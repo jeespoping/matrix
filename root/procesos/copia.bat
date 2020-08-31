@@ -1,0 +1,1 @@
+copy c:\inetpub\wwwroot\matrix\planos\pos\inventario.php c:\inetpub\wwwroot\matrix\pos\procesos\

@@ -1,0 +1,191 @@
+.mtx-cita-out{
+	display: flex;
+	border-radius: 5px;
+	background-color: #F4CDCB;
+	padding: 5px;
+}
+
+.mtx-cita-on{
+	display: flex;
+	border-radius: 5px;
+	background-color: lightgreen;
+	padding: 5px;
+}
+
+
+.mtx-ct {
+	display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-justify-content: flex-start;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    -webkit-align-content: stretch;
+    -ms-flex-line-pack: stretch;
+    align-content: stretch;
+    -webkit-align-items: flex-start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+	width: 60%;
+}
+
+
+.mtx-ct > div:nth-child(1) {
+    -webkit-order: 0;
+    -ms-flex-order: 0;
+    order: 0;
+    -webkit-flex: 0 1 auto;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+    -webkit-align-self: stretch;
+    -ms-flex-item-align: stretch;
+    align-self: stretch;
+	color: red;
+	justify-content:center;
+	text-align: center;
+	font-size: 16pt;
+	font-weight: bold;
+	background-color: #ccc;
+	padding:5px;
+    }
+
+.mtx-ct > div:nth-child(2) {
+    -webkit-order: 0;
+    -ms-flex-order: 0;
+    order: 0;
+    -webkit-flex: 3 1 auto;
+    -ms-flex: 3 1 auto;
+    flex: 3 1 auto;
+    -webkit-align-self: stretch;
+    -ms-flex-item-align: stretch;
+    align-self: stretch;
+	color: black;
+    }
+
+.mtx-ct > div:nth-child(3) {
+    -webkit-order: 0;
+    -ms-flex-order: 0;
+    order: 0;
+    -webkit-flex: 0 1 auto;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+    -webkit-align-self: stretch;
+    -ms-flex-item-align: stretch;
+    align-self: stretch;
+	background-color: #C3D9FF;
+    }
+	
+.mtx-ct-actions {
+    -webkit-order: 0;
+    -ms-flex-order: 0;
+    order: 0;
+    -webkit-flex: 0 1 auto;
+    -ms-flex: 0 1 auto;
+    flex: 0 1 auto;
+    -webkit-align-self: stretch;
+    -ms-flex-item-align: stretch;
+    align-self: stretch;
+	background-color: white;
+	justify-content:center;
+	display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    }
+	
+	
+.mtx-ct-container{
+	display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+	 -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+.mtx-ct-container > div{
+	display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.mtx-label > label{
+	font-size: 12pt;
+	font-weight: bold;
+}
+
+
+.mtx-btn-accpet {
+	background-color: dodgerblue;
+}
+
+.mtx-btn {
+	border: 0px solid #1C6EA4;
+	border-radius: 5px 5px 5px 5px;
+	padding: 5px;
+	width: 100px;
+	text-align: center;
+	margin: 5 auto;
+}
+
+.mtx-btn > a {
+	text-decoration : none;
+	color: white;
+}
+
+.mtx-btn:hover > a {
+	text-decoration : none;
+	color: white;
+	font-weight: bold;
+}
+
+.mtx-btn-disabled {
+	background-color : #ccc;
+}
+
+.mtx-btn-disabled:hover > a {
+	text-decoration : none;
+	color: white;
+	font-weight: normal;
+}
+
+.mtx-ct-container > div > div{
+	 align-self: stretch;
+}
+	
+.mtx-col-1{
+	width : 100%;
+}
+
+.mtx-col-2{
+	width : calc( 100%/2 );
+}
+
+.mtx-col-3{
+	width : calc( 100%/12*3 );
+}
+
+.mtx-col-4{
+	width : calc( 100%/12*4 );
+}
+
+.mtx-col-5{
+	width : calc( 100%/12*5 );
+}
+
+.mtx-col-6{
+	width : calc( 100%/12*6 );
+}
+
+.mtx-col-7{
+	width : calc( 100%/12*7 );
+}
+
+.mtx-col-7{
+	width : calc( 100%/12*8 );
+}

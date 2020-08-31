@@ -1,0 +1,46 @@
+<html>
+  <head>
+
+<!-- UTF-8 is the recommended encoding for your pages -->
+    <meta http-equiv="content-type" content="text/xml; charset=utf-8" />
+    <title>Zapatec DHTML Calendar</title>
+
+<!-- Loading Theme file(s) -->
+    <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
+
+<!-- Loading Calendar JavaScript files -->
+    <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
+
+<!-- Loading language definition file -->
+    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
+
+  </head>
+  <body>
+
+    <input type="text" id="calendar" name="calendar" />
+    <button id="trigger">...</button>
+    <script type="text/javascript">//<![CDATA[
+      Zapatec.Calendar.setup({
+        weekNumbers       : false,
+        showsTime         : true,
+        timeFormat        : "12",
+        electric          : false,
+        inputField        : "calendar",
+        button            : "trigger",
+        ifFormat          : "%Y-%m-%d",
+        daFormat          : "%Y/%m/%d"
+      });
+    //]]></script>
+<noscript>
+<br/>
+This page uses a <a href="http://www.zapatec.com/website/main/products/prod1/"> Javascript Calendar </a>, but
+your browser does not support Javascript. 
+<br/>
+Either enable Javascript in your Browser or upgrade to a newer version.
+</noscript>
+<br><a href="http://www.zapatec.com/website/main/products/prod1/">Zapatec Javascript Calendar</a><br>
+
+  </body>
+</html>

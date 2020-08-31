@@ -1,0 +1,152 @@
+.alternar:hover
+{
+    background-color: #D9EDF7;
+}
+
+.titulo1
+{
+    text-align: center;
+}
+
+.selectPpal
+{
+    margin-top: 20px;
+    width: 100%;
+}
+
+.selectPpal select
+{
+    width: 220px;
+}
+
+.contenidoTab
+{
+    margin-left: 0;
+    margin-top: 20px;
+}
+
+.selectDispo
+{
+    margin-top: 20px;
+    width: 30%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.maestros
+{
+    text-align: center;
+}
+
+.maestros input
+{
+    width: 350px;
+    margin-top: 5px;
+    font-weight: bold;
+}
+
+.label1
+{
+    color: #185ABD;
+}
+
+#files {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.labelArchivo
+{
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #106BA0;
+    display: inline-block;
+    transition: all .5s;
+    cursor: pointer;
+    padding: 15px 40px !important;
+    text-transform: uppercase;
+    width: fit-content;
+    text-align: center;
+}
+
+/*----RADIO BUTTONS:*/
+
+.wrapper{
+    /*background: #497dd0;*/
+    background-color: transparent;
+    /*padding:100px;*/
+}
+
+.toggle_radio{
+    position: relative;
+    /*background: rgba(255,255,255,.1);*/
+    background: #0078D4;
+    margin: 4px auto;
+    overflow: hidden;
+    padding: 0 !important;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    position: relative;
+    height: 26px;
+    width: 212px;
+}
+.toggle_radio > * {
+    float: left;
+}
+.toggle_radio input[type=radio]{
+    display: none;
+    /*position: fixed;*/
+}
+.toggle_radio label{
+    /*font: 90%/1.618 "Source Sans Pro";*/
+    font-weight: bold;
+    color: rgba(255,255,255,.9);
+    z-index: 0;
+    display: block;
+    width: 100px;
+    height: 20px;
+    margin: 3px 3px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    cursor: pointer;
+    z-index: 1;
+    /*background: rgba(0,0,0,.1);*/
+    text-align: center;
+    /*margin: 0 2px;*/
+    /*background: blue;*/ /*make it blue*/
+}
+.toggle_option_slider{
+    /*display: none;*/
+    /*background: red;*/
+    width: 100px;
+    height: 20px;
+    position: absolute;
+    top: 3px;
+    -webkit-border-radius: 50px;
+    -moz-border-radius: 50px;
+    border-radius: 50px;
+    -webkit-transition: all .4s ease;
+    -moz-transition: all .4s ease;
+    -o-transition: all .4s ease;
+    -ms-transition: all .4s ease;
+    transition: all .4s ease;
+}
+
+#first_toggle:checked ~ .toggle_option_slider{
+    background: rgba(255,255,255,.3);
+    left: 3px;
+}
+#second_toggle:checked ~ .toggle_option_slider{
+    background: rgba(255,255,255,.3);
+    left: 109px;
+}
+
+/*-----------------------*/
+

@@ -1,0 +1,133 @@
+html body
+{
+    margin: 0 auto 0 auto;
+}
+.divGeneral
+{
+    margin-top: 5px;
+}
+
+.divHeader
+{
+    width: 80%;
+    margin: auto auto auto auto;
+    text-align: center;
+}
+
+.divHeader table
+{
+    width: 100%;
+}
+
+.divSelector
+{
+    margin: 20px auto 50px auto;
+}
+
+.body2
+{
+    height: 27.94cm;
+    width: 21.59cm;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.divContenido
+{
+    border: inset;
+    margin: 20px auto 0 auto;
+    width: 70%;
+}
+
+.divEncabezado
+{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.divEncabezado div span label
+{
+    font-size: medium;
+}
+
+.divDatosGenerales table
+{
+    margin-left: 10px;
+}
+.lblNormal
+{
+    font-weight: normal;
+}
+
+.divDatosEspecificos
+{
+    border-top: inset;
+    border-color: dimgray;
+    margin-top: 10px;
+    margin-bottom: auto;
+    min-height: 1250px;
+}
+
+.tblDatosEspecificos
+{
+    width: 100%;
+    margin-left: 5px;
+}
+
+.tblDetalle
+{
+    margin-top: 10px;
+    margin-left: 5px;
+    width: 24%;
+}
+
+.tdDetalle
+{
+    border-right: groove;
+    text-align: center;
+}
+
+.divPiepagina
+{
+    border-color: dimgray;
+    /*min-height: 100px;*/
+    min-height: 95px;
+}
+
+.divPiepagina table
+{
+    width: 100%;
+    border-top: inset;
+    border-color: black;
+    margin-top: 5px;
+}
+
+.tblDetalle2
+{
+    margin-right: 70px;
+    margin-top: 30px;
+}
+
+.divPrint
+{
+    margin: 20px auto auto auto;
+}
+
+/* --- IMPRESION --- */
+
+.divContenidoPrint
+{
+    border: inset;
+    margin: 20px auto 0 auto;
+    width: 98%;
+}

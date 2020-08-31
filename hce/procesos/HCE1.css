@@ -1,0 +1,224 @@
+		A	{text-decoration: none;color: #000066;}
+    	//body{background:white url(portal.gif) transparent center no-repeat scroll;}
+		#tipo1{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;}
+		#tipo2{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;}
+		.tipo3T{color:#000066;background:#C3D9FF;font-size:12pt;font-family:Arial;font-weight:bold;text-align:center;border-style:none;}
+		.tipo3TW{color:#C3D9FF;background:#C3D9FF;font-size:1pt;font-family:Arial;font-weight:bold;text-align:center;border-style:none;display:none;}
+		.tipo3V{color:#000066;background:#dddddd;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;border-style:outset;height:1.5em;cursor: hand;cursor: pointer;padding-right:5px;padding-left:5px}
+		.tipo3V:hover {color: #000066; background: #999999;}
+		#tiporegla{color:#FFFFFF;background:#FFFFFF;font-size:2pt;font-family:Arial;font-weight:bold;text-align:center;height:0.5em;}
+		div.centraTabla{text-align: center;}
+		div.centraTabla table {margin: 0 auto;text-align: left;}
+		.divmess{border-style:solid;border-color:#000066;}
+		.tipo3GRID{color:#E8EEF7;background:#E8EEF7;font-size:1pt;font-family:Arial;font-weight:bold;text-align:center;border-style:none;display:none;}
+		.tipo3GRIDJ{color:#000066;background:#E8EEF7;font-size:8pt;font-family:Arial;font-weight:bold;text-align:center;}
+		
+				
+		#tipo1T{color:#000066;background:#E8EEF7;font-size:9.5pt;font-family:Arial;font-weight:normal;text-align:left;}
+		#tipo2T{color:#000066;background:#E8EEF7;font-size:9.5pt;font-family:Arial;font-weight:normal;text-align:left;}
+		#tipo3T{color:#000066;background:#C3D9FF;font-size:9.5pt;font-family:Arial;font-weight:normal;text-align:left;}
+		#tipo1TB{color:#000066;background:#E8EEF7;font-size:9.5pt;font-family:Arial;font-weight:bold;text-align:left;}
+		#tipo2TB{color:#000066;background:#E8EEF7;font-size:9.5pt;font-family:Arial;font-weight:bold;text-align:left;}
+		
+		.tipo3G{color:#FFFFFF;background:#0B615E;font-size:10pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		
+		.tipoPac{color:#000066;background:#FFFFFF;font-size:8pt;font-family:Arial;font-weight:bold;text-align:left;}
+		.tipoPac1{color:#000066;background:#FFFFFF;font-size:8pt;font-family:Arial;font-weight:bold;text-align:right;}
+		.tipoHora{color:#000066;background:#C3D9FF;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		.tipo3{color:#000066;background:#FFFFFF;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		.tipoMARQUEE{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Tahoma;font-weight:normal;text-align:left;}
+		
+		.tipotabs{color:#000000;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		
+		.tipo3F{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:left;width:8em;}
+		.tipo3FO{color:#000066;background:#E0E0E0;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:left;width:8em;}
+		.tipo3H{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:left;width:6em;}
+		.tipo3HO{color:#000066;background:#E0E0E0;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:left;width:6em;}
+		
+		.tipo3O{color:#000066;background:#E0E0E0;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		.tipo3M{color:#000066;background:#E0E0E0;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		.tipo3rojo{color:#FFFFFF;background:#FF0000;font-size:12pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		.tipo3w{color:#000066;background:#FF0000;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		.tipo3A{color:#000066;background:#FFFFFF;font-size:10pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		.tipo3R{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:bold;text-align:center;border-style:none;}
+		.tipo4{color:#000066;background:#dddddd;font-size:6pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipoREF{color:#000066;background:#FFFFFF;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		#tipoREFO{color:#000066;background:#E0E0E0;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		#tipo5{color:#000066;background:#FFFFFF;font-size:10pt;font-family:Tahoma;font-weight:bold;}
+		.tipo6{color:#000066;background:#FFFFFF;font-size:10pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipo7{color:#FFFFFF;background:#000066;font-size:12pt;font-family:Tahoma;font-weight:bold;width:30em;}
+		#tipo8{color:#99CCFF;background:#000066;font-size:6pt;font-family:Tahoma;font-weight:bold;}
+		#tipo9{color:#660000;background:#dddddd;font-size:8pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipo10{color:#FFFFFF;background:#000066;font-size:10pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipo11{color:#000066;background:#999999;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipo12{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		#tipo13{color:#000066;background:#99CCFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:left;}
+		#tipo14{color:#FFFFFF;background:#000066;font-size:14pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipo15{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipo16{color:#000066;background:#99CCFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipo17{color:#000066;background:#CC99FF;font-size:10pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipo18{color:#000066;background:#DDDDDD;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:center;}
+		#tipo19{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:right;}
+		.tipoTAB{color:#000066;background:#FFFFFF;font-size:9pt;font-family:Tahoma;font-weight:normal;width:20em;text-align:left;height:5em;}
+		.tipoTABO{color:#000066;background:#E0E0E0;font-size:9pt;font-family:Tahoma;font-weight:normal;width:20em;text-align:left;height:5em;}
+		
+		#tipoT00{color:#000000;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:left;;vertical-align:middle;}
+		#tipoT01{color:#000000;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;width:15em;text-align:center;height:2em;}
+		#tipoT02{color:#000000;background:#C3D9FF;font-size:12pt;font-family:Arial;font-weight:bold;width:110em;text-align:left;height:2em;}
+		#tipoT03{color:#000000;background:#E8EEF7;font-size:7pt;font-family:Arial;font-weight:normal;width:110em;text-align:right;height:2em;}
+		#tipoT04{color:#000066;background:#F4F4F4;font-size:12pt;font-family:Arial;font-weight:bold;text-align:justify;;vertical-align:middle;}
+		
+		#tipoL01{color:#000000;background:#C3D9FF;font-size:9pt;font-family:Arial;font-weight:bold;width:15em;text-align:center;height:2em;}
+		#tipoL02{color:#000066;background:#E8EEF7;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		#tipoL02PMSG{color:#DF0101;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		#tipoL02REC{color:#000066;background:#E8EEF7;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		#tipoL02O{color:#0000FF;background:#E8EEF7;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		#tipoL02V{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Arial;font-weight:bold;text-align:center;height:1.5em;}
+		#tipoL02W{color:#8B0000;background:#FFDDDD;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		
+		.tipoL02GRID1{color:#000066;background:#E8EEF7;font-size:7pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;}
+		.tipoL02GRID2{color:#000066;background:#C3D9FF;font-size:7pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;}
+		.tipoL02GRID1J{color:#000066;background:#E8EEF7;font-size:5pt;font-family:Arial;font-weight:bold;text-align:left;height:1em;}
+		.tipoL02GRID2J{color:#000066;background:#C3D9FF;font-size:5pt;font-family:Arial;font-weight:bold;text-align:left;height:1em;}
+		.tipoL02GRID1W{color:#000066;background:#E8EEF7;font-size:5pt;font-family:Arial;font-weight:bold;text-align:justify;height:1em;}
+		.tipoL02GRID2W{color:#000066;background:#C3D9FF;font-size:5pt;font-family:Arial;font-weight:bold;text-align:justify;height:1em;}
+
+		.tipoL02GRIDS{color:#000066;background:#33DDFF;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;}
+		
+		.tipoTABLE{font-family:Arial;table-layout:fixed;border-style:dotted;border-collapse:collapse;}
+		.tipoTABLE1{font-family:Arial;border-style:solid;border-collapse:collapse;}
+		.tipoTABLEGRID{font-family:Arial;border-style:solid;border-collapse:collapse;}
+		.tipoDIV{word-wrap:break-word;}
+		
+		.tipoAL02GRID1{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;}
+		.tipoAL02GRID2{color:#000066;background:#C3D9FF;font-size:9pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;}
+		#tipoAL06GRID{color:#000066;background:#999999;font-size:10pt;font-family:Arial;font-weight:bold;text-align:left;height:1em;}
+		#tipoAL05GRID{color:#000066;background:#DDDDDD;font-size:11pt;font-family:Arial;font-weight:bold;text-align:left;height:1em;}
+		#tipoAL07GRID{color:#000066;background:#CCCCCC;font-size:9pt;font-family:Arial;font-weight:bold;text-align:left;height:1em;}
+		
+		#tipoL02W1{color:#000066;background:#E8EEF7;font-size:10pt;font-family:Arial;font-weight:normal;text-align:justify;text-justify:auto;}
+		#tipoL02J1{color:#000066;background:#E8EEF7;font-size:10pt;font-family:Arial;font-weight:normal;text-align:left;}
+		#tipoL02W2{color:#000066;background:#F0F0F0;font-size:10pt;font-family:Arial;font-weight:normal;text-align:justify;text-justify:auto;}
+		#tipoL02J2{color:#000066;background:#F0F0F0;font-size:10pt;font-family:Arial;font-weight:normal;text-align:left;}
+		#tipoL02X{color:#000066;background:#F0F0F0;font-size:10pt;font-family:Arial;font-weight:normal;text-align:justify;height:2em;}
+		#tipoL02U{color:#000066;background:#C3D9FF;font-size:14pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		#tipoL02Z{color:#000066;background:#999999;font-size:12pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		#tipoL02Y{color:#000066;background:#FFFFCC;font-size:10pt;font-family:Arial;font-weight:normal;text-align:left;height:2em;}
+		#tipoL02H{color:#000066;background:#CCFFCC;font-size:10pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		#tipoL02I{color:#000066;background:#FFE8FF;font-size:10pt;font-family:Arial;font-weight:bold;text-align:left;}
+		#tipoL02N{color:#000066;background:#FEAAA4;font-size:10pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		#tipoL02Q{color:#000066;background:#FFFFFF;font-size:10pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		
+		.tipoFinI{color:#000066;background:#FFFFFF;font-size:14pt;font-family:Arial;font-weight:bold;text-align:center;border-style:none;}
+		.tipoTF{color:#000066;background:#FFFFFF;font-size:2pt;font-family:Arial;font-weight:bold;text-align:left;border-style:dotted;border-collapse:collapse;}
+		
+		#tipoIL02W1{color:#000066;background:#E8EEF7;font-size:8pt;font-family:Arial;font-weight:normal;text-align:justify;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02J1{color:#000066;background:#E8EEF7;font-size:8pt;font-family:Arial;font-weight:normal;text-align:left;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02W2{color:#000066;background:#F0F0F0;font-size:8pt;font-family:Arial;font-weight:normal;text-align:justify;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02J2{color:#000066;background:#F0F0F0;font-size:8pt;font-family:Arial;font-weight:normal;text-align:left;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02X{color:#000066;background:#F0F0F0;font-size:8pt;font-family:Arial;font-weight:normal;text-align:justify;height:2em;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02U{color:#000000;background:#C3D9FF;font-size:12pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02Z{color:#000066;background:#999999;font-size:10pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02Y{color:#000066;background:#FFFFCC;font-size:8pt;font-family:Arial;font-weight:normal;text-align:left;height:2em;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02H{color:#000066;background:#CCFFCC;font-size:8pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02I{color:#000066;background:#FFE8FF;font-size:8pt;font-family:Arial;font-weight:bold;text-align:left;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02N{color:#000066;background:#FEAAA4;font-size:8pt;font-family:Arial;font-weight:bold;text-align:left;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02Q{color:#000066;background:#FFFFFF;font-size:8pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02S{color:#000066;background:#CCCCCC;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02L{color:#000066;background:#E8EEF7;font-size:8pt;font-family:Arial;font-weight:normal;text-align:justify;text-justify:auto;height:2em;border-style:dotted;border-collapse:collapse;}
+		#tipoIL02FIRMA{color:#000066;background:#CCFFCC;font-size:8pt;font-family:Arial;font-weight:bold;text-align:left;border-style:dotted;border-collapse:collapse;}
+		
+		#tipoL02check{color:#000066;background:#E0E0E0;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		#tipoL02P{color:#000066;background:#E8EEF7;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		#tipoL02Pcheck{color:#000066;background:#E0E0E0;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		
+		.tipoBR{color:#000000;background:#E8EEF7;font-size:12pt;font-family:Arial;font-weight:bold;width:15em;text-align:center;height:2em;}
+		.tipoL02M{color:#000066;background:#E8EEF7;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		.tipoL02MO{color:#000066;background:#E0E0E0;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		.tipoL02MW{color:#000066;background:#CCCCCC;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:left;height:2em;}
+		#tipoL01C{color:#000000;background:#C3D9FF;font-size:9pt;font-family:Arial;font-weight:bold;width:15em;text-align:center;height:2em;}
+		#tipoL02C{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:bold;width:50em;text-align:center;height:2em;}
+		#tipoL03C{color:#000000;background:#C3D9FF;font-size:11pt;font-family:Arial;font-weight:bold;width:250em;text-align:center;height:2em;}
+		#tipoL04C{color:#000000;background:#C3D9FF;font-size:12pt;font-family:Arial;font-weight:bold;width:250em;text-align:center;height:2em;}
+		#tipoL01A{color:#000000;background:#C3D9FF;font-size:9pt;font-family:Arial;font-weight:bold;width:15em;align:center;text-align:center;height:5em;}
+		#tipoL02A{color:#000000;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:normal;width:15em;align:center;text-align:center;height:5em;}
+		#tipoL01B{color:#000000;background:#C3D9FF;font-size:9pt;font-family:Arial;font-weight:bold;width:15em;align:center;text-align:center;}
+		#tipoL02B{color:#000000;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:normal;width:15em;align:center;text-align:center;}
+		#tipoL03{color:#000066;background:#FFFFFF;font-size:12pt;font-family:Arial;font-weight:bold;width:90em;text-align:center;height:2em;}
+		#tipoL03M{color:#FF0000;background:#FFFFFF;font-size:12pt;font-family:Arial;font-weight:bold;width:90em;text-align:center;height:2em;}
+		#tipoL03X{color:#FFFFFF;background:#FF0000;font-size:12pt;font-family:Arial;font-weight:bold;width:90em;text-align:center;height:2em;}
+		#tipoL04{color:#000000;background:#E8EEF7;font-size:12pt;font-family:Arial;font-weight:bold;width:75em;text-align:center;height:2em;}
+		#tipoL04A{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:bold;width:75em;text-align:center;height:2em;}
+		#tipoL05{color:#000000;background:#C3D9FF;font-size:8pt;font-family:Arial;font-weight:bold;width:25em;text-align:center;height:2em;}
+		#tipoL06{color:#000066;background:#999999;font-size:12pt;font-family:Arial;font-weight:bold;text-align:left;height:1em;cursor: hand;cursor: pointer;}
+		#tipoL06REC{color:#000066;background:#999999;font-size:12pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;cursor: hand;cursor: pointer;}
+		#tipoL06GRID{color:#000066;background:#999999;font-size:8pt;font-family:Arial;font-weight:bold;text-align:left;height:1em;}
+		#tipoL06GRIDW{color:#000066;background:#999999;font-size:8pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;}
+		#tipoL07{color:#000066;background:#CCCCCC;font-size:10pt;font-family:Arial;font-weight:bold;width:90em;text-align:left;height:1em;}
+		#tipoL07A{color:#000066;background:#E8EEF7;font-size:8pt;font-family:Arial;font-weight:bold;width:90em;text-align:left;height:1em;}
+		#tipoL07AW{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:bold;width:90em;text-align:left;height:1em;}
+		#tipoL07B{color:#000066;background:#CCCCCC;font-size:8pt;font-family:Arial;font-weight:bold;width:90em;text-align:left;height:1em;}
+		#tipoL08{color:#000066;background:#CCCCCC;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;}
+		#tipoL09{color:#CC0000;background:#DDDDDD;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;}
+		#tipoL09A{color:#000066;background:#DDDDDD;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;height:1em;vertical-align:middle;}
+		#tipoFILA{color:#FFFFFF;background:#FFFFFF;width:390em;}
+		#tipoLGOK{color:#000000;background:#C3D9FF;font-size:12pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		#tipoLGOL{color:#000000;background:#CC99FF;font-size:12pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		
+		#tipoG000{color:#000066;background:#DDDDDD;font-size:7pt;font-family:Tahoma;font-weight:bold;table-layout:fixed;text-align:left;}
+		#tipoG001{color:#000066;background:#999999;font-size:8pt;font-family:Tahoma;font-weight:bold;table-layout:fixed;text-align:center;}
+		#tipoG01{color:#FFFFFF;background:#FFFFFF;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG54{color:#000066;background:#DDDDDD;font-size:6pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG11{color:#000066;background:#99CCFF;font-size:6pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG21{color:#FFFFFF;background:#CC3333;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG32{color:#FF0000;background:#FFFF66;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG33{color:#006600;background:#FFFF66;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG34{color:#000066;background:#FFFF66;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG42{color:#FF0000;background:#00CC66;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG41{color:#FFFFFF;background:#00CC66;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG44{color:#000066;background:#00CC66;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG51{color:#FF0000;background:#CC99FF;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG52{color:#FFFFFF;background:#CC99FF;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG53{color:#000066;background:#CC99FF;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG61{color:#FF0000;background:#999999;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG62{color:#FFFFFF;background:#999999;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		#tipoG63{color:#000066;background:#999999;font-size:5pt;font-family:Tahoma;font-weight:bold;width:6.4em;text-align:center;height:3em;}
+		
+		#tipoM00{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;table-layout:fixed;text-align:center;}
+		#tipoM01{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Tahoma;font-weight:bold;width:30em;text-align:left;height:3em;}
+		#tipoM02{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Tahoma;font-weight:bold;width:30em;text-align:left;height:3em;}
+		#tipoM03{color:#000066;background:#C3D9FF;font-size:9pt;font-family:Tahoma;font-weight:bold;width:30em;text-align:left;height:3em;}
+		
+		#tipoRB{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:left;height:1em;}
+		#tipoRBcheck{color:#000066;background:#E0E0E0;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:left;height:1em;}
+		#tipoRB1{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:center;height:1em;}
+		#tipoUT1{color:#000066;background:#E8EEF7;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:center;height:1em;}
+		#tipoUT2{color:#000066;background:#E8EEF7;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:center;height:3em;}
+		#tipoUT3{color:#000066;background:#E8EEF7;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:left;height:0.5em;}
+		
+		#tipoTI01{color:#000066;background:#999999;font-size:12pt;font-family:Arial;font-weight:bold;table-layout:fixed;text-align:center;}
+		#tipoTI02{color:#FFFFFF;background:#000066;font-size:8pt;font-family:Arial;font-weight:bold;table-layout:fixed;text-align:center;}
+		#tipoTI03{color:#000066;background:#C3D9FF;font-size:8pt;font-family:Arial;font-weight:bold;table-layout:fixed;text-align:center;}
+		#tipoTI04{color:#000066;background:#E8EEF7;font-size:8pt;font-family:Arial;font-weight:bold;table-layout:fixed;text-align:center;}
+		#tipoTI05{color:#000066;background:#CCCCCC;font-size:9pt;font-family:Arial;font-weight:bold;table-layout:fixed;text-align:center;}
+		
+		#tipoN01{color:#000000;background:#C3D9FF;font-size:9pt;font-family:Arial;font-weight:normal;text-align:center;height:2em;}
+		#tipoN02{color:#000000;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:normal;text-align:center;height:2em;}
+		#tipoN03{color:#000000;background:#999999;font-size:12pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		#tipoN04{color:#000066;background:#C3D9FF;font-size:12pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}
+		#tipoN05{color:#000066;background:#E8EEF7;font-size:14pt;font-family:Arial;font-weight:bold;width:120em;text-align:center;;height:1em;}
+		#tipoN06{color:#000066;background:#CCCCCC;font-size:12pt;font-family:Arial;font-weight:bold;width:120em;text-align:center;;height:1em;}
+		.tipoN07{color:#000066;background:#FFFFCC;font-size:10pt;font-family:Arial;font-weight:bold;text-align:left;}
+		
+		#tipoH01{color:#000066;background:#999999;font-size:12pt;font-family:Arial;font-weight:bold;text-align:center;}
+		#tipoH02{color:#000066;background:#CCCCCC;font-size:12pt;font-family:Arial;font-weight:bold;text-align:center;}
+		#tipoH03{color:#000066;background:#C3D9FF;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;}
+		#tipoH04{color:#000066;background:#FFFFFF;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;}
+		#tipoH03R{color:#000066;background:#C3D9FF;font-size:10pt;font-family:Arial;font-weight:bold;text-align:right;}
+		#tipoH04R{color:#000066;background:#FFFFFF;font-size:10pt;font-family:Arial;font-weight:bold;text-align:right;}
+		#tipoH05{color:#000066;background:#FFFF99;font-size:9pt;font-family:Arial;font-weight:bold;text-align:center;}
+		
+		#tipoH00A{color:#CC0000;background:#dddddd;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;}
+		#tipoH01A{color:#000066;background:#999999;font-size:9pt;font-family:Arial;font-weight:bold;text-align:center;}
+		#tipoH02A{color:#000066;background:#CCCCCC;font-size:9pt;font-family:Arial;font-weight:bold;text-align:center;}
+		#tipoH03A{color:#000066;background:#E8EEF7;font-size:9pt;font-family:Arial;font-weight:bold;text-align:center;}  

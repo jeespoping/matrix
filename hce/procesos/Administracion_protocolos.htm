@@ -1,0 +1,86 @@
+<html>
+<head>
+<title>Documento sin t&iacute;tulo</title>
+
+<style type="text/css">
+body {
+font-family:Verdana;
+}
+
+div.tabArea {  font-size: 80%;  font-weight: bold;}
+
+a.tab {  background-color: #C3D9FF;  border: 1px solid #000000;  border-bottom-width: 0px;  padding: 2px 1em 2px 1em;  position: relative;  text-decoration: none;  top: -1px;  z-index: 100;}
+
+
+
+a.tab,a.tab:visited {  color: #808080;}
+a.tab:hover {  background-color: #d0d0d0;  color: #606060;}
+
+a.tab.activeTab, a.tab.activeTab:hover, a.tab.activeTab:visited {  background-color: #2A5DB0;  color: #FFFFFF;  z-index: 102;}
+
+div.tabIframeWrapper {  height:30em; width: 100%;}
+div.tabMain {  background-color: #c0c0c0;  border: 1px solid #000000;  padding: 0em;  position: relative;  z-index: 101;}
+
+iframe.tabContent {  background-color: #c0c0c0;  border: 3px #2A5DB0;  height:30em; width: 100%;}
+
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body>
+
+<input type=hidden id=wcodpro>
+
+<div>
+	<div class="tabArea">
+		<a class="tab" href="Maestro_protocolos.php" target="myIframe">Encabezado</a>
+		<a class="tab" href="Detalle_protocolo.php" target="myIframe">Contenido del Protocolo</a>
+		<a class="tab activeTab" href="Validaciones_Foraneas.php" target="myIframe">Validaciones Foraneas</a>
+		<a class="tab" href="Prerequisitos.htm" target="myIframe">Prerequisitos</a>
+		<a class="tab" href="Vistas_Asociadas.htm" target="myIframe">Vistas Asociadas</a>
+		<a class="tab" href="Seguridad.htm" target="myIframe">Seguridad</a>
+		<a class="tab" href="PresentacionArbol.htm" target="myIframe">Presentación</a>
+		<a class="tab" href="Plantillas.htm" target="myIframe">Plantillas Predefinidas</a>
+	</div>
+
+<!--	xxx -->
+  <div class="tabMain"> 
+    <div class="tabIframeWrapper"> 
+      <iframe class="tabContent" name="myIframe" src="Maestro_protocolos.php"  marginheight="2" marginwidth="2" frameborder="0"> 
+      </iframe>
+      <iframe class="tabContent" name="myIframe1" src="Lista_protocolos.php"  marginheight="2" marginwidth="2" frameborder="0"> 
+      </iframe>
+    </div>
+  </div>
+  
+<script type="text/javascript">
+function synchTab(frameName) {
+	var elList, i;
+	// Exit if no frame name was given.
+	if (frameName == null)    return;
+	// Check all links.
+	elList = document.getElementsByTagName("A");
+	for (i = 0; i < elList.length; i++)
+		 // Check if the link's target matches the frame being loaded.
+		 if (elList[i].target == frameName) {
+ // If the link's URL matches the page being loaded, activate it.      Otherwise, make sure the tab is deactivated.
+			 if (elList[i].href == window.frames[frameName].location.href) {
+				  elList[i].className += " activeTab";
+  					elList[i].blur();
+			}else
+				  removeName(elList[i], "activeTab");
+      		 }
+		}
+function removeName(el, name) {
+	var i, curList, newList;
+	// Remove the given class name from the element's className property.
+	newList = new Array();
+	curList = el.className.split(" ");
+	for (i = 0; i < curList.length; i++)
+		if (curList[i] != name)
+			newList.push(curList[i]);
+			el.className = newList.join(" ");
+}
+</script>
+</div></body>
+</html>

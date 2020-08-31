@@ -1,0 +1,16 @@
+<?php
+echo "<HTML>";
+echo "<HEAD>";
+echo "<TITLE>BIENVENIDA</TITLE>";
+echo "</HEAD>";
+echo "<BODY>";
+echo "<BR><BR><BR>";
+echo "<center><table border=1>";
+echo "<tr><td rowspan=2 colspan=1 align=center><IMG SRC='logo01.jpg' ></td>";				
+echo "</table>";
+echo "<H1 ALIGN='CENTER'>BIENVENIDOS A FONAMERICAS</H1>";		
+echo "</HTML>";	
+echo "</BODY>";
+?>
+
+

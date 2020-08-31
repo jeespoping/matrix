@@ -1,0 +1,22 @@
+html body
+{
+    margin: 0 auto 0 auto;
+}
+
+.main
+{
+    margin-top: 5px;
+}
+
+.encabezado
+{
+    text-align: center;
+}
+
+.labelTitulo
+{
+    margin-top: 0;
+    background-color: #D9EDF7;
+    padding: 5px 0 5px 0;
+    text-align: center;
+}

@@ -1,0 +1,45 @@
+.demoPadder {
+    padding-top:15px;
+}
+
+.btn-default {
+    color: #007aff;
+    background-color: #fff;
+    border-color: #007aff;
+}
+
+
+.btn-default:hover, .btn-default:focus, .btn-default:active,
+.btn-default.active, .open > .btn-default.dropdown-toggle {
+    color: #fff;
+    background-color: #007aff;
+    border-color: #007aff;
+}
+
+.btn-default2{
+    color: #003399;
+    background-color: #F9F9F9;
+    border-color: #007aff;
+    font-weight: bold;
+    border: 0;
+}
+
+.btn-default2:hover, .btn-default2:focus, .btn-default2:active,
+.btn-default2.active, .open > .btn-default2.dropdown-toggle {
+    color: #339DE8;
+    background-color: #F9F9F9;
+    border-color: #007aff;
+    font-weight: bold;
+    border: 0;
+}
+
+.input{
+    width: 40px;
+    border: none;
+    font-weight: bold;
+    color: #003399;
+}
+
+.input2{
+    width: 30px;
+}

@@ -1,0 +1,31 @@
+<html> 
+ <head> 
+  <script language="JavaScript"> 
+
+   function fullFullScr(){ 
+    var vent = null; 
+    vent = window.open('','vVent','fullscreen=yes') 
+    llenaVentana(vent); 
+    // Para direccionar a una página específica, elimine la linea anterior 
+    // y utilice la siguiente: 
+    // vent.location = "miPagina.htm"; 
+   } 
+
+   function llenaVentana(vent){ 
+    with (vent.document){ 
+     open(); 
+     write("<html><head></head><body>") 
+     write("(Solo funciona sobre IE v.4 o superior)<br>") 
+     write("Recuerde colocar un botón para carrar<br><br>") 
+     write("<input type='button' value='Cerrar' onclick='JavaScript:window.close()'>") 
+     write("</html>") 
+     close(); 
+    } 
+   } 
+
+  </script> 
+ </head> 
+ <body> 
+  <input type="button" value="Abrir FullScreen" onclick="fullFullScr()"> 
+ </body> 
+</html> 

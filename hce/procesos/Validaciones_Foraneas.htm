@@ -1,0 +1,202 @@
+<html>
+<head>
+<title>Documento sin t&iacute;tulo</title>
+<script type="text/javascript" src="tabbed.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<style type="text/css">
+body {
+font-family:Verdana;
+}
+</style>
+</head>
+
+<body BGCOLOR=#DDDDDD>
+<form name="form1" method="post" action="">
+  <div align="center"><font color="#000099" size="5"><strong>VALIDACIONES FORANEAS</strong></font><br>
+    <br>
+  </div>
+  <CENTER>
+    <table width="76%" height="195" border="0">
+      <tr> 
+        <td width="14%" height="34" bgcolor="#C3D9FF"><font color="#000066" size="2"><strong>C&oacute;digo 
+          Protocolo </strong></font></td>
+        <td width="10%" bgcolor="#E8EEF7"> <input type="text" name="textfield"></td>
+        <td width="19%" bgcolor="#C3D9FF"><font color="#000066" size="2"><strong>Campo 
+          Digitado</strong></font></td>
+        <td width="22%" bgcolor="#E8EEF7"><select name="select3">
+            <option>Campo1 del protocolo en pantalla</option>
+            <option>Campo2 del protocolo en pantalla</option>
+            <option>Campo3 del protocolo en pantalla</option>
+            <option>Campo4 del protocolo en pantalla</option>
+            <option>Campo5 del protocolo en pantalla</option>
+          </select></td>
+        <td width="8%" bgcolor="#C3D9FF"><font color="#000066" size="2"><strong>Campo 
+          Asociado</strong></font></td>
+        <td width="27%" bgcolor="#E8EEF7"><select name="select2">
+            <option>Campo1 del protocolo en pantalla</option>
+            <option>Campo2 del protocolo en pantalla</option>
+            <option>Campo3 del protocolo en pantalla</option>
+            <option>Campo4 del protocolo en pantalla</option>
+          </select></td>
+      </tr>
+      <tr> 
+        <td height="37" bgcolor="#C3D9FF"><font color="#000066" size="2"><strong>Tabla 
+          de Validaci&oacute;n </strong></font></td>
+        <td bgcolor="#E8EEF7"><select name="select">
+            <option>CIE 10</option>
+            <option>PROCEDIMIENTOS</option>
+            <option>EXAMENES</option>
+            <option>LABORATORIOS</option>
+            <option>PATOLOGIAS</option>
+            <option>OTROS</option>
+          </select> </td>
+        <td bgcolor="#C3D9FF"><font size="2"><strong>Campo a Validar de la Tabla 
+          de Validaci&oacute;n</strong></font></td>
+        <td bgcolor="#E8EEF7"><select name="select4">
+            <option>Campo1 de la tabla X</option>
+            <option>Campo2 de la tabla X</option>
+            <option>Campo3 de la tabla X</option>
+            <option>Campo4 de la tabla X</option>
+            <option>Campo5 de la tabla X</option>
+          </select></td>
+        <td bgcolor="#C3D9FF"><font color="#000066" size="2"><strong>Tipo de Validaci&oacute;n</strong></font></td>
+        <td bgcolor="#E8EEF7"><select name="select6">
+            <option value="(El digitado mas cada uno de los elementos de la lista digitada y se busca en la tabla del campo siguiente)">Recursiva 
+            </option>
+            <option>Asociada</option>
+          </select></td>
+      </tr>
+      <tr> 
+        <td height="34" bgcolor="#C3D9FF"><font color="#000066" size="2"><strong>Tabla 
+          Origen Asociada</strong></font></td>
+        <td bgcolor="#E8EEF7"><select name="select5">
+            <option>CIE 10</option>
+            <option>PROCEDIMIENTOS</option>
+            <option>EXAMENES</option>
+            <option>LABORATORIOS</option>
+            <option>PATOLOGIAS</option>
+            <option>OTROS</option>
+          </select> </td>
+        <td bgcolor="#C3D9FF"><font color="#000066" size="2"><strong>Campo Inicial 
+          Tabla Asociada</strong></font></td>
+        <td bgcolor="#E8EEF7"><select name="select7">
+            <option>Campo 1 tabla asociada</option>
+            <option>Campo 2 tabla asociada</option>
+            <option>Campo 3 tabla asociada</option>
+            <option>Campo 4 tabla asociada</option>
+            <option>Campo 5 tabla asociada</option>
+          </select></td>
+        <td bgcolor="#C3D9FF"><font color="#000066" size="2"><strong>Campo F Tabla 
+          Asociada</strong></font></td>
+        <td bgcolor="#E8EEF7"><select name="select8">
+            <option>Campo 1 tabla asociada</option>
+            <option>Campo 2 tabla asociada</option>
+            <option>Campo 3 tabla asociada</option>
+            <option>Campo 4 tabla asociada</option>
+            <option>Campo 5 tabla asociada</option>
+          </select></td>
+      </tr>
+      <tr> 
+        <td height="29" bgcolor="#C3D9FF"><font color="#000066" size="2"><strong>Criterio</strong></font></td>
+        <td bgcolor="#E8EEF7"><select name="select9">
+            <option value=":">Rango</option>
+            <option value="=">Igual</option>
+            <option value="&gt;">Mayor que</option>
+            <option value="&gt;=">Mayor o igual</option>
+            <option value="&lt;">Menor</option>
+            <option value="&lt;=">Menor o igual</option>
+          </select> </td>
+        <td bgcolor="#C3D9FF"><font color="#000066" size="2">&nbsp;<strong>Estado</strong></font></td>
+        <td bgcolor="#E8EEF7"><div align="center"> 
+            <input type="checkbox" name="checkbox" value="checkbox">
+          </div></td>
+        <td bgcolor="#C3D9FF"><font color="#000066" size="2">&nbsp;</font></td>
+        <td bgcolor="#E8EEF7">&nbsp;</td>
+      </tr>
+    </table>
+  </CENTER>
+  <div align="center">   
+    <p> 
+      <input type="submit" name="Grabar" value="Grabar">
+      &nbsp;|&nbsp; 
+      <input type="submit" name="Modificar" value="Modificar">
+      &nbsp;|&nbsp; 
+      <input type="submit" name="Submit3" value="Borrar">
+      &nbsp;|&nbsp; 
+      <input type="submit" name="Submit4" value="Consultar">
+    </p>
+    <table width="75%" border="0">
+      <tr> 
+        <td width="9%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>Protocolo</strong></font></div></td>
+        <td width="8%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>campo 
+            Digitado</strong></font></div></td>
+        <td width="9%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>Campo 
+            Asociado</strong></font></div></td>
+        <td width="10%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>Tabla 
+            Validaci&oacute;n</strong></font></div></td>
+        <td width="20%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>Campo 
+            a Validar Tabla de Validaci&oacute;n</strong></font></div></td>
+        <td width="10%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>Tipo 
+            de Validaci&oacute;n</strong></font></div></td>
+        <td width="9%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>Tabla 
+            Orig&eacute;n Asociada</strong></font></div></td>
+        <td width="9%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>Campo 
+            Inicial Tabla Asociada</strong></font></div></td>
+        <td width="7%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>campo 
+            Final Tabla Asociada</strong></font></div></td>
+        <td width="2%" bgcolor="#2A5DB0"> <div align="center"><font color="#FFFFFF" size="2"><strong>Criterio</strong></font></div></td>
+      </tr>
+      <tr bgcolor="#C3D9FF"> 
+        <td><font size="2">PROT-001</font></td>
+        <td><font size="2">Articulo</font></td>
+        <td><font size="2">edad</font></td>
+        <td><font size="2">vademecum</font></td>
+        <td><font size="2">dosis</font></td>
+        <td><font size="2">recursiva</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+      </tr>
+      <tr bgcolor="#E8EEF7"> 
+        <td><font size="2">PROT-001</font></td>
+        <td><font size="2">Articulo</font></td>
+        <td><font size="2">sexo</font></td>
+        <td><font size="2">vademecum</font></td>
+        <td><font size="2">dosis</font></td>
+        <td><font size="2">recursiva</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+      </tr>
+      <tr bgcolor="#C3D9FF"> 
+        <td><font size="2">PROT-001</font></td>
+        <td><font size="2">Articulo</font></td>
+        <td><font size="2">diagnostico</font></td>
+        <td><font size="2">vademecum</font></td>
+        <td><font size="2">dosis</font></td>
+        <td><font size="2">recursiva</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+      </tr>
+      <tr bgcolor="#E8EEF7"> 
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+        <td><font size="2">&nbsp;</font></td>
+      </tr>
+    </table>
+    <p>&nbsp; </p>
+  </div>
+</form>
+</body>
+</html>

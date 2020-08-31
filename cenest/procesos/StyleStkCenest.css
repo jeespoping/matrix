@@ -1,0 +1,261 @@
+.encabezado
+{
+    width: 95%;
+    margin: 0px 10px 0px 10px;
+}
+
+.contenido
+{
+    display: block;
+    width: 95%;
+    margin: 0px 10px 0px 10px;
+}
+
+.divselecciones
+{
+    padding-top: 5px;
+}
+
+.tblselecciones tr
+{
+    text-align: center;
+}
+
+.separaradio
+{
+    background-color: #ffffff;
+    width: 50px;
+    border: none;
+}
+
+.divetiquetas
+{
+    margin: 10px auto 0px auto;
+    border: none;
+}
+
+.divetiquetas h3
+{
+    color: #399AE8;
+    font-weight: bold;
+    text-align: center;
+}
+
+.divEtiqueta1
+{
+    display: none;
+    margin: auto;
+    width: 60%;
+}
+
+.divContainerEtq1
+{
+    border: groove;
+    width: 75%;
+    margin: auto;
+}
+
+.divContainerEtq1 table tr td input
+{
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-color: #0d0d0d;
+}
+
+.divContainerEtq1 table tr td
+{
+    padding-top: 2px;
+}
+
+.divEtiqueta2
+{
+    display: none;
+    margin: auto;
+    width: 60%;
+}
+
+.divContainerEtq2
+{
+    border: groove;
+    width: 75%;
+    margin: auto;
+}
+
+.divContainerEtq2 table tr td input
+{
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-color: #0d0d0d;
+}
+
+.divContainerEtq2 table tr td
+{
+    padding-top: 2px;
+}
+
+.divEtiqueta3
+{
+    display: none;
+    margin: auto;
+    width: 60%;
+}
+
+.divContainerEtq3
+{
+    border: groove;
+    width: 75%;
+    margin: auto;
+}
+
+.divContainerEtq3 table tr td input
+{
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-color: #0d0d0d;
+}
+
+.divContainerEtq3 table tr td
+{
+    padding-top: 2px;
+}
+
+.divEtiqueta4
+{
+    display: none;
+    margin: auto;
+    width: 60%;
+}
+
+.divContainerEtq4
+{
+    border: groove;
+    width: 75%;
+    margin: auto;
+}
+
+.divContainerEtq4 table tr td input
+{
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-color: #0d0d0d;
+}
+
+.divContainerEtq4 table tr td
+{
+    padding-top: 2px;
+}
+
+.divPrint
+{
+    margin: 20px auto auto auto;
+}
+
+/* ETIQUETA 1*/
+
+.divEtq1Print
+{
+    margin-top: 0;
+    /*margin-left: 20px;*/
+    margin-left: 10px;
+    border: none;
+    /*font-size: x-small;*/
+    font-size: 12px;
+    /*font-size: 20px;*/
+    width: 400px;
+}
+
+.divEtq1Print table
+{
+    margin-left: 3px;
+    width: 100%;
+}
+
+.divEtq1Print table tr td label
+{
+    padding-top: -15px;
+    margin-bottom: -5px;
+}
+
+/* ETIQUETA 2*/
+
+.divEtq2Print
+{
+    margin-top: 0;
+    margin-left: 10px;
+    border: none;
+    font-size: 13px;
+    /*font-size: 40px;*/
+    width: 400px;
+}
+
+.divEtq2Print table
+{
+    margin-left: 3px;
+    width: 100%;
+}
+
+.divEtq2Print table tr td label
+{
+    padding-top: -15px;
+    margin-bottom: -5px;
+}
+
+/* ETIQUETA 3*/
+
+.divEtq3Print
+{
+    margin-top: 0;
+    margin-left: 20px;
+    border: none;
+    font-size: small;
+    width: 400px;
+}
+
+.divEtq3Print table
+{
+    margin-left: 3px;
+    width: 100%;
+}
+
+/* ETIQUETA 4*/
+
+.divEtq4Print
+{
+    margin-top: 0;
+    margin-left: 20px;
+    border: none;
+    font-size: small;
+    width: 400px;
+}
+
+.divEtq4Print table
+{
+    margin-left: 3px;
+    width: 100%;
+}
+
+.divInstruccion
+{
+    margin-top: 60px;
+}
+
+.divInstruccion h3
+{
+    color: #399AE8;
+    font-weight: bold;
+}
+
+.lblContenido
+{
+    font-weight: bold;
+}
+
+.lblLeyenda
+{
+    text-align: center;
+    font-size: x-small;
+}

@@ -1,0 +1,85 @@
+.fondoCalculadora * 		{ 
+							margin:0; 
+							padding:0; 
+							border:0; 
+							font-size:100%;
+							font:inherit; 
+							vertical-align:baseline; 
+						}
+.fondoCalculadora 		{ 
+							width:150px; 
+							height:230px; 
+							background-color:#f8f8f8; 
+							margin:10px; 
+							padding:15px; 
+							position:relative;
+							-moz-border-radius:10px; 
+							-webkit-border-radius:10px; 
+							border-radius:10px; 
+							border:1px solid #e8e8e8; 
+							color:#a7a9ac;
+							font-family:Verdana, "Bitstream Vera Sans", "DejaVu Sans", Tahoma, Geneva, Arial, Sans-serif; 
+							font-size:12px; 
+						}
+
+.teclaCalculator 		{ 	
+							display:block; 
+							-moz-border-radius:6px; 
+							-webkit-border-radius:6px; 
+							border-radius:6px;
+							-webkit-box-shadow: inset 0px 0px 15px 5px #EAEAEA; 
+							box-shadow: inset 0px 0px 15px 5px #EAEAEA;
+							background-color:#f8f8f8; 
+							border:1px solid #dedede; 
+							padding:10px; 
+							text-align:center;
+							text-decoration:none; 
+							width:36px; 
+							float:left; 
+							margin-left:6px; 
+							margin-bottom:12px; 
+							color:#a7a9ac;
+						}
+
+.teclaCalculator  		{ 	
+							color:#636363; 
+							text-decoration:none; 
+							font-weight:bold; 
+							outline:none;
+							height:36px; 
+						}
+
+.teclaCalculator:hover	{ 	
+							-webkit-box-shadow:inset 0px 0px 35px 5px #B7B7B7;
+							box-shadow:inset 0px 0px 35px 5px #B7B7B7; 
+							color:#fff; 
+						}
+.teclaCalculator:hover 	{	
+							color:#FFFFFF; 
+							text-decoration:none; 
+						}
+						
+.displayCalculator:hover {
+							-webkit-box-shadow: inset 0px 0px 10px 1px #c0c0c0; 
+							box-shadow: inset 0px 0px 10px 1px #c0c0c0; 
+						}
+.displayCalculator 		{
+							-moz-border-radius:6px; 
+							-webkit-border-radius:6px; 
+							border-radius:6px; 
+							border:0;
+							-webkit-box-shadow: inset 0px 0px 10px 1px #DBDBDB; 
+							box-shadow: inset 0px 0px 10px 1px #DBDBDB;
+							color:#636363; 
+							padding:10px 15px; 
+							font-size:15px; 
+						}
+.displayCalculator		{ 	
+							width:180px; 
+							height:30px; 
+							margin-bottom:15px; 
+							outline:none; 
+						}
+.filaCalculadora		{
+							text-align: center; 
+						}
