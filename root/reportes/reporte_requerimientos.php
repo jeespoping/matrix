@@ -42,6 +42,24 @@ include_once("conex.php");
           $excel     ='';
           $condicion ='';
           $respuesta = array();
+
+          $queryCcoUsuario = "SELECT Usucco           
+              FROM root_000039
+             WHERE Usucod='".$wusuario."' 
+               AND Usuest='on'";
+  
+          $resCcoUsuario = mysql_query($queryCcoUsuario, $conex) or die ("Error: " . mysql_error());       
+          $numCcoUsuario = mysql_num_rows($resCcoUsuario);
+
+
+
+          $ccoUsuario = "";
+          if($numCcoUsuario>0)
+          {
+            $rowsCcoUsuario = mysql_fetch_array($resCcoUsuario);
+            $cco = explode("-",$rowsCcoUsuario['Usucco']);
+            $ccoUsuario = $cco[0];
+          }
    
     
           // Consultar las tablas root_000040
@@ -49,7 +67,8 @@ include_once("conex.php");
                              A.Reqpurs, A.Reqpri, A.Reqest, A.Reqcla, A.Reqsed, 
                              A.Reqtir, A.Reqfal, A.Reqcan, A.Reqtpn
                      From root_000040 A
-                     WHERE Fecha_data >= '".$wfechaini."' AND Fecha_data <= '".$wfechafin."'                         
+                     WHERE A.Fecha_data >= '".$wfechaini."' AND Fecha_data <= '".$wfechafin."'   
+                      AND  A.Reqcco = '".$ccoUsuario."'                      
                      ORDER BY Fecha_data desc";
 
 
@@ -186,8 +205,8 @@ include_once("conex.php");
 
                     $detalle .= "<tr class='".$fondo."' onclick='ilumina(this,\"".$fondo."\")'>
                                  <td >".utf8_encode($row["Reqtpn"])."</td>
-                                 <td >".$row["Reqfec"]."</td>
-                                 <td >".$row["Requso"].'-'.$wrequsu."</td>
+                                 <td >".utf8_encode($row["Reqfec"])."</td>
+                                 <td >".utf8_encode($row["Requso"]).'-'.utf8_encode($wrequsu)."</td>
                                  <td >".utf8_encode($row["Reqdes"])."</td>
                                  <td >".utf8_encode($wreqpri)."</td>
                                  <td >".utf8_encode($wreqcla)."</td>
@@ -201,7 +220,7 @@ include_once("conex.php");
                     $excel .= "<tr >
                                  <td >".utf8_encode($row["Reqtpn"])."</td>
                                  <td >".$row["Reqfec"]."</td>
-                                 <td >".$row["Requso"].'-'.$wrequsu."</td>
+                                 <td >".utf8_encode($row["Requso"]).'-'.utf8_encode($wrequsu)."</td>
                                  <td >".utf8_encode($row["Reqdes"])."</td>
                                  <td >".utf8_encode($wreqpri)."</td>
                                  <td >".utf8_encode($wreqcla)."</td>
@@ -373,6 +392,7 @@ include_once("conex.php");
                 wfechaini:     wfechaini,
                 wfechafin:     wfechafin
                }, function(data){
+
 
                   // Ocultar div que muestra el tiempo de proceso
                   document.getElementById("divcargando").style.display    = "none";
