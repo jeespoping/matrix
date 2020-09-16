@@ -9,7 +9,9 @@ include_once("conex.php");
   Basado en example_006.php de TCPDF, librería creada por @author Nicola Asuni.
 
  ACTUALIZACIONES:
-
+ * Septiembre 8 de 2020 
+    David Henao se crea otro archivo shell (/generarPdfCardioLogo.sh) para asi cuando se genere el pdf en transcripcion.php se guarde en la ruta especificada con un logo y se movio la margen del archivo
+ * 
  *  Marzo 18 de 2016
     Edwar Jaramillo     : Fecha de la creación del archivo de configuración.
 **/
@@ -50,6 +52,12 @@ if (is_dir($dir)) {
 // $datos_paciente = $wtipodoc.". ".$wcedula." | ".$wfuente." ".$worden;
 $datos_paciente = "";
 $wnombrePDF = "resultado_examen_".$wconsecutivo;
+
+if(!isset($logo)){
+    $wnombrePDF = "resultado_examen_".$wconsecutivo;
+}else{
+    $wnombrePDF = $wconsecutivo;
+}
 
 $whistoria = $arr_encabezado["whistoria"];
 $wingreso  = $arr_encabezado["wingreso"];
@@ -115,12 +123,12 @@ $html = "<!DOCTYPE html>
         </head>
         <body style='border:0; margin: 0;' onload='subst()'>
             <input type='hidden' id='incluyeTapa' value='off'>
-            <table id='encabezado' style='width: 100%;'>
+            <table id='encabezado' style='width: 100% background-color: blue;'>
                 <tr>
                     <td align='left' width='25%' id='imagenClinica' style='display:;'>
                         <!-- <img width='90' heigth='70' src='../../../images/medical/root/".$nombre_logo.".JPG' /> -->
                     </td>
-                    <td style='text-align:right' width='15%'><font size='2'>
+                    <td style='text-align:right' width='10%'><font size='2'>
                         P&aacute;g <span class='page'></span> de <span class='topage'></span></font>
                     </td>
                 </tr>
@@ -143,9 +151,8 @@ $contenido_pdf = str_replace("../../", "../../../", $contenido_pdf);
 
 // ************* CUERPO *************
 $html = '<!DOCTYPE html>
-            <head>
-            </head>
-            <body style="border:0; margin-left: 3em;">
+            <head></head>
+            <body style="border:0; margin:2px;">
                 '.$contenido_pdf.'
             </body>
         </html>
@@ -194,8 +201,18 @@ $f = fopen( $archivo_dir, "w+" );
 fwrite( $f, $html );
 fclose( $f );
 
-// generarPdfCardio.sh resultado_examen_7
-$respuesta = shell_exec( "./generarPdfCardio.sh ".$wnombrePDF );
+// generarPdfCardio.sh resultado_examen_7 ----- codigo para generar dos pdf con margen diferente
+//$respuesta = shell_exec( "./generarPdfCardio.sh ".$wnombrePDF);
+//$respuesta = shell_exec( "./generarPdfCardioLogo.sh ".$wnombrePDF);
+
+if(!isset($logo)){
+    $respuesta = shell_exec( "./generarPdfCardio.sh ".$wnombrePDF);
+
+}else{
+    $respuesta = shell_exec( "./generarPdfCardioLogo.sh \"".$wnombrePDF.'"');
+
+}
+
 
 // $dir = '/var/www/matrix/ayucni/procesos/resultados';
 $archivo_dir = $dir."/encabezado_".$wnombrePDF.".html";
@@ -215,4 +232,3 @@ if(file_exists($archivo_dir))
 {
     unlink($archivo_dir);
 }
-?>

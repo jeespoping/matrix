@@ -2,6 +2,34 @@
 include_once("conex.php");
 header("Content-Type: text/html;charset=ISO-8859-1");
 
+/**
+ * Crea los parametros extras de una url para Get
+ */
+function parametrosExtras( $variablesGET, $post = false ){
+		
+	$val = '';
+	
+	$superglobal = $_GET;
+	if( $post ){
+		$superglobal = $_POST;
+	}
+	
+	foreach( $variablesGET as $key => $value ){
+		
+		if( $superglobal[ $value ] ){
+			
+			if( is_numeric($key) ){
+				$val .= "&".$value."=".urlencode( $_GET[ $value ] );
+			}
+			else{
+				$val .= "&".$key."=".urlencode( $_GET[ $value ] );
+			}
+		}
+	}
+	
+	return $val;
+}
+
 if(isset($accion) and $accion == 'consultaObsercaciones')
 {
 			$data= array( 'error'=>0, 'mensaje'=>'');			
@@ -141,6 +169,7 @@ function buscarObservaciones()
 /*
 Creacion: 2012-08-10  Este script se crea para mostrar la lista de medicos disponibles para las citas de caso 2 que son las de medicos, se muestra la lista de medicos de una fecha seleccionada en el calendario, al nombre del medico se le puede dar clic y lleva a la agenda para la asignacion de citas correspondientes a dicho medico, esta pagina se recarga cada 30 segundos para que se puedan visualizar los cambios en las citas asignadas. Viviana Rodas
 Modificacion:
+			2020-09-09	Edwin Molina. Se hacen cambios varios para recibir los datos por defecto que quedaran en la cita y vienen de la lista de espera para Drive Thru
             2020-03-25 Arleyda Insignares. Se adiciona campo Sedcod y tabla root_000128 para adicionar sede a la asignación de las citas
 			2020-01-20 Arleyda Insignares. Se adiciona input para busqueda por texto en la tabla que contiene el listado de médicos.
 			se ubica 'retornar' en la parte superior
@@ -166,7 +195,7 @@ include_once("root/comun.php");
 if(!isset($_SESSION['user']))
 	echo "Error Usuario NO Registrado";
 else
-{	
+{
     $conex = obtenerConexionBD("matrix");
     $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
     // $wbasedato = strtolower( $institucion->baseDeDatos );
@@ -177,7 +206,19 @@ else
 	//************************funcion******************** 
     function disponibilidadMedicos($wfec, $nomdia, $colorDiaAnt, $wemp_pmla)
 	{
-				
+		
+		$parametrosExtras = parametrosExtras([
+										'defaultCedula',
+										'defaultNombre',
+										'defaultNit',
+										'defaultCorreo',
+										'defaultUrl',
+										'defaultEdad',
+										'defaultTelefono',
+										'defaultComentarios',
+										'idListaEspera',
+								]);
+		
 	    global $conex;
 		global $totalCitas;
 		global $citasAsig;
@@ -359,7 +400,7 @@ else
 									$j++;
 									$verde++;
 									echo "<tr $class>";
-									echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla' >".$wequ."</a></font></td> ";
+									echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla{$parametrosExtras}' >".$wequ."</a></font></td> ";
 									echo "<td><font size='2'> Todas las citas disponibles <font></td>";
 									echo "<td></td></tr>";
 								}
@@ -374,7 +415,7 @@ else
 										    $j++;
 											$rojo++;
 											echo "<tr $class>";
-											echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla' > ".$wequ."</a></font></td> ";
+											echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla{$parametrosExtras}' > ".$wequ."</a></font></td> ";
 											echo "<td><font size='2'>No tiene citas disponibles</font></td>";
 											echo "<td><font size='2'>".$sede." </td>";
 											echo "</tr>";
@@ -385,7 +426,7 @@ else
 											$j++;
 											$amarillo++;
 											echo "<tr $class>";
-											echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla' >".$wequ."</a></font></td> ";
+											echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla{$parametrosExtras}' >".$wequ."</a></font></td> ";
 											 echo "<td>Total Citas: ".(floor($totalCitas-$tiempoGastado))." -";
 											 echo "Asignadas: ".$citasAsig." -";
 											 echo "Disponibles: ".floor($citasDisp)."</td>";
@@ -476,7 +517,7 @@ else
 								{
 									$rojo++;
 									echo "<tr $class>";
-									echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla' > ".$wequ."</a></font></td> ";
+									echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla{$parametrosExtras}' > ".$wequ."</a></font></td> ";
 									echo "<td><font size='2'> No tiene citas disponibles</font></td>";
 									echo "<td><font size='2'>".$sede." </td>";
 									echo "</tr>";
@@ -526,7 +567,7 @@ else
 												
 												$rojo++;
 												echo "<tr $class>";
-												echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla' > ".$wequ."</a></font></td> ";
+												echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=$caso&wemp_pmla=$wemp_pmla{$parametrosExtras}' > ".$wequ."</a></font></td> ";
 												echo "<td><font size='2'> No tiene citas disponibles</font></td>";
 												echo "<td><font size='2'>".$sede." </td>";
 												echo "</tr>";
@@ -538,7 +579,7 @@ else
 												
 												$amarillo++;
 												echo "<tr $class>";
-												echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=".@$caso."&wemp_pmla=".@$wemp_pmla."' >".$wequ."</a></font></td> ";
+												echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=".@$caso."&wemp_pmla=".@$wemp_pmla."{$parametrosExtras}' >".$wequ."</a></font></td> ";
 												echo "<td><font size='2'> Total Citas: ".(floor($totalCitas-$tiempoGastado) )." -";
 												echo "Asignadas: ".$citasAsig." -";
 												echo "Disponibles: ".floor($citasDisp)."</font></td>";
@@ -555,7 +596,7 @@ else
 											
 											$verde++;
 											echo "<tr $class>";
-											echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=".@$caso."&wemp_pmla=".@$wemp_pmla."' > ".$wequ."</a></font></td> ";
+											echo "<td><font size='2'><a href='agendaMedicos.php?empresa=$wbasedato&wfec=$wfec&wequ=$wequ&nomdia=$nomdia&colorDiaAnt=$colorDiaAnt&caso=".@$caso."&wemp_pmla=".@$wemp_pmla."{$parametrosExtras}' > ".$wequ."</a></font></td> ";
 										    echo "<td><font size='2'> Todas las citas disponibles </font></td>";
 										    echo "<td><font size='2'>".$sede." </td>";
 										    echo "</tr>";

@@ -14,8 +14,14 @@ if(!isset($accion))
 
  Notas:
  --
-*/ $wactualiza = "2020-05-26"; /*
+*/ $wactualiza = "2020-09-08"; /*
  ACTUALIZACIONES:
+2020-09-16: David Henao Hernandez 
+- Se corrige la asignacion de prefijo cuando es 1250 y 1033 (UDC y CCP) en la asignacion del numero cis y en la creacion del pdf
+ 2020-09-08: David Henao Hernandez 
+ - Al hacer clic en el botón GenerarPDF se guardan 2 copias del pdf en la ruta ayucni/procesos/estudios/ una posee un logo y la otra es para imprimir que genera el archivo
+ - Al hacer clic en el botón GenerarPDF se muestra una ventana la cual pide al usuario el numero de acceso cis y se valida la informacion correcta y se procede a generar el pdf 
+ - Se corrige la asignacion de prefijo cuando es 1250 y 1033 (UDC y CCP) en la asignacion del numero cis y en la creacion del pdf
  2020-05-26: Jessica Madrid Mejía
  - Al hacer clic en el botón GenerarPDF se guarda una copia del pdf en la ruta ayucni/procesos/estudios/
  - Si una transcripción estaba finalizada, hacen clic en guardar parcialmente y dentro de la misma 
@@ -1282,6 +1288,99 @@ function generarQueryCombinado($variables, $tabla)
     return $queryGeneral = $selectQuery.$fromQuery.$whereQuery.$orderByQuery;
 }
 
+function actualizarcis($conex,$wbasedato_ayu,$wconsecutivo,$numeroRespuesta){
+
+    
+    $numr = $_POST['numeroRespuesta'];
+    $sqlnum= "   UPDATE  {$wbasedato_ayu}_000006
+                 SET Espnac = '{$numr}'
+                 WHERE Espcod = '{$wconsecutivo}'";
+    $actunum = mysql_query($sqlnum,$conex);
+}
+
+
+function existecis($conex,$wbasedato_ayu,$wconsecutivo,$numeroRespuesta,$wemp_pmla){
+
+    
+
+    $rexiste = '';
+    $qexiste = "SELECT  Espcod , Esping , Esphis , Espnac
+    FROM    {$wbasedato_ayu}_000006
+    WHERE   Espnac = '{$numeroRespuesta}'and Espcod != '{$wconsecutivo}'";
+
+    $resultexiste = mysql_query($qexiste,$conex);
+    $num = mysql_num_rows($resultexiste);
+    if ($num > 0) {
+        $resulte= mysql_fetch_assoc($resultexiste);
+        $existe = $resulte["Espcod"];
+        $rexiste = $existe;
+        $rexiste = "El codigo de acceso ".$resulte["Espnac"]." ya existe para el examen ".$resulte["Espcod"]."";
+
+        if($resulte["Esphis"] != ''){
+        $pacienteinfo = consultarInfoPacientePorHistoria($conex, $resulte["Esphis"], $wemp_pmla);
+
+            $rexiste .= " con la historia ".$resulte["Esphis"]."-".$resulte["Esping"]." y nombre ".$pacienteinfo->nombre1." ".$pacienteinfo->nombre2." ".$pacienteinfo->apellido1." ".$pacienteinfo->apellido2;
+        }
+        
+    }
+    return $rexiste;
+
+}
+
+function consultarcis($conex,$wbasedato_ayu,$wconsecutivo){
+
+    $rcon = '';
+    $qcon = "SELECT  Espnac , Esping, Esphis
+    FROM    {$wbasedato_ayu}_000006
+    WHERE   Espcod = '{$wconsecutivo}'";
+    $result1 = mysql_query($qcon,$conex);
+    $row1 = mysql_fetch_assoc($result1);
+    $rcon =  $row1["Espnac"];
+    $rhis =  $row1["Esphis"];
+    $ring =  $row1["Esping"];
+    //$numeroR = intval(preg_replace('/[^0-9]+/', '', $rcon), 10); 
+    $numeroR = preg_replace("/[^0-9]/", "", $rcon);
+    return array ($numeroR,$rhis,$ring);
+    
+}
+
+//$cispre = consultarcis($conex,$wbasedato_ayu,$wconsecutivo);
+//$cisihis = $cispre[1];
+
+
+function compararprefijo($conex, $wbasedato_cliamep,$wbasedato_cliame,$wbasedato_movhos,$whistoria,$wingreso)
+{
+    
+    $prefijo = '';
+    
+    $q1 = "SELECT  Ingsei
+    FROM    {$wbasedato_cliame}_000101 AS c101
+    WHERE   c101.inghis = '{$whistoria}' AND c101.Ingnin = '{$wingreso}'";
+    $result1 = mysql_query($q1,$conex);
+    $row1 = mysql_fetch_assoc($result1);
+
+    $q2 = "SELECT  Ccopic
+    FROM    {$wbasedato_movhos}_000011
+    WHERE   Ccocod = '{$row1['Ingsei']}'";
+    $result2 = mysql_query($q2,$conex);
+
+
+    if ($result2 = mysql_query($q2,$conex)){
+        $row2 = mysql_fetch_assoc($result2);
+        $num2 = mysql_num_rows($result2);
+            if ($num2 == 0 || !$row2 || $row2["Ccopic"] == '' || empty($row2["Ccopic"])){
+                $q3 = "SELECT  Ccopic
+                FROM    {$wbasedato_movhos}_000011
+                WHERE   Ccocod = '{$wbasedato_cliamep}'";
+                $result3 = mysql_query($q3,$conex);
+                $row3 = mysql_fetch_assoc($result3);
+                $prefijo = $row3["Ccopic"];
+            }else{
+             $prefijo = $row2["Ccopic"];
+            }
+    }
+    return $prefijo;
+}
 
 function consultar_opciones_equipo($conex, $wemp_pmla, $wbasedato_ayu, $cod_equipo)
 {
@@ -1324,6 +1423,31 @@ if(isset($accion) && isset($form))
 
     switch($accion)
     {
+	    case 'actualizarcis':
+            {
+                actualizarcis($conex,$wbasedato_ayu,$wconsecutivo,$numeroRespuesta);
+                exit();
+            }break;
+            
+        case'consultarcis':
+            {
+                $retorno_consul = consultarcis($conex,$wbasedato_ayu,$wconsecutivo);
+                $prefijocis = compararprefijo($conex, $wbasedato_cliamep, $wbasedato_cliame, $wbasedato_movhos, $retorno_consul[1],$retorno_consul[2]);
+                echo json_encode([
+                    'numeroAcceso' => $retorno_consul[0],
+                    'prefijo' => $prefijocis,
+                ]);
+                exit();
+            }break;
+        
+        case'existecis':
+            {
+                include_once("root/comun.php");
+                $retornoRespuesta=existecis($conex,$wbasedato_ayu,$wconsecutivo,$numeroRespuesta,$wemp_pmla);
+                echo utf8_encode($retornoRespuesta);
+                exit();
+            }break;    
+
         case 'insert':
             switch($form)
             {
@@ -1793,7 +1917,7 @@ if(isset($accion) && isset($form))
 								
 									// si se realizó la copia correctamente se debe registrar la ruta en movhos_268 y hce_28
 									$updateExamen = "UPDATE ".$wbasedato_movhos."_000268 
-														SET Mvcurp='".$urlEstudios."'
+														SET Mvcurp='".$urlEstudios." /_logo '
 													  WHERE id='".$rowExamenes['id']."';";
 									
 									$data["sqlUpdt"] = $updateExamen;
@@ -2494,11 +2618,6 @@ if(isset($accion) && isset($form))
                                                                     <input type="hidden" id="arr_campos_examen_html'.$ver_en_modal.'" name="arr_campos_examen_html" value=\''.json_encode($arr_campos_examen_html).'\' >
                                                                     <input type="hidden" id="wcodigo_examen'.$ver_en_modal.'" name="wcodigo_examen" value="'.$wcodigo_examen.'" >
 
-
- 
-															
-																	
-																	
                                                                     '.$convenciones_examen.'
                                                                     <br>
                                                                     '.$btns_examen.'
@@ -2550,6 +2669,10 @@ if(isset($accion) && isset($form))
                                                                                                 </td>
                                                                                             </tr>
                                                                                             <tr><td align="center">
+ 																							 <div id="div_Nacceso'.$ver_en_modal.'" class="Nacceso" style="display:none;"> 
+
+                                                                                                <input  id="btngenerar_pdf1" name="btngenerar_pdf" class="st_boton1" type="button" value="Generar PDF" onclick="">
+                                                                                            </div>
                                                                                                     <div id="td_img_carga_pdf" style="display:none;text-align:center;"><img width="14 " height="14" border="0" src="../../images/medical/ajax-loader9.gif" /> Generando PDF...</div>
                                                                                             </td></tr>
                                                                                         </table>
@@ -2750,9 +2873,10 @@ if(isset($accion) && isset($form))
                                                             </tr>';
                                     }
 //$fecha_examen se cambio por $vfecha_impresion_examen en la informacion de $data["html"]
-                                    $data["html"] = '<table align="left" cellspacing="0" cellpadding="0" border="0" width="100%">
+//id logo es el td donde se posiciona la imagen
+                                    $data["html"] = '<table id="tabla1" cellspacing="0" cellpadding="0" border="0" width="100%" >
                                                         <tr>
-                                                            <td colspan="3" style="text-align:center;font-weight:bold;font-size:14pt;">'.$wnombre_examen.'</td>
+                                                            <td id="logo" colspan="3" style="text-align:center;font-weight:bold;font-size:14pt;">'.$wnombre_examen.'</td>
                                                         </tr>
                                                         <tr>
                                                             <td colspan="3">&nbsp;</td>
@@ -3162,7 +3286,9 @@ if(isset($accion) && isset($form))
                                                 $cont++;
                                             }
 
-                                            $data["html"] = '   <fieldset>
+                                            $prefijo2 = compararprefijo($conex, $wbasedato_cliamep,$wbasedato_cliame,$wbasedato_movhos,$whistoria,$wingreso);
+
+                                            $data["html"] = '  <input id="id_prefijo" type="hidden" value="'.$prefijo2.'" > <fieldset>
                                                                     <legend align="left"><span style="font-weight:bold;font-size:9pt;" >Exámenes realizados al paciente</span></legend>
                                                                         <div class="encabezadoTabla" style="text-align:left;">
                                                                             Filtrar listado:<input id="id_search_examenes_guardados" type="text" value="" size="25" name="id_search_examenes_guardados" placeholder="Buscar en exámenes realizados">
@@ -3368,6 +3494,7 @@ if(isset($accion) && isset($form))
 }
 
 include_once("root/comun.php");
+$wbasedato_cliamep = consultarAliasPorAplicacion($conex, $wemp_pmla, 'Ccoprefijocardio');
 $wbasedato_HCE    = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 $wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 $wbasedato_cliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
@@ -3612,11 +3739,58 @@ $wing = (!isset($wing)) ? '': $wing;
                 }
 			});
 
-            btngenerar_pdf.click(function(){
-                var id_examen_paciente = $("#id_examen_paciente").val();
+            btngenerar_pdf.click(function() {
+
                 var wconsecutivo = $("#wconsecutivo").val();
-                generarArchivoPdfMostrar(id_examen_paciente, wconsecutivo);
-            });
+                var obJsoncon = parametrosComunes();
+                obJsoncon['accion'] = 'consultarcis';
+                obJsoncon['form'] = 'consultarcis';
+                obJsoncon['wconsecutivo'] = wconsecutivo;
+
+                $.post("transcripcion.php", obJsoncon,function(data){
+                    console.log(data); 
+                    var id_examen_paciente = $("#id_examen_paciente").val();
+                    var wconsecutivo = $("#wconsecutivo").val();
+                    var pre = data['prefijo'];
+                    $('#id_prefijo').val(pre);
+                    var obJson = parametrosComunes();
+                        obJson['accion'] = 'actualizarcis';
+                        obJson['form'] = 'actualizarcis';
+                        obJson['wconsecutivo'] = wconsecutivo;
+                        if(data.numeroAcesso == 0){
+                            data.numeroAcesso = '';
+                        }
+                    
+                    jPrompt('Ingrese numero de acceso en el cis', data.numeroAcceso,'INGRESE INFORMACION', function(respuesta) {
+                        if( parseInt(respuesta)) {
+
+                            var obJsonexis = parametrosComunes();
+                            obJsonexis['accion'] = 'existecis';
+                            obJsonexis['form'] = 'existecis';
+                            obJsonexis['numeroRespuesta'] = pre + respuesta;
+                            obJsonexis['wconsecutivo'] = wconsecutivo;
+                            
+                        
+                            $.post("transcripcion.php",obJsonexis,function(rexiste){
+                                if(rexiste == ''){
+                                numeroRespuesta = respuesta;
+                                obJson['numeroRespuesta'] = pre + respuesta;
+                                obJson['validarR']= pre + respuesta;
+                                $.post("transcripcion.php", obJson);
+                                generarArchivoPdfMostrar(id_examen_paciente, wconsecutivo);
+                                }else{
+                                    alert(rexiste)
+                                }
+                            });
+
+                        }else if(respuesta != null ){
+                            alert('debe ingresar un numero')
+                        }
+                        
+                    });
+                    
+                },'json');
+             });
 
             btncancelar_imprimir.click(function(){
                 $("#div_imprimir_examen").hide("slide", { direction: "up" }, 300, function(){
@@ -5231,49 +5405,89 @@ $wing = (!isset($wing)) ? '': $wing;
             }
 
 			var timestamp = new Date().getTime();
-			var consecutivoPdf = wconsecutivo+"_"+timestamp;
-            var obJson                  = parametrosComunes();
-            obJson['accion']            = 'load';
-            obJson['form']              = 'generar_pdf';
-            obJson['wconsecutivo']      = consecutivoPdf;
-            obJson['contenido_pdf']     = btoa(contenido_pdf);
-            obJson['nombre_logo']       = 'clinica';
-            obJson['arr_encabezado']    = $("#arr_encabezado_b64").val();
+            var consecutivoPdf = wconsecutivo + "_" + timestamp;
+
+            var obJson = parametrosComunes();
+            obJson['accion'] = 'load';
+            obJson['form'] = 'generar_pdf';
+            obJson['wconsecutivo'] = consecutivoPdf;
+            obJson['contenido_pdf'] = btoa(contenido_pdf);
+            obJson['nombre_logo'] = 'clinica';
+            obJson['arr_encabezado'] = $("#arr_encabezado_b64").val();
             obJson['usuario_trancribe'] = usuario_trancribe;
-            obJson['usuario_modifica']  = usuario_modifica;
+            obJson['usuario_modifica'] = usuario_modifica;
+
+            obJson['wdocumento'] = wdocumento.value;
+            obJson['wnombre1'] = wnombre1.value;
+            obJson['wnombre2'] = wnombre2.value;
+            obJson['wapellido1'] = wapellido1.value;
+            obJson['wapellido2'] = wapellido2.value;
+            //obJson['wnombre1']   = wnombre1;
+            
+            var pre = $("#id_prefijo").val();
+            var fechaE = $("#spn_fecha_estudio span").html().substring( 1, $("#spn_fecha_estudio span").html().length -1 );
+            fechae = fechaE.replace(/[:-]/gi,'');
+            fechaef = fechae.replace(/[" "]/gi,'#');
+            
+
+            var consecutivoPdflogo =pre + numeroRespuesta + "#" + wdocumento.value + "#" + wnombre1.value + " " + wnombre2.value +  " " + wapellido1.value + " " + wapellido2.value + "#" + fechaef;
 
             // console.log(obJson);
-            $(".bloquear_todo").attr("disabled","disabled");
+            $(".bloquear_todo").attr("disabled", "disabled");
             fnModalLoading();
 
-            var ruta_pdfs = "resultados/resultado_examen_"+consecutivoPdf+".pdf";
+            var ruta_pdfs = "resultados/resultado_examen_" + consecutivoPdf + ".pdf";
+            //var ruta_pdfs = "-"+consecutivoPdf+".pdf";
             $.post("generar_pdf.php", obJson,
-                function(data){
+                function(data) {
                     fnModalLoading_Cerrar();
                     $(".bloquear_todo").removeAttr("disabled");
                 },
                 "json"
-            ).done(function()   {
+            ).done(function() {
                 // $("#div_vista_previa").show();
                 $("#div_vista_previa_contenedor").show();
                 $("#div_contenedor_pdf").empty();
-                var object= '<br>'
-                            +'<object type="application/pdf" data="'+ruta_pdfs+'#toolbar=1&amp;navpanes=0&amp;scrollbar=1" width="900" height="700">'
-                                +'<param name="src" value="resultados/resultado_laboratorio.pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1" />'
-                                +'<p style="text-align:center; width: 60%;">'
-                                    +'Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />'
-                                    +'<a href="http://get.adobe.com/es/reader/" onclick="this.target=\'_blank\'">'
-                                        +'<img src="../../images/medical/root/prohibido.gif" alt="Descargar Adobe Reader" width="32" height="32" style="border: none;" />'
-                                    +'</a>'
-                                +'</p>'
-                            +'</object>';
+                var object = '<br>' +
+                    '<object type="application/pdf" data="' + ruta_pdfs +
+                    '#toolbar=1&amp;navpanes=0&amp;scrollbar=1" width="900" height="700">' +
+                    '<param name="src" value="resultados/resultado_laboratorio.pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1" />' +
+                    '<p style="text-align:center; width: 60%;">' +
+                    'Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />' +
+                    '<a href="http://get.adobe.com/es/reader/" onclick="this.target=\'_blank\'">' +
+                    '<img src="../../images/medical/root/prohibido.gif" alt="Descargar Adobe Reader" width="32" height="32" style="border: none;" />' +
+                    '</a>' +
+                    '</p>' +
+                    '</object>';
+
+
+                var imagenPDF = $("<div>" + contenido_pdf + "</div>")
+                var textoEstudio = $("#logo", imagenPDF).html();
+                $("#logo", imagenPDF).html(textoEstudio +
+                    '<img src="../../images/medical/ayucni/logoclinica.png" height="110" width="130"  align="right">');
+                contenido_pdf = $(imagenPDF).html()
 
                 $("#div_contenedor_pdf").html(object);
                 $("#td_img_carga_pdf").hide(1500);
-				
-				guardarPDF(wconsecutivo,ruta_pdfs)
-				
-            }).fail(function(xhr, textStatus, errorThrown) { $("#td_img_carga_pdf").hide(1500); mensajeFailAlert('', xhr, textStatus, errorThrown); });
+
+                guardarPDF(wconsecutivo, ruta_pdfs)
+
+                obJson['wconsecutivo'] = consecutivoPdflogo;
+                obJson['logo'] = 'logo';
+                obJson['contenido_pdf'] = btoa(contenido_pdf);
+
+                $.post("generar_pdf.php", obJson,
+                    function(data) {
+                        fnModalLoading_Cerrar();
+                        $(".bloquear_todo").removeAttr("disabled");
+                    },
+                    "json"
+                )
+
+            }).fail(function(xhr, textStatus, errorThrown) {
+                $("#td_img_carga_pdf").hide(1500);
+                mensajeFailAlert('', xhr, textStatus, errorThrown);
+            });
         }
 
         function generarContenidoEditable()
@@ -5537,6 +5751,7 @@ $wing = (!isset($wing)) ? '': $wing;
             obJson['wbasedato_cliame'] = $("#wbasedato_cliame").val();
             obJson['wbasedato_ayu']    = $("#wbasedato_ayu").val();
             obJson['wbasedato_tal']    = $("#wbasedato_tal").val();
+			obJson['wbasedato_cliamep'] = $("#wbasedato_cliamep").val();
             // obJson['wbasedato_tcx']    = $("#wbasedato_tcx").val();
             obJson['consultaAjax']     = '';
             return obJson;
@@ -6379,6 +6594,7 @@ $wing = (!isset($wing)) ? '': $wing;
 <input type='hidden' name='wbasedato_HCE' id='wbasedato_HCE' value="<?=$wbasedato_HCE?>">
 <input type='hidden' name='wbasedato_movhos' id='wbasedato_movhos' value="<?=$wbasedato_movhos?>">
 <input type='hidden' name='wbasedato_cliame' id='wbasedato_cliame' value="<?=$wbasedato_cliame?>">
+<input type='hidden' name='wbasedato_cliamep' id='wbasedato_cliamep' value="<?=$wbasedato_cliamep?>">
 <input type='hidden' name='wbasedato_ayu' id='wbasedato_ayu' value="<?=$wbasedato_ayu?>">
 <input type='hidden' name='wbasedato_tal' id='wbasedato_tal' value="<?=$wbasedato_tal?>">
 <input type='hidden' name='codigoempresaparticular' id='codigoempresaparticular' value="<?=$codigoempresaparticular?>">

@@ -16,7 +16,6 @@
 </center>
 
 <?php
-//2020-08-02, DIDIER OROZCO MODIFICA: SE AGREGAN LOS NUEVOS CAMPOS QUE SE CREARON EN LA TABLA Usuarios CON EL FIN DE RECUPERAR LA CONTRASEÑA.
 include_once("conex.php");
 @session_start();
 if(!isset($_SESSION['user']))
@@ -131,10 +130,10 @@ else
 	if(isset($criterio) and strlen($criterio) > 0)
 	{
 		$criterio=stripslashes($criterio);
-		$query = "select Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo, Empresa, Ccostos, Activo, Documento, Email, PasswordTemporal, FechaPasswordTemp, HoraPasswordTemp from usuarios where ".$criterio;
+		$query = "select Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo, Empresa, Ccostos, Activo from usuarios where ".$criterio;
 	}
 	else
-		$query = "select Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo, Empresa, Ccostos, Activo, Documento, Email, PasswordTemporal, FechaPasswordTemp, HoraPasswordTemp from usuarios";
+		$query = "select Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo, Empresa, Ccostos, Activo from usuarios";
 	$query = $query." limit ".$Inicial.",30";
 	$err = mysql_query($query,$conex) OR die("CRITERIO NO APLICABLE");
 	$num = mysql_num_rows($err);
@@ -160,11 +159,6 @@ else
   		echo "<td bgcolor=".$color."><b>Empresa</b></td>";
   		echo "<td bgcolor=".$color."><b>Centro<br>Costos</b></td>";
   		echo "<td bgcolor=".$color."><b>Activo</b></td>";
-		echo "<td bgcolor=".$color."><b>Documento</b></td>";
-		echo "<td bgcolor=".$color."><b>Email</b></td>";
-		echo "<td bgcolor=".$color."><b>Clave<br>Temporal</b></td>";
-		echo "<td bgcolor=".$color."><b>Fecha de<br>Clave Temporal</b></td>";
-		echo "<td bgcolor=".$color."><b>Hora de<br>Clave Temporal</b></td>";
   		echo "<td bgcolor=".$color."><b>Seleccion</b></td>"; 		
 		echo "</tr>";
 		$r = 0;
@@ -199,11 +193,6 @@ else
 					echo "<td bgcolor=".$color." align=center><IMG SRC='/matrix/images/medical/root/indefinido.gif' ></td>";
 					break;
 			}
-			echo "<td bgcolor=".$color.">".$row[11]."</td>";
-			echo "<td bgcolor=".$color.">".$row[12]."</td>";
-			echo "<td bgcolor=".$color.">".$row[13]."</td>";
-			echo "<td bgcolor=".$color.">".$row[14]."</td>";
-			echo "<td bgcolor=".$color.">".$row[15]."</td>";
 			echo "<td bgcolor=".$color." align=center><A HREF='det_usuarios.php?pos=$row[0]&ok=99'>Editar</td>";
 			echo "</tr>";
 		}
