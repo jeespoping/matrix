@@ -16,9 +16,12 @@ if(!isset($accion))
  --
 */ $wactualiza = "2020-09-08"; /*
  ACTUALIZACIONES:
+2020-09-16: David Henao Hernandez 
+- Se corrige la asignacion de prefijo cuando es 1250 y 1033 (UDC y CCP) en la asignacion del numero cis y en la creacion del pdf
  2020-09-08: David Henao Hernandez 
  - Al hacer clic en el botón GenerarPDF se guardan 2 copias del pdf en la ruta ayucni/procesos/estudios/ una posee un logo y la otra es para imprimir que genera el archivo
  - Al hacer clic en el botón GenerarPDF se muestra una ventana la cual pide al usuario el numero de acceso cis y se valida la informacion correcta y se procede a generar el pdf 
+ - Se corrige la asignacion de prefijo cuando es 1250 y 1033 (UDC y CCP) en la asignacion del numero cis y en la creacion del pdf
  2020-05-26: Jessica Madrid Mejía
  - Al hacer clic en el botón GenerarPDF se guarda una copia del pdf en la ruta ayucni/procesos/estudios/
  - Si una transcripción estaba finalizada, hacen clic en guardar parcialmente y dentro de la misma 
@@ -1326,19 +1329,24 @@ function existecis($conex,$wbasedato_ayu,$wconsecutivo,$numeroRespuesta,$wemp_pm
 
 function consultarcis($conex,$wbasedato_ayu,$wconsecutivo){
 
-
     $rcon = '';
-    $qcon = "SELECT  Espnac
+    $qcon = "SELECT  Espnac , Esping, Esphis
     FROM    {$wbasedato_ayu}_000006
     WHERE   Espcod = '{$wconsecutivo}'";
     $result1 = mysql_query($qcon,$conex);
     $row1 = mysql_fetch_assoc($result1);
     $rcon =  $row1["Espnac"];
+    $rhis =  $row1["Esphis"];
+    $ring =  $row1["Esping"];
     //$numeroR = intval(preg_replace('/[^0-9]+/', '', $rcon), 10); 
     $numeroR = preg_replace("/[^0-9]/", "", $rcon);
-    return $numeroR;
-
+    return array ($numeroR,$rhis,$ring);
+    
 }
+
+//$cispre = consultarcis($conex,$wbasedato_ayu,$wconsecutivo);
+//$cisihis = $cispre[1];
+
 
 function compararprefijo($conex, $wbasedato_cliamep,$wbasedato_cliame,$wbasedato_movhos,$whistoria,$wingreso)
 {
@@ -1424,7 +1432,11 @@ if(isset($accion) && isset($form))
         case'consultarcis':
             {
                 $retorno_consul = consultarcis($conex,$wbasedato_ayu,$wconsecutivo);
-                echo $retorno_consul;
+                $prefijocis = compararprefijo($conex, $wbasedato_cliamep, $wbasedato_cliame, $wbasedato_movhos, $retorno_consul[1],$retorno_consul[2]);
+                echo json_encode([
+                    'numeroAcceso' => $retorno_consul[0],
+                    'prefijo' => $prefijocis,
+                ]);
                 exit();
             }break;
         
@@ -3736,19 +3748,20 @@ $wing = (!isset($wing)) ? '': $wing;
                 obJsoncon['wconsecutivo'] = wconsecutivo;
 
                 $.post("transcripcion.php", obJsoncon,function(data){
+                    console.log(data); 
                     var id_examen_paciente = $("#id_examen_paciente").val();
                     var wconsecutivo = $("#wconsecutivo").val();
-                    var pre = $("#id_prefijo").val();
+                    var pre = data['prefijo'];
+                    $('#id_prefijo').val(pre);
                     var obJson = parametrosComunes();
                         obJson['accion'] = 'actualizarcis';
                         obJson['form'] = 'actualizarcis';
                         obJson['wconsecutivo'] = wconsecutivo;
-                        if(data == 0){
-                            data = '';
+                        if(data.numeroAcesso == 0){
+                            data.numeroAcesso = '';
                         }
-
                     
-                    jPrompt('Ingrese numero de acceso en el cis', data ,'INGRESE INFORMACION', function(respuesta) {
+                    jPrompt('Ingrese numero de acceso en el cis', data.numeroAcceso,'INGRESE INFORMACION', function(respuesta) {
                         if( parseInt(respuesta)) {
 
                             var obJsonexis = parametrosComunes();
@@ -3762,7 +3775,7 @@ $wing = (!isset($wing)) ? '': $wing;
                                 if(rexiste == ''){
                                 numeroRespuesta = respuesta;
                                 obJson['numeroRespuesta'] = pre + respuesta;
-                                obJson['validarR']=pre + respuesta;
+                                obJson['validarR']= pre + respuesta;
                                 $.post("transcripcion.php", obJson);
                                 generarArchivoPdfMostrar(id_examen_paciente, wconsecutivo);
                                 }else{
@@ -3776,7 +3789,7 @@ $wing = (!isset($wing)) ? '': $wing;
                         
                     });
                     
-                });
+                },'json');
              });
 
             btncancelar_imprimir.click(function(){
@@ -5451,7 +5464,7 @@ $wing = (!isset($wing)) ? '': $wing;
                 var imagenPDF = $("<div>" + contenido_pdf + "</div>")
                 var textoEstudio = $("#logo", imagenPDF).html();
                 $("#logo", imagenPDF).html(textoEstudio +
-                    '<img src="../../ayucni/procesos/logoclinica.png" height="110" width="130"  align="right">');
+                    '<img src="../../images/medical/ayucni/logoclinica.png" height="110" width="130"  align="right">');
                 contenido_pdf = $(imagenPDF).html()
 
                 $("#div_contenedor_pdf").html(object);
