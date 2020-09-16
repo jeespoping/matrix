@@ -295,7 +295,7 @@ if($hay_unix)
 			case 'cronFacElectronica':
 			{
 				// --> Estas son las empresas que tienen facturacion electronica hasta el momento 2019-05-16
-				$arrEmpresas = array('01', '11', '07');
+				$arrEmpresas = array('01', '11', '07','02');
 				foreach($arrEmpresas as $codEmp){
 
 					$ejecutarCronWS	= consultarAliasPorAplicacion($conex, $codEmp, 'ejecutarCronFacturacionElec');

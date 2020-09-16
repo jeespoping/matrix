@@ -334,7 +334,7 @@ function obtener_nombre_archivo2($codHabilitacion,$cont)
 <body>
 
 <?php
-  /******************************************************************
+/******************************************************************
    * 	  FORMULARIO ÚNICO DE RECLAMACIÓN IPS - FURIPS				*
    * -------------------------------------------------------------- *
    * Este script genera el Formulario Único de Reclamación de los 	*
@@ -352,6 +352,7 @@ function obtener_nombre_archivo2($codHabilitacion,$cont)
 	 * Autor: John M. Cadavid. G.
 	 * Fecha creacion: 2011-09-23
 	 * Modificado:
+	 * 2020-09-08   David HH    - se agrega firma del representante legal de furips y se consulta los medicos desde matrix (antes se hacia por unix)
 	 * 2019-04-02	Jessica		- En el campo No factura / cuenta de cobro debe mostrar el número de factura electrónica, por tal motivo 
 	 * 							  se agrega el prefijo al número de factura.
 	 * 2018-07-24 	Edwin MG	- Para farpmla (wemp_pmla = 09), la fuente de factura es 01 ( la fuente que corresponde a movfuo de la tabla famov de unix)
@@ -426,8 +427,7 @@ function obtener_nombre_archivo2($codHabilitacion,$cont)
 	  $winstitucion=$row[2];
 
     }
-
-	// Permite separar el código del municipio cuando tiene dentro el del departamento
+// Permite separar el código del municipio cuando tiene dentro el del departamento
 	function define_muncod($munic,$depar)
 	{
 		// for ($i=0;$i<strlen($depar);$i++)
@@ -590,6 +590,8 @@ else	// Si el usuario está registrado inicia el programa
 
   // Obtengo los datos de la empresa y de la base de datos
   $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+  $InformacionReprelegal= consultarAliasPorAplicacion($conex, $wemp_pmla, "firmaRepreLegalFurips");
+  list($responsable,$firmaR) = explode('-',$InformacionReprelegal);
  
   $wbasedato_farm = consultarAliasPorAplicacion($conex, $wemp_pmla, "farpmla");
   
@@ -604,7 +606,7 @@ else	// Si el usuario está registrado inicia el programa
   $wusuario = substr($user,$pos+1,strlen($user));
 
   // Aca se coloca la ultima fecha de actualización
-  $wactualiz = "2019-04-02";
+  $wactualiz = "2020-09-08";
 
   //**********************************************//
   //********** P R I N C I P A L *****************//
@@ -719,7 +721,7 @@ else
 	
 	
 	
-	
+	$wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$wbasedato_cliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "farpmla");
 	
 		
@@ -1790,7 +1792,7 @@ while($row = mysql_fetch_array($res))
 			$total_ase_est = 0;
 
 	    // Obtengo los topes actuales para la aseguradora del paciente y aseguradora estatal
-		$q =   " SELECT cfgcco, Cfgtas, Cfgtfo, Cfgnit, Cfgres "
+		/*$q =   " SELECT cfgcco, Cfgtas, Cfgtfo, Cfgnit, Cfgres "
 			  ."   FROM ".$wbasedato_farm."_000049 "
 			  ."  GROUP BY Cfgnit ";
 		$res_tope = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
@@ -1798,6 +1800,9 @@ while($row = mysql_fetch_array($res))
 		$tope_aseguradora = $row_tope['Cfgtas'];
 		$tope_ase_est = $row_tope['Cfgtfo'];
 		$responsable = $row_tope['Cfgres'];
+		*/
+		//$firmaR = 
+		//$img_firma = '<img src="'.$img_firma.'" alt="" style="max-height: 130px;max-width:210px;">
 
 		/*
 		  if($total > $tope_aseguradora)
@@ -1820,7 +1825,113 @@ while($row = mysql_fetch_array($res))
 			$total_ase_est = 0;
 		  }
 		*/
+		
+	/*
 
+		function Firmamedico($conex,$wbasedato_movhos,$medico,$firmaR){
+
+			$q2 = "SELECT Meduma
+			FROM    {$wbasedato_movhos}_000048 
+			WHERE    = '{$firmaR}'";
+			$result2 = mysql_query($q2,$conex);
+			$row2 = mysql_fetch_assoc($result2);
+
+
+
+		}
+
+		*/
+
+		//consultamos en la tabla cliame_000111 la cedula del medico 
+		function ConsultarCedula($conex,$wbasedato_cliame,$historia,$ingreso){
+
+			$qconsulta = "SELECT EspMed FROM {$wbasedato_cliame}_000111
+			WHERE Esphis= '{$historia}' AND Esping = '{$ingreso}'AND Esptip = 'P' ";
+			$result1 = mysql_query($qconsulta,$conex);
+			$rowc = mysql_fetch_assoc($result1);
+			$Medce = $rowc["EspMed"];
+			return $Medce;
+
+
+
+		}
+
+
+
+		//consultamos en la tabla cliame_000100 y cliame_000101 comparando las historias paciente
+		function ConsultarCedulaXingreso($conex,$wbasedato_cliame,$historia,$ingreso){
+
+			$qconsulta = "	SELECT Ingmei
+			 				   	FROM    {$wbasedato_cliame}_000100 AS c100
+                    			INNER JOIN
+                    			{$wbasedato_cliame}_000101 AS c101 ON (c100.Pachis = c101.Inghis)
+								WHERE c100.Pachis = '{$historia}'
+                    			AND c101.Ingnin = '{$ingreso}'
+								AND c100.Pacact = 'on'";
+			
+			$result1 = mysql_query($qconsulta,$conex);
+			$rowc = mysql_fetch_assoc($result1);
+			$Medced1 = $rowc["Ingmei"];
+			return $Medced1;
+		}
+		
+
+		function Consultarmedico($conex, $wbasedato_cliame,$wbasedato_movhos,$Medcedula){
+		
+
+			$q1 = "SELECT Meddoc,Medtdo, Medno1,Medno2,Medap1,Medap2,Medreg
+			FROM    {$wbasedato_movhos}_000048 
+			WHERE    Meddoc = '{$Medcedula}'";
+			$result1 = mysql_query($q1,$conex);
+			$row1 = mysql_fetch_assoc($result1);
+			$Medno1 = $row1["Medno1"];
+			$Medno2 = $row1["Medno2"];
+			$Medap1 = $row1["Medap1"];
+			$Medap2 = $row1["Medap2"];
+			$Meddoc = $row1["Meddoc"];
+			$Medtdo = $row1["Medtdo"];
+			$Medreg = $row1["Medreg"];
+			
+
+			return array ($Medno1,$Medno2,$Medap1,$Medap2,$Meddoc,$Medtdo,$Medreg);
+			
+		}
+		//inicializar parametros para el medico 
+
+		 $IngresoUlti= consultarUltimoIngresoHistoria($conex, $historia, $wemp_pmla);
+		 $MedCedulaXingreso = ConsultarCedulaXingreso($conex, $wbasedato_cliame, $historia, $ingreso);
+		 $Medcedula = ConsultarCedula($conex,$wbasedato_cliame,$historia,$ingreso);
+
+		if($MedCedulaXingreso == ''|| $IngresoUlti != $ingreso){
+
+			$MedicoDatos = Consultarmedico($conex, $wbasedato_cliame,$wbasedato_movhos,$Medcedula);
+			//var_dump($MedicoDatos);
+			$Mednombre1=$MedicoDatos[0];
+			$Mednombre2=$MedicoDatos[1];
+			$Medapellido1=$MedicoDatos[2];
+			$Medapellido2=$MedicoDatos[3];
+			$Medidentificacion=$MedicoDatos[4];
+			$Medtipoide=$MedicoDatos[5];
+			$Medregistro=$MedicoDatos[6];
+
+		}else {
+
+			$MedicoDatos = Consultarmedico($conex, $wbasedato_cliame,$wbasedato_movhos,$MedCedulaXingreso);
+			//var_dump($MedicoDatos);
+			$Mednombre1=$MedicoDatos[0];
+			$Mednombre2=$MedicoDatos[1];
+			$Medapellido1=$MedicoDatos[2];
+			$Medapellido2=$MedicoDatos[3];
+			$Medidentificacion=$MedicoDatos[4];
+			$Medtipoide=$MedicoDatos[5];
+			$Medregistro=$MedicoDatos[6];
+
+		}
+		
+
+		
+		
+/*
 		//Busco datos del médico
 		$select = " '".$long."' as medno1, '".$long."' as medno2, '".$long."' as medap1, '".$long."' as medap2, '".$long."' as mednom, '".$long."' as medtid, '".$long."' as medced, '".$long."' as medreg, medcod ";
 		$from =   " inmed ";
@@ -1869,7 +1980,7 @@ while($row = mysql_fetch_array($res))
 			$Medidentificacion='';
 			$Medregistro='';
 		}
-
+*/
 	if (!isset ($paro))
 	{
 		//se encontraron los dato se pasan a mostrar
@@ -2081,7 +2192,9 @@ radicaci&oacute;n
 		// </td>
 		
 		// consulta del radicado
+
 		
+		$wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 		$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion");
 		$wbasedato_farm = consultarAliasPorAplicacion($conex, $wemp_pmla, "farpmla");
 		$q="SELECT Glorad, id
@@ -3799,15 +3912,15 @@ t&eacute;cnico n&uacute;mero 2.</td>
 
 
 				<tbody>
-
-
+				
+			
 				  <tr>
 
 
-					<td><div class="campoCodigo"> &nbsp; '.$responsable.' &nbsp; </div></td>
+					<td><div class="campoCodigo"> &nbsp; '.$responsable.' &nbsp;</div></td>
 
-
-					<td>_________________________________________</td>
+					
+					<td style="text-align:left"><img style=" height: 40px;" src="http://'.$httpHost.'/matrix/images/medical/hce/Firmas/'.$firmaR.'png"></td>
 
 
 				  </tr>
@@ -3818,9 +3931,10 @@ t&eacute;cnico n&uacute;mero 2.</td>
 
 					<td class="descripcion">NOMBRE</td>
 
-
+					
 					<td class="descripcion">FIRMA DEL REPRESENTANTE LEGAL, GERENTE O SU DELEGADO</td>
 
+					
 
 				  </tr>
 

@@ -14,8 +14,15 @@ if(!isset($accion))
 
  Notas:
  --
-*/ $wactualiza = "2020-04-20"; /*
+*/ $wactualiza = "2020-05-26"; /*
  ACTUALIZACIONES:
+ 2020-05-26: Jessica Madrid Mejía
+ - Al hacer clic en el botón GenerarPDF se guarda una copia del pdf en la ruta ayucni/procesos/estudios/
+ - Si una transcripción estaba finalizada, hacen clic en guardar parcialmente y dentro de la misma 
+   sesión hacen clic en el botón Finalizar examen, automaticamente se abre el editor y se genera el pdf.
+ - Para evitar que el pdf de la trascripción que se muestra al hacer clic en Generar PDF se quede en 
+   cache y no se actualice correctamente se le agrega al nombre del archivo el timestamp y así obliga 
+   a cargar el pdf cada vez que realicen clic en dicho botón.
  2020-04-20: Jessica Madrid Mejía
  Se deshabilita el select que permite agregar nuevos examenes si el paciente esta inactivo en el ingreso seleccionado.
  2019-10-29: Jerson Trujillo
@@ -1707,6 +1714,104 @@ if(isset($accion) && isset($form))
                                 //
                             }
                     break;
+					
+				case 'guardarPDF':
+                        
+						// buscar si la transcripción ya está registrada para evitar asociar la misma transcripción a diferentes exámenes
+						$queryTranscripcion = "SELECT Mvcurp
+												 FROM ".$wbasedato_ayu."_000006, ".$wbasedato_movhos."_000268 
+												WHERE Espcod='".$wconsecutivo."' 
+												  AND Mvchis=Esphis
+												  AND Mvcing=Esping  
+												  AND Mvcurp LIKE '%".$wconsecutivo."%';";
+						
+						$resultTranscripcion = mysql_query($queryTranscripcion,$conex);
+						$numTranscripcion = mysql_num_rows($resultTranscripcion);
+						
+						if($numTranscripcion>0)
+						{
+							$rowTranscripcion = mysql_fetch_array($resultTranscripcion);
+								
+							// si ya esta registrado se debe actualizar el pdf
+							$origen = "./".$ruta_pdfs;
+							
+							$rutaEstudio = explode("/",$rowTranscripcion['Mvcurp']); 
+							$destino = "./estudios/".end($rutaEstudio);
+							
+							// hacer copia del pdf en la ruta de transcripciones
+							copy($origen, $destino);
+						}
+						else
+						{
+							// Si hay un examen pendiente de transcripción debe registrarlo
+							// buscar si hay examenes sin transcripción registrada
+							$queryExamenes = "SELECT Esphis, Esping, Enfcup, movhos_268.id, movhos_268.Fecha_data, movhos_268.Mvctor, movhos_268.Mvcnro, movhos_268.Mvcite
+												FROM ".$wbasedato_ayu."_000006 AS ayucni_6, ".$wbasedato_ayu."_000001 AS ayucni_1, ".$wbasedato_movhos."_000268 AS movhos_268
+											   WHERE Espcod='".$wconsecutivo."' 
+												 AND Enfcod=Espenf
+												 AND Mvchis=Esphis 
+												 AND Mvcing=Esping
+												 AND Mvccup=Enfcup 
+												 AND Mvcesc!='0' 
+												 AND Mvcest='on' 
+												 AND Mvcurp='' 
+											ORDER BY movhos_268.Fecha_data, movhos_268.Hora_data 
+											   LIMIT 1;";
+							
+							$resultExamenes = mysql_query($queryExamenes,$conex);
+							$numExamenes = mysql_num_rows($resultExamenes);
+							// Si hay un examen pendiente de transcripción debe registrarlo
+							if($numExamenes>0)
+							{
+								$rowExamenes = mysql_fetch_array($resultExamenes);
+								
+								$urlResultados = "./estudios";
+								
+								// $fecha = explode("-",$rowExamenes['Fecha_data']);
+								
+								// $ruta = $fecha[0].'/'.$fecha[1].'/'.$fecha[2].'/'.$rowExamenes['Esphis'].'-'.$rowExamenes['Esping'];	
+								// $storeFolder = $urlResultados.$ruta;
+								$storeFolder = $urlResultados;
+				
+								$upload_path = rtrim($storeFolder, '\\/');
+								$dir = $upload_path.DIRECTORY_SEPARATOR;
+								
+								// antes de hacer la copia se debe crear el directorio si no existe
+								if(!file_exists($dir) && !empty($dir))
+								{
+									$done = @mkdir($dir, 0777, true);
+								}
+							
+								$nuevoNombre = $rowExamenes['Esphis']."-".$rowExamenes['Esping']."_".$rowExamenes['Enfcup']."_".$rowExamenes['id']."_".$wconsecutivo.'.pdf';
+								$origen = $ruta_pdfs;
+								$destino = $dir.$nuevoNombre;
+								
+								// hacer copia del pdf en la ruta de transcripciones
+								if(copy($origen, $destino))
+								{
+									$urlEstudios = "http://".$_SERVER['SERVER_ADDR']."/matrix/ayucni/procesos/estudios/".$nuevoNombre;
+								
+									// si se realizó la copia correctamente se debe registrar la ruta en movhos_268 y hce_28
+									$updateExamen = "UPDATE ".$wbasedato_movhos."_000268 
+														SET Mvcurp='".$urlEstudios."'
+													  WHERE id='".$rowExamenes['id']."';";
+									
+									$data["sqlUpdt"] = $updateExamen;
+									$resultUpdt = mysql_query($updateExamen,$conex);
+									
+									$updateOrden = " UPDATE ".$wbasedato_HCE."_000028 
+														SET Deturp='".$urlEstudios."' 
+													  WHERE Dettor='".$rowExamenes['Mvctor']."' 
+														AND Detnro='".$rowExamenes['Mvcnro']."' 
+														AND Detite='".$rowExamenes['Mvcite']."';";
+														
+									$data["sqlUpdt"] = $updateOrden;
+									$resultUpdt = mysql_query($updateOrden,$conex);
+								}
+							}
+						}
+						
+					break;
 
                 default :
                         $data['mensaje'] = $no_exec_sub;
@@ -3444,16 +3549,30 @@ $wing = (!isset($wing)) ? '': $wing;
                 var id_examen_paciente = $("#id_examen_paciente").val();
                 var wconsecutivo = $("#wconsecutivo").val();
                 var westado_estudio = 'on';
+				
+				if($("#westado_estudio").val()=="off")
+				{
+					$("#westado_estudio").attr('estabaFinalizado','on');
+					$(".btnCerrar").attr("disabled","disabled");
+				}
+				
                 validarGuardarExamen(id_examen_paciente, wconsecutivo, westado_estudio);
             });
 
             btn_cerrar_examen.click(function(){
-                var id_examen_paciente = $("#id_examen_paciente").val();
+				
+				var id_examen_paciente = $("#id_examen_paciente").val();
                 var wconsecutivo = $("#wconsecutivo").val();
                 //Validar firma del médico para cerrar el examen.
                 // validarFirmaMedico(id_examen_paciente, wconsecutivo);
                 var westado_estudio = 'off';
                 validarGuardarExamen(id_examen_paciente, wconsecutivo, westado_estudio);
+				
+				if($("#westado_estudio").attr('estabaFinalizado')=="on")
+				{
+					$(".btnCerrar").removeAttr("disabled");
+					btn_imprimir_examen.click();
+				}
             });
 
             btn_inactivar_examen.click(function(){
@@ -3485,12 +3604,13 @@ $wing = (!isset($wing)) ? '': $wing;
                 {
                     $("#caja_campos_flotantes").hide();
                     generarTextoImprimir(id_examen_paciente, wconsecutivo);
+					
                 }
                 else
                 {
                     jAlert("Primero debe guardar la transcripción para imprimir", "Mensaje");
                 }
-            });
+			});
 
             btngenerar_pdf.click(function(){
                 var id_examen_paciente = $("#id_examen_paciente").val();
@@ -3737,7 +3857,7 @@ $wing = (!isset($wing)) ? '': $wing;
                         fnModalLoading_Cerrar();
                         $(".bloquear_todo").removeAttr("disabled");
                     }
-                    return data;
+					return data;
             },"json").done(function(data){
                 if(data.westado_estudio == 'off')
                 {
@@ -3745,11 +3865,21 @@ $wing = (!isset($wing)) ? '': $wing;
                         $("#div_imprimir_examen").show("slide", { direction: "up" }, 300,function(){
                             if(ckeditor_ok == true)
                             {
-                                // txt_normal = txt_normal.replace(/[\t\n]/gi,"<br>");
+								// txt_normal = txt_normal.replace(/[\t\n]/gi,"<br>");
                                 // CKEDITOR.instances["txt_resultado_examen"].setData(data.html);
-                                $("#txt_resultado_examen").val(data.html);
-                                inicializarCleditor($("#div_imprimir_examen"));
-                                CKEDITOR.instances["txt_resultado_examen"].updateElement();
+								$("#txt_resultado_examen").val(data.html);
+								if(CKEDITOR.instances['txt_resultado_examen']!==undefined)
+								{
+									CKEDITOR.instances['txt_resultado_examen'].destroy();
+								}
+								
+								inicializarCleditor($("#div_imprimir_examen"));
+								CKEDITOR.instances["txt_resultado_examen"].updateElement();
+								
+								if($("#westado_estudio").attr('estabaFinalizado')=="on")
+								{
+									btngenerar_pdf.click();
+								}
                             }
                             else
                             {
@@ -4006,7 +4136,7 @@ $wing = (!isset($wing)) ? '': $wing;
                             {
                                 jAlert(data.mensaje, "Mensaje");
                             }
-                        }
+						}
                         return data;
                 },"json").done(function(data){
                     if(data.error != 1)
@@ -5049,12 +5179,12 @@ $wing = (!isset($wing)) ? '': $wing;
         {
             if(ckeditor_ok == true)
             {
-                // (CKEDITOR.instances.txt_resultado_examen != undefined) ? CKEDITOR.instances.txt_resultado_examen.destroy():false;
+				// (CKEDITOR.instances.txt_resultado_examen != undefined) ? CKEDITOR.instances.txt_resultado_examen.destroy():false;
                 CKEDITOR.replace('txt_resultado_examen', { customConfig: '../../ayucni/configcke_transcripcion_cni_resultado.js?v='+Math.random(), timestamp : 'something_random' }); // js en include/ayucni
             }
             else
             {
-                $(elem).parent().promise().done(function () {
+				$(elem).parent().promise().done(function () {
                     if (!ckinit) {
                         // print source, source es para modificar en html
                         var areaCleditor = $("#txt_resultado_examen").cleditor({
@@ -5089,7 +5219,7 @@ $wing = (!isset($wing)) ? '': $wing;
 
         function generarArchivoPdfMostrar(id_examen_paciente, wconsecutivo)
         {
-            $("#td_img_carga_pdf").show();
+			$("#td_img_carga_pdf").show();
             var contenido_pdf = "";
             if(ckeditor_ok == true)
             {
@@ -5100,10 +5230,12 @@ $wing = (!isset($wing)) ? '': $wing;
                 contenido_pdf = $('#txt_resultado_examen').val();
             }
 
+			var timestamp = new Date().getTime();
+			var consecutivoPdf = wconsecutivo+"_"+timestamp;
             var obJson                  = parametrosComunes();
             obJson['accion']            = 'load';
             obJson['form']              = 'generar_pdf';
-            obJson['wconsecutivo']      = wconsecutivo;
+            obJson['wconsecutivo']      = consecutivoPdf;
             obJson['contenido_pdf']     = btoa(contenido_pdf);
             obJson['nombre_logo']       = 'clinica';
             obJson['arr_encabezado']    = $("#arr_encabezado_b64").val();
@@ -5114,7 +5246,7 @@ $wing = (!isset($wing)) ? '': $wing;
             $(".bloquear_todo").attr("disabled","disabled");
             fnModalLoading();
 
-            var ruta_pdfs = "resultados/resultado_examen_"+wconsecutivo+".pdf";
+            var ruta_pdfs = "resultados/resultado_examen_"+consecutivoPdf+".pdf";
             $.post("generar_pdf.php", obJson,
                 function(data){
                     fnModalLoading_Cerrar();
@@ -5138,6 +5270,9 @@ $wing = (!isset($wing)) ? '': $wing;
 
                 $("#div_contenedor_pdf").html(object);
                 $("#td_img_carga_pdf").hide(1500);
+				
+				guardarPDF(wconsecutivo,ruta_pdfs)
+				
             }).fail(function(xhr, textStatus, errorThrown) { $("#td_img_carga_pdf").hide(1500); mensajeFailAlert('', xhr, textStatus, errorThrown); });
         }
 
@@ -5832,6 +5967,22 @@ $wing = (!isset($wing)) ? '': $wing;
         {
             window.close();
         }
+		
+		function guardarPDF(wconsecutivo,ruta_pdfs)
+		{
+			var obJson                      = parametrosComunes();
+			obJson['accion']                = 'update';
+			obJson['form']                  = 'guardarPDF';
+			obJson['wconsecutivo']          = wconsecutivo;
+			obJson['ruta_pdfs']          	= ruta_pdfs;
+			
+			$.post("transcripcion.php", obJson,
+                    function(data){
+                        
+                },"json").done(function(data){
+                    
+                }).fail(function(xhr, textStatus, errorThrown) { mensajeFailAlert('', xhr, textStatus, errorThrown); });
+		}
 
     </script>
 
@@ -6290,7 +6441,7 @@ $wing = (!isset($wing)) ? '': $wing;
                                 <td colspan="6" style="text-align: center;">
                                     <input type="button" id="btn_consultar_paciente" onclick="btn_consultarDatos();" value="Consultar">
                                     <input type="button" id="btn_limpiar" onclick="limpiarEncabezado();" value="Iniciar campos">
-                                    <input type="button" value="Cerrar Ventana" onclick="cerrarVentanaPpal();">
+                                    <input type="button" value="Cerrar Ventana" class="btnCerrar" onclick="cerrarVentanaPpal();">
 									
                                 </td>
                             </tr>
@@ -6318,7 +6469,7 @@ $wing = (!isset($wing)) ? '': $wing;
 <br />
 <br />
 <table align='center'>
-    <tr><td align="center" colspan="9"><input type="button" value="Cerrar Ventana" onclick="cerrarVentanaPpal();"></td></tr>
+    <tr><td align="center" colspan="9"><input type="button" value="Cerrar Ventana" class="btnCerrar" onclick="cerrarVentanaPpal();"></td></tr>
 </table>
 <br />
 <br />

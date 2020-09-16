@@ -20,10 +20,9 @@
 <center>
 <table border=0 align=center id='tipo1'>
 <tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size=5>Maestro de Usuarios</font></a></tr></td>
-<tr><td align=center bgcolor="#cccccc"><font size=2> <b>det_usuarios.php Ver. 2020-08-02</b></font></tr></td></table>
+<tr><td align=center bgcolor="#cccccc"><font size=2> <b>det_usuarios.php Ver. 2008-01-16</b></font></tr></td></table>
 </center>
 <?php
-//2020-08-02, DIDIER OROZCO MODIFICA: SE AGREGAN LOS NUEVOS CAMPOS QUE SE CREARON EN LA TABLA Usuarios CON EL FIN DE RECUPERAR LA CONTRASEÑA.
 include_once("conex.php");
 @session_start();
 if(!isset($_SESSION['user']))
@@ -61,11 +60,11 @@ else
 			switch ($wpar)
 			{
 				case 1:
-				$query = "update usuarios set Password='".$Password."', Passdel='".$Passdel."', Tablas='".$Tablas."', Prioridad=".$Prioridad.", Grupo='".$Grupo."', Activo='".substr($Activo,0,1)."', Descripcion='".$Descripcion."', Feccap='".$Feccap."', Empresa='".substr($Empresa,0,strpos($Empresa,"-"))."', Ccostos='".substr($Ccostos,0,strpos($Ccostos,"-"))."', Documento='".$Documento."', Email='".$Email."', PasswordTemporal='".$PasswordTemporal."', FechaPasswordTemp='".$FechaPasswordTemp."', HoraPasswordTemp='".$HoraPasswordTemp."' where codigo='".strtolower($Codigo)."'";
+				$query = "update usuarios set Password='".$Password."', Passdel='".$Passdel."', Tablas='".$Tablas."', Prioridad=".$Prioridad.", Grupo='".$Grupo."', Activo='".substr($Activo,0,1)."', Descripcion='".$Descripcion."', Feccap='".$Feccap."', Empresa='".substr($Empresa,0,strpos($Empresa,"-"))."', Ccostos='".substr($Ccostos,0,strpos($Ccostos,"-"))."' where codigo='".strtolower($Codigo)."'";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				break;
 				case 2:
-				$query = "insert usuarios values ('".strtolower($Codigo)."','".$Password."','".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."','".$PasswordTemporal."','".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
+				$query = "insert usuarios values ('".strtolower($Codigo)."','".$Password."','".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."')";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				break;
 			}
@@ -81,7 +80,7 @@ else
 	echo "<table border=0 align=center id='tipo1'>";
 	if(isset($ok))
 	{
-		$query = "select Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo, Empresa, Ccostos, Activo, Documento, Email, PasswordTemporal, FechaPasswordTemp, HoraPasswordTemp  from usuarios where codigo='".$pos."'";
+		$query = "select Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo, Empresa, Ccostos, Activo  from usuarios where codigo='".$pos."'";
 		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		if ($num > 0)
@@ -120,12 +119,7 @@ else
 			$num1 = mysql_num_rows($err1);
 			$row1 = mysql_fetch_array($err1);
 			$Ccostos=$row1[0]."-".$row1[1]; 
-			$Activo=$row[10];
-			$Documento=$row[11];
-			$Email=$row[12];
-			$PasswordTemporal=$row[13];
-			$FechaPasswordTemp=$row[14];
-			$HoraPasswordTemp=$row[15];
+			$Activo=$row[10];  
 			$wpar=1;
 		}
 		else
@@ -141,11 +135,6 @@ else
 			$Empresa="";
 			$Ccostos="";
 			$Activo="";
-			$Documento="";
-			$Email="";
-			$PasswordTemporal=""; 
-			$FechaPasswordTemp="0000-00-00";
-			$HoraPasswordTemp="00:00:00";
 			$tablacc="";
 			$wpar=2;
 		}
@@ -269,36 +258,11 @@ else
 		echo "<option>I-Inactivo</option>";	
 	echo "</td>";	
 	echo "</tr>";
-	
-	echo "<tr>";
-	echo "<td bgcolor=#cccccc>Documento</td>";			
-	echo "<td bgcolor=#cccccc><input type='TEXT' name='Documento' size=15 maxlength=15 value='".$Documento."' class=tipo3></td>";
-	echo "</tr>";
-	
-	echo "<tr>";
-	echo "<td bgcolor=#cccccc>Email</td>";			
-	echo "<td bgcolor=#cccccc><input type='TEXT' name='Email' size=52 maxlength=80 value='".$Email."' class=tipo3></td>";
-	echo "</tr>";
-	
-	echo "<tr>";
-	echo "<td bgcolor=#cccccc>Password Temporal</td>";			
-	echo "<td bgcolor=#cccccc><input type='TEXT' name='PasswordTemporal' size=8 maxlength=8 value='".$PasswordTemporal."' class=tipo3></td>";
-	echo "</tr>";
-	
-	echo "<tr>";
-	echo "<td bgcolor=#cccccc>Fecha Password Temp</td>";			
-	echo "<td bgcolor=#cccccc><input type='TEXT' name='FechaPasswordTemp' size=8 maxlength=8 value='".$FechaPasswordTemp."' class=tipo3></td>";
-	echo "</tr>";
-	
-	echo "<tr>";
-	echo "<td bgcolor=#cccccc>Hora Password Temp</td>";			
-	echo "<td bgcolor=#cccccc><input type='TEXT' name='HoraPasswordTemp' size=8 maxlength=8 value='".$HoraPasswordTemp."' class=tipo3></td>";
-	echo "</tr>";
-	
 	echo "<td bgcolor=#cccccc>Datos Completos</td>";
 	echo "<td bgcolor=#cccccc><input type='RADIO' name=ok value=1></td>";
 	echo "<tr>";
 	echo "<td bgcolor=#cccccc colspan=2 align=center><input type='submit' value='GRABAR'></td>";
+	
 	echo "</tr>";
 	echo "</table>";
 	echo "<table border=0 align=center>";

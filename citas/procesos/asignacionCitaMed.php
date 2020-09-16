@@ -1,8 +1,103 @@
 <?php
 include_once("conex.php");
 
+/**
+ * Crea los parametros extras de una url para Get
+ */
+function parametrosExtras( $variablesGET, $post = false ){
+		
+	$val = '';
+	
+	$superglobal = $_GET;
+	if( $post ){
+		$superglobal = $_POST;
+	}
+	
+	foreach( $variablesGET as $key => $value ){
+		
+		if( $superglobal[ $value ] ){
+			
+			if( is_numeric($key) ){
+				$val .= "&".$value."=".urlencode( $_GET[ $value ] );
+			}
+			else{
+				$val .= "&".$key."=".urlencode( $_GET[ $value ] );
+			}
+		}
+	}
+	
+	return $val;
+}
+
+function actualizarListaEspera( $conex, $citas_lab, $id, $fecha_cita, $hora_cita, $servicio = '' ){
+	
+	$val = false;
+	
+	// if( is_numeric( $id ) ){
+		
+		$sql = "UPDATE ".$citas_lab."_000032 
+				   SET drvfec = '".$fecha_cita."',
+					   drvhor = '".$hora_cita."00',
+					   drvsag = '".$servicio."'
+				 WHERE id = ".$id."
+				";
+		
+		$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if(mysql_affected_rows() !== false ){
+			$val = true;
+		}
+	// }
+	
+	return $val;
+}
+
+function getParametrosDefault( $datos, $post = false ){
+	
+	$val = [];
+	
+	$superglobal = $_GET;
+	if( $post ){
+		$superglobal = $_POST;
+	}
+	
+	foreach( $datos as $key => $value ){
+		if( $superglobal[ $value ] ){
+			array_push( $val, [ $key => $superglobal[ $value ] ] );
+		}
+	}
+	
+	return $val;
+}
+
 header("Content-Type: text/html;charset=ISO-8859-1");
 include_once("citas/funcionesAgendaCitas.php");
+
+$defaults = getParametrosDefault([
+		'Cedula' => 'defaultCedula',
+		'Nompac' => 'defaultNombre',
+		'Nitres' => 'defaultNit',
+		'Email'  => 'defaultCorreo',
+		'Urlcit' => 'defaultUrl',
+		'Edad' 	 => 'defaultEdad',
+		'Tel' 	 => 'defaultTelefono',
+		'Coment' => 'defaultComentarios',
+	]);
+
+$defaults = json_encode( $defaults );
+
+
+$parametrosExtras = parametrosExtras([
+										'defaultCedula',
+										'defaultNombre',
+										'defaultNit',
+										'defaultCorreo',
+										'defaultUrl',
+										'defaultEdad',
+										'defaultTelefono',
+										'defaultComentarios',
+										'idListaEspera',
+								]);
 
 if (isset($accion) and $accion == 'buscar')  
 { 
@@ -110,9 +205,33 @@ if (isset($accion) and $accion == 'buscar')
 		
 		return false;
 	}
+	
+	function setDefaults(){
+		try{
+			var defaults = <?= $defaults ?>;
+			
+			$(defaults).each(function(){
+				
+				var def = this;
+				
+				for( var x in def ){
+					if( $( "[name="+x+"]" )[0].tagName.toLowerCase() != 'select' ){
+						$( "[name="+x+"]" ).val( def[x] );
+					}
+					else{
+						console.log( "[name="+x+"] > option:contains('"+def[x]+"')" );
+						if( $( "[name="+x+"] > option:contains('"+def[x]+"')" ).length > 0 )
+							$( "[name="+x+"] > option:contains('"+def[x]+"')" )[0].selected = true;
+					}
+				}
+			})
+		}
+		catch(e){}
+	}
 
 	window.onload = function(){
 
+		setDefaults();
 		
 		//para el calendario en la fecha que solicto inicialmente la cita
 		$("#FecSol").datepicker({
@@ -264,6 +383,8 @@ if (isset($accion) and $accion == 'buscar')
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
+		2020-09-09:	Edwin Molina
+					Se hacen cambios varios para recibir los datos por defecto que quedaran en la cita y vienen de la lista de espera para Drive Thru
 	    2020-04-02: Arleyda Insignares C. Se adicionan parametros en la función envioEmailCita() para implementar 
 	                citas de teleorientacion.
 	    2020-03-25: Arleyda Insignares C. Se adiciona campo de correo electrónico para ser diligenciado en caso de dar una cita por telemedicina, solo en este caso el programa enviará un correo informando los datos de la cita y especificaciones según parámetro 'EmailAgendamiento' y 'telemedicina' en la tabla root_000051. 
@@ -453,6 +574,10 @@ else
 	echo "<input type='hidden' id='caso' name='caso' value='".$caso."'>";
 	echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
 	
+	if( isset($idListaEspera) ){
+		echo "<input type='hidden' id='idListaEspera' name='idListaEspera' value='".$idListaEspera."'>";
+	}
+	
 	$fechaAct      = date("Y-m-d");
 	$wtelemedicina = consultarAliasPorAplicacion($conex, $wemp_pmla, "telemedicina"); 
 	
@@ -620,7 +745,6 @@ else
 						// $tipoCita="Asignada"; //si la cita es el dia actual la cita fue asignada
 					}
 					/****/
-					
 					if(isset($Asistida))
 						$Asistida="on";
 					else
@@ -638,6 +762,11 @@ else
 					$row = mysql_fetch_array($err);
 					$query = "update ".$empresa."_000008 set cita=".$row[0]." where  cita= ".$OLDID;
 					$err = mysql_query($query,$conex);
+					
+					if( isset($idListaEspera) ){
+						actualizarListaEspera( $conex, $empresa, $idListaEspera, $Fecha, $Hi, substr($pos2,4) );
+					}
+					
 					echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#99CCFF LOOP=-1>LOS DATOS ESTAN OK!!!!</MARQUEE></FONT>";
 					echo "<br><br>";
 				break;
@@ -717,6 +846,10 @@ else
 						$row = mysql_fetch_array($err);
 						$query = "insert ".$empresa."_000008 (medico,fecha_data,hora_data, Fecha, Hora, Cita, Identificacion, Paciente, Edad, Sexo, Historia, Sgs, Atencion, Diagnostico1, Dx_Nuevo1, Nrosotf, Nrosatf, Nrosoto, Nrosato, Nrosotl, Nrosatl, Terapeuta, Ri_pac, Ri_ter, Alta, Control, Observaciones, seguridad) values ('".$empresa."','".$fecha."','".$hora."','".$Fecha."','".substr($Hi,0,2).":".substr($Hi,2,2).":00','".$row[0]."','".ucwords($Cedula)."','".ucwords($Nompac)."',".$Edad.",'NO APLICA',0,0,'NO APLICA','NO APLICA','NO APLICA','NO',0,0,0,0,0,0,'NO APLICA','NO APLICA','NO APLICA','NO APLICA','.','C-".$empresa."')";
 						$err = mysql_query($query,$conex) or die("ERROR GRABANDO HISTORIA : ".mysql_errno().":".mysql_error());
+					}
+					
+					if( isset($idListaEspera) ){
+						actualizarListaEspera( $conex, $empresa, $idListaEspera, $Fecha, $Hi, substr($pos2,4) );
 					}
 					
 					echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#99CCFF LOOP=-1>LOS DATOS ESTAN OK!!!!</MARQUEE></FONT>";
@@ -813,9 +946,9 @@ else
 	
 	echo "<table border=0 align=center>";  //tabla para asignar la cita
 	if(isset($wsw1))
-		echo "<li><A HREF='agendaMedicos.php?wequ=".$pos2."&wfec=".$pos4."&empresa=".$empresa."&wsw1=".$wsw1."&colorDiaAnt=".$colorDiaAnt."&caso=".$caso."&wemp_pmla=".$wemp_pmla."&nomdia=$nomdia' id='retornar'>Retornar</A><br>";
+		echo "<li><A HREF='agendaMedicos.php?wequ=".$pos2."&wfec=".$pos4."&empresa=".$empresa."&wsw1=".$wsw1."&colorDiaAnt=".$colorDiaAnt."&caso=".$caso."&wemp_pmla=".$wemp_pmla."&nomdia=$nomdia{$parametrosExtras}' id='retornar'>Retornar</A><br>";
 	else
-		echo "<li><A HREF='agendaMedicos.php?wequ=".$pos2."&wfec=".$pos4."&empresa=".$empresa."&colorDiaAnt=".$colorDiaAnt."&caso=".$caso."&wemp_pmla=".$wemp_pmla."&nomdia=$nomdia' id='retornar'>Retornar</A><br>";
+		echo "<li><A HREF='agendaMedicos.php?wequ=".$pos2."&wfec=".$pos4."&empresa=".$empresa."&colorDiaAnt=".$colorDiaAnt."&caso=".$caso."&wemp_pmla=".$wemp_pmla."&nomdia=$nomdia{$parametrosExtras}' id='retornar'>Retornar</A><br>";
 	//if ($num > 0)
 		//echo "<li><A HREF='000001_prx4.php?par1=".$pos2."&par2=".$pos4."&par3=".$pos5."&empresa=".$empresa."' target = '_blank'>Imprimir</A><br>";
 	if ($num > 0)
@@ -847,7 +980,8 @@ else
 		if(!isset($Cedula))
 		{
 			$row[5]="";		//Cedula
-			echo "<input type='HIDDEN' name= 'ok' value='1'>";
+			if( empty( $defaultCedula ) )
+				echo "<input type='HIDDEN' name= 'ok' value='1'>";
 		}			
 		else
 		{

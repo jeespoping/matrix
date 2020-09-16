@@ -7,14 +7,12 @@ include_once("conex.php");
 	   Fecha de Liberacion : 2004-04-20
 	   Autor : Pedro Ortiz Tamayo
 	   Version Inicial : 2004-04-20
-	   Version actual  : 2020-08-31
+	   Version actual  : 2016-06-03
 	   
 	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface grafica que permite registrar los datos
 	   Administrativos, Financieros y Clinicos
 	   
 	   REGISTRO DE MODIFICACIONES :
-	   .2020-08-31
-			Se adiciona la opción de recuperación de usuario y/o contraseña.
 	   .2016-06-03
 			Se agrega imagen del proyecto Ingenia y hipervinculo al video de este proyecto.
 	   .2014-06-24
@@ -104,76 +102,6 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 	$DATA[$w][4]=3;
 }
 
-function eliminarPasswordTemporal($conex, $codigo)
-{
-	$update = " UPDATE usuarios 
-				   SET PasswordTemporal='',
-					   FechaPasswordTemp='0000-00-00',
-					   HoraPasswordTemp='00:00:00'
-				 WHERE Codigo='".$codigo."';";
-
-	$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $update . " - " . mysqli_error($conex));
-}
-
-function validarTiempoRestablecer($conex, $codigo, $fechaPasswordTemp, $horaPasswordTemp)
-{
-	$restablecerValido = false;
-	if($fechaPasswordTemp!="0000-00-00" && $horaPasswordTemp!="00:00:00")
-	{
-		$query = "SELECT Detval
-					FROM root_000051 
-				   WHERE Detemp='01'
-					 AND Detapl='tiempoRestablecerPassword';";
-		
-		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $query . " - " . mysqli_error($conex));
-		$num = mysql_num_rows($res);
-		
-		if($num>0)
-		{
-			$row = mysqli_fetch_array($res);
-			
-			$fechaHoraPasswordTemporal = strtotime($fechaPasswordTemp." ".$horaPasswordTemp);
-			$fechaHoraMaxPasswordTemporal = ((int)trim($row['Detval'])*60)+$fechaHoraPasswordTemporal;
-			$fechaHoraActual = strtotime(date("Y-m-d H:i:s"));
-			
-			$restablecerValido = true;
-			if($fechaHoraActual>$fechaHoraMaxPasswordTemporal)
-			{
-				$restablecerValido = false;
-				eliminarPasswordTemporal($conex, $codigo);
-			}
-		}
-	}
-	
-	return $restablecerValido;
-}
-
-$includeLibrerias = "	<script src='../../../include/root/jquery.min.js'></script>
-						<script src='../../../include/root/jquery-ui-1.12.1/jquery-ui.min.js' type='text/javascript'></script>
-						<link type='text/css' href='../../../include/root/jquery-ui-1.12.1/jquery-ui.min.css' rel='stylesheet'/>
-						<link type='text/css' href='../../../include/root/jquery-ui-1.12.1/jquery-ui.theme.min.css' rel='stylesheet'/>
-						<link type='text/css' href='../../../include/root/jquery-ui-1.12.1/jquery-ui.structure.min.css' rel='stylesheet'/>
-						
-						<link rel='stylesheet' href='../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css' >
-						<link rel='stylesheet' href='../../../include/gentelella/vendors/bootstrap/dist/css/bootstrap.min.css'>
-
-						<script   src='../../../include/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js' ></script>
-						
-						<!-- Bootstrap -->
-						<link href='../../../include/gentelella/vendors/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet'>
-						
-						<link rel='stylesheet' href='../../../include/root/bootstrap.min.css'>
-
-						<script src='../../../include/root/bootstrap.min.js'></script>
-						
-						
-						<!-- Bootstrap -->
-						<script src='../../../include/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js'></script>
-						
-						<link rel='stylesheet' href='../../../include/gentelella/vendors/font-awesome/css/font-awesome.min.css'>
-						<link href='../../../include/gentelella/vendors/font-awesome/css/font-awesome.min.css' rel='stylesheet'>
-						";
-
 if(isset($_SESSION["NS"]) and $_SESSION["NS"] == 0)
 {
 	$_SESSION["NS"] = 1;
@@ -183,11 +111,10 @@ if(!isset($accion))
 {
 	echo "<html>";
 	echo "<head>";
-	echo $includeLibrerias;
 	echo "<title>MATRIX</title>";
 	echo "<style type='text/css'>";
 	echo "	#tipo1{color:#000000;font-size:14pt;font-family:Arial;font-weight:bold;width:120em;text-align:left;height:6em;}";
-	echo "	.tipo1a{height:1.5em;}";
+	echo "	#tipo1a{height:1.5em;}";
 	echo "	#tipo2{width:65%}";
 	echo "	#tipo3{color:#000000;font-size:12pt;font-family:Arial;font-weight:bold;width:22em;text-align:center;height:20em;}";
 	echo "  .tipoHIDE{background:#EAEAEA;border-style:none;}";
@@ -198,7 +125,6 @@ if(!isset($accion))
 	echo "	#tipo8{color:#000000;font-size:7pt;font-family:Arial;font-weight:bold;width:100%;text-align:left;height:8em;}";
 	echo "	#tipoL02{color:#000066;background:#E8EEF7;font-size:8.5pt;font-family:Arial;font-weight:bold;text-align:center;height:2em;}";
 	echo "	#tipoL03{color:#FF0000;background:#FFFFFF;font-size:12pt;font-family:Arial;font-weight:bold;width:90em;text-align:center;height:2em;}";
-	echo "	.input-login{font-size:10pt;font-family:Arial;font-weight:normal;}";
 	echo "	.tipoScreen02{color:#EAEAEA;background:#EAEAEA;font-size:12pt;font-family:Ubuntu;font-weight:bold;text-align:center;width:350px;vertical-align:middle;border-style:solid;border-collapse:collapse;border-color:#EAEAEA;border-radius: 4px 4px 4px 4px;border-width:1px;padding:2px;behavior: url(PIE.htc);}";
 	echo "	A {text-decoration: none;color: #000066;;font-size:12pt;font-family:Arial;font-weight:bold;}";
 	echo "</style>";
@@ -213,222 +139,6 @@ if(!isset($accion))
 	echo "		document.entrada.codigo.focus();";
 	echo "	}";
 	echo "</script>";
-	?>
-		<script type='text/javascript'>
-		function abrirRestablecerPassword()
-		{
-			const htmlModal =   "<div class='col-lg-12'>"+
-								"	<div class='form-group col-lg-3' class='control-label' >"+
-								"		<select id='tipoUsuario' class='form-control col-lg-1 inputModal' style='height:32px;' onchange='cambiarOpciones();'>"+
-								"			<option value='codigo'>Usuario Matrix</option>"+
-								"			<option value='documento'>N&uacute;mero de documento</option>"+
-								"		</select>"+
-								"	</div>"+
-								"	<div class='col-lg-2'>"+
-								"		<input id='datoIngreso' class='form-control inputModal' type='text' style='height:32px'  value='' onchange='obtenerEmailUsuario();'>"+
-								"		<input type='hidden' id='codigoUsuario' name='codigoUsuario' value=''>"+
-								"		<input type='hidden' id='documentoUsuario' name='documentoUsuario' value=''>"+
-								"		<input type='hidden' id='nombreUsuario' name='codigoUsuario' value=''>"+
-								"	</div>"+
-								"	<div class='form-group col-lg-4'>"+
-								"		<input id='email' class='form-control inputModal' type='email' style='height:32px;' disabled>"+
-								"	</div>"+
-								"	<div class='form-group col-lg-3 control-label checkbox' id='divCheckOpciones'>"+
-								"		<label id='labelRecordarUsuario' style='font-weight:normal;display:none;'>"+
-								"			<input type='checkbox' class='inputModal checkboxOpciones' id='chk_recordarUsuario'> Recordar usuario"+
-								"		</label>"+
-								"		<label id='labelRestablecerPassword' style='font-weight:normal;'>"+
-								"			<input type='checkbox' class='inputModal checkboxOpciones' id='chk_restablecerPassword'> Restablecer contrase&ntilde;a"+
-								"		</label>"+
-								"	</div>"+
-								"	<div class='form-group col-lg-12' class='control-label' >"+
-								"		<p id='mensajeRestablecer' style='display:none;' align='center'></p>"+
-								"	</div>"+
-								"</div>";
-								
-			$("#bodyModal").html(htmlModal);
-			$("#divModalRestablecer").modal("show");
-			$("#btnAceptar").show();
-			
-			// evitar que al hacer enter en un input de la modal haga submit al form de inicio de sesion
-			$(".inputModal").keydown(function(event){
-				if( event.keyCode == 13) {
-				  event.preventDefault();
-				  return false;
-				}
-			 });
-		}
-		
-		function iniciarCampos()
-		{
-			$("#mensajeRestablecer").html("");
-			$("#mensajeRestablecer").hide();
-			$("#btnAceptar").prop('disabled',true);
-			
-			$("#chk_recordarUsuario").prop('checked', false);
-			$("#chk_restablecerPassword").prop('checked', false);
-		}
-		
-		function cambiarOpciones()
-		{
-			$("#datoIngreso").val("");
-			$("#email").val("");
-			
-			iniciarCampos();
-			
-			if($("#tipoUsuario").val()=="documento")
-			{
-				$("#labelRecordarUsuario").show();
-				$("#divCheckOpciones").css('top','-14px');
-			}
-			else
-			{
-				$("#labelRecordarUsuario").hide();
-				$("#divCheckOpciones").css('top','0px');
-			}
-		}
-		
-		function obtenerEmailUsuario()
-		{
-			iniciarCampos();
-			
-			$.ajax({
-				url: "root/procesos/registroUsuario.php",
-				type: "POST",
-				dataType: "json",
-				data:{
-					consultaAjax 	: '',
-					accion			: 'consultarDatosUsuario',
-					tipoIngreso		: $("#tipoUsuario").val(),
-					datoIngreso		: $("#datoIngreso").val(),
-					proceso			: 'restablecer'
-					},
-					async: false,
-					success:function(result) {
-						
-						$("#codigoUsuario").val(result.codigo);
-						$("#documentoUsuario").val(result.documento);
-						$("#nombreUsuario").val(result.nombre);
-						$("#email").val(result.email);
-						
-						if(result.email!="")
-						{
-							$(".checkboxOpciones").change(validarOpciones);
-							$("#btnAceptar").prop('disabled',false);
-							$("#mensajeRestablecer").html("<span style='color:green;'>Se enviar&aacute; un mensaje con los datos de ingreso al correo electr&oacute;nico registrado.</span>");
-							$("#mensajeRestablecer").show();
-							
-							if($("#tipoUsuario").val()=="documento")
-							{
-								$("#chk_recordarUsuario").prop('checked', true);
-							}
-							else
-							{
-								$("#chk_recordarUsuario").prop('checked', false);
-								$("#chk_restablecerPassword").prop('checked', true);
-							}
-						}
-						else
-						{
-							$("#btnAceptar").prop('disabled',true);
-							$("#mensajeRestablecer").html("<span style='color:red;'>Debe tener un correo electr&oacute;nico registrado para poder realizar el proceso.</span>");
-							$("#mensajeRestablecer").show();
-						}
-					}
-			});
-		}
-		
-		function validarOpciones()
-		{
-			if($("#chk_restablecerPassword").prop('checked')==false && $("#chk_recordarUsuario").prop('checked')==false)
-			{
-				$("#btnAceptar").prop('disabled',true);
-			}
-			else
-			{
-				$("#btnAceptar").prop('disabled',false);
-			}
-		}
-		
-		function restablecerDatosIngreso()
-		{
-			$("#btnAceptar").prop('disabled',false);
-			$.ajax({
-				url: "root/procesos/registroUsuario.php",
-				type: "POST",
-				dataType: "json",
-				data:{
-					consultaAjax 		: '',
-					accion				: 'restablecerDatosIngreso',
-					codigo				: $("#codigoUsuario").val(),
-					documento			: $("#documentoUsuario").val(),
-					email				: $("#email").val(),
-					nombre				: $("#nombreUsuario").val(),
-					restablecerPassword	: $("#chk_restablecerPassword").prop('checked'),
-					recordarUsuario		: $("#chk_recordarUsuario").prop('checked'),
-					wemp_pmla			: '01',
-					proceso				: 'restablecer'
-					},
-					async: false,
-					success:function(mensaje) {
-						let htmlModal = "<p align='center'>"+mensaje+"</p>";
-						$("#bodyModal").html(htmlModal);
-						$("#btnAceptar").hide();
-					}
-			});
-		}
-		</script>
-		<style type='text/css'>
-			#restablecerPassword{
-				// display:none;
-				text-align:right;
-				font-size:8pt;
-				color:#757594;
-				font-family:arial;
-				cursor:pointer;
-			}
-			.panel-primary {
-				border-color: #2A5DB0;
-			}
-			
-			.panel-primary > .panel-heading {
-				color: #fff;
-				background-color: #2A5DB0;
-				border-color: #2A5DB0;
-			}
-			
-			.btnMatrix{
-				background-color: #2A5DB0;
-				color: #FFFFFF;
-			}
-			
-			.btnMatrix:hover {
-				background-color: #234d90;
-				color: #FFFFFF;
-			}
-			
-			.modal-header {
-				background-color: #2A5DB0;
-				padding:1px;
-				color:#FFF;
-				border-bottom:2px dashed #2A5DB0;
-				font-weight: bold;
-			}
-			
-			.modal-Alerta {
-				background-color: #2A5DB0;
-				padding:16px 16px;
-				color:#FFF;
-				border-bottom:2px dashed #2A5DB0;
-				font-weight: bold;
-				font-size: 10pt;
-			}
-			
-			.panel-body {
-				padding: 8px;
-			}
-		</style>
-	<?php
 	echo "</head>";
 	echo "<body onload=ira() BGCOLOR='ffffff'>";
 	echo "<BODY TEXT='#000066'>";
@@ -436,21 +146,6 @@ if(!isset($accion))
 	echo "<center><table border=0>";
 	echo "<tr><td align=center><IMG SRC='/matrix/images/medical/root/GELA.png'></td></tr>";
 	echo "</table></center>";
-	echo "	<div id='divModalRestablecer' class='modal fade bs-example-modal-sm' role='dialog'>
-				<div class='modal-dialog modal-lg'>
-					<div class='modal-content'>
-						<div class='modal-Alerta'>RESTABLECER USUARIO O CONTRASE&Ntilde;A</div>
-						<div class='modal-body' id='bodyModal'>
-							
-						</div>
-						<br/><br/><br/><br/>
-						<div class='modal-footer'>
-							<button type='button' class='btn btnMatrix' id='btnAceptar' onclick='restablecerDatosIngreso();' disabled>Aceptar</button>
-							<button type='button' class='btn btnMatrix' id='btnCerrarModal' data-dismiss='modal'>Cerrar</button>
-						</div>
-					</div>
-				</div>
-			</div>";
 	echo "<br><table border=0 align=center>";
 	echo "<tr>";
 	echo "	<td id=tipo3 valign=middle>";
@@ -461,15 +156,11 @@ if(!isset($accion))
 	echo "	<div class='tipoScreen02'>";
 	echo "		<table border=0 style='width : 100%'>";	
 	echo "			<tr><td align=center id=tipo5 colspan=2><IMG SRC='/matrix/images/medical/root/boton-9.png'></td></tr>";
-	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
-	echo "			<tr><td align=center id=tipo4>C&oacute;digo</td><td align=center><input class='input-login' type='text' name='codigo' size=10 maxlength=8></td></tr>";
-	echo "			<tr><td align=center id=tipo4>Clave</td><td align=center><input class='input-login'  type='password' name='password' size=10 maxlength=8></td></tr>";
-	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
+	echo "          <tr><td align=center id=tipo1a colspan=2></td></tr>";
+	echo "			<tr><td align=center id=tipo4>C&oacute;digo</td><td align=center id=tipo4><input type='text' name='codigo' size=10 maxlength=8></td></tr>";
+	echo "			<tr><td align=center id=tipo4>Clave</td><td align=center id=tipo4><input type='password' name='password' size=10 maxlength=8></td></tr>";
+	echo "          <tr><td align=center id=tipo1a colspan=2></td></tr>";
 	echo "			<tr><td align=center colspan=2><button onClick='enter()' class='tipoHIDE'><IMG SRC='/matrix/images/medical/root/boton-10.png'></button></td></tr>";
-	echo "          <tr><td align=center class='tipo1a' id='restablecerPassword' colspan=2 >
-							<span onclick='abrirRestablecerPassword();'>&iquest;olvid&oacute; su usuario o contrase&ntilde;a?</span>
-							<a class='fa fa-question-circle' href='/matrix/root/manuales/registroUsuario.pdf' onclick='window.open(this.href);return false' style='cursor : pointer' title='Manual de Usuario'></a>
-					</td></tr>";
 	echo "		</table>";
 	echo "	</div>";
 	echo "</td>";
@@ -551,94 +242,23 @@ else
 					$ipdir             = explode("|",GetIP());
 					$_SESSION['IIPP']  = $ipdir[0];
 					$_SESSION['NS']    = 1;
-					$_SESSION['codigo'] = strtolower($codigo);
-					// $_SESSION['password'] = strtolower($password);
-					$_SESSION['password'] = $password;
+					
 				}
 			}
+			
 
 			mysql_select_db("matrix") or die ("ERROR AL CONECTARSE A MATRIX");
-			$query = "SELECT codigo,prioridad,grupo,password,activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp 
-						FROM usuarios 
-					   WHERE codigo='".$codigo."';";
+			$query = "select codigo,prioridad,grupo from usuarios where codigo='".$codigo."' and password='".$password."' and activo = 'A'";
 			$err = mysql_query($query,$conex) or die (mysql_errno().":".mysql_error());
 			$num = mysql_num_rows($err);
-			
-			$login = false;
-			$mensajeLogin = "EL USUARIO NO EXISTE";
-			if($num > 0)
-			{
-				$row = mysql_fetch_array($err);
-				$prioridad=$row['prioridad'];
-				$codigo=$row['codigo'];
-				$grupo=$row['grupo'];
-				$documento=$row['Documento'];
-				$email=$row['Email'];
-				
-				if($row['activo']=="A")
-				{
-					if($row['password']==$password)
-					{
-						$login = true;
-						$mensajeLogin = "";
-					}
-					else
-					{
-						if($row['PasswordTemporal']=="")
-						{
-							$login = false;
-							$mensajeLogin = "CONTRASE&Ntilde;A INCORRECTA";	
-						}
-						else
-						{
-							$restablecerValido = validarTiempoRestablecer($conex, $codigo, $row['FechaPasswordTemp'], $row['HoraPasswordTemp']);
-							if($restablecerValido)
-							{
-								if($row['PasswordTemporal']==$password)
-								{
-									$update = " UPDATE usuarios 
-												   SET Feccap='".date("Y-m-d",strtotime(date("Y-m-d")."- 1 days"))."'
-												 WHERE Codigo='".$codigo."';";
-
-									$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $update . " - " . mysqli_error($conex));
-									
-									$login = true;
-									$mensajeLogin = "";
-								}
-								else
-								{
-									$login = false;
-									$mensajeLogin = "CONTRASE&Ntilde;A DE RECUPERACI&Oacute;N INCORRECTA";
-								}
-							}
-							else
-							{
-								$login = false;
-								$mensajeLogin = "LA CONTRASE&Ntilde;A DE RECUPERACI&Oacute;N EXPIR&Oacute;";
-							}
-						}
-					}
-				}
-				else
-				{
-					$login = false;
-					$mensajeLogin = "EL USUARIO ESTA INACTIVO";
-				}
-				
-				mysql_free_result($err);
-			}
-			
+			$row = mysql_fetch_array($err);
+			$prioridad=$row[1];
+			$codigo=$row[0];
+			$grupo=$row[2];
+			mysql_free_result($err);
 			mysql_close($conex);
-			
-			if ($login)
+			if ($num > 0)
 			{
-				if($documento=="" || $email=="")
-				{
-					echo "	<script>
-								window.open('root/procesos/registroUsuario.php','_self') 
-							</script>";
-				}
-				
 				switch($grupo)
 				{
 					case 'pda':
@@ -717,8 +337,7 @@ else
 				echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
 				echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
 				@session_destroy();
-				// echo "<td id=tipo1><A HREF='f1.php?END=on'>USUARIO NO EXISTE O ESTA INACTIVO</a></td></tr></table></body>";
-				echo "<td id=tipo1><A HREF='f1.php?END=on'>".$mensajeLogin."</a></td></tr></table></body>";
+				echo "<td id=tipo1><A HREF='f1.php?END=on'>USUARIO NO EXISTE O ESTA INACTIVO</a></td></tr></table></body>";
 			}
 		}	
 	}

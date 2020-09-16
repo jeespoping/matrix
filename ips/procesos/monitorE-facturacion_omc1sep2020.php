@@ -337,7 +337,7 @@ if(isset($accion))
 						</td>
 						<td class="text-center">';
 						
-						$respuesta["html"].= '<a class="text-success" style="cursor:pointer" href="javascript:return false;" id="imp_'.$infoFac['Faefue'].'_'.$infoFac['Faedoc'].'" onClick="descargarRepGrafica(\''.$infoFac['Faefue'].'\', \''.$infoFac['Faedoc'].'\', this)"><span class="btn-sm glyphicon glyphicon-cloud-download" aria-hidden="true"></span>Descargar</a>';
+						$respuesta["html"].= '<a class="text-success" style="cursor:pointer" onClick="descargarRepGrafica(\''.$infoFac['Faefue'].'\', \''.$infoFac['Faedoc'].'\', this)"><span class="btn-sm glyphicon glyphicon-cloud-download" aria-hidden="true"></span>Descargar</a>';
 						
 						/*if(trim($infoFac['Faepdf']) != ""){						;
 							$ruta 	= str_replace("/var/www/matrix/ips/", "../../../matrix/ips/", $infoFac['Faedir'])."/".trim($infoFac['Faepdf']);
@@ -393,7 +393,7 @@ if(isset($accion))
 						<td class="text-center"><button type="button" class="btn btn-default btn-sm" onClick="imprimirCodBarras(\''.trim($infoFac['Faedoc']).'\')"><span class="glyphicon glyphicon-print" aria-hidden="true"></span></button></span></td>
 						<td>'.$infoFac['Faeccf'].'</td>
 						<td>
-							<a class="text-success" style="cursor:pointer" id="imp_'.$infoFac['Faefue'].'_'.$infoFac['Faedoc'].'" href="javascript:return false;" onClick="descargarRepGrafica(\''.$infoFac['Faefue'].'\', \''.$infoFac['Faedoc'].'\', this)"><span class="btn-sm glyphicon glyphicon-cloud-download" aria-hidden="true"></span>Descargar</a>
+							<a class="text-success" style="cursor:pointer" onClick="descargarRepGrafica(\''.$infoFac['Faefue'].'\', \''.$infoFac['Faedoc'].'\', this)"><span class="btn-sm glyphicon glyphicon-cloud-download" aria-hidden="true"></span>Descargar</a>
 						</td>
 					</tr>
 					';
