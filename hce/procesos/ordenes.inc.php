@@ -1064,6 +1064,350 @@ class AccionPestanaDTO{
 /***********************************
  * FUNCIONES
  ***********************************/
+ 
+function cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario ){
+	
+	$val = [	
+			'fecha'=> '',
+			'hora' => '',
+			'user' => '',
+			'error'=> true,	//Indica si hay un error(Por defecto 'hay error' = true )
+		];
+	
+	$fecha 	= date( "Y-m-d" );
+	$hora 	= date("H:i:s");
+	
+	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
+	
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
+	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
+	
+	$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$wmovhos."_000159 b
+			   SET Detenv = '".$detval."',
+				   Detesi = 'A',
+				   Detlog = 'M',
+			 WHERE Dettor = '".$tor."'
+			   AND Detnro = '".$nro."'
+			   AND Detite = '".$item."'
+			   AND Deteex = ''
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$whce."_000028 b
+			   SET Detenv = '".$detval."',
+				   Detesi = 'A',
+				   Detlog = 'M'
+			 WHERE Dettor = '".$tor."'
+			   AND Detnro = '".$nro."'
+			   AND Detite = '".$item."'
+			   AND Deteex = ''
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	if( mysql_affected_rows() > 0 ){
+		
+		$val = [
+				'fecha' => $fecha,
+				'hora' 	=> $hora,
+				'user' 	=> $usuario,
+				'error' => false,
+			];
+		
+		/************************************************************************************
+		 * Mayo 20 de 2020
+		 * Se agrega auditoria para toma de muestras desde gestión
+		 ************************************************************************************/
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Ordhis, Ording, Detcod, Descripcion
+				  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$whce."_000047 c
+				 WHERE Ordtor = '".$tor."'
+				   AND Ordnro = '".$nro."' 
+				   AND Dettor = ordtor
+				   AND Detnro = ordnro
+				   AND Detite = '".$item."'
+				   AND Detcod = c.codigo
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		$rows = mysql_fetch_array( $res );
+		
+		
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
+
+		$auditoria->historia 	= $rows['Ordhis'];
+		$auditoria->ingreso 	= $rows['Ording'];
+		$auditoria->descripcion = $tor."-".$nro."-".$item.",".$rows['Detcod'].",".$rows['Descripcion'].",".$usuario;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= obtenerMensaje( "NO_REALIZA_EN_SERVICIO" );
+		$auditoria->seguridad 	= $usuario;
+		$auditoria->idOriginal 	= '';
+
+		registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
+		
+		crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
+		/************************************************************************************/
+	}
+	else{
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Detutm, Detftm, Dethtm
+				  FROM ".$whce."_000028
+				 WHERE Dettor = '".$tor."'
+				   AND Detnro = '".$nro."' 
+				   AND Detite = '".$item."'
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			$val = [
+				'fecha' => $rows['Detftm'],
+				'hora' 	=> $rows['Dethtm'],
+				'user' 	=> $rows['Detutm'],
+				'error' => false,
+			];
+		}
+	}
+	
+	return $val;
+}  
+ 
+ 
+function marcarRealizadoEnPiso( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario ){
+	
+	$val = [	
+			'fecha'=> '',
+			'hora' => '',
+			'user' => '',
+			'error'=> true,	//Indica si hay un error(Por defecto 'hay error' = true )
+		];
+	
+	$fecha 	= date( "Y-m-d" );
+	$hora 	= date("H:i:s");
+	
+	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
+	
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
+	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
+	
+	// $detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
+	$detval = 'on';
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$wmovhos."_000159 b
+			   SET Detnof  = '".$detval."'
+			 WHERE Dettor  = '".$tor."'
+			   AND Detnro  = '".$nro."'
+			   AND Detite  = '".$item."'
+			   AND Detnof != 'on'
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$whce."_000028 b
+			   SET Detnof  = '".$detval."'
+			 WHERE Dettor  = '".$tor."'
+			   AND Detnro  = '".$nro."'
+			   AND Detite  = '".$item."'
+			   AND Detnof != 'on'
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	if( mysql_affected_rows() > 0 ){
+		
+		$val = [
+				'fecha' => $fecha,
+				'hora' 	=> $hora,
+				'user' 	=> $usuario,
+				'error' => false,
+			];
+		
+		/************************************************************************************
+		 * Mayo 20 de 2020
+		 * Se agrega auditoria para toma de muestras desde gestión
+		 ************************************************************************************/
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Ordhis, Ording, Detcod, Descripcion
+				  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$whce."_000047 c
+				 WHERE Ordtor = '".$tor."'
+				   AND Ordnro = '".$nro."' 
+				   AND Dettor = ordtor
+				   AND Detnro = ordnro
+				   AND Detite = '".$item."'
+				   AND Detcod = c.codigo
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		$rows = mysql_fetch_array( $res );
+		
+		
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
+
+		$auditoria->historia 	= $rows['Ordhis'];
+		$auditoria->ingreso 	= $rows['Ording'];
+		$auditoria->descripcion = $tor."-".$nro."-".$item.",".$rows['Detcod'].",".$rows['Descripcion'].",".$usuario;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= obtenerMensaje( "REALIZA_EN_PISO" );
+		$auditoria->seguridad 	= $usuario;
+		$auditoria->idOriginal 	= '';
+
+		registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
+		/************************************************************************************/
+	}
+	else{
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Detutm, Detftm, Dethtm
+				  FROM ".$whce."_000028
+				 WHERE Dettor = '".$tor."'
+				   AND Detnro = '".$nro."' 
+				   AND Detite = '".$item."'
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			$val = [
+				'fecha' => $rows['Detftm'],
+				'hora' 	=> $rows['Dethtm'],
+				'user' 	=> $rows['Detutm'],
+				'error' => false,
+			];
+		}
+	}
+	
+	return $val;
+}
+
+
+function enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario ){
+	
+	$val = [	
+			'fecha'=> '',
+			'hora' => '',
+			'user' => '',
+			'error'=> true,	//Indica si hay un error(Por defecto 'hay error' = true )
+		];
+	
+	$fecha 	= date( "Y-m-d" );
+	$hora 	= date("H:i:s");
+	
+	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
+	
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
+	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
+	
+	$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$wmovhos."_000159 b
+			   SET Detenv = '".$detval."',
+				   Detlog = 'M'
+			 WHERE Dettor = '".$tor."'
+			   AND Detnro = '".$nro."'
+			   AND Detite = '".$item."'
+			   AND Deteex = ''
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$whce."_000028 b
+			   SET Detenv = '".$detval."',
+				   Detlog = 'M'
+			 WHERE Dettor = '".$tor."'
+			   AND Detnro = '".$nro."'
+			   AND Detite = '".$item."'
+			   AND Deteex = ''
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	if( mysql_affected_rows() > 0 ){
+		
+		$val = [
+				'fecha' => $fecha,
+				'hora' 	=> $hora,
+				'user' 	=> $usuario,
+				'error' => false,
+			];
+		
+		/************************************************************************************
+		 * Mayo 20 de 2020
+		 * Se agrega auditoria para toma de muestras desde gestión
+		 ************************************************************************************/
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Ordhis, Ording, Detcod, Descripcion
+				  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$whce."_000047 c
+				 WHERE Ordtor = '".$tor."'
+				   AND Ordnro = '".$nro."' 
+				   AND Dettor = ordtor
+				   AND Detnro = ordnro
+				   AND Detite = '".$item."'
+				   AND Detcod = c.codigo
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		$rows = mysql_fetch_array( $res );
+		
+		
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
+
+		$auditoria->historia 	= $rows['Ordhis'];
+		$auditoria->ingreso 	= $rows['Ording'];
+		$auditoria->descripcion = $tor."-".$nro."-".$item.",".$rows['Detcod'].",".$rows['Descripcion'].",".$usuario;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= obtenerMensaje( "NO_REALIZA_EN_SERVICIO" );
+		$auditoria->seguridad 	= $usuario;
+		$auditoria->idOriginal 	= '';
+
+		registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
+		
+		crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
+		/************************************************************************************/
+	}
+	else{
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Detutm, Detftm, Dethtm
+				  FROM ".$whce."_000028
+				 WHERE Dettor = '".$tor."'
+				   AND Detnro = '".$nro."' 
+				   AND Detite = '".$item."'
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			$val = [
+				'fecha' => $rows['Detftm'],
+				'hora' 	=> $rows['Dethtm'],
+				'user' 	=> $rows['Detutm'],
+				'error' => false,
+			];
+		}
+	}
+	
+	return $val;
+} 
+ 
 
 /******************************************************************************************
  * Consulto la clasificación de un estudio
@@ -15805,6 +16149,14 @@ function obtenerMensaje($clave){
 			
 		case 'TOMA_MUESTRAS_ORDENES':
 			$texto = "Toma de muestras desde ordenes Ordenes";
+			break;
+			
+		case 'NO_REALIZA_EN_SERVICIO':
+			$texto = "En el estudio se realizará en la ayuda diagnóstica";
+			break;
+			
+		case 'REALIZA_EN_PISO':
+			$texto = "En el estudio se realiza en servcio del paciente";
 			break;
 			
 		default:
@@ -33674,13 +34026,15 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 				
 				$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 				
+				$clasificacionEstudio = consultarClasificacionPorEstudio( $conex, $wcliame, $cup );
+				
 				$requiereAut = requiereAutorizacion( $conex, $wcliame, $wemp_pmla, [
 										'tipoEmpresa' 	=> consultarTipoEmpresaPorHistoria( $conex, $wbasedato, $historia, $ingreso ),
 										'nit'			=> $pac['nitResponsable'],
 										'codigoEmpresa'	=> $pac['codigoResponsable'],
 										'planEmpresa'	=> consultarPlanEmpresaPorHistoria( $conex, $wcliame, $historia, $ingreso ),
 										'tarifa'		=> $pac['tarifa'],
-										'clasificacion'	=> consultarClasificacionPorEstudio( $conex, $wcliame, $cup ),
+										'clasificacion'	=> $clasificacionEstudio == '*' ? '' : $clasificacionEstudio,
 										'cup'			=> $cup,
 									]);
 											
@@ -39207,6 +39561,20 @@ if(isset($consultaAjaxKardex)){
 		
 		case 'enviarMensajesFaltantes':
 			enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $usuario );
+		break;
+		
+		case 'seRealizaEnUnidadAmbulatoria':
+			
+			$wmovhos= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos');
+			$whce 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce');
+			
+			if( $realizarEnPiso == 'on' ){
+				enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $numeroOrden, $item, $wusuario );
+			}
+			else{
+				marcarRealizadoEnPiso( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $numeroOrden, $item, $wusuario );
+			}
+			
 		break;
 			
 		default :
