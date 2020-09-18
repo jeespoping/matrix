@@ -18,56 +18,70 @@ if (!$connLab) {
     echo 'Connection error' . mysqli_connect_error(); # code...
 }
 
+$user_session = explode('-', $_SESSION['user']);
+$wuse = "C-" . $user_session[1];
+
+
 
 $url = "/matrix/citas/procesos/listaDeEspera.php?wemp_pmla=05";
 //sendToMail en common
 
-// $sql = 'SELECT Codigo,Nombre FROM Tubos';
-// // make query $ get result
-// $result = mysqli_query($conexLab, $sql);
-// // fetch the resulting rows as an aaray
-// $tubos = mysqli_fetch_all($result, MYSQLI_ASSOC);
-// 
-
-// print_r($tubos);
-// mysqli_close($conexLab);
-
-// write query
-$sql = "SELECT drvanm,drvncl FROM citaslc_000033 where drvast='on' order by drvanm ASC";
+$sql = "SELECT drvanm,drvnlb FROM citaslc_000033 where drvast='on' order by drvanm ASC";
 // make query $ get result
 $result = mysqli_query($conex, $sql);
 // fetch the resulting rows as an aaray
 $eps = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
-if (isset($_POST['servicioSeleccionado']) && ($_POST['servicioSeleccionado'] == 'DT' || $_POST['servicioSeleccionado'] == 'DTP')) {
-
-    $sql =
-        "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE SEREALIZA=1  and Codigo IN ('C021', 'C022','C023', 'C024','C026') order by Codigo ASC";
-    // make query $ get result
-    // $sql =
-    // " SELECT drvclb,drvccp, drvnex  "
-    // . "  FROM citaslc_000036"
-    // . "  WHERE drvser = 'DT'"
-    // . "	AND drvncl = '"
-    // . $id . "'";
+$sql = "SELECT Bardes,Barcod FROM root_000034 where Barmun='05001' order by Bardes ASC";
+$result = mysqli_query($conex, $sql);
+$barrios = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
-    $result = mysqli_query($connLab, $sql);
-    // fetch the resulting rows as an aaray
-    $html = "<option value='' selected><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>";
+$sql = "SELECT c32.id,c32.Fecha_data,c32.Hora_data,
+c32.drvtid,
+c32.drvidp,
+c32.drvnom,
+c32.drvap1,
+c32.drvap2,
+c32.drvbdy,
+c32.drvsex,
+c32.drvtel,
+c32.drvmov,
+c32.drvdir,
+c32.drvbar,
+c32.drvema,
+c32.drvenv,
+c32.drvase,
+c32.drvpol,
+c32.drvcpl,
+c32.drvser,
+c32.drvexa,
+c32.drvfsi,
+c32.drvsin,
+c32.drvcla,
+c32.drvaut,
+c32.drvvcr,
+c32.drvlnk,
+c32.drvpcf,
+c32.drvfec,
+c32.drvhor,
+c32.drvsag,
+c32.drvord,
+c32.drvest,
+c33.drvanm,
+c35.drvser
+FROM citaslc_000032 c32, citaslc_000035 c35 , citaslc_000033 c33
+WHERE drvord='' and c32.drvest='on'  AND c32.drvser=c35.drvcse AND c32.drvase=c33.drvnlb order by c32.Fecha_data DESC, c32.Hora_data DESC;";
+$result = mysqli_query($conex, $sql);
+$registros = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
-    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $html .= "<option value='" . $row['CodigoCups'] . "-" . $row['NombreExamen'] . "-" . $row['Codigo'] . "'>" . $row['NombreExamen'] . " | " . $row['Codigo'] . " | " . $row['CodigoCups'] . "</option>";
-    }
 
-    mysqli_free_result($result);
-    mysqli_close($connLab);
+$sql = "SELECT drvser, drvcse FROM citaslc_000035 where drvest='on'  order by id ASC";
+$result = mysqli_query($conex, $sql);
+$servicios = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-    echo $html;
-    exit;
-}
 
 if (isset($_POST['servicioSeleccionado']) && $_POST['servicioSeleccionado'] == 'DM') {
 
@@ -88,44 +102,6 @@ if (isset($_POST['servicioSeleccionado']) && $_POST['servicioSeleccionado'] == '
 
     echo $html;
     exit;
-} else {
-    /*  if (isset($_POST['aseguradoraSeleccionada']) && $_POST['aseguradoraSeleccionada'] == "9999") {
-        # code...
-        // write query
-        $id = $_POST['aseguradoraSeleccionada'];
-        $service = $_POST['tipoServicio'];
-
-
-
-        $sql =
-            " SELECT drvclb,drvccp, drvnex  "
-            . "  FROM citaslc_000036"
-            . "  WHERE drvser = 'DT'"
-            . "	AND drvncl = '"
-            . $id . "'";
-
-
-
-        $result = mysqli_query($conex, $sql);
-
-        $html = "<option value='' selected><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>";
-
-        if (!$result) {
-            echo ("Error description: " . mysqli_error($conex));
-        }
-        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-            $html .= "<option value='" . $row['CodigoCups'] . "-" . $row['NombreExamen'] . "-" . $row['Codigo'] . "'>" . $row['CodigoCups'] . "|" . $row['Codigo'] . "|" . $row['NombreExamen'] . "</option>";
-        }
-
-
-
-
-
-        // make query $ get result
-        echo $html;
-
-        exit;
-    }*/
 }
 
 
@@ -173,67 +149,32 @@ if (isset($_GET['wemp_pmla'])) {
     # code...
     $empresa = $_GET['wemp_pmla'];
 
-    // $sql = "SELECT * FROM " . $empresa . "_000034";
-    // $result = mysql_query($conex, $sql);
-    // $configuraciones = mysql_fetch_array($result, MYSQLI_ASSOC);
-    // // print_r($configuraciones);
+    $sql = "SELECT drvcam FROM citaslc_000034 WHERE  drvemp=" . $empresa . ";";
+    $result = mysqli_query($conex, $sql);
+    $configuraciones = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    // print_r($configuraciones);
 
-    // print_r($configuraciones[0]['drvest']);
+    $nombreConfiguracion = array();
+    foreach ($configuraciones as $key => $configuracion) {
+        # code...
+        array_push($nombreConfiguracion, $configuracion['drvcam']);
+    }
+
+    $sql = "SELECT * FROM citaslc_000034 WHERE  drvemp=" . $empresa . ";";
+    $result = mysqli_query($conex, $sql);
+    $todasLasConfiguraciones = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+
+    $assocConfiguracion = array_combine($nombreConfiguracion, $todasLasConfiguraciones);
+
+    $wompiKey = $assocConfiguracion['llavePublicaWompi']['drvdpl'];
+    $urlAPI = $assocConfiguracion['urlAPI']['drvdpl'];
+
 
     $sql = "SELECT *  FROM root_000007 where Estado='on' order by id ASC";
     $result = mysqli_query($conex, $sql);
     $tipoDocumento = mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
-
-
-$sql = "SELECT Bardes,Barcod FROM root_000034 where Barmun='05001' order by Bardes ASC";
-$result = mysqli_query($conex, $sql);
-$barrios = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-
-$sql = "SELECT c32.id,c32.Fecha_data,c32.Hora_data,
-c32.drvtid,
-c32.drvidp,
-c32.drvnom,
-c32.drvap1,
-c32.drvap2,
-c32.drvbdy,
-c32.drvsex,
-c32.drvtel,
-c32.drvmov,
-c32.drvdir,
-c32.drvbar,
-c32.drvema,
-c32.drvenv,
-c32.drvase,
-c32.drvpol,
-c32.drvcpl,
-c32.drvser,
-c32.drvexa,
-c32.drvfsi,
-c32.drvsin,
-c32.drvcla,
-c32.drvaut,
-c32.drvvcr,
-c32.drvlnk,
-c32.drvpcf,
-c32.drvfec,
-c32.drvhor,
-c32.drvsag,
-c32.drvord,
-c32.drvest,
-c33.drvanm,
-c35.drvser
-FROM citaslc_000032 c32, citaslc_000035 c35 , citaslc_000033 c33
-WHERE drvord='' and c32.drvest='on'  AND c32.drvser=c35.drvcse AND c32.drvase=c33.drvncl order by c32.Fecha_data DESC, c32.Hora_data DESC;";
-$result = mysqli_query($conex, $sql);
-$registros = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-
-
-$sql = "SELECT drvser, drvcse FROM citaslc_000035 where drvest='on'  order by id ASC";
-$result = mysqli_query($conex, $sql);
-$servicios = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 if (isset($_POST['consultarValorParticular'])) {
     # code...
@@ -279,12 +220,14 @@ if (isset($_POST['consultaExamenesAGrabar'])) {
 
     // write query
     $id = $_POST['consultaExamenesAGrabar'];
+
     $sql = "SELECT id, drvcup,
     drvnex,
     drvaut, drvpos " . "FROM citaslc_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
 
     $result = mysqli_query($conex, $sql);
     $examenesParaOT = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
     echo json_encode($examenesParaOT);
 
     exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
@@ -338,12 +281,64 @@ if (isset($_POST['confirmarPago'])) :
     exit;
 endif;
 
+if (isset($_POST['obtenerExamenes'])) {
+    # code...
+    // write query
+    $id = $_POST['obtenerExamenes'];
+
+    $sql = "SELECT CodigoTarifa FROM Empresas  WHERE Nit = '" . $id . "';";
+    $result = mysqli_query($connLab, $sql);
+    $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $codigoTarifa = $tarifaLab[0]['CodigoTarifa'];
+
+    $sql = "SELECT CodigoExamen FROM ValorExamenes WHERE  ValorActual>=0 AND CodigoTarifa ='" . $codigoTarifa . "' AND CodigoExamen IN (SELECT Codigo FROM Examenes WHERE TipoPrueba<>'')";
+
+
+    $result = mysqli_query($connLab, $sql);
+    $examenesConvenio = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+    $listaExamenes = array();
+
+    foreach ($examenesConvenio as $key => $examen) {
+        # code...
+        array_push($listaExamenes, "'" . $examen['CodigoExamen'] . "'");
+    }
+
+    $examenesAConsultar = implode(",", $listaExamenes);
+    // print_r($row);
+    // echo $examenesAConsultar;
+
+    $sql = "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE  Codigo IN (" . $examenesAConsultar . ") order by Codigo ASC";
+    echo $sql;
+    $result = mysqli_query($connLab, $sql);
+    // $exams = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    // print_r($exams);
+
+
+
+    if (!$result) {
+        echo ("Error description: " . mysqli_error($conex));
+    }
+
+
+    $html = "<option value=''>Elija al menos un examen. </option>";
+
+    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+        $html .= "<option value='" . $row['CodigoCups'] . "-" . $row['NombreExamen'] . "-" . $row['Codigo'] . "'>" . $row['NombreExamen'] . " | " . $row['Codigo'] . " | " . $row['CodigoCups'] . "</option>";
+    }
+    // make query $ get result
+    mysqli_free_result($result);
+    mysqli_close($connLab);
+    echo $html;
+
+    exit;
+}
+
 if (isset($_POST['aseguradoraSeleccionada'])) {
     # code...
     // write query
     $id = $_POST['aseguradoraSeleccionada'];
     $service = $_POST['tipoServicio'];
-
 
     $sql =
         " SELECT Plades "
@@ -369,7 +364,17 @@ if (isset($_POST['aseguradoraSeleccionada'])) {
     exit;
 }
 
-
+if (isset($_POST['consultarCodigoEmpresaLab'])) {
+    $nit = $_POST['consultarCodigoEmpresaLab'];
+    $sql = "SELECT Codigo FROM Empresas  WHERE Nit = '" . $nit . "';";
+    $result = mysqli_query($connLab, $sql);
+    $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    $codigo = $tarifaLab[0]['Codigo'];
+    mysqli_free_result($result);
+    mysqli_close($connLab);
+    echo $codigo;
+    exit;
+}
 
 if (isset($_POST['total'])) {
     # code...
@@ -423,9 +428,6 @@ if (isset($_POST['linkAGuardar'])) {
 
     exit;
 }
-
-
-
 
 
 if (isset($_POST['parametro'])) :
@@ -587,9 +589,11 @@ if (isset($_POST['submit'])) {
     // } else {
     //     // Otra validaci&oacute;n
     // }
-
+    print_r($errors);
     if (array_filter($errors)) {
         // echo 'Errors in the form';
+        echo "aqui";
+        print_r($errors);
     } else {
 
         // [docType]
@@ -631,6 +635,9 @@ if (isset($_POST['submit'])) {
         $drvsin = mysqli_real_escape_string($conex, $_POST['sintomasPost']);
         $drvcla = mysqli_real_escape_string($conex, $_POST['clasificacionCasoPost']);
 
+        print_r($_POST);
+        // codigoTarifa
+
         $fecha_data = date("Y-m-d");
         $hora_data = date("H:i:s");
 
@@ -657,7 +664,7 @@ if (isset($_POST['submit'])) {
             drvexa, 
             drvfsi,
             drvsin,
-            drvcla,drvest) 
+            drvcla,drvest, Seguridad) 
             VALUES('drvtru',
             '$fecha_data',
             '$hora_data',
@@ -680,13 +687,13 @@ if (isset($_POST['submit'])) {
             '$drvexa',
             '$drvfsi',
             '$drvsin',
-            '$drvcla','on'
+            '$drvcla','on','$wuse'
             )";
 
         if (mysqli_query($conex, $sql)) {
             // Sucess
             // The connection will be closed when the index php is loaded
-            header('Location: ' . $url);
+            // header('Location: ' . $url);
 
             $fecha_data = date("Y-m-d");
             $hora_data = date("H:i:s");
@@ -698,7 +705,7 @@ if (isset($_POST['submit'])) {
                 $drvcup = mysqli_real_escape_string($conex, $_POST['exam-' . $i]);
                 $drvnex = mysqli_real_escape_string($conex, $_POST['examName-' . $i]);
                 $drvpos = $i + 1;
-                $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos')";
+                $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
                 // Se agrega coma hasta el pen&uacute;ltimo elemento
                 if ($i !== $drvexa - 1) {
                     # code...
@@ -706,7 +713,7 @@ if (isset($_POST['submit'])) {
                 }
             }
 
-            $sql = "INSERT INTO citaslc_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos) VALUES " . $inserts;
+            $sql = "INSERT INTO citaslc_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
 
 
             if (mysqli_query($conex, $sql)) {
@@ -1090,7 +1097,7 @@ if (isset($_POST['submit'])) {
                             <select name="eps" class="input-select" id="eps">
                                 <option value="" selected><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>
                                 <?php foreach ($eps as $ep) : ?>
-                                    <option value=<?php echo htmlspecialchars($ep['drvncl']); ?>>
+                                    <option value=<?php echo htmlspecialchars($ep['drvnlb']); ?>>
                                         <?php
                                         echo htmlspecialchars($ep['drvanm']);
                                         ?>
@@ -1310,6 +1317,7 @@ if (isset($_POST['submit'])) {
                                                                                                                                                                 '<?php echo htmlspecialchars($registro['drvtel']); ?>', 
                                                                                                                                                                 '<?php echo htmlspecialchars($registro['drvase']); ?>', 
                                                                                                                                                                 '<?php echo htmlspecialchars($registro['drvcpl']); ?>',
+                                                                                                                                                                '<?php echo htmlspecialchars($registro['drvpol']); ?>',
                                                                                                                                                                 '<?php echo htmlspecialchars($registro['drvvcr']); ?>',
                                                                                                                                                                 '<?php echo htmlspecialchars($registro['drvfsi']); ?>',
                                                                                                                                                                 '<?php echo htmlspecialchars($registro['drvsin']); ?>',
@@ -1366,9 +1374,9 @@ if (isset($_POST['submit'])) {
     <script>
         let tempExams = [];
         const urlMatrix = '/matrix/citas/procesos/listaDeEspera.php?wemp_pmla=05'
-        const urlAPI = "http://131.1.18.24:5001/api/hl7/drivethru";
-        // const wompiKey = "pub_test_GZlevgVBlUIA4Aq8jcYjNPJBJEnbitYV"
-        const wompiKey = "pub_prod_J2T5YcYqb8pv6QKRNVjyTJzeRcIFyJJc"
+        const urlAPI = '<?php echo $urlAPI; ?>';
+        const wompiKey = '<?php echo $wompiKey; ?>';
+        // const wompiKey = "pub_prod_J2T5YcYqb8pv6QKRNVjyTJzeRcIFyJJc"
 
         $(document).ready(function() {
 
@@ -1604,8 +1612,10 @@ if (isset($_POST['submit'])) {
 
         }
 
-        function admitir(index, id, identificacion, tipodedocumento, apellido1, apellido2, nombres, fechaDeNacimiento, sexo, direccion, celular, email, fijo, aseguradora, plan, valorACancelar, fechaSintomas, sintomas, clasificacion) {
+        function admitir(index, id, identificacion, tipodedocumento, apellido1, apellido2, nombres, fechaDeNacimiento, sexo, direccion, celular, email, fijo, aseguradora, plan, poliza, valorACancelar, fechaSintomas, sintomas, clasificacion) {
             // console.log(plan);
+            let usuario = '<?php echo $wuse; ?>'
+            console.log(usuario, "usuario")
             let date = new Date()
             let year = date.getFullYear()
             let month = date.getMonth()
@@ -1625,171 +1635,140 @@ if (isset($_POST['submit'])) {
 
             let aaaammdd = fechaDeNacimiento.replaceAll("-", "")
 
-            // Consultar la historia
-            let historia = ""
-            let tarifa = ""
-            switch (aseguradora) {
-                case "890903790": //SURA
-                    tarifa = "694"
-                    break;
-                case "800106339": // COLMEDICA
-                    tarifa = "662";
-                    break;
-                case "805009741": // COOMEVA
-                    tarifa = "691";
-
-                case "099": // PARTICULAR
-                    tarifa = "679";
-                default:
-                    tarifa = "679";
-                    break;
-            }
-            let codEmpresaLab = ""
-
-
-
-            if (plan === "POLIZA CLASICA FAMILIAR") {
-                codEmpresaLab = "SURCOV"
-            }
-            if (plan === "POLIZA GLOBAL") {
-                codEmpresaLab = "SURCOV"
-            }
-            if (plan === "TRATAMIENTO ESPECIFICO") {
-                codEmpresaLab = "SURCOV"
-            }
-            if (plan === "ZAFIRO") {
-                codEmpresaLab = "COLMED"
-            }
-            if (plan === "PLATA JOVEN, ORO, ASOCIADO, ORO PLUS") {
-                codEmpresaLab = "E0011"
-            }
-            if (plan === "UNIBAN") {
-                codEmpresaLab = "E0011"
-            }
-            if (plan === "70/30") {
-                codEmpresaLab = "EC7030"
-            }
-            if (plan === "COLECTIVOS ESPECIALES") {
-                codEmpresaLab = "E0011"
-            }
-
-            if (plan === "") {
-                codEmpresaLab = "PARTI"
-            }
-            if (aseguradora === "9999" || aseguradora === "099" || aseguradora === "PARTICULAR") {
-                codEmpresaLab = "PARTI"
-            }
-
 
             $.ajax({
-                url: urlMatrix,
-                type: 'POST',
                 data: {
-                    "consultaExamenesAGrabar": id,
+                    "consultarCodigoEmpresaLab": aseguradora,
                     "consultaAjax": ""
                 },
+                url: urlMatrix,
+                type: "POST",
                 beforeSend: function() {},
-                success: function(response) {
+                success: function(codEmpresaLab) {
 
-
-
-                    let msh = `MSH|^~&|MATRIX|PMLA|LIS4D|LMLA|${aaaammddhhmmss}||OML^O21|DRIVE-${id}|P|2.5|`
-                    let pid = `PID||${identificacion}^${tipodedocumento}|${historia}||${apellido1}&${apellido2}^${nombres}||${aaaammdd}|${sexo}|||${direccion}^^MEDELLIN^ANTIOQUIA^^COLOMBIA||${celular}^^^${email}^^^${fijo}|`
-                    let in1 = `IN1||${codEmpresaLab}|${aseguradora}||||||||||||${tarifa}|`
-                    let orc = `ORC|NW|0|DRIVE-${id}^||IP||^^^${aaaammddhhmmss}^^R|||^^^^^^^|`
-
-                    // Donde va la autorización?
-                    // hora de la cita?
-                    let horaCita = "" // horadelacita hh:mm
-                    let fechaCita = "" // fechadelacita aaaammdd
-
-                    // Creación de los registros OBR 
-                    let phpJSON = JSON.parse(response);
-                    let obrs = []
-                    for (let index = 0; index < phpJSON.length; index++) {
-
-                        let exam_labcod = phpJSON[index].drvnex
-                        let examn_labcod_replaced = exam_labcod.replace("-C0", "^C0")
-                        obrs.push(`OBR|||DRIVE-${id}-${phpJSON[index].drvpos}|${phpJSON[index].drvcup}^${examn_labcod_replaced}||${aaaammddhhmmss}|||||||${horaCita}||^^^^^||||||||||O|||||||||||${fechaCita}|`)
-                    }
-                    let joinedObrs = obrs.join("<br>");
-
-                    sintomas = sintomas.replace(",", "~")
-                    clasificacion = clasificacion.replace(",", "~")
-                    ////
-
-                    let nte1 = `NTE|1|P|345^3.5^Fecha Inicio de Sintomas^${fechaSintomas}|ENCUESTA`
-                    let nte2 = `NTE|2|P|345^3.6^Clasificacion del Caso^${clasificacion}|ENCUESTA`
-                    let nte3 = `NTE|3|P|345^5,4^Sintomas^${sintomas}|ENCUESTA`
-                    let nte4 = `NTE|4|P|Efectivo^0|PAGO`
-                    let nte5 = `NTE|5|P|Cheque^0|PAGO`
-                    let nte6 = `NTE|6|P|TD^${valorACancelar}^WHOMPI|PAGO`
-                    let nte7 = `NTE|7|P|S015^DRIVE THRU|SEDE`
-                    // console.log(obrs);
-                    let mensaje = msh + "<br>" + pid + "<br>" + in1 + "<br>" + orc + "<br>" + nte1 + "<br>" + nte2 + "<br>" + nte3 + "<br>" + nte4 + "<br>" + nte5 + "<br>" + nte6 + "<br>" + nte7 + "<br>" + joinedObrs
-                    $('#admitir')
-                        .prop('disabled', true)
-                    $(`#orden${index}`).html('Creando orden...');
-                    $(`#orden${index}`).addClass('showOrderCreatedSuccess');
                     $.ajax({
-                        data: JSON.stringify({
-                            "msg": mensaje
-                        }),
-                        dataType: "json",
-                        contentType: "application/json; charset=utf-8",
-                        headers: {
-                            "Authorization": "fab383b9-9e42-4758-a91d-10ebbf6ed68f",
-                            "Content-Type": "application/json"
+                        url: urlMatrix,
+                        type: 'POST',
+                        data: {
+                            "consultaExamenesAGrabar": id,
+                            "consultaAjax": ""
                         },
-                        url: urlAPI,
-                        type: 'post',
                         beforeSend: function() {},
                         success: function(response) {
-                            if (response.orden !== "") {
-                                $('#admitir')
-                                    .prop('disabled', true)
-                                $(`#orden${index}`).html(`Orden creada ${response.orden}`);
-                                $(`#orden${index}`).addClass('showOrderCreatedSuccess');
 
-                                $.ajax({
-                                    url: urlMatrix,
-                                    type: 'POST',
-                                    data: {
-                                        "consultaAjax": "",
-                                        "ordenLaboratorio": response.orden,
-                                        "id": id
-                                    },
-                                    beforeSend: function() {},
-                                    success: function(result) {
-                                        // Orden grabada
-                                        $(`#admitirTD${index}`).removeClass('fila1')
-                                        $(`#admitirTD${index}`).addClass('gestion3')
+                            console.log(response, "response");
 
+                            let msh = `MSH|^~&|MATRIX|PMLA|LIS4D|LMLA|${aaaammddhhmmss}||OML^O21|DRIVE-${id}|P|2.5|`
+                            let pid = `PID||${identificacion}^${tipodedocumento}|||${apellido1}&${apellido2}^${nombres}||${aaaammdd}|${sexo}|||${direccion}^^MEDELLIN^ANTIOQUIA^^COLOMBIA||${celular}^^^${email}^^^${fijo}|`
+                            let in1 = `IN1||${codEmpresaLab}||||||||||||||`
+                            let orc = `ORC|NW|0|DRIVE-${id}^||IP||^^^${aaaammddhhmmss}^^R|||^^^^^^^|`
 
-                                    },
-                                    error: function() {
-                                        alert("error")
-                                    }
-                                })
-                            } else {
-                                $('#admitir')
-                                    .prop('disabled', false)
-                                $(`#orden${index}`).html(`La orden no se pudo crear.`);
-                                $(`#orden${index}`).addClass('showOrderCreatedSuccess');
+                            // Donde va la autorización?
+                            // hora de la cita?
+                            let horaCita = "" // horadelacita hh:mm
+                            let fechaCita = "" // fechadelacita aaaammdd
+
+                            // Creación de los registros OBR 
+                            let phpJSON = JSON.parse(response);
+                            let obrs = []
+                            let autorizacionesArray = [];
+                            for (let index = 0; index < phpJSON.length; index++) {
+
+                                let exam_labcod = phpJSON[index].drvnex
+                                let examn_labcod_replaced = exam_labcod.replace("-C0", "^C0")
+                                obrs.push(`OBR|||DRIVE-${id}-${phpJSON[index].drvpos}|${phpJSON[index].drvcup}^${examn_labcod_replaced}||${aaaammddhhmmss}|||||||${horaCita}||^^^^^||||||||||O|||||||||||${fechaCita}|`)
+                                autorizacionesArray.push(phpJSON[index].drvaut);
                             }
+                            let joinedObrs = obrs.join("<br>");
+                            let autorizaciones = autorizacionesArray.join("~");
+                            sintomas = sintomas.replace(",", "~")
+                            clasificacion = clasificacion.replace(",", "~")
+                            ////
 
+                            let nte1 = `NTE|1|P|345^3.5^Fecha Inicio de Sintomas^${fechaSintomas}|ENCUESTA`
+                            let nte2 = `NTE|2|P|345^3.6^Clasificacion del Caso^${clasificacion}|ENCUESTA`
+                            let nte3 = `NTE|3|P|345^5,4^Sintomas^${sintomas}|ENCUESTA`
+                            let nte4 = `NTE|4|P|Efectivo^0|PAGO`
+                            let nte5 = `NTE|5|P|${usuario}|CAJERO`
+                            let nte6 = `NTE|6|P|TD^${valorACancelar}^WHOMPI|PAGO`
+                            let nte7 = `NTE|7|P|S015^DRIVE THRU|SEDE`
+                            let nte8 = `NTE|8|P|${autorizaciones}|AUTORIZACIONES`
+                            let nte9 = `NTE|9|P|${poliza}|POLIZA`
+
+                            // console.log(obrs);
+                            let mensaje = msh + "<br>" + pid + "<br>" + in1 + "<br>" + orc + "<br>" + nte1 + "<br>" + nte2 + "<br>" + nte3 + "<br>" + nte4 + "<br>" + nte5 + "<br>" + nte6 + "<br>" + nte7 + "<br>" + nte8 + "<br>" + nte9 + "<br>" + joinedObrs
+                            $('#admitir')
+                                .prop('disabled', true)
+                            $(`#orden${index}`).html('Creando orden...');
+                            $(`#orden${index}`).addClass('showOrderCreatedSuccess');
+                            $.ajax({
+                                data: JSON.stringify({
+                                    "msg": mensaje
+                                }),
+                                dataType: "json",
+                                contentType: "application/json; charset=utf-8",
+                                headers: {
+                                    "Authorization": "fab383b9-9e42-4758-a91d-10ebbf6ed68f",
+                                    "Content-Type": "application/json"
+                                },
+                                url: urlAPI,
+                                type: 'post',
+                                beforeSend: function() {},
+                                success: function(response) {
+                                    if (response.orden !== "") {
+                                        $('#admitir')
+                                            .prop('disabled', true)
+                                        $(`#orden${index}`).html(`Orden creada ${response.orden}`);
+                                        $(`#orden${index}`).addClass('showOrderCreatedSuccess');
+
+                                        $.ajax({
+                                            url: urlMatrix,
+                                            type: 'POST',
+                                            data: {
+                                                "consultaAjax": "",
+                                                "ordenLaboratorio": response.orden,
+                                                "id": id
+                                            },
+                                            beforeSend: function() {},
+                                            success: function(result) {
+                                                // Orden grabada
+                                                $(`#admitirTD${index}`).removeClass('fila1')
+                                                $(`#admitirTD${index}`).addClass('gestion3')
+
+
+                                            },
+                                            error: function() {
+                                                alert("error")
+                                            }
+                                        })
+                                    } else {
+                                        $('#admitir')
+                                            .prop('disabled', false)
+                                        $(`#orden${index}`).html(`La orden no se pudo crear.`);
+                                        $(`#orden${index}`).addClass('showOrderCreatedSuccess');
+                                    }
+
+
+                                },
+                                error: function() {
+                                    alert("error")
+                                }
+                            })
 
                         },
                         error: function() {
                             alert("error")
                         }
-                    })
+                    });
+
 
                 },
                 error: function() {
                     alert("error")
                 }
-            });
+            })
+
+
 
 
 
@@ -1842,10 +1821,10 @@ if (isset($_POST['submit'])) {
 
 
         $("#eps").change(function() {
-            var parametro = $('#eps').val();
+            let eps = $('#eps').val();
             $.ajax({
                 data: {
-                    "aseguradoraSeleccionada": parametro,
+                    "aseguradoraSeleccionada": eps,
                     "tipoServicio": $('#service').val(),
                     "consultaAjax": ""
                 },
@@ -1854,6 +1833,24 @@ if (isset($_POST['submit'])) {
                 beforeSend: function() {},
                 success: function(response) {
                     $("#plan").html(response);
+
+                    $.ajax({
+                        data: {
+                            "obtenerExamenes": eps,
+                            "consultaAjax": ""
+                        },
+                        url: urlMatrix,
+                        type: "POST",
+                        beforeSend: function() {},
+                        success: function(response) {
+                            $("#exams").html(response);
+                        },
+                        error: function() {
+                            alert("error")
+                        }
+                    })
+
+
                 },
                 error: function() {
                     alert("error")
@@ -2012,7 +2009,7 @@ if (isset($_POST['submit'])) {
             if (servicio === "DM") {
                 servicioWompi = "Domicilio"
             }
-            if (servicio === "DT") {
+            if (servicio === "DT" || servicio === "DTP") {
                 servicioWompi = "Drive Thru"
             }
 
@@ -2062,40 +2059,6 @@ if (isset($_POST['submit'])) {
 
 
         }
-
-        // function envioCorreo(email, id, nombres, apellidos, valorACancelar) {
-
-
-        //     let wdestinatarios = [email];
-        //     const date = new Date();
-        //     const yearof = date.getFullYear();
-        //     let valorACancelarCentavos = String(Number(valorACancelar) * 100); // Se require pasar a centavos por solicitud de Wompi
-        //     let mensaje = `<!DOCTYPE html><html lang="en" ><head><meta charset="UTF-8"></head><body><style>*:not(br):not(tr):not(html){font-family: Arial, Helvetica, sans-serif; box-sizing: border-box;}body{width: 100% !important; height: 100%; margin: 0; line-height: 1.4; background-color: #F2F4F6; color: #74787E; -webkit-text-size-adjust: none;}p, ul, ol, blockquote{line-height: 1.4; text-align: left;}a{color: #3869D4; text-decoration: none;}a img{border: none;}.email-wrapper{width: 100%; margin: 0; padding: 0; -premailer-width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0; background-color: #F2F4F6;}.email-content{width: 100%; margin: 0; padding: 0; -premailer-width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0;}.email-masthead{padding: 25px 0; text-align: center;}.email-masthead_logo{width: 94px;}.email-masthead_name{font-size: 16px; font-weight: bold; color: #bbbfc3; text-decoration: none; text-shadow: 0 1px 0 white;}.email-body{width: 100%; margin: 0; padding: 0; -premailer-width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0; border-top: 1px solid #EDEFF2; border-bottom: 1px solid #EDEFF2; background-color: #FFFFFF;}.email-body_inner{width: 570px; margin: 0 auto; padding: 0; -premailer-width: 570px; -premailer-cellpadding: 0; -premailer-cellspacing: 0; background-color: #FFFFFF;}.email-footer{width: 570px; margin: 0 auto; padding: 0; -premailer-width: 570px; -premailer-cellpadding: 0; -premailer-cellspacing: 0; text-align: center;}.email-footer p{color: #AEAEAE;}.body-action{width: 100%; margin: 30px auto; padding: 0; -premailer-width: 100%; -premailer-cellpadding: 0; -premailer-cellspacing: 0; text-align: center;}.body-sub{margin-top: 25px; padding-top: 25px; border-top: 1px solid #EDEFF2;}.content-cell{padding: 35px;}.preheader{display: none !important;}.align-right{text-align: right;}.align-left{text-align: left;}.align-center{text-align: center;}@media only screen and (max-width: 600px){.email-body_inner, .email-footer{width: 100% !important;}}@media only screen and (max-width: 500px){.button{width: 100% !important;}}.button{background-color: #0054a4; border-top: 10px solid #0054a4; border-right: 18px solid #0054a4; border-bottom: 10px solid #0054a4; border-left: 18px solid #0054a4; display: inline-block; color: #FFF; font-size: 20px; text-decoration: none; border-radius: 4px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.16); -webkit-text-size-adjust: none; cursor: pointer;}h1{margin-top: 0; color: #2F3133; font-size: 19px; font-weight: bold; text-align: left;}h2{margin-top: 0; color: #2F3133; font-size: 16px; font-weight: bold; text-align: left;}h3{margin-top: 0; color: #2F3133; font-size: 14px; font-weight: bold; text-align: left;}p{margin-top: 0; color: #74787E; font-size: 16px; line-height: 1.5em; text-align: left;}p.disclaimer{color: #8D9095;}p.sub{font-size: 12px;}p.center{text-align: center;}.waybox-button{display: inline-block; height: 40px; line-height: 40px; background-color: rgb(26, 69, 148); border: 0px none; border-radius: 4px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; font-weight: 400; font-size: 14px; padding: 0px 16px; color: white; cursor: pointer;}.waybox-button::before{content: ""; display: inline-block; width: 16px; height: 16px; margin-right: 8px; background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 229.5 229.5'%3E%3Cpath fill='%23fff' d='M214.419 32.12A7.502 7.502 0 0 0 209 25.927L116.76.275a7.496 7.496 0 0 0-4.02 0L20.5 25.927a7.5 7.5 0 0 0-5.419 6.193c-.535 3.847-12.74 94.743 18.565 139.961 31.268 45.164 77.395 56.738 79.343 57.209a7.484 7.484 0 0 0 3.522 0c1.949-.471 48.076-12.045 79.343-57.209 31.305-45.217 19.1-136.113 18.565-139.961zm-40.186 53.066l-62.917 62.917c-1.464 1.464-3.384 2.197-5.303 2.197s-3.839-.732-5.303-2.197l-38.901-38.901a7.497 7.497 0 0 1 0-10.606l7.724-7.724a7.5 7.5 0 0 1 10.606 0l25.874 25.874 49.89-49.891a7.497 7.497 0 0 1 10.606 0l7.724 7.724a7.5 7.5 0 0 1 0 10.607z'/%3E%3C/svg%3E"); background-size: contain; vertical-align: middle; transform: translateY(-8%);}</style><table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0"> <tr> <td align="center"> <table class="email-content" width="100%" cellpadding="0" cellspacing="0"> <tr> <td class="email-masthead"> <img width="300" alt="Laboratorios Las Am&eacute;ricas AUNA" class="rnb-logo-img" src="https://i.ibb.co/yYz1wcb/laboratorios.png"> </td></tr><tr> <td class="email-body" width="100%" cellpadding="0" cellspacing="0"> <table class="email-body_inner" align="center" width="570" cellpadding="0" cellspacing="0"> <tr> <td class="content-cell"> <p class="">Buen d&iacute;a, ${nombres} ${apellidos} para hacer el pago de su examen haga clic en pagar con Wompi</p><table class="body-action" align="center" width="100%" cellpadding="0" cellspacing="0"> <tr> <td align="center"> <table width="100%" border="0" cellspacing="0" cellpadding="0"> <tr> <td align="center"> <table border="0" cellspacing="0" cellpadding="0"> <tr> <td> <form id="wompiForm"action="https://checkout.wompi.co/p/" method="GET"> <input type="hidden" name="public-key" value="pub_test_GZlevgVBlUIA4Aq8jcYjNPJBJEnbitYV"> <input type="hidden" name="currency" value="COP"> <input type="hidden" name="amount-in-cents" value="${valorACancelarCentavos}"> <input type="hidden" name="reference" value="${id}"> <button type="submit" class="waybox-button">Pagar con Wompi</button> </form> </td></tr></table> </td></tr></table> </td></tr></table> <p class="disclaimer">Cualquier duda o inquietud por favor llame al 4449092.</p><p class="disclaimer"> Laboratorios Las Am&eacute;ricas AUNA agradece su confianza para cuidar su bienestar y salud.</p></td></tr></table> </td></tr><tr> <td> <table class="email-footer" align="center" width="570" cellpadding="0" cellspacing="0"> <tr> <td class="content-cell" align="center"> <p class="sub align-center">&copy; ${yearof} Laboratorios Las Am&eacute;ricas AUNA. Todos los derechos reservados. <br>Diagonal 75B 2A 80 Interior 140 <br>Medell&iacute;n, Colombia <br>Tel: +57 (4) 444 9092 </p></td></tr></table> </td></tr></table> </td></tr></table></body></html>`
-
-        //     $.ajax({
-        //         url: urlMatrix,
-        //         type: 'POST',
-        //         data: {
-        //             "consultaAjax": "",
-        //             "id": id,
-        //             "asunto": "prueba",
-        //             "mensaje": mensaje,
-        //             wdestinatarios
-
-        //         },
-        //         beforeSend: function() {},
-        //         success: function(response) {
-        //             console.log(response);
-        //             return response;
-        //         },
-        //         error: function() {
-        //             alert("error")
-        //         }
-        //     });
-
-
-
-        // }
     </script>
 </body>
 
