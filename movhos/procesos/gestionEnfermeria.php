@@ -6,6 +6,38 @@ include_once( "movhos/movhos.inc.php" );
 include_once( "movhos/movhos.inc.php" );
 include_once("./../../interoperabilidad/procesos/funcionesGeneralesEnvioHL7.php");
 
+/************************************************************************************************
+ * Consulto el estado detallado (perteneciente a un estudio) por codigo
+ ************************************************************************************************/
+function detalleEstado( $conex, $wbasedato, $codigo ){
+	
+	$val = [];
+	
+	$sql = "SELECT Eexcod, Eexdes, Eexord, Eexaut, Eexest, Eexmeh, Eexpen, Eexenf, Eexcpe, Eexpnd, Eexrea, Eexcan, Eexgen, Eexapa, Eexepe, Eexrpe, Eexere, Eexeau, Eexrno, Eexhor
+			  FROM ".$wbasedato."_000045
+		     WHERE Eexcod = '".$codigo."'";
+	
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	if( $row = mysql_fetch_array($res) ){
+	
+		$val = [
+				'codigo' 					=> $row['Eexcod'],
+				'descripcion' 				=> $row['Eexdes'],
+				'estado' 					=> $row['Eexest'] == 'on',
+				'esPendiente' 				=> $row['Eexpnd'] == 'on',
+				'esRealizado' 				=> $row['Eexrea'] == 'on',
+				'esCancelado' 				=> $row['Eexcan'] == 'on',
+				'esEstadoPendiente' 		=> $row['Eexepe'] == 'on',
+				'esEstadoResultadoPendiente'=> $row['Eexrpe'] == 'on',
+				'esEstadoRealizado' 		=> $row['Eexere'] == 'on',
+				'esEstadoAutorizado' 		=> $row['Eexeau'] == 'on',
+				'esEstadoReazliadoNocturno' => $row['Eexrno'] == 'on',
+			];
+	}
+	
+	return $val;
+}
+
 function pacienteAEspecialidadUrgencias( $conex, $wemp_pmla, $historia, $ingreso )
 {
 	$val = false;
@@ -2822,6 +2854,44 @@ if($slCcoDestino != '' and $wsp == 'on' and $mostrar == 'on') { ?>
 </style>
 <title>Gestión de Enfermeria</title>
 <script type="text/javascript">
+
+function realizarEnServicio( enServcio, externo, tipoOrden, numeroOrden, item, historia, ingreso, estudio ){
+	
+	var msg = "Es estudio <b>"+estudio+"</b> no se realizará en la ayuda diagnóstica por uno de los siguientes motivos?";
+	
+	if( enServcio ){
+		msg += "<br><br>- Por que se realizará en la unidad hospitalaria ";
+		
+	}
+	
+	if( externo ){
+		msg += "<br><br>- Por que el equipo requerido no se encuentra disponible ";
+	}
+	
+	jConfirm( msg, 'REALIZAR ESTUDIO EN AYUDA DIAGNOSTICA', function(r) {
+
+		// if( r ){
+
+			$.post("../../hce/procesos/ordenes.inc.php",
+            {
+                consultaAjax		: '',
+                consultaAjaxKardex	: 'seRealizaEnUnidadAmbulatoria',
+                wemp_pmla			: $("#wemp_pmla").val(),
+                whistoria			: historia,
+                wingreso			: ingreso,
+                tipoOrden			: tipoOrden,
+				numeroOrden			: numeroOrden,
+				item				: item,
+				realizarEnPiso		: r ? 'on' : 'off',
+				wusuario		  	: $('#user').val(),
+            }
+            ,function(data) {
+				console.log(data);
+            },"json" );
+
+		// }
+	});
+}
 
 function consultarSaldosServicios( cmp, historia, ingreso, habitacion ){
 	
@@ -11276,7 +11346,7 @@ function examenes_procedim_pend($whistoria, $wingreso){
 	$array_datos_procedimientos = array();
 
 	$q = "  SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp, Tiprju, Codcups as Codigo_cup, NoPos, {$whce}_000028.id as id_detalle, Detpri, Detlog, Detpen, Deteex, {$whce}_000028.Hora_data, {$whce}_000028.Fecha_data, Detjoc, Detotr
+				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp, Tiprju, Codcups as Codigo_cup, NoPos, {$whce}_000028.id as id_detalle, Detpri, Detlog, Detpen, Deteex, {$whce}_000028.Hora_data, {$whce}_000028.Fecha_data, Detjoc, Detotr, Detrse, Detrex, Detaut, Detnof
 			FROM
 				{$whce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$whce}_000028, {$whce}_000047 c, {$whce}_000015 d,".$wbasedato."_000045
 			WHERE
@@ -11293,7 +11363,7 @@ function examenes_procedim_pend($whistoria, $wingreso){
 				AND Detalt = 'off'
 			UNION
 			SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp, Tiprju, c.Codigo as Codigo_cup, NoPos, {$whce}_000028.id as id_detalle, Detpri, Detlog, Detpen, Deteex, {$whce}_000028.Hora_data, {$whce}_000028.Fecha_data, Detjoc, Detotr
+				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp, Tiprju, c.Codigo as Codigo_cup, NoPos, {$whce}_000028.id as id_detalle, Detpri, Detlog, Detpen, Deteex, {$whce}_000028.Hora_data, {$whce}_000028.Fecha_data, Detjoc, Detotr, Detrse, Detrex, Detaut, Detnof
 			FROM
 				{$whce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$whce}_000028, {$whce}_000017 c,  {$whce}_000015 d, ".$wbasedato."_000045
 			WHERE
@@ -14510,6 +14580,7 @@ function pintarDatosFila( $datos ){
 				echo "<td>Cantidad</td>";
 				echo "<td>Justificación</td>";
 				echo "<td>Estado</td>";
+				echo "<td>Realizar en Servicio?</td>";
 				echo "<td>Toma de Muestra</td>";
 				echo "<td style='display:none;'>Bitacora de Gestiones</td>";
 				echo "</tr>";
@@ -14532,7 +14603,7 @@ function pintarDatosFila( $datos ){
 						$j++;
 
 						$cantidad = consultarCantidades($valueProcedimientos[ 'Ordhis' ],$valueProcedimientos[ 'Ording' ],$valueProcedimientos[ 'Dettor' ],$valueProcedimientos[ 'Detnro' ],$valueProcedimientos[ 'Detcod' ]);
-
+						
 						$wexam = $valueProcedimientos['Dettor'];
 						$wfechadataexamen = $valueProcedimientos['Detfec'];
 						$wordennro = $valueProcedimientos['Detnro'];
@@ -14554,6 +14625,32 @@ function pintarDatosFila( $datos ){
 						$justificacionInteroperabilidad = $valueProcedimientos['Detjoc'];
 						
 						$estadoPorTipoOrden2 = array_merge( $estadoPorTipoOrden, ccoConInteroperabilidadPorEstudio( $conex, $wbasedato, $valueDatos->historia, $valueDatos->ingreso, $wexam, $codigo_examen ) );
+						
+						
+						$wrealizadoEnPiso 		= $valueProcedimientos['Detnof'] == 'on' ? true : false;
+						$wrealizarEnServicio 	= $valueProcedimientos['Detrse'] == 'on' ? true : false;
+						$wrealizarExterno 		= $valueProcedimientos['Detrex'] == 'on' ? true : false;
+						$wrequiereAutorizacion 	= $valueProcedimientos['Detaut'] == 'on' ? true : false;
+						
+						$wdetalleEstado = detalleEstado( $conex, $wbasedato, $westado_registro );
+						
+						//Si el esado externo (Estado que viene por interoperabilidad) es diferente a vacio significa que ya se ha enviado los mensajes hl7 correspondientes y por tanto
+						//no requiere autorizacion ni preguntar a la enfermera si se realiza en piso o no
+						//por que ya se ha enviado el estudio a realizarse
+						if( !empty( $westado_externo ) || ( !$wdetalleEstado['esEstadoPendiente'] && !$wdetalleEstado['esEstadoAutorizado'] ) ){
+							$wrealizarEnServicio 	= false;
+							$wrealizarExterno 		= false;
+							$wrequiereAutorizacion 	= false;
+						}
+						
+						if( empty( $westado_externo ) && $wdetalleEstado['esEstadoAutorizado'] ){
+							$wrequiereAutorizacion 	= false;
+						}
+						
+						$wpreguntarRealizaEnservicio = false;
+						if( !$wrequiereAutorizacion && ( $wrealizarEnServicio || $wrealizarExterno ) ){
+							$wpreguntarRealizaEnservicio = true;
+						}
 
 						// $permiteModEst = in_array( $wexam, $estadoPorTipoOrden ) ? true : false;
 						$permiteModEst = in_array( $wexam, $estadoPorTipoOrden2 ) ? false : true;
@@ -15058,6 +15155,17 @@ function pintarDatosFila( $datos ){
 						
 						
 						/*******************************************************************************************************************
+						 * Realizar en servicio
+						 *******************************************************************************************************************/
+						echo "<td>";
+
+						if( $wpreguntarRealizaEnservicio && !$wrealizadoEnPiso ){
+							
+							echo "<input type='checkbox' value='' onclick='realizarEnServicio(".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";
+						}
+
+						echo "</td>";
+						 /*******************************************************************************************************************
 						 * Toma de muestra
 						 *******************************************************************************************************************/
 						echo "<td style='text-align:center;'>";
