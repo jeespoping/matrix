@@ -1,6 +1,21 @@
 <html>
 <head>
-  <title>MATRIX Ver. 2013-04-23</title>
+  <title>MATRIX Ver. 2020-08-31</title>
+  
+  
+	<script src="../../../include/root/jquery.min.js"></script>
+	<script src="../../../include/root/jquery-ui-1.12.1/jquery-ui.min.js" type="text/javascript"></script>
+	<link type="text/css" href="../../../include/root/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet"/>
+	<link type="text/css" href="../../../include/root/jquery-ui-1.12.1/jquery-ui.theme.min.css" rel="stylesheet"/>
+	<link type="text/css" href="../../../include/root/jquery-ui-1.12.1/jquery-ui.structure.min.css" rel="stylesheet"/>
+	
+	<link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
+	<script type="text/javascript" src="../../../include/root/jqueryalert.js?v=<?=md5_file('../../../include/root/jqueryalert.js');?>"></script>
+		
+
+	<link rel='stylesheet' href='../../../include/gentelella/vendors/font-awesome/css/font-awesome.min.css'>
+	<link href='../../../include/gentelella/vendors/font-awesome/css/font-awesome.min.css' rel='stylesheet'>
+						
 	<script type="text/javascript">
 	var hexcase=0;var b64pad="";
 	function hex_sha1(a){return rstr2hex(rstr_sha1(str2rstr_utf8(a)))}
@@ -16,23 +31,165 @@
 	function safe_add(a,d){var c=(a&65535)+(d&65535);var b=(a>>16)+(d>>16)+(c>>16);return(b<<16)|(c&65535)}
 	function bit_rol(a,b){return(a<<b)|(a>>>(32-b))};
 	
+	function validarFirmaSegura(variable)
+	{
+		let firmaValida = false;
+		if(variable.value.length==8)
+		{
+			let cantRequisitos = 0;
+			if(/\d/.test(variable.value))
+			{
+				cantRequisitos++;
+			}
+			if(/[a-z]/.test(variable.value))
+			{
+				cantRequisitos++;
+			}
+			if(/[A-Z]/.test(variable.value))
+			{
+				cantRequisitos++;
+			}
+			if(/[$@~!%*?&+-.,:;#{}<>?="']/.test(variable.value))
+			{
+				cantRequisitos++;
+			}
+			
+			if(cantRequisitos >= 3)
+			{
+				firmaValida = true;
+			}
+		}
+		
+		if(firmaValida)
+		{
+			encriptar(variable);
+		}
+		else
+		{
+			if(variable.value!="")
+			{
+				alert("Debe ingresar una firma de 8 caracteres y que cumpla con 3 de las condiciones del paso 2")
+			}
+		}
+	}
+	
 	function encriptar(variable)
 	{
-		variable.value = hex_sha1(variable.value);
+		$(variable).attr('firmaOriginal', variable.value);
+		const idCampo = $(variable).attr('campo');
+		$("#hidden_"+idCampo).val(hex_sha1(variable.value))
+		
+		// variable.value = hex_sha1(variable.value);
 	}
+	
 	function clean(variable)
 	{
-		variable.value = '';
+		// variable.value = '';
 	}
 	function ira()
 	{
 		document.PassHCE.wpassa.focus();
 	}
+	
+	function restablecerFirma(empresa, usuario)
+	{
+		$.ajax({
+				url: "../../root/procesos/registroUsuario.php",
+				type: "POST",
+				dataType: "json",
+				data:{
+					consultaAjax 	: '',
+					accion			: 'consultarDatosUsuario',
+					tipoIngreso		: "codigo",
+					datoIngreso		: usuario,
+					proceso			: 'restablecer'
+					},
+					async: false,
+					success:function(result) {
+						
+						if(confirm("\u00BFDesea restablecer su firma electr\u00F3nica? se enviar\u00E1 una nueva al correo "+result.email))
+						{
+							generarNuevaFirma(empresa, usuario, result.email, result.nombre);
+						}
+					}
+			});
+	}
+	
+	function generarFirmaTemporal(length) 
+	{
+		var result           = '';
+		var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		var charactersLength = characters.length;
+		for ( var i = 0; i < length; i++ )
+		{
+			result += characters.charAt(Math.floor(Math.random() * charactersLength));
+		}
+		
+	   return result;
+	}
+	
+	function generarNuevaFirma(empresa, usuario, email, nombre)
+	{
+		const firmaTemporal = generarFirmaTemporal(6);
+		const firmaEncriptada = hex_sha1(firmaTemporal);
+		
+		// actualiza firma, cambiar fecha de vencimiento para obligar a cambiarla y enviar correo electronico
+		$.ajax({
+			url: "../../root/procesos/registroUsuario.php",
+			type: "POST",
+			dataType: "json",
+			data:{
+				consultaAjax 		: '',
+				accion				: 'restablecerFirma',
+				wbasedatoHCE		: empresa,
+				codigo				: usuario,
+				firmaTemporal		: firmaTemporal,
+				firmaEncriptada		: firmaEncriptada,
+				email				: email,
+				nombre				: nombre,
+				proceso				: 'restablecer'
+				},
+				async: false,
+				success:function(mensaje) {
+					alert(mensaje)
+				}
+		});
+	}
+	
+	function mostrarPassword(elemento)
+	{
+		const firmaOriginal = $('#input_'+elemento.id).attr('firmaOriginal');
+		if($(elemento).hasClass("fa fa-eye-slash"))
+		{
+			$(elemento).removeClass("fa fa-eye-slash");
+			$(elemento).addClass("fa fa-eye");
+			$('#input_'+elemento.id).val(hex_sha1(firmaOriginal));
+			$('#input_'+elemento.id).attr('type','password');
+		}
+		else
+		{
+			$(elemento).removeClass("fa fa-eye");
+			$(elemento).addClass("fa fa-eye-slash");
+			$('#input_'+elemento.id).val(firmaOriginal);
+			$('#input_'+elemento.id).attr('type','text');
+		}
+	}
 	</script>
 </head>
 <body BGCOLOR="" onload=ira()>
 <BODY TEXT="#000066">
+
 <?php
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//                  ACTUALIZACIONES   
+//--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+			$wactualiz='2020-08-31';
+//--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//  2020-08-31 - Jessica Madrid Mejía:  - Se agrega la opción restablecer firma electrónica.
+//										- Se agregan reglas definidas por TI para establecer una firma electrónica segura.
+//
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
 include_once("conex.php");
 function bisiesto($year)
 {
@@ -47,23 +204,50 @@ else
 		
 
 		
-
+		echo "<div>";
+		
 		echo "<form name='PassHCE' action='PassHCE.php' method=post>";
 		echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 		if(!isset($wpass) or !isset($wpassr) or !isset($wpassa))
 		{
 			echo "<center><table border=0>";
-			echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+			echo "<tr><td align=center colspan=2><b>AUNA - PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 			echo "<tr><td align=center colspan=2><b>HISTORIA CLINICA ELECTRONICA HCE<b></td></tr>";
 			echo "<tr><td align=center colspan=2>ADMINISTRACION DE FIRMAS ELECTRONICA</td></tr>";
+			
+			echo "<tr><td align=center colspan=2><p>&nbsp;</p></td></tr>";
+			echo "<tr><td align=center colspan=2>POR FAVOR TENER PRESENTE AL ACTUALIZAR LA FIRMA:</td></tr>";
+			echo "<tr><td align=center colspan=2>POLITICA DE INFORMATICA.</td></tr>";
+			echo "<tr><td align=center colspan=2>1. La firma debe contar con una longitud de 8 caracteres.</td></tr>";
+			echo "<tr><td align=center colspan=2>2. Que tenga combinaciones may&uacute;sculas, min&uacute;sculas, caracteres especiales y n&uacute;meros.</td></tr>";
+			echo "<tr><td align=center colspan=2><b>NOTA:</b> La combinaci&oacute;n debe cumplir con al menos 3 de las caracter&iacute;sticas del paso 2.</td></tr>";
+			echo "<tr><td align=center colspan=2><p>&nbsp;</p></td></tr>";
+			
 			echo "<tr><td align=center colspan=2>ACTUALIZACION DE FIRMA ELECTRONICA</td></tr>";
-			echo "<td bgcolor=#cccccc align=center>Firma Anterior</td>";
-			echo "<td bgcolor=#cccccc align=center><input type='password' name='wpassa' value='' size=30 maxlength=80 onBlur='javascript:encriptar(this);' onFocus='javascript:clean(this);'></td></tr>";
+			echo "<td bgcolor=#cccccc align=center>Firma Actual</td>";
+			echo "<td bgcolor=#cccccc align=center> 
+					<input type='password' firmaOriginal='' id='input_wpassa' value='' campo='wpassa' size=30 maxlength=80 onBlur='javascript:encriptar(this);' onFocus='javascript:clean(this);'>
+					<input type='hidden' id='hidden_wpassa' name='wpassa' value=''>
+					&nbsp;&nbsp;
+					<span id='wpassa' class='fa fa-eye' onclick='mostrarPassword(this)'></span>
+				</td></tr>";
 			echo "<td bgcolor=#cccccc align=center>Firma Nueva</td>";
-			echo "<td bgcolor=#cccccc align=center><input type='password' name='wpass' value='' size=30 maxlength=80 onBlur='javascript:encriptar(this);' onFocus='javascript:clean(this);'></td></tr>";
+			echo "<td bgcolor=#cccccc align=center>
+					<input type='password' firmaOriginal='' id='input_wpass' value='' campo='wpass' size=30 maxlength=80 onBlur='javascript:validarFirmaSegura(this);' onFocus='javascript:clean(this);'>
+					<input type='hidden' id='hidden_wpass' name='wpass' value=''>
+					&nbsp;&nbsp;
+					<span id='wpass' class='fa fa-eye' onclick='mostrarPassword(this)'></span>
+					</td></tr>";
 			echo "<td bgcolor=#cccccc align=center>Redigite Firma Nueva</td>";
-			echo "<td bgcolor=#cccccc align=center><input type='password' name='wpassr' value='' size=30 maxlength=80 onBlur='javascript:encriptar(this);' onFocus='javascript:clean(this);'></td></tr>";		
-			echo "<tr><td bgcolor=#cccccc align=center colspan=2><input type='submit' value='IR'></td></tr></table>";
+			echo "<td bgcolor=#cccccc align=center>
+					<input type='password' firmaOriginal='' id='input_wpassr' campo='wpassr' value='' size=30 maxlength=80 onBlur='javascript:validarFirmaSegura(this);' onFocus='javascript:clean(this);'>
+					<input type='hidden' id='hidden_wpassr' name='wpassr' value=''>
+					&nbsp;&nbsp;
+					<span id='wpassr' class='fa fa-eye' onclick='mostrarPassword(this)'></span>
+					</td></tr>";		
+			echo "<tr><td bgcolor=#cccccc align=center colspan=2><input type='submit' value='IR'></td></tr>";
+			echo "<tr><td align=right colspan=2><span style='cursor:pointer;font-family:arial;color:#757594;' onclick='restablecerFirma(\"".$empresa."\",\"".$key."\")'> &iquest;Olvid&oacute; su firma actual? </span></td></tr>";
+			echo "</table>";
 		}
 		else
 		{  
@@ -96,12 +280,26 @@ else
 			}
 			else
 			{
+				// $mensaje = "ERROR EN LA DIGITACION O LONGITUD MINIMA DE LA FIRMA (4 CARACTERES) O LA FIRMA ACTUAL NO COINCIDE !!!!";
+				$mensaje = "ERROR EN LA DIGITACION O LA FIRMA ACTUAL NO COINCIDE !!!!";
+				
+				if($wpass!=$wpassr)
+				{
+					$mensaje = "ERROR EN LA DIGITACION, LA FIRMA NUEVA Y LA CONFIRMACIÓN DE LA FIRMA NUEVA NO COINCIDEN !!!!";
+				}
+				
+				if($wpass==$wpassa)
+				{
+					$mensaje = "LA FIRMA ACTUAL Y LA FIRMA NUEVA DEBEN SER DIFERENTES !!!!";
+				}
+				
 				echo "<center><table border=0 aling=center>";
 				echo "<tr><td><IMG SRC='/matrix/images/medical/root/cabeza.gif' ></td><tr></table></center>";
-				echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#ffff00 LOOP=-1>ERROR EN LA DIGITACION O LONGITUD MINIMA DE LA FIRMA (4 CARACTERES) O LA FIRMA ANTERIOR NO COINCIDE !!!!</MARQUEE></FONT>";
+				echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#ffff00 LOOP=-1>".$mensaje."</MARQUEE></FONT>";
 				echo "<br><br>";
 			}
 		}
+		echo "</div>";
 }
 ?>
 </body>

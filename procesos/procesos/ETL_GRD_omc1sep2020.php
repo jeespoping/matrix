@@ -5,7 +5,7 @@
 	*/	
 	// ------------------------------------------------------------------------
 	
-	$wactualiz = '31-Ago-2020';	
+	$wactualiz = '13-May-2020';	
 	include_once("conex.php");
 	include_once("root/comun.php");
 	$conex = obtenerConexionBD("matrix");
@@ -298,10 +298,6 @@
 				}
 				
 				foreach($datos as $keyDat => $valDat){
-					
-					// --> Limpiar ocupacion
-					$ocupacion = trim($datos[$keyDat]['Ocup']);
-					$datos[$keyDat]['Ocup'] = (($ocupacion == 'Empleado') ? '9999' : $ocupacion);
 					
 					// --> Limpiar Alta
 					$priCar = substr(trim($datos[$keyDat]['Alta']), 0, 1);

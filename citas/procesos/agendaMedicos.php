@@ -1,5 +1,35 @@
 <?php
 include_once("conex.php");
+
+/**
+ * Crea los parametros extras de una url para Get
+ */
+function parametrosExtras( $variablesGET, $post = false ){
+		
+	$val = '';
+	
+	$superglobal = $_GET;
+	if( $post ){
+		$superglobal = $_POST;
+	}
+	
+	foreach( $variablesGET as $key => $value ){
+		
+		if( $superglobal[ $value ] ){
+			
+			if( is_numeric($key) ){
+				$val .= "&".$value."=".urlencode( $_GET[ $value ] );
+			}
+			else{
+				$val .= "&".$key."=".urlencode( $_GET[ $value ] );
+			}
+		}
+	}
+	
+	return $val;
+}
+
+
 if (isset($accion) and $accion == 'actualizar')
  { 
 
@@ -327,6 +357,8 @@ function buscarObservaciones()
 <?php
 /*
 Modificacion:
+2020-09-09 Edwin Molina
+		   Se hacen cambios varios para recibir los datos por defecto que quedaran en la cita y vienen de la lista de espera para Drive Thru
 2020-04-01 Arleyda Insignares Ceballos
            El llamado del presente script queda desde el iframe de calendar.php adicionalmente se coloca el link retornar en la parte superior.
 2013-11-26 Se hace la modificacion para mostrar las observaciones creadas para cada medico desde el programa de excepciones. Viviana Rodas
@@ -352,6 +384,18 @@ if (!isset($wfec))
 {
 	$wfec=date("Y-m-d");
 }
+
+$parametrosExtras = parametrosExtras([
+										'defaultCedula',
+										'defaultNombre',
+										'defaultNit',
+										'defaultCorreo',
+										'defaultUrl',
+										'defaultEdad',
+										'defaultTelefono',
+										'defaultComentarios',
+										'idListaEspera',
+								]);
 
 //funciones
 function causas($tipo)
@@ -440,7 +484,7 @@ echo "<form name='citas' action='agendaMedicos.php' method=post>";
 	echo "</tr>";
 	echo "</table>";
 	
-	echo "<tr><td><center><b><A HREF='dispMedicos.php?wemp_pmla=".@$wemp_pmla."&wbasedato=$empresa&consultaAjax=10&wfec=$wfec&wsw=".@$wsw."&colorDiaAnt=$colorDiaAnt&caso=$caso&nomdia=".@$nomdia."'>Retornar</A></b><br></center></td></tr>";
+	echo "<tr><td><center><b><A HREF='dispMedicos.php?wemp_pmla=".@$wemp_pmla."&wbasedato=$empresa&consultaAjax=10&wfec=$wfec&wsw=".@$wsw."&colorDiaAnt=$colorDiaAnt&caso=$caso&nomdia=".@$nomdia.$parametrosExtras."'>Retornar</A></b><br></center></td></tr>";
 
 	echo "<center><div class='div_error' style='display:none;'><div id='observacion' style='margin:15px;' align='center'></div></div></center><br>";
 
@@ -684,14 +728,14 @@ echo "<form name='citas' action='agendaMedicos.php' method=post>";
 						{   
 							if ($wfec >= $fechaAct)
 							{
-								echo "<td bgcolor=".$color." align=center><font size=2><A HREF='asignacionCitaMed.php?pos2=".$wequ."&amp;pos3=0&amp;pos4=".$wfec."&amp;pos5=".$whi."&amp;pos6=".$whf."&amp;pos7=".$wul."&amp;pos8=0&amp;pos9=".$inc."&amp;empresa=".$empresa."&amp;colorDiaAnt=".$colorDiaAnt."&amp;wsw1=".$wsw1."&wemp_pmla=".$wemp_pmla."&caso=".$caso."&nomdia=$nomdia' class='desactivar'>Editar</font></td></tr>";
+								echo "<td bgcolor=".$color." align=center><font size=2><A HREF='asignacionCitaMed.php?pos2=".$wequ."&amp;pos3=0&amp;pos4=".$wfec."&amp;pos5=".$whi."&amp;pos6=".$whf."&amp;pos7=".$wul."&amp;pos8=0&amp;pos9=".$inc."&amp;empresa=".$empresa."&amp;colorDiaAnt=".$colorDiaAnt."&amp;wsw1=".$wsw1."&wemp_pmla=".$wemp_pmla."&caso=".$caso."&nomdia=$nomdia{$parametrosExtras}' class='desactivar'>Editar</font></td></tr>";
 							}
 						}
 						else
 						{
 							if ($wfec >= $fechaAct)
 							{
-								echo "<td bgcolor=".$color." align=center><font size=2><A HREF='asignacionCitaMed.php?pos2=".$wequ."&amp;pos3=0&amp;pos4=".$wfec."&amp;pos5=".$whi."&amp;pos6=".$whf."&amp;pos7=".$wul."&amp;pos8=0&amp;pos9=".$inc."&amp;colorDiaAnt=".$colorDiaAnt."&amp;empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&caso=".$caso."&nomdia=".@$nomdia."' class='desactivar'>Editar</font></td></tr>";
+								echo "<td bgcolor=".$color." align=center><font size=2><A HREF='asignacionCitaMed.php?pos2=".$wequ."&amp;pos3=0&amp;pos4=".$wfec."&amp;pos5=".$whi."&amp;pos6=".$whf."&amp;pos7=".$wul."&amp;pos8=0&amp;pos9=".$inc."&amp;colorDiaAnt=".$colorDiaAnt."&amp;empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&caso=".$caso."&nomdia=".@$nomdia."{$parametrosExtras}' class='desactivar'>Editar</font></td></tr>";
 							}
 						}
 							 
@@ -726,7 +770,7 @@ echo "<form name='citas' action='agendaMedicos.php' method=post>";
 	echo "<table border=0 align=center>";
 	echo "<tr><td align='center'><A HREF='#Arriba'><B>Arriba</B></A></td></tr>";
 	echo "<br>";
-	echo "<tr><td><center><b><A HREF='dispMedicos.php?wemp_pmla=".@$wemp_pmla."&wbasedato=$empresa&consultaAjax=10&wfec=$wfec&wsw=".@$wsw."&colorDiaAnt=$colorDiaAnt&caso=$caso&nomdia=".@$nomdia."'>Retornar</A></b><br></center></td></tr>";
+	echo "<tr><td><center><b><A HREF='dispMedicos.php?wemp_pmla=".@$wemp_pmla."&wbasedato=$empresa&consultaAjax=10&wfec=$wfec&wsw=".@$wsw."&colorDiaAnt=$colorDiaAnt&caso=$caso&nomdia=".@$nomdia.$parametrosExtras."'>Retornar</A></b><br></center></td></tr>";
 	echo "<tr><td align='center'><br><br><input name='button' type='button' style='width:100' onclick='window.close();' value='Cerrar' /></td></tr>";
 	echo "</table>";
 	

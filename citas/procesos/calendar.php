@@ -53,6 +53,7 @@ include_once("conex.php");
 * inmediatamente lleva a la agenda para la asignacion de la cita. Viviana Rodas
 *****************************************************************************************************************************************
 * Modificiaciones:
+*				   2020-09-09:	Edwin Molina. Se hacen cambios varios para recibir los datos por defecto que quedaran en la cita y vienen de la lista de espera para Drive Thru
 *                  2020-05-07 Arleyda Insignares. Se amplia el tamaño del iframe principal (width)
 *                  2020-01-20 Arleyda Insignares. Se unifica el script calendar.php con el script 
 *                  asignacionCitaMed.php y asignacionCitaEqu.php mediante un iframe.
@@ -82,7 +83,94 @@ include_once("conex.php");
 				   2012-09-26 Se agregan las validaciones para determinar si las citas a asignar son de un caso u otro. Viviana Rodas
 *****************************************************************************************************************************************/
 
+	/**
+	 * Crea los parametros extras de una url para Get
+	 */
+	function inputExtras( $variablesGET, $post = false ){
+		
+		$val = [];
+		
+		$superglobal = $_GET;
+		if( $post ){
+			$superglobal = $_POST;
+		}
+		
+		foreach( $variablesGET as $key => $value ){
+			
+			if( $superglobal[ $value ] ){
+				
+				$val[] = "<input type='hidden' name='$value' value='".$superglobal[ $value ]."'>";
+			}
+		}
+
+		return $val;
+	}
+	
+	
+	function parametrosExtras( $variablesGET, $post = false ){
+		
+		$val = '';
+		
+		$superglobal = $_GET;
+		if( $post ){
+			$superglobal = $_POST;
+		}
+		
+		foreach( $variablesGET as $key => $value ){
+			
+			if( $superglobal[ $value ] ){
+				
+				if( is_numeric($key) ){
+					$val .= "&".$value."=".urlencode( $_GET[ $value ] );
+				}
+				else{
+					$val .= "&".$key."=".urlencode( $_GET[ $value ] );
+				}
+			}
+		}
+		
+		return $val;
+	}
+	
+
 include_once("root/comun.php");
+
+$parametrosExtras = '';
+
+$parametrosExtras = parametrosExtras( [
+						'defaultCedula' 	=> 'cedula',
+						'defaultNombre' 	=> 'paciente',
+						'defaultNit' 		=> 'aseguradora',
+						'defaultCorreo' 	=> 'email',
+						'defaultUrl' 		=> 'url',
+						'defaultEdad' 		=> 'edad',
+						'defaultTelefono' 	=> 'telefono',
+						'defaultComentarios'=> 'comentarios',
+						'idListaEspera'		=> 'id',
+					]);
+
+$parametrosExtrasOri = parametrosExtras( [
+						'cedula' 		=> 'cedula',
+						'paciente' 		=> 'paciente',
+						'aseguradora' 	=> 'aseguradora',
+						'email' 		=> 'email',
+						'url' 			=> 'url',
+						'edad' 			=> 'edad',
+						'telefono' 		=> 'telefono',
+						'comentarios'	=> 'comentarios',
+						'id'			=> 'id',
+					]);
+
+$inputExtras = inputExtras([
+						'cedula',
+						'paciente',
+						'aseguradora',
+						'email',
+						'url',
+						'edad',
+						'telefono',
+						'comentarios',
+					]);
 
 if(!isset($_SESSION['user']))
 	echo "Error Usuario NO Registrado";
@@ -1074,6 +1162,8 @@ function dispColores($wfec, $nomdia)
 	  global $colorDiaAnt; 
 	  global $fest;
 	  global $esFestivo;
+	  
+	  global $parametrosExtras;
 	  // $colorDiaAnt="rojo";
 	 
 	 
@@ -1144,7 +1234,7 @@ function dispColores($wfec, $nomdia)
 				onClick="window.open(\''.$schurl.'\', \'schedule\', \'width=534,height=400,scrollbars=yes,resizable=yes\')">
                 ';*/
 
-                echo '	<TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand;" align="left" valign="top" width=90 height=80	onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdcurmouseout(\'day'.$fday.'\')"; onClick="cargarIframe(\''.$schurl.'\',this)">';
+                echo '	<TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand;" align="left" valign="top" width=90 height=80	onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdcurmouseout(\'day'.$fday.'\')"; onClick="cargarIframe(\''.$schurl.$parametrosExtras.'\',this)">';
 
 			 }
 			 else if ($caso==2) 
@@ -1182,7 +1272,7 @@ function dispColores($wfec, $nomdia)
 ';*/
                 echo '	<TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand;" align="left" valign="top" width=90 height=70 
 				onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdcurmouseout(\'day'.$fday.'\')"; 
-				onClick="cargarIframe(\''.$schurl.'\',this)">';
+				onClick="cargarIframe(\''.$schurl.$parametrosExtras.'\',this)">';
 			 }                                            
 			 else if($caso==1) 
 			 {
@@ -1215,7 +1305,7 @@ function dispColores($wfec, $nomdia)
 				onClick="window.open(\''.$schurl.'\', \'schedule\', \'width=534,height=400,scrollbars=yes,resizable=yes\')">
                 ';*/
 
-                echo ' <TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand;" align="left" valign="top" width=90 height=70 onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdcurmouseout(\'day'.$fday.'\')"; onClick="cargarIframe(\''.$schurl.'\',this)">';
+                echo ' <TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand;" align="left" valign="top" width=90 height=70 onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdcurmouseout(\'day'.$fday.'\')"; onClick="cargarIframe(\''.$schurl.$parametrosExtras.'\',this)">';
 				
 			 }
 		 
@@ -1256,7 +1346,7 @@ function dispColores($wfec, $nomdia)
 					onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdmouseout(\'day'.$fday.'\')"; 
 					onClick="window.open(\''.$schurl.'\', \'schedule\', \'width=534,height=400,scrollbars=yes,resizable=yes\')">';*/
 
-					echo '	<TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand;" align="left" valign="top" width=90 height=70 onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdcurmouseout(\'day'.$fday.'\')";	onClick="cargarIframe(\''.$schurl.'\',this)">';
+					echo '	<TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand;" align="left" valign="top" width=90 height=70 onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdcurmouseout(\'day'.$fday.'\')";	onClick="cargarIframe(\''.$schurl.$parametrosExtras.'\',this)">';
 
 				 }
 				 else if ($caso==2) 
@@ -1295,7 +1385,7 @@ function dispColores($wfec, $nomdia)
 
 				$schurl = 'dispMedicos.php?wemp_pmla='.$wemp_pmla.'&consultaAjax=10&wfec='.$wfec.'&nomdia='.$numDia.'&colorDiaAnt='.$colorDiaAnt.'&wbasedato='.$solucionCitas.'&caso='.$caso.'&fest='.$fest.'';
 				
-				echo '	<TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand" align="center" valign="top" width=90 height=70 onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdmouseout(\'day'.$fday.'\')"; onClick="cargarIframe(\''.$schurl.'\',this)">';
+				echo '	<TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand" align="center" valign="top" width=90 height=70 onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdmouseout(\'day'.$fday.'\')"; onClick="cargarIframe(\''.$schurl.$parametrosExtras.'\',this)">';
 
 				 }
 														
@@ -1332,7 +1422,7 @@ function dispColores($wfec, $nomdia)
 						onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdmouseout(\'day'.$fday.'\')"; 
 						onClick="window.open(\''.$schurl.'\', \'schedule\', \'width=534,height=400,scrollbars=yes,resizable=yes\')">';*/
 
-						echo '	<TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand;" align="left" valign="top" width=90 height=70	onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdcurmouseout(\'day'.$fday.'\')"; onClick="cargarIframe(\''.$schurl.'\',this)">';
+						echo '	<TD ID="day'.$fday.'" class="'.$color1.' '.$class.'" style="cursor: hand;" align="left" valign="top" width=90 height=70	onMouseOver="tdmouseover(\'day'.$fday.'\')"; onMouseOut="tdcurmouseout(\'day'.$fday.'\')"; onClick="cargarIframe(\''.$schurl.$parametrosExtras.'\',this)">';
 
 				 }
 		 
@@ -1420,7 +1510,7 @@ function dispColores($wfec, $nomdia)
 	</STYLE>
 ';
 	
-	
+
 	if ($wemp_pmla == 01)
 	{
 		encabezado1("ASIGNACI&Oacute;N DE CITAS", "2020-01-20", $wbasedato );
@@ -1444,7 +1534,7 @@ function dispColores($wfec, $nomdia)
 	echo '<TABLE cellspacing=0 cellpadding=0 width=560 border=0 class="externa">
 	<TR>
 	<TD class="form" align="center" valign="bottom" width="100%" COLSPAN=7>
-		<FORM METHOD="post" ACTION="calendar.php?empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&fest='.$fest.'&consultaAjax=">
+		<FORM METHOD="post" ACTION="calendar.php?empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&fest='.$fest.'&consultaAjax='.$parametrosExtrasOri.'">
 		<TABLE class="form" cellspacing=0 cellpadding=0 width="100%" border=0>
 		<TR>
 		<TD class="form" align="center" valign="bottom">
@@ -1512,16 +1602,17 @@ function dispColores($wfec, $nomdia)
 	<TD align="center" valign="middle" height=60 COLSPAN=7>
 		<TABLE class="top" cellspacing=0 cellpadding=0 width=560 border=0>
 		<TR>';
+		
 		if ($caso == 3 or $caso ==1)
 		{
 			echo '<TD class="ends" nowrap align="center" valign="bottom" >
-				<b><A HREF="calendar.php?month='.$prevmonth.'&year='.$prevyear.'&empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&caso='.$caso.'&wsw='.$wsw.'&fest='.$fest.'&consultaAjax="><< '.$backward.'</a></b>
+				<b><A HREF="calendar.php?month='.$prevmonth.'&year='.$prevyear.'&empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&caso='.$caso.'&wsw='.$wsw.'&fest='.$fest.'&consultaAjax='.$parametrosExtrasOri.'"><< '.$backward.'</a></b>
 			</TD>';
 		}
 		else
 		{
 				echo '<TD class="ends" nowrap align="center" valign="bottom" >
-				<b><A HREF="calendar.php?month='.$prevmonth.'&year='.$prevyear.'&empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&caso='.$caso.'&fest='.$fest.'&consultaAjax="><< '.$backward.'</a></b>
+				<b><A HREF="calendar.php?month='.$prevmonth.'&year='.$prevyear.'&empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&caso='.$caso.'&fest='.$fest.'&consultaAjax='.$parametrosExtrasOri.'"><< '.$backward.'</a></b>
 			</TD>';
 		}
 		
@@ -1542,13 +1633,13 @@ function dispColores($wfec, $nomdia)
 		if ($caso == 3 or $caso == 1)
 		{
 			echo '<TD class="ends" nowrap align="center" valign="bottom">
-				<b><A HREF="calendar.php?month='.$nextmonth.'&year='.$nextyear.'&empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&caso='.$caso.'&wsw='.$wsw.'&fest='.$fest.'&consultaAjax=">'.$forward.' >></a></b>
+				<b><A HREF="calendar.php?month='.$nextmonth.'&year='.$nextyear.'&empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&caso='.$caso.'&wsw='.$wsw.'&fest='.$fest.'&consultaAjax='.$parametrosExtrasOri.'">'.$forward.' >></a></b>
 			</TD>';
 		}
 		else
 		{
 			echo '<TD class="ends" nowrap align="center" valign="bottom">
-				<b><A HREF="calendar.php?month='.$nextmonth.'&year='.$nextyear.'&empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&caso='.$caso.'&fest='.$fest.'&consultaAjax=">'.$forward.' >></a></b>
+				<b><A HREF="calendar.php?month='.$nextmonth.'&year='.$nextyear.'&empresa='.$solucionCitas.'&wemp_pmla='.$wemp_pmla.'&caso='.$caso.'&fest='.$fest.'&consultaAjax='.$parametrosExtrasOri.'">'.$forward.' >></a></b>
 			</TD>';
 		}
 	echo'	</TR>
@@ -1747,9 +1838,9 @@ function dispColores($wfec, $nomdia)
 	$numDia=date("N",strtotime($wfec1));
 
 	if ($caso == 1 or $caso == 3)
-        $pageUrl = '../../citas/procesos/dispEquipos.php?wemp_pmla='.$wemp_pmla.'&consultaAjax=10&wfec='.$wfec1.'&wsw='.@$wsw.'&colorDiaAnt='.$colorDiaAnt.'&wbasedato='.$solucionCitas.'&caso='.$caso.'&fest='.$fest.'';
+        $pageUrl = '../../citas/procesos/dispEquipos.php?wemp_pmla='.$wemp_pmla.'&consultaAjax=10&wfec='.$wfec1.'&wsw='.@$wsw.'&colorDiaAnt='.$colorDiaAnt.'&wbasedato='.$solucionCitas.'&caso='.$caso.'&fest='.$fest.''.$parametrosExtras;
 	else
-		$pageUrl = '../../citas/procesos/dispMedicos.php?wemp_pmla='.$wemp_pmla.'&consultaAjax=10&wfec='.$wfec1.'&nomdia='.$numDia.'&colorDiaAnt='.$colorDiaAnt.'&wbasedato='.$solucionCitas.'&caso='.$caso.'&fest='.$fest.'';
+		$pageUrl = '../../citas/procesos/dispMedicos.php?wemp_pmla='.$wemp_pmla.'&consultaAjax=10&wfec='.$wfec1.'&nomdia='.$numDia.'&colorDiaAnt='.$colorDiaAnt.'&wbasedato='.$solucionCitas.'&caso='.$caso.'&fest='.$fest.''.$parametrosExtras;
 
 	echo "<div width='100%' height='100%'>";
 	echo "<iframe id='ifcitas' src=".$pageUrl." width='100%' height='600px' frameborder='0'  border: 1em solid gray;></iframe>";

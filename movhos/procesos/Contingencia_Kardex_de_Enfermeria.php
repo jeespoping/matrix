@@ -791,7 +791,7 @@ else
 
 	  $wfecha  = date('Y-m-d');
 
-	  $wfecant = date("Y-m-d", strtotime(date('Y-m-d')."-1 day"));
+	  $wfecant = date("Y-m-d", strtotime(date('Y-m-d')."-4 day"));
 
 	  $k=0;
 

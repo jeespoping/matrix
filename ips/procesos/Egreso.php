@@ -631,7 +631,7 @@ function ACT_EGR($conex,$whisx,$wninx,$wmeix,$wdxix,$wfeex,$whegx,$westx,$wcaex,
 		{
 			$fecha = date("Y-m-d");
 			$hora = (string)date("H:i:s");
-			$query = "insert ".$empresa."_000108 (medico,fecha_data,hora_data, Egrhis, Egring, Egrmei, Egrdxi, Egrfee, Egrhoe, Egrest, Egrcae, Egrmee, Egrcex, Egrtdp, Egrcom, Egrfia, Egrfta, seguridad) values ('";
+			$query = "insert ".$empresa."_000108 (medico,fecha_data,hora_data, Egrhis, Egring, Egrmei, Egrdxi, Egrfee, Egrhoe, Egrest, Egrcae, Egrmee, Egrcex, Egrtdp, Egrcom, Egrfia, Egrfta, Egract ,seguridad) values ('";
 			$query .=  $empresa."','";
 			$query .=  $fecha."','";
 			$query .=  $hora."','";
@@ -646,12 +646,14 @@ function ACT_EGR($conex,$whisx,$wninx,$wmeix,$wdxix,$wfeex,$whegx,$westx,$wcaex,
 			$query .=  substr($wmeex,0,strpos($wmeex,"-"))."','";
 			$query .=  substr($wcexx,0,strpos($wcexx,"-"))."','";
 			$query .=  substr($wtdpx,0,strpos($wtdpx,"-"))."','";
-			// $query .=  $wcomx."','".$wfiax."','".$wftax."','C-".$empresa."')";
-			$query .=  $wcomx."','".$wfiax."','".$wftax."','C-".$key."')";
+			//$query .=  $wcomx."','".$wfiax."','".$wftax."','C-".$key."')";
+			$query .=  $wcomx."','".$wfiax."','".$wftax."','".on."','C-".$key."')";		//WILL
 			$err1 = mysql_query($query,$conex) or die("ERROR GRABANDO EGRESO : ".mysql_errno().":".mysql_error());
 			$e=$e+1;
 			$werr[$e]="OK! EGRESO GRABADO";
 			return true;
+			
+			
 		}
 		else
 		{

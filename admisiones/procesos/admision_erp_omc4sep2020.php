@@ -4,8 +4,6 @@ define('MYSQL_ASSOC',MYSQLI_ASSOC);
 //header("Content-Type: text/html;charset=UTF8");
 /****************************************************************************
 * accion
-2020-09-03 Jessica Madrid Mejía: Para los pacientes con tipo de documento configurado en el parámetro tipoDocumentoPacienteInternacional en root_000051 se envía correo notificando que son pacientes internacionales al hacer 
-								 la admisión o si se modifica el tipo de documento, los correos de destino están configurados en el parámetro emailDestinoPacienteInternacional en root_000051
 2020-08-12 Camilo Zapata: Manejo del error 12 de unix, nuevo tratamiento para las tablas que quedan sin grabar en una admisión de manera que deshaga todos los cambios y deje el proceso unix para ejecución desde el cronjob.
 2020-06-13 Camilo Zapata: Modificaciones necesarias para permitir la actualización de ingresos anteriores. buscar esta fecha en caso de ser necesario
 2020-04-29 Camilo Zapata: Modificación requerida para abrir el programa que imprime el sticker de historia inmediatamente se ha realizado la admisión
@@ -942,8 +940,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 	/***se guardan o se actualizan los datos***/
 	$remitidoAnterior = 0;
-	$estadoAdmision = "";
-	$cambiaTipoDocumento = false;
 	if( !empty( $historia ) && !empty( $ingreso ) )
 	{
 
@@ -1009,8 +1005,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			//Si no se encontraron los datos, significa que es un registro nuevo
 			if( $num == 0 ) //hace el insert
 			{
-				$estadoAdmision = "Nueva";
-				
 				$datosEnc = crearArrayDatos( $wbasedato, "ing", "ing_", 3 );
 
 				//datos adicionales
@@ -1091,8 +1085,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			}
 			else //hace la actualizacion
 			{
-				$estadoAdmision = "Modificada";
-				
 				//2017-10-23 seguir esta variable $cambioTemporalSaldoCero para revisar los puntos de cambio y retorno del arreglo de responsable.
 				$cambioTemporalSaldoCero = false;
 				$responsables205         = $responsables1;
@@ -1213,7 +1205,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 			/**admision**/
 			//Consulto si existe el registo
-			$sql1 = "select Pachis,a.id, ingfei, ingvre, Pacdoc, Pactdo
+			$sql1 = "select Pachis,a.id, ingfei, ingvre
 					from ".$wbasedato."_000100 a,".$wbasedato."_000101 b
 					where b.Inghis = '".utf8_decode($historia)."'
 					and b.Ingnin = '".utf8_decode($ingreso)."'
@@ -1228,7 +1220,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				//Si no se encontraron los datos, significa que es un registro nuevo
 				if( $num1 == 0 ) //hace el insert
 				{
-					$tipoAtencion=$datosEnc[ "ingsei" ];//se llena porque en el siguiente renglon se sobre escribe
+				    $tipoAtencion=$datosEnc[ "ingsei" ];//se llena porque en el siguiente renglon se sobre escribe
 					$datosEnc = crearArrayDatos( $wbasedato, "pac", "pac_", 3 );
 					unset( $datosEnc[ "pacfec" ] ); //elimina la posicion
 					unset( $datosEnc[ "pacciu" ] ); //elimina la posicion
@@ -1320,12 +1312,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$rowaud = mysql_fetch_assoc( $rsaud );
 
 					$rowsEnc = mysql_fetch_array( $res1 );
-					
-					if($rowsEnc['Pactdo']!=utf8_decode($tipodoc))
-					{
-						$cambiaTipoDocumento = true;
-					}
-					
 					$fechaIngreso = $rowsEnc['ingfei'];
 					//Si se encontraron datos, significa que es una actualización
 					$datosTabla = crearArrayDatos( $wbasedato, "pac", "pac_", 3 );
@@ -3042,38 +3028,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 		}
 	}
 
-	if( $data[ "error" ] == 0)
-	{
-		$tipoDocPacInt = consultarAliasPorAplicacion($conex, $wemp_pmla, "tipoDocumentoPacienteInternacional" );
-		$tipoDocumentoPacienteInternacional = explode(",",$tipoDocPacInt);
-		
-		// Si es un paciente internacional
-		if(in_array($tipodoc,$tipoDocumentoPacienteInternacional))
-		{
-			// Si la admisión es nueva o si es modificada y actualizaron el tipo de documento debe notificar el paciente internacional
-			if(($estadoAdmision == "Nueva") || ($estadoAdmision == "Modificada" && $cambiaTipoDocumento))
-			{
-				$nombrePaciente = $datosTabla['pacno1']." ".$datosTabla['pacno2']." ".$datosTabla['pacap1']." ".$datosTabla['pacap2'];
-				
-				$sqlCco = "SELECT Cconom
-							 FROM ".$aplMovhos."_000011
-						    WHERE Ccocod = '".$servicioIng."';";
-
-				$resCco = mysql_query( $sqlCco, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando descripcion de centro de costos ".mysql_errno()." - Error en el query $sqlCco - ".mysql_error() ) );
-				$numCco=mysql_num_rows($resCco);
-				
-				$descCcoIngreso = $servicioIng;
-				if($numCco>0)
-				{
-					$rowCco     = mysql_fetch_assoc($resCco);
-					$descCcoIngreso = $rowCco['Cconom'];
-				}
-
-				notificarPacienteInternacional($conex, $wemp_pmla, $historia, $ingreso, $nombrePaciente, $descCcoIngreso);
-			}
-		}
-		
-	}
 	echo json_encode($data);
 	return;
 }
@@ -4205,40 +4159,6 @@ if( isset($accion) and $accion == 'actualizarEstadoSoporte' )
 	}
 
 	return;
-}
-
-function notificarPacienteInternacional($conex, $wemp_pmla, $historia, $ingreso, $nombrePaciente, $servicioIng)
-{
-	$correoDestino = consultarAliasPorAplicacion( $conex, $wemp_pmla, "emailDestinoPacienteInternacional");
-	
-	$mensajeError = "";
-	if($correoDestino!="" && $correoDestino!="NO APLICA" && $correoDestino!=".")
-	{
-		$asunto = "Atencion...";
-		$mensaje = "Paciente Internacional Origen ".$wemp_pmla." Con historia nro: ".$historia."-".$ingreso." ".$nombrePaciente." En la unidad de ".$servicioIng;
-		$altbody = "";
-		
-		$email        		= consultarAliasPorAplicacion( $conex, $wemp_pmla, "emailEnviosTI");
-		$email        		= explode("--", $email );
-		$wremitente			= array( 'email'	=> $email[0],
-									 'password' => $email[1],
-									 'from' 	=> $email[0],
-									 'fromName' => "",
-							 );
-		$wdestinatario = explode(";",$correoDestino);
-		$respuesta = sendToEmail($asunto, $mensaje, $altbody, $wremitente, $wdestinatario);
-		
-		if($respuesta['Error'])
-		{
-			$mensajeError = "Correo enviado";
-		}
-		else
-		{
-			$mensajeError = "No se pudo enviar el correo";
-		}
-	}
-	
-	return $mensajeError;
 }
 
 function insertLog( $wemp_pmla, $user_session, $accion, $tabla, $err, $descripcion, $identificacion, $sql_error = "",  $plan="", $servicio="", $wsoporte )
@@ -11464,6 +11384,7 @@ function enviarDatos( automatico = '')
 
 							if( data.mensaje != '' )
 							{
+
 								//Se oculta todos los acordeones
 								//$( "[acordeon]" ).accordion( "option", "active", false );
 
@@ -23959,7 +23880,7 @@ function getInfoCc($nameCco, $conex){
 
 $conex = obtenerConexionBD("matrix");
 
-$wactualiz="2020-09-03";
+$wactualiz="2020-08-12";
 
 if( !isset($wemp_pmla) ){
 	terminarEjecucion($MSJ_ERROR_FALTA_PARAMETRO."wemp_pmla");
