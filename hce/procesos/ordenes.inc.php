@@ -39576,6 +39576,10 @@ if(isset($consultaAjaxKardex)){
 			}
 			
 		break;
+		
+		case '':
+			cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario );
+		break;
 			
 		default :
 			break;
