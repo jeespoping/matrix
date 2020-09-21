@@ -29,6 +29,8 @@ include_once("conex.php");
 // a los examenes anteriores, en la parte inferior la sercretaria puede agregar observaciones generales para la historia.
 /*
 //========================================================================================================================================\\
+  Septiembre 21 de 2020 Edwin MG: Se agrega casting a la variable $valor para que no se generen warnings
+//========================================================================================================================================\\
   Febrero 19 de 2019 Arleyda I.C: Migración realizada 
 //========================================================================================================================================\\
   Septiembre 26 de 2017 Jonatan: Se quita la validacion de procedimientos y examenes que necesitan autotizacion.
@@ -2313,7 +2315,7 @@ function registrarAuditoriaKardex($conex,$wbasedato, $auditoria){
 
 								if($pos %2 != 0)
 								{
-									$suma += $valor;
+									$suma += (int) $valor;	//Septiembre 21 de 2020. Se agrega casting a entero (int) para que no se genere warnings
 								}
 								
 								
