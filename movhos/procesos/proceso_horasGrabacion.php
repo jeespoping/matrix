@@ -108,6 +108,21 @@ include_once("conex.php");
  /********************************************************************************
  * Consulta el valor de una aplicacion en root_000051
  ********************************************************************************/ 
+function cambiarHoraCorte( $conex, $emp, $hora ){
+
+	$val = false;
+
+	$sql = "UPDATE root_000051
+			   SET detval = '".$hora."'
+			 WHERE detapl = 'horaCorteDispensacion'
+				AND detemp = '$emp'
+			";
+			
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+
+	return $val;
+} 
+ 
 function activarCTCcontributivo( $conex, $emp )
 {
 	$val = false;
@@ -175,22 +190,22 @@ function restaurar(){
 	global $conex;
 	global $wmovhos;
 
-	// // restaurar los horarios de dispensación de CM
-	// $sql = "UPDATE
-				// {$wmovhos}_000099
-			// SET
-				// tarhcd = '14:00:00'
-			// WHERE
-				// tarcod != 'LC';
-			// ";
+	// restaurar los horarios de dispensación de CM
+	$sql = "UPDATE
+				{$wmovhos}_000099
+			SET
+				tarhcd = '14:00:00'
+			WHERE
+				tarcod != 'LC';
+			";
 			
-	// $res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	
 	// restaurar los horarios de dispensación de SF
 	$sql = "UPDATE
 				{$wmovhos}_000099
 			SET
-				tarhcd = '08:00:00'
+				tarhcd = '14:00:00'
 			WHERE
 				tarcod = 'A'
 				OR tarcod = 'N';
@@ -202,7 +217,7 @@ function restaurar(){
 	$sql = "UPDATE
 				{$wmovhos}_000011
 			SET
-				ccotdi = '08:00:00'
+				ccotdi = '14:00:00'
 			WHERE
 				ccotdi != '00:00:00'
 				AND ccohos = 'on'
@@ -255,20 +270,20 @@ function cambiarHoraDispensacion( $hora, $hora2, $horacm, $ccos ){
 		$val = true;
 	}
 	
-	// // // articulos de central de mezclas
-	// $sql = "UPDATE
-				// {$wmovhos}_000099
-			// SET
-				// tarhcd = '$horacm'
-			// WHERE
-				// tarcod NOT IN( 'LC', 'A', 'N' )
-			// ";
+	// // articulos de central de mezclas
+	$sql = "UPDATE
+				{$wmovhos}_000099
+			SET
+				tarhcd = '$horacm'
+			WHERE
+				tarcod NOT IN( 'LC', 'A', 'N' )
+			";
 			
-	// $res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	
-	// if( mysql_affected_rows() > 0 ){
-		// $val = true;
-	// }
+	if( mysql_affected_rows() > 0 ){
+		$val = true;
+	}
 	
 	
 	// cambiar los horarios de dispensación de los cco que tienen un horario diferente a cero
@@ -305,23 +320,28 @@ $wmovhos = consultarAliasPorAplicacion_Proc( $conex, $emp, "movhos" );
 // $hora2 : cantidad de horas que se puede dispensar en la ronda especifica por centro de costos
 $hora = "";
 
-switch( floor(date( "H" )/2)*2 ){
+if( date("Y-m-d") == '2020-09-19' ){
 	
-	case 8:
-	case 10:
-		$hora = "12:00:00";
-		$hora2 = "12:00:00";
-		$horacm = "14:00:00";
-		cambiarHoraDispensacion( $hora, $hora2, $horacm, $ccos );
+	switch( floor(date( "H" )/2)*2 ){
 		
-		break;
+		case 16:
+		case 18:
+		case 20:
+		case 22:
+			cambiarHoraCorte( $conex, $emp, '22' );
+			$hora = "30:00:00";
+			$hora2 = "30:00:00";
+			$horacm = "30:00:00";
+			cambiarHoraDispensacion( $hora, $hora2, $horacm, $ccos );
+			
+			break;
 		
-	case 12:
-		restaurar( $ccos, $hora );
-		break;
-	
-	default: break;	
-	
+		default: break;
+	}
+}
+else if( date("Y-m-d") == '2020-09-20' ){
+	cambiarHoraCorte( $conex, $emp, '18' );
+	restaurar( $ccos, $hora );
 }
 
 if( !empty($rondasAplicar) ){
