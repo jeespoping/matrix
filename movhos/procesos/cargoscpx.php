@@ -512,6 +512,7 @@ if(isset($artcod))
  * Es decir, cuando hay un error la tabla debe cambiar de color para indicarselo al usuario, ese cambio de color esta dictado por el class del <td>, lo que se obtiene
  * es el valor de class para el <td>
  *
+ * @modified Septiembre 23 de 2020 (Edwin) 	   - Se valida que la fecha no sea vacia en la funcion consultarRegistroKardexPorArticulo. Si es vacia en la consulta se cambia el valor de fecha por 0000-00-00.
  * @modified Noviembre 6 de 2019  (Edwin)  	   - Al dispensar se tiene en cuenta el saldo del cco desde dónde se dispensa
  * @modified Agosto 28 de 2019  (Edwin)   	   - Si se están actualizando tarifas no se permite dispensar
  * @modified Julio 29 de 2019 (Edwin)	   	   - Se hacen cambios varios para poder dispensar los articulos de ayudas dx y generen saldos para poder aplicar articulos desde gestion de enfermería
@@ -2355,6 +2356,8 @@ function consultarRegistroKardexPorArticulo( $art, $pac ){
 	global $conex;
 	global $fecDispensacion;
 
+	//Septiembre 23 de 2020
+	//Se valida que la fecha no sea vacia
 	$sql = "SELECT
 				Kadart
 			FROM
@@ -2363,7 +2366,7 @@ function consultarRegistroKardexPorArticulo( $art, $pac ){
 				Kadhis = '{$pac['his']}'
 				AND Kading = '{$pac['ing']}'
 				AND Kadart = '{$art['cod']}'
-				AND Kadfec = '{$fecDispensacion}'
+				AND Kadfec = '".( empty( $fecDispensacion ) ? '0000-00-00' : $fecDispensacion )."'
 				AND Kadest = 'on'";
 
 	$res = mysql_query( $sql, $conex );
