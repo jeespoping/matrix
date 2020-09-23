@@ -106,9 +106,6 @@ function estadoPermiteTomaMuestra( $conex, $wmovhos, $westado_externo ){
 			$val = true;
 		}
 	}
-	else{
-		$val = true;
-	}
 	
 	return $val;
 }
@@ -15158,10 +15155,25 @@ function pintarDatosFila( $datos ){
 						 * Realizar en servicio
 						 *******************************************************************************************************************/
 						echo "<td>";
+						
+						$puedeMarcarRealizarServicio = false;
+						//Si tiene toma de muestra
+						if( isset($accionesPestana[$indicePestana.".17"]) )
+						{	
+							//Se verifica que tenga el permismo
+							if( $accionesPestana[$indicePestana.".17"]->leer ){
+								$puedeMarcarRealizarServicio = true;
+							}
+						}
 
-						if( $wpreguntarRealizaEnservicio && !$wrealizadoEnPiso ){
-							
-							echo "<input type='checkbox' value='' onclick='realizarEnServicio(".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";
+						$preuntaPorRealizarEnServicio = false;
+						if( $puedeMarcarRealizarServicio )
+						{
+							if( $wpreguntarRealizaEnservicio && !$wrealizadoEnPiso )
+							{	
+								$preuntaPorRealizarEnServicio = true;
+								echo "<input type='checkbox' value='' onclick='realizarEnServicio(".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";
+							}
 						}
 
 						echo "</td>";
@@ -15184,7 +15196,12 @@ function pintarDatosFila( $datos ){
 									
 									if( time() > strtotime( $valueProcedimientos[ 'Detfec' ]." 00:00:00" ) ){
 										
-										$estadoPermiteTomaMuestra = estadoPermiteTomaMuestra( $conex, $wbasedato, $westado_externo );
+										if( empty($noOfertado) ){
+											$estadoPermiteTomaMuestra = estadoPermiteTomaMuestra( $conex, $wbasedato, $westado_externo );
+										}
+										else{
+											$estadoPermiteTomaMuestra = true;
+										}
 										
 										if( $estadoPermiteTomaMuestra ){
 											
