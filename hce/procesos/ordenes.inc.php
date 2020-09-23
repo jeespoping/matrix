@@ -880,6 +880,9 @@ class ExamenHCEDTO{
 		if( $row = mysql_fetch_array($res) ){
 			$this->solicitaUsuarioTomaMuestra = strtolower( $permitePorCco && $row['Estptm'] == 'on' ) || !empty( $this->usuarioTomaMuestra ) ? $this->solicitaUsuarioTomaMuestra : false;
 		}
+		else{
+			$this->solicitaUsuarioTomaMuestra = false;
+		}
 	}
 	
 	/************************************************************************************
@@ -1065,7 +1068,39 @@ class AccionPestanaDTO{
  * FUNCIONES
  ***********************************/
  
-function cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario ){
+/************************************************************************************************
+ * Consulto el estado detallado (perteneciente a un estudio) por codigo
+ ************************************************************************************************/
+function detalleEstadoOrdenes( $conex, $wbasedato, $codigo ){
+	
+	$val = [];
+	
+	$sql = "SELECT Eexcod, Eexdes, Eexord, Eexaut, Eexest, Eexmeh, Eexpen, Eexenf, Eexcpe, Eexpnd, Eexrea, Eexcan, Eexgen, Eexapa, Eexepe, Eexrpe, Eexere, Eexeau, Eexrno, Eexhor
+			  FROM ".$wbasedato."_000045
+		     WHERE Eexcod = '".$codigo."'";
+	
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	if( $row = mysql_fetch_array($res) ){
+	
+		$val = [
+				'codigo' 					=> $row['Eexcod'],
+				'descripcion' 				=> $row['Eexdes'],
+				'estado' 					=> $row['Eexest'] == 'on',
+				'esPendiente' 				=> $row['Eexpnd'] == 'on',
+				'esRealizado' 				=> $row['Eexrea'] == 'on',
+				'esCancelado' 				=> $row['Eexcan'] == 'on',
+				'esEstadoPendiente' 		=> $row['Eexepe'] == 'on',
+				'esEstadoResultadoPendiente'=> $row['Eexrpe'] == 'on',
+				'esEstadoRealizado' 		=> $row['Eexere'] == 'on',
+				'esEstadoAutorizado' 		=> $row['Eexeau'] == 'on',
+				'esEstadoReazliadoNocturno' => $row['Eexrno'] == 'on',
+			];
+	}
+	
+	return $val;
+}
+ 
+function cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario, $estado ){
 	
 	$val = [	
 			'fecha'=> '',
@@ -1073,108 +1108,100 @@ function cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, 
 			'user' => '',
 			'error'=> true,	//Indica si hay un error(Por defecto 'hay error' = true )
 		];
-	
-	$fecha 	= date( "Y-m-d" );
-	$hora 	= date("H:i:s");
-	
-	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
+		
+	$detEstado  = detalleEstadoOrdenes( $conex, $wmovhos, $estado );
 	
 	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
-	$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
-	
-	//Consulto encabezado de kardex del dia
-	$sql = "UPDATE ".$wmovhos."_000159 b
-			   SET Detenv = '".$detval."',
-				   Detesi = 'A',
-				   Detlog = 'M',
-			 WHERE Dettor = '".$tor."'
-			   AND Detnro = '".$nro."'
-			   AND Detite = '".$item."'
-			   AND Deteex = ''
-			   ";
+	if( $hayInteroperabilidad && $cupOfertado )
+	{
+		//Solo se hace si el estado es Autorizado
+		if( $detEstado['esEstadoAutorizado'] )
+		{
+			$fecha 	= date( "Y-m-d" );
+			$hora 	= date("H:i:s");
+			
+			$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
+			
+			$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
+			
+			//Consulto encabezado de kardex del dia
+			$sql = "UPDATE ".$wmovhos."_000159 b
+					   SET Detenv  = '".$detval."',
+						   Detesi  = '".$estado."',
+						   Detlog  = 'M'
+					 WHERE Dettor  = '".$tor."'
+					   AND Detnro  = '".$nro."'
+					   AND Detite  = '".$item."'
+					   AND Deteex  = ''
+					   AND Detrse != 'on'
+					   AND Detrex != 'on'
+					   ";
 
-	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
-	
-	//Consulto encabezado de kardex del dia
-	$sql = "UPDATE ".$whce."_000028 b
-			   SET Detenv = '".$detval."',
-				   Detesi = 'A',
-				   Detlog = 'M'
-			 WHERE Dettor = '".$tor."'
-			   AND Detnro = '".$nro."'
-			   AND Detite = '".$item."'
-			   AND Deteex = ''
-			   ";
+			$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+			
+			//Consulto encabezado de kardex del dia
+			$sql = "UPDATE ".$whce."_000028 b
+					   SET Detenv  = '".$detval."',
+						   Detesi  = '".$estado."',
+						   Detlog  = 'M'
+					 WHERE Dettor  = '".$tor."'
+					   AND Detnro  = '".$nro."'
+					   AND Detite  = '".$item."'
+					   AND Deteex  = ''
+					   AND Detrse != 'on'
+					   AND Detrex != 'on'
+					   ";
 
-	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
-	
-	if( mysql_affected_rows() > 0 ){
-		
-		$val = [
-				'fecha' => $fecha,
-				'hora' 	=> $hora,
-				'user' 	=> $usuario,
-				'error' => false,
-			];
-		
-		/************************************************************************************
-		 * Mayo 20 de 2020
-		 * Se agrega auditoria para toma de muestras desde gestión
-		 ************************************************************************************/
-		
-		//Consulto la historia del paciente
-		$sql = "SELECT Ordhis, Ording, Detcod, Descripcion
-				  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$whce."_000047 c
-				 WHERE Ordtor = '".$tor."'
-				   AND Ordnro = '".$nro."' 
-				   AND Dettor = ordtor
-				   AND Detnro = ordnro
-				   AND Detite = '".$item."'
-				   AND Detcod = c.codigo
-				   ";
+			$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+			
+			if( mysql_affected_rows() > 0 ){
+				
+				$val = [
+						'fecha' => $fecha,
+						'hora' 	=> $hora,
+						'user' 	=> $usuario,
+						'error' => false,
+					];
+				
+				/************************************************************************************
+				 * Mayo 20 de 2020
+				 * Se agrega auditoria para toma de muestras desde gestión
+				 ************************************************************************************/
+				
+				//Consulto la historia del paciente
+				$sql = "SELECT Ordhis, Ording, Detcod, Descripcion
+						  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$whce."_000047 c
+						 WHERE Ordtor = '".$tor."'
+						   AND Ordnro = '".$nro."' 
+						   AND Dettor = ordtor
+						   AND Detnro = ordnro
+						   AND Detite = '".$item."'
+						   AND Detcod = c.codigo
+						   ";
 
-		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
-		
-		$rows = mysql_fetch_array( $res );
-		
-		
-		//Registro de auditoria
-		$auditoria = new AuditoriaDTO();
+				$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+				
+				$rows = mysql_fetch_array( $res );
+				
+				
+				//Registro de auditoria
+				$auditoria = new AuditoriaDTO();
 
-		$auditoria->historia 	= $rows['Ordhis'];
-		$auditoria->ingreso 	= $rows['Ording'];
-		$auditoria->descripcion = $tor."-".$nro."-".$item.",".$rows['Detcod'].",".$rows['Descripcion'].",".$usuario;
-		$auditoria->fechaKardex = $fecha;
-		$auditoria->mensaje 	= obtenerMensaje( "NO_REALIZA_EN_SERVICIO" );
-		$auditoria->seguridad 	= $usuario;
-		$auditoria->idOriginal 	= '';
+				$auditoria->historia 	= $rows['Ordhis'];
+				$auditoria->ingreso 	= $rows['Ording'];
+				$auditoria->descripcion = $tor."-".$nro."-".$item.",".$rows['Detcod'].",".$rows['Descripcion'].",".$usuario;
+				$auditoria->fechaKardex = $fecha;
+				$auditoria->mensaje 	= obtenerMensaje( "NO_REALIZA_EN_SERVICIO" );
+				$auditoria->seguridad 	= $usuario;
+				$auditoria->idOriginal 	= '';
 
-		registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
-		
-		crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
-		/************************************************************************************/
-	}
-	else{
-		
-		//Consulto la historia del paciente
-		$sql = "SELECT Detutm, Detftm, Dethtm
-				  FROM ".$whce."_000028
-				 WHERE Dettor = '".$tor."'
-				   AND Detnro = '".$nro."' 
-				   AND Detite = '".$item."'
-				   ";
-
-		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
-		
-		if( $rows = mysql_fetch_array( $res ) ){
-			$val = [
-				'fecha' => $rows['Detftm'],
-				'hora' 	=> $rows['Dethtm'],
-				'user' 	=> $rows['Detutm'],
-				'error' => false,
-			];
+				registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
+				
+				crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
+				/************************************************************************************/
+			}
 		}
 	}
 	
@@ -27140,7 +27167,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 	if($ccoPaciente == $ccoUrgencias){
 	
 		$q_realizados = " UNION SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm
+				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 			FROM 
 				{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000047 c, {$wbasedatohce}_000015 d,".$wbasedato."_000045
 			WHERE 
@@ -27158,7 +27185,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 				AND timestamp(DATE_SUB( NOW() , INTERVAL 24 HOUR ) ) < timestamp(concat(Detfmo,' ', Dethmo ))
 			UNION
 			SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm
+				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 			FROM 
 				{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000017 c,  {$wbasedatohce}_000015 d, ".$wbasedato."_000045
 			WHERE 
@@ -27180,7 +27207,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 	
 	//Consulta las ordenes asociadas al paciente que tengan estado pendiente, autorizado o pendiente de realizar.
 	$q = "SELECT
-			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,'' as Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm
+			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,'' as Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 		FROM 
 			{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000047 c, {$wbasedatohce}_000015 d,".$wbasedato."_000045
 		WHERE 
@@ -27197,7 +27224,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			AND Eexmeh != 'on'
 		UNION
 		SELECT
-			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm
+			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 		FROM 
 			{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000017 c,  {$wbasedatohce}_000015 d, ".$wbasedato."_000045
 		WHERE 
@@ -27351,6 +27378,35 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			
 			//Indica si el tipo de orden solicita que usuario tomó la muestra
 			$detalle->solicitaUsuarioTomaMuestra = strtolower( $info['Tiputm'] ) == 'on';
+			
+			/******************************************************************************************************************************************
+			 * Esto es para preguntar si se debe  preguntar si el estado se realiza en servicio o no
+			 ******************************************************************************************************************************************/
+			$detalle->wrealizadoEnPiso 		= $info['Detnof'] == 'on' ? true : false;
+			$detalle->wrealizarEnServicio 	= $info['Detrse'] == 'on' ? true : false;
+			$detalle->wrealizarExterno 		= $info['Detrex'] == 'on' ? true : false;
+			$detalle->wrequiereAutorizacion	= $info['Detaut'] == 'on' ? true : false;
+			 
+			$wdetalleEstado = detalleEstadoOrdenes( $conex, $wbasedato, $detalle->estadoExamen );
+						
+			//Si el esado externo (Estado que viene por interoperabilidad) es diferente a vacio significa que ya se ha enviado los mensajes hl7 correspondientes y por tanto
+			//no requiere autorizacion ni preguntar a la enfermera si se realiza en piso o no
+			//por que ya se ha enviado el estudio a realizarse
+			if( !empty( $detalle->estadoExterno ) || ( !$wdetalleEstado['esEstadoPendiente'] && !$wdetalleEstado['esEstadoAutorizado'] ) ){
+				$detalle->wrealizarEnServicio 	= false;
+				$detalle->wrealizarExterno 		= false;
+				$detalle->wrequiereAutorizacion = false;
+			}
+			
+			if( empty( $detalle->estadoExterno ) && $wdetalleEstado['esEstadoAutorizado'] ){
+				$detalle->wrequiereAutorizacion 	= false;
+			}
+			
+			$detalle->wpreguntarRealizaEnservicio = false;
+			if( !$detalle->wrequiereAutorizacion && ( $detalle->wrealizarEnServicio || $detalle->wrealizarExterno ) ){ echo "aaaaa";
+				$detalle->wpreguntarRealizaEnservicio = true;
+			}
+			/*************************************************************************************************************************************/
 			
 			
 			$usuarioTomaMuestra = '';
@@ -27515,7 +27571,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 				}
 			}
 			
-			
+			$detalle->solicitaUsuarioTomaMuestra = !$detalle->esCupOfertado ? true : $detalle->solicitaUsuarioTomaMuestra;
 			
 			//Si es ayuda hospitalaria el centro de costos es hospitalario
 			// if($detalle->tipoDeOrden == $codigoAyudaHospitalaria){
@@ -39577,8 +39633,10 @@ if(isset($consultaAjaxKardex)){
 			
 		break;
 		
-		case '':
-			cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario );
+		case 'cambioEstadoAutorizadoAutomatico':
+			$wmovhos= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos');
+			$whce 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce');
+			cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $nroOrden, $item, $wuser, $westado );
 		break;
 			
 		default :

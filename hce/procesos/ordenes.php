@@ -3672,6 +3672,7 @@ if (!$usuarioValidado){
 				echo "<td align='center'><b>Procedimiento</b></td>";
 				echo "<td align='center'><b>Justificación</b></td>";				
 				echo "<td align='center'><b>Estado</b></td>";
+				echo "<td align='center'><b>Realizar en Servicio?</b></td>";
 				echo "<td align='center'><b>Muestra<br>tomada por</b></td>";
 				echo "<td align='center' nowrap><b>Bitacora de Gestiones</b></td>";
 				echo "</tr>";
@@ -4402,6 +4403,20 @@ if (!$usuarioValidado){
 						
 						
 						/*********************************************************************************************************************
+						 * REALIZAR EN SERVICIO
+						 *********************************************************************************************************************/
+						echo "<td>";
+						
+						if( $examen->wpreguntarRealizaEnservicio && !$examen->wrealizadoEnPiso )
+						{	
+							// echo "<input type='checkbox' value='' onclick='realizarEnServicio(".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";
+							crearCampo("5","wrealizarEnServicio$contExamenes",@$accionesPestana[$indicePestana.".17"],array("class"=>"campo2","onChange"=>"marcarCambio(\"$indicePestana\",\"$contExamenes\");"),"");
+						}
+						
+						echo "</td>";
+						/*********************************************************************************************************************/
+						
+						 /*********************************************************************************************************************
 						 * TOMA DE MUESTRAS
 						 *********************************************************************************************************************/
 						echo "<td>"; 
