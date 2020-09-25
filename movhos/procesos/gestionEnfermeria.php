@@ -13,7 +13,7 @@ function detalleEstado( $conex, $wbasedato, $codigo ){
 	
 	$val = [];
 	
-	$sql = "SELECT Eexcod, Eexdes, Eexord, Eexaut, Eexest, Eexmeh, Eexpen, Eexenf, Eexcpe, Eexpnd, Eexrea, Eexcan, Eexgen, Eexapa, Eexepe, Eexrpe, Eexere, Eexeau, Eexrno, Eexhor
+	$sql = "SELECT Eexcod, Eexdes, Eexord, Eexaut, Eexest, Eexmeh, Eexpen, Eexenf, Eexcpe, Eexpnd, Eexrea, Eexcan, Eexgen, Eexapa, Eexepe, Eexrpe, Eexere, Eexeau, Eexrno, Eexhor, Eexpin
 			  FROM ".$wbasedato."_000045
 		     WHERE Eexcod = '".$codigo."'";
 	
@@ -32,6 +32,7 @@ function detalleEstado( $conex, $wbasedato, $codigo ){
 				'esEstadoRealizado' 		=> $row['Eexere'] == 'on',
 				'esEstadoAutorizado' 		=> $row['Eexeau'] == 'on',
 				'esEstadoReazliadoNocturno' => $row['Eexrno'] == 'on',
+				'permiteInteroperabilidad' 	=> $row['Eexpin'] == 'on',
 			];
 	}
 	
@@ -62,6 +63,34 @@ function pacienteAEspecialidadUrgencias( $conex, $wemp_pmla, $historia, $ingreso
 	// }
 	
 	return $val;
+}
+
+function consultarComentarioPorInteroperabilidadInc( $conex, $wbasedato, $tipoOrden, $nroOrden, $item ){
+	
+	$val = [];
+	
+	$sql = "SELECT Fecha_data, Hora_data, Logtxt
+			  FROM ".$wbasedato."_000273
+			 WHERE Logtor = '".$tipoOrden."'
+			   AND Lognro = '".$nroOrden."'
+			   AND Logite = '".$item."'
+			   AND Logest = 'on'
+			   AND Logcla = 'Comentario Asignado'
+		  ORDER BY Fecha_data DESC, hora_data DESC
+			  ";
+	
+	$res = mysql_query( $sql, $conex )  or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	while( $rows = mysql_fetch_array($res) ){
+		$val[] = [
+				'fecha' 		=> $rows['Fecha_data'],
+				'hora' 			=> $rows['Hora_data'],
+				'comentario' 	=> $rows['Logtxt'],
+			];
+	}
+	
+	return $val;
+	
 }
 
 function tipoDeOrdenConTomaMuestra( $conex, $whce, $tor ){
@@ -2743,6 +2772,7 @@ if(isset($operacion) && $operacion == 'pacienteAEspecialidadUrgencias'){
 
 <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
 <link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
+<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css">
  <!-- PNotify -->
 <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.css" rel="stylesheet">
 <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
@@ -2753,12 +2783,13 @@ if(isset($operacion) && $operacion == 'pacienteAEspecialidadUrgencias'){
 <script type="text/javascript" src="../../../include/root/jqueryui_1_9_2/jquery-ui.js"></script>
 <script type="text/javascript" src="../../../include/root/ui.core.min.js"></script>
 <script type="text/javascript" src="../../../include/root/ui.tabs.min.js"></script>
-<script type="text/javascript" src="../../../include/root/ui.draggable.min.js"></script>
+<!-- <script type="text/javascript" src="../../../include/root/ui.draggable.min.js"></script> -->
 <script type="text/javascript" src="../../../include/root/jquery.blockUI.min.js"></script>
 <script type="text/javascript" src="../../../include/root/jquery.dimensions.js"></script>
 <script type="text/javascript" src="../../../include/root/jquery.tooltip.js"></script>
 <script type="text/javascript" src="../../../include/root/jquery.simple.tree.js"></script>
 <script type="text/javascript" src="../../../include/root/jqueryalert.js?v=<?=md5_file('../../../include/root/jqueryalert.js');?>"></script>
+
 <!-- PNotify -->
 <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.js" type="text/rocketscript"></script>
 <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.buttons.js" type="text/rocketscript"></script>
@@ -2852,24 +2883,32 @@ if($slCcoDestino != '' and $wsp == 'on' and $mostrar == 'on') { ?>
 <title>Gestión de Enfermeria</title>
 <script type="text/javascript">
 
-function realizarEnServicio( enServcio, externo, tipoOrden, numeroOrden, item, historia, ingreso, estudio ){
+function realizarEnServicio( cmp, enServcio, externo, tipoOrden, numeroOrden, item, historia, ingreso, estudio ){
 	
-	var msg = "Es estudio <b>"+estudio+"</b> no se realizará en la ayuda diagnóstica por uno de los siguientes motivos?";
+	// var msg = "El estudio <b>"+estudio+"</b> no se realizará en la ayuda diagnóstica por uno de los siguientes motivos?";
+	
+	// if( enServcio ){
+		// msg += "<br><br>- Por que se realizará en la unidad hospitalaria ";
+		
+	// }
+	
+	// if( externo ){
+		// msg += "<br><br>- Por que el equipo requerido no se encuentra disponible ";
+	// }
+	
+	var msg = "En donde se realizará el estudio <b>"+estudio+"</b>?<br><br>En el servicio dónde se encuentra el paciente puede realizarse por uno de los siguientes motivos: ";
 	
 	if( enServcio ){
 		msg += "<br><br>- Por que se realizará en la unidad hospitalaria ";
-		
 	}
 	
 	if( externo ){
 		msg += "<br><br>- Por que el equipo requerido no se encuentra disponible ";
 	}
 	
-	jConfirm( msg, 'REALIZAR ESTUDIO EN AYUDA DIAGNOSTICA', function(r) {
-
-		// if( r ){
-
-			$.post("../../hce/procesos/ordenes.inc.php",
+	function enviarRespuestaAOrdenes( resp ){
+		
+		$.post("../../hce/procesos/ordenes.inc.php",
             {
                 consultaAjax		: '',
                 consultaAjaxKardex	: 'seRealizaEnUnidadAmbulatoria',
@@ -2879,14 +2918,48 @@ function realizarEnServicio( enServcio, externo, tipoOrden, numeroOrden, item, h
                 tipoOrden			: tipoOrden,
 				numeroOrden			: numeroOrden,
 				item				: item,
-				realizarEnPiso		: r ? 'on' : 'off',
+				realizarEnPiso		: resp,
 				wusuario		  	: $('#user').val(),
             }
             ,function(data) {
 				console.log(data);
+				$( cmp ).css({display:"none"});
             },"json" );
-
-		// }
+	}
+	
+	$( "<div style='color: black;font-size:12pt;height: 250px;' title='REALIZAR EN SERVICIO?' class='dvRealizarEnServicio'>"+msg+"</div>" ).dialog({
+		width		: 700,
+		height		: 350,
+		modal		: true,
+		resizable	: false,
+		buttons	: {
+			"Relizar en servicio o externo": function() {
+					cmp.checked = true;
+					cmp.value = 'on';
+					enviarRespuestaAOrdenes( 'on' );
+					$( this ).dialog( "close" );
+				},
+			"Realizar en Ayuda diagnóstica": function() {
+					cmp.checked = true;
+					cmp.value = 'off';
+					enviarRespuestaAOrdenes( 'off' );
+					$( this ).dialog( "close" );
+				},
+			"Cancelar": function() {
+					cmp.checked = false;
+					cmp.value = '';
+					$( this ).dialog( "close" );
+				},
+		},
+	});
+	
+	$( ".dvRealizarEnServicio" ).parent().css({
+		left: ( $( window ).width() - 700 )/2,
+		top : ( $( window ).height() - 350 )/2,
+	});
+	
+	$( ".ui-dialog-titlebar-close" ).css({
+		display : "none",
 	});
 }
 
@@ -11341,9 +11414,10 @@ function examenes_procedim_pend($whistoria, $wingreso){
 	global $estados_examenes;
 
 	$array_datos_procedimientos = array();
+	$arrayCita = [ 'conCita' => false, 'hoy' => false  ];
 
 	$q = "  SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp, Tiprju, Codcups as Codigo_cup, NoPos, {$whce}_000028.id as id_detalle, Detpri, Detlog, Detpen, Deteex, {$whce}_000028.Hora_data, {$whce}_000028.Fecha_data, Detjoc, Detotr, Detrse, Detrex, Detaut, Detnof
+				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp, Tiprju, Codcups as Codigo_cup, NoPos, {$whce}_000028.id as id_detalle, Detpri, Detlog, Detpen, Deteex, {$whce}_000028.Hora_data, {$whce}_000028.Fecha_data, Detjoc, Dethci, Detotr, Detrse, Detrex, Detaut, Detnof
 			FROM
 				{$whce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$whce}_000028, {$whce}_000047 c, {$whce}_000015 d,".$wbasedato."_000045
 			WHERE
@@ -11360,7 +11434,7 @@ function examenes_procedim_pend($whistoria, $wingreso){
 				AND Detalt = 'off'
 			UNION
 			SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp, Tiprju, c.Codigo as Codigo_cup, NoPos, {$whce}_000028.id as id_detalle, Detpri, Detlog, Detpen, Deteex, {$whce}_000028.Hora_data, {$whce}_000028.Fecha_data, Detjoc, Detotr, Detrse, Detrex, Detaut, Detnof
+				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp, Tiprju, c.Codigo as Codigo_cup, NoPos, {$whce}_000028.id as id_detalle, Detpri, Detlog, Detpen, Deteex, {$whce}_000028.Hora_data, {$whce}_000028.Fecha_data, Detjoc, Dethci, Detotr, Detrse, Detrex, Detaut, Detnof
 			FROM
 				{$whce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$whce}_000028, {$whce}_000017 c,  {$whce}_000015 d, ".$wbasedato."_000045
 			WHERE
@@ -11417,6 +11491,15 @@ function examenes_procedim_pend($whistoria, $wingreso){
 					$autorizado++;
 
 				}
+				
+				
+				if( $estados_examenes[ $row_pye['Detesi'] ]->est_pendiente == 'on' && $row_pye['Dethci'] != '00:00:00' ){
+					$arrayCita[ 'conCita'] = true;
+					
+					if( $row_pye['Detfec'] == date("Y-m-d") ){
+						$arrayCita[ 'hoy' ] = true;
+					}
+				}
 			}
 		}
 
@@ -11433,7 +11516,13 @@ function examenes_procedim_pend($whistoria, $wingreso){
 			}
 		}
 
-		$array_datos_procedimientos = array('array_procedimientos'=>$array_ordenes, 'cantidad_pendientes'=>$num_pye, 'clase_estado_examenes'=>$clase_estado_examenes, 'array_log_proc_exa'=>$array_log_proc_exa);
+		$array_datos_procedimientos = array(
+				'array_procedimientos'	=>  $array_ordenes, 
+				'cantidad_pendientes'	=>  $num_pye, 
+				'clase_estado_examenes'	=>  $clase_estado_examenes, 
+				'array_log_proc_exa'	=>  $array_log_proc_exa,
+				'conCitaAsignada'		=>  $arrayCita,
+			);
 
 		return $array_datos_procedimientos;
 
@@ -14479,10 +14568,32 @@ function pintarDatosFila( $datos ){
 				$cantidad_total_pend = ($examenes_procedim_pend['cantidad_pendientes'] > 0) ? "(".$examenes_procedim_pend['cantidad_pendientes'].")" : "";
 				if($examenes_procedim_pend['cantidad_pendientes'] > 0){
 					echo "<td colspan=2 align=center style='cursor:pointer; $fondo_pendientes' class='tooltip_proc_exa_".$valueDatos->historia."_".$valueDatos->ingreso." ".$examenes_procedim_pend['clase_estado_examenes']." msg' title='".$tooltip_pex."' onclick='fnMostrarProcedimientos(\"$valueDatos->historia\", \"$valueDatos->ingreso\");'>";
-				}else{
+				}
+				else{
 					echo "<td colspan=2 align=center>";
 				}
 
+				if( $examenes_procedim_pend['conCitaAsignada']['conCita']  )
+				{
+					if( $examenes_procedim_pend['conCitaAsignada']['hoy']  )
+					{
+						echo $relojSvg = '<span title="Cita pendiente para hoy"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="28px" height="28px" viewBox="0 0 1280.000000 1280.000000" preserveAspectRatio="xMidYMid meet">
+											<g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="red" stroke="none">
+											<path d="M6145 12790 c-44 -4 -150 -13 -235 -20 -2036 -155 -3876 -1277 -4952 -3020 -528 -855 -853 -1856 -928 -2855 -6 -82 -15 -197 -20 -255 -13 -134 -13 -346 0 -480 5 -58 14 -172 20 -255 90 -1196 527 -2361 1252 -3330 1101 -1473 2788 -2403 4618 -2545 80 -6 195 -15 256 -20 141 -13 350 -13 484 0 58 5 173 14 255 20 1830 137 3531 1076 4635 2560 715 961 1151 2127 1240 3315 6 83 15 197 20 255 6 58 10 166 10 240 0 74 -4 182 -10 240 -5 58 -14 173 -20 255 -137 1831 -1076 3531 -2560 4635 -961 715 -2127 1151 -3315 1240 -82 6 -197 15 -255 20 -119 11 -376 11 -495 0z m551 -520 c417 -24 767 -77 1158 -177 798 -202 1575 -589 2221 -1107 668 -535 1196 -1191 1584 -1966 628 -1258 783 -2683 440 -4051 -330 -1319 -1110 -2484 -2204 -3294 -382 -283 -882 -561 -1317 -734 -1165 -462 -2417 -542 -3632 -234 -402 101 -762 236 -1151 428 -954 473 -1728 1158 -2311 2045 -510 777 -823 1653 -929 2600 -119 1067 79 2201 559 3186 464 952 1143 1731 2026 2324 294 198 749 437 1082 569 788 312 1661 457 2474 411z"/>
+											<path d="M6160 9268 c0 -1157 -4 -2108 -8 -2115 -4 -6 -33 -23 -65 -37 -196 -86 -364 -267 -431 -462 -35 -103 -49 -203 -45 -321 l4 -105 -1088 -628 c-599 -346 -1091 -631 -1094 -634 -3 -3 48 -98 113 -211 86 -150 123 -205 134 -202 9 2 500 284 1093 626 592 341 1082 621 1089 621 8 0 38 -19 68 -42 30 -22 93 -59 139 -81 385 -181 842 -22 1035 361 63 125 81 207 80 362 -1 123 -3 143 -31 228 -72 215 -229 393 -430 483 -37 17 -71 36 -75 43 -4 6 -8 957 -8 2114 l0 2102 -240 0 -240 0 0 -2102z"/>
+											</g>
+											</svg></span><br>';;
+					}
+					else{
+						echo $relojSvg = '<span title="Cita pendiente"><svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="28px" height="28px" viewBox="0 0 1280.000000 1280.000000" preserveAspectRatio="xMidYMid meet">
+											<g transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+											<path d="M6145 12790 c-44 -4 -150 -13 -235 -20 -2036 -155 -3876 -1277 -4952 -3020 -528 -855 -853 -1856 -928 -2855 -6 -82 -15 -197 -20 -255 -13 -134 -13 -346 0 -480 5 -58 14 -172 20 -255 90 -1196 527 -2361 1252 -3330 1101 -1473 2788 -2403 4618 -2545 80 -6 195 -15 256 -20 141 -13 350 -13 484 0 58 5 173 14 255 20 1830 137 3531 1076 4635 2560 715 961 1151 2127 1240 3315 6 83 15 197 20 255 6 58 10 166 10 240 0 74 -4 182 -10 240 -5 58 -14 173 -20 255 -137 1831 -1076 3531 -2560 4635 -961 715 -2127 1151 -3315 1240 -82 6 -197 15 -255 20 -119 11 -376 11 -495 0z m551 -520 c417 -24 767 -77 1158 -177 798 -202 1575 -589 2221 -1107 668 -535 1196 -1191 1584 -1966 628 -1258 783 -2683 440 -4051 -330 -1319 -1110 -2484 -2204 -3294 -382 -283 -882 -561 -1317 -734 -1165 -462 -2417 -542 -3632 -234 -402 101 -762 236 -1151 428 -954 473 -1728 1158 -2311 2045 -510 777 -823 1653 -929 2600 -119 1067 79 2201 559 3186 464 952 1143 1731 2026 2324 294 198 749 437 1082 569 788 312 1661 457 2474 411z"/>
+											<path d="M6160 9268 c0 -1157 -4 -2108 -8 -2115 -4 -6 -33 -23 -65 -37 -196 -86 -364 -267 -431 -462 -35 -103 -49 -203 -45 -321 l4 -105 -1088 -628 c-599 -346 -1091 -631 -1094 -634 -3 -3 48 -98 113 -211 86 -150 123 -205 134 -202 9 2 500 284 1093 626 592 341 1082 621 1089 621 8 0 38 -19 68 -42 30 -22 93 -59 139 -81 385 -181 842 -22 1035 361 63 125 81 207 80 362 -1 123 -3 143 -31 228 -72 215 -229 393 -430 483 -37 17 -71 36 -75 43 -4 6 -8 957 -8 2114 l0 2102 -240 0 -240 0 0 -2102z"/>
+											</g>
+											</svg></span><br>';;
+					}
+				}
+				
 				echo "<b><span class='blink' onMouseover='mostrarTooltip( this );'><class=tipo3V>".$cantidad_total_pend."</span></b>";
 				echo "<div id='div_proc_".$valueDatos->historia."_".$valueDatos->ingreso."' align='center' style='display:none;cursor:default;background:none repeat scroll 0 0; "
 						."position:relative;width:100 %;height:600px;overflow:auto;'>
@@ -14621,6 +14732,8 @@ function pintarDatosFila( $datos ){
 						
 						$justificacionInteroperabilidad = $valueProcedimientos['Detjoc'];
 						
+						$hora_cita_estudio = $valueProcedimientos['Dethci'] != '00:00:00' ? $valueProcedimientos['Dethci']: '' ;
+						
 						$estadoPorTipoOrden2 = array_merge( $estadoPorTipoOrden, ccoConInteroperabilidadPorEstudio( $conex, $wbasedato, $valueDatos->historia, $valueDatos->ingreso, $wexam, $codigo_examen ) );
 						
 						
@@ -14634,13 +14747,13 @@ function pintarDatosFila( $datos ){
 						//Si el esado externo (Estado que viene por interoperabilidad) es diferente a vacio significa que ya se ha enviado los mensajes hl7 correspondientes y por tanto
 						//no requiere autorizacion ni preguntar a la enfermera si se realiza en piso o no
 						//por que ya se ha enviado el estudio a realizarse
-						if( !empty( $westado_externo ) || ( !$wdetalleEstado['esEstadoPendiente'] && !$wdetalleEstado['esEstadoAutorizado'] ) ){
+						if( !empty( $westado_externo ) || ( !$wdetalleEstado['esEstadoPendiente'] && !$wdetalleEstado['permiteInteroperabilidad'] ) ){
 							$wrealizarEnServicio 	= false;
 							$wrealizarExterno 		= false;
 							$wrequiereAutorizacion 	= false;
 						}
 						
-						if( empty( $westado_externo ) && $wdetalleEstado['esEstadoAutorizado'] ){
+						if( empty( $westado_externo ) && $wdetalleEstado['permiteInteroperabilidad'] ){
 							$wrequiereAutorizacion 	= false;
 						}
 						
@@ -14654,6 +14767,76 @@ function pintarDatosFila( $datos ){
 						// if( !$permiteModEst ){
 							// $westado_externo = '';
 						// }
+						
+						
+						
+						
+						
+						
+						
+						
+						if( !$permiteModEst ){
+							
+							$txtComentario  = "";
+							$textCita 		= "";
+							
+							$comentarios = consultarComentarioPorInteroperabilidadInc( $conex, $wbasedato, $wexam, $wordennro, $wordite  );
+							
+							if( count($comentarios) > 0 ){
+					
+								$txtComentario .= "<b>Comentarios:</b>";
+								
+								foreach( $comentarios as $datoComenario ){
+									$txtComentario .= "<br><b>".$datoComenario['fecha']." ".$datoComenario['hora']."</b><br>".$datoComenario['comentario'];
+								}
+							}
+							
+							if( !empty( $hora_cita_estudio ) && $hora_cita_estudio != '00:00:00' ){
+					
+								$sala = '';
+								
+								//Consultando la sala en que se realizará la cita
+								//Buscar en la tabla de usuario que cco le pertenece al usuario.
+								$sql = "SELECT b.Saldes
+											 FROM ".$wbasedato."_000268 a, ".$wbasedato."_000263 b
+											WHERE a.mvctor = '".$wexam."'
+											  AND a.mvcnro = '".$wordennro."'
+											  AND a.mvcite = '".$wordite."'
+											  AND b.salcod = a.mvcsal";
+								$resSala = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+								if( $rowsSala = mysql_fetch_array( $resSala ) ){
+									$sala = $rowsSala['Saldes'];
+								}
+								
+								
+								$textCita .= "<tr>
+												<td>Fecha</td><td><b>".$wfechadataexamen."</b></td>
+											</tr>
+											<tr>
+												<td>Hora</td><td><b>".$hora_cita_estudio."</b></td>
+											</tr>
+											<tr>
+												<td>Sala</td><td><b>".$sala."</b></td>
+											</tr>
+										";
+							}
+							
+							if( !empty($txtComentario) ){
+								$textCita .= "<tr><td colspan=2>$txtComentario</td></tr>";
+							}
+							
+							if( !empty($textCita) ){
+								$txtComentario = "<table>$textCita</table>";
+							}
+							
+							$justificacionInteroperabilidad .= $txtComentario;
+						}
+						
+						
+						
+						
+						
+						
 
 						if($wproc_pendiente == 'on'){
 
@@ -14699,6 +14882,10 @@ function pintarDatosFila( $datos ){
 						
 						echo "<td style='text-align:center;'>";
 						echo $valueProcedimientos[ 'Detfec' ];
+						
+						if( !empty($hora_cita_estudio) )
+							echo "<br><b>".$hora_cita_estudio."</b>";
+						
 						echo "</td>";
 
 						echo "<td>";
@@ -15154,7 +15341,7 @@ function pintarDatosFila( $datos ){
 						/*******************************************************************************************************************
 						 * Realizar en servicio
 						 *******************************************************************************************************************/
-						echo "<td>";
+						echo "<td style='text-align:center;'>";
 						
 						$puedeMarcarRealizarServicio = false;
 						//Si tiene toma de muestra
@@ -15172,7 +15359,7 @@ function pintarDatosFila( $datos ){
 							if( $wpreguntarRealizaEnservicio && !$wrealizadoEnPiso )
 							{	
 								$preuntaPorRealizarEnServicio = true;
-								echo "<input type='checkbox' value='' onclick='realizarEnServicio(".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";
+								echo "<input type='checkbox' value='' onclick='realizarEnServicio( this, ".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";
 							}
 						}
 

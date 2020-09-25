@@ -1068,6 +1068,61 @@ class AccionPestanaDTO{
  * FUNCIONES
  ***********************************/
  
+ 
+ 
+function enviarHL7FaltantesPorHistoria( $conex, $wemp_pmla, $wmovhos, $whce, $usuario, $his, $ing ){
+	
+	$val = '';
+	
+	//Consulto los tipo de orden para Hiruko
+	$sql = "SELECT Sedtor
+			  FROM ".$wmovhos."_000264 a
+			 WHERE Sedest = 'on'
+			 ";
+	
+	$resH 	= mysql_query( $sql, $conex ) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	
+	$tipoOrdenHiruko = [];
+	
+	while( $rowsH = mysql_fetch_array( $resH ) ){
+		$tipoOrdenHiruko[] = $rowsH['Sedtor'];
+	}
+	
+	//Consulto si existe cups ofertados por tipo de orden
+	$sql = "SELECT a.habcod, a.habhis, a.habing, c.Dettor
+			  FROM ".$wmovhos."_000020 a, ".$whce."_000027 b, ".$whce."_000028 c, ".$whce."_000047 d
+			 WHERE a.habhis  = b.ordhis
+			   AND a.habing  = b.ording
+			   AND c.dettor  = b.ordtor
+			   AND c.detnro  = b.ordnro
+			   AND c.detest  = 'on'
+			   AND b.ordest  = 'on'
+			   AND c.detenv  = 'on'
+			   AND c.deteex  = ''
+			   AND d.codigo  = c.detcod
+			   AND d.codcups!= ''
+			   AND a.habhis = '".$his."'
+			   AND a.habing = '".$ing."'
+		  GROUP BY 1,2,3,4
+			 ";
+	
+	$res 	= mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	
+	while( $rows = mysql_fetch_array( $res ) ){
+		
+		if( in_array( $rows['Dettor'], $tipoOrdenHiruko ) ){
+			//Esta función se encarga de enviar las ordenes al sistema Hiruko, validando por tipo de orden en la tabla de sedes de Hiruko
+			enviarOrdenesAAgendar( $conex, $whce, $wmovhos, $rows['habhis'], $rows['habing'] );
+		}
+		else{
+			//Esta función envía las ordenes a laboratorio
+			crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $rows['habhis'], $rows['habing'], $usuario );
+		}
+	}
+	
+	return $val;
+}
+ 
 /************************************************************************************************
  * Consulto el estado detallado (perteneciente a un estudio) por codigo
  ************************************************************************************************/
@@ -1075,7 +1130,7 @@ function detalleEstadoOrdenes( $conex, $wbasedato, $codigo ){
 	
 	$val = [];
 	
-	$sql = "SELECT Eexcod, Eexdes, Eexord, Eexaut, Eexest, Eexmeh, Eexpen, Eexenf, Eexcpe, Eexpnd, Eexrea, Eexcan, Eexgen, Eexapa, Eexepe, Eexrpe, Eexere, Eexeau, Eexrno, Eexhor
+	$sql = "SELECT Eexcod, Eexdes, Eexord, Eexaut, Eexest, Eexmeh, Eexpen, Eexenf, Eexcpe, Eexpnd, Eexrea, Eexcan, Eexgen, Eexapa, Eexepe, Eexrpe, Eexere, Eexeau, Eexrno, Eexhor, Eexpin
 			  FROM ".$wbasedato."_000045
 		     WHERE Eexcod = '".$codigo."'";
 	
@@ -1094,6 +1149,7 @@ function detalleEstadoOrdenes( $conex, $wbasedato, $codigo ){
 				'esEstadoRealizado' 		=> $row['Eexere'] == 'on',
 				'esEstadoAutorizado' 		=> $row['Eexeau'] == 'on',
 				'esEstadoReazliadoNocturno' => $row['Eexrno'] == 'on',
+				'permiteInteroperabilidad' 	=> $row['Eexpin'] == 'on',
 			];
 	}
 	
@@ -1111,18 +1167,19 @@ function cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, 
 		
 	$detEstado  = detalleEstadoOrdenes( $conex, $wmovhos, $estado );
 	
+	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
+	
 	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	if( $hayInteroperabilidad && $cupOfertado )
 	{
 		//Solo se hace si el estado es Autorizado
-		if( $detEstado['esEstadoAutorizado'] )
+		if( $detEstado['permiteInteroperabilidad'] )
 		{
 			$fecha 	= date( "Y-m-d" );
 			$hora 	= date("H:i:s");
 			
-			$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 			
 			$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
 			
@@ -1199,7 +1256,8 @@ function cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, 
 
 				registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
 				
-				crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
+				// crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
+				enviarHL7FaltantesPorHistoria( $conex, $wemp_pmla, $wmovhos, $whce, $usuario, $rows['Ordhis'], $rows['Ording'] );
 				/************************************************************************************/
 			}
 		}
@@ -1343,7 +1401,8 @@ function enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $to
 	//Consulto encabezado de kardex del dia
 	$sql = "UPDATE ".$wmovhos."_000159 b
 			   SET Detenv = '".$detval."',
-				   Detlog = 'M'
+				   Detlog = 'M',
+				   Detnof = 'off'
 			 WHERE Dettor = '".$tor."'
 			   AND Detnro = '".$nro."'
 			   AND Detite = '".$item."'
@@ -1355,7 +1414,8 @@ function enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $to
 	//Consulto encabezado de kardex del dia
 	$sql = "UPDATE ".$whce."_000028 b
 			   SET Detenv = '".$detval."',
-				   Detlog = 'M'
+				   Detlog = 'M',
+				   Detnof = 'off'
 			 WHERE Dettor = '".$tor."'
 			   AND Detnro = '".$nro."'
 			   AND Detite = '".$item."'
@@ -1407,7 +1467,8 @@ function enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $to
 
 		registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
 		
-		crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
+		// crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
+		enviarHL7FaltantesPorHistoria( $conex, $wemp_pmla, $wmovhos, $whce, $usuario, $rows['Ordhis'], $rows['Ording'] );
 		/************************************************************************************/
 	}
 	else{
@@ -1786,9 +1847,6 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 				'tipoOrden'		=> $rows['Ordtor'], 
 				'nroOrden'		=> $rows['Ordnro'], 
 			);
-		
-		
-		// curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
 		// set URL and other appropriate options
 		$options = array(
@@ -1817,29 +1875,29 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 		curl_close($ch);
 	}
 	
-	// if( count( $ids ) > 0 ){
+	if( count( $ids ) > 0 ){
 		
-		// $sql = "UPDATE ".$whce."_000027 a, ".$whce."_000028 b
-				   // SET Detenv = 'off',
-					   // Deteex = 'E'
-				 // WHERE a.id in(".implode( ",", $ids ).")
-				   // AND b.Dettor = a.Ordtor
-				   // AND b.Detnro = a.Ordnro
-			// ";
+		$sql = "UPDATE ".$whce."_000027 a, ".$whce."_000028 b
+				   SET Detenv = 'off',
+					   Deteex = 'E'
+				 WHERE a.id in(".implode( ",", $ids ).")
+				   AND b.Dettor = a.Ordtor
+				   AND b.Detnro = a.Ordnro
+			";
 	
-		// $resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		$resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 		
 		
-		// $sql = "UPDATE ".$whce."_000027 a, ".$wbasedato."_000159 b
-				   // SET Detenv = 'off',
-					   // Deteex = 'E'
-				 // WHERE a.id in(".implode( ",", $ids ).")
-				   // AND b.Dettor = a.Ordtor
-				   // AND b.Detnro = a.Ordnro
-			// ";
+		$sql = "UPDATE ".$whce."_000027 a, ".$wbasedato."_000159 b
+				   SET Detenv = 'off',
+					   Deteex = 'E'
+				 WHERE a.id in(".implode( ",", $ids ).")
+				   AND b.Dettor = a.Ordtor
+				   AND b.Detnro = a.Ordnro
+			";
 	
-		// $resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-	// }
+		$resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	}
 	
 }
  
@@ -10840,8 +10898,8 @@ function cargarProcedimientosTemporalADetalleItem( $tipoOrden, $nroOrden, $numer
 		
 		
 		//Si no hay registros en la tabla de detalle de examenes se inserta
-		$sql = "INSERT INTO ".$whce."_000028( Medico, Fecha_data, Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh, Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detlog, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Seguridad )
-				SELECT '$whce' as Medico,         b.Fecha_data, b.Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh, Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detlog, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, 'C-$whce' as Seguridad
+		$sql = "INSERT INTO ".$whce."_000028( Medico, Fecha_data, Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh, Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detlog, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof, Seguridad )
+				SELECT '$whce' as Medico,         b.Fecha_data, b.Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh, Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detlog, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof, 'C-$whce' as Seguridad
 				  FROM ".$whce."_000027 a, ".$basedatos."_000159 b
 				 WHERE a.ordtor = dettor
 				   AND a.ordnro = detnro
@@ -10886,7 +10944,8 @@ function cargarProcedimientosTemporalADetalleItem( $tipoOrden, $nroOrden, $numer
 					   a.Dethtm = b.Dethtm,
 					   a.Detrse = b.Detrse,
 					   a.Detrex = b.Detrex,
-					   a.Detaut = b.Detaut
+					   a.Detaut = b.Detaut,
+					   a.Detnof = b.Detnof
 				 WHERE a.dettor = '".$tipoOrden."'
 				   AND a.detnro = '".$nroOrden."'
 				   AND a.detite = '".$numeroItem."'
@@ -10970,8 +11029,8 @@ function cargarProcedimientosDetalleATemporal( $conex, $wbasedato, $wmovhos, $hi
 	if($num == 0){
 		
 		//Si la temporal está vacía se llena la temporal
-		$sql = "INSERT INTO ".$wmovhos."_000159( Medico, Fecha_data, Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh,Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detpri, Detlog, Deteex, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Seguridad )
-				SELECT '$wmovhos' as Medico,         b.Fecha_data, b.Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh,Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detpri, Detlog, Deteex, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, 'C-$wmovhos' as Seguridad
+		$sql = "INSERT INTO ".$wmovhos."_000159( Medico, Fecha_data, Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh,Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detpri, Detlog, Deteex, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof, Seguridad )
+				SELECT '$wmovhos' as Medico,         b.Fecha_data, b.Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh,Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detpri, Detlog, Deteex, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof, 'C-$wmovhos' as Seguridad
 				  FROM ".$wbasedato."_000027 a, ".$wbasedato."_000028 b
 				 WHERE a.ordhis = '".$his."'
 				   AND a.ording = '".$ing."'
@@ -16179,11 +16238,11 @@ function obtenerMensaje($clave){
 			break;
 			
 		case 'NO_REALIZA_EN_SERVICIO':
-			$texto = "En el estudio se realizará en la ayuda diagnóstica";
+			$texto = "El estudio se realizará en la ayuda diagnóstica";
 			break;
 			
 		case 'REALIZA_EN_PISO':
-			$texto = "En el estudio se realiza en servcio del paciente";
+			$texto = "El estudio se realiza en servcio del paciente";
 			break;
 			
 		default:
@@ -27403,7 +27462,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			}
 			
 			$detalle->wpreguntarRealizaEnservicio = false;
-			if( !$detalle->wrequiereAutorizacion && ( $detalle->wrealizarEnServicio || $detalle->wrealizarExterno ) ){ echo "aaaaa";
+			if( !$detalle->wrequiereAutorizacion && ( $detalle->wrealizarEnServicio || $detalle->wrealizarExterno ) ){
 				$detalle->wpreguntarRealizaEnservicio = true;
 			}
 			/*************************************************************************************************************************************/
@@ -33836,7 +33895,7 @@ function consultarMedicosPorEspecialidad($basedatos,$especialidad){
  * @param $numeroItem
  * @return unknown_type
  */
-function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$nombreExamen,$observaciones,$estadoExamen,$fechaDeSolicitado,$usuario,$consecutivoOrden,$firma,$observacionesOrden,$justificacion,$consecutivoExamen,$numeroItem,$impExamen,$altExamen,$firmHCE, $datosAdicionales, $ordenAnexa, $esOfertado, $usuarioTomaMuestra, $cco = '' ){
+function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$nombreExamen,$observaciones,$estadoExamen,$fechaDeSolicitado,$usuario,$consecutivoOrden,$firma,$observacionesOrden,$justificacion,$consecutivoExamen,$numeroItem,$impExamen,$altExamen,$firmHCE, $datosAdicionales, $ordenAnexa, $esOfertado, $usuarioTomaMuestra, $respuestaRealizarEnServicio, $cco = '' ){
 
 	global $whce;
 	global $wemp_pmla;
@@ -33992,7 +34051,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 	
 	//Verifico que exista EL DETALLE de la orden (el examen en particular)
 	$q = "SELECT
-				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm, Detrse, Detrex, Detaut, Deteex
+				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm, Detrse, Detrex, Detaut, Deteex, Detnof
 			FROM	
 				{$wbasedato}_000159 a, {$whce}_000047 b
 			WHERE 
@@ -34003,7 +34062,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 				AND Detcod = codigo
 			UNION
 		  SELECT
-				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm, Detrse, Detrex, Detaut, Deteex
+				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm, Detrse, Detrex, Detaut, Deteex, Detnof
 			FROM	
 				{$wbasedato}_000159 a, {$whce}_000017 b
 			WHERE 
@@ -34078,7 +34137,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 			
 			if( $hayInteroperabilidad )
 			{
-				$cup = consultarCupPorCodigoEstudio( $conex, $whce, $codigo );
+				$cup = consultarCupPorCodigoEstudio( $conex, $whce, $consecutivoExamen );
 				
 				$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 				
@@ -34169,8 +34228,15 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 					$firma = $fila['Detfir'];
 				}
 			}
-			echo "-".$fila['Detaut'],"-".$fila['Deteex'],"-".$fila['Detesi'];
-			if( $fila['Detaut'] == 'on' && $fila['Deteex'] == '' && ( $fila['Detesi'] == 'P' || $fila['Detesi'] == 'A' ) ){
+			
+			//Si $respuestaRealizarEnServicio es on significa que la enfermera respondió que se realizaría en el servicio	
+			//Si $respuestaRealizarEnServicio es off significa que la enfermera respondió que se realizaría en unidad externa	
+			if( $respuestaRealizarEnServicio == 'off' && $fila['Deteex'] == '' ){
+				$enviarMsgHL7 		= true;
+				$estadoEnvioMsgHL7 	= 'on';
+			}
+			// echo "-".$fila['Detaut'],"-".$fila['Deteex'],"-".$fila['Detesi'];
+			else if( $fila['Detaut'] == 'on' && $fila['Deteex'] == '' && ( $fila['Detesi'] == 'P' || $fila['Detesi'] == 'A' ) ){
 				$enviarMsgHL7 		= true;
 				$estadoEnvioMsgHL7 	= 'off';
 			}
@@ -34193,7 +34259,8 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 					Detenv = ".( $enviarMsgHL7 ? "'".$estadoEnvioMsgHL7."'" : 'Detenv' ).",
 					Detutm = ".( !empty( $usuarioTomaMuestra && empty( $fila['Detutm'] ) ) ? "'".$usuarioTomaMuestra."'" : 'Detutm' ).",
 					Detftm = ".( !empty( $usuarioTomaMuestra && empty( $fila['Detutm'] ) ) ? "'".$fecha."'" : 'Detftm' ).", 
-					Dethtm = ".( !empty( $usuarioTomaMuestra && empty( $fila['Detutm'] ) ) ? "'".date("H:i:s")."'" : 'Dethtm' )."
+					Dethtm = ".( !empty( $usuarioTomaMuestra && empty( $fila['Detutm'] ) ) ? "'".date("H:i:s")."'" : 'Dethtm' ).",
+					Detnof = ".( empty( $respuestaRealizarEnServicio ) ? "'".$fila['Detnof']."'" : "'".$respuestaRealizarEnServicio."'" )."
 					$updateExtra
 				WHERE
 					Dettor = '$codigoExamen'
@@ -39127,7 +39194,7 @@ if(isset($consultaAjaxKardex)){
 			break;
 		case 7:
 			// echo json_decode( $datosAdicionales );
-			echo grabarExamenKardex($basedatos,$historia,$ingreso,$fecha,$codigoExamen,$nombreExamen,$observaciones,$estado,$fechaDeSolicitado,$codUsuario,$consecutivoOrden,$firma,$observacionesOrden,$justificacion,$consecutivoExamen,$numeroItem,$impExamen,$altExamen, $firmHCE, json_decode( $datosAdicionales ), $ordenAnexa, $esOfertado == 1 ? 'on' : 'off', $usuarioTomaMuestra, $cco );
+			echo grabarExamenKardex($basedatos,$historia,$ingreso,$fecha,$codigoExamen,$nombreExamen,$observaciones,$estado,$fechaDeSolicitado,$codUsuario,$consecutivoOrden,$firma,$observacionesOrden,$justificacion,$consecutivoExamen,$numeroItem,$impExamen,$altExamen, $firmHCE, json_decode( $datosAdicionales ), $ordenAnexa, $esOfertado == 1 ? 'on' : 'off', $usuarioTomaMuestra, $realizarEnServicio, $cco );
 			break;
 		case 8:
 			echo eliminarExamenKardex($basedatos,$historia,$ingreso,$fecha,$codExamen,$consecutivoOrden,$codUsuario,$numeroItem);
@@ -39624,7 +39691,7 @@ if(isset($consultaAjaxKardex)){
 			$wmovhos= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos');
 			$whce 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce');
 			
-			if( $realizarEnPiso == 'on' ){
+			if( $realizarEnPiso != 'on' ){
 				enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $numeroOrden, $item, $wusuario );
 			}
 			else{
