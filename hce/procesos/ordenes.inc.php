@@ -38987,8 +38987,8 @@ function consultarProtocolo($wbasedato,$protocolo,$cco,$codUsuario){
 			if($rs['Procco']=="*" || $rs['Procco']==$cco)	
 			{
 				
-				if (!array_key_exists($rs['Dprcod']."-".$rs['Dprpes'], $arrayDetalleProtocolo))
-				{
+				// if (!array_key_exists($rs['Dprcod']."-".$rs['Dprpes'], $arrayDetalleProtocolo))
+				// {
 					$consulta .= 
 					$rs['Dprcod'].
 					"|".$rs['Dprfre'].
@@ -39004,7 +39004,7 @@ function consultarProtocolo($wbasedato,$protocolo,$cco,$codUsuario){
 					"\\";
 					
 					$arrayDetalleProtocolo[$rs['Dprcod']."-".$rs['Dprpes']] = $rs['Dprcod'];
-				}
+				// }
 				
 			}
 			
