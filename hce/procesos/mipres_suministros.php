@@ -14196,6 +14196,7 @@ function add_months( dt , n )
 	//Nueva funcionalidad para imprimir  reporte 03-10-2020 Mavila :)
 	function openPrintDialogue( info , encabezado ){		
 		//Se toma envio información a un div con los datos :)
+		$("#printDiv").html('<br>');
 		$("#printDiv").append('<h1>'+ encabezado +'</h1>'+'<br><h2>'+ info +'</h2>');
 		//Se obtiene la información del div :)
 		var mydiv = document.getElementById("printDiv");
