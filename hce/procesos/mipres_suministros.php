@@ -14193,7 +14193,19 @@ function add_months( dt , n )
 		jAlert ( info );
 	}
 	
-	
+	//Nueva funcionalidad para imprimir  reporte 03-10-2020 Mavila :)
+	function openPrintDialogue( info , encabezado ){		
+		//Se toma envio información a un div con los datos :)
+		$("#printDiv").append('<h1>'+ encabezado +'</h1>'+'<br><h2>'+ info +'</h2>');
+		//Se obtiene la información del div :)
+		var mydiv = document.getElementById("printDiv");
+		//Se envian datos del div a un iframe para imprimirlo :)
+		window.frames["print_frame"].document.body.innerHTML = $(mydiv).html();
+        window.frames["print_frame"].window.focus();
+        window.frames["print_frame"].window.print();
+	}
+	//Funcionalidad anterior comentada por error en firefox 03-10-2020 Mavila :)
+	/*
 	function openPrintDialogue( info , encabezado )//imprime info 
 	{
 	  $('<iframe>', {
@@ -14221,7 +14233,7 @@ function add_months( dt , n )
 	  window.frames['myiframe'].print();
 
 	 setTimeout(() => { $(".printFrame").remove(); }, 1000);
-}//function openPrintDialogue( info , encabezado )//imprime info 
+	}//function openPrintDialogue( info , encabezado )//imprime info */
 	
 	function imprimirfacturacion ( cta ){
 		
@@ -15715,7 +15727,10 @@ function add_months( dt , n )
 	?>
 
 
-
+		<!-- Iframe y div para imprimir la información de los informes de mipres Mavila 05-10-2020 :)-->
+		<iframe name="print_frame" style="display:none" width="0" height="0" frameborder="0" src="about:blank">
+        </iframe>
+		<div id="printDiv" name="printDiv" style="display:none"></div>
 	</BODY>
 <!--=====================================================================================================================================================================
 	F I N   B O D Y
