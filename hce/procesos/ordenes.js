@@ -136,7 +136,7 @@ function marcarCambioRealizarEnServicio( cmp, enServcio, externo, indice, contex
 	
 	marcarCambio( indice, contexamen );
 	
-	// var msg = "El estudio <b>"+$( "#wnmexamen"+contexamen ).val()+"</b> no se realizará en la ayuda diagnóstica por uno de los siguientes motivos?";
+	// var msg = "En donde se realizará el estudio <b>"+$( "#wnmexamen"+contexamen ).val()+"</b>?<br><br>En el servicio dónde se encuentra el paciente puede realizarse por uno de los siguientes motivos: ";
 	
 	// if( enServcio ){
 		// msg += "<br><br>- Por que se realizará en la unidad hospitalaria ";
@@ -146,23 +146,19 @@ function marcarCambioRealizarEnServicio( cmp, enServcio, externo, indice, contex
 		// msg += "<br><br>- Por que el equipo requerido no se encuentra disponible ";
 	// }
 	
-	var msg = "En donde se realizará el estudio <b>"+$( "#wnmexamen"+contexamen ).val()+"</b>?<br><br>En el servicio dónde se encuentra el paciente puede realizarse por uno de los siguientes motivos: ";
+	var msg = "En donde se realizará el estudio <b>"+$( "#wnmexamen"+contexamen ).val()+"</b>?";
 	
-	if( enServcio ){
-		msg += "<br><br>- Por que se realizará en la unidad hospitalaria ";
-	}
+	msg += "<br><br><b>Relizar en servicio o externo:</b> Indica que el estudio se realizará en el servicio dónde se encuentra el paciente o se realizará en una Institución externa ya sea por qué el equipo requerido en la unidad interna (Cardiología, imagenlogía, laboratorio, etc ) no se encuentra disponible u otro motivo";
 	
-	if( externo ){
-		msg += "<br><br>- Por que el equipo requerido no se encuentra disponible ";
-	}
+	msg += "<br><br><b>Realizar en Ayuda diagnóstica:</b> Indica que el estudio se realizará en una unidad interna de la clínica (Cardiología, imagenlogía, laboratorio, etc )";
 	
 	$( "<div style='color: black;font-size:12pt;height: 250px;' title='REALIZAR EN SERVICIO?' class='dvRealizarEnServicio'>"+msg+"</div>" ).dialog({
 		width		: 600,
-		height		: 300,
+		height		: 400,
 		modal		: true,
 		resizable	: false,
 		buttons	: {
-			"Relizar en servicio": function() {
+			"Relizar en servicio o externo": function() {
 					cmp.checked = true;
 					cmp.value = 'on';
 					$( this ).dialog( "close" );

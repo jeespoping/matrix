@@ -2885,26 +2885,21 @@ if($slCcoDestino != '' and $wsp == 'on' and $mostrar == 'on') { ?>
 
 function realizarEnServicio( cmp, enServcio, externo, tipoOrden, numeroOrden, item, historia, ingreso, estudio ){
 	
-	// var msg = "El estudio <b>"+estudio+"</b> no se realizará en la ayuda diagnóstica por uno de los siguientes motivos?";
+	// var msg = "En donde se realizará el estudio <b>"+estudio+"</b>?<br><br>En el servicio dónde se encuentra el paciente puede realizarse por uno de los siguientes motivos: ";
 	
 	// if( enServcio ){
 		// msg += "<br><br>- Por que se realizará en la unidad hospitalaria ";
-		
 	// }
 	
 	// if( externo ){
 		// msg += "<br><br>- Por que el equipo requerido no se encuentra disponible ";
 	// }
 	
-	var msg = "En donde se realizará el estudio <b>"+estudio+"</b>?<br><br>En el servicio dónde se encuentra el paciente puede realizarse por uno de los siguientes motivos: ";
+	var msg = "En donde se realizará el estudio <b>"+estudio+"</b>?";
 	
-	if( enServcio ){
-		msg += "<br><br>- Por que se realizará en la unidad hospitalaria ";
-	}
+	msg += "<br><br><b>Relizar en servicio o externo:</b> Indica que el estudio se realizará en el servicio dónde se encuentra el paciente o se realizará en una Institución externa ya sea por qué el equipo requerido en la unidad interna (Cardiología, imagenlogía, laboratorio, etc ) no se encuentra disponible u otro motivo";
 	
-	if( externo ){
-		msg += "<br><br>- Por que el equipo requerido no se encuentra disponible ";
-	}
+	msg += "<br><br><b>Realizar en Ayuda diagnóstica:</b> Indica que el estudio se realizará en una unidad interna de la clínica (Cardiología, imagenlogía, laboratorio, etc )";
 	
 	function enviarRespuestaAOrdenes( resp ){
 		
@@ -2923,7 +2918,6 @@ function realizarEnServicio( cmp, enServcio, externo, tipoOrden, numeroOrden, it
             }
             ,function(data) {
 				console.log(data);
-				$( cmp ).css({display:"none"});
             },"json" );
 	}
 	
@@ -2934,16 +2928,23 @@ function realizarEnServicio( cmp, enServcio, externo, tipoOrden, numeroOrden, it
 		resizable	: false,
 		buttons	: {
 			"Relizar en servicio o externo": function() {
-					cmp.checked = true;
+					cmp.checked = false;
 					cmp.value = 'on';
 					enviarRespuestaAOrdenes( 'on' );
 					$( this ).dialog( "close" );
+					$( cmp ).css({display:""});
 				},
 			"Realizar en Ayuda diagnóstica": function() {
-					cmp.checked = true;
-					cmp.value = 'off';
-					enviarRespuestaAOrdenes( 'off' );
-					$( this ).dialog( "close" );
+					let __self = this;
+					jConfirm( "Esta decisión no puede ser modificada. Está seguro(a) que se realizará en la Unidad diagnóstica correspondiente?","ALERTA", function(r){
+						if(r){
+							cmp.checked = true;
+							cmp.value = 'off';
+							enviarRespuestaAOrdenes( 'off' );
+							$( __self ).dialog( "close" );
+							$( cmp ).css({display:"none"});
+						}
+					});
 				},
 			"Cancelar": function() {
 					cmp.checked = false;
@@ -15356,7 +15357,7 @@ function pintarDatosFila( $datos ){
 						$preuntaPorRealizarEnServicio = false;
 						if( $puedeMarcarRealizarServicio )
 						{
-							if( $wpreguntarRealizaEnservicio && !$wrealizadoEnPiso )
+							if( $wpreguntarRealizaEnservicio || $wrealizadoEnPiso )
 							{	
 								$preuntaPorRealizarEnServicio = true;
 								echo "<input type='checkbox' value='' onclick='realizarEnServicio( this, ".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";

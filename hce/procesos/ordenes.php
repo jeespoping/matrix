@@ -4473,7 +4473,7 @@ if (!$usuarioValidado){
 						 *********************************************************************************************************************/
 						echo "<td>";
 						
-						if( $examen->wpreguntarRealizaEnservicio && !$examen->wrealizadoEnPiso )
+						if( $examen->wpreguntarRealizaEnservicio || $examen->wrealizadoEnPiso )
 						{	
 							// echo "<input type='checkbox' value='' onclick='realizarEnServicio(".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";
 							crearCampo("5","wrealizarEnServicio$contExamenes",@$accionesPestana[$indicePestana.".17"],array("class"=>"campo2","onChange"=>"marcarCambioRealizarEnServicio( this, ".( $examen->wrealizarEnServicio ? 'true' : 'false' ).",".( $examen->wrealizarExterno ? 'true' : 'false' ).",'$indicePestana','$contExamenes');"),"");
