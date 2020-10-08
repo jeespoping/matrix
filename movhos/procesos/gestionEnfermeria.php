@@ -13009,7 +13009,7 @@ function pintarDatosFila( $datos ){
 				if($wurgencias){
 					echo "<td rowspan=2>Dar Alta</td>";
 				}
-				elseif($wcirugia){
+				elseif( $wcirugia && empty($ccoayuda) ){
 					echo "<td rowspan=2>Dar Alta Definitva</td>";
 					echo "<td rowspan=2>Muerte</td>";
 				}
@@ -13649,7 +13649,7 @@ function pintarDatosFila( $datos ){
 				echo "<td align=center><input type=checkbox class='msg_alta_proceso' title='Poner de Alta' id='alta_$valueDatos->historia-$valueDatos->ingreso' $westado_checkbox onclick='marcaraltaenproceso($valueDatos->historia,$valueDatos->ingreso,$i, \"$wtraslado\")'></td>";
 
 			}
-			elseif($wcirugia){
+			elseif($wcirugia && empty($ccoayuda) ){
 
 				//Cajon de alta definitiva
 				//Si el paciente es esta ubicado en un centro de costos ambulatorio el codigo de la habitacion es Cx (Cirugia)
