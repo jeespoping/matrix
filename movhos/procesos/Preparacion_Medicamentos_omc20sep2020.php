@@ -50,8 +50,6 @@ include_once("conex.php");
 //=============================================================================================================================================
 //M O D I F I C A C I O N E S
 //=============================================================================================================================================
-// 2020-09-20 ( Edwin MG )	Se corrige consulta por cambio a BD mysql 8
-//=============================================================================================================================================
 // 2019-03-06 ( Edwin MG )	Se muestra el cco de urgencias y pide zonas según el cco
 //=============================================================================================================================================
 // 2018-02-15 ( Edwin MG )	Los medicamentos de ayudas diagnósticas no se muestran en piso
@@ -452,7 +450,7 @@ else
 						."   FROM ".$wbasedato."_000053 "
 						."  WHERE karhis = '".$whis."'"
 						."    AND karing = '".$wing."'"
-						."    AND fecha_data = '".( empty( $wfecha_actual ) ? '0000-00-00' : $wfecha_actual )."'"	//Se corrige consulta por cambio a BD mysql 8, la fecha no puede ser vacia
+						."    AND fecha_data = '".$wfecha_actual."'"
 						."    AND karcon = 'on' "
 						."    AND karcco = '*' ";
 					$res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());

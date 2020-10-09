@@ -34,7 +34,7 @@ include_once("conex.php");
 
  
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2020-09-25';
+			$wactualiz='2020-05-26';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //
 //
@@ -2485,7 +2485,7 @@ else
 	<script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
 	<script src="../../../include/root/jquery.tooltip.js" type="text/javascript"></script>
 	<script src="../../../include/root/jquery.maskedinput.js" type="text/javascript"></script>
-	<script src="../../../matrix/ips/procesos/MarcaDeAguaERP.js" type="text/javascript"></script>
+	<script src="<?=$URL_ACTUAL?>procesos/MarcaDeAguaERP.js" type="text/javascript"></script>
 	<script type="text/javascript" src="../../../include/root/jquery.ui.timepicker.js"></script>
 
 	<!--<script src="../../../include/root/jquery.maskedinput.js" type="text/javascript"></script>-->

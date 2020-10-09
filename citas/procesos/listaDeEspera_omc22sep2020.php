@@ -1254,17 +1254,7 @@ if (isset($_POST['submit'])) {
                                     } ?> id=<?php echo "envioLinkTD" . $key; ?>>
                             <!-- <input type="text" name=<?php echo "link" . $key; ?> id=<?php echo "link" . $key; ?> value='<?php echo htmlspecialchars($registro['drvlnk']); ?>'> -->
                             <!-- <button type="button" onclick="guardarLink(<?php echo $key; ?>, <?php echo $registro['id']; ?>)">Guardar</button> -->
-                            <button type="button" onclick="enviarLink('<?php echo $key; ?>',
-                                                                        '<?php echo htmlspecialchars($registro['drvema']); ?>',
-                                                                        '<?php echo htmlspecialchars($registro['id']); ?>',
-                                                                        '<?php echo htmlspecialchars($registro['drvnom']); ?>',
-                                                                        '<?php echo htmlspecialchars($registro['drvap1']); ?> <?php echo htmlspecialchars($registro['drvap2']); ?>',
-                                                                        '<?php echo htmlspecialchars($registro['drvvcr']); ?>',
-                                                                        '<?php echo htmlspecialchars($registro['drvlnk']); ?>',
-                                                                        '<?php echo htmlspecialchars($registro['drvser']); ?>')" <?php if (htmlspecialchars($registro['drvvcr']) === "" || htmlspecialchars($registro['drvvcr']) <= "0") {
-                                                                                                                                        echo "disabled";
-                                                                                                                                    }
-                                                                                                                                    ?>>Enviar</button>
+                            <button type="button" onclick="enviarLink('<?php echo $key; ?>','<?php echo htmlspecialchars($registro['drvema']); ?>','<?php echo htmlspecialchars($registro['id']); ?>','<?php echo htmlspecialchars($registro['drvnom']); ?>','<?php echo htmlspecialchars($registro['drvap1']); ?> <?php echo htmlspecialchars($registro['drvap2']); ?>','<?php echo htmlspecialchars($registro['drvvcr']); ?>','<?php echo htmlspecialchars($registro['drvlnk']); ?>','<?php echo htmlspecialchars($registro['drvser']); ?>')">Enviar</button>
                             <div><b id=<?php echo "showEmailSent" . $key; ?>></b></div>
                         </td>
                         <!-- <td> -->
@@ -1361,11 +1351,11 @@ if (isset($_POST['submit'])) {
                 </tbody>
             </table>
         </div>
-        <!--
+
         <div id="dialog-cancel" title="Cancelar registro">
             <h2 style='min-width: -moz-max-content;'>Est&aacute; seguro de cancelar el registro <b id="idDelRegistroACancelar"></b> ?</h2>
 
-        </div> -->
+        </div>
     </div>
     <br>
     <table align="center">
@@ -1396,13 +1386,6 @@ if (isset($_POST['submit'])) {
             $('#tablaExamenes').hide();
             $('#showEmailSent').hide();
             $('#seccionCovid').hide()
-            $("#dialog-confirm").hide()
-            $('#eps').attr({
-                disabled: true,
-            })
-            $('#plan').attr({
-                disabled: true,
-            })
         })
 
         // $('#submitFormulario').click(function() {
@@ -1632,6 +1615,7 @@ if (isset($_POST['submit'])) {
         function admitir(index, id, identificacion, tipodedocumento, apellido1, apellido2, nombres, fechaDeNacimiento, sexo, direccion, celular, email, fijo, aseguradora, plan, poliza, valorACancelar, fechaSintomas, sintomas, clasificacion) {
             // console.log(plan);
             let usuario = '<?php echo $wuse; ?>'
+            console.log(usuario, "usuario")
             let date = new Date()
             let year = date.getFullYear()
             let month = date.getMonth()
@@ -1877,19 +1861,9 @@ if (isset($_POST['submit'])) {
         $("#service").change(function() {
 
             if ($('#service').val() === "DT" || $('#service').val() === "DTP") {
-
                 $('#seccionCovid').show()
             } else {
                 $('#seccionCovid').hide()
-            }
-
-            if ($('#service').val() !== "") {
-                $('#eps').attr({
-                    disabled: false,
-                })
-                $('#plan').attr({
-                    disabled: false,
-                })
             }
 
             $.ajax({

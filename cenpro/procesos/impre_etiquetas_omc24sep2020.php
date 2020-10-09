@@ -22,8 +22,10 @@
 								segun con los campos requeridos y se deja El mismo legunaje Zebra ZPL para generar y diseñar las etiquetas.	 			  		
  * AUTOR        			  : Didier Orozco Carmona.                                                                                       |
  * FECHA PUBLICACION	      : 2020-06-26.                                                                                             |
- * FECHA ULTIMA ACTUALIZACION : 2019-06-26. 
- *
+ * FECHA ULTIMA ACTUALIZACION : 2020-07-16. 
+ * MODIFICACION				  : 2020-07-16 --> Se procede a cambiar el tipo de letra del nombre d ela letra.
+ *							  : 2020-07-16 --> Se procede a agregar funcion para cambiar el codigo si lo ingresan en 
+										   --> minuscula que siempre en la etiqueta aparece en mayuscula.	
  *									
  */
     include_once("conex.php");
@@ -54,7 +56,7 @@
 $fecha_actual = date('d-m-Y');
 $hora_actual = date('H:i');
 //---------------------------->>> CAPTURAR LOS DATOS DEL FORMULARIO <<<----------------------------------------
-$wcod = $_POST['wcod'];
+$wcod = strtoupper($_POST['wcod']);
 $wlot=$_POST['wlot'];
 $wlotm=$_POST['wlotm'];
 $wnom = $_POST['wnom'];
@@ -102,8 +104,8 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 			echo "<tr><td bgcolor=#cccccc>Hora</td>";
 			echo "<td bgcolor=#cccccc><input type=text' value='".$hora_actual."' name='whor' size=10 maxlength=10></td></tr>";
 			
-			//echo "<tr><td bgcolor=#cccccc>Nro. de Lote Acondicionamiento</td>";
-			//echo "<td bgcolor=#cccccc><input type='TEXT' id='wlot' name='wlot' size=20 maxlength=20 readonly></td></tr>";
+			echo "<tr><td bgcolor=#cccccc>Nro. de Lote Acondicionamiento</td>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' id='wlot' name='wlot' size=20 maxlength=20 readonly></td></tr>";
 			
 			echo "<tr><td bgcolor=#cccccc>Nro. de Lote de Medicamento</td>";
 			echo "<td bgcolor=#cccccc><input type='TEXT' id='wlotm' name='wlotm' size=20 maxlength=20></td></tr>";
@@ -174,7 +176,7 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 			/////////////////////////////--> REALIZAR CONSULTA DE LA FIRMA DE QUIEN APRUEBA <--////////////////////////////////////////
 			$select_aprobo = mysql_query("SELECT descripcion,Firfir 
 								from usuarios left join cenpro_000023 on codigo = fircod
-								where codigo='$wapro'");					
+								where codigo='$wapro'");
 			$resultado_aprobo=mysql_fetch_array($select_aprobo);
 				$apro_nom = substr($resultado_aprobo[0],0,21);
 				$apro_firma = $resultado_aprobo[1];
@@ -190,21 +192,21 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 							^CFR
 							^FO240,10^FD".$wcod."^FS
 							
-							^FX Lote medicamento y fecha vencimiento
+							^FX Lote y fecha acondicionamiento
 							^CFP
-							^FO240,40^FDLOTE M:".$wlotm."^FS
-							^FO240,60^FDF.V: ".$wfecv."^FS
+							^FO240,40^FD#ACON:".$wlot."^FS
+							^FO240,60^FDF. ACON: ".$wacon."^FS
 
 							^FX Nombre del producto
-							^CFP
+							^CFR
 							^FO10,85^FD".$wnom."^FS
 							^FO10,110^FD".$wnomc."^FS
 
 							^FX Fecha y hora Acondicionamiento y lote de medicamento
 							^CFP
-							^FO10,140^FDF. ACON: ".$wacon."^FS
+							^FO10,140^FDF.V: ".$wfecv."^FS
 							^FO190,140^FDH. ACOND: ".$whor."^FS
-							^FO10,160^FDINVIMA: ".$winv."^FS
+							^FO10,160^FDLOTE M: ".$wlotm."^FS
 							
 							^FX Acondiciona
 							^CFP
@@ -216,9 +218,10 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 							^FO10,220^FDVERIFICO:^FS
 							^FO10,240^FD".$apro_nom."^FS
 
-							^FX Via
+							^FX Via e Invima
 							^CFP
 							^FO10,260^FDVIA:".$wvia."^FS                                                                                                            
+                            ^FO180,160^FDINVIMA:".$winv."^FS                                         
 	                        
 							^FX Observacion
 							^CFP

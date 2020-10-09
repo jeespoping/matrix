@@ -9,8 +9,6 @@ include_once("conex.php");
  *********************************************************************************************************
 
  Actualizaciones:
- *  2020-09-22	: Se adiciona ORDER BY ORDINAL_POSITION al query que obtiene los campos de las tablas 
- *				  para evitar que no se muestren los campos en desorden en mysql 8
  *  2020-05-26   : Freddy Saenz
  *                 1. Grabar en el log , el estado de como se encontraba el registro antes de editarlo
  *                 2. Corregir : abrir_tabla hace llamado al metodo PermisosTabla que cuando se abre la primera vez la ventana
@@ -21,7 +19,7 @@ include_once("conex.php");
  *				  correctamente las tildes.
  **********************************************************************************************************/
 
-$wactualiz = "2020-09-22";
+$wactualiz = "2020-05-27";
 
 if(!isset($_SESSION['user'])){
 	echo "error";
@@ -2230,8 +2228,7 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 
 			$select_campos_tabla ="	SELECT COLUMN_NAME
 									  FROM INFORMATION_SCHEMA.COLUMNS
-									 WHERE table_name = '".$wtabla."'
-									 ORDER BY ORDINAL_POSITION";
+									 WHERE table_name = '".$wtabla."'";
 
 			$res = 	mysql_query($select_campos_tabla,$conex) or die ("Error 2: ".mysql_errno()." - en el query: ".$select_campos_tabla." - ".mysql_error());
 			$i=0;

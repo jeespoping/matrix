@@ -113,8 +113,6 @@ input.promptbox { border:1 solid #0000FF; background-color:white;width:90%; }
 	*
 	* Modificaciones:
 	*
-	* 	Septiembre 21 de 2020	(Edwin MG) -> Si la variable $fechaAyer es vacia, se deja por defecto con valor 0000-00-00, esto para que las consultas con fecha no generen error.
-	*										  Esto es debido al cambio de BD realizada el 19 de septiembre
 	* 	Junio 09 de 2020		(Edwin MG) -> Se hacen cambios varios para poder visualizar las ordenes en modo de consulta y poder imprimir las ordenes de medicamentos o de estudios en este modo
 	* 	Abril 16 de 2020		(Edwin MG) -> Al dar click sobre cerrar ventana o grabar las ordenes regresa a HCE
 	* 	Octubre 04 de 2017		(Edwin MG) -> Se deshabilita el lenguage américas idc
@@ -415,11 +413,6 @@ if (!$usuarioValidado){
 	
 	if( $rows = mysql_fetch_array( $res ) ){
 		$fechaAyer = $rows[0];
-	}
-	
-	//2020-09-21. Si la fecha es vacia se deja por defecto la fecha 0000-00-00, para que no halla conflicto con la BD
-	if( empty( $fechaAyer ) ){
-		$fechaAyer = '0000-00-00';
 	}
 	/************************************************************************************************************************************/
 			

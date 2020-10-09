@@ -704,13 +704,15 @@ function periodosSolicitadosPorAprobar($conex, $wemp_pmla, $wbasedato, $wusuario
     $fecha_actual = date("Y-m-d");
     // No se mostrarán las solicitudes que ya empezó el periodo de disfrute (Dvafid)
     $arr_solicitudEnviada = array();
- /*   $sql = "SELECT  n12.Dvause AS wusuario_solicitud, n12.Dvapfi AS fecha_inicio_pendiente, n12.Dvapff AS fecha_fin_pendiente
+    $sql = "SELECT  n12.Dvause AS wusuario_solicitud, n12.Dvapfi AS fecha_inicio_pendiente, n12.Dvapff AS fecha_fin_pendiente
                     , n12.Dvadpe AS dias_disponibles, n12.Dvaerc AS respuesta_coordinador, n12.Dvaern AS respuesta_nomina
                     , n12.Dvadso AS dias_solicitados, n12.Dvafid AS fecha_inicio_solicitud, n12.Dvaffd AS fecha_fin_solicitud
                     , n12.id as id_solicitud, n12.Dvacco AS wcentro_costo_empleado, 'pendiente' estadoSolicitud, n12.Fecha_data as fecha_Creacion_Solicitud
             FROM    {$wbasedato}_000012 AS n12
             WHERE   n12.Dvause = '{$wusuario}'
                     AND n12.Dvaest = 'on'
+                    AND n12.Dvafid <> ''
+                    AND n12.Dvaffd <> ''
                     AND n12.Dvaerc <> 'RECHAZADO'
                     AND n12.Dvaern <> 'RECHAZADO'
                     AND n12.Dvafid >= '{$fecha_actual}'
@@ -722,11 +724,13 @@ function periodosSolicitadosPorAprobar($conex, $wemp_pmla, $wbasedato, $wusuario
             FROM    {$wbasedato}_000012 AS n12
             WHERE   n12.Dvause = '{$wusuario}'
                     AND n12.Dvaest = 'on'
+                    AND n12.Dvafid <> ''
+                    AND n12.Dvaffd <> ''
                     AND n12.Dvaern <> 'RECHAZADO'
                     AND n12.Dvaern <> 'APROBADO'
                     AND n12.Dvaerc = 'APROBADO'
                     AND n12.Dvafid < '{$fecha_actual}'
-            ORDER BY fecha_inicio_pendiente ASC";*/
+            ORDER BY fecha_inicio_pendiente ASC";
 
         $sql = "SELECT  n12.Dvause AS wusuario_solicitud, n12.Dvapfi AS fecha_inicio_pendiente, n12.Dvapff AS fecha_fin_pendiente
                     , n12.Dvadpe AS dias_disponibles, n12.Dvaerc AS respuesta_coordinador, n12.Dvaern AS respuesta_nomina
@@ -735,6 +739,8 @@ function periodosSolicitadosPorAprobar($conex, $wemp_pmla, $wbasedato, $wusuario
             FROM    {$wbasedato}_000012 AS n12
             WHERE   n12.Dvause = '{$wusuario}'
                     AND n12.Dvaest = 'on'
+                    AND n12.Dvafid <> ''
+                    AND n12.Dvaffd <> ''
                     AND n12.Dvafid >= '{$fecha_actual}'
                     AND n12.Fecha_data >= '{$fechaMesAtras}'
             UNION
@@ -745,6 +751,8 @@ function periodosSolicitadosPorAprobar($conex, $wemp_pmla, $wbasedato, $wusuario
             FROM    {$wbasedato}_000012 AS n12
             WHERE   n12.Dvause = '{$wusuario}'
                     AND n12.Dvaest = 'on'
+                    AND n12.Dvafid <> ''
+                    AND n12.Dvaffd <> ''
                     AND n12.Dvaerc <> 'APROBADO'
                     AND n12.Dvaerc <> 'RECHAZADO'
                     AND n12.Dvafid < '{$fecha_actual}'
@@ -757,6 +765,8 @@ function periodosSolicitadosPorAprobar($conex, $wemp_pmla, $wbasedato, $wusuario
             FROM    {$wbasedato}_000012 AS n12
             WHERE   n12.Dvause = '{$wusuario}'
                     AND n12.Dvaest = 'on'
+                    AND n12.Dvafid <> ''
+                    AND n12.Dvaffd <> ''
                     AND n12.Dvaerc = 'APROBADO'
                     AND n12.Dvaern <> 'APROBADO'
                     AND n12.Dvaern <> 'RECHAZADO'
@@ -764,6 +774,7 @@ function periodosSolicitadosPorAprobar($conex, $wemp_pmla, $wbasedato, $wusuario
                     AND n12.Fecha_data >= '{$fechaMesAtras}'
             ORDER BY fecha_inicio_pendiente ASC";
 
+    //echo "<pre>".print_r($sql,true)."</pre>";
     if($result = mysql_query($sql, $conex))
     {
         while ($row = mysql_fetch_array($result))

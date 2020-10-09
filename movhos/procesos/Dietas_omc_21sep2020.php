@@ -14,7 +14,7 @@ else
   $array_user_aux = explode("-",$sesion_usuario);
 
 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz = "2020-09-28"; // Ultima fecha de actualizacion de este programa
+  $wactualiz = "2019-10-23"; // Ultima fecha de actualizacion de este programa
 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 //-----------------------------------------------------------------------------------------------------
@@ -207,8 +207,6 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 //=========================================================================================================================================\\
 //En este programa se registran las diferentes dietas por servicio y pacientes de la clinica.                                              \\
 //=========================================================================================================================================\\
-//2020-09-28 Edwin MG	  : Se corrige  fecha en la funcion traer_observaciones_dsn
-//2020-09-21 Camilo Zapata: Se corrige consultas con fecha debido al cambio de BD (ya no se permite consultas con fecha vacia ej: fecha_data = '' )
 //2019-10-28 Camilo Zapata: Ahora el programa se refresca despues de darle click al botón grabar en la modal de patrón SI(Servicio Individual), para que
                             habilite los campos de observaciones e intolerancias inmediatamente. buscar por fecha si es necesario.
 //2019-10-23 Camilo Zapata: Modificación en el programa para evitar caracteres erroneos en el nombre del patrón DSN wpatron_dsn_asociado, de tal manera que
@@ -3384,7 +3382,7 @@ function verificar_dia_sgte($whis, $wing){
             ."  WHERE movhis  = '".$whis."'"
             ."    AND moving  = '".$wing."'"
             ."    AND movcco  = '".$wcco."'"
-            ."    AND movfec  = '".( empty( $wfecha_consulta ) ? '0000-00-00' : $wfecha_consulta )."'"
+            ."    AND movfec  = '".$wfecha_consulta."'"
             ."    AND movser  = '".$wser."'"
            ." ORDER BY id DESC" ;
     $res_obs = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -4562,7 +4560,7 @@ function verificar_dia_sgte($whis, $wing){
             //Busco si la historia para este patron ya tiene grabado o no la opcion
             $q = " SELECT SUM(Detcos) as suma "
                 ."   FROM ".$wbasedato."_000084 "
-                ."  WHERE detfec = '".( empty( $wfec ) ? '0000-00-00' : $wfec )."'"
+                ."  WHERE detfec = '".$wfec."'"
                 ."    AND dethis = '".$whis."'"
                 ."    AND deting = '".$wing."'"
                 ."    AND detser = '".$wser."'"
@@ -4580,7 +4578,7 @@ function verificar_dia_sgte($whis, $wing){
             //$westado = 2 para que haga los procedimientos del case correspondiente.
             $q = " SELECT detpro, detcan"
                 ."   FROM ".$wbasedato."_000084 "
-                ."  WHERE detfec = '".( empty( $wfec ) ? '0000-00-00' : $wfec )."'"
+                ."  WHERE detfec = '".$wfec."'"
                 ."    AND dethis = '".$whis."'"
                 ."    AND deting = '".$wing."'"
                 ."    AND detser = '".$wser."'"
@@ -6142,7 +6140,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
                         //Busco si esta opcion esta grabada para el paciente en la tabla 000084
                         $q = " SELECT detpro, detcan, Fecha_data "
                             ."   FROM ".$wbasedato."_000084 "
-                            ."  WHERE detfec = '".( empty( $wfecha_consulta ) ? '0000-00-00' : $wfecha_consulta )."'"
+                            ."  WHERE detfec = '".$wfecha_consulta."'"
                             ."    AND dethis = '".$whis."'"
                             ."    AND deting = '".$wing."'"
                             ."    AND detpat = '".$wpatron."'"

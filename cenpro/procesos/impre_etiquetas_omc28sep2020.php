@@ -102,8 +102,8 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 			echo "<tr><td bgcolor=#cccccc>Hora</td>";
 			echo "<td bgcolor=#cccccc><input type=text' value='".$hora_actual."' name='whor' size=10 maxlength=10></td></tr>";
 			
-			//echo "<tr><td bgcolor=#cccccc>Nro. de Lote Acondicionamiento</td>";
-			//echo "<td bgcolor=#cccccc><input type='TEXT' id='wlot' name='wlot' size=20 maxlength=20 readonly></td></tr>";
+			echo "<tr><td bgcolor=#cccccc>Nro. de Lote Acondicionamiento</td>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' id='wlot' name='wlot' size=20 maxlength=20 readonly></td></tr>";
 			
 			echo "<tr><td bgcolor=#cccccc>Nro. de Lote de Medicamento</td>";
 			echo "<td bgcolor=#cccccc><input type='TEXT' id='wlotm' name='wlotm' size=20 maxlength=20></td></tr>";
@@ -190,10 +190,10 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 							^CFR
 							^FO240,10^FD".$wcod."^FS
 							
-							^FX Lote medicamento y fecha vencimiento
+							^FX Lote y fecha acondicionamiento
 							^CFP
-							^FO240,40^FDLOTE M:".$wlotm."^FS
-							^FO240,60^FDF.V: ".$wfecv."^FS
+							^FO240,40^FD#ACON:".$wlot."^FS
+							^FO240,60^FDF. ACON: ".$wacon."^FS
 
 							^FX Nombre del producto
 							^CFP
@@ -202,10 +202,11 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 
 							^FX Fecha y hora Acondicionamiento y lote de medicamento
 							^CFP
-							^FO10,140^FDF. ACON: ".$wacon."^FS
+							^FO10,140^FDF.V: ".$wfecv."^FS
 							^FO190,140^FDH. ACOND: ".$whor."^FS
-							^FO10,160^FDINVIMA: ".$winv."^FS
+							^FO10,160^FDLOTE M: ".$wlotm."^FS
 							
+
 							^FX Acondiciona
 							^CFP
 							^FO10,180^FDACONDICIONA:^FS
@@ -216,9 +217,10 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 							^FO10,220^FDVERIFICO:^FS
 							^FO10,240^FD".$apro_nom."^FS
 
-							^FX Via
+							^FX Via e Invima
 							^CFP
 							^FO10,260^FDVIA:".$wvia."^FS                                                                                                            
+                            ^FO180,160^FDINVIMA:".$winv."^FS                                         
 	                        
 							^FX Observacion
 							^CFP

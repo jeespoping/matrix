@@ -14,6 +14,8 @@ include_once("conex.php");
  * Julio 17 de 2017.		Edwin MG.	El wemp_pmla depende de lo que se mande en la url, si no se manda el wemp_pmla es 01
  ******************************************************************************************************************************/
 
+set_time_limit(1200);
+
 include_once("root/comun.php");
 // --> Libreria que contiene todas las funciones y rutinas relacionadas con el sistema unix
 include_once("root/kron_maestro_unix.php");

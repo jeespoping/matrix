@@ -1595,7 +1595,7 @@
 								<p>&nbsp;</p>
 								</td>
 								<td>							
-									<strong><input name="bus_fecha" type="date" id="bus_fecha" size="0" /></strong>
+									<strong><input name="bus_fecha" type="date" id="bus_fecha" size="0" <?php echo $Bus_fecha ?>/></strong>
 								</td>
 							</tr>
 							<tr>
@@ -1619,18 +1619,10 @@
 									$Bus_fecha = $_POST['bus_fecha'];
 									// Si est&aacute; vac&iacute;o, lo informamos, sino realizamos la búsqueda
 									if(empty($Bus_plantilla) or empty($Bus_identificacion) or empty($Bus_responsable))
-									
 									{
-										if ($Bus_fecha == null or $Bus_fecha == ""){
-											$select_cotizacion = mysql_query("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
-																		from cliame_000337 
-																		where CodplaR='$Bus_plantilla' or Identificacion='$Bus_identificacion' or EmpcodR='$Bus_responsable'");
-										}else{
-											$select_cotizacion = mysql_query("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
+										$select_cotizacion = mysql_query("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
 																		from cliame_000337 
 																		where CodplaR='$Bus_plantilla' or Identificacion='$Bus_identificacion' or EmpcodR='$Bus_responsable' or Fecha='$Bus_fecha'");
-										}
-										
 										?>
 										<table width="1000" height="44" border="1">
 										  <tr>
