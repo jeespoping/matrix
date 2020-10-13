@@ -521,7 +521,7 @@ function BorrarAltasMuertesAntesDeAgregarNueva($conex, $wbasedato, $whis, $wing,
 			FROM ".$wbasedato."_000033 
 			WHERE Historia_clinica = '".$whis."' 
 			AND Num_ingreso = '".$wing."'
-			AND Tipo_egre_serv REGEXP 'MUERTE MAYOR A 48 HORAS|MUERTE MENOR A 48 HORAS|ALTA' ";
+			AND Tipo_egre_serv REGEXP 'MUERTE MAYOR A 48 HORAS|MUERTE MENOR A 48 HORAS|ALTA|MUERTE' ";
 			
 	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	$num = mysql_num_rows($res);
