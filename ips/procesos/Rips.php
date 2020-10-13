@@ -89,8 +89,12 @@
 		s= document.forms.rips.wemp;
 		x5 = s.options[s.selectedIndex].value;
 
+
+
 		ajax=nuevoAjax();
 		st="rips.php?empresa="+empresa+"&wfec1="+x2+"&wfec2="+x3+"&wenv="+x1+"&ti="+x4+"&wemp="+x5+"&wffa="+x6+"&wfac="+x7;
+
+		//alert(st); Se muestra la consulta Mavila :)
 		ajax.open("GET", st, true);
 		ajax.onreadystatechange=function()
 		{
@@ -108,12 +112,12 @@ include_once("conex.php");
 echo "<div id='1'>";
 /**********************************************************************************************************************
 	   PROGRAMA : rips.php
-	   Fecha de Liberaci髇 : 2006-04-08
+	   Fecha de Liberaci贸n : 2006-04-08
 	   Autor : Ing. Pedro Ortiz Tamayo
 	   Version Actual : 2008-04-11
 
-	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface gr醘ica que permite generar el registro individual
-	   de prestacion de servicios que debe acompa馻r la informacion de facturacion de una IPS.
+	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface gr谩fica que permite generar el registro individual
+	   de prestacion de servicios que debe acompa帽ar la informacion de facturacion de una IPS.
 
 	   Se puede ejecutar bajo dos modalidades:
 	   	. modalidad 0 : Genera los Rips de las facturas asociadas a un envio.
@@ -139,7 +143,7 @@ echo "<div id='1'>";
 	   		Tipo de DX Ppal "Egrtdp" que estaban fijos en 13 y 1 respectivamente.
 
 	   .2007-06-25
-	   		Se modifico el programa para limitar el tama駉 del nombre de la entidad administradora a 30 caracteres como
+	   		Se modifico el programa para limitar el tama帽o del nombre de la entidad administradora a 30 caracteres como
 	   		maximo en el archivo AF.
 
 	   .2007-05-16
@@ -169,7 +173,7 @@ echo "<div id='1'>";
 	   		si es particular.
 
 	   .2006-04-08
-	   		Release de Versi髇 Beta.
+	   		Release de Versi贸n Beta.
 
 ***********************************************************************************************************************/
 function c_fecha($wfecha)
@@ -240,31 +244,63 @@ else
 	if(!isset($ti) or !isset($wenv) or ($wenv == 0 and $ti == 0 and $wfac == "" ) )
 	{
 		echo "<center> ";
+		//Se organiza la informacion de la tabla :)
 		echo "<table border=0 id=tipo2> ";
-		echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr> ";
-		echo "<tr><td align=center colspan=2>PROGRAMA DE GENERACION DE RIPS Ver. 2019-09-16</td></tr> ";
-		echo "<tr><td align=center colspan=2><br>* Si desea buscar por factura, recuerde la fuente y el prefijo de la factura, ejemplo: fuente: 20 factura: CS-99999 *<br></td></tr> ";
-		echo "<tr><td bgcolor=#999999 align=center colspan=2><input type='RADIO' name=ti value=0 checked><b>X ENVIO</b><input type='RADIO' name=ti value=1><b>PARTICULARES</b><input type='RADIO' name=ti value=2><b>EMPRESAS</b></td></tr>";
-		echo "<tr><td bgcolor=#cccccc align=center>Nro. Envio</td>";
-		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wenv' id='wenv' value=".$wenv." size=10 maxlength=10 class=tipo3></td></tr>";
-		echo "<tr><td bgcolor=#cccccc align=center>Factura</td>";
-		echo "<td bgcolor=#cccccc align=center>Fuente: <input type='TEXT' name='wffa' id='wffa' value='".$wffa."' size=10 maxlength=3 class=tipo3> Factura: <input type='TEXT' name='wfac' id='wfac' value='".$wfac."' size=10 maxlength=10 class=tipo3></td></tr>";
-		echo "<tr><td bgcolor=#cccccc align=center>Empresa</td><td bgcolor=#cccccc align=center><select name='wemp' id=tipo1>";
-		$query = "SELECT Empcod, Empnom  from ".$empresa."_000024, ".$empresa."_000029 where mid(Emptem,1,2) = Temcod and Temche = 'off'  order by Empnom";
-		$err = mysql_query($query,$conex);
-		$num = mysql_num_rows($err);
-		if ($num>0)
-		{
-			echo "<option value='TODAS'>TODAS</option>";
-			for ($i=0;$i<$num;$i++)
-			{
-				$row = mysql_fetch_row($err);
-				echo "<option value='".$row[0]."-".$row[1]."'>".$row[0]."-".$row[1]."</option>";
-			}
-		}
-		else
-			echo "<option value='0-NO APLICA'>0-NO APLICA</option>";
-		echo "</select></td></tr>";
+		echo "<tr>";
+			echo "<td align=center colspan=2>";
+				echo "<b>PROMOTORA MEDICA LAS AMERICAS S.A.<b>";
+			echo "</td>";
+		echo "</tr> ";
+		echo "<tr>";
+		echo "<td align=center colspan=2>PROGRAMA DE GENERACION DE RIPS Ver. 2019-09-16</td>";
+		echo "</tr> ";
+		echo "<tr>";
+		echo "<td align=center colspan=2>";
+			echo "<br>* Si desea buscar por factura, recuerde la fuente y el prefijo de la factura, ejemplo: fuente: 20 factura: CS-99999 *<br>";
+		echo "</td>";
+		echo "</tr> ";
+		echo "<tr>";
+		echo "<td bgcolor=#999999 align=center colspan=2>";
+			echo "<input type='RADIO' name=ti value=0 checked><b>X ENVIO</b>";
+			echo "<input type='RADIO' name=ti value=1><b>PARTICULARES</b>";
+			echo "<input type='RADIO' name=ti value=2><b>EMPRESAS</b>";
+		echo "</td>";
+		echo "</tr>";
+		echo "<tr>";
+			echo "<td bgcolor=#cccccc align=center>Nro. Envio</td>";
+			echo "<td bgcolor=#cccccc align=center>";
+				echo "<input type='TEXT' name='wenv' id='wenv' value=".$wenv." size=10 maxlength=10 class=tipo3>";
+			echo "</td>";
+		echo "</tr>";
+		echo "<tr>";
+			echo "<td bgcolor=#cccccc align=center>Factura</td>";
+			echo "<td bgcolor=#cccccc align=center>";
+				echo "Fuente: <input type='TEXT' name='wffa' id='wffa' value='".$wffa."' size=10 maxlength=3 class=tipo3> ";
+				echo " Factura: <input type='TEXT' name='wfac' id='wfac' value='".$wfac."' size=10 maxlength=10 class=tipo3>";
+			echo "</td>";
+		echo "</tr>";
+		echo "<tr>";
+			echo "<td bgcolor=#cccccc align=center>Empresa</td>";
+			echo "<td bgcolor=#cccccc align=center>";
+			echo "<select name='wemp' id=tipo1>";
+				$query = "SELECT Empcod, Empnom  from ".$empresa."_000024, ".$empresa."_000029 where mid(Emptem,1,2) = Temcod and Temche = 'off'  order by Empnom";
+				$err = mysql_query($query,$conex);
+				$num = mysql_num_rows($err);
+				if ($num>0){
+					echo "<option value='TODAS'>TODAS</option>";
+					for ($i=0;$i<$num;$i++)
+					{
+						$row = mysql_fetch_row($err);
+						//Se ordena campo de EPS en orden alfabetico :)
+						echo "<option value='".$row[0]."-".$row[1]."'> ".$row[1]." - ".$row[0]." </option>";
+					}
+				}
+				else{
+					echo "<option value='0-NO APLICA'>0-NO APLICA</option>";
+				}
+			echo "</select>";
+			echo "</td>";
+		echo "</tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Fecha Inicial de Proceso</td> ";
 		$cal="calendario('1')";
 		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wfec1' id='wfec1' readonly='readonly'  value=".$wfec1." size=10 maxlength=10 class=tipo3><button id='trigger1' onclick=".$cal.">...</button>";
@@ -447,8 +483,12 @@ else
 		$dh=opendir($ruta);
 		if(readdir($dh) == false)
 			mkdir($ruta,0777);
+		//Se construye tabla de informaci贸n  :)
 		echo "<table border=0>";
-		echo "<tr><td align=center colspan=2><font size=2>PROMOTORA MEDICA LAS AMERICAS S.A.</font></td></tr>";
+		echo "<tr>";
+		//Titulo de la table de la informaci贸n mavila :)
+		echo "<td align=center colspan=2><font size=2>PROMOTORA MEDICA LAS AMERICAS S.A.</font></td>";
+		echo "</tr>";
 		echo "<tr><td align=center colspan=2><font size=2>DIRECCION DE INFORMATICA</font></td></tr>";
 		echo "<tr><td align=center colspan=2><font size=2>PROGRAMA DE GENERACION DE RIPS Ver. 2007-05-16</font></td></tr>";
 		switch ($ti)
@@ -463,11 +503,19 @@ else
 				echo "<tr><td align=center bgcolor=#999999 colspan=2><font size=2><b>EMPRESAS - ".$wemp."</b></font>";
 			break;
 		}
-		echo "<tr><td align=center bgcolor=#999999 colspan=2><font size=2><b>REMISION NRo. : ".$wremi."</b></font>";
-		echo "</td></tr>";
+		echo "<tr>";
+		echo "<td align=center bgcolor=#999999 colspan=2>";
+			echo "<font size=2><b>REMISION NRo. : ".$wremi."</b></font>";
+		echo "</td>";
+		echo "</tr>";
 		if($ti == 1 OR $ti == 2)
 			echo "<tr><td align=center bgcolor=#999999 colspan=2><font size=2><b>DESDE: ".$wfec1." HASTA ".$wfec2."</b></font></td></tr>";
-		echo "<tr><td bgcolor=#CCCCCC align=center><b>TIPO<BR>ARCHIVO</b></td><td bgcolor=#CCCCCC align=center><b>NRo.<BR>REGISTRO</b></td></tr>";
+		
+		//Titulos de las tablas mavila :)
+		echo "<tr>";
+		echo "<td bgcolor=#CCCCCC align=center><b>TIPO<BR>ARCHIVO</b></td>";
+		echo "<td bgcolor=#CCCCCC align=center><b>NRo.<BR>REGISTRO</b></td>";
+		echo "</tr>";
 
 		//******** GENERACION DE ARCHIVO AF *********
 		$kAF=0;
@@ -585,23 +633,74 @@ else
 		$kt += $kUS;
 		echo "<tr><td bgcolor=#999999><font size=2><B>TOTAL REGISTROS US</B></font></td><td bgcolor=#999999><font size=2><B>".$kUS."</B></font></td></tr>";
 
-		//******** GENERACION DE ARCHIVO AM *********
+		//Generacion de los archivos AM-MEDICAMENTOS Mavila :)
+		//******** GENERACION DE ARCHIVO AM *********		
 		$kAM=0;
-		$query = "select Fenfac, Pactdo, Pacdoc, Ingord, Tcarprocod, Artpos, Tcarpronom, Artffa, Artcon, Artuni, Tcarcan, Tcarvun, Tcarvto   from ".$empresa."_000018, ".$empresa."_000100, ".$empresa."_000101, ".$empresa."_000106, ".$empresa."_000066, ".$empresa."_000004, ".$empresa."_000001 ";
-		$query .= " where Fenfac in ".$win." ";
-		$query .= "   and Fenhis = Pachis ";
-		$query .= "   and Fenhis = Inghis ";
-		$query .= "   and Fening = Ingnin ";
-		$query .= "   and Fenhis = Tcarhis ";
-		$query .= "   and Fening = Tcaring ";
-		$query .= "   and fenfac = Rcffac ";
-   		$query .= "   and ".$empresa."_000106.id = Rcfreg ";
-   		$query .= "   and Rcfest = 'on' ";
-		$query .= "   and Tcarconcod = Grucod ";
-		$query .= "   and Grutri = 'AM-MEDICAMENTOS' ";
-		$query .= "   and Tcarprocod = Artcod ";
-		$query .= "   order by Fenfac ";
+		
+		//Se actualiza la construcci贸n de la consulta :)
+		$query  = " SELECT Fenfac as factura, Pactdo as tipo_documento, Pacdoc as documento,  ";
+		//Se evidencia que el n煤mero de autorizaci贸n viene dado desde el n煤mero de ingreso de la orden :)
+		$query .= " Ingord as orden_ingreso, ";
+		$query .= " Tcarprocod as codigo_articulo, ";
+		$query .= " Artpos as articulo_pos, Tcarpronom as descripcion_articulo,  ";
+		$query .= " Artffa as forma_farmaceutica, Artcon as concentracion, Artuni as unidad_medida, ";
+		$query .= " Tcarcan as cantidad, Tcarvun as valor_unitario, Tcarvto as valor_total,  ";
+		//Se adiciona variable para el calculo de las cantidades teniendo en cuenta los registros negativos :)
+		$query .= " SUM(CASE WHEN cargo.Tcarvto > 0 THEN (cargo.Tcarcan)  ELSE (cargo.Tcarcan)*(-1) ";
+		$query .= " END) AS Sum_cantidad, ";
+		//Se adiciona variable para el calculo del valor total teniendo en cuenta los registros negativos :)
+		$query .= " SUM(Tcarvto) AS Sum_valor_total, ";
+		//Se obtinene el codigo del cums asociado al articulo de la tabla 000244 :)
+		$query .= " eq_articulo.Cumcod AS cums ";
+		$query .= " from ".$empresa."_000018 factura ";
+		$query .= " INNER JOIN ".$empresa."_000100 paciente ON factura.Fenhis = paciente.Pachis ";
+		$query .= " INNER JOIN ".$empresa."_000101 ingreso ";
+		$query .= " ON factura.Fenhis=ingreso.Inghis and factura.Fening =ingreso.Ingnin ";
+		$query .= " INNER JOIN ".$empresa."_000106 cargo ";
+		$query .= " ON factura.Fenhis =cargo.Tcarhis AND factura.fening=cargo.Tcaring ";
+		$query .= " INNER JOIN ".$empresa."_000066 det_cargo ";
+		$query .= " ON factura.fenfac = det_cargo.Rcffac AND cargo.id =det_cargo.Rcfreg ";
+		$query .= " INNER JOIN ".$empresa."_000004 grupo ";
+		$query .= " ON grupo.Grucod = cargo.Tcarconcod AND grupo.Grutri = 'AM-MEDICAMENTOS' ";
+		$query .= " INNER JOIN ".$empresa."_000001 articulo ON cargo.Tcarprocod = articulo.Artcod ";
+		$query .= " LEFT JOIN ".$empresa."_000244 eq_articulo ON cargo.Tcarprocod = eq_articulo.Cumint ";
+		$query .= " WHERE det_cargo.Rcfest = 'on'  ";
+		$query .= " AND Fenfac in ".$win." ";
+		//Se realiza agrupaci贸n para obtener los calculos de las cantidades y valor total :)
+		$query .= " GROUP BY Fenfac, Pactdo, Pacdoc, Ingord, ";
+		$query .= " Tcarprocod, Artpos, Tcarpronom,  Artffa, Artcon, Artuni ";
+		$query .= " ORDER BY Fenfac ";
 
+		//CONSULTA ANTERIOR :)
+			/*$query = "select Fenfac, Pactdo, Pacdoc, ";
+			//Se evidencia que el n煤mero de autorizaci贸n viene dado desde el n煤mero de ingreso de la orden :)
+			$query .= " Ingord, Cumcodq	, Artpos, Tcarpronom, ";
+			$query .= " Artffa, Artcon, Artuni, Tcarcan, Tcarvun, Tcarvto  ";
+			$query .= " from ".$empresa."_000018, "; //Datos de factura :)
+			$query .= "  ".$empresa."_000100, "; //Info paciente :)
+			$query .= "  ".$empresa."_000101, "; //Info ingreso :)
+			$query .= "  ".$empresa."_000106, "; //info de cargos :)
+			$query .= "  ".$empresa."_000066, "; //info cargos con facturas  :)
+			$query .= "  ".$empresa."_000004, "; //Grupo de inventarios :)
+			$query .= "  ".$empresa."_000001, "; //Articulos de inventarios :)
+			$query .= "  ".$empresa."_000244 "; //Equivalencia en cums :)
+			$query .= " where Fenfac in ".$win." ";
+			$query .= "   and Fenhis = Pachis ";
+			$query .= "   and Fenhis = Inghis ";
+			$query .= "   and Fening = Ingnin ";
+			$query .= "   and Fenhis = Tcarhis ";
+			$query .= "   and Fening = Tcaring ";
+			$query .= "   and fenfac = Rcffac ";
+	   		$query .= "   and ".$empresa."_000106.id = Rcfreg ";
+	   		$query .= "   and Rcfest = 'on' ";
+			$query .= "   and Tcarconcod = Grucod ";
+			$query .= "   and Grutri = 'AM-MEDICAMENTOS' ";
+			$query .= "   and Tcarprocod = Artcod ";
+			//Filtro para la adicion del cum de los medicamentos 
+			$query .= "   and Tcarprocod = Cumint ";
+			$query .= "   order by Fenfac ";
+		CONSULTA ANTERIOR */
+		//echo 'Se imprime consulta: '.$query;
 		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		if($num > 0)
@@ -628,7 +727,33 @@ else
 					$wpos=1;
 				else
 					$wpos=2;
-				$registro=$row[0].",".$confcpr.",".$row[1].",".$row[2].",".$row[3].",".$row[4].",".$wpos.",".$row[6].",".$row[7].",".$row[8].",".substr($row[9],strpos($row[9],"-")+1).",".$row[10].",".$row[11].",".$row[12];
+				
+				//Se realiza validacion de la infamcion que se muestra :)
+				$factura = $row[0];
+				$tipo_documento = $row[1];
+				$documento = $row[2];
+				$orden_autorizacion = $row[3];
+				$codigo_articulo = $row[4];
+				$articulo_pos = $wpos;
+				$descripcion_articulo = $row[6];
+				$forma_farmaceutica = $row[7];
+				$concentracion = $row[8];
+				$unidad_medida = substr($row[9],strpos($row[9],"-")+1);
+				$cantidad = $row[10];
+				$valor_unitario = $row[11];
+				$valor_total = $row[12];
+				$suma_cantidad = $row[13];
+				$suma_valor_total = $row[14];
+				//Se realiza validacion del cums del articulo :)
+				if ($row[15] != '') {
+					$cums_articulo = $row[15];
+				}else{
+					$cums_articulo = $row[4];
+				}				
+
+				//$registro=$row[0].",".$confcpr.",".$row[1].",".$row[2].",".$row[3].",".$row[4].",".$wpos.",".$row[6].",".$row[7].",".$row[8].",".substr($row[9],strpos($row[9],"-")+1).",".$row[10].",".$row[11].",".$row[12];
+				//Se adiciona variables para los registros :)
+				$registro= $factura.",".$confcpr.",".$tipo_documento.",".$documento.",".$orden_autorizacion.",".$cums_articulo.",".$articulo_pos.",".$descripcion_articulo.",".$forma_farmaceutica.",".$concentracion.",".$unidad_medida.",".$suma_cantidad.",".$valor_unitario.",".$suma_valor_total;				
 				$registro=$registro.chr(13).chr(10);
   				fwrite ($file,$registro);
   				$kAM++;
@@ -645,10 +770,14 @@ else
 		$kt += $kAM;
 		echo "<tr><td bgcolor=#999999><font size=2><B>TOTAL REGISTROS AM</B></font></td><td bgcolor=#999999><font size=2><B>".$kAM."</B></font></td></tr>";
 
+		//Generacion de los archivos AC-MEDICAMENTOS Mavila :)
 		//******** GENERACION DE ARCHIVO AC *********
-		$kAC=0;
-		//                0         1      2        3        4         5        6     7        8     9 10 11   12       13    14    15      16      17
-		$query = "select Fenfac, Pactdo, Pacdoc, Tcarfec, Ingord, Procup, '10', Egrcex , Egrdxi,'','','', Egrtdp, Tcarvto,0, Tcarvto, Fenfac, Pactdo   from ".$empresa."_000018, ".$empresa."_000100, ".$empresa."_000101, ".$empresa."_000108, ".$empresa."_000106, ".$empresa."_000066, ".$empresa."_000103, ".$empresa."_000004 ";
+		$kAC=0;		
+		$query = "select Fenfac, Pactdo, Pacdoc, Tcarfec, ";
+		//Se evidencia que el n煤mero de autorizaci贸n viene dado desde el n煤mero de ingreso de la orden :)
+		$query .= " Ingord, Procup, '10', Egrcex , Egrdxi,'','','', Egrtdp, ";
+		$query .= " Tcarvto,0, Tcarvto, Fenfac, Pactdo  ";
+		$query .= " from ".$empresa."_000018, ".$empresa."_000100, ".$empresa."_000101, ".$empresa."_000108, ".$empresa."_000106, ".$empresa."_000066, ".$empresa."_000103, ".$empresa."_000004 ";
 		$query .= " where Fenfac in ".$win." ";
 		$query .= "   and Fenhis = Pachis ";
 		$query .= "   and Fenhis = Inghis ";
@@ -707,9 +836,13 @@ else
 		$kt += $kAC;
 		echo "<tr><td bgcolor=#999999><font size=2><B>TOTAL REGISTROS AC</B></font></td><td bgcolor=#999999><font size=2><B>".$kAC."</B></font></td></tr>";
 
+		//Generacion del archivo AP-Procedimientos mavila :)
 		//******** GENERACION DE ARCHIVO AP *********
 		$kAP=0;
-		$query = "select Fenfac, Pactdo, Pacdoc, Tcarfec, Ingord, Procup, '1', '1', '2', Egrdxi,'' , '', '1', Tcarvto, Pachis, Pactdo, Pacdoc  from ".$empresa."_000018, ".$empresa."_000100, ".$empresa."_000101, ".$empresa."_000108, ".$empresa."_000106, ".$empresa."_000066, ".$empresa."_000103, ".$empresa."_000004 ";
+		$query = "select Fenfac, Pactdo, Pacdoc, Tcarfec, ";
+		//Se evidencia que el n煤mero de autorizaci贸n viene dado desde el n煤mero de ingreso de la orden :)
+		$query .= " Ingord, Procup, '1', '1', '2', Egrdxi,'' , '', '1', Tcarvto, Pachis, Pactdo, Pacdoc ";
+		$query .= " from ".$empresa."_000018, ".$empresa."_000100, ".$empresa."_000101, ".$empresa."_000108, ".$empresa."_000106, ".$empresa."_000066, ".$empresa."_000103, ".$empresa."_000004 ";
 		$query .= " where Fenfac in ".$win." ";
 		$query .= "   and Fenhis = Pachis ";
 		$query .= "   and Fenhis = Inghis ";
@@ -748,8 +881,14 @@ else
 						}
 					}
 				}
-				if(strpos($row[5],"-") !== false)
+
+				//se realiza validacion del campo Procup que contiene el cups del procedimiento 
+				//Si este campo contiene un '-' concatenando el cups mas la descripci贸n :)
+				if(strpos($row[5],"-") !== false){
+					//Se obtiene solo el codigo cups del procedimiento :)
 					$row[5]=substr($row[5],0,strpos($row[5],"-"));
+				}
+				
 				$registro=$row[0].",".$confcpr.",".$row[15].",".$row[16].",".c_fecha($row[3]).",".$row[4].",".$row[5].",".$row[6].",".$row[7].",".$row[8].",".$row[9].",".$row[10].",".$row[11].",".$row[12].",".$row[13];
 				$registro=$registro.chr(13).chr(10);
   				fwrite ($file,$registro);
@@ -761,12 +900,14 @@ else
 			$hora = (string)date("H:i:s");
 			$query = "insert ".$empresa."_000118 (medico,fecha_data,hora_data, Mrienv, Mrirem, Mritip, Mriemp, Mrifec, Mriest, seguridad) values ('".$empresa."','".$fecha."','".$hora."',".$wenv.",'".$wremi."','AP','".$wempresa."','".$fecha."','on','C-".$empresa."')";
 			$err1 = mysql_query($query,$conex);
-			if($err1 != 1 and mysql_errno() != 1062)
-			 die("ERROR GRABANDO MOVIMIENTO DE RIPS : ".mysql_errno().":".mysql_error());
+			if($err1 != 1 and mysql_errno() != 1062){
+				die("ERROR GRABANDO MOVIMIENTO DE RIPS : ".mysql_errno().":".mysql_error());
+			}
 		}
 		$kt += $kAP;
 		echo "<tr><td bgcolor=#999999><font size=2><B>TOTAL REGISTROS AP</B></font></td><td bgcolor=#999999><font size=2><B>".$kAP."</B></font></td></tr>";
 
+		//Generacion de los archivos AU-URGENCIAS Mavila :)
 		//******** GENERACION DE ARCHIVO AU *********
 		$kAU=0;
 		$query = "select Fenfac, Pactdo, Pacdoc, Ingfei, Inghin, Ingord, '13', Egrdxi, '', '', '', '1', Tcarfec, ".$empresa."_000106.hora_data, Fenhis, Fening  from ".$empresa."_000018, ".$empresa."_000100, ".$empresa."_000101, ".$empresa."_000108, ".$empresa."_000106, ".$empresa."_000066, ".$empresa."_000004 ";
@@ -853,9 +994,19 @@ else
 		$kt += $kAU;
 		echo "<tr><td bgcolor=#999999><font size=2><B>TOTAL REGISTROS AU</B></font></td><td bgcolor=#999999><font size=2><B>".$kAU."</B></font></td></tr>";
 
+		//Generacion de los archivos AT-OTROS SERVICIOS Mavila :)
 		//******** GENERACION DE ARCHIVO AT *********
-		$kAT=0;
-		$query = "select Fenfac, Pactdo, Pacdoc, Ingord, Tcarprocod, Tcarpronom, Tcarcan, Tcarvun, Tcarvto, Grudes   from ".$empresa."_000018, ".$empresa."_000100, ".$empresa."_000101, ".$empresa."_000106, ".$empresa."_000066, ".$empresa."_000004 ";
+		$kAT=0;		
+		$query = "select Fenfac, Pactdo, Pacdoc, ";
+		//Se evidencia que el n煤mero de autorizaci贸n viene dado desde el n煤mero de ingreso de la orden :)
+		$query .= " Ingord, Tcarprocod, Tcarpronom, ";
+		$query .= " Tcarcan, Tcarvun, Tcarvto, Grudes,  ";
+		//Se adiciona variable para el calculo de las cantidades teniendo en cuenta los registros negativos :)
+		$query .= " SUM(CASE WHEN Tcarvto > 0 THEN (Tcarcan)  ELSE (Tcarcan)*(-1) ";
+		$query .= " END) AS Sum_cantidad, ";
+		//Se adiciona variable para el calculo del valor total teniendo en cuenta los registros negativos :)
+		$query .= " SUM(Tcarvto) AS Sum_valor_total ";
+		$query .= " FROM ".$empresa."_000018, ".$empresa."_000100, ".$empresa."_000101, ".$empresa."_000106, ".$empresa."_000066, ".$empresa."_000004 ";
 		$query .= " where Fenfac in ".$win." ";
 		$query .= "   and Fenhis = Pachis ";
 		$query .= "   and Fenhis = Inghis ";
@@ -867,9 +1018,13 @@ else
    		$query .= "   and Rcfest = 'on' ";
 		$query .= "   and Tcarconcod = Grucod ";
 		$query .= "   and Grutri = 'AT-OTROS SERVICIOS' ";
+		//Se realiza agrupaci贸n para obtener los calculos de las cantidades y valor total :)
+		$query .= " GROUP BY Fenfac, Pactdo, Pacdoc, Ingord, ";
+		$query .= " Tcarprocod, Tcarpronom ";
 		$query .= "   order by Fenfac ";
-		$err = mysql_query($query,$conex);
 
+		//echo "Se imprime consulta am: ".$query;
+		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		if($num > 0)
 		{
@@ -895,7 +1050,24 @@ else
 					$Wtipo="4";
 				else
 					$Wtipo="1";
-				$registro=$row[0].",".$confcpr.",".$row[1].",".$row[2].",".$row[3].",".$Wtipo.",".$row[4].",".$row[5].",".$row[6].",".$row[7].",".$row[8];
+
+				//Se realiza validacion de la infamcion que se muestra :)
+				$factura = $row[0];
+				$tipo_documento = $row[1];
+				$documento = $row[2];
+				$orden_autorizacion = $row[3];
+				$codigo_articulo = $row[4];
+				$descripcion_articulo = $row[5];
+				$cantidad = $row[6];
+				$valor_unitario = $row[7];
+				$valor_total = $row[8];
+				//calculo cantidad y calculo de valor total :)
+				$suma_cantidad = $row[10];
+				$suma_valor_total = $row[11];
+
+				//$registro=$row[0].",".$confcpr.",".$row[1].",".$row[2].",".$row[3].",".$Wtipo.",".$row[4].",".$row[5].",".$row[6].",".$row[7].",".$row[8];
+				$registro= $factura.",".$confcpr.",".$tipo_documento.",".$documento.",".$orden_autorizacion.",".$Wtipo.",".$codigo_articulo.",".$descripcion_articulo.",".$suma_cantidad.",".$valor_unitario.",".$suma_valor_total;
+
 				$registro=$registro.chr(13).chr(10);
   				fwrite ($file,$registro);
   				$kAT++;
@@ -985,7 +1157,7 @@ else
 			{
 				if($fac[$i][$j][1] == 0)
 				{
-					echo "<pre>".print_r( $fac )."</pre>";
+					//echo "<pre>".print_r( $fac )."</pre>";
 					switch ($fac[$i][$j][0])
 					{
 						case "AF":

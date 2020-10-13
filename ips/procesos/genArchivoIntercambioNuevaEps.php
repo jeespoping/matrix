@@ -36,7 +36,7 @@ if( isset($consultaAjax) == false ){
 	<script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
 	<script type='text/javascript' src='../../../include/root/jquery.tooltip.js'></script>
 	<style>
-		/* CORRECCION DE BUG PARA EL DATEPICKER Y CONFIGURACION DEL TAMAÑO  */
+		/* CORRECCION DE BUG PARA EL DATEPICKER Y CONFIGURACION DEL TAMAÃ‘O  */
 		.ui-datepicker {font-size:12px;}
 		/* IE6 IFRAME FIX (taken from datepicker 1.5.3 */
 		.ui-datepicker-cover {
@@ -109,6 +109,20 @@ if( isset($consultaAjax) == false ){
 		  maxDate:"+0D"
 		});		
 	});
+
+ 	//Funcion para adicionar filtro por codigo del envio Mavila :)
+	function showInputEnvio() {
+        cod_Envio = document.getElementById("cod_Envio");
+        sel_Envio = document.getElementById("sel_Envio");
+        check_Envio = document.getElementById("check_Envio");
+        if (check_Envio.checked) {            
+        	cod_Envio.style.display='block';
+            sel_Envio.style.display='none';
+        }else {
+        	sel_Envio.style.display='block';
+            cod_Envio.style.display='none';
+        }
+    }
 	
 	function generarReporte(){
 		var wemp_pmla = $("#wemp_pmla").val();
@@ -121,11 +135,21 @@ if( isset($consultaAjax) == false ){
 		var wing = $("#wing").val();
 		var wdoc = $("#wdoc").val();
 		var wfacturaonc = $("#facturaonc").val();
+
+		//Se adicionan los campos de filtros por fuente de envio y nÃºmero de envio Mavila :)
+		var fuente_envio = $("#fuente_envio").val();
+		check_Envio = document.getElementById("check_Envio");
+        if (check_Envio.checked) {
+            var cod_Envio = $("#cod_Envio").val();
+        }else {
+        	var cod_Envio = $("#sel_Envio").val();
+        }		
 		
 		$.blockUI({ message: $('#msjEspere') });
 
 		//Realiza el llamado ajax con los parametros de busqueda
-		$.post('genArchivoIntercambioNuevaEps.php', { wemp_pmla: wemp_pmla, action: "generarReporte", wempresa: empresa, wfuente: wfuente, wfacturaonc: wfacturaonc, wfactura: wfactura, whis: whis, wing: wing, wdoc: wdoc, wfeci: fecha_inicio, wfecf: fecha_fin, consultaAjax: ''} ,
+		//Se adiciona a la busqueda los campos de fuente de envio y envio :)
+		$.post('genArchivoIntercambioNuevaEps.php', { wemp_pmla: wemp_pmla, action: "generarReporte", wempresa: empresa, wfuente: wfuente, wfacturaonc: wfacturaonc, wfactura: wfactura, whis: whis, wing: wing, wdoc: wdoc, wfeci: fecha_inicio, wfecf: fecha_fin, wfuente_envio: fuente_envio, wenvio: cod_Envio, consultaAjax: ''} ,
 			function(data) {
 				$.unblockUI();
 				$("#contenido").html(data);
@@ -302,7 +326,7 @@ if( isset($consultaAjax) == false ){
         numero=numero.toString().replace(".", separador_decimal!==undefined ? separador_decimal : ",");
 
         if(separador_miles){
-            // Añadimos los separadores de miles
+            // AÃ±adimos los separadores de miles
             var miles=new RegExp("(-?[0-9]+)([0-9]{3})");
             while(miles.test(numero)) {
                 numero=numero.replace(miles, "$1" + separador_miles + "$2");
@@ -331,6 +355,7 @@ $conex = obtenerConexionBD("matrix");
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion");
 $nuevaFacturacion = consultarAliasPorAplicacion($conex, $wemp_pmla, 'NuevaFacturacionActiva');
 $nitsArchivoIntercambio = consultarAliasPorAplicacion($conex, $wemp_pmla, 'nitsArchivoIntercambio');
+
 $wmovhos = "";
 $wtcx = "";
 // $sep = "|";
@@ -354,7 +379,8 @@ $wusuario = substr($user,$pos+1,strlen($user));
 if( isset($_REQUEST['action'] )){
 	$action = $_REQUEST['action'];
 	if( $action == "generarReporte"){
-		generarReporte( $wfacturaonc, $wempresa, @$wfuente, @$wfactura, @$whis, @$wing, @$wdoc, $wfeci, $wfecf );
+		//Se adicionan nuevos campos al filtro de busqueda Mavila :)
+		generarReporte( $wfacturaonc, $wempresa, @$wfuente, @$wfactura, @$whis, @$wing, @$wdoc, $wfeci, $wfecf, $wfuente_envio, $wenvio );
 		
 	}elseif( $action == "consultarFactura"){
 		consultarFactura( $wfuente, $wfactura );
@@ -379,7 +405,7 @@ if( isset($_REQUEST['action'] )){
 		//Anexo 1, Tipos de identificacion
 		/*	11	Registro Civil	RC
 			12	Tarjeta de Identidad	TI
-			13	Cedula de Ciudadanía	CC
+			13	Cedula de CiudadanÃ­a	CC
 			22	Cedula de extranjeria	CE
 			31	NIT	NIT
 			41	Pasaporte	PA
@@ -432,16 +458,15 @@ if( isset($_REQUEST['action'] )){
 										  );		
 		$facturaHos = "";
 		
-		if( $wfacturaonc == "FAC" )
-		{
-					
+		//die ('Vamos por aca: '.$wfacturaonc);
+		if( $wfacturaonc == "FAC" ){			
 			
 			/***********************************/
 			/* CREAR ENCABEZADO
 			/***********************************/
 			$tiporeg = "0"; //1
 			// $numRegsEnviados = count($wdatos); //6
-			// $numRegsEnviados = count($wDetalle); //6  -- Se llena más abajo
+			// $numRegsEnviados = count($wDetalle); //6  -- Se llena mias abajo
 			$numFacsEnviados = count($wdatos); //6
 			$fechaEnvio = date("d/m/Y"); //10
 			$codigoSucursalIPS = "001"; //3
@@ -454,11 +479,10 @@ if( isset($_REQUEST['action'] )){
 			$digitoVerificadorEPS = ""; //1
 			$nombreEPS = ""; //50
 			
-			$q = " SELECT empdes as nombre, empnit as nit, emphos as hos
-					 FROM root_000050 
-					WHERE empcod = '".$wemp_pmla."'
-			";
-			$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());								//fuente y numero de factura
+			//Se consulta la informacion de la empresa :)
+			$q = "SELECT empdes as nombre, empnit as nit, emphos as hos FROM root_000050 WHERE empcod='".$wemp_pmla."' ";
+			$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+			//fuente y numero de factura
 			$num = mysql_num_rows($res);	
 			if ($num > 0)
 			{
@@ -475,17 +499,19 @@ if( isset($_REQUEST['action'] )){
 			}
 			
 				
-			$consecutivoEmpresa = 0;
+			$consecutivoEmpresa = 0;			
+			$consecutivoEmpresa = consultarAliasPorAplicacion($conex, $wemp_pmla, "consecutivoFAC-".$wempresa);
+
+			//$myfile = fopen("../../planos/".$nitIPS."-".$consecutivoEmpresa.".txt", "w") or die("Unable to open file!");
 			
-			$consecutivoEmpresa = consultarAliasPorAplicacion($conex, $wemp_pmla, "consecutivoFAC-".$wempresa);		
-			// $myfile = fopen("../../planos/".$nitIPS."-".$consecutivoEmpresa.".txt", "w") or die("Unable to open file!");	
-			$myfile = fopen("../../planos/".$nitIPS.$digitoVerificadorIPS."-".$consecutivoEmpresa.".txt", "w") or die("Unable to open file!");	
+			//SE ABRE ARCHIVO QUE SE GENERA MAVILA :)
+			$myfile = fopen("../../planos/".$nitIPS.$digitoVerificadorIPS."-".$consecutivoEmpresa.".txt", "w") or die("Unable to open file!");
+
+			//Se consulta informacion de la entidad :)
 			$nitIPSsf = $nitIPS;
-			$q = " SELECT empnom as nombre, empnit as nit, empdiv as digito
-					 FROM ".$wbasedato."_000024
-					WHERE empcod = '".$wempresa."'				
-			";
-			$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());								//fuente y numero de factura
+			$q = " SELECT empnom as nombre, empnit as nit, empdiv as digito FROM ".$wbasedato."_000024 WHERE empcod = '".$wempresa."' ";
+			$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+			//fuente y numero de factura
 			$num = mysql_num_rows($res);
 			if ($num > 0){
 				$row = mysql_fetch_array($res);
@@ -494,8 +520,9 @@ if( isset($_REQUEST['action'] )){
 				$digitoVerificadorEPS = $row['digito'];
 			}
 			
+			//INFORMACIÃƒâ€œN DE DATOS DE ENCABEZADO MAVILA :)
 			$tiporeg = formatearCadena( $tiporeg, "n", 1 ); //1
-			// $numRegsEnviados = formatearCadena( $numRegsEnviados, "n", 6 ); //6 -- Se formatea más abajo
+			// $numRegsEnviados = formatearCadena( $numRegsEnviados, "n", 6 ); //6 -- Se formatea mias abajo
 			$numFacsEnviados = formatearCadena( $numFacsEnviados, "n", 6 ); //6
 			$fechaEnvio = formatearCadena( $fechaEnvio, "c", 10 ); //10
 			$codigoSucursalIPS = formatearCadena( $codigoSucursalIPS, "n", 3 ); //3
@@ -508,7 +535,7 @@ if( isset($_REQUEST['action'] )){
 			$digitoVerificadorEPS = formatearCadena( $digitoVerificadorEPS, "n", 1 ); //1
 			$nombreEPS = formatearCadena( $nombreEPS, "c", 50 ); //50
 			
-			// // Se imprime más abajo para poder llenar $numRegsEnviados (cantidad de detalles)
+			// // Se imprime mÃ¡s abajo para poder llenar $numRegsEnviados (cantidad de detalles)
 			// //IMPRIMIR LINEA
 			// $linea = $tiporeg.$sep.$numRegsEnviados.$sep.$numFacsEnviados.$sep.$fechaEnvio.$sep.$codigoSucursalIPS.$sep.$tipoDocIPS.$sep.$nitIPS.$sep.$digitoVerificadorIPS.$sep.$nombreIPS.$sep.$tipoDocumentoEPS.$sep.$nitEPS.$sep.$digitoVerificadorEPS.$sep.$nombreEPS;
 			// fwrite($myfile, $linea.$saltoLineaArchivo);
@@ -519,96 +546,185 @@ if( isset($_REQUEST['action'] )){
 				array_push( $arr_facturas, "'".$wdato['fac']."'" );
 			}
 					
-			$q="";		
-			if ($facturaHos == "on")  //Facturacion Hospitalaria
-			{
-				$q = "   SELECT fenffa as fuente, fenfac as factura, fenfec as fecha, fenval as valor,	fensal as saldo, 
-								fenesf as estadofac, fenhis as historia, fening as ingreso, fenest as estado, fennpa as nombrepac, 
-								fendpa as docpac, fenviv as valoriva, fencop as copago, fencmo as cuotamoderadora, Pactdo as ti, 
-								Pacdoc as doc, Pacno1 as no1, Pacno2 as no2, Pacap1 as ap1, Pacap2 as ap2,
-								Ingfei as fei, Ingord as orden, rcfreg as regcargo, tcarconcod as concepto, grudes as grupodes, 
-								tcarfec as fechacargo, tcarprocod as procedimiento, pronom as nomprocedimiento, tcartercod, tcarcan as cantidad, 
-								tcarvun as valorunitario, tcarvto as valortotal, tcarfex, tcarfre, rcfval as valorfacturado, 
-								tcarusu, proemppro as procedimientoempresa, proempnom as nomprocedimientoempresa, Egrfee as fechaegr, 0 as poriva, 
-								diacod as diagnos, d.Hora_data as hora, tcardev as devolucion, Egrfia as fechainiciotratamiento
-						   FROM ".$wbasedato."_000018 a LEFT JOIN ".$wbasedato."_000108 n ON(a.fenhis=n.egrhis AND a.fening=n.egring)  LEFT JOIN ".$wbasedato."_000109 xx ON(a.fenhis=xx.diahis AND a.fening=xx.diaing AND xx.diatip='P'), ".$wbasedato."_000100 b, ".$wbasedato."_000101 c,".$wbasedato."_000066 e, ".$tablaConceptos." f, ".$wbasedato."_000103 g, ".$wbasedato."_000106 d
-						   LEFT JOIN ".$wbasedato."_000070 h ON (proempcod = d.tcarprocod AND proempemp = '".$wemp_pmla."' AND proempest = 'on')
-						  WHERE fenfac IN (".implode(",",$arr_facturas).")
-							AND Inghis = fenhis
-							AND Ingnin = fening
-							AND Pachis = Inghis
-							AND rcfffa = fenffa
-							AND rcffac = fenfac
-							AND rcfreg = d.id 
-							AND tcarconcod  = grucod 
-							AND grutab != 'on' 
-							AND tcarprocod = procod
-							AND proest = 'on' 
-							AND fencod = '".$wempresa."' 
-							GROUP BY 1,2,3,4,5,7,8,24,26,27,30,31,32,35,36
-						UNION
-						 SELECT fenffa as fuente, fenfac as factura, fenfec as fecha, fenval as valor, fensal as saldo, 
-								fenesf as estadofac, fenhis as historia, fening as ingreso, fenest as estado, fennpa as nombrepac, 
-								fendpa as docpac, fenviv as valoriva, fencop as copago, fencmo as cuotamoderadora, Pactdo as ti, 
-								Pacdoc as doc, Pacno1 as no1, Pacno2 as no2, Pacap1 as ap1, Pacap2 as ap2,
-								Ingfei as fei, Ingord as orden, rcfreg as regcargo, tcarconcod as concepto, grudes as grupodes, 
-								tcarfec as fechacargo, tcarprocod as procedimiento, artnom as nomprocedimiento, tcartercod, tcarcan as cantidad, 
-								tcarvun as valorunitario, tcarvto as valortotal, tcarfex, tcarfre, rcfval as valorfacturado, 
-								tcarusu, proemppro as procedimientoempresa, proempnom as nomprocedimientoempresa, Egrfee as fechaegr, artiva as poriva, 
-								diacod as diagnos, d.Hora_data as hora, tcardev as devolucion, Egrfia as fechainiciotratamiento
-						   FROM ".$wbasedato."_000018 a LEFT JOIN ".$wbasedato."_000108 n ON(a.fenhis=n.egrhis AND a.fening=n.egring) LEFT JOIN ".$wbasedato."_000109 xx ON(a.fenhis=xx.diahis AND a.fening=xx.diaing AND xx.diatip='P'), ".$wbasedato."_000100 b, ".$wbasedato."_000101 c, ".$wbasedato."_000106 d, ".$wbasedato."_000066 e, ".$tablaConceptos." f, ".$wbasedato."_000001 g
-						   LEFT JOIN ".$wbasedato."_000070 h ON (proempcod = g.artcod AND proempemp = '".$wemp_pmla."' AND proempest = 'on')
-						  WHERE fenfac IN (".implode(",",$arr_facturas).")
-							AND Inghis = fenhis
-							AND Ingnin = fening
-							AND Pachis = Inghis
-							AND rcfffa = fenffa
-							AND rcffac = fenfac
-							AND rcfreg = d.id 
-							AND tcarconcod  = grucod 
-							AND grutab != 'on' 
-							AND tcarprocod = artcod 
-							AND artest = 'on'
-							AND fencod = '".$wempresa."' 
-							GROUP BY 1,2,3,4,5,6,7,8,9,26,42,27,30,31,32,35";				
-			}
-			else             //Facturacion POS
-			{
-					$q = "   SELECT fenffa as fuente, fenfac as factura, fenfec as fecha, fenval as valor, 
-								fensal as saldo, fenesf as estadofac, fenhis as historia, fening as ingreso, fenest as estado, 
-								fennpa as nombrepac, fendpa as docpac, fenviv as valoriva, fencop as copago, fencmo as cuotamoderadora,
-								Pactdo as ti, Pacdoc as doc, Pacno1 as no1, Pacno2 as no2, Pacap1 as ap1, Pacap2 as ap2,
-								Ingfei as fei, Ingord as orden,
-								rcfreg as regcargo, artgru as concepto, grudes as grupodes, d.fecha_data  as fechacargo, artcod as procedimiento, artnom as nomprocedimiento, '', vdecan as cantidad, vdevun as valorunitario, vdecan*vdevun as valortotal, 0, 0, rcfval as valorfacturado, d.seguridad ,
-								proemppro as procedimientoempresa, proempnom as nomprocedimientoempresa, Egrfee as fechaegr, artiva as poriva, diacod as diagnos, d.Hora_data as hora
-								, tcardev as devolucion, Egrfia as fechainiciotratamiento
-						   FROM ".$wbasedato."_000018 a LEFT JOIN ".$wbasedato."_000108 n ON(a.fenhis=n.egrhis AND a.fening=n.egring) LEFT JOIN ".$wbasedato."_000109 xx ON(a.fenhis=xx.diahis AND a.fening=xx.diaing AND xx.diatip='P'), ".$wbasedato."_000100 b, ".$wbasedato."_000101 c, ".$wbasedato."_000017 d, ".$wbasedato."_000066 e, ".$wbasedato."_000004 f, ".$wbasedato."_000001 g
-						   LEFT JOIN ".$wbasedato."_000070 h ON (proempcod = g.artcod AND proempemp = '".$wemp_pmla."' AND proempest = 'on')
-						  WHERE fenfac IN (".implode(",",$arr_facturas).")
-							AND Inghis = fenhis
-							AND Ingnin = fening						
-							AND Pachis = Inghis
-							AND rcfffa = fenffa
-							AND rcffac = fenfac
-							AND rcfreg = d.id 
-							AND vdeart = artcod 
-							AND mid(artgru,1,instr(artgru,'-')-1) = grucod 
-							AND grutab != 'on'
-							AND fencod = '".$wempresa."' 
-							GROUP BY 1,2,3,4,5,6,7,8,9,26,42,27,30,31,32,35";
-			}
-				
-			//---------------------------------------------------------------------------
-			
-			$array_datos = array();			
+			$q="";
+			//Facturacion Hospitalaria  		
+			if ($facturaHos == "on"){
+				//Se organiza con sulta para mostrar fecha de terminaciÃ³n de atencion Mavila :)
+				$q  = " SELECT fenffa as fuente, fenfac as factura, fenfec as fecha, ";
+				$q .= " fenval as valor, fensal as saldo, fenesf as estadofac, ";
+				$q .= " fenhis as historia, fening as ingreso, fenest as estado, ";
+				$q .= " fennpa as nombrepac, fendpa as docpac, fenviv as valoriva, ";
+				//Se adiciona a la consulta el campo de abono general :)
+				$q .= " (fencop + fenabo) as copago, fenabo as abono, ";
+				$q .= " fencmo as cuotamoderadora, Pactdo as ti, Pacdoc as doc, ";
+				$q .= " Pacno1 as no1, Pacno2 as no2, Pacap1 as ap1, Pacap2 as ap2, ";
+				$q .= " Ingfei as fei, Ingord as orden, rcfreg as regcargo, ";
+				$q .= " tcarconcod as concepto, grudes as grupodes, ";
+				$q .= "	tcarfec as fechacargo, tcarprocod as procedimiento, pronom as nomprocedimiento, ";
+				$q .= " tcartercod, tcarcan as cantidad, tcarvun as valorunitario, ";
+				$q .= " tcarvto as valortotal,  tcarfex, tcarfre, rcfval as valorfacturado, tcarusu, ";
+				//Se identifica validacion de procediminetos asociados para cada eps mavila :)
+				$q .= " proemppro as procedimientoempresa, proempnom as nomprocedimientoempresa, ";
+				//Se adiciona a la consulta la  informacion articulo asociados para cada eps mavila :)
+				$q .= " artempart as articuloempresa, artempnom as nomarticuloempresa, ";
+				//Se muestra la fecha de terminacion de atencion del egreso Mavila :))
+				//$q .= " Egrfee as fechaegr,  "
+				$q .= " Egrfta as fechaegr,  ";
+				//Se modifica la consulta para traer el diagnositco registrado en el egreso. Mavila
+				$q .= " Egrdxi as diagnostico_egreso, ";
+				$q .= " 0 as poriva, diacod as diagnos, d.Hora_data as hora, tcardev as devolucion,  ";
+				$q .= " Egrfia as fechainiciotratamiento  ";
+				$q .= " FROM ".$wbasedato."_000018 a  ";
+				$q .= " LEFT JOIN ".$wbasedato."_000108 n  ";
+				$q .= " ON(a.fenhis=n.egrhis AND a.fening=n.egring) ";
+				$q .= " LEFT JOIN ".$wbasedato."_000109 xx  ";
+				$q .= " ON(a.fenhis=xx.diahis AND a.fening=xx.diaing AND xx.diatip='P'),  ";
+				$q .= " ".$wbasedato."_000100 b, ".$wbasedato."_000101 c,".$wbasedato."_000066 e,  ";
+				$q .= " ".$tablaConceptos." f, ".$wbasedato."_000103 g, ".$wbasedato."_000106 d  ";
 
-			$resx = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());								//fuente y numero de factura
+				//Relacion de la tabla con los procedimientos creados para cada empresa mavila :)
+				$q .= " LEFT JOIN ".$wbasedato."_000070 h ";
+				$q .= " ON (proempcod = d.tcarprocod AND proempemp = '".$wemp_pmla."'  ";
+				$q .= " AND proempest = 'on') ";
+				//Relacion de la tabla con los articulos creados para cada empresa mavila :)
+				$q .= " LEFT JOIN ".$wbasedato."_000339 hh ";
+				$q .= " ON (artempcod = d.tcarprocod AND artempemp = '".$wempresa."'  ";
+				$q .= " AND artempest = 'on') ";
+
+				$q .= " WHERE fenfac IN (".implode(",",$arr_facturas).")  ";
+				$q .= " AND Inghis = fenhis  ";
+				$q .= " AND Ingnin = fening  ";
+				$q .= " AND Pachis = Inghis  ";
+				$q .= " AND rcfffa = fenffa  ";
+				$q .= " AND rcffac = fenfac  ";
+				$q .= " AND rcfreg = d.id   ";
+				$q .= " AND tcarconcod  = grucod   ";
+				$q .= " AND grutab != 'on'   ";
+				$q .= " AND tcarprocod = procod  ";
+				$q .= " AND proest = 'on'   ";
+				$q .= " AND fencod = '".$wempresa."'   ";
+				$q .= " GROUP BY 1,2,3,4,5,7,8,24,26,27,30,31,32,35,36 ";
+				$q .= " UNION  ";
+				$q .= " SELECT fenffa as fuente, fenfac as factura, fenfec as fecha,  ";
+				$q .= " fenval as valor, fensal as saldo, fenesf as estadofac,  ";
+				$q .= "	fenhis as historia, fening as ingreso, fenest as estado,   ";
+				$q .= "	fennpa as nombrepac, fendpa as docpac, fenviv as valoriva, ";
+				//Se adiciona a la consulta el campo de abono general :)
+				$q .= " (fencop + fenabo) as copago, fenabo as abono, ";
+				$q .= " fencmo as cuotamoderadora, Pactdo as ti,  ";
+				$q .= "	Pacdoc as doc, Pacno1 as no1, Pacno2 as no2, Pacap1 as ap1, Pacap2 as ap2, ";
+				$q .= "	Ingfei as fei, Ingord as orden, rcfreg as regcargo, ";
+				$q .= " tcarconcod as concepto, grudes as grupodes,  ";
+				$q .= "	tcarfec as fechacargo, ";
+				$q .= " tcarprocod as procedimiento, artnom as nomprocedimiento, ";
+				$q .= " tcartercod, tcarcan as cantidad,  ";
+				$q .= "	tcarvun as valorunitario, tcarvto as valortotal, ";
+				$q .= " tcarfex, tcarfre, rcfval as valorfacturado, tcarusu, ";				
+				//Se identifica validacion de procediminetos asociados para cada eps mavila :)
+				$q .= " proemppro as procedimientoempresa, proempnom as nomprocedimientoempresa, ";
+				//Se adiciona a la consulta la  informacion articulo asociados para cada eps mavila :)
+				$q .= " artempart as articuloempresa, artempnom as nomarticuloempresa, ";
+				//Se muestra la fecha de terminacion de atencion del egreso Mavila :))
+				//$q .= " Egrfee as fechaegr, ";
+				$q .= " Egrfta as fechaegr, ";
+				//Se modifica la consulta para traer el diagnositco registrado en el egreso. Mavila
+				$q .= " Egrdxi as diagnostico_egreso, ";
+				$q .= " artiva as poriva,  ";
+				$q .= "	diacod as diagnos, d.Hora_data as hora, tcardev as devolucion, ";
+				$q .= " Egrfia as fechainiciotratamiento";
+				$q .= " FROM ".$wbasedato."_000018 a ";
+				$q .= " LEFT JOIN ".$wbasedato."_000108 n ";
+				$q .= " ON(a.fenhis=n.egrhis AND a.fening=n.egring) ";
+				$q .= " LEFT JOIN ".$wbasedato."_000109 xx ";
+				$q .= " ON(a.fenhis=xx.diahis AND a.fening=xx.diaing AND xx.diatip='P'), ";
+				$q .= " ".$wbasedato."_000100 b, ".$wbasedato."_000101 c, ".$wbasedato."_000106 d, ";
+				$q .= " ".$wbasedato."_000066 e, ".$tablaConceptos." f, ".$wbasedato."_000001 g ";
+
+				//Relacion de la tabla con los procedimientos creados para cada empresa mavila :)
+				$q .= " LEFT JOIN ".$wbasedato."_000070 h ";
+				$q .= " ON (proempcod = g.artcod AND proempemp = '".$wemp_pmla."' AND proempest = 'on') ";
+				//Relacion de la tabla con los articulos creados para cada empresa mavila :)
+				$q .= " LEFT JOIN ".$wbasedato."_000339 hh ";
+				$q .= " ON (artempcod = g.artcod AND artempemp = '".$wempresa."' AND artempest = 'on') ";
+
+				$q .= " WHERE fenfac IN (".implode(",",$arr_facturas).") ";
+				$q .= " AND Inghis = fenhis ";
+				$q .= " AND Ingnin = fening ";
+				$q .= " AND Pachis = Inghis ";
+				$q .= " AND rcfffa = fenffa ";
+				$q .= " AND rcffac = fenfac ";
+				$q .= " AND rcfreg = d.id  ";
+				$q .= " AND tcarconcod  = grucod  ";
+				$q .= " AND grutab != 'on'  ";
+				$q .= " AND tcarprocod = artcod  ";
+				$q .= " AND artest = 'on' ";
+				$q .= " AND fencod = '".$wempresa."'  ";
+				$q .= " GROUP BY 1,2,3,4,5,6,7,8,9,26,42,27,30,31,32,35";				
+			//Facturacion POS
+			}else{
+				$q  = " SELECT fenffa as fuente, fenfac as factura, fenfec as fecha, fenval as valor, ";
+				$q .= " fensal as saldo, fenesf as estadofac, ";
+				$q .= " fenhis as historia, fening as ingreso, fenest as estado, ";
+				$q .= " fennpa as nombrepac, fendpa as docpac, ";
+				$q .= " fenviv as valoriva, ";				
+				//Se adiciona a la consulta el campo de abono general :)
+				$q .= " (fencop + fenabo) as copago, fenabo as abono, ";
+				$q .= " fencmo as cuotamoderadora, ";
+				$q .= " Pactdo as ti, Pacdoc as doc, ";
+				$q .= " Pacno1 as no1, Pacno2 as no2, Pacap1 as ap1, Pacap2 as ap2, ";
+				$q .= " Ingfei as fei, Ingord as orden, ";
+				$q .= " rcfreg as regcargo, artgru as concepto, ";
+				$q .= " grudes as grupodes, d.fecha_data as fechacargo, ";
+				$q .= " artcod as procedimiento, artnom as nomprocedimiento, '', ";
+				$q .= " vdecan as cantidad, vdevun as valorunitario, ";
+				$q .= " vdecan*vdevun as valortotal, 0, 0, rcfval as valorfacturado, d.seguridad , ";
+				//Se identifica validacion de procediminetos asociados para cada eps mavila :)
+				$q .= " proemppro as procedimientoempresa, proempnom as nomprocedimientoempresa, ";
+				//Se adiciona a la consulta la  informacion articulo asociados para cada eps mavila :)
+				$q .= " artempart as articuloempresa, artempnom as nomarticuloempresa, ";
+				//Se muestra la fecha de terminacion de atencion del egreso Mavila :)
+				//$q .= " Egrfee as fechaegr, ";
+				$q .= " Egrfta as fechaegr, ";
+				//Se modifica la consulta para traer el diagnositco registrado en el egreso. Mavila
+				$q .= " Egrdxi as diagnostico_egreso, ";
+				$q .= " artiva as poriva, diacod as diagnos, d.Hora_data as hora, ";
+				$q .= " tcardev as devolucion, Egrfia as fechainiciotratamiento ";
+				$q .= " FROM ".$wbasedato."_000018 a ";
+				$q .= " LEFT JOIN ".$wbasedato."_000108 n ";
+				$q .= " ON(a.fenhis=n.egrhis AND a.fening=n.egring) ";
+				$q .= " LEFT JOIN ".$wbasedato."_000109 xx ";
+				$q .= " ON(a.fenhis=xx.diahis AND a.fening=xx.diaing AND xx.diatip='P'), ";
+				$q .= " ".$wbasedato."_000100 b, ".$wbasedato."_000101 c, ".$wbasedato."_000017 d, ";
+				$q .= " ".$wbasedato."_000066 e, ".$wbasedato."_000004 f, ".$wbasedato."_000001 g ";
+
+				//Relacion de la tabla con los procedimientos creados para cada empresa mavila :)
+				$q .= " LEFT JOIN ".$wbasedato."_000070 h ";
+				$q .= " ON (proempcod = g.artcod AND proempemp = '".$wemp_pmla."' AND proempest = 'on') ";
+				//Relacion de la tabla con los articulos creados para cada empresa mavila :)
+				$q .= " LEFT JOIN ".$wbasedato."_000339 hh ";
+				$q .= " ON (artempcod = g.artcod AND artempemp = '".$wempresa."' AND artempest = 'on') ";
+
+				$q .= " WHERE fenfac IN (".implode(",",$arr_facturas).") ";
+				$q .= " AND Inghis = fenhis ";
+				$q .= " AND Ingnin = fening						 ";
+				$q .= " AND Pachis = Inghis ";
+				$q .= " AND rcfffa = fenffa ";
+				$q .= " AND rcffac = fenfac ";
+				$q .= " AND rcfreg = d.id  ";
+				$q .= " AND vdeart = artcod  ";
+				$q .= " AND mid(artgru,1,instr(artgru,'-')-1) = grucod  ";
+				$q .= " AND grutab != 'on' ";
+				$q .= " AND fencod = '".$wempresa."'  ";
+				$q .= " GROUP BY 1,2,3,4,5,6,7,8,9,26,42,27,30,31,32,35";
+			}
+			
+			$array_datos = array();
+			$resx = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+			//fuente y numero de factura
 			$num = mysql_num_rows($resx);	
 			
-			
-			
-			if ($num > 0)
-			{
+			//Se realiza consula de la informaciÃ³n de los datos mavila		
+			if ($num > 0){
 				while( $row = mysql_fetch_array($resx) ){
 					if( array_key_exists( $row['fuente']."|".$row['factura'], $array_datos ) == false ){
 						$array_datos[$row['fuente']."|".$row['factura']] = array();
@@ -648,15 +764,48 @@ if( isset($_REQUEST['action'] )){
 
 					array_push( $array_datos[$row['fuente']."|".$row['factura']]['detalle'][$row['concepto']], $row );
 					*/
+
 					
+
+
+					//Se realiza validaciÃƒÂ³n de los campos procedimiento, fuente, factura y detalle Mavila :))	
 					if( array_key_exists( $row['procedimiento'], $array_datos[$row['fuente']."|".$row['factura']]['detalle'] ) == false ){
+						
 						$array_datos[$row['fuente']."|".$row['factura']]['detalle'][$row['procedimiento']] = array();
 						
-						$filadetalle=array( 'concepto'=>$row['concepto'], 'grupodes'=>$row['grupodes'], 'procedimientoempresa'=>$row['procedimientoempresa'],
-										'nomprocedimientoempresa'=>$row['nomprocedimientoempresa'], 'procedimiento'=>$row['procedimiento'], 'nomprocedimiento'=>$row['nomprocedimiento'],
-										'valorfacturado'=>$row['valorfacturado'], 'cantidad'=>$row['cantidad'], 'valorunitario'=>$row['valorunitario'], 'diagnos'=>$row['diagnos'], 'poriva'=>$row['poriva'], 'valortotal'=>$row['valortotal'] );
+						//se adiciona funcionalidad para validar el diagnostico del paciento o del egreso :)
+						$codigo_diagnotico_ralacionado = '';
+						if( $row['diagnos'] != ''){
+							$codigo_diagnotico_ralacionado = $row['diagnos'];
+						}else{
+							$codigo_diagnotico_ralacionado = $row['diagnostico_egreso'];
+						}
 
-						 $array_datos[$row['fuente']."|".$row['factura']]['detalle'][$row['procedimiento']] = $filadetalle;
+						$filadetalle=array( 
+							'concepto'=>$row['concepto'], 
+							'grupodes'=>$row['grupodes'], 
+
+							//Se adiciona variable de para los procecimientos de cada eps mavila :)
+							'procedimientoempresa'=>$row['procedimientoempresa'],
+							'nomprocedimientoempresa'=>$row['nomprocedimientoempresa'],
+
+							//Se adiciona variable de para los acticulos de cada eps mavila :)
+							'articuloempresa'=>$row['articuloempresa'],
+							'nomarticuloempresa'=>$row['nomarticuloempresa'],
+
+							//Aca se muestra la info del codigo y nombre del detalle desde facturacion :)
+							'procedimiento'=>$row['procedimiento'], 
+							'nomprocedimiento'=>$row['nomprocedimiento'], 
+
+							'valorfacturado'=>$row['valorfacturado'], 
+							'cantidad'=>$row['cantidad'], 
+							'valorunitario'=>$row['valorunitario'], 
+							'diagnos'=>$codigo_diagnotico_ralacionado, 
+							'poriva'=>$row['poriva'], 
+							'valortotal'=>$row['valortotal'] 
+						);
+
+						$array_datos[$row['fuente']."|".$row['factura']]['detalle'][$row['procedimiento']] = $filadetalle;
 					}else{
 						if( $row['devolucion'] == "on" ){
 							$array_datos[$row['fuente']."|".$row['factura']]['detalle'][$row['procedimiento']]['cantidad']-=$row['cantidad'];
@@ -696,8 +845,8 @@ if( isset($_REQUEST['action'] )){
 			if ($num > 0)
 			{
 				//Va entre dos corchetes para que el regex en javascript identifique el nombre del archivo y cree en el enlace correctamente
-				echo "[[".$nitIPSsf.$digitoVerificadorIPS."-".$consecutivoEmpresa.".txt]]"; //Se agrega digito de verificación
-				// echo "[[".$nitIPSsf."-".$consecutivoEmpresa.".txt]]"; //Sin digito de verificación
+				echo "[[".$nitIPSsf.$digitoVerificadorIPS."-".$consecutivoEmpresa.".txt]]"; //Se agrega digito de verificacion
+				// echo "[[".$nitIPSsf."-".$consecutivoEmpresa.".txt]]"; //Sin digito de verificacion
 				aumentarConsecutivo("consecutivoFAC-".$wempresa);
 				
 				foreach( $array_datos as $fuefackey => $wdato )
@@ -760,6 +909,7 @@ if( isset($_REQUEST['action'] )){
 					/***********************************/
 					/*CREAR DETALLE
 					/***********************************/
+					//Declaracion de variable del detale del archivo Mavila :)
 					$tiporeg = "2"; //1
 					$numeroFactura = preg_replace("/[^0-9]/", "", $wdato['factura']); //10
 					$numOrdenAutorizacion = ""; //15
@@ -770,8 +920,10 @@ if( isset($_REQUEST['action'] )){
 					$fechaIngAfiliado = ""; //10
 					$fechaEgrAfiliado = ""; //10
 					$tipoAtencion = "1"; //2
+					//Se declaran las variables de codigo y descripcion del archivo :)
 					$codigoAtencion = ""; //12
 					$descripcionServicio = ""; //100
+
 					$cantidadServicio = ""; //3
 					$aplicaIva = ""; //1
 					$valorUnitarioServicio = ""; //12
@@ -800,40 +952,43 @@ if( isset($_REQUEST['action'] )){
 					
 					$numOrdenAutorizacion = $wdato['orden'];	
 					// echo count($wdato['detalle'])."----";
+					//Se verifica la informacion del detalle del archivo :)
 					if (count($wdato['detalle']) > 0)
 					{
-						 $j=1;
+						$j=1;
 
-						 $wgtotgracon=0;
-						 $wgtotfaccon=0;
+						$wgtotgracon=0;
+						$wgtotfaccon=0;
 
-						 //===========================================================
-						 $wtiene_paq="off";
+						//===========================================================
+						$wtiene_paq="off";
 						
-
 						if ($wtiene_paq == "off")
 						{
+							//Se recorre la informacion del detalle del archivo :)
 							foreach( $wdato['detalle'] as $keyProcedimiento => $wDetalle )
 							{
-							
-								//foreach( $arrConceptos as $wDetalle ){
+									//foreach( $arrConceptos as $wDetalle ){
 									
-									 $wtotgracon=0;
-									 $wtotfaccon=0;
+									$wtotgracon=0;
+									$wtotfaccon=0;
 
-									if ($wDetalle['procedimientoempresa'] != "" )
-									{								
+									//Se verifica que el campo procedimiento contenga informacion para mostrar validacion ya existente :)
+									if ($wDetalle['procedimientoempresa'] != "" ){
 										$wcodpro = $wDetalle['procedimientoempresa'];
 										$wnompro = $wDetalle['nomprocedimientoempresa'];
-									}
-									else
-									{
+									//Se adiciona validacion para mostrar el articulo definico para cada empresa en la nueva tabla 000339
+									}elseif ($wDetalle['articuloempresa'] != "" ){
+										$wcodpro = $wDetalle['articuloempresa'];
+										$wnompro = $wDetalle['nomarticuloempresa'];
+									}else{
 										$wcodpro = $wDetalle['procedimiento'];
 										$wnompro = $wDetalle['nomprocedimiento'];
 									}
 									
 									$codigoAtencion = $wcodpro;
 									$descripcionServicio = $wnompro;
+
 									$cantidadServicio = $wDetalle['cantidad'];
 									$valorUnitarioServicio = $wDetalle['valorunitario'];
 									$valorTotalServicio = $wDetalle['valorfacturado'];
@@ -853,7 +1008,9 @@ if( isset($_REQUEST['action'] )){
 									$numeroFactura = formatearCadena( $numeroFactura, "n", 10 ); //10
 									$numOrdenAutorizacion = formatearCadena( $numOrdenAutorizacion, "n", 15 ); //15
 									$tiAfiliado = formatearCadena( $tiAfiliado, "c", 2 ); //2
-									$docAfiliado = formatearCadena( $docAfiliado, "c", 12 ); //12
+									//Se modifica el tamaÃ±o del campo de 12 a 16 caracteres Mavila :)
+									//$docAfiliado = formatearCadena( $docAfiliado, "c", 12 ); //12
+									$docAfiliado = formatearCadena( $docAfiliado, "c", 16 ); //12
 									$apellidosAfiliado = formatearCadena( $apellidosAfiliado, "c", 25 ); //25
 									$nombresAfiliado = formatearCadena( $nombresAfiliado, "c", 15 ); //15
 									$fechaIngAfiliado = formatearCadena( $fechaIngAfiliado, "c", 10 ); //10
@@ -1211,7 +1368,316 @@ if( isset($_REQUEST['action'] )){
 		return $cadena;
 	}
 	
-	function generarReporte( $wfacturaonc, $wempresa, $wfuente='', $wfactura='', $whis='', $wing='', $wdoc='', $wfeci, $wfecf ){
+	//Se modifica funcion adicionando los filtros por fuente de envio y nÃºmero de envio Mavila :)
+	function generarReporte( $wfacturaonc, $wempresa, $wfuente='', $wfactura='', $whis='', $wing='', $wdoc='', $wfeci, $wfecf, $wfuente_envio, $wenvio ){
+		global $conex;
+        global $wbasedato;
+		global $wtcx;
+		global $wmovhos;
+		global $wemp_pmla;
+		global $wusuario;
+		
+		$num = 0;
+		$totalValor=0;
+		$totalSaldo=0;
+
+		$consultaSql = '';
+
+		if( $wfacturaonc == "FAC" ){
+			$consultaSql = " SELECT fenffa as fuente, fenfac as factura, fenfec as fecha,  "; 
+			$consultaSql .= " fencod as entidad, fennit as nit, empnom as nombreent, fenval as valor,  "; 
+			$consultaSql .= " fensal as saldo, fenesf as estadofac, fenhis as historia,  "; 
+			$consultaSql .= " fening as ingreso, fenest as estado, fennpa as nombrepac,  "; 
+			$consultaSql .= " fendpa as docpac, egrhis as egresado, "; 
+			$consultaSql .= " det_envio.Rdenum as envio, det_envio.Rdefue fuente_detalle "; 
+			$consultaSql .= " FROM ".$wbasedato."_000018 factura   "; 
+			$consultaSql .= " LEFT JOIN ".$wbasedato."_000108 egreso  "; 
+			$consultaSql .= " ON(factura.fenhis = egreso.egrhis AND factura.fening= egreso.egring)  "; 
+			$consultaSql .= " LEFT JOIN ".$wbasedato."_000024 eps ON factura.fencod = eps.empcod   "; 
+			$consultaSql .= " LEFT JOIN ".$wbasedato."_000021 det_envio  "; 
+			$consultaSql .= " ON (factura.fenffa=det_envio.Rdeffa AND factura.fenfac=det_envio.Rdefac) ";
+			$consultaSql .= "  WHERE 1=1 ";
+			//Si se realiza filtro por envio 
+			if ( ($wenvio != '') ) {
+				$consultaSql .= " AND fencod = '".$wempresa."' ";
+				$consultaSql .= " AND det_envio.Rdenum = '".$wenvio."' ";
+				if (($wfuente_envio != '') ) {
+					$consultaSql .= " AND det_envio.Rdefue = '".$wfuente_envio."' "; 
+				}				
+				$consultaSql .= " AND det_envio.Rdeest ='on' "; 
+			//Si no se filtra por los parametros de fechas :)
+			}else{
+				$consultaSql .= "  AND fenfec BETWEEN '".$wfeci."' AND '".$wfecf."' "; 			
+				$consultaSql .= "  AND fencod = '".$wempresa."' ";
+			}
+			$consultaSql .= " GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13   "; 
+			$consultaSql .= " ORDER BY fenfec desc,fenffa,fenfac ";
+			//echo $consultaSql;
+			//Se actualiza el reporte para que se muestre en orden de fecha,
+			$res = mysql_query($consultaSql,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$consultaSql." - ".mysql_error());								//fuente y numero de factura
+			$num = mysql_num_rows($res);		
+				
+			if ($num > 0){
+				echo "<center>";
+				echo "<br<br><input type='button' value='Generar Archivo' onclick='crearArchivo()' /><br><br>";
+				echo "</center>";
+				echo "<br>";
+				echo "<center><table border='0'>";
+
+				echo "<tr><td colspan=14 class='fila2'><b>Cantidad de Facturas encontradas: ".$num."</b></td></tr>";
+
+				echo "<tr class='encabezadoTabla'>";
+				echo "<th>SELECCIONAR</th>";
+				echo "<th>ESTADO<br>PACIENTE</th>";
+				echo "<th>FUENTE</th>";
+				echo "<th>FACTURA</th>";
+				echo "<th>FECHA</th>";
+				echo "<th>HISTORIA</th>";
+				echo "<th>DOCUMENTO</th>";
+				echo "<th>PACIENTE</th>";
+				echo "<th>RESPONSABLE</th>";
+				echo "<th>VALOR</th>";
+				echo "<th>SALDO</th>";
+				echo "<th>ESTADO CARTERA</th>";
+				echo "<th>ESTADO FACTURA</th>";
+				echo "<th>&nbsp</th>";
+				echo "</tr>";
+
+				$wver="";
+				
+				$totalValor=0;
+				$totalSaldo=0;
+
+					for ($i=1;$i<=$num;$i++){
+						$row = mysql_fetch_array($res);
+
+						if ($i%2==0)
+						$wclass="fila1";
+						else
+						$wclass="fila2";
+						
+						$westadopac = "Egresado";
+						if( $row['egresado'] == "" )
+							$westadopac = "<div class='fondorojo'>SIN egresar</span>";
+
+						$westcar = '';
+						//Le coloco nombre a los estados de la factura en cartera
+						switch ($row['estadofac'])
+						{
+						case "GE":
+						{ $westcar="GENERADA"; }
+						break;
+						case "EV":
+						{ $westcar="ENVIADA"; }
+						break;
+						case "RD":
+						{ $westcar="RADICADA"; }
+						break;
+						case "DV":
+						{ $westcar="DEVUELTA"; }
+						break;
+						case "GL":
+						{ $westcar="GLOSADA"; }
+						}
+
+						//Le coloco nombre a los estados de la factura en el archivo
+						switch ($row['estado'])
+						{
+						case "on":
+						{ $westreg="ACTIVA*"; }
+						BREAK;
+						case "off":
+						{ $westreg="ANULADA"; }
+						BREAK;
+						}
+
+						echo "<tr class='filafactura ".$wclass."'>";
+						//echo "<td class='".$wclass."' align=center><A href='Consultar_Factura.php?wffue=".$row['fuente']."&wffac=".$row[1]."&wbasedato=".$wbasedato."&wemp_pmla=".$wemp_pmla."&$wver=on&wfue=".convertir_url($wfue)."&wfac=".convertir_url($wfac)."&whis=".convertir_url($whis)."&wnom=".convertir_url($wnom)."&wdoc=".convertir_url($wdoc)."'> Ver</A></td>";
+						echo "<td align='center'><input type='checkbox' onclick='elegirFactura(this)' class='elegirfactura' value='".$row['fuente']."||".$row['factura']."' fuente='".$row['fuente']."' factura='".$row['factura']."' checked/></td>";
+						echo "<td align='center'>".$westadopac."</td>";
+						echo "<td>".$row['fuente']."</td>";
+						echo "<td>".$row['factura']."</td>";
+						echo "<td>".$row['fecha']."</td>";
+						echo "<td>".$row['historia']."-".$row['ingreso']."</td>";
+						echo "<td>".$row['docpac']."</td>";
+						echo "<td>".$row['nombrepac']."</td>";
+						echo "<td>".$row['nit']." ".$row['nombreent']."</td>";
+						echo "<td class='valor' align=right>".number_format($row['valor'],0,'.',',')."</td>";
+						echo "<td class='saldo' align=right>".number_format($row['saldo'],0,'.',',')."</td>";
+						echo "<td align=center><b>".$westcar."</b></td>";
+						echo "<td align=center><b>".$westreg."</b></td>";
+						//echo "<td align=center><A href='Consultar_Factura.php?wffue=".$row['fuente']."&wffac=".$row['factura']."&wbasedato=".$wbasedato."&wemp_pmla=".$wemp_pmla."&$wver=on&wfue=".$wfuente."&wfac=".$wfactura."&whis=".$whis."&wdoc=".$wdoc."'> Ver</A></td>";
+						echo "<td align=center><A onclick='consultarFactura(this, \"".$row['fuente']."\", \"".$row['factura']."\")' href='#'>Ver</A></td>";
+						echo "</tr>";
+						echo "<tr class='detalle' style='display:none;'><td colspan=14>&nbsp;</td></tr>";
+						
+						$totalValor+=$row['valor'];
+						$totalSaldo+=$row['saldo'];
+					}
+
+			}
+			else{
+				echo "<br>No se encontraron datos con los parametros ingresados.";			
+			}
+		}
+		else{	 
+			$consultaSql = " SELECT carfue as fuentecar, fenffa as fuentefac, fenfac as factura, "; 
+			$consultaSql .= " Renfec as fecha, fencod as entidad, fennit as nit, empnom as nombreent, "; 
+			$consultaSql .= " fenval as valor, fensal as saldo, fenesf as estadofac, "; 
+			$consultaSql .= " fenhis as historia, fening as ingreso, fenest as estado, "; 
+			$consultaSql .= " fennpa as nombrepac, fendpa as docpac, egrhis as egresado, "; 
+			$consultaSql .= " Renfue as fuente, Rennum numero, Renvca valor_cancelado, "; 
+			$consultaSql .= " Rdevco valor_concepto, Renobs as obs "; 
+			$consultaSql .= " FROM ".$wbasedato."_000020 as c20, ".$wbasedato."_000021 as c21, "; 
+			$consultaSql .= " ".$wbasedato."_000018 as a "; 
+			$consultaSql .= " LEFT JOIN ".$wbasedato."_000108 as b "; 
+			$consultaSql .= " ON(a.fenhis=b.egrhis AND a.fening=b.egring), ".$wbasedato."_000024 c, "; 
+			$consultaSql .= " ".$wbasedato."_000040 as c40 "; 
+			$consultaSql .= " WHERE Renfec BETWEEN '".$wfeci."' AND '".$wfecf."' "; 
+			$consultaSql .= " AND Rennum = Rdenum "; 
+			$consultaSql .= " AND Renfue = Rdefue AND Rencco = Rdecco "; 
+			$consultaSql .= " AND fenffa = Rdeffa AND fenfac = Rdefac "; 
+			$consultaSql .= " AND Carfue = Rdefue AND fencod = empcod "; 
+			$consultaSql .= " AND fencod = '".$wempresa."' AND Rdeest ='on' "; 
+			$consultaSql .= " AND Carncr='on' ";
+			if (($wfuente_envio != '') && ($wenvio != '')) {
+				$consultaSql .= " AND Rdenum = '".$wenvio."' ";
+				$consultaSql .= " AND Rdefue = '".$wfuente_envio."' ";
+			}
+			$res = mysql_query($consultaSql,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$consultaSql." - ".mysql_error());
+			$num = mysql_num_rows($res);
+			
+			if ($num > 0) {
+				echo "<center>";
+				echo "<br<br><input type='button' value='Generar Archivo' onclick='crearArchivo()' /><br><br>";
+				echo "</center>";
+				echo "<br>";
+				echo "<center><table border='0'>";
+
+				echo "<tr><td colspan=15 class='fila2'><b>Cantidad de Notas Credito encontradas: ".$num."</b></td></tr>";
+
+				echo "<tr class='encabezadoTabla'>";
+				echo "<th>SELECCIONAR</th>";
+				echo "<th>ESTADO</th>";
+				echo "<th>FUENTE</th>";
+				echo "<th>DOCUMENTO</th>";
+				echo "<th>FACTURA</th>";
+				echo "<th>FECHA</th>";
+				echo "<th>HISTORIA</th>";
+				echo "<th>DOCUMENTO</th>";
+				echo "<th>PACIENTE</th>";
+				echo "<th>RESPONSABLE</th>";
+				echo "<th>VALOR<br>CANCELADO</th>";
+				echo "<th>VALOR<BR>CONCEPTO</th>";
+				echo "<th>ESTADO CARTERA</th>";
+				echo "<th>ESTADO FACTURA</th>";
+				echo "<th>OBSERVACION</th>";				
+				echo "</tr>";
+
+				$wver="";
+				
+				$totalValor=0;
+				$totalSaldo=0;
+
+				for ($i=1;$i<=$num;$i++)
+				{
+					$row = mysql_fetch_array($res);
+
+					if ($i%2==0)
+					$wclass="fila1";
+					else
+					$wclass="fila2";
+					
+					$westadopac = "Egresado";
+					if( $row['egresado'] == "" )
+						$westadopac = "<div class='fondorojo'>SIN egresar</span>";
+
+					$westcar = '';
+					//Le coloco nombre a los estados de la factura en cartera
+					switch ($row['estadofac'])
+					{
+					case "GE":
+					{ $westcar="GENERADA"; }
+					break;
+					case "EV":
+					{ $westcar="ENVIADA"; }
+					break;
+					case "RD":
+					{ $westcar="RADICADA"; }
+					break;
+					case "DV":
+					{ $westcar="DEVUELTA"; }
+					break;
+					case "GL":
+					{ $westcar="GLOSADA"; }
+					}
+
+					//Le coloco nombre a los estados de la factura en el archivo
+					switch ($row['estado'])
+					{
+					case "on":
+					{ $westreg="ACTIVA*"; }
+					BREAK;
+					case "off":
+					{ $westreg="ANULADA"; }
+					BREAK;
+					}				
+				
+					//En el checkbox, se pone atributo fuente y factura, aunque el ultimo atributo en realidad es "numero", se deja asi para no cambiar funciones javascript
+					echo "<tr class='filafactura ".$wclass."'>";					
+					echo "<td align='center'><input type='checkbox' onclick='elegirFactura(this)' class='elegirfactura' value='".$row['fuente']."||".$row['numero']."' fuente='".$row['fuente']."' factura='".$row['numero']."' checked/></td>";
+					echo "<td align='center'>".$westadopac."</td>";
+					echo "<td>".$row['fuente']."</td>";
+					echo "<td>".$row['numero']."</td>";
+					echo "<td>".$row['fuentefac']."/".$row['factura']."</td>";
+					echo "<td>".$row['fecha']."</td>";
+					echo "<td>".$row['historia']."-".$row['ingreso']."</td>";
+					echo "<td>".$row['docpac']."</td>";
+					echo "<td>".$row['nombrepac']."</td>";
+					echo "<td>".$row['nit']." ".$row['nombreent']."</td>";
+					echo "<td class='valor' align=right>".number_format($row['valor_cancelado'],0,'.',',')."</td>";
+					echo "<td class='saldo' align=right>".number_format($row['valor_concepto'],0,'.',',')."</td>";
+					echo "<td align=center><b>".$westcar."</b></td>";
+					echo "<td align=center><b>".$westreg."</b></td>";
+					echo "<td align=center>".$row['obs']."</td>";
+					echo "</tr>";
+					echo "<tr class='detalle' style='display:none;'><td colspan=14>&nbsp;</td></tr>";
+					
+					$totalValor+=$row['valor'];
+					$totalSaldo+=$row['saldo'];
+				}
+			}else{
+				echo "<br>No se encontraron datos con los parametros ingresados.";			
+			}
+		}
+		
+		if( $num > 0 ){
+			$cols = 9;
+			if( $wfacturaonc == "FAC" )
+				$cols=8;
+			echo "<tr class='encabezadotabla'>";
+			echo "<td align='center' nowrap>Elegir todas<br><input type='checkbox' onclick='seleccionarTodas(this)' checked/></td>";
+			echo "<td colspan={$cols}>&nbsp;</td>";
+			echo "<td id='totalValor'>".number_format($totalValor,0,'.',',')."</td>";
+			echo "<td id='totalSaldo'>".number_format($totalSaldo,0,'.',',')."</td>";
+			echo "<td colspan=3>&nbsp;</td>";
+			echo "</tr>";
+			
+			echo "</table>";
+			echo "<br>";
+			echo "<center>";
+			echo "<br<br><input type='button' value='Generar Archivo' onclick='crearArchivo()' /><br><br>";
+			echo "</center>";
+			echo "<input type='hidden' id='empresaHidden' value='".$wempresa."' />";
+			echo "<input type='hidden' id='wfacturaonc' value='".$wfacturaonc."' />";
+			echo "<input type='hidden' id='wfeci' value='".$wfeci."' />";
+			echo "<input type='hidden' id='wfecf' value='".$wfecf."' />";
+		}
+
+
+	}
+
+	function generarReporteBk( $wfacturaonc, $wempresa, $wfuente='', $wfactura='', $whis='', $wing='', $wdoc='', $wfeci, $wfecf ){
 		global $conex;
         global $wbasedato;
 		global $wtcx;
@@ -1386,7 +1852,7 @@ if( isset($_REQUEST['action'] )){
 				echo "<br>";
 				echo "<center><table border='0'>";
 
-				echo "<tr><td colspan=15 class='fila2'><b>Cantidad de Notas Crédito encontradas: ".$num."</b></td></tr>";
+				echo "<tr><td colspan=15 class='fila2'><b>Cantidad de Notas CrÃ©dito encontradas: ".$num."</b></td></tr>";
 
 				echo "<tr class='encabezadoTabla'>";
 				echo "<th>SELECCIONAR</th>";
@@ -1673,7 +2139,7 @@ if( isset($_REQUEST['action'] )){
 					echo "</tr>";
 				}
 
-				// FILAS PARA LA ANULACIÓN DE FACTURAS.
+				// FILAS PARA LA ANULACÃ“N DE FACTURAS.
 				if($west == "on" and $puedeAnular == "on" ){
 					$visibilidad = "display:none;";
 					$textHabilitado = "";
@@ -1778,17 +2244,75 @@ if( isset($_REQUEST['action'] )){
 				array_push($arr_empresas_archivo, $row );
 			}			
 		}
+
+		//Funcionalidad para consultar las fuentes de maestros de los envios Mavila :)
+		$arr_fuentes_envio = array();
+		$consultaSql = " SELECT Carfue AS fuente, Cardes as descripcion ";
+		$consultaSql.= " FROM ".$wbasedato."_000040 WHERE Carest = 'on' AND Carenv = 'on';";
+		$res = mysql_query($consultaSql,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$consultaSql." - ".mysql_error());								//fuente y numero de factura
+		$num = mysql_num_rows($res);	
+		if ($num > 0){
+			while($row = mysql_fetch_array($res)){
+				array_push($arr_fuentes_envio, $row );
+			}			
+		}
+		//Fin de la funcionalidad para consultar las fuentes :)
+		//
+		//Funcionalidad para consultar las fuentes de maestros de los envios Mavila :)
+		$arr_envios = array();
+		$consultaSql = " SELECT Renfue AS fuente, Rennum AS envio, Renfec AS fecha_envio ";
+		$consultaSql.= " FROM ".$wbasedato."_000020  ";
+		$consultaSql.= " WHERE Renest = 'on' ";
+		$consultaSql.= " ORDER BY Renfec DESC LIMIT 20";
+		$res = mysql_query($consultaSql,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$consultaSql." - ".mysql_error());								//fuente y numero de factura
+		$num = mysql_num_rows($res);	
+		if ($num > 0){
+			while($row = mysql_fetch_array($res)){
+				array_push($arr_envios, $row );
+			}			
+		}
+		//Fin de la funcionalidad para consultar las fuentes :)
 		
 		echo "<center>";
 		 echo "<div align='center'><fieldset id='' style='padding:15px;width:800px'>";
 		//------------TABLA DE PARAMETROS-------------		
 		echo "<legend class='fieldset'>Par&aacute;metros de busqueda</legend>";
 		echo "<div>";
-		echo "<table border='0' style='width:60%;'>";
+		echo "<table border='0' style='width:80%;'>";
+		//Se adiciona campo de filtro por tipo de fuente de envio :)	
+		echo "<tr>";
+		echo "<td align=left width='10%' class='encabezadotabla' colspan=1>";
+		echo "<b>Fuente de envio:</b>";
+		echo "</td>";
+		echo "<td width='40%' class='fila2'>";
+		echo "<select style='width:100%' id='fuente_envio'>";
+		foreach( $arr_fuentes_envio as $fuente ){
+			echo "<option value='".$fuente['fuente']."'>".$fuente['fuente']."  -  ".$fuente['descripcion']."</option>";
+		}
+		echo "</td>";
+		echo "</tr>";
+		//Se adiciona campo de filtro por el numero de envio :)
+		echo "<tr>";
+		echo "<td align=left width='10%' class='encabezadotabla' colspan=1>";
+		echo "<b>Ingrese envio: <input type='checkbox' name='check_Envio' id='check_Envio' value='1' onchange='javascript:showInputEnvio()' /></b>";
+		echo "</td>";
+		echo "<td width='40%' class='fila2'>";
+		echo "<input style='width:100%; display:none' placeholder='Ingrese envio...' ";
+		echo " type='text' name='cod_Envio' id='cod_Envio'>";
+		echo "<select style='width:100%;' id='sel_Envio'>";
+		echo "<option value=''> Seleccione de envio...</option>";
+		foreach( $arr_envios as $envio ){
+			echo "<option value='".$envio['envio']."'>".$envio['envio']." ";
+			echo " (".$envio['fecha_envio'].") </option>";
+		}
+		echo "</td>";
+		echo "</tr>";
+		//Se adiciona campo de filtro por tipo de fuente de envio :)
+		//
 		echo "<tr>";
 		echo "<td align=left width='10%' class='encabezadotabla' colspan=1><b>Empresa:</b></td>
 			  <td width='40%' class='fila2'>
-			 <select id='empresa'>				
+			 <select style='width:100%' id='empresa'>				
 				";
 		foreach( $arr_empresas_archivo as $empresa ){
 			echo "<option value='".$empresa['cod']."'>".$empresa['cod']."  -  ".$empresa['nombre']."</option>";
@@ -1798,7 +2322,7 @@ if( isset($_REQUEST['action'] )){
 		echo "<tr>";
 		echo "<td align=left width='10%' class='encabezadotabla' colspan=1><b>Facturas/Notas Credito:</b></td>
 			  <td width='40%' class='fila2' align='center'>
-			 <select id='facturaonc'>";		
+			 <select style='width:100%' id='facturaonc'>";		
 			echo "<option value='FAC'>FACTURAS</option>";
 			echo "<option value='NC'>NOTAS CREDITO</option>";
 		echo "</select>";
@@ -1821,7 +2345,7 @@ if( isset($_REQUEST['action'] )){
 			  <td width='40%' class='fila2'><INPUT TYPE='text' NAME='wing' id='wing'></td>";
 		echo "</tr>";
 		echo "<tr>";
-		echo "<td align=left class='encabezadotabla'><b>Documento de Identificación: </b></td>
+		echo "<td align=left class='encabezadotabla'><b>Documento de Identificacion: </b></td>
 			  <td colspan='2' class='fila2'> <INPUT TYPE='text' NAME='wdoc' id='wdoc' SIZE=34 ></td>";
 		echo "</tr>";*/	
 		echo "<tr>";
