@@ -149,6 +149,7 @@ if(!isset($_SESSION['user']))
 		$cont1284=0;
 		$cont1285=0;
 		$cont1179=0;
+		$cont1021=0;
 		$y = 0;
 		for ($i=1;$i<=$num1;$i++)
 		{
@@ -330,9 +331,11 @@ if(!isset($_SESSION['user']))
 								$cont1285 = $cont1285 + 1;
 							if ($dato3[0] == '1179') 
 								$cont1179 = $cont1179 + 1;
+							if ($dato3[0] == '1021') 
+								$cont1021 = $cont1021 + 1;
 						}
 						$contot = $cont1182 + $cont1183 + $cont1184 + $cont1020 + $cont1187 +  $cont1180 + $cont1185 + $cont1186 + $cont1188 
-						  + $cont1190 + $cont1189 + $cont1286 + $cont1282 + $cont1281 + $cont1283 + $cont1284 + $cont1285 + $cont1179 ;
+						  + $cont1190 + $cont1189 + $cont1286 + $cont1282 + $cont1281 + $cont1283 + $cont1284 + $cont1285 + $cont1179 + $cont1021;
 
 				}
 				
@@ -362,6 +365,7 @@ if(!isset($_SESSION['user']))
 	echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1284 - HOSP. PISO 4- TORRE 4   = ".$cont1284."</font></b><br>";
 	echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1285 - HOSP. PISO 5- TORRE 4   = ".$cont1285."</font></b><br>";
 	echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1179 - HOSP. MED. NUCL- TORRE 3= ".$cont1179."</font></b><br>";
+	echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1021 - UCI EXTENSION           = ".$cont1021."</font></b><br>";
 	echo "</table>";
 	
 	
@@ -416,6 +420,7 @@ if(!isset($_SESSION['user']))
 		$cont1284=0;
 		$cont1285=0;
 		$cont1179=0;
+		$cont1021=0;
 		$y = 0;
 		
 		
@@ -597,9 +602,11 @@ if(!isset($_SESSION['user']))
 									$cont1285 = $cont1285 + 1;
 								if ($dato3[0] == '1179') 
 									$cont1179 = $cont1179 + 1;
+								if ($dato3[0] == '1021') 
+									$cont1021 = $cont1021 + 1;
 							}
 							$contot = $cont1182 + $cont1183 + $cont1184 + $cont1020 + $cont1187 +  $cont1180 + $cont1185 + $cont1186 + $cont1188 
-							  + $cont1190 + $cont1189 + $cont1286 + $cont1282 + $cont1281 + $cont1283 + $cont1284 + $cont1285 + $cont1179 ;
+							  + $cont1190 + $cont1189 + $cont1286 + $cont1282 + $cont1281 + $cont1283 + $cont1284 + $cont1285 + $cont1179 + $cont1021 ;
 				}
 				
 				
@@ -629,6 +636,7 @@ if(!isset($_SESSION['user']))
 			echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1284 - HOSP. PISO 4- TORRE 4   = ".$cont1284."</font></b><br>";
 			echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1285 - HOSP. PISO 5- TORRE 4   = ".$cont1285."</font></b><br>";
 			echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1179 - HOSP. MED. NUCL- TORRE 3= ".$cont1179."</font></b><br>";
+			echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1021 - UCI EXTENSION           = ".$cont1021."</font></b><br>";
 			echo "</table>";
 			
 			
@@ -682,6 +690,7 @@ if(!isset($_SESSION['user']))
 		$cont1284=0;
 		$cont1285=0;
 		$cont1179=0;
+		$cont1021=0;
 		$y = 0;
 		
 		
@@ -865,9 +874,11 @@ if(!isset($_SESSION['user']))
 									$cont1285 = $cont1285 + 1;
 								if ($dato3[0] == '1179') 
 									$cont1179 = $cont1179 + 1;
+								if ($dato3[0] == '1021') 
+									$cont1021 = $cont1021 + 1;
 							}
 							$contot = $cont1182 + $cont1183 + $cont1184 + $cont1020 + $cont1187 +  $cont1180 + $cont1185 + $cont1186 + $cont1188 
-							  + $cont1190 + $cont1189 + $cont1286 + $cont1282 + $cont1281 + $cont1283 + $cont1284 + $cont1285 + $cont1179 ;
+							  + $cont1190 + $cont1189 + $cont1286 + $cont1282 + $cont1281 + $cont1283 + $cont1284 + $cont1285 + $cont1179 + $cont1021;
 
 				}
 	
@@ -897,6 +908,7 @@ if(!isset($_SESSION['user']))
 			echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1284 - HOSP. PISO 4- TORRE 4   = ".$cont1284."</font></b><br>";
 			echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1285 - HOSP. PISO 5- TORRE 4   = ".$cont1285."</font></b><br>";
 			echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1179 - HOSP. MED. NUCL- TORRE 3= ".$cont1179."</font></b><br>";
+			echo "<tr><td align=left bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4>1021 - UCI EXTENSION           = ".$cont1021."</font></b><br>";
 			echo "</table>";
 		
 			echo "<center><table border=0>";
