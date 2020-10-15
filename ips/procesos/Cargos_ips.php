@@ -4627,8 +4627,9 @@
 	           			$q .=" ,tcarno1 ,tcarno2 ,tcarap1 ,tcarap2  ";
 	           			$q .=" ,tcardoc ,tcarser ,tcarconcod ,tcarconnom  ";
 	           			$q .=" ,tcarprocod ,tcarpronom  ";
-	           			$q .=" ,tcartercod ,tcarternom ,tcarterpor  ";
-	           			$q .=" ,tcarca, tcarvun  ";
+						$q .=" ,tcartercod ,tcarternom ,tcarterpor  ";
+						//Se adiciona validacion del nombre del campo de tcarca a tcarcan Mavila :)   
+	           			$q .=" ,tcarcan, tcarvun  ";
 	           			$q .=" ,tcarvto  ";
 	           			$q .=" ,tcarrec ,tcarfac ,tcartfa  ";
 	           			$q .=" ,tcarest ,tcarnmo ,tcarcmo ,tcarapr ";
