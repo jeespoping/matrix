@@ -1187,7 +1187,7 @@ else
 		<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
 		<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
 		<script src="../../../include/root/jquery_1_7_2/js/jquery-ui.js" type="text/javascript"></script>
-		<script src="<?=$URL_ACTUAL?>procesos/MarcaDeAguaERP.js" type="text/javascript"></script>
+		<script src="../../../matrix/ips/procesos/MarcaDeAguaERP.js" type="text/javascript"></script>
 		<script src="../../../include/ips/funcionInsumosqxERP.js" type="text/javascript"></script>
 		<script src="../../../include/root/toJson.js" type="text/javascript"></script>
 		<link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
