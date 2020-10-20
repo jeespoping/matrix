@@ -1,4 +1,13 @@
 <?php
+/**
+ * Modificaciones
+ *
+ * Octubre 20 de 2020	Edwin MG	Se hacen cambios para que el cron se crea diaramente solo para servicio domiciliario. También
+ *									se deja la opción para que se puede ejecutar para todos agregando en la url el parametro todos.
+ *									El parametro $todos puede tener cualquier valor
+ */
+
+
 function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 
 	global $wbasedato;
@@ -290,25 +299,34 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 	}
 }
 
-function consultarPacientes( $conex, $wemp_pmla, $wbasedato, $fecha = '' ){
+function consultarPacientes( $conex, $wemp_pmla, $wbasedato, $all, $fecha = '' ){
 	
 	if( empty( $fecha ) ){
 		$fecha = date("Y-m-d");
 	}
 	
 	$val = false;
-	
-	$sql = "SELECT Ubihis, Ubiing, Ubisac, Ubihan
-			  FROM ".$wbasedato."_000018 a, ".$wbasedato."_000011 b
-			 WHERE a.ubiald = 'off'
-			   AND a.ubisac = b.ccocod
-			 ";
+
+	if( !$all ){
+		$sql = "SELECT Ubihis, Ubiing, Ubisac, Ubihan
+				  FROM ".$wbasedato."_000018 a, ".$wbasedato."_000011 b
+				 WHERE a.ubiald = 'off'
+				   AND a.ubisac = b.ccocod
+				   AND b.ccodom = 'on'
+				 ";
+	}
+	else{
+		$sql = "SELECT Ubihis, Ubiing, Ubisac, Ubihan
+				  FROM ".$wbasedato."_000018 a, ".$wbasedato."_000011 b
+				 WHERE a.ubiald = 'off'
+				   AND a.ubisac = b.ccocod
+				 ";
+	}
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ". mysql_error() );
 	
 	while( $rows = mysql_fetch_array( $res ) ){
-		echo $rows['Ubihis'], "-".$rows['Ubiing'];
-		crearKardexAutomaticamente( $conex, $wbasedato, $rows['Ubihis'], $rows['Ubiing'], $fecha );
+		crearKardexAutomaticamente( $conex, $wbasedato, $rows['Ubihis'], $rows['Ubiing'], date("Y-m-d") );
 	}
 	
 	return $val;
@@ -331,4 +349,4 @@ $usuario = consultarUsuarioKardex($wuser);
 if(!isset($fecha) )
 	$fecha = '';
 
-consultarPacientes( $conex, $wemp_pmla, $wbasedato, $fecha );
+consultarPacientes( $conex, $wemp_pmla, $wbasedato, isset($todos), $fecha );
