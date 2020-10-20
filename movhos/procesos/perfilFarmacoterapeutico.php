@@ -2085,11 +2085,26 @@ if (!$usuarioValidado){
 									echo "<td $eventosQuitarTooltip>";
 									echo "<select name='wviadmon$contArticulos' id='wviadmon$contArticulos' class='seleccion' style='width:100px' ".( !$detalleEditable ? 'disabled': '' ).">";
 
+									$vias_por_art = explode( ",", $articulo->viasPosibles );
+
 									foreach ($colVias as $via){
-										if($via->codigo == $articulo->via){
-											echo "<option value='".$via->codigo."' selected>$via->descripcion</option>";
-										}else{
-											echo "<option value='".$via->codigo."'>$via->descripcion</option>";
+										
+										if( empty( $articulo->viasPosibles ) ){
+											if($via->codigo == $articulo->via){
+												echo "<option value='".$via->codigo."' selected>$via->descripcion</option>";
+											}else{
+												echo "<option value='".$via->codigo."'>$via->descripcion</option>";
+											}
+										}
+										else{
+											if( in_array( $via->codigo , $vias_por_art ) ){
+												if( $via->codigo == $articulo->via ){
+													echo "<option value='".$via->codigo."' selected>$via->descripcion</option>";
+												}
+												else{
+													echo "<option value='".$via->codigo."'>$via->descripcion</option>";
+												}
+											}
 										}
 									}
 									echo "</select>";

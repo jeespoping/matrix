@@ -15981,6 +15981,12 @@ else{
 
 		encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica" );
 
+		$servicioDomiciliario = '';
+		$ccoServDom = '';
+		if( !empty($servicioDomiciliario) ){
+			$ccoServDom = ',ccodom';
+		}
+
 		//**************** llamada a la funcion consultaCentrosCostos y dibujarSelect************
 		if( empty( $ccoayudaori ) ){
 
