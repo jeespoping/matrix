@@ -4628,11 +4628,13 @@
 	           			$q .=" ,tcardoc ,tcarser ,tcarconcod ,tcarconnom  ";
 	           			$q .=" ,tcarprocod ,tcarpronom  ";
 						$q .=" ,tcartercod ,tcarternom ,tcarterpor  ";
+
 						//Se adiciona validacion del nombre del campo de tcarca a tcarcan Mavila :)   
 	           			$q .=" ,tcarcan, tcarvun  ";
 	           			$q .=" ,tcarvto  ";
 	           			$q .=" ,tcarrec ,tcarfac ,tcartfa  ";
-	           			$q .=" ,tcarest ,tcarnmo ,tcarcmo ,tcarapr ";
+						   $q .=" ,tcarest ,tcarnmo ,tcarcmo ,tcarapr ";
+						   
 	           			//Se adiciona validacion de la consulta del numero de autorizacion :)
 	           			if ($w_solicitar_autorizacion == 'on') {
 	           				$q .=" ,tcaraut ,Seguridad)  ";
