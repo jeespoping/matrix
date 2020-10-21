@@ -23,6 +23,17 @@
 
 <script type="text/javascript">
 
+function imprimirSticker( url ){
+
+	$.get( url,
+		{},
+		function(data){
+			alert( data.msg );
+		},
+		"json",
+	);
+}
+
 function mostrarImprimirSticker(){
 	 $.blockUI({ 
 		message: $('#dvImprimirStickers'),
@@ -2620,7 +2631,7 @@ if (!$usuarioValidado){
 			echo "<td colspan='2' id='cntHabitacion' align='center'>";
 			
 			if(isset($wsservicio) && !empty($wsservicio)){
-				echo @consultarHabitacionPacienteServicioPerfil($wbasedato,$wsservicio,$esServicioDomiciliario);
+				echo @consultarHabitacionPacienteServicioPerfil($wbasedato,$wsservicio,$wemp_pmla,$esServicioDomiciliario);
 			}
 			
 			echo "</td>";
