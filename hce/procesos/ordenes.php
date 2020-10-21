@@ -866,6 +866,8 @@ if($historia !='' and $ingreso != ''){
 	$paciente = consultarInfoPacienteOrdenHCE($tipoDocumento,$wcedula);
 }
 
+$diasDispensacion = consultarDiasDispensacion( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
+
 $wempresa = consultarAliasPorAplicacion( $conex, $wemp_pmla, "hce" );
 
 //****************************************************************************/

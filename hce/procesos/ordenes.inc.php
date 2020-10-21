@@ -226,11 +226,18 @@ include_once("./../../interoperabilidad/procesos/funcionesGeneralesEnvioHL7.php"
 /**********************************
  * VARIABLES GLOBALES
  **********************************/
+//Conexion base de datos
+$conex = obtenerConexionBD("matrix");
+	
 $strPendientesCTC="";
  
  $grupoControl = "CTR";
 
 $centroCostosServicioFarmaceutico = "1050";
+
+if( $wemp_pmla == '02')
+	$centroCostosServicioFarmaceutico = "1505";
+
 $centroCostosCentralMezclas = "1051";
 
 $codigoServicioFarmaceutico = "SF";
@@ -255,14 +262,11 @@ $nombreProtocoloQuimioterapia = "Quimioterapia";
 // Regleta con dosis por ronda para cada familia
 $regletaFamilia = array();
 
-	
 //Nombre del esquema de hce
-$esquemaBDHce = "hce";
+$esquemaBDHce = consultarAliasPorAplicacion($conex,$wemp_pmla,"hce");
 $codigoAplicacion = "ordenes";
 $codigoAyudaHospitalaria="H";
 
-//Conexion base de datos
-$conex = obtenerConexionBD("matrix");
 
 //Consulta de la información del usuario
 @$usuario = consultarUsuarioOrdenes($wuser);
@@ -270,9 +274,13 @@ $conex = obtenerConexionBD("matrix");
 /**********************************
  * PARAMETROS DE LA BASE DE DATOS *
  **********************************/
-$horaCorteDispensacion 	= consultarAliasPorAplicacion($conex,"01","horaCorteDispensacion");
-$inicioDiaDispensacion 	= consultarAliasPorAplicacion($conex,"01","inicioDiaDispensacion");
-$topePorcentualCtc 		= consultarAliasPorAplicacion($conex,"01","topePorcentualCTC");
+$horaCorteDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"horaCorteDispensacion");
+$inicioDiaDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"inicioDiaDispensacion");
+$topePorcentualCtc 		= consultarAliasPorAplicacion($conex,$wemp_pmla,"topePorcentualCTC");
+
+$diasDispensacion = 1;
+if( $wemp_pmla == '02' )
+	$diasDispensacion = 7;
 
 /***********************************
  * CLASES
@@ -471,6 +479,8 @@ class detalleKardexDTO {
 	}
 	
 	function consultarDatosExtensionDetalleKardexPorArticulo( $conex, $wbasedato, $tabla, $his, $ing, $fecha, $art, $ido ){
+		
+		global $centroCostosServicioFarmaceutico;
 	
 		$val = false;
 		
@@ -483,7 +493,7 @@ class detalleKardexDTO {
 				   AND Ekxido = '".$ido."'
 				   AND Ekxest = 'on'
 				   AND Ekxart = Defart
-				   AND Defcco = '1050'
+				   AND Defcco = '".$centroCostosServicioFarmaceutico."'
 				 ";
 		
 		$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
@@ -1062,6 +1072,32 @@ class AccionPestanaDTO{
 /***********************************
  * FUNCIONES
  ***********************************/
+
+/**
+ * Consulta los dias de dispensación por centro de costos donde se encuentra ubicado el paciente
+ * 
+ */
+function consultarDiasDispensacion( $conex, $wmovhos, $his, $ing ){
+	
+	$val = 1;
+	
+	//Consultando el nombre del estudio
+	$sql = "SELECT Ccoddi
+			  FROM ".$wmovhos."_000011 a, ".$wmovhos."_000018 b
+			 WHERE a.ccocod = b.ubisac
+			   AND a.ccoest = 'on'
+			   AND b.ubihis = '".$his."'
+			   AND b.ubiing = '".$ing."'
+			 ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
+	
+	if( $rows = mysql_fetch_array ($res) ){
+		$val = $rows['Ccoddi'];
+	}
+	
+	return $val;
+} 
  
 function consultarEstudioPorOrdenClinica( $conex, $whce, $wtor, $wnro, $wite ){
 				
@@ -2016,6 +2052,8 @@ function consultarArticuloControlAImprimir( $conex, $wbasedato, $cenmez, $wemp_p
  ************************************************************************************************************************/
 function cambiarEstadoDeDispensacionParaLEVIC( $conex, $wbasedato, $his, $ing ){
 	
+	global $centroCostosServicioFarmaceutico;
+	
 	$val= false;
 
 	$sql = "UPDATE movhos_000054 a, movhos_000098 b, movhos_000171 c
@@ -2034,7 +2072,7 @@ function cambiarEstadoDeDispensacionParaLEVIC( $conex, $wbasedato, $his, $ing ){
 			   AND a.kadart = b.carcod
 			   AND a.kadlev = 'on'
 			   AND a.kadess = 'off'
-			   AND b.carcco = '1050'
+			   AND b.carcco = '".$centroCostosServicioFarmaceutico."'
 			   AND b.cardis = 'off'
 			   AND b.carest = 'on'
 			   AND b.cartip = 'IC'
@@ -2063,7 +2101,7 @@ function cambiarEstadoDeDispensacionParaLEVIC( $conex, $wbasedato, $his, $ing ){
 			   AND a.kadart = b.carcod
 			   AND a.kadlev = 'on'
 			   AND a.kadess = 'off'
-			   AND b.carcco = '1050'
+			   AND b.carcco = '".$centroCostosServicioFarmaceutico."'
 			   AND b.cardis = 'off'
 			   AND b.carest = 'on'
 			   AND b.cartip = 'LQ'
@@ -2139,12 +2177,16 @@ function guardarNotaMedicaCtcContributivo($his,$ing,$fechaCTC,$horaCTC,$ctcmed,$
 	global $wbasedato;
 	global $wbasedatohce;
 	
+	global $wemp_pmla;
+	
 	$fecha_data = date( "Y-m-d" );
 	$hora_data = date( "H:i:s" );
 	$cco = "";
 	
+	$tablaHceNotas = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'NotaMedicaCtcContributivo' );
+	
 	$qFormularioHCE = " SELECT Hora_data,Movdat 
-							FROM ".$wbasedatohce."_000243 
+							FROM ".$wbasedatohce."_".$tablaHceNotas." 
 						   WHERE Fecha_data='".$fecha_data."' 
 						     AND Hora_data='".$hora_data."' 
 						     AND movpro='000243' 
@@ -2167,7 +2209,7 @@ function guardarNotaMedicaCtcContributivo($his,$ing,$fechaCTC,$horaCTC,$ctcmed,$
 		}
 		
 		$qFormularioHCE = " SELECT Hora_data,Movdat 
-								FROM ".$wbasedatohce."_000243 
+								FROM ".$wbasedatohce."_".$tablaHceNotas." 
 							   WHERE Fecha_data='".$fecha_data."' 
 								 AND Hora_data='".$hora_data."' 
 								 AND movpro='000243' 
@@ -2226,8 +2268,8 @@ function guardarNotaMedicaCtcContributivo($his,$ing,$fechaCTC,$horaCTC,$ctcmed,$
 				
 		if($valorAGrabar!="")
 		{
-			$queryInsertHce= "INSERT INTO ".$wbasedatohce."_000243 (	Medico	,		Fecha_data	,	  Hora_data	   , movpro ,		movcon		  ,		 movhis   ,		 moving   ,		 movtip	   ,		movdat	   ,	movusu    ,	Seguridad	) 
-													VALUES ('".$wbasedatohce."' , '".$fecha_data."' , '".$hora_data."' ,'000243',  '".$consecutivo."' ,'".$his."', '".$ing."', '".$tipoDato."','".$valorAGrabar."','".$ctcmed ."','C-".$wbasedatohce."');";
+			$queryInsertHce= "INSERT INTO ".$wbasedatohce."_".$tablaHceNotas." (	Medico	,		Fecha_data	,	  Hora_data	   , movpro ,		movcon		  ,		 movhis   ,		 moving   ,		 movtip	   ,		movdat	   ,	movusu    ,	Seguridad	) 
+													VALUES ('".$wbasedatohce."' , '".$fecha_data."' , '".$hora_data."' ,'".$tablaHceNotas."',  '".$consecutivo."' ,'".$his."', '".$ing."', '".$tipoDato."','".$valorAGrabar."','".$ctcmed ."','C-".$wbasedatohce."');";
 
 			$res = mysql_query( $queryInsertHce, $conex ) or die( mysql_errno()." - Error en el query $queryInsertHce - ".mysql_error() );	
 		}
@@ -2235,15 +2277,15 @@ function guardarNotaMedicaCtcContributivo($his,$ing,$fechaCTC,$horaCTC,$ctcmed,$
 	
 	//Firma
 	$firma = consultarFirma($wbasedatohce,$ctcmed);
-	$queryInsertHce= "INSERT INTO ".$wbasedatohce."_000243 (	Medico	,		Fecha_data	,	  Hora_data	   , movpro ,  movcon ,	 	movhis    ,	 moving	   , movtip ,	movdat		,	 movusu	   ,Seguridad	) 
-											VALUES ('".$wbasedatohce."' , '".$fecha_data."' , '".$hora_data."' ,'000243',  '1000' ,'".$his."', '".$ing."', 'Firma',  '".$firma."'	,'".$ctcmed ."','C-".$wbasedatohce."');";
+	$queryInsertHce= "INSERT INTO ".$wbasedatohce."_".$tablaHceNotas." (	Medico	,		Fecha_data	,	  Hora_data	   , movpro ,  movcon ,	 	movhis    ,	 moving	   , movtip ,	movdat		,	 movusu	   ,Seguridad	) 
+											VALUES ('".$wbasedatohce."' , '".$fecha_data."' , '".$hora_data."' ,'".$tablaHceNotas."',  '1000' ,'".$his."', '".$ing."', 'Firma',  '".$firma."'	,'".$ctcmed ."','C-".$wbasedatohce."');";
 
 	$res = mysql_query( $queryInsertHce, $conex ) or die( mysql_errno()." - Error en el query $queryInsertHce - ".mysql_error() );
 	
 	//Registrar firma
 	$regMedico = consultarRegMedico($wbasedato,$ctcmed);
 	$queryInsertHce= "INSERT INTO ".$wbasedatohce."_000036 (	Medico	,		Fecha_data	,	  Hora_data	   , Firpro, Firhis, Firing, Firusu, Firfir, Firrol,Fircco,Seguridad	) 
-											VALUES ('".$wbasedatohce."' , '".$fecha_data."' , '".$hora_data."' ,'000243',  '".$his."' , '".$ing."', '".$ctcmed ."',  'on'	,'".$regMedico ."','".$cco[0] ."','C-".$wbasedatohce."');";
+											VALUES ('".$wbasedatohce."' , '".$fecha_data."' , '".$hora_data."' ,'".$tablaHceNotas."',  '".$his."' , '".$ing."', '".$ctcmed ."',  'on'	,'".$regMedico ."','".$cco[0] ."','C-".$wbasedatohce."');";
 
 	$res = mysql_query( $queryInsertHce, $conex ) or die( mysql_errno()." - Error en el query $queryInsertHce - ".mysql_error() );
 	
@@ -9438,12 +9480,14 @@ function actualizarFamiliaProductos( $conex, $wmovhos, $wcenpro, $his, $ing, $fe
 /******************************************************************************************
  * Consulta la hubicación del paciente en urgencias
  ******************************************************************************************/
-function consultaUbicacionPacienteUrgencias( $conex, $wbasedato, $historia, $ingreso ){
+function consultaUbicacionPacienteUrgencias( $conex, $wbasedato, $historia, $ingreso, $cco ){
 	
 	$val = false;
 	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $cco );
+	
 	$sql = "SELECT Habzon, Habcpa, Aredes
-			  FROM ".$wbasedato."_000020 a, ".$wbasedato."_000169 b
+			  FROM ".$tablaHabitaciones." a, ".$wbasedato."_000169 b
 			 WHERE habhis = '$historia'
 			   AND habing = '$ingreso'
 			   AND habzon = arecod
@@ -12367,12 +12411,14 @@ function consultarHabitacionPacienteServicioPerfil($basedatos,$servicio){
 	global $wemp_pmla;
 	
 	$conexion = obtenerConexionBD("matrix");		
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $servicio );
 		
 	$q = "SELECT
 			Habcod, Habcco, Habhis, Habing,
 			CONCAT(pacno1,' ', pacno2,' ', pacap1,' ', pacap2, '|', Pactid, '|', Pacced ) as nombre, 'off' Ubiptr
 		FROM
-			{$basedatos}_000020, root_000036, root_000037
+			{$tablaHabitaciones}, root_000036, root_000037
 		WHERE
 			Habcco = '$servicio'
 			AND Habdis = 'off'
@@ -13016,6 +13062,8 @@ function consultarTiempoDispensacion( $conex, $wemp ){
  */
 function crearVectorAplicaciones( $horasAplicar, $frecuencia, $can, $tiempoDispensacion ){
 	
+	global $diasDispensacion;
+	
 	$can = round( $can, 3 );
 	
 	$val = "";
@@ -13024,10 +13072,10 @@ function crearVectorAplicaciones( $horasAplicar, $frecuencia, $can, $tiempoDispe
 	// 2012-09-04
 	// Se aumenta hora máxima a 30
 	if( $tiempoDispensacion > 2 ){
-		$horaMaxima = 30 + ceil( $tiempoDispensacion/2 )*2-2;
+		$horaMaxima = ($diasDispensacion*24+6) + ceil( $tiempoDispensacion/2 )*2-2;
 	}
 	else{
-		$horaMaxima = 30;
+		$horaMaxima = $diasDispensacion*24+6;
 	}
 
 	if( count($horasAplicar) > 0 ){
@@ -13044,6 +13092,9 @@ function crearVectorAplicaciones( $horasAplicar, $frecuencia, $can, $tiempoDispe
 				if( $j == 0 ){
 					
 					if( $k != 0 ){
+						
+						$k = $k%24;
+						
 						if( $k < 10 ){
 							$val .= ",0".($k).":00:00-".($apl*$can)."-0";
 						}
@@ -19871,7 +19922,7 @@ function consultarInfoPacienteOrdenHCE($tipoDocumento,$nroDocumento){
 		$paciente->enUrgencias = isset($info['Ccourg']) && $info['Ccourg'] == "on" ? true : false;
 		
 		if( $paciente->enUrgencias ){
-			$paciente->habitacionActual = consultaUbicacionPacienteUrgencias( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
+			$paciente->habitacionActual = consultaUbicacionPacienteUrgencias( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica, $paciente->servicioRealActual );
 			
 			if( !$paciente->habitacionActual )
 				$paciente->habitacionActual = $info['Ubihac'];
@@ -20063,11 +20114,13 @@ function consultarCentrosCostosHospitalarios(){
 function consultarHabitacionesOcupadasServicio($servicio){
 	global $wbasedato;
 	global $conex;
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $servicio );
 
 	$q = "SELECT
 				Habcod
 			FROM 
-				".$wbasedato."_000020
+				".$tablaHabitaciones."
 			WHERE 
   				Habdis = 'off'
   				AND Habest = 'on'
@@ -24265,6 +24318,8 @@ function consultarMedicamentosPendientesHorario($wservicio, $fecha, $whabitacion
 	global $wemp_pmla;
 
 	global $usuario;
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wservicio );
 
 	$coleccion = array();
 
@@ -24283,7 +24338,7 @@ function consultarMedicamentosPendientesHorario($wservicio, $fecha, $whabitacion
 										)
 				END) Nombre
 		FROM
-		{$wbasedato}_000020, {$wbasedato}_000053, {$wbasedato}_000054, {$wbasedato}_000043
+		{$tablaHabitaciones}, {$wbasedato}_000053, {$wbasedato}_000054, {$wbasedato}_000043
 		WHERE
 			Habest='on'
 			AND Habdis = 'off'
@@ -24463,12 +24518,14 @@ function consultarListadoArticulosPacientes($wservicio, $fecha){
 	global $codigoServicioFarmaceutico;
 
 	$caso = "";
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wservicio );
 
 	//Consulta pacientes en las habitaciones
 	$q3 = "SELECT
 				Habhis, Habing, Habcod, Habcco
 			FROM 
-			{$wbasedato}_000020
+			{$tablaHabitaciones}
 			WHERE 
 				Habcco LIKE '$wservicio' 
 				AND Habest = 'on' 
@@ -24684,10 +24741,12 @@ function consultarListadoArticulosPacientesCentral($wservicio, $fecha){
 	$coleccion = array();
 	global $codigoCentralMezclas;
 
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wservicio );
+
 	$q = "SELECT
 			Karhis, Karing, Kadfec, Kadart, Kadfin, Kadhin, Kadper, Perequ, Habcod, Kadcfr, Kadufr, Kaddma, Kaddia, Kadobs, Kadcdi, Kaddis
 		FROM
-		{$wbasedato}_000020, {$wbasedato}_000053, {$wbasedato}_000054, {$wbasedato}_000043
+		{$tablaHabitaciones}, {$wbasedato}_000053, {$wbasedato}_000054, {$wbasedato}_000043
 		WHERE
 			Habest='on'
 			AND Habdis = 'off'
@@ -24816,6 +24875,8 @@ function consultarListadoArticulosPacientesCentral($wservicio, $fecha){
 function consultarKardexModificadosFecha($wservicio, $fecha){
 	global $wbasedato;
 	global $conex;
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wservicio );
 
 	$coleccion = array();
 
@@ -24849,7 +24910,7 @@ function consultarKardexModificadosFecha($wservicio, $fecha){
 					AND oriing = Habing
 				) paciente
 		FROM
-			{$wbasedato}_000020
+			{$tablaHabitaciones}
 		WHERE
 			Habest='on'
 			AND Habdis = 'off'		
@@ -25361,8 +25422,11 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 	global $grupoControl;
 	
 	global $horaCorteDispensacion;
+	global $diasDispensacion;
 	
 	global $wemp_pmla;
+	
+	$diasDispensacion = consultarDiasDispensacion( $conex, $wbasedato, $historia, $ingreso );
 
 	$tieneCpx = tieneCpxPorHistoria( $conex, $wbasedato, $historia, $ingreso );
 	
@@ -26024,7 +26088,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 						 * Creando regleta
 						 ************************************************************************************************************************/
 						$vectorAplicacion = obtenerVectorAplicacionMedicamentos( $fechaGrabacion, $info['Kadfin'], $info['Kadhin'], $info['periodicidad'] );
-						$vectorAplicacion2 = obtenerVectorAplicacionMedicamentos( date( "Y-m-d", strtotime( $fechaGrabacion )+24*3600 ), $info['Kadfin'], $info['Kadhin'], $info['periodicidad'] );
+						$vectorAplicacion2 = obtenerVectorAplicacionMedicamentos( date( "Y-m-d", strtotime( $fechaGrabacion )+$diasDispensacion*24*3600 ), $info['Kadfin'], $info['Kadhin'], $info['periodicidad'] );
 						$vectorAplicacion2 = arreglarVectorKardex( $vectorAplicacion2 );
 						
 						$quitarUnoARegleta = 25;
@@ -30224,131 +30288,194 @@ function consultarComponenteLEV($basedatos,$descripcion){
  * Marzo 8 de 2011	(Edwin MG)	La variable $fechaHoy se manda por parametro, queda con la fecha del kardex
  ************************************************************************************************************************/
 function calcularCantidadGrabar( $fechaHoy,$fechaInicio,$horaInicioSuministro,$horasFrecuencia,$esPrimeraVez, $dosisMaximas, $aplicacionesAnteriores, $aplicacionesPorSaldo ){
+	
+	/************************************************************************************************************************
+	 * Se cambia está función por un calculo más sencillo y poder manejar tiempos de dispensación mayores a un día
+	 * ya que clínica del sur tiene un tiempo de dispensación de 7 días
+	 ************************************************************************************************************************/
+	
 	global $horaCorteDispensacion;
-
-	$horasDia = 24;
+	global $diasDispensacion;
+	
+	if( empty( $diasDispensacion ) )
+		$diasDispensacion = 1;
+	
 	$cantidad = 0;
-	$cocienteHoras = 0;
-
-//	$fechaHoy = date("Y-m-d");
-	$fechaAyer = date( "Y-m-d", strtotime($fechaHoy)-24*3600 );
-
-	//Indicadores
-	$esAnteriorAHoraSuministro = false;
-	$esHoy = false;
-
-	//Hora de inicio entera
+	
 	$vecHoraInicioSuministro	= explode(":",$horaInicioSuministro);
 	$vecFechaInicioSuministro	= explode("-",$fechaInicio);
-	$horaInicioInt 				= intval($vecHoraInicioSuministro[0]);
-
-//	if($horaInicioInt == 0){
-//		$horaInicioInt = 24;
-//	}
-
-	//Si la hora de inicio es mayor a las 16 se tiene en cuenta la frecuencia
-//	$fechaTempDiaSiguiente = mktime($horaCorteDispensacion,0,0,date("m"),date("d"),date("Y")) + (24*60*60);
-//	$fechaActualHoraInicio = mktime($horaInicioSuministro,0,0,date("m"),date("d"),date("Y"));
-
-	$fechaTempDiaSiguiente = mktime($horaCorteDispensacion,0,0,$vecFechaInicioSuministro[1],$vecFechaInicioSuministro[2],$vecFechaInicioSuministro[0]) + (24*60*60);
+	
+	//Si no hay frecuencia dejo por defecto dos horas para hacer calculos y no se haga un ciclo infinito
+	if( $horasFrecuencia == 0 ){
+		$horasFrecuencia = 2*3600;
+	}
+	
+	$fechaTempDiaSiguiente = strtotime( $fechaHoy." $horaCorteDispensacion:00:00" ) + $diasDispensacion*(24*60*60);
 	$fechaActualHoraInicio = mktime($horaInicioSuministro,0,0,$vecFechaInicioSuministro[1],$vecFechaInicioSuministro[2],$vecFechaInicioSuministro[0]);
-
-	$fechaHoraInicio = mktime(0,0,0,$vecFechaInicioSuministro[1],$vecFechaInicioSuministro[2],$vecFechaInicioSuministro[0]);
-
-	$vecFechaHoy	= explode("-",$fechaHoy);
-
-	$diferenciaHoras = ($fechaTempDiaSiguiente - $fechaActualHoraInicio);
-	$diferenciaHoras = intval($diferenciaHoras / 3600); 	//60 (minutos) * 60 (horas)
-	$diferenciaSuministroInicio = intval($horaCorteDispensacion-$horaInicioInt);
-	$diferenciaInicioSuministro = intval($horaInicioInt-$horaCorteDispensacion);
-
-	//Diferencia de horas entre el dia actual y la fecha de inicio
-	$timeActual = mktime(0,0,0,$vecFechaHoy[1],$vecFechaHoy[2],$vecFechaHoy[0]);
-	$diferenciaTotal = intval(($fechaHoraInicio-$timeActual) / 3600);
-	/*****************************************************************************************
-	 * Son cuatro condiciones a controlar:
-	 * 1.Menor o igual a la hora maxima suministro
-	 * 2.Despues de la hora maxima de suministro
-	 * 3.La fecha de inicio es de hoy
-	 * 4.Primera vez del articulo en un kardex
-	 *****************************************************************************************/
-	if($horaInicioInt <= $horaCorteDispensacion){
-		$esAnteriorAHoraSuministro = true;
-	}
-
-	if(trim($fechaInicio) == trim($fechaHoy)){
-		$esHoy = true;
-	}
-
-	$esta = in_array("*",obtenerVectorAplicacionMedicamentos($fechaHoy, $fechaInicio, $horaInicioSuministro, $horasFrecuencia));
 	
-	if($horasFrecuencia==0)
-		$horasFrecuencia = 1;
+	if( $esPrimeraVez )
+		$fechaHoyUnix = strtotime( $fechaHoy." 00:00:00");
+	else{
+		$fechaHoyUnix = strtotime( $fechaHoy." $horaCorteDispensacion:00:00" ) + ($diasDispensacion-1)*(24*60*60);
+	}
 	
-	if($esPrimeraVez){
-		if($esAnteriorAHoraSuministro && $esHoy){
-			$cocienteHoras = intval(($horasDia + ($horaCorteDispensacion-$horaInicioInt))/$horasFrecuencia) + 1;
-		}
-
-		if($esAnteriorAHoraSuministro && !$esHoy){
-			$cocienteHoras = intval($diferenciaSuministroInicio/$horasFrecuencia) + 1;
-
-			if($horaInicioInt > 8 && $horasFrecuencia > 8){	//Junio 10 de 2011, condicion original: $horaInicioInt > 8 && $horasFrecuencia >= 8
-				$cocienteHoras = 1;
-			}
-		}
-
-		if(!$esAnteriorAHoraSuministro && $esHoy){
-			$cocienteHoras = intval(($horasDia - $diferenciaInicioSuministro)/$horasFrecuencia) + 1;
-		}
-
-		if(!$esHoy){
-			if(!$esAnteriorAHoraSuministro){
-				$cocienteHoras = 0;
-			} else {
-				if($diferenciaTotal >= 48){
-					$cocienteHoras = 0;
+	//Sí hay dosis máximas reviso cuando dosis máximas faltan por aplicar
+	if( $dosisMaximas != '' && $dosisMaximas != 0 ){
+		$dosisMaximas = $dosisMaximas - $aplicacionesAnteriores - $aplicacionesPorSaldo;
+		
+		if( $dosisMaximas < 0 )
+			$dosisMaximas = 0;
+	}
+	else{
+		$dosisMaximas = false;
+	}
+	
+	//Recorro todas las horas de aplicación del articulo, desde fecha de inicio hasta la fecha final de acuerdo a la frecuencia
+	for( $i = $fechaActualHoraInicio; $i <= $fechaTempDiaSiguiente; $i += $horasFrecuencia*3600 ){
+		
+		//Si la hora de aplicación es mayor a la fecha de inicio, significa que debe aplicar
+		if( $i > $fechaHoyUnix ){
+			$cantidad++;
+			
+			//Si hay dosis máxima verifico que no supere la dosis máxima
+			if( $dosisMaximas ){
+				if( $dosisMaximas <= $cantidad ){
+					$cantidad = $dosisMaximas;
+					break;
 				}
 			}
 		}
-	} else {
-		if( $fechaHoy >= $fechaInicio  ){ 			//Diciembre 16 de 2010
-//			if( $horasFrecuencia <= $horasDia ){		//Si la frecuencia es hasta 24 horas aplica esto
-			if( $horasFrecuencia <= (($fechaTempDiaSiguiente - $fechaActualHoraInicio)/3600) ){		//Si la frecuencia es hasta 24 horas aplica esto
-//				echo "<br>...........Dif horas: ".(($fechaTempDiaSiguiente - $fechaActualHoraInicio)/3600);
-				$cocienteHoras = (($fechaTempDiaSiguiente - $fechaActualHoraInicio)/3600) / $horasFrecuencia;
-//				$cocienteHoras = $horasDia / $horasFrecuencia;
-			} else {
-				if($esta){  //Si la frecuencia es de mas de 24 horas
-					$cocienteHoras = 1;
-				} else {
-					$cocienteHoras = 0;
-				}
-			}
-		}		//Diciembre 16 de 2010
-	}
-
-	$cocienteHorasEntero = intval($cocienteHoras);
-	$cantidad = $cocienteHorasEntero;
-	
-	
-	/****************************************************************************************************************
-	 * Enero 05 de 2011
-	 ****************************************************************************************************************/
-	//$aplicacionesAnteriores = consultarAplicacionesArticuloPaciente( $conexion, $wbasedato, $idRegDiaAnterior );
-	
-	//Si la dosis maxima es menor que la cantidad a grabar, la cantidad a grabar seran la dosis maximas
-	if( $dosisMaximas != '' && $dosisMaximas != 0 && $dosisMaximas - $aplicacionesAnteriores - $aplicacionesPorSaldo < $cantidad ){
-		$cantidad = $dosisMaximas - $aplicacionesAnteriores - $aplicacionesPorSaldo;
 	}
 	
-	if( $cantidad < 0 ){
-		$cantidad = 0;
-	}
-	/******************************************************************************************************************/
-
 	return $cantidad;
 }
+
+// function calcularCantidadGrabar( $fechaHoy,$fechaInicio,$horaInicioSuministro,$horasFrecuencia,$esPrimeraVez, $dosisMaximas, $aplicacionesAnteriores, $aplicacionesPorSaldo ){
+	// global $horaCorteDispensacion;
+
+	// $horasDia = 24;
+	// $cantidad = 0;
+	// $cocienteHoras = 0;
+
+// //	$fechaHoy = date("Y-m-d");
+	// $fechaAyer = date( "Y-m-d", strtotime($fechaHoy)-24*3600 );
+
+	// //Indicadores
+	// $esAnteriorAHoraSuministro = false;
+	// $esHoy = false;
+
+	// //Hora de inicio entera
+	// $vecHoraInicioSuministro	= explode(":",$horaInicioSuministro);
+	// $vecFechaInicioSuministro	= explode("-",$fechaInicio);
+	// $horaInicioInt 				= intval($vecHoraInicioSuministro[0]);
+
+// //	if($horaInicioInt == 0){
+// //		$horaInicioInt = 24;
+// //	}
+
+	// //Si la hora de inicio es mayor a las 16 se tiene en cuenta la frecuencia
+// //	$fechaTempDiaSiguiente = mktime($horaCorteDispensacion,0,0,date("m"),date("d"),date("Y")) + (24*60*60);
+// //	$fechaActualHoraInicio = mktime($horaInicioSuministro,0,0,date("m"),date("d"),date("Y"));
+
+	// $fechaTempDiaSiguiente = mktime($horaCorteDispensacion,0,0,$vecFechaInicioSuministro[1],$vecFechaInicioSuministro[2],$vecFechaInicioSuministro[0]) + (24*60*60);
+	// $fechaActualHoraInicio = mktime($horaInicioSuministro,0,0,$vecFechaInicioSuministro[1],$vecFechaInicioSuministro[2],$vecFechaInicioSuministro[0]);
+
+	// $fechaHoraInicio = mktime(0,0,0,$vecFechaInicioSuministro[1],$vecFechaInicioSuministro[2],$vecFechaInicioSuministro[0]);
+
+	// $vecFechaHoy	= explode("-",$fechaHoy);
+
+	// $diferenciaHoras = ($fechaTempDiaSiguiente - $fechaActualHoraInicio);
+	// $diferenciaHoras = intval($diferenciaHoras / 3600); 	//60 (minutos) * 60 (horas)
+	// $diferenciaSuministroInicio = intval($horaCorteDispensacion-$horaInicioInt);
+	// $diferenciaInicioSuministro = intval($horaInicioInt-$horaCorteDispensacion);
+
+	// //Diferencia de horas entre el dia actual y la fecha de inicio
+	// $timeActual = mktime(0,0,0,$vecFechaHoy[1],$vecFechaHoy[2],$vecFechaHoy[0]);
+	// $diferenciaTotal = intval(($fechaHoraInicio-$timeActual) / 3600);
+	// /*****************************************************************************************
+	 // * Son cuatro condiciones a controlar:
+	 // * 1.Menor o igual a la hora maxima suministro
+	 // * 2.Despues de la hora maxima de suministro
+	 // * 3.La fecha de inicio es de hoy
+	 // * 4.Primera vez del articulo en un kardex
+	 // *****************************************************************************************/
+	// if($horaInicioInt <= $horaCorteDispensacion){
+		// $esAnteriorAHoraSuministro = true;
+	// }
+
+	// if(trim($fechaInicio) == trim($fechaHoy)){
+		// $esHoy = true;
+	// }
+
+	// $esta = in_array("*",obtenerVectorAplicacionMedicamentos($fechaHoy, $fechaInicio, $horaInicioSuministro, $horasFrecuencia));
+	
+	// if($horasFrecuencia==0)
+		// $horasFrecuencia = 1;
+	
+	// if($esPrimeraVez){
+		// if($esAnteriorAHoraSuministro && $esHoy){
+			// $cocienteHoras = intval(($horasDia + ($horaCorteDispensacion-$horaInicioInt))/$horasFrecuencia) + 1;
+		// }
+
+		// if($esAnteriorAHoraSuministro && !$esHoy){
+			// $cocienteHoras = intval($diferenciaSuministroInicio/$horasFrecuencia) + 1;
+
+			// if($horaInicioInt > 8 && $horasFrecuencia > 8){	//Junio 10 de 2011, condicion original: $horaInicioInt > 8 && $horasFrecuencia >= 8
+				// $cocienteHoras = 1;
+			// }
+		// }
+
+		// if(!$esAnteriorAHoraSuministro && $esHoy){
+			// $cocienteHoras = intval(($horasDia - $diferenciaInicioSuministro)/$horasFrecuencia) + 1;
+		// }
+
+		// if(!$esHoy){
+			// if(!$esAnteriorAHoraSuministro){
+				// $cocienteHoras = 0;
+			// } else {
+				// if($diferenciaTotal >= 48){
+					// $cocienteHoras = 0;
+				// }
+			// }
+		// }
+	// } else {
+		// if( $fechaHoy >= $fechaInicio  ){ 			//Diciembre 16 de 2010
+// //			if( $horasFrecuencia <= $horasDia ){		//Si la frecuencia es hasta 24 horas aplica esto
+			// if( $horasFrecuencia <= (($fechaTempDiaSiguiente - $fechaActualHoraInicio)/3600) ){		//Si la frecuencia es hasta 24 horas aplica esto
+// //				echo "<br>...........Dif horas: ".(($fechaTempDiaSiguiente - $fechaActualHoraInicio)/3600);
+				// $cocienteHoras = (($fechaTempDiaSiguiente - $fechaActualHoraInicio)/3600) / $horasFrecuencia;
+// //				$cocienteHoras = $horasDia / $horasFrecuencia;
+			// } else {
+				// if($esta){  //Si la frecuencia es de mas de 24 horas
+					// $cocienteHoras = 1;
+				// } else {
+					// $cocienteHoras = 0;
+				// }
+			// }
+		// }		//Diciembre 16 de 2010
+	// }
+
+	// $cocienteHorasEntero = intval($cocienteHoras);
+	// $cantidad = $cocienteHorasEntero;
+	
+	
+	// /****************************************************************************************************************
+	 // * Enero 05 de 2011
+	 // ****************************************************************************************************************/
+	// //$aplicacionesAnteriores = consultarAplicacionesArticuloPaciente( $conexion, $wbasedato, $idRegDiaAnterior );
+	
+	// //Si la dosis maxima es menor que la cantidad a grabar, la cantidad a grabar seran la dosis maximas
+	// if( $dosisMaximas != '' && $dosisMaximas != 0 && $dosisMaximas - $aplicacionesAnteriores - $aplicacionesPorSaldo < $cantidad ){
+		// $cantidad = $dosisMaximas - $aplicacionesAnteriores - $aplicacionesPorSaldo;
+	// }
+	
+	// if( $cantidad < 0 ){
+		// $cantidad = 0;
+	// }
+	// /******************************************************************************************************************/
+
+	// return $cantidad;
+// }
 
 function consultarCantidadAcumuladaDispensada($conex,$wbasedato,$historia,$ingreso,$codigoArticulo){
 	$cantidad = "";
@@ -30387,7 +30514,13 @@ function consultarCantidadAcumuladaDispensada($conex,$wbasedato,$historia,$ingre
 function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKardex,$codArticulo,$fechaInicio,$horaInicio,$cantDosis,$horasFrecuencia,$dosisMaximas,$ccoOrigen,$diasTtoAcumulados,&$cantGrabar,&$saldoNuevo,&$cantDispensar,&$cantManejo,$saldoDispensacion, $tipoProtocolo, &$horasAplicacionDia,$diasTto,$idRegDiaAnterior = '' ){
 	
 	global $codigoCentralMezclas;
+	global $centroCostosServicioFarmaceutico;
+	global $centroCostosCentralMezclas;
 	global $horaCorteDispensacion;
+	
+	global $diasDispensacion;
+	
+	$diasDispensacion = consultarDiasDispensacion( $conexion, $wbasedato, $historia, $ingreso );
 
 	//Variables
 	$saldoAnterior = 0;
@@ -30423,10 +30556,10 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
 	}
 
 	//La solución a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
-	$tarti = "1051";
+	$tarti = $centroCostosCentralMezclas;
 	
 	if( $ccoOrigen == "SF" ){
-		$tarti = "1050";
+		$tarti = $centroCostosServicioFarmaceutico;
 	}
 
 	$qf = "SELECT
@@ -30613,6 +30746,13 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	global $whce;	
 	global $usuario;	
 	global $wemp_pmla;
+	
+	global $codigoCentralMezclas;
+	global $centroCostosServicioFarmaceutico;
+	
+	global $diasDispensacion;
+	
+	$diasDispensacion = consultarDiasDispensacion( $conexion, $wbasedato, $historia, $ingreso );
 	
 	$fInicioAnt = trim( $fInicioAnt );
 	
@@ -30852,9 +30992,9 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	seguimiento($guardar);
 	
 	//La solución a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
-	$tarti = "1051";
+	$tarti = $centroCostosCentralMezclas;
 	if($origenArticulo == "SF"){
-		$tarti = "1050";
+		$tarti = $centroCostosServicioFarmaceutico;
 	}
 
 	$qf = "SELECT
@@ -35335,12 +35475,14 @@ function consultarHabitacionPacienteServicio($basedatos,$servicio){
 	
 	global $wemp_pmla;
 	$conexion = obtenerConexionBD("matrix");
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conexion, $basedatos, $servicio );
 
 	$q = "SELECT
 			Habcod, Habcco, Habhis, Habing,
 			(SELECT CONCAT(pacno1,' ', pacno2,' ', pacap1,' ', pacap2) FROM root_000036, root_000037 WHERE oriced = pacced AND oriori = '01' AND orihis = Habhis AND oriing = Habing AND Oritid = Pactid) nombre
 		FROM
-			{$basedatos}_000020
+			{$tablaHabitaciones}
 		WHERE
 			Habcco = '$servicio'
 			AND Habdis = 'off'
@@ -36044,7 +36186,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 			$componentesTipo = "";
 			$tieneComponentes = false;
 			while($infoComp = mysql_fetch_array($resComp)){
-				if($infoComp['Carcco'] == "1050"){
+				if($infoComp['Carcco'] == $centroCostosServicioFarmaceutico ){
 					$qArt = "SELECT Artcom,Artgen FROM {$wbasedato}_000026 WHERE Artcod = '{$infoComp['Carcod']}';";
 				} else {
 					$qArt = "SELECT Artcom,Artgen FROM cenpro_000002 WHERE Artcod = '{$infoComp['Carcod']}';";
@@ -36397,7 +36539,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 							AND Artest = 'on'
 							AND defart = artcod
 							AND defest = 'on'
-							AND defcco = '1050'
+							AND defcco = '".$centroCostosServicioFarmaceutico."'
 							AND FIND_IN_SET( '".$administracion."', defvia ) > 0
 							";
 		$resFiltro = mysql_query( $sqlFiltro, $conex ) or die( mysql_errno()." - Error en el query $sqlFiltro - ".mysql_error() );
@@ -37906,7 +38048,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 			$tieneComponentes = false;
 			while($infoComp = mysql_fetch_array($resComp))
 			{
-				if($infoComp['Carcco'] == "1050"){
+				if($infoComp['Carcco'] == $centroCostosServicioFarmaceutico ){
 					$qArt = "SELECT Artcom,Artgen FROM {$wbasedato}_000026 WHERE Artcod = '{$infoComp['Carcod']}';";
 				} else {
 					$qArt = "SELECT Artcom,Artgen FROM cenpro_000002 WHERE Artcod = '{$infoComp['Carcod']}';";
