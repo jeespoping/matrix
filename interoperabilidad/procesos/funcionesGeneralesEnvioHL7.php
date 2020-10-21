@@ -572,6 +572,7 @@ function informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso ){
 				'nombreResponsable'	=> $responsable['nombreResponsable'],
 				'nitResponsable'	=> $responsable['nitResponsable'],
 				'tarifa'			=> $row['Ingtar'],
+				'codigoBarrio'		=> $row['Pacbar'],
 			];
 	}
 	

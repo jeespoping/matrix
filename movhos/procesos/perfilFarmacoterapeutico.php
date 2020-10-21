@@ -125,41 +125,55 @@ function marcarLeido( campo, id ){
 	$("#sinLeer").html(count_final);
 }
 
-function inicioPerfil(){
-	document.location.href='perfilFarmacoterapeutico.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&wsservicio='+document.forms.forma.servicioPaciente.value+'&editable=<?=$editable ?>';
+function inicioPerfil( esServicioDomiciliario ){
+	
+	esServicioDomiciliario = esServicioDomiciliario || false;
+	
+	var parametroServicioDomiciliario = "";
+	if( esServicioDomiciliario ){
+		parametroServicioDomiciliario = "&servicioDomiciliario=on";
+	}
+	
+	document.location.href='perfilFarmacoterapeutico.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&wsservicio='+document.forms.forma.servicioPaciente.value+'&editable=<?=$editable ?>'+parametroServicioDomiciliario;
 }
 
 /*****************************************************************************************************************************
  * Punto de entrada de Perfil
  ******************************************************************************************************************************/
-function consultarPerfil(){
+// function consultarPerfil(){
 
-	var historia = document.forms.forma.whistoria.value;
-	var esFechaValida = esFechaMenorIgualAActual(document.forms.forma.wfecha.value);
+	// var historia = document.forms.forma.whistoria.value;
+	// var esFechaValida = esFechaMenorIgualAActual(document.forms.forma.wfecha.value);
 	
-	//Digitó historia
-	if(!historia || historia == ''){
-		alert("Debe especificar una historia clínica");
-		return;
-	}
+	// //Digitó historia
+	// if(!historia || historia == ''){
+		// alert("Debe especificar una historia clínica");
+		// return;
+	// }
 
-	if(esFechaValida){
-		if(whgrabado && whgrabado.value != ''){
-			document.location.href = 'perfilFarmacoterapeutico.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&editable='+document.forms.forma.editable.value;
-		} else {
-			document.location.href = 'perfilFarmacoterapeutico.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&editable='+document.forms.forma.editable.value;
-		}
-	} else {
-		alert("La fecha ingresada debe ser igual o anterior a la fecha actual");
-	}
-}
+	// if(esFechaValida){
+		// if(whgrabado && whgrabado.value != ''){
+			// document.location.href = 'perfilFarmacoterapeutico.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&editable='+document.forms.forma.editable.value;
+		// } else {
+			// document.location.href = 'perfilFarmacoterapeutico.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&editable='+document.forms.forma.editable.value;
+		// }
+	// } else {
+		// alert("La fecha ingresada debe ser igual o anterior a la fecha actual");
+	// }
+// }
 
-function irAPerfil(historia){
+function irAPerfil(historia, esServicioDomiciliario ){
+	
+	esServicioDomiciliario = esServicioDomiciliario || false;
+	
 	document.forms.forma.wthistoria.value = historia;
-	consultarPerfil();	
+	consultarPerfil( esServicioDomiciliario );	
 }
 
-function consultarPerfil(){
+function consultarPerfil( esServicioDomiciliario ){
+	
+	esServicioDomiciliario = esServicioDomiciliario || false;
+	
 	var ingreso = "";
 
 	if(document.forms.forma.wtingreso && document.forms.forma.wtingreso.value != ''){
@@ -170,9 +184,14 @@ function consultarPerfil(){
 		alert("Debe ingresar una historia clinica");
 		return;
 	}
+	
+	var parametroServicioDomiciliario = "";
+	if( esServicioDomiciliario ){
+		parametroServicioDomiciliario = "&servicioDomiciliario=on";
+	}
 
 	document.location.href = 'perfilFarmacoterapeutico.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+document.forms.forma.whistoria.value+'&wfecha='+document.forms.forma.wfecha.value
-				+'&editable='+document.forms.forma.editable.value+'&wingreso='+ingreso;
+				+'&editable='+document.forms.forma.editable.value+'&wingreso='+ingreso+parametroServicioDomiciliario;
 }
 
 function limpiarCampo(idx){
@@ -186,12 +205,19 @@ function limpiarCampo(idx){
 /*****************************************************************************************************************************
  *Consulta las historias y habitaciones de acuerdo a un servicio
  ******************************************************************************************************************************/
-function consultarHabitaciones()
+function consultarHabitaciones( esServicioDomiciliario )
 {
+	esServicioDomiciliario = esServicioDomiciliario || false;
+	
+	var parametroServicioDomiciliario = "";
+	if( esServicioDomiciliario ){
+		parametroServicioDomiciliario = "&servicioDomiciliario=on";
+	}
+	
 	var contenedor = document.getElementById('cntHabitacion');
 	var parametros = ""; 
 				
-	parametros = "wemp_pmla=01&consultaAjaxKardex=29&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + document.getElementById('wsservicio').value; 
+	parametros = "wemp_pmla=01&consultaAjaxKardex=29&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + document.getElementById('wsservicio').value+parametroServicioDomiciliario; 
 	
 	try{
 		$.blockUI({ message: $('#msjEspere') });
@@ -828,6 +854,12 @@ if (!$usuarioValidado){
 
 	terminarEjecucion("Por favor cierre esta ventana e ingrese a matrix nuevamente.");
 }else{
+	
+	$esServicioDomiciliario = false;
+	if( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ){
+		$esServicioDomiciliario = true;
+	}
+	
 	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 	$winstitucion = $institucion->nombre;
 
@@ -1574,7 +1606,7 @@ if (!$usuarioValidado){
 								echo "<input type='button' value='Grabar estado aprobaci&oacute;n' onclick='javascript:grabarAprobacionRegente11(1);'>&nbsp;|&nbsp;";
 							}
 							*/
-							echo "<input type='button' value='Regresar' onclick='javascript:inicioPerfil();'>&nbsp;|&nbsp;";
+							echo "<input type='button' value='Regresar' onclick='javascript:inicioPerfil(".( $esServicioDomiciliario ? 'true' : 'false' ).");'>&nbsp;|&nbsp;";
 							echo "<input type=button value=' X ' onclick='javascript:cerrarVentana();'>";
 							echo "</div>";
 
@@ -2534,7 +2566,7 @@ if (!$usuarioValidado){
 							// }
 
 							// echo "</div>";
-							echo "<br/><center><input type='button' value='Regresar' onclick='javascript:inicioPerfil();' > | <input type=button value='Cerrar ventana' onclick='javascript:cerrarVentana();' ></center><br/>";
+							echo "<br/><center><input type='button' value='Regresar' onclick='javascript:inicioPerfil(".( $esServicioDomiciliario ? 'true' : 'false' ).");' > | <input type=button value='Cerrar ventana' onclick='javascript:cerrarVentana();' ></center><br/>";
 							
 							pintarImpresora( $conex, $wemp_pmla, $wbasedato );
 							
@@ -2544,19 +2576,19 @@ if (!$usuarioValidado){
 							} else {
 								mensajeEmergente("El kardex ya se ha creado pero aun no ha sido confirmado.");
 							}
-							funcionJavascript("inicioPerfil();");
+							funcionJavascript("inicioPerfil(".( $esServicioDomiciliario ? 'true' : 'false' ).");");
 						}
 					}else{
 						mensajeEmergente("No se ha generado kardex en esta fecha");
-						funcionJavascript("inicioPerfil();");
+						funcionJavascript("inicioPerfil(".( $esServicioDomiciliario ? 'true' : 'false' ).");");
 					}
 				} else {
 					mensajeEmergente("No se pudo consultar el ingreso del paciente.  Verifique que la historia clinica fue digitada correctamente");
-					funcionJavascript("inicioPerfil();");
+					funcionJavascript("inicioPerfil(".( $esServicioDomiciliario ? 'true' : 'false' ).");");
 				}//Fin existe ingreso de historia e informacion de paciente
 			} else {
 				mensajeEmergente("Faltan parametros para realizar la consulta");
-				funcionJavascript("inicioPerfil();");
+				funcionJavascript("inicioPerfil(".( $esServicioDomiciliario ? 'true' : 'false' ).");");
 			}
 
 			echo "</div>";
@@ -2566,11 +2598,11 @@ if (!$usuarioValidado){
 			echo "<table align='center' border=0>";
 			
 			//Servicio
-			$centrosCostosHospitalarios = centrosCostosHospitalariosOcupados();
+			$centrosCostosHospitalarios = centrosCostosHospitalariosOcupados( $esServicioDomiciliario );
 			echo "<tr>";
 			echo "<td class='fila1'>Servicio</td>";
 			echo "<td class='fila2'>"; 
-			echo "<select id='wsservicio' NAME='wsservicio' onchange='javascript:consultarHabitaciones();' class='textoNormal'>";
+			echo "<select id='wsservicio' NAME='wsservicio' onchange='javascript:consultarHabitaciones(".( $esServicioDomiciliario ? 'true' : 'false' ).");' class='textoNormal'>";
 			echo "<option value=''>Seleccione</option>";
 			foreach ($centrosCostosHospitalarios as $centroCostosHospitalario){
 				if(isset($wsservicio) && !empty($wsservicio) && $wsservicio == $centroCostosHospitalario->codigo){
@@ -2588,7 +2620,7 @@ if (!$usuarioValidado){
 			echo "<td colspan='2' id='cntHabitacion' align='center'>";
 			
 			if(isset($wsservicio) && !empty($wsservicio)){
-				echo @consultarHabitacionPacienteServicioPerfil($wbasedato,$wsservicio);
+				echo @consultarHabitacionPacienteServicioPerfil($wbasedato,$wsservicio,$esServicioDomiciliario);
 			}
 			
 			echo "</td>";
@@ -2606,14 +2638,14 @@ if (!$usuarioValidado){
 			//Por Historia clinica
 			echo "<tr><td class='fila1' width=170>Historia clínica</td>";
 			echo "<td class='fila2' align='center' width=170>";
-			echo "<INPUT TYPE='text' id='wthistoria' NAME='whistoria' SIZE=10 onkeypress='return teclaEnterEntero(event,"."\"consultarPerfil()\");' class='textoNormal'>";
+			echo "<INPUT TYPE='text' id='wthistoria' NAME='whistoria' SIZE=10 onkeypress='return teclaEnterEntero(event,"."\"consultarPerfil(".( $esServicioDomiciliario ? 'true' : 'false' ).")\");' class='textoNormal'>";
 			echo "</td>";
 			echo "</tr>";
 
 			//Ingreso (para pacientes inactivos)
 			echo "<tr><td class='fila1' width=170>Ingreso</td>";
 			echo "<td class='fila2' align='center' width=170>";
-			echo "<INPUT TYPE='text' id='wtingreso' NAME='wtingreso' SIZE=5 onkeypress='return teclaEnterEntero(event,"."\"consultarPerfil()\");' class='textoNormal'>";
+			echo "<INPUT TYPE='text' id='wtingreso' NAME='wtingreso' SIZE=5 onkeypress='return teclaEnterEntero(event,"."\"consultarPerfil(".( $esServicioDomiciliario ? 'true' : 'false' ).")\");' class='textoNormal'>";
 			echo "</td>";
 			echo "</tr>";
 
@@ -2625,7 +2657,7 @@ if (!$usuarioValidado){
 			echo "&nbsp;<button id='btnFecha' onclick=".$cal.">...</button>";
 			echo "</td></tr>";
 
-			echo "<tr><td align=center colspan=4><br><input type=button value='Consultar' onclick='javascript:consultarPerfil();'> | <input type=button value='Cerrar ventana' onclick='javascript:cerrarVentana();' ></td></tr>";
+			echo "<tr><td align=center colspan=4><br><input type=button value='Consultar' onclick='javascript:consultarPerfil(".( $esServicioDomiciliario ? 'true' : 'false' ).");'> | <input type=button value='Cerrar ventana' onclick='javascript:cerrarVentana();' ></td></tr>";
 			echo "</table>";
 
 			//Se configura el calendario cuando ingresa la primera vez

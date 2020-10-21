@@ -3138,8 +3138,15 @@ function mostrar_mensaje_contingencia(wemp_pmla, cco, fecha) {
 
 }
 
-function volver(wemp_pmla, waux, wsp)
+function volver(wemp_pmla, waux, wsp, esServicioDomiciliario )
 {
+	esServicioDomiciliario = esServicioDomiciliario || false;
+	
+	var parametroServicioDomiciliario = "";
+	if( esServicioDomiciliario ){
+		parametroServicioDomiciliario = "&servicioDomiciliario=on";
+	}
+	
 	var extra = "";
 
 	if( waux != '' ){
@@ -3150,7 +3157,7 @@ function volver(wemp_pmla, waux, wsp)
 		extra += '&wsp='+wsp;
 	}
 
-	location.href = 'gestionEnfermeria.php?wemp_pmla='+wemp_pmla+extra;
+	location.href = 'gestionEnfermeria.php?wemp_pmla='+wemp_pmla+extra+parametroServicioDomiciliario;
 }
 
 //Funcion que llama al programa modificacion de traslados para que cancele la entrega de una paciente.
@@ -15981,17 +15988,15 @@ else{
 
 		encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica" );
 
-		$servicioDomiciliario = '';
-		$ccoServDom = '';
-		if( !empty($servicioDomiciliario) ){
-			$ccoServDom = ',ccodom';
+		$esServicioDomiciliario = false;
+		if( !empty($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+			$esServicioDomiciliario = true;
 		}
 
 		//**************** llamada a la funcion consultaCentrosCostos y dibujarSelect************
-		if( empty( $ccoayudaori ) ){
-
+		if( $esServicioDomiciliario ){
 			$nameSelect = "slCcoDestino";
-			$cco="Ccoipd,Ccourg,Ccoior,Ccocir";	//Febrero 02 de 2016:
+			$cco="ccodom";	//Febrero 02 de 2016:
 			$sub="off";
 			$tod="";
 			$ipod="off";
@@ -16000,25 +16005,49 @@ else{
 			$centrosCostos = consultaCentrosCostos($cco);
 		}
 		else{
-			$nameSelect = "ccoayuda";
-			$cco="Ccoayu";	//Febrero 02 de 2016:
-			$sub="off";
-			$tod="";
-			$ipod="off";
+			
+			if( empty( $ccoayudaori ) ){
 
-			$centrosCostos = consultaCentrosCostos($cco);
+				$nameSelect = "slCcoDestino";
+				$cco="Ccoipd,Ccourg,Ccoior,Ccocir";	//Febrero 02 de 2016:
+				$sub="off";
+				$tod="";
+				$ipod="off";
 
-			//Solo saco los ccos necesarios
-			$ccs = array();
-			$ccsAyuda = explode( ",", $ccoayudaori );
+				//$cco=" ";
+				$centrosCostos = consultaCentrosCostos($cco);
+			}
+			else{
+				$nameSelect = "ccoayuda";
+				$cco="Ccoayu";	//Febrero 02 de 2016:
+				$sub="off";
+				$tod="";
+				$ipod="off";
 
+				$centrosCostos = consultaCentrosCostos($cco);
+
+				//Solo saco los ccos necesarios
+				$ccs = array();
+				$ccsAyuda = explode( ",", $ccoayudaori );
+
+				foreach( $centrosCostos as $key => $value ){
+					if( in_array( $value->codigo, $ccsAyuda ) ){
+						$ccs[] = $value;
+					}
+				}
+
+				$centrosCostos = $ccs;
+			}
+			
+			$ccsndom = [];
 			foreach( $centrosCostos as $key => $value ){
-				if( in_array( $value->codigo, $ccsAyuda ) ){
-					$ccs[] = $value;
+				$esCcoDom = esCcoDomiciliario( $conex, $wbasedato, $value->codigo );
+				if( !$esCcoDom ){
+					$ccsndom[] = $value;
 				}
 			}
-
-			$centrosCostos = $ccs;
+			
+			$centrosCostos = $ccsndom;
 		}
 
 		echo "<table align='center' border=0>";
@@ -16875,7 +16904,7 @@ else{
 				$wsp .= "&ccoayuda=".$ccoayudaori;
 
 			echo "<td>";
-			echo "<center><INPUT type='button' value='Retornar' onclick='volver(\"$wemp_pmla\", \"$waux\", \"$wsp\" )' style='width:100px'></center>";
+			echo "<center><INPUT type='button' value='Retornar' onclick='volver(\"$wemp_pmla\", \"$waux\", \"$wsp\", ".( $esServicioDomiciliario ? 'true' : 'false' )." )' style='width:100px'></center>";
 			echo "</td>";
 		}
 
@@ -16896,6 +16925,10 @@ else{
 		}
 
 		echo "</table>";
+	}
+
+	if( !empty( $esServicioDomiciliario ) ){
+		echo "<INPUT type='hidden' name='esServicioDomiciliario' id='esServicioDomiciliario' value='$esServicioDomiciliario'>";
 	}
 
 	echo "<input type='hidden' name='registro_inicial' value='" . $registro_inicial . "'>";
