@@ -117,6 +117,179 @@ if( isset($consultaAjax) == false ){
 
 	});
 
+
+	//Funcionalidad para cuando se llama la opción desde una ventana de modal Mavila 23-10-2020 :)
+	function abrir_tabla_modal(wemp_pmla, wtabla, wusuariotabla, wnombreopc, wid, widregistro, wcampo, woperacion){
+
+		if	(wemp_pmla != ''){
+
+		
+			var i=0;
+			var j=0;
+			var parametros = new Array();
+			var campos = new Array();
+			var operaciones = new Array();
+
+
+			// armando busqueda
+			var verificacion = true ;
+			parametros.push(widregistro);
+			campos.push(wcampo);
+			operaciones.push(woperacion);
+			//------------------------------
+
+			var busqueda='';
+			for (k=0 ; k < campos.length ; k++){
+				if (k==0){
+					busqueda = busqueda +" "+campos[k]+" = '"+parametros[k]+"'";
+				}else{
+					busqueda = busqueda +" AND "+campos[k]+" = '"+parametros[k]+"'";
+				}
+			}
+			
+			$.post("EditarDatosMatrix.php",
+			{
+				consultaAjax:     '',
+				wemp_pmla:        wemp_pmla,
+				accion:           'abrir_tabla',
+				tablappal:		  wtabla,
+				wusuariotabla:	  wusuariotabla,
+				wnombreopc:	  	  wnombreopc,    
+				parametro: 		  widregistro,
+				wbusqueda:        busqueda,
+				campobuscar: 	  wcampo,
+				wid:			  wid,
+				campos:           JSON.stringify(campos),
+				parametros:		  JSON.stringify(parametros),
+				operaciones:	  JSON.stringify(operaciones)
+
+			},function(data) {
+
+				$("#divtabla").show();
+				$("#primeradiv").hide();
+				$("#div_nuevo_registro").html('');
+				$("#div_nuevo_registro").remove();
+				$("#divtabla").html(data.html);
+				$("#oculta").html("");
+				$("#oculta").html(data.oculto);
+					//****************************************************************
+					//* formatea hora para un campo
+					//****************************************************************/
+					//Masked input
+					$.mask.definitions['H']='[012]';
+					$.mask.definitions['N']='[012345]';
+					$.mask.definitions['n']='[0123456789]';
+
+					$(".hora1").mask("Hn:Nn:Nn");
+
+					$(".hora1").keyup(function(){
+
+						if ( $(this).val().substring(0,1) == "2" && $(this).val().substring(0,2)*1 > 23 )
+						{
+							$(this).val( "2_:__:__" );
+							$(this).caret(1);
+						}
+					});
+					//---------------------------------------
+					//---------------------------------------
+
+					$('.entero').keyup(function(){
+						if ($(this).val() !="")
+						$(this).val($(this).val().replace(/[^0-9]/g, ""));
+					});
+
+
+					$('.real').focusout(function(){
+						if ($(this).val() !=""){
+							//$(this).val($(this).val().replace(/[^0-9|\.]/g, ""));
+							var regEx = /(^[0]\.{1}[0-9]+$)|(^[1-9]+\.{1}[0-9]+$)|(^[1-9]+[0-9]*$)|(^[0]$)/;
+							if ( regEx.test( $(this).val() ) == false )
+							{
+
+								$(this).val("");
+
+
+							}
+						}
+					});
+
+				if($("#cambioinicioyfin").val() =='on')
+				{
+					$("#mostrandodatos").html("Registros de: 1 a "+ $("#cambiofinal").val());
+				}
+
+				cuantos = data.cuantos ;
+			}, 'json').done(function(){
+
+				$('#paginador').smartpaginator({
+
+					totalrecords: cuantos,
+					recordsperpage: 30,
+					length: 7,
+					next: 'Sig',
+					prev: 'Atras',
+					first: 'Inicio',
+					last: 'Ulti',
+					go: 'Ir',
+					theme: 'black',
+					controlsalways: true,
+					onchange:
+
+					function (newPage) {
+
+							$.blockUI({ message:	'<img src="../../images/medical/ajax-loader.gif" >',
+									css: 	{
+												width: 	'auto',
+												height: 'auto'
+											}
+							});
+
+							$.ajax({
+								url: "EditarDatosMatrix.php",
+								type: "POST",
+								data:{
+
+									consultaAjax: 		'',
+									wemp_pmla:      	$('#wemp_pmla').val(),
+									accion:           	'mostrar_registros',
+									wtabla:				wtabla,
+									wusuario:			$("#wusuariotabla").val(),
+									parametro: 			$("#parametro_buscar").val(),
+									campobuscar: 		$("#select_buscador_campo").val(),
+									wprincipio:			(newPage*30) - 30,
+									wfinal:				30,
+									wnombreopc:	  	    $("#wtituloopcion").val(),
+									wid:				id
+
+								},
+								async: false,
+								dataType: "json",
+								success:function(data_json) {
+
+									if (data_json.error == 1)
+									{
+										alert(data_json.mensaje);
+										return;
+									}
+									else{
+
+										$('#datos').html(data_json.html);
+										$.unblockUI();
+									}
+								}
+							});
+
+					}
+				});
+
+
+			});
+		}
+
+
+
+	}
+
 	function abrir_tabla(wtabla,nombreopc,id)
 	{
 		
@@ -194,7 +367,7 @@ if( isset($consultaAjax) == false ){
 				recordsperpage: 30,
 				length: 7,
 				next: 'Sig',
-				prev: 'Atr�s',
+				prev: 'Atras',
 				first: 'Inicio',
 				last: 'Ulti',
 				go: 'Ir',
@@ -1008,7 +1181,8 @@ if( isset($consultaAjax) == false ){
 					recordsperpage: 30,
 					length: 7,
 					next: 'Sig',
-					prev: 'Atr�s',
+					//Se modifica para evitar caracteres extraños Mavila 23-10-2020 :)
+					prev: 'Atrás',
 					first: 'Inicio',
 					last: 'Ulti',
 					go: 'Ir',
@@ -2990,10 +3164,8 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 ?>
  <body>
 		<!-- LO QUE SE MUESTRA AL INGRESAR POR PRIMERA VEZ -->
+			<?php encabezado("Editar Datos Tabla ".$nombreformulario."", $wactualiz, "clinica"); ?>
 			<?php
-
-					encabezado("Editar Datos Tabla ".$nombreformulario."", $wactualiz, "clinica");
-
 					$user_session = explode('-',$_SESSION['user']);
 					$user_session = (count($user_session) > 1)? $user_session[1] : $user_session[0];
 					//$user_session = (strlen($user_session) > 5) ? substr($user_session,-5): $user_session;
@@ -3057,9 +3229,56 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 					$html .="<br><br><div id='divtabla' ></div>";
 					$html .="<br><br><div id='oculta'></div>";
 					echo $html;
-
-
-
 			?>
+			
+			<?php //FUNCIONALIADAD PARA RECIBIRL LA INFORMACION CUANDO SE UTILIZA ARCHIVO EN VENTANA MODAL
+					//Se utilia en los siguientes archivos: 
+					// listaDeEspera.php --> Para editar los datos de los pacientes y los examenes 
+					//Favor continuar si lo utiliza continuar con esta documentación :) ?>
+			<?php  if (isset($_GET['waction'])){ 
+				$waction = $_GET['waction']; 
+				if ($waction != ''){
+					//datos recibidos = `action=abrir_tabla_modal&tablappal=citaslc_000032&wusuariotabla=03150&wnombreopc=Lista de espera&wid=434`
+					if (isset($_GET['wemp_pmla'])){ 
+						$wemp_pmla_op = $_GET['wemp_pmla'];
+					}
+					if (isset($_GET['wtabla'])){ 
+						$wtabla = $_GET['wtabla'];
+					}
+					if (isset($_GET['wusuariotabla'])){ 
+						$wusuariotabla = $_GET['wusuariotabla'];
+					}
+					if (isset($_GET['wnombreopc'])){ 
+						$wnombreopc = $_GET['wnombreopc'];
+					}
+					if (isset($_GET['wid'])){ 
+						$wid = $_GET['wid'];
+					}
+					if (isset($_GET['widregistro'])){
+						$widregistro = $_GET['widregistro'];
+					}
+					if (isset($_GET['wcampo'])){
+						$wcampo = $_GET['wcampo'];
+					}
+					if (isset($_GET['woperacion'])){
+						$woperacion = $_GET['woperacion'];
+					}		
+					?>
+					<script languaje="javascript">
+						var wemp_pmla_op = '<?php echo $wemp_pmla_op; ?>';
+						var wtabla = '<?php echo $wtabla; ?>';
+						var wusuariotabla = '<?php echo $wusuariotabla; ?>';
+						var wnombreopc= '<?php echo $wnombreopc; ?>';
+						var wid= '<?php echo $wid; ?>';
+						var widregistro= '<?php echo $widregistro; ?>';	
+						var wcampo= '<?php echo $wcampo; ?>';	
+						var woperacion= '<?php echo $woperacion; ?>';
+
+						//abrir_tabla_modal(wtabla, wopcon, wid, widregistro);
+						abrir_tabla_modal(wemp_pmla_op, wtabla, wusuariotabla, wnombreopc, wid, widregistro, wcampo, woperacion);
+					</script>
+				<?php } ?>
+				
+			<?php } ?> 
     </body>
 </html>

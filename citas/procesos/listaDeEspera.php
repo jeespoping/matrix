@@ -22,7 +22,10 @@
     $user_session = explode('-', $_SESSION['user']);
     $wuse = "C-" . $user_session[1];
 
-
+    //Se obtiene la informacion del usuario logueado :)
+    $wusuario_logueado = explode('-',$_SESSION['user']);
+    $wusuario_logueado = (count($wusuario_logueado) > 1)? $wusuario_logueado[1] : $wusuario_logueado[0];
+    //Se obtiene el ID del usuario :)
 
     $url = "/matrix/citas/procesos/listaDeEspera.php?wemp_pmla=05";
     //sendToMail en common
@@ -87,749 +90,763 @@
 
 //CONSULTAS  Y DATOS :)
 
-//Funcionalidad para consultar los examenes asociados aún servidicio :)
-if (isset($_POST['servicioSeleccionado']) && $_POST['servicioSeleccionado'] == 'DM') {
+//FUNCIONES Y METODOS :)
+    //Funcionalidad para consultar los examenes asociados aún servidicio :)
+    if (isset($_POST['servicioSeleccionado']) && $_POST['servicioSeleccionado'] == 'DM') {
 
-    $sql =
-        "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE CodigoCups<>''  and SEREALIZA=1  order by Codigo ASC";
-    // make query $ get result
-    $result = mysqli_query($connLab, $sql);
-    // fetch the resulting rows as an aaray
-    $html = "<option value='' selected><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>";
+        $sql =
+            "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE CodigoCups<>''  and SEREALIZA=1  order by Codigo ASC";
+        // make query $ get result
+        $result = mysqli_query($connLab, $sql);
+        // fetch the resulting rows as an aaray
+        $html = "<option value='' selected><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>";
 
 
-    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $html .= "<option value='" . $row['CodigoCups'] . "-" . $row['NombreExamen'] . "-" . $row['Codigo'] . "'>" . $row['NombreExamen']  . " | " . $row['Codigo'] . " | " . $row['CodigoCups']  . "</option>";
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+            $html .= "<option value='" . $row['CodigoCups'] . "-" . $row['NombreExamen'] . "-" . $row['Codigo'] . "'>" . $row['NombreExamen']  . " | " . $row['Codigo'] . " | " . $row['CodigoCups']  . "</option>";
+        }
+
+        mysqli_free_result($result);
+        mysqli_close($connLab);
+
+        echo $html;
+        exit;
     }
 
-    mysqli_free_result($result);
-    mysqli_close($connLab);
+    //Funcionalidad para enviar email de con asunto de pago :)
+    if (isset($_POST['asunto'])) {
 
-    echo $html;
-    exit;
-}
+        $id = $_POST['id'];
+        function encode64($cadena)
+        {
+            return "=?UTF-8?B?" . base64_encode($cadena) . "=?=";
+        }
 
-//Funcionalidad para enviar email de con asunto de pago :)
-if (isset($_POST['asunto'])) {
+        //Change2: Pruebas para enviar correo Mavila :(
+        //$subject = "Pruebas - Preadmisión toma de muestras - Laboratorios Las Américas Auna";
+        //$fromName = "Pruebas - Laboratorios Las Américas AUNA";
+        $subject = "Preadmisión toma de muestras - Laboratorios Las Américas Auna";
+        $fromName = "Laboratorios Las Américas AUNA";
+        //Para pruebas se verifica la llave publica para pruebas en la tabla ".$wbasedato."_000034 :)
 
-    $id = $_POST['id'];
-    function encode64($cadena)
-    {
-        return "=?UTF-8?B?" . base64_encode($cadena) . "=?=";
-    }
-
-    //Change2: Pruebas para enviar correo Mavila :(
-    //$subject = "Pruebas - Preadmisión toma de muestras - Laboratorios Las Américas Auna";
-    //$fromName = "Pruebas - Laboratorios Las Américas AUNA";
-    $subject = "Preadmisión toma de muestras - Laboratorios Las Américas Auna";
-    $fromName = "Laboratorios Las Américas AUNA";
-    //Para pruebas se verifica la llave publica para pruebas en la tabla ".$wbasedato."_000034 :)
-
-    $wremitente =  array(
-        //Change3: Habilitar para produccion Mavila :(
-        'email' => "lis@lasamericas.com.co",
-        'password' => "tel3419092",
-        //Change2: Solo dejar para pruebas para enviar correo Mavila :)
-        //'email' => "lmla@lablasamericas.com.co",
-        //'password' => "111111",
-        'from' => "",
-        'fromName' => encode64($fromName),
-    );
+        $wremitente =  array(
+            //Change3: Habilitar para produccion Mavila :(
+            'email' => "lis@lasamericas.com.co",
+            'password' => "tel3419092",
+            //Change2: Solo dejar para pruebas para enviar correo Mavila :)
+            //'email' => "lmla@lablasamericas.com.co",
+            //'password' => "111111",
+            'from' => "",
+            'fromName' => encode64($fromName),
+        );
 
 
-    $data = sendToEmail(encode64($subject), $_POST['mensaje'], "", $wremitente, $_POST['wdestinatarios']);
+        $data = sendToEmail(encode64($subject), $_POST['mensaje'], "", $wremitente, $_POST['wdestinatarios']);
 
-    if ($data['Error'] == '1') {
-        # code...
-        $sql =   "UPDATE ".$wbasedato."_000032 SET drvenv='on' WHERE id='$id';";
-        $result = mysqli_query($conex, $sql);
-
-        if ($result) {
-            echo $data['Error'];
-        } else {
+        if ($data['Error'] == '1') {
             # code...
-            echo 'query error' . mysqli_error($conex);
-        }
-    }
-
-
-    exit;
-}
-
-//Funcionalidad para consultar otras configuraciones :)
-if (isset($_GET['wemp_pmla'])) {
-    # code...
-    $empresa = $_GET['wemp_pmla'];
-
-    $sql = "SELECT drvcam FROM ".$wbasedato."_000034 WHERE  drvemp=" . $empresa . ";";
-    $result = mysqli_query($conex, $sql);
-    $configuraciones = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    // print_r($configuraciones);
-
-    $nombreConfiguracion = array();
-    foreach ($configuraciones as $key => $configuracion) {
-        # code...
-        array_push($nombreConfiguracion, $configuracion['drvcam']);
-    }
-
-    $sql = "SELECT * FROM ".$wbasedato."_000034 WHERE  drvemp=" . $empresa . ";";
-    $result = mysqli_query($conex, $sql);
-    $todasLasConfiguraciones = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-
-    $assocConfiguracion = array_combine($nombreConfiguracion, $todasLasConfiguraciones);
-    //Para pruebas se verifica la llave publica para pruebas en la tabla ".$wbasedato."_000034 Mavila :)
-    $wompiKey = $assocConfiguracion['llavePublicaWompi']['drvdpl'];
-    $urlAPI = $assocConfiguracion['urlAPI']['drvdpl'];
-    //Se adiciona consulta parametro de la API de los eventos mavila :)
-    $urlAPIevents = $assocConfiguracion['urlAPIevents']['drvdpl'];
-    //Se adiciona consulta parametro de la API de recibo de pagos mavila :)
-    $urlAPIRespuestaPagos = $assocConfiguracion['urlAPIRespuestaPagos']['drvdpl'];
-
-
-    $sql = "SELECT *  FROM root_000007 where Estado='on' order by id ASC";
-    $result = mysqli_query($conex, $sql);
-    $tipoDocumento = mysqli_fetch_all($result, MYSQLI_ASSOC);
-}
-
-if (isset($_POST['consultarValorParticular'])) {
-    # code...
-    # code...
-    $cups = $_POST['consultarValorParticular'];
-
-    $sql =  "SELECT drvncl FROM ".$wbasedato."_000031 where drvser='DT' AND drvnex=$cups;";
-    $result = mysqli_query($conex, $sql);
-    $valorExamen = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-    print_r($valorExamen);
-    exit;
-}
-
-if (isset($_POST['consultaExamenes'])) {
-
-    // write query
-    $id = $_POST['consultaExamenes'];
-    $sql = "SELECT drvcup,
-    drvnex,
-    drvaut " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
-
-    $result = mysqli_query($conex, $sql);
-    $html = "";
-
-    // $html = "";
-    $index = 0;
-
-    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $index % 2 == 0 ? $wclass = "fila1" : $wclass = "fila2";
-        $html .= "<tr class=" . $wclass . "><td  id='cup-" . $id . "-" . $index . "' >" . $row["drvcup"] . "</td><td style='min-width: -moz-max-content;'>" . $row["drvnex"] . "</td> <td> <input id='auth-" . $id . "-" . $index . "' type=text value='" . $row["drvaut"] . "'>";
-        $index++;
-    }
-    $auth_to_copy = "auth-" . $id . "-0";
-
-    $html .= "<tr><td></td><td></td><td><button class='btn btn-info btn-sm' onclick='copiarAutorizaciones(`" . $auth_to_copy . "`,`" . $index . "`,`" . $id . "` )'>Copiar</button><button class='btn btn-info btn-sm' onclick='guardarAutorizaciones(`" . $index . "`,`" . $id . "`)'>Guardar</button></td></tr></table>";
-
-    echo $html;
-    exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
-}
-
-if (isset($_POST['consultaExamenesAGrabar'])) {
-
-    // write query
-    $id = $_POST['consultaExamenesAGrabar'];
-
-    $sql = "SELECT id, drvcup,
-    drvnex,
-    drvaut, drvpos " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
-
-    $result = mysqli_query($conex, $sql);
-    $examenesParaOT = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-    echo json_encode($examenesParaOT);
-
-    exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
-}
-
-//Funcion para consultar los Pagos pendientes Mavila 
-if (isset($_POST['consultaPagosPendientes'])) {
-
-    // write query
-    $id = $_POST['consultaPagosPendientes'];
-    $sql = "SELECT id, drvpcf FROM ".$wbasedato."_000032 WHERE drvpcf='off' AND drvest ='on' order by id DESC";
-    $result = mysqli_query($conex, $sql);
-    $pagosPentientes = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    echo json_encode($pagosPentientes);
-    exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
-}
-
-if (isset($_POST['ordenLaboratorio'])) {
-    # code...
-    $orden = $_POST['ordenLaboratorio'];
-    $id = $_POST['id'];
-    $sql =  "UPDATE ".$wbasedato."_000032 SET drvord='$orden' WHERE id='$id';";
-    $result = mysqli_query($conex, $sql);
-    if (!$result) {
-        echo ("Error description: " . mysqli_error($conex));
-    }
-    exit;
-}
-
-if (isset($_POST['guardarAutorizaciones'])) {
-    # code...
-    $autorizaciones = $_POST['guardarAutorizaciones'];
-    $id = $_POST['guardarAutorizacionesId'];
-    $numeroDeExamenes = count($autorizaciones);
-
-    for ($i = 0; $i < $numeroDeExamenes; $i++) {
-        # code...
-        $sql = "";
-        $drvcit = $autorizaciones[$i]['drvcit'];
-        $drvcup = $autorizaciones[$i]['drvcup'];
-        $drvaut = $autorizaciones[$i]['drvaut'];
-        $sql =  "UPDATE ".$wbasedato."_000036 SET drvaut='$drvaut' WHERE drvcit='$drvcit' AND drvcup='$drvcup';";
-
-        $result = mysqli_query($conex, $sql);
-        if (!$result) {
-            echo ("Error description: " . mysqli_error($conex));
-        }
-    }
-    exit;
-}
-
-//Funcionalidad para recibir pago  :)
-if (isset($_POST['confirmarPago'])) :
-    // write query
-    $id = $_POST['confirmarPago'];
-
-    $sql = "UPDATE ".$wbasedato."_000032 SET drvpcf = CASE WHEN drvpcf = 'on' THEN 'off' WHEN drvpcf = 'off' THEN 'on' END WHERE id='$id'";
-
-    // make query $ get result
-    $result = mysqli_query($conex, $sql);
-    $pagoConfirmado = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-    print_r($pagoConfirmado);
-    exit;
-endif;
-
-if (isset($_POST['obtenerExamenes'])) {
-    # code...
-    // write query
-    $id = $_POST['obtenerExamenes'];
-
-    $sql = "SELECT CodigoTarifa FROM Empresas  WHERE Nit = '" . $id . "';";
-    $result = mysqli_query($connLab, $sql);
-    $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    $codigoTarifa = $tarifaLab[0]['CodigoTarifa'];
-
-    $sql = "SELECT CodigoExamen FROM ValorExamenes WHERE  ValorActual>=0 AND CodigoTarifa ='" . $codigoTarifa . "' AND CodigoExamen IN (SELECT Codigo FROM Examenes WHERE TipoPrueba<>'')";
-
-
-    $result = mysqli_query($connLab, $sql);
-    $examenesConvenio = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-    $listaExamenes = array();
-
-    foreach ($examenesConvenio as $key => $examen) {
-        # code...
-        array_push($listaExamenes, "'" . $examen['CodigoExamen'] . "'");
-    }
-
-    $examenesAConsultar = implode(",", $listaExamenes);
-    // print_r($row);
-    // echo $examenesAConsultar;
-
-    $sql = "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE  Codigo IN (" . $examenesAConsultar . ") order by Codigo ASC";
-    echo $sql;
-    $result = mysqli_query($connLab, $sql);
-    // $exams = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    // print_r($exams);
-
-
-
-    if (!$result) {
-        echo ("Error description: " . mysqli_error($conex));
-    }
-
-
-    $html = "<option value=''>Elija al menos un examen. </option>";
-
-    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $html .= "<option value='" . $row['CodigoCups'] . "-" . $row['NombreExamen'] . "-" . $row['Codigo'] . "'>" . $row['NombreExamen'] . " | " . $row['Codigo'] . " | " . $row['CodigoCups'] . "</option>";
-    }
-    // make query $ get result
-    mysqli_free_result($result);
-    mysqli_close($connLab);
-    echo $html;
-
-    exit;
-}
-
-if (isset($_POST['aseguradoraSeleccionada'])) {
-    # code...
-    // write query
-    $id = $_POST['aseguradoraSeleccionada'];
-    $service = $_POST['tipoServicio'];
-
-    $sql =
-        " SELECT Plades "
-        . "  FROM cliame_000153 "
-        . "  WHERE Plaest = 'on'"
-        . "	AND Plaemp = '"
-        . $id . $service . "' ";
-
-    $html = "";
-
-    $result = mysqli_query($conex, $sql);
-
-    if (!$result) {
-        echo ("Error description: " . mysqli_error($conex));
-    }
-
-    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $html .= "<option>" . $row["Plades"] . "</option>";
-    }
-    // make query $ get result
-    echo $html;
-
-    exit;
-}
-
-if (isset($_POST['consultarCodigoEmpresaLab'])) {
-    $nit = $_POST['consultarCodigoEmpresaLab'];
-    $sql = "SELECT Codigo FROM Empresas  WHERE Nit = '" . $nit . "';";
-    $result = mysqli_query($connLab, $sql);
-    $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    $codigo = $tarifaLab[0]['Codigo'];
-    mysqli_free_result($result);
-    mysqli_close($connLab);
-    echo $codigo;
-    exit;
-}
-
-if (isset($_POST['total'])) {
-    # code...
-    $total = intval($_POST['total']);
-    $id = $_POST['id'];
-
-    // if (empty($_POST['total'])) {
-    //     $errors['total'] = "No puede ir sin valor.";
-    // } else {
-    //     $total = $_POST['total'];
-    //     if (!preg_match('/^[0-9]$/', $total)) {
-    //         $errors['total'] = 'El valor a pagar solo debe estar compuesto por n&uacute;meros.';
-    //     }
-    // }
-
-
-    $sql = "UPDATE citaslc_000032 SET drvvcr =$total  WHERE id='$id'";
-
-    // make query $ get result
-    $result = mysqli_query($conex, $sql);
-    if (!$result) {
-        echo ("Error description: " . mysqli_error($conex));
-    }
-
-    exit;
-}
-
-if (isset($_POST['linkAGuardar'])) {
-    # code...
-    $link = htmlspecialchars($_POST['linkAGuardar']);
-    echo $link;
-    $id = $_POST['id'];
-
-    // if (empty($_POST['total'])) {
-    //     $errors['total'] = "No puede ir sin valor.";
-    // } else {
-    //     $total = $_POST['total'];
-    //     if (!preg_match('/^[0-9]$/', $total)) {
-    //         $errors['total'] = 'El valor a pagar solo debe estar compuesto por n&uacute;meros.';
-    //     }
-    // }
-
-
-    $sql = "UPDATE citaslc_000032 SET drvlnk ='$link'  WHERE id='$id'";
-
-    // make query $ get result
-    $result = mysqli_query($conex, $sql);
-    if (!$result) {
-        echo ("Error description: " . mysqli_error($conex));
-    }
-
-    exit;
-}
-
-
-if (isset($_POST['parametro'])) :
-    // write query
-    $parametro = $_POST['parametro'];
-    $sql = "SELECT drvclb,drvvlr FROM citaslc_000031 where drvncl=$parametro order by Fecha_data";
-    // make query $ get result
-    $result = mysqli_query($conex, $sql);
-    $html = "<option value=''><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>";
-    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $html .= "<option value='$row[drvvlr]'>$row[drvclb]</option>";
-    }
-
-
-    echo $html;
-endif;
-
-
-if (isset($_POST['examenesParaComentarios'])) {
-    # code...
-
-    // write query
-    $id = $_POST['examenesParaComentarios'];
-    $sql = "SELECT drvcup,
-        drvnex,
-        drvaut " . "FROM citaslc_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
-
-    $result = mysqli_query($conex, $sql);
-    $html = "";
-
-
-    while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
-        $html .=  $row["drvcup"] . "_" . $row["drvnex"] . "_" . $row["drvaut"] . "|";
-    }
-
-    echo $html;
-    exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
-
-}
-
-if (isset($_POST['cancelarRegistro'])) {
-    # code...
-    $id = $_POST['cancelarRegistro'];
-    echo $id;
-    $sql = "UPDATE citaslc_000032 SET drvest='off' WHERE id=" . $id . ";";
-    echo $sql;
-    $result = mysqli_query($conex, $sql);
-
-    exit;
-}
-
-if (isset($_POST['guardarDatosPaciente'])) {
-    //Se obtienen los datos del formulario :)
-    $datos = $_POST['guardarDatosPaciente'];
-    //$doc = $_POST['guardarDatosPacienteDoc'];
-    //Se validan los datos recibidos :)
-    if (!empty($datos)) {
-        //Se convierte la información recibida en vector $data Mavila :);
-        parse_str($_POST['guardarDatosPaciente'], $data);
-        //Se reciben los valores del formulario :)
-        $drvtid = mysqli_real_escape_string($conex, $data['docType']);
-        $drvidp = mysqli_real_escape_string($conex, $data['doc']);
-        $drvnom = mysqli_real_escape_string($conex, $data['names']);
-        $drvap1 = mysqli_real_escape_string($conex, $data['lastname1']);
-        $drvap2 = mysqli_real_escape_string($conex, $data['lastname2']);
-        $drvbdy = mysqli_real_escape_string($conex, $data['birthday']);
-        $drvsex = mysqli_real_escape_string($conex, $data['sex']);
-        $drvtel = mysqli_real_escape_string($conex, $data['phone']);
-        $drvmov = mysqli_real_escape_string($conex, $data['cellphone']);
-        $drvdir = mysqli_real_escape_string($conex, $data['addr']);
-        $drvbar = mysqli_real_escape_string($conex, $data['barrio']);
-        $drvema = mysqli_real_escape_string($conex, $data['email']);
-        $drvase = mysqli_real_escape_string($conex, $data['eps']);
-        $drvpol = mysqli_real_escape_string($conex, $data['epsNumber']);
-        $drvser = mysqli_real_escape_string($conex, $data['service']);
-        $drvcpl = mysqli_real_escape_string($conex, $data['plan']);
-        $drvexa = mysqli_real_escape_string($conex, $data['numeroExamenes']);
-        $drvfsi = mysqli_real_escape_string($conex, $data['fechaSintomas']);
-        $drvsin = mysqli_real_escape_string($conex, $data['sintomasPost']);
-        $drvcla = mysqli_real_escape_string($conex, $data['clasificacionCasoPost']);
-        $fecha_data = date("Y-m-d");
-        $hora_data = date("H:i:s");
-        //Nueva validacion de datos sencibles :)        
-        if (!empty($drvidp)) {
-            // Create sql
-            $sql = "INSERT INTO ".$wbasedato."_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla,drvest, Seguridad) VALUES('drvtru', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla','on','$wuse' )";
-            //Validamos el insertar si se guarda la información :)
-            if (mysqli_query($conex, $sql)) {
-                //Se procede a insertar los datos de los examenes :)
-                $fecha_data = date("Y-m-d");
-                $hora_data = date("H:i:s");
-                $drvcit = mysqli_insert_id($conex);
-                $inserts = "";
-                //se recorre la cantidad de examenes :)
-                for ($i = 0; $i < $drvexa; $i++) {
-                    $drvcup = mysqli_real_escape_string($conex, $data['exam-' . $i]);
-                    $drvnex = mysqli_real_escape_string($conex, $data['examName-' . $i]);
-                    $drvpos = $i + 1;
-                    //Se construye la consula de los examenes :)
-                    $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
-                    // Se agrega coma hasta el pen&uacute;ltimo elemento :)
-                    if ($i !== $drvexa - 1) {
-                        $inserts = $inserts . ",";
-                    }
-                }                
-                //Consulta para ingresar los examenes :)
-                $sqlExamenes = "INSERT INTO ".$wbasedato."_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
-                //Se valida el ingreso de los datos :)
-                if (mysqli_query($conex, $sqlExamenes)) {
-                    $response['code'] = '200';
-                    $response['content'] = 'Se registran los datos correctamente.';
-                    echo json_encode($response);
-                } else {
-                    $response['code'] = '404';
-                    $response['content'] = 'query error' . mysqli_error($conex);
-                    echo json_encode($response);
-                }                
-            } else {
-                $response['code'] = '404';
-                $response['content'] = 'query error' . mysqli_error($conex);
-                echo json_encode($response);
-            }
-        }else{
-            $response['code'] = '404';
-            $response['content'] = 'No hay datos para procesar el registro.';
-            echo json_encode($response);
-        }            
-    } else {
-        $response['code'] = '400';
-        $response['content'] = 'No hay datos para procesar el registro.';
-        echo json_encode($response);
-    } 
-    return;
-}
-
-//Funcionalidad para cuando se guarda la información :)
-if (isset($_POST['submit'])) {
-
-
-    // Validaci&oacute;n
-
-    if (empty($_POST['doc'])) {
-        $errors['doc'] = "Este campo es obligatorio.";
-    } else {
-        // Otra validaci&oacute;n
-        $doc = $_POST['doc'];
-        if (!preg_match('/^([a-zA-Z0-9]){5,}$/', $doc)) {
-            $errors['doc'] = 'El documento debe ser alfanumerico. Sin espacios ni caracteres especiales. Longitud m&iacute;nima 5 caracteres.';
-        }
-    }
-    if (empty($_POST['names'])) {
-        $errors['names'] = "Este campo es obligatorio.";
-    } else {
-        // Otra validaci&oacute;n
-        $names = $_POST['names'];
-        if (!preg_match('/^[a-zA-Z\s]{2,}$/', $names)) {
-            $errors['names'] = 'Los nombres solo pueden estar compuestos por letras y espacios. Longitud m&iacute;nima 2 caracteres.';
-        }
-    }
-    if (empty($_POST['lastname1'])) {
-        $errors['lastname1'] = "Este campo es obligatorio.";
-    } else {
-        // Otra validaci&oacute;n
-        $lastname1 = $_POST['lastname1'];
-        if (!preg_match('/^[a-zA-Z\s]{2,}$/', $lastname1)) {
-            $errors['lastname1'] = 'Los apellidos solo pueden estar compuestos por letras y espacios. Longitud m&iacute;nima 2 caracteres.';
-        }
-    }
-
-
-    if (empty($_POST['birthday'])) {
-        $errors['birthday'] = "Este campo es obligatorio.";
-    } else {
-        $birthday = $_POST['birthday'];
-        if ($_POST['birthday'] == "0000-00-00") {
-            $errors['birthday'] = 'La fecha no puede ser 0000-00-00.';
-        }
-    }
-
-    //Se adiciona validación del sexo del paciente :)
-    if (empty($_POST['sex'])) {
-        $sex = '';
-        $errors['sex'] = "Este campo es obligatorio.";
-    }else{
-        $sex = $_POST['sex'];
-    }
-
-    if (empty($_POST['phone']) && empty($_POST['cellphone'])) {
-        $errors['phone'] = "Ingrese por lo menos un tel&eacute;fono.";
-        $errors['cellphone'] = "Ingrese por lo menos un tel&eacute;fono.";
-    } else {
-        // Otra validaci&oacute;n
-        if ($_POST['phone']) {
-            # code...
-            $phone = $_POST['phone'];
-            if (!preg_match('/^[0-9]{7,}$/', $phone)) {
-                $errors['phone'] = 'El n&uacute;mero de tel&eacute;fono solo debe estar compuesto por n&uacute;meros. Longitud m&iacute;nima 7 caracteres.';
-            }
-        } else {
-            $cellphone = $_POST['cellphone'];
-            if (!preg_match('/^[0-9]{10,}$/', $cellphone)) {
-                $errors['cellphone'] = 'El n&uacute;mero de tel&eacute;fono solo debe estar compuesto por n&uacute;meros. Longitud m&iacute;nima 10 caracteres.';
-            }
-        }
-    }
-
-    if (empty($_POST['addr'])) {
-        $errors['addr'] = "Este campo es obligatorio.";
-    }
-
-    //Se adiciona validacion para almacenar la información del barrio sleecionado Mavila :)
-    if (empty($_POST['barrio'])) {
-        $barrio_seleccionado = '';
-        $errors['barrio'] = "Este campo es obligatorio.";
-    } else {
-        // Otra validaci&oacute;n
-        $barrio_seleccionado = $_POST['barrio'];
-    }
-    // Check email
-    if (empty($_POST['email'])) {
-        $errors['email'] = "Correo electr&oacute;nico requerido";
-        # code...
-    } else {
-        $email = $_POST['email'];
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors['email'] = "Correo electr&oacute;nico debe ser " . utf8_decode('v&aacute;lido');
-        }
-    }
-
-
-
-
-    if (empty($_POST['service'])) {
-        $service_seleccionado = '';
-        $errors['service'] = "Este campo es obligatorio.";
-    } else {
-        // Otra validaci&oacute;n
-        $service_seleccionado = $_POST['service'];
-    }
-
-    if (empty($_POST['eps'])) {
-        $eps_seleccionada = '';
-        $errors['eps'] = "Este campo es obligatorio.";
-    } else {
-        // Otra validaci&oacute;n
-        $eps_seleccionada = $_POST['eps'];
-    }
-
-    if (isset($_POST['numeroExamenes']) && $_POST['numeroExamenes'] == 0) {
-        # code...
-        $errors['exams'] = "Debe elegir al menos un examen.";
-    }
-
-    // if (empty($_POST['plan']) && $_POST['eps'] != 'PARTICULAR') {
-    //     $errors['eps'] = "Este campo es obligatorio si no es PARTICULAR.";
-    // } else {
-    //     // Otra validaci&oacute;n
-    // }
-    //print_r($errors);
-    if (array_filter($errors)) {
-        // echo 'Errors in the form';
-        //echo "aqui";
-        //print_r($errors);
-    } else {
-
-        // [docType]
-        // [doc]
-        // [names]
-        // [lastname1]
-        // [birthday]
-        // [sex]
-        // [phone]
-        // [cellphone]
-        // [addr]
-        // [barrio]
-        // [email]
-        // [service]
-        // [eps]
-        // [plan]
-        // [epsNumber]
-        // [numeroExamenes]
-
-
-        $drvtid = mysqli_real_escape_string($conex, $_POST['docType']);
-        $drvidp = mysqli_real_escape_string($conex, $_POST['doc']);
-        $drvnom = mysqli_real_escape_string($conex, $_POST['names']);
-        $drvap1 = mysqli_real_escape_string($conex, $_POST['lastname1']);
-        $drvap2 = mysqli_real_escape_string($conex, $_POST['lastname2']);
-        $drvbdy = mysqli_real_escape_string($conex, $_POST['birthday']);
-        $drvsex = mysqli_real_escape_string($conex, $_POST['sex']);
-        $drvtel = mysqli_real_escape_string($conex, $_POST['phone']);
-        $drvmov = mysqli_real_escape_string($conex, $_POST['cellphone']);
-        $drvdir = mysqli_real_escape_string($conex, $_POST['addr']);
-        $drvbar = mysqli_real_escape_string($conex, $_POST['barrio']);
-        $drvema = mysqli_real_escape_string($conex, $_POST['email']);
-        $drvase = mysqli_real_escape_string($conex, $_POST['eps']);
-        $drvpol = mysqli_real_escape_string($conex, $_POST['epsNumber']);
-        $drvser = mysqli_real_escape_string($conex, $_POST['service']);
-        $drvcpl = mysqli_real_escape_string($conex, $_POST['plan']);
-        $drvexa = mysqli_real_escape_string($conex, $_POST['numeroExamenes']);
-        $drvfsi = mysqli_real_escape_string($conex, $_POST['fechaSintomas']);
-        $drvsin = mysqli_real_escape_string($conex, $_POST['sintomasPost']);
-        $drvcla = mysqli_real_escape_string($conex, $_POST['clasificacionCasoPost']);
-
-        //print_r($_POST);
-        // codigoTarifa
-
-        $fecha_data = date("Y-m-d");
-        $hora_data = date("H:i:s");
-
-        // Create sql
-        $sql = "INSERT INTO citaslc_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla,drvest, Seguridad) VALUES('drvtru', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla','on','$wuse' )";
-
-        if (mysqli_query($conex, $sql)) {
-            // Sucess
-            // The connection will be closed when the index php is loaded
-            // header('Location: ' . $url);
-
-            $fecha_data = date("Y-m-d");
-            $hora_data = date("H:i:s");
-            $drvcit = mysqli_insert_id($conex);
-
-            $inserts = "";
-            for ($i = 0; $i < $drvexa; $i++) {
-                # code...
-                $drvcup = mysqli_real_escape_string($conex, $_POST['exam-' . $i]);
-                $drvnex = mysqli_real_escape_string($conex, $_POST['examName-' . $i]);
-                $drvpos = $i + 1;
-                $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
-                // Se agrega coma hasta el pen&uacute;ltimo elemento
-                if ($i !== $drvexa - 1) {
-                    # code...
-                    $inserts = $inserts . ",";
-                }
-            }
-
-            $sql = "INSERT INTO citaslc_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
-
-
-            if (mysqli_query($conex, $sql)) {
-                header('Location: ' . $url);
+            $sql =   "UPDATE ".$wbasedato."_000032 SET drvenv='on' WHERE id='$id';";
+            $result = mysqli_query($conex, $sql);
+
+            if ($result) {
+                echo $data['Error'];
             } else {
                 # code...
                 echo 'query error' . mysqli_error($conex);
             }
+        }
+
+
+        exit;
+    }
+
+    //Funcionalidad para consultar otras configuraciones :)
+    if (isset($_GET['wemp_pmla'])) {
+        # code...
+        $empresa = $_GET['wemp_pmla'];
+
+        $sql = "SELECT drvcam FROM ".$wbasedato."_000034 WHERE  drvemp=" . $empresa . ";";
+        $result = mysqli_query($conex, $sql);
+        $configuraciones = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        // print_r($configuraciones);
+
+        $nombreConfiguracion = array();
+        foreach ($configuraciones as $key => $configuracion) {
+            # code...
+            array_push($nombreConfiguracion, $configuracion['drvcam']);
+        }
+
+        $sql = "SELECT * FROM ".$wbasedato."_000034 WHERE  drvemp=" . $empresa . ";";
+        $result = mysqli_query($conex, $sql);
+        $todasLasConfiguraciones = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+
+        $assocConfiguracion = array_combine($nombreConfiguracion, $todasLasConfiguraciones);
+        //Para pruebas se verifica la llave publica para pruebas en la tabla ".$wbasedato."_000034 Mavila :)
+        $wompiKey = $assocConfiguracion['llavePublicaWompi']['drvdpl'];
+        $urlAPI = $assocConfiguracion['urlAPI']['drvdpl'];
+        //Se adiciona consulta parametro de la API de los eventos mavila :)
+        $urlAPIevents = $assocConfiguracion['urlAPIevents']['drvdpl'];
+        //Se adiciona consulta parametro de la API de recibo de pagos mavila :)
+        $urlAPIRespuestaPagos = $assocConfiguracion['urlAPIRespuestaPagos']['drvdpl'];
+
+
+        $sql = "SELECT *  FROM root_000007 where Estado='on' order by id ASC";
+        $result = mysqli_query($conex, $sql);
+        $tipoDocumento = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    }
+
+    if (isset($_POST['consultarValorParticular'])) {
+        # code...
+        # code...
+        $cups = $_POST['consultarValorParticular'];
+
+        $sql =  "SELECT drvncl FROM ".$wbasedato."_000031 where drvser='DT' AND drvnex=$cups;";
+        $result = mysqli_query($conex, $sql);
+        $valorExamen = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+        print_r($valorExamen);
+        exit;
+    }
+
+    if (isset($_POST['consultaExamenes'])) {
+
+        // write query
+        $id = $_POST['consultaExamenes'];
+        $sql = "SELECT drvcup,
+        drvnex,
+        drvaut " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
+
+        $result = mysqli_query($conex, $sql);
+        $html = "";
+
+        // $html = "";
+        $index = 0;
+
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+            $index % 2 == 0 ? $wclass = "fila1" : $wclass = "fila2";
+            $html .= "<tr class=" . $wclass . "><td  id='cup-" . $id . "-" . $index . "' >" . $row["drvcup"] . "</td><td style='min-width: -moz-max-content;'>" . $row["drvnex"] . "</td> <td> <input id='auth-" . $id . "-" . $index . "' type=text value='" . $row["drvaut"] . "'>";
+            $index++;
+        }
+        $auth_to_copy = "auth-" . $id . "-0";
+
+        $html .= "<tr><td></td><td></td><td><button class='btn btn-info btn-sm' onclick='copiarAutorizaciones(`" . $auth_to_copy . "`,`" . $index . "`,`" . $id . "` )'>Copiar</button><button class='btn btn-info btn-sm' onclick='guardarAutorizaciones(`" . $index . "`,`" . $id . "`)'>Guardar</button></td></tr></table>";
+
+        echo $html;
+        exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
+    }
+
+    if (isset($_POST['consultaExamenesAGrabar'])) {
+
+        // write query
+        $id = $_POST['consultaExamenesAGrabar'];
+
+        $sql = "SELECT id, drvcup,
+        drvnex,
+        drvaut, drvpos " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
+
+        $result = mysqli_query($conex, $sql);
+        $examenesParaOT = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+        echo json_encode($examenesParaOT);
+
+        exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
+    }
+
+    //Funcion para consultar los Pagos pendientes Mavila 
+    if (isset($_POST['consultaPagosPendientes'])) {
+
+        // write query
+        $id = $_POST['consultaPagosPendientes'];
+        $sql = "SELECT id, drvpcf FROM ".$wbasedato."_000032 WHERE drvpcf='off' AND drvest ='on' order by id DESC";
+        $result = mysqli_query($conex, $sql);
+        $pagosPentientes = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        echo json_encode($pagosPentientes);
+        exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
+    }
+
+    if (isset($_POST['ordenLaboratorio'])) {
+        # code...
+        $orden = $_POST['ordenLaboratorio'];
+        $id = $_POST['id'];
+        $sql =  "UPDATE ".$wbasedato."_000032 SET drvord='$orden' WHERE id='$id';";
+        $result = mysqli_query($conex, $sql);
+        if (!$result) {
+            echo ("Error description: " . mysqli_error($conex));
+        }
+        exit;
+    }
+
+    if (isset($_POST['guardarAutorizaciones'])) {
+        # code...
+        $autorizaciones = $_POST['guardarAutorizaciones'];
+        $id = $_POST['guardarAutorizacionesId'];
+        $numeroDeExamenes = count($autorizaciones);
+
+        for ($i = 0; $i < $numeroDeExamenes; $i++) {
+            # code...
+            $sql = "";
+            $drvcit = $autorizaciones[$i]['drvcit'];
+            $drvcup = $autorizaciones[$i]['drvcup'];
+            $drvaut = $autorizaciones[$i]['drvaut'];
+            $sql =  "UPDATE ".$wbasedato."_000036 SET drvaut='$drvaut' WHERE drvcit='$drvcit' AND drvcup='$drvcup';";
+
+            $result = mysqli_query($conex, $sql);
+            if (!$result) {
+                echo ("Error description: " . mysqli_error($conex));
+            }
+        }
+        exit;
+    }
+
+    //Funcionalidad para recibir pago  :)
+    if (isset($_POST['confirmarPago'])) :
+        // write query
+        $id = $_POST['confirmarPago'];
+
+        $sql = "UPDATE ".$wbasedato."_000032 SET drvpcf = CASE WHEN drvpcf = 'on' THEN 'off' WHEN drvpcf = 'off' THEN 'on' END WHERE id='$id'";
+
+        // make query $ get result
+        $result = mysqli_query($conex, $sql);
+        $pagoConfirmado = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+        print_r($pagoConfirmado);
+        exit;
+    endif;
+
+    //Se adiciona funcionalidad para descartar pagos Mavila 23-10-2020 :)
+    if (isset($_POST['descartarPaciente'])) :
+        // write query
+        $id = $_POST['descartarPaciente'];
+        $date = date('Y-m-d H:i:s');
+        $sql = "UPDATE ".$wbasedato."_000032 SET drvest = 'off', drvfed = '$date', drvusd = '$wusuario_logueado' WHERE id='$id'";
+        // make query $ get result
+        $result = mysqli_query($conex, $sql);
+        $pacienteDescartado = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        print_r($pacienteDescartado);
+        exit;
+    endif;
+
+    if (isset($_POST['obtenerExamenes'])) {
+        # code...
+        // write query
+        $id = $_POST['obtenerExamenes'];
+
+        $sql = "SELECT CodigoTarifa FROM Empresas  WHERE Nit = '" . $id . "';";
+        $result = mysqli_query($connLab, $sql);
+        $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        $codigoTarifa = $tarifaLab[0]['CodigoTarifa'];
+
+        $sql = "SELECT CodigoExamen FROM ValorExamenes WHERE  ValorActual>=0 AND CodigoTarifa ='" . $codigoTarifa . "' AND CodigoExamen IN (SELECT Codigo FROM Examenes WHERE TipoPrueba<>'')";
+
+
+        $result = mysqli_query($connLab, $sql);
+        $examenesConvenio = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+        $listaExamenes = array();
+
+        foreach ($examenesConvenio as $key => $examen) {
+            # code...
+            array_push($listaExamenes, "'" . $examen['CodigoExamen'] . "'");
+        }
+
+        $examenesAConsultar = implode(",", $listaExamenes);
+        // print_r($row);
+        // echo $examenesAConsultar;
+
+        $sql = "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE  Codigo IN (" . $examenesAConsultar . ") order by Codigo ASC";
+        echo $sql;
+        $result = mysqli_query($connLab, $sql);
+        // $exams = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        // print_r($exams);
+
+
+
+        if (!$result) {
+            echo ("Error description: " . mysqli_error($conex));
+        }
+
+
+        $html = "<option value=''>Elija al menos un examen. </option>";
+
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+            $html .= "<option value='" . $row['CodigoCups'] . "-" . $row['NombreExamen'] . "-" . $row['Codigo'] . "'>" . $row['NombreExamen'] . " | " . $row['Codigo'] . " | " . $row['CodigoCups'] . "</option>";
+        }
+        // make query $ get result
+        mysqli_free_result($result);
+        mysqli_close($connLab);
+        echo $html;
+
+        exit;
+    }
+
+    if (isset($_POST['aseguradoraSeleccionada'])) {
+        # code...
+        // write query
+        $id = $_POST['aseguradoraSeleccionada'];
+        $service = $_POST['tipoServicio'];
+
+        $sql =
+            " SELECT Plades "
+            . "  FROM cliame_000153 "
+            . "  WHERE Plaest = 'on'"
+            . "	AND Plaemp = '"
+            . $id . $service . "' ";
+
+        $html = "";
+
+        $result = mysqli_query($conex, $sql);
+
+        if (!$result) {
+            echo ("Error description: " . mysqli_error($conex));
+        }
+
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+            $html .= "<option>" . $row["Plades"] . "</option>";
+        }
+        // make query $ get result
+        echo $html;
+
+        exit;
+    }
+
+    if (isset($_POST['consultarCodigoEmpresaLab'])) {
+        $nit = $_POST['consultarCodigoEmpresaLab'];
+        $sql = "SELECT Codigo FROM Empresas  WHERE Nit = '" . $nit . "';";
+        $result = mysqli_query($connLab, $sql);
+        $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        $codigo = $tarifaLab[0]['Codigo'];
+        mysqli_free_result($result);
+        mysqli_close($connLab);
+        echo $codigo;
+        exit;
+    }
+
+    if (isset($_POST['total'])) {
+        # code...
+        $total = intval($_POST['total']);
+        $id = $_POST['id'];
+
+        // if (empty($_POST['total'])) {
+        //     $errors['total'] = "No puede ir sin valor.";
+        // } else {
+        //     $total = $_POST['total'];
+        //     if (!preg_match('/^[0-9]$/', $total)) {
+        //         $errors['total'] = 'El valor a pagar solo debe estar compuesto por n&uacute;meros.';
+        //     }
+        // }
+
+
+        $sql = "UPDATE ".$wbasedato."_000032 SET drvvcr =$total  WHERE id='$id'";
+
+        // make query $ get result
+        $result = mysqli_query($conex, $sql);
+        if (!$result) {
+            echo ("Error description: " . mysqli_error($conex));
+        }
+
+        exit;
+    }
+
+    if (isset($_POST['linkAGuardar'])) {
+        # code...
+        $link = htmlspecialchars($_POST['linkAGuardar']);
+        echo $link;
+        $id = $_POST['id'];
+
+        // if (empty($_POST['total'])) {
+        //     $errors['total'] = "No puede ir sin valor.";
+        // } else {
+        //     $total = $_POST['total'];
+        //     if (!preg_match('/^[0-9]$/', $total)) {
+        //         $errors['total'] = 'El valor a pagar solo debe estar compuesto por n&uacute;meros.';
+        //     }
+        // }
+
+
+        $sql = "UPDATE ".$wbasedato."_000032 SET drvlnk ='$link'  WHERE id='$id'";
+
+        // make query $ get result
+        $result = mysqli_query($conex, $sql);
+        if (!$result) {
+            echo ("Error description: " . mysqli_error($conex));
+        }
+
+        exit;
+    }
+
+
+    if (isset($_POST['parametro'])) :
+        // write query
+        $parametro = $_POST['parametro'];
+        $sql = "SELECT drvclb,drvvlr FROM citaslc_000031 where drvncl=$parametro order by Fecha_data";
+        // make query $ get result
+        $result = mysqli_query($conex, $sql);
+        $html = "<option value=''><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>";
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+            $html .= "<option value='$row[drvvlr]'>$row[drvclb]</option>";
+        }
+
+
+        echo $html;
+    endif;
+
+
+    if (isset($_POST['examenesParaComentarios'])) {
+        # code...
+
+        // write query
+        $id = $_POST['examenesParaComentarios'];
+        $sql = "SELECT drvcup,
+            drvnex,
+            drvaut " . "FROM citaslc_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
+
+        $result = mysqli_query($conex, $sql);
+        $html = "";
+
+
+        while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
+            $html .=  $row["drvcup"] . "_" . $row["drvnex"] . "_" . $row["drvaut"] . "|";
+        }
+
+        echo $html;
+        exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
+
+    }
+
+    if (isset($_POST['cancelarRegistro'])) {
+        # code...
+        $id = $_POST['cancelarRegistro'];
+        echo $id;
+        $sql = "UPDATE ".$wbasedato."_000032 SET drvest='off' WHERE id=" . $id . ";";
+        echo $sql;
+        $result = mysqli_query($conex, $sql);
+
+        exit;
+    }
+
+    if (isset($_POST['guardarDatosPaciente'])) {
+        //Se obtienen los datos del formulario :)
+        $datos = $_POST['guardarDatosPaciente'];
+        //$doc = $_POST['guardarDatosPacienteDoc'];
+        //Se validan los datos recibidos :)
+        if (!empty($datos)) {
+            //Se convierte la información recibida en vector $data Mavila :);
+            parse_str($_POST['guardarDatosPaciente'], $data);
+            //Se reciben los valores del formulario :)
+            $drvtid = mysqli_real_escape_string($conex, $data['docType']);
+            $drvidp = mysqli_real_escape_string($conex, $data['doc']);
+            $drvnom = mysqli_real_escape_string($conex, $data['names']);
+            $drvap1 = mysqli_real_escape_string($conex, $data['lastname1']);
+            $drvap2 = mysqli_real_escape_string($conex, $data['lastname2']);
+            $drvbdy = mysqli_real_escape_string($conex, $data['birthday']);
+            $drvsex = mysqli_real_escape_string($conex, $data['sex']);
+            $drvtel = mysqli_real_escape_string($conex, $data['phone']);
+            $drvmov = mysqli_real_escape_string($conex, $data['cellphone']);
+            $drvdir = mysqli_real_escape_string($conex, $data['addr']);
+            $drvbar = mysqli_real_escape_string($conex, $data['barrio']);
+            $drvema = mysqli_real_escape_string($conex, $data['email']);
+            $drvase = mysqli_real_escape_string($conex, $data['eps']);
+            $drvpol = mysqli_real_escape_string($conex, $data['epsNumber']);
+            $drvser = mysqli_real_escape_string($conex, $data['service']);
+            $drvcpl = mysqli_real_escape_string($conex, $data['plan']);
+            $drvexa = mysqli_real_escape_string($conex, $data['numeroExamenes']);
+            $drvfsi = mysqli_real_escape_string($conex, $data['fechaSintomas']);
+            $drvsin = mysqli_real_escape_string($conex, $data['sintomasPost']);
+            $drvcla = mysqli_real_escape_string($conex, $data['clasificacionCasoPost']);
+            $fecha_data = date("Y-m-d");
+            $hora_data = date("H:i:s");
+            //Nueva validacion de datos sencibles :)        
+            if (!empty($drvidp)) {
+                // Create sql
+                $sql = "INSERT INTO ".$wbasedato."_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla, drvvcr, drvest, Seguridad) VALUES('drvtru', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla', 0,'on','$wuse' )";
+                //Validamos el insertar si se guarda la información :)
+                if (mysqli_query($conex, $sql)) {
+                    //Se procede a insertar los datos de los examenes :)
+                    $fecha_data = date("Y-m-d");
+                    $hora_data = date("H:i:s");
+                    $drvcit = mysqli_insert_id($conex);
+                    $inserts = "";
+                    //se recorre la cantidad de examenes :)
+                    for ($i = 0; $i < $drvexa; $i++) {
+                        $drvcup = mysqli_real_escape_string($conex, $data['exam-' . $i]);
+                        $drvnex = mysqli_real_escape_string($conex, $data['examName-' . $i]);
+                        $drvpos = $i + 1;
+                        //Se construye la consula de los examenes :)
+                        $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
+                        // Se agrega coma hasta el pen&uacute;ltimo elemento :)
+                        if ($i !== $drvexa - 1) {
+                            $inserts = $inserts . ",";
+                        }
+                    }                
+                    //Consulta para ingresar los examenes :)
+                    $sqlExamenes = "INSERT INTO ".$wbasedato."_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
+                    //Se valida el ingreso de los datos :)
+                    if (mysqli_query($conex, $sqlExamenes)) {
+                        $response['code'] = '200';
+                        $response['content'] = 'Se registran los datos correctamente.';
+                        echo json_encode($response);
+                    } else {
+                        $response['code'] = '404';
+                        $response['content'] = 'query error' . mysqli_error($conex);
+                        echo json_encode($response);
+                    }                
+                } else {
+                    $response['code'] = '404';
+                    $response['content'] = 'query error' . mysqli_error($conex);
+                    echo json_encode($response);
+                }
+            }else{
+                $response['code'] = '404';
+                $response['content'] = 'No hay datos para procesar el registro.';
+                echo json_encode($response);
+            }            
         } else {
-            echo 'query error' . mysqli_error($conex);
+            $response['code'] = '400';
+            $response['content'] = 'No hay datos para procesar el registro.';
+            echo json_encode($response);
+        } 
+        return;
+    }
+
+    //Funcionalidad para cuando se guarda la información :)
+    if (isset($_POST['submit'])) {
+
+
+        // Validaci&oacute;n
+
+        if (empty($_POST['doc'])) {
+            $errors['doc'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $doc = $_POST['doc'];
+            if (!preg_match('/^([a-zA-Z0-9]){5,}$/', $doc)) {
+                $errors['doc'] = 'El documento debe ser alfanumerico. Sin espacios ni caracteres especiales. Longitud m&iacute;nima 5 caracteres.';
+            }
+        }
+        if (empty($_POST['names'])) {
+            $errors['names'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $names = $_POST['names'];
+            if (!preg_match('/^[a-zA-Z\s]{2,}$/', $names)) {
+                $errors['names'] = 'Los nombres solo pueden estar compuestos por letras y espacios. Longitud m&iacute;nima 2 caracteres.';
+            }
+        }
+        if (empty($_POST['lastname1'])) {
+            $errors['lastname1'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $lastname1 = $_POST['lastname1'];
+            if (!preg_match('/^[a-zA-Z\s]{2,}$/', $lastname1)) {
+                $errors['lastname1'] = 'Los apellidos solo pueden estar compuestos por letras y espacios. Longitud m&iacute;nima 2 caracteres.';
+            }
+        }
+
+
+        if (empty($_POST['birthday'])) {
+            $errors['birthday'] = "Este campo es obligatorio.";
+        } else {
+            $birthday = $_POST['birthday'];
+            if ($_POST['birthday'] == "0000-00-00") {
+                $errors['birthday'] = 'La fecha no puede ser 0000-00-00.';
+            }
+        }
+
+        //Se adiciona validación del sexo del paciente :)
+        if (empty($_POST['sex'])) {
+            $sex = '';
+            $errors['sex'] = "Este campo es obligatorio.";
+        }else{
+            $sex = $_POST['sex'];
+        }
+
+        if (empty($_POST['phone']) && empty($_POST['cellphone'])) {
+            $errors['phone'] = "Ingrese por lo menos un tel&eacute;fono.";
+            $errors['cellphone'] = "Ingrese por lo menos un tel&eacute;fono.";
+        } else {
+            // Otra validaci&oacute;n
+            if ($_POST['phone']) {
+                # code...
+                $phone = $_POST['phone'];
+                if (!preg_match('/^[0-9]{7,}$/', $phone)) {
+                    $errors['phone'] = 'El n&uacute;mero de tel&eacute;fono solo debe estar compuesto por n&uacute;meros. Longitud m&iacute;nima 7 caracteres.';
+                }
+            } else {
+                $cellphone = $_POST['cellphone'];
+                if (!preg_match('/^[0-9]{10,}$/', $cellphone)) {
+                    $errors['cellphone'] = 'El n&uacute;mero de tel&eacute;fono solo debe estar compuesto por n&uacute;meros. Longitud m&iacute;nima 10 caracteres.';
+                }
+            }
+        }
+
+        if (empty($_POST['addr'])) {
+            $errors['addr'] = "Este campo es obligatorio.";
+        }
+
+        //Se adiciona validacion para almacenar la información del barrio sleecionado Mavila :)
+        if (empty($_POST['barrio'])) {
+            $barrio_seleccionado = '';
+            $errors['barrio'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $barrio_seleccionado = $_POST['barrio'];
+        }
+        // Check email
+        if (empty($_POST['email'])) {
+            $errors['email'] = "Correo electr&oacute;nico requerido";
+            # code...
+        } else {
+            $email = $_POST['email'];
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors['email'] = "Correo electr&oacute;nico debe ser " . utf8_decode('v&aacute;lido');
+            }
+        }
+
+
+
+
+        if (empty($_POST['service'])) {
+            $service_seleccionado = '';
+            $errors['service'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $service_seleccionado = $_POST['service'];
+        }
+
+        if (empty($_POST['eps'])) {
+            $eps_seleccionada = '';
+            $errors['eps'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $eps_seleccionada = $_POST['eps'];
+        }
+
+        if (isset($_POST['numeroExamenes']) && $_POST['numeroExamenes'] == 0) {
+            # code...
+            $errors['exams'] = "Debe elegir al menos un examen.";
+        }
+
+        // if (empty($_POST['plan']) && $_POST['eps'] != 'PARTICULAR') {
+        //     $errors['eps'] = "Este campo es obligatorio si no es PARTICULAR.";
+        // } else {
+        //     // Otra validaci&oacute;n
+        // }
+        //print_r($errors);
+        if (array_filter($errors)) {
+            // echo 'Errors in the form';
+            //echo "aqui";
+            //print_r($errors);
+        } else {
+
+            // [docType]
+            // [doc]
+            // [names]
+            // [lastname1]
+            // [birthday]
+            // [sex]
+            // [phone]
+            // [cellphone]
+            // [addr]
+            // [barrio]
+            // [email]
+            // [service]
+            // [eps]
+            // [plan]
+            // [epsNumber]
+            // [numeroExamenes]
+
+
+            $drvtid = mysqli_real_escape_string($conex, $_POST['docType']);
+            $drvidp = mysqli_real_escape_string($conex, $_POST['doc']);
+            $drvnom = mysqli_real_escape_string($conex, $_POST['names']);
+            $drvap1 = mysqli_real_escape_string($conex, $_POST['lastname1']);
+            $drvap2 = mysqli_real_escape_string($conex, $_POST['lastname2']);
+            $drvbdy = mysqli_real_escape_string($conex, $_POST['birthday']);
+            $drvsex = mysqli_real_escape_string($conex, $_POST['sex']);
+            $drvtel = mysqli_real_escape_string($conex, $_POST['phone']);
+            $drvmov = mysqli_real_escape_string($conex, $_POST['cellphone']);
+            $drvdir = mysqli_real_escape_string($conex, $_POST['addr']);
+            $drvbar = mysqli_real_escape_string($conex, $_POST['barrio']);
+            $drvema = mysqli_real_escape_string($conex, $_POST['email']);
+            $drvase = mysqli_real_escape_string($conex, $_POST['eps']);
+            $drvpol = mysqli_real_escape_string($conex, $_POST['epsNumber']);
+            $drvser = mysqli_real_escape_string($conex, $_POST['service']);
+            $drvcpl = mysqli_real_escape_string($conex, $_POST['plan']);
+            $drvexa = mysqli_real_escape_string($conex, $_POST['numeroExamenes']);
+            $drvfsi = mysqli_real_escape_string($conex, $_POST['fechaSintomas']);
+            $drvsin = mysqli_real_escape_string($conex, $_POST['sintomasPost']);
+            $drvcla = mysqli_real_escape_string($conex, $_POST['clasificacionCasoPost']);
+
+            //print_r($_POST);
+            // codigoTarifa
+
+            $fecha_data = date("Y-m-d");
+            $hora_data = date("H:i:s");
+
+            // Create sql
+            $sql = "INSERT INTO ".$wbasedato."_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla,drvest, Seguridad) VALUES('drvtru', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla','on','$wuse' )";
+
+            if (mysqli_query($conex, $sql)) {
+                // Sucess
+                // The connection will be closed when the index php is loaded
+                // header('Location: ' . $url);
+
+                $fecha_data = date("Y-m-d");
+                $hora_data = date("H:i:s");
+                $drvcit = mysqli_insert_id($conex);
+
+                $inserts = "";
+                for ($i = 0; $i < $drvexa; $i++) {
+                    # code...
+                    $drvcup = mysqli_real_escape_string($conex, $_POST['exam-' . $i]);
+                    $drvnex = mysqli_real_escape_string($conex, $_POST['examName-' . $i]);
+                    $drvpos = $i + 1;
+                    $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
+                    // Se agrega coma hasta el pen&uacute;ltimo elemento
+                    if ($i !== $drvexa - 1) {
+                        # code...
+                        $inserts = $inserts . ",";
+                    }
+                }
+
+                $sql = "INSERT INTO citaslc_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
+
+
+                if (mysqli_query($conex, $sql)) {
+                    header('Location: ' . $url);
+                } else {
+                    # code...
+                    echo 'query error' . mysqli_error($conex);
+                }
+            } else {
+                echo 'query error' . mysqli_error($conex);
+            }
         }
     }
-}
 
 
-//Change4: Funcion para el estilo de los campos según estados Mavila :)
-function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){ 
-    $class_campoValor = '';
-    if (($key % 2 === 0)) {
-        //valores para pares :)
-        if ($campo_verificar == $valor_verificado) {
-            $class_campoValor = 'fila1';
+    //Change4: Funcion para el estilo de los campos según estados Mavila :)
+    function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){ 
+        $class_campoValor = '';
+        if (($key % 2 === 0)) {
+            //valores para pares :)
+            if ($campo_verificar == $valor_verificado) {
+                $class_campoValor = 'fila1';
+            }else{
+                $class_campoValor = 'gestion1';
+            }
         }else{
-            $class_campoValor = 'gestion1';
+            //valores para inpares :)
+            if ($campo_verificar == $valor_verificado) {
+                $class_campoValor = 'fila2';
+            }else{
+                $class_campoValor = 'gestion2';         
+            }
         }
-    }else{
-        //valores para inpares :)
-        if ($campo_verificar == $valor_verificado) {
-            $class_campoValor = 'fila2';
-        }else{
-            $class_campoValor = 'gestion2';         
-        }
+        return  $class_campoValor;
     }
-    return  $class_campoValor;
-}
-
+//FUNCIONES Y METODOS :)
 
 // mysqli_close($conex);
 
@@ -1084,6 +1101,8 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
     <link rel="stylesheet" href="../../../include/root/bootstrap4/css/bootstrap.min.css">
     <link type="text/css" rel="stylesheet" href="../../../include/root/matrix.css" />
     <!-- <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css"> -->
+    <!-- Se relaciona libreria para mensajes de alerta Mavila 23-10-2020 -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 
 <body>
@@ -1360,12 +1379,7 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
         </div>
         <div class="row">
             <div class="col-12 col-lg-12">
-                <div id="div_mostrar_proceso" class="alert alert-info">
-                    <h5>Actualizando pagos
-                        <img alt="Actualizando pagos" class="rnb-logo-img" src="../../images/medical/ajax-loader5.gif">                    
-                        <p id="resultado_pago"></p>
-                    </h5>
-                </div>
+                <div id="div_mostrar_proceso" class="alert alert-info"></div>
             </div>
         </div>
         <div class="row">
@@ -1413,6 +1427,7 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
                         //Verificacion de clases para los estilos de las celdas Mavila :)
                         //Verificación del registro teniendo en cuenta el valor enviado Mavila :)
                         $class_campoValor = verificarClassCampo($key, $registro['drvvcr'], '');
+                        $class_campoValor = verificarClassCampo($key, $registro['drvvcr'], '0');
                         $class_campoEnvio = verificarClassCampo($key, $registro['drvenv'], 'off');
                         $class_campoPago = verificarClassCampo($key, $registro['drvpcf'], 'off');
                         $class_campoAgenda = verificarClassCampo($key, $registro['drvfec'], '0000-00-00');
@@ -1497,14 +1512,12 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
 
                                 <button class="btn btn-info btn-sm mt-1" type="button" 
                                     onclick="abrirMaestro('<?php echo htmlspecialchars($registro['id']); ?>',
-                                    '<?php echo htmlspecialchars($registro['drvidp']); ?>',
-                                    '<?php echo htmlspecialchars($registro['drvnom']); ?>'+'-'+'<?php echo htmlspecialchars($registro['drvap1']); ?> <?php echo htmlspecialchars($registro['drvap2']); ?>',
-                                    '<?php echo htmlspecialchars($registro['drvtel']); ?>'+'-'+'<?php echo htmlspecialchars($registro['drvmov']); ?>',
-                                    '<?php echo htmlspecialchars($registro['drvema']); ?>',
-                                    '<?php echo htmlspecialchars($registro['drvlnk']); ?>',
-                                    '<?php echo htmlspecialchars($registro['drvbdy']); ?>',
-                                    '<?php echo htmlspecialchars($registro['drvase']); ?>')" >
+                                    '<?php echo htmlspecialchars($registro['drvidp']); ?>')" >
                                     Editar datos
+                                </button>
+                                <button class="btn btn-info btn-sm mt-1" type="button" 
+                                    onclick="descartarPaciente('<?php echo htmlspecialchars($registro['id']); ?>', '<?php echo htmlspecialchars($registro['drvidp']); ?>')" >
+                                    Descartar
                                 </button>
                             </td>
                             <?php //Fin para para mustrar los datos del paciente en un solo campo :) ?>
@@ -1519,6 +1532,12 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
                                     class="btn btn-info btn-sm mt-2" type="button" 
                                     onclick="showExamsAndAuths(<?php echo $key; ?>, <?php echo $registro['id']; ?>)">Ver
                                 </button>
+
+                                <button class="btn btn-info btn-sm mt-1" type="button" 
+                                    onclick="abrirMaestroExamenes('<?php echo htmlspecialchars($registro['id']); ?>',
+                                    '<?php echo htmlspecialchars($registro['drvidp']); ?>')" >
+                                    Editar
+                                </button>
                             </td>
 
                             <?php //Se adiciona función para dar estilo del campo teniendo encuenta el valor :) ?>
@@ -1526,7 +1545,7 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
                                 <?php //Se adiciona estilo de campo y boton :) ?>
                                 <!-- <input type="text" name=<?php echo "total" . $key; ?> id=<?php echo "total" . $key; ?> value='<?php echo htmlspecialchars($registro['drvvcr']); ?>'> <button type="button" onclick="guardarTotal(<?php echo $key; ?>, <?php echo $registro['id']; ?>)">Guardar</button></td>-->
                                 
-                                <input class="form-control form-control-sm input_small money mt-2" type="text" 
+                                <input class="form-control form-control-sm money input_small mt-2" type="text" 
                                 name=<?php echo "total" . $key; ?> 
                                 id=<?php echo "total" . $key; ?> 
                                 value='<?php echo htmlspecialchars($registro['drvvcr']); ?>'> 
@@ -1761,11 +1780,13 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
         const urlAPIRespuestaPagos = '<?php echo $urlAPIRespuestaPagos; ?>';
         const wemp_pmla = '<?php echo $wemp_pmla; ?>';
         const wbasedato = '<?php echo $wbasedato; ?>';
+        //Se adiciona variale para obtener el usaurio logueado mavila 23-10-2020 :)
+        const wusuario_logueado = '<?php echo $wusuario_logueado; ?>';
         const wenviar_respuesta = '<?php echo $wenviar_respuesta; ?>';
         // const wompiKey = "pub_prod_J2T5YcYqb8pv6QKRNVjyTJzeRcIFyJJc"
 
         $(document).ready(function() {
-
+            
             $('#newExam').hide();
             $('#newAut').hide();
             $('#agregarExamen').hide();
@@ -1806,6 +1827,7 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
                 })
             }
         })
+        
 
         // $('#submitFormulario').click(function() {
         //     $('#submitFormulario').attr({
@@ -1878,24 +1900,31 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
         //Funcionalidad para validar el registro de pacientes :)
         function guardarDatosPaciente(ev){
             ev.preventDefault();            
-            var enviar = true;    
+            var enviar = true; 
                     
             //alert("Hasta aca");
-            //Validación de los campos :)
-            enviar = validarCampo('doc', 2, false);
-            enviar = validarCampo('names', 2, true);
-            enviar = validarCampo('lastname1', 2, true);
-            enviar = validarCampo('lastname2', 2, true);
-            enviar = validarCampo('birthday', 0, false);
-            enviar = validarCampoRadio('sex');
-            enviar = validarCampo('phone', 10, false);
-            enviar = validarCampo('cellphone', 10, false);
-            enviar = validarCampoEmail('email');
-            enviar = validarCampo('barrio', 0, false);
-            enviar = validarCampo('addr', 5, false);
-            enviar = validarCampo('service', 0, false);
-            enviar = validarCampo('eps', 0, false);
-            enviar = validarCampo('numeroExamenes', 0, false);
+            //Se adiciona validación de los campos Mavila 23-20-2020 :)            
+            var enviar_doc = validarCampo('doc', 2, false);
+            var enviar_names = validarCampo('names', 2, true);
+            var enviar_las1 = validarCampo('lastname1', 2, true);
+            var enviar_las2 = validarCampo('lastname2', 2, true);
+            var enviar_birthday = validarCampo('birthday', 0, false);
+            var enviar_sex = validarCampoRadio('sex');
+            var enviar_phone = validarCampo('phone', 10, false);
+            var enviar_cell = validarCampo('cellphone', 10, false);
+            var enviar_email = validarCampoEmail('email');
+            var enviar_barrio = validarCampo('barrio', 0, false);
+            var enviar_addr = validarCampo('addr', 5, false);
+            var enviar_service = validarCampo('service', 0, false);
+            var enviar_eps = validarCampo('eps', 0, false);
+            var enviar_examenes = validarCampo('numeroExamenes', 0, false);
+
+            //Se validan cada uno de los campos Mavila 23-10-2020 :)
+            if  (enviar_doc && enviar_names && enviar_las1 && enviar_las2 && enviar_birthday && enviar_sex && enviar_phone && enviar_cell && enviar_email && enviar_barrio && enviar_addr && enviar_service && enviar_eps && enviar_examenes){
+                enviar = true; 
+            }else{
+                enviar = false;
+            }
             //enviar = false;
             var doc = $.trim($('#doc').val());
             if  ((enviar) && (doc != '')){
@@ -1916,21 +1945,33 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
                         var respuesta = jQuery.parseJSON(response);
                         var code = respuesta.code;
                         if (code == '200'){
-                            alert('Registro agregado correctamente.');
-                            $("#form_datos_paciente")[0].reset()
-                            location.reload()
+                            //Se envia mensaje de confirmación con la nueva libreria Mavila 23-10-2020 :)
+                            swal("Registro agregado correctamente.", {
+                                icon: "success",
+                            }).then((value) => {
+                                $("#form_datos_paciente")[0].reset()
+                                location.reload()
+                            });
+                            //alert('Registro agregado correctamente.');
+                            
                         }else{
-                            alert('Verifique los datos del formualrio.');
+                            //Se envia mensaje de confirmación con la nueva libreria Mavila 23-10-2020 :)
+                            swal("Verifique los datos del formualrio.");
+                            //alert('Verifique los datos del formualrio.');
                             //$("#form_datos_paciente")[0].reset()
                             //location.reload() 
                         }                    
                     },
                     error: function() {
-                        alert("error")
+                        //alert("error")
+                        //Se envia mensaje de confirmación con la nueva libreria Mavila 23-10-2020 :)
+                        swal("Error, Verifique los datos del formualrio.");
                     }
                 });
             }else{
-                alert('Verifique los datos del formualrio.');
+                //Se envia mensaje de confirmación con la nueva libreria Mavila 23-10-2020 :)
+                //alert('Verifique los datos del formualrio.');
+                swal("Verifique los datos del formualrio.");
             }
             
         }
@@ -2158,8 +2199,16 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
                                         beforeSend: function() {},
                                         success: function(response) {
                                             console.log(response)
-                                            $(`#checkPagoConfirmadoTD${ref}`).removeClass('fila1')
-                                            $(`#checkPagoConfirmadoTD${ref}`).addClass('gestion2')
+                                            //$(`#checkPagoConfirmadoTD${ref}`).removeClass('fila1')
+                                            //$(`#checkPagoConfirmadoTD${ref}`).addClass('gestion2')
+
+                                            if (ref % 2 == 0){
+                                                $(`#checkPagoConfirmadoTD${ref}`).removeClass('fila2');
+                                                $(`#checkPagoConfirmadoTD${ref}`).addClass('gestion2');
+                                            }else {  
+                                                $(`#checkPagoConfirmadoTD${ref}`).removeClass('fila1');
+                                                $(`#checkPagoConfirmadoTD${ref}`).addClass('gestion1');
+                                            }
                                             //location.reload();
                                             $("#resultado_pago").html('Referencia: '+ref+' - Confirmado ');
                                         },
@@ -2224,8 +2273,15 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
                             beforeSend: function() {},
                             success: function(response) {
                                 console.log(response);
-                                $(`#checkPagoConfirmadoTD${ref}`).removeClass('fila1');
-                                $(`#checkPagoConfirmadoTD${ref}`).addClass('gestion2');
+
+                                if (ref % 2 == 0){
+                                    $(`#checkPagoConfirmadoTD${ref}`).removeClass('fila2');
+                                    $(`#checkPagoConfirmadoTD${ref}`).addClass('gestion2');
+                                }else {  
+                                    $(`#checkPagoConfirmadoTD${ref}`).removeClass('fila1');
+                                    $(`#checkPagoConfirmadoTD${ref}`).addClass('gestion1');
+                                }
+                                
 
                                 $(`#resultado_pago${ref}`).removeClass('badge-danger');
                                 $(`#resultado_pago${ref}`).addClass('badge-success');
@@ -2236,39 +2292,108 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
                                 }, 4000);
                                 setTimeout(function(){
                                     $(`#resultado_pago${ref}`).html('Confirmado');
-                                    location.reload()
+                                    //location.reload()
                                 }, 4000);                                
                             },
-                            error: function() {
-                                //alert("error")
-                                $(`#resultado_pago${ref}`).html('Pendiente');
+                            error: function() {                                
+                                $(`#resultado_pago${ref}`).html('Cargando...'); 
+                                setTimeout(function(){
+                                    $(`#resultado_pago${ref}`).html('Pendiente');
+                                }, 4000);
+                                
                             }
                             
                         });
-                    }    
+                    }else{
+                        $(`#resultado_pago${ref}`).html('Cargando.'); 
+                        setTimeout(function(){
+                            $(`#resultado_pago${ref}`).html('Pendiente');
+                        }, 4000);
+                    }  
                 },
                 failure: function (data) {
                     //console.log(data.responseText);
                     //$(`#resultado_pago${ref}`).html('Pendiente');
-                    $(`#resultado_pago${ref}`).html('Cargando...');                                
+                    $(`#resultado_pago${ref}`).html('Cargando..');                                
                     setTimeout(function(){
                         $(`#resultado_pago${ref}`).html('Pendiente');
-                        location.reload()
                     }, 4000);
                 },
                 error: function (data) {
                     //$(`#resultado_pago${ref}`).html('Pendiente');
-                    $(`#resultado_pago${ref}`).html('Cargando...');                                
+                    $(`#resultado_pago${ref}`).html('Cargando....');                                
                     setTimeout(function(){
                         $(`#resultado_pago${ref}`).html('Pendiente');
-                        location.reload()
                     }, 4000);
                 }
             }); 
 
         }
 
+        //Se adiciona funcionaliad para descartar al paciente de la lista Mavila 23-10-2020 :)
+        function descartarPaciente(id, paciente) {
+            
+            swal({
+                title: "Descartar paciente.",
+                text: "Desea descartar el paciente.",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    url: urlMatrix,
+                    type: 'POST',
+                    data: {
+                        "descartarPaciente": id,
+                        "paciente": paciente
+                    },
+                    beforeSend: function() {},
+                    success: function(response) {
+                        //console.log(response);
+                        //Se envia mensaje de confirmación con la nueva libreria Mavila 23-10-2020 :)
+                        swal("Paciente descartado.", {
+                            icon: "success",
+                        }).then((value) => {
+                            location.reload();
+                        });
+                        //alert("Paciente descartado.");
+                        
+                    },
+                    error: function() {
+                        //Se envia mensaje de confirmación con la nueva libreria Mavila 23-10-2020 :)
+                        swal("Error al descartar paciente");
+                        //alert("Error al descartar paciente.")
+                    }
+                })    
 
+                
+            } 
+            });
+                        
+            /*var r = confirm("Desea descartar el paciente.");
+            if (r == true) {
+                $.ajax({
+                    url: urlMatrix,
+                    type: 'POST',
+                    data: {
+                        "descartarPaciente": id,
+                        "paciente": paciente
+                    },
+                    beforeSend: function() {},
+                    success: function(response) {
+                        console.log(response);
+                        alert("Paciente descartado.");
+                        location.reload();
+                    },
+                    error: function() {
+                        alert("Error al descartar paciente.")
+                    }
+                })            
+            }*/
+
+        }
         
 
         function abrirAgenda(id, cedula, paciente, telefono, email, url, fechaNacimiento, aseguradora) {
@@ -2304,13 +2429,17 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
         }
 
         
-        function abrirMaestro(id, cedula, paciente, telefono, email, url, fechaNacimiento, aseguradora) {
-            let comentarios = ""
-            var MILLISECONDS_IN_A_YEAR = 1000 * 60 * 60 * 24 * 365.25;
-            const getAge = birthDate => Math.floor((new Date() - new Date(birthDate).getTime()) / MILLISECONDS_IN_A_YEAR)
-
-            // const reemplazar = comments => replace(/\s/g, "_", comments)
-
+        function abrirMaestro(id, paciente) {
+            //Se adicionan variables para enviar datos a la venatana modal Mavila 23-10-2020 :)
+            let waction = 'abrir_tabla_modal'            
+            let wusuariotabla = wusuario_logueado
+            let wnombreopc = 'Datos paciente'
+            let wtabla = `${wbasedato}_000032` //Tabla a consultar :)
+            let wid = '434' //Id de la tabla a consiltar
+            let widregistro = id
+            let wcampo = 'id'
+            let woperacion = 'igual'
+            
             $.ajax({
                 data: {
                     "paciente": paciente,
@@ -2320,11 +2449,10 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
                 type: 'post',
                 beforeSend: function() {},
                 success: function(response) {
-
                     respuesta = response;
-                    comentarios = respuesta.replace(/\s/g, "_")
-                    let edad = getAge(fechaNacimiento)
-                    window.open(`/matrix/root/procesos/EditarDatosMatrix.php?wemp_pmla=01`, "_blank")
+                    let parametros = `wemp_pmla=${wemp_pmla}&waction=${waction}&wtabla=${wtabla}&wusuariotabla=${wusuariotabla}&wnombreopc=${wnombreopc}&wid=${wid}&widregistro=${widregistro}&wcampo=${wcampo}&woperacion=${woperacion}`
+                    //window.open(`/matrix/root/procesos/EditarDatosMatrix.php?wemp_pmla=01`, "_blank")
+                    window.open(`/matrix/root/procesos/EditarDatosMatrix.php?${parametros}`,'Editar datos paciente','width=1000,height=500,resizable=no,scrollbars=yes,toolbar=no,location=no,directories=no,status=nomenubar=no');
                     //window.open(`/matrix/root/procesos/EditarDatosMatrix.php?wemp_pmla=01&accion=abrir_tabla&wemp_pmla=01&tablappal=citaslc_000032&wusuariotabla=03150&wnombreopc=Lista de espera&wid=434`, "_blank")
 
                 },
@@ -2335,6 +2463,42 @@ function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){
 
 
         }
+
+        function abrirMaestroExamenes(id, paciente) {
+            
+            let waction = 'abrir_tabla_modal'            
+            let wusuariotabla = wusuario_logueado
+            let wnombreopc = 'Examenes'
+            let wtabla = `${wbasedato}_000036` //Tabla a consultar :)
+            let wid = '441' //Id de la tabla a consiltar
+            let widregistro = id
+            let wcampo = 'drvcit'
+            let woperacion = 'igual'
+            
+            $.ajax({
+                data: {
+                    "paciente": paciente,
+                    "consultaAjax": ""
+                },
+                url: urlMatrix,
+                type: 'post',
+                beforeSend: function() {},
+                success: function(response) {
+                    respuesta = response;
+                    let parametros = `wemp_pmla=${wemp_pmla}&waction=${waction}&wtabla=${wtabla}&wusuariotabla=${wusuariotabla}&wnombreopc=${wnombreopc}&wid=${wid}&widregistro=${widregistro}&wcampo=${wcampo}&woperacion=${woperacion}`
+                    //window.open(`/matrix/root/procesos/EditarDatosMatrix.php?wemp_pmla=01`, "_blank")
+                    window.open(`/matrix/root/procesos/EditarDatosMatrix.php?${parametros}`,'Editar datos paciente','width=1000,height=500,resizable=no,scrollbars=yes,toolbar=no,location=no,directories=no,status=nomenubar=no');
+                    //window.open(`/matrix/root/procesos/EditarDatosMatrix.php?wemp_pmla=01&accion=abrir_tabla&wemp_pmla=01&tablappal=citaslc_000032&wusuariotabla=03150&wnombreopc=Lista de espera&wid=434`, "_blank")
+
+                },
+                error: function() {
+                    alert("error")
+                }
+            })
+
+
+        }
+
 
         function admitir(index, id, identificacion, tipodedocumento, apellido1, apellido2, nombres, fechaDeNacimiento, sexo, direccion, celular, email, fijo, aseguradora, plan, poliza, valorACancelar, fechaSintomas, sintomas, clasificacion) {
             // console.log(plan);
