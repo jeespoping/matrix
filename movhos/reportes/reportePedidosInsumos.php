@@ -146,8 +146,10 @@ else
 		global $conex;
 		global $wbasedato;
 		
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codigoCco );
+		
 		$queryZonas ="SELECT Habzon,Aredes 
-						FROM ".$wbasedato."_000020,".$wbasedato."_000169 
+						FROM ".$tablaHabitaciones.",".$wbasedato."_000169 
 					   WHERE Habcco='".$codigoCco."' 
 						 AND Habest='on' 
 						 AND Habzon=Arecod
@@ -209,6 +211,8 @@ else
 		global $wbasedato;
 		global $wbasedatoHce;
 		global $wemp_pmla;
+		
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codigoCco );
 		
 		$condicionMostrarTodos = "AND Pedent='off' ";
 		if($mostrarTodos=="on")
@@ -281,7 +285,7 @@ else
 			}
 			
 			$queryPacientes ="SELECT Dpehis,Dpeing,Dpehab,Pacno1,Pacno2,Pacap1,Pacap2,Pacced,Pactid,Habcod,Habcpa,Pedent 
-								FROM ".$wbasedato."_000230 a,".$wbasedato."_000231,".$wbasedato."_000020,root_000037,root_000036
+								FROM ".$wbasedato."_000230 a,".$wbasedato."_000231,".$tablaHabitaciones.",root_000037,root_000036
 							   WHERE Pedcco='".$codigoCco."' 
 								 ".$condicionMostrarTodos."
 								 AND Pedest='on'
@@ -343,7 +347,7 @@ else
 		global $wbasedatoHce;
 		global $wemp_pmla;
 		
-		
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codigoCco );
 		
 		$condicionMostrarTodos = "AND Pedent='off' ";
 		if($mostrarTodos=="on")
@@ -413,7 +417,7 @@ else
 			}
 			
 			$queryInsumos =" SELECT Dpeins,SUM(Dpeped) as cantidad,Artgen,Artuni,Unides,Pedent
-							   FROM ".$wbasedato."_000230 a,".$wbasedato."_000231,".$wbasedato."_000020,".$wbasedato."_000026,".$wbasedato."_000027
+							   FROM ".$wbasedato."_000230 a,".$wbasedato."_000231,".$tablaHabitaciones.",".$wbasedato."_000026,".$wbasedato."_000027
 							  WHERE Pedcco='".$codigoCco."' 
 								".$condicionMostrarTodos." 
 								AND Pedest='on'
@@ -466,6 +470,7 @@ else
 		global $wbasedatoHce;
 		global $wemp_pmla;
 		
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codigoCco );
 		
 		$condicionMostrarTodos = "AND Pedent='off' ";
 		if($mostrarTodos=="on")
@@ -534,7 +539,7 @@ else
 			else
 			{
 				$queryInsumos =" SELECT Dpehis,Dpeing,Dpehab,Dpeins,Dpeped
-								   FROM ".$wbasedato."_000230 a,".$wbasedato."_000231,".$wbasedato."_000020
+								   FROM ".$wbasedato."_000230 a,".$wbasedato."_000231,".$tablaHabitaciones."
 								  WHERE Pedcco='".$codigoCco."' 
 									".$condicionMostrarTodos." 
 									AND Pedest='on'
@@ -885,7 +890,7 @@ else
 									<td class='fila1'>Historia</td>
 									<td class='fila2'>".$historia."-".$ingreso."</td>
 									<td class='fila1'>Nombre</td>
-									<td class='fila2'>".consultarNombrePaciente($historia)."</td>
+									<td class='fila2'>".utf8_encode( consultarNombrePaciente($historia) )."</td>
 								</tr>
 								<tr>
 									<td class='fila1'>Habitaci&oacute;n</td>
@@ -973,7 +978,7 @@ else
 		global $wbasedatoHce;
 		global $wemp_pmla;
 		
-		
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codigoCco );
 		
 		$condicionMostrarTodos = "AND Pedent='off' ";
 		if($mostrarTodos=="on")
@@ -1043,7 +1048,7 @@ else
 
 			
 			$queryInsumos = " SELECT Pedbot,Pedaux,SUM(Dpeped) as Cantidad,Descripcion,Cconom,Empresa
-								FROM ".$wbasedato."_000230 a,".$wbasedato."_000231,usuarios,".$wbasedato."_000020,".$wbasedato."_000011
+								FROM ".$wbasedato."_000230 a,".$wbasedato."_000231,usuarios,".$tablaHabitaciones.",".$wbasedato."_000011
 							   WHERE Pedcco='".$codigoCco."' 
 								 ".$condicionMostrarTodos." 
 								 AND Pedest='on'
