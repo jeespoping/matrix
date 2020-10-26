@@ -5046,4 +5046,9 @@ else
 	echo "</body>";
 	echo "</html>";
 }
+
+//Se adiciona cierre de la variable conex Mavila 23-10-2020 :)
+if	(isset($conex)){
+	mysql_close($conex);
+}
 ?>
