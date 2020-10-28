@@ -34161,11 +34161,13 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 				$requierePreguntarServicioRealizacion = requierePreguntarServicioRealizacion( $conex, $wcliame, $cup );
 				if( $requierePreguntarServicioRealizacion ){
 					$realizarEnServicio = 'on';
+					$esOfertado = 'off';
 				}
 				
 				$requiereRealizacionExterna = requiereRealizacionExterna( $conex, $whce, $codigoExamen );
 				if( $requiereRealizacionExterna ){
 					$realizacionExterna = 'on';
+					$esOfertado = 'off';
 				}
 			}
 			
