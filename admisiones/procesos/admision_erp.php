@@ -24820,7 +24820,8 @@ echo "</table></center>";
 		echo "<td class='fila1 dato_particulares' style='display:none;'>Tarifa Responsable</td>";
 	}
 	/*FIN*/
-
+	//Se cierra conexión de la base de datos :)
+	mysql_close($conex);
 	echo "<td class='fila1 dato_esconder_particulares'>Aseguradora</td>";
 	echo "<td class='fila1 dato_esconder_particulares'>Plan</td>";
 	echo "<td class='fila1 dato_esconder_particulares'>N&uacute;mero de P&oacute;liza</td>";
@@ -25125,10 +25126,5 @@ echo "<div id='div_doc_change' class='fila2' style='display:none;'><br>
 echo "</html>";
 }
 
-
-//Se adiciona cierre de la variable conex Mavila 23-10-2020 :)
-if	(isset($conex)){
-	mysql_close($conex);
-}
 
 ?>

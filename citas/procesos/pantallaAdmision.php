@@ -1656,11 +1656,6 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 		echo "<div id='div_reiniciar_procedimiento' style='display:none;background-color: #FFFFFF;border:1px dotted #AFAFAF;' align='center'>
 		</div>";
 	}
-
-	//Se adiciona cierre de la variable conex Mavila 23-10-2020 :)
-	if	(isset($conex)){
-		mysql_close($conex);
-	}
 ?>
 </body>
 </html>
