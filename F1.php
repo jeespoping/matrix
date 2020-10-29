@@ -565,7 +565,9 @@ else
 			$num = mysql_num_rows($err);
 			
 			$login = false;
-			$mensajeLogin = "EL USUARIO NO EXISTE";
+			//Se modifica mensaje de respuesta Mavila 29-10-2020 :)
+			//$mensajeLogin = "EL USUARIO NO EXISTE";
+			$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";
 			if($num > 0)
 			{
 				$row = mysql_fetch_array($err);
@@ -587,7 +589,9 @@ else
 						if($row['PasswordTemporal']=="")
 						{
 							$login = false;
-							$mensajeLogin = "CONTRASE&Ntilde;A INCORRECTA";	
+							//Se modifica mensaje de respuesta Mavila 29-10-2020 :)
+							//$mensajeLogin = "CONTRASE&Ntilde;A INCORRECTA";	
+							$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";	
 						}
 						else
 						{
@@ -1110,6 +1114,9 @@ else
 							}
 						}
 					}
+					
+					//Se cierra conexión de la base de datos :)
+					mysql_close($conex);
 					echo "</table>";
 					echo "<table border=0 align=center><tr><td align=center><A HREF='#Arriba'><B>Arriba</B></A></td></tr></table>";
 				}
@@ -1118,11 +1125,5 @@ else
 	//echo "</div>";
 	echo "</body>";
 	echo "</html>";
-}
-
-
-//Se adiciona cierre de la variable conex Mavila 23-10-2020 :)
-if	(isset($conex)){
-	mysql_close($conex);
 }
 ?>
