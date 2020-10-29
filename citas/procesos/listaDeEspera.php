@@ -7,7 +7,7 @@
 // ñ -> &ntilde;
 
 //Configuraciones y conexciones :)
-    $wactualiz = '2020-10-15';
+    $wactualiz = '2020-10-29';
     date_default_timezone_set("America/Bogota");
     // include('./config/db_connect.php');
     include_once("conex.php");
@@ -1905,13 +1905,13 @@
             //alert("Hasta aca");
             //Se adiciona validación de los campos Mavila 23-20-2020 :)            
             var enviar_doc = validarCampo('doc', 2, false);
-            var enviar_names = validarCampo('names', 2, true);
-            var enviar_las1 = validarCampo('lastname1', 2, true);
-            var enviar_las2 = validarCampo('lastname2', 2, true);
+            var enviar_names = validarCampo('names', 2, false);
+            var enviar_las1 = validarCampo('lastname1', 2, false);
+            var enviar_las2 = validarCampo('lastname2', 2, false);
             var enviar_birthday = validarCampo('birthday', 0, false);
             var enviar_sex = validarCampoRadio('sex');
-            var enviar_phone = validarCampo('phone', 10, false);
-            var enviar_cell = validarCampo('cellphone', 10, false);
+            var enviar_phone = validarCampo('phone', 5, false);
+            var enviar_cell = validarCampo('cellphone', 9, false);
             var enviar_email = validarCampoEmail('email');
             var enviar_barrio = validarCampo('barrio', 0, false);
             var enviar_addr = validarCampo('addr', 5, false);
