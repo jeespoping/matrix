@@ -522,6 +522,8 @@ include_once("hce/HCE_print_function.php");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES 
+		.2020-10-29
+			Se cambia CREATE TABLE por CREATE TEMPORARY
 		.2020-05-04
 			Para el envío de HCE por correo se modifica en la función enviarPdf() el mensaje y asunto como vacíos ya que el 
 			mensaje se construirá dinamicamente desde envioCorreoHCEOrdenes.php con los parámetros de root_000051 
@@ -1322,7 +1324,9 @@ else
 			{
 				$query = "DROP TABLE IF EXISTS TESPECIAL".$key.";";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
-				$query = "CREATE TABLE if not exists TESPECIAL".$key." as ";
+				// $query = "CREATE TABLE if not exists TESPECIAL".$key." as ";
+				//2020-10-29
+				$query = "CREATE TEMPORARY TABLE if not exists TESPECIAL".$key." as ";
 				$query .= " select Firusu as usuario from ".$empresa."_000036, ".$wdbmhos."_000048  ";
 				$query .= "   where Firhis = '".$whis."' ";
 				$query .= " 	and Firing = '".$wing."' ";
@@ -1557,5 +1561,7 @@ else
 			}
 		}
 	}
+	
+	mysql_close( $conex );
 }
 ?>
