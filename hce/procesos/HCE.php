@@ -4985,6 +4985,7 @@ else
 				$query .= "   and ccocod = ubisac ";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$row = mysql_fetch_array($err);
+				
 				$wsex="M";
 				if($row[5] == "F")
 					$wsex="F";
@@ -5041,6 +5042,11 @@ else
 		echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#CCCCFF LOOP=-1>NO SE HA CONFIGURADO ADECUADAMENTE EL SERVIDOR DE LA APLICACION EN LA TABLA 14 DEL GRUPO HCE.  LLAME A SISTEMAS!!!!</MARQUEE></FONT>";
 		echo "<br><br>";	
 	}
+	
+	
+	//Se cierra conexión de la base de datos :)
+	mysql_close($conex);
+	
 	//Cierre de la estructura head y html inicial
 	echo "</div>";
 	echo "</body>";

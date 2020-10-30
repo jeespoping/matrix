@@ -1366,7 +1366,10 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 				<td>Ubicacion</td>
 			";
 		}
-
+		
+		
+		
+		
 
 		//---------------------------------------------------- CREAR LISTADO DE MEDICOS O EQUIPOS ------------------------------------------------------------
 		if (!isset($wfec)) {
@@ -1636,6 +1639,7 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 			echo "<br><br>";
 			echo "<center><a href='../../IPS/Procesos/admision.php?ok=9&empresa=$wbasedato&wemp2=citascs' target='_blank'>Admision sin cita</a></center>";
 		}
+		
 
 		echo "<br>";
 		echo "<meta name='met' id='met' url=pantallaAdmision.php?solucionCitas=".$solucionCitas."&wemp_pmla=".$wemp_pmla."&ccosto=".$ccosto."&caso=".$caso."&wsw=".@$wsw."&slDoctor=$slDoctor&valCitas=".$valCitas."&wfec=".$wfec."&fest=".$fest.">";
@@ -1655,6 +1659,9 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 
 		echo "<div id='div_reiniciar_procedimiento' style='display:none;background-color: #FFFFFF;border:1px dotted #AFAFAF;' align='center'>
 		</div>";
+		
+		//Se cierra conexión de la base de datos :)
+		mysql_close($conex);
 	}
 ?>
 </body>

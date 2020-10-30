@@ -6684,6 +6684,9 @@ else
 		$arrConIva[$rowConIva['Grucod']]['iva'] = $rowConIva['Gruiva'];
 	}
 	
+	//Se cierra conexión de la base de datos :)
+	mysql_close($conex);
+	
 	// --> Div oculto para grabar iva
 	echo "
 	<div id='modalGrabarIva' style='display:none;font-family: verdana;font-size: 9pt;' align='center'>		

@@ -622,7 +622,11 @@ else
 			
 		}
 	}
-}//funcion
+
+	
+		//Se cierra conexión de la base de datos :)
+		mysql_close($conex);
+	}//funcion
 
 //Devuelve la fecha en formato descriptivo dia mes año
 function devolverFecha($fecha)
