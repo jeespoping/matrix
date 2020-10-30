@@ -13,6 +13,8 @@ include_once("root/comun.php");
 //=========================================================================================================================================\\
 //En este programa muestra los productos asociados a una historia e ingreso en un tooltip del programa de las dietas.                      \\
 //=========================================================================================================================================\\
+//Octubre 30 de 2020 Edwin MG
+//Se valida fecha vacia debido a cambio de BD
 //Mayo 15 de 2013
 //Se modifica la consulta de los ultimos productos de DSN basado en el ultimo registro de la 77 activo o inactivo.
 //=========================================================================================================================================
@@ -159,7 +161,7 @@ if ($wnovalidah != 'novalida')
                     ."  WHERE dethis = '".$whis."'"
                     ."    AND deting = '".$wing."'"
                     ."    AND detpat = '".$wpatron."'"
-                    ."    AND detfec = '".$wult_fecha."'"
+                    ."    AND detfec = '".( !empty( $wult_fecha ) ? $wult_fecha : '0000-00-00' )."'"
                     ."    AND detser = sercod"
                     ."    AND detser = '".$wservicio."'"
                     ."    AND detcco = '".$wcco."'"
