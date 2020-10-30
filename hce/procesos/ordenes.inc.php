@@ -38919,8 +38919,5 @@ if(isset($consultaAjaxKardex)){
 		default :
 			break;
 	}
-	
-	//Se cierra conexión de la base de datos :)
-	mysql_close($conex);
 }
 ?>
