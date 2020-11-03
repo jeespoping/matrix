@@ -538,7 +538,8 @@ else
 		
 		
 		//Se cierra conexión de la base de datos :)
-		mysql_close($conex);
+		//Se comenta cierre de conexion para la version estable de matrix :)
+		//mysql_close($conex);
 	?>
 	</BODY>
 <!--=====================================================================================================================================================================

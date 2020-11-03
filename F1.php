@@ -626,7 +626,9 @@ else
 				else
 				{
 					$login = false;
-					$mensajeLogin = "EL USUARIO ESTA INACTIVO";
+					//Se modifica mensaje de respuesta Mavila 30-10-2020 :)
+					//$mensajeLogin = "EL USUARIO ESTA INACTIVO";	
+					$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";					
 				}
 				
 				mysql_free_result($err);
@@ -1116,7 +1118,9 @@ else
 					}
 					
 					//Se cierra conexión de la base de datos :)
-					mysql_close($conex);
+					//Se comenta cierre de conexion para la version estable de matrix :)
+					//mysql_close($conex);
+					
 					echo "</table>";
 					echo "<table border=0 align=center><tr><td align=center><A HREF='#Arriba'><B>Arriba</B></A></td></tr></table>";
 				}

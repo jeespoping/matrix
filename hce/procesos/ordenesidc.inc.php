@@ -24113,5 +24113,6 @@ if(isset($consultaAjaxKardex)){
 		default :
 			break;
 	}
+	
 }
 ?>

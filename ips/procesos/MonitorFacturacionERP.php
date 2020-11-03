@@ -14394,7 +14394,8 @@ else
 										}
 										
 										//Se cierra conexión de la base de datos :)
-										mysql_close($conex);
+										//Se comenta cierre de conexion para la version estable de matrix :)
+										//mysql_close($conex);
 										?>
 										</select></td>
 										<td class='encabezadoTabla' >Nombre de Concepto</td><td colspan = '1' ><input type='text' disabled='disabled' class='requerido'  style='width:350px' id='nombreconcepto'></td>
