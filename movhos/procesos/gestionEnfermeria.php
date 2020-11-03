@@ -15966,45 +15966,131 @@ else{
 			$condicionPacientesOrdenes = " AND concat( ubihis,ubiing ) NOT IN (".implode(",", $historiasconOrdenesUrgencias).") ";
 		  }
 
+		// //Pacientes con muerte en on pero con saldo en insumos
+		// $q_pac_con_saldo_insum = "     SELECT Ubisac as Habcco,Ubihan as Habcod,Ubihis as Habhis, Ubiing as Habing, CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre,
+										// Cconom, Ubihis, Ubiing, Ubiptr, Ubialp, Ubifap, Ubihap, pacced, pactid, Ingres, Ingnre, tabla18.id as id_tabla18, Ubisan, '2000' as Habord, Ubimue
+										   // FROM root_000036, root_000037, ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000016, ".$wbasedato."_000011, ".$wbasedato."_000227
+										  // WHERE ubihis = orihis
+											// AND ubiing = oriing
+											// AND oriori = '$wemp_pmla'
+											// AND oriced = pacced
+											// AND oritid = pactid
+											// AND ubisac = '".trim($ccoCodigo)."'
+											// AND ubihis = inghis
+											// AND ubiing = inging
+											// AND ccocod = ubisac
+											// AND ccoest = 'on'
+											// AND Carhis = ubihis
+											// AND Caring = ubiing
+											// AND ubimue = 'on'
+											// AND (Carcca - Carcap - Carcde) > 0
+									   // GROUP BY Ubihis";
+									   
+		//Octubre 29 de 2020. Modificación de query
 		//Pacientes con muerte en on pero con saldo en insumos
-		$q_pac_con_saldo_insum = "     SELECT Ubisac as Habcco,Ubihan as Habcod,Ubihis as Habhis, Ubiing as Habing, CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre,
-										Cconom, Ubihis, Ubiing, Ubiptr, Ubialp, Ubifap, Ubihap, pacced, pactid, Ingres, Ingnre, tabla18.id as id_tabla18, Ubisan, '2000' as Habord, Ubimue
-										   FROM root_000036, root_000037, ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000016, ".$wbasedato."_000011, ".$wbasedato."_000227
-										  WHERE ubihis = orihis
-											AND ubiing = oriing
-											AND oriori = '$wemp_pmla'
-											AND oriced = pacced
-											AND oritid = pactid
-											AND ubisac = '".trim($ccoCodigo)."'
-											AND ubihis = inghis
-											AND ubiing = inging
-											AND ccocod = ubisac
-											AND ccoest = 'on'
-											AND Carhis = ubihis
-											AND Caring = ubiing
-											AND ubimue = 'on'
-											AND (Carcca - Carcap - Carcde) > 0
-									   GROUP BY Ubihis";
+		$q_pac_con_saldo_insum = "       SELECT ".$wbasedato."_000018.Ubisac as Habcco,
+												".$wbasedato."_000018.Ubihan as Habcod,
+												".$wbasedato."_000018.Ubihis as Habhis, 
+												".$wbasedato."_000018.Ubiing as Habing, 
+												CONCAT(root_000036.pacno1,' ',root_000036.pacno2,' ',root_000036.pacap1,' ',root_000036.pacap2) as Nombre,
+												".$wbasedato."_000011.Cconom, 
+												".$wbasedato."_000018.Ubihis, 
+												".$wbasedato."_000018.Ubiing, 
+												".$wbasedato."_000018.Ubiptr, 
+												".$wbasedato."_000018.Ubialp, 
+												".$wbasedato."_000018.Ubifap, 
+												".$wbasedato."_000018.Ubihap, 
+												root_000036.pacced, 
+												root_000036.pactid, 
+												".$wbasedato."_000016.Ingres, 
+												".$wbasedato."_000016.Ingnre, 
+												".$wbasedato."_000018.id as id_tabla18, 
+												".$wbasedato."_000018.Ubisan, '2000' as Habord, 
+												".$wbasedato."_000018.Ubimue
+										   FROM root_000037 
+									 INNER JOIN root_000036
+											 ON root_000037.oriced = root_000036.pacced
+											AND root_000037.oritid = root_000036.pactid
+									 INNER JOIN ".$wbasedato."_000018
+											 ON ".$wbasedato."_000018.ubihis = root_000037.orihis
+											AND ".$wbasedato."_000018.ubiing = root_000037.oriing
+									 INNER JOIN ".$wbasedato."_000016
+											 ON ".$wbasedato."_000018.ubihis = ".$wbasedato."_000016.inghis
+											AND ".$wbasedato."_000018.ubiing = ".$wbasedato."_000016.inging
+									 INNER JOIN ".$wbasedato."_000011
+											 ON ".$wbasedato."_000011.ccocod = ".$wbasedato."_000018.ubisac
+									 INNER JOIN ".$wbasedato."_000227
+											 ON ".$wbasedato."_000227.Carhis = ".$wbasedato."_000018.ubihis
+											AND ".$wbasedato."_000227.Caring = ".$wbasedato."_000018.ubiing
+										  WHERE root_000037.oriori = '$wemp_pmla'
+											AND ".$wbasedato."_000018.ubisac = '".trim($ccoCodigo)."'
+										    AND ".$wbasedato."_000011.ccoest = 'on'
+											AND ".$wbasedato."_000018.ubimue = 'on'
+											AND (".$wbasedato."_000227.Carcca - ".$wbasedato."_000227.Carcap - ".$wbasedato."_000227.Carcde) > 0
+									   GROUP BY ".$wbasedato."_000018.Ubihis";
 
-		 //Pacientes marcados con muerte.
-	     $pacientes_muerte = 	 "SELECT Ubisac as Habcco,'' as Habcod,Ubihis as Habhis,Ubiing as Habing, CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre,
-										 Cconom, Ubihis, Ubiing, Ubiptr, Ubialp, Ubifap, Ubihap, pacced, pactid, Ingres, Ingnre, {$wbasedato}_000018.id as id_tabla18, Ubisan, '3000' as Habord, Ubimue
-									FROM ".$wbasedato."_000018, root_000036, root_000037, ".$wbasedato."_000011, ".$wbasedato."_000016
-								   WHERE ubihis = orihis
-									 AND Ubiing = Oriing
-									 AND oriori  = '".$wemp_pmla."'
-									 AND ubisac = '".trim($ccoCodigo)."'
-									 AND oriced  = pacced
-									 AND oritid  = pactid
-									 AND ubisac  = ccocod
-									 AND ubihis = inghis
-									 AND ubiing = inging
-									 AND ccohos  = 'on'
-									 AND ubimue  = 'on'
-									 AND ccourg != 'on'
-									 AND ubiald != 'on'
-									 AND ubiptr != 'on'
-								   ORDER BY 2 ";
+		 // //Pacientes marcados con muerte.
+	     // $pacientes_muerte = 	 "SELECT Ubisac as Habcco,'' as Habcod,Ubihis as Habhis,Ubiing as Habing, CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre,
+										 // Cconom, Ubihis, Ubiing, Ubiptr, Ubialp, Ubifap, Ubihap, pacced, pactid, Ingres, Ingnre, {$wbasedato}_000018.id as id_tabla18, Ubisan, '3000' as Habord, Ubimue
+									// FROM ".$wbasedato."_000018, root_000036, root_000037, ".$wbasedato."_000011, ".$wbasedato."_000016
+								   // WHERE ubihis = orihis
+									 // AND Ubiing = Oriing
+									 // AND oriori  = '".$wemp_pmla."'
+									 // AND ubisac = '".trim($ccoCodigo)."'
+									 // AND oriced  = pacced
+									 // AND oritid  = pactid
+									 // AND ubisac  = ccocod
+									 // AND ubihis = inghis
+									 // AND ubiing = inging
+									 // AND ccohos  = 'on'
+									 // AND ubimue  = 'on'
+									 // AND ccourg != 'on'
+									 // AND ubiald != 'on'
+									 // AND ubiptr != 'on'
+								   // ORDER BY 2 ";
+
+		  //Octubre 29 de 2020. Modificación de query
+		  //Pacientes marcados con muerte.
+	     $pacientes_muerte = 	 "SELECT ".$wbasedato."_000018.Ubisac as Habcco,
+										 '' as Habcod,
+										 ".$wbasedato."_000018.Ubihis as Habhis,
+										 ".$wbasedato."_000018.Ubiing as Habing, 
+										 CONCAT(root_000036.pacno1,' ',root_000036.pacno2,' ',root_000036.pacap1,' ',root_000036.pacap2) as Nombre,
+										 ".$wbasedato."_000011.Cconom, 
+										 ".$wbasedato."_000018.Ubihis, 
+										 ".$wbasedato."_000018.Ubiing, 
+										 ".$wbasedato."_000018.Ubiptr, 
+										 ".$wbasedato."_000018.Ubialp, 
+										 ".$wbasedato."_000018.Ubifap, 
+										 ".$wbasedato."_000018.Ubihap, 
+										 root_000036.pacced, 
+										 root_000036.pactid, 
+										 {$wbasedato}_000016.Ingres, 
+										 {$wbasedato}_000016.Ingnre, 
+										 {$wbasedato}_000018.id as id_tabla18, 
+										 ".$wbasedato."_000018.Ubisan, 
+										 '3000' as Habord, 
+										 ".$wbasedato."_000018.Ubimue
+									FROM ".$wbasedato."_000018
+							  INNER JOIN root_000037
+									  ON ".$wbasedato."_000018.ubihis = orihis
+									 AND ".$wbasedato."_000018.Ubiing = Oriing
+							  INNER JOIN root_000036
+									  ON root_000037.oriced  = root_000036.pacced
+									 AND root_000037.oritid  = root_000036.pactid
+							  INNER JOIN ".$wbasedato."_000011
+									  ON ".$wbasedato."_000018.ubisac  = ".$wbasedato."_000011.ccocod
+							  INNER JOIN ".$wbasedato."_000016
+									  ON ".$wbasedato."_000018.ubihis  = ".$wbasedato."_000016.inghis
+									 AND ".$wbasedato."_000018.ubiing  = ".$wbasedato."_000016.inging
+								   WHERE root_000037.oriori 		   = '".$wemp_pmla."'
+									 AND ".$wbasedato."_000018.ubisac  = '".trim($ccoCodigo)."'
+									 AND ".$wbasedato."_000011.ccohos  = 'on'
+									 AND ".$wbasedato."_000018.ubimue  = 'on'
+									 AND ".$wbasedato."_000011.ccourg != 'on'
+									 AND ".$wbasedato."_000018.ubiald != 'on'
+									 AND ".$wbasedato."_000018.ubiptr != 'on'
+								ORDER BY Habcod ";
 
 		switch(1){
 
@@ -16278,39 +16364,89 @@ else{
 					//Centro de costos diferente de urgencias, cirugia y hemodinamia.
 					if($sala != '%'){
 
-						$filtro_zonas = "	AND habzon = '".$sala."'";
+						$filtro_zonas = "	AND {$wbasedato}_000020.habzon = '".$sala."'";
 					}
 
+					// $sql = "SELECT * FROM (
+								// SELECT
+									// Habcco,Habcod,Habhis,Habing, CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre,
+									// Cconom, Ubihis, Ubiing, Ubiptr, Ubialp, Ubifap, Ubihap, pacced, pactid, Ingres, Ingnre, {$wbasedato}_000018.id as id_tabla18, Ubisan, Habord, Ubimue
+								// FROM
+									// {$wbasedato}_000020,{$wbasedato}_000018,{$wbasedato}_000011,{$wbasedato}_000016,
+									// root_000036, root_000037
+								// WHERE
+									// habcco = '$ccoCodigo'
+									// AND habest = 'on'
+									// AND ubihis = habhis
+									// AND ubiing = habing
+									// AND orihis = habhis
+									// AND ccocod = habcco
+									// AND ccoipd = 'on'
+									// AND ccoest = 'on'
+									// AND oriori = '$wemp_pmla'
+									// AND pacced = Oriced
+									// AND pactid = Oritid
+									// AND ubihis = inghis
+									// AND ubiing = inging
+									// $filtro_zonas
+									// UNION
+									// $q_pac_con_saldo_insum
+									// UNION
+									// $pacientes_muerte
+
+									// ) AS t
+							// GROUP BY Ubihis, Ubiing
+							// ORDER BY Habord*1, Habcod";
+							
 					$sql = "SELECT * FROM (
-								SELECT
-									Habcco,Habcod,Habhis,Habing, CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre,
-									Cconom, Ubihis, Ubiing, Ubiptr, Ubialp, Ubifap, Ubihap, pacced, pactid, Ingres, Ingnre, {$wbasedato}_000018.id as id_tabla18, Ubisan, Habord, Ubimue
-								FROM
-									{$wbasedato}_000020,{$wbasedato}_000018,{$wbasedato}_000011,{$wbasedato}_000016,
-									root_000036, root_000037
-								WHERE
-									habcco = '$ccoCodigo'
-									AND habest = 'on'
-									AND ubihis = habhis
-									AND ubiing = habing
-									AND orihis = habhis
-									AND ccocod = habcco
-									AND ccoipd = 'on'
-									AND ccoest = 'on'
-									AND oriori = '$wemp_pmla'
-									AND pacced = Oriced
-									AND pactid = Oritid
-									AND ubihis = inghis
-									AND ubiing = inging
-									$filtro_zonas
-									UNION
-									$q_pac_con_saldo_insum
-									UNION
-									$pacientes_muerte
+								SELECT {$wbasedato}_000020.Habcco, 
+									   {$wbasedato}_000020.Habcod, 
+									   {$wbasedato}_000020.Habhis, 
+									   {$wbasedato}_000020.Habing, 
+									   CONCAT( root_000036.pacno1,' ',root_000036.pacno2,' ',root_000036.pacap1,' ',root_000036.pacap2) as Nombre,
+									   {$wbasedato}_000011.Cconom, 
+									   {$wbasedato}_000018.Ubihis, 
+									   {$wbasedato}_000018.Ubiing, 
+									   {$wbasedato}_000018.Ubiptr, 
+									   {$wbasedato}_000018.Ubialp, 
+									   {$wbasedato}_000018.Ubifap, 
+									   {$wbasedato}_000018.Ubihap, 
+									   root_000036.pacced, 
+									   root_000036.pactid, 
+									   {$wbasedato}_000016.Ingres, 
+									   {$wbasedato}_000016.Ingnre, 
+									   {$wbasedato}_000018.id as id_tabla18, 
+									   {$wbasedato}_000018.Ubisan, 
+									   {$wbasedato}_000020.Habord, 
+									   {$wbasedato}_000018.Ubimue
+								  FROM {$wbasedato}_000020 
+						    INNER JOIN {$wbasedato}_000018 
+									ON {$wbasedato}_000018.ubihis 	= {$wbasedato}_000020.habhis
+								   AND {$wbasedato}_000018.ubiing 	= {$wbasedato}_000020.habing
+							INNER JOIN {$wbasedato}_000011
+									ON {$wbasedato}_000011.ccocod 	= {$wbasedato}_000020.habcco
+							INNER JOIN {$wbasedato}_000016
+									ON {$wbasedato}_000018.ubihis 	= {$wbasedato}_000016.inghis
+								   AND {$wbasedato}_000018.ubiing 	= {$wbasedato}_000016.inging
+							INNER JOIN root_000037
+									ON root_000037.orihis 			= {$wbasedato}_000020.habhis
+							INNER JOIN root_000036
+								    ON root_000036.pacced 			= root_000037.Oriced
+								   AND root_000036.pactid 			= root_000037.Oritid
+								 WHERE {$wbasedato}_000020.habcco 	= '$ccoCodigo'
+								   AND {$wbasedato}_000020.habest 	= 'on'
+								   AND {$wbasedato}_000011.ccoipd 	= 'on'
+								   AND {$wbasedato}_000011.ccoest 	= 'on'
+								   AND root_000037.oriori 			= '$wemp_pmla'
+								   $filtro_zonas
+								   UNION
+								   $q_pac_con_saldo_insum
+								   UNION
+								   $pacientes_muerte
 
 									) AS t
-							GROUP BY Ubihis, Ubiing
-							ORDER BY Habord*1, Habcod";
+							GROUP BY t.Ubihis, t.Ubiing
+							ORDER BY t.Habord*1, t.Habcod";
 
 				break;
 		}
@@ -16541,6 +16677,8 @@ else{
 	echo "<input type='hidden' name='registro_inicial' value='" . $registro_inicial . "'>";
 	echo "<input type='hidden' name='registro_final' value='" . $registro_final . "'>";
 	echo "</form>";
+	
+	mysql_close( $conex );
 }
 ?>
 </body>

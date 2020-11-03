@@ -2,6 +2,7 @@
 include_once("conex.php");
 /******************************************************************************************************************************
  * Actualizaciones:
+ * Octubre 28 de 2020		Edwin MG. 	Se comenta cron copiaDeCxDelDia ya que se manda a hacer por aparte
  * 28-04-2020				Jerson T. 	Nuevo llamdo a la ejecucion de ETL_GRD.php (Ver) 
  * 27-04-2020 				Jerson T.	Nuevo llamado a la funcion copiaDeCxDelDia() para se ejecute cada 24 H
  * Octubre 23 de 2019.		Jessica		Se comenta en la ejecución de cada hora kron_diagnosticos.php ya que se mofificó HCE.php 
@@ -183,7 +184,8 @@ if($hay_unix)
 					guardarLog($log, "maestroCausas");
 					
 					// --> 27-04-2020: Jerson Trujillo
-					$ejCron->copiaDeCxDelDia();
+					// Octubre 28 de 2020. Edwin MG. Se comenta este cron debido a que se manda a hacer por separado
+					// $ejCron->copiaDeCxDelDia();
 
 					$log.= PHP_EOL."  > diferenciaMaterialesUnixMatrix(): Inicio:".date("Y-m-d-H:i:s");
 					$ejCron->diferenciaMaterialesUnixMatrix();

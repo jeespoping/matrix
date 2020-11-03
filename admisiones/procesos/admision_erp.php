@@ -24820,7 +24820,11 @@ echo "</table></center>";
 		echo "<td class='fila1 dato_particulares' style='display:none;'>Tarifa Responsable</td>";
 	}
 	/*FIN*/
-
+	
+	//Se cierra conexión de la base de datos :)
+	//Se comenta cierre de conexion para la version estable de matrix :)
+	//mysql_close($conex);
+	
 	echo "<td class='fila1 dato_esconder_particulares'>Aseguradora</td>";
 	echo "<td class='fila1 dato_esconder_particulares'>Plan</td>";
 	echo "<td class='fila1 dato_esconder_particulares'>N&uacute;mero de P&oacute;liza</td>";

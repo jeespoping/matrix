@@ -9,9 +9,12 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2015-01-30';
+			$wactualiz='2020-10-19';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-//
+//Octubre 19 de 2020		Edwin MG:	- Se cambia la ruta del script MarcaDeAguaERP.js, para que no use la variable globla URL_ACTUAL.
+//										Esto se hace debido a los diferentes cambios en el servidor de producción que hace que la variable URL_ACTUAL
+//										que contiene la ruta relativa de los script lo hace incorrectamente (el scrip que hace dicho enrutamiento y crea 
+//										la variable global URL_ACTUAL es /matrix/gesapl/gestor_aplicaciones_config.php)
 //
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1187,7 +1190,9 @@ else
 		<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
 		<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
 		<script src="../../../include/root/jquery_1_7_2/js/jquery-ui.js" type="text/javascript"></script>
-		<script src="<?=$URL_ACTUAL?>procesos/MarcaDeAguaERP.js" type="text/javascript"></script>
+		<!-- Octubre 19 de 2020 -->
+		<!-- <script src="<?=$URL_ACTUAL?>procesos/MarcaDeAguaERP.js" type="text/javascript"></script> -->
+		<script src="../../ips/procesos/MarcaDeAguaERP.js" type="text/javascript"></script>
 		<script src="../../../include/ips/funcionInsumosqxERP.js" type="text/javascript"></script>
 		<script src="../../../include/root/toJson.js" type="text/javascript"></script>
 		<link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
