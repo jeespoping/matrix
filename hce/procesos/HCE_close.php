@@ -11,4 +11,5 @@ include_once("conex.php");
 		else
 			echo $_SESSION["HCEON"];
 	}
+	
 ?>

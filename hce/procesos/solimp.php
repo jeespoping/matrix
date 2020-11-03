@@ -15,6 +15,7 @@ include_once("conex.php");
  *********************************************************************************************************
 
  Actualizaciones:
+	2019-10-29: Edwin MG, - Se cambia sentencia CREATE TABLE por CREATE TEMPORARY
 	2019-10-09: Jessica Madrid, - Se modifica el texto Edad por Edad actual en la información demográfica.
 	2019-08-13: Jessica Madrid, - Se agrega el include a funcionesHCE.php con la función calcularEdadPaciente() y se reemplaza en el 
 								  script el cálculo de la edad del paciente por dicha función, ya que el cálculo se realizaba con 360 
@@ -1834,7 +1835,8 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 		{
 			$query = "DROP TABLE IF EXISTS TESPECIAL".$key.";";
 			$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
-			$query = "CREATE TABLE if not exists TESPECIAL".$key." as ";
+			//2020-10-29
+			$query = "CREATE TEMPORARY TABLE if not exists TESPECIAL".$key." as ";
 			$query .= " select Firusu as usuario from ".$empresa."_000036, ".$wmovhos."_000048  ";
 			$query .= "   where Firhis = '".$whis."' ";
 			$query .= " 	and Firing = '".$wing."' ";
@@ -4489,6 +4491,8 @@ $cadenaProgramasAnexos = "";
 				        </div>";
 				echo " <div id='div_dialogo' align='center' style='display:none;'>
 				       </div>";
+					   
+				mysql_close( $conex );
 			?>
     </body>
 </html>

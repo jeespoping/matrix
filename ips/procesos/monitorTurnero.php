@@ -178,6 +178,8 @@ include_once("conex.php");
 		 ORDER BY REPLACE(Turtur, '-', '')*1 ASC
 		";
 		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
+		
+		
 
 		$colorFila		= '#F2F5F7;';
 		$arrFilasTur 	= array();
@@ -477,7 +479,9 @@ else
 				[?] El tema '.$tema.' no existe.
 			</div>';
 			return;
-		}	
+		}
+		
+		
 	}	
 		
 		
@@ -531,7 +535,11 @@ else
 	<div id='ventanaAlertas' style='display:none' align='center'></div>
 	<audio id='sonidoAlerta'><source type='audio/mp3' src='../../images/medical/root/alertaMensaje.mp3' ></audio>
 	";
-
+		
+		
+		//Se cierra conexión de la base de datos :)
+		//Se comenta cierre de conexion para la version estable de matrix :)
+		//mysql_close($conex);
 	?>
 	</BODY>
 <!--=====================================================================================================================================================================

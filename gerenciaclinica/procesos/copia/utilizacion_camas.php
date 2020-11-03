@@ -338,7 +338,7 @@ encabezado( " OCUPACION HOSPITALARIA POR SERVICIO Y HABITACION ", $wactualiz, "c
 ?>
 <html>
 <head>
-    <meta http-equiv="Content-type" content="text/html;">
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     <title> Utilización de camas </title>
     <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
     <style>
@@ -493,11 +493,11 @@ encabezado( " OCUPACION HOSPITALARIA POR SERVICIO Y HABITACION ", $wactualiz, "c
     <input type='hidden' id='whce'      value='<?php echo $whce; ?>'>
     <input type='hidden' id='wmovhos'   value='<?php echo $wmovhos; ?>'>
     <div id='formularios_ppales'>
-        <div align='center'><span class='subtituloPagina2'><font size='2' id='receptor_actual'>(Este reporte incluye los servicios de Urgencias, Cirugia y Hospitalizaci&oacute;n pero no afectan los porcentajes de ocupaci&oacute;n hospitalaria)</font></span></div>
+        <div align='center'><span class='subtituloPagina2'><font size='2' id='receptor_actual'>(Este reporte incluye los servicios de Urgencias, Cirugia y Hospitalización pero no afectan los porcentajes de ocupación hospitalaria)</font></span></div>
         <br><br>
         <center><table>
             <tr class="encabezadoTabla">
-                <td align="center" colspan="8"><b>Par&aacute;metros de Consulta</b></td>
+                <td align="center" colspan="8"><b>Parámetros de Consulta</b></td>
             </tr>
             <tr class="Fila1">
                 <td align='left' width='70px'>

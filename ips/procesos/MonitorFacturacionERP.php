@@ -14350,6 +14350,7 @@ else
 	<input type="hidden" name="hidden_procedimiento" id="hidden_procedimiento" value='<?=json_encode(obtener_array_procedimientos($conex, $wemp_pmla, $wbasedato))?>'>
 	<input type='hidden' name='hidden_paquetes' id='hidden_paquetes' value='<?=json_encode(Obtener_array_paquetes($conex, $wemp_pmla, $wbasedato))?>'>
 
+	
 	<input type='hidden' id = 'wemp_pmla' value='<?=$wemp_pmla?>'>
 	<input type='hidden' id = 'wemp_pmla_tal' value='<?=$wemp_pmla?>'>
 	<input type='hidden' id = 'fechas_cirugias_oculto' value='<?=$wfecha?>'>
@@ -14391,6 +14392,10 @@ else
 										{
 											echo "<option value='".$row['Grucod']."'>".$row['Grucod']."-".$row['Grudes']."</option>";
 										}
+										
+										//Se cierra conexión de la base de datos :)
+										//Se comenta cierre de conexion para la version estable de matrix :)
+										//mysql_close($conex);
 										?>
 										</select></td>
 										<td class='encabezadoTabla' >Nombre de Concepto</td><td colspan = '1' ><input type='text' disabled='disabled' class='requerido'  style='width:350px' id='nombreconcepto'></td>
