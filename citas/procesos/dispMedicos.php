@@ -170,8 +170,8 @@ function buscarObservaciones()
 Creacion: 2012-08-10  Este script se crea para mostrar la lista de medicos disponibles para las citas de caso 2 que son las de medicos, se muestra la lista de medicos de una fecha seleccionada en el calendario, al nombre del medico se le puede dar clic y lleva a la agenda para la asignacion de citas correspondientes a dicho medico, esta pagina se recarga cada 30 segundos para que se puedan visualizar los cambios en las citas asignadas. Viviana Rodas
 Modificacion:
 			2020-09-09	Edwin Molina. Se hacen cambios varios para recibir los datos por defecto que quedaran en la cita y vienen de la lista de espera para Drive Thru
-            2020-03-25 Arleyda Insignares. Se adiciona campo Sedcod y tabla root_000128 para adicionar sede a la asignaciï¿½n de las citas
-			2020-01-20 Arleyda Insignares. Se adiciona input para busqueda por texto en la tabla que contiene el listado de mï¿½dicos.
+            2020-03-25 Arleyda Insignares. Se adiciona campo Sedcod y tabla root_000128 para adicionar sede a la asignación de las citas
+			2020-01-20 Arleyda Insignares. Se adiciona input para busqueda por texto en la tabla que contiene el listado de médicos.
 			se ubica 'retornar' en la parte superior
             2018-09-11 Arleyda Insignares. Se unifican dos consultas a la tabla 'prefijo_000009', con el objetivo de optimizar la 
             consulta de disponibilidad de las citas.
@@ -431,7 +431,7 @@ else
 											 echo "Asignadas: ".$citasAsig." -";
 											 echo "Disponibles: ".floor($citasDisp)."</td>";
 											 echo "<td><font size='2'>".$sede." </td>";
-											 echo "</tr>"; //aca salia con tamaï¿½o 10pt
+											 echo "</tr>"; //aca salia con tamaño 10pt
 										}
 								}
 							
@@ -622,9 +622,14 @@ else
 			
 		}
 	}
-}//funcion
 
-//Devuelve la fecha en formato descriptivo dia mes aï¿½o
+	
+		//Se cierra conexión de la base de datos :)
+		//Se comenta cierre de conexion para la version estable de matrix :)
+		//mysql_close($conex);
+	}//funcion
+
+//Devuelve la fecha en formato descriptivo dia mes año
 function devolverFecha($fecha)
 {
 	$dia=date("l", strtotime($fecha)); //date("l");
@@ -632,10 +637,10 @@ function devolverFecha($fecha)
 	$mes=date("F", strtotime($fecha));
 	$anio=date("Y", strtotime($fecha));
 
-	// Obtenemos y traducimos el nombre del dï¿½a
+	// Obtenemos y traducimos el nombre del día
 	if ($dia=="Monday") $dia="Lunes";
 	if ($dia=="Tuesday") $dia="Martes";
-	if ($dia=="Wednesday") $dia="Miï¿½rcoles";
+	if ($dia=="Wednesday") $dia="Miércoles";
 	if ($dia=="Thursday") $dia="Jueves";
 	if ($dia=="Friday") $dia="Viernes";
 	if ($dia=="Saturday") $dia="Sabado";
@@ -689,14 +694,7 @@ function devolverFecha($fecha)
 	echo "</html>";
 	
 	
-} 
-
-//Se adiciona cierre de la variable conex Mavila 23-10-2020 :)
-if	(isset($conex)){
-	mysql_close($conex);
-}
-
-
+} 	
 ?>
 
 			

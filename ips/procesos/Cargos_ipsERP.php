@@ -17,7 +17,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 	CODIGO	|	FECHA		|	AUTOR 	|	DESCRIPCION	
 ----------------------------------------------------------------------------------------------------------------------------------------------
-	MIGRA_1	|	2019-01-22	|	Jerson	|	Se corrige tilde en el tooltip para mostrar si se aplicï¿½ alguna politica
+	MIGRA_1	|	2019-01-22	|	Jerson	|	Se corrige tilde en el tooltip para mostrar si se aplicó alguna politica
 	MIGRA_2	|	2019-01-31	|	Jerson	|	Se agrega coma(,) en el select del query
 
 	
@@ -36,7 +36,7 @@ Noviembre 18 2019: Jerson, Se coloca trim en la variable historia, al momento de
 Septiembre 12-09-2019: Jerson
 	- Se agrega nueva funcionalidad para grabar iva 
 Agosto 21-08-2019: Jerson
-		Para los conceptos de inventario validar si se estï¿½ actualizando el cron de tarifas de medicamentos y materiales, para no dejar grabar cargos
+		Para los conceptos de inventario validar si se está actualizando el cron de tarifas de medicamentos y materiales, para no dejar grabar cargos
 Julio 16 de 2019 Jerson Trujillo:
 	- Se controla la cantidad maxima permitida a grabar para cargos que mueven inventario, con la variable de la 51 cantidadMaxPermitidaParaGrabarCargosInv
 Marzo 4 de 2019 Jerson Trujillo:
@@ -62,28 +62,28 @@ Septiembre 14 2017: Jerson Andres Trujillo:
 		a aplicar recargo, es decir si el cargo tiene una politica de recargo pero el grabador selecciono que NO aplica recrago, entonces	
 		se omitira la aplicacion de la politica del recargo.
 Marzo 28 2017: Camilo Zapata
-	* se modifican las consultas que tienen que ver con la tabla 205 para que tengan en cuenta si el responsable estï¿½ descartado o no Resdes
-	* se adiciona el manejo del campo tcarreg = 'pen' para especificar que el cargo estï¿½ pendiente de regrabar por cambio de responsable
+	* se modifican las consultas que tienen que ver con la tabla 205 para que tengan en cuenta si el responsable está descartado o no Resdes
+	* se adiciona el manejo del campo tcarreg = 'pen' para especificar que el cargo está pendiente de regrabar por cambio de responsable
 Febrero 02 2017: Jerson Trujillo
 	- 	Se modifica la funcionalidad ObtenerPoliticaManejoTerceros, para que trabaje con un nuevo parametro "OP" el cual indica
 		que al ingresar un tercero sera opcional, se pinta el input para pedir tercero pero no sera obligatorio ingresarlo.
 
 Enero 26 2017 Edwar Jaramillo:
-	* Se empieza a usar la funciï¿½n "validar_cargo_ingreso_inactivo", en caso de identificar que se estï¿½ grabando cargo a ingreso inactivo, se
-		setean ciertas variables que indicarï¿½n posteriormente si para el cargo se debe actualizar en unix el nï¿½mero del ingreso. Esas variables son
-		tenidas en cuenta en funciones_facturacionERP para que en al tabla de cargos se marquen los cargos a los que se les debe actualizar el nï¿½mero de ingreso
-		en unix, pues el integrador siempre graba con el ï¿½ltimo ingreso activo.
+	* Se empieza a usar la función "validar_cargo_ingreso_inactivo", en caso de identificar que se está grabando cargo a ingreso inactivo, se
+		setean ciertas variables que indicarán posteriormente si para el cargo se debe actualizar en unix el número del ingreso. Esas variables son
+		tenidas en cuenta en funciones_facturacionERP para que en al tabla de cargos se marquen los cargos a los que se les debe actualizar el número de ingreso
+		en unix, pues el integrador siempre graba con el último ingreso activo.
 Diciembre 29 2016 Edwar Jaramillo:
-	* En la validaciï¿½n
+	* En la validación
 		"Validar si se debe redondear a la centena valores totales, Jerson Trujillo 2016-02-24"
 		se debe tener en cuenta que los insumos no se pueden redondear y se estaban redondeando, por tanto se agrega si
-		lo que se estï¿½ grabando es un insumo "$wconinv != 'on'" adicional a los tipos de empresa que permiten redondear
+		lo que se está grabando es un insumo "$wconinv != 'on'" adicional a los tipos de empresa que permiten redondear
 Junio 20 2016 Edwar:
-	* Modificaciï¿½n para que al cargar los datos del paciente en el encabezado utilice el ingreso que llega por parï¿½metro url desde los monitores, el programa estaba siempre cargando el ï¿½ltimo ingreso.
+	* Modificación para que al cargar los datos del paciente en el encabezado utilice el ingreso que llega por parámetro url desde los monitores, el programa estaba siempre cargando el último ingreso.
 Julio 30 2015 Edwar:
-	* En la funciï¿½n "cargar_terceros" se cambia de lï¿½nea el llamado a la funciï¿½n "cargarSelectEspecialidades", pues primero se debe escribir el cï¿½digo del tercero
-		en el campo respectivo antes de llamar la funciï¿½n, de esta forma cuando se llame la funciï¿½n "cargarSelectEspecialidades" encontrarï¿½ el valor del tercero, antes se estaba
-		quedando vacï¿½o y no encontraba excepciï¿½n tarifaria.
+	* En la función "cargar_terceros" se cambia de línea el llamado a la función "cargarSelectEspecialidades", pues primero se debe escribir el código del tercero
+		en el campo respectivo antes de llamar la función, de esta forma cuando se llame la función "cargarSelectEspecialidades" encontrará el valor del tercero, antes se estaba
+		quedando vacío y no encontraba excepción tarifaria.
 --------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -230,7 +230,7 @@ else
 		if ($wconmca=="on")   //Indica que es un abono y que mueve caja
 		{
 			//Aca traigo la fuente y el consecutivo del centro de costo para saber si tiene fuente y consecutivo
-			//Si no tiene estos dos datos bien no hace la grabaciï¿½n del cargo.
+			//Si no tiene estos dos datos bien no hace la grabación del cargo.
 			$q = "SELECT ccofrc, ccorci "                //Fuente Recibo de Caja y Consecutivo
 				."  FROM ".$wbasedato."_000003 "
 				." WHERE ccocod='".$wcco."'"
@@ -350,7 +350,7 @@ else
 				$html .=  "<td class=".$wcf2." colspan=1><b>Ubicacion:</b><br><select name='wubica' id='wubica' ><option selected>1-Local</option ><option>2-Otras plazas</option></select></td>";                        //wdocane
 				////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//NUMERO DE AUTORIZACION
-					$html .=  "<td class=".$wcf2." colspan=1><b>Nï¿½ autorizacion:</b><br><INPUT TYPE='text' NAME='wautori' id='wautori' ></td></tr></table></div></td>";                           //wobsrec
+					$html .=  "<td class=".$wcf2." colspan=1><b>Nº autorizacion:</b><br><INPUT TYPE='text' NAME='wautori' id='wautori' ></td></tr></table></div></td>";                           //wobsrec
 			}
 			else
 			{
@@ -465,7 +465,7 @@ else
 			$html .=  "<td class=".$wcf2." colspan=1><b>Ubicacion:</b><br><select name='wubica' id='wubica' ><option selected>1-Local</option ><option>2-Otras plazas</option></select></td>";                        //wdocane
 			////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//NUMERO DE AUTORIZACION
-			$html .=  "<td class=".$wcf2." colspan=1><b>Nï¿½ autorizacion:</b><br><INPUT TYPE='text' NAME='wautori'  id='wautori'></td></tr></table>";                           //wobsrec
+			$html .=  "<td class=".$wcf2." colspan=1><b>Nº autorizacion:</b><br><INPUT TYPE='text' NAME='wautori'  id='wautori'></td></tr></table>";                           //wobsrec
 		}
 		else
 		{
@@ -548,7 +548,7 @@ else
 		if($wconmca=='on')
 		{
 			//Aca traigo la fuente y el consecutivo del centro de costo para saber si tiene fuente y consecutivo
-			//Si no tiene estos dos datos bien no hace la grabaciï¿½n del cargo.
+			//Si no tiene estos dos datos bien no hace la grabación del cargo.
 			$q = "SELECT ccofrc, ccorci "                //Fuente Recibo de Caja y Consecutivo
 				  ."  FROM ".$wbasedato."_000003 "
 				  ." WHERE ccocod='".$wcco."'"
@@ -559,7 +559,7 @@ else
 			$wnrorec   =$row[1];               //Consecutivo recibo de caja
 
 
-			$wvalfpa=str_replace(",","",$wvalfpa);    //Le quito el formato al nï¿½mero
+			$wvalfpa=str_replace(",","",$wvalfpa);    //Le quito el formato al número
 			$wtotfpa=$wtotfpa;
 
 			//ACA SE VALIDA QUE SE HALLAN DIGITADO TODOS LOS DATOS NECESARIOS PARA LA FORMA DE PAGO SELECCIONADA
@@ -603,7 +603,7 @@ else
 					."                            VALUES ('".$wbasedato."','".$wfecha."' ,'".$hora."' ,'".$wusuario."','".$whistoria."' ,'".$wing."' ,'".$wfeccar."','".$wser."','".$wcodemp."-".$wnomemp."','".$wno1."','".$wno2."' ,'".$wap1."','".$wap2."','".$wdoc."','".$wccogra."','".$wcodcon."','".$wnomcon."','".$wprocod."','".$wpronom."','".$wcodter."','".$wnomter."','".$wporter."','".$wcantidad."','".$wvaltar."','".round($wcantidad*$wvaltar)."','".$wrecexcfpa."','".$wfacturable."','".$wtipfac."','on'   ,'".$wnromvto."','".$wconmvto."','".$waprovecha."', 'C-".$wusuario."')";
 				$res2 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 
-				$wid=mysql_insert_id();   //Esta funciï¿½n devuelve el id despues de un insert, siempre y cuando el campo sea de autoincremento
+				$wid=mysql_insert_id();   //Esta función devuelve el id despues de un insert, siempre y cuando el campo sea de autoincremento
 
 				//**************************
 				//Aca grabo la auditoria
@@ -686,7 +686,7 @@ else
 		{
 
 
-			$wvalfpa=str_replace(",","",$wvalfpa);    //Le quito el formato al nï¿½mero
+			$wvalfpa=str_replace(",","",$wvalfpa);    //Le quito el formato al número
 			$wtotfpa=$wvalfpa;
 
 			//ACA SE VALIDA QUE SE HALLAN DIGITADO TODOS LOS DATOS NECESARIOS PARA LA FORMA DE PAGO SELECCIONADA
@@ -735,7 +735,7 @@ else
 					."                            VALUES ('".$wbasedato."','".$wfecha."' ,'".$hora."' ,'".$wusuario."','".$whistoria."' ,'".$wing."' ,'".$wfeccar."','".$wser."','".$wcodemp."-".$wnomemp."','".$wno1."','".$wno2."' ,'".$wap1."','".$wap2."','".$wdoc."','".$wccogra."','".$wcodcon."','".$wnomcon."','".$wprocod."','".$wpronom."','".$wcodter."','".$wnomter."','".$wporter."','".$wcantidad."','".$wvaltar."','".round($wcantidad*$wvaltar)."','".$wrecexcfpa."','".$wfacturable."','".$wtipfac."','on'   ,'".$wnromvto."','".$wconmvto."','".$waprovecha."', 'C-".$wusuario."')";
 				$res2 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 
-				$wid=mysql_insert_id();   //Esta funciï¿½n devuelve el id despues de un insert, siempre y cuando el campo sea de autoincremento
+				$wid=mysql_insert_id();   //Esta función devuelve el id despues de un insert, siempre y cuando el campo sea de autoincremento
 
 				//**************************
 				//Aca grabo la auditoria
@@ -796,7 +796,7 @@ else
 		$option_select = cargar_cco($wcodcon,$wcodemp,$wconabo, $numcco, $ccoUbiActualPac);
 		$data['option_select'] = $option_select;
 		
-		// --> Para los conceptos de inventario validar si se estï¿½ actualizando el cron de tarifas de medicamentos y materiales
+		// --> Para los conceptos de inventario validar si se está actualizando el cron de tarifas de medicamentos y materiales
 		if($data['wconinv'] == 'on'){
 			$resAct = (array) actualizandoTarifaMedicamentos();
 			$data 	= array_merge($data, $resAct);
@@ -1210,7 +1210,7 @@ function detalle_cuenta_resumido($whistoria, $wing, $permiteAnularCargo='off')
 					else
 						$infoRecargo = "";
 					
-					// --> Si el cargo es de material o medicamentos, verificar si ya se actualizï¿½ en unix, lo que indica si estï¿½ integrado o no
+					// --> Si el cargo es de material o medicamentos, verificar si ya se actualizó en unix, lo que indica si está integrado o no
 					$colorFondoInte = '';
 					
 					if($variables['ConceptoInventar'] == 'on')
@@ -1540,7 +1540,7 @@ function pintarCargosQueMuevenInventario($datosBasicos, $resInfoCar, $numPagina,
 				<table width='100%' class='doted' style='border:1px;border-style:dotted none dotted none;'>
 					<tr style='font-weight:bold' align='center'>
 						<td>Articulo</td>
-						<td>Descripciï¿½n</td>
+						<td>Descripción</td>
 						<td align='right'>Cantidad</td>
 						<td align='right'>Val. Uni.</td>
 						<td align='right'>Val. Total</td>
@@ -1674,7 +1674,7 @@ if(isset($accion))
 			$data['tieneInsumosPorAplicar'] = "off";			
 			$wbasedatoMov 					= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 			
-			// -->  Por ahora solo se va a hacer estï¿½ validacion si el cco de grabacion es urgencias, para las ayudas no se debe hacer.
+			// -->  Por ahora solo se va a hacer está validacion si el cco de grabacion es urgencias, para las ayudas no se debe hacer.
 			//		NOTA: Queda pendiente activar validacion para hospitalizacion, cuando se este grabando en pisos.			
 			$sqlCco = "
 			SELECT Ccocod
@@ -1767,7 +1767,7 @@ if(isset($accion))
 					{
 						$wbasedatoMov 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 						
-						// --> Si el codigo que se va a grabar estï¿½ en el maestro de vacunas
+						// --> Si el codigo que se va a grabar está en el maestro de vacunas
 						$sqlCodVac = "
 						SELECT Vaccom as Cod 
 						  FROM ".$wbasedato."_000297
@@ -1922,9 +1922,9 @@ if(isset($accion))
 				$datos['wvaltarReco'] = round($datos['wvaltarReco'], -2);
 			}
 
-			// Si se estï¿½ grabando un insumo a un ingreso inactivo, se deben agregar parï¿½metros adicionales para que al pasar esos insumo a unix
-			// no queden con ï¿½ltimo ingreso activo sino con el ingreso inactivo con el que se estï¿½ grabando el cargo, pues el integrador siempre
-			// va a grabar a unix con el ï¿½ltimo ingreso activo.
+			// Si se está grabando un insumo a un ingreso inactivo, se deben agregar parámetros adicionales para que al pasar esos insumo a unix
+			// no queden con último ingreso activo sino con el ingreso inactivo con el que se está grabando el cargo, pues el integrador siempre
+			// va a grabar a unix con el último ingreso activo.
 			validar_cargo_ingreso_inactivo($conex, $wemp_pmla, $wbasedato, $datos);
 
 			$respuesta = validar_y_grabar_cargo($datos, false);
@@ -2420,7 +2420,7 @@ if(isset($accion))
 			$respuesta 		= array('Error' => false, 'Html' => '', 'Mensaje' => '');
 			$wbasedatoMov 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
-			// --> Consultar informaciï¿½n
+			// --> Consultar información
 			$sqlInfoPac = "
 			SELECT A.Fecha_data, Tcarhis, Tcaring, Tcarternom, Pacno1, Pacno2, Pacap1, Pacap2, Pactdo, Pacdoc, Pronom,
 				   Medno1, Medno2, Medap1, Medap2, Meddoc
@@ -2518,7 +2518,7 @@ if(isset($accion))
 						<object type='application/pdf' data='../../../matrix/ips/procesos/soportes/".$wnombrePDF.".pdf' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 width='600' height='300'>"
 						  ."<param name='src' value='soportes/".$wnombrePDF."' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"
 						  ."<p style='text-align:center; width: 90%;'>"
-							."Adobe Reader no se encuentra o la versiï¿½n no es compatible, utiliza el icono para ir a la pï¿½gina de descarga <br />"
+							."Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />"
 							."<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
 							  ."<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"
 							."</a>"
@@ -2530,7 +2530,7 @@ if(isset($accion))
 			}
 			else
 			{
-				$respuesta['Mensaje'] 	= utf8_encode("No se encontrï¿½ informaciï¿½n del cargo");
+				$respuesta['Mensaje'] 	= utf8_encode("No se encontró información del cargo");
 				$respuesta['Error'] 	= true;
 			}
 
@@ -2574,7 +2574,7 @@ if(isset($accion))
 					}
 				</style>";
 
-			// --> Consultar informaciï¿½n del paciente
+			// --> Consultar información del paciente
 			//MIGRA_2
 			$sqlInfoPac = "
 			SELECT Pacno1, Pacno2, Pacap1, Pacap2, Pactdo, Pacdoc, Pacfna, Ingfei, Inghin, Ingtpa,
@@ -2650,7 +2650,7 @@ if(isset($accion))
 			else
 			{
 				$respuesta['Error'] 	= true;
-				$respuesta['Mensaje'] 	= "No se encontro informaciï¿½n del paciente";
+				$respuesta['Mensaje'] 	= "No se encontro información del paciente";
 				$respuesta['Mensaje'] 	= utf8_encode($respuesta['Mensaje']);
 				echo json_encode($respuesta);
 				return;
@@ -2689,9 +2689,9 @@ if(isset($accion))
 						<table width='100%' class='doted' style='border:1px;border-style:none none dotted none;'>
 							<tr style='font-weight:bold' align='center'>
 								<td>Cpto</td>
-								<td>Descripciï¿½n</td>
+								<td>Descripción</td>
 								<td>Codigo</td>
-								<td>Descripciï¿½n</td>
+								<td>Descripción</td>
 								<td>Can.</td>
 								<td>Tercero</td>
 								<td align='right'>Valor</td>
@@ -2822,7 +2822,7 @@ if(isset($accion))
 					<object type='application/pdf' data='../../../matrix/ips/procesos/soportes/".$wnombrePDF.".pdf' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 width='800' height='700'>"
 					  ."<param name='src' value='soportes/".$wnombrePDF."' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"
 					  ."<p style='text-align:center; width: 60%;'>"
-						."Adobe Reader no se encuentra o la versiï¿½n no es compatible, utiliza el icono para ir a la pï¿½gina de descarga <br />"
+						."Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />"
 						."<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
 						  ."<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"
 						."</a>"
@@ -3822,7 +3822,7 @@ else
 				$( "#busc_concepto_1" ).val('');
 				$( "#busc_concepto_1" ).attr('valor', '');
 				$( "#busc_procedimiento_1" ).val('');
-				alert("El concepto estï¿½ configurado como no facturable.");
+				alert("El concepto está configurado como no facturable.");
 			}
 		}, 'json');
 	}
@@ -3884,7 +3884,7 @@ else
 			ccoUbiActualPac:	$("#ccoActualPac").val()
 		}, function (data){
 			if(data.actualizando){
-				jAlert("<span style='color:#2a5db0;font-size:10pt'>En este momento no se pueden grabar cargos de "+$( "#busc_concepto_1" ).attr('nombre')+"<br>porque se estï¿½ realizando el proceso de actualizaciï¿½n de tarifas.<br><br>Por favor espere un momento para volver a grabar el cargo.</span>", "Mensaje");
+				jAlert("<span style='color:#2a5db0;font-size:10pt'>En este momento no se pueden grabar cargos de "+$( "#busc_concepto_1" ).attr('nombre')+"<br>porque se está realizando el proceso de actualización de tarifas.<br><br>Por favor espere un momento para volver a grabar el cargo.</span>", "Mensaje");
 				
 				$( "#busc_concepto_1" ).val('');
 				$( "#busc_concepto_1" ).attr('valor', '');
@@ -3892,8 +3892,8 @@ else
 				return;
 			}
 			
-			// --> 	2019-10-03: Jerson Trujillo. Para cargos de medicamentos y materiales, no se permitirï¿½ grabarle a un ingreso menor al ultimo.
-			//		Esto se hace porque se presentï¿½ un caso donde una secretaria por error grabï¿½ un medicamento a un ingreso menor al actual
+			// --> 	2019-10-03: Jerson Trujillo. Para cargos de medicamentos y materiales, no se permitirá grabarle a un ingreso menor al ultimo.
+			//		Esto se hace porque se presentó un caso donde una secretaria por error grabó un medicamento a un ingreso menor al actual
 			//		Y el integrador se bloqueo porque este tenia una fecha menor al mes actual. requerimiento (01)1710 5061
 			if(data.wconinv == 'on' && $("#msjIngPost").attr("hayIngresoPosterior") == "on"){
 				jAlert("<span style='color:#2a5db0;font-size:10pt'>Solo se pueden grabar cargos de "+$( "#busc_concepto_1" ).attr('nombre')+"<br>en el ultimo ingreso del paciente.</span>", "Mensaje");
@@ -4649,7 +4649,7 @@ else
 			else
 			{
 				borderojo($("#tipoCuadroTurno"));
-				mostrar_mensaje("Debe seleccionar el cuadro de turno en el que estï¿½ el mï¿½dico.");
+				mostrar_mensaje("Debe seleccionar el cuadro de turno en el que está el médico.");
 				return;
 			}
 		}
@@ -5051,7 +5051,7 @@ else
 				/*if(data.pedirCambioTarifa)
 				{
 					var mensaje =" Se ha realizado cambio de responsable por superacion de topes."+
-						mensaje+=" La nueva tarifa del paciente es PARTICULAR, ï¿½Desea continuar con tarifa PARTICULAR o con tarifa "+$("#div_tarifa").html()+"?";
+						mensaje+=" La nueva tarifa del paciente es PARTICULAR, ¿Desea continuar con tarifa PARTICULAR o con tarifa "+$("#div_tarifa").html()+"?";
 
 					if(confirm(mensaje))
 					{
@@ -5682,7 +5682,7 @@ else
 					}
 				}
 			}
-			// --> 	No se van a cobrar honorarios en el cargo (Esto se da cuando hay cortesï¿½as especiales
+			// --> 	No se van a cobrar honorarios en el cargo (Esto se da cuando hay cortesías especiales
 			//		por parte del medico, osea el medico renuncia a los honorarios para favorecer al paciente)
 			else
 			{
@@ -5958,7 +5958,7 @@ else
 						// --> Si el usuario la congelo desde un programa diferente al de cargos
 						if(info.Ecotip != 'CA')
 						{
-							mensaje = "Usted tiene una liquidaciï¿½n de <b>"+info.Nomtip+"</b> en proceso.<br>Para conservar dicho proceso de Click en <b>Aceptar</b> y luego abra su prgrama correspondiente.<br>Si desea cancelar el proceso y poder grabarle cargos al paciente de Click en <b>Cancelar</b>.";
+							mensaje = "Usted tiene una liquidación de <b>"+info.Nomtip+"</b> en proceso.<br>Para conservar dicho proceso de Click en <b>Aceptar</b> y luego abra su prgrama correspondiente.<br>Si desea cancelar el proceso y poder grabarle cargos al paciente de Click en <b>Cancelar</b>.";
 							$( '#divMsjCongelar').html(mensaje);
 							$( '#divMsjCongelar').dialog({
 								width:  680,
@@ -6186,7 +6186,7 @@ else
 	#tooltip{font-family: verdana;font-weight:normal;color: #2A5DB0;font-size: 8pt;position:absolute;z-index:3000;border:1px solid #2A5DB0;background-color:#FFFFFF;padding:3px;opacity:1;border-radius: 4px;}
 	#tooltip div{margin:0; width:auto;}
 
-	/* CORRECCION DE BUG PARA EL DATEPICKER Y CONFIGURACION DEL TAMAï¿½O  */
+	/* CORRECCION DE BUG PARA EL DATEPICKER Y CONFIGURACION DEL TAMAÑO  */
 	.ui-datepicker {font-size:12px;}
 	/* IE6 IFRAME FIX (taken from datepicker 1.5.3 */
 	.ui-datepicker-cover {
@@ -6436,7 +6436,7 @@ else
 	$title6 = "
 		<span style=\"font-family: verdana;font-weight:normal;color: #2A5DB0;font-size: 9pt;\">
 			&nbsp;<img width=\"12\" height=\"12\" src=\"../../images/medical/root/info.png\">
-			<b>Opciï¿½n ".(($opcGraIva == 'on') ? "activa" : "inactiva")."</b> (Ver parametro activarOpcionGrabarIvaDesdeCargosERP en root_51).
+			<b>Opción ".(($opcGraIva == 'on') ? "activa" : "inactiva")."</b> (Ver parametro activarOpcionGrabarIvaDesdeCargosERP en root_51).
 		</span>";
 	
 	// --> Ingreso de cargos
@@ -6684,6 +6684,10 @@ else
 		$arrConIva[$rowConIva['Grucod']]['iva'] = $rowConIva['Gruiva'];
 	}
 	
+	//Se cierra conexión de la base de datos :)
+	//Se comenta cierre de conexion para la version estable de matrix :)
+	//mysql_close($conex);
+	
 	// --> Div oculto para grabar iva
 	echo "
 	<div id='modalGrabarIva' style='display:none;font-family: verdana;font-size: 9pt;' align='center'>		
@@ -6730,10 +6734,5 @@ else
 }
 
 }//Fin de session
-
-//Se adiciona cierre de la variable conex Mavila 23-10-2020 :)
-if	(isset($conex)){
-	mysql_close($conex);
-}
 ?>
 
