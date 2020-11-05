@@ -14,14 +14,15 @@ if(!isset($accion))
 
  Notas:
  --
-*/ $wactualiza = "2020-09-08"; /*
- ACTUALIZACIONES:
-2020-09-16: David Henao Hernandez 
+*/ $wactualiza = "2020-11-05"; /*
+  ACTUALIZACIONES:
+ 2020-11-05: David Henao Hernandez
+ - Se corrige la configuracion de nombres ya que podrian tener caracteres especiales 
+ 2020-09-16: David Henao Hernandez 
 - Se corrige la asignacion de prefijo cuando es 1250 y 1033 (UDC y CCP) en la asignacion del numero cis y en la creacion del pdf
  2020-09-08: David Henao Hernandez 
  - Al hacer clic en el botón GenerarPDF se guardan 2 copias del pdf en la ruta ayucni/procesos/estudios/ una posee un logo y la otra es para imprimir que genera el archivo
  - Al hacer clic en el botón GenerarPDF se muestra una ventana la cual pide al usuario el numero de acceso cis y se valida la informacion correcta y se procede a generar el pdf 
- - Se corrige la asignacion de prefijo cuando es 1250 y 1033 (UDC y CCP) en la asignacion del numero cis y en la creacion del pdf
  2020-05-26: Jessica Madrid Mejía
  - Al hacer clic en el botón GenerarPDF se guarda una copia del pdf en la ruta ayucni/procesos/estudios/
  - Si una transcripción estaba finalizada, hacen clic en guardar parcialmente y dentro de la misma 
@@ -5429,8 +5430,13 @@ $wing = (!isset($wing)) ? '': $wing;
             fechae = fechaE.replace(/[:-]/gi,'');
             fechaef = fechae.replace(/[" "]/gi,'#');
             
-
-            var consecutivoPdflogo =pre + numeroRespuesta + "#" + wdocumento.value + "#" + wnombre1.value + " " + wnombre2.value +  " " + wapellido1.value + " " + wapellido2.value + "#" + fechaef;
+			var wnombrereemplazado = wnombre1.value.replace(/[^a-z0-9\s]/gi,'');
+			var wnombrereemplazado2 = wnombre2.value.replace(/[^a-z0-9\s]/gi, '');
+			var wapellidoreemeplazado = wapellido1.value.replace(/[^a-z0-9\s]/gi, '');
+			var wapellidoreemeplazado2 = wapellido2.value.replace(/[^a-z0-9\s]/gi, '');
+		
+			
+			var consecutivoPdflogo =pre + numeroRespuesta + "#" + wdocumento.value + "#" + wnombrereemplazado + " " + wnombrereemplazado2 +  " " +  wapellidoreemeplazado + " " + wapellidoreemeplazado2 + "#" + fechaef;
 
             // console.log(obJson);
             $(".bloquear_todo").attr("disabled", "disabled");
