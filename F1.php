@@ -540,6 +540,8 @@ else
 		}
 		else
 		{
+			$password = sha1( $password );
+			
 			@session_start();
 			if (!isset($user))
 			{

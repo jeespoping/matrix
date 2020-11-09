@@ -191,7 +191,11 @@ else
 					}
 					if ($contador >= 3) {
 						
-						$query = "update usuarios set password='".$wpass."', feccap='".$wfecw1."'  where codigo='".$codigo."'";
+						$query = "UPDATE usuarios 
+									 SET password=SHA('".$wpass."'), 
+										 feccap='".$wfecw1."'  
+								   WHERE codigo='".$codigo."'";
+								   
 						$err = mysql_query($query,$conex);
 						if($err !=1)
 						{
@@ -220,7 +224,7 @@ else
 				{
 					echo "<center><table border=0 aling=center>";
 					echo "<tr><td><IMG SRC='/matrix/images/medical/root/cabeza.gif' ></td><tr></table></center>";
-					echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#ffff00 LOOP=-1>ERROR EN LA DIGITACION O LONGITUD SON DE (8 CARACTERES) !!!!</MARQUEE></FONT>";
+					echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#ffff00 LOOP=-1>ERROR EN LA DIGITACION O LONGITUD SON DE (8 CARACTERES) aaaa !!!!</MARQUEE></FONT>";
 					echo "<br><br>";
 				}
 			}
