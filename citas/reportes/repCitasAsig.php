@@ -2,6 +2,519 @@
 include_once("conex.php");
 
 include_once("root/comun.php");
+// $conex = obtenerConexionBD("matrix");
+
+//funcion para seleccionar los datos de configuracion de campos 
+function SeleccionarDatos($wbasedato){
+	
+	$datosS = [];
+	
+	 $sql = "SELECT Concam
+			  FROM root_000132 
+			 WHERE Consol = '".$wbasedato."' AND  Conest = 'on'";
+	$res = mysql_query( $sql );
+	$datos = mysql_fetch_assoc($res);
+	$Concam= $datos["Concam"];
+	$datosS = explode('-',$Concam);
+	return $datosS;
+	
+}
+
+
+//array con los datos de root132 y se divide para hacer la consulta 
+$listaDatos = SeleccionarDatos($wbasedato);
+$numcampos = count($listaDatos);
+$numcampos;
+$datosAdicc = "'".implode("','",$listaDatos)."'";
+$datosAdicc;  
+$datosA = implode(",",$listaDatos);
+$datosA;
+
+/*
+	$var = '';
+	for($i = 0; $i < count($listaDatos); $i++){
+		if($i == 0){
+			$var = $var.$listaDatos[$i];
+		}else{
+			$var = $var.",".$listaDatos[$i];
+		}	
+	}
+*/
+
+//consulta para combinacion de los datos 
+function Ordendatos($datosAdicc){
+	
+	$NombresC12 = '';
+	
+		 $sql = "SELECT descripcion,Dic_Descripcion
+				   FROM root_000030 AS r30
+			 INNER JOIN det_formulario AS det 
+			         ON (r30.Dic_Usuario = det.medico 
+					AND r30.Dic_Formulario = det.codigo 
+					AND r30.Dic_Campo = det.campo)
+				  WHERE det.descripcion  IN (".$datosAdicc.")
+				  ORDER BY Dic_Descripcion";
+
+	$Nombrecampos = mysql_query( $sql );
+	$num = mysql_num_rows($Nombrecampos);
+	if ($num > 0)
+	{	
+		$var=0;
+		while($Nombres1 = mysql_fetch_assoc($Nombrecampos)){
+			if($var == 0)
+			{
+			 $NombresC12 .=$Nombres1["descripcion"];
+			 $var=$var+1;
+			}else{
+			 $NombresC12 .=",".$Nombres1["descripcion"];
+			 //"<td>".$Nombres["Dic_Descripcion"]."</td>";
+			
+			}
+		}
+	}
+	return $NombresC12;
+}
+
+
+$OC = Ordendatos($datosAdicc);
+$OC;
+
+
+
+//funcion para seleccionar el nombre de los campos para asi adicionarlos 
+function AdiccionarCitas($datosAdicc)
+{
+	//$NombresC1 =  "<td width='19%'></td>";
+	
+	     $sql = "SELECT Dic_Descripcion
+				   FROM root_000030 AS r30
+			 INNER JOIN det_formulario AS det 
+			         ON (r30.Dic_Usuario = det.medico 
+					AND r30.Dic_Formulario = det.codigo 
+					AND r30.Dic_Campo = det.campo)
+				  WHERE det.descripcion  IN (".$datosAdicc.")
+				  ORDER BY Dic_Descripcion";
+
+	$Nombrecampos = mysql_query( $sql );
+	$num = mysql_num_rows($Nombrecampos);
+	if ($num > 0)
+	{	
+		while($Nombres = mysql_fetch_assoc($Nombrecampos)){
+			
+			 $NombresC1 .="<td width='19%'>".$Nombres["Dic_Descripcion"]."</td>";
+			 
+			 //"<td>".$Nombres["Dic_Descripcion"]."</td>";
+			
+		}
+	}
+	return $NombresC1;
+
+}
+
+//$NC = AdiccionarCitas($datosAdicc);
+//$NC;
+
+
+
+//seleccionar tablas citaslc
+function seleccionarT($wbasedato){
+	
+	$datosT = '';
+	
+	$sq2= "SELECT Contab
+		     FROM root_000132
+			WHERE Consol = '".$wbasedato."' AND  Conest = 'on'";
+	if($rest = mysql_query($sq2 ))
+	{
+		if($row = mysql_num_rows($rest)>0)
+		{
+			if ($datost = mysql_fetch_assoc($rest))
+			{
+				$datosT = $datost["Contab"];
+			}
+		}
+	}
+	return $datosT;
+	
+}
+
+$tb = seleccionarT($wbasedato);
+// se realiza explode para separar el nombre tabla(tb) que hay en la base de datos para realizar la comparacion y agregar los datos.
+
+$tbNombre = explode('_',$tb);
+$tbwbasedato=$tbNombre[0];
+$tbwbasedatonum=$tbNombre[1];
+
+//seleccionar el id de los pacientes
+
+
+function SeleccionaCitaslce($OC,$tb,$cedula,$fecha,$hora){
+	
+	$Rsel1= '';
+	
+	if($OC!= '' && $tb != '')
+	{
+			  $sq3= "SELECT  id
+				      FROM ".$tb." 
+			 	     WHERE drvidp = '".$cedula."'
+					   AND drvfec = '".$fecha."'
+					   AND drvhor = '".$hora."'"; 
+		$rest = mysql_query( $sq3 );
+		$num = mysql_num_rows($rest);
+		if ($num > 0)
+		{	
+			$Rsel1= '';
+			if($TabR= mysql_fetch_assoc($rest)){
+				$Rsel1 = $TabR["id"];
+			}
+		}
+	}
+	return $Rsel1;
+	
+}
+
+//$id =SeleccionaCitaslce($OC,$tb,$cedula,$fecha,$hora);
+
+
+
+
+
+//seleccionar los campos requeridos por cedula hora y fecha
+function SeleccionaCitaslc($OC,$tb,$cedula,$fecha,$hora){
+	
+	global $tb;
+	global $tbwbasedato;
+	global $tbwbasedatonum;
+	global $numcampos;
+	
+	$Rsel ="";
+	
+	for ($i=1; $i<=$numcampos; $i++) {
+		
+	$agregartd = "<td width='19%'></td>";
+	
+	$Rsel .= $agregartd;
+			
+			
+	}
+	
+	
+	if($OC!= '' && $tb != ''){
+			
+			  $sq3= "SELECT ".$OC." 
+				      FROM ".$tb." 
+			 	     WHERE drvidp = '".$cedula."'
+					   AND drvfec = '".$fecha."'
+					   AND drvhor = '".$hora."'"; 
+					   
+		if($rest = mysql_query( $sq3 )){
+		
+			$num = mysql_num_rows($rest);
+			if ($num > 0)
+			{	
+				
+				
+				while($TabR= mysql_fetch_assoc($rest)){
+					
+					$Rsel= '';
+
+					foreach($TabR as $key => $value){
+						
+						
+						$comentariosDetF = comentariosDetF($tbwbasedato,$tbwbasedatonum,$key);
+						$Tab_ase = $comentariosDetF[1];
+						$campo1= $comentariosDetF[2];
+						$campo2 = $comentariosDetF[3];
+							  
+						$Detase = seleccionarCdet($campo1,$Tab_ase,$tbwbasedato);
+						$Detase2 = seleccionarCdet2($campo2,$Tab_ase,$tbwbasedato);
+						$Detase = $Detase.",";
+						$Detase2 = ",".$Detase2;	
+						$DatosAseguradora = $Detase."'-'".$Detase2;
+						$DatosAseguradora;
+						
+						$Tipocampo10 = TipoPago($tbwbasedato,$tbwbasedatonum,$key);
+						
+						if($Tipocampo10)
+						{
+							if($value == 'on')
+							{
+								$Si = "Si";
+								$Rsel .="<td width='19%' align='center'>".$Si."</td>";
+								
+							}else{
+								
+								$No = "No";
+								$Rsel .="<td width='19%'align='center'>".$No."</td>";
+								
+							}
+							
+						}else if(count($comentariosDetF) > 0 ){
+							
+							$mostrarAse = seleccionarAse($DatosAseguradora,$Tab_ase,$value);
+							$Rsel .="<td width='19%' align='center'>".$mostrarAse."</td>";
+						
+						}else{
+							
+							$Rsel .="<td width='19%' align='center'>".$value."</td>";
+							//$Rsel .="<td width='10%'>".$value."</td>";
+						}
+					}
+				}
+			}
+		}	
+	}
+	
+	return $Rsel;
+	
+}
+
+
+
+//$ResultadoTabla = SeleccionaCitaslc($OC,$tb,$cedula,$fecha,$hora);
+//var_dump($ResultadoTabla);
+
+
+// seleccionar campo especial 
+function seleccionarEsp($wbasedato){
+	
+	$conesp = [];
+	
+				$sql = "SELECT Conesp
+				FROM root_000132 
+				WHERE Consol = '".$wbasedato."' AND  Conest = 'on'";
+				
+				$resp = mysql_query( $sql );
+					if($esp = mysql_fetch_assoc($resp))
+					{
+						$Conesp= $esp["Conesp"];
+					}
+				//$datosE = explode('-',$Conesp);
+
+	return $Conesp;
+	
+}
+
+$listaDatosE = SeleccionarEsp($wbasedato);
+//$listaDatosE;
+$datosE = '';
+
+list($exa,$datosE) = explode("@",$listaDatosE);
+$NombreCE = "'".$exa."'";
+//examen  
+$NombreCE;
+//consulta select del campo Conesp
+$datosE;
+
+
+
+
+function especial($consExamen){
+		
+		$RE = '';
+		$sql = $consExamen;
+		$resp = mysql_query( $sql );
+		$num = mysql_num_rows($resp);
+		if ($num > 0)
+		$RE = '';
+		{	
+			while($esp = mysql_fetch_row($resp)){
+				$RE = $esp[0];
+			}
+		}
+	return $RE;
+	
+}
+
+//$examen1 = especial($consExamen);
+
+
+function AdiccionarCitasEspeciales($NombreCE)
+{
+	$NombresCE = '';
+	
+	     $sql = "SELECT Dic_Descripcion
+				   FROM root_000030 AS r30
+			 INNER JOIN det_formulario AS det 
+			         ON (r30.Dic_Usuario = det.medico 
+					AND r30.Dic_Formulario = det.codigo 
+					AND r30.Dic_Campo = det.campo)
+				  WHERE det.descripcion  IN (".$NombreCE.")
+				  ORDER BY Dic_Descripcion";
+
+	$NombrecamposE = mysql_query( $sql );
+	$num = mysql_num_rows($NombrecamposE);
+	if ($num > 0)
+	{	
+		while($NombresE = mysql_fetch_assoc($NombrecamposE)){
+			
+			 $NombresCE .="<td width='19%'>".$NombresE["Dic_Descripcion"]."</td>";
+			 
+			 //"<td>".$Nombres["Dic_Descripcion"]."</td>";
+			
+		}
+	}
+	return $NombresCE;
+
+}
+
+
+
+function comentariosDetF($tbwbasedato,$tbwbasedatonum,$campov)
+{
+	$datosAse = [];
+	
+		  $sql = "SELECT comentarios
+		           FROM det_formulario 
+		          WHERE medico = '".$tbwbasedato."'
+				    AND codigo = '".$tbwbasedatonum."'
+			        AND descripcion = '".$campov."'
+			        AND tipo = '18'";
+					
+	
+	$sqlase = mysql_query( $sql );
+	$num = mysql_num_rows($sqlase);
+	if($num > 0)
+	{
+		while($resultado = mysql_fetch_assoc($sqlase)){
+			
+			$ase = $resultado["comentarios"];
+			$datosAse = explode('-',$ase);
+			
+		}
+	}
+	return $datosAse; 
+	
+}
+
+/*
+ $comentariosDetF = comentariosDetF($tbwbasedato,$tbwbasedatonum,$key);
+					 $Tab_ase = $comentariosDetF[1];
+					 $campo1= $comentariosDetF[2];
+					 $campo2 = $comentariosDetF[3];
+*/
+
+
+function seleccionarCdet($campo1,$Tab_ase,$tbwbasedato){
+	
+	$NCA = '';
+	 $sql = "SELECT descripcion
+			  FROM det_formulario
+			  WHERE medico = '".$tbwbasedato."'
+			  AND codigo = '".$Tab_ase."'
+			  AND campo = '".$campo1."'";
+			  //AND campo = '".$campo2."'";
+			  
+	$sqlaseC = mysql_query($sql);
+	$num = mysql_num_rows($sqlaseC);
+	if($num > 0)
+	{
+		while($resultado = mysql_fetch_assoc($sqlaseC)){
+				$NCA = $resultado["descripcion"];
+		}		
+	}
+	return $NCA;
+	
+}
+
+//$Detase = seleccionarCdet($campo1,$Tab_ase,$tbwbasedato);
+//$Detase;
+
+
+function seleccionarCdet2($campo2,$Tab_ase,$tbwbasedato){
+	
+	$NCA2 = '';
+	 $sql2 = "SELECT descripcion
+			  FROM det_formulario
+			  WHERE medico = '".$tbwbasedato."'
+			  AND codigo = '".$Tab_ase."'
+			  AND campo = '".$campo2."'";
+			  
+	$sqlaseC = mysql_query($sql2);
+	$num = mysql_num_rows($sqlaseC);
+	if($num > 0)
+	{
+		while($resultado = mysql_fetch_assoc($sqlaseC)){
+			$NCA2 = $resultado["descripcion"];
+		}
+	}
+	return $NCA2;
+	
+}
+
+//$Detase2 = seleccionarCdet2($campo2,$Tab_ase,$tbwbasedato);
+//$Detase2;
+
+
+//$DatosAseguradora = $Detase.",".$Detase2;
+//$DatosAseguradora;
+
+
+
+
+
+function seleccionarAse($DatosAseguradora,$Tab_ase,$var){
+	
+	$aseguradora = '';
+	  $sql = "	 SELECT CONCAT(".$DatosAseguradora.")
+		           FROM citaslc_".$Tab_ase." 
+		          WHERE drvncl = '".$var."'";
+				   
+	$sqlase = mysql_query($sql);
+	$num = mysql_num_rows($sqlase);
+	
+		if($num > 0)
+		{
+			$aseguradora = '';
+			
+			while($resultado = mysql_fetch_assoc($sqlase)){
+				
+				foreach($resultado as $key => $value){
+	
+					$aseguradora .= $value;
+					
+				}	
+			}
+		}	
+	
+return $aseguradora;
+	
+	//SELECT concat( drvncl,'-', drvanm ) FROM `citaslc_000033` WHERE drvncl = '099'
+	
+	
+}
+
+//$mostrarAse = seleccionarAse($DatosAseguradora,$Tab_ase,'099');
+//$mostrarAse;
+	
+
+
+
+function TipoPago($tbwbasedato,$tbwbasedatonum,$campov)
+{
+	$val = false;
+	
+			$sql = "SELECT descripcion
+		           FROM det_formulario 
+		          WHERE medico = '".$tbwbasedato."'
+				    AND codigo = '".$tbwbasedatonum."'
+			        AND descripcion = '".$campov."'
+			        AND tipo = '10'";
+					
+	
+	$sqlase = mysql_query( $sql );
+	$num = mysql_num_rows($sqlase);
+	if($num > 0)
+	{
+		$val = true;
+		
+	}
+	return $val; 
+	
+}
+
+
+
 
 if (isset($accion) && $accion == 'listar')
 {
@@ -118,58 +631,144 @@ if (isset($accion) && $accion == 'listar')
 				$especialidad=$row1['examen'];
 				$equiMed=$row1['equipo'];
 				 
-				if ($mostrar_obser == 'true'){
+				
+				 
+				
+				 if($tbwbasedato == $wbasedato && $mostrar_obser == 'true')
+				 {
+					$columnas_titulo = 18;
+					
+					$ResultadoTabla = SeleccionaCitaslc($OC,$tb,$cedula,$fecha,$hora);
+					$NC = AdiccionarCitas($datosAdicc);
+					$NCE = AdiccionarCitasEspeciales($NombreCE);
+					$id =SeleccionaCitaslce($OC,$tb,$cedula,$fecha,$hora);
+					
+					
+					if($id != ''){
+						
+					$consExamen = str_replace("abcd",$id,$datosE);	
+					$espe = especial($consExamen);
+					$Ex ="	<table border='0' width=400px>
+								<tbody>
+									<td width='19%' align='center'>".$espe."</td>							  
+								</tbody>
+							</table>";
+					}
+					
+					
+					
+					
+					$trs .=  "
+						<tr class='".$colorf."' >
+						<td align=center>".$fecha_data."</td>
+						<td align=center>".utf8_encode($equiMed)."</td>
+						<td align=center>".utf8_encode($cod_exa)."-".utf8_encode($especialidad)."</td>
+						<td align=center>".$hora."</td>
+						<td align=center>".$fecha."</td>
+						<td>".utf8_encode($nom_pac)."</td>
+						<td>".utf8_encode($cedula)."</td>
+						<td>".utf8_encode($usuario)."</td>
+						".utf8_encode($ResultadoTabla)."
+						<td >".utf8_encode($Ex)."</td>
+						".utf8_encode($dato_comentario)."
+						</tr>";						
+					 
+
+				 }elseif($tbwbasedato == $wbasedato)
+				 {
+					 
+					 $ResultadoTabla = SeleccionaCitaslc($OC,$tb,$cedula,$fecha,$hora);
+					 $NCE = AdiccionarCitasEspeciales($NombreCE);
+					 $NC = AdiccionarCitas($datosAdicc);
+					 $id =SeleccionaCitaslce($OC,$tb,$cedula,$fecha,$hora);
+
+					if($id != ''){
+					
+					
+					$consExamen = str_replace("abcd",$id,$datosE);	
+					$espe = especial($consExamen);
+					$Ex ="	<table border='0' width=400px>
+								<tbody>
+									<td width='19%' align='center'>".$espe."</td>							  
+								</tbody>
+							</table>";
+					}
+					 $columnas_titulo = 18;
+					 $trs .=  "
+						<tr class='".$colorf."' >
+						<td align=center>".$fecha_data."</td>
+						<td align=center>".utf8_encode($equiMed)."</td>
+						<td align=center>".utf8_encode($cod_exa)."-".utf8_encode($especialidad)."</td>
+						<td align=center>".$hora."</td>
+						<td align=center>".$fecha."</td>
+						<td>".utf8_encode($nom_pac)."</td>
+						<td>".utf8_encode($cedula)."</td>
+						<td>".utf8_encode($usuario)."</td>					
+						".utf8_encode($ResultadoTabla)."
+						<td width = 200px >".utf8_encode($Ex)."</td>
+						</tr>";		
+					 
+				 }
+				 
+				 
+				if ($mostrar_obser == 'true' && $tbwbasedato != $wbasedato){
 		        
 					$trs .=  "
 						<tr class='".$colorf."' >
 						<td align=center>".$fecha_data."</td>
-						<td align=center>".$equiMed."</td>
-						<td align=center>".$cod_exa."-".utf8_encode($especialidad)."</td>
-						<td align=center>".$fecha."</td>
+						<td align=center>".utf8_encode($equiMed)."</td>
+						<td align=center>".utf8_encode($cod_exa)."-".utf8_encode($especialidad)."</td>
 						<td align=center>".$hora."</td>
-						<td>".$nom_pac."</td>
-						<td>".$cedula."</td>
-						<td>".$usuario."</td>						
-						".$dato_comentario."
+						<td align=center>".$fecha."</td>
+						<td>".utf8_encode($nom_pac)."</td>
+						<td>".utf8_encode($cedula)."</td>
+						<td>".utf8_encode($usuario)."</td>							
+						".utf8_encode($dato_comentario)."
 						</tr>";
 				}
-				else{
+				elseif($tbwbasedato != $wbasedato){
+
 						$trs .=  "
 						<tr class='".$colorf."' >
 						<td align=center>".$fecha_data."</td>
-						<td align=center>".$equiMed."</td>
-						<td align=center>".$cod_exa."-".utf8_encode($especialidad)."</td>
-						<td align=center>".$fecha."</td>
+						<td align=center>".utf8_encode($equiMed)."</td>
+						<td align=center>".utf8_encode($cod_exa)."-".utf8_encode($especialidad)."</td>
 						<td align=center>".$hora."</td>
-						<td>".$nom_pac."</td>
-						<td>".$cedula."</td>
-						<td>".$usuario."</td>						
+						<td align=center>".$fecha."</td>
+						<td>".utf8_encode($nom_pac)."</td>
+						<td>".utf8_encode($cedula)."</td>
+						<td>".utf8_encode($usuario)."</td>
 						</tr>";					
 				}		
-
-
-						
-			 }
-	 }
-	 else
+							
+		}
+	 }else
 	 {
-		$trs = "<tr><td colspan='8' align='center' class='fila2'>No se encontraron registros en ese rango de fechas</td></tr>";
+		$trs = "<tr><td colspan='8%' align='center' class='fila2'>No se encontraron registros en ese rango de fechas</td></tr>";
 	 }
 		 
 	$resp .= "<table border='0' align='center'>";
 	if ($num>0)
 	{
-        // Cuando escoga ver comentarios se agrega una columna
-		if ($mostrar_obser == 'true')
+        // Cuando escoga ver comentarios se agrega una columna para las tablas diferentes que hay en root_000132
+		if ($mostrar_obser == 'true' && $tbwbasedato != $wbasedato)
 		{
 			$columnas_titulo = 9; //Si no selecciona el cajon de mostrar comentarios seran solamente 8 columnas en el encabezado.
+			$titulo_comentario = "<td width='8%'>Comentarios</td>";
+			
+		}elseif($tbwbasedato == $wbasedato && $mostrar_obser == 'true')
+		{
+			//Si no selecciona el cajon de mostrar comentarios seran solamente 8 para las tabals diferentes que hay en root_000132
+			$columnas_titulo = 18;//pero con la condicion se hacen los 13 campos 
 			$titulo_comentario = "<td width='10%'>Comentarios</td>";
+		
 		}
+		
+		
         // Adicionar Titulo
-		$resp .= "<th class='encabezadotabla' colspan='".$columnas_titulo."'>Citas entre ".@$wfecini." y ".@$wfecfin."</th>";
+		$resp .= "<th class='encabezadotabla' colspan='".$columnas_titulo."'>Citas asignadas entre:".@$wfecini." y ".@$wfecfin."</th>";
 		$resp .= "<tr class='encabezadotabla' align='center'>";
-		$resp .= "<td width='14%'>Fecha asignacion cita</td><td width='22%'>".$med."</td><td width='22%'>Especialidad</td><td width='8%'>Fecha cita</td><td width='4%'>Hora</td><td width='25%'>Nombre Paciente</td><td width='15%'>Cedula</td><td width='10%'>Usuario</td>$titulo_comentario";
-		$resp .= "</tr>";
+		$resp .= "<td width='15%' >Fecha asignacion cita</td><td width='10%'>".$med."</td><td width='10%'>Especialidad</td><td width='4%'>Hora</td><td width='8%'>Fecha cita</td><td width='18%'>Nombre Paciente</td><td width='4%'>Cedula</td><td width='8%'>Usuario</td>".utf8_encode($NC)."".$NCE."</td>.$titulo_comentario";
 	}
 	$resp .= $trs;	
 	$resp .= "</table>";
@@ -284,6 +883,12 @@ BODY{
 </script>
 <?php
 /*****************************************************************************************************************
+Modificaciones:
+2020-11-5 David Henao Hernandez - Se modifica el reporte de citas asignadas para citas de laboratorio , creando una nueva tabla root_000132 
+para dicho manejo. 
+-Se agregaron al reporte los campos de aseguradora, pago confirmado , examenes , direccion, con esta nueva tabla el reporte 
+se hizo dinamico y ya para cualquier area es posible agregarle campos a su reporte de citas.
+
 * 2018-07-12 (Juan Felipe Balcero): Se agrega un filtro para realizar búsquedas por número de documento
 * 2014-03-05 (Jonatan Lopez): Se agrega la columna de comentarios, si el usuario 
 * selecciona el cajon para verlas, estas se podran ver en un tooltip y en una ventana modal.
