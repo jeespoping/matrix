@@ -45,6 +45,9 @@ function GetIP()
 
 function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 {
+	$codigo = mysqli_real_escape_string( $conex, $codigo );
+	$usera 	= mysqli_real_escape_string( $conex, $usera );
+	
 	switch($grupo)
 	{
 		case 'AMERICAS':
@@ -63,69 +66,45 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 	switch($grupo)
 	{
 		case 'AMERICAS':
-			$query = "select codopt,descripcion,programa,ruta from root_000021 where codgru=? and usuarios like ? order by codopt ";
+			$query = "select codopt,descripcion,programa,ruta from root_000021 where codgru='".$codigo."' and usuarios like '%".$usera."%' order by codopt ";
 		break;
 	}
-	// $err = mysql_query($query,$conex);
-	// $num = mysql_num_rows($err);
-	
-	
-	$stUpdate = mysqli_prepare( $conex, $query );
-
-
-	$usera_q = "%".$usera."%";
-	mysqli_stmt_bind_param( $stUpdate, "ss", $codigo, $usera_q );
-
-	/* Ejecutar la sentencia */
-	$num = mysqli_stmt_execute( $stUpdate );
-	
-	/* ligar variables de resultado */
-	mysqli_stmt_bind_result( $stUpdate, $codopt, $descripcion, $programa, $ruta );
-	
-	
-	
+	$err = mysql_query($query,$conex);
+	$num = mysql_num_rows($err);
 	if ($num > 0)
 	{
-		// for($i=0;$i<$num;$i++)
-		while( mysqli_stmt_fetch($stUpdate) )
+		for ($i=0;$i<$num;$i++)
 		{
-			// $row = mysql_fetch_array($err);
-			
-			/* obtener valor */
-			
-			
-			if(substr(strtolower($programa),0,31) == "f1.php?accion=w&grupo=americas&")
+			$row = mysql_fetch_array($err);
+			if(substr(strtolower($row[2]),0,31) == "f1.php?accion=w&grupo=americas&")
 			{
 				$w++;
-				$DATA[$w][0]=$codopt;
-				$DATA[$w][1]=$descripcion;
-				$DATA[$w][2]=$programa;
-				$DATA[$w][3]=$ruta;
+				$DATA[$w][0]=$row[0];
+				$DATA[$w][1]=$row[1];
+				$DATA[$w][2]=$row[2];
+				$DATA[$w][3]=$row[3];
 				$DATA[$w][4]=2;
-				$codigo=substr($programa,31);
+				$codigo=substr($row[2],31);
 				$codigo=substr($codigo,7,strpos($codigo,"&")-7);
 				listar($conex,$grupo,$codigo,$usera,$w,$DATA);
 			}
 			else
 			{
 				$w++;
-				$DATA[$w][0]=$codopt;
-				$DATA[$w][1]=$descripcion;
-				$DATA[$w][2]=$programa;
-				$DATA[$w][3]=$ruta;
+				$DATA[$w][0]=$row[0];
+				$DATA[$w][1]=$row[1];
+				$DATA[$w][2]=$row[2];
+				$DATA[$w][3]=$row[3];
 				$DATA[$w][4]=1;
 			}
 		}
 	}
-	
 	$w++;
 	$DATA[$w][0]=$codigo;
 	$DATA[$w][1]=$row[0];
 	$DATA[$w][2]="";
 	$DATA[$w][3]="";
 	$DATA[$w][4]=3;
-	
-	mysqli_stmt_close( $stUpdate );
 }
 
 function eliminarPasswordTemporal($conex, $codigo)
