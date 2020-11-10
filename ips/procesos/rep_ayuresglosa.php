@@ -44,7 +44,7 @@ include_once("conex.php");
 include_once("root/comun.php");
 $conex     = obtenerConexionBD("matrix");
 $conex_o   = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-$wactualiz = "1.0 17-Sept-2020";
+$wactualiz = "1.0 22-Sept-2020";
 
 $empresa='root';
 
@@ -131,26 +131,21 @@ if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
  else // Cuando ya estan todos los datos escogidos
   {
 	
-  // --> Consultar la factura por concepto
-			$query_o1="
-			SELECT movdetcon, SUM(movdetval) as val, connom, concon, conarc
-			  FROM FAMOVDET, FACON
-			 WHERE movdetfue = '20'
-			   AND movdetdoc = '".$fac."'
-			   AND movdetanu = '0'
-			   AND movdetcon = concod
-			   AND conarc	 IS NOT NULL
-			 GROUP BY 1,3,4,5
-			 UNION
-			 SELECT movdetcon, SUM(movdetval) as val, connom, concon, ' ' as conarc
-			  FROM FAMOVDET, FACON
-			 WHERE movdetfue = '20'
-			   AND movdetdoc = '".$fac."'
-			   AND movdetanu = '0'
-			   AND movdetcon = concod
-			   AND conarc	 IS NULL
-			 GROUP BY 1,3,4,5 ";		   
-	
+  		$query_o1="SELECT cardetcod,cardetcon,connom,SUM(carfacval)
+					FROM facarfac, facardet,outer IVDRODET,outer facon,cacar 
+					WHERE carfacfue = '20'
+					AND carfacdoc = '".$fac."'
+					AND carfacanu = '0'
+					AND carfacfue = carfue
+					AND carfacdoc = cardoc
+					AND carfacreg = cardetreg
+					AND drodetfue = cardetfue
+					AND drodetdoc = cardetdoc
+					AND drodetite = cardetite
+					AND cardetcon = concod 
+					GROUP BY 1,2,3 
+					ORDER BY cardetcod,cardetcon";
+		
 		$err_o = odbc_do($conex_o,$query_o1);
 				
 		echo "<table border=0 cellspacing=3 cellpadding=0 align=center size='100'>";  //border=0 no muestra la cuadricula en 1 si.
@@ -166,32 +161,27 @@ if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
 		
 		echo "<table border=0 cellspacing=0 cellpadding=0 align=center size='100'>";  //border=0 no muestra la cuadricula en 1 si.
 		echo "<tr>";
+		echo "<td align=CENTER colspan='1' bgcolor=#DDDDDD><font size='2' text color=#003366><b>CODIGO&nbsp;&nbsp;</b></font></td>";
 		echo "<td align=CENTER colspan='1' bgcolor=#DDDDDD><font size='2' text color=#003366><b>CONCEPTO&nbsp;&nbsp;</b></font></td>";
-		echo "<td align=CENTER colspan='1' bgcolor=#DDDDDD><font size='2' text color=#003366><b>VALOR&nbsp;&nbsp;</b></font></td>";
 		echo "<td align=CENTER colspan='1' bgcolor=#DDDDDD><font size='2' text color=#003366><b>NOMBRE&nbsp;&nbsp;</b></font></td>";
-		//echo "<td align=CENTER colspan='1' bgcolor=#FFFFFF><font size='2' text color=#003366><b>CONCEPTO RELACIONADO</b></font></td>";
-		//echo "<td align=CENTER colspan='1' bgcolor=#FFFFFF><font size='2' text color=#003366><b>&nbsp;</b></font></td>";
-		//echo "<td align=CENTER colspan='1' bgcolor=#FFFFFF><font size='2' text color=#003366><b>TABLA</b></font></td>";
-		//echo "<td align=CENTER colspan='1' bgcolor=#FFFFFF><font size='2' text color=#003366><b>&nbsp;</b></font></td>";
+		echo "<td align=CENTER colspan='1' bgcolor=#DDDDDD><font size='2' text color=#003366><b>VALOR&nbsp;&nbsp;</b></font></td>";
 		echo "</tr>";
 		$Num_Filas = 0;
 		$totconval=0;
 		while (odbc_fetch_row($err_o))
 			  {
 				$Num_Filas++;
-				$concepto = odbc_result($err_o,1);//concepto
-				$conval = odbc_result($err_o,2);//valor concepto
+				$cod = odbc_result($err_o,1);//codigo
+				$concepto = odbc_result($err_o,2);//concepto
 				$connom = odbc_result($err_o,3);//nombre del concepto
-				$conrel = odbc_result($err_o,4);//concepto relacionado
-				$tabla = odbc_result($err_o,5);//tabla a consultar
+				$conval = odbc_result($err_o,4);//valor concepto
+				//$conrel = odbc_result($err_o,4);//concepto relacionado
+				//$tabla = odbc_result($err_o,5);//tabla a consultar
 				echo "<tr>";
+				echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$cod."&nbsp;&nbsp;</b></font></td>";
 				echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$concepto."&nbsp;&nbsp;</b></font></td>";
-				echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$conval."&nbsp;&nbsp;</b></font></td>";
 				echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$connom."&nbsp;&nbsp;</b></font></td>";
-				//echo "<td align=CENTER colspan='1' bgcolor=#FFFFFF><font size='2' text color=#003366><b>&nbsp;</b></font></td>";
-				//echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$conrel."</b></font></td>";
-				//echo "<td align=CENTER colspan='1' bgcolor=#FFFFFF><font size='2' text color=#003366><b>&nbsp;</b></font></td>";
-				//echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$tabla."</b></font></td>";
+				echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$conval."&nbsp;&nbsp;</b></font></td>";
 				echo "</tr>";
 				$totconval=$totconval + $conval;
 			  }
@@ -253,6 +243,7 @@ if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
 		echo "<td align=CENTER colspan='1' bgcolor=#DDDDDD><font size='2' text color=#003366><b>VALOR ANTERIOR</b></font></td>";
 		echo "<td align=CENTER colspan='1' bgcolor=#DDDDDD><font size='2' text color=#003366><b>FACTURABLE S=SI N=NO P=EXCEDENTE</b></font></td>";
 		echo "<td align=CENTER colspan='1' bgcolor=#DDDDDD><font size='2' text color=#003366><b>ARTICULO REGULADO</b></font></td>";	
+		echo "<td align=CENTER colspan='1' bgcolor=#DDDDDD><font size='2' text color=#003366><b>COBRO(C/G/U)</b></font></td>";	
 		echo "</tr>";
 		$Num_Filas1 = 0;
 		$bandera=0;
@@ -346,7 +337,8 @@ if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
 								else
 								{
 									echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO</b></font></td>";
-								}				
+								}
+							echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>CODIGO</b></font></td>";
 					}
 					if ($tab == 'INPROTAR')
 					{
@@ -358,19 +350,84 @@ if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
 									  and  protarpro = procod ";		   
 							
 								$err_4 = odbc_do($conex_o,$query_o4);
-								while (odbc_fetch_row($err_4))
-									  {	
-										$provrant = odbc_result($err_4,1);//valor anterior
+								
+								if (odbc_fetch_row($err_4))
+								{
+									//while (odbc_fetch_row($err_4))
+									  //{	
+								       	$provrant = odbc_result($err_4,1);//valor anterior
 										$profec = odbc_result($err_4,2);//fecha inicio contrato
 										$provract = odbc_result($err_4,3);//valor actual
 										$pronombre = odbc_result($err_4,4);//nombre del procedimiento
-									  }
-						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$pronombre."</b></font></td>";
-						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$profec."</b></font></td>";
-						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$provract."</b></font></td>";
-						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$provrant."</b></font></td>";
-						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
-						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
+									  //}
+									echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$pronombre."</b></font></td>";
+									echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$profec."</b></font></td>";
+									echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$provract."</b></font></td>";
+									echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$provrant."</b></font></td>";
+									echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
+									echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
+									echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>CODIGO</b></font></td>";
+								}
+								else
+								{
+									$q="Select proempane,proempnom,proempuni,proempliq From inproemp  Where  proemppro = '".$codigo."' And proempemp = '".$nit."' ";
+									$resultliq = odbc_do($conex_o,$q);                   // Ejecuto el query
+									if (odbc_fetch_row($resultliq))
+										{
+										  $wresultliqane=odbc_result($resultliq,1);
+										  $wresultliqdes=odbc_result($resultliq,2);
+										  $wresultliquni=odbc_result($resultliq,3);
+										  $wresultliqliq=odbc_result($resultliq,4);
+										  if ( $wresultliqliq == 'G' )
+											{
+												$q="Select proqui From inpro Where procod = '".$codigo."' ";
+												$resultliqg = odbc_do($conex_o,$q);                   // Ejecuto el query
+												if (odbc_fetch_row($resultliqg))
+													{
+														$wgrupo=odbc_result($resultliqg,1);
+														$q="Select quitarvaa,quitarfec,quitarval From inquitar Where quitarqui = '".$wgrupo."' and quitartar = '".$tar."' and quitarcon = '".$conc."' ";
+														$tarifa = odbc_do($conex_o,$q); 
+														if (odbc_fetch_row($tarifa))
+														{
+															$wquitarvaa =odbc_result($tarifa,1);
+															$wquitarfec =odbc_result($tarifa,2);
+															$wquitarval =odbc_result($tarifa,3);
+															echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$wresultliqdes."</b></font></td>";
+															echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$wquitarfec."</b></font></td>";
+															echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$wquitarval."</b></font></td>";
+															echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$wquitarvaa."</b></font></td>";
+															echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
+															echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
+															echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>GRUPO:'".$wgrupo."'</b></font></td>";
+														}
+													}
+											}  
+										  else
+											{
+												if ( $wresultliqliq == 'U' )
+												{
+													$q="Select unitarvaa,unitarfec,unitarval,(unitarvaa * '".$wresultliquni."' ),(unitarval * '".$wresultliquni."' )  From faunitar Where unitartar = '".$tar."' and unitarcon = '".$conc."' ";
+													$tarifa = odbc_do($conex_o,$q); 
+													if (odbc_fetch_row($tarifa))
+													{
+														$wquitarvaa =odbc_result($tarifa,1);
+														$wquitarfec =odbc_result($tarifa,2);
+														$wquitarval =odbc_result($tarifa,3);
+														echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$wresultliqdes."</b></font></td>";
+														echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$wquitarfec."</b></font></td>";
+														echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>UVR:".$wquitarval."</b></font></td>";
+														echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>UVR:".$wquitarvaa."</b></font></td>";
+														echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
+														echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
+														echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>FACTURADO POR UVR CANTIDAD:'".$wresultliquni."'</b></font></td>";
+													}
+													
+												}	
+											}
+									  
+										}
+								}
+						
 					}
 					if ($tab == 'INEXATAR')
 					{
@@ -395,6 +452,7 @@ if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
 						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$exavrant."</b></font></td>";
 						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
 						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
+						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>CODIGO</b></font></td>";
 					}
 					if (trim($tab) == 'INTIP')
 					{
@@ -418,6 +476,7 @@ if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
 						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$tipant."</b></font></td>";
 						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
 						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>NO APLICA</b></font></td>";
+						echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>CODIGO</b></font></td>";
 					}
 				}
 				echo "</tr>";

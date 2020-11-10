@@ -1326,7 +1326,7 @@ else
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				// $query = "CREATE TABLE if not exists TESPECIAL".$key." as ";
 				//2020-10-29
-				$query = "CREATE TEMPORARY TABLE if not exists TESPECIAL".$key." as ";
+				$query = "CREATE TABLE if not exists TESPECIAL".$key." as ";
 				$query .= " select Firusu as usuario from ".$empresa."_000036, ".$wdbmhos."_000048  ";
 				$query .= "   where Firhis = '".$whis."' ";
 				$query .= " 	and Firing = '".$wing."' ";

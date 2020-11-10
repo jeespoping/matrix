@@ -1836,7 +1836,7 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 			$query = "DROP TABLE IF EXISTS TESPECIAL".$key.";";
 			$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 			//2020-10-29
-			$query = "CREATE TEMPORARY TABLE if not exists TESPECIAL".$key." as ";
+			$query = "CREATE TABLE if not exists TESPECIAL".$key." as ";
 			$query .= " select Firusu as usuario from ".$empresa."_000036, ".$wmovhos."_000048  ";
 			$query .= "   where Firhis = '".$whis."' ";
 			$query .= " 	and Firing = '".$wing."' ";

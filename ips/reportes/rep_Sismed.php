@@ -261,24 +261,38 @@ include_once("conex.php");
 				."	 AND Mdeest ='on'";*/
 		$rstemp = mysql_query($qtemp,$conex) or die (mysql_errno().":".mysql_error());
 
+		// //consulto los datos los artículos por mes
+		// $query = "SELECT Artcna, Artcod art, Menmes mes, (SUM(Mdecan*fac)*Cumequ) can, (SUM(Mdevto*fac)) total, MIN((Mdevto/Mdecan)/Cumequ) minVal, MAX((Mdevto/Mdecan)/Cumequ) maxVal, Cumcod cum"
+				// ."  FROM ".$tmcompras.", ".$wbasedatos."_000001, {$wbasedatos}_000244"
+				// ." WHERE Cumcod = Artcna"
+				// ."	 AND Cumint = Artcod"
+				// ."	 AND Mdeart = Artcod"
+				// ."	 AND cumemp = {$wemp_pmla}"
+				// ."   AND Cumcod != ''"
+				// ." GROUP BY 1, 2, 3
+				 // UNION ALL "
+				// ."SELECT Cumint as 'Artcna', Artcod art, Menmes mes, (SUM(Mdecan*fac)*Cumequ) can, (SUM(Mdevto*fac)) total, MIN((Mdevto/Mdecan)/Cumequ) minVal, MAX((Mdevto/Mdecan)/Cumequ) maxVal, Cumcod cum"
+				// ."  FROM ".$tmcompras.", ".$wbasedatos."_000001, {$wbasedatos}_000244"
+				// ." WHERE Cumint = Artcod"
+				// ."	 AND Mdeart = Artcod"
+				// ."	 AND cumemp = {$wemp_pmla}"
+				// ."   AND Cumcod = ''"
+				// ." GROUP BY 1, 2, 3";
+				
 		//consulto los datos los artículos por mes
 		$query = "SELECT Artcna, Artcod art, Menmes mes, (SUM(Mdecan*fac)*Cumequ) can, (SUM(Mdevto*fac)) total, MIN((Mdevto/Mdecan)/Cumequ) minVal, MAX((Mdevto/Mdecan)/Cumequ) maxVal, Cumcod cum"
 				."  FROM ".$tmcompras.", ".$wbasedatos."_000001, {$wbasedatos}_000244"
-				." WHERE Cumcod = Artcna"
+				." WHERE ( Cumcod = Artcna"
 				."	 AND Cumint = Artcod"
 				."	 AND Mdeart = Artcod"
 				."	 AND cumemp = {$wemp_pmla}"
-				."   AND Cumcod != ''"
-				." GROUP BY 1, 2, 3
-				 UNION ALL "
-				."SELECT Cumint as 'Artcna', Artcod art, Menmes mes, (SUM(Mdecan*fac)*Cumequ) can, (SUM(Mdevto*fac)) total, MIN((Mdevto/Mdecan)/Cumequ) minVal, MAX((Mdevto/Mdecan)/Cumequ) maxVal, Cumcod cum"
-				."  FROM ".$tmcompras.", ".$wbasedatos."_000001, {$wbasedatos}_000244"
-				." WHERE Cumint = Artcod"
+				."   AND Cumcod != '' ) "
+				."    OR ( Cumint = Artcod"
 				."	 AND Mdeart = Artcod"
 				."	 AND cumemp = {$wemp_pmla}"
-				."   AND Cumcod = ''"
+				."   AND Cumcod = '' ) "
 				." GROUP BY 1, 2, 3";
-		$rs = mysql_query($query, $conex) or die (mysql_errno().":".mysql_error());
+		$rs = mysql_query($query, $conex) or die (mysql_errno().": - bbbb  Error en el query : $query - ".mysql_error());
 		$num = mysql_num_rows($rs);
 
 		//temporal para buscar las facturas con máximos y mínimos.
@@ -904,24 +918,38 @@ include_once("conex.php");
 			}
 
 		$rstemp = mysql_query($qtemp,$conex) or die (mysql_errno().":".mysql_error());
+		// //se hace el join con la tabla 64.
+		// $query = "SELECT  Artcna cum, Artcod art, Venmes mes, (SUM(Vdecan*fac)*Cumequ) unidades, (SUM(Vdecan*Vdevun*fac)) total, MIN(Vdevun/Cumequ) minVal, MAX(Vdevun/Cumequ) maxVal, Cumcod, Cumequ, Venano"
+				// ."  FROM ".$tmventas.", ".$wbasedatos."_000001, {$wbasedatos}_000244" //."  FROM ".$wbasedatos."_000016, ".$wbasedatos."_000017, ".$wbasedatos."_000001, root_000064"
+				// ." WHERE Cumcod = Artcna"
+				// ."	 AND Cumint = Artcod"
+				// ."	 AND Vdeart = Artcod"
+				// ."	 AND cumemp = {$wemp_pmla}"
+				// ."   AND Cumcod != ''"
+				// ." GROUP BY 1, 2, 3"
+				// ." UNION ALL "
+				// ."SELECT Artcod cum, Artcod art, Venmes mes, (SUM(Vdecan*fac)*Cumequ) unidades, (SUM(Vdecan*Vdevun*fac)) total, MIN(Vdevun/Cumequ) minVal, MAX(Vdevun/Cumequ) maxVal, Cumcod, Cumequ, Venano"
+				// ."  FROM ".$tmventas.", ".$wbasedatos."_000001, {$wbasedatos}_000244" //."  FROM ".$wbasedatos."_000016, ".$wbasedatos."_000017, ".$wbasedatos."_000001, root_000064"
+				// ." WHERE Cumint = Artcod"
+				// ."	 AND Vdeart = Artcod"
+				// ."	 AND cumemp = {$wemp_pmla}"
+				// ."   AND Cumcod = ''"
+				// ." GROUP BY 1, 2, 3";
+		
 		//se hace el join con la tabla 64.
 		$query = "SELECT  Artcna cum, Artcod art, Venmes mes, (SUM(Vdecan*fac)*Cumequ) unidades, (SUM(Vdecan*Vdevun*fac)) total, MIN(Vdevun/Cumequ) minVal, MAX(Vdevun/Cumequ) maxVal, Cumcod, Cumequ, Venano"
 				."  FROM ".$tmventas.", ".$wbasedatos."_000001, {$wbasedatos}_000244" //."  FROM ".$wbasedatos."_000016, ".$wbasedatos."_000017, ".$wbasedatos."_000001, root_000064"
-				." WHERE Cumcod = Artcna"
+				." WHERE ( Cumcod = Artcna"
 				."	 AND Cumint = Artcod"
 				."	 AND Vdeart = Artcod"
 				."	 AND cumemp = {$wemp_pmla}"
-				."   AND Cumcod != ''"
-				." GROUP BY 1, 2, 3"
-				." UNION ALL "
-				."SELECT Artcod cum, Artcod art, Venmes mes, (SUM(Vdecan*fac)*Cumequ) unidades, (SUM(Vdecan*Vdevun*fac)) total, MIN(Vdevun/Cumequ) minVal, MAX(Vdevun/Cumequ) maxVal, Cumcod, Cumequ, Venano"
-				."  FROM ".$tmventas.", ".$wbasedatos."_000001, {$wbasedatos}_000244" //."  FROM ".$wbasedatos."_000016, ".$wbasedatos."_000017, ".$wbasedatos."_000001, root_000064"
-				." WHERE Cumint = Artcod"
+				."   AND Cumcod != '' )" 
+				."    OR ( Cumint = Artcod"
 				."	 AND Vdeart = Artcod"
 				."	 AND cumemp = {$wemp_pmla}"
-				."   AND Cumcod = ''"
+				."   AND Cumcod = '' )"
 				." GROUP BY 1, 2, 3";
-		$rs = mysql_query($query, $conex) or die (mysql_errno().":".mysql_error());
+		$rs = mysql_query($query, $conex) or die (mysql_errno().": - Error en el query $query - ".mysql_error());
 		$num = mysql_num_rows($rs);
 
 
