@@ -66,16 +66,33 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 	switch($grupo)
 	{
 		case 'AMERICAS':
-			$query = "select codopt,descripcion,programa,ruta from root_000021 where codgru='".$codigo."' and usuarios like '%".$usera."%' order by codopt ";
+			$query = "select codopt,descripcion,programa,ruta from root_000021 where codgru=? and usuarios like ? order by codopt ";
 		break;
 	}
-	$err = mysql_query($query,$conex);
-	$num = mysql_num_rows($err);
+	// $err = mysql_query($query,$conex);
+	// $num = mysql_num_rows($err);
+	
+	/* crear una sentencia preparada */
+	$stmt = mysqli_prepare($conex, $query );
+	
+	/* ligar parámetros para marcadores */
+	$usera_pq	= '%'.$usera.'%';
+	mysqli_stmt_bind_param($stmt, "ss", $codigo, $usera_pq );
+	
+	/* ejecutar la consulta */
+	$num = mysqli_stmt_execute($stmt);
+	
+	$err = mysqli_stmt_get_result($stmt);
+	
+	//Cerrando la sentencia
+	mysqli_stmt_close($stmt);
+	
 	if ($num > 0)
 	{
-		for ($i=0;$i<$num;$i++)
+		// for ($i=0;$i<$num;$i++)
+		while( $row = mysql_fetch_array($err) )
 		{
-			$row = mysql_fetch_array($err);
+			// $row = mysql_fetch_array($err);
 			if(substr(strtolower($row[2]),0,31) == "f1.php?accion=w&grupo=americas&")
 			{
 				$w++;
@@ -99,6 +116,7 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 			}
 		}
 	}
+	
 	$w++;
 	$DATA[$w][0]=$codigo;
 	$DATA[$w][1]=$row[0];
