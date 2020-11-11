@@ -104,7 +104,7 @@ else
 		$passwordTemporal = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $passwordLength); 
 		
 		$update = " UPDATE usuarios 
-					   SET PasswordTemporal='".$passwordTemporal."',
+					   SET PasswordTemporal=SHA('".$passwordTemporal."'),
 						   FechaPasswordTemp='".date("Y-m-d")."',
 						   HoraPasswordTemp='".date("H:i:s")."'
 					 WHERE Codigo='".$codigo."';";
