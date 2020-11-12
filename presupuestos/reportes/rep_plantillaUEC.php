@@ -29,14 +29,16 @@ include_once("conex.php");
 //DESCRIPCION			      :Este programa sirve para imprimir la plantilla única estados de cuenta de los saldos de cartera x responsable|
 //                                                                                                                                          |
 //TABLAS UTILIZADAS :                                                                                                                       |
-//amepuec           : Tabla de movimiento del rsalenveda, programa de unix que llena esta tabla.                                            | 
+//amepuec           : Tabla de movimiento del rsalenveda, programa de unix que llena esta tabla.     
+//MODIFICACIONES			  : 2020-10-29
+//							    Se actualiza el nombre del coordinador de cartera y se actualiza el logotipo                                     | 
 //==========================================================================================================================================
 
 include_once("root/comun.php");
 
 $conex = obtenerConexionBD("matrix");
 
-$wactualiz="1.0 21-Agosto-2014";
+$wactualiz="2.0 29-Octubre-2020";
 
 $usuarioValidado = true;
 
@@ -148,7 +150,7 @@ if (!isset($carg) or $carg == '' or !isset($tip) or $tip == '')
   	
   echo "<table border=1 align=left size='100' cellpadding='0'>";  //border=0 no muestra la cuadricula en 1 si.
   echo "<tr>";	
-  echo "<td align='CENTER' colspan='2'><IMG SRC='/MATRIX/images/medical/calidad/clnicanuevo.gif' WIDTH=140 HEIGHT=50></td>"; //trae el logo de la clinica.
+  echo "<td align='CENTER' colspan='2'><IMG SRC='../../images/medical/root/clinica.jpg' WIDTH=120 HEIGHT=76></td>"; //trae el logo de la clinica.
   echo "<td align='CENTER' colspan='9' bgcolor='#FFFFFF' ><font size='3' text color='#003366'><b>PLANTILLA ÚNICA ESTADOS DE CUENTA</b></font></td>";
   echo "</tr>";
   
@@ -547,7 +549,7 @@ if (!isset($carg) or $carg == '' or !isset($tip) or $tip == '')
 	 	 
   echo "<tr>";
   echo "<td align=LEFT colspan='2' bgcolor='#FFFFFF' ><font size='2' text color='#003366'><b>VoBo COORDINADOR :</b></font></td>";
-  echo "<td align=LEFT colspan='9' bgcolor='#FFFFFF' ><font size='2' text color='#003366'><b>HECTOR ARIAS RICO</b></font></td>";
+  echo "<td align=LEFT colspan='9' bgcolor='#FFFFFF' ><font size='2' text color='#003366'><b>CARLOS ALBERTO GONZALEZ</b></font></td>";
   echo "</tr>";
   
   echo "</table>";
