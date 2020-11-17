@@ -68,6 +68,8 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 			$wactualiz='2020-03-02';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+// 	2020-11-13	Edwin MG				- Se cambia función mysqli_connect, que se conectaba a la BD de producción y se cambia por función nueva
+//										  pmla_connectdb agregada en el conex.php
 // 	2020-03-02	Jessica Madrid Mejía	- Se agrega el parámetro default_socket_timeout con el tiempo configurado en minutos en 
 // 										  root_000051 (tiempoEsperaWSMipres) para evitar que se interrumpa el consumo de los web 
 // 										  services debido a que el alto tiempo de respuesta desde el ministerio, si al terminar de 
@@ -1350,7 +1352,7 @@ else
 		if (!mysqli_ping($conex)) 
 		{
 			//Conexión a la base de datos
-			$conex = mysqli_connect($ipBdProduccion,'root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
+			$conex = pmla_connectdb() or die("No se realizo Conexion");
 		}
 		
 		return $resultado;
