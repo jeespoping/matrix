@@ -300,7 +300,7 @@ function traerDatosMes( $fechaInicial, $fechaFinal, $iteracion, $limite ){
             $resultadosDetalle[$articulo][$fecha][$tipoMovimiento] += odbc_result($resFac,'cantidad')*1;
         }
     }
-    $conex = mysqli_connect($ipServidor,'root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
+    $conex = pmla_connectdb or die("No se realizo Conexion");
     foreach( $resultadosDetalle as $keyArticulo => $fechas ){
         foreach( $resultadosDetalle[$keyArticulo] as $keyFecha => $datos ){
             $entradas      = $datos['E'];
@@ -436,7 +436,7 @@ function consultarDatosMes( $fechaInicial, $fechaFinal, $iteracion, $limite, $ar
         }
     }
     echo "<br><pre>".print_r( $resultadosDetalle, true )."</pre>";
-    //$conex = mysqli_connect('132.1.18.95','root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
+    
     foreach( $resultadosDetalle as $keyArticulo => $fechas ){
         foreach( $resultadosDetalle[$keyArticulo] as $keyFecha => $datos ){
             $entradas      = $datos['E'];
@@ -563,7 +563,7 @@ function consultarEstadoInventarioXmes(){
 
 function borrarDatosConsumoMesXfaltaCierre( $fechaInicial, $fechaFinal ){
     global $wbasedato, $ipServidor;
-    $conex2 = mysqli_connect($ipServidor,'root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
+    $conex2 = pmla_connectdb() or die("No se realizo Conexion");
 
     $query =  " DELETE FROM {$wbasedato}_000321 WHERE Cinfec BETWEEN '{$fechaInicial}' AND '{$fechaFinal}'";
     echo "<br> edb-> ".$query;
@@ -574,7 +574,7 @@ function borrarDatosConsumoMesXfaltaCierre( $fechaInicial, $fechaFinal ){
 
 function guardarMesCerradoEnUnix( $ano, $mes, $fechaCierreUnix ){
     global $wbasedato, $fechaActual, $horaActual, $ipServidor;
-    $conex3 = mysqli_connect($ipServidor,'root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
+    $conex3 = pmla_connectdb() or die("No se realizo Conexion");
 
     $query = "INSERT INTO `{$wbasedato}_000323` (`Medico`, `Fecha_data`, `Hora_data`, `Emiano`, `Emimes`, `Emifci`, `Emigdc`, `Emiest`, `Seguridad`)
                             VALUES ('{$wbasedato}', '{$fechaActual}', '{$horaActual}', '{$ano}', '{$mes}', '{$fechaCierreUnix}', 'on', 'on', 'C-{$wbasedato}')";
