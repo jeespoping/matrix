@@ -6508,7 +6508,7 @@ class habitacion{
 		//Si tiene dias de tratamiento
 		//Si tiene dias de trtamiento, miro que la ronda no supere los dias de tratamiento
 		$diasTratatamiento = trim( $diasTratatamiento );
-		if( !empty( $diasTratatamiento ) ){
+		if( !empty( $diasTratatamiento && is_numeric($diasTratatamiento) && is_numeric($info[ 'fechaHoraIncio' ]) ) ){
 			if( strtotime( "$fecha 23:59:59" ) > strtotime( date( "Y-m-d 23:59:59", $info[ 'fechaHoraIncio' ]+( $diasTratatamiento-1 )*24*3600 ) ) ){
 				return;
 			}
