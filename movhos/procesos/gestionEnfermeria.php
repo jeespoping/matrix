@@ -464,7 +464,7 @@ if(isset($operacion) && $operacion == 'validar_clave'){
 	$q = " SELECT *
 		     FROM usuarios
 		    WHERE Codigo = '".$usuario."'
-		      AND Password = '".$contrasena."'
+		      AND Password = SHA1('".$contrasena."')
 		      AND Activo = 'A'  ";
 	$res =  mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 	$num =  mysql_num_rows($res);
@@ -5953,6 +5953,7 @@ $actualiz="2020-05-15";
 /**********************************************************************************************************************************************************
 
  * Modificaciones:
+ * 2020-11-19: Edwin MG				- Se modifica para que se validen las claves de acuerdo a la nueva encriptación
  * 2020-08-12: Edwin MG				- Se hacen cambios varios para poder trasladar pacientes a otros servicio (ejemplo, urgencias) y se parametriza para por
  *									  cco si el cco de costo al cual va a ser traladado el paciente debe tener saldo 0 (movhos 11 campo ccosst = on)
  *									  Si este campo está inactivo (movhos 11 campo ccosst = off) se asuma que es un traslado temporal
