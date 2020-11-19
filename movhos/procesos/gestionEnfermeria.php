@@ -16002,7 +16002,7 @@ else{
 			$ipod="off";
 
 			//$cco=" ";
-			$centrosCostos = consultaCentrosCostos($cco);
+			$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccodom = 'on'", "otros" );
 		}
 		else{
 			

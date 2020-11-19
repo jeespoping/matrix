@@ -96,13 +96,10 @@ session_start();
       die( "<b>La sesión a caducado, entre nuevamente a MATRIX o recargue la página principal</b>" );
     else
     {
-        
-
-        
 
         include_once("root/comun.php");
         include_once("root/magenta.php"); 
-        
+		
         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
         $wactualiz = "Septiembre 26 de 2017"; // Aca se coloca la ultima fecha de actualizacion de este programa //                          
         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
@@ -113,7 +110,13 @@ session_start();
         $whora = (string)date("H:i:s");
 
         encabezado("RECIBO DE DEVOLUCIONES",$wactualiz, "clinica");
-                
+		
+        $srvDomiciliario = false;
+		if( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ){
+			$srvDomiciliario = true;
+			echo "<input type='HIDDEN' name='servicioDomiciliario' value='" . $servicioDomiciliario . "'>"; 
+		}
+		
         if (strpos($user, "-") > 0)
             $wuser = substr($user, (strpos($user, "-") + 1), strlen($user)); 
             
@@ -158,11 +161,22 @@ session_start();
              // . "   FROM " . $wtabcco . ", " . $wbasedato . "_000011"
              // . "  WHERE " . $wtabcco . ".ccocod = " . $wbasedato . "_000011.ccocod ";
 			 
-			 $q = "SELECT ccocod,cconom 
-					 FROM ".$wbasedato."_000011 
-					WHERE (Ccohos='on' OR Ccourg='on' OR (ccofac='on' AND Ccotra='on') ) 
-					  AND Ccoest='on'
-					  ORDER BY ccocod;";
+			 if( $srvDomiciliario )
+			 { 
+				$q = "SELECT ccocod,cconom 
+						 FROM ".$wbasedato."_000011 
+						WHERE Ccoest='on'
+						  AND Ccodom = 'on'
+					 ORDER BY ccocod;";
+			 }
+			 else{
+				 $q = "SELECT ccocod,cconom 
+						 FROM ".$wbasedato."_000011 
+						WHERE (Ccohos='on' OR Ccourg='on' OR (ccofac='on' AND Ccotra='on') ) 
+						  AND Ccoest='on'
+						  ORDER BY ccocod;";
+			 }
+			 
 					  
             $res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
             $num = mysql_num_rows($res);
@@ -300,7 +314,7 @@ session_start();
                         else
                             echo "<td>&nbsp</td>"; 
                         // ======================================================================================================
-                        echo "<td align=center class=link><A href='Recibo_devoluciones.php?wnde=".$wnde."&wbasedato=".$wbasedato."&wemp_pmla=".$wemp_pmla."&whis=".$whis."&wing=".$wing."&wpac=".$wpac."&wcco=".trim($wcco)."&whab=".$whab."&wser=".$wser."'>Recibir</A></td>";
+                        echo "<td align=center class=link><A href='Recibo_devoluciones.php?wnde=".$wnde."&wbasedato=".$wbasedato."&wemp_pmla=".$wemp_pmla."&whis=".$whis."&wing=".$wing."&wpac=".$wpac."&wcco=".trim($wcco)."&whab=".$whab."&wser=".$wser.( $servicioDomiciliario == 'on' ? '&servicioDomiciliario=on' : '' )."'>Recibir</A></td>";
                         echo "</tr>";
                     } 
                     echo "<meta http-equiv='refresh' content='40;url=Recibo_devoluciones.php?wbasedato=".$wbasedato."&wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'>";
@@ -796,14 +810,14 @@ session_start();
                     echo "<input type='HIDDEN' name= 'whab' value='" . $whab . "'>";
 					echo "<input type='HIDDEN' name= 'wser' value='" . $wser . "'>";
                     echo "<tr>";
-                    echo "<td align=center colspan=11><A href='Recibo_devoluciones.php?wbasedato=" . $wbasedato . "&wemp_pmla=" . $wemp_pmla . "&wcco=" . $wcco . "'><b>Retornar</b></A></td>";
+                    echo "<td align=center colspan=11><A href='Recibo_devoluciones.php?wbasedato=" . $wbasedato . "&wemp_pmla=" . $wemp_pmla . "&wcco=" . $wcco .( $servicioDomiciliario == 'on' ? '&servicioDomiciliario=on' : '' ). "'><b>Retornar</b></A></td>";
                     echo "</tr>";
                 } 
             } 
             if (!isset($reporte))
             {
                 echo "<tr>";
-                echo "<th align=center colspan=11><A href='Recibo_devoluciones.php?wbasedato=" . $wbasedato . "&wemp_pmla=" . $wemp_pmla . "'><b>Inicio</b></A></td>";
+                echo "<th align=center colspan=11><A href='Recibo_devoluciones.php?wbasedato=" . $wbasedato . "&wemp_pmla=" . $wemp_pmla.( $servicioDomiciliario == 'on' ? '&servicioDomiciliario=on' : '' ) . "'><b>Inicio</b></A></td>";
                 echo "</tr>";
             } 
         } 
