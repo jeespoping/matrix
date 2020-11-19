@@ -45,6 +45,9 @@ function GetIP()
 
 function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 {
+	$codigo = mysqli_real_escape_string( $conex, $codigo );
+	$usera 	= mysqli_real_escape_string( $conex, $usera );
+	
 	switch($grupo)
 	{
 		case 'AMERICAS':
@@ -63,16 +66,33 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 	switch($grupo)
 	{
 		case 'AMERICAS':
-			$query = "select codopt,descripcion,programa,ruta from root_000021 where codgru='".$codigo."' and usuarios like '%".$usera."%' order by codopt ";
+			$query = "select codopt,descripcion,programa,ruta from root_000021 where codgru=? and usuarios like ? order by codopt ";
 		break;
 	}
-	$err = mysql_query($query,$conex);
-	$num = mysql_num_rows($err);
+	// $err = mysql_query($query,$conex);
+	// $num = mysql_num_rows($err);
+	
+	/* crear una sentencia preparada */
+	$stmt = mysqli_prepare($conex, $query );
+	
+	/* ligar parámetros para marcadores */
+	$usera_pq	= '%'.$usera.'%';
+	mysqli_stmt_bind_param($stmt, "ss", $codigo, $usera_pq );
+	
+	/* ejecutar la consulta */
+	$num = mysqli_stmt_execute($stmt);
+	
+	$err = mysqli_stmt_get_result($stmt);
+	
+	//Cerrando la sentencia
+	mysqli_stmt_close($stmt);
+	
 	if ($num > 0)
 	{
-		for ($i=0;$i<$num;$i++)
+		// for ($i=0;$i<$num;$i++)
+		while( $row = mysql_fetch_array($err) )
 		{
-			$row = mysql_fetch_array($err);
+			// $row = mysql_fetch_array($err);
 			if(substr(strtolower($row[2]),0,31) == "f1.php?accion=w&grupo=americas&")
 			{
 				$w++;
@@ -96,6 +116,7 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 			}
 		}
 	}
+	
 	$w++;
 	$DATA[$w][0]=$codigo;
 	$DATA[$w][1]=$row[0];
@@ -105,14 +126,21 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 }
 
 function eliminarPasswordTemporal($conex, $codigo)
-{
+{	
 	$update = " UPDATE usuarios 
 				   SET PasswordTemporal='',
 					   FechaPasswordTemp='0000-00-00',
 					   HoraPasswordTemp='00:00:00'
 				 WHERE Codigo='".$codigo."';";
+	
+	$stUpdate = mysqli_prepare( $conex, $update );
 
-	$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $update . " - " . mysqli_error($conex));
+	mysqli_stmt_bind_param( $stUpdate, "s", $codigo );
+
+	/* Ejecutar la sentencia */
+	mysqli_stmt_execute( $stUpdate ) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $update . " - " . mysqli_error($conex));
+	
+	mysqli_stmt_close( $stUpdate );
 }
 
 function validarTiempoRestablecer($conex, $codigo, $fechaPasswordTemp, $horaPasswordTemp)
@@ -540,6 +568,8 @@ else
 		}
 		else
 		{
+			$password = sha1( $password );
+			
 			@session_start();
 			if (!isset($user))
 			{
@@ -556,37 +586,48 @@ else
 					$_SESSION['password'] = $password;
 				}
 			}
-
+			
 			mysql_select_db("matrix") or die ("ERROR AL CONECTARSE A MATRIX");
+			
 			$query = "SELECT codigo,prioridad,grupo,password,activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp 
 						FROM usuarios 
-					   WHERE codigo='".$codigo."';";
-			$err = mysql_query($query,$conex) or die (mysql_errno().":".mysql_error());
-			$num = mysql_num_rows($err);
+					   WHERE codigo=?";
+			
+			/* crear una sentencia preparada */
+			$stmt = mysqli_prepare($conex, $query );
+			
+			/* ligar parámetros para marcadores */
+			mysqli_stmt_bind_param($stmt, "s", $codigo);
+			
+			/* ejecutar la consulta */
+			$num = mysqli_stmt_execute($stmt);
 			
 			$login = false;
 			//Se modifica mensaje de respuesta Mavila 29-10-2020 :)
 			//$mensajeLogin = "EL USUARIO NO EXISTE";
 			$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";
-			if($num > 0)
-			{
-				$row = mysql_fetch_array($err);
-				$prioridad=$row['prioridad'];
-				$codigo=$row['codigo'];
-				$grupo=$row['grupo'];
-				$documento=$row['Documento'];
-				$email=$row['Email'];
+			// if($num > 0)
+			if( $num )
+			{				
+				/* ligar variables de resultado */
+				mysqli_stmt_bind_result( $stmt, $codigo, $prioridad, $grupo, $pwd, $activo, $documento, $email, $passwordTemporal, $fechaPasswordTemp, $horaPasswordTemp );
 				
-				if($row['activo']=="A")
+				/* obtener valor */
+				mysqli_stmt_fetch($stmt);
+				
+				/* cerrar sentencia */
+				mysqli_stmt_close($stmt);
+				
+				if($activo=="A")
 				{
-					if($row['password']==$password)
+					if($pwd==$password)
 					{
 						$login = true;
 						$mensajeLogin = "";
 					}
 					else
 					{
-						if($row['PasswordTemporal']=="")
+						if($passwordTemporal=="")
 						{
 							$login = false;
 							//Se modifica mensaje de respuesta Mavila 29-10-2020 :)
@@ -595,16 +636,23 @@ else
 						}
 						else
 						{
-							$restablecerValido = validarTiempoRestablecer($conex, $codigo, $row['FechaPasswordTemp'], $row['HoraPasswordTemp']);
+							$restablecerValido = validarTiempoRestablecer($conex, $codigo, $fechaPasswordTemp, $horaPasswordTemp );
 							if($restablecerValido)
 							{
-								if($row['PasswordTemporal']==$password)
-								{
+								if( $passwordTemporal ==$password)
+								{	
 									$update = " UPDATE usuarios 
 												   SET Feccap='".date("Y-m-d",strtotime(date("Y-m-d")."- 1 days"))."'
-												 WHERE Codigo='".$codigo."';";
+											     WHERE Codigo=?;";
+									
+									$stUpdate = mysqli_prepare( $conex, $update );
 
-									$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $update . " - " . mysqli_error($conex));
+									mysqli_stmt_bind_param( $stUpdate, "s", $codigo );
+
+									/* Ejecutar la sentencia */
+									mysqli_stmt_execute( $stUpdate );
+									
+									mysqli_stmt_close( $stUpdate );
 									
 									$login = true;
 									$mensajeLogin = "";
@@ -631,7 +679,8 @@ else
 					$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";					
 				}
 				
-				mysql_free_result($err);
+				// mysql_free_result($err);
+				// mysqli_stmt_close($stmt);
 			}
 			
 			mysql_close($conex);
@@ -859,21 +908,72 @@ else
 
 					
 
-					$query = "select Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo, Empresa, Ccostos, Activo  from usuarios where codigo = '".substr($user,2,strlen($user))."'";
-					$err = mysql_query($query,$conex);
-					$num = mysql_num_rows($err);
-					$row = mysql_fetch_array($err);
-					if(date("Y-m-d") > $row[3])
+					// $query = "select Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo, Empresa, Ccostos, Activo  from usuarios where codigo = '".substr($user,2,strlen($user))."'";
+					// $err = mysql_query($query,$conex);
+					// $num = mysql_num_rows($err);
+					// $row = mysql_fetch_array($err);
+					
+					$query = "SELECT Feccap, Prioridad  
+							    FROM usuarios 
+							   WHERE codigo = ? ";
+							   
+					$st = mysqli_prepare( $conex, $query );
+					
+					$user_pq = substr($user,2,strlen($user));
+					
+					/* ligar parámetros para marcadores */
+					mysqli_stmt_bind_param($st, "s", $user_pq );
+
+					/* ejecutar la consulta */
+					mysqli_stmt_execute($st);
+
+					/* ligar variables de resultado */
+					mysqli_stmt_bind_result( $st, $feccap, $prioridad );
+
+					/* obtener valor */
+					mysqli_stmt_fetch($st);
+					
+					 /* cerrar sentencia */
+					mysqli_stmt_close($st);
+
+					
+					
+					if(date("Y-m-d") > $feccap)
 						$grupo = "PASSWD";
 					echo "<center>";
 					echo "<hr>";
-					$query = "select descripcion from usuarios where codigo = '".$key."'";
-					$err1 = mysql_query($query,$conex);
-					$row1 = mysql_fetch_array($err1);
+					
+					
+					// $query = "select descripcion from usuarios where codigo = '".$key."'";
+					// $err1 = mysql_query($query,$conex);
+					// $row1 = mysql_fetch_array($err1);
+					
+					$query = "SELECT descripcion 
+								FROM usuarios 
+							   WHERE codigo = ? ";
+					
+					$st = mysqli_prepare( $conex, $query );
+					
+					/* ligar parámetros para marcadores */
+					mysqli_stmt_bind_param($st, "s", $key );
+
+					/* ejecutar la consulta */
+					mysqli_stmt_execute($st);
+
+					/* ligar variables de resultado */
+					mysqli_stmt_bind_result( $st, $descripcion );
+
+					/* obtener valor */
+					mysqli_stmt_fetch($st);
+					
+					 /* cerrar sentencia */
+					mysqli_stmt_close($st);
+					
+					
 					echo "<div class='tipoScreen02'>";
 					echo "<center><table border=0>";
 					echo "<tr><td Class='tipoT'>Usuario : ".substr($user,2,strlen($user))."</td></tr>";
-					echo "<tr><td Class='tipoT1'>".$row1[0]."</td></tr>";
+					echo "<tr><td Class='tipoT1'>".$descripcion."</td></tr>";
 					echo "<tr><td Class='tipoT'>IP: ".$IIPP."</td></tr>";
 					echo "</table></center>";
 					echo "</div>";
@@ -887,23 +987,56 @@ else
 							echo "<hr>";
 							echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='help.php' target='main'>Manual de Operacion</A>";
 							echo "<hr>";
+							// $key = substr($user,2,strlen($user));
+							// $query = "select codigo,descripcion from root_000020 where usuarios like '%-".$key."-%' ";
+							// $query .= " or usuarios like '".$key."-%' ";
+							// $query .= " or usuarios like '%-".$key."' ";
+							// $query .= " or usuarios = '".$key."' ";
+							// $query .= " order by codigo";
+							// $err = mysql_query($query,$conex);
+							// $num = mysql_num_rows($err);
+							// if ($num > 0)
+							// {
+								// for ($i=0;$i<$num;$i++)
+								// {
+									// $row = mysql_fetch_array($err);
+									// echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='f1.php?accion=W&grupo=".$grupo."&amp;codigo=".$row[0]."' target='main'>".strtoupper($row[1])."</A>";
+									// echo "<hr>";
+								// }
+							// }
+							
 							$key = substr($user,2,strlen($user));
-							$query = "select codigo,descripcion from root_000020 where usuarios like '%-".$key."-%' ";
-							$query .= " or usuarios like '".$key."-%' ";
-							$query .= " or usuarios like '%-".$key."' ";
-							$query .= " or usuarios = '".$key."' ";
+							$query = "select codigo,descripcion from root_000020 where usuarios like ? ";
+							$query .= " or usuarios like ? ";
+							$query .= " or usuarios like ? ";
+							$query .= " or usuarios = ? ";
 							$query .= " order by codigo";
-							$err = mysql_query($query,$conex);
-							$num = mysql_num_rows($err);
-							if ($num > 0)
+							
+							$st = mysqli_prepare( $conex, $query );
+					
+							/* ligar parámetros para marcadores */
+							$key_1 = "%-".$key."-%";
+							$key_2 = "%-".$key."";
+							$key_3 = "".$key."-%";
+							$key_4 = $key;
+							mysqli_stmt_bind_param($st, "ssss", $key_1, $key_2, $key_3, $key_4 );
+
+							/* ejecutar la consulta */
+							mysqli_stmt_execute($st);
+
+							/* ligar variables de resultado */
+							mysqli_stmt_bind_result( $st, $codigo, $descripcion );
+							
+							/* obtener valor */
+							while( mysqli_stmt_fetch($st) )
 							{
-								for ($i=0;$i<$num;$i++)
-								{
-									$row = mysql_fetch_array($err);
-									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='f1.php?accion=W&grupo=".$grupo."&amp;codigo=".$row[0]."' target='main'>".strtoupper($row[1])."</A>";
-									echo "<hr>";
-								}
+								echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='f1.php?accion=W&grupo=".$grupo."&amp;codigo=".$codigo."' target='main'>".strtoupper($descripcion)."</A>";
+								echo "<hr>";
 							}
+							
+							/* cerrar sentencia */
+							mysqli_stmt_close($st);
+							
 							echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='F1.php?END=on' target='_top' class='myButton'>Salida Segura</A>";
 							echo "<hr>";
 							echo "</ol>";
@@ -921,9 +1054,9 @@ else
 							echo "<font size=2><ol>";
 							echo "<li>Menu de Maestros";
 							echo "<ol>";
-							if ($num > 0)
-							{
-								if ($row[6] > 1)
+							// if ($num > 0)
+							// {
+								if ($prioridad > 1)
 								{			
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='F1.php?accion=M&grupo=".$grupo."' target='main'>Inicio</A>";
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='formularios.php' target='main'>Formularios</A>";
@@ -934,7 +1067,7 @@ else
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='seguridad_matrix.php' target='main'>Control de Acceso</A>";
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='defpro.php' target='main'>Definicion de Procesos</A>";
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='defrep.php' target='main'>Definicion de Reportes</A>";
-									if ($row[6] > 2)
+									if ($prioridad > 2)
 										echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='usuarios.php' target='main'>Usuarios</A>";
 								}
 								else
@@ -946,7 +1079,7 @@ else
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34).">Control de Numeracion";
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34).">Control de Acceso";
 								}
-							}
+							// }
 							echo "</ol>";
 							echo "<hr>";
 							echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='registro.php' target='main'>REGISTRO</A>";
