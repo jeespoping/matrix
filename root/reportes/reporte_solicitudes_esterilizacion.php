@@ -313,7 +313,7 @@ else
 		global $wemp_pmla;	
 		
 		$ipMatrixFinanciero = consultarAliasPorAplicacion($conex, $wemp_pmla, 'ipMatrixFinanciero');
-		$conexMatrixFinanciero = pmla_connectdb('Financiero') or die("No se realizo Conexion");
+		$conexMatrixFinanciero = auna_connectdb('Financiero') or die("No se realizo Conexion");
 	
 		$arrayCostos = array();
 		if(count($arrayInsumos)>0)
