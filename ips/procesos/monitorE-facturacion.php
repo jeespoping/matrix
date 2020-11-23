@@ -368,7 +368,9 @@ if(isset($accion))
 					$minutos	= ceil((strtotime($horaAct)-strtotime($horaEnvio)) / 60);
 					
 					// --> Activar boton de reenviar, si tiene permiso y ya fue consultado el estado y no tiene el aceptado por la DIAN
-					if($verBtnReenviar && $infoFac['Faevac'] == "on" && $infoFac['Faeace'] != "on" && $resWsDE['legalStatus'] != "ACCEPTED "){
+					//if($verBtnReenviar && $infoFac['Faevac'] == "on" && $infoFac['Faeace'] != "on" && $resWsDE['legalStatus'] != "ACCEPTED ")
+					if($verBtnReenviar && $infoFac['Faevac'] == "on" && $infoFac['Faeace'] != "on" && $resWsDE['legalStatus'] != "ACCEPTED " && $resWsDE['errorMessage'] != "ERROR-DI2" && !isset($resWsDE['errorMessage']["ERROR-DI2"]))	
+					{
 						$respuesta["html"].= '
 						<td class="text-center"><button type="button" class="btn btn-success btn-sm" onClick="reenviarDoc(\''.$infoFac['Faefue'].'\', \''.$infoFac['Faedoc'].'\')"><span class="glyphicon glyphicon-repeat" aria-hidden="true"></span></button></td>';
 					}
