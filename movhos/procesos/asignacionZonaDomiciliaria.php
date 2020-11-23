@@ -66,8 +66,9 @@ function consultarCcoDomiciliarios( $conex, $wbasedato ){
 	
 	$sql = "SELECT Ccocod, Cconom
 			  FROM ".$wbasedato."_000011
-			 WHERE ccodom = 'on'
-			   AND ccoest = 'on'
+			 WHERE ccodom  = 'on'
+			   AND ccoest  = 'on'
+			   AND ccotra != 'on'
 			 ";
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ". mysql_error() );
@@ -537,7 +538,7 @@ else{
 		<div>
 			<table style='margin: 0 auto;'>
 				<tr class='encabezadotabla'>
-					<td>SELECCIOE CENTRO DE COSTOS</td>
+					<td>SELECCIONE CENTRO DE COSTOS</td>
 				</tr>
 				<tr class='fila1' style='text-align:center;'>
 					<td><?php pintarCcos( $wccos ); ?></td>
@@ -546,6 +547,12 @@ else{
 			
 			<div id='dvpacientes' style='padding: 20px;'>
 			</div>
+		</div>
+		
+		<div>
+			<center>
+				<input type="button" value="Cerrar ventana" onclick="javascript:cerrarVentana();">
+			</center>
 		</div>
 	
 		<?php
