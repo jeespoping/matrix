@@ -10,8 +10,8 @@ Modificaciones
                              puede tomar mucho tiempo(provocando desconexiones automáticas), Se modifica el programa para que obtenga la ip a la que se conectará posteriormente desde el mismo $conex original por medio de la función mysqli_get_host_info().
 
  */
-include_once("root/comun.php");
-include_once("conex.php");
+//include_once("root/comun.php");
+//include_once("conex.php");
 $wbasedato    = "cliame";
 $wemp_pmla    = "01";
 $conexunix    = odbc_pconnect('inventarios','informix','sco') or die("No se ralizo Conexion con Unix");
