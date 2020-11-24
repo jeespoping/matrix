@@ -25,7 +25,7 @@ echo "<form name='cotizaciones20' action='cotizaciones20.php' method=post>";
 $fecha = date("Y-m-d");  
 //$wano=substr($fecha,0,4);   // ASI SERA NORMALMENTE SI SE DEJA COTIZAR HASTA EL 31 DE DIC
 
-$wano=2019;                  //COMO PARA EL 2020 COTIZARAN TODO ENERO TOCO ASI.
+$wano=2020;                  //COMO PARA EL 2021 COTIZARAN TODO ENERO TOCO ASI.
 
 //$user="1-07013";               // El codigo asignado para entrar a matrix se deben asociar 
 /**********************/         // en la tabla cotizaci_000005 al Codigo del Proveedor
