@@ -174,6 +174,7 @@ session_start();
 						 FROM ".$wbasedato."_000011 
 						WHERE (Ccohos='on' OR Ccourg='on' OR (ccofac='on' AND Ccotra='on') ) 
 						  AND Ccoest='on'
+						  AND Ccodom != 'on'
 						  ORDER BY ccocod;";
 			 }
 			 
