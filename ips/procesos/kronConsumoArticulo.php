@@ -6,14 +6,12 @@
  * Descripcion  :   consolida los movimientos de inventarios en unix en matrix.
 
 Modificaciones
- - 	2020-11-13	Edwin MG				- Se cambia función mysqli_connect, que se conectaba a la BD de producción y se cambia por función nueva
-										  pmla_connectdb agregada en el conex.php
  - 2019-11-05 Camilo Zapata: Teniendo en cuenta que este programa se conecta y se desconecta iterativamente puesto que traer datos desde unix
                              puede tomar mucho tiempo(provocando desconexiones automáticas), Se modifica el programa para que obtenga la ip a la que se conectará posteriormente desde el mismo $conex original por medio de la función mysqli_get_host_info().
 
  */
-include_once("root/comun.php");
-include_once("conex.php");
+//include_once("root/comun.php");
+//include_once("conex.php");
 $wbasedato    = "cliame";
 $wemp_pmla    = "01";
 $conexunix    = odbc_pconnect('inventarios','informix','sco') or die("No se ralizo Conexion con Unix");
@@ -175,10 +173,8 @@ function traerDatosMesNuevo( $fechaInicial, $fechaFinal ){
             $resultadosDetalle[$articulo][$fecha][$tipoMovimiento] += odbc_result($resFac,'cantidad')*1;
         }
     }
-    
-	$conex = pmla_connectdb or die("No se realizo Conexion");
-    
-	foreach( $resultadosDetalle as $keyArticulo => $fechas ){
+    $conex = mysqli_connect( $ipServidor,'root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
+    foreach( $resultadosDetalle as $keyArticulo => $fechas ){
         foreach( $resultadosDetalle[$keyArticulo] as $keyFecha => $datos ){
             $entradas      = $datos['E'];
             $salidas       = $datos['S'];
@@ -300,7 +296,7 @@ function traerDatosMes( $fechaInicial, $fechaFinal, $iteracion, $limite ){
             $resultadosDetalle[$articulo][$fecha][$tipoMovimiento] += odbc_result($resFac,'cantidad')*1;
         }
     }
-    $conex = pmla_connectdb or die("No se realizo Conexion");
+    $conex = mysqli_connect($ipServidor,'root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
     foreach( $resultadosDetalle as $keyArticulo => $fechas ){
         foreach( $resultadosDetalle[$keyArticulo] as $keyFecha => $datos ){
             $entradas      = $datos['E'];
@@ -436,7 +432,7 @@ function consultarDatosMes( $fechaInicial, $fechaFinal, $iteracion, $limite, $ar
         }
     }
     echo "<br><pre>".print_r( $resultadosDetalle, true )."</pre>";
-    
+    //$conex = mysqli_connect('132.1.18.95','root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
     foreach( $resultadosDetalle as $keyArticulo => $fechas ){
         foreach( $resultadosDetalle[$keyArticulo] as $keyFecha => $datos ){
             $entradas      = $datos['E'];
@@ -563,7 +559,7 @@ function consultarEstadoInventarioXmes(){
 
 function borrarDatosConsumoMesXfaltaCierre( $fechaInicial, $fechaFinal ){
     global $wbasedato, $ipServidor;
-    $conex2 = pmla_connectdb() or die("No se realizo Conexion");
+    $conex2 = mysqli_connect($ipServidor,'root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
 
     $query =  " DELETE FROM {$wbasedato}_000321 WHERE Cinfec BETWEEN '{$fechaInicial}' AND '{$fechaFinal}'";
     echo "<br> edb-> ".$query;
@@ -574,7 +570,7 @@ function borrarDatosConsumoMesXfaltaCierre( $fechaInicial, $fechaFinal ){
 
 function guardarMesCerradoEnUnix( $ano, $mes, $fechaCierreUnix ){
     global $wbasedato, $fechaActual, $horaActual, $ipServidor;
-    $conex3 = pmla_connectdb() or die("No se realizo Conexion");
+    $conex3 = mysqli_connect($ipServidor,'root','q6@nt6m', 'matrix') or die("No se realizo Conexion");
 
     $query = "INSERT INTO `{$wbasedato}_000323` (`Medico`, `Fecha_data`, `Hora_data`, `Emiano`, `Emimes`, `Emifci`, `Emigdc`, `Emiest`, `Seguridad`)
                             VALUES ('{$wbasedato}', '{$fechaActual}', '{$horaActual}', '{$ano}', '{$mes}', '{$fechaCierreUnix}', 'on', 'on', 'C-{$wbasedato}')";
