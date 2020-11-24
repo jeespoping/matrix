@@ -12,7 +12,7 @@
 	 *Redirecciona a la pagina inicial
 	 ******************************************************************************************************************************/
 	 function inicio(servicio){
- 		document.location.href='Recibo_dispensacion.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&servicio='+servicio+'&servicioDomiciliario='+<?= "'".@$_GET['servicioDomiciliario']."'" ?>;
+ 		document.location.href='Recibo_dispensacion.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&servicio='+servicio+'&servicioDomiciliario='+( $("[name=servicioDomiciliario]").length > 0 ? $("[name=servicioDomiciliario]").val() : '' );
 	 }
 	/******************************************************************************************************************************
 	 *Redirecciona a la pagina inicial
@@ -333,14 +333,14 @@
 		 		cont1++;
 
 		 	}
-	 	if(datos != ''){
-		 	document.forms.forma.wdatos.value = datos;
-		 	document.forms.forma.waccion.value = 'b';
-		 	document.forms.forma.submit();
-	 	} else {
-	 		alert("Nada para grabar.");
-	 	}
-	 	document.getElementById("btnGrabar").disabled = false;
+			if(datos != ''){
+				document.forms.forma.wdatos.value = datos;
+				document.forms.forma.waccion.value = 'b';
+				document.forms.forma.submit();
+			} else {
+				alert("Nada para grabar.");
+			}
+			document.getElementById("btnGrabar").disabled = false;
 		}
 	 }
 	 /******************************************************************************************************************************
