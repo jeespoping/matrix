@@ -32,8 +32,9 @@ else
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	if(isset($ok))
 	{
-		$query = "lock table ".$empresa."_000017 LOW_PRIORITY WRITE ";
-		$err1 = mysql_query($query,$conex) or die("ERROR BLOQUEANDO CONSECUTIVO");
+		// 2020-11-20 se desactiva para reducir los bloqueos a las tabla citasfi_000017
+		//$query = "lock table ".$empresa."_000017 LOW_PRIORITY WRITE ";
+		//$err1 = mysql_query($query,$conex) or die("ERROR BLOQUEANDO CONSECUTIVO");
 		for ($i=0;$i<$num;$i++)
 		{
 			if(isset($fac[$i]))
@@ -42,8 +43,8 @@ else
 				$err3 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 			}
 		}
-		$query = " UNLOCK TABLES";													
-		$err1 = mysql_query($query,$conex) or die("ERROR DESBLOQUEANDO");
+		//$query = " UNLOCK TABLES";													
+		//$err1 = mysql_query($query,$conex) or die("ERROR DESBLOQUEANDO");
 		unset($ok);
 		unset($wpac);
 	}

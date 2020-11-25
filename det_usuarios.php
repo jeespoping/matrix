@@ -61,11 +61,11 @@ else
 			switch ($wpar)
 			{
 				case 1:
-				$query = "update usuarios set Password='".$Password."', Passdel='".$Passdel."', Tablas='".$Tablas."', Prioridad=".$Prioridad.", Grupo='".$Grupo."', Activo='".substr($Activo,0,1)."', Descripcion='".$Descripcion."', Feccap='".$Feccap."', Empresa='".substr($Empresa,0,strpos($Empresa,"-"))."', Ccostos='".substr($Ccostos,0,strpos($Ccostos,"-"))."', Documento='".$Documento."', Email='".$Email."', PasswordTemporal='".$PasswordTemporal."', FechaPasswordTemp='".$FechaPasswordTemp."', HoraPasswordTemp='".$HoraPasswordTemp."' where codigo='".strtolower($Codigo)."'";
+				$query = "update usuarios set Password=SHA1('".$Password."'), Passdel='".$Passdel."', Tablas='".$Tablas."', Prioridad=".$Prioridad.", Grupo='".$Grupo."', Activo='".substr($Activo,0,1)."', Descripcion='".$Descripcion."', Feccap='".$Feccap."', Empresa='".substr($Empresa,0,strpos($Empresa,"-"))."', Ccostos='".substr($Ccostos,0,strpos($Ccostos,"-"))."', Documento='".$Documento."', Email='".$Email."', PasswordTemporal='".$PasswordTemporal."', FechaPasswordTemp='".$FechaPasswordTemp."', HoraPasswordTemp='".$HoraPasswordTemp."' where codigo='".strtolower($Codigo)."'";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				break;
 				case 2:
-				$query = "insert usuarios values ('".strtolower($Codigo)."','".$Password."','".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."','".$PasswordTemporal."','".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
+				$query = "insert usuarios values ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				break;
 			}

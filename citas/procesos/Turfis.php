@@ -756,12 +756,13 @@ else
 			$e=-1;
 			if(valgen($ok,$conex,$wced,$wnom,$wres,$wtip,$werr,$e))
 			{
-				$query = "lock table ".$empresa."_000017 LOW_PRIORITY WRITE ";
-				$err1 = mysql_query($query,$conex) or die("ERROR BLOQUEANDO ARCHIVO DE ARCHIVOS : ".mysql_errno().":".mysql_error());
+				// 2020-11-20 se desactiva para reducir los bloqueos a las tabla citasfi_000017
+				//$query = "lock table ".$empresa."_000017 LOW_PRIORITY WRITE ";
+				//$err1 = mysql_query($query,$conex) or die("ERROR BLOQUEANDO ARCHIVO DE ARCHIVOS : ".mysql_errno().":".mysql_error());
 				if(ING_TUR($key,$conex,$wced,$wnom,$wres,$wobs,$wter,$wtip,$wfecha,$whin,$werr,$e,$Wnum,$wmax))
 					$ok=0;
-				$query = " UNLOCK TABLES";
-				$err1 = mysql_query($query,$conex) or die("ERROR DESBLOQUEANDO TABLAS : ".mysql_errno().":".mysql_error());	
+				//$query = " UNLOCK TABLES";
+				//$err1 = mysql_query($query,$conex) or die("ERROR DESBLOQUEANDO TABLAS : ".mysql_errno().":".mysql_error());	
 				if($ok != 0)
 					$ok = 1;
 			}
@@ -787,8 +788,9 @@ else
 		
 		if(isset($ok) and $ok == 1 and isset($Wnum) and isset($numero) and $numero > 0)
 		{
-			$query = "lock table ".$empresa."_000017 LOW_PRIORITY WRITE ";
-			$err1 = mysql_query($query,$conex) or die("ERROR BLOQUEANDO ARCHIVO DE ARCHIVOS : ".mysql_errno().":".mysql_error());
+			// 2020-11-20 se desactiva para reducir los bloqueos a las tabla citasfi_000017
+			//$query = "lock table ".$empresa."_000017 LOW_PRIORITY WRITE ";
+			//$err1 = mysql_query($query,$conex) or die("ERROR BLOQUEANDO ARCHIVO DE ARCHIVOS : ".mysql_errno().":".mysql_error());
 			for ($i=0;$i<$numero;$i++)
 			{
 				if(isset($wact[$i]))
@@ -847,8 +849,8 @@ else
 							}	
 						}
 			}
-			$query = " UNLOCK TABLES";
-			$err1 = mysql_query($query,$conex) or die("ERROR DESBLOQUEANDO TABLAS : ".mysql_errno().":".mysql_error());	
+			//$query = " UNLOCK TABLES";
+			//$err1 = mysql_query($query,$conex) or die("ERROR DESBLOQUEANDO TABLAS : ".mysql_errno().":".mysql_error());	
 		}
 		//*******PROCESO DE INFORMACION *********
 		echo "<tr><td align=center colspan=4 id=tipo14><b>TURNOS DE FISIOTERAPIA</td></tr>";

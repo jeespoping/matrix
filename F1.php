@@ -14,6 +14,8 @@ include_once("conex.php");
 	   
 	   REGISTRO DE MODIFICACIONES :
 	   .2020-08-31
+			Se corrige variable para que muestre el esquema por usuarios
+		.2020-08-31
 			Se adiciona la opción de recuperación de usuario y/o contraseña.
 	   .2016-06-03
 			Se agrega imagen del proyecto Ingenia y hipervinculo al video de este proyecto.
@@ -1095,7 +1097,7 @@ else
 							echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='cargaG.php' target='main'>Carga de Archivos Planos Grandes</A>";
 							echo "<hr>";
 							echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='publicar.php?grupo=".$grupo."&amp;prioridad=".$prioridad."' target='main'>Publicacion de Archivos</A>";
-							if ($row[6] > 2)
+							if ($prioridad > 2)
 							{
 								echo "<hr>";
 								echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='esquemas.php' target='main'>Esquemas x Usuario</A>";
