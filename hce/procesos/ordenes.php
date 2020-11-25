@@ -5459,7 +5459,7 @@ if (!$usuarioValidado){
 								$ramaArbol = "";
 								$ramaArbol .= "<li id='R$clase->codigo'><span>$clase->descripcion</span>";
 								$ramaArbol .= "<ul class='ajax'>";
-								$ramaArbol .= "<li id='ajax$clase->codigo'>{url:../../../include/movhos/kardex.inc.php?tree_id=1&consultaAjaxKardex=24&nivelA=$clase->codigo&basedatos=$wbasedato}</li>";
+								$ramaArbol .= "<li id='ajax$clase->codigo'>{url:../../../include/movhos/kardex.inc.php?wemp_pmla=$wemp_pmla&tree_id=1&consultaAjaxKardex=24&nivelA=$clase->codigo&basedatos=$wbasedato}</li>";
 								$ramaArbol .= "</ul>";
 								$ramaArbol .= "</li>";								
 								crearCampo("7","ajax$clase->codigo",@$accionesPestana[$indicePestana.".R$clase->codigo"],array(),"$ramaArbol");
