@@ -4476,9 +4476,10 @@ function mostrarCantidadNPTPendientes($actualizar)
 	}
 }
 
-function queryDA($wemp_pmla,$wbasedato,$bd)
+function queryDA($wemp_pmla,$wbasedatocm,$bd)
 {
 	global $conex;
+	global $wbasedato;
 	
 	$gruposAntibioticos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "gruposMedicamentosAntibioticos" );
 	
@@ -4495,80 +4496,197 @@ function queryDA($wemp_pmla,$wbasedato,$bd)
 		$cadenaGruposAntibioticos = " AND (".substr($cadenaGruposAntibioticos, 0, -3).")";
 	}
 	
-	$qDosisAdaptadas = "  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs, Pacno1,Pacno2,Pacap1,Pacap2, Artgen,Ccocod,Cconom,Habcpa,'Antibiotico' AS tipo  
-							FROM ".$bd."_000054 a,".$bd."_000026,root_000036,root_000037,".$bd."_000018,".$bd."_000020,".$bd."_000011
-						   WHERE Kadfec='".date('Y-m-d')."'
-							 AND Kadsus='off'
-							 AND Kadest='on'
-							 AND Kadart=Artcod
-							 AND (Kaddis='0' AND a.Kadfin=Kadfec)
-							 AND Artest='on'
-							 ".$cadenaGruposAntibioticos."
-							 AND Orihis = Kadhis
-							 AND Oriing = Kading
-							 AND Oriori = '01'
-							 AND Oriced = Pacced
-							 AND Oritid = Pactid
-							 AND Kadhis = Ubihis
-							 AND Kading = Ubiing
-							 AND Kadhis = Habhis
-							 AND Kading = Habing
-							 AND Ccocod = Ubisac
+	/*******************************************************************************
+	 * Consultando las diferentes tablas de habitaciones
+	 *******************************************************************************/
+	$nameSelect = "slCcoDestino";
+	$cco="ccodom";	//Febrero 02 de 2016:
+	$sub="off";
+	$tod="";
+	$ipod="off";
 
-						   UNION
+	//$cco=" ";
+	//Consulto los cco domiciliarios
+	$wcenmez = $wbasedato; 
+	$wbasedato = $bd;
+	$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccodom = 'on'", "otros" );
+	$wbasedato = $wcenmez;
+	
+	$tablasHabitaciones = [];
+	
+	//Hago esto(*otro*) para traer la tabla de ubicaciones por defecto
+	$tablasHabitaciones[] = consultarTablaHabitaciones( $conex, $bd, '*otro*' );
+	
+	foreach( $centrosCostos as $key => $value ){
+		$tablasHabitaciones[] = consultarTablaHabitaciones( $conex, $bd, $value->codigo );
+	}
+	/************************************************************************************/
+	
+	$val = false;
+	$qDosisAdaptadas = '';
+	foreach( $tablasHabitaciones as $tablaHabitaciones ){
+		
+		if( $val ){
+			$qDosisAdaptadas .= " UNION ";
+		}
+		
+		$val = true;
+		
+		$qDosisAdaptadas .= "  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs, Pacno1,Pacno2,Pacap1,Pacap2, Artgen,Ccocod,Cconom,Habcpa,'Antibiotico' AS tipo  
+								FROM ".$bd."_000054 a,".$bd."_000026,root_000036,root_000037,".$bd."_000018,".$tablaHabitaciones.",".$bd."_000011
+							   WHERE Kadfec='".date('Y-m-d')."'
+								 AND Kadsus='off'
+								 AND Kadest='on'
+								 AND Kadart=Artcod
+								 AND (Kaddis='0' AND a.Kadfin=Kadfec)
+								 AND Artest='on'
+								 ".$cadenaGruposAntibioticos."
+								 AND Orihis = Kadhis
+								 AND Oriing = Kading
+								 AND Oriori = '01'
+								 AND Oriced = Pacced
+								 AND Oritid = Pactid
+								 AND Kadhis = Ubihis
+								 AND Kading = Ubiing
+								 AND Kadhis = Habhis
+								 AND Kading = Habing
+								 AND Ccocod = Ubisac
 
-						  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs, Pacno1,Pacno2,Pacap1,Pacap2, Artgen,Ccocod,Cconom,Habcpa,'Dosis adaptada' AS tipo  
-							FROM ".$bd."_000054,".$bd."_000026,root_000036,root_000037,".$bd."_000018,".$bd."_000020,".$bd."_000011
-						   WHERE Kadfec='".date('Y-m-d')."'
-							 AND Kadsus='off'
-							 AND Kadest='on'
-							 AND Kaddoa='on'
-							 AND Kadart=Artcod
-							 AND Artest='on'
-							 AND Orihis = Kadhis
-							 AND Oriing = Kading
-							 AND Oriori = '01'
-							 AND Oriced = Pacced
-							 AND Oritid = Pactid
-							 AND Kadhis = Ubihis
-							 AND Kading = Ubiing
-							 AND Kadhis = Habhis
-							 AND Kading = Habing
-							 AND Ccocod = Ubisac
-							 
-						   UNION
-							 
-						  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs, Pacno1,Pacno2,Pacap1,Pacap2, Artgen,Ccocod,Cconom,Habcpa,'Generica' AS tipo  
-							FROM ".$bd."_000054,root_000036,root_000037,".$bd."_000018,".$bd."_000020,".$bd."_000011,".$wbasedato."_000001,".$wbasedato."_000002,".$bd."_000068
-						   WHERE Kadfec='".date('Y-m-d')."'
-							 AND Kadsus='off'
-							 AND Kadest='on'
-							 AND Orihis = Kadhis
-							 AND Oriing = Kading
-							 AND Oriori = '01'
-							 AND Oriced = Pacced
-							 AND Oritid = Pactid
-							 AND Kadhis = Ubihis
-							 AND Kading = Ubiing
-							 AND Kadhis = Habhis
-							 AND Kading = Habing
-							 AND Ccocod = Ubisac
-							 AND Artcod = Kadart 
+							   UNION
 
-							 AND tippro = 'on' 
-							 AND Tipnco = 'on' 
-							 AND Tipcdo != 'on'
-							 AND Tipest = 'on'
-							 AND Arttip = Tipcod
-							 AND Artcod = Arkcod
-							 AND Artest = 'on'
-							 AND Tiptpr = Arktip
-							 AND Tiptpr IN ('DA','DS','DD')
+							  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs, Pacno1,Pacno2,Pacap1,Pacap2, Artgen,Ccocod,Cconom,Habcpa,'Dosis adaptada' AS tipo  
+								FROM ".$bd."_000054,".$bd."_000026,root_000036,root_000037,".$bd."_000018,".$tablaHabitaciones.",".$bd."_000011
+							   WHERE Kadfec='".date('Y-m-d')."'
+								 AND Kadsus='off'
+								 AND Kadest='on'
+								 AND Kaddoa='on'
+								 AND Kadart=Artcod
+								 AND Artest='on'
+								 AND Orihis = Kadhis
+								 AND Oriing = Kading
+								 AND Oriori = '01'
+								 AND Oriced = Pacced
+								 AND Oritid = Pactid
+								 AND Kadhis = Ubihis
+								 AND Kading = Ubiing
+								 AND Kadhis = Habhis
+								 AND Kading = Habing
+								 AND Ccocod = Ubisac
+								 
+							   UNION
+								 
+							  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs, Pacno1,Pacno2,Pacap1,Pacap2, Artgen,Ccocod,Cconom,Habcpa,'Generica' AS tipo  
+								FROM ".$bd."_000054,root_000036,root_000037,".$bd."_000018,".$tablaHabitaciones.",".$bd."_000011,".$wbasedatocm."_000001,".$wbasedatocm."_000002,".$bd."_000068
+							   WHERE Kadfec='".date('Y-m-d')."'
+								 AND Kadsus='off'
+								 AND Kadest='on'
+								 AND Orihis = Kadhis
+								 AND Oriing = Kading
+								 AND Oriori = '01'
+								 AND Oriced = Pacced
+								 AND Oritid = Pactid
+								 AND Kadhis = Ubihis
+								 AND Kading = Ubiing
+								 AND Kadhis = Habhis
+								 AND Kading = Habing
+								 AND Ccocod = Ubisac
+								 AND Artcod = Kadart 
+
+								 AND tippro = 'on' 
+								 AND Tipnco = 'on' 
+								 AND Tipcdo != 'on'
+								 AND Tipest = 'on'
+								 AND Arttip = Tipcod
+								 AND Artcod = Arkcod
+								 AND Artest = 'on'
+								 AND Tiptpr = Arktip
+								 AND Tiptpr IN ('DA','DS','DD')
+								 
+								 ";
+		
+	}
+	
+	if( !empty( $qDosisAdaptadas ) )
+		$qDosisAdaptadas .= " ORDER BY Kadfin,Kadhin,Kadhis,Kading,tipo DESC; ";
+	
+	return $qDosisAdaptadas;
+	
+	
+	
+	// $qDosisAdaptadas = "  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs, Pacno1,Pacno2,Pacap1,Pacap2, Artgen,Ccocod,Cconom,Habcpa,'Antibiotico' AS tipo  
+							// FROM ".$bd."_000054 a,".$bd."_000026,root_000036,root_000037,".$bd."_000018,".$bd."_000020,".$bd."_000011
+						   // WHERE Kadfec='".date('Y-m-d')."'
+							 // AND Kadsus='off'
+							 // AND Kadest='on'
+							 // AND Kadart=Artcod
+							 // AND (Kaddis='0' AND a.Kadfin=Kadfec)
+							 // AND Artest='on'
+							 // ".$cadenaGruposAntibioticos."
+							 // AND Orihis = Kadhis
+							 // AND Oriing = Kading
+							 // AND Oriori = '01'
+							 // AND Oriced = Pacced
+							 // AND Oritid = Pactid
+							 // AND Kadhis = Ubihis
+							 // AND Kading = Ubiing
+							 // AND Kadhis = Habhis
+							 // AND Kading = Habing
+							 // AND Ccocod = Ubisac
+
+						   // UNION
+
+						  // SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs, Pacno1,Pacno2,Pacap1,Pacap2, Artgen,Ccocod,Cconom,Habcpa,'Dosis adaptada' AS tipo  
+							// FROM ".$bd."_000054,".$bd."_000026,root_000036,root_000037,".$bd."_000018,".$bd."_000020,".$bd."_000011
+						   // WHERE Kadfec='".date('Y-m-d')."'
+							 // AND Kadsus='off'
+							 // AND Kadest='on'
+							 // AND Kaddoa='on'
+							 // AND Kadart=Artcod
+							 // AND Artest='on'
+							 // AND Orihis = Kadhis
+							 // AND Oriing = Kading
+							 // AND Oriori = '01'
+							 // AND Oriced = Pacced
+							 // AND Oritid = Pactid
+							 // AND Kadhis = Ubihis
+							 // AND Kading = Ubiing
+							 // AND Kadhis = Habhis
+							 // AND Kading = Habing
+							 // AND Ccocod = Ubisac
 							 
-							 ORDER BY Kadfin,Kadhin,Kadhis,Kading,tipo DESC;";
+						   // UNION
 							 
-	// echo "<pre>".print_r($qDosisAdaptadas,true)."</pre>";						 
-	return $qDosisAdaptadas;						 
+						  // SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs, Pacno1,Pacno2,Pacap1,Pacap2, Artgen,Ccocod,Cconom,Habcpa,'Generica' AS tipo  
+							// FROM ".$bd."_000054,root_000036,root_000037,".$bd."_000018,".$bd."_000020,".$bd."_000011,".$wbasedato."_000001,".$wbasedato."_000002,".$bd."_000068
+						   // WHERE Kadfec='".date('Y-m-d')."'
+							 // AND Kadsus='off'
+							 // AND Kadest='on'
+							 // AND Orihis = Kadhis
+							 // AND Oriing = Kading
+							 // AND Oriori = '01'
+							 // AND Oriced = Pacced
+							 // AND Oritid = Pactid
+							 // AND Kadhis = Ubihis
+							 // AND Kading = Ubiing
+							 // AND Kadhis = Habhis
+							 // AND Kading = Habing
+							 // AND Ccocod = Ubisac
+							 // AND Artcod = Kadart 
+
+							 // AND tippro = 'on' 
+							 // AND Tipnco = 'on' 
+							 // AND Tipcdo != 'on'
+							 // AND Tipest = 'on'
+							 // AND Arttip = Tipcod
+							 // AND Artcod = Arkcod
+							 // AND Artest = 'on'
+							 // AND Tiptpr = Arktip
+							 // AND Tiptpr IN ('DA','DS','DD')
+							 
+							 // ORDER BY Kadfin,Kadhin,Kadhis,Kading,tipo DESC;";
+							 
+	// // echo "<pre>".print_r($qDosisAdaptadas,true)."</pre>";						 
+	// return $qDosisAdaptadas;						 
 }
 
 function pintarInsumosDA($insumos, $inslis, $compu, $nutri, $peso, $purga, $estado, $vol,$tfd,$hacerSubmitInsumosDA,$DA_historia,$DA_ingreso,$DA_articulo,$DA_ido,$DA_cantidadSinPurga,$wronda,$wfecharonda,$DA_cco)
