@@ -2678,60 +2678,92 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 			// global $bd;
 			// global $conex;
 			
-			$qNutriciones  = "SELECT Kadhis,Kading,Kadart,Kadido,Kadfin,Kadhin,Pacno1,Pacno2,Pacap1,Pacap2,Ccocod,Cconom,Habcpa,Artgen,Enuobs,Enupes,Enutin,Enupur,Enuvol,Enurea ,'ordenes' AS origen  
-								FROM ".$bd."_000214,".$bd."_000054,root_000036,root_000037,".$bd."_000018,".$bd."_000020,".$bd."_000011,".$wbasedato."_000002
-							   WHERE Kadhis = Enuhis
-								 AND Kading = Enuing
-								 AND Kadart = Enuart
-								 AND Kadido = Enuido
-								 AND Kadfec='".date('Y-m-d')."' 
-								 AND Kadsus = 'off'
-								 AND Kadest = 'on'
-								 AND Kadcon = 'on'
-								 AND Kadhis = Orihis
-								 AND Kading = Oriing
-								 AND Oriori = '01'
-								 AND Oriced = Pacced
-								 AND Oritid = Pactid
-								 AND Kadhis = Ubihis
-								 AND Kading = Ubiing
-								 AND Kadhis = Habhis
-								 AND Kading = Habing
-								 AND Ccocod = Ubisac
-								 AND Artcod = Kadart
-								 AND Enuest = 'on'
-								 AND Enuord = 'on'
-								 
-							   UNION
-							   
-							  SELECT Kadhis,Kading,Kadart,Kadido,Kadfin,Kadhin,Pacno1,Pacno2,Pacap1,Pacap2,Ccocod,Cconom,Habcpa,Artgen,'' AS Enuobs,'' AS Enupes,'' AS Enutin,'' AS Enupur,'' AS Enuvol,'' AS Enurea ,'kardex' AS origen 
-								FROM ".$bd."_000054,root_000036,root_000037,".$bd."_000018,".$bd."_000020,".$bd."_000011 ,".$wbasedato."_000002,".$wbasedato."_000001,".$bd."_000068   
-							   WHERE Kadfec='".date('Y-m-d')."' 
-								 AND Kadest='on' 
-								 AND Kadsus='off'
-								 AND Kadhis = Orihis 
-								 AND Kading = Oriing
-								 AND Kadcon = 'on'
-								 AND Kadart = Arkcod
-								 AND Oriori = '01' 
-								 AND Oriced = Pacced 
-								 AND Oritid = Pactid 
-								 AND Kadhis = Ubihis 
-								 AND Kading = Ubiing 
-								 AND Kadhis = Habhis 
-								 AND Kading = Habing 
-								 AND Ccocod = Ubisac 
-								 AND Artcod = Kadart 
-								 
-								 AND tippro = 'on' 
-								 AND Tipnco = 'off' 
-								 AND Tipcdo != 'on'
-								 AND Tipest = 'on'
-								 AND Arttip = Tipcod
-								 AND Artcod = Arkcod
-								 AND Tiptpr = Arktip
+			/*******************************************************************************/
+
+			//$cco=" ";
+			//Consulto los cco domiciliarios
+			$wcenmez = $wbasedato; 
+			$wbasedato = $bd;
+			$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccodom = 'on'", "otros" );
+			$wbasedato = $wcenmez;
+			
+			$tablasHabitaciones = [];
+	
+			//Hago esto(*otro*) para traer la tabla de ubicaciones por defecto
+			$tablasHabitaciones[] = consultarTablaHabitaciones( $conex, $bd, '*otro*' );
+			
+			foreach( $centrosCostos as $key => $value ){
+				$tablasHabitaciones[] = consultarTablaHabitaciones( $conex, $bd, $value->codigo );
+			}
+			
+			$agregarUnion = false;
+			foreach( $tablasHabitaciones as $tablaHabitaciones )
+			{
+				if( $agregarUnion ){
+					$qNutriciones .= " UNION ";
+				}
+				
+				$agregarUnion = true;
+				
+				$qNutriciones  .= "SELECT Kadhis,Kading,Kadart,Kadido,Kadfin,Kadhin,Pacno1,Pacno2,Pacap1,Pacap2,Ccocod,Cconom,Habcpa,Artgen,Enuobs,Enupes,Enutin,Enupur,Enuvol,Enurea ,'ordenes' AS origen  
+									FROM ".$bd."_000214,".$bd."_000054,root_000036,root_000037,".$bd."_000018,".$tablaHabitaciones.",".$bd."_000011,".$wbasedato."_000002
+								   WHERE Kadhis = Enuhis
+									 AND Kading = Enuing
+									 AND Kadart = Enuart
+									 AND Kadido = Enuido
+									 AND Kadfec='".date('Y-m-d')."' 
+									 AND Kadsus = 'off'
+									 AND Kadest = 'on'
+									 AND Kadcon = 'on'
+									 AND Kadhis = Orihis
+									 AND Kading = Oriing
+									 AND Oriori = '01'
+									 AND Oriced = Pacced
+									 AND Oritid = Pactid
+									 AND Kadhis = Ubihis
+									 AND Kading = Ubiing
+									 AND Kadhis = Habhis
+									 AND Kading = Habing
+									 AND Ccocod = Ubisac
+									 AND Artcod = Kadart
+									 AND Enuest = 'on'
+									 AND Enuord = 'on'
+									 
+								   UNION
 								   
-							ORDER BY Kadfin,Kadhin,Kadhis,Kading,origen DESC;";
+								  SELECT Kadhis,Kading,Kadart,Kadido,Kadfin,Kadhin,Pacno1,Pacno2,Pacap1,Pacap2,Ccocod,Cconom,Habcpa,Artgen,'' AS Enuobs,'' AS Enupes,'' AS Enutin,'' AS Enupur,'' AS Enuvol,'' AS Enurea ,'kardex' AS origen 
+									FROM ".$bd."_000054,root_000036,root_000037,".$bd."_000018,".$tablaHabitaciones.",".$bd."_000011 ,".$wbasedato."_000002,".$wbasedato."_000001,".$bd."_000068   
+								   WHERE Kadfec='".date('Y-m-d')."' 
+									 AND Kadest='on' 
+									 AND Kadsus='off'
+									 AND Kadhis = Orihis 
+									 AND Kading = Oriing
+									 AND Kadcon = 'on'
+									 AND Kadart = Arkcod
+									 AND Oriori = '01' 
+									 AND Oriced = Pacced 
+									 AND Oritid = Pactid 
+									 AND Kadhis = Ubihis 
+									 AND Kading = Ubiing 
+									 AND Kadhis = Habhis 
+									 AND Kading = Habing 
+									 AND Ccocod = Ubisac 
+									 AND Artcod = Kadart 
+									 
+									 AND tippro = 'on' 
+									 AND Tipnco = 'off' 
+									 AND Tipcdo != 'on'
+									 AND Tipest = 'on'
+									 AND Arttip = Tipcod
+									 AND Artcod = Arkcod
+									 AND Tiptpr = Arktip
+								";
+				
+			}
+			
+			if( !empty($qNutriciones) ){
+				$qNutriciones .= " ORDER BY Kadfin,Kadhin,Kadhis,Kading,origen DESC; ";
+			}
 			
 			// echo"<pre>".print_r($qNutriciones,true)."<pre>";
 			
