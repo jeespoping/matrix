@@ -197,25 +197,43 @@ function empezar() {
 		{
 			ccosCliclos24 = ccoCliclos24.split(",");
 			
-			$("#wcco option").each(function(){
+			if( ccoOrigen[0] == '3053' ){
 				
-				var opcionCco = $(this).val();
-				opcionCco = opcionCco.split("-");
+				$( "#wcco option" )
+					.css({display: "none" })
+					.attr({disabled: true });
 				
-				if(jQuery.inArray(opcionCco[0],ccosCliclos24) != -1)
-				{
-					if( ccoOrigen[0] == '1050' )
+				$( "#wcco option[dom=on]" )
+					.css({display: "" })
+					.attr({disabled: false });
+				
+			}
+			else{
+				$( "#wcco option" )
+					.css({display: "" })
+					.attr({disabled: false });
+				
+				$("#wcco option").each(function(){
+					
+					var opcionCco = $(this).val();
+					opcionCco = opcionCco.split("-");
+					
+					if(jQuery.inArray(opcionCco[0],ccosCliclos24) != -1)
 					{
-						$(this).css({display: "none" });
-						$(this).attr({disabled: true });
+						if( ccoOrigen[0] == '1050' )
+						{
+							$(this).css({display: "none" });
+							$(this).attr({disabled: true });
+						}
+						else
+						{
+							$(this).css({display: "" });
+							$(this).attr({disabled: false });
+						}
 					}
-					else
-					{
-						$(this).css({display: "" });
-						$(this).attr({disabled: false });
-					}
-				}
-			});
+				});
+			}
+			
 		}
 		
 	});
@@ -821,8 +839,12 @@ else
 			$cadenaGruposAntibioticos = " AND (".substr($cadenaGruposAntibioticos, 0, -3).")";
 		}
 		
+		$paciente = consultarUbicacionPaciente( $conex, $wbasedato, $historia, $ingreso);
+	
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $paciente->servicioActual );
+		
 		$qArt = " SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs,Kadcpx,Kadron,Kadcnd,'Dosis adaptada' AS Tipo,Habcco
-					FROM ".$wbasedato."_000054,".$wbasedato."_000020
+					FROM ".$wbasedato."_000054,".$tablaHabitaciones."
 				   WHERE Kadhis='".$historia."' 
 					 AND Kading='".$ingreso."' 
 					 AND Kadart='".$codArticulo."' 
@@ -836,7 +858,7 @@ else
 				   UNION
 
 				  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs,Kadcpx,Kadron,Kadcnd,'Dosis adaptada' AS Tipo,Habcco
-					FROM ".$wbasedato."_000060,".$wbasedato."_000020 
+					FROM ".$wbasedato."_000060,".$tablaHabitaciones." 
 				   WHERE Kadhis='".$historia."' 
 					 AND Kading='".$ingreso."' 
 					 AND Kadart='".$codArticulo."' 
@@ -850,7 +872,7 @@ else
 				   UNION
 
 				  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs,Kadcpx,Kadron,Kadcnd,'Antibiotico' AS Tipo,Habcco
-					FROM ".$wbasedato."_000054,".$wbasedato."_000026,".$wbasedato."_000020 
+					FROM ".$wbasedato."_000054,".$wbasedato."_000026,".$tablaHabitaciones." 
 				   WHERE Kadhis='".$historia."' 
 					 AND Kading='".$ingreso."' 
 					 AND Kadart='".$codArticulo."' 
@@ -866,7 +888,7 @@ else
 				   UNION
 
 				  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs,Kadcpx,Kadron,Kadcnd,'Antibiotico' AS Tipo,Habcco
-					FROM ".$wbasedato."_000060,".$wbasedato."_000026,".$wbasedato."_000020 
+					FROM ".$wbasedato."_000060,".$wbasedato."_000026,".$tablaHabitaciones." 
 				   WHERE Kadhis='".$historia."' 
 					 AND Kading='".$ingreso."' 
 					 AND Kadart='".$codArticulo."' 
@@ -882,7 +904,7 @@ else
 				   UNION
 
 				  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs,Kadcpx,Kadron,Kadcnd,'Central de mezclas' AS Tipo,Habcco
-					FROM ".$wbasedato."_000054,".$wbasedato."_000020
+					FROM ".$wbasedato."_000054,".$tablaHabitaciones."
 				   WHERE Kadhis='".$historia."' 
 					 AND Kading='".$ingreso."' 
 					 AND Kadart='".$codArticulo."' 
@@ -896,7 +918,7 @@ else
 				   UNION
 
 				  SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs,Kadcpx,Kadron,Kadcnd,'Central de mezclas' AS Tipo,Habcco
-					FROM ".$wbasedato."_000060,".$wbasedato."_000020
+					FROM ".$wbasedato."_000060,".$tablaHabitaciones."
 				   WHERE Kadhis='".$historia."' 
 					 AND Kading='".$ingreso."' 
 					 AND Kadart='".$codArticulo."' 
@@ -1658,6 +1680,14 @@ function pintarAritculos( $articulos ){
 		$cco="ccocpx = 'on' AND ccohos = 'on' OR ccolac = 'on'";  // filtros para la consulta
 		$centrosCostosDestino = consultaCentrosCostos($cco, $filtro);  //tipo 3
 		
+		$cco="ccotra != 'on' AND ccodom = 'on' AND ccoest = 'on'";  // filtros para la consulta
+		$centrosCostosDomiciliario = consultaCentrosCostos($cco, $filtro);  //tipo 3
+		
+		$serviciosDomiciliarios = [];
+		foreach( $centrosCostosDomiciliario as $ccoDoms ){
+			$serviciosDomiciliarios[] = $ccoDoms->codigo;
+		}
+		
 		$ccoConCiclos24 = consultarCcoCiclos24();
 		
 	  echo "<div>
@@ -1724,7 +1754,7 @@ function pintarAritculos( $articulos ){
 								<option>%-Todos</option>";
 								foreach ($centrosCostosDestino as $centroCostos)
 								{
-									echo "<option value='".$centroCostos->codigo."-".$centroCostos->nombre."'>".$centroCostos->codigo."-".$centroCostos->nombre."</option>";
+									echo "<option ".( in_array( $centroCostos->codigo, $serviciosDomiciliarios ) ? 'dom="on"' : '' )." value='".$centroCostos->codigo."-".$centroCostos->nombre."'>".$centroCostos->codigo."-".$centroCostos->nombre."</option>";
 								}
 		echo				"</select>
 						</td>
