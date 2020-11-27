@@ -387,10 +387,15 @@ function pintarAritculos( $articulos ){
 		global $wipimpresora;
 
 	    $datamensaje = array('mensaje'=>'', 'error'=>0, 'tabla'=>'');
+		
+		$ingreso_paciente 	= consultarUltimoIngresoHistoria( $conex, $whis, $wemp_pmla );
+		$paciente 			= consultarUbicacionPaciente($conex, $wbasedato, $whis, $ingreso_paciente );
+
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $paciente->servicioActual );
 
 	   //Busco los datos del paciente.
 		$query_pac =  " SELECT habcco "
-				   . "   FROM ".$wbasedato."_000020"
+				   . "   FROM ".$tablaHabitaciones." "
 				   . "  WHERE habhis  = '".$whis."'";
 		$res_pac = mysql_query($query_pac, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $query_pac . " - " . mysql_error());
 		$row_pac = mysql_fetch_array($res_pac);
@@ -432,7 +437,7 @@ function pintarAritculos( $articulos ){
 
 	  //Selecciono el paciente segun la historia
 	    $q = " SELECT habcod, habhis, habing, pacno1, pacno2, pacap1, pacap2 , pactid, pacced, Pacnac, Pacsex"
-	        ."   FROM ".$wbasedato."_000020, ".$wbasedato."_000018, root_000036, root_000037"
+	        ."   FROM ".$tablaHabitaciones.", ".$wbasedato."_000018, root_000036, root_000037"
 	        ."  WHERE habali != 'on' "            //Que no este para alistar
 	        ."    AND habdis != 'on' "            //Que no este disponible, osea que este ocupada
 	        ."    AND habcod  = ubihac "
@@ -448,7 +453,7 @@ function pintarAritculos( $articulos ){
 		    ."    AND habhis  = '".$whis."'"
 			."	  UNION"
 		    ." SELECT habcod, habhis, habing, pacno1, pacno2, pacap1, pacap2, pactid, pacced, Pacnac,  Pacsex"
-			."  FROM ".$wbasedato."_000020, ".$wbasedato."_000018, root_000036, root_000037, ".$wbasedato."_000017"
+			."  FROM ".$tablaHabitaciones.", ".$wbasedato."_000018, root_000036, root_000037, ".$wbasedato."_000017"
 			." WHERE habali != 'on' "		//Que no este para alistar
 			."   AND habdis != 'on' "		//Que no este disponible, osea que este ocupada
 			."   AND habcod = ubihac "
