@@ -1638,6 +1638,8 @@ function ArticulosXPaciente( $his, $ing ){
 	
 	global $wemp_pmla;
 	
+	$diasDispensacion = consultarDiasDispensacionPorHistoriaIngreso( $conex, $bd, $his, $ing );
+	
 	if( empty( $wemp_pmla ) )
 		$wemp_pmla = "01";
 	
@@ -1721,7 +1723,7 @@ function ArticulosXPaciente( $his, $ing ){
 		}
 		/****************************************************************************************************/
 		
-		$temprxRonda = ( intval( date( "H" )/$tiempoPreparacion )*$tiempoPreparacion+$tiempoPreparacion );
+		// $temprxRonda = ( intval( date( "H" )/$tiempoPreparacion )*$tiempoPreparacion+$tiempoPreparacion );
 		$temprxRonda = ( intval( ( date( "H" )+intval( $corteDispensacion/3600 ) )/$tiempoPreparacion )*$tiempoPreparacion );
 		
 		//Marzo 11 de 2013. Aquí estaba el cambio de Agosto 27 de 2012.
@@ -1737,7 +1739,7 @@ function ArticulosXPaciente( $his, $ing ){
 		//Limito la proxima ronda hasta la hora de corte del día siguiente
 		$info[ $r[ 'Kadpro' ] ]['proximaRonda'] = strtotime( date( "Y-m-d" )." 00:00:00" ) + $temprxRonda*3600;
 		
-		$info[ $r[ 'Kadpro' ] ]['proximaRonda'] = min( $info[ $r[ 'Kadpro' ] ]['proximaRonda'], strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 );
+		$info[ $r[ 'Kadpro' ] ]['proximaRonda'] = min( $info[ $r[ 'Kadpro' ] ]['proximaRonda'], strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+$diasDispensacion*24*3600 );
 		
 		list( $fecpxr, $ronda ) = explode( " ", date( "Y-m-d H:i:s", $info[ $r[ 'Kadpro' ] ]['proximaRonda'] ) );
 		
@@ -1751,7 +1753,7 @@ function ArticulosXPaciente( $his, $ing ){
 			$fecDispensacion = date( "Y-m-d" );
 			//Creo la regleta del dia actual
 			$ar = obtenerVectorAplicacionMedicamentosIncCM( date( "Y-m-d" ), $r['Kadfin'], $r['Kadhin'], $r['Perequ'] );
-			$ar2 = obtenerVectorAplicacionMedicamentosIncCM( date( "Y-m-d", time()+24*3600 ), $r['Kadfin'], $r['Kadhin'], $r['Perequ'] );
+			$ar2 = obtenerVectorAplicacionMedicamentosIncCM( date( "Y-m-d", time()+$diasDispensacion*24*3600 ), $r['Kadfin'], $r['Kadhin'], $r['Perequ'] );
 			$ar2 = arreglarVector( $ar2 );
 			
 			$quitarUnoARegleta = 25;
@@ -1775,7 +1777,7 @@ function ArticulosXPaciente( $his, $ing ){
 			//Si es falso busco el dia anterior
 			if( !$horaTraslado && $r['Kadsad'] == 0 ){
 			
-				$diaAnterior = date( "Y-m-d", time()-24*3600 );
+				$diaAnterior = date( "Y-m-d", time()-$diasDispensacion*24*3600 );
 				$horaTraslado = consultarHoraTrasladoUrgenciasIncCM( $conex, $bd, $his, $ing, $diaAnterior );
 				
 				//Creo la regleta del dia anterior
@@ -1890,7 +1892,7 @@ function ArticulosXPaciente( $his, $ing ){
 			if( $kadRondaCpx > 0 ){
 				
 				if( empty( $kadFechaRondaCpx ) ){
-					$kadFechaRondaCpx = date( "Y-m-d", time()+24*3600 );
+					$kadFechaRondaCpx = date( "Y-m-d", time()+$diasDispensacion*24*3600 );
 				}
 				else{
 					$kadFechaRondaCpx = date( "Y-m-d" );
@@ -2025,7 +2027,7 @@ function ArticulosXPaciente( $his, $ing ){
 		 *
 		 * No permito crear una regleta mas alla de la hora de corte del día siguiente
 		 ******************************************************************************************/
-		$corteDispensacionRep = min( $corteDispensacionRep, $horaCorteDispensacion*3600+2*3600 );
+		$corteDispensacionRep = min( $corteDispensacionRep, $horaCorteDispensacion*3600+2*3600 + ( $diasDispensacion-1 )*24*3600 );
 		/******************************************************************************************/
 		
 		$canAplicada = 0;
@@ -2093,7 +2095,7 @@ function ArticulosXPaciente( $his, $ing ){
 					
 					if( $agregarRepetido ){
 						//Con las funciones virtuales
-						$fhFinMed = consultarFechaHoraFinalMedicamento( $horaCorteDispensacion, $fecDispensacion, $r2[ 'Kadfin' ], $r2[ 'Kadhin' ], $r2[ 'Kaddma' ], $r2[ 'Kaddia' ], $r2[ 'Perequ' ] );
+						$fhFinMed = consultarFechaHoraFinalMedicamento( $diasDispensacion, $horaCorteDispensacion, $fecDispensacion, $r2[ 'Kadfin' ], $r2[ 'Kadhin' ], $r2[ 'Kaddma' ], $r2[ 'Kaddia' ], $r2[ 'Perequ' ] );
 						
 						$regletas[] = Array( 0 			 => crearRegletaVirtual( strtotime( $fecDispensacion." 00:00:00" )-($antHoras-2)*3600, strtotime( $fecDispensacion." 00:00:00" )+22*3600+$corteDispensacionRep, strtotime( $r2['Kadfin']." ".$r2['Kadhin'] ), $r2[ 'Perequ' ], $r2[ 'Kadcfr' ]/$r2[ 'Kadcma' ], $fhFinMed, $fechorTrasladoRep ),
 											 'id' 		 => $r2[ 'id' ],
@@ -2154,7 +2156,7 @@ function ArticulosXPaciente( $his, $ing ){
 				}
 				
 				if( $agregarRepetido ){
-					$fhFinMed = consultarFechaHoraFinalMedicamento( $horaCorteDispensacion, $fecDispensacion, $r[ 'Kadfin' ], $r[ 'Kadhin' ], $r[ 'Kaddma' ], $r[ 'Kaddia' ], $r[ 'Perequ' ] );
+					$fhFinMed = consultarFechaHoraFinalMedicamento( $diasDispensacion, $horaCorteDispensacion, $fecDispensacion, $r[ 'Kadfin' ], $r[ 'Kadhin' ], $r[ 'Kaddma' ], $r[ 'Kaddia' ], $r[ 'Perequ' ] );
 					
 					$regletas[] = Array( 0    		 => crearRegletaVirtual( strtotime( $fecDispensacion." 00:00:00" )-($antHoras-2)*3600, strtotime( $fecDispensacion." 00:00:00" )+22*3600+$corteDispensacionRep,strtotime( $r['Kadfin']." ".$r['Kadhin'] ), $r[ 'Perequ' ], $r[ 'Kadcfr' ]/$r[ 'Kadcma' ], $fhFinMed, $fechorTrasladoRep ),
 										 'id' 		 => $r[ 'id' ],
@@ -2203,7 +2205,8 @@ function ArticulosXPaciente( $his, $ing ){
 		}
 		/****************************************************************************/
 		
-		$sindis = cantidadSinDispensarRondas( $r[ 'Kadcpx' ], $ronda, date( "Y-m-d" ) == $fecpxr );
+		// $sindis = cantidadSinDispensarRondas( $r[ 'Kadcpx' ], $ronda, date( "Y-m-d" ) == $fecpxr );
+		$sindis = cantidadSinDispensarRondas( $r[ 'Kadcpx' ], $ronda, $fecpxr );
 		
 		if( ( $perteneceRonda && time() >= $info[ $r[ 'Kadpro' ] ]['proximaRonda']-$corteDispensacion && time() <= $info[ $r[ 'Kadpro' ] ]['proximaRonda'] ) ){
 			
