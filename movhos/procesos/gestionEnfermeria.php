@@ -16788,10 +16788,10 @@ else{
 							// ORDER BY Habord*1, Habcod";
 							
 					$sql = "SELECT * FROM (
-								SELECT {$wbasedato}_000020.Habcco, 
-									   {$wbasedato}_000020.Habcod, 
-									   {$wbasedato}_000020.Habhis, 
-									   {$wbasedato}_000020.Habing, 
+								SELECT {$tablaHabitaciones}.Habcco, 
+									   {$tablaHabitaciones}.Habcod, 
+									   {$tablaHabitaciones}.Habhis, 
+									   {$tablaHabitaciones}.Habing, 
 									   CONCAT( root_000036.pacno1,' ',root_000036.pacno2,' ',root_000036.pacap1,' ',root_000036.pacap2) as Nombre,
 									   {$wbasedato}_000011.Cconom, 
 									   {$wbasedato}_000018.Ubihis, 
@@ -16806,24 +16806,24 @@ else{
 									   {$wbasedato}_000016.Ingnre, 
 									   {$wbasedato}_000018.id as id_tabla18, 
 									   {$wbasedato}_000018.Ubisan, 
-									   {$wbasedato}_000020.Habord, 
+									   {$tablaHabitaciones}.Habord, 
 									   {$wbasedato}_000018.Ubimue
 								  FROM {$tablaHabitaciones} 
 						    INNER JOIN {$wbasedato}_000018 
-									ON {$wbasedato}_000018.ubihis 	= {$wbasedato}_000020.habhis
-								   AND {$wbasedato}_000018.ubiing 	= {$wbasedato}_000020.habing
+									ON {$wbasedato}_000018.ubihis 	= {$tablaHabitaciones}.habhis
+								   AND {$wbasedato}_000018.ubiing 	= {$tablaHabitaciones}.habing
 							INNER JOIN {$wbasedato}_000011
-									ON {$wbasedato}_000011.ccocod 	= {$wbasedato}_000020.habcco
+									ON {$wbasedato}_000011.ccocod 	= {$tablaHabitaciones}.habcco
 							INNER JOIN {$wbasedato}_000016
 									ON {$wbasedato}_000018.ubihis 	= {$wbasedato}_000016.inghis
 								   AND {$wbasedato}_000018.ubiing 	= {$wbasedato}_000016.inging
 							INNER JOIN root_000037
-									ON root_000037.orihis 			= {$wbasedato}_000020.habhis
+									ON root_000037.orihis 			= {$tablaHabitaciones}.habhis
 							INNER JOIN root_000036
 								    ON root_000036.pacced 			= root_000037.Oriced
 								   AND root_000036.pactid 			= root_000037.Oritid
-								 WHERE {$wbasedato}_000020.habcco 	= '$ccoCodigo'
-								   AND {$wbasedato}_000020.habest 	= 'on'
+								 WHERE {$tablaHabitaciones}.habcco 	= '$ccoCodigo'
+								   AND {$tablaHabitaciones}.habest 	= 'on'
 								   AND {$wbasedato}_000011.ccoipd 	= 'on'
 								   AND {$wbasedato}_000011.ccoest 	= 'on'
 								   AND root_000037.oriori 			= '$wemp_pmla'
