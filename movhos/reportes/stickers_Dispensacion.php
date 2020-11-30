@@ -2077,8 +2077,10 @@ window.onload = function(){
 		}
 
 		$datos = array();
-		foreach( $articulos as $key => $articulo ){
-			$datos[ date( "H", $articulo['rondaMenor'] ) ][] = $articulo;
+		if( is_array($articulos) ){
+			foreach( $articulos as $key => $articulo ){
+				$datos[ date( "H", $articulo['rondaMenor'] ) ][] = $articulo;
+			}
 		}
 		
 		pintarAritculos( $datos );
