@@ -2268,7 +2268,7 @@ if (!$usuarioValidado){
 								if($clase->codigo != ''){
 									echo "<li id='R$clase->codigo'><span>$clase->descripcion</span>";
 									echo "<ul class='ajax'>";
-									echo "<li id='ajax$clase->codigo'>{url:../../../include/movhos/kardex.inc.php?tree_id=1&consultaAjaxKardex=24&nivelA=$clase->codigo&basedatos=$wbasedato}</li>";
+									echo "<li id='ajax$clase->codigo'>{url:../../../include/movhos/kardex.inc.php?wemp_pmla=$wemp_pmla&tree_id=1&consultaAjaxKardex=24&nivelA=$clase->codigo&basedatos=$wbasedato}</li>";
 									echo "</ul>";
 									echo "</li>";
 								}
