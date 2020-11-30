@@ -1524,7 +1524,7 @@ function grabarEstadoAprobacionArticulos(historia,ingreso,fecha,codigosArticulos
 	var parametros = "";
 
 	parametros = "consultaAjaxKardex=26&basedatos="+document.forms.forma.wbasedato.value+"&historia="+historia+"&ingreso="+ingreso+"&fecha="+fecha+"&codigosArticulos="+codigosArticulos
-				+"&codUsuario="+codUsuario+"&estadoAprobacion="+estadoAprobacion;
+				+"&codUsuario="+codUsuario+"&estadoAprobacion="+estadoAprobacion+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
 
 	try{
 		$.blockUI({ message: $('#msjEspere') });

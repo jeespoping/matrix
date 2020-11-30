@@ -275,6 +275,17 @@ function cancelarReemp( ){
 function aceptarReemp(){
 	document.forms[0].submit();
 }
+
+$("input:text").on('keypress', function(event) {
+	
+	var regex = new RegExp("^[a-zA-Z0-9 ]+$");
+	var key = String.fromCharCode(!event.charCode ? event.which : event.charCode);
+	
+	if (!regex.test(key)) {
+		event.preventDefault();
+		return false;
+	}
+});
 </script>
 
 <?php
@@ -742,6 +753,29 @@ if(isset($artcod))
 /************************************************************
  * FUNCIONES
  ************************************************************/
+function consultarDiasDispensacionPorHistoriaIngreso( $conex, $wmovhos, $his, $ing ){
+	
+	$val = 1;
+	
+	//Consultando el nombre del estudio
+	$sql = "SELECT Ccoddi
+			  FROM ".$wmovhos."_000011 a, ".$wmovhos."_000018 b
+			 WHERE a.ccocod = b.ubisac
+			   AND a.ccoest = 'on'
+			   AND b.ubihis = '".$his."'
+			   AND b.ubiing = '".$ing."'
+			 ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
+	
+	if( $rows = mysql_fetch_array ($res) ){
+		if( !empty($rows['Ccoddi']) )
+			$val = $rows['Ccoddi'];
+	}
+	
+	return $val;
+}  
+ 
  
 function marcarArticulosNoEnviar( $conex, $wbasedato, $wemp_pmla, $his, $ing, $fecha ){
 	
@@ -1420,7 +1454,7 @@ function consultarHoraDispensacionPorCco( $conex, $wbasedato, $cco ){
  * - Ultima aplicacion aplicacion por dosis máxima.
  * - Ultima aplicacion por dias de tratamiento.
  ************************************************************************************/
-function consultarFechaHoraFinalMedicamento( $horaCorteDispensacion, $fechaKardex, $fini, $hini, $dosisMaxima, $diasTratamiento, $frecuencia ){
+function consultarFechaHoraFinalMedicamento( $diasDispensacion, $horaCorteDispensacion, $fechaKardex, $fini, $hini, $dosisMaxima, $diasTratamiento, $frecuencia ){
 
 	//la frecuencia esta dada en horas, se pasa a segundos
 	$frecuencia = $frecuencia*3600;
@@ -1429,7 +1463,7 @@ function consultarFechaHoraFinalMedicamento( $horaCorteDispensacion, $fechaKarde
 	$fechorInicio = strtotime( "$fini $hini" );
 
 	//Fecha y hora de corte para el medicamento
-	$fechorFin = strtotime( $fechaKardex." $horaCorteDispensacion:00:00" ) + 24*3600;
+	$fechorFin = strtotime( $fechaKardex." $horaCorteDispensacion:00:00" ) + $diasDispensacion*24*3600;
 
 	//Si tiene dosis maximas
 	if( trim( $dosisMaxima ) != '' ){
@@ -3272,7 +3306,7 @@ function crearAplicacionesCargadasPorHoras( $vector, $cantidad ){
  *************************************************************************************************/
 function cantidadDispensadaRonda( $horasAplicar, $ronda, $esPrimera = true ){
 
-	$val = 0;
+	return $val = 0;
 
 	if( empty( $horasAplicar ) ){
 		return $val;
@@ -3326,7 +3360,7 @@ function cantidadDispensadaRonda( $horasAplicar, $ronda, $esPrimera = true ){
  *************************************************************************************************/
 function cantidadADispensarRonda( $horasAplicar, $ronda, $esPrimera = true ){
 
-	$val = 0;
+	return $val = 0;
 
 	if( empty( $horasAplicar ) ){
 		return $val;
@@ -3374,35 +3408,34 @@ function cantidadADispensarRonda( $horasAplicar, $ronda, $esPrimera = true ){
  * Calcula la cantidad sin dispensar hasta una ronda dada
  *
  * @return unknown_type
+ *
+ * $fechaRonda: Fecha final de dispensación para la ronda data
+ * $ronda	  : Hora final de la ronda
  ****************************************************************************************/
-function cantidadSinDispensarRondas( $horasAplicar, $ronda, $esPrimera = true ){
+function cantidadSinDispensarRondas( $horasAplicar, $ronda, $fechaRonda = null ){
 
 	$val = 0;
+
+	if( !$fechaRonda ){
+		$fechaRonda = date( "Y-m-d", time()+24*3600 );
+	}
 
 	if( empty( $horasAplicar ) ){
 		return $val;
 	}
 
-	if( $esPrimera ){
-		if( $ronda == "00:00:00" ){
-			$timeRonda = strtotime( date( "Y-m-d" )." $ronda" )+24*3600;
-		}
-		else{
-			$timeRonda = strtotime( date( "Y-m-d" )." $ronda" );
-		}
+	$date1 		= new DateTime( date("Y-m-d $ronda") );
+	$date2 		= new DateTime( $fechaRonda." $ronda"  );
+	$diff 		= $date1->diff($date2);
 
-		if( time() > $timeRonda ){
-			$esPrimera = false;
-		}
-		else{
-			$esPrimera = true;
-		}
+	$totalDias = $diff->days;
+	
+	if( $ronda == '00:00:00' ){
+		$totalDias--;
 	}
-	else{
-		if( $ronda == '00:00:00' ){
-			$esPrimera = true;
-		}
-	}
+
+	if( $totalDias < 0 )
+		$totalDias = 0;
 
 	$exp = explode( ",", $horasAplicar );
 
@@ -3410,20 +3443,67 @@ function cantidadSinDispensarRondas( $horasAplicar, $ronda, $esPrimera = true ){
 
 		$valores = explode( "-", $exp[$i] );
 
-		if( $ronda == $valores[0] && $esPrimera ){
-
+		$val += $valores[1]-$valores[2];
+		
+		if( $ronda == $valores[0] && ( $totalDias == 0 ) ){
 			break;
 		}
 		elseif( $ronda == $valores[0] ){
-			$esPrimera = true;
+			$totalDias--;
 		}
-
-		$val += $valores[1]-$valores[2];
 	}
 
 	return $val;
 }
 
+// function cantidadSinDispensarRondas( $horasAplicar, $ronda, $esPrimera = true ){
+
+	// $val = 0;
+
+	// if( empty( $horasAplicar ) ){
+		// return $val;
+	// }
+
+	// if( $esPrimera ){
+		// if( $ronda == "00:00:00" ){
+			// $timeRonda = strtotime( date( "Y-m-d" )." $ronda" )+24*3600;
+		// }
+		// else{
+			// $timeRonda = strtotime( date( "Y-m-d" )." $ronda" );
+		// }
+
+		// if( time() > $timeRonda ){
+			// $esPrimera = false;
+		// }
+		// else{
+			// $esPrimera = true;
+		// }
+	// }
+	// else{
+		// if( $ronda == '00:00:00' ){
+			// $esPrimera = true;
+		// }
+	// }
+
+	// $exp = explode( ",", $horasAplicar );
+
+	// for( $i = 0; $i < count( $exp ); $i++ ){
+
+		// $valores = explode( "-", $exp[$i] );
+
+		// if( $ronda == $valores[0] && $esPrimera ){
+
+			// break;
+		// }
+		// elseif( $ronda == $valores[0] ){
+			// $esPrimera = true;
+		// }
+
+		// $val += $valores[1]-$valores[2];
+	// }
+
+	// return $val;
+// }
 
 /**
  * Indica si un artciulo peretenece a una ronda o no
@@ -4303,7 +4383,8 @@ function preCondicionesKE( $pac, &$art, $ke, $artValido, $tipTrans, $cco, &$nka 
 				$regbool = true;
 				
 				//Si es POS, solo se puede grabar si tiene articulos aprobados por CTC
-				if( $listartpac[$poslist][5] == 'N' && $listartpac[$poslist][10] && $listartpac[$poslist][10] >= 100 ){
+				// if( $listartpac[$poslist][5] == 'N' && $listartpac[$poslist][10] && $listartpac[$poslist][10] >= 100 ){
+				if( $listartpac[$poslist][5] == 'N' && $listartpac[$poslist][10] ){
 					$regbool = false;
 				}
 			}
@@ -4649,6 +4730,7 @@ function ArticulosXPacienteCM( $pac ){
 	global $tmpDispensacion;
 
 	global $horaCorteDispensacion;
+	global $diasDispensacion;
 
 	global $tempRonda;
 
@@ -4732,7 +4814,7 @@ function ArticulosXPacienteCM( $pac ){
 			$info[ $r[ 'Kadpro' ] ]['proximaRonda'] = strtotime( date( "Y-m-d" )." 00:00:00" ) + $temprxRonda*3600;
 
 			//Limito la proxima ronda hasta la hora de corte del día siguiente
-			$info[ $r[ 'Kadpro' ] ]['proximaRonda'] = min( $info[ $r[ 'Kadpro' ] ]['proximaRonda'], strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 );
+			$info[ $r[ 'Kadpro' ] ]['proximaRonda'] = min( $info[ $r[ 'Kadpro' ] ]['proximaRonda'], strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+$diasDispensacion*24*3600 );
 
 //			list( $fecpxr, $ronda ) = explode( " ", date( "Y-m-d H:i:s", $info[ $r[ 'Kadpro' ] ]['proximaRonda']-$tiempoPreparacion*3600 ) );
 			list( $fecpxr, $ronda ) = explode( " ", date( "Y-m-d H:i:s", $info[ $r[ 'Kadpro' ] ]['proximaRonda'] ) );
@@ -4850,7 +4932,7 @@ function ArticulosXPacienteCM( $pac ){
 			 *
 			 * No permito crear una regleta mas alla de la hora de corte del día siguiente
 			 ******************************************************************************************/
-			$corteDispensacionRep = min( $corteDispensacionRep, $horaCorteDispensacion*3600+2*3600 );
+			$corteDispensacionRep = min( $corteDispensacionRep, $horaCorteDispensacion*3600+2*3600 + ( $diasDispensacion-1 )*24*3600 );
 			/******************************************************************************************/
 
 			$canAplicada = 0;
@@ -4890,7 +4972,7 @@ function ArticulosXPacienteCM( $pac ){
 						$r['Kaddis'] += $r2['Kaddis'];
 
 						//Consulto la cantidad aplicada para este medicamento, hasta maximo la hora de corte de dispensación del día siguiente
-						$canAplicadaRep = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $r2['Kadart'], max( strtotime( $r2[ 'Kadfin' ]." ".$r2[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 ), $r2[ 'Kadido' ], $fechorTrasladoRep );
+						$canAplicadaRep = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $r2['Kadart'], max( strtotime( $r2[ 'Kadfin' ]." ".$r2[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+$diasDispensacion*24*3600 ), $r2[ 'Kadido' ], $fechorTrasladoRep );
 						$canAplicada += $canAplicadaRep;
 
 						/****************************************************************
@@ -4942,7 +5024,7 @@ function ArticulosXPacienteCM( $pac ){
 
 						if( $agregarRepetido ){
 							//Con las funciones virtuales
-							$fhFinMed = consultarFechaHoraFinalMedicamento( $horaCorteDispensacion, $fecDispensacion, $r2[ 'Kadfin' ], $r2[ 'Kadhin' ], $r2[ 'Kaddma' ], $r2[ 'Kaddia' ], $r2[ 'Perequ' ] );
+							$fhFinMed = consultarFechaHoraFinalMedicamento( $diasDispensacion, $horaCorteDispensacion, $fecDispensacion, $r2[ 'Kadfin' ], $r2[ 'Kadhin' ], $r2[ 'Kaddma' ], $r2[ 'Kaddia' ], $r2[ 'Perequ' ] );
 
 							$regletas[] = Array( 0 			 => crearRegletaVirtual( strtotime( $fecDispensacion." 00:00:00" )-($antHoras-2)*3600, strtotime( $fecDispensacion." 00:00:00" )+22*3600+$corteDispensacionRep, strtotime( $r2['Kadfin']." ".$r2['Kadhin'] ), $r2[ 'Perequ' ], $r2[ 'Kadcfr' ]/$r2[ 'Kadcma' ], $fhFinMed, $fechorTrasladoRep ),
 												 'id' 		 => $r2[ 'id' ],
@@ -4972,7 +5054,7 @@ function ArticulosXPacienteCM( $pac ){
 						$r[ 'Kaddma' ] = recalcularDosisMaxima( $conex, $bd, $pac['his'], $pac['ing'], $r['Kadart'], $r, $antHoras, $esANecesidad );
 
 					//Consulto la cantidad aplicada para este medicamento, hasta maximo la hora de corte de dispensación del día siguiente
-					$canAplicadaRep = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $r['Kadart'], max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 ), $r[ 'Kadido' ], $fechorTrasladoRep );
+					$canAplicadaRep = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $r['Kadart'], max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+$diasDispensacion*24*3600 ), $r[ 'Kadido' ], $fechorTrasladoRep );
 					$canAplicada += $canAplicadaRep;
 					
 					/************************************************************************************************
@@ -4983,10 +5065,10 @@ function ArticulosXPacienteCM( $pac ){
 						
 						//Solo se hace cambio de articulo por qué al hacer reemplazo quedan los mismos datos que el medicamento anterior
 						if( $aanFec == date( "Y-m-d", time()-$antHoras*3600 ) ){
-							$canAplicadaRepAan = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $aanArt, max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 ), '', $fechorTrasladoRep );
+							$canAplicadaRepAan = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $aanArt, max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+$diasDispensacion*24*3600 ), '', $fechorTrasladoRep );
 							
 							//Es la cantidad aplicada con el medicamento anterior, debo traducirlo al actual
-							$aanFracc = consultarFraccionPorArticulo( $conex, $bd, $aanArt, '1050' );
+							$aanFracc = consultarFraccionPorArticulo( $conex, $bd, $aanArt, $serviciofarmaceutico );
 							
 							if( $aanFracc['unidad'] == $r['Kadcfr'] ){
 								$canAplicadaRepAan = $canAplicadaRepAan*$aanFracc['fraccion']/$r[ 'Kadcma' ];
@@ -5031,7 +5113,7 @@ function ArticulosXPacienteCM( $pac ){
 					}
 
 					if( $agregarRepetido ){
-						$fhFinMed = consultarFechaHoraFinalMedicamento( $horaCorteDispensacion, $fecDispensacion, $r[ 'Kadfin' ], $r[ 'Kadhin' ], $r[ 'Kaddma' ], $r[ 'Kaddia' ], $r[ 'Perequ' ] );
+						$fhFinMed = consultarFechaHoraFinalMedicamento( $diasDispensacion, $horaCorteDispensacion, $fecDispensacion, $r[ 'Kadfin' ], $r[ 'Kadhin' ], $r[ 'Kaddma' ], $r[ 'Kaddia' ], $r[ 'Perequ' ] );
 
 						$regletas[] = Array( 0    		 => crearRegletaVirtual( strtotime( $fecDispensacion." 00:00:00" )-($antHoras-2)*3600, strtotime( $fecDispensacion." 00:00:00" )+22*3600+$corteDispensacionRep,strtotime( $r['Kadfin']." ".$r['Kadhin'] ), $r[ 'Perequ' ], $r[ 'Kadcfr' ]/$r[ 'Kadcma' ], $fhFinMed, $fechorTrasladoRep ),
 											 'id' 		 => $r[ 'id' ],
@@ -5098,7 +5180,8 @@ function ArticulosXPacienteCM( $pac ){
 
 
 			//Se muestra el articulo si pertenece a la ronda y la hora actual esta entre la hora de corte de dispensacion y la ronda que se va a mostar
-			$sindis = cantidadSinDispensarRondas( $r[ 'Kadcpx' ], $ronda, date( "Y-m-d" ) == $fecpxr );
+			// $sindis = cantidadSinDispensarRondas( $r[ 'Kadcpx' ], $ronda, date( "Y-m-d" ) == $fecpxr );
+			$sindis = cantidadSinDispensarRondas( $r[ 'Kadcpx' ], $ronda, $fecpxr );
 			$can = 0;	//Septiembre 22 de 2011
 
 			if( $mostrarArticulo && ( ( $perteneceRonda && time() >= $info[ $r[ 'Kadpro' ] ]['proximaRonda']-$corteDispensacion && time() <= $info[ $r[ 'Kadpro' ] ]['proximaRonda'] ) ) ){
@@ -5393,6 +5476,7 @@ function ArticulosXPaciente( $pac ){
 	global $tmpDispensacion;
 
 	global $horaCorteDispensacion;
+	global $diasDispensacion;
 
 	global $tempRonda;
 
@@ -5567,7 +5651,8 @@ function ArticulosXPaciente( $pac ){
 			$corteDispensacion = $info[ $r[ 'Kadpro' ] ]['horaCaroteDispensacion'];
 
 			//Agosto 29 de 2012
-			$corteDispensacion = substr( $info[ $r[ 'Kadpro' ] ]['horaCaroteDispensacion'],0 , 2 )*3600;
+			// $corteDispensacion = substr( $info[ $r[ 'Kadpro' ] ]['horaCaroteDispensacion'],0 , 2 )*3600;
+			$corteDispensacion = explode( ":", $info[ $r[ 'Kadpro' ] ]['horaCaroteDispensacion'] )[0]*3600;
 
 			$disCco = false;
 
@@ -5582,7 +5667,7 @@ function ArticulosXPaciente( $pac ){
 			$info[ $r[ 'Kadpro' ] ]['proximaRonda'] = strtotime( date( "Y-m-d" )." 00:00:00" ) + $temprxRonda*3600;
 
 			//Limito la proxima ronda hasta la hora de corte del día siguiente
-			$info[ $r[ 'Kadpro' ] ]['proximaRonda'] = min( $info[ $r[ 'Kadpro' ] ]['proximaRonda'], strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 );
+			$info[ $r[ 'Kadpro' ] ]['proximaRonda'] = min( $info[ $r[ 'Kadpro' ] ]['proximaRonda'], strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+$diasDispensacion*24*3600 );
 
 //			list( $fecpxr, $ronda ) = explode( " ", date( "Y-m-d H:i:s", $info[ $r[ 'Kadpro' ] ]['proximaRonda']-$tiempoPreparacion*3600 ) );
 			list( $fecpxr, $ronda ) = explode( " ", date( "Y-m-d H:i:s", $info[ $r[ 'Kadpro' ] ]['proximaRonda'] ) );
@@ -5711,7 +5796,7 @@ function ArticulosXPaciente( $pac ){
 			 *
 			 * No permito crear una regleta mas alla de la hora de corte del día siguiente
 			 ******************************************************************************************/
-			$corteDispensacionRep = min( $corteDispensacionRep, $horaCorteDispensacion*3600+2*3600 );
+			$corteDispensacionRep = min( $corteDispensacionRep, $horaCorteDispensacion*3600+2*3600 + ( $diasDispensacion-1 )*24*3600 );
 			/******************************************************************************************/
 
 			$canAplicada = 0;
@@ -5751,7 +5836,7 @@ function ArticulosXPaciente( $pac ){
 						$r['Kaddis'] += $r2['Kaddis'];
 
 						//Consulto la cantidad aplicada para este medicamento, hasta maximo la hora de corte de dispensación del día siguiente
-						$canAplicadaRep = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $r2['Kadart'], max( strtotime( $r2[ 'Kadfin' ]." ".$r2[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 ), $r2[ 'Kadido' ], $fechorTrasladoRep );
+						$canAplicadaRep = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $r2['Kadart'], max( strtotime( $r2[ 'Kadfin' ]." ".$r2[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+$diasDispensacion*24*3600 ), $r2[ 'Kadido' ], $fechorTrasladoRep );
 						$canAplicada += $canAplicadaRep;
 
 						/****************************************************************
@@ -5803,7 +5888,7 @@ function ArticulosXPaciente( $pac ){
 
 						if( $agregarRepetido ){
 							//Con las funciones virtuales
-							$fhFinMed = consultarFechaHoraFinalMedicamento( $horaCorteDispensacion, $fecDispensacion, $r2[ 'Kadfin' ], $r2[ 'Kadhin' ], $r2[ 'Kaddma' ], $r2[ 'Kaddia' ], $r2[ 'Perequ' ] );
+							$fhFinMed = consultarFechaHoraFinalMedicamento( $diasDispensacion, $horaCorteDispensacion, $fecDispensacion, $r2[ 'Kadfin' ], $r2[ 'Kadhin' ], $r2[ 'Kaddma' ], $r2[ 'Kaddia' ], $r2[ 'Perequ' ] );
 
 							$regletas[] = Array( 0 			 => crearRegletaVirtual( strtotime( $fecDispensacion." 00:00:00" )-($antHoras-2)*3600, strtotime( $fecDispensacion." 00:00:00" )+22*3600+$corteDispensacionRep, strtotime( $r2['Kadfin']." ".$r2['Kadhin'] ), $r2[ 'Perequ' ], $r2[ 'Kadcfr' ]/$r2[ 'Kadcma' ], $fhFinMed, $fechorTrasladoRep ),
 												 'id' 		 => $r2[ 'id' ],
@@ -5851,7 +5936,7 @@ function ArticulosXPaciente( $pac ){
 					}
 
 					//Consulto la cantidad aplicada para este medicamento, hasta maximo la hora de corte de dispensación del día siguiente
-					$canAplicadaRep = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $r['Kadart'], max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 ), $r[ 'Kadido' ], $fechorTrasladoRep );
+					$canAplicadaRep = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $r['Kadart'], max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+$diasDispensacion*24*3600 ), $r[ 'Kadido' ], $fechorTrasladoRep );
 					$canAplicada += $canAplicadaRep;
 					
 					/************************************************************************************************
@@ -5862,10 +5947,10 @@ function ArticulosXPaciente( $pac ){
 						
 						//Solo se hace cambio de articulo por qué al hacer reemplazo quedan los mismos datos que el medicamento anterior
 						if( $aanFec == date( "Y-m-d", time()-$antHoras*3600 ) ){
-							$canAplicadaRepAan = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $aanArt, max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 ), '', $fechorTrasladoRep );
+							$canAplicadaRepAan = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $aanArt, max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+$diasDispensacion*24*3600 ), '', $fechorTrasladoRep );
 							
 							//Es la cantidad aplicada con el medicamento anterior, debo traducirlo al actual
-							$aanFracc = consultarFraccionPorArticulo( $conex, $bd, $aanArt, '1050' );
+							$aanFracc = consultarFraccionPorArticulo( $conex, $bd, $aanArt, $serviciofarmaceutico );
 							
 							if( $aanFracc['unidad'] == $r['Kadcfr'] ){
 								$canAplicadaRepAan = $canAplicadaRepAan*$aanFracc['fraccion']/$r[ 'Kadcma' ];
@@ -5910,7 +5995,7 @@ function ArticulosXPaciente( $pac ){
 					}
 
 					if( $agregarRepetido ){
-						$fhFinMed = consultarFechaHoraFinalMedicamento( $horaCorteDispensacion, $fecDispensacion, $r[ 'Kadfin' ], $r[ 'Kadhin' ], $r[ 'Kaddma' ], $r[ 'Kaddia' ], $r[ 'Perequ' ] );
+						$fhFinMed = consultarFechaHoraFinalMedicamento( $diasDispensacion, $horaCorteDispensacion, $fecDispensacion, $r[ 'Kadfin' ], $r[ 'Kadhin' ], $r[ 'Kaddma' ], $r[ 'Kaddia' ], $r[ 'Perequ' ] );
 
 						$regletas[] = Array( 0    		 => crearRegletaVirtual( strtotime( $fecDispensacion." 00:00:00" )-($antHoras-2)*3600, strtotime( $fecDispensacion." 00:00:00" )+22*3600+$corteDispensacionRep,strtotime( $r['Kadfin']." ".$r['Kadhin'] ), $r[ 'Perequ' ], $r[ 'Kadcfr' ]/$r[ 'Kadcma' ], $fhFinMed, $fechorTrasladoRep ),
 											 'id' 		 => $r[ 'id' ],
@@ -5986,7 +6071,8 @@ function ArticulosXPaciente( $pac ){
 
 
 			//Se muestra el articulo si pertenece a la ronda y la hora actual esta entre la hora de corte de dispensacion y la ronda que se va a mostar
-			$sindis = cantidadSinDispensarRondas( $r[ 'Kadcpx' ], $ronda, date( "Y-m-d" ) == $fecpxr );
+			// $sindis = cantidadSinDispensarRondas( $r[ 'Kadcpx' ], $ronda, date( "Y-m-d" ) == $fecpxr );
+			$sindis = cantidadSinDispensarRondas( $r[ 'Kadcpx' ], $ronda, $fecpxr );
 			$can = 0;	//Septiembre 22 de 2011
 
 			if( $mostrarArticulo && ( ( $perteneceRonda && time() >= $info[ $r[ 'Kadpro' ] ]['proximaRonda']-$corteDispensacion && time() <= $info[ $r[ 'Kadpro' ] ]['proximaRonda'] ) ) ){
@@ -6455,7 +6541,7 @@ function registrarArticuloKE( $art, $pac, $trans = "C", &$idRegistro, $tras = tr
 		/****************************************************************************************************/
 
 		// echo "<br>........kkkk2222: ".$tempRonda = ( intval( ( date( "H" )+intval( $tempRonda/3600 ) )/$tmpDispensacion )*$tmpDispensacion );
-		$tempRonda = gmdate( "H:i:s", ( intval( ( date( "H" ) )/$tmpDispensacion )*$tmpDispensacion )*3600 )+$tempRonda*3600;
+		$tempRonda = gmdate( "H:i:s", ( intval( ( date( "H" ) )/$tmpDispensacion )*$tmpDispensacion )*3600+$tempRonda*3600 );
 
 		$rondaActual = $tempRonda;
 		/************************************************************************************************************/
@@ -7162,6 +7248,10 @@ $wcliame = consultarAliasPorAplicacion( $conex, $emp, "cliame" );
 //Se pone aca porque la variable usuario es seteado por el kardex automaticamente
 $aux = @$usuario;
 include_once("movhos/kardex.inc.php");
+
+// //Nota: horaCorteDispensacion viene del kardex
+// //Consultando los días de dispensación
+// $diasDispensacion = consultarAliasPorAplicacion( $conex, $emp, "diasDispensacion" );
 
 //Verifica si las funciones ejecutarLogUnix y procesoContingencia ya seejecutaron
 //valores posibles: 0 no se ha ejecutado, caso contrario ya se ejecutrado
@@ -8040,6 +8130,8 @@ else{
 	
 	if( $pac['act'] ){
 		
+		$diasDispensacion = consultarDiasDispensacionPorHistoriaIngreso( $conex, $bd, $pac['his'], $pac['ing'] );
+		
 		if ($cco['apl'])
 		{
 			$color="titulo4";
@@ -8142,7 +8234,7 @@ else{
 													AND kadart = '".$artEq[ 'Areces' ]."'
 													AND defart = kadart
 													AND defest = 'on'
-													AND defcco = '1050'
+													AND defcco = '$serviciofarmaceutico'
 													AND kadsus != 'on'
 													AND kadare = 'on'
 													AND kadest = 'on'
@@ -8542,7 +8634,7 @@ else{
 											// $ronApl=date("G:i - A");
 											$ronApl2=gmdate("H:00 - A", floor( date( "H" )/2 )*2*3600 );
 											registrarAplicacion($pac, $art2, $cco,$aprov,$fecApl2,$ronApl2, $usuario, $tipTrans, $dronum,$ardrolin2[ $art2['cod'] ], $error);
-											actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art2, $dronum, $ardrolin2[ $art2['cod'] ], 1050 );
+											actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art2, $dronum, $ardrolin2[ $art2['cod'] ], $serviciofarmaceutico );
 										}
 
 										mysql_data_seek( $resAut, 0 );	//reseteo nuevamente la consulta por si toca hacer la aplicación automática
@@ -8617,7 +8709,7 @@ else{
 										$artValido = registrarAplicacion($pac, $art, $cco,$aprov,$fecApl,$ronApl, $usuario, $tipTrans, $dronum, $drolin, $error);
 										$registroAplicacion = true;	//Mayo 6 de 2011
 
-										actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, 1050 );	//Noviembre 8 de 2011
+										actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, $serviciofarmaceutico );	//Noviembre 8 de 2011
 									}
 								}
 								else
@@ -8677,7 +8769,7 @@ else{
 												$artValido = registrarAplicacion($pac, $art, $cco,$aprov,$fecApl,$ronApl, $usuario, $tipTrans,$dronum,$drolin, $error);
 												$registroAplicacion = true;	//Mayo 6 de 2011
 
-												actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, 1050 );	//Noviembre 8 de 2011
+												actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, $serviciofarmaceutico );	//Noviembre 8 de 2011
 											}
 										}
 									}
@@ -8904,7 +8996,7 @@ else{
 	// }
 
 	// echo "<tr><td class='tituloSup' align='center'><b>RONDA: ".$tempRonda."</b></b>";
-	$rondaMaximaDispensacion = gmdate( "H:i:s", min( ($horaCorteDispensacion+24)*3600,$tempRonda*3600 ) );
+	$rondaMaximaDispensacion = gmdate( "H:i:s", min( ($horaCorteDispensacion+$diasDispensacion*24)*3600,$tempRonda*3600 ) );
 	// echo "<tr>";
 	// echo "<td class='tituloSup' align='center'><b>RONDA: ".$rondaMaximaDispensacion."</b></b>";
 	// echo "</tr>";

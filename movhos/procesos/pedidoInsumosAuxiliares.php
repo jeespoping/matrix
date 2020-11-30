@@ -94,6 +94,29 @@ else
 //=====================================================================================================================================================================     
 //		F U N C I O N E S	 G E N E R A L E S    P H P
 //=====================================================================================================================================================================
+
+	/****************************************************************************
+	 * Consulta los centros de costos que son domiciliarios
+	 ****************************************************************************/ 
+	function esCcoDomiciliario( $conex, $wbasedato, $cco ){
+		
+		$val = false;
+		
+		$sql = "SELECT Ccocod, Cconom
+				  FROM ".$wbasedato."_000011
+				 WHERE ccodom = 'on'
+				   AND ccoest = 'on'
+				   AND ccocod = '".$cco."'
+				 ";
+		
+		$res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ". mysql_error() );
+		
+		while( $rows = mysql_fetch_array($res) ){
+			$val = true;
+		}
+		
+		return $val;
+	}
 	
 	function hayPedidosEnEntrega( $conex, $wemp_pmla, $wbasedato, $auxiliar, $botiquin ){
 	
@@ -292,6 +315,8 @@ else
 	
 	function pintarFiltroCcoDispensacion()
 	{
+		global $wbasedato;
+		
 		$ccoDispensacion = consultarCentrosDeCostosBotiquines();
 		
 		$filtroFecha = "";
@@ -311,7 +336,8 @@ else
 												<option value=''>Seleccione...</option>";
 												foreach($ccoDispensacion as $keycco => $valuecco)
 												{
-		$filtroFecha .= "							<option value='".$valuecco['codcco']."' botiquin='".$valuecco['botiquin']."'>".$valuecco['codcco']."-".$valuecco['descco']."</option>";												
+													$esCcoDomiciliario = esCcoDomiciliario( $conex, $wbasedato, $valuecco['codcco'] );
+		$filtroFecha .= "							<option value='".$valuecco['codcco']."' botiquin='".$valuecco['botiquin']."' data-domiciliario='".( $esCcoDomiciliario ? 'on' : 'off' )."'>".$valuecco['codcco']."-".$valuecco['descco']."</option>";												
 												}
 		$filtroFecha .= "					</select>";											
 		$filtroFecha .= "				</td>
@@ -385,8 +411,12 @@ else
 		global $conex;
 		global $wbasedato;
 		
+		//función en comun.php que consulta la tabla de habitaciones por cco, por defectos es la movhos20
+		//de lo contrario es lo que indique la tabla movhos 11
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codigoCco );
+		
 		$queryZonas ="SELECT Habzon,Aredes 
-						FROM ".$wbasedato."_000020,".$wbasedato."_000169 
+						FROM ".$tablaHabitaciones.",".$wbasedato."_000169 
 					   WHERE Habcco='".$codigoCco."' 
 						 AND Habest='on' 
 						 AND Habzon=Arecod
@@ -426,7 +456,7 @@ else
 		$html = "";
 		if(count($zonas)>0)
 		{
-			$html .= "<select id='filtroZonas' name='filtroZonas' onChange='seleccionarCco(false);'>
+			$html .= "<select id='filtroZonas' name='filtroZonas'>
 						<option value=''>Seleccione...</option>
 						".$opcionUrgencias;
 						foreach($zonas as $keyZona => $valueZona)
@@ -536,8 +566,17 @@ else
 				$condicionZona = "AND Habzon='".$zona."'";
 			}
 			
+			$filtroPacientes = '';
+			if( isset( $_POST['pacDomciliarios'] ) && $_POST['pacDomciliarios'] ){
+				$filtroPacientes = " AND Ubihis IN('".implode( "','", $_POST['pacDomciliarios'] )."')";
+			}
+			
+			//función en comun.php que consulta la tabla de habitaciones por cco, por defectos es la movhos20
+			//de lo contrario es lo que indique la tabla movhos 11
+			$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codigoCco );
+			
 			$queryHabitaciones =  " SELECT Habhis,Habing,Habcod,Habcpa,Pacced,Pactid,Pacno1,Pacno2,Pacap1,Pacap2,'' AS Mtrcur  
-									  FROM ".$wbasedato."_000020,root_000037,root_000036,".$wbasedato."_000018 
+									  FROM ".$tablaHabitaciones.",root_000037,root_000036,".$wbasedato."_000018 
 									 WHERE Habcco='".$codigoCco."'
 									   AND Habhis!=''
 									   ".$condicionZona."
@@ -550,6 +589,7 @@ else
 									   AND Ubihis=Habhis
 									   AND Ubiing=Habing
 									   AND Ubiald='off'
+									   $filtroPacientes
 								  ORDER BY Habcpa;";
 		}
 		
@@ -2208,6 +2248,110 @@ else
 	
 	paquetesAgregados = {};
 	
+	function marcarDesmarcarSeleccionarTodos(){
+		if(    $( "#divPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).length > 0 
+			&& $( "#divPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).length == $( "#divPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).filter(":checked").length
+		){
+			$( "#inMarcarTodos" )[0].checked = true;
+			console.log("true")
+		}
+		else{
+			$( "#inMarcarTodos" )[0].checked = false;
+			console.log("false")
+		}
+	}
+	
+	function buscadorInformacionPaciente(){
+		
+		//Agregando la tabla al div que muestra los pacientes
+		$( "<div style='display:block;margin: 0 auto; width:70%;padding: 20px;'><span style='font-weight:bold;'>Buscador:</span><input id='buscarInformacion'></div>" ).prependTo( $( "#divPacientesDomiciliarios" ) );
+		
+		$('#buscarInformacion').quicksearch('#divPacientesDomiciliarios .find', { 
+				onAfter : function(){ 
+							marcarDesmarcarSeleccionarTodos();
+						},
+			});
+	}
+	
+	/**
+	 *
+	 */
+	function consutlarPacientesDomiciliarios(){
+	
+		$( "#divPacientesDomiciliarios" ).html('');
+		$( "#divInsumosBotiquin" ).html('');
+		
+		var valZona = $( "#filtroZonas" ).val();
+		// var valZona = $( "#filtroZonas" ).filter(":visible").length > 0 ? $( "#filtroZonas" ).val() : '';
+		console.log( valZona );
+		
+		if( valZona != '' && valZona != undefined ){
+			
+			if( valZona == '0' ){
+				valZona = '';
+			}
+			
+			$.post("gestionEnfermeria.php",
+				{
+					consultaAjax 	: '',
+					operacion		: 'consutlarPacientesDomiciliarios',
+					wemp_pmla		: $('#wemp_pmla').val(),
+					wcco			: $( "#filtroCcoDispensacion" ).val(),
+					wzona			: valZona,
+				},
+				function(data) {
+					
+					if( data.length > 0 ){
+						
+						var stHTML =   "<table style='margin: 0 auto;width:70%;padding: 0 0 20px 0;'>"
+									 + 		"<tr class='encabezadoTabla'>"
+									 + 			"<td>Historia</td>"
+									 + 			"<td>Identifacaci&oacute;n</td>"
+									 + 			"<td>Nombre del Paciente</td>"
+									 + 			"<td>Barrio</td>"
+									 + 			"<td>Direcci&oacute;n</td>"
+									 + 			"<td>Ver pacientes<input type='checkbox' id='inMarcarTodos'></td>"
+									 + 		"</tr>"
+									 + "</table>";
+									 
+						var tbtable = $( stHTML );
+						
+						$( data ).each(function(index){
+							
+							var _class = "fila1";
+							if(index %2 == 0){
+								_class = "fila2";	
+							}
+							
+							stHTML = "<tr class='"+_class+" find'>"
+								   + "<td>"+this.historia+"-"+this.ingreso+"</td>"
+								   + "<td>"+this.tipoDocumento+" "+this.numeroDocumento+"</td>"
+								   + "<td>"+this.nombreCompleto+"</td>"
+								   + "<td>"+this.barrio+"</td>"
+								   + "<td>"+this.direccion+"</td>"
+								   + "<td style='text-align:center;'><input type='checkbox' class='hisDomiciliarias' name='historiasDomiciliarias[]' value='"+this.historia+"'></td>"
+								   + "</tr>";
+								   
+							var tr = $( stHTML );
+							
+							$( stHTML ).appendTo( $( "tbody", tbtable ) );
+						});
+						
+						$( tbtable ).appendTo( $( "#divPacientesDomiciliarios" ) );
+						
+						$( "<div style='text-align:center;'><input id='inComenzarPedido' type='button' value='Comenzar a realizar pedido'></div>" ).appendTo( $( "#divPacientesDomiciliarios" ) );
+						
+						// if( $("#filtroZonas").val() == '' ){
+							// $("#filtroZonas").val( '0' );
+						// }
+						
+						buscadorInformacionPaciente();
+					}
+				}, "json"
+			);
+		}
+	}
+	
 	function cambiarEstadoEdicionPedido( estado ){
 		
 		if( $('#codPedido').val() != '' ){
@@ -2337,6 +2481,11 @@ else
 	
 	function pintarInsumosBotiquin(zona)
 	{
+		var pacientesDomiciliarios = [];
+		$( ".hisDomiciliarias:checked" ).each(function(){
+			pacientesDomiciliarios.push( this.value );
+		})
+		
 		$("#divInsumosBotiquin").html("");
 		$("#msjEspere").show();
 		$( ".botonPedidos" ).prop('disabled', false);
@@ -2356,7 +2505,8 @@ else
 				codigoCco		: $('#filtroCcoDispensacion').val(),
 				zona			: zona,
 				wemp_pmla		: $('#wemp_pmla').val(),
-				pedidosPorCco	: $('#permitePedidosPorCco').val()
+				pedidosPorCco	: $('#permitePedidosPorCco').val(),
+				pacDomciliarios : pacientesDomiciliarios,
 			}
 			, function(data) {
 				$("#msjEspere").hide();
@@ -3451,6 +3601,53 @@ else
 			}
 		});
 	}
+	
+	$( document ).ready(function(){
+		
+		$( filtroCcoDispensacion ).change(function(){
+			consutlarPacientesDomiciliarios();
+		});
+		
+		$( "#trZona" ).on( 'change', '#filtroZonas',function(){
+			
+			if( $( "#filtroCcoDispensacion > option:selected" ).data("domiciliario") != 'on' ){
+				seleccionarCco(false);
+			}
+			else{
+				consutlarPacientesDomiciliarios();
+			}
+			
+		});
+		
+		$( "#divPacientesDomiciliarios" ).on( 'click', '#inComenzarPedido', function(){
+			
+			if( $( ".hisDomiciliarias:checked" ).length > 0 ){
+				
+				seleccionarCco(false);
+				
+				$( "#divPacientesDomiciliarios > table, #divPacientesDomiciliarios > div" ).css({display:'none'});
+			}
+			else{
+				jAlert( "Debe seleccionar al menos un paciente", "ALERTA" );
+			}
+		});
+		
+		$( "#divPacientesDomiciliarios" ).on( 'click', '#inMarcarTodos', function(){
+			
+			if( this.checked ){
+				$( "#divPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).each(function(){
+					this.checked = true;
+				});
+			}
+			else{
+				$( "#divPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).each(function(){
+					this.checked = false;
+				});
+			}
+		});
+		
+		$( "#divPacientesDomiciliarios" ).on( 'change', 'input.hisDomiciliarias', function(){ marcarDesmarcarSeleccionarTodos(); });
+	})
 //=======================================================================================================================================================	
 //	F I N  F U N C I O N E S  J A V A S C R I P T 
 //=======================================================================================================================================================	
@@ -3516,6 +3713,8 @@ else
 	echo "<div id='dvModalResumen'></div>";
 	
 	echo "<div id='divPaquetes' title='Paquetes de insumos'></div>";
+	
+	echo "<div id='divPacientesDomiciliarios'></div>";
 	
 	echo "<br>";
 	

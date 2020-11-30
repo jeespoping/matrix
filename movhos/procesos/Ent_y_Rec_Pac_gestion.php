@@ -254,10 +254,10 @@ function consultarAplicadoJustificado($conex, $wbasedato, $whis, $wing, $wart, $
 }
 
 //Consulta el tipo de habitacion a facturar.
-function consultartipohab($conex, $whab, $wbasedato){
+function consultartipohab($conex, $whab, $tabla ){
 
 	$q = " SELECT Habtfa "
-		."   FROM ".$wbasedato."_000020 "
+		."   FROM ".$tabla." "
 		."  WHERE habcod = '".$whab."'";
 	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	$row = mysql_fetch_array($res);
@@ -2014,6 +2014,9 @@ else
 									// ============================================================================================
 									if ($went_rec == "Ent") // ******* ENTREGA *******
 									{
+										$tablaHabitacionesOrigen  = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
+										$tablaHabitacionesDestino = consultarTablaHabitaciones( $conex, $wbasedato, $wccodes1 );
+										
 										 $wtipo = "Entrega";
 
 										// $ubiptr = 'on';
@@ -2054,7 +2057,7 @@ else
 											$whora = (string)date("H:i:s");
 
 											// Aca actualizo la habitacion anterior, la libero
-											$q =  " UPDATE " . $wbasedato . "_000020 "
+											$q =  " UPDATE " . $tablaHabitacionesOrigen . " "
 												. "    SET habhis = '', "
 												. "        habing = '', "
 												. "        habali = 'on', "          // habitacion para alistar
@@ -2067,7 +2070,7 @@ else
 											// if(!$cirugia_o_urgencia)
 											// {
 												// // Aca actualizo la habitacion actual o para la que va el paciente
-												$q =  " UPDATE " . $wbasedato . "_000020 "
+												$q =  " UPDATE " . $tablaHabitacionesDestino . " "
 													. "    SET habhis = '" . $whis . "'," // Historia
 													. "        habing = '" . $wing . "'," // Ingreso
 													. "        habdis = 'off', "          // Habitacion ya lista
@@ -2099,7 +2102,6 @@ else
 									{
 										$wtipo = "Recibo";
 
-
 										/*$q_cco=" SELECT Ubisan, Ubisac
 												   FROM ".$wbasedato."_000018
 												 WHERE  Ubihis = '".$whis."'
@@ -2119,7 +2121,7 @@ else
 										// Si esta en proceso de traslado, verifico si la cama que le habian asignado es
 										// la misma que en la que quedo, si no, para liberar la habitacion o cama.
 										// =============================================================================
-										$q =  " SELECT ubihac "
+										$q =  " SELECT ubihac, ubisac "
 											. "   FROM " . $wbasedato . "_000018 "
 											. "  WHERE ubihis = '" . $whis . "'"
 											. "    AND ubiing = '" . $wing . "'"
@@ -2129,8 +2131,10 @@ else
 
 										if ($row['ubihac'] != $whabdes1)
 										{
+											$tablaHabitacionesOrigen  = consultarTablaHabitaciones( $conex, $wbasedato, $row['ubisac'] );
+											
 											// Libero la habitacion que se habia colocado cuando se entrego el paciente
-											$q =  " UPDATE ".$wbasedato."_000020 "
+											$q =  " UPDATE ".$tablaHabitacionesOrigen." "
 												. "    SET habhis = '', "
 												. "        habing = '', "
 												. "        habdis = 'on' "
@@ -2151,7 +2155,9 @@ else
 										// =============================================================================
 										// Aca actualizo la habitación en la que quedo el paciente
 										// =============================================================================
-										$q =  " UPDATE " . $wbasedato . "_000020 "
+										$tablaHabitacionesDestino = consultarTablaHabitaciones( $conex, $wbasedato, $wccodes1 );
+										
+										$q =  " UPDATE " . $tablaHabitacionesDestino . " "
 											. "    SET habdis = 'off', " // Habitacion ya ocupada
 											. "        habhis = '".$whis."',"
 											. "        habing = '".$wing."'"
@@ -2512,12 +2518,16 @@ else
 										cambioDeUbicacionHL7Lab( $conex, $wemp_pmla, $wbasedato, $whis, $wing, $wccodes1 );
 									}
 
-									$wtipo_hab_fac_e = consultartipohab($conex, $whab, $wbasedato);
-									$wtipo_hab_fac_r = consultartipohab($conex, $whabdes1,$wbasedato);
+									$tablaHabitacionesOrigen  = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
+									$wtipo_hab_fac_e 		  = consultartipohab( $conex, $whab, $tablaHabitacionesOrigen );
+									
+									
+									$tablaHabitacionesDestino  = consultarTablaHabitaciones( $conex, $wbasedato, $wccodes1 );
+									$wtipo_hab_fac_r 		   = consultartipohab( $conex, $whabdes1, $tablaHabitacionesDestino );
 
 									// Aca grabo el encabezado de la entrega o recibo
-									$q = " INSERT INTO " . $wbasedato . "_000017 (   Medico       ,   Fecha_data,   Hora_data,   Eyrnum     ,   Eyrhis  ,   Eyring  ,   Eyrsor  ,   Eyrsde         ,   Eyrhor  ,   Eyrhde         ,   Eyrtip   , Eyrest, Eyrids,  Eyrthe , Eyrthr, Seguridad     ) "
-										."                                VALUES ('" . $wbasedato . "','" . $wfecha . "','" . $whora . "','" . $wconsec . "','" . $whis . "','" . $wing . "','" . $wcco . "','" . $wccodes1 . "','" . $whab . "','" . $whabdes1 . "','" . $wtipo . "', 'on', '" . $wid . "'  , '".$wtipo_hab_fac_e."', '".$wtipo_hab_fac_r."', 'C-" . $wuser . "')";
+									$q = " INSERT INTO " . $wbasedato . "_000017 (       Medico       ,   Fecha_data    ,   Hora_data    ,       Eyrnum     ,   Eyrhis      ,   Eyring      ,     Eyrsor    ,    Eyrsde         ,     Eyrhor    ,    Eyrhde         ,     Eyrtip     , Eyrest,     Eyrids      ,    Eyrthe             ,         Eyrthr        ,    Seguridad      ) "
+										."                                VALUES ('" . $wbasedato . "','" . $wfecha . "','" . $whora . "','" . $wconsec . "','" . $whis . "','" . $wing . "','" . $wcco . "','" . $wccodes1 . "','" . $whab . "','" . $whabdes1 . "','" . $wtipo . "', 'on'  , '" . $wid . "'  , '".$wtipo_hab_fac_e."', '".$wtipo_hab_fac_r."', 'C-" . $wuser . "')";
 									$err = mysql_query($q, $conex) or die (mysql_errno().$q." - ".mysql_error());
 
 									// Aca se graba el detalle del movimiento si lo hay

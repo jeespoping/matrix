@@ -1399,9 +1399,11 @@ else
 
             // Consultar los pacientes activos para generar la contingencia
 			if( !$esCcoCir ){	//Si no es cirugía
+			
+				$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco1[0] );
 																										   // Nov 26 2014
 				$q = " SELECT habcpa, habhis, habing, pacno1, pacno2, pacap1, pacap2, pacnac, pactid, pacced, habzon "
-					."   FROM ".$wbasedato."_000020, ".$wbasedato."_000018, root_000036, root_000037 "
+					."   FROM ".$tablaHabitaciones.", ".$wbasedato."_000018, root_000036, root_000037 "
 					."  WHERE habcco  = '".$wcco1[0]."'"
 					."    AND habali != 'on' "            //Que no este para alistar
 					."    AND habdis != 'on' "            //Que no este disponible, osea que este ocupada

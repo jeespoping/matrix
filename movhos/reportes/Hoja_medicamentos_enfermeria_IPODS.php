@@ -359,7 +359,12 @@ else
 		var wtipo = $("#wtipo_"+i).val();
 		var wemp_pmla = $("#wemp_pmla").val();
 		
-		location.href = 'Hoja_medicamentos_enfermeria_IPODS.php?Imprimir=ok&whis='+historia+'&wing='+ingreso+'&wcco='+centro_costos+'&wtipo='+wtipo+'&wemp_pmla='+wemp_pmla+'';
+		var parametroextra = '';
+		if( $( "[name=servicioDomiciliario]" ).length > 0 )
+			if( $( "[name=servicioDomiciliario]" ).val() == 'on' )
+				parametroextra = '&servicioDomiciliario=on'; 
+		
+		location.href = 'Hoja_medicamentos_enfermeria_IPODS.php?Imprimir=ok&whis='+historia+'&wing='+ingreso+'&wcco='+centro_costos+'&wtipo='+wtipo+'&wemp_pmla='+wemp_pmla+parametroextra;
 		
 	}
 	
@@ -976,6 +981,68 @@ else
          }
 
 
+		function consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato ){
+	
+			$coleccion = array();
+			
+			$sql = "SELECT Ccocod, UPPER( Cconom )
+					  FROM ".$wbasedato."_000011
+					 WHERE Ccoest  = 'on' 
+					   AND Ccohos  = 'on' 
+					   AND ccodom != 'on'
+				  ORDER BY Ccoord, Ccocod; ";
+							  
+			$res1 = mysql_query($sql,$conex) or die (" Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+			$num1 = mysql_num_rows($res1);
+
+			if ($num1 > 0 )
+			{
+				for ($i=1;$i<=$num1;$i++)
+				{
+					$cco = new centroCostosDTO();
+					$row1 = mysql_fetch_array($res1);
+
+					$cco->codigo = $row1[0];
+					$cco->nombre = $row1[1];
+
+					$coleccion[] = $cco;
+				}
+			}
+			
+			return $coleccion;
+		}
+		
+		function consultaCentrosCostosDomiciliarios( $conex, $wbasedato ){
+		
+			$coleccion = array();
+			
+			$sql = "SELECT Ccocod, UPPER( Cconom )
+					  FROM ".$wbasedato."_000011
+					 WHERE Ccoest  = 'on' 
+					   AND Ccohos  = 'on' 
+					   AND ccodom  = 'on'
+				  ORDER BY Ccoord, Ccocod; ";
+							  
+			$res1 = mysql_query($sql,$conex) or die (" Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+			$num1 = mysql_num_rows($res1);
+
+			if ($num1 > 0 )
+			{
+				for ($i=1;$i<=$num1;$i++)
+				{
+					$cco = new centroCostosDTO();
+					$row1 = mysql_fetch_array($res1);
+
+					$cco->codigo = $row1[0];
+					$cco->nombre = $row1[1];
+
+					$coleccion[] = $cco;
+				}
+			}
+			
+			return $coleccion;
+		}
+
 
         function elegir_centro_de_costo()
          {
@@ -988,6 +1055,7 @@ else
           global $whora_par_actual;
           global $whora_par_anterior;
 
+          global $esServicioDomiciliario;
 
           echo "<center><table>";
           echo "<tr class=encabezadoTabla><td align=center><font size=7>HOJA DE MEDICAMENTOS</font></td></tr>";
@@ -1003,7 +1071,13 @@ else
 		  $tod="";
 		  $ipod="";
 		  //$cco=" ";
-		  $centrosCostos = consultaCentrosCostos($cco);
+		  // $centrosCostos = consultaCentrosCostos($cco);
+		  
+		  if( $esServicioDomiciliario )
+				$centrosCostos = consultaCentrosCostosDomiciliarios($conex,$wbasedato);
+		  else
+				$centrosCostos = consultaCentrosCostosNoDomiciliarios($conex,$wbasedato);
+		  
 					
 		  echo "<table align='center' border=0>";		
 		  $dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
@@ -1331,6 +1405,12 @@ else
 			echo "<input type='HIDDEN' name='whce' value='".$whce."'>";
 		}
 		
+		$esServicioDomiciliario = false;
+		if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+			$esServicioDomiciliario = true;
+			echo "<input type='HIDDEN' NAME= 'servicioDomiciliario' value='".$servicioDomiciliario."'/>";
+		}
+		
         if (!isset($wcco))
            elegir_centro_de_costo();
         else
@@ -1364,13 +1444,15 @@ else
                 $wcco="%";
 
                 $wcco1=explode("-",$wcco);
+				
+				$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco1[0] );
 
                 encabezado("ADMINISTRACION DE MEDICAMENTOS (HOJA DE MEDICAMENTOS)", $wactualiz, 'clinica');
 
                 echo "<center><table>";
 
                 $q = " SELECT ubihac, ubihis, ubiing, pacno1,pacno2, pacap1, pacap2, ubifad, root_000036.fecha_data, ubisac "
-                    ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020,  root_000037, root_000036 "
+                    ."   FROM ".$wbasedato."_000018, ".$tablaHabitaciones.",  root_000037, root_000036 "
                     ."  WHERE ubihis  = orihis "
                     ."    AND ubiing  = oriing "
 					."	  AND ubihis  = habhis "
@@ -1465,7 +1547,10 @@ else
                 echo "<tr class=boton1><td align=center colspan=6></b><input type='submit' value='ACEPTAR'></b></td></tr>";
                 echo "</table></center>";
 
-                echo "<center><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."'> Retornar</A></font></center>";
+				if($esServicioDomiciliario)
+					echo "<center><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&servicioDomiciliario=on'> Retornar</A></font></center>";
+				else
+					echo "<center><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."'> Retornar</A></font></center>";
             }
             else
             {
@@ -1670,7 +1755,7 @@ if( !isset($retornarCodigo) ){
                             <div align='center'>
                                 <br/>
                                 <br/>
-                                <font size=3><a href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'> Retornar</a></font>
+                                <font size=3><a href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco.( $esServicioDomiciliario ? '&servicioDomiciliario=on' : '' )."'> Retornar</a></font>
                             </div>
                         </div>";
                     /******/
@@ -1694,7 +1779,10 @@ if( !isset($retornarCodigo) ){
                         if (!isset($wced) and !isset($wtid) and !$imprimir)
                            {
                             echo "<center><table>";
-                            echo "<td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'> Retornar</A></font></td>";
+							if($esServicioDomiciliario)
+								echo "<td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&servicioDomiciliario=on'> Retornar</A></font></td>";
+							else
+								echo "<td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'> Retornar</A></font></td>";
                             echo "</table></center>";
                            }
 
@@ -2309,7 +2397,10 @@ if( !isset($retornarCodigo) ){
                         if (!isset($wced) and !isset($wtid) and !$imprimir)
                            {
                             echo "<center><table>";
-                            echo "<tr><td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'> Retornar</A></font></td></tr>";
+							if($esServicioDomiciliario)
+								echo "<tr><td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&servicioDomiciliario=on'> Retornar</A></font></td></tr>";
+							else
+								echo "<tr><td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'> Retornar</A></font></td></tr>";
                             echo "</table></center>";
                            }
 

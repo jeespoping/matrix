@@ -12,7 +12,7 @@
 	 *Redirecciona a la pagina inicial
 	 ******************************************************************************************************************************/
 	 function inicio(servicio){
- 		document.location.href='Recibo_dispensacion.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&servicio='+servicio;
+ 		document.location.href='Recibo_dispensacion.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&servicio='+servicio+'&servicioDomiciliario='+( $("[name=servicioDomiciliario]").length > 0 ? $("[name=servicioDomiciliario]").val() : '' );
 	 }
 	/******************************************************************************************************************************
 	 *Redirecciona a la pagina inicial
@@ -125,7 +125,7 @@
 	function consultarDetalle(historia,ingreso,nomPaciente,habitacion,consecutivo,linea,servicio,wfechai,wfechaf,wscausa){
 		$.blockUI({ message: $('#msjEspere') });
 		if(historia != '' && ingreso != '') {
-			var href = 'Recibo_dispensacion.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wingreso='+ingreso+'&nombrePaciente='+nomPaciente+'&habitacion='+habitacion+'&consecutivo='+consecutivo+'&linea='+linea+'&wservicio='+servicio+'&wfechai='+wfechai+'&wfechaf='+wfechaf+'&wscausa='+wscausa;
+			var href = 'Recibo_dispensacion.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wingreso='+ingreso+'&nombrePaciente='+nomPaciente+'&habitacion='+habitacion+'&consecutivo='+consecutivo+'&linea='+linea+'&wservicio='+servicio+'&wfechai='+wfechai+'&wfechaf='+wfechaf+'&wscausa='+wscausa+'&servicioDomiciliario='+<?= "'".@$_GET['servicioDomiciliario']."'" ?>;
 
 			document.location.href = href;
 		} else {
@@ -333,14 +333,14 @@
 		 		cont1++;
 
 		 	}
-	 	if(datos != ''){
-		 	document.forms.forma.wdatos.value = datos;
-		 	document.forms.forma.waccion.value = 'b';
-		 	document.forms.forma.submit();
-	 	} else {
-	 		alert("Nada para grabar.");
-	 	}
-	 	document.getElementById("btnGrabar").disabled = false;
+			if(datos != ''){
+				document.forms.forma.wdatos.value = datos;
+				document.forms.forma.waccion.value = 'b';
+				document.forms.forma.submit();
+			} else {
+				alert("Nada para grabar.");
+			}
+			document.getElementById("btnGrabar").disabled = false;
 		}
 	 }
 	 /******************************************************************************************************************************
@@ -590,22 +590,38 @@ class RegistroArticulo{
 /***********************************
  * Funciones
  ***********************************/
-function centrosCostosRecibenCarro(){
+function centrosCostosRecibenCarro( $esServicioDomiciliario ){
 	global $conex;
 	global $wbasedato;
 
 	$coleccion = array();
-
-	$q = "SELECT
-			Ccocod,Cconom
-		FROM
-			".$wbasedato."_000011
-		WHERE
-			Ccorec = 'on'
-			AND Ccoest = 'on'
-			AND DATE_FORMAT(NOW(),'%Y-%m-%d %T') >= CONCAT(Fecha_data,' ',Hora_data)
-		ORDER BY
-			Ccocod";
+	
+	if( !$esServicioDomiciliario ){
+		$q = "SELECT
+				Ccocod,Cconom
+			FROM
+				".$wbasedato."_000011
+			WHERE
+				Ccorec = 'on'
+				AND Ccoest = 'on'
+				AND DATE_FORMAT(NOW(),'%Y-%m-%d %T') >= CONCAT(Fecha_data,' ',Hora_data)
+				AND ccodom != 'on'
+			ORDER BY
+				Ccocod";
+	}
+	else{
+		$q = "SELECT
+				Ccocod,Cconom
+			FROM
+				".$wbasedato."_000011
+			WHERE
+				Ccorec = 'on'
+				AND Ccoest = 'on'
+				AND DATE_FORMAT(NOW(),'%Y-%m-%d %T') >= CONCAT(Fecha_data,' ',Hora_data)
+				AND ccodom = 'on'
+			ORDER BY
+				Ccocod";
+	}
 
 	//	echo $q;
 
@@ -1177,6 +1193,9 @@ if(!$usuarioValidado){
 
 	terminarEjecucion("Por favor cierre esta ventana e ingrese a matrix nuevamente.");
 } else {
+	
+	
+	
 	//Conexion base de datos
 	$conex = obtenerConexionBD("matrix");
 	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
@@ -1190,6 +1209,15 @@ if(!$usuarioValidado){
 	echo "<input type='HIDDEN' NAME= 'wbasedato' value='".$wbasedato."'/>";
 	echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
 
+	$esServicioDomiciliario = false;
+	if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+		$esServicioDomiciliario = true;
+		echo "<input type='HIDDEN' NAME= 'servicioDomiciliario' value='".$servicioDomiciliario."'/>";
+	}
+	else{
+		$servicioDomiciliario = 'off';
+	}
+	
 	//Mensaje de espera
 	echo "<div id='msjEspere' style='display:none;'>";
 	echo "<br /><img src='../../images/medical/ajax-loader5.gif'/><br /><br /> Por favor espere un momento ... <br /><br />";
@@ -1587,7 +1615,7 @@ if(!$usuarioValidado){
 			echo "</tr>";
 
 			//Servicio
-			$centrosCostos = centrosCostosRecibenCarro();
+			$centrosCostos = centrosCostosRecibenCarro($esServicioDomiciliario);
 			echo "<tr><td class='fila1' width=170>Servicio</td>";
 			echo "<td class='fila2' align='center'>";
 			if(isset($servicio) && !empty($servicio)){
@@ -1766,7 +1794,7 @@ if(!$usuarioValidado){
 			echo "<br>";
 
 			//Servicio
-			$centrosCostos = centrosCostosRecibenCarro();
+			$centrosCostos = centrosCostosRecibenCarro($esServicioDomiciliario);
 			echo "<tr><td class='fila1' width=170>Servicio</td>";
 			echo "<td class='fila2' align='center' width=170>";
 
