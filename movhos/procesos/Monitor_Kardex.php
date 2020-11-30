@@ -1803,7 +1803,7 @@ else
 	  return $sin_dispensar;
 	}
  
-  function estado_del_Kardex($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac)
+  function estado_del_Kardex($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac, &$esOrdenes )
     {
 	  global $wbasedato;
 	  global $conex;
@@ -1815,6 +1815,8 @@ else
 	  global $wemp_pmla;
 	  
 	  global $wsuspendidos;
+	  
+	  global $servicioDomiciliario;
 
 	  //$disCco = false; 
 	  $disCco = consultarHoraDispensacionPorCco( $conex, $wbasedato, $wsac );	//consulto el tiempo de dispensación por cco
@@ -1822,6 +1824,7 @@ else
 	  
 	  $westado="off";  //Apago el estado, que indica segun la opcion si la historia si esta en el estado que indica la opcion.
 	  $wactual="Sin Kardex Hoy";  //Indica si el Kardex esta actualizado a la fecha, off = actualizado al día anterior, on= Actualizado a la fecha
+	  $esOrdenes = false;
 	  
 	  
 	  switch ($wopcion)   
@@ -2079,7 +2082,7 @@ else
 			  //========================================================================================================================================================================
 			  //Pacientes con Antibioticos SIN Confirmar
 			  //========================================================================================================================================================================   
-			  $q= " SELECT kadcpx, kadpro, kadart, kadori "
+			  $q= " SELECT kadcpx, kadpro, kadart, kadori, karord "
 		          ."  FROM ".$wbasedato."_000054 DetKar, ".$wbasedato."_000053 EncKar "
 		          ." WHERE kadhis            = '".$whis."'"
 		          ."   AND kading            = '".$wing."'"
@@ -2095,7 +2098,7 @@ else
 		          ."   AND EncKar.Fecha_data = kadfec "
 				  ."   AND karaut           != 'on' "               //Que el kardex no sea generado automaticamente
 		          ." UNION "
-			      ."SELECT kadcpx, kadpro, kadart, kadori "
+			      ."SELECT kadcpx, kadpro, kadart, kadori, karord "
 		          ."  FROM ".$wbasedato."_000054 DetKar, ".$wbasedato."_000053 EncKar, ".$wbasedato."_000059 deffra"
 		          ." WHERE kadhis            = '".$whis."'"
 		          ."   AND kading            = '".$wing."'"
@@ -2112,11 +2115,16 @@ else
 		          ."   AND kadart            = defart "
 		          ."   AND defcon            = 'on' "
 				  ."   AND karaut           != 'on' ";               //Que el kardex no sea generado automaticamente
+
 		      $res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 		      $wnum = mysql_num_rows($res1);
 		      
 		      while ($wcan = mysql_fetch_array($res1)) 
 		        {
+				  if( !$esOrdenes ){
+					$esOrdenes = $wcan['karord'] == 'on';
+				  }
+					
 				  $regleta_str = explode(",",$wcan['kadcpx']);
 				  
 				  $sin_dispensar = estado_sin_dispensar($regleta_str, $disCco, $wcan['kadpro'], $wcan['kadori'], $wcan['kadart']);
@@ -2844,79 +2852,98 @@ else
 		 	}
 		 default:
 		    {
+				$tablaHabitaciones = $wbasedato."_000020";
+				if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+					$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, "9050" );
+				}
+				
 			  hora_par();
-			  //Aca trae todos los pacientes que esten hospitalizados en la clinica y luego busco como es el estado en cuanto a Kardex de cada uno
-			  $q = " CREATE TEMPORARY TABLE IF NOT EXISTS tempo_ART "
-			      ." SELECT ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac  "
-			      ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011, ".$wbasedato."_000020, ".$wbasedato."_000017 "
-			      ."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
-			      //."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
-			      ."    AND ubisac  = ccocod "
-			      ."    AND ccohos  = 'on' "             //Que el CC sea hospitalario
-			      ."    AND ccourg != 'on' "             //Que no se de Urgencias
-			      ."    AND ccocir != 'on' "             //Que no se de Cirugia
-			      ."    AND ubihis  = habhis "
-			      ."    AND ubiing  = habing "
-			      ."    AND ubihis != '' "
-			      ."    AND ubihis  = eyrhis "            //Estas cuatro linea que siguen son temporales
-			      ."    AND ubiing  = eyring "             
-			      ."    AND eyrsde  = ccocod "
-			      ."    AND eyrtip  = 'Recibo' "
-			      ."    AND eyrest  = 'on' "
-				  //."    AND ccocpx != 'on' "              //CICLOS de Producción 'OFF'
-				  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
-				  ."  UNION ALL "
-				  //Solo traigo los pacientes que esten en un servicio que sea con el MODELO DE CICLOS DE PRODUCCION Y DISPENSACION FRECUENTE
-				  ." SELECT ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac  "
-			      ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011, ".$wbasedato."_000020, ".$wbasedato."_000017, ".$wbasedato."_000054, "
-				  ."        ".$wbasedato."_000043, ".$wbasedato."_000099 "
-			      ."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
-			      //."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
-			      ."    AND ubisac  = ccocod "
-			      ."    AND ccohos  = 'on' "             //Que el CC sea hospitalario
-			      ."    AND ccourg != 'on' "             //Que no se de Urgencias
-			      ."    AND ccocir != 'on' "             //Que no se de Cirugia
-			      ."    AND ubihis  = habhis "
-			      ."    AND ubiing  = habing "
-			      ."    AND ubihis != '' "
-			      ."    AND ubihis  = eyrhis "            //Estas cuatro linea que siguen son temporales
-			      ."    AND ubiing  = eyring "             
-			      ."    AND eyrsde  = ccocod "
-			      ."    AND eyrtip  = 'Recibo' "
-			      ."    AND eyrest  = 'on' "
-				  //."    AND ccocpx  = 'on' "              //CICLOS de Producción 'ON'
-				  ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_par_actual',':00:00')),perequ) = 0 "   //Resto la fecha actual de la fecha de inicio y el resultado que da en horas las divido por la periodicidad (perequ), si hay decimales es porque el medicamento no es de esa hora, pero si es cero es porque si
-				  ."    AND ubihis  = kadhis "
-				  ."    AND ubiing  = kading "
-				  ."    AND kadare  = 'on' "
-				  ."    AND kadfec  = '".$wfecha."'"
-				  ."    AND kadpro  = tarcod "
-				  ."    AND tarpdx  = 'off' "            //Tipo de Articulo no se produce en ciclos osea, que son de dispensacion
-				  ."    AND kadart  NOT IN ( SELECT artcod FROM cenpro_000002 WHERE artcod = kadart) "
-				  ."    AND kadper  = percod "
-				  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
+			  
+			  if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
 				  
-				   ."  UNION "
-	              
-	              ." SELECT CONCAT(habzon,' - ',habcpa) as ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac "
-			      ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000054, ".$wbasedato."_000026, ".$wbasedato."_000011 "
-			      ."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
-			      ."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
-			      ."    AND ubihis  = habhis "
-			      ."    AND ubiing  = habing "
-			      ."    AND ubihis != '' "		    
-			      ."    AND ubihis  = kadhis "
-			      ."    AND ubiing  = kading "
-			      ."    AND kadfec  = '".$wfecha."'"      //Hoy
-			      ."    AND kadart  = artcod "
-				  ."	AND ubisac  = ccocod "
-				  ."	AND ccourg  != 'off'"
-			      ."  GROUP BY 1,2,3,4,5,6,7,8,9 ";
-				$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-				 // echo "<pre>".print_r($q,true)."</pre>";
-				$q = " SELECT ubihac, ubihis, ubiing, id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac "
-				    ."   FROM tempo_ART "
-				    ."  GROUP BY 1, 2, 5, 6, 7, 8, 9, 10 ";
+				   $q =" SELECT ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac  "
+					  ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011 "
+					  ."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+					  ."    AND ubisac  = ccocod "
+					  ."    AND ccodom  = 'on' "             //Que el CC sea domiciliario
+					  ."    AND ubihis != '' "
+					  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 ";
+			  }
+			  else{
+				  
+				  //Aca trae todos los pacientes que esten hospitalizados en la clinica y luego busco como es el estado en cuanto a Kardex de cada uno
+				  $q = " CREATE TEMPORARY TABLE IF NOT EXISTS tempo_ART "
+					  ." SELECT ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac  "
+					  ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011, ".$wbasedato."_000020, ".$wbasedato."_000017 "
+					  ."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+					  //."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
+					  ."    AND ubisac  = ccocod "
+					  ."    AND ccohos  = 'on' "             //Que el CC sea hospitalario
+					  ."    AND ccourg != 'on' "             //Que no se de Urgencias
+					  ."    AND ccocir != 'on' "             //Que no se de Cirugia
+					  ."    AND ubihis  = habhis "
+					  ."    AND ubiing  = habing "
+					  ."    AND ubihis != '' "
+					  ."    AND ubihis  = eyrhis "            //Estas cuatro linea que siguen son temporales
+					  ."    AND ubiing  = eyring "             
+					  ."    AND eyrsde  = ccocod "
+					  ."    AND eyrtip  = 'Recibo' "
+					  ."    AND eyrest  = 'on' "
+					  //."    AND ccocpx != 'on' "              //CICLOS de Producción 'OFF'
+					  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
+					  ."  UNION ALL "
+					  //Solo traigo los pacientes que esten en un servicio que sea con el MODELO DE CICLOS DE PRODUCCION Y DISPENSACION FRECUENTE
+					  ." SELECT ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac  "
+					  ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011, ".$wbasedato."_000020, ".$wbasedato."_000017, ".$wbasedato."_000054, "
+					  ."        ".$wbasedato."_000043, ".$wbasedato."_000099 "
+					  ."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+					  //."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
+					  ."    AND ubisac  = ccocod "
+					  ."    AND ccohos  = 'on' "             //Que el CC sea hospitalario
+					  ."    AND ccourg != 'on' "             //Que no se de Urgencias
+					  ."    AND ccocir != 'on' "             //Que no se de Cirugia
+					  ."    AND ubihis  = habhis "
+					  ."    AND ubiing  = habing "
+					  ."    AND ubihis != '' "
+					  ."    AND ubihis  = eyrhis "            //Estas cuatro linea que siguen son temporales
+					  ."    AND ubiing  = eyring "             
+					  ."    AND eyrsde  = ccocod "
+					  ."    AND eyrtip  = 'Recibo' "
+					  ."    AND eyrest  = 'on' "
+					  //."    AND ccocpx  = 'on' "              //CICLOS de Producción 'ON'
+					  ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_par_actual',':00:00')),perequ) = 0 "   //Resto la fecha actual de la fecha de inicio y el resultado que da en horas las divido por la periodicidad (perequ), si hay decimales es porque el medicamento no es de esa hora, pero si es cero es porque si
+					  ."    AND ubihis  = kadhis "
+					  ."    AND ubiing  = kading "
+					  ."    AND kadare  = 'on' "
+					  ."    AND kadfec  = '".$wfecha."'"
+					  ."    AND kadpro  = tarcod "
+					  ."    AND tarpdx  = 'off' "            //Tipo de Articulo no se produce en ciclos osea, que son de dispensacion
+					  ."    AND kadart  NOT IN ( SELECT artcod FROM cenpro_000002 WHERE artcod = kadart) "
+					  ."    AND kadper  = percod "
+					  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
+					  
+					   ."  UNION "
+					  
+					  ." SELECT CONCAT(habzon,' - ',habcpa) as ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac "
+					  ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000054, ".$wbasedato."_000026, ".$wbasedato."_000011 "
+					  ."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+					  ."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
+					  ."    AND ubihis  = habhis "
+					  ."    AND ubiing  = habing "
+					  ."    AND ubihis != '' "		    
+					  ."    AND ubihis  = kadhis "
+					  ."    AND ubiing  = kading "
+					  ."    AND kadfec  = '".$wfecha."'"      //Hoy
+					  ."    AND kadart  = artcod "
+					  ."	AND ubisac  = ccocod "
+					  ."	AND ccourg  != 'off'"
+					  ."  GROUP BY 1,2,3,4,5,6,7,8,9 ";
+					$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+					 // echo "<pre>".print_r($q,true)."</pre>";
+					$q = " SELECT ubihac, ubihis, ubiing, id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac "
+						."   FROM tempo_ART "
+						."  GROUP BY 1, 2, 5, 6, 7, 8, 9, 10 ";
+			  }
 			    
 			   break;
 		 	}	
@@ -2966,7 +2993,7 @@ else
 				  $wdpa = $rowpac[4];                                                 //Documento del Paciente
 			      $wtid = $rowpac[5];                                                 //Tipo de Documento o Identificacion
 
-			      estado_del_kardex($whis, $wing, $westado, $wmue, $wcolor, $wactual, $wsac);     
+			      estado_del_kardex($whis, $wing, $westado, $wmue, $wcolor, $wactual, $wsac, $esOrdenes );     
 			      
 				  if ($wmue=="on")
 			         {
@@ -2984,6 +3011,9 @@ else
 				      $wmat_estado[$j][5]=$wcolor;
 				      $wmat_estado[$j][6]=$walp;
 				      $wmat_estado[$j][7]=$wptr;
+				      $wmat_estado[$j][8]=$esOrdenes;
+				      $wmat_estado[$j][9]=$wdpa;
+				      $wmat_estado[$j][10]=$wtid;
 
 					  $j++;
 				     } 
@@ -3201,7 +3231,10 @@ else
 						 if ($wopcion != "12")
 						    {
 						 	 if ($wopcion=="3" or $wopcion=="8")      //Esta es la opcion de historias que no tienen kardex actualizado
-								 echo "<td class=".$walta_tras."><div align='center'><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
+									if( $wmat_estado[$i][8] )
+											echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=01&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
+									else	
+										echo "<td class=".$walta_tras."><div align='center'><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
 							   else
 								  {
 								    if ($wopcion == "11")
@@ -3318,7 +3351,10 @@ else
 								 echo "<td class=".$walta_tras." align=center>".$wmat_estado[$i][1]." - ".$wmat_estado[$i][2]."</td>";  //Historia-Ingreso
 								 echo "<td class=".$walta_tras." align=left  >".$wmat_estado[$i][3]."</td>";                            //Paciente
 								 if ($wopcion=="3" or $wopcion=="8" or $wopcion=="12")  //Esta es la opcion de historias que no tienen kardex actualizado
-									 echo "<td class=".$walta_tras."><div align='center'><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
+									if( $wmat_estado[$i][8] )
+										echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=01&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
+									else	
+										echo "<td class=".$walta_tras."><div align='center'><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
 								   else
 									  {
 										if ($wopcion == "11")
@@ -3440,6 +3476,9 @@ else
 						   if ($wopcion != "12")
 						      {
 								 if ($wopcion=="3" or $wopcion=="8")   //Esta es la opcion de historias que no tienen kardex actualizado
+									if( $wmat_estado[$i][8] )
+										echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=01&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
+									else	
 										echo "<td class=".$walta_tras." align=center><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
 								 else
 									{
@@ -3541,7 +3580,11 @@ else
 	  if ($wopcion=="9")
 	     echo "<meta http-equiv='refresh' content='300;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion."'>";
 	    else
-	       echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion."'>";
+			if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' )
+				echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion."&servicioDomiciliario=on'>";
+			else
+				echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion."'>";
+				
 	                 
 	  echo "</form>";
 	  

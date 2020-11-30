@@ -213,6 +213,18 @@ function enter2( i, valor )
 	document.forms.apl_ipods.submit();
 }
 
+function enter3( i, valor )
+{
+	if( $( "[name=pac_historia]" ).val() != '' ){
+		
+		$( "form" ).eq(0).append( "<input type='hidden' name='wido["+i+"]' value='"+valor+"'>" )
+		document.forms.apl_ipods.submit();
+	}
+	else{
+		jAlert("Debe ingresar una historia","ALERTA");
+	}
+}
+
 
 </script>
 
@@ -490,6 +502,48 @@ else
 
   encabezado("APLICACION DE MEDICAMENTOS",$wactualiz, "clinica");
 
+
+function consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato, $esDomiciliario = false ){
+	
+  	$coleccion = array();
+	
+	if( $esDomiciliario )
+	{
+		$sql = "SELECT Ccocod, UPPER( Cconom )
+				  FROM ".$wbasedato."_000011
+				 WHERE Ccoest  = 'on' 
+				   AND ( Ccohos  = 'on' AND ccodom = 'on' )
+			  ORDER BY Ccoord, Ccocod; ";
+	}
+	else
+	{
+		$sql = "SELECT Ccocod, UPPER( Cconom )
+				  FROM ".$wbasedato."_000011
+				 WHERE Ccoest  = 'on' 
+				   AND ( Ccohos  = 'on' AND ccodom != 'on' )
+					OR Ccourg  = 'on'
+			  ORDER BY Ccoord, Ccocod; ";
+	}
+					  
+	$res1 = mysql_query($sql,$conex) or die (" Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	$num1 = mysql_num_rows($res1);
+
+  	if ($num1 > 0 )
+  	{
+  		for ($i=1;$i<=$num1;$i++)
+  		{
+  			$cco = new centroCostosDTO();
+  			$row1 = mysql_fetch_array($res1);
+
+  			$cco->codigo = $row1[0];
+  			$cco->nombre = $row1[1];
+
+  			$coleccion[] = $cco;
+  		}
+  	}
+	
+  	return $coleccion;
+}
 
 function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 {
@@ -1194,23 +1248,172 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 	  global $wusuario;
 
 	  global $wemp_pmla;
+	  
+	  global $consultaPorHistoria;
+	  
+	  global $servicioDomiciliario;
 
-	  echo "<center><table>";
-      echo "<tr class=encabezadoTabla><td align=center><font size=20>APLICACION DE MEDICAMENTOS</font></td></tr>";
-	  echo "</table>";
-
-	  echo "<br><br>";
-
-	  if( !esUsuarioLactario( $conex, $wbasedato, $wusuario ) ){	//Si el usuario no es de lacatario
-
-		  //Seleccionar RONDA
+	  if( !isset($consultaPorHistoria) ){
+		  
 		  echo "<center><table>";
-		  echo "<tr class=fila1><td align=center><font size=20>Seleccione Ronda : </font></td></tr>";
+		  echo "<tr class=encabezadoTabla><td align=center><font size=20>APLICACION DE MEDICAMENTOS</font></td></tr>";
 		  echo "</table>";
 
-		  echo "<center><table>";
+		  echo "<br><br>";
 
-		  echo "<tr><td align=rigth><select name='whora_par_actual' onChange='alCambiarRondaPiso( this );' size='1' style=' font-size:50px; font-family:Verdana, Arial, Helvetica, sans-serif; height:50px;'>";
+	  
+		  
+		  if( !esUsuarioLactario( $conex, $wbasedato, $wusuario ) ){	//Si el usuario no es de lacatario
+
+			  //Seleccionar RONDA
+			  echo "<center><table>";
+			  echo "<tr class=fila1><td align=center><font size=20>Seleccione Ronda : </font></td></tr>";
+			  echo "</table>";
+
+			  echo "<center><table>";
+
+			  echo "<tr><td align=rigth><select name='whora_par_actual' onChange='alCambiarRondaPiso( this );' size='1' style=' font-size:50px; font-family:Verdana, Arial, Helvetica, sans-serif; height:50px;'>";
+			  //echo "<option selected>".$whora_par_actual."</option>";
+
+			  $selected = "selected";
+			  // $j indica la cantidad de horas a restar mientras que $i es la hora que se muestra
+			  //Al seleccionar la hora se cambia la fecha a la que se requiera
+			  $rondasAMostrar = consultarAliasPorAplicacion( $conex, $wemp_pmla, "mostrarRondasAnteriorsIpods" );
+			  
+			  for( $j = $rondasAMostrar*2-2, $i = strtotime( $wfecha_actual." ".$whora_par_actual.":00:00 UTC" ); $j >= 0; $i -=2*3600, $j-=2 ){
+				echo "<option $selected fechaactual='".gmdate( "Y-m-d", $i)."'>".( gmdate( "H", $i ) == 0 ? '24': gmdate( "H", $i ) )."</option>";
+				$selected = "";
+			  }
+			  
+			  /*
+			  if( $whora_par_actual < 2 ){
+				  echo "<option>".$whora_par_anterior."</option>";
+			  }
+			  else{
+				  for( $i = $whora_par_actual-2; $i >= 0; $i -=2 ){
+					echo "<option>".gmdate( "H", $i*3600 )."</option>";
+				  }
+			  }*/
+			  
+			  
+			  echo "</select></td></tr>";
+
+			  echo "<input type='HIDDEN' name='wfecha_actual' value='".$wfecha_actual."'>";
+		  }
+		  else{	//Si es usuario de lactarios
+
+			  //Consulto la hora de corte de dispensacion del día siguiente
+			  $horaCorteDispensacion = consultarAliasPorAplicacion($conex,$wemp_pmla,"horaCorteDispensacion");;
+
+			  $mostarDatosAyer = false;	//indica si debe mostrar datos para aplicar del día anterior
+
+			  if( date( "Y-m-d", time() - 2*3600 ) == date( "Y-m-d", time() - 24*3600 ) ){
+				$mostarDatosAyer = true;
+			  }
+
+			  //La hora de corte del día siguiente es la hora de corte de dispensación o la hora par acual
+			  //Esto para limitar la hora de aplicación del día siguiente.
+																	//Esto se hace para que siempre sea una hora entre 0 - 23, por si whora_par_actual es 24
+			  $horaCorteDispensacion =  min( $horaCorteDispensacion, gmdate( "H", $whora_par_actual*3600 ) );
+
+
+			  //Seleccionar RONDA
+			  echo "<center><table>";
+			  echo "<tr class=fila1><td align=center><font size=20>Seleccione Ronda : </font></td></tr>";
+			  echo "</table>";
+
+			  echo "<center><table>";
+
+			  //Selección del día
+			  echo "<tr>";
+
+			  if( $mostarDatosAyer || $whora_par_anterior == 24 ){
+				echo "<td align=rigth><select name='wfecha_actual' size='1' style=' font-size:50px; font-family:Verdana, Arial, Helvetica, sans-serif; height:50px' onChange='alCambiarDia( this, 22, 22, 2, 24, 0, $horaCorteDispensacion );'>";
+			  }
+			  else{
+				echo "<td align=rigth><select name='wfecha_actual' size='1' style=' font-size:50px; font-family:Verdana, Arial, Helvetica, sans-serif; height:50px' onChange='alCambiarDia( this, 22, 22, $whora_par_anterior, 24, 0, $horaCorteDispensacion );'>";
+			  }
+
+			  if( $mostarDatosAyer ){
+				echo "<option value='".date( "Y-m-d", time() - 24*3600 )."'>AYER</option>";
+			  }
+
+			  echo "<option value='".date( "Y-m-d" )."' selected>HOY</option>";
+			  echo "<option value='".date( "Y-m-d", time()+24*3600 )."'>MAÑANA</option>";
+			  echo "</select>";
+			  echo "</td>";
+
+			  echo "<td align=rigth><select name='whora_par_actual' size='1' style=' font-size:50px; font-family:Verdana, Arial, Helvetica, sans-serif; height:50px'>";
+
+			  if( $mostarDatosAyer ){
+				$whora_par_anterior_2 = 2;
+			  }
+			  else{
+				if( $whora_par_anterior == 24 ){
+					$whora_par_anterior_2 = 2;
+				}
+				else{
+					$whora_par_anterior_2 = $whora_par_anterior;
+				}
+			  }
+
+			  for( $rn = $whora_par_anterior_2*3600; $rn <= 24*3600; $rn+=7200 ){
+				if( $whora_par_actual == gmdate( "H", $rn ) ){
+					if( $rn == 24*3600 ){
+						echo "<option selected>24</option>";
+					}
+					else{
+						echo "<option selected>".gmdate( "H", $rn )."</option>";
+					}
+				}
+				else{
+					if( $rn == 24*3600 ){
+						echo "<option>24</option>";
+					}
+					else{
+						echo "<option>".gmdate( "H", $rn )."</option>";
+					}
+				}
+			  }
+
+			  echo "</select></td></tr>";
+		  }
+
+		  echo "</table>";
+
+		  echo "<br><br><br>";
+
+		  //Seleccionar CENTRO DE COSTOS
+
+		  //**************** llamada a la funcion consultaCentrosCostos y dibujarSelect************
+						$cco="Ccohos,Ccourg";
+						$sub="on";
+						$tod="";
+						$ipod="on";
+						//$cco=" ";
+						// $centrosCostos = consultaCentrosCostos($cco);
+						
+						$esServicioDomiciliario = false;
+						if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+							$esServicioDomiciliario = true;
+							echo "<input type='HIDDEN' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";
+						}
+						
+						$centrosCostos = consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato, $esServicioDomiciliario );
+
+						echo "<table align='center' border=0>";
+						$dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
+
+						echo $dib;
+						echo "</table>";
+	  }
+	  else{
+		  echo "<center>";
+		  echo "<b class='encabezadoTabla' style='font-size: 20pt;font-weight:bold;'>APLICACION DE MEDICAMENTOS</b>";
+		  
+		  echo "<span class=fila1 style='font-size:20pt;display:block;margin:20px;width:500px;padding:5px;font-weight:bold;'>Seleccione Ronda : </span>";
+		  
+		  echo "<select name='whora_par_actual' onChange='alCambiarRondaPiso( this );' size='1' style=' font-size:50px; font-family:Verdana, Arial, Helvetica, sans-serif; height:50px;'>";
 		  //echo "<option selected>".$whora_par_actual."</option>";
 
 		  $selected = "selected";
@@ -1223,119 +1426,15 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 			$selected = "";
 		  }
 		  
-		  /*
-		  if( $whora_par_actual < 2 ){
-			  echo "<option>".$whora_par_anterior."</option>";
-		  }
-		  else{
-			  for( $i = $whora_par_actual-2; $i >= 0; $i -=2 ){
-				echo "<option>".gmdate( "H", $i*3600 )."</option>";
-			  }
-		  }*/
-		  
-		  
-		  echo "</select></td></tr>";
-
-		  echo "<input type='HIDDEN' name='wfecha_actual' value='".$wfecha_actual."'>";
-	  }
-	  else{	//Si es usuario de lactarios
-
-		  //Consulto la hora de corte de dispensacion del día siguiente
-		  $horaCorteDispensacion = consultarAliasPorAplicacion($conex,$wemp_pmla,"horaCorteDispensacion");;
-
-		  $mostarDatosAyer = false;	//indica si debe mostrar datos para aplicar del día anterior
-
-		  if( date( "Y-m-d", time() - 2*3600 ) == date( "Y-m-d", time() - 24*3600 ) ){
-			$mostarDatosAyer = true;
-		  }
-
-		  //La hora de corte del día siguiente es la hora de corte de dispensación o la hora par acual
-		  //Esto para limitar la hora de aplicación del día siguiente.
-																//Esto se hace para que siempre sea una hora entre 0 - 23, por si whora_par_actual es 24
-		  $horaCorteDispensacion =  min( $horaCorteDispensacion, gmdate( "H", $whora_par_actual*3600 ) );
-
-
-		  //Seleccionar RONDA
-		  echo "<center><table>";
-		  echo "<tr class=fila1><td align=center><font size=20>Seleccione Ronda : </font></td></tr>";
-		  echo "</table>";
-
-		  echo "<center><table>";
-
-		  //Selección del día
-		  echo "<tr>";
-
-		  if( $mostarDatosAyer || $whora_par_anterior == 24 ){
-			echo "<td align=rigth><select name='wfecha_actual' size='1' style=' font-size:50px; font-family:Verdana, Arial, Helvetica, sans-serif; height:50px' onChange='alCambiarDia( this, 22, 22, 2, 24, 0, $horaCorteDispensacion );'>";
-		  }
-		  else{
-			echo "<td align=rigth><select name='wfecha_actual' size='1' style=' font-size:50px; font-family:Verdana, Arial, Helvetica, sans-serif; height:50px' onChange='alCambiarDia( this, 22, 22, $whora_par_anterior, 24, 0, $horaCorteDispensacion );'>";
-		  }
-
-		  if( $mostarDatosAyer ){
-			echo "<option value='".date( "Y-m-d", time() - 24*3600 )."'>AYER</option>";
-		  }
-
-		  echo "<option value='".date( "Y-m-d" )."' selected>HOY</option>";
-		  echo "<option value='".date( "Y-m-d", time()+24*3600 )."'>MAÑANA</option>";
 		  echo "</select>";
-		  echo "</td>";
-
-		  echo "<td align=rigth><select name='whora_par_actual' size='1' style=' font-size:50px; font-family:Verdana, Arial, Helvetica, sans-serif; height:50px'>";
-
-		  if( $mostarDatosAyer ){
-			$whora_par_anterior_2 = 2;
-		  }
-		  else{
-			if( $whora_par_anterior == 24 ){
-				$whora_par_anterior_2 = 2;
-			}
-			else{
-				$whora_par_anterior_2 = $whora_par_anterior;
-			}
-		  }
-
-		  for( $rn = $whora_par_anterior_2*3600; $rn <= 24*3600; $rn+=7200 ){
-			if( $whora_par_actual == gmdate( "H", $rn ) ){
-				if( $rn == 24*3600 ){
-					echo "<option selected>24</option>";
-				}
-				else{
-					echo "<option selected>".gmdate( "H", $rn )."</option>";
-				}
-			}
-			else{
-				if( $rn == 24*3600 ){
-					echo "<option>24</option>";
-				}
-				else{
-					echo "<option>".gmdate( "H", $rn )."</option>";
-				}
-			}
-		  }
-
-		  echo "</select></td></tr>";
+		  
+		  echo "<input type='HIDDEN' name='wfecha_actual' value='".$wfecha_actual."'>";
+		  
+		  echo "<label style='display:block;font-size:15pt;font-weight:bold;margin: 15px 0;'>Historia</label>";
+		  echo "<span style='margin: 15px;display:block;'><input type='text' style='font-size:20pt;' name='pac_historia'></span>";
+		  echo "<span style='margin: 15px;display:block;'><input type='button' value='Aceptar' onclick='enter3()' class='tipo4V'></span>";
+		  echo "";
 	  }
-
-	  echo "</table>";
-
-	  echo "<br><br><br>";
-
-	  //Seleccionar CENTRO DE COSTOS
-
-	  //**************** llamada a la funcion consultaCentrosCostos y dibujarSelect************
-					$cco="Ccohos,Ccourg";
-					$sub="on";
-					$tod="";
-					$ipod="on";
-					//$cco=" ";
-					$centrosCostos = consultaCentrosCostos($cco);
-
-					echo "<table align='center' border=0>";
-					$dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
-
-					echo $dib;
-					echo "</table>";
     }
 	             //echo "<br>wcco ".$wcco;
   //============================================================================================================================
@@ -1348,6 +1447,9 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 	  global $wcco;
 
 	  $wcco1 = explode("-",$wcco);
+	  
+	  $tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, trim($wcco1[0]) );
+	  
 	  //echo "wcco1".$wcco1;
 
 	  // $q = " SELECT ccozon "
@@ -1355,7 +1457,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 		  // ."  WHERE ccocod = '".trim($wcco1[0])."'";
 	
 		$q = "SELECT Arecod, Aredes
-			  FROM ".$wbasedato."_000020, ".$wbasedato."_000169
+			  FROM ".$tablaHabitaciones.", ".$wbasedato."_000169
 			 WHERE habcco = '".trim($wcco1[0])."'
 			   AND habzon = Arecod
 		  GROUP BY habzon, habcco";
@@ -1378,8 +1480,12 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 	  global $wbasedato;
 	  global $wcco;
 	  global $wzona;
+	  
+	  global $servicioDomiciliario;
 
 	  $wcco1 = explode("-",$wcco);
+	  
+	  $tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, trim($wcco1[0]) );
 
 	  /////////////
 	  echo "<center><table>";
@@ -1388,7 +1494,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 		  // ."  WHERE ccocod = '".trim($wcco1[0])."'";
 
 	  $q = "SELECT Arecod, Aredes
-			  FROM ".$wbasedato."_000020, ".$wbasedato."_000169
+			  FROM ".$tablaHabitaciones.", ".$wbasedato."_000169
 			 WHERE habcco = '".trim($wcco1[0])."'
 			   AND habzon = Arecod
 		  GROUP BY habzon, habcco";
@@ -1409,6 +1515,10 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
          // }
 		while( $row = mysql_fetch_array($res) ){
 			echo "<option value='".$row['Arecod']."'>".$row['Aredes']."</option>";;
+		}
+		
+		if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+			echo "<input type='HIDDEN' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";
 		}
 		 
       echo "</select></td></tr>";
@@ -1445,17 +1555,21 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 	  global $wfecha_a_buscar; //Abril de 23 de 2013
 
 	  global $wusuario;
+	  
+	  global $servicioDomiciliario;
 
 	  $wfecha_a_buscar = $wfecha_actual;	//Abril 24 de 2013
 
 	  $wcco1=explode("-",$wcco);
+	  
+	  $tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco1[0] );
 
 	  if ($wzona == "")
 	     $wzona = "%";
 
 	  //Selecciono todos los pacientes del servicio seleccionado
 	  $q = " SELECT habcod, habhis, habing, pacno1, pacno2, pacap1, pacap2, ubialp " //, pactid, pacced "
-	      ."   FROM ".$wbasedato."_000020, ".$wbasedato."_000018, root_000036, root_000037 "
+	      ."   FROM ".$tablaHabitaciones.", ".$wbasedato."_000018, root_000036, root_000037 "
 	      ."  WHERE habcco        = '".$wcco1[0]."'"
 	      ."    AND habali       != 'on' "            //Que no este para alistar
 	      ."    AND habdis       != 'on' "            //Que no este disponible, osea que este ocupada
@@ -1641,7 +1755,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 				   }
 
 				   if( true || !$hoyNoConfirmado )
-						echo "<td align=center><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whis=".$whis."&wing=".$wing."&wcco=".$wcco."&whab=".$whab."&wpac=".$wpac."&walp=".$walp."&wzona=".$wzona."' class=tipo3V>Ver</A></td>";
+						echo "<td align=center><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whis=".$whis."&wing=".$wing."&wcco=".$wcco."&whab=".$whab."&wpac=".$wpac."&walp=".$walp."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Ver</A></td>";
 					else
 						echo "<td align='center' class='suspendido'><font size=6>Kardex No confirmado</font></td>";	//Enero 29 de 2013
 
@@ -2791,7 +2905,7 @@ function validar_ipods($wcco)
 			echo " <script>
 				   alert ('$wmsj');
 
-				   window.location.href='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."'
+				   window.location.href='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.( isset($consultaPorHistoria) ? '&consultaPorHistoria=on' : '' )."'.
 				   </script> ";
 
 		   }
@@ -2823,6 +2937,25 @@ function validar_ipods($wcco)
   echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
 
   mostrar_empresa($wemp_pmla);
+  
+  if( !empty( $pac_historia ) ){
+	  
+		$whis 		= $pac_historia;
+		$wing 		= consultarUltimoIngresoHistoria($conex, $whis, $wemp_pmla );
+	  
+		$info_pac	= informacionPacienteM18( $conex, $wbasedato, $wemp_pmla, $historia, $wing );
+		$ubi_pac 	= consultarUbicacionPaciente( $conex, $wbasedato, $whis, $wing, $wemp_pmla );
+		
+		$wpac 			= trim( $info_pac['primerNombre']." ".$info_pac['segundoNombre'] )." ".trim( $info_pac['primerApellido']." ".$info_pac['segundoApellido'] );
+		$wcco			= $ubi_pac->servicioActual."-".consultarCentroCosto($conex, $ubi_pac->servicioActual, $wbasedato )->nombre;
+		$whab 			= $ubi_pac->habitacionActual;
+		$walp 			= 'off';
+		$wzona 			= '';
+		$wfecha_actual 	= date("Y-m-d");
+		
+		$wcenmez 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cenmez');
+		echo "<input type='HIDDEN' name='pac_historia' value='".$pac_historia."'>";
+  }
 
   if (!isset($wcco))
      {
@@ -2874,6 +3007,10 @@ function validar_ipods($wcco)
 		echo "<input type='HIDDEN' name='wfecha' value='".$wfecha."'>";
 	    echo "<input type='HIDDEN' name='whora_par_actual' value='".$whora_par_actual."'>";
 	    echo "<input type='HIDDEN' name='wfecha_actual' value='".$wfecha_actual."'>";
+		
+		if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+			echo "<input type='HIDDEN' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";
+		}
 
 		if (isset($wusuario) and TRIM($wusuario))
 		   {
@@ -3463,7 +3600,7 @@ function validar_ipods($wcco)
 									$noPuedeAnular = consultarSiPuedeAnular( $whis, $wing, $row[1], $row[22]);
 									if(!$noPuedeAnular)
 									{
-										echo "<td align=center rowspan=4><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona."' class=tipo3V>Anular</A></td>";
+										echo "<td align=center rowspan=4><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
 									}
 									
 
@@ -3474,12 +3611,12 @@ function validar_ipods($wcco)
 									{
 									   if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
 									     {
-									       echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona." ' class=tipo3V>Aplicar</A></td>";
+									       echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar</A></td>";
 										 }
 									   else
 										 {
 										    echo "<td align=center rowspan=4 colspan=2>555";
-											echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
+											echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
 											echo "<option></option>";
 
 											for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
@@ -3498,11 +3635,11 @@ function validar_ipods($wcco)
 									 {
 									  if ($wStock[$i]=="on")
 										if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
-										    echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona." ' class=tipo3V>Aplicar (Stock)</A></td>";
+										    echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar (Stock)</A></td>";
 										 else
 										    {
 										      echo "<td align=center rowspan=4 colspan=2><font class=tipo4V>(Stock)<br></font>";
-											  echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
+											  echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
 											  echo "<option></option>";
 
 											  for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
@@ -3515,11 +3652,11 @@ function validar_ipods($wcco)
 											}
 										else
 										   if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
-										      echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona." ' class=tipo3V>Aplicar</A></td>";
+										      echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar</A></td>";
 										   else
 										    {
 										      echo "<td align=center rowspan=4 colspan=2>";
-											  echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
+											  echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' ).$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
 											  echo "<option></option>";
 
 											  for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
@@ -3542,7 +3679,7 @@ function validar_ipods($wcco)
 											$noPuedeAnular = consultarSiPuedeAnular( $whis, $wing, $row[1], $row[22]);
 											if(!$noPuedeAnular)
 											{
-												echo "<td align=center rowspan=4><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona."' class=tipo3V>Anular</A></td>";
+												echo "<td align=center rowspan=4><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
 											}
 											// echo "<td align=center rowspan=4><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona."' class=tipo3V>Anular</A></td>";
 										   }
@@ -3564,7 +3701,10 @@ function validar_ipods($wcco)
 
 				echo "<br><br>";
 				echo "<table>";
-				echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona."' class=tipo3V>Retornar</A></td></tr>";
+				if( empty($pac_historia) )
+					echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
+				else
+					echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
 				echo "</table>";
 			   }
 			  else
@@ -3585,7 +3725,11 @@ function validar_ipods($wcco)
 
 				  echo "<br><br>";
 				  echo "<table>";
-				  echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona."' class=tipo3V>Retornar</A></td></tr>";
+				  if(empty($pac_historia))
+					echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
+				  else	
+					echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
+				
 				  echo "</table>";
 				 }
 		 }

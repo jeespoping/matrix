@@ -6,6 +6,98 @@ include_once( "movhos/movhos.inc.php" );
 include_once( "movhos/movhos.inc.php" );
 include_once("./../../interoperabilidad/procesos/funcionesGeneralesEnvioHL7.php");
 
+/************************************************************
+ * Se asignar habitaciones a los pacientes
+ ************************************************************/
+function asignarHabitacionPaciente( $conex, $tabla, $cco, $hab, $his, $ing, $zona ){
+	
+	$val = false;
+	
+	$fecha = date( "H:i:s" );
+	$hora  = date( "Y-m-d" );
+
+	list( $wbasedato ) = explode( "_", $tabla );
+
+	$sql = "REPLACE INTO 
+			".$tabla." (   Medico       ,  Fecha_data , Hora_data  ,    Habcod , Habcco    , Habhis    ,  Habing   , Habali, Habdis, Habest, habpro,   habfal    ,    habhal, habprg, Habtmp,   Habzon   , Habord, Habtip, Habtfa,    Habcpa       , Habcub, Habvir,     Seguridad     ) 
+			    VALUES ('".$wbasedato."', '".$fecha."', '".$hora."', '".$hab."', '".$cco."', '".$his."', '".$ing."', 'off' , 'off' , 'on'  ,  'off', '0000-00-00', '00:00:00', 'off', 'off' , '".$zona."',   ''  ,   ''  ,   ''  , '".$habitacion."', 'off',  'off', 'C-".$wbasedato."');
+			";
+		  
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ". mysql_error() );
+
+	if( mysql_affected_rows() !== 0 ){
+		$val = true;
+	}
+	
+	return $val;
+}
+
+function esCcoDomiciliario( $conex, $wbasedato, $wcco ){
+		
+	$val = false;
+
+	$sql = "SELECT Ccodom
+			  FROM ".$wbasedato."_000011
+			 WHERE ccocod = '".$wcco."'
+			   AND ccodom = 'on'
+			 ;";
+
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	$num = mysql_num_rows($res);
+	
+	if($num > 0)
+	{
+		$val = true;
+	}
+	
+	return $val;
+}
+
+function consutlarPacientesDomiciliarios( $conex, $wbasedato, $wemp_pmla, $wcco, $wzona ){
+	
+	$val = [];
+	
+	$esCcoDomiciliario = esCcoDomiciliario( $conex, $wbasedato, $wcco );
+	
+	if( $esCcoDomiciliario ){
+		
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
+		
+		if( !empty($wzona) ){
+			$wzona = " AND habzon = '".$wzona."' ";
+		}
+		
+		$sql = "SELECT Habcod, Habcco, Habhis, Habing
+				  FROM ".$tablaHabitaciones."
+				 WHERE habcco = '".$wcco."'
+				   AND habest = 'on'
+				   $wzona
+				 ;";
+
+		$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+		$num = mysql_num_rows($res);
+		
+		while( $rows = mysql_fetch_array($res) ){
+			
+			$paciente 				= consultarInfoPacientePorHistoria( $conex, $rows['Habhis'], $wemp_pmla );
+			$informacionPaciente	= informacionPaciente( $conex, $wemp_pmla, $rows['Habhis'], $rows['Habing'] );
+			
+			$val[] = [
+					'nombreCompleto' 	=> utf8_encode( trim( trim( $paciente->nombre1." ".$paciente->nombre2 )." ".trim(  $paciente->apellido1." ".$paciente->apellido2  ) ) ),
+					'numeroDocumento' 	=> $paciente->documentoIdentidad,
+					'tipoDocumento'		=> $paciente->tipoDocumentoIdentidad,
+					'direccion'			=> utf8_encode( $informacionPaciente['direccion'] ),
+					'barrio' 			=> utf8_encode( consultarBarrio( $conex, $wbasedato, $informacionPaciente['codigomMunicipio'], $informacionPaciente['codigoBarrio'] ) ),
+					'historia' 			=> $rows['Habhis'],
+					'ingreso' 			=> $rows['Habing'],
+				];
+		}
+	}
+	
+	return $val;
+}
+	
+
 function pacienteAEspecialidadUrgencias( $conex, $wemp_pmla, $historia, $ingreso )
 {
 	$val = false;
@@ -502,26 +594,59 @@ if(isset($operacion) && $operacion == 'registro_log_contingencia'){
 if(isset($operacion) && $operacion == 'trasladarayudapac'){
 
 	$datamensaje = array('mensaje'=>'', 'error'=>0 , 'formulario'=>'', 'nombreccoayuda'=>'');
+	
+	$esCcoDomiciliario = esCcoDomiciliario( $conex, $wbasedato, $centroCosto );
+	
+	if( $esCcoDomiciliario ){
+		
+		$esCcoDomiciliario = esCcoDomiciliario( $conex, $wbasedato, $cco_ayuda );
+		
+		$datamensaje['error'] 	=  1;
+		$datamensaje['mensaje'] =  "Este Centro de costos no permite traslado a otros servicios";
+		
+		// $tablaHabitacionesOrigen  = consultarTablaHabitaciones( $conex, $wbasedato, $centroCosto );
+		// $tablaHabitacionesDestino = consultarTablaHabitaciones( $conex, $wbasedato, $cco_ayuda );
+		
+		// $sql = "REPLACE INTO ".$tablaHabitacionesDestino." 
+				 // SELECT Medico,  CURRENT_DATE() , CURRENT_TIME(),    Habcod , '".$cco_ayuda."'    , Habhis    ,  Habing   , Habali, Habdis, Habest, habpro,   habfal    ,    habhal, habprg, Habtmp,   Habzon   , Habord, Habtip, Habtfa,    Habcpa       , Habcub, Habvir,     Seguridad  , NULL    
+			       // FROM ".$tablaHabitacionesOrigen."
+				  // WHERE habhis = '".$whis."' 
+				    // AND habing = '".$wing."'
+				// ";
+		  
+		// $res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ". mysql_error() );
+		
+		// if( $tablaHabitacionesOrigen != $tablaHabitacionesDestino ){
+			
+			// $sql = "DELETE FROM ".$tablaHabitacionesOrigen."
+						  // WHERE habhis = '".$whis."' 
+							// AND habing = '".$wing."'
+					// ";
+		  
+			// $res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ". mysql_error() );
+		// }
+	}
+	else{
+		$datos_cco_ayuda = explode("-",$cco_ayuda);
+		$cod_cco_ayuda = trim($datos_cco_ayuda[0]);
+		$nom_cco_ayuda = $datos_cco_ayuda[1];
 
-	$datos_cco_ayuda = explode("-",$cco_ayuda);
-	$cod_cco_ayuda = trim($datos_cco_ayuda[0]);
-	$nom_cco_ayuda = $datos_cco_ayuda[1];
+		$q = " UPDATE ".$wbasedato."_000018 "
+				 ."    SET Ubiste  = '".$cod_cco_ayuda."' "
+				 ."  WHERE Ubihis  = '".$whis."'"
+				 ."    AND Ubiing  = '".$wing."'";
+		$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		$update = mysql_affected_rows();
 
-	$q = " UPDATE ".$wbasedato."_000018 "
-			 ."    SET Ubiste  = '".$cod_cco_ayuda."' "
-			 ."  WHERE Ubihis  = '".$whis."'"
-			 ."    AND Ubiing  = '".$wing."'";
-	$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-	$update = mysql_affected_rows();
-
-	//Si se actualizo la muerte para el paciente se muestra el mensaje.
-	if( $update > 0){
-		$datamensaje['error'] =  0;
-		$datamensaje['mensaje'] =  "El paciente ".$nombre." ha sido trasladado al servicio $nom_cco_ayuda.";
-		$datamensaje['nombreccoayuda'] =  $nom_cco_ayuda;
-	}else{
-		$datamensaje['error'] =  1;
-		$datamensaje['mensaje'] =  "No se traslado el paciente al servicio, favor comunicarse con soporte de enfermeria.";
+		//Si se actualizo la muerte para el paciente se muestra el mensaje.
+		if( $update > 0){
+			$datamensaje['error'] =  0;
+			$datamensaje['mensaje'] =  "El paciente ".$nombre." ha sido trasladado al servicio $nom_cco_ayuda.";
+			$datamensaje['nombreccoayuda'] =  $nom_cco_ayuda;
+		}else{
+			$datamensaje['error'] =  1;
+			$datamensaje['mensaje'] =  "No se traslado el paciente al servicio, favor comunicarse con soporte de enfermeria.";
+		}
 	}
 
 	echo json_encode($datamensaje);
@@ -560,6 +685,8 @@ if(isset($operacion) && $operacion == 'marcarmuerte_hospitalizacion'){
 	 $datamensaje = array('mensaje'=>'', 'error'=>0 , 'formulario'=>'');
 
 	 $wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
+	 
+	 $tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
 
 	 $wfecha = date("Y-m-d");
 	 $whora  = date("H:i:s");
@@ -583,7 +710,7 @@ if(isset($operacion) && $operacion == 'marcarmuerte_hospitalizacion'){
 	 /************************************************************************************************************************/
 
 	 $q = " SELECT Pacno1, Pacno2, Pacap1, Pacap2 "
-		."   FROM root_000036, root_000037, ".$wbasedato."_000020 "
+		."   FROM root_000036, root_000037, ".$tablaHabitaciones." "
 		."  WHERE Habhis = '".$whis."'"
 		."    AND Habing = '".$wing."' "
 		."    AND Habhis = Orihis "
@@ -601,7 +728,7 @@ if(isset($operacion) && $operacion == 'marcarmuerte_hospitalizacion'){
 
 	 //=======================================================================================================================================================
 	 //Aca libero la habitación, porque el cadaver lo trasladan a transición y puedeque se halla o pueda facturar, pero hay que liberar la habitación
-	$q = " UPDATE ".$wbasedato."_000020 "
+	$q = " UPDATE ".$tablaHabitaciones." "
 		 ."    SET Habali = 'on', "
 		 ."        Habdis = 'off', "
 		 ."        Habhis = '', "
@@ -780,6 +907,8 @@ if(isset($operacion) && $operacion == 'marcarmuerte_hospitalizacion'){
 if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 
 	 $datamensaje = array('mensaje'=>'', 'error'=>0 , 'formulario'=>'', 'justificacion'=>'', 'htmljusti'=>'');
+	 
+	 $tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
 
 	 $wfecha = date("Y-m-d");
 	 $whora  = date("H:i:s");
@@ -788,7 +917,7 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 	 $continuar = false; //esta variable me va a controlar el proceso de cancelado de almimentación, limpieza de habitación etc...
 
 	 $q = " SELECT Pacno1, Pacno2, Pacap1, Pacap2 "
-			."   FROM root_000036, root_000037, ".$wbasedato."_000020 "
+			."   FROM root_000036, root_000037, ".$tablaHabitaciones." "
 			."  WHERE Habhis = '".$whis."'"
 			."    AND Habing = '".$wing."' "
 			."    AND Habhis = Orihis "
@@ -901,7 +1030,7 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 
 		//=======================================================================================================================================================
 		//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
-		$q = " UPDATE ".$wbasedato."_000020 "
+		$q = " UPDATE ".$tablaHabitaciones." "
 			."    SET Habali = 'on', "
 			."        Habdis = 'off', "
 			."        Habhis = '', "
@@ -1366,47 +1495,65 @@ if(isset($operacion) && $operacion == 'trasladoayuda'){
 
 
        $datamensaje = array('mensaje'=>'', 'notificacion'=>0 , 'formulario'=>'');
+	   
+	   $esCcoDomiciliario = esCcoDomiciliario( $conex, $wbasedato, $centro_costo );
+	   
+	   if( $esCcoDomiciliario ){
+		   $q = "  SELECT ccocod, cconom, ccocir, ccoayu, ccourg, ccosst "
+				."    FROM ".$wbasedato."_000011 "
+				."   WHERE ccodom = 'on'"
+				."     AND ccocod != '".$centro_costo."'"
+				."   ORDER BY cconom " ;
+				
+			$datamensaje['mensaje'] = 'Ese centro de costos no permite traslado de habitaci&oacute;n.';
+			
+			$datamensaje['formulario'] .= "<div align='center' style='cursor:default;background:none repeat scroll 0 0; position:relative;width:100%;height:400px;overflow:auto;'><center><br><br><br>";
+			$datamensaje['formulario'] .= "<div style='font-size:14pt;font-weight:bold;'>Este centro de costos no permite traslado a otros servicios</div>";
+			$datamensaje['formulario'] .= "<br><INPUT TYPE='button' value='Cerrar' onClick='$.unblockUI();' style='width:100'><br><br>";
+			$datamensaje['formulario'] .= "</div>";
+	   }
+	   else{
+			$q = "  SELECT ccocod, cconom, ccocir, ccoayu, ccourg, ccosst "
+				."    FROM ".$wbasedato."_000011 "
+				."   WHERE ccoitr = 'on'"
+				."   ORDER BY cconom " ;
+			
+			$res_cco = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
+
+			$select_tipo_cama .= "<SELECT id='cco_ayuda' onchange='consultarSaldosServicios( this, \"$whistoria\",\"$wingreso\", \"$hab_actual\")'>";
+			$select_tipo_cama .= "<option></option>";
+
+			while($row_cco = mysql_fetch_array($res_cco))
+			   {
+				$select_tipo_cama .= "<option data-saldos='".( $row_cco['ccosst'] == 'on' ? 'on' : 'off' )."' value='".$row_cco['ccocod']." - ".$row_cco['cconom']."'>".$row_cco['ccocod']." - ".$row_cco['cconom']."</option>";
+			   }
+			$select_tipo_cama .= "</SELECT>";
 
 
-		$q = "  SELECT ccocod, cconom, ccocir, ccoayu, ccourg, ccosst "
-			."    FROM ".$wbasedato."_000011 "
-			."   WHERE ccoitr = 'on'"
-			."   ORDER BY cconom " ;
-		$res_cco = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
-
-		$select_tipo_cama .= "<SELECT id='cco_ayuda' onchange='consultarSaldosServicios( this, \"$whistoria\",\"$wingreso\", \"$hab_actual\")'>";
-		$select_tipo_cama .= "<option></option>";
-
-		while($row_cco = mysql_fetch_array($res_cco))
-		   {
-			$select_tipo_cama .= "<option data-saldos='".( $row_cco['ccosst'] == 'on' ? 'on' : 'off' )."' value='".$row_cco['ccocod']." - ".$row_cco['cconom']."'>".$row_cco['ccocod']." - ".$row_cco['cconom']."</option>";
-		   }
-		$select_tipo_cama .= "</SELECT>";
-
-
-		//Formulario que solicita la historia e ingreso para el paciente.
-		$datamensaje['formulario'] .= "<div align='center' style='cursor:default;background:none repeat scroll 0 0; position:relative;width:100%;height:600px;overflow:auto;'><center><br><br><br>";
-		$datamensaje['formulario'] .= "<table style='text-align: center; width: 100%;' border='0'>";
-		$datamensaje['formulario'] .= "<tr class = fila1>
-										<td><b>Traslado a otros servicios<b></td>
-									   </tr>";
-	    $datamensaje['formulario'] .= "<tr>
-										<td><b>Paciente: $nombre <br>Hab. $hab_actual<b></td>
-										</tr>";
-		$datamensaje['formulario'] .= "</table>";
-		$datamensaje['formulario'] .= "<br>";
-		$datamensaje['formulario'] .= "<table style='text-align: center; width: 100px;' border='0'>
-										<tr class = fila1>
-										<td colspan=2><b>Seleccionar el servicio<b></td>
-										</tr>
-										<tr class = fila1>
-										<td>$select_tipo_cama</td>
-										</tr>
-									</table>";
-		$datamensaje['formulario'] .= "<div id='dvMostrarSaladosServicios'></div>";
-		$datamensaje['formulario'] .= "<br><INPUT TYPE='button' value='Grabar' id='insumos' onClick='trasladarayudapac(\"$centro_costo\",\"$wemp_pmla\",\"$whistoria\",\"$wingreso\", \"$hab_actual\")'><br>";
-		$datamensaje['formulario'] .= "<br><INPUT TYPE='button' value='Cerrar' onClick='$.unblockUI();' style='width:100'><br><br>";
-		$datamensaje['formulario'] .= "</center></div>";
+			//Formulario que solicita la historia e ingreso para el paciente.
+			$datamensaje['formulario'] .= "<div align='center' style='cursor:default;background:none repeat scroll 0 0; position:relative;width:100%;height:600px;overflow:auto;'><center><br><br><br>";
+			$datamensaje['formulario'] .= "<table style='text-align: center; width: 100%;' border='0'>";
+			$datamensaje['formulario'] .= "<tr class = fila1>
+											<td><b>Traslado a otros servicios<b></td>
+										   </tr>";
+			$datamensaje['formulario'] .= "<tr>
+											<td><b>Paciente: $nombre <br>Hab. $hab_actual<b></td>
+											</tr>";
+			$datamensaje['formulario'] .= "</table>";
+			$datamensaje['formulario'] .= "<br>";
+			$datamensaje['formulario'] .= "<table style='text-align: center; width: 100px;' border='0'>
+											<tr class = fila1>
+											<td colspan=2><b>Seleccionar el servicio<b></td>
+											</tr>
+											<tr class = fila1>
+											<td>$select_tipo_cama</td>
+											</tr>
+										</table>";
+			$datamensaje['formulario'] .= "<div id='dvMostrarSaladosServicios'></div>";
+			$datamensaje['formulario'] .= "<br><INPUT TYPE='button' value='Grabar' id='insumos' onClick='trasladarayudapac(\"$centro_costo\",\"$wemp_pmla\",\"$whistoria\",\"$wingreso\", \"$hab_actual\")'><br>";
+			$datamensaje['formulario'] .= "<br><INPUT TYPE='button' value='Cerrar' onClick='$.unblockUI();' style='width:100'><br><br>";
+			$datamensaje['formulario'] .= "</center></div>";
+	   }
 
        echo json_encode($datamensaje);
 	   return;
@@ -1419,6 +1566,23 @@ if(isset($operacion) && $operacion == 'solicitarHab'){
 
 
        $datamensaje = array('mensaje'=>'', 'notificacion'=>0 , 'formulario'=>'');
+	   
+	   $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	   
+	   $esCcoDomiciliario = esCcoDomiciliario( $conex, $wmovhos, $centro_costo );
+	   
+	   if( $esCcoDomiciliario ){
+			
+			$datamensaje['mensaje'] = 'Ese centro de costos no permite traslado de habitaci&oacute;n.';
+			
+			$datamensaje['formulario'] .= "<div align='center' style='cursor:default;background:none repeat scroll 0 0; position:relative;width:100%;height:400px;overflow:auto;'><center><br><br><br>";
+			$datamensaje['formulario'] .= "<div style='font-size:14pt;font-weight:bold;'>Este centro de costos no permite traslado de habitaci&oacute;n.</div>";
+			$datamensaje['formulario'] .= "<br><INPUT TYPE='button' value='Cerrar' onClick='$.unblockUI();' style='width:100'><br><br>";
+			$datamensaje['formulario'] .= "</div>";
+			
+		    echo json_encode($datamensaje);
+			return;
+	   }
 
 	   $wcentral_camas = consultarAliasPorAplicacion($conex, $wemp_pmla, 'CentralCamas');
 	   $wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
@@ -1520,6 +1684,8 @@ if(isset($operacion) && $operacion == 'EntregarUrgAPiso'){
 	$wusuario = $wuser[1];
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$codCcoUrg = consultarCcoUrgencias();
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codCcoUrg );
 
 	if($wusuario != ''){
 
@@ -1528,7 +1694,7 @@ if(isset($operacion) && $operacion == 'EntregarUrgAPiso'){
 		$infoUbicacion = consultarHabitacionAsignada($whistoria,$wingreso);
 
 		$contenidoLog = $contenidoLog."Ubicacion inicial del paciente: Ubisan: $infoUbicacion->servicioAnterior. Ubisac: $infoUbicacion->servicioActual. Ubihan:$infoUbicacion->habitacionAnterior. Ubihac:$infoUbicacion->habitacionActual Ubiptr: $infoUbicacion->enProcesoTraslado \r\n";
-		$habitacion = consultarHabitacion($conex,$infoUbicacion->habitacionDestino);
+		$habitacion = consultarHabitacion($conex,$tablaHabitaciones,$infoUbicacion->habitacionDestino);
 
 		if($habitacion->disponible == 'on'){
 			//Marcar el servicio y la historia con los servicios seleccionados en la admision
@@ -1591,6 +1757,8 @@ if(isset($operacion) && $operacion == 'EntregaDesdeCirugiaAPiso'){
 	$codCcoCirugia = consultarCcoCirugia();
 	$wuser = explode('-',$_SESSION['user']);
 	$wusuario = $wuser[1];
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codCcoCirugia );
 
 	if($wusuario != ''){
 
@@ -1600,7 +1768,7 @@ if(isset($operacion) && $operacion == 'EntregaDesdeCirugiaAPiso'){
 		$infoUbicacion = consultarHabitacionAsignada($whistoria,$wingreso);
 
 		@$contenidoLog = $contenidoLog."Ubicacion inicial del paciente: Ubisan:  Ubisac: $codCcoCirugia. Ubihan: . Ubihac: $infoUbicacion->habitacionDestino. Ubiptr: $infoUbicacion->enProcesoTraslado \r\n";
-		$habitacion = consultarHabitacion($conex,$infoUbicacion->habitacionDestino);
+		$habitacion = consultarHabitacion($conex,$tablaHabitaciones,$infoUbicacion->habitacionDestino);
 
 		if($habitacion->disponible == 'on'){
 			//Marcar el servicio y la historia con los servicios seleccionados en la admision
@@ -1793,9 +1961,11 @@ if(isset($operacion) && $operacion == 'AsignarZona')
 
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
 
 	//Se libera el paciente de cualquier ubicacion en la que se encuentre.
-	$q = " UPDATE ".$wbasedato."_000020 "
+	$q = " UPDATE ".$tablaHabitaciones." "
 		."    SET habhis = '', "
 		."        habing = '',"
 		."        habdis = 'on'"
@@ -1805,7 +1975,7 @@ if(isset($operacion) && $operacion == 'AsignarZona')
 
 	//Busco los cubiculos asociados a la sala y luego devuelvo el html con el dropdown para pintarlo.
 	$q_cub =   " SELECT Habcod, Habcpa "
-			 . "   FROM ".$wbasedato."_000020 "
+			 . "   FROM ".$tablaHabitaciones." "
 			 . "  WHERE habcub = 'on'"
 			 . "	AND habdis = 'on'"
 			 . "	AND habhis = '' "
@@ -1820,7 +1990,7 @@ if(isset($operacion) && $operacion == 'AsignarZona')
 
 		//Si ya estan ocupadas todas las fisicas muestra las virtuales.
 		$q_cub =   " SELECT Habcod, Habcpa, Habzon, Habhis, Habing  "
-				 . "   FROM ".$wbasedato."_000020 "
+				 . "   FROM ".$tablaHabitaciones." "
 				 . "  WHERE habcub = 'on'"
 				 . "	AND habest = 'on' "
 				 . "	AND habdis = 'on' "
@@ -1874,11 +2044,12 @@ if(isset($operacion) && $operacion == 'reasignarCubiculo')
 	$datamensaje = array('mensaje'=>'', 'error'=>0, 'html'=>'' , 'sql'=>'');
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+	
 
 	$num_hab_his = 0;
 
 	//Evaluo si el paciente tiene alta definitva y si tiene movimientos en la tabla movhos_000018
-	$q_ald = " SELECT ubiald
+	$q_ald = " SELECT ubiald, ubisac
                  FROM ".$wbasedato."_000018
                 WHERE ubihis = '$whis'
                   AND ubiing = '$wing'";
@@ -1889,6 +2060,7 @@ if(isset($operacion) && $operacion == 'reasignarCubiculo')
 	$row_ald = mysql_fetch_array($res_ald);
 	if ($num_ald > 0)
 	{
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $row_ald['ubisac'] );
 
 		if($row_ald['ubiald'] == 'on'){
 
@@ -1899,7 +2071,7 @@ if(isset($operacion) && $operacion == 'reasignarCubiculo')
 
 			//Evaluo el estado actual del cubiculo.
 			$q_hab = " SELECT habdis
-						 FROM ".$wbasedato."_000020
+						 FROM ".$tablaHabitaciones."
 						WHERE habcod = '$wcubiculoNuevo'";
 			$res_hab = mysql_query($q_hab, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q_hab . " - " . mysql_error());
 			$row_hab = mysql_fetch_array($res_hab);
@@ -1910,7 +2082,7 @@ if(isset($operacion) && $operacion == 'reasignarCubiculo')
 				if($row_hab['habdis'] == "on"){
 
 				//Se libera al paciente de cualquier otro cubiculo que este ocupando.
-				$q = " UPDATE ".$wbasedato."_000020 "
+				$q = " UPDATE ".$tablaHabitaciones." "
 					."    SET habhis = '', "
 					."        habing = '', "
 					."        habdis = 'on' "
@@ -1920,7 +2092,7 @@ if(isset($operacion) && $operacion == 'reasignarCubiculo')
 				$res1 = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 
 				//Se actualiza el cubiculo para el paciente.
-				$q = " UPDATE ".$wbasedato."_000020 "
+				$q = " UPDATE ".$tablaHabitaciones." "
 					."    SET habhis = '".$whis."', "
 					."        habing = '".$wing."',"
 					."        habdis = 'off' "
@@ -1984,9 +2156,11 @@ if(isset($operacion) && $operacion == 'filtrarzonas')
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 	$array_cco = explode("-", $wcco);
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $array_cco[0] );
 
 	$q_sala =      "  SELECT Arecod, Aredes  "
-				 . "    FROM ".$wbasedato."_000020, ".$wbasedato."_000169 "
+				 . "    FROM ".$tablaHabitaciones.", ".$wbasedato."_000169 "
 				 ."	   WHERE habcco = '".$array_cco[0]."'"
 				 ."		 AND habzon = Arecod "
 				 ." GROUP BY habzon, habcco ";
@@ -2029,6 +2203,8 @@ if(isset($operacion) && $operacion == 'grabar_tipo_hab')
 {
 
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $cco );
 
 	$whis = $historia;
 	$wing = $ingreso;
@@ -2262,14 +2438,14 @@ if(isset($operacion) && $operacion == 'grabar_tipo_hab')
 	// ---cambiar el tipo de habitacion en   el maestro de tablas
 	//--------------------------------------------------------------
 	$q_select = " SELECT Habcod , Habtfa"
-				."  FROM ".$wbasedato."_000020"
+				."  FROM ".$tablaHabitaciones." "
 				." WHERE   Habcod = '".$hab."' ";
 
 	$res_select = mysql_query($q_select,$conex) or die("Error en el query: ".$q_tarifas."<br>Tipo Error:".mysql_error());
 	$row_select = mysql_fetch_array($res_select);
 
 
-	$q  = 		"UPDATE  ".$wbasedato."_000020"
+	$q  = 		"UPDATE  ".$tablaHabitaciones." "
 				 ." SET Habtfa = '".$thab_act."' "
 			   ." WHERE  Habcod = '".$hab."' ";
 
@@ -2708,6 +2884,21 @@ if(isset($operacion) && $operacion == 'pacienteAEspecialidadUrgencias'){
 	
 	exit();
 }
+
+if(isset($operacion) && $operacion == 'consutlarPacientesDomiciliarios'){
+	
+	if( $wzona == '%' ){
+		$wzona = '';
+	}
+	
+	$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+	
+	$result = consutlarPacientesDomiciliarios( $conex, $wbasedato, $wemp_pmla, $wcco, $wzona );
+	
+	echo json_encode( $result );
+	
+	exit();
+}
 ?>
 <html>
 <head>
@@ -2734,6 +2925,8 @@ if(isset($operacion) && $operacion == 'pacienteAEspecialidadUrgencias'){
 <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.js" type="text/rocketscript"></script>
 <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.buttons.js" type="text/rocketscript"></script>
 <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.nonblock.js" type="text/rocketscript"></script>
+
+<script src='../../../include/root/jquery.quicksearch.js' type='text/javascript'></script>
 
 
 
@@ -2945,8 +3138,15 @@ function mostrar_mensaje_contingencia(wemp_pmla, cco, fecha) {
 
 }
 
-function volver(wemp_pmla, waux, wsp)
+function volver(wemp_pmla, waux, wsp, esServicioDomiciliario )
 {
+	esServicioDomiciliario = esServicioDomiciliario || false;
+	
+	var parametroServicioDomiciliario = "";
+	if( esServicioDomiciliario ){
+		parametroServicioDomiciliario = "&servicioDomiciliario=on";
+	}
+	
 	var extra = "";
 
 	if( waux != '' ){
@@ -2957,7 +3157,7 @@ function volver(wemp_pmla, waux, wsp)
 		extra += '&wsp='+wsp;
 	}
 
-	location.href = 'gestionEnfermeria.php?wemp_pmla='+wemp_pmla+extra;
+	location.href = 'gestionEnfermeria.php?wemp_pmla='+wemp_pmla+extra+parametroServicioDomiciliario;
 }
 
 //Funcion que llama al programa modificacion de traslados para que cancele la entrega de una paciente.
@@ -4608,7 +4808,7 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 
 
 
-	function AsignarZona(whis, wing, i, SalaActual, cubiculoActual){
+	function AsignarZona(whis, wing, i, SalaActual, cubiculoActual, wcco){
 
 		$.ajax({
 			url: "gestionEnfermeria.php",
@@ -4622,7 +4822,8 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 				whis 			: whis,
 				wing			: wing,
 				wcubiculoActual	: cubiculoActual,
-				SalaActual 		: SalaActual
+				SalaActual 		: SalaActual,
+				wcco 			: wcco,
 			},
 			dataType: "json",
 			async: false,
@@ -5636,10 +5837,110 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 				});
 
 	}
+	
+	function marcarDesmarcarSeleccionarTodos(){
+		if(    $( "#dvPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).length > 0 
+			&& $( "#dvPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).length == $( "#dvPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).filter(":checked").length
+		){
+			$( "#inMarcarTodos" )[0].checked = true;
+			console.log("true")
+		}
+		else{
+			$( "#inMarcarTodos" )[0].checked = false;
+			console.log("false")
+		}
+	}
+	
+	
+	function buscadorInformacionPaciente(){
+		
+		//Agregando la tabla al div que muestra los pacientes
+		$( "<div style='display:block;margin: 0 auto; width:70%;padding: 20px;'><span style='font-weight:bold;'>Buscador:</span><input id='buscarInformacion'></div>" ).prependTo( $( "#dvPacientesDomiciliarios" ) );
+		
+		$('#buscarInformacion').quicksearch('#dvPacientesDomiciliarios .find', { 
+				onAfter : function(){ 
+							marcarDesmarcarSeleccionarTodos();
+						},
+			});
+	}
 
+
+	function consutlarPacientesDomiciliarios(){
+		
+		$( "#dvPacientesDomiciliarios" ).html('');
+		
+		$.post("gestionEnfermeria.php",
+			{
+				consultaAjax 	: '',
+				operacion		: 'consutlarPacientesDomiciliarios',
+				wemp_pmla		: $('#wemp_pmla').val(),
+				wcco			: $( "#slCcoDestino" ).val().split("-")[0],
+				wzona			: $( "#sala" ).filter(":visible").length > 0 ? $( "#sala" ).val() : '',
+			},
+			function(data) {
+				
+				if( data.length > 0 ){
+					
+					var stHTML =   "<table style='margin: 0 auto;padding: 20px;'>"
+								 + 		"<tr class='encabezadoTabla'>"
+								 + 			"<td>Historia</td>"
+								 + 			"<td>Identifacaci&oacute;n</td>"
+								 + 			"<td>Nombre del Paciente</td>"
+								 + 			"<td>Barrio</td>"
+								 + 			"<td>Direcci&oacute;n</td>"
+								 + 			"<td>Ver pacientes<input type='checkbox' id='inMarcarTodos'></td>"
+								 + 		"</tr>"
+								 + "</table>";
+								 
+					var tbtable = $( stHTML );
+					
+					$( data ).each(function(index){
+						
+						var _class = "fila1";
+						if(index %2 == 0){
+							_class = "fila2";	
+						}
+						
+						stHTML = "<tr class='"+_class+" find'>"
+							   + "<td>"+this.historia+"-"+this.ingreso+"</td>"
+							   + "<td>"+this.tipoDocumento+" "+this.numeroDocumento+"</td>"
+							   + "<td>"+this.nombreCompleto+"</td>"
+							   + "<td>"+this.barrio+"</td>"
+							   + "<td>"+this.direccion+"</td>"
+							   + "<td style='text-align:center;'><input type='checkbox' class='hisDomiciliarias' name='historiasDomiciliarias[]' value='"+this.historia+"'></td>"
+							   + "</tr>";
+							   
+						var tr = $( stHTML );
+						
+						$( stHTML ).appendTo( $( "tbody", tbtable ) );
+					});
+					
+					$( tbtable ).appendTo( $( "#dvPacientesDomiciliarios" ) );
+					
+					buscadorInformacionPaciente();
+				}
+			}, "json"
+		);
+	}
 
 	$(document).ready(function()
 	 {
+		 
+		$( "#dvPacientesDomiciliarios" ).on( 'click', '#inMarcarTodos', function(){
+			
+			if( this.checked ){
+				$( "#dvPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).each(function(){
+					this.checked = true;
+				});
+			}
+			else{
+				$( "#dvPacientesDomiciliarios > table input.hisDomiciliarias:visible" ).each(function(){
+					this.checked = false;
+				});
+			}
+		});
+		
+		$( "#dvPacientesDomiciliarios" ).on( 'change', 'input.hisDomiciliarias', function(){ marcarDesmarcarSeleccionarTodos(); });
 
 		var alerta_contingencia = $("#alerta_contingencia").val();
 		var mostrar_alerta_contingencia = $("#mostrar_alerta_contingencia").val();
@@ -5660,7 +5961,14 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 		$('#slCcoDestino').change(function(){
 
 			buscar_zonas();
+			
+			consutlarPacientesDomiciliarios();
 
+		});
+		
+		
+		$( "#tabla_zonas" ).on( "change", "#sala", function(){
+			consutlarPacientesDomiciliarios();
 		});
 
 		//Marca en azul los pacientes con habitacoin asignada en urgencias.
@@ -5893,7 +6201,17 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 		// usuarioHabilitado = false;
 		if(usuarioHabilitado)
 		{
-			document.forms[0].submit();
+			if( $( ".hisDomiciliarias" ).length > 0 ){
+				if( $( ".hisDomiciliarias:checked" ).length > 0 ){
+					document.forms[0].submit();
+				}
+				else{
+					jAlert( "Debe seleccionar al menos un paciente", "ALERTA" );
+				}
+			}
+			else{
+				document.forms[0].submit();
+			}
 		}
 		else
 		{
@@ -7334,13 +7652,15 @@ function listaPacientesEntregarHospitalizacion($wcco){
 	$wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
 	$wcentral_camas = consultarAliasPorAplicacion($conex, $wemp_pmla, 'CentralCamas');
 	$todoslashab = todaslashab();
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
 
 	$wfecha_actual = date('Y-m-d');
 	$fecha_inicial = date("Y-m-d", strtotime("$wfecha_actual -7 day"));
 
 	// Aca trae los pacientes que estan hospitalizados en el servicio (ubisac) del usuario matrix y que no esten en proceso de traslado
 	$q = " SELECT habcod, habhis, habing, pacno1, pacno2, pacap1, pacap2, pactid, pacced, ".$wcencam."_000003.id as idsolicitud, hab_asignada "
-		."   FROM " . $wbasedato . "_000020, root_000036, root_000037, " . $wbasedato . "_000018, ".$wcencam."_000003"
+		."   FROM " . $tablaHabitaciones . ", root_000036, root_000037, " . $wbasedato . "_000018, ".$wcencam."_000003"
 		."  WHERE habcco  = '" . $wcco . "'"
 		."    AND habali != 'on' " // Que no este para alistar
 		."    AND habdis != 'on' " // Que no este disponible, osea que este ocupada
@@ -7393,6 +7713,8 @@ function listaPacientesRecibirHospitalizacion($wcco){
 	$wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
 	$wcentral_camas = consultarAliasPorAplicacion($conex, $wemp_pmla, 'CentralCamas');
 	$todoslashab = todaslashab();
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
 
 	// $wfecha_actual = date('Y-m-d');
 	// $fecha_inicial = date("Y-m-d", strtotime("$wfecha_actual -7 day"));
@@ -7400,7 +7722,7 @@ function listaPacientesRecibirHospitalizacion($wcco){
 	//Pacientes que tienen solicitud de cama y que aun estan con habitacion asignada desde urgencias, estos pacientes aun estan en el centro de costos de cirugia.
 	// Aca trae los pacientes que estan hospitalizados en el servicio (ubisac) del usuario matrix y que no esten en proceso de traslado
 	$q = " SELECT habcod, habhis, habing, pacno1, pacno2, pacap1, pacap2, pactid, pacced, MAX(".$wcencam."_000003.id) as idsolicitud, hab_asignada "
-		."   FROM " . $wbasedato . "_000020, root_000036, root_000037, " . $wbasedato . "_000018 ,  ".$wcencam."_000003"
+		."   FROM " . $tablaHabitaciones . ", root_000036, root_000037, " . $wbasedato . "_000018 ,  ".$wcencam."_000003"
 		."  WHERE habcco  = '" . $wcco . "'"
 		."    AND habali  = 'off' " // Que no este para alistar
 		."    AND habhis  = orihis "
@@ -8997,9 +9319,11 @@ function Detalle_ent_rec_saldos($wtip, $whis, $wing, $nombre_pac, $cod_hab, $cco
 		   WHERE Ubihis = '".$whistoria."'
 			 AND Ubiing = '".$wingreso."';";
 	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . "-en el query: " . $q . "-" . mysql_error());
+	
+	$tablaHabitacionesOrigen = consultarTablaHabitaciones( $conex, $wbasedato, $servicioOrigen );
 
 	//Registro en la tabla 20
-	$q = "UPDATE ".$wbasedato."_000020
+	$q = "UPDATE ".$tablaHabitacionesOrigen."
 		     SET Habhis = '',
 				 Habing = '',
 				 Habdis = 'on',
@@ -9007,9 +9331,10 @@ function Detalle_ent_rec_saldos($wtip, $whis, $wing, $nombre_pac, $cod_hab, $cco
 		   WHERE habhis = '".$whistoria."'
 		     AND habing = '".$wingreso."' ";
 	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . "-en el query: " . $q . "-" . mysql_error());//Registro en la tabla 20
+	
+	$tablaHabitacionesDestino = consultarTablaHabitaciones( $conex, $wbasedato, $servicioDestino );
 
-
-	$q = "UPDATE ".$wbasedato."_000020
+	$q = "UPDATE ".$tablaHabitacionesDestino."
 		     SET Habhis = '".$whistoria."',
 				 Habing = '".$wingreso."',
 				 Habdis = 'off',
@@ -9030,10 +9355,9 @@ function todaslashab(){
 	global $wbasedato;
 	global $conex;
 
-	//Consulto todas las habitaciones
-	$q_hab = "SELECT *
-			FROM ".$wbasedato."_000020 ";
-	$res_hab = mysql_query($q_hab, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q_hab . " - " . mysql_error());
+	//La tabla de habitaciones siempre por defecto es la movhos 20
+	//pero pueden haber otras tabla de habitaciones configuradas en movhos 11
+	$tablasHabitaciones = [ $wbasedato."_000020" ];
 
 	//Consulto todos los centros de costo
 	$q_cco = "SELECT *
@@ -9049,8 +9373,34 @@ function todaslashab(){
 
 			$cco[$fila_cco['Ccocod']] = $fila_cco;
 		}
-
+		
+		//Agrego al array las tablas de habitaciones configuradas en movhos 11
+		$fila_cco['Ccotha'] = trim( $fila_cco['Ccotha'] );
+		
+		if( !empty( $fila_cco['Ccotha'] ) ){
+			if( strtoupper( $fila_cco['Ccotha'] ) != 'NO APLICA' && $fila_cco['Ccotha'] != '.' ){
+				if(!array_key_exists($fila_cco['Ccotha'], $tablasHabitaciones )){
+					$tablasHabitaciones[] = $fila_cco['Ccotha'];
+				}
+			}
+		}
 	}
+	
+	//Consulto todas las habitaciones
+	$q_hab = "";
+	$i = 0;
+	foreach( $tablasHabitaciones as $key => $value ){
+		
+		if( $i > 0 )
+			$q_hab .= " UNION ";
+		
+		$q_hab .= "SELECT * FROM ".$value;
+		
+		$i++;
+	}
+	
+	$res_hab = mysql_query($q_hab, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q_hab . " - " . mysql_error());
+	
 
 	$hab = array();
 	//Creo un arreglo con la informacion de las habitacion y le agrego el nombre del centro de costos al que pertenece.
@@ -9099,12 +9449,12 @@ function registrarEntregaPac($whistoria,$wingreso,$wusuario,$ccorigen,$ccodestin
 
 }
 
-function consultarHabitacion($conex,$cdHabitacion){
+function consultarHabitacion($conex, $tabla, $cdHabitacion){
 
 	global $wbasedato;
 
 	$q = "SELECT Habcod,Habcco,Habhis,Habing,Habdis,Habest
-			FROM ".$wbasedato."_000020
+			FROM ".$tabla."
 		   WHERE Habcod = '".$cdHabitacion."';";
 	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . "-en el query: " . $q . "-" . mysql_error());
 	$filas = mysql_num_rows($res);
@@ -9163,10 +9513,10 @@ function consultarHabitacionAsignada($whistoria,$wingreso){
 
 }
 
-function consultartipohab($conex, $whab, $wbasedato){
+function consultartipohab($conex, $whab, $tabla ){
 
 	$q = " SELECT Habtfa "
-		."   FROM ".$wbasedato."_000020 "
+		."   FROM ".$tabla." "
 		."  WHERE habcod = '".$whab."'";
 	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	$row = mysql_fetch_array($res);
@@ -9188,9 +9538,12 @@ function entregarArticulos($whis, $wing, $servicioOrigen, $habitacionOrigen, $se
 
 	$wfecha = date('Y-m-d');
 	$whora = date('H:i:s');
+	
+	$tablaHabitacionesOrigen = consultarTablaHabitaciones( $conex, $wbasedato, $servicioOrigen );
+	$tablaHabitacionesDestino = consultarTablaHabitaciones( $conex, $wbasedato, $servicioDestino );
 
-	$wtipo_hab_fac_e = consultartipohab($conex, $habitacionOrigen, $wbasedato);
-	$wtipo_hab_fac_r = consultartipohab($conex, $habitacionDestino ,$wbasedato);
+	$wtipo_hab_fac_e = consultartipohab($conex, $habitacionOrigen, $tablaHabitacionesOrigen);
+	$wtipo_hab_fac_r = consultartipohab($conex, $habitacionDestino ,$tablaHabitacionesDestino);
 
 	$q = " SELECT Eyrnum "
 		. "  FROM ".$wbasedato."_000017 "
@@ -9427,6 +9780,8 @@ function modificarUsuarioMovimientoHospitalario($whistoria,$wingreso,$wusuario,$
 	$whora = date('H:i:s');
 	$codCcoCirugia = consultarCcoCirugia();
 	$ccoOrigenUrg = consultarCcoUrgencias();
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $ccodest_paciente );
 
 	$q = "UPDATE ".$wbasedato."_000017
 		     SET Seguridad = 'C-".$wusuario."'
@@ -9463,7 +9818,7 @@ function modificarUsuarioMovimientoHospitalario($whistoria,$wingreso,$wusuario,$
 		$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 
 		//Se desocupa la habitacion actual del paciente y quedara disponible.
-		$q = "UPDATE ".$wbasedato."_000020
+		$q = "UPDATE ".$tablaHabitaciones."
 				 SET habhis = '', habing='', habdis='on'
 			   WHERE habhis = '".$whistoria."'
 				 AND habing = '".$wingreso."'";
@@ -12010,7 +12365,7 @@ function Consultar_dietas($whis,$wing,$wser)
 
 
  //Array de zonas.
-function array_zonas(){
+function array_zonas( $tabla ){
 
 	global $conex;
 	global $wbasedato;
@@ -12018,7 +12373,7 @@ function array_zonas(){
 	$array_zonas = array();
 
 	$q_zon = "SELECT Aredes, Arecod
-			    FROM ".$wbasedato."_000020, ".$wbasedato."_000169
+			    FROM ".$tabla.", ".$wbasedato."_000169
 			   WHERE Areest = 'on'
 			     AND Habzon = Arecod
 			     AND Habcub = 'on'
@@ -12040,7 +12395,7 @@ function array_zonas(){
 }
 
 //Array de historias que tienen asignado cubiculos.
-function array_his_cub(){
+function array_his_cub( $tabla ){
 
 	global $conex;
 	global $wbasedato;
@@ -12048,7 +12403,7 @@ function array_his_cub(){
 	$datos_his_cub = array();
 
 	$q_cub = "SELECT habcod, habhis, habing, habcpa, habzon
-			    FROM ".$wbasedato."_000020
+			    FROM ".$tabla."
 			   WHERE Habcub = 'on'" ;
 	$res_cub = mysql_query($q_cub, $conex);
 
@@ -12348,14 +12703,16 @@ function pintarDatosFila( $datos ){
 	}
 
 	$origen = "Kardex";
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $ccoCodigo );
 
 	$wurgencias = esUrgencias($conex,$ccoCodigo);
 	$wcirugia = esCirugia($conex,$ccoCodigo);
 
 	$colEstadosExamenRol = consultarEstadosExamenesRol();
 
-	$array_his_cub = array_his_cub();
-	$array_zonas = array_zonas();
+	$array_his_cub = array_his_cub( $tablaHabitaciones );
+	$array_zonas = array_zonas( $tablaHabitaciones );
 	$array_log = array_log();
 	$pacientes_atendidos_activos = pacientes_atendidos_activos($ccoCodigo);
 	$wtiempos_urgencias = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tiempos_urgencias');
@@ -12453,7 +12810,7 @@ function pintarDatosFila( $datos ){
 
 	//Array de cubiculos con los datos de historia e ingreso.
 	$q_cub =   " SELECT Habcod, Habcpa, Habzon, Habvir  "
-			 . "   FROM ".$wbasedato."_000020 "
+			 . "   FROM ".$tablaHabitaciones." "
 			 . "  WHERE habcub = 'on'"
 			 . "	AND habdis = 'on'"
 			 . "	AND habhis = '' "
@@ -13017,11 +13374,7 @@ function pintarDatosFila( $datos ){
 			//Consulto si hay dietas o mjs del perfil o secretaria sin leer
 		    $wdietas     = Consultar_dietas($valueDatos->historia,$valueDatos->ingreso, $wcodser);
 			$wdietas_Sig = Consultar_dietas($valueDatos->historia,$valueDatos->ingreso, $wcodser_Sig);
-
-			//----------------------
-			//------------
-			$wbasedatocliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'facturacion');
-			$wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+			
 
 			//----------------------
 			//------------
@@ -13029,7 +13382,7 @@ function pintarDatosFila( $datos ){
 			$wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 			$hab_select = '';
 			$q_hab="SELECT Habcod,Habcco,Habtip,Habtfa
-					  FROM	".$wbasedato_movhos."_000020
+					  FROM	".$tablaHabitaciones."
 					 WHERE Habcod='".$valueDatos->codigo."' ";
 			$res_hab = mysql_query($q_hab,$conex) or die("Error en el query: ".$q_hab."<br>Tipo Error:".mysql_error());
 			$row_hab = mysql_fetch_array($res_hab);
@@ -13805,7 +14158,7 @@ function pintarDatosFila( $datos ){
 					 $wconsala = $array_zonas[$array_his_cub[$valueDatos->historia.$valueDatos->ingreso]['habzon']]['Arecod'];
 					}
 
-					echo "<select id='sala$i' name='sala$i' $disabled_sala onchange='AsignarZona($valueDatos->historia, $valueDatos->ingreso, $i, \"$wconsala\", \"$ubicacion_actual\")'>";
+					echo "<select id='sala$i' name='sala$i' $disabled_sala onchange='AsignarZona($valueDatos->historia, $valueDatos->ingreso, $i, \"$wconsala\", \"$ubicacion_actual\", \"$valueDatos->cco\")'>";
 
 						if(is_array($array_zonas)){
 							foreach($array_zonas as $key => $row_sala){
@@ -15636,38 +15989,66 @@ else{
 
 		encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica" );
 
-		//**************** llamada a la funcion consultaCentrosCostos y dibujarSelect************
-		if( empty( $ccoayudaori ) ){
+		$esServicioDomiciliario = false;
+		if( !empty($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+			$esServicioDomiciliario = true;
+		}
 
+		//**************** llamada a la funcion consultaCentrosCostos y dibujarSelect************
+		if( $esServicioDomiciliario ){
 			$nameSelect = "slCcoDestino";
-			$cco="Ccoipd,Ccourg,Ccoior,Ccocir";	//Febrero 02 de 2016:
+			$cco="ccodom";	//Febrero 02 de 2016:
 			$sub="off";
 			$tod="";
 			$ipod="off";
 
 			//$cco=" ";
-			$centrosCostos = consultaCentrosCostos($cco);
+			$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccodom = 'on'", "otros" );
 		}
 		else{
-			$nameSelect = "ccoayuda";
-			$cco="Ccoayu";	//Febrero 02 de 2016:
-			$sub="off";
-			$tod="";
-			$ipod="off";
+			
+			if( empty( $ccoayudaori ) ){
 
-			$centrosCostos = consultaCentrosCostos($cco);
+				$nameSelect = "slCcoDestino";
+				$cco="Ccoipd,Ccourg,Ccoior,Ccocir";	//Febrero 02 de 2016:
+				$sub="off";
+				$tod="";
+				$ipod="off";
 
-			//Solo saco los ccos necesarios
-			$ccs = array();
-			$ccsAyuda = explode( ",", $ccoayudaori );
+				//$cco=" ";
+				$centrosCostos = consultaCentrosCostos($cco);
+			}
+			else{
+				$nameSelect = "ccoayuda";
+				$cco="Ccoayu";	//Febrero 02 de 2016:
+				$sub="off";
+				$tod="";
+				$ipod="off";
 
+				$centrosCostos = consultaCentrosCostos($cco);
+
+				//Solo saco los ccos necesarios
+				$ccs = array();
+				$ccsAyuda = explode( ",", $ccoayudaori );
+
+				foreach( $centrosCostos as $key => $value ){
+					if( in_array( $value->codigo, $ccsAyuda ) ){
+						$ccs[] = $value;
+					}
+				}
+
+				$centrosCostos = $ccs;
+			}
+			
+			$ccsndom = [];
 			foreach( $centrosCostos as $key => $value ){
-				if( in_array( $value->codigo, $ccsAyuda ) ){
-					$ccs[] = $value;
+				$esCcoDom = esCcoDomiciliario( $conex, $wbasedato, $value->codigo );
+				if( !$esCcoDom ){
+					$ccsndom[] = $value;
 				}
 			}
-
-			$centrosCostos = $ccs;
+			
+			$centrosCostos = $ccsndom;
 		}
 
 		echo "<table align='center' border=0>";
@@ -15698,6 +16079,8 @@ else{
 		//echo "</tr>";
 
 		echo "</table>";
+		
+		echo "<div id='dvPacientesDomiciliarios'></div>";
 
 		echo "<br><table align='center'>";
 
@@ -15765,6 +16148,7 @@ else{
 		//Separo la información del cco
 		list( $ccoCodigo, $ccoDescipcion ) = explode( "-", $slCcoDestino );
 		
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $ccoCodigo );
 		
 		$wipimpresoraga = consultarImpresoraGA_inc( $conex, $wbasedato, $ccoCodigo );
 		echo "<input type='hidden' name='wipimpresoraga' id='wipimpresoraga' value='".$wipimpresoraga."'/>";
@@ -15809,7 +16193,6 @@ else{
 
 		$wcirugia = esCirugia($conex,$ccoCodigo);
 		$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
-
 
 		switch(1){
 
@@ -15862,7 +16245,7 @@ else{
 				$sql = "SELECT
 						Aplfec, Aplhis, Apling, Aplart, SUBSTRING_INDEX( aplron, ':', 1 ) as Ronda, SUBSTRING_INDEX( aplron, '-', -1 ) as Meridiano, sum(Apldos) as Apldos, Aplido
 					FROM
-						{$wbasedato}_000020 b, {$wbasedato}_000015 a
+						{$tablaHabitaciones} b, {$wbasedato}_000015 a
 					WHERE
 						habcco = '$ccoCodigo'
 						AND habhis != ''
@@ -16113,7 +16496,7 @@ else{
 						(SELECT Ubisac as Habcco, Habcod, Habhis, Habing,
 									CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
 									Ubialp, Ubifap, Ubihap, pacced, pactid, '1' as ordenes, Habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '2' as orden
-						   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016, ".$wbasedato."_000020
+						   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016, ".$tablaHabitaciones."
 						  WHERE ubiald = 'off'
 							AND Ccocir != 'on'
 							AND ubisac = Ccocod
@@ -16166,7 +16549,7 @@ else{
 								Ubialp, Ubifap, Ubihap, pacced, pactid, '1' as ordenes, Mtrsal as consala,
 								habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan "
 						."   FROM root_000036, root_000037, ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000016,
-								".$wbasedato."_000011, ".$wbasedato."_000053 f, ".$whce."_000022 , ".$wbasedato."_000020 "
+								".$wbasedato."_000011, ".$wbasedato."_000053 f, ".$whce."_000022 , ".$tablaHabitaciones." "
 						."  WHERE ubihis = orihis "
 						."    AND ubiing = oriing "
 						."    AND oriori = '".$wemp_pmla."'"       //Empresa Origen de la historia,
@@ -16217,7 +16600,7 @@ else{
 								Ubialp, Ubifap, Ubihap, pacced, pactid, '2' as ordenes,
 								Mtrsal as consala,habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan
 						   FROM root_000036, root_000037, ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000016,
-								 ".$wbasedato."_000011, ".$whce."_000022, ".$wbasedato."_000020
+								 ".$wbasedato."_000011, ".$whce."_000022, ".$tablaHabitaciones."
 						  WHERE ubihis = orihis
 							AND ubiing = oriing
 							AND oriori = '".$wemp_pmla."'
@@ -16264,7 +16647,7 @@ else{
 								 Ubialp, Ubifap, Ubihap, pacced, pactid, '2' as ordenes,
 								 Mtrsal as consala, habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan "
 						."   FROM root_000036, root_000037, ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000016,
-								 ".$wbasedato."_000011, ".$whce."_000022, ".$wbasedato."_000020 "
+								 ".$wbasedato."_000011, ".$whce."_000022, ".$tablaHabitaciones." "
 						."  WHERE ubihis = orihis "
 						."    AND ubiing = oriing "
 						."    AND oriori = '".$wemp_pmla."'"       //Empresa Origen de la historia,
@@ -16320,7 +16703,7 @@ else{
 					(SELECT Ubisac as Habcco, Habcod, Habhis, Habing,
 								CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
 								Ubialp, Ubifap, Ubihap, pacced, pactid, '1' as ordenes, Habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, turtur, Ubisan
-					   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016, ".$wtcx."_000011, ".$wbasedato."_000020
+					   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016, ".$wtcx."_000011, ".$tablaHabitaciones."
 					  WHERE ubiald = 'off'
 					    AND Ccocir != 'on'
 						AND ubisac = Ccocod
@@ -16367,6 +16750,11 @@ else{
 
 						$filtro_zonas = "	AND {$wbasedato}_000020.habzon = '".$sala."'";
 					}
+					
+					$filtroHistorias = "";
+					if( count( $historiasDomiciliarias ) > 0 ){
+						$filtroHistorias = "AND ubihis in( '".implode( "','", $historiasDomiciliarias )."' )";
+					}
 
 					// $sql = "SELECT * FROM (
 								// SELECT
@@ -16400,10 +16788,10 @@ else{
 							// ORDER BY Habord*1, Habcod";
 							
 					$sql = "SELECT * FROM (
-								SELECT {$wbasedato}_000020.Habcco, 
-									   {$wbasedato}_000020.Habcod, 
-									   {$wbasedato}_000020.Habhis, 
-									   {$wbasedato}_000020.Habing, 
+								SELECT {$tablaHabitaciones}.Habcco, 
+									   {$tablaHabitaciones}.Habcod, 
+									   {$tablaHabitaciones}.Habhis, 
+									   {$tablaHabitaciones}.Habing, 
 									   CONCAT( root_000036.pacno1,' ',root_000036.pacno2,' ',root_000036.pacap1,' ',root_000036.pacap2) as Nombre,
 									   {$wbasedato}_000011.Cconom, 
 									   {$wbasedato}_000018.Ubihis, 
@@ -16418,27 +16806,28 @@ else{
 									   {$wbasedato}_000016.Ingnre, 
 									   {$wbasedato}_000018.id as id_tabla18, 
 									   {$wbasedato}_000018.Ubisan, 
-									   {$wbasedato}_000020.Habord, 
+									   {$tablaHabitaciones}.Habord, 
 									   {$wbasedato}_000018.Ubimue
-								  FROM {$wbasedato}_000020 
+								  FROM {$tablaHabitaciones} 
 						    INNER JOIN {$wbasedato}_000018 
-									ON {$wbasedato}_000018.ubihis 	= {$wbasedato}_000020.habhis
-								   AND {$wbasedato}_000018.ubiing 	= {$wbasedato}_000020.habing
+									ON {$wbasedato}_000018.ubihis 	= {$tablaHabitaciones}.habhis
+								   AND {$wbasedato}_000018.ubiing 	= {$tablaHabitaciones}.habing
 							INNER JOIN {$wbasedato}_000011
-									ON {$wbasedato}_000011.ccocod 	= {$wbasedato}_000020.habcco
+									ON {$wbasedato}_000011.ccocod 	= {$tablaHabitaciones}.habcco
 							INNER JOIN {$wbasedato}_000016
 									ON {$wbasedato}_000018.ubihis 	= {$wbasedato}_000016.inghis
 								   AND {$wbasedato}_000018.ubiing 	= {$wbasedato}_000016.inging
 							INNER JOIN root_000037
-									ON root_000037.orihis 			= {$wbasedato}_000020.habhis
+									ON root_000037.orihis 			= {$tablaHabitaciones}.habhis
 							INNER JOIN root_000036
 								    ON root_000036.pacced 			= root_000037.Oriced
 								   AND root_000036.pactid 			= root_000037.Oritid
-								 WHERE {$wbasedato}_000020.habcco 	= '$ccoCodigo'
-								   AND {$wbasedato}_000020.habest 	= 'on'
+								 WHERE {$tablaHabitaciones}.habcco 	= '$ccoCodigo'
+								   AND {$tablaHabitaciones}.habest 	= 'on'
 								   AND {$wbasedato}_000011.ccoipd 	= 'on'
 								   AND {$wbasedato}_000011.ccoest 	= 'on'
 								   AND root_000037.oriori 			= '$wemp_pmla'
+								   $filtroHistorias
 								   $filtro_zonas
 								   UNION
 								   $q_pac_con_saldo_insum
@@ -16652,7 +17041,7 @@ else{
 				$wsp .= "&ccoayuda=".$ccoayudaori;
 
 			echo "<td>";
-			echo "<center><INPUT type='button' value='Retornar' onclick='volver(\"$wemp_pmla\", \"$waux\", \"$wsp\" )' style='width:100px'></center>";
+			echo "<center><INPUT type='button' value='Retornar' onclick='volver(\"$wemp_pmla\", \"$waux\", \"$wsp\", ".( $esServicioDomiciliario ? 'true' : 'false' )." )' style='width:100px'></center>";
 			echo "</td>";
 		}
 
@@ -16673,6 +17062,10 @@ else{
 		}
 
 		echo "</table>";
+	}
+
+	if( !empty( $esServicioDomiciliario ) ){
+		echo "<INPUT type='hidden' name='esServicioDomiciliario' id='esServicioDomiciliario' value='$esServicioDomiciliario'>";
 	}
 
 	echo "<input type='hidden' name='registro_inicial' value='" . $registro_inicial . "'>";

@@ -849,18 +849,17 @@ $entre = "no";
 				$resdel = mysql_query($qdel, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qdel . " - " . mysql_error());
 
 		     $q= " CREATE TABLE IF NOT EXISTS tempo1 AS "
-		        ." SELECT fenffa as fue, fenfac as doc, mid(fentip,1,instr(fentip,'-')-1) as tip, fencod as cem, fendpa as dre, fennpa as nre, Fennit as nitter, 'ori'"
+		        ." SELECT fenffa as fue, fenfac as doc, mid(fentip,1,instr(fentip,'-')-1) as tip, fencod as cem, fendpa as dre, fennpa as nre, Fennit as nitter"
 			    ."   FROM ".$wbasedato."_000018"
 			    ."  WHERE fenffa = '".$wfue[0]."'"
-			    //."    AND fenfac = 'CS-541415'"
 			    ."    AND fenfec between '".$wfec_i."' AND '".$wfec_f."'"
 			    //."    AND fenfac = '".$fac[0]."'"                              //On temporal
 			    ."    AND fenest = 'on' "
 			    ."    AND fencod like '".trim($wempresa[0])."'"
-			    //."    AND fencod = '860078828'"
+			    //."    AND fennit = '39270589' "    ///On quitar
 			    ."  GROUP BY 1, 2, 3, 4, 5, 6 "
 			    ."  ORDER BY 3, 4, 5 ";
-
+			   echo "<pre>".print_r( $q, true )."</pre>";
 			 $res = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 
 			 //====================================================================================================================
@@ -927,7 +926,7 @@ $entre = "no";
 			    ."    AND fencod like '".trim($wempresa[0])."'"
 			    ."    AND fenval   >= 0 "
 			    ."    AND fenres    = empres "
-			    ."  GROUP BY 1, 2, 3, 4, 6, 7, 8 "
+			    ."  GROUP BY 1, 2, 3, 4, 6, 7 "
 
 
 			    ." UNION "
@@ -982,7 +981,7 @@ $entre = "no";
 			    ."    AND fencod    like '".trim($wempresa[0])."'"
 			    ."    AND fenval    >= 0 "
 			    ."    AND fenres     = empres "
-			    ."  GROUP BY 1, 2, 3, 4, 6, 7, 8 "
+			    ."  GROUP BY 1, 2, 3, 4, 6, 7 "
 
 
 
@@ -1019,7 +1018,7 @@ $entre = "no";
 			    ."    AND fencod like '".trim($wempresa[0])."'"
 			    ."    AND fenval    < 0 "
 			    ."    AND fenres    = empres "
-			    ."  GROUP BY 1, 2, 3, 4, 6, 7, 8 "
+			    ."  GROUP BY 1, 2, 3, 4, 6, 7 "
 
 			    ." UNION "
 
@@ -1053,24 +1052,24 @@ $entre = "no";
 			    ."    AND fencod like '".trim($wempresa[0])."'"
 			    ."    AND fenval    < 0 "
 			    ."    AND fenres    = empres "
-			    ."  GROUP BY 1, 2, 3, 4, 6, 7, 8 "
+			    ."  GROUP BY 1, 2, 3, 4, 6, 7 "
 
 			    ////////////////////////    Hasta aca tiene en cuenta las facturas ** Negativas **.
 			    ."  ORDER BY 1, 2, 7, 8, 9 ";
-
+			 echo "<pre>".print_r( $q, true )."</pre>";
 			 $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 // cambio antes los  ." GROUP BY 1, 2, 3, 4, 7  " eran distintos comparar con produccion
 			 $q= " SELECT cta,nat,cco,ter,sum(val),res,nit,cem,dre,nre "
 	             ."  FROM tempo2 "
 	             ." WHERE val >= 0 "
-	             ." GROUP BY 1, 2, 3, 4, 7,8  "
+	             ." GROUP BY 1, 2, 3, 4, 7  "
 	             ." UNION "
 
 		         ." SELECT cta,nat,cco,ter,sum(val),res,nit,cem,dre,nre "
 		         ."  FROM tempo2 "
 	             ."  WHERE val < 0 "
-		         ."  GROUP BY 1, 2, 3, 4, 7,8 ";
-
+		         ."  GROUP BY 1, 2, 3, 4, 7 ";
+		     echo "<pre>".print_r( $q, true )."</pre>";
 	         $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	         $num = mysql_num_rows($res);
 
@@ -1171,7 +1170,7 @@ $entre = "no";
 				     ."    AND renest    = 'on' "
 				     ."    AND tip       = '01' "
 				     ."    AND relfuenit = 'off' "             //Indica que No debe mostrar el tercero
-				     ."  GROUP BY 1,2,3,4,7,8 "
+				     ."  GROUP BY 1,2,3,4,7 "
 
 				     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1195,7 +1194,7 @@ $entre = "no";
 				     ."    AND renest    = 'on' "
 				     ."    AND tip       <> '01' "
 				     ."    AND relfuenit = 'off' "             //Indica que No debe mostrar el tercero
-				     ."  GROUP BY 1,2,3,4,7,8 "
+				     ."  GROUP BY 1,2,3,4,7 "
 				     ."  ORDER BY 1,2,3,4 ";
 				  $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 
@@ -1737,7 +1736,7 @@ $entre = "no";
 					     ."    AND relconnit = 'off' "
 					     ."    AND fdefue    = carfue "
 					     ."    AND carcfa    = 'on' "
-					     ."  GROUP BY 1,2,3,4,7, 8"
+					     ."  GROUP BY 1,2,3,4,7 "
 
 					     ." UNION "
 
@@ -1751,7 +1750,7 @@ $entre = "no";
 					     ."    AND relconnit = 'on' "
 					     ."    AND fdefue    = carfue "
 					     ."    AND carcfa    = 'on' "
-					     ."  GROUP BY 1,2,3,4,7, 8 "
+					     ."  GROUP BY 1,2,3,4,7 "
 
 					     ." UNION "
 
@@ -1765,7 +1764,7 @@ $entre = "no";
 					     ."    AND relconnit = 'off' "
 					     ."    AND fdefue    = carfue "
 					     ."    AND carcfa    = 'on' "
-					     ."  GROUP BY 1,2,3,4,7, 8 "
+					     ."  GROUP BY 1,2,3,4,7 "
 					     ."  ORDER BY 1,2,3,4 ";
 					 $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 

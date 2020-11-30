@@ -226,6 +226,70 @@ else
 	      
 	  encabezado("REPORTE DE SALDOS X APLICAR X PACIENTE",$wactualiz, "clinica");
      }
+	 
+	 
+	 
+	function consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato ){
+	
+		$coleccion = array();
+		
+		$sql = "SELECT Ccocod, UPPER( Cconom )
+				  FROM ".$wbasedato."_000011
+				 WHERE Ccoest  = 'on' 
+				   AND Ccohos  = 'on' 
+				   AND ccodom != 'on'
+			  ORDER BY Ccoord, Ccocod; ";
+						  
+		$res1 = mysql_query($sql,$conex) or die (" Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+		$num1 = mysql_num_rows($res1);
+
+		if ($num1 > 0 )
+		{
+			for ($i=1;$i<=$num1;$i++)
+			{
+				$cco = new centroCostosDTO();
+				$row1 = mysql_fetch_array($res1);
+
+				$cco->codigo = $row1[0];
+				$cco->nombre = $row1[1];
+
+				$coleccion[] = $cco;
+			}
+		}
+		
+		return $coleccion;
+	}
+	
+	function consultaCentrosCostosDomiciliarios( $conex, $wbasedato ){
+	
+		$coleccion = array();
+		
+		$sql = "SELECT Ccocod, UPPER( Cconom )
+				  FROM ".$wbasedato."_000011
+				 WHERE Ccoest  = 'on' 
+				   AND Ccohos  = 'on' 
+				   AND ccodom  = 'on'
+			  ORDER BY Ccoord, Ccocod; ";
+						  
+		$res1 = mysql_query($sql,$conex) or die (" Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+		$num1 = mysql_num_rows($res1);
+
+		if ($num1 > 0 )
+		{
+			for ($i=1;$i<=$num1;$i++)
+			{
+				$cco = new centroCostosDTO();
+				$row1 = mysql_fetch_array($res1);
+
+				$cco->codigo = $row1[0];
+				$cco->nombre = $row1[1];
+
+				$coleccion[] = $cco;
+			}
+		}
+		
+		return $coleccion;
+	}
     
     function elegir_centro_de_costo()   
      {
@@ -238,6 +302,8 @@ else
 	  global $whora_par_actual;
 	  global $whora_par_anterior;
 	  
+	  global $esServicioDomiciliario;
+	  
 	  //Seleccionar CENTRO DE COSTOS
 	  //*********************llamado a las funciones que listan los centros de costos y la que dibuja el select************************
 		$cco="Ccohos";
@@ -245,7 +311,13 @@ else
 		$tod="";
 		//$cco=" ";
 		$ipod="on";
-		$centrosCostos = consultaCentrosCostos($cco);
+		// $centrosCostos = consultaCentrosCostos($cco);
+		
+		if( $esServicioDomiciliario )
+			$centrosCostos = consultaCentrosCostosDomiciliarios($conex,$wbasedato);
+		else
+			$centrosCostos = consultaCentrosCostosNoDomiciliarios($conex,$wbasedato);
+		
 		echo "<center><table align='center' border=0 >";
 		$dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
 					
@@ -362,6 +434,12 @@ else
     echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";   
     
     mostrar_empresa($wemp_pmla);
+	
+	$esServicioDomiciliario = false;
+	if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+		$esServicioDomiciliario = true;
+		echo "<input type='HIDDEN' NAME= 'servicioDomiciliario' value='".$servicioDomiciliario."'/>";
+	}
     
     if (!isset($wcco))
      {
@@ -369,8 +447,10 @@ else
      } 
     else // Cuando ya estan todos los datos escogidos
        {
+		   
         $wcco1 = explode('-', $wcco);
 
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco1[0] );
 		
 		$query = "SELECT ccogka
 					FROM ".$wbasedato."_000011
@@ -393,7 +473,7 @@ else
 
 		$q = " CREATE TEMPORARY TABLE if not exists TEMPO as "
             ." SELECT ubihac, ubisac, spaart as art, ubihis, ubiing, pacno1, pacno2, pacap1, pacap2, SUM(spauen-spausa) as sal, artuni, habcod, habord "
-            ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000004, ".$wbasedato."_000026, root_000036, root_000037, ".$wbasedato."_000029, ".$wbasedato."_000020 "
+            ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000004, ".$wbasedato."_000026, root_000036, root_000037, ".$wbasedato."_000029, ".$tablaHabitaciones." "
             ."  WHERE ubiald                              <> 'on' "
             ."    AND ubihis                               = spahis "
             ."    AND ubiing                               = spaing " 
@@ -412,7 +492,7 @@ else
 			."GROUP BY 3,12 "
             ."  UNION "
             ." SELECT ubihac, ubisac, spaart as art, ubihis, ubiing, pacno1, pacno2, pacap1, pacap2, (spauen-spausa) as sal, artuni, habcod, habord "
-            ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000004, ".$wcenmez."_000002, root_000036, root_000037, ".$wbasedato."_000020 "
+            ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000004, ".$wcenmez."_000002, root_000036, root_000037, ".$tablaHabitaciones." "
             ."  WHERE ubiald         <> 'on' "
             ."    AND ubihis          = spahis "
             ."    AND ubiing          = spaing " 
@@ -432,12 +512,12 @@ else
 			
 		 $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 
-         $q = " SELECT ubihac, ubisac, cconom, art, ubihis, ubiing, pacno1, pacno2, pacap1, pacap2, sum(sal), artuni, " .$wbasedato."_000020.habcod, " .$wbasedato."_000020.habord "
-             ."   FROM TEMPO, ".$wbasedato."_000011," .$wbasedato."_000020 "
+         $q = " SELECT ubihac, ubisac, cconom, art, ubihis, ubiing, pacno1, pacno2, pacap1, pacap2, sum(sal), artuni, " .$tablaHabitaciones.".habcod, " .$tablaHabitaciones.".habord "
+             ."   FROM TEMPO, ".$wbasedato."_000011," .$tablaHabitaciones." "
              ."  WHERE ubisac  = Ccocod"
              ."    AND ubihis <> '' "
-			 ."    AND ubihac = " .$wbasedato."_000020.habcod "
-			 ."    AND ubisac = " .$wbasedato."_000020.habcco "
+			 ."    AND ubihac = " .$tablaHabitaciones.".habcod "
+			 ."    AND ubisac = " .$tablaHabitaciones.".habcco "
              ."  GROUP BY 1,2,3,4,5,6,7,8,9,10, 12 "
              //."  ORDER BY 2,1,6,4";
 			 ."  ORDER BY habord,1";
@@ -583,7 +663,10 @@ else
 	        
 	        echo "<br><br><br>";
 		    echo "<center><table>";
-		    echo "<tr><td><A HREF='rep_salxaplixpac.php?wemp_pmla=".$wemp_pmla."' class=tipo3V>Retornar</A></td></tr>";
+			if($esServicioDomiciliario)
+				echo "<tr><td><A HREF='rep_salxaplixpac.php?wemp_pmla=".$wemp_pmla."&servicioDomiciliario=on' class=tipo3V>Retornar</A></td></tr>";
+			else
+				echo "<tr><td><A HREF='rep_salxaplixpac.php?wemp_pmla=".$wemp_pmla."' class=tipo3V>Retornar</A></td></tr>";
 		    echo "</table>";
 	        
         } // cierre del else donde empieza la impresión

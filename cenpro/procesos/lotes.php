@@ -384,8 +384,12 @@ function consultarServicioPaciente($whistoria,$wingreso)
 	
 	$bdMovhos = consultarAliasPorAplicacion($conex,"01", 'movhos');
 	
+	$paciente = consultarUbicacionPaciente($conex, $bdMovhos, $whistoria, $wingreso );
+		
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $bdMovhos, $paciente->servicioActual );
+	
 	$qServicio = "SELECT Habcco
-					FROM ".$bdMovhos."_000020
+					FROM ".$tablaHabitaciones."
 				   WHERE Habhis='".$whistoria."'
 					 AND Habing='".$wingreso."';";
 	
@@ -598,9 +602,13 @@ function consultarSiEsDA($historia,$ingreso,$codigoProducto,$lote,$codCco,$warti
 	global $conex;
 	$bdMovhos = consultarAliasPorAplicacion($conex,"01", 'movhos');
 	
+	$paciente = consultarUbicacionPaciente($conex, $bdMovhos, $historia, $ingreso);
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $bdMovhos, $paciente->servicioActual );
+	
 	// Consultar si es DA
 	$qDA  = " SELECT Rdaart,Rdaido,Habcco,Cconom  
-				FROM ".$bdMovhos."_000224,".$bdMovhos."_000011,".$bdMovhos."_000020 
+				FROM ".$bdMovhos."_000224,".$bdMovhos."_000011,".$tablaHabitaciones."
 			   WHERE Rdahis='".$historia."' 
 			     AND Rdaing='".$ingreso."' 
 			     AND Rdaart='".$warticuloda."' 
@@ -771,18 +779,23 @@ function consultarSiEsNPT($codigoProducto)
 function pintarBotonNPT($codigoProducto,$lote,$codCco)
 {
 	global $conex;
+	
 	$bdMovhos = consultarAliasPorAplicacion($conex,"01", 'movhos');
 	
-	
 	$arrayNPT = consultarSiEsNPT($codigoProducto);
+	
 	
 	$botonCargos = "";
 	if(count($arrayNPT)>0)
 	{
+		$paciente = consultarUbicacionPaciente($conex, $bdMovhos, $arrayNPT['Enuhis'], $arrayNPT['Enuing'] );
+		
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $bdMovhos, $paciente->servicioActual );
+		
 		//Enero 29 de 2020
 		//Se corrige las variables historia e ingreso
 		$q = "SELECT Habcco,Cconom 
-				FROM ".$bdMovhos."_000020,".$bdMovhos."_000011 
+				FROM ".$tablaHabitaciones.",".$bdMovhos."_000011 
 			   WHERE Habhis='".$arrayNPT['Enuhis']."' 
 				 AND Habing='".$arrayNPT['Enuing']."'
 				 AND Habcco=Ccocod;";
@@ -3141,11 +3154,18 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 		        		ORDER BY
 		        			2,3 desc
 		        		"; //echo "........<pre>$sql</pre>";
+						
+				$bdMovhos = consultarAliasPorAplicacion($conex,"01", 'movhos');
+						
+				$ingreso_paciente 	= consultarUltimoIngresoHistoria( $conex, $txHistoria, "01" );
+				$paciente 			= consultarUbicacionPaciente($conex, $bdMovhos, $txHistoria, $ingreso_paciente );
+		
+				$tablaHabitaciones = consultarTablaHabitaciones( $conex, $bdMovhos, $paciente->servicioActual );
 		        
 		        $sql = "SELECT
 		        			Habcod
 		        		FROM
-		        			movhos_000020
+							{$tablaHabitaciones}
 		        		WHERE
 		        			habhis = '{$txHistoria}'
 		        		"; //echo "........<pre>$sql</pre>";

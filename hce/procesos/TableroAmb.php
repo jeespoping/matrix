@@ -199,6 +199,8 @@ include_once("conex.php");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   .2020-10-20 Edwin MG
+				Se agrega filtro de servicio domiciliario
 	   .2016-04-12 Verónica Arismendy Se modifica la consulta porque no se estaban teniendno en cuenta las citas de la tabla citasfi_000017 
 	    *************************************************************************************************
 	   .2016-03-03 Verónica Arismendy
@@ -409,6 +411,9 @@ else
 	echo "<input type='HIDDEN' name= 'historia' value='".$historia."'>";
 	echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
 	
+	if(isset($servicioDomiciliario) && $servicioDomiciliario == 'on' )
+		echo "<input type='HIDDEN' name= 'servicioDomiciliario' value='".$servicioDomiciliario."'>";
+	
 	$wcit = isset($wcit) ? $wcit : "";
 	echo "<input type='hidden' name='wcit' id='wcit' value='".$wcit."'>"; //2016-03-03 Verónica Arismendy
 	
@@ -512,6 +517,17 @@ else
 				$numemp=$num;
 			}
 		}
+		
+		
+		$filtroServDom = '';
+		if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
+			$filtroServDom = " AND ccodom = 'on' ";
+		}
+		
+		if( !empty( $wcco ) ){
+			$filtroCco .= " and ubisac = '".$wcco."' ";
+		}
+		
 		if($Wexiste == 1)
 		{	
 			// 2016-03-03 Verónica Arismendy
@@ -531,10 +547,10 @@ else
 					
 						for($i=0; $i<$countTablas; $i++){
 							
-							$query .= "SELECT Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', movhos_000016.fecha_data  
+							$query .= "SELECT Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', movhos_000016.fecha_data, Ccoseu  
 								FROM ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016, ".$arrInfoTabla["prefijo"] . "_" . $arrInfoTabla["nombreTabla"][$i]." c
 								WHERE ubiald = 'off' 
-								AND ubisac   = '".$wcco."' 
+								$filtroCco;
 								AND ubisac   = Ccocod 
 								AND ubihis   = orihis 
 								AND ubiing   = oriing 
@@ -545,6 +561,7 @@ else
 								AND oriing   = inging  
 								AND c.Cedula = Pacced 
 								AND c.Fecha  = '".$fecha."'
+								$filtroServDom;
 							";
 						
 							$can = $i+1;
@@ -557,10 +574,10 @@ else
 							
 					}else{
 						//                 0       1       2       3       4       5       6       7       8       9      10     11      12      13      14      15         16                 17
-						$query = "SELECT Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', movhos_000016.fecha_data  
+						$query = "SELECT Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', movhos_000016.fecha_data, Ccoseu 
 							FROM ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016, ".$arrInfoTabla["prefijo"] . "_" . $arrInfoTabla["nombreTabla"][0]." c
 							WHERE ubiald = 'off' 
-							AND ubisac   = '".$wcco."' 
+							$filtroCco;
 							AND ubisac   = Ccocod 
 							AND ubihis   = orihis 
 							AND ubiing   = oriing 
@@ -571,19 +588,21 @@ else
 							AND oriing   = inging  
 							AND c.Cedula = Pacced 
 							AND c.Fecha  = '".$fecha."'
+							$filtroServDom;
 							ORDER BY 11,17 ";	
 					}					
 			}else{
 				$query = "";
 			}
 							
-		} else{
+		}
+		else{
 				//Query por defecto es decir si no viene el parámetro para buscar asociado con la tabla de citas está es la consulta
 			    //                 0       1       2       3       4       5       6       7       8       9      10     11      12      13      14      15         16                 17
-				$query = "select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', movhos_000016.fecha_data  ";
+				$query = "select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', movhos_000016.fecha_data, Ccoseu  ";
 				$query .= " from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016 ";
 				$query .= " where ubiald = 'off'  ";
-				$query .= " and ubisac = '".$wcco."' ";
+				$query .= $filtroCco;
 				$query .= " and ubisac = Ccocod  ";
 				$query .= " and ubihis = orihis  ";
 				$query .= " and ubiing = oriing  ";
@@ -592,6 +611,7 @@ else
 				$query .= " and oritid = pactid  ";
 				$query .= " and orihis = inghis "; 
 				$query .= " and oriing = inging  ";
+				$query .= $filtroServDom;
 				$query .= "  order by 11,17 ";
 		}
 		
@@ -673,6 +693,10 @@ else
 				for ($i=0;$i<$num;$i++)
 				{
 					$row = mysql_fetch_array($err);
+					
+					if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' && empty( $wcco ) )
+						$wservicio = $row[18];
+					
 					$wmed="";
 					$wesp="";
 					$query = "select Medno1, Medno2, Medap1, Medap2, Mtretr, Espnom, max(hce_000022.Fecha_data) ";

@@ -156,8 +156,13 @@ function consultarHabitacion($historia,$ingreso)
 {
 	global $conex;
 	
+	$bdMovhos = "movhos";
+	
+	$paciente 			= consultarUbicacionPaciente($conex, $bdMovhos, $txHistoria, $ingreso_paciente );
+	$tablaHabitaciones	= consultarTablaHabitaciones( $conex, $bdMovhos, $paciente->servicioActual );
+	
 	$q = "SELECT Habcpa
-			FROM movhos_000018,movhos_000020
+			FROM movhos_000018,". $tablaHabitaciones ."
 		   WHERE Ubihis = '".$historia."'
 			 AND Ubiing = '".$ingreso."'
 			 AND Ubihis = Habhis
@@ -3912,7 +3917,7 @@ else
 												$val = false;
 											} 
 
-											$cantidad = $cantidad + $presen[$i][$j]['can'] + $presen[$i][$j]['caj'];
+											$cantidad = $cantidad + (float) $presen[$i][$j]['can'] + (float) $presen[$i][$j]['caj'];
 										} 
 
 										if (round($faltante, 4) < round($inslis[$i]['fal'], 4))
