@@ -130,8 +130,9 @@ function consultarCcoDomiciliarios( $conex, $wbasedato ){
 	
 	$sql = "SELECT Ccocod, Cconom
 			  FROM ".$wbasedato."_000011
-			 WHERE ccodom = 'on'
-			   AND ccoest = 'on'
+			 WHERE ccodom  = 'on'
+			   AND ccoest  = 'on'
+			   AND ccotra != 'on'
 			 ";
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ". mysql_error() );

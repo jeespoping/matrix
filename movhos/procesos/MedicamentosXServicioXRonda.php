@@ -364,6 +364,27 @@ else
   //F U N C I O N E S
   //===========================================================================================================================================
   
+	function esCcoDomiciliarioMSR( $conex, $wbasedato, $wcco ){
+		
+		$val = false;
+
+		$sql = "SELECT Ccodom
+				  FROM ".$wbasedato."_000011
+				 WHERE ccocod = '".$wcco."'
+				   AND ccodom = 'on'
+				 ;";
+
+		$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+		$num = mysql_num_rows($res);
+		
+		if($num > 0)
+		{
+			$val = true;
+		}
+		
+		return $val;
+	}
+  
 	/**********************************************************************************************************************************
 	 * Indica si un articulo peretenece al stock
 	 * 
@@ -843,6 +864,10 @@ else
 	
 		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $paciente->servicioActual );
 		
+		$esCcoDomiciliario = esCcoDomiciliarioMSR( $conex, $wbasedato, $paciente->servicioActual );
+		
+		$serDom = $esCcoDomiciliario ? '&servicioDomiciliario=on' : '' ;
+		
 		$qArt = " SELECT Kadhis,Kading,Kadart,Kadido,Kadcfr,Kadufr,Kadfin,Kadhin,Kadobs,Kadcpx,Kadron,Kadcnd,'Dosis adaptada' AS Tipo,Habcco
 					FROM ".$wbasedato."_000054,".$tablaHabitaciones."
 				   WHERE Kadhis='".$historia."' 
@@ -1005,14 +1030,14 @@ else
 								if($equivalenteCM=="")
 								{
 									$urlCM = "Sin equivalente en central de mezclas (cenpro_000009)"; 
-									$urlCM .= "<br><A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A>"; 
+									$urlCM .= "<br><A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A>"; 
 								}
 								else
 								{
 									$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?DA_historia=".$historia."&DA_ingreso=".$ingreso."&DA_articulo=".$rows['Kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=".$rows['Tipo']."&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
 									if($rows['Tipo']=="Antibiotico")
 									{
-										$urlCM .= "<br>-<br><A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A>"; 
+										$urlCM .= "<br>-<br><A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A>"; 
 									}
 								}
 							}
@@ -1030,7 +1055,7 @@ else
 								else
 								{
 									// Ir al perfil
-									$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A>"; 
+									$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A>"; 
 								}
 								
 							}
@@ -1080,7 +1105,7 @@ else
 										else
 										{
 											// Ir al perfil
-											$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A>"; 
+											$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A>"; 
 										}
 										
 									}
@@ -1100,7 +1125,7 @@ else
 									else
 									{
 										// Ir al perfil
-										$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A>"; 
+										$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A>"; 
 									}
 									
 								}
@@ -1164,13 +1189,13 @@ else
 							else
 							{
 								// Ir al perfil
-								$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A>"; 
+								$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A>"; 
 							}
 						}
 						else
 						{
 							// Ir al perfil
-							$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A>"; 
+							$urlCM = "<A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A>"; 
 						}
 						
 						$kadobs1="";
@@ -1331,11 +1356,19 @@ else
 		echo "<td>".$valuePacientes['dosis']."</td>";
 		echo "<td><b>".$valuePacientes['condicion']."</b></td>";
 		
+		$paciente = consultarUbicacionPaciente( $conex, $wbasedato, $valuePacientes['historia'], $valuePacientes['ingreso'] );
+	
+		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $paciente->servicioActual );
+		
+		$esCcoDomiciliario = esCcoDomiciliarioMSR( $conex, $wbasedato, $paciente->servicioActual );
+		
+		$serDom = $esCcoDomiciliario ? '&servicioDomiciliario=on' : '' ;
+		
 		if($ccoOrigen[0]=="1051")
 		{
 			if(count($artPaciente)==0)
 			{
-				echo "<td align=center><A href='../procesos/perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$valuePacientes['historia']."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A></td>";
+				echo "<td align=center><A href='../procesos/perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$valuePacientes['historia']."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A></td>";
 			}
 			else
 			{
@@ -1376,7 +1409,7 @@ else
 		}
 		else
 		{
-			echo "<td align=center><A href='../procesos/perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$valuePacientes['historia']."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A></td>";
+			echo "<td align=center><A href='../procesos/perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$valuePacientes['historia']."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A></td>";
 		}
 		
 		// echo "<td align=center><A href='../procesos/perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$valuePacientes['historia']."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A></td>";
@@ -1643,7 +1676,7 @@ function pintarAritculos( $articulos ){
 				  $wcond=$row1[0]." - ".$row1[1];
 				 }
 			  echo "<td><b>".$wcond."</b></td>";
-			  echo "<td align=center><A href='../procesos/perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$row[0]."&wfecha=".$wfecha."' target=_blank> Ir al Perfil </A></td>";
+			  echo "<td align=center><A href='../procesos/perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$row[0]."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A></td>";
 			  echo "</tr>";
 			 }
 		  echo "</table>";
@@ -2240,6 +2273,17 @@ function pintarAritculos( $articulos ){
 						$articulos[ $row['kadart']."-".$row['kadare'] ]['cantidadDosis'] += $row[2];
 						$articulos[ $row['kadart']."-".$row['kadare'] ]['cantidadUnidades'] += ceil( $row['kadcfr']/$row['kadcma'] );
 						
+						
+						
+	
+						
+						$paciente_inf 		= consultarUbicacionPaciente( $conex, $wbasedato, $historia, $ingreso);
+						$esCcoDomiciliario 	= esCcoDomiciliarioMSR( $conex, $wbasedato, $paciente_inf->servicioActual );
+						$serDom 			= $esCcoDomiciliario ? '&servicioDomiciliario=on' : '' ;
+						
+						
+						
+						
 						if( !isset( $articulos[ $row['kadart']."-".$row['kadare'] ]['pacientes'][$historia] ) ){
 						
 							$articulos[ $row['kadart']."-".$row['kadare'] ]['pacientes'][$historia] = array(
@@ -2251,7 +2295,7 @@ function pintarAritculos( $articulos ){
 								'dosis' 		=> $row['kadcfr']." ".$row['kadufr'],
 								'dosisFraccion' => $row['kadcfr'],
 								'condicion' 	=> $wcond,
-								'accion' 		=> "'../procesos/perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$rowsPac[0]."&wfecha=".$wfecha."'",
+								'accion' 		=> "'../procesos/perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$rowsPac[0]."&wfecha=".$wfecha.$serDom."'",
 								'fecharonda' 	=> date( "Y-m-d" ,$articulos[ $row['kadart']."-".$row['kadare'] ]['rondaMenor'] ),
 							);
 						}
