@@ -1,6 +1,7 @@
 <?php
 include_once("conex.php");
 /* * * * * * * * * * * * * * * * * * * * *   Modificaciones   * * * * * * * * * * * * * * * * * * * * * * *
+ 2019-06-28  -Edwin MG.	Se evalua correcamente la firma del usuario. esto debido al cambio de encriptación de clave
  2019-06-28  -Edwin MG.	Se cambian funciones split de php por explode
  2019-06-27  -Edwin MG.	Se valida en javascript que no se pueda ingresar en las notas de las evaluaciones espacios
  2018-07-11  -Juan Felipe Balcero L. Se agrega un filtro de estado en la consulta de los descriptores de las encuestas
@@ -850,7 +851,7 @@ if (isset($wenviofirma))
  $q = "SELECT * "
 	 ."  FROM usuarios "
 	 ." WHERE Codigo Like '%".$wcalificado."' "
-	 ."   AND Password ='".$wenviofirma."' ";
+	 ."   AND Password = SHA1('".$wenviofirma."') ";
 	 //."   AND Empresa = '".$wemp_pmla."'";
 
 	$res = mysql_query($q,$conex) or die ("Error 3: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
