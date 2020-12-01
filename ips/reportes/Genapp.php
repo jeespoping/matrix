@@ -64,7 +64,7 @@ else
 	{
 		//                    0      1        2      3       4       5       6       7       8       9      10      11      12     13      14       15      16      17         18
 		$query = " SELECT  pactdo, pacdoc, Pachis, ingnin, pacap1, pacap2, pacno1, pacno2, pacdir, pacmuh, Nombre, pactel, Pacmov, Ingcem, ingent, Paccor, pactam, ingdig, Descripcion ";
-	    $query .= "  FROM  ".$wcliame."_000100, ".$wcliame."_000101, ".$wmovhos."_000018,root_000006,root_000011  ";
+	    $query .= "  FROM  ".$wcliame."_000100, ".$wcliame."_000101, ".$wmovhos."_000018,root_000006,root_000011, ".$wmovhos."_000011  ";
 	    $query .= "  WHERE  pacact = 'on' ";
 		$query .= "    AND  ingfei between '".$wfecha1."' AND  '".$wfecha2."' ";
 		$query .= "    AND  pachis = inghis ";
@@ -73,7 +73,9 @@ else
 		$query .= "    AND  Ubiald = 'off' ";
 		$query .= "    AND  pacmuh = root_000006.codigo ";
 		$query .= "    AND  ingdig = root_000011.codigo ";
-		$query .= " ORDER BY 3,4 ";
+		$query .= "    AND  ccocod = ubisac ";
+		$query .= "    AND  ccodom = 'on' ";
+		echo $query .= " ORDER BY 3,4 ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$num = mysql_num_rows($err);
 		if($num > 0)
