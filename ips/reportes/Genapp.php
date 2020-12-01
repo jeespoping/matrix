@@ -21,7 +21,12 @@
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b> Genapp.php Ver. 2017-02-09</b></font></tr></td></table>
 </center>
 <?php
+
+$consultaAjax = 'Esto solo es para que no cargue jquery y otras cosas más';
+
 include_once("conex.php");
+include_once("root/comun.php");
+
 @session_start();
 if(!isset($_SESSION['user']))
 	echo "error";
@@ -30,7 +35,8 @@ else
 	$key = substr($user,2,strlen($user));
 	echo "<form action='Genapp.php' method=post>";
 	
-
+	$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
 	
 
 	if(!isset($wfecha1) or !isset($wfecha2))
@@ -51,12 +57,14 @@ else
 		//]]></script>
 		<?php
 		echo "<tr><td bgcolor=#cccccc  colspan=3 align=center><input type='submit' value='ENTER'></td></tr></table>";
+		
+		echo "<input type='hidden' name='wemp_pmla' value='".$wemp_pmla."'>";
 	}
 	else
 	{
 		//                    0      1        2      3       4       5       6       7       8       9      10      11      12     13      14       15      16      17         18
 		$query = " SELECT  pactdo, pacdoc, Pachis, ingnin, pacap1, pacap2, pacno1, pacno2, pacdir, pacmuh, Nombre, pactel, Pacmov, Ingcem, ingent, Paccor, pactam, ingdig, Descripcion ";
-	    $query .= "  FROM  clisur_000100, clisur_000101,mhoscs_000018,root_000006,root_000011  ";
+	    $query .= "  FROM  ".$wcliame."_000100, ".$wcliame."_000101, ".$wmovhos."_000018,root_000006,root_000011  ";
 	    $query .= "  WHERE  pacact = 'on' ";
 		$query .= "    AND  ingfei between '".$wfecha1."' AND  '".$wfecha2."' ";
 		$query .= "    AND  pachis = inghis ";
