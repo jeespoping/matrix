@@ -362,7 +362,7 @@ else{
 				}
 				,function( data_json ){
 					
-					data_json = data_json | [];
+					data_json = data_json || [];
 					
 					$( dvpacientes ).html('');
 					mostrarPacientes( data_json, !conZonas );
@@ -502,7 +502,7 @@ else{
 					wcco			: $( wccos ).val(),
 				}
 				,function( data_json ){
-					data_json = data_json | [];
+					data_json = data_json || [];
 					$( dvpacientes ).html('');
 					mostrarPacientes( data_json, true );
 				},
