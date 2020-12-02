@@ -523,6 +523,7 @@ if(isset($artcod))
  * Es decir, cuando hay un error la tabla debe cambiar de color para indicarselo al usuario, ese cambio de color esta dictado por el class del <td>, lo que se obtiene
  * es el valor de class para el <td>
  *
+ * @modified Diciembre 02 de 2020  (Edwin)	   - Se corrige validación de cargos de CTC en la función preCondicionesKE
  * @modified Septiembre 23 de 2020 (Edwin) 	   - Se valida que la fecha no sea vacia en la funcion consultarRegistroKardexPorArticulo. Si es vacia en la consulta se cambia el valor de fecha por 0000-00-00.
  * @modified Noviembre 6 de 2019  (Edwin)  	   - Al dispensar se tiene en cuenta el saldo del cco desde dónde se dispensa
  * @modified Agosto 28 de 2019  (Edwin)   	   - Si se están actualizando tarifas no se permite dispensar
@@ -4382,10 +4383,12 @@ function preCondicionesKE( $pac, &$art, $ke, $artValido, $tipTrans, $cco, &$nka 
 			{
 				$regbool = true;
 				
-				//Si es POS, solo se puede grabar si tiene articulos aprobados por CTC
+				//Si es NO POS, solo se puede grabar si tiene articulos aprobados por CTC
 				// if( $listartpac[$poslist][5] == 'N' && $listartpac[$poslist][10] && $listartpac[$poslist][10] >= 100 ){
 				if( $listartpac[$poslist][5] == 'N' && $listartpac[$poslist][10] ){
-					$regbool = false;
+					if( $listartpac[$poslist][10] >= 100 ){
+						$regbool = false;
+					}
 				}
 			}
 
@@ -6215,7 +6218,7 @@ function ArticulosXPaciente( $pac ){
 			$datos[2][0]="DISPENSAR";
 			$datos['error'][0]=false;
 		}
-		
+
 		return $datos;
 	}
 	else{
