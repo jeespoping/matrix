@@ -188,12 +188,14 @@ function consultarPacientesAMostrar( $conex, $wemp_pmla, $wbasedato, $cco ){
 		// echo "-".$rows['Ubihis'];
 		//función en el script funcionesGeneralesEnvioHL7.php
 		$paciente 					= informacionPaciente( $conex, $wemp_pmla, $rows['Ubihis'], $rows['Ubiing'] );
-		$paciente['nombre1'] 		= utf8_encode( $paciente['nombre1'] );
-		$paciente['nombre2'] 		= utf8_encode( $paciente['nombre2'] );
-		$paciente['apellido1'] 		= utf8_encode( $paciente['apellido1'] );
-		$paciente['apellido2'] 		= utf8_encode( $paciente['apellido2'] );
-		$paciente['nombreCompleto']	= utf8_encode( $paciente['nombreCompleto'] );
-		$paciente['direccion']		= utf8_encode( $paciente['direccion'] );
+		
+		foreach( $paciente as &$value ){
+			$value = utf8_encode( $value );
+		}
+		
+		//Esto se debe hacer para que no quede vinculada la variable en ninguna lado
+		unset( $value );
+		
 		$paciente['cco'] 			= $rows['Ubisac'];
 		$paciente['barrio']			= utf8_encode( consultarBarrio( $conex, $wbasedato, $paciente['codigomMunicipio'], $paciente['codigoBarrio'] ) );
 		$paciente['zonas'] 			= $zonas;
@@ -227,12 +229,14 @@ function consultarPacientesConZonaAsigandasAMostrar( $conex, $wemp_pmla, $wbased
 		// echo "-".$rows['Ubihis'];
 		//función en el script funcionesGeneralesEnvioHL7.php
 		$paciente 					= informacionPaciente( $conex, $wemp_pmla, $rows['Ubihis'], $rows['Ubiing'] );
-		$paciente['nombre1'] 		= utf8_encode( $paciente['nombre1'] );
-		$paciente['nombre2'] 		= utf8_encode( $paciente['nombre2'] );
-		$paciente['apellido1'] 		= utf8_encode( $paciente['apellido1'] );
-		$paciente['apellido2'] 		= utf8_encode( $paciente['apellido2'] );
-		$paciente['nombreCompleto']	= utf8_encode( $paciente['nombreCompleto'] );
-		$paciente['direccion']		= utf8_encode( $paciente['direccion'] );
+		
+		foreach( $paciente as &$value ){
+			$value = utf8_encode( $value );
+		}
+		
+		//Esto se debe hacer para que no quede vinculada la variable en ninguna lado
+		unset( $value );
+		
 		$paciente['cco'] 			= $rows['Ubisac'];
 		$paciente['barrio']			= utf8_encode( consultarBarrio( $conex, $wbasedato, $paciente['codigomMunicipio'], $paciente['codigoBarrio'] ) );
 		$paciente['zonas'] 			= $zonas;
@@ -262,7 +266,7 @@ if( isset($accion) ){
 		
 		case 'consultarPacientesAMostrar': 
 			$result = consultarPacientesAMostrar( $conex, $wemp_pmla, $wbasedato, $wcco );
-			
+			// var_dump( $result );
 			echo json_encode( $result );
 		break;
 		
