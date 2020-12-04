@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Modificaciones
  *
@@ -299,6 +300,7 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 	}
 }
 
+
 function consultarPacientes( $conex, $wemp_pmla, $wbasedato, $all, $fecha = '' ){
 	
 	if( empty( $fecha ) ){
@@ -350,3 +352,4 @@ if(!isset($fecha) )
 	$fecha = '';
 
 consultarPacientes( $conex, $wemp_pmla, $wbasedato, isset($todos), $fecha );
+
