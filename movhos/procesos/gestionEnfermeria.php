@@ -17059,7 +17059,7 @@ else{
 					//Centro de costos diferente de urgencias, cirugia y hemodinamia.
 					if($sala != '%'){
 
-						$filtro_zonas = "	AND {$wbasedato}_000020.habzon = '".$sala."'";
+						$filtro_zonas = "	AND {$tablaHabitaciones}.habzon = '".$sala."'";
 					}
 					
 					$filtroHistorias = "";
