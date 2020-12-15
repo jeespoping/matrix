@@ -1874,49 +1874,99 @@ function traer_observaciones_examen($whis, $wing, $wexam, $wfechadataexamen, $wh
 					
 					if($sala == '%' and $sala != ''){
 						
-						$pacientes_urgencias_24horas = "	UNION
-															SELECT 'Urg' as habcod, ubihis as 'habhis', ubiing as 'habing', pacno1, pacno2, pacap1, pacap2, pacnac, pactid, pacced, Ingnre AS ent_responsable, ubiptr, ubialp, ingres, ubiald, ubifad, ubihad, 'on' as Altadef, ubisac
-															   FROM root_000036, root_000037, ".$wmovhos."_000018, ".$wmovhos."_000016,
-																	".$wmovhos."_000011, ".$whce."_000022
-															  WHERE ubihis = orihis
-																AND ubiing = oriing
-																AND oriori = '".$wemp_pmla."'
-																AND oriced = pacced
-																AND oritid = pactid
-																AND ubiald = 'on'
-																AND ubisac = '".trim($wcco1[0])."'
-																AND ubihis = inghis
-																AND ubiing = inging
-																AND ccocod = ubisac
-																AND ccoest = 'on'
-																AND mtrhis = ubihis
-																AND mtring = ubiing
-																$filtro_responsable 									
-																AND concat(".$wmovhos."_000018.Ubifad,' ',".$wmovhos."_000018.Ubihad ) between '$fecha_inicial' and  '$fecha_actual'";
-							
-					}
-					
-					$query = "SELECT * FROM (
-								SELECT 'Urg' as habcod, ubihis as 'habhis', ubiing as 'habing', pacno1, pacno2, pacap1, pacap2, pacnac, pactid, pacced, Ingnre AS ent_responsable, ubiptr, ubialp, ingres, ubiald, ubifad, ubihad, '' as AltaDef, ubisac
-								   FROM root_000036, root_000037, ".$wmovhos."_000018, ".$wmovhos."_000016,
-										".$wmovhos."_000011, ".$whce."_000022
-								  WHERE ubihis = orihis
-									AND ubiing = oriing
-									AND oriori = '".$wemp_pmla."'
-									AND oriced = pacced
-									AND oritid = pactid
-									AND ubiald != 'on'
-									AND ubisac = '".trim($wcco1[0])."'
-									AND ubihis = inghis
-									AND ubiing = inging
-									AND ccocod = ubisac
-									AND ccoest = 'on'
-									AND mtrhis = ubihis
-									AND mtring = ubiing
+						$pacientes_urgencias_24horas = "   UNION
+															SELECT  'Urg' AS habcod,
+															".$wmovhos."_000018.ubihis AS 'habhis',
+															".$wmovhos."_000018.ubiing AS 'habing',
+															root_000036.pacno1,
+															root_000036.pacno2,
+															root_000036.pacap1,
+															root_000036.pacap2,
+															root_000036.pacnac,
+															root_000036.pactid,
+															root_000036.pacced,
+															".$wmovhos."_000016.Ingnre AS ent_responsable,
+															".$wmovhos."_000018.ubiptr,
+															".$wmovhos."_000018.ubialp,
+															".$wmovhos."_000016.ingres,
+															".$wmovhos."_000018.ubiald,
+															".$wmovhos."_000018.ubifad,
+															".$wmovhos."_000018.ubihad,
+															'on' AS Altadef,
+															".$wmovhos."_000018.ubisac
+															
+															FROM root_000037
+													  INNER JOIN ".$wmovhos."_000018 ON ".$wmovhos."_000018.ubihis = root_000037.orihis 
+															 AND ".$wmovhos."_000018.ubiing = root_000037.oriing
+													  INNER JOIN ".$wmovhos."_000016 
+															  ON ".$wmovhos."_000018.ubihis = ".$wmovhos."_000016.inghis 
+														     AND ".$wmovhos."_000018.ubiing = ".$wmovhos."_000016.inging
+													  INNER JOIN ".$wmovhos."_000011 
+														      ON ".$wmovhos."_000011.ccocod = ".$wmovhos."_000018.ubisac
+													  INNER JOIN root_000036 
+															  ON root_000037.oriced = root_000036.pacced 
+															 AND root_000037.oritid = root_000036.pactid
+												      INNER JOIN ".$whce."_000022 
+															  ON ".$whce."_000022.mtrhis = ".$wmovhos."_000018.ubihis 
+														     AND ".$whce."_000022.mtring = ".$wmovhos."_000018.ubiing
+																
+														
+														   WHERE root_000037.oriori = '".$wemp_pmla."'
+															 AND ".$wmovhos."_000018.ubiald = 'on'
+															 AND ".$wmovhos."_000018.ubisac = '".trim($wcco1[0])."'
+															 AND ".$wmovhos."_000011.ccoest = 'on'
+															 AND ".$wmovhos."_000016.ingres LIKE '%%%'
+															$filtro_responsable 
+															 AND concat( ".$wmovhos."_000018.Ubifad, ' ', ".$wmovhos."_000018.Ubihad ) between '$fecha_inicial' and  '$fecha_actual'";
+														
+                                    
+                        
+                }
+                
+               $query = "SELECT * FROM (
+									SELECT 
+										'Urg' as habcod,
+										".$wmovhos."_000018.ubihis AS 'habhis',
+										".$wmovhos."_000018.ubiing AS 'habing',
+										root_000036.pacno1,
+										root_000036.pacno2,
+										root_000036.pacap1,
+										root_000036.pacap2,
+										root_000036.pacnac,
+										root_000036.pactid,
+										root_000036.pacced,
+										".$wmovhos."_000016.Ingnre AS ent_responsable,
+										".$wmovhos."_000018.ubiptr,
+										".$wmovhos."_000018.ubialp,
+										".$wmovhos."_000016.ingres,
+										".$wmovhos."_000018.ubiald,
+										".$wmovhos."_000018.ubifad,
+										".$wmovhos."_000018.ubihad,
+										'' AS AltaDef,
+										".$wmovhos."_000018.ubisac
+										
+									FROM root_000037 
+							  INNER JOIN ".$wmovhos."_000018 
+								      ON ".$wmovhos."_000018.ubihis = root_000037.orihis 
+									 AND ".$wmovhos."_000018.ubiing = root_000037.oriing
+							  INNER JOIN ".$wmovhos."_000016 
+									  ON ".$wmovhos."_000018.ubihis = ".$wmovhos."_000016.inghis 
+									 AND ".$wmovhos."_000018.ubiing = ".$wmovhos."_000016.inging
+							  INNER JOIN ".$wmovhos."_000011 
+									  ON ".$wmovhos."_000011.ccocod = ".$wmovhos."_000018.ubisac
+							  INNER JOIN root_000036 ON root_000037.oriced = root_000036.pacced 
+									 AND root_000037.oritid = root_000036.pactid
+							  INNER JOIN ".$whce."_000022 
+									  ON ".$whce."_000022.mtrhis = ".$wmovhos."_000018.ubihis 
+									 AND ".$whce."_000022.mtring = ".$wmovhos."_000018.ubiing
+								   WHERE root_000037.oriori = '".$wemp_pmla."'
+									 AND ".$wmovhos."_000018.ubiald = 'off'
+									 AND ".$wmovhos."_000018.ubisac = '".trim($wcco1[0])."'
+									 AND ".$wmovhos."_000011.ccoest = 'on'
+									 AND ".$wmovhos."_000016.ingres LIKE '%%%'
 									$filtro_responsable 
 									$filtro_zonas
-									$pacientes_urgencias_24horas
-									) as t ";	
+									$pacientes_urgencias_24horas) AS t";     
 					
 					break;	
 					
