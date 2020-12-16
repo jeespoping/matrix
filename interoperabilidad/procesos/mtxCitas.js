@@ -246,12 +246,12 @@
 					$( slModalidad ).val( datos.defaults.modalidad );
 					$( slModalidad ).change();
 					
-					//Deshabilitito todas las opciones menos la que tenga por defecto
-					$( "option", slModalidad )
-						.not( $("option:selected", slModalidad ) )
-						.attr({disabled:true})
-						.prop({disabled:true})
-						.css({display:"none"});
+					// //Deshabilitito todas las opciones menos la que tenga por defecto
+					// $( "option", slModalidad )
+						// .not( $("option:selected", slModalidad ) )
+						// .attr({disabled:true})
+						// .prop({disabled:true})
+						// .css({display:"none"});
 				}	
 				
 				if( datos.defaults.sala ){

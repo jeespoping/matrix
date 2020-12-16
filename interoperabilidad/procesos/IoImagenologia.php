@@ -1753,7 +1753,7 @@ function agregarMovimiento( $conex, $wemp_pmla, $wmvohos, $datos = [] ){
 	return $val;
 }
 
-function consultarMaestros( $conex, $wemp_pmla, $sede ){
+function consultarMaestros( $conex, $wemp_pmla, $sede, $modalidadesPorCup ){
 	
 	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
 	
@@ -1780,6 +1780,11 @@ function consultarMaestros( $conex, $wemp_pmla, $sede ){
 				];
 	}
 	
+	$filtroModalidades = "";
+	if( count( $modalidadesPorCup ) > 0 ){
+		$filtroModalidades = "AND Modcod IN('".implode( "','", $modalidadesPorCup )."')";
+	}
+	
 	//Consultando modalidades y salas
 	$sql = "SELECT Modcod, Moddes, Salcod, Saldes
 			  FROM ".$wmovhos."_000262 a, ".$wmovhos."_000263 b
@@ -1787,6 +1792,7 @@ function consultarMaestros( $conex, $wemp_pmla, $sede ){
 			   AND b.Salmod = a.Modcod
 			   AND a.Modest = 'on'
 			   AND b.Salest = 'on'
+			   ".$filtroModalidades."
 			";
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -2469,13 +2475,20 @@ if( $_GET ){
 				$cup 		= $procedimientosCargados[0]['codigo'];
 				
 				//Modalidad por defecto
-				$modDefecto = consultarModalidadPorCup( $conex, $wmovhos, $cup );
+				// $modDefecto = consultarModalidadPorCup( $conex, $wmovhos, $cup );
+				$modDefecto = "";
 				
 				//Consulto la sede
 				$sede  = consultarSedePorCcoYCup( $conex, $wmovhos, $cco_sede, $cup );
 				
+				$modalidadesCup	= consultarModalidadesPorCup( $conex, $wmovhos, $cup );
+				
+				if( count( $modalidadesCup ) > 0 )
+					$modDefecto = $modalidadesCup[0];
+				
 				//Consulto todos los maestros respectivos para la sede y los cuales se mostraran en la modal
-				$result = consultarMaestros( $conex, $wemp_pmla, $sede['codigo'] );
+				$result = consultarMaestros( $conex, $wemp_pmla, $sede['codigo'], $modalidadesCup );
+				
 				$result['paciente'] = $paciente;
 				
 				//Solo se muestra la modal si se encuentra una sede para el cco que carga y el cup cargado
@@ -2510,7 +2523,6 @@ if( $_GET ){
 				
 				if( $datosCita )
 					$result['datosCita'] = $datosCita;
-				
 				echo json_encode($result);
 			break;
 			
