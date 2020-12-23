@@ -1,4 +1,4 @@
-ï»¿<html>
+<html>
 <head>
   <title>Reporte de Articulos Aplicados X Paciente</title>
 </head>
@@ -55,6 +55,9 @@ include_once("conex.php");
 // ==========================================================================================================================================
 // M O D I F I C A C I O N E S 	 
 // ==========================================================================================================================================
+// Diciembre 23 de 2020: Edwin MG
+// Se hacen modificaciones varias para servicio domiciliario
+// ===========================================================================================================================================
 // Julio 12 de 2018: Juan Felipe Balcero
 // Se agrega la opción de generar la hoja filtrando por el tipo de medicamento requerido, ya sean todos, sólo quimioterapia, nutricion parenteral, 
 // no esteril o dosis adaptada.
@@ -225,8 +228,11 @@ else
 		//if(isset($wcco0) and $wcco0!="todos")
 		{
 			$wcco = explode("-",$wcco0);
+			
+			$tablaHabitaciones 	= consultarTablaHabitaciones( $conex, $wbasedato, $wcco[0] );
+			
 			$q ="SELECT A.Habcod,A.Habhis,A.Habing,Pacno1,Pacno2,Pacap1,Pacap2
-				   FROM	".$wbasedato."_000020 A,".$wbasedato."_000018 B, root_000037 C, root_000036 D 
+				   FROM	".$tablaHabitaciones." A,".$wbasedato."_000018 B, root_000037 C, root_000036 D 
 				  WHERE A.Habest = 'on'
 				    AND A.Habhis = B.Ubihis 
 					AND A.Habing = B.Ubiing
