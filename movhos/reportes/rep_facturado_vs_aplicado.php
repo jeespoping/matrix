@@ -37,7 +37,7 @@ include_once("conex.php");
 // usuarios          : Tabla de Usuarios con su codigo y descripcion.                                                                        |
 // ===========================================================================================================================================
 // Modificaciones:
-// Diciembre 23 de 2020: (Edwin MG)	 	Se hacen modificaciones varias para que sea funcional con Servicio Domiciliario
+// Diciembre 24 de 2020: (Edwin MG)	 	Se hacen modificaciones varias para que sea funcional con Servicio Domiciliario
 // Mayo      20 de 2014: (Camilo Zapata) Se agregaron union con consultas sobre la tabla de respaldo de la de detalles de cargos(000003) porq
 //										 la estaban consultando y no salian los registros anteriores a la fecha de realización del respaldo
 // Diciembre 11 de 2013: (Jonatan Lopez) Se agrega el parametro SQL ALL a la consulta de los detalles de aplicado, devuelto y descarte, ademas

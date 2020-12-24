@@ -55,8 +55,9 @@ include_once("conex.php");
 // ==========================================================================================================================================
 // M O D I F I C A C I O N E S 	 
 // ==========================================================================================================================================
-// Diciembre 23 de 2020: Edwin MG
-// Se hacen modificaciones varias para servicio domiciliario
+// Diciembre 24 de 2020: Edwin MG
+// Se hacen modificaciones varias para servicio domiciliario. Se mejora el flujo del programa no funcionaba correctamente.
+// Antes si se sleccionaba un centro de costos y luego otro cco traía un paciente
 // ===========================================================================================================================================
 // Julio 12 de 2018: Juan Felipe Balcero
 // Se agrega la opción de generar la hoja filtrando por el tipo de medicamento requerido, ya sean todos, sólo quimioterapia, nutricion parenteral, 

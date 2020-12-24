@@ -23,7 +23,9 @@ include_once("conex.php");
 	*				CONEX, FREE => OK				 *
 	*************************************************
 	*Modificaciones
-	*Marzo 14 del 2019 Arleyda I.C. Migración realizada */
+	*Diciembre 24 del 2020 Edwin MG. Se hacen cambios varios para servicio domiciliario y ya se muestra las aplicaciones de las rondas de las 0 horas, antes no los mostraba
+	*Marzo 14 del 2019 Arleyda I.C. Migración realizada 
+	*/
 	
 session_start();
 if(!isset($_SESSION['user']))
