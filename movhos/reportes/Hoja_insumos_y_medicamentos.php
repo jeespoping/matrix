@@ -1,4 +1,4 @@
-﻿<head>
+<head>
   <title>REPORTE ADMINISTRACION DE INSUMOS Y MEDICAMENTOS</title>
 </head>
 <body BGCOLOR="">
@@ -95,20 +95,29 @@ else
     
     
     echo "<form action='Hoja_insumos_y_medicamentos.php' method=post>";
+	
+	echo "<INPUT type='hidden' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";
 
     if (!isset($whis) or !isset($wing))
        {
-	    encabezado("REPORTE ADMINISTRACION DE INSUMOS Y MEDICAMENTOS (HOJA DE MEDICAMENTOS E INSUMOS)", $wactualiz, 'clinica');    
+	    encabezado("REPORTE ADMINISTRACION DE INSUMOS Y MEDICAMENTOS (HOJA DE MEDICAMENTOS E INSUMOS)", $wactualiz, 'clinica');
+		
+		$filtroSD = " != 'on' ";
+		if( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ){
+			$filtroSD = " = 'on' ";
+		}
 	       
 	    echo "<center><table>";
           
         $q = " SELECT ubihac, ubihis, ubiing, pacno1,pacno2, pacap1, pacap2, ubifad, root_000036.fecha_data "
-	        ."   FROM ".$wbasedato."_000018, root_000037, root_000036 "
+	        ."   FROM ".$wbasedato."_000018, root_000037, root_000036, ".$wbasedato."_000011 "
 	        ."  WHERE ubihis  = orihis "
 	        ."    AND ubiing  = oriing "
 	        ."    AND oriori  = '".$wemp_pmla."'"
 	        ."    AND oriced  = pacced "
 	        ."    AND ubiald != 'on' "              //Solo los que estan activos
+	        ."    AND ubisac  = ccocod "
+	        ."	  AND ccodom ".$filtroSD
 	        ."  ORDER BY 1, 4, 5 ";
 	    $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	    $wnr = mysql_num_rows($res);        
@@ -144,7 +153,7 @@ else
 			    echo "<td align=center>".$wing."</td>";
 			    echo "<td align=left  >".$wpac."</td>";
 			            
-			    echo "<td align=center><A href='Hoja_insumos_y_medicamentos.php?whis=".$whis."&wing=".$wing."&wemp_pmla=".$wemp_pmla."'>Imprimir</A></td>";
+			    echo "<td align=center><A href='Hoja_insumos_y_medicamentos.php?whis=".$whis."&wing=".$wing."&wemp_pmla=".$wemp_pmla.( ( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ) ? '&servicioDomiciliario=on' : '' )."'>Imprimir</A></td>";
 			    echo "</tr>";
 			           
 			    $whabant = $whab;
@@ -195,7 +204,7 @@ else
         $wnomser = $row[10];
 	    
         echo "<tr class=seccion1>";  
-		echo "<td colspan=10><b>HISTORIA N? : </b>".$whis." - ".$wing."</td>";
+		echo "<td colspan=10><b>HISTORIA : </b>".$whis." - ".$wing."</td>";
         echo "<td colspan=10><b>SERVICIO : </b>".$wnomser."</td>";
         echo "<td colspan=9 ><b>CAMA : </b>".$whab."</td>"; 
         echo "</tr>";  
@@ -246,7 +255,7 @@ else
 		  
 		    while ($wart==$row[0] and $wfec==$row[1] and $wdesc==$row[4])
 		        {
-			     $wronda=$row[2];   
+			     $wronda= (integer) $row[2];   
 			       
 			     if ($row[3]!=0 and trim($row[3])!="")  //Si la cantidad es diferente a cero
 			        {    
@@ -311,6 +320,7 @@ else
 		          ."  WHERE aplhis     = '".$whis."'"
 		          ."    AND apling     = '".$wing."'"
 		          ."    AND fecha_data = '".$Afechas[$i]."'"
+		          ."    AND aplest = 'on'"
 		          ."  GROUP BY apldes ";        //Se agrupa por decripcion porque si se hace por codigo, falla el reporte para los medicamentos traidos por los pacientes porque estos tienen el mismo codigo pero diferente descripcion
 		          //." HAVING sum(aplcan) <> 0 ";
 		      $res3 = mysql_query($q,$conex);
@@ -358,7 +368,7 @@ else
 	   
 	   echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	   
-	   echo "<font size=3><A href='Hoja_insumos_y_medicamentos.php?wemp_pmla=".$wemp_pmla."'> Retornar</A></font>";
+	   echo "<font size=3><A href='Hoja_insumos_y_medicamentos.php?wemp_pmla=".$wemp_pmla.( ( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ) ? '&servicioDomiciliario=on' : '' )."'> Retornar</A></font>";
 	   
 	   echo "<br><br>";
 	   echo "<center><table></center>"; 
