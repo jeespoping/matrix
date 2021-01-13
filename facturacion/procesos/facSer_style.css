@@ -1,0 +1,80 @@
+html body
+{
+    width: 90%;
+    margin: 0 auto 0 auto;
+}
+
+.divGeneral
+{
+    width: 1210px;
+    margin: 20px auto 0 auto;
+}
+
+.divGeneral div
+{
+    width: 100%;
+    margin: 0 auto 0 auto;
+}
+
+.divTitulo
+{
+    margin-top: 50px;
+}
+
+.divTitulo div
+{
+    margin: 0 auto 0 auto;
+}
+
+.divTitulo div span label
+{
+    font-size: large;
+    font-weight: normal;
+}
+
+.divContHome
+{
+    height: 450px;
+}
+
+.inpConcepto
+{
+    border-top: none;
+    font-size: medium;
+    margin-top: 3px;
+    text-align: center;
+    font-weight: bold;
+    width: 130px;
+}
+
+.inpTotales
+{
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    font-size: medium;
+    text-align: center;
+    font-weight: bold;
+    width: 150px;
+    border-bottom-color: black;
+}
+
+.inpSaved
+{
+    font-size: initial;
+    color: black;
+    border-right: none;
+    border-left: none;
+    border-bottom: inset;
+}
+
+.navigation
+{
+    float: left;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid #428BCA;
+    border-top: 1px solid #428BCA;
+}
