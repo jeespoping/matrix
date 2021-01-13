@@ -1,4 +1,4 @@
-ï»¿<html>
+<html>
 <head>
   <title>Reporte de Articulos Aplicados X Paciente</title>
 </head>
@@ -55,6 +55,10 @@ include_once("conex.php");
 // ==========================================================================================================================================
 // M O D I F I C A C I O N E S 	 
 // ==========================================================================================================================================
+// Diciembre 24 de 2020: Edwin MG
+// Se hacen modificaciones varias para servicio domiciliario. Se mejora el flujo del programa no funcionaba correctamente.
+// Antes si se sleccionaba un centro de costos y luego otro cco traía un paciente
+// ===========================================================================================================================================
 // Julio 12 de 2018: Juan Felipe Balcero
 // Se agrega la opción de generar la hoja filtrando por el tipo de medicamento requerido, ya sean todos, sólo quimioterapia, nutricion parenteral, 
 // no esteril o dosis adaptada.
@@ -205,19 +209,39 @@ else
 		echo "<form name='rep_artaplixpac4' action='' method=post>";
 		//Selecionamos los centros de costos hospitalarios
 		//*********************llamado a las funciones que listan los centros de costos y la que dibuja el select************************
-		$cco="Ccohos";
-		$sub="on";
-		$tod="";
-		//$cco=" ";
-		$ipod="off";
-		$centrosCostos = consultaCentrosCostos($cco);
 		echo "<table align='center' border=0 >";
+		
+		if( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ){
+			$cco="ccodom";	//Febrero 02 de 2016:
+			$sub="on";
+			$tod="";
+			$ipod="off";
+
+			//$cco=" ";
+			$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccodom = 'on'", "otros" );
+		}
+		else{
+			$cco="Ccohos";
+			$sub="on";
+			$tod="";
+			//$cco=" ";
+			$ipod="off";
+			// $centrosCostos = consultaCentrosCostos($cco);
+			$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccohos = 'on' AND ccodom != 'on'", "otros" );
+		}
+		
 		$dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod, "wcco0");
+		
+		
 		echo "<input type='hidden' name='wemp' value='".$wemp."'>";			
 		echo $dib; 
 		echo "</table>";
+		
+		if( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ){
+			echo "<input type='hidden' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";			
+		}
 					
-					
+		echo "</form>";			
 	//********************************fin llamado a funciones en comun.php				
 		
 		//buscamos las historias que se encuentran activos en cama en la tabla de movhos_000020	
@@ -225,8 +249,11 @@ else
 		//if(isset($wcco0) and $wcco0!="todos")
 		{
 			$wcco = explode("-",$wcco0);
+			
+			$tablaHabitaciones 	= consultarTablaHabitaciones( $conex, $wbasedato, $wcco[0] );
+			
 			$q ="SELECT A.Habcod,A.Habhis,A.Habing,Pacno1,Pacno2,Pacap1,Pacap2
-				   FROM	".$wbasedato."_000020 A,".$wbasedato."_000018 B, root_000037 C, root_000036 D 
+				   FROM	".$tablaHabitaciones." A,".$wbasedato."_000018 B, root_000037 C, root_000036 D 
 				  WHERE A.Habest = 'on'
 				    AND A.Habhis = B.Ubihis 
 					AND A.Habing = B.Ubiing
@@ -261,7 +288,6 @@ else
 						$wclass="fila2";
 					
 					$row = mysql_fetch_array($res);
-					echo "<form name='rep_artaplixpac2' action='rep_artaplixpac.php' method=post>";
 					echo "<tr>";
 					echo "<td class=".$wclass." align=center>".$row["Habcod"]."</td>";
 					echo "<td class=".$wclass." align=center>".$row["Habhis"]."</td>";
@@ -271,23 +297,31 @@ else
 					$wremplazo = "%20"; 
 					$wnombres2 = str_replace($wespacio,$wremplazo,$wnombres);	
 					echo "<td class=".$wclass." align=left>".$wnombres." </td>";
-					echo "<td class=".$wclass." align=center><select name='wtipo'>";
+					echo "<td align=center class=".$wclass.">"; 
+					echo "<form name='rep_artaplixpac2' action='rep_artaplixpac.php' method=post>";
+					
+					if( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ){
+						echo "<input type='hidden' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";			
+					}
+					
+					echo "<select name='wtipo'>";
 					echo "<option value='%-Todos'>Todos</option>";
 					echo "<option value='Q-Citostáticos y Coadyuvantes'>Citostáticos y Coadyuvantes</option>";
 					echo "<option value='DA-Dosis Adaptada'>Dosis Adaptada</option>";
 					echo "<option value='NU-Nutricion Parenteral'>Nutrición parenteral</option>";
 					echo "<option value='NE-No Esteril'>No esteril</option>";
 					echo "<option value='OT-Generales'>Generales</option>";
-					echo "</select></td>";
+					echo "</select>";
 					echo "<input type='hidden' name='wemp' value='".$wemp."'>";
                     echo "<input type='hidden' name='whis' value='".$row["Habhis"]."'>";
                     echo "<input type='hidden' name='wing' value='".$row["Habing"]."'>";
 					echo "<input type='hidden' name='whab' value='".$row["Habcod"]."'>";
 					echo "<input type='hidden' name='wnombres' value='".$wnombres."'>";
 					echo "<input type='hidden' name='wcco0' value='".$wcco[0]."'>";
-					echo "<td align=center class=".$wclass."><input type='submit' value='Ver'></td>";
-					echo "</tr>";
+					echo "<input type='submit' value='Ver'>"; 
 					echo "</form>";
+					echo "</td>";
+					echo "</tr>";
 					
 				}
 				echo "</table>";	
@@ -307,13 +341,21 @@ else
 			$wvalor = $whis2;
 		else 
 			$wvalor = "";
-		echo "</form>";
+		
 		echo "<form name='rep_artaplixpac' action='rep_artaplixpac.php' method=post>";
+		
+		if( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ){
+			echo "<input type='hidden' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";			
+		}
+		
 		echo "<td><b>Historia</b><br><center><INPUT TYPE='text' NAME='whis2' ID='whis2' value='".$wvalor."' SIZE=10></td></tr>";
 		echo "<input type='hidden' name='wemp' value='".$wemp."'>";
 		echo "<input type='hidden' name='wcco0' value='".$wcco0."'>";
 		echo "</table>";
 		echo "<input type='HIDDEN' name='wingreso' id='wingreso' value='1'>";
+		echo "<br/>";		
+		echo "<center><input type='submit' value='Generar' onclick='valida_campo()'></center>";	
+		echo "</form>";   
 		
 		//preguntamos si se inserto la historia para contultar todos los ingresos  
 		if( isset($whis2) and $whis2!="" )
@@ -352,20 +394,27 @@ else
 					echo "<td class=".$wclass." align=center> ".$row["Ubihis"]." </td> ";
 					echo "<td class=".$wclass." align=center> ".$row["Ubiing"]." </td> ";
 					echo "<td class=".$wclass." align=left> " 	.$row["Pacno1"]." ".$row["Pacno2"]." ".$row["Pacap1"]." ".$row["Pacap2"]. " </td> ";
+					echo "<td class=".$wclass." align=center>";
 					echo "<form name='rep_artaplixpac3' action='rep_artaplixpac.php' method=post>";
-					echo "<td class=".$wclass." align=center><select name='wtipo'>";
+					
+					if( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ){
+						echo "<input type='hidden' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";			
+					}
+					
+					echo "<select name='wtipo'>";
 					echo "<option value='%-Todos'>Todos</option>";
 					echo "<option value='Q-Citostáticos y Coadyuvantes'>Citostáticos y Coadyuvantes</option>";
 					echo "<option value='DA-Dosis Adaptada'>Dosis Adaptada</option>";
 					echo "<option value='NU-Nutricion Parenteral'>Nutrición parenteral</option>";
 					echo "<option value='NE-No Esteril'>No esteril</option>";
 					echo "<option value='OT-Generales'>Generales</option>";
-					echo "</select></td>";
+					echo "</select>";
 					echo "<input type='hidden' name='wemp' value='".$wemp."'>";
                     echo "<input type='hidden' name='whis' value='".$row["Ubihis"]."'>";
                     echo "<input type='hidden' name='wing' value='".$row["Ubiing"]."'>";
-					echo "<td align=center class=".$wclass."><input type='submit' value='Ver'></td>";
+					echo "<input type='submit' value='Ver'>";
 					echo "</form>";
+					echo "</td>";
 					echo "</tr>";
 	
 				}
@@ -377,9 +426,6 @@ else
 				echo "<center class='textoMedio'>NO SE ENCONTRÓ HISTORIA</center>";
 			}		
 		}
-		echo "<br/>";		
-		echo "<center><input type='submit' value='Generar' onclick='valida_campo()'></center>";	
-		echo "</form>";   
     }
 	else if( isset($whis) and  isset($wing) and !isset($warticulo) )
 	{
@@ -483,6 +529,9 @@ else
 		echo "<b>INGRESO : </b>".$wing;
 		echo "</td></tr></table>";
 		echo "<form action='rep_artaplixpac.php' name='rep_artaplixpac' method=post>";
+		if( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ){
+			echo "<input type='hidden' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";			
+		}
 		echo "<table align=center><tr class=encabezadoTabla><td align=center>";
 		echo "<b>PACIENTE : </b>".$wnombres;
 		echo "</td>";
@@ -531,9 +580,9 @@ else
 				echo "<td class=".$wclass.">".$medicamento."</td>";
 				
 				if(isset($whab))
-					$path = "rep_artaplixpac.php?wemp=".$wemp."&whis=".$whis."&wing=".$wing."&warticulo=".$row["Codigo"]."&whab=".$whab."&wcco0=".$wcco0."&wtipo=".$wtipo;
+					$path = "rep_artaplixpac.php?wemp=".$wemp."&whis=".$whis."&wing=".$wing."&warticulo=".$row["Codigo"]."&whab=".$whab."&wcco0=".$wcco0."&wtipo=".$wtipo.( ( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ) ? '&servicioDomiciliario=on' : '' );
 				else
-					$path = "rep_artaplixpac.php?wemp=".$wemp."&whis=".$whis."&wing=".$wing."&warticulo=".$row["Codigo"]."&wtipo=".$wtipo;
+					$path = "rep_artaplixpac.php?wemp=".$wemp."&whis=".$whis."&wing=".$wing."&warticulo=".$row["Codigo"]."&wtipo=".$wtipo.( ( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ) ? '&servicioDomiciliario=on' : '' );
 				echo "<td class=".$wclass." align=center ><A href=".$path."><b>Ver</b></A> </td>";
 				echo "<tr/>";
 			}
@@ -544,9 +593,9 @@ else
 			echo "<tr><td align=center class=textoMedio colspan = '3'>NO HAY MEDICAMENTOS APLICADOS PARA ESTE PACIENTE</td></tr>";
 		}
 		if(isset($whab))
-			echo "<tr><td align=center colspan=9><A href='rep_artaplixpac.php?wemp=".$wemp."&wcco0=".$wcco0."' id='searchsubmit'> Retornar</A></td></tr>";
+			echo "<tr><td align=center colspan=9><A href='rep_artaplixpac.php?wemp=".$wemp."&wcco0=".$wcco0.( ( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ) ? '&servicioDomiciliario=on' : '' )."' id='searchsubmit'> Retornar</A></td></tr>";
 		else
-			echo "<tr><td align=center colspan=9><A href='rep_artaplixpac.php?wemp=".$wemp."&whis2=".$whis	."' id='searchsubmit'> Retornar</A></td></tr>";
+			echo "<tr><td align=center colspan=9><A href='rep_artaplixpac.php?wemp=".$wemp."&whis2=".$whis.( ( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ) ? '&servicioDomiciliario=on' : '' )	."' id='searchsubmit'> Retornar</A></td></tr>";
 		echo "</table>";
 	}
     else if( isset($whis) and isset($wing) and isset($warticulo) )
@@ -766,13 +815,13 @@ else
         echo "</tr>";
 	
 		if(isset($ret))
-			echo "<tr><td align=center colspan=9><A href='Hoja_medicamentos_auditores.php?wemp_pmla=".$wemp."&whis=".$whis."&wing=".$wing."&wfil=".$wfil ."&externointerno=".$externointerno."&wtipo=".$wtipo."' id='searchsubmit'> Retornar</A></font></td></tr>";
+			echo "<tr><td align=center colspan=9><A href='Hoja_medicamentos_auditores.php?wemp_pmla=".$wemp."&whis=".$whis."&wing=".$wing."&wfil=".$wfil ."&externointerno=".$externointerno."&wtipo=".$wtipo.( ( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ) ? '&servicioDomiciliario=on' : '' )."' id='searchsubmit'> Retornar</A></font></td></tr>";
         else
 		{
 			if(isset($whab))
-				echo "<tr><td align=center colspan=9><A href='rep_artaplixpac.php?wemp=".$wemp."&whis=".$whis."&wing=".$wing."&whab=".$whab."&wcco0=".$wcco0."&wfil=".$wfil ."&wtipo=".$wtipo."' id='searchsubmit'> Retornar </A></font></td></tr>";
+				echo "<tr><td align=center colspan=9><A href='rep_artaplixpac.php?wemp=".$wemp."&whis=".$whis."&wing=".$wing."&whab=".$whab."&wcco0=".$wcco0."&wfil=".$wfil ."&wtipo=".$wtipo.( ( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ) ? '&servicioDomiciliario=on' : '' )."' id='searchsubmit'> Retornar </A></font></td></tr>";
 			else
-				echo "<tr><td align=center colspan=9><A href='rep_artaplixpac.php?wemp=".$wemp."&whis=".$whis."&whis2=".$whis."&wing=".$wing."&wfil=".$wfil ."&wtipo=".$wtipo."' id='searchsubmit'> Retornar </A></font></td></tr>";			                         
+				echo "<tr><td align=center colspan=9><A href='rep_artaplixpac.php?wemp=".$wemp."&whis=".$whis."&whis2=".$whis."&wing=".$wing."&wfil=".$wfil ."&wtipo=".$wtipo.( ( isset( $servicioDomiciliario ) && $servicioDomiciliario == 'on' ) ? '&servicioDomiciliario=on' : '' )."' id='searchsubmit'> Retornar </A></font></td></tr>";			                         
 		}	 
     } // cierre del else donde empieza la impresión
         

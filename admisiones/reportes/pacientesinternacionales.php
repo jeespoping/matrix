@@ -116,7 +116,7 @@ include_once("conex.php");
 												Inner Join ".$wbasemovhos."_000044 G on F.Medesp = G.Espcod
 												Inner Join ".$wbasemovhos."_000011 H on H.Ccocod = D.Ingsei
 												Inner Join usuarios U on U.Codigo = D.Ingusu 
-												Inner Join root_000002 R on R.Codigo = A.Pacdeh
+												Left Join root_000002 R on R.Codigo = A.Pacdeh
 										WHERE ".$condicion . " 
 										GROUP BY D.Inghis,D.Ingnin,D.Ingsei,A.Pacdoc,D.Ingmei,D.Ingfei,D.Ingdig 
 										ORDER BY Nompac";
@@ -147,7 +147,7 @@ include_once("conex.php");
 												Inner Join ".$wbasemovhos."_000044 G on F.Medesp = G.Espcod
 												Inner Join ".$wbasemovhos."_000011 H on H.Ccocod = D.Ingsei
 												Inner Join usuarios U on U.Codigo = D.Ingusu 
-												Inner Join root_000002 R on R.Codigo = A.Pacdeh
+												Left Join root_000002 R on R.Codigo = A.Pacdeh
 										WHERE ".$condicion. " 
 										GROUP BY E.Egrhis,E.Egring,D.Ingsei,A.Pacdoc,E.Egrmei,D.Ingfei,D.Ingdig 
 										ORDER BY Nompac";   
@@ -236,7 +236,7 @@ include_once("conex.php");
 											  Inner Join ".$wbasemovhos."_000044 G on F.Medesp = G.Espcod
 											  Inner Join ".$wbasemovhos."_000011 H on H.Ccocod = D.Ingsei
 											  Inner Join usuarios U on U.Codigo = D.Ingusu 
-											  Inner Join root_000002 R on R.Codigo = A.Pacdeh
+											  Left  Join root_000002 R on R.Codigo = A.Pacdeh
 									  WHERE ".$condicion. " 
 									  GROUP BY D.Inghis,D.Ingnin,D.Ingsei,A.Pacdoc,D.Ingmei,D.Ingfei,D.Ingdig 
 									  ORDER BY Nompac";     
@@ -268,7 +268,7 @@ include_once("conex.php");
 												Inner Join ".$wbasemovhos."_000044 G on F.Medesp = G.Espcod
 												Inner Join ".$wbasemovhos."_000011 H on H.Ccocod = D.Ingsei
 												Inner Join usuarios U on U.Codigo = D.Ingusu 
-												Inner Join root_000002 R on R.Codigo = A.Pacdeh
+												Left Join root_000002 R on R.Codigo = A.Pacdeh
 										WHERE ".$condicion. " 
 										GROUP BY E.Egrhis,E.Egring,D.Ingsei,A.Pacdoc,E.Egrmei,D.Ingfei,D.Ingdig 
 										ORDER BY Nompac";
@@ -308,6 +308,7 @@ include_once("conex.php");
                 } // Fin switch
 
           } // Fin pacientes internacionales
+
 
           // * * * * * * * * * * * * *  CONSTRUCCION TABLA DETALLE CONSULTA  * * * * * * * * * * * * *
           
@@ -451,7 +452,7 @@ include_once("conex.php");
 									  Inner join ".$wbasedato."_000100 A on A.Pachis = D.Inghis
 									  Inner Join ".$wbasemovhos."_000011 H on H.Ccocod = D.Ingsei
 									  Inner Join usuarios U on U.Codigo = D.Ingusu 
-									  Inner Join root_000002 R on R.Codigo = A.Pacdeh
+									  Left Join root_000002 R on R.Codigo = A.Pacdeh
 							 WHERE ".$condicion."
 							 GROUP BY D.Inghis,D.Ingnin,D.Ingsei,A.Pacdoc,D.Ingmei,D.Ingfei,D.Ingdig 
 							 ORDER BY Nompac";	
@@ -727,6 +728,8 @@ include_once("conex.php");
 							  $Colum ++;
 							  $data .= '</tr>';
 
+
+
 							  $data_excel .= '<tr>
 										   <td >'.utf8_encode($Paisn).'</td>
 										   <td >'.utf8_encode($Paisr).'</td>
@@ -766,9 +769,12 @@ include_once("conex.php");
 									  $valtotal = $valtotal + odbc_result($resodbc,'carval');
 					}// fin while
 
+
             } // Fin while datos Matrix
 
           } // fin else
+
+          $conten =$data_excel;
 
           $data .= '<tr class=encabezadotabla><td colspan=28 align="left">TOTAL PACIENTES:  '.$cont1.'</td>
                     <td>'.number_format($valtotal).'</td><td colspan=4 align="left"></td></tr>';
@@ -785,6 +791,7 @@ include_once("conex.php");
               $respuesta['titulo2'] = 'N';
           }
 
+          //var_dump($respuesta);
           echo json_encode($respuesta);
           return;
       }

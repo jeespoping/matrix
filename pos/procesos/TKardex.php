@@ -10,6 +10,13 @@
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b>Tkardex.php Ver. 2015-08-15</b></font></tr></td></table>
 </center>
 <?php
+/*****************************************************************************
+ * Modificaciones:
+ *
+ * Diciembre 16 de 2020: Se agrega order by a la consulta
+ *****************************************************************************/
+
+
 include_once("conex.php");
 function comparacion($vec1,$vec2)
 {
@@ -142,6 +149,7 @@ else
 		$query .= "     and  Mencon = Mdecon ";
 		$query .= "     and  Mencon = Concod ";
 		$query .= " group by Mdeart, Conaca, Conaco, Conind, Mencco, Menccd ";
+		$query .= " order by Mencco, Mdeart ";	//Linea agregada el: Diciembre 16 de 2020
 		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		$tot=$num;

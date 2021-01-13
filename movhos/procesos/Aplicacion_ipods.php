@@ -279,6 +279,8 @@ include_once("conex.php");
 //=============================================================================================================================================\\
 //M O D I F I C A C I O N E S                                                                                                                  \\
 //=============================================================================================================================================\\
+// Enero 08 de 2021	Edwin MG:		- Se corrige mensaje de rondas anteriores pendientes para la aplicación de medicamentos.
+//=============================================================================================================================================\\
 // Diciembre 10 de 219	Edwin MG:	- Si es un cco de ayuda dx, no se valida el saldo en carro debido a que un cco de ayuda dx no tiene saldo  \\
 //									  en carro
 //=============================================================================================================================================\\
@@ -2905,7 +2907,7 @@ function validar_ipods($wcco)
 			echo " <script>
 				   alert ('$wmsj');
 
-				   window.location.href='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.( isset($consultaPorHistoria) ? '&consultaPorHistoria=on' : '' )."'.
+				   window.location.href='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.( isset($consultaPorHistoria) ? '&consultaPorHistoria=on' : '' )."'
 				   </script> ";
 
 		   }
