@@ -1,4 +1,11 @@
 <?php
+/****************************************************************************************
+ * Modificaciones:
+ *
+ * Enero 15 de 2021 		Edwin MG:	- Se valida que el usuario este logueado.
+ ****************************************************************************************/
+
+
 // á -> &aacute;
 // &eacute; -> &eacute;
 // í -> &iacute;
@@ -7,6 +14,9 @@
 // ñ -> &ntilde;
 
 //Configuraciones y conexciones :)
+	if(!isset($_SESSION['user']))
+		exit( "<b>Usuario no registrado" );
+
     $wactualiz = '2020-10-29';
     date_default_timezone_set("America/Bogota");
     // include('./config/db_connect.php');
