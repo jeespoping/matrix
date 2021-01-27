@@ -127,7 +127,7 @@ if($accion == 'saveTempo')
     $numRowsToHab = $numRows + 1;   //fila inmediatamente superior a NUMROWS
     ?>
     <script>
-    alert('NUM ROW TO HAB = '+<?php echo $numRowsToHab; ?>);
+    //alert('NUM ROW TO HAB = '+<?php echo $numRowsToHab; ?>);
         //HABILITAR PARA EDITAR LINEA INFERIOR
         fieldConcepto = opener.document.getElementById('1-'+<?php echo $numRowsToHab ?>);       fieldCcosto = opener.document.getElementById('2-'+<?php echo $numRowsToHab ?>);
         fieldValConce = opener.document.getElementById('3-'+<?php echo $numRowsToHab ?>);       fieldValDes = opener.document.getElementById('4-'+<?php echo $numRowsToHab ?>);
@@ -815,15 +815,108 @@ if($accion == 'verConcep')
         window.close();
         opener.document.getElementById('nitResp').focus();
     }
-    function copiarValor2(campo,valor,nombreCon)
+    function copiarValor2(campo,concepto,nombreCon)
     {
-        opener.document.getElementById(campo).value = valor;
-        opener.document.getElementById(campo).title = valor+'-'+nombreCon;
+        opener.document.getElementById(campo).value = concepto;
+        opener.document.getElementById(campo).title = concepto+'-'+nombreCon;
         cCostos = opener.document.getElementById('2-1').value;
-        //alert('NUM ROW DONDE VA A COPIAR = '+<?php echo $numRows ?>);
-        opener.document.getElementById('2-'+<?php echo $numRows ?>).value = cCostos;
-        //opener.document.getElementById('2-2').value = cCostos;
         opener.document.getElementById('detConcepto'+<?php echo $numRows ?>).value = nombreCon;
+        opener.document.getElementById('2-'+<?php echo $numRows ?>).value = cCostos;
+        detCcost = opener.document.getElementById('detCcosto1').value;
+        opener.document.getElementById('detCcosto'+<?php echo $numRows ?>).value = detCcost;
+        opener.document.getElementById('chkCcos'+<?php echo $numRows ?>).style.pointerEvents = 'auto'; //habilitar el boton busqueda de Ccostos
+        opener.document.getElementById('chkCcos'+<?php echo $numRows ?>).style.backgroundColor = '#5CB85C';
+
+         if(concepto == '2001' || concepto == '2021' || concepto == '2022' || concepto == '2025' || concepto == '2078' || concepto == '2079' || concepto == '4216' || concepto == '9819')
+         {
+                    var valIva = 19; concepIva = 'on';
+                    <?php
+                    include("facSer_js.js");
+                    ?>
+                    //OBTENER LOS VALORES, QUITAR LOS PUNTOS Y ASIGNAR VALOR 0 (CERO) SI ESTE VIENE EN NULL:
+                    concepto1 = opener.document.getElementById('1-1').value;
+                    if(concepto1 == '2001' || concepto1 == '2021' || concepto1 == '2022' || concepto1 == '2025' || concepto1 == '2078' || concepto1 == '2079' || concepto1 == '4216' || concepto1 == '9819' )
+                    {
+                        var totConcep1 = opener.document.getElementById('5-1').value;   totConcep1 = quita_comas2(totConcep1);  if(totConcep1 == 0){totConcep1 = 0}
+                    }
+                    else
+                    {
+                        totConcep1 = 0;
+                    }
+
+                    concepto2 = opener.document.getElementById('1-2').value;
+                    if(concepto2 == '2001' || concepto2 == '2021' || concepto2 == '2022' || concepto2 == '2025' || concepto2 == '2078' || concepto2 == '2079' || concepto2 == '4216' || concepto2 == '9819' )
+                    {
+                        var totConcep2 = opener.document.getElementById('5-2').value;   totConcep2 = quita_comas2(totConcep2);  if(totConcep2 == 0){totConcep2 = 0}
+                    }
+                    else
+                    {
+                        totConcep2 = 0;
+                    }
+
+                    concepto3 = opener.document.getElementById('1-3').value;
+                    if(concepto3 == '2001' || concepto3 == '2021' || concepto3 == '2022' || concepto3 == '2025' || concepto3 == '2078' || concepto3 == '2079' || concepto3 == '4216' || concepto3 == '9819' )
+                    {
+                        var totConcep3 = opener.document.getElementById('5-3').value;   totConcep3 = quita_comas2(totConcep3);  if(totConcep3 == 0){totConcep3 = 0}
+                    }
+                    else
+                    {
+                        totConcep3 = 0;
+                    }
+
+                    concepto4 = opener.document.getElementById('1-4').value;
+                    if(concepto4 == '2001' || concepto4 == '2021' || concepto4 == '2022' || concepto4 == '2025' || concepto4 == '2078' || concepto4 == '2079' || concepto4 == '4216' || concepto4 == '9819' )
+                    {
+                        var totConcep4 = opener.document.getElementById('5-4').value;   totConcep4 = quita_comas2(totConcep4);  if(totConcep4 == 0){totConcep4 = 0}
+                    }
+                    else
+                    {
+                        totConcep4 = 0;
+                    }
+
+                    concepto5 = opener.document.getElementById('1-5').value;
+                    if(concepto5 == '2001' || concepto5 == '2021' || concepto5 == '2022' || concepto5 == '2025' || concepto5 == '2078' || concepto5 == '2079' || concepto5 == '4216' || concepto5 == '9819' )
+                    {
+                        var totConcep5 = opener.document.getElementById('5-5').value;   totConcep5 = quita_comas2(totConcep5);  if(totConcep5 == 0){totConcep5 = 0}
+                    }
+                    else
+                    {
+                        totConcep5 = 0;
+                    }
+
+                    //SUMAR VALORES NETOS LINEA POR LINEA:
+                    var sumConceptos = parseInt(totConcep1) + parseInt(totConcep2) + parseInt(totConcep3) + parseInt(totConcep4) + parseInt(totConcep5);
+
+                    //OBTENER EL TOTAL NETOS + IVA:
+                    var totalConcMasIva = (parseInt(sumConceptos) * parseInt(valIva))/100;
+
+                    //REDONDEAR SI ES UN NUMERO DECIMAL:
+                    var totalTodo = totalConcMasIva.toFixed();
+
+                    //ASIGNAR EL VALOR DEL IVA AL CAMPO VALOR CONCEPTO SI ES EL CONCEPTO DE IVA:
+                    opener.document.getElementById(3+'-'+<?php echo $numRows ?>).value = totalTodo.toLocaleString();
+                }
+         else
+         {
+                    concepIva = 'off';
+                    <?php
+                    if($numRows > 1)
+                    {
+                        $rowProx = $numRows + 1;
+                        ?>
+                        opener.document.getElementById(3+'-'+<?php echo $numRows ?>).focus();
+                        opener.document.getElementById(2+'-'+<?php echo $numRows ?>).readOnly = true;
+                        <?php
+                    }
+                    else
+                    {
+                        ?>
+                        opener.document.getElementById(2+'-'+<?php echo $numRows ?>).focus();
+                        <?php
+                    }
+                    ?>
+                }
+
         window.close();
     }
     </script>
