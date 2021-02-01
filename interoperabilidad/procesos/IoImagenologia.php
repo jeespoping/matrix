@@ -35,6 +35,7 @@ define("OBR_NUMERO_ESTUDIO", 3 );
 define("OBR_ESTUDIO", 4 );
 define("OBR_ESTADO", 25 );
 define("OBR_PRIORIDAD", 5 );
+define("OBR_INIDCACION", 11 );
 define("OBR_COMENTARIO", 13 );
 define("PV1_SEDE", 10 );
 
@@ -45,6 +46,354 @@ define("OBX_URL_REPORTE", 5 );
 if( !isset( $wemp_pmla ) )
 	$wemp_pmla = "01";
 
+
+class medicoDTO {
+	var $tipoDocumento = "";
+	var $numeroDocumento = "";
+	var $nombre1 = "";
+	var $nombre2 = "";
+	var $apellido1 = "";
+	var $apellido2 = "";
+	var $telefono = "";
+	var $registroMedico = "";
+	var $interconsultante = "";
+	var $tratante = "";
+	var $codigoEspecialidad = "";
+	var $usuarioMatrix = "";
+	var $id = "";
+}
+
+function marcarEstudioComoEnviado( $conex, $wmovhos, $whce, $tipoOrden, $nroOrden, $item ){
+	
+	$val = false;
+	
+	//El campo detenv indica si debe enviar un mensaje hl7 cuando está activo
+	//por tal motivo se apaga
+	echo $sql = "UPDATE ".$wmovhos."_000159
+			   SET Detenv = 'off'
+			 WHERE Dettor = '".$tipoOrden."'
+			   AND Detnro = '".$nroOrden."'
+			   AND Detite = '".$item."'";
+	
+	$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	//El campo detenv indica si debe enviar un mensaje hl7 cuando está activo
+	//por tal motivo se apaga
+	$sql = "UPDATE ".$whce."_000028
+			   SET Detenv = 'off'
+			 WHERE Dettor = '".$tipoOrden."'
+			   AND Detnro = '".$nroOrden."'
+			   AND Detite = '".$item."'";
+	
+	$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $row = mysql_affected_rows($res) ){
+		$val = true;
+	}
+	
+	return $val;
+}
+
+
+/**
+ *	consultarModalidadPorCup	2
+ *	consultarSedePorCcoYCup		3	
+ *	consultarPacienteConCita	1	Se puede
+ */
+function consultarTablaOfertadoPorTipoOrden( $conex, $wmovhos, $tipoOrden ){
+	
+	$val = false;
+	
+	//Buscando los estado según el estandar HL7
+	$sql = "SELECT Valtoc
+			  FROM ".$wmovhos."_000267
+			 WHERE valtor = '".$tipoOrden."'
+			   AND valest = 'on'";
+	
+	$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $row = mysql_fetch_array($res) ){
+		$val = $row['Valtoc'];
+	}
+	
+	return $val;
+}
+
+function consultarTablaOferadosPorCco( $conex, $wmovhos, $cco ){
+	
+	$val = false;
+	
+	//Buscando los estado según el estandar HL7
+	$sql = "SELECT Sedtor
+			  FROM ".$wmovhos."_000264
+			 WHERE sedcco = '".$cco."'
+			   AND sedest = 'on'";
+	
+	$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $row = mysql_fetch_array($res) ){
+			
+		$tipoOrden = $row['Sedtor'];	//Esta es la tabla dónde se encuentra el médico remitente
+		
+		$val = consultarTablaOfertadoPorTipoOrden( $conex, $wmovhos, $tipoOrden );
+	}
+	
+	return $val;
+}
+
+function envarReporteMatrix( $conex ){
+	
+	$tipoOrden 	= "";
+	$nroOrden	= "";
+	
+	$wemp_pmla 	= $_POST['wemp_pmla'];
+	
+	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
+	$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+	$whce 	 = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce' );
+	
+	$historia 	= $_POST['historia'];
+	$ingreso 	= $_POST['ingreso'];
+	$idCita 	= $_POST['idCita'];
+	
+	$rows 		= consultarDatosPorId( $conex, $wmovhos, $idCita );
+	$paciente 	= informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
+	
+	$indicacion	= '';
+	
+	$sede 		= consultarSedePorCcoYCup( $conex, $wmovhos, $rows['Mvcsed'], $rows['Mvccup'] );
+	
+	$idMatrix = $datosCita['tipoOrden']."-".$datosCita['nroOrden'];
+	
+	$nroOrden	= $idCita;
+	if( !empty( $rows['Mvcci'] ) && $rows['Mvcci'] == 'on' ){
+		$item 		= "CC-".$idCita;
+		$tipoOrden 	= "CC";
+	}
+	else{
+		$item 		= "SC-".$idCita;
+		$tipoOrden 	= "SC";
+	}
+	
+	$datosCita = [
+			'idHiruko' 			=> $row['Mvcidh'],
+			'idAgenda' 			=> $row['Mvcida'],
+			'estadoAgenda' 		=> "AG",
+			'cco' 				=> $paciente['servicioActual'],
+			'tipoOrden' 		=> $tipoOrden,
+			'nroOrden' 			=> $nroOrden,
+			'sede' 				=> $sede,
+			'recepcionado'  	=> $rows['Mvcrec'],
+			'cups' 				=> [[
+										'cup' 			=> $rows['Mvccup'],
+										'modalidad'		=> $rows['Mvcmod'],
+										'sala'			=> $rows['Mvcsal'],
+										'prioridad'		=> $rows['Mvcpri'],
+										'item'			=> $item,
+										'orden'			=> '',
+										'justificacion'	=> '',
+										'urlReporte'	=> $rows['Mvcurp'],
+									]],
+		];
+	
+	
+	$mensaje 	= crearMensajesHL7ORMAgenda( $conex, $wemp_pmla, $paciente, $datosCita );
+	
+	$direccion 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'ipHL7HirukoEnvioReporte' );
+
+	$socket 	= stream_socket_client("tcp://$direccion", $errno, $errstr);
+
+	if( $socket ){
+		$val = fwrite($socket, utf8_encode($mensaje ) );
+		
+		fclose($socket);
+	}
+	
+	registrarMsgLogHl7( $conex, $wmovhos, $historia, $ingreso, $paciente['tipoDocumento'], $paciente['nroDocumento'], 'MATRIX-HIRUKO', $rows['Mvctor'], $rows['Mvcnor'], '', $mensaje );
+	
+	echo $mensaje;
+	
+}
+
+/************************************************************************
+ * Consulta las indicaciones que hay por cup 
+ *
+ * $conex		Tipo de orden
+ * $whce		Solucion hce
+ * $tipoOrden	Tipo de orden
+ * $cup			CUP al cuál se le busca las indicaciones por cup
+ ************************************************************************/
+function consultarIndicacionesPorCup( $conex, $whce, $tipoOrden, $cup ){
+	
+	$val = [];
+	
+	//Buscando los estado según el estandar HL7
+	$sql = "SELECT Tiptic
+			  FROM ".$whce."_000015
+			 WHERE codigo = '".$tipoOrden."'
+			   AND estado = 'on'";
+	
+	$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $row = mysql_fetch_array($res) ){
+			
+		$tablaIndicaciones = $row['Tiptic'];	//Esta es la tabla dónde se encuentra el médico remitente
+		
+		//Buscando los estado según el estandar HL7
+		$sql = "SELECT Indind
+				  FROM ".$tablaIndicaciones."
+				 WHERE indcup  = '".$cup."'
+				   AND Indind != ''
+				   AND indest  = 'on'";
+		
+		$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		while( $row = mysql_fetch_array($res) ){
+			$val[] = [
+					'descripcion'	=> utf8_encode( $row['Indind'] ),
+				];
+		}
+	}
+	
+	return $val;
+}
+
+/************************************************************************
+ * Consulta el medico remitente según lo ingrsado por el usuario ($parametro)
+ *
+ * $conex		Tipo de orden
+ * $whce		Solucion hce
+ * $tipoOrden	Tipo de orden
+ * $parametro	Número  de orden
+ ************************************************************************/
+function consultarMedicosRemitentes( $conex, $whce, $tipoOrden, $parametro ){
+	
+	$val = [];
+	
+	//Buscando los estado según el estandar HL7
+	$sql = "SELECT Tipsmr, Tippmr
+			  FROM ".$whce."_000015
+			 WHERE codigo = '".$tipoOrden."'
+			   AND Tiptmr = 'on'
+			   AND estado = 'on'";
+	
+	$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $row = mysql_fetch_array($res) ){
+			
+		$solucionMedicoRemitente = $row['Tipsmr'];	//Esta es la tabla dónde se encuentra el médico remitente
+		
+		$parametroMedicoTratante = $row['Tippmr'];				//Parametro del médico remitente
+		
+		//Buscando los estado según el estandar HL7
+		$sql = "SELECT Opccod, Opcdes, Opctdo, Opcndo, Opcno1, Opcno2, Opcap1, Opcap2
+				  FROM ".$solucionMedicoRemitente."_000004 a , ".$solucionMedicoRemitente."_000005 b
+				 WHERE a.tblcod = '".$parametroMedicoTratante."'
+				   AND a.tblest = 'on'
+				   AND b.opctbl = a.tblcod 
+				   AND b.opcest = 'on'
+				   AND ( b.opccod LIKE '%".$parametro."%'
+				    OR b.opcdes LIKE '%".$parametro."%' )";
+		
+		$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		while( $row = mysql_fetch_array($res) ){
+			$val[] = [
+					'codigo' 			=> utf8_encode( $row['Opccod'] ),
+					'descripcion' 		=> utf8_encode( $row['Opcdes'] ),
+					'tipoDocumento'		=> utf8_encode( $row['Opctdo'] ),
+					'numeroDocumento'	=> utf8_encode( $row['Opcndo'] ),
+					'nombreCompleto'	=> utf8_encode( trim( $row['Opcno1']." ".$row['Opcno2'] )." ".trim( $row['Opcap1']." ".$row['Opcap2'] ) ),
+					'nombresCompletos'	=> utf8_encode( trim( $row['Opcno1']." ".$row['Opcno2'] ) ),
+					'apellidosCompletos'=> utf8_encode( trim( $row['Opcap1']." ".$row['Opcap2'] ) ),
+					'nombre1' 			=> utf8_encode( $row['Opcno1'] ),
+					'nombre2' 			=> utf8_encode( $row['Opcno2'] ),
+					'apellido1'			=> utf8_encode( $row['Opcap1'] ),
+					'apellido2'			=> utf8_encode( $row['Opcap2'] ),
+					'registroMedico'	=> utf8_encode( $row['Opcrme'] ),
+					'label' 			=> utf8_encode( $row['Opcdes'] ),
+					'value' 			=> utf8_encode( $row['Opcdes'] ),
+				];
+		}
+	}
+	
+	return $val;
+}
+
+
+/************************************************************************
+ * Consulta el código matrix del médico que ordeno el estudio
+ *
+ * $conex		Tipo de orden
+ * $whce		Solucion hce
+ * $tipoOrden	Tipo de orden
+ * $nroOrden	Número  de orden
+ * $item		Item de orden
+ ************************************************************************/
+function consultarCodigoMedicoPorEstudio( $conex, $whce, $tipoOrden, $nroOrden, $item ){
+	
+	$val = [ 'medico' => '', 'justificacion' => '' ];
+	
+	//Buscando los estado según el estandar HL7
+	$sql = "SELECT Detusu, Detjus
+			  FROM ".$whce."_000028
+			 WHERE Dettor = '".$tipoOrden."'
+			   AND Detnro = '".$nroOrden."'
+			   AND Detite = '".$item."'";
+	
+	$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $row = mysql_fetch_array($res) ){
+		$val = [ 
+					'medico' 		=> $row['Detusu'], 
+					'justificacion' => $row['Detjus'],
+				];
+	}
+	
+	return $val;
+}
+
+/************************************************************************
+ * Indica si un estudio(CUP) tiene transcripción en matrix o no
+ *
+ * $conex		Tipo de orden
+ * $whce		Solucion hce
+ * $tor			Tipo de orden
+ * $cup			Código cup del estudio
+ ************************************************************************/
+function tieneTranscripcionMatrix( $conex, $whce, $tor, $cup ){
+	
+	$val = false;
+	
+	//Buscando los estado según el estandar HL7
+	$sql = "SELECT Tipstm
+			  FROM ".$whce."_000015
+			 WHERE codigo = '".$tor."'
+			   AND Tipttm = 'on'
+			   AND estado = 'on'";
+	
+	$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $row = mysql_fetch_array($res) ){
+		
+		$solucionTranscripcion = $row['Tipstm'];
+		
+		//Buscando los estado según el estandar HL7
+		$sql = "SELECT Enfcod
+				  FROM ".$solucionTranscripcion."_000001
+				 WHERE Enfcup = '".$cup."'
+				   AND Enfest = 'on'
+				   AND Enfttm = 'on'";
+		
+		$res = mysql_query($sql, $conex) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $row = mysql_fetch_array($res) ){
+			$val = true;
+		}
+	}
+	
+	return $val;
+}
 
 function consultarEmails( $conex, $whce, $tipoOrden ){
 	
@@ -349,6 +698,29 @@ function consultarModalidadPorCup( $conex, $wmovhos, $cup ){
 	return $val;
 }
 
+
+/********************************************************************************
+ * Consulta las modalidades por cup
+ ********************************************************************************/
+function consultarModalidadesPorCup( $conex, $wmovhos, $cup ){
+	
+	$val = [];
+
+	$sql = "SELECT *
+			  FROM ".$wmovhos."_000271 a
+			 WHERE a.Procup = '".$cup."'
+			   AND a.Proest = 'on'
+			";
+	
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	while( $rows = mysql_fetch_array($res) ){
+		$val[] = $rows['Promod'];
+	}
+	
+	return $val;
+}
+
 function consultarUltimosDatosCita( $conex, $wemp_pmla, $historia, $ingreso, $cco ){
 	
 	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
@@ -398,7 +770,7 @@ function consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $tipoOrden, $nroOrd
 		$c_estado 	= $rowOferta['Valeoc']; //tabla de cups ofertados
 		$campo  	= $rowOferta['Valcoc']; //tabla de cups ofertados
 		
-		$sql = "SELECT a.Dettor, a.Detnro, a.Detite, a.Detcod, c.Codigo, c.Nombre, b.Codcups, a.id, Detesi, Detlog, Detjus, Deteex, b.Codigo as Codlma
+		$sql = "SELECT a.Dettor, a.Detnro, a.Detite, a.Detcod, c.Codigo, c.Nombre, b.Codcups, a.id, Detesi, Detlog, Detjus, Deteex, b.Codigo as Codlma, Detusu
 				  FROM ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c
 				 WHERE a.Dettor = '".$tipoOrden."'
 				   AND a.Detnro = '".$nroOrden."'
@@ -408,7 +780,7 @@ function consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $tipoOrden, $nroOrd
 				   AND b.Estado = 'on'
 				   AND b.Codcups= c.Codigo
 				 UNION
-				SELECT a.Dettor, a.Detnro, a.Detite, a.Detcod, c.Codigo, c.Nombre, b.Codcups, a.id, Detesi, Detlog, Detjus, Deteex, b.Codigo as Codlma
+				SELECT a.Dettor, a.Detnro, a.Detite, a.Detcod, c.Codigo, c.Nombre, b.Codcups, a.id, Detesi, Detlog, Detjus, Deteex, b.Codigo as Codlma, Detusu
 				  FROM ".$whce."_000028 a, ".$whce."_000017 b, root_000012 c
 				 WHERE a.Dettor = '".$tipoOrden."'
 				   AND a.Detnro = '".$nroOrden."'
@@ -445,6 +817,7 @@ function consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $tipoOrden, $nroOrd
 						'estado'		=> $row[ 'Detesi' ] ,
 						'justificacion'	=> $row[ 'Detjus' ] ,
 						'estadoExterno'	=> $row[ 'Deteex' ] ,	//Estado en que se encuentra la cita hl7
+						'medico'		=> $row[ 'Detusu' ] ,	//Médico que ordena
 					];
 			}
 			else
@@ -667,6 +1040,7 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 		$estado 		= $HL7['AIS'][0][ AIS_ESTADO_ACTIVIDAD ];
 		
 		$comentario = '';
+		$indicacion = '';
 
 		//Siempre se recibe un solo OBR
 		foreach( $HL7['OBR'] as $kOBR => $OBR )
@@ -675,6 +1049,7 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 			$prioridad = $OBR[ OBR_PRIORIDAD ];
 			
 			$datosOrden  = explode( "-", $OBR[ OBR_NUMERO_ESTUDIO ] );
+			$nroOrden = $datosOrden[1];
 			
 			if( $esOrden ){
 				$idMatrix = consultarIdPorOrden( $conex, $wmovhos, $datosOrden[0], $datosOrden[1], $datosOrden[2] );
@@ -684,6 +1059,8 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 			}
 			
 			$comentario = utf8_decode( $OBR[ OBR_COMENTARIO ] );
+			
+			$indicacion = utf8_decode( $OBR[ OBR_INIDCACION ] );
 			
 			//Siempre se recibe un solo OBR
 			break;
@@ -708,6 +1085,12 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 			if( !$idMatrix ) $idMatrix = "";
 		}
 		
+		$tieneTranscripcionMatrix = tieneTranscripcionMatrix( $conex, $whce, $sede['tipoOrden'], $cup );
+		
+		if( $tieneTranscripcionMatrix ){
+			$urlReporte = '';
+		}
+		
 		$datosCita['idMatrix'] 			= $idMatrix;
 		$datosCita['idHiruko'] 			= $idHiruko;
 		$datosCita['idAgenda'] 			= $idAgenda;
@@ -717,9 +1100,19 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 		$datosCita['conCita'] 			= empty( $idAgenda ) ? 'off' : 'on';
 		$datosCita['fechaCita']			= $fechaCita;
 		$datosCita['horaCita']			= $horaCita;
-		$datosCita['cup']				= $cup;
 		$datosCita['url']				= $url;
 		$datosCita['urlReporte']		= $urlReporte;
+		
+		if( !empty( $indicacion ) ){
+			$datosCita['indicaciones'] = $indicacion;
+		}
+		
+		//Si no es una orden, se puede agregar cup
+		//Si es una orden médica el cup ya existe y no se puede modificar
+		// if( empty( $tipoOrden ) || empty( $nroOrden ) || empty( $item ) ){
+		if( empty( $nroOrden ) ){
+			$datosCita['cup'] = $cup;
+		}
 		
 		if( empty($idMatrix) ){
 			
@@ -1263,6 +1656,12 @@ function actualizarMovimiento( $conex, $wmvohos, $id, $datos = [] ){
 	if( !empty( $datos['estadoCita'] ) || $datos['estadoCita'] === '0' )
 		$set[] = "mvcesc = '".$datos['estadoCita']."'";
 	
+	if( !empty( $datos['indicaciones'] ) )
+		$set[] = "mvcind = '".$datos['indicaciones']."'";
+	
+	if( !empty( $datos['medicoRemitente'] ) )
+		$set[] = "mvcmre = '".$datos['medicoRemitente']."'";
+	
 	//Se hace forma el set( campo = 'valor1', campo2 = 'valor2', ... )
 	//Para ello se hace un implode
 	if( count($set ) > 0 ){
@@ -1327,12 +1726,14 @@ function agregarMovimiento( $conex, $wemp_pmla, $wmvohos, $datos = [] ){
 	$mvcere 	= empty( $datos['estadoResultado'] ) ? '' : $datos['estadoResultado'];
 	$mvcurl 	= empty( $datos['url'] ) ? '' : $datos['url'];
 	$mvcurp 	= empty( $datos['urlReporte'] ) ? '' : $datos['urlReporte'];
+	$mvcind 	= empty( $datos['indicaciones'] ) ? '' : $datos['indicaciones'];
+	$mvcmre 	= empty( $datos['medicoRemitente'] ) ? '' : $datos['medicoRemitente'];
 	$seguridad	= 'C-'.$wmvohos;
 	
 	//Consultando modalidades y salas
 	$sql = "INSERT INTO 
-				".$wmvohos."_000268( Medico, Fecha_data, Hora_data, Mvcidm, Mvcidh, Mvcida, Mvctdo, Mvcdoc, Mvchis, Mvcing, Mvccco, Mvcfec, Mvchor, Mvcesc, Mvcmod, Mvcsal, Mvcpri, Mvcest, Mvcrec, Mvccci, Mvccup, Mvcsed, Mvctor, Mvcnro, Mvcite, Mvcere, Mvcurl, Mvcurp, Seguridad )
-							 VALUES( '".$medico."','".$fecha_data."','".$hora_data."','".$mvcidm."','".$mvcidh."','".$mvcida."','".$mvctdo."','".$mvcdoc."','".$mvchis."','".$mvcing."','".$mvccco."','".$mvcfec."','".$mvchor."','".$mvcesc."','".$mvcmod."','".$mvcsal."','".$mvcpri."','".$mvcest."','".$mvcrec."','".$mvccci."','".$mvccup."','".$mvcsed."','".$mvctor."','".$mvcnro."','".$mvcite."','".$mvcere."','".$mvcurl."','".$mvcurp."','".$seguridad."' )
+				".$wmvohos."_000268( Medico, Fecha_data, Hora_data, Mvcidm, Mvcidh, Mvcida, Mvctdo, Mvcdoc, Mvchis, Mvcing, Mvccco, Mvcfec, Mvchor, Mvcesc, Mvcmod, Mvcsal, Mvcpri, Mvcest, Mvcrec, Mvccci, Mvccup, Mvcsed, Mvctor, Mvcnro, Mvcite, Mvcere, Mvcurl, Mvcurp, Mvcind, Mvcmre, Seguridad )
+							 VALUES( '".$medico."','".$fecha_data."','".$hora_data."','".$mvcidm."','".$mvcidh."','".$mvcida."','".$mvctdo."','".$mvcdoc."','".$mvchis."','".$mvcing."','".$mvccco."','".$mvcfec."','".$mvchor."','".$mvcesc."','".$mvcmod."','".$mvcsal."','".$mvcpri."','".$mvcest."','".$mvcrec."','".$mvccci."','".$mvccup."','".$mvcsed."','".$mvctor."','".$mvcnro."','".$mvcite."','".$mvcere."','".$mvcurl."','".$mvcurp."','".$mvcind."','".$mvcmre."','".$seguridad."' )
 			";
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -1352,7 +1753,7 @@ function agregarMovimiento( $conex, $wemp_pmla, $wmvohos, $datos = [] ){
 	return $val;
 }
 
-function consultarMaestros( $conex, $wemp_pmla, $sede ){
+function consultarMaestros( $conex, $wemp_pmla, $sede, $modalidadesPorCup ){
 	
 	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
 	
@@ -1379,6 +1780,11 @@ function consultarMaestros( $conex, $wemp_pmla, $sede ){
 				];
 	}
 	
+	$filtroModalidades = "";
+	if( count( $modalidadesPorCup ) > 0 ){
+		$filtroModalidades = "AND Modcod IN('".implode( "','", $modalidadesPorCup )."')";
+	}
+	
 	//Consultando modalidades y salas
 	$sql = "SELECT Modcod, Moddes, Salcod, Saldes
 			  FROM ".$wmovhos."_000262 a, ".$wmovhos."_000263 b
@@ -1386,6 +1792,7 @@ function consultarMaestros( $conex, $wemp_pmla, $sede ){
 			   AND b.Salmod = a.Modcod
 			   AND a.Modest = 'on'
 			   AND b.Salest = 'on'
+			   ".$filtroModalidades."
 			";
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -1431,53 +1838,55 @@ function crearMensajesHL7ORMAgenda( $conex, $wemp_pmla, $paciente, $datosCita ){
 	$fechaCita 	= empty( $datosCita['fechaCita'] ) ? '': str_replace( "-", "", $datosCita['fechaCita'] );
 	$horaCita 	= empty( $datosCita['horaCita'] ) ? '':str_replace( ":", "", $datosCita['horaCita'] );
 	
+	$medicoNombres			= utf8_decode( trim( $datosCita['medico']->nombre1." ". $datosCita['medico']->nombre2 ) );
+	$medicoApellidos		= utf8_decode( trim( $datosCita['medico']->apellido1." ". $datosCita['medico']->apellido2 ) );
+	$medicoNroDocumento		= $datosCita['medico']->numeroDocumento;
+	$medicoTipoDocumento	= $datosCita['medico']->tipoDocumento;
+	
+	$indicacion				= !empty( $datosCita['indicacion'] ) ? $datosCita['indicacion'] : '';
+	
 	$procedimientosCargados = $datosCita['cups'];
 	
-	// $procedencia = consultarProcedencia( $conex, $wmovhos, $paciente['servicioActual'] );
-	// $sede 		 = consultarSede( $conex, $wmovhos, $paciente['servicioActual'] );
-	// $procedencia = $paciente['servicioActual'];
 	$procedencia = consultarCco( $conex, $wmovhos, $paciente['servicioActual'] );
 	$sede 		 = $datosCita['sede'];
 	
 	$estado = $datosCita['estadoAgenda']; //AG
 	
 	$mensaje = "";
+		
+	$idMatrix = $datosCita['tipoOrden']."-".$datosCita['nroOrden'];
 	
-	// if( !empty( $sala ) && !empty( $modalidad ) && !empty( $prioridad ) ){
+	$mensaje =	 "MSH|^~\\&|PMLA|MATRIX|IMEXHS|HIRUKO|".date("Y-m-d H:i:s")."||ORM^O01|".$idMatrix."^".$idHiruko."^".$idAgenda."|P|2.5||||AL"
+				."\nPID||".$paciente['tipoDocumento']."^".$paciente['nroDocumento']."|||".$paciente['nombre1']."^".$paciente['nombre2']."^".$paciente['apellido1']."^".$paciente['apellido2']."||".$paciente['fechaNacimiento']."|".$paciente['genero']."|||".$paciente['direccion']."^^".$paciente['codigomMunicipio']."^".$paciente['codigomDepartamento']."^^CO||".$paciente['celular']."^^^".$paciente['correoElectronico']."^^^".$paciente['telefono']."|"
+				."\nAIS|".$idMatrix."^".$idHiruko."^".$idAgenda."|||".$fechaCita.$horaCita."||||||".$estado."|"
+				."\nPV1||||||".$procedencia['descripcion']."^".$procedencia['codigo']."||".$medicoNombres."^".$medicoApellidos."^".$medicoNroDocumento."^".$medicoTipoDocumento."||".$sede['descripcion']."^".$sede['codigo']."||"
+				."\nIN1|||".$paciente['codigoResponsable']."|".$paciente['nombreResponsable']."|||||";
+				
+	if( count($procedimientosCargados) > 0 ){
 		
-		// if( !empty( $datosCita['conCita'] ) && $datosCita['conCita'] == 'on' )
-			// $idMatrix = "CC-".$idMatrix;
-		// else
-			// $idMatrix = "SC-".$idMatrix;
-		
-		$idMatrix = $datosCita['tipoOrden']."-".$datosCita['nroOrden'];
-		
-		$mensaje =	 "MSH|^~\\&|PMLA|MATRIX|IMEXHS|HIRUKO|".date("YmdHis")."||ORM^O01|".$idMatrix."^".$idHiruko."^".$idAgenda."|P|2.5||||AL"
-					."\nPID||".$paciente['tipoDocumento']."^".$paciente['nroDocumento']."|||".$paciente['nombre1']."^".$paciente['nombre2']."^".$paciente['apellido1']."^".$paciente['apellido2']."||".$paciente['fechaNacimiento']."|".$paciente['genero']."|||".$paciente['direccion']."^^".$paciente['codigomMunicipio']."^".$paciente['codigomDepartamento']."^^CO||".$paciente['celular']."^^^".$paciente['correoElectronico']."^^^".$paciente['telefono']."|"
-					."\nAIS|".$idMatrix."^".$idHiruko."^".$idAgenda."|||".$fechaCita.$horaCita."||||||".$estado."|"
-					."\nPV1||||||".$procedencia['descripcion']."^".$procedencia['codigo']."||||".$sede['descripcion']."^".$sede['codigo']."||"
-					."\nIN1|||".$paciente['codigoResponsable']."|".$paciente['nombreResponsable']."|||||";
-					
-		if( count($procedimientosCargados) > 0 ){
+		foreach( $procedimientosCargados as $proc ){
 			
-			foreach( $procedimientosCargados as $proc ){
-				
-				$infoCup = consultarProcedimiento( $conex, $wcliame, $proc['cup'] );
-				
-				$modalidad		= empty( $proc['modalidad'] ) ? '': $proc['modalidad'];
-				$prioridad		= empty( $proc['prioridad'] ) ? '': $proc['prioridad'];
-				$estudio		= empty( $proc['item'] ) ? '': $proc['item'];
-				$orden			= empty( $proc['orden'] ) ? '': $proc['orden'];
-				$sala			= empty( $proc['sala'] ) ? '': $proc['sala']; 
-				$justificacion	= empty( $proc['justificacion'] ) ? '': $proc['justificacion']; 
-				
-				$cup 			= $infoCup[0]['codigo'];
-				$descripcionCUP = $infoCup[0]['descripcion'];
-				
-				$mensaje .= "\nOBR|||".$estudio."|".$cup."^".$modalidad."^".$sala."^".$descripcionCUP."|".$prioridad."||||||||".$justificacion;
+			$infoCup = consultarProcedimiento( $conex, $wcliame, $proc['cup'] );
+			
+			$modalidad		= empty( $proc['modalidad'] ) ? '': $proc['modalidad'];
+			$prioridad		= empty( $proc['prioridad'] ) ? '': $proc['prioridad'];
+			$estudio		= empty( $proc['item'] ) ? '': $proc['item'];
+			$orden			= empty( $proc['orden'] ) ? '': $proc['orden'];
+			$sala			= empty( $proc['sala'] ) ? '': $proc['sala']; 
+			$justificacion	= empty( $proc['justificacion'] ) ? '': str_replace( "\n", " ", str_replace( "\r", " ", $proc['justificacion'] ) ); 
+			
+			$cup 			= $infoCup[0]['codigo'];
+			$descripcionCUP = $infoCup[0]['descripcion'].( empty( $justificacion ) ? '' : "(".$justificacion.")" );
+			
+			$urlReporte		= empty( $proc['urlReporte'] ) ? '': $proc['urlReporte']; 
+			
+			$mensaje .= "\nOBR|||".$estudio."|".$cup."^".$modalidad."^".$sala."^".$descripcionCUP."|".$prioridad."||||||".$indicacion."||".$justificacion;
+			
+			if( !empty( $urlReporte ) ){
+				$mensaje .= "\nOBX|||||".$urlReporte."||||||||";
 			}
 		}
-	// }
+	}
 
 	return $mensaje;
 }
@@ -1500,6 +1909,15 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita ){
 	$orden		= empty( $datosCita['tipoOrden'] ) ? '':  $datosCita['tipoOrden'];
 	
 	$procedimientosCargados = consultarProcedimiento( $conex, $wcliame, $datosCita['cup'] );
+	
+	$indicacion	= !empty( $datosCita['indicacion'] ) ? $datosCita['indicacion'] : '';
+	
+	
+	$medicoNombres			= utf8_decode( trim( $datosCita['medico']->nombre1." ". $datosCita['medico']->nombre2 ) );
+	$medicoApellidos		= utf8_decode( trim( $datosCita['medico']->apellido1." ". $datosCita['medico']->apellido2 ) );
+	$medicoNroDocumento		= $datosCita['medico']->numeroDocumento;
+	$medicoTipoDocumento	= $datosCita['medico']->tipoDocumento;
+	
 	
 	if( !empty( $orden ) && !empty( $datosCita['nroOrden'] ) && !empty( $datosCita['item'] ) )
 		$orden		= $orden."-".$datosCita['nroOrden']."-".$datosCita['item'];
@@ -1525,7 +1943,7 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita ){
 		$mensaje =	 "MSH|^~\\&|PMLA|MATRIX|IMEXHS|HIRUKO|".date("Y-m-d H:i:s")."||ORM^O01|".$idMatrix."^".$idHiruko."^".$idAgenda."|P|2.5||||AL"
 					."\nPID||".$paciente['tipoDocumento']."^".$paciente['nroDocumento']."|||".$paciente['nombre1']."^".$paciente['nombre2']."^".$paciente['apellido1']."^".$paciente['apellido2']."||".$paciente['fechaNacimiento']."|".$paciente['genero']."|||".$paciente['direccion']."^^".$paciente['codigomMunicipio']."^".$paciente['codigomDepartamento']."^^CO||".$paciente['celular']."^^^".$paciente['correoElectronico']."^^^".$paciente['telefono']."|"
 					."\nAIS|".$idMatrix."^".$idHiruko."^".$idAgenda."|||".$fechaCita.$horaCita."||||||".$estado."|"
-					."\nPV1||||||".$procedencia['descripcion']."^".$procedencia['codigo']."||||".$sede['descripcion']."^".$sede['codigo']."||"
+					."\nPV1||||||".$procedencia['descripcion']."^".$procedencia['codigo']."||".$medicoNombres."^".$medicoApellidos."^".$medicoNroDocumento."^".$medicoTipoDocumento."||".$sede['descripcion']."^".$sede['codigo']."||"
 					."\nIN1|||".$paciente['codigoResponsable']."|".$paciente['nombreResponsable']."|||||";
 					// ."\nOBR||||".$cup."^".$modalidad."^".$sala."^".$descripcionCUP."|".$prioridad."|";
 					
@@ -1535,8 +1953,9 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita ){
 				
 				$cup 			= $proc['codigo'];
 				$descripcionCUP = $proc['descripcion'];
+				$justificacion	= empty( $proc['justificacion'] ) ? '':  str_replace( "\n", " ", str_replace( "\r", " ", $proc['justificacion'] ) ); 
 				
-				$mensaje .= "\nOBR|||".$idMatrix."|".$cup."^".$modalidad."^".$sala."^".$descripcionCUP."|".$prioridad."|";
+				$mensaje .= "\nOBR|||".$idMatrix."|".$cup."^".$modalidad."^".$sala."^".$descripcionCUP."|".$prioridad."||||||".$indicacion."||".$justificacion;
 				
 				break;
 			}
@@ -1613,7 +2032,8 @@ if( $_POST ){
 				break;
 				
 			case 'ORU': 
-				procesarMsgORU( $conex, $wemp_pmla, $HL7 );
+				procesarMsgORM( $conex, $wemp_pmla, $HL7, $message );
+				// procesarMsgORU( $conex, $wemp_pmla, $HL7 );
 				$respuesta['message'] 	= 'Mensage procesado';
 				endRoutine( $respuesta, 200 );
 				break;
@@ -1631,10 +2051,15 @@ if( $_POST ){
 			
 			switch( $accion ){
 				
+				case 'enviarReporte':
+					envarReporteMatrix( $conex );
+				break;
+				
 				case 'crearMensaje': 
 				
 					$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
 					$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+					$whce 	 = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce' );
 					
 					$historia 	= $_POST['historia'];
 					$ingreso 	= $_POST['ingreso'];
@@ -1643,6 +2068,7 @@ if( $_POST ){
 					$prioridad 	= $_POST['prioridad'];
 					$idCita 	= $_POST['idCita'];
 					$cco_sede 	= $_POST['cco_sede'];
+					$indicacion	= $_POST['indicacion'] ? $_POST['indicacion'] : '';
 					
 					$paciente = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 					
@@ -1653,42 +2079,129 @@ if( $_POST ){
 					$sede = consultarSedePorCcoYCup( $conex, $wmovhos, $cco_sede, $cup );
 					
 					$datosCita = [
-							'tipoDocumento' => $paciente['tipoDocumento'],
-							'documento' 	=> $paciente['nroDocumento'],
-							'historia' 		=> $historia,
-							'ingreso' 		=> $ingreso,
-							'cco' 			=> $paciente['servicioActual'],
-							'modalidad' 	=> $modalidad,
-							'sala' 			=> $sala,
-							'prioridad' 	=> $prioridad ,
-							'tipoOrden' 	=> $sede['tipoOrden'],
-							'sede' 			=> $sede['cco'],
-							'recepcionado'  => 'on',
-							'cup' 			=> $cup,
+							'tipoDocumento' 	=> $paciente['tipoDocumento'],
+							'documento' 		=> $paciente['nroDocumento'],
+							'historia' 			=> $historia,
+							'ingreso' 			=> $ingreso,
+							'cco' 				=> $paciente['servicioActual'],
+							'modalidad' 		=> $modalidad,
+							'sala' 				=> $sala,
+							'prioridad' 		=> $prioridad ,
+							'tipoOrden' 		=> $sede['tipoOrden'],
+							'sede' 				=> $sede['cco'],
+							'recepcionado'  	=> 'on',
+							'cup' 				=> $cup,
+							'estadoResultado'	=> 'PR',
+							'indicaciones'		=> $indicacion,
+							'medicoRemitente'	=> $_POST['medico']['codigo'] ? $_POST['medico']['codigo'] : '',
 						];
 					
 					//Si no hay cita es que es ambulatorio y se debe crear registros nuevo
 					//caso contrario tiene cita y se usa esos datos
+					$esHospitalario = false;
 					if( empty($idCita) ){
 						$id 		= agregarMovimiento( $conex, $wemp_pmla, $wmovhos, $datosCita );
 						$rows 		= consultarDatosPorId( $conex, $wmovhos, $id );
 						$datosCita 	= traducirCamposPorRegistro( $rows );
 					}
 					else{
+						
 						$id 				= $idCita;
+						
+						actualizarMovimiento( $conex, $wmovhos, $id, [
+													'tipoDocumento' 	=> $paciente['tipoDocumento'],
+													'documento' 		=> $paciente['nroDocumento'],
+													'historia' 			=> $historia,
+													'ingreso' 			=> $ingreso,
+													'modalidad' 		=> $modalidad,
+													'sala' 				=> $sala,
+													'prioridad' 		=> $prioridad ,
+													'recepcionado'  	=> 'on',
+													'estadoResultado'	=> 'PR',
+													'indicaciones'		=> $indicacion,
+													'medicoRemitente'	=> $_POST['medico']['codigo'] ? $_POST['medico']['codigo'] : '',
+												] );
+												
 						$rows 				= consultarDatosPorId( $conex, $wmovhos, $id );
 						$datosCita 			= traducirCamposPorRegistro( $rows );
-						$datosCita['cup'] 	= $cup;
+						
+						if( empty($rows['Mvctor']) || empty($rows['Mvcnro']) || empty($rows['Mvcite']) ){
+							$datosCita['cup'] 	= $cup;
+						}
+						else{
+							
+							$esHospitalario = true;
+							
+							$datosCita['sede'] = $sede;
+							
+							$datosCita['cups'][] = [
+											'cup' 			=> $cup,
+											'item' 			=> $rows['Mvctor']."-".$rows['Mvcnro']."-".$rows['Mvcite'],
+											'orden'			=> $rows['Mvctor']."-".$rows['Mvcnro'],
+											'modalidad' 	=> $modalidad,
+											'sala' 			=> $sala,
+											'prioridad' 	=> $prioridad,
+											'justificacion' => '',
+										];
+						}
+						
+						if( !empty( $rows['Mvctor'] ) && !empty( $rows['Mvcnro'] ) && empty( $rows['Mvcite'] ) )
+							cambiarEstadoExamen( $conex, $wemp_pmla, $rows['Mvctor'],$rows['Mvcnro'], $rows['Mvcite'], 'PR', date("Y-m-d"), date("H:m:s"), '', $historia, $ingreso );
 					}
 
-					$datosCita['sede'] 			= $sede;
-					$datosCita['recepcionado']  = 'on';
-					
-					echo $mensaje = crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita );
-					
-					registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso, $sede['tipoOrden'], 0, 0, 'Mensaje enviado', $mensaje );
-					
-					registrarMsgLogHl7( $conex, $wmovhos, $historia, $ingreso, $paciente['tipoDocumento'], $paciente['nroDocumento'], 'MATRIX-HIRUKO', $dc['tipoOrden'], $dc['nroOrden'], '', $mensaje );
+					if( !$esHospitalario ){
+						// Si es ambulatario
+						$datosCita['sede'] 			= $sede;
+						$datosCita['recepcionado']  = 'on';
+						$datosCita['indicacion']	= $indicacion;
+						
+						$medico = new medicoDTO();
+						
+						if( $_POST['medico'] ){
+							$medico->tipoDocumento 	= $_POST['medico']['tipoDocumento'];
+							$medico->numeroDocumento= $_POST['medico']['numeroDocumento'];
+							$medico->nombre1		= $_POST['medico']['nombre1'];
+							$medico->nombre2		= $_POST['medico']['nombre2'];
+							$medico->apellido1		= $_POST['medico']['apellido1'];
+							$medico->apellido2		= $_POST['medico']['apellido2'];
+						}
+						
+						$datosCita['medico'] 		= $medico;
+						
+						echo $mensaje = crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita );
+						
+						registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso, $sede['tipoOrden'], 0, 0, 'Mensaje enviado', $mensaje );
+						
+						registrarMsgLogHl7( $conex, $wmovhos, $historia, $ingreso, $paciente['tipoDocumento'], $paciente['nroDocumento'], 'MATRIX-HIRUKO', $dc['tipoOrden'], $dc['nroOrden'], '', $mensaje );
+					}
+					else{
+						$cod_medico = consultarCodigoMedicoPorEstudio( $conex, $whce, $rows['Mvctor'], $rows['Mvcnro'], $rows['Mvcite'] );
+						
+						$medico 	= informacionMedico( $conex, $wmovhos, $wemp_pmla, $cod_medico['medico'] );
+						
+						$datosCita['medico'] 					= $medico;
+						$datosCita['indicacion']				= $indicacion;
+						$datosCita['cups'][0]['justificacion']	= $cod_medico['justificacion'];
+						
+						$mensaje = crearMensajesHL7ORMAgenda( $conex, $wemp_pmla, $paciente, $datosCita );
+						//Si es hospitalario
+						
+						//Conectando vía socket
+						// $direccion = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'ipHL7HirukoAgendarOrden' );
+						$direccion = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'ipHL7HirukoPacienteAmbulatorio' ); 
+
+						$socket = stream_socket_client("tcp://$direccion", $errno, $errstr);
+
+						if( $socket ){
+							$val = fwrite($socket, utf8_encode($mensaje ) );
+							
+							fclose($socket);
+						}
+						
+						registrarMsgLogHl7( $conex, $wmovhos, $historia, $ingreso, $paciente['tipoDocumento'], $paciente['nroDocumento'], 'MATRIX-HIRUKO', $dc['tipoOrden'], $dc['nroOrden'], '', $mensaje );
+						
+						echo $mensaje;
+					}
 				break;
 				
 				
@@ -1707,11 +2220,15 @@ if( $_POST ){
 					
 					$paciente 	= informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 					
+					//medico remitente
+					$medico		= informacionMedico( $conex, $wmovhos, $wemp_pmla, $ordenes['medico'] );
+					
 					$sede 		= consultarSedePorTipoOrden( $conex, $wmovhos, $tipoOrden );
 					
 					if( empty( $ordenes ) ){
 						registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso, $tipoOrden, $nroOrden, 0, 'Orden no enviada', 'Estudios no realizables por '.$sede['descripcion'] );
-						exit( 'Orden no enviada: Estudios no realizables por '.$sede['descripcion'] );
+						// exit( 'Orden no enviada: Estudios no realizables por '.$sede['descripcion'] );
+						exit();
 					}
 					
 					$datosCita = [
@@ -1723,6 +2240,7 @@ if( $_POST ){
 								'sede' 			=> $sede,
 								'tipoOrden' 	=> $tipoOrden,
 								'nroOrden' 		=> $nroOrden,
+								'medico' 		=> $medico,		//Esto es un objeto con la información del médico
 								'cups' 			=> [],
 							];
 					
@@ -1730,20 +2248,24 @@ if( $_POST ){
 					
 					foreach( $ordenes as $orden ){
 						
+						
 						$modDefecto 	= consultarModalidadPorCup( $conex, $wmovhos, $orden['codigo'] );
+						$modalidadesCup	= consultarModalidadesPorCup( $conex, $wmovhos, $orden['codigo'] );
 					
 						$datos = [
-								'tipoDocumento' => $paciente['tipoDocumento'],
-								'documento' 	=> $paciente['nroDocumento'],
-								'historia' 		=> $historia,
-								'ingreso' 		=> $ingreso,
-								'cco' 			=> $paciente['servicioActual'],
-								'tipoOrden' 	=> $tipoOrden,
-								'nroOrden' 		=> $nroOrden,
-								'sede' 			=> $sede['cco'],
-								'item' 			=> $orden['item'],
-								'cup' 			=> $orden['codigo'],
-								'modalidad' 	=> $modDefecto,
+								'tipoDocumento' 	=> $paciente['tipoDocumento'],
+								'documento' 		=> $paciente['nroDocumento'],
+								'historia' 			=> $historia,
+								'ingreso' 			=> $ingreso,
+								'cco' 				=> $paciente['servicioActual'],
+								'tipoOrden' 		=> $tipoOrden,
+								'nroOrden' 			=> $nroOrden,
+								'sede' 				=> $sede['cco'],
+								'item' 				=> $orden['item'],
+								'cup' 				=> $orden['codigo'],
+								'modalidad' 		=> $modDefecto,
+								'medico' 			=> $medico,		//Esto es un objeto con la información del médico
+								'medicoRemitente'	=> $orden['medico'],		//Esto es un objeto con la información del médico
 							];
 						
 						$id 	= consultarIdPorOrden( $conex, $wmovhos, $tipoOrden, $nroOrden, $orden['item'] );
@@ -1780,35 +2302,57 @@ if( $_POST ){
 							$datosCita['idAgenda'] = $datos['idAgenda'];
 							$datosCita['idHiruko'] = $datos['idHiruko'];
 							
-							$datosCita['cups'][] = [
-									'cup' 			=> $orden['codigo'],
-									'item' 			=> $tipoOrden."-".$nroOrden."-".$orden['item'],
-									'orden'			=> $tipoOrden."-".$nroOrden,
-									'modalidad' 	=> $modDefecto,
-									'justificacion' => '',
-								];
+							$tieneCita = false;
+							if( $datos['conCita'] == 'on' || ( !empty( $datos['fechaCita'] ) && $datos['fechaCita'] != '0000-00-00' ) || !empty( $datos['idHiruko'] ) ){
+								$tieneCita = true;
+							}
+							
+							$index = 0;
+							
+							foreach( $modalidadesCup as $keyMods => $mods ){
 								
-							$datosPorEstado[ 'C' ][] = $datosCita;
+								$datosCita['cups'][] = [
+										'cup' 			=> $orden['codigo'],
+										'item' 			=> $tipoOrden."-".$nroOrden."-".$orden['item'].( $tieneCita ? '' : ",".$index ),
+										'orden'			=> $tipoOrden."-".$nroOrden,
+										'modalidad' 	=> $mods,
+										'justificacion' => $orden['justificacion'],
+									];
+									
+								$index++;
+								
+								$datosPorEstado[ 'C' ][] = $datosCita;
+								
+								if( $tieneCita )
+									break;
+								else{
+									$datosCita['cups'] = [];
+								}
+							}	
 						}
 						else{
 							
 							if( !isset($datosPorEstado['O']) ){
 								$datosPorEstado[ 'O' ][0] 	= $datosCita;
 							}
+							
+							$index = 0;
 						
-							$datosPorEstado[ 'O' ][0]['cups'][] = [
-										'cup' 			=> $orden['codigo'],
-										'item' 			=> $tipoOrden."-".$nroOrden."-".$orden['item'],
-										'orden'			=> $tipoOrden."-".$nroOrden,
-										'modalidad' 	=> $modDefecto,
-										'justificacion' => $orden['justificacion'],
-									];
+							foreach( $modalidadesCup as $keyMods => $mods ){
+								
+								$datosPorEstado[ 'O' ][0]['cups'][] = [
+											'cup' 			=> $orden['codigo'],
+											'item' 			=> $tipoOrden."-".$nroOrden."-".$orden['item'].",".$index,
+											'orden'			=> $tipoOrden."-".$nroOrden,
+											'modalidad' 	=> $mods,
+											'justificacion' => $orden['justificacion'],
+										];
+								
+								$index++;
+							}
 						}
-					
-						// echo crearMensajesHL7ORMAgenda( $conex, $wemp_pmla, $paciente, $datosCita );
 					}
 
-					// echo crearMensajesHL7ORMAgenda( $conex, $wemp_pmla, $paciente, $datosCita );
 					//se crea el mensaje ORM para procesar las ordenes por modalidad
 					if( count($datosPorEstado['O']) > 0 )
 					{	
@@ -1829,6 +2373,13 @@ if( $_POST ){
 								$val = fwrite($socket, utf8_encode($mensaje ) );
 								
 								fclose($socket);
+								
+								foreach( $dc['cups'] as $k => $v ){
+									
+									list( $v_tor, $v_nor, $v_item ) = explode( "-", $v['item'] );
+									
+									marcarEstudioComoEnviado( $conex, $wmovhos, $whce, $v_tor, $v_nor, $v_item );
+								}
 							}
 							
 							registrarMsgLogHl7( $conex, $wmovhos, $historia, $ingreso, $paciente['tipoDocumento'], $paciente['nroDocumento'], 'MATRIX-HIRUKO', $dc['tipoOrden'], $dc['nroOrden'], '', $mensaje );
@@ -1842,6 +2393,8 @@ if( $_POST ){
 						//se crea el mensaje ORM para procesar las ordenes por modalidad
 						foreach( $datosPorEstado['C'] as $datosCita )
 						{
+							actualizarMovimiento( $conex, $wmovhos, $datosCita['idMatrix'], [ 'estadoCita' => '0' ] );
+							
 							$mensaje =  crearMensajesHL7ORMAgenda( $conex, $wemp_pmla, $paciente, $datosCita );
 							
 							//Conectando vía socket
@@ -1857,6 +2410,13 @@ if( $_POST ){
 								$val = fwrite($socket, utf8_encode($mensaje ) );
 								
 								fclose($socket);
+								
+								foreach( $datosCita['cups'] as $k => $v ){
+									
+									list( $v_tor, $v_nor, $v_item ) = explode( "-", $v['item'] );
+									
+									marcarEstudioComoEnviado( $conex, $wmovhos, $whce, $v_tor, $v_nor, $v_item );
+								}
 							}
 							
 							list( $tor, $nro, $ite ) = explode( "-", $datosCita['cups'][0]['item'] );
@@ -1883,10 +2443,20 @@ if( $_GET ){
 		
 		switch( $accion ){
 			
+			case 'consultarMedicosRemitentes': 
+				
+				$whce = consultarAliasPorAplicacion( $conex, $_GET['wemp_pmla'], 'hce' );
+			
+				$result = consultarMedicosRemitentes( $conex, $whce, $_GET['tipoOrden'], $_GET['term'] );
+				
+				echo json_encode( $result );
+			break;
+			
 			case 'consultarMaestros': 
 				
 				$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
 				$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
+				$whce 	 = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce' );
 				
 				//Cco desde donde se carga el procedimiento
 				$cco_sede = $_GET['cco_sede'];
@@ -1905,13 +2475,20 @@ if( $_GET ){
 				$cup 		= $procedimientosCargados[0]['codigo'];
 				
 				//Modalidad por defecto
-				$modDefecto = consultarModalidadPorCup( $conex, $wmovhos, $cup );
+				// $modDefecto = consultarModalidadPorCup( $conex, $wmovhos, $cup );
+				$modDefecto = "";
 				
 				//Consulto la sede
 				$sede  = consultarSedePorCcoYCup( $conex, $wmovhos, $cco_sede, $cup );
 				
+				$modalidadesCup	= consultarModalidadesPorCup( $conex, $wmovhos, $cup );
+				
+				if( count( $modalidadesCup ) > 0 )
+					$modDefecto = $modalidadesCup[0];
+				
 				//Consulto todos los maestros respectivos para la sede y los cuales se mostraran en la modal
-				$result = consultarMaestros( $conex, $wemp_pmla, $sede['codigo'] );
+				$result = consultarMaestros( $conex, $wemp_pmla, $sede['codigo'], $modalidadesCup );
+				
 				$result['paciente'] = $paciente;
 				
 				//Solo se muestra la modal si se encuentra una sede para el cco que carga y el cup cargado
@@ -1919,6 +2496,12 @@ if( $_GET ){
 				
 				//Debe mostrarse la modal solo tiene cita
 				$result['mostrar'] = true;	//Variable que indica si la modal se muestra
+				
+				$result['sede'] = $sede;	//Variable que indica si la modal se muestra
+				
+				$result['sede']['descripcion'] = utf8_encode( $result['sede']['descripcion'] );
+				
+				$result['indicaciones'] = consultarIndicacionesPorCup( $conex, $whce, $sede['tipoOrden'], $cup );
 				
 				// var_dump($cita);
 				if( count( $cita ) > 0 )
@@ -1928,15 +2511,18 @@ if( $_GET ){
 					$result['defaults']['modalidad'] = $modDefecto;
 				}
 				
-				// if( !empty($cita) ){
-					// $result['defaults']['sala'] = $cita['Mvcsal'];
-				// }
+				if( !empty($cita['Mvcind']) ){
+					$result['defaults']['indicacion'] = $cita['Mvcind'];
+				}
+				
+				if( !empty($cita) ){
+					$result['defaults']['sala'] = $cita['Mvcsal'];
+				}
 				
 				$datosCita = consultarPacienteConCita( $conex, $wemp_pmla, $wmovhos, $historia, $ingreso, $paciente['tipoDocumento'], $paciente['nroDocumento'], $cup, $cco_sede );
 				
 				if( $datosCita )
 					$result['datosCita'] = $datosCita;
-				
 				echo json_encode($result);
 			break;
 			
