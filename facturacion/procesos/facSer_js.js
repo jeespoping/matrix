@@ -585,17 +585,44 @@ function validarTodo()
     var valTercero = document.getElementById('nitResp').value;  var valTotReg1 = document.getElementById('5-1').value;
     var totNeto = document.getElementById('totValnet2').value;
     var conc1 = document.getElementById('1-1').value;   conc1 = evalConc(conc1);
+    if(conc1 != '2002' || conc1 != '2023' || conc1 != '2088'){concepto1 = 'noIva'} else{concepto1 = 'iva'}
+
     var conc2 = document.getElementById('1-2').value;   conc2 = evalConc(conc2);
+    if(conc2 != '2002' || conc2 != '2023' || conc2 != '2088'){concepto2 = 'noIva'}  else{concepto2 = 'iva'}
+
     var conc3 = document.getElementById('1-3').value;   conc3 = evalConc(conc3);
+    if(conc3 != '2002' || conc3 != '2023' || conc3 != '2088'){concepto3 = 'noIva'}  else{concepto3 = 'iva'}
+
     var conc4 = document.getElementById('1-4').value;   conc4 = evalConc(conc4);
+    if(conc4 != '2002' || conc4 != '2023' || conc4 != '2088'){concepto4 = 'noIva'}  else{concepto4 = 'iva'}
+
     var conc5 = document.getElementById('1-5').value;   conc5 = evalConc(conc5);
+    if(conc5 != '2002' || conc5 != '2023' || conc5 != '2088'){concepto5 = 'noIva'}  else{concepto5 = 'iva'}
 
     if(isNaN(conc1)){conc1 = 0}  if(isNaN(conc2)){conc2 = 0}  if(isNaN(conc3)){conc3 = 0}  if(isNaN(conc4)){conc4 = 0}  if(isNaN(conc5)){conc5 = 0}
     var contConceptoIva = parseInt(conc1) + parseInt(conc2) + parseInt(conc3) + parseInt(conc4) + parseInt(conc5);
 
     if(contConceptoIva < 2)
     {
-        alert('DEBE INGRESAR UN CONCEPTO DE IVA');
+        if(concepto1 == 'iva' || concepto2 == 'iva' || concepto3 == 'iva' || concepto4 == 'iva' || concepto5 == 'iva')
+        {
+            alert('DEBE INGRESAR UN CONCEPTO DE IVA');
+        }
+        else
+        {
+            if(concepto1 == 'noIva' || concepto2 == 'noIva' || concepto3 == 'noIva' || concepto4 == 'noIva' || concepto5 == 'noIva')
+            {
+                if(valTercero != '' && valTotReg1 != '' && totNeto != '0')
+                {
+                    document.getElementById('divListo').style.display = 'none';
+                    document.getElementById('divSave').style.display = 'block';
+                }
+                else
+                {
+                    alert('NO PUEDE GRABAR, TIENE CAMPOS OBLIGATORIOS SIN LLENAR');
+                }
+            }
+        }
     }
     if(contConceptoIva >= 2)
     {
@@ -625,6 +652,101 @@ function validarTodo()
                 concepto = 1;
                 return concepto;
             break;
+        }
+    }
+}
+
+//VALIDAR QUE AL DIGITAR CONCEPTO 9819 YA EXISTA UN CONCEPTO DE IVA PREVIO AL CUAL APLICARSELO
+function validar9819(concDigitado,numRow)
+{
+    //OBTENER TODOS LOS VALORES DIGITADOS EN CAMPO CONCEPTO:
+    var fieldConcepto1 = document.getElementById('1-1');
+    var fieldConcepto2 = document.getElementById('1-2');
+    var fieldConcepto3 = document.getElementById('1-3');
+    var fieldConcepto4 = document.getElementById('1-4');
+    var fieldConcepto5 = document.getElementById('1-5');
+
+    var conc1 = fieldConcepto1.value;
+    if(conc1 == '2002' || conc1 == '2023' || conc1 == '2088' || conc1 == '2001' || conc1 == '2021' || conc1 == '2022' || conc1 == '2025' || conc1 == '2078' || conc1 == '2079' || conc1 == '4216')
+    {conc1 = 'iva'}
+    var conc2 = fieldConcepto2.value;
+    if(conc2 == '2002' || conc2 == '2023' || conc2 == '2088' || conc2 == '2001' || conc2 == '2021' || conc2 == '2022' || conc2 == '2025' || conc2 == '2078' || conc2 == '2079' || conc2 == '4216')
+    {conc2 = 'iva'}
+    var conc3 = fieldConcepto3.value;
+    if(conc3 == '2002' || conc3 == '2023' || conc3 == '2088' || conc3 == '2001' || conc3 == '2021' || conc3 == '2022' || conc3 == '2025' || conc3 == '2078' || conc3 == '2079' || conc3 == '4216')
+    {conc3 = 'iva'}
+    var conc4 = fieldConcepto4.value;
+    if(conc4 == '2002' || conc4 == '2023' || conc4 == '2088' || conc4 == '2001' || conc4 == '2021' || conc4 == '2022' || conc4 == '2025' || conc4 == '2078' || conc4 == '2079' || conc4 == '4216')
+    {conc4 = 'iva'}
+    var conc5 = fieldConcepto5.value;
+    if(conc5 == '2002' || conc5 == '2023' || conc5 == '2088' || conc5 == '2001' || conc5 == '2021' || conc5 == '2022' || conc5 == '2025' || conc5 == '2078' || conc5 == '2079' || conc5 == '4216')
+    {conc5 = 'iva'}
+
+    if(concDigitado == '9819')
+    {
+        if(conc1 != '')
+        {
+            if(conc1 != 'iva')
+            {
+                alert('NO HA INGRESADO UN CONCEPTO DE IVA, POR FAVOR VERIFIQUE');
+                document.getElementById('1-'+numRow).value = '';
+                document.getElementById('detConcepto'+numRow).value = '';
+                document.getElementById('2-'+numRow).value = '';
+                document.getElementById('detCcosto'+numRow).value = '';
+                document.getElementById('3-'+numRow).value = '';
+            }
+        }
+
+        if(conc2 != '' && conc2 != '9819')
+        {
+            if(conc2 != 'iva')
+            {
+                alert('NO HA INGRESADO UN CONCEPTO DE IVA, POR FAVOR VERIFIQUE');
+                document.getElementById('1-'+numRow).value = '';
+                document.getElementById('detConcepto'+numRow).value = '';
+                document.getElementById('2-'+numRow).value = '';
+                document.getElementById('detCcosto'+numRow).value = '';
+                document.getElementById('3-'+numRow).value = '';
+            }
+        }
+
+        if(conc3 != '' && conc3 != '9819')
+        {
+            if(conc3 != 'iva')
+            {
+                alert('NO HA INGRESADO UN CONCEPTO DE IVA, POR FAVOR VERIFIQUE');
+                document.getElementById('1-'+numRow).value = '';
+                document.getElementById('detConcepto'+numRow).value = '';
+                document.getElementById('2-'+numRow).value = '';
+                document.getElementById('detCcosto'+numRow).value = '';
+                document.getElementById('3-'+numRow).value = '';
+            }
+        }
+
+        if(conc4 != '' && conc4 != '9819')
+        {
+            if(conc4 != 'iva')
+            {
+                alert('NO HA INGRESADO UN CONCEPTO DE IVA, POR FAVOR VERIFIQUE');
+                document.getElementById('1-'+numRow).value = '';
+                document.getElementById('detConcepto'+numRow).value = '';
+                document.getElementById('2-'+numRow).value = '';
+                document.getElementById('detCcosto'+numRow).value = '';
+                document.getElementById('3-'+numRow).value = '';
+            }
+        }
+
+        if(conc5 != '' && conc5 != '9819')
+        {
+            if(conc5 != 'iva')
+            {
+                alert('NO HA INGRESADO UN CONCEPTO DE IVA, POR FAVOR VERIFIQUE');
+                document.getElementById('1-'+numRow).value = '';
+                document.getElementById('detConcepto'+numRow).value = '';
+                document.getElementById('2-'+numRow).value = '';
+                document.getElementById('detCcosto'+numRow).value = '';
+                document.getElementById('3-'+numRow).value = '';
+            }
         }
     }
 }

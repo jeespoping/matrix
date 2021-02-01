@@ -497,7 +497,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <input type="text" id="1-1" name="detConcep" class="inpConcepto Ntooltip" onchange="validarDato(this.value,1,1)"> <!--valor,parametro,numero de fila-->
+                                            <input type="text" id="1-1" name="detConcep" class="inpConcepto Ntooltip" onchange="validarDato(this.value,1,1); validar9819(this.value,1)"> <!--valor,parametro,numero de fila-->
                                             <input type="text" id="detConcepto1" class="inpTotales" style="font-size: small; width: 170px" readonly>
                                             <a href="#" id="chkConc1" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-search" onclick="openConc('verConcep','1-1',1)"></span></a>
                                         </td>
@@ -533,7 +533,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <input type="text" id="1-2" name="detConcep" class="inpConcepto" onchange="validarDato(this.value,1,2)">    <!-- dato,parametro,numrow -->
+                                            <input type="text" id="1-2" name="detConcep" class="inpConcepto" onchange="validarDato(this.value,1,2); validar9819(this.value,2)">    <!-- dato,parametro,numrow -->
                                             <input type="text" id="detConcepto2" class="inpTotales" style="font-size: small; width: 170px" readonly>
                                             <a href="#" id="chkConc2" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-search" onclick="openConc('verConcep','1-2',2)"></span></a>
                                         </td>
@@ -570,7 +570,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <input type="text" id="1-3" name="detConcep" class="inpConcepto" onchange="validarDato(this.value,1,3)">
+                                            <input type="text" id="1-3" name="detConcep" class="inpConcepto" onchange="validarDato(this.value,1,3); validar9819(this.value,3)">
                                             <input type="text" id="detConcepto3" class="inpTotales" style="font-size: small; width: 170px" readonly>
                                             <a href="#" id="chkConc3" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-search" onclick="openConc('verConcep','1-3',3)"></span></a>
                                         </td>
@@ -607,7 +607,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <input type="text" id="1-4" name="detConcep" class="inpConcepto" onchange="validarDato(this.value,1,4)">
+                                            <input type="text" id="1-4" name="detConcep" class="inpConcepto" onchange="validarDato(this.value,1,4); validar9819(this.value,4)">
                                             <input type="text" id="detConcepto4" class="inpTotales" style="font-size: small; width: 170px" readonly>
                                             <a href="#" id="chkConc4" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-search" onclick="openConc('verConcep','1-4',4)"></span></a>
                                         </td>
@@ -644,7 +644,7 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <input type="text" id="1-5" name="detConcep" class="inpConcepto" onchange="validarDato(this.value,1,5)">
+                                            <input type="text" id="1-5" name="detConcep" class="inpConcepto" onchange="validarDato(this.value,1,5); validar9819(this.value,5)">
                                             <input type="text" id="detConcepto5" class="inpTotales" style="font-size: small; width: 170px" readonly>
                                             <a href="#" id="chkConc5" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-search" onclick="openConc('verConcep','1-5',5)"></span></a>
                                         </td>
