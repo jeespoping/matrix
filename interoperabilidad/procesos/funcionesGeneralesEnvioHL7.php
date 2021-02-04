@@ -567,7 +567,7 @@ function informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso ){
 				'habitacion' 		=> $ubicacionPaciente->habitacionActual,
 				'servicioActual'	=> $ubicacionPaciente->servicioActual,
 				'celular'			=> $row['Pacmov'],
-				'correoElectronico'	=> $row['Paccre'],
+				'correoElectronico'	=> $row['Paccor'],	//Octubre 21 de 2020
 				'telefono'			=> $row['Pactel'],
 				'codigoResponsable'	=> $responsable['codigoResponsable'],
 				'nombreResponsable'	=> $responsable['nombreResponsable'],
