@@ -87,7 +87,7 @@ function ConsultarUtlimoComprobante($conexunix, $id_comprobante) {
         MOVENCFUE AS COMPROBANTE,
         MOVENCDOC AS DOCUMENTO
         FROM COMOVENC
-        WHERE MOVENCANO = 2021 AND MOVENCFUE = '" . $fuente . "' AND MOVENCDOC = '" . $documento . "'
+        WHERE MOVENCANO = 2020 AND MOVENCFUE = '" . $fuente . "' AND MOVENCDOC = '" . $documento . "'
         GROUP BY MOVENCFUE, MOVENCDOC";
 
     $RecordSet = odbc_exec($conexunix, $SQLQuery);
