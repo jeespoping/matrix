@@ -7,8 +7,11 @@ se asignan filtros, generando un listado que les permite con una accion, actuali
 
 Creador : Jonatan Lopez Aguirre
 
-*/ $actualiz = "2020-01-24"; /*
+*/ $actualiz = "2021-02-01"; /*
  ACTUALIZACIONES:
+  * 2021-02-01:  Leandro Meneses, se modifica la instrucción ini_set('memory_limit', '2048M') ya que hay querys que pueden sobrepasar el limite de la memoria
+				que a hoy está en 1024M.
+ * Julio 10 de 2019 Camilo Zapata:
  * 2020-01-24:  Jerson, se coloca la instrucción ini_set('memory_limit', '1024M') ya que hay querys que pueden sobrepasar el limite de la memoria
 				que a hoy está en 512M.
  * Julio 10 de 2019 Camilo Zapata:
@@ -1280,7 +1283,8 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 		$select_art_incluidos = " UNION SELECT $campos FROM $tablas WHERE $filtro AND $filtro_art_incluidos ";
 	}
 
-	ini_set('memory_limit', '1024M');
+	//Se asigna una cantidad de memoria suficiente para poblar los arreglos
+	ini_set('memory_limit', '2048M');
 	//Consulta final a unix.
 	$query  = "SELECT $campos FROM $tablas WHERE $filtro $grupos_filtro $articulos_filtro";
 	$query .= "$select_grupos_incluidos";
