@@ -7,13 +7,11 @@ se asignan filtros, generando un listado que les permite con una accion, actuali
 
 Creador : Jonatan Lopez Aguirre
 
-*/ $actualiz = "2020-01-24"; /*
+*/ $actualiz = "2021-02-01"; /*
  ACTUALIZACIONES:
- * 2021-02-08:  *Leandro, se modifica el código de la operación mostrar_art ya ue estaba consumiendo una gran cantidad de memoria generan error.
-				*Se modifica la lógica del proceso de tal manera que el uso de arrays (los cuales estabn consumiento la memoria) sea el mínimo posible.
-				*En la versión anterior, cuando se consultaban los articulos, se generaba un html que se devolvía al bowser para generar un archivo de excel (por javascript), este html también consumia una gran cantidad de memoria, se modifica el proceso para que genere un archivo csv en el servidor el cual puede 
-				ser descargado por el usario bajo demanada
-				
+  * 2021-02-01:  Leandro Meneses, se modifica la instrucción ini_set('memory_limit', '2048M') ya que hay querys que pueden sobrepasar el limite de la memoria
+				que a hoy está en 1024M.
+ * Julio 10 de 2019 Camilo Zapata:
  * 2020-01-24:  Jerson, se coloca la instrucción ini_set('memory_limit', '1024M') ya que hay querys que pueden sobrepasar el limite de la memoria
 				que a hoy está en 512M.
  * Julio 10 de 2019 Camilo Zapata:
@@ -44,7 +42,6 @@ Creador : Jonatan Lopez Aguirre
 	- Se crea objeto json para compartir los mismos datos con la operación "mostrar_art" sin repetir todos los parámetros en cada llamado.
 	- Validación de sesión activa en los llamados ajax.
 **/
-
 include ("conex.php");
 if(isset($operacion) && !array_key_exists('user',$_SESSION))
 {
@@ -1005,7 +1002,6 @@ if(isset($operacion) && $operacion == 'info_alertas'){
 
 }
 
-
 if(isset($operacion) && $operacion == 'mostrar_art'){
 
 	$datamensaje = array('html_oculto'=>'', 'html'=>'', 'mensaje'=>'', 'error'=>0 , 'formulario'=>'');
@@ -1102,15 +1098,7 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 
 	$entidad = trim($entidad);
 	$datosTarifas = datosTarifas();
-	//echo "Antes de consultar articulos";
 	$datosArticulos = consultarArticulos();
-	//echo "Cantidad Tarifas: ". count($datosTarifas);
-	//echo "Cantidad Articulos: ". count($datosArticulos);
-	//eturn;
-	
-	
-
-
 
 	$q = "  SELECT * "
 		."    FROM ".$wbasedato_cliame."_000271 "
@@ -1140,7 +1128,7 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 	if($entidad != '' and $entidad != '*'){
 
 		$tabla['inemp'] = "inemp";
-		$campos[] = "empnit";
+		$campos[] = "empnit, empnom";
 		$filtro[] = "empnit = '".trim($entidad)."'";
 		$filtro[] = "emptar = arttartar";
 		$filtro[] = "empact = 'S'";
@@ -1295,11 +1283,10 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 		$select_art_incluidos = " UNION SELECT $campos FROM $tablas WHERE $filtro AND $filtro_art_incluidos ";
 	}
 
-	
+	//Se asigna una cantidad de memoria suficiente para poblar los arreglos
+	ini_set('memory_limit', '2048M');
 	//Consulta final a unix.
-
-
-	$query  = "SELECT DISTINCT $campos FROM $tablas WHERE $filtro $grupos_filtro $articulos_filtro";
+	$query  = "SELECT $campos FROM $tablas WHERE $filtro $grupos_filtro $articulos_filtro";
 	$query .= "$select_grupos_incluidos";
 	$query .= "$select_art_incluidos";
 	//echo $query;
@@ -1311,13 +1298,65 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 	$mes_actual = date('m');
 	$ano_inicial = $ano_actual-2;
 
-	// Se llenan los arrays correspondientes a filtros matrix
-	$array_articulos_pos = array();
+	// $query_compra  = "SELECT movdetart, movdetano, movdetmes FROM $tablas, ivmovdet WHERE $filtro AND movdetart = artcod AND movdetart = arttarcod  AND movdetano >= '".$ano_inicial."' GROUP BY 1,2,3 ORDER BY 2 desc, 3 desc ";
+	// $res_compras = odbc_do($conexUnixInventarios,$query_compra) or die (odbc_errormsg());
+	// $num_compras = odbc_num_fields($res_compras);
+
+	// if($num_compras > 0){
+
+		// $array_art_compras = array();
+
+		// while($row_compras = odbc_fetch_array($res_compras))
+        // {
+			// $array_art_compras[$row_compras['movdetart']] = $row_compras;
+        // }
+
+	// }
+
+
+	//***********************
+
+	//****** Consultar articulos que no registran ventas en los ultimos 2 años.
+
+	// $query_compra  = "SELECT drodetart FROM $tablas, ivdrodet WHERE $filtro AND drodetart = artcod AND drodetart = arttarcod  AND drodetano >= '".$ano_inicial."' GROUP BY 1 ";
+	// $res_ventas = odbc_do($conexUnixInventarios,$query_compra) or die (odbc_errormsg());
+	// $num_ventas = odbc_num_fields($res_ventas);
+
+	// if($num_ventas > 0){
+
+		// $array_art_ventas = array();
+
+		// while($row_ventas = odbc_fetch_array($res_ventas))
+        // {
+
+			// $array_art_ventas[$row_ventas['drodetart']] = $row_ventas['drodetart'];
+
+        // }
+
+	// }
+
+	//print_r($array_art_ventas);
+	//***********************
+
+	$i = 0;
+	$array_resultado = array();
+
+	 while($row = odbc_fetch_array($err_o))
+        {
+
+			$array_resultado[trim(utf8_encode(odbc_result($err_o,'artcod')))][trim(odbc_result($err_o,'arttartar'))] = $row;
+			$array_resultado_aux[trim(utf8_encode(odbc_result($err_o,'artcod')))][trim(odbc_result($err_o,'arttartar'))] = $row;
+
+        }
+		// echo count($array_resultado);
+	// print_r($array_resultado);
+
+	//Filtros matrix
 	if($pos != ''){
 
 		if($pos == 'S'){
 			//Consulta los codigos de los articulos pos
-			 $q = "  SELECT artcod "
+			 $q = "  SELECT * "
 				."    FROM ".$wbasedato."_000026 "
 				."	 WHERE Artest = 'on'"
 				."	   AND Artpos = 'P'";
@@ -1331,22 +1370,40 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 
 		$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
 
-		
+		$array_articulos_pos = array();
 
 		//Creo un arreglo con los articulos regulados
 		while($row = mysql_fetch_array($res)){
 
-			$array_articulos_pos[$row['artcod']] = $row['artcod'];
+			$array_articulos_pos[$row['Artcod']] = $row;
 
 		}
+
+		foreach($array_articulos_pos as $key => $value){
+
+				if(array_key_exists($key, $array_resultado)){
+
+					$array_resultado_pos[$key] = $array_resultado_aux[$key];
+
+				}
+
+		}
+
+		//Igualo la variable $array_resultado para que sea leida correctamente en el foreach que sigue y pinte la informacion necesaria.
+		$array_resultado = $array_resultado_pos;
+
+		if(count($array_resultado) == 0){
+			$array_resultado = array();
+		}
+		//print_r($array_resultado);
 	}
 
-	$array_articulos_idc = array();
+
 	if($articulo_idc != ''){
 
 		if($articulo_idc == 'Si'){
 			//Consulta los codigos de los articulos pos
-			 $q = "  SELECT artcod "
+			 $q = "  SELECT * "
 				."    FROM ".$wbasedato."_000026 "
 				."	 WHERE Artest = 'on'"
 				."	   AND Artidc = 'on'";
@@ -1365,13 +1422,30 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 		//Creo un arreglo con los articulos regulados
 		while($row = mysql_fetch_array($res)){
 
-			$array_articulos_idc[$row['artcod']] = $row;
+			$array_articulos_idc[$row['Artcod']] = $row;
 
 		}
 
+		foreach($array_articulos_idc as $key => $value){
+
+				if(array_key_exists($key, $array_resultado)){
+
+					$array_resultado_idc[$key] = $array_resultado_aux[$key];
+
+				}
+
+		}
+			//print_r($array_resultado_idc);
+		//Igualo la variable $array_resultado para que sea leida correctamente en el foreach que sigue y pinte la informacion necesaria.
+		$array_resultado = $array_resultado_idc;
+
+		if(count($array_resultado) == 0){
+			$array_resultado = array();
+		}
+		//print_r($array_resultado);
 	}
 
-	$array_articulos_reg = array();
+
 	//Si seleccionan medicamentos regulados hace relacion con la tabla cliame_000207.
 	if($regulado != '' and $pareto == ''){
 
@@ -1381,7 +1455,7 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 			."	 WHERE Regest = 'on'";
 		$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
 
-		
+		$array_articulos_reg = array();
 
 		//Creo un arreglo con los articulos regulados
 		while($row = mysql_fetch_array($res)){
@@ -1390,29 +1464,305 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 
 		}
 
+		if($regulado =='S'){
 
+		foreach($array_articulos_reg as $key => $value){
+
+				if(array_key_exists($key, $array_resultado)){
+
+					$array_resultado_reg[$key] = $array_resultado_aux[$key];
+
+				}
+			}
+
+			$array_resultado = $array_resultado_reg;
+
+		}else{
+
+			foreach($array_articulos_reg as $key => $value){
+
+				if(array_key_exists($key, $array_resultado)){
+
+					unset($array_resultado[$key]);
+
+				}
+
+			}
+
+		}
+
+		if(count($array_resultado) == 0){
+			$array_resultado = array();
+		}
 	}
 
 	if($pareto != '' and $regulado == ''){
 
-		//Consulta los codigos de los articulos regulados
-		$q = "  SELECT * "
-			."    FROM ".$wbasedato_cliame."_000271 "
-			."	 WHERE Paremp = '".$entidad."'"
-			."	   AND Parest = 'on'";
-		$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
+			//Consulta los codigos de los articulos regulados
+			$q = "  SELECT * "
+				."    FROM ".$wbasedato_cliame."_000271 "
+				."	 WHERE Paremp = '".$entidad."'"
+				."	   AND Parest = 'on'";
+			$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
 
-		$array_articulos_pareto = array();
+			$array_articulos_pareto = array();
 
-		//Creo un arreglo con los articulos regulados
-		while($row = mysql_fetch_array($res)){
+			//Creo un arreglo con los articulos regulados
+			while($row = mysql_fetch_array($res)){
 
-			$array_articulos_pareto[$row['Parcod']] = $row;
+				$array_articulos_pareto[$row['Parcod']] = $row;
+
+			}
+
+			if($pareto == 'S'){
+
+				foreach($array_articulos_pareto as $key => $value){
+
+						if(array_key_exists($key, $array_resultado)){
+
+							$array_resultado_pareto[$key] = $array_resultado_aux[$key];
+
+						}
+					}
+
+					$array_resultado = $array_resultado_pareto;
+
+			}else{
+
+					foreach($array_articulos_pareto as $key => $value){
+
+						if(array_key_exists($key, $array_resultado)){
+
+							unset($array_resultado[$key]);
+
+						}
+
+					}
+
+				}
+			if(count($array_resultado) == 0){
+			$array_resultado = array();
+		}
 
 		}
 
-	}
 
+	if($pareto != '' and $regulado != ''){
+
+
+		switch(1){
+
+			case ($pareto == 'S' and $regulado == 'S'):
+
+									//Consulta los codigos de los articulos regulados
+									$q = "  SELECT * "
+										."    FROM ".$wbasedato_cliame."_000270, ".$wbasedato_cliame."_000271 "
+										."	 WHERE Paremp = '".$entidad."'"
+										."	   AND Parcod = Regcod"
+										."	   AND Parest = 'on'"
+										."	   AND Regest = 'on'";
+									$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
+
+									$array_articulos_pareto_reg = array();
+
+									//Creo un arreglo con los articulos regulados
+									while($row = mysql_fetch_array($res)){
+
+										$array_articulos_pareto_reg[$row['Parcod']] = $row;
+
+									}
+
+
+									foreach($array_articulos_pareto_reg as $key => $value){
+
+										if(array_key_exists($key, $array_resultado)){
+
+											$array_resultado_pareto_reg[$key] = $array_resultado_aux[$key];
+
+											}
+
+									}
+
+									//Igualo la variable $array_resultado para que sea leida correctamente en el foreach que sigue y pinte la informacion necesaria.
+									$array_resultado = $array_resultado_pareto_reg;
+
+									if(count($array_resultado) == 0){
+										$array_resultado = array();
+									}
+
+
+			break;
+
+			case ($pareto == 'N' and $regulado == 'S'):
+
+							//Consulta los codigos de los articulos regulados
+							$q = "  SELECT * "
+								."    FROM ".$wbasedato_cliame."_000270 "
+								."	 WHERE Regest = 'on'";
+							$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
+
+							$array_articulos_reg = array();
+
+							//Creo un arreglo con los articulos regulados
+							while($row = mysql_fetch_array($res)){
+
+								$array_articulos_reg[$row['Regcod']] = $row;
+
+							}
+
+							foreach($array_articulos_reg as $key => $value){
+
+									if(array_key_exists($key, $array_resultado)){
+
+										$array_resultado_reg[$key] = $array_resultado_aux[$key];
+
+									}
+								}
+
+							$array_resultado = $array_resultado_reg;
+
+
+							//Consulta los codigos de los articulos pareto
+							$q = "  SELECT * "
+								."    FROM ".$wbasedato_cliame."_000271 "
+								."	 WHERE Paremp = '".$entidad."'"
+								."	   AND Parest = 'on'";
+							$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
+
+							$array_articulos_pareto = array();
+
+							//Creo un arreglo con los articulos regulados
+							while($row = mysql_fetch_array($res)){
+
+								$array_articulos_pareto[$row['Parcod']] = $row;
+
+							}
+
+							foreach($array_articulos_pareto as $key => $value){
+
+									unset($array_resultado[$key]);
+
+								}
+
+							if(count($array_resultado) == 0){
+										$array_resultado = array();
+									}
+
+			break;
+
+			case ($pareto == 'S' and $regulado == 'N'):
+
+							//Consulta los codigos de los articulos pareto
+							$q = "  SELECT * "
+								."    FROM ".$wbasedato_cliame."_000271 "
+								."	 WHERE Paremp = '".$entidad."'"
+								."	   AND Parest = 'on'";
+							$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
+
+							$array_articulos_pareto = array();
+
+							//Creo un arreglo con los articulos regulados
+							while($row = mysql_fetch_array($res)){
+
+								$array_articulos_pareto[$row['Parcod']] = $row;
+
+							}
+
+							foreach($array_articulos_pareto as $key => $value){
+
+									if(array_key_exists($key, $array_resultado)){
+
+										$array_resultado_pareto[$key] = $array_resultado_aux[$key];
+
+									}
+								}
+
+							$array_resultado = $array_resultado_pareto;
+
+							//Consulta los codigos de los articulos regulados
+							$q = "  SELECT * "
+								."    FROM ".$wbasedato_cliame."_000270 "
+								."	 WHERE Regest = 'on'";
+							$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
+
+							$array_articulos_reg = array();
+
+							//Creo un arreglo con los articulos regulados
+							while($row = mysql_fetch_array($res)){
+
+								$array_articulos_reg[$row['Regcod']] = $row;
+
+							}
+
+							foreach($array_articulos_reg as $key => $value){
+
+									unset($array_resultado[$key]);
+
+								}
+
+							if(count($array_resultado) == 0){
+										$array_resultado = array();
+									}
+
+			break;
+
+			case ($pareto == 'N' and $regulado == 'N'):
+
+						//Consulta los codigos de los articulos pareto
+							$q = "  SELECT * "
+								."    FROM ".$wbasedato_cliame."_000271 "
+								."	 WHERE Paremp = '".$entidad."'"
+								."	   AND Parest = 'on'";
+							$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
+
+							$array_articulos_pareto = array();
+
+							//Creo un arreglo con los articulos regulados
+							while($row = mysql_fetch_array($res)){
+
+								$array_articulos_pareto[$row['Parcod']] = $row;
+
+							}
+
+							foreach($array_articulos_pareto as $key => $value){
+
+									unset($array_resultado[$key]);
+
+								}
+
+							//Consulta los codigos de los articulos regulados
+							$q = "  SELECT * "
+								."    FROM ".$wbasedato_cliame."_000270 "
+								."	 WHERE Regest = 'on'";
+							$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
+
+							$array_articulos_reg = array();
+
+							//Creo un arreglo con los articulos regulados
+							while($row = mysql_fetch_array($res)){
+
+								$array_articulos_reg[$row['Regcod']] = $row;
+
+							}
+
+							foreach($array_articulos_reg as $key => $value){
+
+									unset($array_resultado[$key]);
+
+								}
+
+							if(count($array_resultado) == 0){
+								$array_resultado = array();
+							}
+
+			break;
+
+
+		}
+
+
+		//print_r($array_resultado);
+	}
 
 
 	if($tipo_articulo != ''){
@@ -1420,13 +1770,13 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 		//Medicamentos es on y dispositivos es off
 		if($tipo_articulo == 'on'){
 			//Consulta los codigos de los medicamentos
-			$q = "  SELECT artcod "
+			$q = "  SELECT * "
 				."    FROM ".$wbasedato."_000026 "
 				."	 WHERE Artest = 'on'"
 				."	   AND Artesm = 'on'";
 		}else{
 			//Consulta los codigos de los dispositivos
-			$q = "  SELECT artcod "
+			$q = "  SELECT * "
 				."    FROM ".$wbasedato."_000026 "
 				."	 WHERE Artest = 'on'"
 				."	   AND (Artesm = 'off' OR Artesm = '')";
@@ -1439,325 +1789,42 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 		//Creo un arreglo con los articulos regulados
 		while($row = mysql_fetch_array($res)){
 
-			$array_articulos_medi_dispo[$row['artcod']] = $row;
+			$array_articulos_medi_dispo[$row['Artcod']] = $row;
 
 		}
 
-	}
+		foreach($array_articulos_medi_dispo as $key => $value){
 
+				if(array_key_exists($key, $array_resultado)){
 
-	//$size = memory_get_usage(true);
-	
-    //$unit=array('b','kb','mb','gb','tb','pb');
-    //echo @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
-	//return;	
-	
-	$i = 0;
-	$array_resultado = array();
+					$array_resultado_medi_dispo[$key] = $array_resultado_aux[$key];
 
-
-	$cont_registros = 0;
-	$pagina_terminada = false;
-	
-	//se crea el archivo csv cuando se genera la  primera página
-	if ($registros_inicial == 0)
-	{
-		$fp = fopen('incrementotarifas.csv', 'w');
-		//se crea el encabezado
-		fputcsv($fp, array("Codigo","Tarifa","Generico","Comercial","UN","Grupo","POS","CUM","Invima","Costo","TarifaActual","TarifaIncremento","Clasificacion","FechaCodificacion"));
-	}
-	
-
-	//while(($row = odbc_fetch_array($err_o)) && $pagina_terminada)
-	while(($row = odbc_fetch_array($err_o)))
-	{
-		$i++;
-		
-		//if ($i<30)
-		//{
-		//	echo "\n";
-		//	print_r($row);
-		//}
-			
-		
-		$ProcesarTarifa = true;
-		
-		//Filtros matrix
-		if($pos != '')
-		{
-			if(!array_key_exists(odbc_result($err_o,'artcod'), $array_articulos_pos))
-			{	
-				$ProcesarTarifa = false;
-			}	
-		}
-
-		if($articulo_idc != '')
-		{
-			if(!array_key_exists(odbc_result($err_o,'artcod'), $array_articulos_idc))
-			{	
-				$ProcesarTarifa = false;
-			}	
-			
-		}
-		
-		if($regulado != '' and $pareto == '')
-		{
-			if($regulado =='S')
-			{
-				
-				if(!array_key_exists(odbc_result($err_o,'artcod'), $array_articulos_reg))
-				{	
-					$ProcesarTarifa = false;
-				}	
-							
-				
-			}else{
-			
-				if(array_key_exists(odbc_result($err_o,'artcod'), $array_articulos_reg))
-				{	
-					$ProcesarTarifa = false;
-				}	
-			}
-		}
-		
-		if($pareto != '' and $regulado == '')
-		{
-			if($pareto =='S')
-			{
-				
-				if(!array_key_exists(odbc_result($err_o,'artcod'), $array_articulos_pareto))
-				{	
-					$ProcesarTarifa = false;
-				}	
-							
-				
-			}else{
-			
-				if(array_key_exists(odbc_result($err_o,'artcod'), $array_articulos_pareto))
-				{	
-					$ProcesarTarifa = false;
-				}	
-			}
-		}
-
-		if($tipo_articulo != '')
-		{
-			
-			if(!array_key_exists(odbc_result($err_o,'artcod'), $array_articulos_medi_dispo))
-			{	
-				$ProcesarTarifa = false;
-			}				
-		}
-
-
-		if ($ProcesarTarifa)
-		{
-			$cod_tarifa = trim(odbc_result($err_o,'arttartar'));
-			if ($cont_registros == 0)
-			{
-				$datamensaje['html'] .= "<br><input value='Actualizar tarifas' onclick='mostrar_art(\"on\");' type='button'><input value='Exportar a Excel' onclick='window.location.href=\"DescargarArchivo.php\";');' type='button'><br><br>";
-				$datamensaje['html'] .= "<table><tr class='encabezadotabla'><td>Codigo</td><td>Tarifa</td><td>Nombre generico</td><td>Nombre comercial</td><td>UN</td><td>Registro Invima</td><td>Costo compra</td><td>Tarifa Actual</td><td>Tarifa incremento</td><th>Fecha Codificacion</th><td>Basado en costo</td></tr>";
-				$datamensaje['html_oculto'] .= "<table id='exportTable'><thead><tr class='encabezadotabla'><th>Codigo</th><th>Tarifa</th><th>Generico</th><th>Comercial</th><th>UN</th><th>Grupo</th><th>POS</th><th>CUM</th><th>Invima</th><th>Costo</th><th>TarifaActual</th><th>TarifaIncremento</th><th>Clasificacion</th><th>FechaCodificacion</th></tr></thead>";
-				if ($actualizar == 'on')
-				{
-					$log = "INSERT INTO ".$wbasedato_cliame."_000277 (       Medico           ,   Fecha_data    ,   Hora_data    ,       Lognit  ,           Logfin         ,         Loggin 	      ,      Loggfi       ,           Logexg        ,            Loging       ,        Logcin          ,       Logcfi         ,      Logcex              ,       Logcoi              ,      Logreg    ,     Logpar   ,    Logpos ,       Logtip        ,        Logidc      ,     Logtar   ,     Logred     ,       Loginp          ,      Loginv           ,        Logiva				 		, Logico 						,Logobs      ,    Logest, Seguridad ) "
-											."                 VALUES ('".$wbasedato_cliame."','" . $wfecha . "','" . $whora . "', '".$entidad."','" . $fecha_inicio_inc . "','" . $grupo_inicial . "','". $grupo_final."','" .$grupos_excluidos. "','" .$grupos_incluidos. "','" .$codigo_inicial . "','" .$codigo_final. "' ,'".$articulos_excluidos."', '".$articulos_incluidos."', '".$regulado."', '".$pareto."', '".$pos."', '".$tipo_articulo."', '".$articulo_idc."', '".$tarifa."', '".$redondeo."', '".$porc_incremento."', '".$inc_tarifa_fija."', 		'".$inc_valor_adicional."'  , '".$incremento_sobre_costo."'	,'".$observaciones."','on','".$_SESSION['user']."')";
-					$err = mysql_query($log, $conex) or die (mysql_errno().$log." - ".mysql_error());
-					$id = mysql_insert_id();
-					//echo "primer id:".$id." "; 
 				}
 
-			}
-			$value = $row;
-			$cont_registros++;
-			if ($cont_registros >= ($registros_inicial + $registros_final))
-			{
-				//se usará en el futuro para solo procesar hasta el último registro correspondiente a la página
-				$pagina_terminada = true;
-			}
-			if (($cont_registros >= $registros_inicial) && ($cont_registros < ($registros_inicial + $registros_final)))
-			{
-				
-				$class2 = "class='fila".(($i%2)+1)."'";
-				$incremento_sobre_costo = 'off';
-				switch(1){
-
-				case ($porc_incremento != '') :
-										//si es por costo buscar el costo del articulo ******
-										$valor_insumo = $value['arttarval'];
-										if($inc_costo_porcentaje == "on"){
-											$valor_insumo = $value['artcos']*('1.'.$value['artiva']);
-											$incremento_sobre_costo = 'on';
-										}
-										$incremento = porcentaje($valor_insumo, $porc_incremento, $redondeo, $inc_costo_porcentaje);
-				break;
-
-				case ($inc_tarifa_fija != '') :
-										$incremento = $inc_tarifa_fija;
-				break;
-
-				case ($inc_valor_adicional != ''):
-										$valor_insumo = $value['arttarval'];
-										if($inc_costo_adicional == "on"){
-											$valor_insumo = $value['artcos']*('1.'.$value['artiva']);
-											$incremento_sobre_costo = 'on';
-										}
-										$incremento = $inc_valor_adicional+$valor_insumo;
-				break;
-				}
-
-				
-				$datamensaje['html'] .= "<tr $class2><td>".$value['artcod']."</td><td>".$datosTarifas[$cod_tarifa]."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artgen'])."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artcom'])."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artuni'])."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artreg'])."</td><td align=right>".number_format($value['artcos']*(('1.'.$value['artiva'])*1), 2)."</td><td align=right>".number_format($value['arttarval'], 2)."</td><td align=right>".number_format($incremento, 2)."</td><td align=center>".$value['artfec']."</td><td align=center>".(($incremento_sobre_costo=='on') ? 'Si': 'No')."</td></tr>";
-				
-
-
-			}
-			
-
-			if ($registros_inicial == 0)
-			{
-				$incremento_sobre_costo = 'off';
-				switch(1)
-				{
-
-					case ($porc_incremento != '') :
-						$valor_insumo = $value['arttarval'];
-						if($inc_costo_porcentaje == "on"){
-							$valor_insumo = $value['artcos']*('1.'.$value['artiva']);
-							$incremento_sobre_costo = 'on';
-						}
-						$incremento = porcentaje($valor_insumo, $porc_incremento, $redondeo, $inc_costo_porcentaje);
-						break;
-
-					case ($inc_tarifa_fija != '') :
-						$incremento = $inc_tarifa_fija;
-						break;
-
-					case ($inc_valor_adicional != ''):
-						$valor_insumo = $value['arttarval'];
-						if($inc_costo_adicional == "on"){
-							$valor_insumo = $value['artcos']*('1.'.$value['artiva']);
-							$incremento_sobre_costo = 'on';
-						}
-						$incremento = $inc_valor_adicional+$valor_insumo;
-						break;
-				}
-
-				$datosArticulosGenerico = limpiarString($datosArticulos[$value['artcod']]['Artgen']);
-				$datosArticulosComercial = limpiarString($datosArticulos[$value['artcod']]['Artcom']);
-				$datosArticulosInvima = limpiarString($datosArticulos[$value['artcod']]['Artreg']);
-				$datosArtPOS = limpiarString($datosArticulos[$value['artcod']]['Artpos']);
-
-				if($datosArtPOS == 'P'){
-				 $datosArtPOS = "POS";
-				}elseif($datosArtPOS == 'N'){
-				 $datosArtPOS = "NO POS";
-				}	
-				$costoCorregido = $value['artcos']*(('1.'.$value['artiva'])*1);//-->2019-07-10
-				
-				fputcsv($fp, array($value['artcod'],$datosTarifas[$cod_tarifa],utf8_encode($datosArticulosGenerico),utf8_encode($datosArticulosComercial),utf8_encode($datosArticulos[$value['artcod']]['Artuni']),utf8_encode($datosArticulos[$value['artcod']]['Artgru']),$datosArtPOS,utf8_encode($datosArticulos[$value['artcod']]['Artcum']),utf8_encode($datosArticulosInvima),$costoCorregido,$value['arttarval'],$incremento,$datosArticulos[$value['artcod']]['Artcla'],$value['artfec']));
-			}
-	
-			if($actualizar == 'on')
-			{
-
-				//echo "id:".$id." "; 
-
-
-				$incremento_sobre_costo = 'off';
-				switch(1){
-				case ($porc_incremento != '') :
-									//si es por costo buscar el costo del articulo ******
-									$valor_insumo = $value['arttarval'];
-									if($inc_costo_porcentaje == "on"){
-										$valor_insumo = $value['artcos'];
-										$incremento_sobre_costo = 'on';
-									}
-									$incremento = porcentaje($valor_insumo, $porc_incremento, $redondeo, $inc_costo_porcentaje);
-				break;
-
-				case ($inc_tarifa_fija != '') :
-										$incremento = $inc_tarifa_fija;
-				break;
-
-				case ($inc_valor_adicional != ''):
-									$valor_insumo = $value['arttarval'];
-									if($inc_costo_adicional == "on"){
-										$valor_insumo = $value['artcos'];
-										$incremento_sobre_costo = 'on';
-									}
-									$incremento = $inc_valor_adicional+$valor_insumo;
-				break;
-				}
-
-				$log = "INSERT INTO ".$wbasedato_cliame."_000272 (       Medico       ,   Fecha_data ,   Hora_data     , Logconsec,    Logcodart         ,           Logoldval         ,      Lognewval      ,      Logoldvaa           ,        Lognewvaa          ,         Logoldfin         ,     Lognewfin            ,          Logtarifa       , Logcosto				, Logincos						, Logestado	, Seguridad          ) "
-								."                 VALUES ('".$wbasedato_cliame."','" . $wfecha . "','" . $whora . "', '".$id."','".$value['artcod']."','" . $value['arttarval'] . "','" . $incremento . "','". $value['arttarvaa']."','" .$value['arttarval']. "','" .$value['arttarfec']. "','" .$fecha_inicio_inc . "','" .$value['arttartar']. "' , '".$value['artcos']."'	, '".$incremento_sobre_costo."'	, 'on' 		, '".$_SESSION['user']."')";
-				$err = mysql_query($log, $conex) or die (mysql_errno().$q." - ".mysql_error());
-
-				$query_update = "UPDATE ivarttar SET arttarval = '".$incremento."', arttarvaa='".$value['arttarval']."', arttarfec = '".$fecha_inicio_inc."', arttarumo = '".$_SESSION['user']."', arttarfmo = '".date('Y-m-d H:i:s')."' WHERE arttarcod = '".$value['artcod']."' AND arttartar = '".$cod_tarifa."'";
-				$err_update = odbc_do($conexUnix,$query_update) or die (odbc_errormsg());
-
-
-				
-				$datamensaje['query_update_ok'] = "on";
-				$datamensaje['mensaje_update'] = "Articulos actualizados";
-			}	
-			
 		}
-		
 
+
+		//Igualo la variable $array_resultado para que sea leida correctamente en el foreach que sigue y pinte la informacion necesaria.
+		$array_resultado = $array_resultado_medi_dispo;
+		//print_r($array_resultado);
+
+		if(count($array_resultado) == 0){
+				$array_resultado = array();
+			}
 	}
-	if ($registros_inicial == 0)
-	{
-		fclose($fp);
-	}
-	
-	//echo " Numero Registros:".$i;
-	//return;
-	if ($cont_registros > 0)
-	{
-
-		$datamensaje['html'] .= "</table>";
-		$datamensaje['html_oculto'] .= "</tbody></table>";
-
-
-	}
-
-	$cant_registros_pagina = $registros_final;
-	$datamensaje['cant_registros_pagina'] = $cant_registros_pagina;
-	$datamensaje['total_registros'] =  $cont_registros;
-
-	//$size = memory_get_usage(true);
-	
-    //$unit=array('b','kb','mb','gb','tb','pb');
-    //echo @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
-	//return;	
-	
-	echo json_encode($datamensaje);
-
-	return;
-		// echo count($array_resultado);
-	// print_r($array_resultado);
-
 
 	$cant_registros = array_sum(array_map("count", $array_resultado)); //Suma la cantidad total de elementos en el arreglo ya que es multidimensional.
 
 	if($cant_registros > 0){
 
-
-		//El resultado final ya no se pagina debido a que es un arreglo multidimensional, los registros de la pàgina se extraeran en còdigo  Leandro Meneses 2021/01/25
-		//$array_resultado_final = array_slice($array_resultado, $registros_inicial, $registros_final); //Array porcionado, solo mostrara una cantidad definica de registros.
-		$array_resultado_final = $array_resultado;
+		$array_resultado_final = array_slice($array_resultado, $registros_inicial, $registros_final); //Array porcionado, solo mostrara una cantidad definica de registros.
 		$array_resultado_final_oculto = array_slice($array_resultado, 0, 1000000); //Array entero, para poder pintarlo oculto.
-		//El numero de registros de la pagina corresponde al parametro enviado, antes era diferente ya que el arreglo es multdimencional   Leandro Meneses 2021/01/25
-		$cant_registros_pagina = $registros_final;
-		//$cant_registros_pagina = array_sum(array_map("count", $array_resultado_final)); //Cantidad de registros por pagina.
+		$cant_registros_pagina = array_sum(array_map("count", $array_resultado_final)); //Cantidad de registros por pagina.
 
 		asort($array_resultado_final);
 
 		$wfecha = date('Y-m-d');
 		$whora = date('H:i:s');
-
 
 		if(count($array_resultado_final) > 0){
 
@@ -1765,45 +1832,42 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 			$datamensaje['html'] .= "<table><tr class='encabezadotabla'><td>Codigo</td><td>Tarifa</td><td>Nombre generico</td><td>Nombre comercial</td><td>UN</td><td>Registro Invima</td><td>Costo compra</td><td>Tarifa Actual</td><td>Tarifa incremento</td><th>Fecha Codificacion</th><td>Basado en costo</td></tr>";
 			$datamensaje['html_oculto'] .= "<table id='exportTable'><thead><tr class='encabezadotabla'><th>Codigo</th><th>Tarifa</th><th>Generico</th><th>Comercial</th><th>UN</th><th>Grupo</th><th>POS</th><th>CUM</th><th>Invima</th><th>Costo</th><th>TarifaActual</th><th>TarifaIncremento</th><th>Clasificacion</th><th>FechaCodificacion</th></tr></thead>";
 
-			$cont_registros = 0;
+
 			foreach($array_resultado_final as $cod_art =>$tarifas){
 
 				foreach($tarifas as $cod_tarifa => $value){
-				 if (($cont_registros >= $registros_inicial) && ($cont_registros < ($registros_inicial + $registros_final))){
-				 
-					 $class2 = "class='fila".(($i%2)+1)."'";
-					 $incremento_sobre_costo = 'off';
-					 switch(1){
 
-						case ($porc_incremento != '') :
-												//si es por costo buscar el costo del articulo ******
-												$valor_insumo = $value['arttarval'];
-												if($inc_costo_porcentaje == "on"){
-													$valor_insumo = $value['artcos']*('1.'.$value['artiva']);
-													$incremento_sobre_costo = 'on';
-												}
-												$incremento = porcentaje($valor_insumo, $porc_incremento, $redondeo, $inc_costo_porcentaje);
-						break;
+				 $class2 = "class='fila".(($i%2)+1)."'";
+				 $incremento_sobre_costo = 'off';
+				 switch(1){
 
-						case ($inc_tarifa_fija != '') :
-												$incremento = $inc_tarifa_fija;
-						break;
+					case ($porc_incremento != '') :
+											//si es por costo buscar el costo del articulo ******
+											$valor_insumo = $value['arttarval'];
+											if($inc_costo_porcentaje == "on"){
+												$valor_insumo = $value['artcos']*('1.'.$value['artiva']);
+												$incremento_sobre_costo = 'on';
+											}
+											$incremento = porcentaje($valor_insumo, $porc_incremento, $redondeo, $inc_costo_porcentaje);
+					break;
 
-						case ($inc_valor_adicional != ''):
-												$valor_insumo = $value['arttarval'];
-												if($inc_costo_adicional == "on"){
-													$valor_insumo = $value['artcos']*('1.'.$value['artiva']);
-													$incremento_sobre_costo = 'on';
-												}
-												$incremento = $inc_valor_adicional+$valor_insumo;
-						break;
-					 }
-				 
-					$datamensaje['html'] .= "<tr $class2><td>".$value['artcod']."</td><td>".$datosTarifas[$cod_tarifa]."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artgen'])."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artcom'])."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artuni'])."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artreg'])."</td><td align=right>".number_format($value['artcos']*(('1.'.$value['artiva'])*1), 2)."</td><td align=right>".number_format($value['arttarval'], 2)."</td><td align=right>".number_format($incremento, 2)."</td><td align=center>".$value['artfec']."</td><td align=center>".(($incremento_sobre_costo=='on') ? 'Si': 'No')."</td></tr>";
+					case ($inc_tarifa_fija != '') :
+											$incremento = $inc_tarifa_fija;
+					break;
 
-					$i++;
+					case ($inc_valor_adicional != ''):
+											$valor_insumo = $value['arttarval'];
+											if($inc_costo_adicional == "on"){
+												$valor_insumo = $value['artcos']*('1.'.$value['artiva']);
+												$incremento_sobre_costo = 'on';
+											}
+											$incremento = $inc_valor_adicional+$valor_insumo;
+					break;
 				 }
-				 $cont_registros++;
+
+				 $datamensaje['html'] .= "<tr $class2><td>".$value['artcod']."</td><td>".$datosTarifas[$cod_tarifa]."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artgen'])."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artcom'])."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artuni'])."</td><td>".utf8_encode($datosArticulos[$value['artcod']]['Artreg'])."</td><td align=right>".number_format($value['artcos']*(('1.'.$value['artiva'])*1), 2)."</td><td align=right>".number_format($value['arttarval'], 2)."</td><td align=right>".number_format($incremento, 2)."</td><td align=center>".$value['artfec']."</td><td align=center>".(($incremento_sobre_costo=='on') ? 'Si': 'No')."</td></tr>";
+
+				 $i++;
 				}
 			}
 
@@ -1862,8 +1926,7 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 			$datamensaje['html_oculto'] .= "</tbody></table>";
 
 
-			if($actualizar == 'on')
-			{
+			if($actualizar == 'on'){
 
 				$log = "INSERT INTO ".$wbasedato_cliame."_000277 (       Medico           ,   Fecha_data    ,   Hora_data    ,       Lognit  ,           Logfin         ,         Loggin 	      ,      Loggfi       ,           Logexg        ,            Loging       ,        Logcin          ,       Logcfi         ,      Logcex              ,       Logcoi              ,      Logreg    ,     Logpar   ,    Logpos ,       Logtip        ,        Logidc      ,     Logtar   ,     Logred     ,       Loginp          ,      Loginv           ,        Logiva				 		, Logico 						,Logobs      ,    Logest, Seguridad ) "
 										."                 VALUES ('".$wbasedato_cliame."','" . $wfecha . "','" . $whora . "', '".$entidad."','" . $fecha_inicio_inc . "','" . $grupo_inicial . "','". $grupo_final."','" .$grupos_excluidos. "','" .$grupos_incluidos. "','" .$codigo_inicial . "','" .$codigo_final. "' ,'".$articulos_excluidos."', '".$articulos_incluidos."', '".$regulado."', '".$pareto."', '".$pos."', '".$tipo_articulo."', '".$articulo_idc."', '".$tarifa."', '".$redondeo."', '".$porc_incremento."', '".$inc_tarifa_fija."', 		'".$inc_valor_adicional."'  , '".$incremento_sobre_costo."'	,'".$observaciones."','on','".$_SESSION['user']."')";
@@ -1911,7 +1974,6 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 				$datamensaje['query_update_ok'] = "on";
 				$datamensaje['mensaje_update'] = "Articulos actualizados";
 			}
-		
 		}
 
 	}
@@ -1923,7 +1985,6 @@ if(isset($operacion) && $operacion == 'mostrar_art'){
 
 	return;
 }
-
 
 function eliminarArchivosDiasAnteriores($dir, $dias_cache_archivos_furips = 1)
 {
@@ -2086,17 +2147,17 @@ function consultarArticulos(){
 
 	$wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
-	$q_medicamento= "SELECT artcod,Artuni,Artgru,Artcum,Artcla,Artgen,Artcom,Artreg,Artpos
+	$q_medicamento= "SELECT *
 					   FROM {$wbasedato_movhos}_000026
 					  WHERE Artest = 'on'";
 	$r_medicamento = mysql_query($q_medicamento,$conex) or die("Error en el query: ".$q_medicamento."<br>Tipo Error:".mysql_error());
-	//echo $q_medicamento;
+
 	while($row_medicamento = mysql_fetch_array($r_medicamento))
 	{
-		$arr_medicamento[trim($row_medicamento['artcod'])] = $row_medicamento;
+		$arr_medicamento[trim($row_medicamento['Artcod'])] = $row_medicamento;
 	}
 
-	
+
 	return $arr_medicamento;
 }
 
