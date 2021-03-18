@@ -595,6 +595,8 @@ function consultarCargoInsumoPorLinea($conex, $conexUnix, $wbasedato, $arr_param
 
 function consultaCargosUnix($conex, $conexUnix, $wbasedato, $wbasedato_movhos, $solo_facturas, $wccos_rep, $row, &$data, &$arr_cargosReporte, &$arr_cargosHisFactNotas, &$Tcardoi_ant, &$fuente_insumo, &$drodocdoc, &$arr_DocumentosFuentes, &$arr_consultas_por_historia)
 {
+	global $wcenmez;
+	
     $Tcarlin      = $row['linea_insumo'];
     $fecha_rep    = $row['Turfec'];
     $historia_rep = $row['Tcarhis'];
@@ -717,8 +719,8 @@ function consultaCargosUnix($conex, $conexUnix, $wbasedato, $wbasedato_movhos, $
                 if($row['Logpro'] =='on')
                 {
                     $querycenpro = "SELECT  Pdeins
-                                    FROM    cenpro_000003
-                                    WHERE   Pdepro ='{$row['Tcarprocod']}'";
+                                    FROM    {$wcenmez}_000003
+                                    WHERE   Pdepro =".$row['Tcarprocod']."";
                     // $data["evidencia_error"][] = "DEBUG querycenpro: ".$querycenpro.' > '.PHP_EOL;
                     // $arr_consultas_por_historia[$historia_ing][] = $querycenpro;
                     if($resquerycenpro =  mysql_query( $querycenpro, $conex  ))
@@ -772,7 +774,7 @@ function consultaCargosUnix($conex, $conexUnix, $wbasedato, $wbasedato_movhos, $
         else
         {
             // $data["error"] = 1;
-            $data["mensaje"] = "Problemas al generar el reporte";
+            $data["mensaje"] = "Problemas al generar el reporte"; 
             $data["evidencia_error"][] = "drodocdoc: es un valor vacío, no esta integrado, Tcardoi: {$row['Tcardoi']}, fuen_insumo: {$row['fuen_insumo']}, Tcarprocod: {$row['Tcarprocod']}";
             // $data["evidencia_error"][] = $sqlu;
         }
@@ -1567,6 +1569,7 @@ include_once("root/comun.php");
 $wbasedato     = consultarAliasPorAplicacion($conex, $wemp_pmla, 'facturacion');
 $wbasedato_tcx = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tcx');
 $wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 
 //Centros de costos
 $sqlCco = " SELECT  Ccocod, Ccocir, Ccourg

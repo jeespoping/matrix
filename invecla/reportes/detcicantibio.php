@@ -1,17 +1,28 @@
 <HTML>
+<html><input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <HEAD>
 <TITLE>DETALLA CICLOS DE ANTIBIOTICOS DE UN PACIENTES</TITLE>
 </HEAD>
 <BODY>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
         " <H1>Para entrar correctamente a la aplicacion debe".
         " hacerlo por la pagina <FONT COLOR='RED'>" .
         " index.php</FONT></H1>\n</CENTER>");
-
+	else
+	{
+		$user_session = explode('-', $_SESSION['user']);
+        $wuse = $user_session[1];
+        mysql_select_db("matrix");
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wcenpro = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez"); 
+	
+        $conex = obtenerConexionBD("matrix");
+	}
  
 
 
@@ -29,12 +40,12 @@ function calcularDiferenciaDias($fecha_inicio, $fecha_fin)
 }
 
  //Forma
- echo "<form name='detcicantibio' action='detcicantibio.php' method=post>";
+ echo "<form name='detcicantibio' action='detcicantibio.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
 	echo "<center><table border=0>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>DETALLE CICLOS DE ANTIBIOTICOS</font></b><br>";
 	echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTE:".$whis."-".$wnum." ".$wnom." </font></b><br>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: detcicantibio.php Ver. 2016/04/12<br>AUTOR: JairS</font></b><br>";
+    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: detcicantibio.? Ver. 2016/04/12<br>AUTOR: JairS</font></b><br>";
     echo "</table>";
 
     echo "<br>";
@@ -61,23 +72,23 @@ function calcularDiferenciaDias($fecha_inicio, $fecha_fin)
 	$query = "CREATE TEMPORARY TABLE IF NOT EXISTS tmpa
 			 (INDEX idx(art))
 				SELECT Artcod art, Artcom nom
-				  FROM movhos_000026
+				  FROM ".$wmovhos."_000026
 				 WHERE artgru like 'J00%'
 				   AND artest='on'
 				 UNION ALL
 				SELECT Pdepro art, Artcom nom
-				  FROM cenpro_000003, cenpro_000002
+				  FROM ".$wcenpro."_000003, ".$wcenpro."_000002
 				 WHERE Pdeins like 'MA%'
 				   AND pdeest = 'on'
 				   AND artcod = Pdepro
 				 GROUP BY Pdepro";
 	$resultado = mysql_query($query, $conex) or die(mysql_error());
 
-    $query="Select art,nom,kadvia,kadfin,kadhin,kadfec,kadsus,kadper From movhos_000054, tmpa "
-          ." WHERE kadhis = ".$whis
-          ."  AND kading = ".$wnum
-          ."  AND kadart = art "
-          ." ORDER BY art, kadfec DESC ";
+    $query="Select art,nom,kadvia,kadfin,kadhin,kadfec,kadsus,kadper From ".$wmovhos."_000054, tmpa "
+          ." WHERE kadhis = ".$whis."
+            AND kading = ".$wnum."
+            AND kadart = art 
+           ORDER BY art, kadfec DESC ";
 
    $resultado = mysql_query($query);            // Ejecuto el query
    $nroreg = mysql_num_rows($resultado);

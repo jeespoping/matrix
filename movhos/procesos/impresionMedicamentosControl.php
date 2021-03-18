@@ -1601,7 +1601,7 @@ else{	//si no hay ajax
 				(SELECT
 					Artcod, Artgen, Artcom, '' as Artfar, Ubihac, Ubisac, Cconom, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacced, Pactid, a.*, a.id as ctcid
 				FROM
-					{$wbasedato}_000133 a, cenpro_000002 b, {$wbasedato}_000018 d, {$wbasedato}_000011 e, root_000036 f, root_000037 g
+					{$wbasedato}_000133 a, {$wcenmez}_000002 b, {$wbasedato}_000018 d, {$wbasedato}_000011 e, root_000036 f, root_000037 g
 				WHERE ctrimp = 'off'
 					AND ctrest = 'on'
 					AND artcod = ctrart
@@ -1816,7 +1816,7 @@ else{	//si no hay ajax
 				(SELECT
 					Artcod, Artgen, Artcom, '' as Artfar, Ubihac, Ubisac, Cconom, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacced, Pactid, a.*, a.id as idctc
 				FROM
-					{$wbasedato}_000133 a, cenpro_000002 b, {$wbasedato}_000018 d, {$wbasedato}_000011 e, root_000036 f, root_000037 g
+					{$wbasedato}_000133 a, {$wcenmez}_000002 b, {$wbasedato}_000018 d, {$wbasedato}_000011 e, root_000036 f, root_000037 g
 				WHERE ctrimp = 'on'
 					AND ctrest = 'on'
 					AND artcod = ctrart
@@ -2056,7 +2056,7 @@ else{	//si no hay ajax
 				SELECT
 					Artgen, Artcom, '' as Artfar, Perequ, Ubihac, Ubisac, e.Cconom, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacced, Pactid, a.*, Ctrmed, i.cconom as nomser
 				FROM
-					{$wbasedato}_000133 a, cenpro_000002 b, cenpro_000001 h, {$wbasedato}_000043 c, {$wbasedato}_000018 d, {$wbasedato}_000011 e, root_000036 f, root_000037 g, {$wbasedato}_000011 i
+					{$wbasedato}_000133 a, {$wcenmez}_000002 b, {$wcenmez}_000001 h, {$wbasedato}_000043 c, {$wbasedato}_000018 d, {$wbasedato}_000011 e, root_000036 f, root_000037 g, {$wbasedato}_000011 i
 				WHERE $control_impresion
 					AND ctrest = 'on'
 					AND a.id = '$id_registro'
