@@ -1,8 +1,8 @@
 <?php
-namespace matrix;
 
-include_once("conex.php");
-include_once("root/comun.php");
+namespace matrix\admisiones\presap\models;
+
+//include_once("root/comun.php");
 /*
  * Obtener los datos socioeconomicos de la admision
  */
@@ -20,16 +20,22 @@ class DatosSocioeconomicos {
     private $nombresCompletos;
     private $numeroDocumento;
     private $tipoDocumento;
+    private $fechaNacimiento;
+    private $nombre1;
+    private $nombre2;
+    private $apellido1;
+    private $apellido2;
 
     /*
      * 
      */
 
-    public function __construct($numeroHistoria, $numeroIngreso) {
+    public function __construct($numeroHistoria, $numeroIngreso, $conex) {
         $this->numeroHistoria = $numeroHistoria;
         $this->numeroIngreso = $numeroIngreso;
         $this->conex = $conex;
         $this->getDatos();
+        $this->calcularEdad($this->fechaNacimiento);
     }
 
     function setConex($conex) {
@@ -38,27 +44,28 @@ class DatosSocioeconomicos {
     }
 
     private function getDatos() {
-        $query = "SELECT ing.Inghis, ing.Ingnin, pac.Pactdo, pac.Pacdoc, pac.Pacno1, pac.Pacno2, pac.Pacap1, pac.Pacap2, ing.Ingdig, '', pac.Pacfna, pac.Pacsex "
+        $query = "SELECT pac.Pactdo, pac.Pacdoc, pac.Pacno1, pac.Pacno2, pac.Pacap1, pac.Pacap2, ing.Ingdig, '', pac.Pacfna, pac.Pacsex "
                 . " FROM matrix.cliame_000101 ing "
                 . " JOIN matrix.cliame_000100 pac ON pac.Pachis = ing.inghis "
                 . "WHERE ing.Inghis = ? AND ing.Ingnin = ?";
 
         if ($sql = mysqli_prepare($this->conex, $query)) {
-            $sql->bind_param("ii", $this->numeroHistoria, $this->numeroIngreso);
+
+            $numeroHistoria = $this->numeroHistoria;
+            $numeroIngreso = $this->numeroIngreso;
+
+            $sql->bind_param("ii", $numeroHistoria, $numeroIngreso);
             $sql->execute();
 
-            if ($sql->num_rows() > 0) {
-                $sql->bind_result(
-                        $this->numeroHistoria, $this->numeroIngreso,
-                        $this->tipoDocumento, $this->numeroDocumento,
-                        $nombre1, $nombre2, $apellido1, $apellido2,
-                        $this->diagnostico, $this->aseguradora,
-                        $fechaNacimiento, $this->genero);
-                $this->edad = $this->getEdad($fechaNacimiento);
-                $this->nombresCompletos($nombre1, $nombre2);
-                $this->apellidosCompletos($apellido1, $apellido2);
-                $fetch = $sql->fetch();
-            }
+            $sql->bind_result(
+                    $this->tipoDocumento, $this->numeroDocumento,
+                    $this->nombre1, $this->nombre2,
+                    $this->apellido1, $this->apellido2,
+                    $this->diagnostico, $this->aseguradora,
+                    $this->fechaNacimiento, $this->genero
+            );
+
+            $sql->fetch();
         }
     }
 
@@ -67,24 +74,72 @@ class DatosSocioeconomicos {
      * 
      */
 
-    function getEdad($fechaNacimiento) {
-        $fecha = new DateTime($fechaNacimiento);
-        $ahora = new DateTime();
-        return $ahora->diff($fecha)->y;
+    function calcularEdad() {
+        $fecha = new \DateTime($this->fechaNacimiento);
+        $ahora = new \DateTime();
+        $this->edad = $ahora->diff($fecha)->y;
     }
 
-    function getNombresCompletos() {
-        $this->nombresCompletos = $this->nombre1;
-        if ($this->nombre2) {
-            $this->nombresCompletos .= " " . $this->nombre2;
+    function getEdad() {
+        return $this->edad;
+    }
+
+    function getNumeroHistoria() {
+        return $this->numeroHistoria;
+    }
+
+    function getNumeroIngreso() {
+        return $this->numeroIngreso;
+    }
+
+    function getAseguradora() {
+        return $this->aseguradora;
+    }
+
+    function getDiagnostico() {
+        return $this->diagnostico;
+    }
+
+    function getGenero() {
+        return $this->genero;
+    }
+
+    function getNumeroDocumento() {
+        return $this->numeroDocumento;
+    }
+
+    function getTipoDocumento() {
+        return $this->tipoDocumento;
+    }
+
+    function getNombre1() {
+        return ucfirst(strtolower($this->nombre1));
+    }
+
+    function getNombre2() {
+        return ucfirst(strtolower($this->nombre2));
+    }
+
+    function getApellido1() {
+        return ucfirst(strtolower($this->apellido1));
+    }
+
+    function getApellido2() {
+        return ucfirst(strtolower($this->apellido2));
+    }
+
+    function getNombres() {
+        $this->nombresCompletos = $this->getNombre1();
+        if ($this->nombre1) {
+            $this->nombresCompletos .= " " . $this->getNombre2();
         }
         return $this->nombresCompletos;
     }
 
     function getApellidos() {
-        $this->apellidosCompletos = $this->apellido1;
+        $this->apellidosCompletos = $this->getApellido1();
         if ($this->apellido2) {
-            $this->apellidosCompletos .= " " . $this->apellido2;
+            $this->apellidosCompletos .= " " . $this->getApellido2();
         }
         return $this->apellidosCompletos;
     }
