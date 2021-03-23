@@ -49,7 +49,6 @@ else{
 	</script>
 	<?php
 	//FORMA ================================================================
-	echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
 	if (strpos($user,"-") > 0)
 		$wusuario = substr($user,(strpos($user,"-")+1),strlen($user));
 
