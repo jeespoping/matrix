@@ -1,36 +1,38 @@
-var today = new Date();
-var dd = String(today.getDate()).padStart(2, '0');
-var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-var yyyy = today.getFullYear();
+import FilaTabla from './FilaTabla';
+import {TODAYSTRING} from '../common/dateTime';
+import Empresa from '../common/Empresa';
 
 export default {
     name: 'TablaFechas',
-    data: function() {
+    data: () => {
         return {
-            fechaInicio:`${yyyy}-${mm}-${dd}`,
-            fechaFin:`${yyyy}-${mm}-${dd}`,
+            fechaInicio: TODAYSTRING,
+            fechaFin: TODAYSTRING,
+            wemp_pmla: new Empresa().obtenerIdEmpresa(),
         }
     },
+    methods: {
+        onSubmit: () =>{
+            alert("Enviando información");
+        },
+        onClose: () => {
+            window.close();
+        }
+    },
+    components:{
+        FilaTabla,
+    },
     template: `
-    <form>
+    <form v-on:submit.prevent="onSubmit" method="post">
         <table align='center' border=0 width=402>
+            <FilaTabla titulo="Fecha Inicial" v-model="fechaInicio"></FilaTabla>
+            <FilaTabla titulo="Fecha Final" v-model="fechaFin"></FilaTabla>
+        </table>
+        <table align='center' border=0 width=402>	
             <tr>
-                <td class='fila1' width=85>Fecha inicial</td>
-                <td class='fila2' align='center' width=250>
-                    <input v-model="fechaInicio" type="date" 
-                        size=10 
-                        maxlength=10  
-                        class='textoNormal'/>
-                </td>
-            </tr>
-            <tr>
-                <td class='fila1' width=85>Fecha final:</td>
-                <td class='fila2' align='center' width=250>
-                <input v-model="fechaFin" type="date" 
-                        name='wfec_i' 
-                        size=10 
-                        maxlength=10  
-                        class='textoNormal'/>
+                <td align=center bgcolor=cccccc colspan=2></b>
+                    <input type='submit'>
+                    <button type=button v-on:click="onClose">Cerrar</button></b>
                 </td>
             </tr>
         </table>

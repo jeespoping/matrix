@@ -39,8 +39,8 @@ else{
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 	$modeloAdmisiones = new Admisiones($conex,$wemp_pmla,$wtabcco);
-	$servicioAdmisiones = new ServicioAdmisiones($modeloAdmisiones);
-	$prueba = $servicioAdmisiones->calcularEdad();
+	//$servicioAdmisiones = new ServicioAdmisiones($modeloAdmisiones);
+	//$prueba = $servicioAdmisiones->calcularEdad();
 	encabezado("Sistema de reporte admisiones", $wactualiz, "cliame");
 	?>
 	<div id="app">
@@ -49,7 +49,6 @@ else{
 	</script>
 	<?php
 	//FORMA ================================================================
-	echo "<form name='indhosp' action='indicadores_hospitalarios.php' method=post>";
 	echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
 	if (strpos($user,"-") > 0)
 		$wusuario = substr($user,(strpos($user,"-")+1),strlen($user));
@@ -70,13 +69,8 @@ else{
 	$tod="Todos";
 	//$cco=" ";
 	$ipod="off";
-	
-	echo "<table align='center' border=0 width=402>";		
-	echo "<tr><td align=center bgcolor=cccccc colspan=2></b><input type='submit' value='Consultar'>&nbsp;|&nbsp;<input type=button value='Cerrar Ventana' onclick='javascript:cerrarVentana();'></b></td></tr></center>";
-	echo "</table>";
 }
 echo "</table>";
-echo "</form>";
 
 echo "</table>";
 liberarConexionBD($conex);
