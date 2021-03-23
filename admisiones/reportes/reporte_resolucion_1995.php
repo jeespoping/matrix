@@ -1,6 +1,7 @@
 <html>
 <head>
 <script src="reporte-res1995/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <title>MATRIX - [REPORTE ADMISIONES RES 1995]</title>
 </head>
 
@@ -13,9 +14,12 @@
 <?php
 include_once("conex.php");
 include_once("root/comun.php");
-include("../presap/models/Admisiones.php");
+include '../presap/models/Admisiones.php';
+include '../presap/service/ServicioAdmisiones.php';
+use matrix\admisiones\presap\models\Admisiones;
+use matrix\admisiones\presap\service\ServicioAdmisiones;
 
-$wactualiz = " 2021-03-19";
+$wactualiz = date('Y-m-d');
 
 if (!isset($user))
 if(!isset($_SESSION['user']))
@@ -32,11 +36,11 @@ else{
 	}
 	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 	$winstitucion = $institucion->nombre;
-
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
-	$wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, "tabcco");
-	$infoAdmisiones = new Admisiones($conex,$wemp_pmla,$wbasedato);
-	$infoAdmisiones->todas();
+	$wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+	$modeloAdmisiones = new Admisiones($conex,$wemp_pmla,$wtabcco);
+	$servicioAdmisiones = new ServicioAdmisiones($modeloAdmisiones);
+	$prueba = $servicioAdmisiones->calcularEdad();
 	encabezado("Sistema de reporte admisiones", $wactualiz, "cliame");
 	?>
 	<div id="app">
@@ -58,8 +62,8 @@ else{
 	$q = " SELECT ".$wtabcco.".ccocod, ".$wtabcco.".cconom "
 	."   FROM ".$wtabcco.", ".$wbasedato."_000011"
 	."  WHERE ".$wtabcco.".ccocod = ".$wbasedato."_000011.ccocod ";
-	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-	$num = mysql_num_rows($res);
+	//$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+	//$num = mysql_num_rows($res);
 	
 	$cco="Ccohos";
 	$sub="off";

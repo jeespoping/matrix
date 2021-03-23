@@ -1,20 +1,12 @@
-import Tabla from '../components/Tabla';
+import FormularioFechas from '../components/TablaFechas';
 
 export default {
-    name: 'Reporte',
-    data: function () {
-        return {
-            styleObject: {
-                color: 'red',
-                fontSize: '13px'
-            }
-        }
-    },
+    name: 'reporte',
     components: {
-        Tabla,
+        FormularioFechas,
     },
     template: `
-    <div v-bind:style="styleObject">
-        <Tabla></Tabla>
+    <div>
+        <FormularioFechas></FormularioFechas>
     </div>`
 }
