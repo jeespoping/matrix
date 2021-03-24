@@ -4,7 +4,7 @@ import Empresa from '../common/Empresa';
 
 export default {
     name: 'TablaFechas',
-    data: () => {
+    data: function() {
         return {
             fechaInicio: TODAYSTRING,
             fechaFin: TODAYSTRING,
@@ -12,8 +12,32 @@ export default {
         }
     },
     methods: {
-        onSubmit: () =>{
+        onSubmit: function() {
             alert("Enviando información");
+            fetch('../presap/controllers/Reporte1995Controller.php',{
+                method: 'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                },
+                body:JSON.stringify({
+                    'fechaInicio': this.fechaInicio,
+                    'fechaFin': this.fechaFin,
+                    'wemp_pmla': this.wemp_pmla,
+                })
+            })
+            .then(response => {
+                if(response.ok){
+                    return response.text();
+                }else {
+                    throw "Error en la llamada";
+                }
+            })
+            .then(text => {
+                console.log(text);
+            })
+            .catch(err => {
+                console.log(err);
+            });
         },
         onClose: () => {
             window.close();
