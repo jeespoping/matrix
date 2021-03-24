@@ -10,60 +10,61 @@ use matrix\admisiones\presap\models\Admisiones;
 use matrix\admisiones\presap\service\ServicioAdmisiones;
 use matrix\admisiones\presap\service\GeneradorCSV;
 
-if (!($_SERVER["REQUEST_METHOD"] == "POST")) {
+
+$wactualiz = date('Y-m-d');
+if (!isset($user))
+	if (!isset($_SESSION['user']))
+		session_register("user");
+if (!isset($_SESSION['user']))
+	terminarEjecucion($MSJ_ERROR_SESION_CADUCADA);
+else {
+	$conex = obtenerConexionBD("matrix");
+	if (!isset($wemp_pmla)) {
+		terminarEjecucion($MSJ_ERROR_FALTA_PARAMETRO . "wemp_pmla");
+	}
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$winstitucion = $institucion->nombre;
+	$wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+	if (strpos($user, "-") > 0)
+		$wusuario = substr($user, (strpos($user, "-") + 1), strlen($user));
+	if (!($_SERVER["REQUEST_METHOD"] == "POST")) {
 ?>
-	<html>
+		<html>
+		<head>
+			<script src="reporte-res1995/vue.js"></script>
+			<script src=""></script>
+			<title>MATRIX - [REPORTE ADMISIONES RES 1995]</title>
+		</head>
 
-	<head>
-		<script src="reporte-res1995/vue.js"></script>
-		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-		<title>MATRIX - [REPORTE ADMISIONES RES 1995]</title>
-	</head>
-
-	<body>
-		<?php
-		$wactualiz = date('Y-m-d');
-		if (!isset($user))
-			if (!isset($_SESSION['user']))
-				session_register("user");
-
-		if (!isset($_SESSION['user']))
-			terminarEjecucion($MSJ_ERROR_SESION_CADUCADA);
-		else {
+		<body>
+			<?php
 			/*PARTE DEL REGISTRO Y LA APLICACIÓN*/
-			$conex = obtenerConexionBD("matrix");
-			if (!isset($wemp_pmla)) {
-				terminarEjecucion($MSJ_ERROR_FALTA_PARAMETRO . "wemp_pmla");
-			}
-			$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-			$winstitucion = $institucion->nombre;
-			$wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
-			$modeloAdmisiones = new Admisiones($conex, $wemp_pmla, $wtabcco);
-			//$servicioAdmisiones = new ServicioAdmisiones($modeloAdmisiones);
 			encabezado("Reporte admisiones", $wactualiz, "cliame");
-		?>
+			?>
 			<div id="app">
 			</div>
 			<script type='module' src='reporte-res1995/main.js'>
 			</script>
+		</body>
+		</html>
 	<?php
-			//FORMA ================================================================
-			if (strpos($user, "-") > 0)
-				$wusuario = substr($user, (strpos($user, "-") + 1), strlen($user));
-
-			liberarConexionBD($conex);
-
-			//===============================================================================================================================================
-			//Rutas del programa.
-			//===============================================================================================================================================
-		}
-		echo '</body>';
-		echo '</html>';
 	} else {
+		//===============================================================================================================================================
+		//Rutas del programa.
+		//===============================================================================================================================================
+		$modeloAdmisiones = new Admisiones($conex, $wemp_pmla, $wtabcco);
+		$servicioAdmisiones = new ServicioAdmisiones($modeloAdmisiones);
+		
 		$JSONEntrada = file_get_contents('php://input');
-		$request = json_decode($JSONEntrada, TRUE);
-		$prueba = new GeneradorCSV('prueba.csv', ',');
-		$prueba->crearArchivo();
-		//echo json_encode($request);
+		$peticion = json_decode($JSONEntrada, TRUE);
+		if($peticion['accion'] == 'DESCARGAR_REPORTE'){
+			$prueba = new GeneradorCSV('prueba.csv', ',');
+			$prueba->crearArchivo();
+		}else {
+			$response = ['error' => true, 'mensaje' => 'Debe especificar una acción'];
+			echo json_encode($response);
+		}
 	}
+	liberarConexionBD($conex);
+}
 	?>
