@@ -14,11 +14,8 @@ export default {
     methods: {
         onSubmit: function() {
             alert("Enviando información");
-            fetch('../presap/controllers/Reporte1995Controller.php',{
+            fetch('?consultaAjax=',{
                 method: 'POST',
-                headers:{
-                    'Content-Type': 'application/json'
-                },
                 body:JSON.stringify({
                     'fechaInicio': this.fechaInicio,
                     'fechaFin': this.fechaFin,
@@ -27,17 +24,20 @@ export default {
             })
             .then(response => {
                 if(response.ok){
-                    return response.text();
+                    return response.blob();
                 }else {
                     throw "Error en la llamada";
                 }
             })
-            .then(text => {
-                console.log(text);
+            .then((blob) => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `report-${this.fechaInicio}-${this.fechaFin}.csv`);
+                document.body.appendChild(link);
+                link.click();
             })
-            .catch(err => {
-                console.log(err);
-            });
+            .catch(err => console.error(err));
         },
         onClose: () => {
             window.close();

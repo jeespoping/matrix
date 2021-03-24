@@ -14,13 +14,13 @@
             $this->aliasPorApp = $aliasPorApp;
         }
 
-        public function todas(){
+        public function todos(){
             $query = 'SELECT * FROM matrix.'.$this->aliasPorApp.'_000101 ORDER BY Fecha_data DESC LIMIT 0, 500';
             $res = mysql_query($query,$this->conex);
             return mysql_fetch_array($res);
         }
 
-        public function todasPorFechaIngreso($fechaInicial, $fechaFinal) {
+        public function todosPorFechaIngreso($fechaInicial, $fechaFinal) {
             $query = 'SELECT * FROM matrix.'.$this->aliasPorApp.'';
         }
     }

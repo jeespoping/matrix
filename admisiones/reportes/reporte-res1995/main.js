@@ -13,7 +13,7 @@ new Vue({
     template: `
     <div>
         <span v-bind:class="[subtituloPagina2]">
-            Parametros de la consulta para generar el reporte según la resolución 1995:
+            Ingrese los parametros:
             <br />
             <br />
         </span>
