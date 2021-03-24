@@ -10,15 +10,10 @@ use matrix\admisiones\presap\models\Admisiones;
 use matrix\admisiones\presap\service\ServicioAdmisiones;
 use matrix\admisiones\presap\service\GeneradorCSV;
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	$JSONEntrada = file_get_contents('php://input');
-	$request = json_decode($JSONEntrada, TRUE);
-	$prueba = new GeneradorCSV('prueba.csv', ',');
-	$prueba->crearArchivo();
-	//echo json_encode($request);
-} else {
+if (!($_SERVER["REQUEST_METHOD"] == "POST")) {
 ?>
 	<html>
+
 	<head>
 		<script src="reporte-res1995/vue.js"></script>
 		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -64,5 +59,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 		}
 		echo '</body>';
 		echo '</html>';
+	} else {
+		$JSONEntrada = file_get_contents('php://input');
+		$request = json_decode($JSONEntrada, TRUE);
+		$prueba = new GeneradorCSV('prueba.csv', ',');
+		$prueba->crearArchivo();
+		//echo json_encode($request);
 	}
 	?>

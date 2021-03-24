@@ -4,7 +4,6 @@ namespace matrix\admisiones\presap\controllers;
 
 include_once("conex.php");
 include '../service/GeneradorCSV.php';
-use matrix\admisiones\presap\service\GeneradorCSV;
 include_once("root/comun.php");
 
 class Reporte1995Controller
@@ -31,12 +30,4 @@ class Reporte1995Controller
             'wemp_pmla' => $request['wemp_pmla'],
         ];
     }
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $JSONEntrada = file_get_contents('php://input');
-    $request = json_decode($JSONEntrada, TRUE);
-    $prueba = new GeneradorCSV('prueba.csv', ',');
-    $prueba->crearArchivo();
-    //echo json_encode($request);
 }
