@@ -229,30 +229,10 @@
                     else{?><h4>NO SE PUDO INSERTAR EN CACARDES</h4><?php }
 
                     //GUARDAR CACAROBS:
-					$linea = lineaDeString ($obsFac, 1, 60);
-					if ($linea != "") {
-						//echo("<br>grabando lineas:<br>$linea");
-						$insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','1','$linea','0')";
-						$comInsertCacarobs = odbc_do($conex_o, $insertCacarobs);
-					}
-					if($comInsertCacarobs) {
-						$linea = lineaDeString ($obsFac, 2, 60);
-						if ($linea != "") {
-							//echo("<br>$linea");
-							$insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','2','$linea','0')";
-							$comInsertCacarobs = odbc_do($conex_o, $insertCacarobs);
-						}
-						if($comInsertCacarobs) {
-							$linea = lineaDeString ($obsFac, 3, 60);
-							if ($linea != "") {
-								//echo("<br>$linea");
-								$insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','3','$linea','0')";
-								$comInsertCacarobs = odbc_do($conex_o, $insertCacarobs);
-							}
-						}
-					}
+                    $insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','1','$obsFac','0')";
+                    $comInsertCacarobs = odbc_do($conex_o, $insertCacarobs);
                     if($comInsertCacarobs){?><!--<h4>CACAROBS => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR TODO EN CACAROBS</h4><?php }
+                    else{?><h4>NO SE PUDO INSERTAR EN CACAROBS</h4><?php }
 
                     //GUARDAR EN CAENC:
                     $insertCaenc = "insert into caenc VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','','0','$wuse','AP')";
@@ -734,7 +714,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <textarea id="observacionFac" name="observacionFac" class="form-control rounded-0" cols="129" rows="1" maxlength="180" required></textarea>
+                                            <textarea id="observacionFac" name="observacionFac" class="form-control rounded-0" cols="129" rows="1" required></textarea>
                                         </td>
                                     </tr>
                                 </table>
@@ -776,29 +756,6 @@
 
 <?php
 ////////////FUNCIONES:
-
-// Obtiene de $cadena, la linea $num, de $longitud máxima
-function lineaDeString ($cadena, $num, $longitud)
-{
-	$linea = 1;
-	$str = "";
-	$arr = explode(' ',$cadena);
-	foreach($arr as $palabra) {
-		if (strlen(trim($str . " " . $palabra)) > $longitud) {
-			if ($linea == $num) {  // retornar la línea construída
-				break;
-			}
-			$linea++;
-			$str = $palabra;
-		}
-		else
-			$str = $str . ' ' . $palabra;
-		//echo("<br>$str");
-	}
-	if ($linea < $num)
-		$str = "";
-	return $str;
-}
 
 function obtenerDatosUsuario($parametro,$wuse,$conex)
 {

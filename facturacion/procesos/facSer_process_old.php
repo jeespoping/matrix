@@ -144,24 +144,12 @@ if($accion == 'saveTempo')
         btnPercent.style.pointerEvents = 'auto';            btnPercent.style.backgroundColor = '#52C1E0';
     </script>
     <?php
-	
-	// Aquí se consulta si el concepto ya existe en la factura
     $queryPre = "select count(*) from amefactmp WHERE fac = '$numFac' AND con = '$concepto'";
     $datoPre = odbc_do($conex_o, $queryPre);
     $contPre = odbc_result($datoPre, 1);
 
-	// Se quitó la validación de no permitir un concepto varias veces en la factura.
-	// Para activarla de nuevo, quitar el true en el if
-	// OJO: ESTÁ IGUAL EN $accion == 'saveTempo2'.
-    if($contPre == 0 || true) 
+    if($contPre == 0)
     {
-		/*
-		?>
-		 <script>
-			alert ("insert");
-        </script>
-		<?php
-		*/
         $queryTemp = "insert into amefactmp
                   VALUES('$numFac','$fechafac','$plazo','$docPac','$nomPac','$tipoResp','$nitResp','$tarifa','E',
                          '$concepto','$ccosto','$valcon','$valdesc','$valneto')";
@@ -228,15 +216,11 @@ if($accion == 'saveTempo2')
     </script>
     <?php
 
-	// Aquí se consulta si el concepto ya existe en la factura
     $queryPre = "select count(*) from amefactmp WHERE fac = '$numFac' AND con = '$concepto'";
     $datoPre = odbc_do($conex_o, $queryPre);
     $contPre = odbc_result($datoPre, 1);
 
-	// Se quitó la validación de no permitir un concepto varias veces en la factura.
-	// Para activarla de nuevo, quitar el true en el if
-	// OJO: ESTÁ IGUAL EN $accion == 'saveTempo'.
-    if($contPre == 0 || true)
+    if($contPre == 0)
     {
         if($concepto == '2001' or $concepto == '2021' or $concepto == '2022' or $concepto == '2025' or $concepto == '2078' or $concepto == '2079' or $concepto == '4216' or $concepto == '9819')
         {
