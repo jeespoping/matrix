@@ -7,7 +7,8 @@ namespace Admisiones\Controller;
  *
  * @author edier
  */
-class DatosEmpresa {
+class DatosEmpresa
+{
 
     private $codigo;
     private $nombre;
@@ -17,9 +18,10 @@ class DatosEmpresa {
     private $baseDeDatos;
     private $ingpos;
 
-    function __construct($conex, $wEmp) {
+    function __construct($conex, $wEmp)
+    {
         $institucion = consultarInstitucionPorCodigo($conex, $wEmp);
-        
+
         $this->codigo = $institucion->codigo;
         $this->nombre = $institucion->nombre;
         $this->tcc = $institucion->tcc;
@@ -28,5 +30,4 @@ class DatosEmpresa {
         $this->baseDeDatos = $institucion->baseDeDatos;
         $this->ingpos = $institucion->ingpos;
     }
-
 }

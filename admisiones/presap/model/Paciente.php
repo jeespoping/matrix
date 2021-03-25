@@ -2,6 +2,7 @@
 
 
 namespace Admisiones\Model;
+
 use DateTime;
 
 /*
@@ -9,6 +10,7 @@ use DateTime;
  *
  * @author Edier Andrés Villaneda Navarro
  */
+
 class Pacientes
 {
 
@@ -27,6 +29,8 @@ class Pacientes
     protected $numeroHistoria;
     protected $numeroIngreso;
     protected $tipoDocumento;
+    protected $nombreCompleto;
+    protected $documento;
 
     /**
      * Primer apellido del paciente
@@ -105,6 +109,15 @@ class Pacientes
         return $this->nombres;
     }
 
+    /**
+     * Obtener el nombre completo del paciente
+     * @return string
+     */
+    function getNombreCompleto()
+    {
+        return $this->getNombres() . " " . $this->getApellidos();
+    }
+
     function getNumeroDocumento()
     {
         return $this->numeroDocumento;
@@ -123,6 +136,15 @@ class Pacientes
     function getTipoDocumento()
     {
         return $this->tipoDocumento;
+    }
+
+    /**
+     * Obtener el tipo y numero de documento.
+     * @return mixed
+     */
+    public function getDocumento()
+    {
+        return $this->getTipoDocumento() . " " . $this->getNumeroDocumento();
     }
 
     function setApellido1($apellido1)
