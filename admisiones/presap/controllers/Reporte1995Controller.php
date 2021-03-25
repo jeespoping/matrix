@@ -6,6 +6,9 @@ include_once("conex.php");
 include '../service/GeneradorCSV.php';
 include_once("root/comun.php");
 
+/**
+ * Maneja las peticiones y la generación del reporte para el reporte de admisiones
+ */
 class Reporte1995Controller
 {
     public $request;

@@ -30,9 +30,11 @@ else {
 	if (!($_SERVER["REQUEST_METHOD"] == "POST")) {
 ?>
 		<html>
+
 		<head>
 			<script src="reporte-res1995/vue.js"></script>
-			<script src=""></script>
+			<script src="../presap/sweeralert2/dist/sweetalert2.min.js"></script>
+			<link rel="stylesheet" href="../presap/sweeralert2/dist/sweetalert2.min.css">
 			<title>MATRIX - [REPORTE ADMISIONES RES 1995]</title>
 		</head>
 
@@ -40,31 +42,44 @@ else {
 			<?php
 			/*PARTE DEL REGISTRO Y LA APLICACIÓN*/
 			encabezado("Reporte admisiones", $wactualiz, "cliame");
+			/*$modeloAdmisiones = new Admisiones($conex,$wemp_pmla,$wtabcco);
+			$reporte = $modeloAdmisiones->todasPorFechaIngreso('"2021-03-01"','"2021-03-25"');
+			echo json_encode($reporte);*/
 			?>
 			<div id="app">
 			</div>
 			<script type='module' src='reporte-res1995/main.js'>
 			</script>
 		</body>
+
 		</html>
-	<?php
+<?php
 	} else {
 		//===============================================================================================================================================
 		//Rutas del programa.
 		//===============================================================================================================================================
 		$modeloAdmisiones = new Admisiones($conex, $wemp_pmla, $wtabcco);
 		$servicioAdmisiones = new ServicioAdmisiones($modeloAdmisiones);
-		
+
 		$JSONEntrada = file_get_contents('php://input');
 		$peticion = json_decode($JSONEntrada, TRUE);
-		if($peticion['accion'] == 'DESCARGAR_REPORTE'){
-			$prueba = new GeneradorCSV('prueba.csv', ',');
-			$prueba->crearArchivo();
-		}else {
+		if ($peticion['accion'] == 'DESCARGAR_REPORTE') {
+			$reporteCSV = new GeneradorCSV('test.csv', ',');
+			try {
+				$reporte = $modeloAdmisiones->todasPorFechaIngreso('"2021-02-23"', '"2021-03-25"');
+				echo json_encode($reporte);
+			} catch (Exception $err) {
+				$response = ['error' => true, 'mensaje' => 'Debe especificar una acción'];
+				echo json_encode($response);
+			}
+			/*if(sizeof($reporte)>0){
+				$reporteCSV->crearArchivo($reporte);
+			}*/
+		} else {
 			$response = ['error' => true, 'mensaje' => 'Debe especificar una acción'];
 			echo json_encode($response);
 		}
 	}
 	liberarConexionBD($conex);
 }
-	?>
+?>

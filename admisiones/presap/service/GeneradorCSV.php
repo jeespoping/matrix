@@ -9,10 +9,12 @@ class GeneradorCSV{
         $this->archivo =$filename;
         $this->delimitador = $delimitador;
     }
-    public function crearArchivo(){
+    public function crearArchivo($datos){
         $filename = 'holaMundo.csv';
-        $fields = array(
-            'historia','nombre','estado civil',
+        $cabecera = array(
+            'primer nombre','segundo nombre',
+            'primer apellido','segundo apellido'
+            ,'historia','estado civil',
             'documento', 'fecha de nacimiento', 
             'edad', 'sexo', 'direccion','Telefono del domicilio',
             'Lugar de residencia', 'Nombre del acompanante',
@@ -20,12 +22,11 @@ class GeneradorCSV{
             'Telefono del responsable', 'parentesco del responsable',
             'Aseguradora', 'Tipo de vinculacion');
         
-        $test = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17'];
-
         $f = fopen('php://output', 'w');
-        fputcsv($f,$fields,',');
-        fputcsv($f,$test,',');
-        fputcsv($f,$test,',');
+        fputcsv($f,$cabecera);
+        foreach($datos as $dato){
+            fputcsv($f,$dato);
+        }
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="' . $filename . '";');
         fclose($f);

@@ -1,8 +1,22 @@
-<?php 
-include '../presap/service/GeneradorCSV.php';
+<?php
+include_once("conex.php");
+include '../presap/models/Admisiones.php';
 
-use matrix\admisiones\presap\service\GeneradorCSV;
+use matrix\admisiones\presap\models\Admisiones;
 
-$prueba = new GeneradorCSV();
-$prueba->crearArchivo();
-?> 
+$conex = obtenerConexionBD("matrix");
+$wtabcco = "cliame";
+$modeloAdmisiones = new Admisiones($conex, $wemp_pmla, $wtabcco);
+try{
+    $reporte = $modeloAdmisiones->todasPorFechaIngreso('"2021-02-24"', '"2021-02-25"');
+    $json = json_encode($reporte);
+
+    if($json){
+        echo $json;
+    }else {
+        echo json_last_error_msg();
+    }
+}catch(Error $err){
+    echo json_encode($err);
+}
+liberarConexionBD($conex);

@@ -19,34 +19,48 @@ export default {
     },
     methods: {
         onSubmit: function () {
-            fetch(`?consultaAjax=&wemp_pmla=${this.wemp_pmla}`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        'fechaInicio': this.fechaInicio,
-                        'fechaFin': this.fechaFin,
-                        'wemp_pmla': this.wemp_pmla,
-                        'accion': this.accion,
-                    })
-                })
-                .then(response => {
-                    return validacionContentType(response);
-                })
-                .then(datos => {
-                    if (datos instanceof Blob) {
-                        const url = window.URL.createObjectURL(datos);
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.setAttribute('download', `reporte-${this.fechaInicio}-${this.fechaFin}.csv`);
-                        document.body.appendChild(link);
-                        link.click();
-                    } else {
-                        const respuesta = JSON.parse(datos);
-                        if (respuesta.error) {
-                            alert(respuesta.mensaje);
-                        }
-                    }
-                })
-                .catch(err => console.error(err));
+            Swal.fire({
+                title: '¿Desea generar el reporte con los parametros provistos?',
+                confirmButtonText: 'Generar',
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return fetch(`?consultaAjax=&wemp_pmla=${this.wemp_pmla}`, {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                'fechaInicio': this.fechaInicio,
+                                'fechaFin': this.fechaFin,
+                                'wemp_pmla': this.wemp_pmla,
+                                'accion': this.accion,
+                            })
+                        })
+                        .then(response => {
+                            return validacionContentType(response);
+                        })
+                        .then(datos => {
+                            if (datos instanceof Blob) {
+                                const url = window.URL.createObjectURL(datos);
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', `reporte-${this.fechaInicio}-${this.fechaFin}.csv`);
+                                document.body.appendChild(link);
+                                link.click();
+                            } else {
+                                console.log(datos);
+                                const respuesta = JSON.parse(datos);
+                                if (respuesta.error) {
+                                    alert(respuesta.mensaje);
+                                    throw new Error(respuesta.mensaje);
+                                } else {
+                                    return respuesta;
+                                }
+                            }
+                        });
+                },
+                allowOutsideClick: () => !Swal.isLoading(),
+            }).then((result) => {
+                /* Read more about handling dismissals below */
+                console.log(result.value);
+            });
         },
         onClose: () => {
             window.close();
