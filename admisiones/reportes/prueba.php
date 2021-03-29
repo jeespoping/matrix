@@ -8,9 +8,8 @@ $conex = obtenerConexionBD("matrix");
 $wtabcco = "cliame";
 $modeloAdmisiones = new Admisiones($conex, $wemp_pmla, $wtabcco);
 try{
-    $reporte = $modeloAdmisiones->todasPorFechaIngreso('"2021-02-24"', '"2021-02-25"');
+    $reporte = $modeloAdmisiones->todasPorFechaIngreso('"2021-02-23"', '"2021-03-25"');
     $json = json_encode($reporte);
-
     if($json){
         echo $json;
     }else {

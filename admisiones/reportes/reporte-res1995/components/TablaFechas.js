@@ -7,12 +7,20 @@ import {
 } from '../common/Response';
 import Empresa from '../common/Empresa';
 
+const validarFechaRequerida = (fecha, nombreCampo) => {
+    if (fecha === '') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error...',
+            text: 'El campo fecha inicio no puede estar vacío',
+        });
+    }
+}
 export default {
     name: 'TablaFechas',
     data: function () {
         return {
             fechaInicio: TODAYSTRING,
-            fechaFin: TODAYSTRING,
             wemp_pmla: new Empresa().obtenerIdEmpresa(),
             accion: 'DESCARGAR_REPORTE',
         }
@@ -20,47 +28,50 @@ export default {
     methods: {
         onSubmit: function () {
             Swal.fire({
-                title: '¿Desea generar el reporte con los parametros provistos?',
-                confirmButtonText: 'Generar',
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    return fetch(`?consultaAjax=&wemp_pmla=${this.wemp_pmla}`, {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                'fechaInicio': this.fechaInicio,
-                                'fechaFin': this.fechaFin,
-                                'wemp_pmla': this.wemp_pmla,
-                                'accion': this.accion,
+                    title: 'Confirmación',
+                    text: '¿Desea generar el informe?',
+                    confirmButtonText: 'Generar',
+                    showLoaderOnConfirm: true,
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancelar',
+                    preConfirm: () => {
+                        return fetch(`?consultaAjax=&wemp_pmla=${this.wemp_pmla}`, {
+                                method: 'POST',
+                                body: JSON.stringify({
+                                    'fechaInicio': this.fechaInicio,
+                                    'wemp_pmla': this.wemp_pmla,
+                                    'accion': this.accion,
+                                })
                             })
-                        })
-                        .then(response => {
-                            return validacionContentType(response);
-                        })
-                        .then(datos => {
-                            if (datos instanceof Blob) {
-                                const url = window.URL.createObjectURL(datos);
-                                const link = document.createElement('a');
-                                link.href = url;
-                                link.setAttribute('download', `reporte-${this.fechaInicio}-${this.fechaFin}.csv`);
-                                document.body.appendChild(link);
-                                link.click();
-                            } else {
-                                console.log(datos);
-                                const respuesta = JSON.parse(datos);
-                                if (respuesta.error) {
-                                    alert(respuesta.mensaje);
-                                    throw new Error(respuesta.mensaje);
+                            .then((response) => {
+                                return validacionContentType(response);
+                            })
+                            .then(datos => {
+                                if (datos instanceof Blob) {
+                                    const url = window.URL.createObjectURL(datos);
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.setAttribute('download', `reporte-${this.fechaInicio}.csv`);
+                                    document.body.appendChild(link);
+                                    link.click();
                                 } else {
-                                    return respuesta;
+                                    const respuesta = JSON.parse(datos);
+                                    if (respuesta.error) {
+                                        alert(respuesta.mensaje);
+                                        throw new Error(respuesta.mensaje);
+                                    } else {
+                                        return respuesta;
+                                    }
                                 }
-                            }
-                        });
-                },
-                allowOutsideClick: () => !Swal.isLoading(),
-            }).then((result) => {
-                /* Read more about handling dismissals below */
-                console.log(result.value);
-            });
+                            })
+                            .catch(err => console.log(err));
+                    },
+                    allowOutsideClick: () => !Swal.isLoading(),
+                })
+                .then((result) => {
+                    console.log(result.value);
+                });
+                validarFechaRequerida(this.fechaInicio, 'Fecha inicio');
         },
         onClose: () => {
             window.close();
@@ -72,8 +83,7 @@ export default {
     template: `
     <form v-on:submit.prevent="onSubmit" method="post">
         <table align='center' border=0 width=402>
-            <FilaTabla titulo="Fecha Inicial" v-model="fechaInicio"></FilaTabla>
-            <FilaTabla titulo="Fecha Final" v-model="fechaFin"></FilaTabla>
+            <FilaTabla titulo="Fecha" v-model="fechaInicio" :fecha="fechaInicio"></FilaTabla>
         </table>
         <table align='center' border=0 width=402>	
             <tr>

@@ -4,7 +4,9 @@ export const validacionContentType = (response) => {
         if (contentType.includes('text/csv')) {
             return response.blob();
         } else {
-            return response.text();
+            let text = response.text();
+            console.log(text);
+            return text;
         }
     } else {
         throw "Error en la petición";

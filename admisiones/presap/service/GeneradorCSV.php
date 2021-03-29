@@ -11,7 +11,10 @@ class GeneradorCSV{
     }
     public function crearArchivo($datos){
         $filename = 'holaMundo.csv';
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . "holamundo.csv" . '";');
         $cabecera = array(
+            'fecha_ingreso',
             'primer nombre','segundo nombre',
             'primer apellido','segundo apellido'
             ,'historia','estado civil',
@@ -27,8 +30,6 @@ class GeneradorCSV{
         foreach($datos as $dato){
             fputcsv($f,$dato);
         }
-        header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
         fclose($f);
     }
 }

@@ -30,9 +30,10 @@ class Admisiones
         return mysql_fetch_array($res);
     }
 
-    public function todasPorFechaIngreso($fechaInicial, $fechaFinal)
+    public function todasPorFechaIngreso($fechaInicial)
     {
-        $q = 'SELECT 
+        $q = 'SELECT
+            ing.Ingfei as fecha_ingreso,
             pac.Pacno1 AS nombre, pac.Pacno2 AS segundo_nombre, pac.Pacap1 AS primer_apellido,
             pac.Pacap2 AS segund_apellido, ing.Inghis AS historia,
             est.Seldes AS estado_civil, pac.Pacdoc AS documento, pac.Pacfna AS fecha_nacimiento,
@@ -46,13 +47,14 @@ class Admisiones
         INNER JOIN matrix.' . $this->aliasPorApp . '_000105 AS afi ON pac.Pactaf = afi.Selcod AND afi.seltip = 16
         INNER JOIN matrix.root_000006 AS mun ON pac.Paciu = mun.codigo
         INNER JOIN matrix.' . $this->aliasPorApp . '_000024 AS aseg ON ing.Ingcem = aseg.Empcod
-        WHERE ing.Ingfei BETWEEN ' . $fechaInicial . 'AND' . $fechaFinal . 'LIMIT 0,2000;';
+        WHERE ing.Ingfei = ' . $fechaInicial . ';';
         try {
+            //mysqli_set_charset($this->conex, "utf8");
             $res = mysqli_query($this->conex, $q);
-            mysqli_data_seek($res,0);
+            mysqli_data_seek($res, 0);
             $collecionReporte = [];
-            while($fila = mysqli_fetch_assoc($res)) {
-                array_push($collecionReporte,$fila);
+            while ($fila = mysqli_fetch_assoc($res)) {
+                array_push($collecionReporte, $fila);
             }
             return $collecionReporte;
         } catch (Exception $err) {
