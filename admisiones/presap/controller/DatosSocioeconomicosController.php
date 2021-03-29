@@ -8,11 +8,11 @@ use Admisiones\Model\Pacientes;
 use DateTime;
 use Exception;
 
-//include_once("root/comun.php");
 /*
  * Datos socioeconomicos de un paciente.
  *
  * @author Edier Andres Villaneda Navarro
+ * @version 1.0
  */
 
 class DatosSocioeconomicosController extends Pacientes
@@ -24,11 +24,11 @@ class DatosSocioeconomicosController extends Pacientes
     /**
      * Consultar los datos socioeconomicos de un paciente.
      *
-     * @param object $conex datos de la conexión a la base de datos. (Obligatorio)
+     * @param object $conex Datos de la conexión a la base de datos. (Obligatorio)
      * @param string $numeroHistoria Numero de Historia Clinica del paciente.
      * @param string $numeroIngreso Numero de ingreso del paciente.
      */
-    public function __construct($conex, $numeroHistoria = "", $numeroIngreso = "")
+    public function __construct($conex, string $numeroHistoria = "", string $numeroIngreso = "")
     {
         $this->conex = $conex;
         $this->setNumeroHistoria($numeroHistoria);
@@ -130,7 +130,8 @@ class DatosSocioeconomicosController extends Pacientes
             $edad = $ahora->diff($this->getFechaNacimiento())->m;
             $unidad = " meses";
         }
-        $this->setEdad($edad . $unidad);
+        $str = iconv('UTF-8', 'windows-1252', $unidad);
+        $this->setEdad($edad . $str);
     }
 
     function getError(): string

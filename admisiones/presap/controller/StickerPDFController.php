@@ -2,22 +2,19 @@
 
 namespace Admisiones\Controller;
 
-//define('FPDF_FONTPATH', 'root/font/');
 require('root/fpdf/fpdf.php');
-require('root/phpqrcode/qrlib.php');
+require 'root/tcpdf/tcpdf_barcodes_2d.php';
 
 use Exception;
 use FPDF;
-use Tools\{QRcode, QRimage};
-
-
-//use Tools\QRcode;
-
+use QRcode;
+use TCPDF2DBarcode;
 
 /**
  * Description of StickerPDFController
  *
  * @author Edier Andrés Villaneda Navarro
+ * @version 1.0
  */
 class StickerPDFController extends FPDF
 {
@@ -60,9 +57,26 @@ class StickerPDFController extends FPDF
         $this->SetXY($x, $y);
         $this->Cell($w, $h, $txt, $border, 0, $align);
     }
-    function Escribir($x, $y, $txt = '', $h = 0)
+
+    /**
+     * Pocisionar y escribir texto en el documento.
+     * @param int $x Posición horiontal
+     * @param int $y Posicion vertical
+     * @param string $label Etiqueta del texto
+     * @param string $txt Texto del campo
+     * @throws Exception
+     */
+    function Escribir(int $x, int $y, string $label = '', string $txt = '')
     {
-        $this->Text($x, $y, $txt);
+        $this->SetTextColor(96, 96, 96);
+        $this->SetFont('Courier', 'B', 8);
+        $this->Text($x, $y, $label);
+        if (!is_null($txt) || !$txt != '') {
+            $this->SetTextColor(0, 0, 0);
+            $this->SetFont('Arial', '', 9);
+            $posX = $x + ((strlen($label) * 2) - 4);
+            $this->Text($posX, $y, $txt);
+        }
     }
 
     /**
@@ -128,10 +142,10 @@ class StickerPDFController extends FPDF
         $barChar['+'] = 'nwnnnwnwn';
         $barChar['%'] = 'nnnwnwnwn';
 
-        $this->SetFont('Courier', '', 5);
-        //$this->Text($xpos, $ypos + $height + 2, $code);
-        $this->SetXY($xpos, $ypos + $height);
-        $this->Cell(0, 2, $code, 0, 0, 'C');
+        $this->SetFont('Arial', '', 9);
+        $this->Text($xpos, $ypos + $height + 3, $code);
+        $this->SetXY($xpos, $ypos + $height + 1);
+//        $this->Cell(0, 2, $code, 0, 0, 'C');
         $this->SetFillColor(0);
 
         $code = '*' . strtoupper($code) . '*';
@@ -156,12 +170,11 @@ class StickerPDFController extends FPDF
         }
     }
 
-    function QrCode($code, $file = "temp.png")
+    function QrCode($code, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '')
     {
-//        $qr = new QRimage();
-//        $qr->png($code, $file);
-        QRcode::png($code, $file);
-        return $file;
-    }
+        // generating
+        $qr = new TCPDF2DBarcode($code, 'QRCODE');
+        $this->Image($qr->getBarcodePNG(5, 5), $x, $y, $w, $h, "png");
 
+    }
 }
