@@ -487,7 +487,7 @@ if( !empty( $consultaAjax ) ){
 			$nombre		= utf8_decode( $_POST['nombre'] );
 		
 			$auditoria = consultarHistorialCambiosKardex( $conex, $wbasedato, $historia, $ingreso, $articulo, $ido );
-			$datosDemo = datosDemograficosPorIngreso( $conex, $wbasedato, $wcliame, $historia['historia'], $historia['ingreso'] );
+			$datosDemo = datosDemograficosPorIngreso( $conex, $wbasedato, $wcliame, $historia, $historia );
 			
 			$auditoria[ 'infoPaciente' ] = $datosDemo;
 			$auditoria[ 'infoPaciente' ]['nombre'] = $nombre;

@@ -525,6 +525,7 @@ function consultarMedicamentos($wemp_pmla,$fechainicio,$fechafin,$cco)
 
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion");
 	$wbasedato_mov = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 
 	// Selecciono  los cargos que mueven inventario  que tengan linea (Tcardoi !=''), estos seran la base para ir a unix a comparar
 	// su estado facturable o no .
@@ -573,6 +574,7 @@ function consultarMedicamentos($wemp_pmla,$fechainicio,$fechafin,$cco)
 	$condicion = true;
 	$title ='';
 	$wbasedato_mov = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 	$arr_documentos = array();
 	$arr_itdrodoc 	= array();
 
@@ -957,7 +959,7 @@ function consultarMedicamentos($wemp_pmla,$fechainicio,$fechafin,$cco)
 							if ($esdereemplazo =='si')
 							{
 								$querycenpro = "SELECT  Pdeins
-												  FROM  cenpro_000003
+												  FROM  ".$wcenmez."_000003
 												 WHERE  Pdepro ='".$row['Tcarprocod']."'";
 
 								$resquerycenpro=  mysql_query( $querycenpro, $conex  ) or die( mysql_errno()." - Error en el query $querycenpro - ".mysql_error() );
@@ -1353,6 +1355,7 @@ function consultarcco ($fechaini, $fechafin,$wemp_pmla)
 				<td align='center' colspan='4'><b>Centro de costos</b><div id='divselect'><select id='cco' >";
 					$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion");
 					$wbasedato_mov = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+					$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 					$select = "SELECT Tcarser , Cconom
 							  FROM ".$wbasedato."_000106 , ".$wbasedato_mov."_000011
 							 WHERE  Tcardoi !=''
