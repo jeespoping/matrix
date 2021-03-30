@@ -33,7 +33,7 @@ new Vue({
                     if (respuesta.error) {
                         alert(respuesta.mensaje);
                     }
-                    // console.log(respuesta);
+                    console.log(respuesta);
                 }
             })
             .catch(err => console.log(err));
@@ -77,7 +77,7 @@ new Vue({
                 <label for="eps">Aseguradora</label>
             </div>
             <div class="col-12 text-center">
-                <button type="submit" class="btn btn-primary">Generar Sticker</button>
+                <button type="button" class="btn btn-primary">Generar Sticker</button>
             </div>
         </form>
     </div>

@@ -6,9 +6,7 @@
     include dirname(__FILE__) . '/../presap/controllers/StickerPDFController.php';
 
     use Admisiones\Controller\DatosSocioEconomicosController as DatosPaciente;
-    use Admisiones\Controller\StickerPDFController;
-
-?>
+    use Admisiones\Controller\StickerPDFController; ?>
 
 <!doctype html>
 <html lang="es">
@@ -24,8 +22,7 @@
     <script src="../../assets/vendor/vuejs/vue.js"></script>
 
 </head>
-
-<body>
+<body class="container">
 <?php
 
     // if (!isset($user)) {
@@ -38,6 +35,11 @@
     //     terminarEjecucion($MSJ_ERROR_SESION_CADUCADA);
     // }
 
+    $wEmp = empty($_GET['wemp_pmla']) ? 0 : $_GET['wemp_pmla'];
+    $nHis = empty($_GET['nHis']) ? 0 : $_GET['nHis'];
+    $nIng = empty($_GET['nIng']) ? 0 : $_GET['nIng'];
+    $pdf = empty($_GET['pdf']) ? false : $_GET['pdf'];
+
     $conex = obtenerConexionBD("matrix");
 
     if (empty($wemp_pmla)) {
@@ -47,20 +49,18 @@
     $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
     $wInstitucion = $institucion->nombre;
     $empresa = $institucion->baseDeDatos;
-//    echo "<pre>";
-//echo var_dump($institucion);
-//    echo "<pre>";
-//    $datosPaciente = new DatosPaciente($conex, $nHis, $nIng);
+
+    $datosPaciente = new DatosPaciente($conex, $empresa, $nHis, $nIng);
+    //    echo json_encode($datosPaciente->jsonSerialize());
     $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, $institucion->baseDeDatos);
     if (strpos($user, "-") > 0) {
         $wusuario = substr($user, (strpos($user, "-") + 1), strlen($user));
     }
-    if (!($_SERVER["REQUEST_METHOD"] == "POST")) :
 
-        ?>
+    if (!$pdf || !$_SERVER["REQUEST_METHOD"] == "POST") : ?>
 
         <?php encabezado("Sticker Admisi&oacuten", date('Y-m-d'), "cliame"); ?>
-        <div class="container" id="app" empresa="<?php echo $empresa; ?>"></div>
+        <div id="app" empresa="<?php echo $empresa; ?>"></div>
 
     <?php else :
         //===============================================================================================================================================
@@ -75,7 +75,7 @@
             $prueba = new GeneradorCSV('prueba.csv', ',');
             $prueba->crearArchivo();
         } else {
-            $response = ['error' => true, 'mensaje' => 'Debe especificar una acciÃ³n'];
+            $response = ['error' => true, 'mensaje' => 'Debe especificar una acción'];
             echo json_encode($response);
         }
     endif;

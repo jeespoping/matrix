@@ -13,29 +13,33 @@
     $wEmp = empty($_GET['wemp_pmla']) ? 0 : $_GET['wemp_pmla'];
     $nHis = empty($_GET['nHis']) ? 0 : $_GET['nHis'];
     $nIng = empty($_GET['nIng']) ? 0 : $_GET['nIng'];
+    $empresa = empty($_GET['empresa']) ? null : $_GET['empresa'];
+    $json = empty($_GET['json']) ? false : $_GET['json'];
 
 //    echo "$wEmp $nHis $nIng";
 
 //$conex = obtenerConexionBD("matrix");
 
-    $datosPaciente = new DatosPaciente($conex, $nHis, $nIng);
-    header('Content-Type: text/json');
+    $datosPaciente = new DatosPaciente($conex, $empresa, $nHis, $nIng);
+    if($json){
+        header('Content-Type: text/json');
 
-    echo $datosPaciente->getJsonData();
-    //$pdf = new StickerPDFController('L', 'mm', array(50, 38));
-    //
-    //    try {
-    //        $pdf->generarSticker('cliame',
-    //            $datosPaciente->getNombreCompleto(),
-    //            $datosPaciente->getDocumento(),
-    //            $datosPaciente->getNumeroHistoria(),
-    //            $datosPaciente->getNumeroIngreso(),
-    //            $datosPaciente->getGenero(),
-    //            $datosPaciente->getEdad(),
-    //            $datosPaciente->getDiagnostico(),
-    //            $datosPaciente->getAseguradora());
-    //    } catch (Exception $e) {
-    //        die("Error intentando generar el sticker");
-    //    }
-    //
-    //    $pdf->Output();
+        echo json_encode($datosPaciente->jsonSerialize());
+    } else {
+        try {
+            $pdf = new StickerPDFController('L', 'mm', [50, 38]);
+            $pdf->generarSticker($empresa,
+                $datosPaciente->getNombreCompleto(),
+                $datosPaciente->getDocumento(),
+                $datosPaciente->getNumeroHistoria(),
+                $datosPaciente->getNumeroIngreso(),
+                $datosPaciente->getGenero(),
+                $datosPaciente->getEdad(),
+                $datosPaciente->getDiagnostico(),
+                $datosPaciente->getAseguradora());
+            $pdf->Output();
+        } catch (Exception $e) {
+            die("Error intentando generar el sticker");
+        }
+
+    }

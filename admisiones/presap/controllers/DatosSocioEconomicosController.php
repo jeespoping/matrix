@@ -26,37 +26,36 @@
         /**
          * Consultar los datos socioeconomicos de un paciente.
          * @param object $conex          Datos de la conexión a la base de datos. (Obligatorio)
-         * @param string $numeroHistoria Numero de Historia Clinica del paciente.
-         * @param string $numeroIngreso  Numero de ingreso del paciente.
+         * @param string $empresa        Alias de la empresa
+         * @param        $numeroHistoria Número de Historia Clinica del paciente.
+         * @param        $numeroIngreso  Numero de ingreso del paciente.
          */
-        public function __construct($conex, string $numeroHistoria, $numeroIngreso)
+        public function __construct($conex, string $empresa, $numeroHistoria, $numeroIngreso)
         {
             $this->setNumeroHistoria($numeroHistoria);
             $this->setNumeroIngreso($numeroIngreso);
             $this->error = "";
             if ($this->validarDatos()) {
-                $this->getDatosPaciente($conex);
+                $this->getDatosPaciente($conex, $empresa);
             }
         }
 
-        function getJsonData()
-        {
-            $var = get_object_vars($this);
-            foreach ($var as &$value) {
-                if (is_object($value) && method_exists($value, 'getJsonData')) {
-                    $value = $value->getJsonData();
-                }
-            }
-            return json_encode($var);
-        }
-
-        public function decodePostBody($request): array
+        function jsonSerialize(): array
         {
             return [
-                'fechaInicio' => $request['fechaInicio'],
-                'fechaFin' => $request['fechaFin'],
-                'wemp_pmla' => $request['wemp_pmla'],
+                'numeroHistoria' => $this->getNumeroHistoria(),
+                'numeroIngreso' => $this->getNumeroIngreso(),
+                'documento' => $this->getDocumento(),
+                'tipoDocumento' => $this->getTipoDocumento(),
+                'numeroDocumento' => $this->getNumeroDocumento(),
+                'nombreCompleto' => $this->getNombreCompleto(),
+                'nombres' => $this->getNombres(),
+                'apellidos' => $this->getApellidos(),
+                'aseguradora' => $this->getAseguradora(),
+                'diagnostico' => $this->getDiagnostico(),
+//                'edad' => $this->getEdad()
             ];
+
         }
 
         /**
@@ -85,18 +84,19 @@
         }
 
         /**
-         *
+         * @param $conex
+         * @param $empresa
          */
-        public function getDatosPaciente($conex)
+        public function getDatosPaciente($conex, $empresa)
         {
             $query = "SELECT pac.Pactdo AS tipodocumento, pac.Pacdoc as documento, "
                 . "pac.Pacno1 AS nombre, pac.Pacno2 AS segundo_nombre, "
                 . "pac.Pacap1 AS primer_apellido, pac.Pacap2 AS segundo_apellido, "
                 . "ing.Ingdig AS diagnostico, aseg.Empnom AS aseguradora, pac.Pacfna AS fecha_nacimiento, pac.Pacsex as sexo "
-                . "FROM matrix.cliame_000101 AS ing "
-                . "INNER JOIN matrix.cliame_000100 AS pac ON pac.Pachis = ing.inghis "
-                . "INNER JOIN matrix.cliame_000105 AS est ON pac.Pacest = est.Selcod AND est.seltip = 25 "
-                . "INNER JOIN matrix.cliame_000024 AS aseg ON ing.Ingcem = aseg.Empcod "
+                . "FROM matrix.{$empresa}_000101 AS ing "
+                . "INNER JOIN matrix.{$empresa}_000100 AS pac ON pac.Pachis = ing.inghis "
+                . "INNER JOIN matrix.{$empresa}_000105 AS est ON pac.Pacest = est.Selcod AND est.seltip = 25 "
+                . "INNER JOIN matrix.{$empresa}_000024 AS aseg ON ing.Ingcem = aseg.Empcod "
                 . "WHERE ing.Inghis = ? AND ing.Ingnin = ?";
 
             try {
@@ -112,51 +112,9 @@
                     $this->fechaNacimiento, $this->genero);
 
                 $sql->fetch();
-
-                $this->calcularEdad($this->fechaNacimiento);
             } catch (Exception $exc) {
                 $this->error = $exc->error;
             }
-        }
-
-        public function getDatosDiagnostico()
-        {
-            $query = "SELECT  'K088', 'Descripcion' "
-                . " FROM matrix.cliame_000101 ing "
-                . " JOIN matrix.cliame_000100 pac ON pac.Pachis = ing.inghis "
-                . "WHERE ing.Inghis = ? AND ing.Ingnin = ?";
-            try {
-                $sql = mysqli_prepare($this->conex, $query);
-
-                $sql->bind_param("ii", $this->numeroHistoria, $this->numeroIngreso);
-                $sql->execute();
-
-                $sql->bind_result($this->diagnostico, $this->aseguradora);
-
-                $sql->fetch();
-
-                $this->calcularEdad($this->fechaNacimiento);
-            } catch (Exception $exc) {
-                $this->error = $exc->error;
-            }
-        }
-
-        /*
-         * Retorna la edad, partiendo de la fecha de nacimiento.
-         *
-         */
-
-        private function calcularEdad()
-        {
-            $ahora = new DateTime();
-            $edad = $ahora->diff($this->getFechaNacimiento())->y;
-            $unidad = " años";
-            if ($edad < 1) {
-                $edad = $ahora->diff($this->getFechaNacimiento())->m;
-                $unidad = " meses";
-            }
-            $str = iconv('UTF-8', 'windows-1252', $unidad);
-            $this->setEdad($edad . $str);
         }
 
         function getError(): string
