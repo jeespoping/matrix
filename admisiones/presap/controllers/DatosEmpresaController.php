@@ -21,7 +21,7 @@ class DatosEmpresaController
     private $ingpos;
     private $codigoEmpresa;
 
-    function __construct($conex, $wEmp)
+    function __construct($wEmp)
     {
         $institucion = new consultarInstitucionPorCodigo($conex, $wEmp);
         $aliasInstitucion = new consultarAliasPorAplicacion();

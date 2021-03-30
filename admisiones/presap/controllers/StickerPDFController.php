@@ -3,12 +3,9 @@
 namespace Admisiones\Controller;
 
 require('root/fpdf/fpdf.php');
-require 'root/tcpdf/tcpdf_barcodes_2d.php';
 
 use Exception;
 use FPDF;
-use QRcode;
-use TCPDF2DBarcode;
 
 /**
  * Description of StickerPDFController
@@ -19,21 +16,31 @@ use TCPDF2DBarcode;
 class StickerPDFController extends FPDF
 {
 
-    /**
-     * Encabeczado de la pagina
-     */
-    function LogoEmpresa()
+    public function __construct($orientation = 'P', $unit = 'mm', $size = 'A4')
     {
+        parent::__construct($orientation, $unit, $size);
+        $this->AddPage();
+        $this->SetMargins(1, 1, 1);
+        $this->SetFont('Arial', 'B', 8);
+    }
+
+    /**
+     * Encabezado de la pagina
+     * @param $aliasEmpresa Alias de la empresa.
+     */
+    function LogoEmpresa(string $aliasEmpresa)
+    {
+        $fileInfo = pathinfo("/../../../images/medical/root/$aliasEmpresa");
+
         // Logo
-        $this->Image('logo.png', 10, 8, 33);
+        $this->Image(dirname(__FILE__) . '/../../../images/medical/root/cliame.jpg', 1, 4, 14, 10, $fileInfo['extension']);
         // Arial bold 15
-        $this->SetFont('Arial', 'B', 15);
+//        $this->SetFont('Arial', 'B', 15);
         // Movernos a la derecha
-        $this->Cell(80);
+//        $this->Cell(80);
         // Título
-        $this->Cell(30, 10, 'Title', 1, 0, 'C');
-        // Salto de línea
-        $this->Ln(20);
+//        $this->Cell(30, 10, 'Title', 1, 0, 'C');
+
     }
 
 
@@ -64,7 +71,6 @@ class StickerPDFController extends FPDF
      * @param int $y Posicion vertical
      * @param string $label Etiqueta del texto
      * @param string $txt Texto del campo
-     * @throws Exception
      */
     function Escribir(int $x, int $y, string $label = '', string $txt = '')
     {
@@ -83,14 +89,14 @@ class StickerPDFController extends FPDF
      * Este script implementa códigos de barras Code 39. Un código de barras Code 39 puede codificar una cadena
      * con los siguientes caracteres: dígitos (0 a 9), letras mayúsculas (A a Z) y 8 caracteres
      * adicionales (-.Espacio $ / +% *).
-     * @param $xpos abscisa del código de barras
-     * @param $ypos ordenada del código de barras
-     * @param $code valor del código de barras
+     * @param int $xpos abscisa del código de barras
+     * @param int $ypos ordenada del código de barras
+     * @param string $code valor del código de barras
      * @param float $baseline corresponde al ancho de una barra ancha (por defecto es 0.5)
      * @param int $height altura de la barra (por defecto es 5)
      * @throws Exception
      */
-    function Code39($xpos, $ypos, $code, $baseline = 0.5, $height = 5)
+    function CodigoBarras(int $xpos, int $ypos, string $code, float $baseline = 0.5, int $height = 5)
     {
 
         $wide = $baseline;
@@ -170,11 +176,31 @@ class StickerPDFController extends FPDF
         }
     }
 
-    function QrCode($code, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '')
+    /**
+     * @param $empresa
+     * @param $nombreCompleto
+     * @param $documento
+     * @param $historia
+     * @param $ingreso
+     * @param $genero
+     * @param $edad
+     * @param $dx
+     * @param $eps
+     * @throws Exception
+     */
+    function generarSticker($empresa, $nombreCompleto, $documento, $historia, $ingreso, $genero, $edad, $dx, $eps)
     {
-        // generating
-        $qr = new TCPDF2DBarcode($code, 'QRCODE');
-        $this->Image($qr->getBarcodePNG(5, 5), $x, $y, $w, $h, "png");
+        $this->Celda(1, 2, $nombreCompleto, 'C');
+        $this->LogoEmpresa($empresa);
+
+        $this->CodigoBarras(1, 4, $documento, 0.25, 10);
+
+        $this->Escribir(1, 22, 'Historia: ', $historia);
+        $this->Escribir(30, 22, 'Ingreso: ', $ingreso);
+        $this->Escribir(1, 28, 'Sexo: ', $genero);
+        $this->Escribir(15, 28, 'Edad: ', $edad);
+        $this->Escribir(37, 28, 'Dx: ', $dx);
+        $this->Escribir(1, 35, 'EPS: ', $eps);
 
     }
 }

@@ -2,12 +2,12 @@
 include_once("conex.php");
 
 //include dirname(__FILE__) . '/../../presap/controller/DatosEmpresaController.php';
-include dirname(__FILE__) . '/../../presap/controller/DatosSocioeconomicosController.php';
+include dirname(__FILE__) . '/../../presap/controller/DatosSocioEconomicosController.php';
 include dirname(__FILE__) . '/../../presap/controller/StickerPDFController.php';
 
 
 use Admisiones\Controller\{DatosEmpresaController,
-    DatosSocioeconomicosController as DatosPaciente,
+    DatosSocioEconomicosController as DatosPaciente,
     StickerPDFController};
 
 if (isset($_POST['wEmp'])) {

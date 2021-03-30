@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Admisiones\Model;
+namespace Admisiones\Models;
 
 use DateTime;
 
@@ -224,15 +224,15 @@ class Pacientes
         return $this;
     }
 
-    function setNumeroHistoria($numeroHistoria)
+    function setNumeroHistoria($numeroHistoria): Pacientes
     {
-        $this->numeroHistoria = $numeroHistoria;
+        $this->numeroHistoria = $numeroHistoria == "" ? 0 : $numeroHistoria;
         return $this;
     }
 
-    function setNumeroIngreso($numeroIngreso)
+    function setNumeroIngreso($numeroIngreso): Pacientes
     {
-        $this->numeroIngreso = $numeroIngreso;
+        $this->numeroIngreso = $numeroIngreso == "" ? 0 : $numeroIngreso;
         return $this;
     }
 
