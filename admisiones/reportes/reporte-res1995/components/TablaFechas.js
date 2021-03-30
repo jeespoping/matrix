@@ -6,13 +6,14 @@ import {
     validacionContentType
 } from '../common/Response';
 import Empresa from '../common/Empresa';
+import Permisos from '../common/Permisos';
 
 const validarFechaRequerida = (fecha, nombreCampo) => {
     if (fecha === '') {
         Swal.fire({
             icon: 'error',
             title: 'Error...',
-            text: 'El campo fecha inicio no puede estar vacío',
+            text: `El campo ${nombreCampo} no puede estar vacío`,
         });
     }
 }
@@ -35,7 +36,10 @@ export default {
                     showCancelButton: true,
                     cancelButtonText: 'Cancelar',
                     preConfirm: () => {
-                        return fetch(`?consultaAjax=&wemp_pmla=${this.wemp_pmla}`, {
+                        let permisos = new Permisos();
+                        const codigoGrupo = permisos.obtenerIdGrupo();
+                        const codigoOpcion = permisos.obtenerIdOpcion();
+                        return fetch(`?consultaAjax=&wemp_pmla=${this.wemp_pmla}&grupo=${codigoGrupo}&opcion=${codigoOpcion}`, {
                                 method: 'POST',
                                 body: JSON.stringify({
                                     'fechaInicio': this.fechaInicio,
@@ -69,9 +73,12 @@ export default {
                     allowOutsideClick: () => !Swal.isLoading(),
                 })
                 .then((result) => {
-                    console.log(result.value);
+                    Swal.fire({
+                        'title':'Exito',
+                        'text': 'Por favor verifique la descarga en el navegador',
+                    });
                 });
-                validarFechaRequerida(this.fechaInicio, 'Fecha inicio');
+            validarFechaRequerida(this.fechaInicio, 'Fecha');
         },
         onClose: () => {
             window.close();

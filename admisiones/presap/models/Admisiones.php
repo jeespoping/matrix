@@ -5,31 +5,51 @@ namespace matrix\admisiones\presap\models;
 include_once("conex.php");
 include_once("root/comun.php");
 
-use Error;
 use Exception;
-use mysqli;
+use DateTime;
 
+/**
+ * Modelo para obtener información de las admisiones
+ */
 class Admisiones
 {
-
+    /**
+     * codigo de la empresa
+     */
     private $wemp_pmla;
+    /**
+     * alias de la aplicación en matrix.
+     */
     private $aliasPorApp;
+    /**
+     * conexión a la base de datos matrix.
+     */
     private $conex;
-
+    /**
+     * 
+     */
     public function __construct($conex, $wemp_pmla, $aliasPorApp)
     {
         $this->conex = $conex;
         $this->wemp_pmla = $wemp_pmla;
         $this->aliasPorApp = $aliasPorApp;
     }
-
+    /**
+     * Obtiene 500 regisros de los ingresos por empresa
+     * @param void
+     * @return array $res
+     */
     public function todas()
     {
         $query = 'SELECT * FROM matrix.' . $this->aliasPorApp . '_000101 ORDER BY Fecha_data DESC LIMIT 0, 500';
         $res = mysql_query($query, $this->conex);
         return mysql_fetch_array($res);
     }
-
+    /**
+     * Obtiene los ingresos filtrandolos por fecha de ingreso.
+     * @param string $fechaInicial
+     * @return array $res
+     */
     public function todasPorFechaIngreso($fechaInicial)
     {
         $q = 'SELECT
@@ -54,11 +74,29 @@ class Admisiones
             mysqli_data_seek($res, 0);
             $collecionReporte = [];
             while ($fila = mysqli_fetch_assoc($res)) {
+                if ($fila['fecha_nacimiento'] != '') {
+                    $fila['edad'] = $this->calcularEdad($fila['fecha_nacimiento']);
+                }
                 array_push($collecionReporte, $fila);
             }
             return $collecionReporte;
         } catch (Exception $err) {
             throw new Exception($err);
         }
+    }
+    /**
+     * 
+     */
+    private function calcularEdad($edad)
+    {
+        $ahora = new DateTime();
+        $objetoEdad = new DateTime($edad);
+        $edad = $ahora->diff($objetoEdad)->y;
+        $unidad = " anos";
+        if ($edad < 1) {
+            $edad = $ahora->diff($objetoEdad)->m;
+            $unidad = " meses";
+        }
+        return $edad . $unidad;
     }
 }
