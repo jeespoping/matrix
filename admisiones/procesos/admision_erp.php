@@ -9714,6 +9714,7 @@ $(document).ready(function() {
 
 	//Pongo limite de fecha máxima, la cual es la actual
 	$( "#pac_fnatxtFecNac" ).datepicker( "option", "maxDate", "+0d" );
+	$( "#pac_doctxtFecExpDoc" ).datepicker( "option", "maxDate", "+0d" );
 	$( "#dat_Accfec" ).datepicker( "option", "maxDate", "+0d" );
 	$( "[name=dat_Accvfi_ux_accfin]" ).datepicker( "option", "maxDate", "+0d" );
 	$( "[name=dat_Accvfi_ux_accffi]" ).datepicker( "option", "minDate", new Date( dateActual[0], dateActual[1]-1, dateActual[2] ) );
@@ -9848,6 +9849,9 @@ $(document).ready(function() {
 	// $('#iframeModalTablero').load(function() {
 		// RunAfterIFrameLoaded();
 	// });
+	setInterval(() => {
+		$( "#pac_doctxtFecExpDoc" ).removeClass( "campoRequerido" );
+	}, 100);
 
 
  });
@@ -24410,8 +24414,9 @@ echo "<div id='div_int_datos_personales'>";
 echo "<center><table>";
 echo "<th class='encabezadotabla' colspan='8'>Datos Personales Paciente</th>";
 echo "<tr>";
-echo "<td class='fila1' colspan='2' style='width:16%'>Tipo de Documento</td>";
+echo "<td class='fila1' colspan='1' style='width:8%'>Tipo de Documento</td>";
 echo "<td class='fila1' style='width:16%'>N&uacute;mero Documento</td>";
+echo"<td class='fila1' colspan='1' style='width:8%'>Fecha de Expedici&oacute;n</td>";
 echo "<td class='fila1' style='width:16%'>Primer Apellido</td>";
 echo "<td class='fila1' style='width:16%'>Segundo Apellido</td>";
 echo "<td class='fila1' style='width:16%'>Primer Nombre</td>";
@@ -24419,11 +24424,12 @@ echo "<td class='fila1' colspan='2' style='width:16%'>Segundo Nombre</td>";
 echo "</tr>";
 echo "<tr>";
 $param="class='reset' msgError msgcampo='Tipo de documento' ux='_ux_pactid_ux_midtii' onChange='cambiarTipoDocumento( this );'";
-echo "<td class='fila1espacio' colspan='2'>";$res1=consultaMaestros('root_000007','Codigo,Descripcion,alfanumerico, docigualhis',$where="Estado='on'",'','');
+echo "<td class='fila1espacio' colspan='1'>";$res1=consultaMaestros('root_000007','Codigo,Descripcion,alfanumerico, docigualhis',$where="Estado='on'",'','');
 crearSelectHTMLAcc($res1,'pac_tdoselTipoDoc','pac_tdoselTipoDoc',$param);
 
 echo "</td>";
 echo "<td class='fila1espacio'><input type='text' msgcampo='Documento' name='pac_doctxtNumDoc' id='pac_doctxtNumDoc' class='reset' msgError='Digite el numero de documento' ux='_ux_pacced_ux_midide' onblur='verificarDocumento();verificarTriageUrgencias();'></td>";
+echo "<td class='fila1espacio'><input type='text' name='pac_doctxtFecExpDoc' id='pac_doctxtFecExpDoc' class='reset' fecha  placeholder='Seleccione fecha de expedicion' onblur=''></td>";
 echo "<td class='fila1espacio'><input type='text' msgcampo='Primer Apellido' name='pac_ap1txtPriApe' id='pac_ap1txtPriApe' class='reset' msgError='Digite el primer apellido' alfabetico ux='_ux_pacap1_ux_midap1' onblur=''></td>";
 echo "<td class='fila1espacio'><input type='text' name='pac_ap2txtSegApe' id='pac_ap2txtSegApe' class='reset' placeholder='Digite el segundo apellido' alfabetico ux='_ux_pacap2_ux_midap2' onblur=''></td>";
 echo "<td class='fila1espacio'><input type='text' msgcampo='Primer nombre' name='pac_no1txtPriNom' id='pac_no1txtPriNom' class='reset' msgError='Digite el primer nombre' alfabetico ux='_ux_pnom1_ux_midno1' onblur=''></td>";
