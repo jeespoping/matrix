@@ -1,0 +1,25 @@
+  [31morigin/HEAD[m -> origin/master
+  [31morigin/auditoriaPasswords[m
+  [31morigin/auditoriasCambiandoConex[m
+  [31morigin/autorizaciones[m
+  [31morigin/autorizacionesOrdenesCx[m
+  [31morigin/autorizacionesOrdenesCxV2[m
+  [31morigin/cambioEstudiosPorTiempo[m
+  [31morigin/cargosOrdenesClisur[m
+  [31morigin/develop/004reporte1995[m
+  [31morigin/emgModificacionesScriptSD[m
+  [31morigin/emgServDomPro[m
+  [31morigin/emg_InteroperabilidadHiruko[m
+  [31morigin/emg_autorizacionesIoHiruko[m
+  [31morigin/emghfix_cargoscpx.php[m
+  [31morigin/emlm_IncrementoTarifas[m
+  [31morigin/hfix_MejoraQueries[m
+  [31morigin/hfix_generarKardexAutomaticoSD[m
+  [31morigin/htfix_TKardexSoe[m
+  [31morigin/jmejia/prueba[m
+  [31morigin/johan[m
+  [31morigin/listaEspera[m
+  [31morigin/lm_IncrementoTarifas[m
+  [31morigin/master[m
+  [31morigin/ordenesCirugia[m
+  [31morigin/servicioDomiciliario[m
