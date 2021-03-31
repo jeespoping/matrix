@@ -1,38 +1,49 @@
 <?php
 
-namespace Admisiones\Service;
-
+namespace matrix\admisiones\presap\service;
+/**
+ * Se encarga de generar archivos CSV unidimensionales
+ */
 class GeneradorCSV
 {
 
-    private $archivo, $datos, $delimitador;
+    private $archivo, $datos, $delimitador, $cabecera = array();
 
-    public function __construct($filename = 'Sin-Nombre.csv', $delimitador = ',')
+    public function __construct(string $filename = 'Sin-Nombre.csv', string $delimitador = ',')
     {
         $this->archivo = $filename;
         $this->delimitador = $delimitador;
     }
-
-    public function crearArchivo()
+    /**
+     * Cambia el valor de la cabecera que puede llevar el archivo
+     * @param array $cabecera datos de cabecera
+     */
+    public function setCabecera(array $cabecera)
     {
-        $filename = 'holaMundo.csv';
-        $fields = array(
-            'historia', 'nombre', 'estado civil',
-            'documento', 'fecha de nacimiento',
-            'edad', 'sexo', 'direccion', 'Telefono del domicilio',
-            'Lugar de residencia', 'Nombre del acompanante',
-            'Telefono del acompanante', 'Nombre del responsable',
-            'Telefono del responsable', 'parentesco del responsable',
-            'Aseguradora', 'Tipo de vinculacion');
-
-        $test = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17'];
-
-        $f = fopen('php://output', 'w');
-        fputcsv($f, $fields, ',');
-        fputcsv($f, $test, ',');
-        fputcsv($f, $test, ',');
+        $this->cabecera = $cabecera;
+    }
+    /**
+     * Obtiene los datos de cabecera
+     * @param null 
+     * @return array datos de cabecera
+     */
+    public function getCabecera(): array
+    {
+        return $this->cabecera;
+    }
+    /**
+     * genera el archivo y permite su descarga en una respuesta blob
+     * @param array $datos información a descargar
+     */
+    public function descargarArchivo(array $datos)
+    {
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="' . $filename . '";');
+        header('Content-Disposition: attachment; filename="' . $this->archivo . '";');
+        $f = fopen('php://output', 'w');
+        fputcsv($f, $this->cabecera);
+        foreach ($datos as $dato) {
+            fputcsv($f, $dato);
+        }
         fclose($f);
     }
 }

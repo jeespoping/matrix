@@ -42,12 +42,6 @@ function percent(f_origen, f_destino,numRows,f_destino2)
 function copiarVal2(numRows)
 {
     var numRow = numRows.value;
-	
-	if (document.getElementById(1+'-'+numRow).disabled) // NO procesar líneas registradas
-		return;
-		
-	//alert('registrar');
-		
     //var numRow = numRows;
     var fuente = document.getElementById('fuente').value;           var fechafac = document.getElementById('fechafac').value;
     var plazo = document.getElementById('plazo').value;             var docPac = document.getElementById('docPac').value;
@@ -448,38 +442,8 @@ function cleanFields()
     document.getElementById('descResp').value = '';
 }
 
-// Valida que todos los registros de la factura estén grabados 
-// (que se les haya dado click en el botón ok de la derecha a cada uno)
-
-function ValidarDatosActualizados()
-{
-	var regs = "";
-    if (document.getElementById('1-1').value != "" && !document.getElementById('1-1').disabled)
-		regs = regs + document.getElementById('1-1').value + ",";
-    if (document.getElementById('1-2').value != "" && !document.getElementById('1-2').disabled)
-		regs = regs + document.getElementById('1-2').value + ",";
-    if (document.getElementById('1-3').value != "" && !document.getElementById('1-3').disabled)
-		regs = regs + document.getElementById('1-3').value + ",";
-    if (document.getElementById('1-4').value != "" && !document.getElementById('1-4').disabled)
-		regs = regs + document.getElementById('1-4').value + ",";
-    if (document.getElementById('1-5').value != "" && !document.getElementById('1-5').disabled)
-		regs = regs + document.getElementById('1-5').value + ",";
-
-	if (regs != ""){
-		alert ("Registrar el concepto: " + regs + " para continuar.");
-		return false;
-	}
-	else
-	  return true;
-}
-
-
-// Llamado por el botón verde totalizar del final de la factura
 function totalizar()
 {
-	//alert("totalizar");
-	if (!ValidarDatosActualizados()) return;
-	  
     var valor1 = document.getElementById('3-1').value;  if(valor1 == ''){valor1 = 0} else{valor1 = quita_comas2(valor1);}
     var valor2 = document.getElementById('3-2').value;  if(valor2 == ''){valor2 = 0} else{valor2 = quita_comas2(valor2);}
     var valor3 = document.getElementById('3-3').value;  if(valor3 == ''){valor3 = 0} else{valor3 = quita_comas2(valor3);}
@@ -618,9 +582,6 @@ function dishabledFields(numRows)
 //HACER VALIDACION FINAL DE TODOS LOS CAMPOS
 function validarTodo()
 {
-	if (!ValidarDatosActualizados())
-	  return;
-	  
     var valTercero = document.getElementById('nitResp').value;  var valTotReg1 = document.getElementById('5-1').value;
     var totNeto = document.getElementById('totValnet2').value;
     var conc1 = document.getElementById('1-1').value;   conc1 = evalConc(conc1);

@@ -1,12 +1,17 @@
 <HTML>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <HEAD>
 <TITLE>MUESTRA EL ULTIMO CICLO DE ANTIBIOTICOS POR PACIENTES POR CENTRO DE COSTOS</TITLE>
 </HEAD>
 <BODY>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 
+$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
+$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 session_start();
+
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
         " <H1>Para entrar correctamente a la aplicacion debe".
@@ -26,10 +31,12 @@ if(!isset($_SESSION['user']))
  $totala=0;
  //Forma
  echo "<form name='ultcicantibio' action='ultcicantibio.php' method=post>";  
+ echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
  
  if (!isset($wcco) or $wcco=='')
  {
 	//Cuerpo de la pagina
+   echo "<center><h4>MUESTRA EL ULTIMO CICLO DE ANTIBIOTICOS POR PACIENTES POR CENTRO DE COSTO</h4></center>";
    echo "<table align='center' border=0>";
    echo "<tr>";
    echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>PACIENTES CON ANTIBIOTICOS<br></font></b>";   
@@ -114,12 +121,12 @@ if(!isset($_SESSION['user']))
 			 PRIMARY KEY ( Id ),
              INDEX ( art ) ) 
 				SELECT Artcod art, Artcom nom
-				  FROM movhos_000026
+				  FROM ".$wmovhos."_000026
 				 WHERE artgru like 'J00%'
 				   AND artest='on'
 				 UNION ALL
 				SELECT Pdepro art, Artcom nom
-				  FROM cenpro_000003, cenpro_000002
+				  FROM ".$wcenmez."_000003, ".$wcenmez."_000002
 				 WHERE Pdeins like 'MA%'
 				   AND pdeest = 'on'
 				   AND artcod = Pdepro
@@ -130,7 +137,7 @@ if(!isset($_SESSION['user']))
 	
 	// Pacientes con Antibioticos en ese ccosto
 	$c1=explode('-',$wcco);   
-	$query="Select habcco,habcod,habhis,habing From movhos_000020,movhos_000054,tmpa
+	$query="Select habcco,habcod,habhis,habing From ".$wmovhos."_000020,".$wmovhos."_000054,tmpa
           WHERE habcco='".$c1[0]."'  
           AND habdis = 'off' 
           AND habhis = kadhis 
@@ -180,7 +187,7 @@ if(!isset($_SESSION['user']))
 		 
 		 //Si tiene antibioticos a la fecha muestro el nombre en amarillo, esto lo hace un poco mas demorado pero...
 		 $wfecact = date("Y-m-d");  
-		 $query="Select kadfec From movhos_000054, tmpa"
+		 $query="Select kadfec From ".$wmovhos."_000054, tmpa"
           ." WHERE kadhis = ".$registro[2] 
           ."   AND kading = ".$registro[3]
           ."   AND kadart = art "
@@ -194,7 +201,7 @@ if(!isset($_SESSION['user']))
 		  echo "<td colspan=2 align=LEFT   bgcolor=".$wcf."><font text color=#003366 size=3>".$wnombre."</td>";
 		  
   	     echo "<td colspan=1 align=center color=#FFFFFF bgcolor=".$wcf.">";
-         echo "<A HREF='detcicantibio.php?whis=".$registro[2]."&wnum=".$registro[3]."&wnom=".$wnombre."' TARGET='_blank'>Detallar</A></td>";           
+         echo "<A HREF='detcicantibio.php?wemp_pmla=".$wemp_pmla."&whis=".$registro[2]."&wnum=".$registro[3]."&wnom=".$wnombre."' TARGET='_blank'>Detallar</A></td>";           
 
 		 echo "</tr>";  
 		          
