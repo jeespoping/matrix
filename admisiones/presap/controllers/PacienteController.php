@@ -23,16 +23,16 @@ class PacienteController extends Paciente
 
     /**
      * Consultar los datos socioeconomicos de un paciente.
-     * @param object $conex          Datos de la conexiÃ³n a la base de datos. (Obligatorio)
+     * @param object $conex          Datos de la conexión a la base de datos. (Obligatorio)
      * @param string $empresa        Alias de la empresa
-     * @param        $numeroHistoria NÃºmero de Historia Clinica del paciente.
+     * @param        $numeroHistoria Número de Historia Clinica del paciente.
      * @param        $numeroIngreso  Numero de ingreso del paciente.
+     * @throws Exception
      */
     public function __construct($conex, string $empresa, $numeroHistoria, $numeroIngreso)
     {
         $this->setNumeroHistoria($numeroHistoria);
         $this->setNumeroIngreso($numeroIngreso);
-        $this->error = "";
         if ($this->validarDatos()) {
             $this->getDatosPaciente($conex, $empresa);
         }
@@ -49,11 +49,11 @@ class PacienteController extends Paciente
         switch (true) {
             case $this->getNumeroHistoria() == 0:
                 $this->errorCode = true;
-                throw new \Exception("NÃºmero de Historia invalido");
+                throw new \Exception("Número de Historia invalido");
                 break;
             case $this->getNumeroIngreso() == 0:
                 $this->errorCode = true;
-                throw new \Exception("NÃºmero de Ingreso invalido");
+                throw new \Exception("Número de Ingreso invalido");
                 break;
         }
         if ($this->errorCode) {
@@ -66,7 +66,7 @@ class PacienteController extends Paciente
      * Serializacion de datos de la consulta
      * @return array array de datos del paciente
      */
-    function jsonSerialize(): array
+    public function jsonSerialize(): array
     {
         return [
             'numeroHistoria' => $this->getNumeroHistoria(),
