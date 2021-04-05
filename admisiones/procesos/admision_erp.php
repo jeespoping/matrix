@@ -11839,6 +11839,11 @@ function enviarDatos( automatico = '')
 										}
 									}
 
+                                    let wemp = $('#wemp_pmla').val();
+                                    console.log("../reportes/stickersAdmision.php?wemp_pmla="+wemp+"&nHis="+data.historia+"&nIng="+data.ingreso);
+                                    window.open("../reportes/stickersAdmision.php?wemp_pmla="+wemp+"&nHis="+data.historia+"&nIng="+data.ingreso ,'_blank','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=490', true);
+                                    // alert('Testing');
+
 								}
 								else
 								{

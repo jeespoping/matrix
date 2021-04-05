@@ -187,7 +187,7 @@ class Paciente
             . "FROM matrix.{$empresa}_000101 AS ing "
             . "INNER JOIN matrix.{$empresa}_000100 AS pac ON pac.Pachis = ing.inghis "
             . "INNER JOIN matrix.{$empresa}_000105 AS est ON pac.Pacest = est.Selcod AND est.seltip = 25 "
-            . "INNER JOIN matrix.{$empresa}_000024 AS aseg ON ing.Ingcem = aseg.Empcod "
+            . "LEFT JOIN matrix.{$empresa}_000024 AS aseg ON ing.Ingcem = aseg.Empcod "
             . "WHERE ing.Inghis = ? AND ing.Ingnin = ?";
 
         try {

@@ -60,12 +60,12 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") : ?>
     <?php encabezado("Sticker Admisi&oacuten", date('Y-m-d'), "cliame"); ?>
     <form method="post" class="row g-1" id="stickerForm"
           action="stickers/stickers.php?consultaAjax=&wemp_pmla=<?php echo $wemp_pmla; ?>&nHis=<?php echo $paciente->getNumeroHistoria() ?>&nIng=<?php echo $paciente->getNumeroIngreso() ?>&empresa=<?php echo $empresa; ?>">
-        <div class="form-floating col-md-6">
+        <div class="form-floating col-sm-6">
             <input type="number" class="form-control" id="nHis" placeholder="999999"
                    value="<?php echo $paciente->getNumeroHistoria() ?>">
             <label for="nHistoria">N&uacute;mero Historia</label>
         </div>
-        <div class="form-floating col-md-6">
+        <div class="form-floating col-sm-6">
             <input type="number" class="form-control" id="nIng" placeholder="0"
                    value="<?php echo $paciente->getNumeroIngreso() ?>">
             <label for="nIngreso">N&uacute;mero Ingreso</label>
@@ -81,34 +81,37 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") : ?>
                    readonly>
             <label for="documento">Tipo y Documento</label>
         </div>
-        <div class="form-floating col-md-4">
+        <div class="form-floating col-sm-4">
             <input type="text" class="form-control" id="genero" placeholder="F=Femenino; M=Masculino"
                    value="<?php echo $paciente->getGenero() ?>"
                    readonly>
             <label for="genero">Genero</label>
         </div>
-        <div class="form-floating col-md-4">
+        <div class="form-floating col-sm-4">
             <input type="text" class="form-control" id="edad" placeholder="En Meses o años"
                    value="<?php echo $paciente->getEdad() ?>" readonly>
             <label for="edad">Edad</label>
         </div>
-        <div class="form-floating col-md-4">
+        <div class="form-floating col-sm-4">
             <input type="text" class="form-control" id="dx" placeholder="Diagnostico"
                    value="<?php echo $paciente->getDiagnostico() ?>" readonly>
             <label for="dx">Diagnostico</label>
         </div>
-        <div class="form-floating col-md-12">
+        <div class="form-floating col-sm-12">
             <input type="text" class="form-control" id="eps" placeholder="Aseguradora"
                    value="<?php echo $paciente->getAseguradora() ?>" readonly>
             <label for="eps">Aseguradora</label>
         </div>
         <div class="col-12 text-center">
             <input type="submit" class="btn btn-primary" value="Generar Sticker" />
-            <button type=button class="btn btn-secondary">Cerrar</button>
+            <button type=button class="btn btn-secondary" onclick="return closeWindow();">Cerrar</button>
         </div>
         <input type="hidden" id="consultaAjax" value="false">
     </form>
     <script src="../../assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script>
+        const closeWindow = () => { open(location, '_self').close(); };
+    </script>
     <!--    <script type='module' src='stickers/main.js'></script>-->
     </body>
 
