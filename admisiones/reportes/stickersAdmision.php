@@ -35,9 +35,9 @@ try {
     $paciente = new PacienteController($conex, $empresa, $nHis, $nIng);
     $jsonPaciente = $paciente->jsonSerialize();
 } catch (Exception $e) {
-    $paciente = new \Admisiones\models\Paciente($nHis, $nIng);
-    echo $e;
-    terminarEjecucion($MSJ_ERROR_FALTA_PARAMETRO . $e);
+    $paciente = new \Admisiones\models\Paciente();
+//    echo $e;
+//    terminarEjecucion($MSJ_ERROR_FALTA_PARAMETRO . $e);
 }
 
 //validarPermisos();
@@ -61,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") : ?>
     <form method="post" class="row g-1" id="stickerForm"
           action="stickers/stickers.php?consultaAjax=&wemp_pmla=<?php echo $wemp_pmla; ?>&nHis=<?php echo $paciente->getNumeroHistoria() ?>&nIng=<?php echo $paciente->getNumeroIngreso() ?>&empresa=<?php echo $empresa; ?>">
         <div class="form-floating col-sm-6">
-            <input type="number" class="form-control" id="nHis" placeholder="999999"
+            <input type="number" class="form-control" id="nHis" placeholder="999999" on
                    value="<?php echo $paciente->getNumeroHistoria() ?>">
             <label for="nHistoria">N&uacute;mero Historia</label>
         </div>

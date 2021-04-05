@@ -32,11 +32,11 @@ class Paciente
     protected $nombreCompleto;
     protected $documento;
 
-    public function __construct($numeroHistoria, $numeroIngreso)
-    {
-        $this->setNumeroHistoria($numeroHistoria);
-        $this->setNumeroIngreso($numeroIngreso);
-    }
+//    public function __construct($numeroHistoria, $numeroIngreso)
+//    {
+//        $this->setNumeroHistoria($numeroHistoria);
+//        $this->setNumeroIngreso($numeroIngreso);
+//    }
 
     /**
      * Primer apellido del paciente

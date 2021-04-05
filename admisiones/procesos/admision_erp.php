@@ -11839,11 +11839,6 @@ function enviarDatos( automatico = '')
 										}
 									}
 
-                                    let wemp = $('#wemp_pmla').val();
-                                    console.log("../reportes/stickersAdmision.php?wemp_pmla="+wemp+"&nHis="+data.historia+"&nIng="+data.ingreso);
-                                    window.open("../reportes/stickersAdmision.php?wemp_pmla="+wemp+"&nHis="+data.historia+"&nIng="+data.ingreso ,'_blank','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=490', true);
-                                    // alert('Testing');
-
 								}
 								else
 								{
@@ -18900,6 +18895,13 @@ function solicitarCambioDocumento( obj, historia, ingreso, tipoDocumentoAnterior
         title: "SOLICITAR CAMBIO DE DOCUMENTO"
     });
 }
+
+function imprimirStickerAdmision(obj, historia, ingreso) {
+    let wemp = $('#wemp_pmla').val();
+    window.open("../reportes/stickersAdmision.php?wemp_pmla="+wemp+"&nHis="+historia+"&nIng="+ingreso ,'_blank','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=490');
+    obj.checked = false;
+}
+
 function parpadear( cantidad ){
 
 	if( cantidad <= 15 ){
@@ -21590,12 +21592,14 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 	global $filtrarCcoAyuda;
 	global $user2;
 	global $imprimirHistoria;
+	global $imprimirStickerAdmision;
 
 	$data = array('error'=>0,'mensaje'=>'','html'=>'');
 
 	$aplMovhos=consultarAplicacion2($conex,$wemp_pmla,"movhos");
 	$wbasedatoHce = consultarAplicacion2( $conex, $wemp_pmla, "hce" );
 	$imprimirHistoria = consultarAplicacion2($conex,$wemp_pmla,"imprimirHistoria");
+	$imprimirStickerAdmision = consultarAplicacion2($conex,$wemp_pmla,"imprimirStickerAdmision");
 	$habilitarSolicitarCambioDocumento = consultarAplicacion2($conex,$wemp_pmla,"habilitarSolicitarCambioDocumento");
 	$admin_erp_ver_boton_alta_egreso = consultarAplicacion2($conex,$wemp_pmla,"admin_erp_ver_boton_alta_egreso");
 	$priorizarPermiso81 = consultarAplicacion2($conex,$wemp_pmla,"priorizarPermiso81");
@@ -21911,6 +21915,9 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 				$data[ 'html' ] .= "<td>Solicitud<br>Cambio<br>documento</td>";
 			}
 
+            if( $imprimirStickerAdmision == "on" ) {
+                $data['html'] .= "<td>Sticker</td>";
+            }
 
 			//---------------------------------------------------
 			// mirar el codigo de la empresa
@@ -22076,6 +22083,13 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 					$data[ 'html' ] .= "<INPUT type='radio' onClick='solicitarCambioDocumento( this, \"".$rows[ 'Pachis' ]."\", ".$rows[ 'Ingnin' ].",  \"".$rows[ 'Pactdo' ]."\", \"".$rows[ 'Pacdoc' ]."\", \"".$nombre."\" )'>";
 					$data[ 'html' ] .= "</td>";
 				}
+
+				// Imprimir Sticker
+                if ($imprimirStickerAdmision == "on"){
+                    $data['html'] .= "<td>";
+                    $data['html'] .= "<input class='printSticker' type='radio' onClick='imprimirStickerAdmision(this,".$rows[ 'Pachis' ].",".$rows[ 'Ingnin' ].");'>";
+                    $data['html'] .= "</td>";
+                }
 
 				//------tener en cuenta el campo
 				if($TableroDigitalizacionUrgencias =='on')
