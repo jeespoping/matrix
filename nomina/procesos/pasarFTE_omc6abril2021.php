@@ -71,56 +71,42 @@
                 {
                     case '1':
                         ?>
-                        <label for="conexion">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" checked> <!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
+                        <label for="conexion">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" checked>&ensp;&ensp;
+                        <label for="conexion">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled>&ensp;&ensp;
+                        <label for="conexion">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled>&ensp;&ensp;
+                        <label for="conexion">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled>
                         <?php
                         break;
                     case '2':
                         ?>
-                        <label for="conexion" style="display:none;">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" checked><!-- &ensp;&ensp; -->
-                        <label for="conexion"style="display:none;">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion"style="display:none;">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion"style="display:none;">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
+                        <label for="conexion">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" disabled>&ensp;&ensp;
+                        <label for="conexion">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" checked>&ensp;&ensp;
+                        <label for="conexion">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled>&ensp;&ensp;
+                        <label for="conexion">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled>
                         <?php
                         break;
                     case '3':
                         ?>
-                        <label for="conexion" style="display:none;">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" checked><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
+                        <label for="conexion">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" disabled>&ensp;&ensp;
+                        <label for="conexion">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled>&ensp;&ensp;
+                        <label for="conexion">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" checked>&ensp;&ensp;
+                        <label for="conexion">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled>
                         <?php
                         break;
                     case '4':
                         ?>
-                        <label for="conexion" style="display:none;">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" checked><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
-                        <?php
-                        break;
-                    case '5':
-                        ?>
-                        <label for="conexion" style="display:none;">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" checked>
+                        <label for="conexion">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" disabled>&ensp;&ensp;
+                        <label for="conexion">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled>&ensp;&ensp;
+                        <label for="conexion">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled>&ensp;&ensp;
+                        <label for="conexion">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" checked>
                         <?php
                         break;
                     default:
                         ?>
-                        <label for="conexion">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" disabled>&ensp;&ensp; 
-                        <label for="conexion">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled>&ensp;&ensp; 
-                        <label for="conexion">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled >&ensp;&ensp; 
+                        <label for="conexion">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" disabled>&ensp;&ensp;
+                        <label for="conexion">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled>&ensp;&ensp;
+                        <label for="conexion">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled>&ensp;&ensp;
                         <label for="conexion">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled>
-                        <label for="conexion">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled>
                         <?php
                         break;
                 }
@@ -207,41 +193,31 @@
             //Promotora:
             if ($conexion == 1)
             {
-				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA Y FUNDACIÓN
                 //$conexSql7 = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-				echo 'SELECCIONO PROMOTORA...';
                 $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexión con la BD de Promotora");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'promotora', $wuse);
+				echo 'SELECCIONO PROMOTORA';
             }
             //Laboratorio:
             if ($conexion == 2)
             {
-                echo 'SELECCIONO LABORATORIO...';				
                 $conexSql7 = odbc_connect('queryx7LMLA','','') or die("No se realizo conexión con la BD de Laboratorio");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'laboratorio', $wuse);
+                echo 'SELECCIONO LABORATORIO';
             }
-            //Patologia  
+            //Patologia
             if ($conexion == 3)
             {
-                echo 'SELECCIONO PATOLOGIA...';
-                $conexSql7 = odbc_connect('queryx7PAT','','') or die("No se realizo conexión con la BD de Patología");
+                $conexSql7 = odbc_connect('queryx7PAT','','') or die("No se realizo conexión con la BD de Patologia");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'patologia', $wuse);
+                echo 'SELECCIONO PATOLOGIA';
             }
             //Clisur
             if ($conexion == 4)
             {
-                echo 'SELECCIONO CLISUR...';
                 $conexSql7 = odbc_connect('queryx7CS','','') or die("No se realizo conexión con la BD de Clisur");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'clisur', $wuse);
-            }
-            //Fundación
-            if ($conexion == 5)
-            {
-				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA Y FUNDACIÓN
-                //$conexSql7 = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-				echo 'SELECCIONO FUNDACION...';
-                $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexión con la BD de Fundación");
-                modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'fundacion', $wuse);
+                echo 'SELECCIONO CLISUR';
             }
         }
         else
@@ -259,184 +235,68 @@
 
 function modificarFte($conexionSql7, $fuente, $documento, $anoFuente, $mesFuente, $empresa, $usuario)
 {
-	// Vista COMOVENC: Se agregó columna MOVENCEMPRESA. En el momento los valores serían 1 para Clínica y 7 para Fundación
-	// Vista COMOV       : Se agregó columna MOVEMPRESA. En el momento los valores serían 1 para Clínica y 7 para Fundación
     //DEFINIR EL CONEX DE UNIX PARA CADA EMPRESA:
     switch($empresa)
     {
-        case 'promotora': $conexUnix = odbc_connect('nomina','informix','sco') or die("No se realizo conexión con la BD de Promotora/Fundación"); break;
-		case 'fundacion':$conexUnix = odbc_connect('cofunda','informix','sco') or die("No se realizo conexión con la BD de Promotora/Fundación"); break;
+        case 'promotora': $conexUnix = odbc_connect('nomina','informix','sco') or die("No se realizo conexión con la BD de Promotora"); break;
         case 'laboratorio': $conexUnix = odbc_connect('nomlab','informix','sco') or die("No se realizo conexión con la BD de Laboratorio"); break;
-        case 'patologia': $conexUnix = odbc_connect('nompat','informix','sco') or die("No se realizo conexión con la BD de Patología"); break;
+        case 'patologia': $conexUnix = odbc_connect('nompat','informix','sco') or die("No se realizo conexión con la BD de Patologia"); break;
         case 'clisur': $conexUnix = odbc_connect('nomsur','informix','sco') or die("No se realizo conexión con la BD de Clisur"); break;
-        
     }
-	
-	// ---- QUITAR COMENTARIO PARA EFECTOS DE PRUEBAS -----------
-	// contar los registros del resultado
-	/*
-	$sql = "SELECT Count(*) AS cantidad " 
-		. " from comov where movfue = '$fuente'"
-                        ."   and movdoc = '$documento'"
-                        ."   and movano = '$anoFuente'"
-                        ."   and movmes = '$mesFuente'";
-	if ($empresa=='promotora')
-	{
-		$sql .= " and movempresa=1";
-	}
-	else if ($empresa=='fundacion')
-	{
-		$sql .= " and movempresa=7";
-	}	
-	$rs = odbc_do($conexionSql7, $sql);
-		
-	if (!$rs){
-              echo "<br>SQL7 --> Query conteo error: " .odbc_error();
-	}
-	echo "<br>SQL7--> $sql <br>Registros: ";
-	if (odbc_fetch_row($rs))
-		echo odbc_result($rs, 1); 
-	*/
-	// --- HASTA AQUÍ PARA PRUEBAS  -------------------------------------------
-		
-	// ---- QUITAR COMENTARIO PARA EFECTOS DE PRUEBAS -----------
-	// BORRAR DATOS DE ESE PERIODO EN UNIX PARA PODER PROBAR CARGA DE NUEVO
-	/*
-	$sql = "delete from  comov "
-					. " WHERE movfue = '$fuente'"
-					. "		AND movdoc = '$documento'"
-					. "		AND movano = '$anoFuente'"
-					. "		AND movmes = '$mesFuente'";
-    $rs = odbc_do($conexUnix, $sql);
-	$sql = "delete from  comovenc "
-					. " WHERE movencfue = '$fuente'"
-					. "		AND movencdoc = '$documento'"
-					. "		AND movencano = '$anoFuente'"
-					. "		AND movencmes = '$mesFuente'";
-    $rs = odbc_do($conexUnix, $sql);
-	*/
-	// --- HASTA AQUÍ PARA PRUEBAS  -------------------------------------------
-
 
     //VERIFICAR QUE EN NUESTRAS BASES DE DATOS NO EXISTAN YA ESTOS REGISTROS:
-    $queryVerificar = "select count(*) as CONTEO"
-					. " from comov "
-					. " WHERE movfue = '$fuente'"
-					. "		AND movdoc = '$documento'"
-					. "		AND movano = '$anoFuente'"
-					. "		AND movmes = '$mesFuente'";
-	
-	// echo '<br>Verificar si reg existen...';
-					
+    $queryVerificar = "select count(*) CONTEO from comov WHERE movfue = '$fuente' AND movdoc = '$documento' AND movano = '$anoFuente' AND movmes = '$mesFuente'";
     $commitVerificar = odbc_do($conexUnix, $queryVerificar);
-	$dato="xx";
-	if (!$commitVerificar){
-              echo "<br>Error consultando en Unix: " .odbc_error();
-	}
-	else {
-		//echo "<br>UNIX--> $queryVerificar <br>Registros: ";
-		if (odbc_fetch_row($commitVerificar))
-		{
-			$dato = odbc_result($commitVerificar, 1);
-			// echo $dato; 	
-		}
-	}
+    $dato = odbc_result($commitVerificar, 1);
 
     if($dato == '0')
     {
-		
-		echo '<br>Procesando...';
-		
         //REALIZAR EL QUERY DE LA TABLA COMOV DE SQL7:
-        $queryPromotora = " from comov"
+        $queryPromotora = "select movfue, movdoc, movane, movano, movmes, rownum, movfec, movcue, movcco, movnit,
+                           movdes, movind, movval, movcon, movbas, movfac, movuni, movcam, movbaj, movanu"
+                        ."   from comov"
                         ."   where movfue = '$fuente'"
                         ."   and movdoc = '$documento'"
                         ."   and movano = '$anoFuente'"
                         ."   and movmes = '$mesFuente'";
-		if ($empresa=='promotora')
-		{
-			$queryPromotora .= " and movempresa=1";
-		}
-		else if ($empresa=='fundacion')
-		{
-			$queryPromotora .= " and movempresa=7";
-		}
-
-        $queryPromotora = "select movfue, movdoc, movane, movano, movmes, rownum, movfec, movcue, movcco, movnit,
-                           movdes, movind, movval, movcon, movbas, movfac, movuni, movcam, movbaj, movanu"
-                        . $queryPromotora;
-
-
         $commitQueryPromotora = odbc_do($conexionSql7,$queryPromotora);
-		
 
-		if (!$commitQueryPromotora){
-              echo "<br>Query COMOV error: " .odbc_error();
-		}
-				
         //ASIGNAR TODOS LOS REGISTROS DE COMOV DE SQL7:
-		echo "<br>ASIGNAR TODOS LOS REGISTROS DE COMOV DE SQL7: $queryPromotora";
-		$cant = 0;
         while(odbc_fetch_row($commitQueryPromotora))
         {
-			//echo "<br>movfue:";
-            $movfue = odbc_result($commitQueryPromotora, 1);    
-			//echo "$movfue";
-			$movdoc = odbc_result($commitQueryPromotora, 2);    
-			$movane = odbc_result($commitQueryPromotora, 3);
-            $movano = odbc_result($commitQueryPromotora, 4);    
-			$movmes = odbc_result($commitQueryPromotora, 5);    
-			$movite = odbc_result($commitQueryPromotora, 6);
-            $movfec = odbc_result($commitQueryPromotora, 7);    
-			$movcue = odbc_result($commitQueryPromotora, 8);    
-			$movcco = odbc_result($commitQueryPromotora, 9);
-            $movnit = odbc_result($commitQueryPromotora, 10);   
-			$movdes = odbc_result($commitQueryPromotora, 11);   
-			$movind = odbc_result($commitQueryPromotora, 12);
-            $movval = odbc_result($commitQueryPromotora, 13);   
-			$movcon = odbc_result($commitQueryPromotora, 14);   
-			$movbas = odbc_result($commitQueryPromotora, 15);
-            $movfac = odbc_result($commitQueryPromotora, 16);   
-			$movuni = odbc_result($commitQueryPromotora, 17);   
-			$movcam = odbc_result($commitQueryPromotora, 18);
-            $movbaj = odbc_result($commitQueryPromotora, 19);   
-			$movanu = odbc_result($commitQueryPromotora, 20);
+            $movfue = odbc_result($commitQueryPromotora, 1);    $movdoc = odbc_result($commitQueryPromotora, 2);    $movane = odbc_result($commitQueryPromotora, 3);
+            $movano = odbc_result($commitQueryPromotora, 4);    $movmes = odbc_result($commitQueryPromotora, 5);    $movite = odbc_result($commitQueryPromotora, 6);
+            $movfec = odbc_result($commitQueryPromotora, 7);    $movcue = odbc_result($commitQueryPromotora, 8);    $movcco = odbc_result($commitQueryPromotora, 9);
+            $movnit = odbc_result($commitQueryPromotora, 10);   $movdes = odbc_result($commitQueryPromotora, 11);   $movind = odbc_result($commitQueryPromotora, 12);
+            $movval = odbc_result($commitQueryPromotora, 13);   $movcon = odbc_result($commitQueryPromotora, 14);   $movbas = odbc_result($commitQueryPromotora, 15);
+            $movfac = odbc_result($commitQueryPromotora, 16);   $movuni = odbc_result($commitQueryPromotora, 17);   $movcam = odbc_result($commitQueryPromotora, 18);
+            $movbaj = odbc_result($commitQueryPromotora, 19);   $movanu = odbc_result($commitQueryPromotora, 20);
 
             //REALIZAR EL INSERT DE CADA REGISTRO EN LA TABLA COMOV DE CLINICA, SEGUN LA EMPRESA:
             $queryComov = "insert into comov(movfue, movdoc, movane, movano, movmes, movite, movfec, movcue, movcco, movnit, movdes, movind, movval,
                                          movcon, movbas, movfac, movuni, movcam, movbaj, movanu)
                                    VALUES('$movfue','$movdoc','$movane','$movano','$movmes','$movite','$movfec','$movcue','$movcco','$movnit','$movdes','$movind','$movval',
                                           '$movcon','$movbas','$movfac','$movuni','$movcam','$movbaj','$movanu')";
-			$cant++;
-			//if ($cant < 2) { echo "<br>$queryComov";}
-			$commitQueryComov = odbc_do($conexUnix, $queryComov);				
-			
+            $commitQueryComov = odbc_do($conexUnix, $queryComov);
         }
-		echo "<br>$cant";
+
         //GRABAR EL ENCABEZADO EN COMOVENC:
         $queryEncabezado = "insert into comovenc(movencano, movencmes, movencfue, movencdoc, movencusu, movencanu)
                                     VALUES('$anoFuente','$mesFuente','$fuente','$documento','$usuario','0')";
         $commitQueryEncabezado = odbc_do($conexUnix, $queryEncabezado);
 
-        if($cant <= 0) {
+        if($commitQueryComov == true and $commitQueryEncabezado == true)
+        {
             ?>
-            <h3>La consulta no arroj&oacute; registros para generar</h3>
+            <h3>Proceso Exitoso</h3>
             <?php
-		}
-        else {
-			if($commitQueryComov == true and $commitQueryEncabezado == true)
-			{
-				?>
-					<h3>Proceso Exitoso <?php echo("($cant registros procesados)"); ?></h3>
-				<?php
-			}
-			else
-			{
-				?>
-					<h3>Se ha presentado un problema y el proceso no se realiz&oacute;</h3>
-				<?php
-			}
-		}
+        }
+        else
+        {
+            ?>
+            <h3>Se ha presentado un problema y el proceso no se realiz&otilde;</h3>
+            <?php
+        }
     }
     else
     {
