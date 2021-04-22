@@ -1,9 +1,9 @@
 <?php
 include_once("conex.php");
 include_once("root/comun.php");
-include_once("citas/funcionesAgendaCitas.php");
-$wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
-$this->dbConection = obtenerConexionBD("matrix");
+//include_once("citas/funcionesAgendaCitas.php");
+// $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
+// $this->dbConection = obtenerConexionBD("matrix");
 /***
  * Creo una clase para medida
  * @by: sebastian.nevado
@@ -296,6 +296,8 @@ class Medida
 
             $res = mysql_query($sQueryUpdate,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
 
+            $this->iId = mysql_insert_id($this->dbConection);
+
             $this->sMensaje = 'Medida actualizada satisfactoriamente';
 
             return true;
@@ -352,6 +354,38 @@ class Medida
 
             return false;
         }
+    }
+
+    /**
+     * Funcion para cargar listado de medidas de la base de datos
+     * @by: sebastian.nevado
+     * @date: 2021/04/22
+     * @return: array
+     */
+    public function getAll()
+    {
+        //Cargo de base de datos
+        $wbasedato="radiolog";
+        $sQuery = "SELECT id, medcod AS codigo, mednom AS nombre, meddes AS descripcion, meduni AS unidad, medenc AS enviarnotificacion
+                    FROM ".$wbasedato."_000001
+                    ORDER BY id";
+
+        //Uno a uno
+        $err = mysql_query($sQuery,$this->dbConection);
+        while($oMedida = mysqli_fetch_assoc($resultado_query)) {
+            var_dump($oMedida);
+        }
+
+        //Traerlos todos
+        // $result = mysql_query($sQuery,$this->dbConection);
+        // var_dump($result);
+
+        // $abc = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        // var_dump($abc);
+
+        $this->sMensaje = 'Todos las medidas cargadas satisfactoriamente';
+
+        return $aMedidas;
     }
 
 }
