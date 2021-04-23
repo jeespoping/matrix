@@ -18,9 +18,11 @@ class medidaController
      */
     public function index()
     {
+        //Obtengo el parámetro
+        $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
 
         //Creo la variable medida
-        $oMedida = new Medida();
+        $oMedida = new Medida($wemp_pmla);
         
         //Asigno los coches a una variable que estará esperando la vista
         $aMedidas = $oMedida->getAll();

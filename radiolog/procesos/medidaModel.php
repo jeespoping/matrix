@@ -55,17 +55,29 @@ class Medida
 
     /**
      * @Name: sMensaje
-     * @Type: date
+     * @Type: string
      */
     private $sMensaje;
 
     /**
+     * @Name: sMensaje
+     * @Type: string
+     */
+    private $wemp_pmla;
+
+    /**
+     * @Name: sMensaje
+     * @Type: string
+     */
+    private $nombreAplicacion;
+
+    /**
      * Constructor de la clase
      */
-    public function __construct()
+    public function __construct($wemppmla = null)
     {
         //Valores por defecto
-        $this->dbConection = obtenerConexionBD("matrix");
+        $this->dbConection = $conex;
         $this->iId = null;
         $this->sCodigo = null;
         $this->sNombre = null;
@@ -73,6 +85,8 @@ class Medida
         $this->sIdUnidad = null;
         $this->bEnviarNotificacion = null;
         $this->sMensaje = null;
+        $this->wemp_pmla = $wemppmla;
+        $this->nombreAplicacion = 'radiolog';
     }
 
     /**
@@ -364,25 +378,22 @@ class Medida
      */
     public function getAll()
     {
+        //Obtengo el alias por aplicación
+        $wbasedato = consultarAliasPorAplicacion($this->dbConection, $this->wemp_pmla, $this->nombreAplicacion);
+
         //Cargo de base de datos
-        $wbasedato="radiolog";
-        $sQuery = "SELECT id, medcod AS codigo, mednom AS nombre, meddes AS descripcion, meduni AS unidad, medenc AS enviarnotificacion
+        $sQuery = "SELECT id, medcod AS codigo, mednom AS nombre, meddes AS descripcion, meduni AS unidad, medenc AS enviarnotificacion,
+                            CASE 
+                                WHEN medenc = 0 THEN 'NO'
+                                ELSE 'SÍ'
+                            END enviarnotificaciontexto
                     FROM ".$wbasedato."_000001
                     ORDER BY id";
 
         //Uno a uno
-        $err = mysql_query($sQuery,$this->dbConection);
-        while($oMedida = mysqli_fetch_assoc($resultado_query)) {
-            var_dump($oMedida);
-        }
-
-        //Traerlos todos
-        // $result = mysql_query($sQuery,$this->dbConection);
-        // var_dump($result);
-
-        // $abc = mysqli_fetch_all($result, MYSQLI_ASSOC);
-        // var_dump($abc);
-
+        $resultado_query = mysql_query($sQuery,$this->dbConection);
+        $aMedidas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
+        
         $this->sMensaje = 'Todos las medidas cargadas satisfactoriamente';
 
         return $aMedidas;

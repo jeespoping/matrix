@@ -92,34 +92,59 @@
             <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
 
             <!-- Tabla de Medidas-->
-            <!-- <table border="1"> -->
+            <table style="width:100%; text-align:center;">
                 <?php
                     //No muestro tabla si no hay medidas
                     if(isset($aMedidas) && count($aMedidas)>0)
                     {
                         //Títulos de tabla
-                        // echo "<h2>Medidas</h2>";
-                        // echo "<tr>
-                        //     <th>Nombre</th>
-                        //     <th>Action</th>
-                        // </tr>";
+                        echo("<tr class='encabezadoTabla'>
+                                <th>C&oacute;digo</th>
+                                <th>Nombre</th>
+                                <th>Descripci&oacute;n</th>
+                                <th>Unidad</th>
+                                <th>Enviar Notificaci&oacute;n</th>
+                                <th>Acci&oacute;n</th>
+                            </tr>");
 
                         //Elementos de la tabla de Medidas
-                        foreach ( $aMedidas as $oMedida ) {
-                            var_dump($oMedida);
-                            // echo "<tr><td>";
-                            // echo('<a href="medidas.php?action=viewMedida&id='.$oMedida['id'].'">'.$oMedida['codigo'].' - '.$oMedida['nombre'].'</a>');
-                            // echo("</td><td>");
-                            // echo('<a href="medidas.php?action=editMedida&id='.$oMedida['id'].'">Editar</a> / ');
-                            // echo('<a href="medidas.php?action=deleteMedida&id='.$oMedida['id'].'">Eliminar</a>');
-                            // echo("</td></tr>");
+                        $iIndice = 0;
+                        foreach ( $aMedidas as $oMedida ) 
+                        {
+                            //Defino la clase a partir del índice.
+                            $iIndice++;
+                            $sClaseFila = ($iIndice % 2 == 0) ? "fila2" : "fila1";
+                            //Muestro la fila
+                            echo "<tr class='".$sClaseFila."'>
+                                    <td>
+                                        <a href='medidas.php?action=viewMedida&id=".$oMedida['id']."'>".$oMedida['codigo']."</a>
+                                    </td>
+                                    <td>
+                                        ".$oMedida['nombre']."
+                                    </td>
+                                    <td>
+                                        ".$oMedida['descripcion']."
+                                    </td>
+                                    <td>
+                                        ".$oMedida['unidad']."
+                                    </td>
+                                    <td>
+                                        ".$oMedida['enviarnotificaciontexto']."
+                                    </td>
+                                    <td>
+                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedida&id=".$oMedida['id']."'>Editar</a> / 
+                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=deleteMedida&id=".$oMedida['id']."'>Eliminar</a>
+                                    </td>
+                                </tr>";
                         }
                         
-                    } else {
+                    }
+                    else
+                    {
                         echo "<p>No se enontraron registros</p>";
                     }
                 ?>
-            <!-- </table> -->
+            </table>
             <p>
                 <br><br>
                 <a href='medidas.php?wemp_pmla=<?php echo $wemp_pmla; ?>&action=createMedida'>Agregar nuevo</a>
