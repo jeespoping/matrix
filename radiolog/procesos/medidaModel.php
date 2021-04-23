@@ -54,19 +54,25 @@ class Medida
     private $bEnviarNotificacion;
 
     /**
+     * @Name: sSeguridad
+     * @Type: string
+     */
+    private $sSeguridad;
+
+    /**
      * @Name: sMensaje
      * @Type: string
      */
     private $sMensaje;
 
     /**
-     * @Name: sMensaje
+     * @Name: wemp_pmla
      * @Type: string
      */
     private $wemp_pmla;
 
     /**
-     * @Name: sMensaje
+     * @Name: nombreAplicacion
      * @Type: string
      */
     private $nombreAplicacion;
@@ -87,6 +93,7 @@ class Medida
         $this->sMensaje = null;
         $this->wemp_pmla = $wemppmla;
         $this->nombreAplicacion = 'radiolog';
+        $this->sSeguridad = null;
     }
 
     /**
@@ -199,7 +206,7 @@ class Medida
      * @by: sebastian.nevado
      * @date: 2021/04/21
      */
-    public function getEnviarConfirmacion()
+    public function getEnviarNotificacion()
     {
         return $this->bEnviarNotificacion;
     }
@@ -210,9 +217,30 @@ class Medida
      * @date: 2021/04/21
      * @params: bEnviarNotificacion
      */
-    public function setEnviarConfirmacion($bEnviarNotificacion)
+    public function setEnviarNotificacion($bEnviarNotificacion)
     {
         $this->bEnviarNotificacion = $bEnviarNotificacion;
+    }
+
+    /**
+     * Funcion para obtener el código de seguridad
+     * @by: sebastian.nevado
+     * @date: 2021/04/23
+     */
+    public function getSeguridad()
+    {
+        return $this->sSeguridad;
+    }
+
+    /**
+     * Funcion para setear el envío de notificación por correo
+     * @by: sebastian.nevado
+     * @date: 2021/04/23
+     * @params: sSeguridad
+     */
+    public function setSeguridad($sSeguridad)
+    {
+        $this->sSeguridad = $sSeguridad;
     }
 
     /**
@@ -291,7 +319,9 @@ class Medida
      */
     public function save()
     {
-        
+        //Obtengo el alias por aplicación
+        $wbasedato = consultarAliasPorAplicacion($this->dbConection, $this->wemp_pmla, $this->nombreAplicacion);
+
         //Verifico la integridad        
         if(!$this->verificarIntegridad())
         {
@@ -305,12 +335,10 @@ class Medida
             $sQueryUpdate = " UPDATE ".$wbasedato."_000001
                             SET Medico = '".$wbasedato."', Fecha_data = '".date("Y-m-d")."', Hora_data = '".date("H:i:s")."',
                                 medcod = '".$this->sCodigo."', mednom = '".$this->sNombre."', meddes = '".$this->sDescripcion."', 
-                                meduni = '".$this->sIdUnidad."', medenc = '".$this->bEnviarNotificacion."', Seguridad = 'C-".$wbasedato."'
+                                meduni = '".$this->sIdUnidad."', medenc = '".$this->bEnviarNotificacion."', Seguridad = '".$this->sSeguridad."'
                             WHERE id = ".$this->iId;
 
             $res = mysql_query($sQueryUpdate,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
-
-            $this->iId = mysql_insert_id($this->dbConection);
 
             $this->sMensaje = 'Medida actualizada satisfactoriamente';
 
@@ -324,10 +352,12 @@ class Medida
                                 meddes, meduni, medenc, Seguridad)
                         VALUES
                             (   '".$wbasedato."','".date("Y-m-d")."','".date("H:i:s")."','".$this->sCodigo."','".$this->sNombre."',
-                                '".$this->sDescripcion."','".$this->sIdUnidad."','".$this->bEnviarNotificacion."','C-".$wbasedato."')";
+                                '".$this->sDescripcion."','".$this->sIdUnidad."','".$this->bEnviarNotificacion."','".$this->sSeguridad."')";
             $res = mysql_query($sQueryInsert,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryInsert . " - " . mysql_error());
 
             $this->sMensaje = 'Medida insertada satisfactoriamente';
+
+            $this->iId = mysql_insert_id($this->dbConection);
 
             return true;
         }
@@ -341,6 +371,8 @@ class Medida
      */
     public function load()
     {
+        //Obtengo el alias por aplicación
+        $wbasedato = consultarAliasPorAplicacion($this->dbConection, $this->wemp_pmla, $this->nombreAplicacion);
 
         //Valido que tenga el id seteado
         if(isset($this->iId))
@@ -384,8 +416,8 @@ class Medida
         //Cargo de base de datos
         $sQuery = "SELECT id, medcod AS codigo, mednom AS nombre, meddes AS descripcion, meduni AS unidad, medenc AS enviarnotificacion,
                             CASE 
-                                WHEN medenc = 0 THEN 'NO'
-                                ELSE 'SÍ'
+                                WHEN medenc = 0 THEN 'No'
+                                ELSE 'Si'
                             END enviarnotificaciontexto
                     FROM ".$wbasedato."_000001
                     ORDER BY id";

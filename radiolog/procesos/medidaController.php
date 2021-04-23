@@ -38,9 +38,11 @@ class medidaController
      */
     public function create()
     {
+        //Obtengo el parámetro
+        $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
         
         //Creo la variable medida
-        $oMedida = new Medida();
+        $oMedida = new Medida($wemp_pmla);
 
         // Si pulso el botón cancelar, vuelvo al inicio
         if ( isset($_POST['cancel']) )
@@ -53,28 +55,32 @@ class medidaController
         {
 
             //Valido existencia de datos
+            $sCodigo = isset($_POST['codigo']) ? $_POST['codigo'] : null;
             $sNombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
-            $sApellidos = isset($_POST['apellidos']) ? $_POST['apellidos'] : null;
-            $iIdentificacion = isset($_POST['identificacion']) ? $_POST['identificacion'] : null;
-            $dFechaNacimiento = isset($_POST['fechanacimiento']) ? $_POST['fechanacimiento'] : null;
+            $sDescripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : null;
+            $sIdUnidad = isset($_POST['unidad']) ? $_POST['unidad'] : null;
+            $bEnviarNotificacion = !isset($_POST['enviarnotificacion']) ? false : true;
+            $sSeguridad = "C-".$_SESSION['codigo'];
 
             //Data validations
-            $oMedida->setIdentificacion($iIdentificacion);
+            $oMedida->setCodigo($sCodigo);
             $oMedida->setNombre($sNombre);
-            $oMedida->setApellidos($sApellidos);
-            $oMedida->setFechaNacimiento($dFechaNacimiento);
+            $oMedida->setDescripcion($sDescripcion);
+            $oMedida->setIdUnidad($sIdUnidad);
+            $oMedida->setEnviarNotificacion($bEnviarNotificacion);
+            $oMedida->setSeguridad($sSeguridad);
 
             //Guardo y manejo los mensajes
             if(!$oMedida->save())
             {
                 $_SESSION["error"]=$oMedida->getMensaje();
-                header("Location: medidas.php?action=createMedida");
+                header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedida");
                 return;
             }
 
             //Seteo la variable de respuesta
             $_SESSION["success"]="Medida guardada";
-            header("Location: ./");
+            header("Location: medidas.php?wemp_pmla=".$wemp_pmla);
             return;
         }
         else
