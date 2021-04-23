@@ -44,14 +44,8 @@ class medidaController
         //Creo la variable medida
         $oMedida = new Medida($wemp_pmla);
 
-        // Si pulso el botón cancelar, vuelvo al inicio
-        if ( isset($_POST['cancel']) )
-        {
-            $wemp_pmla = isset($_POST['wemp_pmla']) ? $_POST['wemp_pmla'] : null;
-            header('Location: medidas.php?wemp_pmla='.$wemp_pmla);
-            return;
-        }
-        elseif ( isset($_POST['add']) )
+        // Proceso si doy aceptar
+        if ( isset($_POST['add']) )
         {
 
             //Valido existencia de datos
@@ -74,9 +68,21 @@ class medidaController
             if(!$oMedida->save())
             {
                 $_SESSION["error"]=$oMedida->getMensaje();
+                $_SESSION["codigo"]=$sCodigo;
+                $_SESSION["nombre"]=$sNombre;
+                $_SESSION["descripcion"]=$sDescripcion;
+                $_SESSION["unidad"]=$sIdUnidad;
+                $_SESSION["enviarnotificacion"]=($bEnviarNotificacion) ? "checked" : "";
                 header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedida");
                 return;
             }
+
+            //Limpio variables de sesión
+            unset($_SESSION['codigo']);
+            unset($_SESSION['nombre']);
+            unset($_SESSION['descripcion']);
+            unset($_SESSION['unidad']);
+            unset($_SESSION['enviarnotificacion']);
 
             //Seteo la variable de respuesta
             $_SESSION["success"]="Medida guardada";
@@ -86,7 +92,14 @@ class medidaController
         else
         {
             //Llamo a la vista
-            require(".//crearMedidaView.php");
+            require("crearMedidaView.php");
+
+            //Limpio variables de sesión
+            unset($_SESSION['codigo']);
+            unset($_SESSION['nombre']);
+            unset($_SESSION['descripcion']);
+            unset($_SESSION['unidad']);
+            unset($_SESSION['enviarnotificacion']);
         }
     }
 

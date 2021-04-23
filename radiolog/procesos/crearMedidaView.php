@@ -123,7 +123,16 @@
             </form>
         </div> -->
 
-        <div class="container" style="text-align:center;">
+        <div class="container" style="text-align:center; align:center;">
+            <?php
+                //Llamo los mensajes flash
+                if(isset($_SESSION['error']))
+                {
+                    echo "<center><div align='center' class='fondoRojo' style='width:510px'><b><blink>".$_SESSION['error']."</blink></b></div></center>"; 
+                    echo "<br><br>";
+                    unset($_SESSION['error']);
+                }
+            ?>
             <form method="post">
                 <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
                 <table style="width:100%;">
@@ -141,18 +150,17 @@
                     </thead>
                     <tbody>
                         <tr class="fila2" style="text-align:center;">
-                            <td><input type="text" name="codigo" id="codigo"></td>
-                            <td><input type="text" name="nombre" id="nombre"></td>
-                            <td><textarea type="text" name="descripcion" id="descripcion" rows="3" cols="50"></textarea></td>
-                            <td><input type="text" name="unidad" id="unidad"></td>
-                            <td><input type="checkbox" name="enviarnotificacion" id="enviarnotificacion"></td>
-                            
+                            <td><input type="text" name="codigo" id="codigo" required value="<?= $_SESSION['codigo']  ?>"></td>
+                            <td><input type="text" name="nombre" id="nombre" required value="<?= $_SESSION['nombre']  ?>"></td>
+                            <td><textarea type="text" name="descripcion" id="descripcion" rows="3" cols="50"><?= $_SESSION['descripcion']  ?></textarea></td>
+                            <td><input type="text" name="unidad" id="unidad" required value="<?= $_SESSION['unidad']  ?>"></td>
+                            <td><input type="checkbox" name="enviarnotificacion" id="enviarnotificacion" <?= $_SESSION['enviarnotificacion'] ?>></td>
                         </tr>
                     </tbody>
                 </table>
                 </br>
                 <input type="submit" name="add" id="add" value="Guardar">
-                <input type="submit" name="cancel" value="Cancelar">
+                <a href='medidas.php?wemp_pmla=<?php echo $wemp_pmla; ?>'>Cancelar</a>
             </form>
         </div>
     </body>

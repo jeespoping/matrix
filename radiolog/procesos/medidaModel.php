@@ -275,7 +275,7 @@ class Medida
         //Valido código
         if(is_null($this->sCodigo) || is_null($this->sCodigo) || strlen($this->sCodigo)<1)
         {
-            $this->sMensaje = 'El campo "Código" es obligatorio';
+            $this->sMensaje = 'El campo "C&oacute;digo" es obligatorio';
             return false;
         }
 
@@ -289,21 +289,7 @@ class Medida
         //Valido unidad
         if(!isset($this->sIdUnidad) || is_null($this->sIdUnidad)  || strlen($this->sIdUnidad)<1)
         {
-            $this->sMensaje = 'El campo "Apellidos" es obligatorio';
-            return false;
-        }
-
-        //Valido descripcion
-        if(!isset($this->sDescripcion) || is_null($this->sDescripcion)  || strlen($this->sDescripcion)<1)
-        {
-            $this->sMensaje = 'El campo "Descripción" es obligatorio';
-            return false;
-        }
-
-        //Valido Enviar Notificación
-        if(!isset($this->bEnviarNotificacion) || is_null($this->bEnviarNotificacion)  || strlen($this->bEnviarNotificacion)<1)
-        {
-            $this->sMensaje = 'El campo "Enviar Notificación" es obligatorio';
+            $this->sMensaje = 'El campo "Unidad" es obligatorio';
             return false;
         }
         
