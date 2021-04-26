@@ -518,6 +518,40 @@
             
         }
 
+        /**
+         * Funcion para cargar listado de usuarios para registrar medidas de la base de datos
+         * @by: sebastian.nevado
+         * @date: 2021/04/22
+         * @return: array
+         */
+        public function getUsuariosMedidas($sTipoBusqueda = null, $sValorBusqueda = null)
+        {
+            //Si busco
+            $sBusqueda = '';
+            if ($sTipoBusqueda == 'documento')
+            {
+                $sBusqueda = " WHERE Documento LIKE '%".$sValorBusqueda."%' ";
+            }
+            elseif ($sTipoBusqueda == 'codigo')
+            {
+                $sBusqueda = " WHERE Codigo LIKE '%".$sValorBusqueda."%' ";
+            }
+
+            //Cargo de base de datos
+            $sQuery = "SELECT codigo, descripcion AS nombre, grupo, empresa, activo, documento, email
+                        FROM usuarios ".
+                        $sBusqueda .
+                        "ORDER BY documento";
+
+            //Uno a uno
+            $resultado_query = mysql_query($sQuery,$this->dbConection);
+            $aMedidas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
+            
+            $this->sMensaje = 'Todos los usuarios cargados satisfactoriamente';
+
+            return $aMedidas;
+        }
+
     }
 
 ?>
