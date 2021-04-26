@@ -1,34 +1,28 @@
 <?php
-//Variables de sesión
-//session_start();
+    //Variables de sesión
+    //session_start();
 
-//Agrego el controlador de medida
-require_once("medidaController.php");
+    //Agrego el controlador de medida
+    require_once("medidaController.php");
 
-//Valido si envío parámetro "action" por URL
-if(isset($_REQUEST["action"])){
-    //Defino las acciones que se realizarán
-    switch ($_REQUEST["action"]) {
-        case 'createMedida':
-            medidaController::create();
-            break;
-        case 'viewMedida':
-            medidaController::view();
-            break;
-        case 'editMedida':
-            medidaController::edit();
-            break;
-        case 'deleteMedida':
-            medidaController::delete();
-            break;
+    //Valido si envío parámetro "action" por URL
+    if(isset($_REQUEST["action"])){
+        //Defino las acciones que se realizarán
+        switch ($_REQUEST["action"]) {
+            case 'createMedida':
+                medidaController::create();
+                break;
+            case 'createMedidaxPersona':
+                medidaController::createMedidaxPersona();
+                break;
 
-        default:
-            medidaController::index();
-            break;
+            default:
+                medidaController::index();
+                break;
+        }
+    } else {
+        medidaController::index();
     }
-} else {
-    medidaController::index();
-}
 
 
 ?>

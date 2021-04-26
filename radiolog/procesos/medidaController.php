@@ -1,292 +1,188 @@
 <?php
 
-//Clase
-require_once "medidaModel.php";
+    //Clase
+    require_once "medidaModel.php";
 
-/***
- * Creo una clase para el controlador de Medida
- * @by: sebastian.nevado
- * @date: 2021/04/22
- ***/
-class medidaController
-{
-    
-    /**
-     * Funcion para el listado de medidas
+    /***
+     * Creo una clase para el controlador de Medida
      * @by: sebastian.nevado
      * @date: 2021/04/22
-     */
-    public function index()
+     ***/
+    class medidaController
     {
-        //Obtengo el parámetro
-        $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
-
-        //Creo la variable medida
-        $oMedida = new Medida($wemp_pmla);
         
-        //Asigno los coches a una variable que estará esperando la vista
-        $aMedidas = $oMedida->getAll();
-
-        //Llamo a la vista
-        require("listarMedidaView.php");
-    }
-
-    /**
-     * Funcion para creación de medidas
-     * @by: sebastian.nevado
-     * @date: 2021/04/22
-     */
-    public function create()
-    {
-        //Obtengo el parámetro
-        $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
-        
-        //Creo la variable medida
-        $oMedida = new Medida($wemp_pmla);
-
-        // Proceso si doy aceptar
-        if ( isset($_POST['add']) )
+        /**
+         * Funcion para el listado de medidas
+         * @by: sebastian.nevado
+         * @date: 2021/04/22
+         */
+        public function index()
         {
+            //Obtengo el parámetro
+            $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
 
-            //Valido existencia de datos
-            $sCodigo = isset($_POST['codigo']) ? $_POST['codigo'] : null;
-            $sNombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
-            $sDescripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : null;
-            $sIdUnidad = isset($_POST['unidad']) ? $_POST['unidad'] : null;
-            $bEnviarNotificacion = !isset($_POST['enviarnotificacion']) ? false : true;
-            $sSeguridad = "C-".$_SESSION['codigo'];
+            //Creo la variable medida
+            $oMedida = new Medida($wemp_pmla);
+            
+            //Asigno los coches a una variable que estará esperando la vista
+            $aMedidas = $oMedida->getAll();
 
-            //Data validations
-            $oMedida->setCodigo($sCodigo);
-            $oMedida->setNombre($sNombre);
-            $oMedida->setDescripcion($sDescripcion);
-            $oMedida->setIdUnidad($sIdUnidad);
-            $oMedida->setEnviarNotificacion($bEnviarNotificacion);
-            $oMedida->setSeguridad($sSeguridad);
-
-            //Guardo y manejo los mensajes
-            if(!$oMedida->save())
-            {
-                $_SESSION["error"]=$oMedida->getMensaje();
-                $_SESSION["codigo"]=$sCodigo;
-                $_SESSION["nombre"]=$sNombre;
-                $_SESSION["descripcion"]=$sDescripcion;
-                $_SESSION["unidad"]=$sIdUnidad;
-                $_SESSION["enviarnotificacion"]=($bEnviarNotificacion) ? "checked" : "";
-                header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedida");
-                return;
-            }
-
-            //Limpio variables de sesión
-            unset($_SESSION['codigo']);
-            unset($_SESSION['nombre']);
-            unset($_SESSION['descripcion']);
-            unset($_SESSION['unidad']);
-            unset($_SESSION['enviarnotificacion']);
-
-            //Seteo la variable de respuesta
-            $_SESSION["success"]="Medida guardada";
-            header("Location: medidas.php?wemp_pmla=".$wemp_pmla);
-            return;
-        }
-        else
-        {
             //Llamo a la vista
-            require("crearMedidaView.php");
-
-            //Limpio variables de sesión
-            unset($_SESSION['codigo']);
-            unset($_SESSION['nombre']);
-            unset($_SESSION['descripcion']);
-            unset($_SESSION['unidad']);
-            unset($_SESSION['enviarnotificacion']);
+            require("listarMedidaView.php");
         }
-    }
 
-    /**
-     * Funcion para ver una medida
-     * @by: sebastian.nevado
-     * @date: 2021/04/22
-     */
-    public function view()
-    {
-        
-        //Creo la variable medida
-        $oMedida = new Medida();
+        /**
+         * Funcion para creación de medidas
+         * @by: sebastian.nevado
+         * @date: 2021/04/22
+         */
+        public function create()
+        {
+            //Obtengo el parámetro
+            $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
+            
+            //Creo la variable medida
+            $oMedida = new Medida($wemp_pmla);
 
-        // Si pulso el botón cancelar, vuelvo al inicio
-        if ( isset($_POST['cancel']) )
-        {
-            header('Location: ./');
-            return;
-        }
-        else
-        {
-            if(isset($_REQUEST['id']))
+            // Proceso si doy aceptar
+            if ( isset($_POST['add']) )
             {
-                //Seteo el id y cargo la medida
-                $oMedida->setId($_REQUEST['id']);
-                $oMedida->load();
 
-                //Le paso los datos a la vista
-                $iIdentificacion = $oMedida->getIdentificacion();
-                $sNombre = $oMedida->getNombre();
-                $sApellidos = $oMedida->getApellidos();
-                $dFechaNacimiento = $oMedida->getFechaNacimiento();
-                $iId = $oMedida->getId();
-                
-                //Llamo a la vista
-                require("view/medida/view.php");
+                //Valido existencia de datos
+                $sCodigo = isset($_POST['codigo']) ? $_POST['codigo'] : null;
+                $sNombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
+                $sDescripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : null;
+                $sIdUnidad = isset($_POST['unidad']) ? $_POST['unidad'] : null;
+                $bEnviarNotificacion = !isset($_POST['enviarnotificacion']) ? false : true;
+                $sUsuario = $_SESSION['usera'];
+                $sSeguridad = "C-".$sUsuario;
+
+                //Data validations
+                $oMedida->setCodigo($sCodigo);
+                $oMedida->setNombre($sNombre);
+                $oMedida->setDescripcion($sDescripcion);
+                $oMedida->setIdUnidad($sIdUnidad);
+                $oMedida->setEnviarNotificacion($bEnviarNotificacion);
+                $oMedida->setSeguridad($sSeguridad);
+
+                //Guardo y manejo los mensajes
+                if(!$oMedida->save())
+                {
+                    $_SESSION["error"] = $oMedida->getMensaje();
+                    $_SESSION["codigo"] = $sCodigo;
+                    $_SESSION["nombre"] = $sNombre;
+                    $_SESSION["descripcion"] = $sDescripcion;
+                    $_SESSION["unidad"] = $sIdUnidad;
+                    $_SESSION["enviarnotificacion"] = ($bEnviarNotificacion) ? "checked" : "";
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedida");
+                    return;
+                }
+
+                //Limpio variables de sesión
+                unset($_SESSION['codigo']);
+                unset($_SESSION['nombre']);
+                unset($_SESSION['descripcion']);
+                unset($_SESSION['unidad']);
+                unset($_SESSION['enviarnotificacion']);
+
+                //Seteo la variable de respuesta
+                $_SESSION["success"]="Medida guardada";
+                header("Location: medidas.php?wemp_pmla=".$wemp_pmla);
+                return;
             }
             else
             {
-                $_SESSION["error"]= "No se envió el id de la medida";
-                header("Location: index.php?action=createMedida");
-                return;
-            }
-        }
-    }
-
-    /**
-     * Funcion para editar una medida
-     * @by: sebastian.nevado
-     * @date: 2021/04/22
-     */
-    public function edit()
-    {
-        
-        //Creo la variable medida
-        $oMedida = new Medida();
-
-        // Si pulso el botón cancelar, vuelvo al inicio
-        if ( isset($_POST['cancel']) )
-        {
-            header('Location: ./');
-            return;
-        }
-        elseif ( isset($_POST['add']) )
-        {
-
-            //Valido existencia de datos
-            $iId = isset($_POST['id']) ? $_POST['id'] : null;
-            $sNombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
-            $sApellidos = isset($_POST['apellidos']) ? $_POST['apellidos'] : null;
-            $iIdentificacion = isset($_POST['identificacion']) ? $_POST['identificacion'] : null;
-            $dFechaNacimiento = isset($_POST['fechanacimiento']) ? $_POST['fechanacimiento'] : null;
-
-            //Seteo los datos para guardar
-            $oMedida->setId($iId);
-            $oMedida->setIdentificacion($iIdentificacion);
-            $oMedida->setNombre($sNombre);
-            $oMedida->setApellidos($sApellidos);
-            $oMedida->setFechaNacimiento($dFechaNacimiento);
-
-            //Guardo y manejo los mensajes
-            if(!$oMedida->save())
-            {
-                $_SESSION["error"]=$oMedida->getMensaje();
-                header("Location: index.php?action=editMedida&id=".$_REQUEST['id']);
-                return;
-            }
-
-            //Seteo la variable de respuesta
-            $_SESSION["success"]="Medida guardada";
-            header("Location: ./");
-            return;
-        }
-        else
-        {
-            if(isset($_REQUEST['id']))
-            {
-                $oMedida->setId($_REQUEST['id']);
-                $oMedida->load();
-
-                $iIdentificacion = $oMedida->getIdentificacion();
-                $sNombre = $oMedida->getNombre();
-                $sApellidos = $oMedida->getApellidos();
-                
-                $date = new DateTime($oMedida->getFechaNacimiento());
-                $dFechaNacimiento = $date->format('Y-m-d');
-
-                $iId = $oMedida->getId();
-                
                 //Llamo a la vista
-                require("view/medida/edit.php");
+                require("crearMedidaView.php");
+
+                //Limpio variables de sesión
+                unset($_SESSION['codigo']);
+                unset($_SESSION['nombre']);
+                unset($_SESSION['descripcion']);
+                unset($_SESSION['unidad']);
+                unset($_SESSION['enviarnotificacion']);
+            }
+        }
+
+        /**
+         * Funcion para creación de medidas
+         * @by: sebastian.nevado
+         * @date: 2021/04/26
+         */
+        public function createMedidaxPersona()
+        {
+            //Obtengo el parámetro
+            $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
+            
+            //Creo la variable medida
+            $oMedida = new Medida($wemp_pmla);
+
+            // Proceso si doy aceptar
+            if ( isset($_POST['add']) )
+            {
+
+                //Valido existencia de datos
+                $iIdMedida = isset($_POST['idmedida']) ? $_POST['idmedida'] : null;
+                $sCodigoPersona = isset($_POST['codigopersona']) ? $_POST['codigopersona'] : null;
+                $dFechaMedida = isset($_POST['fechamedida']) ? $_POST['fechamedida'] : null;
+                $dHoraMedida = isset($_POST['horamedida']) ? $_POST['horamedida'] : null;
+                $dValorMedida = isset($_POST['valormedida']) ? $_POST['valormedida'] : null;
+                $iIdMedidaxPersonal = isset($_POST['idmedidaxpersona']) ? $_POST['idmedidaxpersona'] : null;
+                $bContinuarIngresando = !isset($_POST['seguiringresando']) ? false : true;
+                $sUsuario = $_SESSION['usera'];
+                $sSeguridad = "C-".$sUsuario;
+
+                //Data validations
+                $oMedida->setId($iIdMedida);
+                $oMedida->setSeguridad($sSeguridad);
+
+                //Guardo y manejo los mensajes
+                if(!$oMedida->saveMedidaxPersona($sCodigoPersona, $dFechaMedida, $dHoraMedida, $dValorMedida, $iIdMedidaxPersonal))
+                {
+                    $_SESSION["error"]=$oMedida->getMensaje();
+                    $_SESSION["idmedida"] = $iIdMedida;
+                    $_SESSION["codigopersona"] = $sCodigoPersona;
+                    $_SESSION["fechamedida"] = $dFechaMedida;
+                    $_SESSION["horamedida"] = $dHoraMedida;
+                    $_SESSION["valormedida"] = $dValorMedida;
+                    $_SESSION["idmedidaxpersona"] = $iIdMedidaxPersonal;
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
+                    return;
+                }
+
+                //Limpio variables de sesión
+                unset($_SESSION['idmedida']);
+                unset($_SESSION['codigopersona']);
+                unset($_SESSION['fechamedida']);
+                unset($_SESSION['horamedida']);
+                unset($_SESSION['valormedida']);
+                unset($_SESSION['idmedidaxpersona']);
+
+                //Seteo la variable de respuesta
+                $_SESSION["success"]="Medida por personal guardada";
+                if($bContinuarIngresando)
+                {
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
+                }
+                else
+                {
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla);
+                }
+                return;
             }
             else
             {
-                $_SESSION["error"]= "No se envió el id de la medida";
-                header("Location: ./");
-                return;
-            }
-        }
-    }
-
-    /**
-     * Funcion para eliminar una medida
-     * @by: sebastian.nevado
-     * @date: 2021/04/22
-     */
-    public function delete()
-    {
-        
-        //Creo la variable medida
-        $oMedida = new Medida();
-
-        // Si pulso el botón cancelar, vuelvo al inicio
-        if ( isset($_POST['cancel']) )
-        {
-            header('Location: ./');
-            return;
-        }
-        elseif ( isset($_POST['delete']) )
-        {
-
-            //Valido existencia de datos
-            $iId = isset($_POST['id']) ? $_POST['id'] : null;
-
-            //Seteo los datos para eliminar
-            $oMedida->setId($iId);
-
-            //Guardo y manejo los mensajes
-            if(!$oMedida->delete())
-            {
-                $_SESSION["error"]=$oMedida->getMensaje();
-                header("Location: index.php?action=deleteMedida&id=".$_REQUEST['id']);
-                return;
-            }
-
-            //Seteo la variable de respuesta
-            $_SESSION["success"]="Medida eliminada";
-            header("Location: ./");
-            return;
-        }
-        else
-        {
-            if(isset($_REQUEST['id']))
-            {
-                $oMedida->setId($_REQUEST['id']);
-                $oMedida->load();
-                
-                $iIdentificacion = $oMedida->getIdentificacion();
-                $sNombre = $oMedida->getNombre();
-                $sApellidos = $oMedida->getApellidos();
-                
-                $date = new DateTime($oMedida->getFechaNacimiento());
-                $dFechaNacimiento = $date->format('Y-m-d');
-
-                $iId = $oMedida->getId();
-                
                 //Llamo a la vista
-                require("view/medida/delete.php");
-            }
-            else
-            {
-                $_SESSION["error"]= "No se envió el id de la medida";
-                header("Location: ./");
-                return;
+                require("crearMedidaPersonaView.php");
+
+                //Limpio variables de sesión
+                unset($_SESSION['codigo']);
+                unset($_SESSION['nombre']);
+                unset($_SESSION['descripcion']);
+                unset($_SESSION['unidad']);
+                unset($_SESSION['enviarnotificacion']);
             }
         }
-    }
 
-}
+    }
+?>

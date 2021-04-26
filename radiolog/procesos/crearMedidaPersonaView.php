@@ -87,42 +87,6 @@
             }
 		    //--------------------------------------------------------- FIN ENCABEZADO ---------------------------------------------------
         ?>
-        <!-- <div class="container" style="text-align:center;">
-            <h1>Agregar Medida</h1>
-            <form method="post">
-                <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
-                <table style="width:100%">
-                    <tbody>
-                        <tr>
-                            <td style="min-width:35%; text-align:right;"><label for="codigo">C&oacute;digo:</label></td>
-                            <td style="min-width:65%"><input type="text" name="codigo" id="codigo" size="65"></td>
-                        </tr>
-                        <tr>
-                            <td style="min-width:35%; text-align:right;"><label for="nombre">Nombre:</label></td>
-                            <td style="min-width:65%"><input type="text" name="nombre" id="nombre" size="65"></td>
-                        </tr>
-                        <tr>
-                            <td style="min-width:35%; text-align:right;"><label for="descripcion">Descripci&oacute;n:</label></td>
-                            <td style="min-width:65%"><textarea type="text" name="descripcion" id="descripcion" rows="5" cols="50"></textarea></td>
-                        </tr>
-                        <tr>
-                            <td style="min-width:35%; text-align:right;"><label for="unidad">Unidad:</label></td>
-                            <td style="min-width:65%"><input type="text" name="unidad" id="unidad" size="65"></td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:center;" colspan="2">
-                                <input type="checkbox" name="enviarnotificacion" id="enviarnotificacion">
-                                <label for="enviarnotificacion">Enviar notificaci&oacute;n</label>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                </br>
-                <input type="submit" name="add" id="add" value="Guardar">
-                <input type="submit" name="cancel" value="Cancelar">
-            </form>
-        </div> -->
-
         <div class="container" style="text-align:center; align:center;">
             <?php
                 //Llamo los mensajes flash
@@ -144,26 +108,31 @@
                 <table style="width:100%;">
                     <thead>
                         <tr class="fila1">
-                            <th colspan="5"><h2>Agregar Medida<h2></th>
+                            <th colspan="5"><h2>Agregar medida a persona<h2></th>
                         </tr>
                         <tr class="encabezadoTabla">
-                            <th>C&oacute;digo</th>
-                            <th>Nombre</th>
-                            <th>Descripci&oacute;n</th>
-                            <th>Unidad</th>
-                            <th>Enviar notificaci&oacute;n</th>
+                            <th>C&oacute;digo Medida</th>
+                            <th>Persona</th>
+                            <th>Fecha medida</th>
+                            <th>Hora medida</th>
+                            <th>Valor Medida</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="fila2" style="text-align:center;">
-                            <td><input type="text" name="codigo" id="codigo" required value="<?= $_SESSION['codigo']  ?>"></td>
-                            <td><input type="text" name="nombre" id="nombre" required value="<?= $_SESSION['nombre']  ?>"></td>
-                            <td><textarea type="text" name="descripcion" id="descripcion" rows="3" cols="50"><?= $_SESSION['descripcion']  ?></textarea></td>
-                            <td><input type="text" name="unidad" id="unidad" required value="<?= $_SESSION['unidad']  ?>"></td>
-                            <td><input type="checkbox" name="enviarnotificacion" id="enviarnotificacion" <?= $_SESSION['enviarnotificacion'] ?>></td>
+                            <td><input type="text" name="idmedida" id="idmedida" required value="<?= $_SESSION['idmedida']  ?>"></td>
+                            <td><input type="text" name="codigopersona" id="codigopersona" required value="<?= $_SESSION['codigopersona']  ?>"></td>
+                            <td><input type="date" name="fechamedida" id="fechamedida" required value="<?= $_SESSION['fechamedida']  ?>"></td>
+                            <td><input type="time" name="horamedida" id="horamedida" required value="<?= ($_SESSION['horamedida']) ? $_SESSION['horamedida'] : "00:00"  ?>"></td>
+                            <td><input type="number" name="valormedida" id="valormedida" required step="0.01" value="<?= $_SESSION['valormedida']  ?>"></td>
                         </tr>
                     </tbody>
                 </table>
+                </br>
+                <center>
+                    <input type="checkbox" name="seguiringresando" id="seguiringresando" <?= $_SESSION['seguiringresando'] ?>>
+                    <label for="seguiringresando"> Continuar ingresando medidas al pulsar "Guardar"</label><br>
+                </center>
                 </br>
                 <input type="submit" name="add" id="add" value="Guardar">
                 <a href='medidas.php?wemp_pmla=<?php echo $wemp_pmla; ?>'>Cancelar</a>

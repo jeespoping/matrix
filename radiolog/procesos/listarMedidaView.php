@@ -90,6 +90,21 @@
         <div class="container" style="text-align:center">
             <h1>Listado de Medidas</h1>
             <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
+            <?php
+                //Llamo los mensajes flash
+                if(isset($_SESSION['error']))
+                {
+                    echo "<center><div align='center' class='fondoRojo' style='width:510px'><b><blink>".$_SESSION['error']."</blink></b></div></center>"; 
+                    echo "<br><br>";
+                    unset($_SESSION['error']);
+                }
+                elseif(isset($_SESSION['success']))
+                {
+                    echo "<center><div align='center' class='fondoVerde' style='width:510px'><b><blink>".$_SESSION['success']."</blink></b></div></center>"; 
+                    echo "<br><br>";
+                    unset($_SESSION['success']);
+                }
+            ?>
 
             <!-- Tabla de Medidas-->
             <table style="width:100%; text-align:center;">
