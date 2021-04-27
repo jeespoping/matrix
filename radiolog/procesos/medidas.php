@@ -16,6 +16,14 @@
                 medidaController::createMedidaxPersona();
                 break;
 
+            case 'buscarPersona':
+                /** Se inicializa el bufer de salida de php **/
+                ob_start();
+                /** Limpiamos el buffer de salida de php para no retornar los datos de los "echos" que se hacen en los include **/
+                ob_end_clean();
+                medidaController::buscarPersona();
+                break;
+
             default:
                 medidaController::index();
                 break;

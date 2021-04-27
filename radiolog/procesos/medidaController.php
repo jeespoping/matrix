@@ -123,7 +123,7 @@
 
                 //Valido existencia de datos
                 $iIdMedida = isset($_POST['idmedida']) ? $_POST['idmedida'] : null;
-                $sCodigoPersona = isset($_POST['codigopersona']) ? $_POST['codigopersona'] : null;
+                $sCodigoPersona = isset($_POST['personasselect']) ? $_POST['personasselect'] : null;
                 $dFechaMedida = isset($_POST['fechamedida']) ? $_POST['fechamedida'] : null;
                 $dHoraMedida = isset($_POST['horamedida']) ? $_POST['horamedida'] : null;
                 $dValorMedida = isset($_POST['valormedida']) ? $_POST['valormedida'] : null;
@@ -131,6 +131,9 @@
                 $bContinuarIngresando = !isset($_POST['seguiringresando']) ? false : true;
                 $sUsuario = $_SESSION['usera'];
                 $sSeguridad = "C-".$sUsuario;
+
+                $sBusquedaPersona = isset($_POST['codigopersona']) ? $_POST['codigopersona'] : null;
+                $sTipoBusquedaPersona = isset($_POST['tipobusqueda']) ? $_POST['tipobusqueda'] : null;
 
                 //Data validations
                 $oMedida->setId($iIdMedida);
@@ -141,22 +144,29 @@
                 {
                     $_SESSION["error"]=$oMedida->getMensaje();
                     $_SESSION["idmedida"] = $iIdMedida;
-                    $_SESSION["codigopersona"] = $sCodigoPersona;
+                    $_SESSION["personasselect"] = $sCodigoPersona;
                     $_SESSION["fechamedida"] = $dFechaMedida;
                     $_SESSION["horamedida"] = $dHoraMedida;
                     $_SESSION["valormedida"] = $dValorMedida;
                     $_SESSION["idmedidaxpersona"] = $iIdMedidaxPersonal;
+                    $_SESSION['seguiringresando'] = ($bContinuarIngresando) ? "checked" : "";
+                    $_SESSION["codigopersona"] = $sBusquedaPersona;
+                    $_SESSION["tipobusqueda"] = $sTipoBusquedaPersona;
                     header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
                     return;
                 }
 
                 //Limpio variables de sesión
                 unset($_SESSION['idmedida']);
-                unset($_SESSION['codigopersona']);
+                unset($_SESSION['personasselect']);
                 unset($_SESSION['fechamedida']);
                 unset($_SESSION['horamedida']);
                 unset($_SESSION['valormedida']);
                 unset($_SESSION['idmedidaxpersona']);
+                //unset($_SESSION['seguiringresando']);
+
+                unset($_SESSION['codigopersona']);
+                unset($_SESSION['tipobusqueda']);
 
                 //Seteo la variable de respuesta
                 $_SESSION["success"]="Medida por personal guardada";
@@ -172,16 +182,62 @@
             }
             else
             {
+                $aMedidas = $oMedida->getAll();
+                $aPersonas = $oMedida->getUsuariosMedidas();
                 //Llamo a la vista
                 require("crearMedidaPersonaView.php");
 
                 //Limpio variables de sesión
-                unset($_SESSION['codigo']);
-                unset($_SESSION['nombre']);
-                unset($_SESSION['descripcion']);
-                unset($_SESSION['unidad']);
-                unset($_SESSION['enviarnotificacion']);
+                unset($_SESSION['idmedida']);
+                unset($_SESSION['personasselect']);
+                unset($_SESSION['fechamedida']);
+                unset($_SESSION['horamedida']);
+                unset($_SESSION['valormedida']);
+                unset($_SESSION['idmedidaxpersona']);
+                unset($_SESSION['seguiringresando']);
+
+                unset($_SESSION['codigopersona']);
+                unset($_SESSION['tipobusqueda']);
             }
+        }
+
+        /**
+         * Funcion para creación de medidas
+         * @by: sebastian.nevado
+         * @date: 2021/04/26
+         */
+        public function buscarPersona()
+        {
+            //Obtengo el parámetro
+            $wemp_pmla = isset($_POST["wemp_pmla"]) ? $_POST["wemp_pmla"] : null;
+            $sValorBusqueda = isset($_POST["codigoPersona"]) ? $_POST["codigoPersona"] : null;
+            $sTipoBusqueda = isset($_POST["tipoBusqueda"]) ? $_POST["tipoBusqueda"] : null;
+            $bLimpiar = isset($_POST["limpiar"]) ? ($_POST["limpiar"]=="true") : false;
+            
+            //Creo la variable medida
+            $oMedida = new Medida($wemp_pmla);
+            $aPersonas = $oMedida->getUsuariosMedidas($sTipoBusqueda, $sValorBusqueda);
+            
+            $aDatos = array('error'=>0,'mensaje'=>'','html'=>'','personas'=>'');
+            $sHtml = '<select style="max-width:60%; width:60%" id="personasselect" name="personasselect">
+                        <option value="" selected>--Seleccione una persona--</option>';
+            
+            $sSelected = ($bLimpiar) ? "" : "selected";
+            foreach ($aPersonas as $oPersona)
+            {
+                $sHtml .= "<option value='".$oPersona['codigo']."' ".$sSelected.">".$oPersona['codigo']." - ".utf8_encode($oPersona['nombre'])." (".$oPersona['documento'].")"."</option>";
+            }
+            $sHtml .= "</select>";
+
+            //$aDatos['personas'] = $aPersonas;
+		    $aDatos['mensaje'] = 'Se ha filtrado la información de personas.';
+            $aDatos['html'] = $sHtml;
+
+            /** Limpiamos el buffer de salida de php para no retornar los datos de los "echos" que se hacen en los include **/
+            ob_end_clean();
+
+            echo json_encode($aDatos);
+            return ;
         }
 
     }

@@ -1,5 +1,8 @@
 <?php
+    /** Se inicializa el bufer de salida de php **/
+    ob_start();
     include_once("conex.php");
+    
     include_once("root/comun.php");
 
     /***
@@ -80,6 +83,7 @@
          */
         public function __construct($wemppmla = null)
         {
+            global $conex;
             //Valores por defecto
             $this->dbConection = $conex;
             $this->iId = null;
@@ -496,7 +500,7 @@
             //Valido hora
             if(!isset($dHoraMedida) || is_null($dHoraMedida)  || strlen($dHoraMedida)<1)
             {
-                $this->sMensaje = 'El campo "Fecha" es obligatorio';
+                $this->sMensaje = 'El campo "Hora" es obligatorio';
                 return false;
             }
 
@@ -510,7 +514,17 @@
             //Valido id medida
             if(!isset($this->iId) || is_null($this->iId)  || strlen($this->iId)<1)
             {
-                $this->sMensaje = 'El campo "Medida" es obligatorio';
+                $this->sMensaje = 'El campo "C&oacute;digo Medida" es obligatorio';
+                return false;
+            }
+
+            //Valido fecha ingresada vs fecha actual
+            $dFechaHoraMedida = DateTime::createFromFormat('Y-m-d H:i', $dFechaMedida . ' ' . $dHoraMedida);
+            $dFechaHoraActual = DateTime::createFromFormat('Y-m-d H:i', date('Y-m-d H:i'));
+            $sFechaHoraActual = date('Y-m-d H:i');
+            if($dFechaHoraMedida > $dFechaHoraActual)
+            {
+                $this->sMensaje = 'La Fecha y Hora ingresada ('.$dFechaMedida . ' ' . $dHoraMedida.') no pueden ser superior a la fecha y hora actual ('.$sFechaHoraActual.')';
                 return false;
             }
             
@@ -528,28 +542,33 @@
         {
             //Si busco
             $sBusqueda = '';
-            if ($sTipoBusqueda == 'documento')
+            if (($sTipoBusqueda == 'documento') && ($sValorBusqueda != ''))
             {
-                $sBusqueda = " WHERE Documento LIKE '%".$sValorBusqueda."%' ";
+                $sBusqueda = " AND Documento LIKE '".$sValorBusqueda."%' ";
             }
-            elseif ($sTipoBusqueda == 'codigo')
+            elseif (($sTipoBusqueda == 'codigo') && ($sValorBusqueda != ''))
             {
-                $sBusqueda = " WHERE Codigo LIKE '%".$sValorBusqueda."%' ";
+                $sBusqueda = " AND Codigo LIKE '".$sValorBusqueda."%' ";
+            }
+            elseif (($sTipoBusqueda == 'nombre') && ($sValorBusqueda != ''))
+            {
+                $sBusqueda = " AND Descripcion LIKE '%".$sValorBusqueda."%' ";
             }
 
             //Cargo de base de datos
             $sQuery = "SELECT codigo, descripcion AS nombre, grupo, empresa, activo, documento, email
-                        FROM usuarios ".
+                        FROM usuarios 
+                        WHERE activo = 'A' ".
                         $sBusqueda .
-                        "ORDER BY documento";
+                        " ORDER BY codigo ";
 
             //Uno a uno
             $resultado_query = mysql_query($sQuery,$this->dbConection);
-            $aMedidas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
+            $aPersonas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
             
             $this->sMensaje = 'Todos los usuarios cargados satisfactoriamente';
 
-            return $aMedidas;
+            return $aPersonas;
         }
 
     }

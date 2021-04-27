@@ -70,6 +70,7 @@
             }
             include_once("root/comun.php");
             $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
+            global $conex;
 
             //----------------------------------------------------------ENCABEZADO--------------------------------------------------------
             $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);

@@ -11,6 +11,7 @@
         <link rel="stylesheet" type="text/css" href="../../../include/root/jquery.multiselect.filter.css" />
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.js"></script>
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.filter.js"></script>
+        <script type="text/javascript" src="medidapersona.js"></script>
         <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
 
         <!-- Inicio estilos css -->
@@ -70,6 +71,7 @@
             }
             include_once("root/comun.php");
             $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
+            global $conex;
 
             //----------------------------------------------------------ENCABEZADO--------------------------------------------------------
             $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
@@ -112,7 +114,7 @@
                         </tr>
                         <tr class="encabezadoTabla">
                             <th>C&oacute;digo Medida</th>
-                            <th>Persona</th>
+                            <th style="width:40%">Persona</th>
                             <th>Fecha medida</th>
                             <th>Hora medida</th>
                             <th>Valor Medida</th>
@@ -120,17 +122,59 @@
                     </thead>
                     <tbody>
                         <tr class="fila2" style="text-align:center;">
-                            <td><input type="text" name="idmedida" id="idmedida" required value="<?= $_SESSION['idmedida']  ?>"></td>
-                            <td><input type="text" name="codigopersona" id="codigopersona" required value="<?= $_SESSION['codigopersona']  ?>"></td>
-                            <td><input type="date" name="fechamedida" id="fechamedida" required value="<?= $_SESSION['fechamedida']  ?>"></td>
-                            <td><input type="time" name="horamedida" id="horamedida" required value="<?= ($_SESSION['horamedida']) ? $_SESSION['horamedida'] : "00:00"  ?>"></td>
-                            <td><input type="number" name="valormedida" id="valormedida" required step="0.01" value="<?= $_SESSION['valormedida']  ?>"></td>
+                            <td>
+                                <select id="idmedida" name="idmedida" required>
+                                    <option value="">--Seleccione una medida--</option>
+                                    <?php
+                                        $sMedidaSelect = (isset($_SESSION['idmedida'])) ? $_SESSION['idmedida'] : $aMedidas[0]['codigo'];
+                                        foreach ($aMedidas as $oMedida) {
+                                            $sSelected = ($sMedidaSelect == $oMedida['codigo']) ? 'selected' : '';
+                                            echo "<option value='".$oMedida['codigo']."' ".$sSelected.">".$oMedida['codigo']." - ".$oMedida['nombre']."</option>";
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+                            <td style="width:40%">
+                                </br>B&uacute;squeda:
+                                <?php $sTipoBusqueda = (isset($_SESSION['tipobusqueda'])) ? $_SESSION['tipobusqueda'] : "documento";  ?>
+                                <select name="tipobusqueda" id="tipobusqueda">
+                                    <option value="documento" <?= ($sTipoBusqueda == "documento") ? "selected" : "" ?> >Documento</option>
+                                    <option value="codigo" <?= ($sTipoBusqueda == "codigo") ? "selected" : "" ?> >C&oacute;digo</option>
+                                    <option value="nombre" <?= ($sTipoBusqueda == "nombre") ? "selected" : "" ?>>Nombre</option>
+                                </select>
+                                <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>">
+                                <!-- <input type="submit" name="busqueda" id="busqueda" value="Buscar" onclick="buscarPersona()"> -->
+                                <a onclick="buscarPersona(false)">Buscar</a> | 
+                                <a onclick="buscarPersona(true)">Limpiar</a>
+                                </br></br>
+                                Seleccione una persona:
+                                <select style="max-width:60%; width:60%" id="personasselect" name="personasselect" required>
+                                    <option value="" >--Seleccione una persona--</option>
+                                    <?php
+                                        $sCodigoPersonaSelect = (isset($_SESSION['personasselect'])) ? $_SESSION['personasselect'] : null;
+                                        foreach ($aPersonas as $oPersona) {
+                                            $sSelected = ($sCodigoPersonaSelect == $oPersona['codigo']) ? 'selected' : '';
+                                            echo "<option value='".$oPersona['codigo']."' ".$sSelected.">".$oPersona['codigo']." - ".$oPersona['nombre']." (".$oPersona['documento'].")"."</option>";
+                                        }
+                                    ?>
+                                </select>
+                                </br></br>
+                            </td>
+                            <td>
+                                <input type="date" name="fechamedida" id="fechamedida" required value="<?= (isset($_SESSION['fechamedida'])) ? $_SESSION['fechamedida'] : null  ?>">
+                            </td>
+                            <td>
+                                <input type="time" name="horamedida" id="horamedida" required value="<?= isset($_SESSION['horamedida']) ? $_SESSION['horamedida'] : "00:00"  ?>">
+                            </td>
+                            <td>
+                                <input type="number" name="valormedida" id="valormedida" required step="0.01" value="<?= (isset($_SESSION['valormedida'])) ? $_SESSION['valormedida'] : null  ?>">
+                            </td>
                         </tr>
                     </tbody>
                 </table>
                 </br>
                 <center>
-                    <input type="checkbox" name="seguiringresando" id="seguiringresando" <?= $_SESSION['seguiringresando'] ?>>
+                    <input type="checkbox" name="seguiringresando" id="seguiringresando" <?= (isset($_SESSION['seguiringresando'])) ? $_SESSION['seguiringresando'] : null ?>>
                     <label for="seguiringresando"> Continuar ingresando medidas al pulsar "Guardar"</label><br>
                 </center>
                 </br>
