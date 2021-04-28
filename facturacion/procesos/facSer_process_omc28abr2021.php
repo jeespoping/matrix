@@ -44,26 +44,18 @@ $factTemporal = $_GET['factTemporal'];
 
 if($accion == 'verNit')
 {
-	// buscarDat('verNit',this.value,tipoResp)
     $query1 = "select * from conit WHERE nitnit = '$nitCed'";
-    //echo("<br>q:$query1");
     $commit1 = odbc_do($conex_o, $query1);
     $nomResp = odbc_result($commit1, 3);
-    //echo("<br>n:$nomResp"); 
+
     if($nomResp != null)
     {
         if($tipoResp == 'E')
         {
-			// Cambio 2021-Abr-22 Luis Meneses. 
-			// Por solicitud de usuarios
-			// se cambia empcod por empnit al buscar
-			// la identificación en la tabla inemp.
-            $query2 = "select count(*) from inemp WHERE empnit = '$nitCed' AND empact = 'S'";
-			//echo("<br>q2:$query2");
+            $query2 = "select count(*) from inemp WHERE empcod = '$nitCed' AND empact = 'S'";
             $commit2 = odbc_do($conex_o, $query2);
             $countInemp = odbc_result($commit2, 1);
-			//echo("<br>c:$countInemp");
-			/* ?> <script> alert('cons cli'); </script> <?php */
+
             if($countInemp > 0)
             {
                 ?>
@@ -128,8 +120,6 @@ if($accion == 'verNit')
         </script>
         <?php
     }
-	
-
 }
 
 if($accion == 'saveTempo')

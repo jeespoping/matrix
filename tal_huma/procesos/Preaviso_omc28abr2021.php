@@ -16,9 +16,7 @@ include_once("conex.php");
 //FECHA ULTIMA ACTUALIZACION 	:2016-01-26
 
 /* DESCRIPCION	:Actualiza las fecha de preaviso del los contratos con prorroga automatica */
-// Actualizaciones:
-// 2021-01-14	: Leandro Meneses
-//		Se adiciona la variable .$wbasedato. en los querys, estaba quemada la tabal talento                 
+                 
 
  session_start();
  if (!isset($_SESSION['user']))
@@ -32,7 +30,7 @@ include_once("conex.php");
 
 		echo "<form action='Preaviso.php' method=post>";
 		$query = "SELECT Concon, Connum, Contip, Conpa1, Conpa2, Connit, Conobj, Convac, Confin, Conffi, Confpr, Conres, Conpro, Conter,id   "
-			   ."    FROM ".$wbasedato."_000002 "
+			   ."    FROM talento_000002 "
 			   ."    WHERE Conter = 'off' "
 			   ."      AND Conpro = 'on' "
 			   ."      AND Confpr <= '".date("Y-m-d")."' ";
@@ -76,7 +74,7 @@ include_once("conex.php");
 				
 				$nuevafecha = $row[10];
 				
-				$query = "UPDATE ".$wbasedato."_000002 set Confpr = '".$nuevafecha."' WHERE id = '".$row[14]."' ";
+				$query = "UPDATE talento_000002 set Confpr = '".$nuevafecha."' WHERE id = '".$row[14]."' ";
 				$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				echo "<tr>";
 				echo "<td align=center>".$row[0]."</td>";
