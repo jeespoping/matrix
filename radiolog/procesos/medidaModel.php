@@ -43,10 +43,10 @@
         private $sDescripcion;
 
         /**
-         * @Name: sIdUnidad
-         * @Type: string
+         * @Name: iIdUnidad
+         * @Type: integer
          */
-        private $sIdUnidad;
+        private $iIdUnidad;
 
         /**
          * @Name: bEnviarNotificacion
@@ -90,7 +90,7 @@
             $this->sCodigo = null;
             $this->sNombre = null;
             $this->sDescripcion = null;
-            $this->sIdUnidad = null;
+            $this->iIdUnidad = null;
             $this->bEnviarNotificacion = null;
             $this->sMensaje = null;
             $this->wemp_pmla = $wemppmla;
@@ -189,18 +189,18 @@
          */
         public function getIdUnidad()
         {
-            return $this->sIdUnidad;
+            return $this->iIdUnidad;
         }
 
         /**
          * Funcion para setear el idUnidad
          * @by: sebastian.nevado
          * @date: 2021/04/21
-         * @params: sIdUnidad
+         * @params: iIdUnidad
          */
-        public function setIdUnidad($sIdUnidad)
+        public function setIdUnidad($iIdUnidad)
         {
-            $this->sIdUnidad = $sIdUnidad;
+            $this->iIdUnidad = $iIdUnidad;
         }
 
         /**
@@ -289,7 +289,7 @@
             }
 
             //Valido unidad
-            if(!isset($this->sIdUnidad) || is_null($this->sIdUnidad)  || strlen($this->sIdUnidad)<1)
+            if(!isset($this->iIdUnidad) || is_null($this->iIdUnidad)  || strlen($this->iIdUnidad)<1)
             {
                 $this->sMensaje = 'El campo "Unidad" es obligatorio';
                 return false;
@@ -323,10 +323,10 @@
                 $sQueryUpdate = " UPDATE ".$wbasedato."_000001
                                 SET Medico = '".$wbasedato."', Fecha_data = '".date("Y-m-d")."', Hora_data = '".date("H:i:s")."',
                                     medcod = '".$this->sCodigo."', mednom = '".$this->sNombre."', meddes = '".$this->sDescripcion."', 
-                                    meduni = '".$this->sIdUnidad."', medenc = '".$this->bEnviarNotificacion."', Seguridad = '".$this->sSeguridad."'
+                                    meduni = ".$this->iIdUnidad.", medenc = '".$this->bEnviarNotificacion."', Seguridad = '".$this->sSeguridad."'
                                 WHERE id = ".$this->iId;
 
-                $res = mysqli_query($sQueryUpdate,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
+                $res = mysqli_query($this->dbConection, $sQueryUpdate) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
 
                 $this->sMensaje = 'Medida actualizada satisfactoriamente';
 
@@ -340,8 +340,8 @@
                                     meddes, meduni, medenc, Seguridad)
                             VALUES
                                 (   '".$wbasedato."','".date("Y-m-d")."','".date("H:i:s")."','".$this->sCodigo."','".$this->sNombre."',
-                                    '".$this->sDescripcion."','".$this->sIdUnidad."','".$this->bEnviarNotificacion."','".$this->sSeguridad."')";
-                $res = mysqli_query($sQueryInsert,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryInsert . " - " . mysql_error());
+                                    '".$this->sDescripcion."',".$this->iIdUnidad.",'".$this->bEnviarNotificacion."','".$this->sSeguridad."')";
+                $res = mysqli_query($this->dbConection, $sQueryInsert) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryInsert . " - " . mysql_error());
 
                 $this->sMensaje = 'Medida insertada satisfactoriamente';
 
@@ -370,13 +370,13 @@
                             FROM ".$wbasedato."_000001"."
                             WHERE id = ".$this->iId;
 
-                $err1 = mysqli_query($sQuery,$this->dbConection);
+                $err1 = mysqli_query($this->dbConection, $sQuery);
                 $row1 = mysql_fetch_assoc($err1);
 
                 $this->sCodigo = htmlentities($row1['medcod']);
                 $this->sNombre = htmlentities($row1['mednom']);
                 $this->sDescripcion = htmlentities($row1['meddes']);
-                $this->sIdUnidad = htmlentities($row1['meduni']);
+                $this->iIdUnidad = htmlentities($row1['meduni']);
                 $this->bEnviarNotificacion = (htmlentities($row1['medenc']) == 1) ? true : false;
 
                 $this->sMensaje = 'Medida cargada satisfactoriamente';
@@ -411,7 +411,7 @@
                         ORDER BY id";
 
             //Uno a uno
-            $resultado_query = mysqli_query($sQuery,$this->dbConection);
+            $resultado_query = mysqli_query($this->dbConection, $sQuery);
             $aMedidas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
             
             $this->sMensaje = 'Todos las medidas cargadas satisfactoriamente';
@@ -451,7 +451,7 @@
                                     Seguridad = '".$this->sSeguridad."'
                                 WHERE id = ".$iIdMedidaxPersonal;
 
-                $res = mysqli_query($sQueryUpdate,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000002 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
+                $res = mysqli_query($this->dbConection, $sQueryUpdate) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000002 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
 
                 $this->sMensaje = 'Medida por persona actualizada satisfactoriamente';
 
@@ -468,19 +468,19 @@
                                 (   '".$wbasedato."','".date("Y-m-d")."','".date("H:i:s")."','".
                                     $this->iId."','".$sCodigoPersona."','".$_SESSION['usera']."','".$dValorMedida."','".
                                     $dFechaMedida."','".$dHoraMedida."','".$this->sSeguridad."')";
-                $res = mysqli_query($sQueryInsert,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000002 por primera vez): " . $sQueryInsert . " - " . mysql_error());
+                $res = mysqli_query($this->dbConection, $sQueryInsert) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000002 por primera vez): " . $sQueryInsert . " - " . mysql_error());
 
                 $this->sMensaje = 'Medida por persona insertada satisfactoriamente';
 
                 $iIdMedidaxPersonal = mysql_insert_id($this->dbConection);
 
-                return true;
-            }
+                //Se envía notificación por correo si la medida está configurada de esa manera
+                if($this->bEnviarNotificacion)
+                {
+                    $bResultadoNotificación = $this->enviarNotificacion($sCodigoPersona, $dFechaMedida, $dHoraMedida, $dValorMedida, $iIdMedidaxPersonal);
+                }
 
-            //Se envía notificación por correo si la medida está configurada de esa manera
-            if($this->bEnviarNotificacion)
-            {
-                $this->enviarNotificacion();
+                return true;
             }
         }
 
@@ -572,7 +572,7 @@
                         " ORDER BY codigo ";
 
             //Uno a uno
-            $resultado_query = mysqli_query($sQuery,$this->dbConection);
+            $resultado_query = mysqli_query($this->dbConection, $sQuery);
             $aPersonas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
             
             $this->sMensaje = 'Todos los usuarios cargados satisfactoriamente';
@@ -583,11 +583,14 @@
         /**
          * Funcion para enviar notificación por correo cuando se ingrese una nueva medida
          * @by: sebastian.nevado
-         * @date: 2021/04/22
+         * @date: 2021/04/28
          * @return: array
          */
-        public function enviarNotificacion($sCodigoPersona, $dFechaMedida, $dHoraMedida, $dValorMedida)
+        public function enviarNotificacion($sCodigoPersona, $dFechaMedida, $dHoraMedida, $dValorMedida, $iIdMedidaxPersonal)
         {
+            //Obtengo el alias por aplicación
+            $wbasedato = consultarAliasPorAplicacion($this->dbConection, $this->wemp_pmla, $this->nombreAplicacion);
+
             //Valido que se envíe código de la persona
             if(isset($sCodigoPersona) && !is_null($sCodigoPersona))
             {
@@ -596,54 +599,74 @@
                             FROM usuarios 
                             WHERE codigo = ".$sCodigoPersona;
 
-                $err1 = mysqli_query($sQuery,$this->dbConection);
+                $err1 = mysqli_query($this->dbConection, $sQuery);
                 $row1 = mysql_fetch_assoc($err1);
 
                 $sCorreoPersona = $row1['Email'];
-                $sNombrePersona = $row1['nombre'];
+                $sNombrePersona = ucwords(strtolower($row1['nombre']));
                 $sDocumentoPersona = $row1['Documento'];
+                $aDestinatario = array($sCorreoPersona."-".$sNombrePersona);
+                $sUnidadMedida = "%";
 
                 //Valido si la persona tiene correo
                 if(isset($sCorreoPersona) && !is_null(isset($sCorreoPersona)) && ($sCorreoPersona != ''))
                 {
                     //Construyo el correo
                     $asunto = "Atencion...";
-                    $mensaje = "Paciente Internacional Origen ".$wemp_pmla." Con historia nro: ".$historia."-".$ingreso." ".$nombrePaciente." En la unidad de ".$servicioIng;
+                    $mensaje = "Señor/a ".$sNombrePersona."
+                    </br>
+                    Se ha realizado un registro de la medida ".$this->sNombre." al código de usuario ".$sCodigoPersona.", vinculado a esta dirección de correo electrónico en el sistema Matrix. Por favor, ingrese al sistema y valide la información.";
                     $altbody = "";
                     
-                    $email        		= consultarAliasPorAplicacion( $conex, $wemp_pmla, "emailEnviosTI");
+                    $email        		= consultarAliasPorAplicacion( $this->dbConection, $this->wemp_pmla, "emailEnviosTI");
                     $email        		= explode("--", $email );
                     $wremitente			= array( 'email'	=> $email[0],
                                                 'password' => $email[1],
                                                 'from' 	=> $email[0],
                                                 'fromName' => "",
                                         );
-                    $respuesta = sendToEmail($asunto, $mensaje, $altbody, $wremitente, $sCorreoPersona);
+                    
+                    //Se envía el correo
+                    //$respuesta = sendToEmail($asunto, $mensaje, $altbody, $wremitente, $aDestinatario);
+                    $respuesta = array();
+                    $respuesta['Error']=true;
                     
                     //Si envío correo, se guarda en la base de datos
                     if($respuesta['Error'])
                     {
-                        $this->sMensaje = "Correo enviado";
+                        $this->sMensaje .= "Correo enviado";
                         
                         //Guardo en base de datos el envío de correo
-                        $sQueryInsert = "";
+                        $sQueryInsert = "INSERT INTO ".$wbasedato."_000003 
+                                            (Medico, Fecha_data, Hora_data,
+                                            nmpimp, nmpcme, nmpnme, 
+                                            nmpvme, nmpcum, nmpume, 
+                                            nmpcpm, nmpnpm, nmpcep, 
+                                            nmpcop, nmpfme, nmphme, 
+                                            nmpfen, nmphen, Seguridad)
+                                        VALUES ('".$wbasedato."', '".date("Y-m-d")."', '".date("H:i:s")."', ".
+                                                    $iIdMedidaxPersonal.", '".$this->sCodigo."', '".$this->sNombre."', ".
+                                                    $dValorMedida.", ".$this->iIdUnidad.", '".$sUnidadMedida."', '".
+                                                    $sCodigoPersona."', '".$sNombrePersona."', '".$sDocumentoPersona."', '".
+                                                    $sCorreoPersona. "', '".$dFechaMedida."', '".$dHoraMedida."', '".
+                                                    date("Y-m-d")."', '".date("H:i:s")."', '".$this->sSeguridad."')";
 
                         //Guardo en base de datos el envío de correo
-                        $res = mysqli_query($sQueryInsert,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000005 por primera vez): " . $sQueryInsert . " - " . mysql_error());
+                        $res = mysqli_query($this->dbConection, $sQueryInsert) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000005 por primera vez): " . $sQueryInsert . " - " . mysql_error());
 
-                        $this->sMensaje = 'Envío de notificación por correo guardado satisfactoriamente';
+                        $this->sMensaje .= 'Envío de notificación por correo guardado satisfactoriamente';
 
                         return true;
                     }
                     else
                     {
-                        $this->sMensaje = "No se pudo enviar el correo";
+                        $this->sMensaje .= "No se pudo enviar el correo";
                         return false;
                     }
                 }
                 else
                 {
-                    $this->sMensaje = "No se puede enviar la notificación por correo, porque la persona no tiene correo electrónico registrado";
+                    $this->sMensaje .= "No se puede enviar la notificación por correo, porque la persona no tiene correo electrónico registrado";
                     return false;
                 }
             }
@@ -652,6 +675,25 @@
                 $this->sMensaje = "No se puede enviar la notificación por correo, porque no se envío el código de la persona";
                 return false;
             }
+        }
+
+        /**
+         * Funcion para obtener unidad de la medida
+         * @by: sebastian.nevado
+         * @date: 2021/04/28
+         * @return: string
+         */
+        public function getNombreUnidad($iIdUnidad)
+        {
+            $sQuery = "SELECT unides
+                            FROM mipres_000017
+                            WHERE id = ".$iIdUnidad;
+
+            $err1 = mysqli_query($this->dbConection, $sQuery);
+            $row1 = mysql_fetch_assoc($err1);
+
+            $sNombreUnidad = htmlentities($row1['unides']);
+            return $sNombreUnidad;
         }
 
     }
