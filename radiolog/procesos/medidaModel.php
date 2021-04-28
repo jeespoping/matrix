@@ -606,7 +606,7 @@
                 $sNombrePersona = ucwords(strtolower($row1['nombre']));
                 $sDocumentoPersona = $row1['Documento'];
                 $aDestinatario = array($sCorreoPersona."-".$sNombrePersona);
-                $sUnidadMedida = "%";
+                $sUnidadMedida = $this->getNombreUnidad($this->iIdUnidad);
 
                 //Valido si la persona tiene correo
                 if(isset($sCorreoPersona) && !is_null(isset($sCorreoPersona)) && ($sCorreoPersona != ''))
