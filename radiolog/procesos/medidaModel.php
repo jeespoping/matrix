@@ -326,7 +326,7 @@
                                     meduni = '".$this->sIdUnidad."', medenc = '".$this->bEnviarNotificacion."', Seguridad = '".$this->sSeguridad."'
                                 WHERE id = ".$this->iId;
 
-                $res = mysql_query($sQueryUpdate,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
+                $res = mysqli_query($sQueryUpdate,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
 
                 $this->sMensaje = 'Medida actualizada satisfactoriamente';
 
@@ -341,7 +341,7 @@
                             VALUES
                                 (   '".$wbasedato."','".date("Y-m-d")."','".date("H:i:s")."','".$this->sCodigo."','".$this->sNombre."',
                                     '".$this->sDescripcion."','".$this->sIdUnidad."','".$this->bEnviarNotificacion."','".$this->sSeguridad."')";
-                $res = mysql_query($sQueryInsert,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryInsert . " - " . mysql_error());
+                $res = mysqli_query($sQueryInsert,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000001 por primera vez): " . $sQueryInsert . " - " . mysql_error());
 
                 $this->sMensaje = 'Medida insertada satisfactoriamente';
 
@@ -370,14 +370,14 @@
                             FROM ".$wbasedato."_000001"."
                             WHERE id = ".$this->iId;
 
-                $err1 = mysql_query($sQuery,$this->dbConection);
+                $err1 = mysqli_query($sQuery,$this->dbConection);
                 $row1 = mysql_fetch_assoc($err1);
 
                 $this->sCodigo = htmlentities($row1['medcod']);
                 $this->sNombre = htmlentities($row1['mednom']);
                 $this->sDescripcion = htmlentities($row1['meddes']);
                 $this->sIdUnidad = htmlentities($row1['meduni']);
-                $this->bEnviarNotificacion = htmlentities($row1['medenc']);
+                $this->bEnviarNotificacion = (htmlentities($row1['medenc']) == 1) ? true : false;
 
                 $this->sMensaje = 'Medida cargada satisfactoriamente';
 
@@ -411,7 +411,7 @@
                         ORDER BY id";
 
             //Uno a uno
-            $resultado_query = mysql_query($sQuery,$this->dbConection);
+            $resultado_query = mysqli_query($sQuery,$this->dbConection);
             $aMedidas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
             
             $this->sMensaje = 'Todos las medidas cargadas satisfactoriamente';
@@ -427,8 +427,11 @@
          */
         public function saveMedidaxPersona($sCodigoPersona, $dFechaMedida, $dHoraMedida, $dValorMedida, $iIdMedidaxPersonal = null, $iIdMedida = null)
         {
-            //Obtengo el alias por aplicación
+            //Cargo la medida
             $this->iId = (!is_null($iIdMedida)) ? $iIdMedida : $this->iId;
+            $this->load();
+
+            //Obtengo el alias por aplicación
             $wbasedato = consultarAliasPorAplicacion($this->dbConection, $this->wemp_pmla, $this->nombreAplicacion);
 
             //Verifico la integridad        
@@ -448,7 +451,7 @@
                                     Seguridad = '".$this->sSeguridad."'
                                 WHERE id = ".$iIdMedidaxPersonal;
 
-                $res = mysql_query($sQueryUpdate,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000002 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
+                $res = mysqli_query($sQueryUpdate,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000002 por primera vez): " . $sQueryUpdate . " - " . mysql_error());
 
                 $this->sMensaje = 'Medida por persona actualizada satisfactoriamente';
 
@@ -465,13 +468,19 @@
                                 (   '".$wbasedato."','".date("Y-m-d")."','".date("H:i:s")."','".
                                     $this->iId."','".$sCodigoPersona."','".$_SESSION['usera']."','".$dValorMedida."','".
                                     $dFechaMedida."','".$dHoraMedida."','".$this->sSeguridad."')";
-                $res = mysql_query($sQueryInsert,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000002 por primera vez): " . $sQueryInsert . " - " . mysql_error());
+                $res = mysqli_query($sQueryInsert,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000002 por primera vez): " . $sQueryInsert . " - " . mysql_error());
 
                 $this->sMensaje = 'Medida por persona insertada satisfactoriamente';
 
                 $iIdMedidaxPersonal = mysql_insert_id($this->dbConection);
 
                 return true;
+            }
+
+            //Se envía notificación por correo si la medida está configurada de esa manera
+            if($this->bEnviarNotificacion)
+            {
+                $this->enviarNotificacion();
             }
         }
 
@@ -540,7 +549,7 @@
          */
         public function getUsuariosMedidas($sTipoBusqueda = null, $sValorBusqueda = null)
         {
-            //Si busco
+            //Defino si busco por documento, código o nombre y construyo el where de la consulta
             $sBusqueda = '';
             if (($sTipoBusqueda == 'documento') && ($sValorBusqueda != ''))
             {
@@ -563,12 +572,86 @@
                         " ORDER BY codigo ";
 
             //Uno a uno
-            $resultado_query = mysql_query($sQuery,$this->dbConection);
+            $resultado_query = mysqli_query($sQuery,$this->dbConection);
             $aPersonas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
             
             $this->sMensaje = 'Todos los usuarios cargados satisfactoriamente';
 
             return $aPersonas;
+        }
+
+        /**
+         * Funcion para enviar notificación por correo cuando se ingrese una nueva medida
+         * @by: sebastian.nevado
+         * @date: 2021/04/22
+         * @return: array
+         */
+        public function enviarNotificacion($sCodigoPersona, $dFechaMedida, $dHoraMedida, $dValorMedida)
+        {
+            //Valido que se envíe código de la persona
+            if(isset($sCodigoPersona) && !is_null($sCodigoPersona))
+            {
+                //Cargo de base de datos
+                $sQuery = "SELECT Descripcion AS nombre, Documento, Email
+                            FROM usuarios 
+                            WHERE codigo = ".$sCodigoPersona;
+
+                $err1 = mysqli_query($sQuery,$this->dbConection);
+                $row1 = mysql_fetch_assoc($err1);
+
+                $sCorreoPersona = $row1['Email'];
+                $sNombrePersona = $row1['nombre'];
+                $sDocumentoPersona = $row1['Documento'];
+
+                //Valido si la persona tiene correo
+                if(isset($sCorreoPersona) && !is_null(isset($sCorreoPersona)) && ($sCorreoPersona != ''))
+                {
+                    //Construyo el correo
+                    $asunto = "Atencion...";
+                    $mensaje = "Paciente Internacional Origen ".$wemp_pmla." Con historia nro: ".$historia."-".$ingreso." ".$nombrePaciente." En la unidad de ".$servicioIng;
+                    $altbody = "";
+                    
+                    $email        		= consultarAliasPorAplicacion( $conex, $wemp_pmla, "emailEnviosTI");
+                    $email        		= explode("--", $email );
+                    $wremitente			= array( 'email'	=> $email[0],
+                                                'password' => $email[1],
+                                                'from' 	=> $email[0],
+                                                'fromName' => "",
+                                        );
+                    $respuesta = sendToEmail($asunto, $mensaje, $altbody, $wremitente, $sCorreoPersona);
+                    
+                    //Si envío correo, se guarda en la base de datos
+                    if($respuesta['Error'])
+                    {
+                        $this->sMensaje = "Correo enviado";
+                        
+                        //Guardo en base de datos el envío de correo
+                        $sQueryInsert = "";
+
+                        //Guardo en base de datos el envío de correo
+                        $res = mysqli_query($sQueryInsert,$this->dbConection) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000005 por primera vez): " . $sQueryInsert . " - " . mysql_error());
+
+                        $this->sMensaje = 'Envío de notificación por correo guardado satisfactoriamente';
+
+                        return true;
+                    }
+                    else
+                    {
+                        $this->sMensaje = "No se pudo enviar el correo";
+                        return false;
+                    }
+                }
+                else
+                {
+                    $this->sMensaje = "No se puede enviar la notificación por correo, porque la persona no tiene correo electrónico registrado";
+                    return false;
+                }
+            }
+            else
+            {
+                $this->sMensaje = "No se puede enviar la notificación por correo, porque no se envío el código de la persona";
+                return false;
+            }
         }
 
     }
