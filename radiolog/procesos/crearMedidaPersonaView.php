@@ -135,7 +135,20 @@
                                 </select>
                             </td>
                             <td style="width:40%">
-                                </br>B&uacute;squeda:
+                                </br><b>Seleccione primero el centro de costo, y luego busque o seleccione la persona.</b>
+                                </br></br>Centro de costo:
+                                <select id="codigocentrocosto" name="codigocentrocosto" required onchange="buscarPersona(true)">
+                                    <option value="">--Seleccione un centro de costo--</option>
+                                    <?php
+                                        foreach ($aCentrosCosto as $oCentroCosto) {
+                                            if($oCentroCosto['codigo'] != '*')
+                                            {
+                                                echo "<option value='".$oCentroCosto['codigo']."'>".$oCentroCosto['codigo']." - ".$oCentroCosto['nombre']."</option>";
+                                            }
+                                        }
+                                    ?>
+                                </select>
+                                </br></br>B&uacute;squeda:
                                 <?php $sTipoBusqueda = (isset($_SESSION['tipobusqueda'])) ? $_SESSION['tipobusqueda'] : "documento";  ?>
                                 <select name="tipobusqueda" id="tipobusqueda">
                                     <option value="documento" <?= ($sTipoBusqueda == "documento") ? "selected" : "" ?> >Documento</option>

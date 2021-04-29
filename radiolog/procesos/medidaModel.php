@@ -547,8 +547,10 @@
          * @date: 2021/04/22
          * @return: array
          */
-        public function getUsuariosMedidas($sTipoBusqueda = null, $sValorBusqueda = null)
+        public function getUsuariosMedidas($sTipoBusqueda = null, $sValorBusqueda = null, $sCodigoCentroCosto = null)
         {
+            $aPersonas = array();
+
             //Defino si busco por documento, código o nombre y construyo el where de la consulta
             $sBusqueda = '';
             if (($sTipoBusqueda == 'documento') && ($sValorBusqueda != ''))
@@ -564,18 +566,26 @@
                 $sBusqueda = " AND Descripcion LIKE '%".$sValorBusqueda."%' ";
             }
 
-            //Cargo de base de datos
-            $sQuery = "SELECT codigo, descripcion AS nombre, grupo, empresa, activo, documento, email
-                        FROM usuarios 
-                        WHERE activo = 'A' ".
-                        $sBusqueda .
-                        " ORDER BY codigo ";
+            $sBusquedaCentroCosto = "";
+            if(isset($sCodigoCentroCosto))
+            {
+                //Cargo de base de datos
+                $sQuery = "SELECT codigo, descripcion AS nombre, grupo, empresa, activo, documento, email
+                FROM usuarios 
+                WHERE activo = 'A' AND Ccostos = '".$sCodigoCentroCosto."'".
+                $sBusqueda .
+                " ORDER BY codigo ";
 
-            //Uno a uno
-            $resultado_query = mysqli_query($this->dbConection, $sQuery);
-            $aPersonas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
-            
-            $this->sMensaje = 'Todos los usuarios cargados satisfactoriamente';
+                //Uno a uno
+                $resultado_query = mysqli_query($this->dbConection, $sQuery);
+                $aPersonas = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
+
+                $this->sMensaje = 'Todos los usuarios cargados satisfactoriamente';
+            }
+            else
+            {
+                $this->sMensaje = 'No se seleccionó centro de costo';
+            }
 
             return $aPersonas;
         }
@@ -694,6 +704,30 @@
 
             $sNombreUnidad = htmlentities($row1['unides']);
             return $sNombreUnidad;
+        }
+
+        /**
+         * Funcion para obtener las personas habilitadas para medidas
+         * @by: sebastian.nevado
+         * @date: 2021/04/29
+         * @return: string
+         */
+        public function getCentrosCosto()
+        {
+            //Obtengo el alias por aplicación
+            $wbasedato = consultarAliasPorAplicacion($this->dbConection, $this->wemp_pmla, 'movhos');
+
+            $sQuery = "SELECT Ccocod AS codigo, Cconom AS nombre
+                        FROM ".$wbasedato."_000011
+                        ORDER BY codigo";
+
+            //Uno a uno
+            $resultado_query = mysqli_query($this->dbConection, $sQuery);
+            $aCentrosCosto = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
+            
+            $this->sMensaje = 'Todos los centros de costo cargados satisfactoriamente';
+
+            return $aCentrosCosto;
         }
 
     }

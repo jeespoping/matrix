@@ -184,6 +184,8 @@
             {
                 $aMedidas = $oMedida->getAll();
                 $aPersonas = $oMedida->getUsuariosMedidas();
+                $aCentrosCosto = $oMedida->getCentrosCosto();
+                
                 //Llamo a la vista
                 require("crearMedidaPersonaView.php");
 
@@ -194,7 +196,7 @@
                 unset($_SESSION['horamedida']);
                 unset($_SESSION['valormedida']);
                 unset($_SESSION['idmedidaxpersona']);
-                unset($_SESSION['seguiringresando']);
+                //unset($_SESSION['seguiringresando']);
 
                 unset($_SESSION['codigopersona']);
                 unset($_SESSION['tipobusqueda']);
@@ -212,11 +214,12 @@
             $wemp_pmla = isset($_POST["wemp_pmla"]) ? $_POST["wemp_pmla"] : null;
             $sValorBusqueda = isset($_POST["codigoPersona"]) ? $_POST["codigoPersona"] : null;
             $sTipoBusqueda = isset($_POST["tipoBusqueda"]) ? $_POST["tipoBusqueda"] : null;
+            $sCentroCosto = isset($_POST["codigoCentroCosto"]) ? $_POST["codigoCentroCosto"] : null;
             $bLimpiar = isset($_POST["limpiar"]) ? ($_POST["limpiar"]=="true") : false;
             
             //Creo la variable medida
             $oMedida = new Medida($wemp_pmla);
-            $aPersonas = $oMedida->getUsuariosMedidas($sTipoBusqueda, $sValorBusqueda);
+            $aPersonas = $oMedida->getUsuariosMedidas($sTipoBusqueda, $sValorBusqueda, $sCentroCosto);
             
             $aDatos = array('error'=>0,'mensaje'=>'','html'=>'','personas'=>'');
             $sHtml = '<select style="max-width:60%; width:60%" id="personasselect" name="personasselect">

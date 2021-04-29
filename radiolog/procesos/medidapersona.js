@@ -26,6 +26,7 @@ function buscarPersona(bLimpiar)
             codigoPersona : $("#codigopersona").val(),
             wemp_pmla : $("#wemp_pmla").val(),
             tipoBusqueda : $("#tipobusqueda").val(),
+            codigoCentroCosto : $("#codigocentrocosto").val(),
             limpiar : bLimpiar
         },
         function(response)
