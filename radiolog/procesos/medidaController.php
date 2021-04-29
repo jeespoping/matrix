@@ -105,7 +105,7 @@
         }
 
         /**
-         * Funcion para creación de medidas
+         * Funcion para creación de medidas por persona
          * @by: sebastian.nevado
          * @date: 2021/04/26
          */
@@ -176,7 +176,7 @@
                 }
                 else
                 {
-                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla);
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=listMedidaxPersona");
                 }
                 return;
             }
@@ -244,4 +244,37 @@
         }
 
     }
+
+    /**
+         * Funcion para listado de medidas por persona
+         * @by: sebastian.nevado
+         * @date: 2021/04/29
+         */
+        public function listMedidaxPersona()
+        {
+            //Obtengo el parámetro
+            $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
+            
+            //Creo la variable medida
+            $oMedida = new Medida($wemp_pmla);
+
+            $aMedidas = $oMedida->getAll();
+            $aPersonas = $oMedida->getUsuariosMedidas();
+            $aCentrosCosto = $oMedida->getCentrosCosto();
+            
+            //Llamo a la vista
+            require("listarMedidaPersonaView.php");
+
+            //Limpio variables de sesión
+            unset($_SESSION['idmedida']);
+            unset($_SESSION['personasselect']);
+            unset($_SESSION['fechamedida']);
+            unset($_SESSION['horamedida']);
+            unset($_SESSION['valormedida']);
+            unset($_SESSION['idmedidaxpersona']);
+            //unset($_SESSION['seguiringresando']);
+
+            unset($_SESSION['codigopersona']);
+            unset($_SESSION['tipobusqueda']);
+        }
 ?>

@@ -12,8 +12,13 @@
             case 'createMedida':
                 medidaController::create();
                 break;
+            
             case 'createMedidaxPersona':
                 medidaController::createMedidaxPersona();
+                break;
+
+            case 'listMedidaxPersona':
+                medidaController::listMedidaxPersona();
                 break;
 
             case 'buscarPersona':
