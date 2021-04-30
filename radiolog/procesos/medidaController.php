@@ -243,9 +243,7 @@
             return ;
         }
 
-    }
-
-    /**
+        /**
          * Funcion para listado de medidas por persona
          * @by: sebastian.nevado
          * @date: 2021/04/29
@@ -258,9 +256,7 @@
             //Creo la variable medida
             $oMedida = new Medida($wemp_pmla);
 
-            $aMedidas = $oMedida->getAll();
-            $aPersonas = $oMedida->getUsuariosMedidas();
-            $aCentrosCosto = $oMedida->getCentrosCosto();
+            $aMedidasPersonal = $oMedida->getAllMedidasxPersona();
             
             //Llamo a la vista
             require("listarMedidaPersonaView.php");
@@ -277,4 +273,5 @@
             unset($_SESSION['codigopersona']);
             unset($_SESSION['tipobusqueda']);
         }
+    }
 ?>

@@ -117,13 +117,12 @@
             <table style="width:100%; text-align:center;">
                 <?php
                     //No muestro tabla si no hay medidas
-                    if(isset($aMedidas) && count($aMedidas)>0)
+                    if(isset($aMedidasPersonal) && count($aMedidasPersonal)>0)
                     {
                         //Títulos de tabla
                         echo("<tr class='encabezadoTabla'>
                                 <th>Fecha</th>
                                 <th>Medida</th>
-                                <th>C&oacute;digo</th>
                                 <th>Documento</th>
                                 <th>Nombre</th>
                                 <th>Valor medida</th>
@@ -133,7 +132,7 @@
 
                         //Elementos de la tabla de Medidas
                         $iIndice = 0;
-                        foreach ( $aMedidas as $oMedida ) 
+                        foreach ( $aMedidasPersonal as $oMedidaPersonal ) 
                         {
                             //Defino la clase a partir del índice.
                             $iIndice++;
@@ -141,28 +140,25 @@
                             //Muestro la fila
                             echo "<tr class='".$sClaseFila."'>
                                     <td>
-                                        ".$oMedida['fechamedida']."
+                                        ".$oMedidaPersonal['fechamedida']."
                                     </td>
                                     <td>
-                                        ".$oMedida['medida']."
+                                        ".$oMedidaPersonal['medida']."
                                     </td>
                                     <td>
-                                        ".$oMedida['codigopersona']."
+                                        ".$oMedidaPersonal['documento']."
                                     </td>
                                     <td>
-                                        ".$oMedida['documento']."
+                                        ".$oMedidaPersonal['nombreusuario']."
                                     </td>
                                     <td>
-                                        ".$oMedida['nombreusuario']."
+                                        ".$oMedidaPersonal['valor']."
                                     </td>
                                     <td>
-                                        ".$oMedida['valor']."
+                                        ".$oMedidaPersonal['fecharegistro']."
                                     </td>
                                     <td>
-                                        ".$oMedida['fecharegistro']."
-                                    </td>
-                                    <td>
-                                        ".$oMedida['personaregistro']."
+                                        ".$oMedidaPersonal['personaregistro']."
                                     </td>
                                 </tr>";
                         }

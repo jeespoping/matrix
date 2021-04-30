@@ -99,7 +99,7 @@
         }
 
         /**
-         * Funcion para obtener el id
+         * Función para obtener el id
          * @by: sebastian.nevado
          * @date: 2021/04/21
          */
@@ -109,7 +109,7 @@
         }
 
         /**
-         * Funcion para setear el id
+         * Función para setear el id
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @params: iId
@@ -120,7 +120,7 @@
         }
 
         /**
-         * Funcion para obtener el código
+         * Función para obtener el código
          * @by: sebastian.nevado
          * @date: 2021/04/21
          */
@@ -130,7 +130,7 @@
         }
 
         /**
-         * Funcion para setear el código
+         * Función para setear el código
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @params: sCodigo
@@ -141,7 +141,7 @@
         }
 
         /**
-         * Funcion para obtener el nombre
+         * Función para obtener el nombre
          * @by: sebastian.nevado
          * @date: 2021/04/21
          */
@@ -151,7 +151,7 @@
         }
 
         /**
-         * Funcion para setear el nombre
+         * Función para setear el nombre
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @params: sNombre
@@ -162,7 +162,7 @@
         }
 
         /**
-         * Funcion para obtener el descripción
+         * Función para obtener el descripción
          * @by: sebastian.nevado
          * @date: 2021/04/21
          */
@@ -172,7 +172,7 @@
         }
 
         /**
-         * Funcion para setear la descripción
+         * Función para setear la descripción
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @params: sDescripcion
@@ -183,7 +183,7 @@
         }
 
         /**
-         * Funcion para obtener el idUnidad
+         * Función para obtener el idUnidad
          * @by: sebastian.nevado
          * @date: 2021/04/21
          */
@@ -193,7 +193,7 @@
         }
 
         /**
-         * Funcion para setear el idUnidad
+         * Función para setear el idUnidad
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @params: iIdUnidad
@@ -204,7 +204,7 @@
         }
 
         /**
-         * Funcion para obtener el envío de notificación por correo
+         * Función para obtener el envío de notificación por correo
          * @by: sebastian.nevado
          * @date: 2021/04/21
          */
@@ -214,7 +214,7 @@
         }
 
         /**
-         * Funcion para setear el envío de notificación por correo
+         * Función para setear el envío de notificación por correo
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @params: bEnviarNotificacion
@@ -225,7 +225,7 @@
         }
 
         /**
-         * Funcion para obtener el código de seguridad
+         * Función para obtener el código de seguridad
          * @by: sebastian.nevado
          * @date: 2021/04/23
          */
@@ -235,7 +235,7 @@
         }
 
         /**
-         * Funcion para setear el envío de notificación por correo
+         * Función para setear el envío de notificación por correo
          * @by: sebastian.nevado
          * @date: 2021/04/23
          * @params: sSeguridad
@@ -246,7 +246,7 @@
         }
 
         /**
-         * Funcion para obtener el mensaje
+         * Función para obtener el mensaje
          * @by: sebastian.nevado
          * @date: 2021/04/21
          */
@@ -256,7 +256,7 @@
         }
 
         /**
-         * Funcion para setear el mensaje
+         * Función para setear el mensaje
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @params: sMensaje
@@ -267,7 +267,7 @@
         }
 
         /**
-         * Funcion para verificar integridad de la medida antes de guardar
+         * Función para verificar integridad de la medida antes de guardar
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @return: Boolean
@@ -300,7 +300,7 @@
         }
 
         /**
-         * Funcion para guardar medida en la base de datos
+         * Función para guardar medida en la base de datos
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @return: Boolean
@@ -352,7 +352,7 @@
         }
 
         /**
-         * Funcion para cargar la medida de la base de datos
+         * Función para cargar la medida de la base de datos
          * @by: sebastian.nevado
          * @date: 2021/04/21
          * @return: Boolean
@@ -391,7 +391,7 @@
         }
 
         /**
-         * Funcion para cargar listado de medidas de la base de datos
+         * Función para cargar listado de medidas de la base de datos
          * @by: sebastian.nevado
          * @date: 2021/04/22
          * @return: array
@@ -420,7 +420,7 @@
         }
 
         /**
-         * Funcion para guardar medidaxpersona en la base de datos
+         * Función para guardar medidaxpersona en la base de datos
          * @by: sebastian.nevado
          * @date: 2021/04/26
          * @return: Boolean
@@ -485,7 +485,7 @@
         }
 
         /**
-         * Funcion para verificar integridad de la medidaxpersona antes de guardar
+         * Función para verificar integridad de la medidaxpersona antes de guardar
          * @by: sebastian.nevado
          * @date: 2021/04/26
          * @return: Boolean
@@ -542,7 +542,7 @@
         }
 
         /**
-         * Funcion para cargar listado de usuarios para registrar medidas de la base de datos
+         * Función para cargar listado de usuarios para registrar medidas de la base de datos
          * @by: sebastian.nevado
          * @date: 2021/04/22
          * @return: array
@@ -591,7 +591,7 @@
         }
 
         /**
-         * Funcion para enviar notificación por correo cuando se ingrese una nueva medida
+         * Función para enviar notificación por correo cuando se ingrese una nueva medida
          * @by: sebastian.nevado
          * @date: 2021/04/28
          * @return: array
@@ -688,7 +688,7 @@
         }
 
         /**
-         * Funcion para obtener unidad de la medida
+         * Función para obtener unidad de la medida
          * @by: sebastian.nevado
          * @date: 2021/04/28
          * @return: string
@@ -707,7 +707,7 @@
         }
 
         /**
-         * Funcion para obtener las personas habilitadas para medidas
+         * Función para obtener las personas habilitadas para medidas
          * @by: sebastian.nevado
          * @date: 2021/04/29
          * @return: string
@@ -728,6 +728,36 @@
             $this->sMensaje = 'Todos los centros de costo cargados satisfactoriamente';
 
             return $aCentrosCosto;
+        }
+
+        /**
+         * Función para obtener el listado de personas con medidas
+         * @by: sebastian.nevado
+         * @date: 2021/04/30
+         * @return: string
+         */
+        public function getAllMedidasxPersona()
+        {
+            //Obtengo el alias por aplicación
+            $wbasedato = consultarAliasPorAplicacion($this->dbConection, $this->wemp_pmla, $this->nombreAplicacion);
+
+            $sQuery = "SELECT CONCAT(mxp.mdpfme, ' ', DATE_FORMAT(mxp.mdphme, '%H:%i')) AS fechamedida, 
+                                CONCAT_WS('-', m.medcod, mednom) AS medida, 
+                                u.documento, CONCAT(u.codigo, ' - ', u.descripcion) as nombreusuario, FORMAT(mxp.mdpvme, 2) AS valor, 
+                                CONCAT(ur.codigo, ' - ', ur.descripcion) AS personaregistro, CONCAT(mxp.Fecha_data, ' ', DATE_FORMAT(mxp.Hora_data, '%H:%i')) AS fecharegistro
+                        FROM ".$wbasedato."_000002 mxp
+                        INNER JOIN ".$wbasedato."_000001 m ON (mxp.mdpimp = m.id)
+                        LEFT JOIN usuarios u ON (mxp.mdpcpm = u.Codigo)
+                        LEFT JOIN usuarios ur ON (SUBSTRING(mxp.Seguridad, LOCATE('-', mxp.Seguridad)+1, LENGTH(mxp.Seguridad)) = ur.Codigo)
+                        ORDER BY fechamedida DESC";
+
+            //Uno a uno
+            $resultado_query = mysqli_query($this->dbConection, $sQuery);
+            $aMedidasxPersona = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
+            
+            $this->sMensaje = 'Todos las medidas por persona cargadas satisfactoriamente';
+
+            return $aMedidasxPersona;
         }
 
     }
