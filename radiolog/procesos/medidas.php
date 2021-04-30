@@ -29,6 +29,10 @@
                 medidaController::buscarPersona();
                 break;
 
+            case 'informeMedidaPersona':
+                medidaController::informeMedidaxPersona();
+                break;
+
             default:
                 medidaController::index();
                 break;

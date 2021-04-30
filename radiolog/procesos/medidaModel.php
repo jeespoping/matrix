@@ -736,28 +736,92 @@
          * @date: 2021/04/30
          * @return: string
          */
-        public function getAllMedidasxPersona()
+        public function getAllMedidasxPersona($sTipoBusqueda = null, $sValorBusqueda = null, $iIdMedida = null, $bGuardarBusqueda = false)
         {
             //Obtengo el alias por aplicación
             $wbasedato = consultarAliasPorAplicacion($this->dbConection, $this->wemp_pmla, $this->nombreAplicacion);
 
-            $sQuery = "SELECT CONCAT(mxp.mdpfme, ' ', DATE_FORMAT(mxp.mdphme, '%H:%i')) AS fechamedida, 
+            //Defino si busco por documento, código o nombre y construyo el where de la consulta
+            $sBusqueda = '';
+            if (($sTipoBusqueda == 'documento') && ($sValorBusqueda != ''))
+            {
+                $sBusqueda .= " AND u.Documento = '".$sValorBusqueda."' ";
+            }
+            elseif (($sTipoBusqueda == 'codigo') && ($sValorBusqueda != ''))
+            {
+                $sBusqueda .= " AND u.Codigo = '".$sValorBusqueda."' ";
+            }
+            
+            //Si busco una medida en específico, filtro la medida
+            if (isset($iIdMedida))
+            {
+                $sBusqueda .= " AND m.id = ".$iIdMedida." ";
+            }
+
+            $sQuery = "SELECT m.id AS idmedida, mxp.id AS idmedidapersona, 
+                                mxp.mdpfme AS fechamedida, mxp.mdphme AS horamedida,
+                                CONCAT(mxp.mdpfme, ' ', DATE_FORMAT(mxp.mdphme, '%H:%i')) AS fechahoramedida, 
                                 CONCAT_WS('-', m.medcod, mednom) AS medida, 
-                                u.documento, CONCAT(u.codigo, ' - ', u.descripcion) as nombreusuario, FORMAT(mxp.mdpvme, 2) AS valor, 
+                                u.documento, u.codigo AS codigousuario, CONCAT(u.codigo, ' - ', u.descripcion) as nombreusuario, FORMAT(mxp.mdpvme, 2) AS valor, 
                                 CONCAT(ur.codigo, ' - ', ur.descripcion) AS personaregistro, CONCAT(mxp.Fecha_data, ' ', DATE_FORMAT(mxp.Hora_data, '%H:%i')) AS fecharegistro
                         FROM ".$wbasedato."_000002 mxp
                         INNER JOIN ".$wbasedato."_000001 m ON (mxp.mdpimp = m.id)
                         LEFT JOIN usuarios u ON (mxp.mdpcpm = u.Codigo)
                         LEFT JOIN usuarios ur ON (SUBSTRING(mxp.Seguridad, LOCATE('-', mxp.Seguridad)+1, LENGTH(mxp.Seguridad)) = ur.Codigo)
-                        ORDER BY fechamedida DESC";
+                        WHERE 1=1 ".$sBusqueda."
+                        ORDER BY fechahoramedida DESC";
 
             //Uno a uno
             $resultado_query = mysqli_query($this->dbConection, $sQuery);
             $aMedidasxPersona = mysqli_fetch_all($resultado_query, MYSQLI_ASSOC);
+
+            if($bGuardarBusqueda)
+            {
+                $bResultadoGuardarBusquedas = $this->saveBusqueda($sTipoBusqueda, $sValorBusqueda, $iIdMedida, $aMedidasxPersona);
+            }
             
             $this->sMensaje = 'Todos las medidas por persona cargadas satisfactoriamente';
 
             return $aMedidasxPersona;
+        }
+
+        /**
+         * Función para guardar búsqueda realizada
+         * @by: sebastian.nevado
+         * @date: 2021/04/30
+         * @return: boolean
+         */
+        public function saveBusqueda($sTipoBusqueda = null, $sValorBusqueda = null, $iIdMedida = null, $aMedidasxPersona = array())
+        {
+            //Obtengo el alias por aplicación
+            $wbasedato = consultarAliasPorAplicacion($this->dbConection, $this->wemp_pmla, $this->nombreAplicacion);
+            $sCodigoSolicitante = isset($_SESSION['usera']) ? $_SESSION['usera'] : null;
+
+            //Recorro los resultados de búsqueda y los guardo como evidencia que la persona los observó
+            foreach ($aMedidasxPersona as $oMedidaxPersona)
+            {
+                $sQueryInsert = "INSERT INTO ".$wbasedato."_000004
+                                        (Medico, Fecha_data, Hora_data, 
+                                        cmpccc, cmptbc, cmpcpb, 
+                                        cmpimc, cmpimp, 
+                                        cmpvme, cmpume, 
+                                        cmpfme, cmphme, 
+                                        cmpcpc, Seguridad)
+                                    VALUES ('".$wbasedato."', '".date("Y-m-d")."', '".date("H:i:s")."', '".
+                                            $sValorBusqueda."', '".$sTipoBusqueda."', '".$oMedidaxPersona['codigousuario']."', ".
+                                            $oMedidaxPersona['idmedida'].", ".$oMedidaxPersona['idmedidapersona'].", ".
+                                            $oMedidaxPersona['valor'].", '".$oMedidaxPersona['unidadmedida']."', '".
+                                            $oMedidaxPersona['fechamedida']."', '".$oMedidaxPersona['horamedida']."', '".
+                                            $sCodigoSolicitante."', '".$this->sSeguridad."')";
+                
+                //Guardo en base de datos el envío de correo
+                $res = mysqli_query($this->dbConection, $sQueryInsert) or die("Error: " . mysql_errno() . " - en el query (Insertar En ".$wbasedato."_000004 por primera vez): " . $sQueryInsert . " - " . mysql_error());
+            }
+
+            //Guardo en base de datos el envío de correo
+            $this->sMensaje = 'Todos los resultados de búsqueda de medidas por persona guardadas satisfactoriamente';
+
+            return true;
         }
 
     }

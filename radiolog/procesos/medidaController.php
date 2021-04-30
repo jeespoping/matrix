@@ -273,5 +273,82 @@
             unset($_SESSION['codigopersona']);
             unset($_SESSION['tipobusqueda']);
         }
+
+        /**
+         * Funcion para informe de medidas por persona
+         * @by: sebastian.nevado
+         * @date: 2021/04/30
+         */
+        public function informeMedidaxPersona()
+        {
+            //Obtengo el parámetro
+            $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
+            
+            //Creo la variable medida
+            $oMedida = new Medida($wemp_pmla);
+
+            // Proceso si doy aceptar
+            if ( isset($_POST['buscar']) )
+            {
+
+                //Valido existencia de datos
+                $sValorBusqueda = isset($_POST["codigopersona"]) ? $_POST["codigopersona"] : null;
+                $sTipoBusqueda = isset($_POST["tipobusqueda"]) ? $_POST["tipobusqueda"] : null;
+                $iIdMedida = isset($_POST['idmedida']) ? $_POST['idmedida'] : null;
+                $sUsuario = $_SESSION['usera'];
+                $sSeguridad = "C-".$sUsuario;
+
+                //Data validations
+                $oMedida->setId($iIdMedida);
+                $oMedida->setSeguridad($sSeguridad);
+                
+                $bGuardarBusqueda=true;
+
+                //Guardo y manejo los mensajes
+                $aMedidasPersonal = $oMedida->getAllMedidasxPersona($sTipoBusqueda, $sValorBusqueda, $iIdMedida, $bGuardarBusqueda);
+
+                //Limpio variables de sesión
+                unset($_SESSION['idmedida']);
+                unset($_SESSION['personasselect']);
+                unset($_SESSION['fechamedida']);
+                unset($_SESSION['horamedida']);
+                unset($_SESSION['valormedida']);
+                unset($_SESSION['idmedidaxpersona']);
+                //unset($_SESSION['seguiringresando']);
+
+                unset($_SESSION['codigopersona']);
+                unset($_SESSION['tipobusqueda']);
+
+                //Seteo la variable de respuesta
+                $_SESSION["success"] = $oMedida->getMensaje();
+                $_SESSION["success"] .= (count($aMedidasPersonal) == 0) ? ". No se encontraron registros con ".$sTipoBusqueda." ".$sValorBusqueda."." : ".";
+
+                $aMedidas = $oMedida->getAll();
+
+                //Llamo a la vista
+                require("informeMedidaPersonaView.php");
+                
+                return;
+            }
+            else
+            {
+                $aMedidas = $oMedida->getAll();
+                
+                //Llamo a la vista
+                require("informeMedidaPersonaView.php");
+
+                //Limpio variables de sesión
+                unset($_SESSION['idmedida']);
+                unset($_SESSION['personasselect']);
+                unset($_SESSION['fechamedida']);
+                unset($_SESSION['horamedida']);
+                unset($_SESSION['valormedida']);
+                unset($_SESSION['idmedidaxpersona']);
+                //unset($_SESSION['seguiringresando']);
+
+                unset($_SESSION['codigopersona']);
+                unset($_SESSION['tipobusqueda']);
+            }
+        }
     }
 ?>
