@@ -151,6 +151,7 @@
 <body onload="hacerFoco()">
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 //actualizacion: Agosto 09 de 2018	(Edwin)		Se corrige query en la función consultarLotes
 //actualizacion: Noviembre 02 de 2017	(Edwin)		Entre el tiempo de dispensación por defecto de CM(10 horas al momento de la publicación) y el tiempo de dispensacion de cco del paciente se toma la de mayor valor.
 //													Ejemplo: UCI tiene 8 horas y CM tiene 10 horas de tiempo de dispensación, se toma la de CM por ser mayor
@@ -452,10 +453,11 @@ function buscarCodigoNombreCamillero(){
 	
 	global $conex;
 	global $bd;
+	global $wemp_pmla;
+	//global $bdCencam;
 	
-	global $bdCencam;
-	
-	$bdCencam = "cencam";
+	//$bdCencam = "cencam";
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "CAMILLEROS"); 
 	
 	$val = '';
 	
@@ -496,7 +498,9 @@ function crearPeticionCamillero( $origen, $motivo, $hab, $destino, $solicita, $c
 	global $conex;
 	global $bdCencam;
 	
-	$bdCencam = "cencam";
+	//$bdCencam = "cencam";
+	global $wemp_pmla;
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "CAMILLEROS"); 
 	
 	$fecha = date( "Y-m-d" );
 	$hora = date( "H:i:s" );
@@ -587,12 +591,15 @@ function nombreCcoCentralCamilleros( $codigo ){
 	global $conex;
 	global $bd;
 	
+	global $wemp_pmla;
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "CAMILLEROS");
+	
 	$val = '';
 	
 	$sql = "SELECT
 				Nombre
 			FROM
-				cencam_000004
+				".$bdCencam."_000004
 			WHERE
 				SUBSTRING_INDEX( cco, '-', 1 ) = '$codigo'
 				AND Estado = 'on'
@@ -876,7 +883,7 @@ function pintarCargosPDA( $insumos, $unidades, $lotes, $tipo, $escogidos, $accio
 	global $grabo;
 	global $mart;
 	global $numMovAnt;
-	
+	global $wemp_pmla;
 	global $solCamillero;
 	
 	global $tmpDispensacion;
@@ -1268,11 +1275,11 @@ function pintarCargosPDA( $insumos, $unidades, $lotes, $tipo, $escogidos, $accio
 					if( true || !isset( $txCanMMQ ) || empty($txCanMMQ) ){
 						if( $solCamillero != 'on' ){
 							echo "<tr><td colspan='2' align='center' class='titulo3'><b>Cantidad a cargar: </b><INPUT type='text' name='txCanMMQ' id='txCanMMQ' class='texto5'></td></tr>";
-							echo "<tr><td colspan='2' align='center' class='titulo3'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&user=$user\" )'></td></tr>";
+							echo "<tr><td colspan='2' align='center' class='titulo3'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&user=$user\" )'></td></tr>";
 						}
 						else{
 							echo "<tr><td colspan='2' align='center' class='titulo3'><b>Cantidad a cargar: </b><INPUT type='text' name='txCanMMQ' id='txCanMMQ' class='texto5'></td></tr>";
-							echo "<tr><td colspan='2' align='center' class='titulo3'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&user=$user&solicitudCamillero=on\" )'></td></tr>";
+							echo "<tr><td colspan='2' align='center' class='titulo3'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&user=$user&solicitudCamillero=on\" )'></td></tr>";
 						}
 						?>
 						<script type="text/javascript">
@@ -1286,13 +1293,13 @@ function pintarCargosPDA( $insumos, $unidades, $lotes, $tipo, $escogidos, $accio
 					{
 						if( $packe['nka'] || (!esProductoNoCodificado( $insumos[0]['cod'] ) && enLista($listaDispensacion, $insumos[0]['cod'] ) > -1 ) ){
 							if( ( !$packe['ke'] || $packe['nut'] || $packe['mmq'] || $packe['nka'] || ($packe['ke'] && $packe['act'] && $packe['con'] && $packe['gra']) && $packe['art'] )){
-								echo "<td class='texto2' colspan='2' align='left'><a id='txCargar' href='cargocpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&user=$user' target='_blank' onClick='javascript: recargar();'><font size='4'>CARGAR</a></td></tr>";
+								echo "<td class='texto2' colspan='2' align='left'><a id='txCargar' href='cargocpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&user=$user' target='_blank' onClick='javascript: recargar();'><font size='4'>CARGAR</a></td></tr>";
 							}
 						}
 					}
 					else
 					{
-						echo "<td class='texto2' colspan='2' align='left'><a href='devolucioncpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . " ' target='_blank'><font size='4'>DEVOLVER</a></td></tr>";
+						echo "<td class='texto2' colspan='2' align='left'><a href='devolucioncpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . " ' target='_blank'><font size='4'>DEVOLVER</a></td></tr>";
 					}
 				}
 			}
@@ -1314,14 +1321,14 @@ function pintarCargosPDA( $insumos, $unidades, $lotes, $tipo, $escogidos, $accio
 			
 			$exp = explode( "-", $cco );
 			
-			echo "<a href='./cargoscm.php?pda=on&user=$user&solicitarCamillero=on&his=$historia&ing=$ingreso&ccoCencam={$exp[0]}&hab=$habitacion&nom=$nombre&usu=$wusuario&des=$servicio'>Retornar</a>";
+			echo "<a href='./cargoscm.php?wemp_pmla=".$wemp_pmla."&pda=on&user=$user&solicitarCamillero=on&his=$historia&ing=$ingreso&ccoCencam={$exp[0]}&hab=$habitacion&nom=$nombre&usu=$wusuario&des=$servicio'>Retornar</a>";
 			echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-			echo "<a href='./cargoscm.php?pda=on&solicitarCamillero=on&his=$historia&ing=$ingreso&solicitarCamillero=on&his=$historia&ing=$ingreso&ccoCencam={$exp[0]}&hab=$habitacion&nom=$nombre&usu=$wusuario&des=$servicio'>Reiniciar</a>";
+			echo "<a href='./cargoscm.php?wemp_pmla=".$wemp_pmla."&pda=on&solicitarCamillero=on&his=$historia&ing=$ingreso&solicitarCamillero=on&his=$historia&ing=$ingreso&ccoCencam={$exp[0]}&hab=$habitacion&nom=$nombre&usu=$wusuario&des=$servicio'>Reiniciar</a>";
 		}
 		else{
-			echo "<a href='./cargoscm.php?pda=on&user=$user'>Retornar</a>";
+			echo "<a href='./cargoscm.php?wemp_pmla=".$wemp_pmla."&pda=on&user=$user'>Retornar</a>";
 			echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-			echo "<a href='./cargoscm.php?pda=on'>Reiniciar</a>";
+			echo "<a href='./cargoscm.php?wemp_pmla=".$wemp_pmla."&pda=on'>Reiniciar</a>";
 		}
 		echo "</td>";
 		
@@ -1363,7 +1370,7 @@ function descargarCarro2( $cod, $codari, $his, $ing, $cco ){
 	$sql = "SELECT
 				ccofca
 			FROM
-				movhos_000011
+				".$bd."_000011
 			WHERE
 				ccocod = '".$expcco[0]."'
 			";
@@ -2677,6 +2684,9 @@ function consultarCentros($cco)
 {
 	global $conex;
 	global $wbasedato;
+	global $wemp_pmla;
+	global $bd;
+	$wcostosyp = consultarAliasPorAplicacion($conex, $wemp_pmla, "COSTOS");
 
 	if ($cco != '') // cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
@@ -2691,7 +2701,7 @@ function consultarCentros($cco)
 	}
 	// consulto los conceptos
 	$q = " SELECT A.Ccocod as codigo, B.Cconom as nombre"
-	. "        FROM movhos_000011 A, costosyp_000005 B "
+	. "        FROM ".$bd."_000011 A, ".$wcostosyp."_000005 B "
 	. "      WHERE " . $cadena . " "
 	. "        A.Ccoima = 'on' "
 	. "        AND A.Ccocod = B.Ccocod "
@@ -2751,6 +2761,7 @@ function consultarInsumos($parbus, $forbus)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	switch ($forbus)
 	{
@@ -2768,7 +2779,7 @@ function consultarInsumos($parbus, $forbus)
 		if (isset($row[0]) and $row[0] == 'on')
 		{
 			$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro, Tipcdo, Arttnc "
-			. "       FROM " . $wbasedato . "_000002, " . $wbasedato . "_000001, movhos_000027 "
+			. "       FROM " . $wbasedato . "_000002, " . $wbasedato . "_000001, ".$bd."_000027 "
 			. "    WHERE Artcod = '" . $parbus . "' "
 			. "       AND Artest = 'on' "
 			. "       AND Artuni= Unicod "
@@ -2780,7 +2791,7 @@ function consultarInsumos($parbus, $forbus)
 		else
 		{
 			$q = " SELECT C.Artcod, C.Artcom, C.Artgen, C.Artuni, B.Unides, D.Tippro, D.Tipcdo, Arttnc  "
-			. "       FROM movhos_000026 A, movhos_000027 B, " . $wbasedato . "_000002 C, " . $wbasedato . "_000001 D, " . $wbasedato . "_000009 E"
+			. "       FROM ".$bd."_000026 A, ".$bd."_000027 B, " . $wbasedato . "_000002 C, " . $wbasedato . "_000001 D, " . $wbasedato . "_000009 E"
 			. "    WHERE A. Artcod = '" . $parbus . "' "
 			. "       AND A. Artest = 'on' "
 			. "       AND A. Artcod = E.Apppre "
@@ -2797,7 +2808,7 @@ function consultarInsumos($parbus, $forbus)
 
 		case 'Codigo':
 		$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro, Tipcdo, Arttnc "
-		. "       FROM " . $wbasedato . "_000002, " . $wbasedato . "_000001, movhos_000027 "
+		. "       FROM " . $wbasedato . "_000002, " . $wbasedato . "_000001, ".$bd."_000027 "
 		. "    WHERE Artcod like '%" . $parbus . "%' "
 		. "       AND Artest = 'on' "
 		. "       AND Artuni= Unicod "
@@ -2811,7 +2822,7 @@ function consultarInsumos($parbus, $forbus)
 		case 'Nombre comercial':
 
 		$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro, Tipcdo, Arttnc "
-		. "       FROM " . $wbasedato . "_000002,  " . $wbasedato . "_000001, movhos_000027 "
+		. "       FROM " . $wbasedato . "_000002,  " . $wbasedato . "_000001, ".$bd."_000027 "
 		. "    WHERE Artcom like '%" . $parbus . "%' "
 		. "       AND Artest = 'on' "
 		. "       AND Tipest = 'on' "
@@ -2824,7 +2835,7 @@ function consultarInsumos($parbus, $forbus)
 		case 'Nombre genérico':
 
 		$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro, Tipcdo, Arttnc "
-		. "       FROM " . $wbasedato . "_000002,  " . $wbasedato . "_000001, movhos_000027 "
+		. "       FROM " . $wbasedato . "_000002,  " . $wbasedato . "_000001, ".$bd."_000027 "
 		. "    WHERE Artgen like '%" . $parbus . "%' "
 		. "       AND Artest = 'on' "
 		. "       AND Tipest = 'on' "
@@ -3054,9 +3065,10 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$tipo, &$ccos, &$de
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	$q = "SELECT Mdeart, Mdecan, Mdepre, Mdenlo, Mencco, Menccd, Menest, Artcom, Artgen, Artuni, Unides, Mdecaj, Mdepaj, Mendan "
-	. "     FROM   " . $wbasedato . "_000007 A, " . $wbasedato . "_000006, " . $wbasedato . "_000002, movhos_000027 "
+	. "     FROM   " . $wbasedato . "_000007 A, " . $wbasedato . "_000006, " . $wbasedato . "_000002, ".$bd."_000027 "
 	. "   WHERE Mdecon = '" . $concepto . "' "
 	. "     AND Mdedoc = '" . $consecutivo . "' "
 	. "     AND Mdecon = Mencon "
@@ -3082,7 +3094,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$tipo, &$ccos, &$de
 				$ingreso = $exp[1];
 
 				$q = "SELECT Cconom  "
-				. "     FROM   movhos_000011 "
+				. "     FROM   ".$bd."_000011 "
 				. "   WHERE Ccocod = '" . $row['Menccd'] . "' "
 				. "     AND Ccoest = 'on' ";
 				$res1 = mysql_query($q, $conex) or die(mysql_errno()." - en el query: ".$q." - ".mysql_error());;;
@@ -3094,7 +3106,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$tipo, &$ccos, &$de
 			else
 			{
 				$q = "SELECT Cconom  "
-				. "     FROM   movhos_000011 "
+				. "     FROM   ".$bd."_000011 "
 				. "   WHERE Ccocod = '" . $row['Mencco'] . "' "
 				. "     AND Ccoest = 'on' ";
 				$res1 = mysql_query($q, $conex) or die(mysql_errno()." - en el query: ".$q." - ".mysql_error());;;
@@ -3132,7 +3144,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$tipo, &$ccos, &$de
 			$mpre[$i] = $row['Mdepre'];
 
 			$q = "SELECT Artcom "
-			. "     FROM   " . $wbasedato . "_000002, movhos_000027, " . $wbasedato . "_000001 "
+			. "     FROM   " . $wbasedato . "_000002, ".$bd."_000027, " . $wbasedato . "_000001 "
 			. "   WHERE Artcod='" . $mart[$i] . "' "
 			. "     AND Unicod = Artuni "
 			. "     AND Tipcod = Arttip "
@@ -3180,12 +3192,13 @@ function consultarUnidades($codigo, $cco, $unidad)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	if ($unidad != '') // cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
 		// consulto los conceptos
 		$q = " SELECT Apppre, Artcom, Artgen, Appcnv, Appexi "
-		. "        FROM  " . $wbasedato . "_000009, movhos_000026 "
+		. "        FROM  " . $wbasedato . "_000009, ".$bd."_000026 "
 		. "      WHERE Apppre='" . $unidad . "' "
 		. "            and Appcco=mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
 		. "            and Appest='on' "
@@ -3216,7 +3229,7 @@ function consultarUnidades($codigo, $cco, $unidad)
 	}
 	// consulto los conceptos
 	$q = " SELECT Apppre, Artcom, Artgen, Appcnv, Appexi "
-	. "        FROM  " . $wbasedato . "_000009, movhos_000026 "
+	. "        FROM  " . $wbasedato . "_000009, ".$bd."_000026 "
 	. "      WHERE " . $cadena . " "
 	. "             Appcod='" . $codigo . "' "
 	. "            and Appcco=mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
@@ -3409,7 +3422,7 @@ function BuscarTraslado($parcon, $parcon2, $parcon3, $insfor, $forcon, $accion)
 		else if ($insfor == 'Nombre')
 		{
 			$q = "SELECT Mdecon, Mdedoc, Menfec "
-			. "     FROM   " . $wbasedato . "_000007, " . $wbasedato . "_000006, movhos_000011, " . $wbasedato . "_000008 "
+			. "     FROM   " . $wbasedato . "_000007, " . $wbasedato . "_000006, ".$bd."_000011, " . $wbasedato . "_000008 "
 			. "   WHERE Cconom like '%" . $parcon . "%' "
 			. "     AND Ccoest = 'on' "
 			. "     AND (Menccd = Ccocod or Mencco = Ccocod) "
@@ -3647,6 +3660,7 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	if( empty($wemp_pmla) ){
 		$wemp_pmla = '01';
@@ -3655,7 +3669,7 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 	if ($historia == '0')
 	{
 		$q = " SELECT Ccohcr "
-		. "     FROM movhos_000011 "
+		. "     FROM ".$bd."_000011 "
 		. "   WHERE	Ccocod = mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
 		. "     AND	Ccoest = 'on'";
 
@@ -3695,7 +3709,7 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 			 * Marzo 18 de 2013
 			 ****************************************************************************************/
 			$q = "SELECT * "
-			. "      FROM movhos_000018 "
+			. "      FROM ".$bd."_000018 "
 			. "     WHERE Ubihis = '" . $historia . "' "
 			. "       AND Ubiing = '" . $ingreso . "' ";
 			//. "       AND Ubiald <> 'on' ";
@@ -3785,6 +3799,7 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 function pintarTitulo($tipo)
 {
 	global $pda;
+	global $wemp_pmla;
 	
 	if( isset($pda) && $pda == 'on' ){
 		return;
@@ -3799,10 +3814,10 @@ function pintarTitulo($tipo)
 	{
 		echo "<table ALIGN=CENTER width='90%' >";
 		// echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-		echo "<tr><td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cen_Mez.php?wbasedato=cen_mez'>PRODUCTOS</a></td>";
-		echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='lotes.php?wbasedato=lotes.php'>LOTES</a></td>";
-		echo "<td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='cargoscm.php?wbasedato=lotes.php&tipo=C'>CARGOS A PACIENTES</a></td>";
-		echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='pos.php?wbasedato=lotes.php&tipo=A'>VENTA EXTERNA</a></td></TR>";
+		echo "<tr><td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cen_Mez.php?wemp_pmla=$wemp_pmla'>PRODUCTOS</a></td>";
+		echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='lotes.php?wemp_pmla=$wemp_pmla' >LOTES</a></td>";
+		echo "<td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='cargoscm.php?wemp_pmla=$wemp_pmla&tipo=C'>CARGOS A PACIENTES</a></td>";
+		echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='pos.php?wemp_pmla=$wemp_pmla&tipo=A'>VENTA EXTERNA</a></td></TR>";
 		// echo "<a href='cargos.php?wbasedato=lotes.php&tipo=A'><td class='texto5' width='15%'>AVERIAS</td></a>";
 		// echo "<a href='descarte.php?wbasedato=cenmez'><td class='texto5' width='15%'>DESCARTES</td></TR></a>";
 		echo "<tr><td class='texto6' >&nbsp;</td>";
@@ -3822,6 +3837,7 @@ function pintarTitulo($tipo)
 function pintarBusqueda( $consultas, $forcon, $tipo, $accion)
 {
 	global $pda;
+	global $wemp_pmla;
 	
 	if( isset($pda) && $pda == 'on' ){
 		return;
@@ -3831,7 +3847,8 @@ function pintarBusqueda( $consultas, $forcon, $tipo, $accion)
 		$consultas[0]= array();
 	}
 	echo "<table border=0 ALIGN=CENTER width=90%>";
-	echo "<form name='producto2' action='cargoscpxcm.php' method=post>";
+	echo "<form name='producto2' action='cargoscpxcm.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<tr><td class='titulo3' colspan='3' align='center'>Consulta: ";
 	echo "<select name='forcon' class='texto5' onchange='enter7()'>";
 	echo "<option>" . $forcon . "</option>";
@@ -3927,13 +3944,15 @@ function pintarFormulario($estado, $ccos, $historia, $destinos, $fecha, $ingreso
 	global $user;
 	global $wusuario;
 	global $mostrarMensajeSolicitudCamillero;
+	global $wemp_pmla;
 
 	
 	if( isset($pda) && $pda == 'on' ){
 		
 		if( $wusuario != '' && validarUsuario( $wusuario ) ){
 		
-			echo "<form name='producto' action='cargoscpxcm.php' method=post>";
+			echo "<form name='producto' action='cargoscpxcm.php?wemp_pmla=".$wemp_pmla."' method=post>";
+			echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 			echo "<INPUT type='hidden' value='on' name='pda'>";
 			echo "<INPUT type='hidden' name='user' value='$user'>";
 			
@@ -3956,7 +3975,7 @@ function pintarFormulario($estado, $ccos, $historia, $destinos, $fecha, $ingreso
 			?>
 			<script>
 				alert( "El usuario no se encuentra registrado" );
-				location.href = "cargoscm.php?pda=on";
+				location.href = "cargoscm.php?wemp_pmla="+wemp_pmla.value+"&pda=on";
 			</script>
 			<?php 
 //			echo "<form name='producto' action='cargos.php' method=post>";
@@ -3969,15 +3988,17 @@ function pintarFormulario($estado, $ccos, $historia, $destinos, $fecha, $ingreso
 	}
 	else{
 	
-		echo "<form name='producto3' action='cargoscpxcm.php' method=post>";
+		echo "<form name='producto3' action='cargoscpxcm.php?wemp_pmla=".$wemp_pmla."' method=post>";
+		echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 		echo "<input type='hidden' name='tipo' value='" . $tipo . "'>";
-		$url = "cargoscm.php?wbasedato=lotes&tipo=$tipo&accion=$accion";
+		$url = "cargoscm.php?wemp_pmla=".$wemp_pmla."&wbasedato=lotes&tipo=$tipo&accion=$accion";
 		echo "<tr><td colspan=3 class='titulo3' align='center'><INPUT TYPE='BUTTON' NAME='NUEVO' VALUE='Nuevo' class='texto5' onClick='javascript:redireccionar(\"$url\")'></td></tr>";
 		echo "<input type='hidden' name='tipo' value='" . $tipo . "'></td>";
 		echo "<input type='hidden' name='accion' value='" . $accion . "'></td>";
 		echo "</table></form>";
 	
-		echo "<form name='producto' action='cargoscpxcm.php' method=post>";
+		echo "<form name='producto' action='cargoscpxcm.php?wemp_pmla=".$wemp_pmla."' method=post>";
+		echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 		echo "<table border=0 ALIGN=CENTER width=90%>";
 	
 		echo "<tr><td colspan=3 class='titulo3' align='center'><b>Informacion general del " . $accion . "</b></td></tr>";
@@ -4086,6 +4107,7 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 	global $bd;
 	global $tempRonda;
 	global $tmpDispensacion;
+	global $wemp_pmla;
 //	global $txCanMMQ;
 	
 	if( empty($insumos[0]['lot']) ) {
@@ -4274,7 +4296,7 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 				if( esMMQ( $insumos[0]['cod'] ) && $accion == 'Cargo' ){
 					if( true || !isset( $txCanMMQ ) || empty($txCanMMQ) ){
 						echo "<tr><td colspan='8' align='center' class='texto1'><b>Cantidad a cargar: </b><INPUT type='text' name='txCanMMQ' id='txCanMMQ' class='texto5'></td></tr>";
-						echo "<tr><td colspan='8' align='center' class='texto1'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "\" )'></td></tr>";
+						echo "<tr><td colspan='8' align='center' class='texto1'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "\" )'></td></tr>";
 					}
 //					else{
 //						echo "<script>";
@@ -4286,11 +4308,11 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 				else{
 					if($accion == 'Cargo' )
 					{ 
-						echo "<td class='texto2' colspan='6' align='left'><a href='cargocpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "' target='_blank'><font size='4'>CARGAR</a></td></tr>";
+						echo "<td class='texto2' colspan='6' align='left'><a href='cargocpx.php?wemp_pmla=".$wemp_pmla."cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "' target='_blank'><font size='4'>CARGAR</a></td></tr>";
 					}
 					else
 					{
-						echo "<td class='texto2' colspan='6' align='left'><a href='devolucioncpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . " ' target='_blank'><font size='4'>DEVOLVER</a></td></tr>";
+						echo "<td class='texto2' colspan='6' align='left'><a href='devolucioncpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . " ' target='_blank'><font size='4'>DEVOLVER</a></td></tr>";
 					}
 				}
 			}
@@ -4561,11 +4583,11 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 					if( true || !isset( $txCanMMQ ) || empty($txCanMMQ) ){
 						if( $solCamilleroPedidoOn != 'on' ){
 							echo "<tr><td colspan='8' align='center' class='texto1'><b>Cantidad a cargar: </b><INPUT type='text' name='txCanMMQ' id='txCanMMQ' class='texto5'></td></tr>";
-							echo "<tr><td colspan='8' align='center' class='texto1'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "\" )'></td></tr>";
+							echo "<tr><td colspan='8' align='center' class='texto1'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "\" )'></td></tr>";
 						}
 						else{
 							echo "<tr><td colspan='8' align='center' class='texto1'><b>Cantidad a cargar: </b><INPUT type='text' name='txCanMMQ' id='txCanMMQ' class='texto5'></td></tr>";
-							echo "<tr><td colspan='8' align='center' class='texto1'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&solicitudCamillero=on\" )'></td></tr>";
+							echo "<tr><td colspan='8' align='center' class='texto1'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&solicitudCamillero=on\" )'></td></tr>";
 						}
 					}
 				}
@@ -4580,13 +4602,13 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 							if( $listart[ $posicionLista ]['ctc'] >= 100 )
 								echo "<b style='font-size:14pt;'>ES ARTICULO NO POS Y LA CANTIDAD AUTORIZADA YA LLEGO A SU LIMITE</b>";
 							else
-								echo "<a id='txCargar' href='cargocpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "' target='_blank'><font size='4'>CARGAR</a>"; 
+								echo "<a id='txCargar' href='cargocpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "' target='_blank'><font size='4'>CARGAR</a>"; 
 							echo "</td></tr>";
 						}
 					}
 					else
 					{
-						echo "<td class='texto2' colspan='6' align='left'><a href='devolucioncpx.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . " ' target='_blank'><font size='4'>DEVOLVER</a></td></tr>";
+						echo "<td class='texto2' colspan='6' align='left'><a href='devolucioncpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . " ' target='_blank'><font size='4'>DEVOLVER</a></td></tr>";
 					}
 				}
 			}
@@ -4654,7 +4676,7 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 		if( false && count($mart) > $numMovAnt && @$solCamilleroPedidoOn != 'on' ){
 			$exp = explode('-', $cco);
 			echo "<tr><td colspan='8' align='center'>";
-			echo "<a href='./cargoscpxcm.php?user=".@$user."&solicitarCamillero=on&his=$historia&ing=$ingreso&ccoCencam={$exp[0]}&hab=$habitacion&nom=$nombre&usu=$wusuario&des=$servicio'><b>Solicitar camillero</b></a>";
+			echo "<a href='./cargoscpxcm.php?wemp_pmla=".$wemp_pmla."&user=".@$user."&solicitarCamillero=on&his=$historia&ing=$ingreso&ccoCencam={$exp[0]}&hab=$habitacion&nom=$nombre&usu=$wusuario&des=$servicio'><b>Solicitar camillero</b></a>";
 			echo "</td></tr>";
 			
 //			echo "<INPUT type='hidden' value='on' name='solicitarCamillero'>";
@@ -4812,6 +4834,7 @@ function pintarCargos($mart, $mlot, $mpre, $mcan, $mpaj, $mcaj, $mmov1, $mmov2, 
 /**
     * =========================================================PROGRAMA==========================================================================
     */
+	global $wemp_pmla;
 if( !isset($user) ){
 	$user = "";
 }
@@ -4840,7 +4863,7 @@ if ( !isset($user) || $user == "" )
 //				session_register("user");
 			}
 			else{
-				echo "<form name='producto' action='cargoscpxcm.php' method=post>";
+				echo "<form name='producto' action='cargoscpxcm.php?wemp_pmla=".$wemp_pmla."' method=post>";
 				echo "<INPUT type='hidden' value='on' name='pda'>";
 				pedirUsuario();
 				echo "</form>";
@@ -4872,7 +4895,9 @@ else
 	include_once( "conex.php" );
 	include_once( "cenpro/cargos.inc.php" );
 	
-	$wbasedato = 'cenpro';
+	//$wbasedato = 'cenpro';
+	global $wemp_pmla;
+	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 //	$conex = mysql_connect('localhost', 'root', '')
 //	or die("No se ralizo Conexion");
 	
@@ -4896,7 +4921,9 @@ else
 	{
 		$accion = 'Cargo';
 	}
-	$bd = 'movhos';
+	//$bd = 'movhos';
+	global $wemp_pmla;
+	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	// invoco la funcion connectOdbc del inlcude de ana, para saber si unix responde, en caso contrario,
 	// este programa no debe usarse
 	// include_once("pda/tablas.php");

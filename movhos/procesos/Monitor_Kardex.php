@@ -339,9 +339,10 @@ else
 	{
 		global $conex;
 		global $wbasedato;
+		global $wcenmez;
 		
 		$qDA = 	" SELECT Arttip,Tiptpr 
-					FROM cenpro_000002,cenpro_000001
+					FROM ".$wcenmez."_000002,".$wcenmez."_000001
 				   WHERE Artcod='".$codProdCM."' 
 					 AND Artest='on'
 					 AND Arttip=Tipcod
@@ -475,9 +476,10 @@ else
 	{
 		global $conex;
 		global $wbasedato;
+		global $wcenmez;
 		
 		$qDatos = 	" SELECT Edainf,Edadex,Edaemi,Edaema 
-						FROM cenpro_000021 
+						FROM ".$wcenmez."_000021 
 					   WHERE Edains='".$articuloCM."' 
 						 AND Edaest='on';";
 							 
@@ -507,9 +509,10 @@ else
 	{
 		global $wbasedato;
 		global $conex;
+		global $wcenmez;
 		
 		$qNPT = "SELECT Tiptpr 
-				  FROM cenpro_000001,cenpro_000002,".$wbasedato."_000068
+				  FROM ".$wcenmez."_000001,".$wcenmez."_000002,".$wbasedato."_000068
 				 WHERE Tipnco = 'off' 
 				   AND Tipcdo != 'on'
 				   AND Tipest = 'on'
@@ -534,9 +537,10 @@ else
 	{
 		global $wbasedato;
 		global $conex;
+		global $wcenmez;
 		
 		$qDA = "SELECT Tiptpr 
-				  FROM cenpro_000001,cenpro_000002,".$wbasedato."_000068
+				  FROM ".$wcenmez."_000001,".$wcenmez."_000002,".$wbasedato."_000068
 				 WHERE tippro = 'on' 
 				   AND Tipnco = 'on' 
 				   AND Tipcdo != 'on'
@@ -686,6 +690,8 @@ else
 		global $wemp_pmla;
 		global $wbasedato;
 		global $wfecha;
+		global $wcenmez;
+		
 		
 		
 		$queryArtNuevosSinAprobarCM = consultarQueryArticulosNuevosSinAprobarCM($whis,$wing); 
@@ -768,7 +774,7 @@ else
 		  // ."ORDER BY tipo;";
 				  			 
 		$q= " SELECT kadcpx, kadpro, kadart, kadori, 'Central de mezclas' AS Tipo,Kadido,Artgen,Kadcfr,Kadufr,Kadobs,Kadfin,Kadhin,Habcco,'' AS Artpos  "
-		  ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B, cenpro_000002 C, ".$wbasedato."_000020 D "
+		  ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B, ".$wcenmez."_000002 C, ".$wbasedato."_000020 D "
 		  ." WHERE kadhis        = '".$whis."'"
 		  ."   AND kading        = '".$wing."'"
 		  ."   AND kadfec        = '".$wfecha."'"       //Esto me valida que el Kardex sea del día
@@ -934,7 +940,7 @@ else
 								$info = "Dosis adaptada creada: ".$existeDA;
 								$codigoDA = $existeDA;
 								// crear lote
-								$urlCM = "<A href='../../cenpro/procesos/lotes.php?parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$whis."&wingreso=".$wing."&warticuloda=".$rows['kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
+								$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$whis."&wingreso=".$wing."&warticuloda=".$rows['kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
 							}
 							else
 							{
@@ -976,7 +982,7 @@ else
 								
 								// $dosis = $rows['Kadcfr'];
 								
-								// // Valida si el medicamento esta marcado como compuesto en movhos_000059, si es así consultar en movhos_000208 o movhos_000209 la dosis del antibiotico
+								// // Valida si el medicamento esta marcado como compuesto en revisa_000059, si es así consultar en movhos_000208 o movhos_000209 la dosis del antibiotico
 								// $dosisMedicamentoCompuesto = consultarDosisSiMedicamentoCompuesto($whis,$wing,$rows['kadart'],$rows['Kadido']);
 								
 								// if($dosisMedicamentoCompuesto!="")
@@ -1016,7 +1022,7 @@ else
 								$info = "Dosis adaptada genérica creada: ".$existeDA;
 								// crear lote
 								$codigoDA = $existeDA;
-								$urlCM = "<A href='../../cenpro/procesos/lotes.php?parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$whis."&wingreso=".$wing."&warticuloda=".$rows['kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
+								$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$whis."&wingreso=".$wing."&warticuloda=".$rows['kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
 							}
 						}
 						elseif(strtoupper($codProdCM)==$tipoProtocoloNPT)
@@ -1060,7 +1066,7 @@ else
 							else
 							{
 								$info = "Nutrición parenteral creada: ".$codigoNPT;
-								$urlCM = "<A href='../../cenpro/procesos/lotes.php?parcon=".$codigoNPT."&forcon=Codigo del Producto&pintar=1' target=_blank> Crear lote </A>"; 
+								$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoNPT."&forcon=Codigo del Producto&pintar=1' target=_blank> Crear lote </A>"; 
 							}
 						}
 						else
@@ -1468,11 +1474,10 @@ else
     
   function mostrar_suspendidos_CM($wsuspendidos, $whis)
     {
-     global $wcenmez;
+    
 	 global $conex;
-	 
 	 global $wsuspendidos;
-	 
+	 global $wcenmez;
  
      $wclass="fondoVerde";
 	 
@@ -2748,7 +2753,7 @@ else
 		}
 		
 	  //FORMA ================================================================
-	  echo "<form name='monkardex' action='Monitor_Kardex.php' method=post>";
+	  echo "<form name='monkardex' action='Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."' method=post>";
   
   
 	  echo "<input type='HIDDEN' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
@@ -2918,7 +2923,7 @@ else
 					  ."    AND kadfec  = '".$wfecha."'"
 					  ."    AND kadpro  = tarcod "
 					  ."    AND tarpdx  = 'off' "            //Tipo de Articulo no se produce en ciclos osea, que son de dispensacion
-					  ."    AND kadart  NOT IN ( SELECT artcod FROM cenpro_000002 WHERE artcod = kadart) "
+					  ."    AND kadart  NOT IN ( SELECT artcod FROM ".$wcenmez."_000002 WHERE artcod = kadart) "
 					  ."    AND kadper  = percod "
 					  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
 					  
@@ -3232,7 +3237,7 @@ else
 						    {
 						 	 if ($wopcion=="3" or $wopcion=="8")      //Esta es la opcion de historias que no tienen kardex actualizado
 									if( $wmat_estado[$i][8] )
-											echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=01&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
+											echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=".$wemp_pmla."&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
 									else	
 										echo "<td class=".$walta_tras."><div align='center'><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
 							   else
@@ -3312,7 +3317,7 @@ else
 									else
 									{
 										if ($wopcion != "7")
-											echo "<td class=".$walta_tras."><div align='center'><A href='../../".$wcenmez."/procesos/cargoscm.php?wbasedato=lotes.php&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
+											echo "<td class=".$walta_tras."><div align='center'><A href='../../".$wcenmez."/procesos/cargoscm.php?wemp_pmla=".$wemp_pmla."&wbasedato=lotes.php?wemp_pmla=".$wemp_pmla."&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
 										else
 										   echo "<td bgcolor='#ffffff'>&nbsp;</td>";
 									}
@@ -3352,7 +3357,7 @@ else
 								 echo "<td class=".$walta_tras." align=left  >".$wmat_estado[$i][3]."</td>";                            //Paciente
 								 if ($wopcion=="3" or $wopcion=="8" or $wopcion=="12")  //Esta es la opcion de historias que no tienen kardex actualizado
 									if( $wmat_estado[$i][8] )
-										echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=01&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
+										echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=".$wemp_pmla."&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
 									else	
 										echo "<td class=".$walta_tras."><div align='center'><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
 								   else
@@ -3431,7 +3436,7 @@ else
 										  else
 											{
 											 if ($wopcion != "7")
-												echo "<td class=".$walta_tras."><div align='center'><A href='../../".$wcenmez."/procesos/cargoscm.php?wbasedato=lotes.php&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
+												echo "<td class=".$walta_tras."><div align='center'><A href='../../".$wcenmez."/procesos/cargoscm.php?wemp_pmla=".$wemp_pmla."&wbasedato=lotes.php&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
 											   else
 												  echo "<td bgcolor='#ffffff' align=center>&nbsp;</td>";
 											}
@@ -3477,7 +3482,7 @@ else
 						      {
 								 if ($wopcion=="3" or $wopcion=="8")   //Esta es la opcion de historias que no tienen kardex actualizado
 									if( $wmat_estado[$i][8] )
-										echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=01&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
+										echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=".$wemp_pmla."&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
 									else	
 										echo "<td class=".$walta_tras." align=center><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
 								 else
@@ -3555,7 +3560,7 @@ else
 											echo "<td class=".$walta_tras." align=center><A href='cargos.php?emp=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&cco[cod]=".$ccoDisSF."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
 										else
 										    if ($wopcion!="6" and $wopcion!="7")  //Con Antibioticos SIN Confirmar no debe salir Cargar
-											  echo "<td class=".$walta_tras." align=center><A href='../../".$wcenmez."/procesos/cargoscm.php?wbasedato=lotes.php&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
+											  echo "<td class=".$walta_tras." align=center><A href='../../".$wcenmez."/procesos/cargoscm.php?wemp_pmla=".$wemp_pmla."wbasedato=lotes.php?wemp_pmla=".$wemp_pmla."&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
 											else
 												echo "<td align='center' bgcolor='#ffffff'>&nbsp;</td>"; 
 									}

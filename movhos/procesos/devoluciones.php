@@ -161,6 +161,9 @@ include_once("conex.php");
  * Modificacion:
  * Septiembre 8 de 2011.	Ya no se considera MMQ los articulos del grupo V00
  */
+ 
+ 
+ 
 function esMMQ( $art ){
 
 	global $conex;
@@ -983,7 +986,7 @@ function buscarCodigoNombreCamillero(){
 
 	global $bdCencam;
 
-	$bdCencam = "cencam";
+	//$bdCencam = "cencam";
 
 	$val = '';
 
@@ -1084,17 +1087,18 @@ function nombreCcoCentralCamilleros( $codigo ){
 
 	global $conex;
 	global $bd;
-
+	global $wemp_pmla;
 	global $bdCencam;
 
-	$bdCencam = "cencam";
+	//$bdCencam = "cencam";
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
 
 	$val = '';
 
 	$sql = "SELECT
 				Nombre
 			FROM
-				cencam_000004
+				".$bdCencam."_000004
 			WHERE
 				SUBSTRING_INDEX( cco, '-', 1 ) = '$codigo'
 				AND Estado = 'on'
@@ -1124,8 +1128,8 @@ function crearPeticionCamillero( $origen, $motivo, $hab, $destino, $solicita, $c
 
 	global $conex;
 	global $bdCencam;
-
-	$bdCencam = "cencam";
+	global $wemp_pmla;
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
 
 	$fecha = date( "Y-m-d" );
 	$hora = date( "H:i:s" );
@@ -1766,6 +1770,7 @@ function crearArray($pac,&$cco,&$datos)
 	global $emp;
 	global $conex;
 	global $ccoUsu;
+	global $wcenpro;
 
 	$q = " SELECT * "
 	."       FROM ".$bd."_000004 LEFT JOIN ".$bd."_000026  "
@@ -1836,7 +1841,7 @@ function crearArray($pac,&$cco,&$datos)
                          * Hay que buscarlo ahi.
                          */
 						$q = " SELECT * "
-						."      FROM cenpro_000002 "
+						."      FROM ".$wcenpro."_000002 "
 						."     WHERE Artcod = '".$artCod."' ";
 						$err1 = mysql_query($q,$conex);
 						echo mysql_error();
@@ -2514,7 +2519,8 @@ include_once("movhos/cargosSF.inc.php");
 include_once("ips/funciones_facturacionERP.php");
 
 
-
+$wcenpro  = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
+$bdCencam = consultarAliasPorAplicacion( $conex, $emp, "camilleros" );
 
 $serviciofarmaceutico = '1050';
 $centraldemezclas = '1051';

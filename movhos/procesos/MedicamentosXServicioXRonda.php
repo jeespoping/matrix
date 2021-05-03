@@ -344,12 +344,12 @@ else
 {
 
   
-
+  
   include_once("root/comun.php");
   include_once("movhos/movhos.inc.php");
   include_once("movhos/classRegleta.php");
   
-  
+  $wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 
 
   $pos = strpos($user,"-");
@@ -501,9 +501,11 @@ else
 	{
 		global $conex;
 		global $wbasedato;
+		global $wemp_pmla;
+		$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 		
 		$qDA = 	" SELECT Arttip,Tiptpr 
-					FROM cenpro_000002,cenpro_000001
+					FROM ".$wcenmez."_000002,".$wcenmez."_000001
 				   WHERE Artcod='".$codProdCM."' 
 					 AND Artest='on'
 					 AND Arttip=Tipcod
@@ -692,9 +694,11 @@ else
 	{
 		global $conex;
 		global $wbasedato;
+		global $wemp_pmla;
+		$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 		
 		$qDatos = 	" SELECT Edainf,Edadex,Edaemi,Edaema 
-						FROM cenpro_000021 
+						FROM ".$wcenmez."_000021 
 					   WHERE Edains='".$articuloCM."' 
 						 AND Edaest='on';";
 							 
@@ -750,8 +754,9 @@ else
 	function consultarSiDAexiste($historia,$ingreso,$articulo,$ido)
 	{
 		global $wbasedato;
-		global $wcenmez;
+		global $wemp_pmla;
 		global $conex;
+		$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 		
 		$qExisteDA = " SELECT Rdacda 
 						 FROM ".$wbasedato."_000224,".$wcenmez."_000002
@@ -1034,7 +1039,7 @@ else
 								}
 								else
 								{
-									$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?DA_historia=".$historia."&DA_ingreso=".$ingreso."&DA_articulo=".$rows['Kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=".$rows['Tipo']."&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
+									$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&DA_historia=".$historia."&DA_ingreso=".$ingreso."&DA_articulo=".$rows['Kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=".$rows['Tipo']."&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
 									if($rows['Tipo']=="Antibiotico")
 									{
 										$urlCM .= "<br>-<br><A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A>"; 
@@ -1050,7 +1055,7 @@ else
 									$info = "Dosis adaptada creada: ".$existeDA;
 									$codigoDA = $existeDA;
 									// crear lote
-									$urlCM = "<A href='../../cenpro/procesos/lotes.php?parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$rows['Kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
+									$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$rows['Kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
 								}
 								else
 								{
@@ -1087,7 +1092,7 @@ else
 										
 										$info = "Dosis adaptada genérica";
 										// crear producto DA
-										$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?DA_historia=".$historia."&DA_ingreso=".$ingreso."&DA_articulo=".$rows['Kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=Generica&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
+										$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&DA_historia=".$historia."&DA_ingreso=".$ingreso."&DA_articulo=".$rows['Kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=Generica&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
 									}
 									else
 									{
@@ -1098,7 +1103,7 @@ else
 											// crear lote
 											$codigoDA = $rows['Kadart'];
 											$info = "Dosis adaptada creada: ".$codigoDA;
-											$urlCM = "<A href='../../cenpro/procesos/lotes.php?parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$codigoDA."&idoda=".$rows['Kadido']."&sinReemplazo=on&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
+											$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$codigoDA."&idoda=".$rows['Kadido']."&sinReemplazo=on&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
 										
 											
 										}
@@ -1120,7 +1125,7 @@ else
 										$info = "Dosis adaptada creada: ".$existeDA;
 										// crear lote
 										$codigoDA = $existeDA;
-										$urlCM = "<A href='../../cenpro/procesos/lotes.php?parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$rows['Kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
+										$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$rows['Kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
 									}
 									else
 									{
@@ -1157,7 +1162,7 @@ else
 										$tipoProtocoloNPT=$rowsDatosNPT['Tiptpr'];
 										
 										// crear NPT
-										$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?historia=".$historia."&NPT_historia=".$historia."&NPT_ingreso=".$ingreso."&NPT_articulo=".$rows['Kadart']."&NPT_ido=".$rows['Kadido']."&peso=".$rowsDatosNPT['Enupes']."&purga=".$rowsDatosNPT['Enupur']."&volumen=".$rowsDatosNPT['Enuvol']."&NPT_tiempoInfusion=".$rowsDatosNPT['Enutin']."&NPT_origen=ordenes&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
+										$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&NPT_historia=".$historia."&NPT_ingreso=".$ingreso."&NPT_articulo=".$rows['Kadart']."&NPT_ido=".$rows['Kadido']."&peso=".$rowsDatosNPT['Enupes']."&purga=".$rowsDatosNPT['Enupur']."&volumen=".$rowsDatosNPT['Enuvol']."&NPT_tiempoInfusion=".$rowsDatosNPT['Enutin']."&NPT_origen=ordenes&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
 										
 									}
 									else
@@ -1169,13 +1174,13 @@ else
 										{
 											$info = "Nutrición parenteral genérica";
 											// crear NPT generica
-											$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?historia=".$historia."&NPT_historia=".$historia."&NPT_ingreso=".$ingreso."&NPT_articulo=".$rows['Kadart']."&NPT_ido=".$rows['Kadido']."&&NPT_origen=kardex&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
+											$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&NPT_historia=".$historia."&NPT_ingreso=".$ingreso."&NPT_articulo=".$rows['Kadart']."&NPT_ido=".$rows['Kadido']."&&NPT_origen=kardex&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
 										}
 										else
 										{
 											$codigoNPT = $rows['Kadart'];
 											$info = "Nutrición parenteral creada: ".$codigoNPT;
-											$urlCM = "<A href='../../cenpro/procesos/lotes.php?parcon=".$codigoNPT."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&sinReemplazo=on' target=_blank> Crear lote </A>"; 
+											$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoNPT."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&sinReemplazo=on' target=_blank> Crear lote </A>"; 
 										}
 										
 									}
@@ -1183,7 +1188,7 @@ else
 								else
 								{
 									$info = "Nutrición parenteral creada: ".$codigoNPT;
-									$urlCM = "<A href='../../cenpro/procesos/lotes.php?parcon=".$codigoNPT."&forcon=Codigo del Producto&pintar=1' target=_blank> Crear lote </A>"; 
+									$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoNPT."&forcon=Codigo del Producto&pintar=1' target=_blank> Crear lote </A>"; 
 								}
 							}
 							else
@@ -1239,9 +1244,11 @@ else
 	{
 		global $wbasedato;
 		global $conex;
+		global $wemp_pmla;
+		$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 		
 		$qNPT = "SELECT Tiptpr 
-				  FROM cenpro_000001,cenpro_000002,".$wbasedato."_000068
+				  FROM ".$wcenmez."_000001,".$wcenmez."_000002,".$wbasedato."_000068
 				 WHERE Tipnco = 'off' 
 				   AND Tipcdo != 'on'
 				   AND Tipest = 'on'
@@ -1266,9 +1273,11 @@ else
 	{
 		global $wbasedato;
 		global $conex;
+		global $wemp_pmla;
+		$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 		
 		$qDA = "SELECT Tiptpr 
-				  FROM cenpro_000001,cenpro_000002,".$wbasedato."_000068
+				  FROM ".$wcenmez."_000001,".$wcenmez."_000002,".$wbasedato."_000068
 				 WHERE tippro = 'on' 
 				   AND Tipnco = 'on' 
 				   AND Tipcdo != 'on'
@@ -1514,13 +1523,13 @@ function pintarAritculos( $articulos ){
      {
 	  global $user;
 	  global $conex;
-	  global $wcenmez;
+	  global $wemp_pmla;
 	  global $wafinidad;
 	  global $wbasedato;
 	  global $wtabcco;
 	  global $winstitucion;
 	  global $wactualiz;
-
+	  $wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 	  //Traigo TODAS las aplicaciones de la empresa, con su respectivo nombre de Base de Datos
 	  $q = " SELECT detapl, detval, empdes "
 	      ."   FROM root_000050, root_000051 "
@@ -1538,7 +1547,7 @@ function pintarAritculos( $articulos ){
 
 		      if ($row[0] == "cenmez")
 		         $wcenmez=$row[1];
-
+				
 		      if ($row[0] == "afinidad")
 		         $wafinidad=$row[1];
 
@@ -1688,7 +1697,7 @@ function pintarAritculos( $articulos ){
      {
 	  global $user;
 	  global $conex;
-	  global $wcenmez;
+	  global $wemp_pmla;
 	  global $wafinidad;
 	  global $wbasedato;
 	  global $wtabcco;
@@ -1699,7 +1708,7 @@ function pintarAritculos( $articulos ){
 	  global $whora_par_actual;
 	  global $whora_par_sigte;
 	  global $whora_par_anterior;
-
+	  $wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 
 	  hora_par();
 	  
@@ -1892,9 +1901,9 @@ function pintarAritculos( $articulos ){
 	 }
 	function consultarTipoMedicamento($codigoArticulo)
 	{
-		global $wcenmez;
+		global $wemp_pmla;
 		global $conex;
-
+	    $wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 		$sql  = " SELECT Tiptpr ";
 		$sql .= " FROM ".$wcenmez."_000002 A, ".$wcenmez."_000001 B ";
 		$sql .= " WHERE Arttip = Tipcod ";
@@ -1915,7 +1924,7 @@ function pintarAritculos( $articulos ){
   // P R I N C I P A L
   //===========================================================================================================================================
   //===========================================================================================================================================
-  echo "<form name='separacionXRonda' action='MedicamentosXServicioXRonda.php' method=post>";
+  echo "<form name='separacionXRonda' action='MedicamentosXServicioXRonda.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
   $wfecha = date("Y-m-d");
   

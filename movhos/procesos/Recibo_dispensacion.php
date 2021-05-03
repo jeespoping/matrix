@@ -493,6 +493,7 @@
 <body>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 /*********************************************************
  * Recibo de carro de dispensacion
  *
@@ -677,6 +678,7 @@ function centrosCostosRecibenCarro( $esServicioDomiciliario ){
 function consultarListadoPendienteReciboPaciente($historia,$ingreso,$servicio,$consecutivo){
 	global $conex;
 	global $wbasedato;
+	global $wcenmez;
 
 	$tipo = "";
 
@@ -867,7 +869,7 @@ function consultarListadoPendienteReciboPaciente($historia,$ingreso,$servicio,$c
 			$num2 = mysql_num_rows($res2);
 
 			if($num2 == 0){
-				$q2 = "SELECT Artcom, Artuni FROM cenpro_000002 WHERE Artcod = '".$articulo."'";
+				$q2 = "SELECT Artcom, Artuni FROM ".$wcenmez."_000002 WHERE Artcod = '".$articulo."'";
 				$res2 = mysql_query($q2,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q2 . " - " . mysql_error());
 				$info2 = mysql_fetch_array($res2);
 			}
@@ -904,6 +906,7 @@ function consultarListadoPendienteReciboPaciente($historia,$ingreso,$servicio,$c
 function consultarListadoRecibidoPaciente($historia,$ingreso,$fechare,$servicio,$causa){
 	global $conex;
 	global $wbasedato;
+	global $wcenmez;
 
 	$coleccion = array();
 
@@ -955,7 +958,7 @@ function consultarListadoRecibidoPaciente($historia,$ingreso,$fechare,$servicio,
 				$num2 = mysql_num_rows($res2);
 
 				if($num2 == 0){
-					$q2 = "SELECT Artcom, Artuni FROM cenpro_000002 WHERE Artcod = '".$info['Recart']."'";
+					$q2 = "SELECT Artcom, Artuni FROM ".$wcenmez."_000002 WHERE Artcod = '".$info['Recart']."'";
 					$res2 = mysql_query($q2,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q2 . " - " . mysql_error());
 					$info2 = mysql_fetch_array($res2);
 				}
@@ -1202,9 +1205,10 @@ if(!$usuarioValidado){
 	$winstitucion = $institucion->nombre;
 
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 
 	//Forma
-	echo "<form name='forma' action='Recibo_dispensacion.php' method='post'>";
+	echo "<form name='forma' action='Recibo_dispensacion.php?wemp_pmla=".$wemp_pmla."' method='post'>";
 	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<input type='HIDDEN' NAME= 'wbasedato' value='".$wbasedato."'/>";
 	echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";

@@ -53,6 +53,7 @@ if(!isset($wemp_pmla)){
 }
 
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 
 encabezado("INSUMOS APLICADOS POR CENTRO DE COSTOS", "2012-07-04" ,"clinica");
 
@@ -98,7 +99,7 @@ if( !isset($ccos) || !isset($fechaini) || !isset($fechafin) )
 		$fechafin = date("Y-m-t");
 
 	
-	echo "<br><br><form action='rep_seraplixccos.php?wemp_pmla=01' method='post'>";
+	echo "<br><br><form action='rep_seraplixccos.php?wemp_pmla=".$wemp_pmla."' method='post'>";
 		
 	//**************** llamada a la funcion consultaCentrosCostos y dibujarSelect************
 		$cco="Ccohos";
@@ -202,7 +203,7 @@ else{
 			
 			//Hallo la unidad de medida
 			$query = "SELECT artuni 
-					 FROM movhos_000026
+					 FROM {$wbasedato}_000026
 					 WHERE artcod = '{$rows[0]}'";
 			
 			$result = mysql_query($query);
@@ -210,7 +211,7 @@ else{
 				$rowuni = mysql_fetch_array($result);
 			else{
 				$query = "SELECT artuni 
-					 	 FROM cenpro_000002
+					 	 FROM {$wcenmez}_000002
 					 	 WHERE artcod = '{$rows[0]}'";
 				
 				$result = mysql_query($query);
@@ -243,5 +244,4 @@ else{
 }
 
 ?>
-
 </body>

@@ -54,8 +54,8 @@ if(!isset($_SESSION['user']))
 }
 else
 {
-	$wemp_pmla='01';
-	$wbasedato='cenpro';
+	//$wemp_pmla='01';
+	//$wbasedato='cenpro';
 	
 //	include_once( "root/comun.php" );
 //    $conex = obtenerConexionBD("matrix");
@@ -66,7 +66,9 @@ else
 	include_once("root/comun.php");
 	
 
-	
+	$wbasedatoMovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+	$wcostosyp = consultarAliasPorAplicacion( $conex, $wemp_pmla, "COSTOS" );
 	//consulto los datos del usuario de la sesion
 	$pos = strpos($user,"-");
 	$wusuario = substr($user,$pos+1,strlen($user)); //extraigo el codigo del usuario
@@ -396,8 +398,9 @@ function pintarRotulo($wemp_pmla,$wbasedato,$historia="",$codigo,$lote,$ph,$hora
 	global $conex;
 	global $wusuario;
 	global $agua;
+	global $wbasedatoMovhos;
 	
-	$wbasedatoMovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	//$wbasedatoMovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 	$arrayLote = consultarDatosLote($wbasedato,$codigo,$lote);
 	
 	if($fecha=="")
@@ -938,7 +941,7 @@ function pintarRotulo($wemp_pmla,$wbasedato,$historia="",$codigo,$lote,$ph,$hora
 	if(($servicio=="" || $cama=="") && $ingreso!="")
 	{
 		$q = "SELECT Ubisac, Ubihac, Cconom "
-		."      FROM movhos_000018, costosyp_000005 "
+		."      FROM ".$wbasedatoMovhos."_000018, ".$wcostosyp."_000005 "
 		."     WHERE Ubihis = '".$historia."' "
 		."       AND ubiing = '".$ingreso."' "
 		."       AND ubisac = Ccocod "
@@ -955,7 +958,7 @@ function pintarRotulo($wemp_pmla,$wbasedato,$historia="",$codigo,$lote,$ph,$hora
 	
 	$htmlRotulo = "";
 	
-	$htmlRotulo .= "<form name='rotulo2' action='rotulo2.php' method=post>";
+	$htmlRotulo .= "<form name='rotulo2' action='rotulo2.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	if (!isset($imprimir) or $imprimir==0)
 	{
 		$htmlRotulo .= "<table style='border-bottom: 1px solid #000000;' style='border-left: 1px solid #000000;'align='center' cellspacing='0' cellpading='0'>" ;

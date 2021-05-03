@@ -155,6 +155,7 @@ include_once("conex.php");
 function consultarHabitacion($historia,$ingreso)
 {
 	global $conex;
+	global $bd;
 	
 	$bdMovhos = "movhos";
 	
@@ -162,7 +163,7 @@ function consultarHabitacion($historia,$ingreso)
 	$tablaHabitaciones	= consultarTablaHabitaciones( $conex, $bdMovhos, $paciente->servicioActual );
 	
 	$q = "SELECT Habcpa
-			FROM movhos_000018,". $tablaHabitaciones ."
+			FROM ".$bd."_000018,". $tablaHabitaciones ."
 		   WHERE Ubihis = '".$historia."'
 			 AND Ubiing = '".$ingreso."'
 			 AND Ubihis = Habhis
@@ -324,10 +325,9 @@ function buscarCodigoNombreCamillero(){
 	
 	global $conex;
 	global $bd;
-	
 	global $bdCencam;
 	
-	$bdCencam = "cencam";
+	//$bdCencam = "cencam";
 	
 	$val = '';
 	
@@ -368,7 +368,7 @@ function crearPeticionCamillero( $origen, $motivo, $hab, $destino, $solicita, $c
 	global $conex;
 	global $bdCencam;
 	
-	$bdCencam = "cencam";
+	//$bdCencam = "cencam";
 	
 	$fecha = date( "Y-m-d" );
 	$hora = date( "H:i:s" );
@@ -458,13 +458,14 @@ function nombreCcoCentralCamilleros( $codigo ){
 	
 	global $conex;
 	global $bd;
+	global $bdCencam;
 	
 	$val = '';
 	
 	$sql = "SELECT
 				Nombre
 			FROM
-				cencam_000004
+				{$bdCencam}_000004
 			WHERE
 				SUBSTRING_INDEX( cco, '-', 1 ) = '$codigo'
 				AND Estado = 'on'
@@ -2108,7 +2109,9 @@ function pintarTitulo()
 
 function pintarConfi($cod, $var, $nom, $sub)
 {
+	global $wemp_pmla;
     echo "<form name='producto3' action='cargocpx.php' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 
     echo "<table ALIGN=CENTER width='50%'>";
     echo "<tr><td class='titulo4'>SE HA REALIZADO EL MOVIMIENTO EXITOSAMENTE</td></tr>";
@@ -2136,7 +2139,9 @@ function pintarConfi($cod, $var, $nom, $sub)
 
 function pintarAlerta($mensaje)
 {
+	global $wemp_pmla;
     echo "<form name='producto3' action='cargocpx.php' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 
     echo "<table ALIGN=CENTER width='50%'>";
     echo "<tr><td class='titulo5'>" . $mensaje . "</td></tr>";
@@ -2218,8 +2223,10 @@ function pintarPreparacion($preparacion, $escogidos, $carro)
 
 function pintarInsumos($inslis, $presen, $cod, $cco, $historia, $ingreso, $var, $servicio)
 {
+	global $wemp_pmla;
 	global $pac;
     echo "<form name='producto' action='cargocpx.php' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
     
     $packe = $pac;
     condicionesKE( $packe, $cod );
@@ -2353,9 +2360,10 @@ function consultarInsumos($codigo, &$inslis)
 {
     global $conex;
     global $wbasedato;
+	global $bd;
 
     $q = " SELECT Pdeins, Pdecan, Artcom, Artgen, Artuni, Unides "
-     . "       FROM " . $wbasedato . "_000003, " . $wbasedato . "_000002, movhos_000027 "
+     . "       FROM " . $wbasedato . "_000003, " . $wbasedato . "_000002, ".$bd."_000027 "
      . "    WHERE  Pdepro = '" . $codigo . "' "
      . "       AND Pdeest = 'on' "
      . "       AND Pdeins= Artcod "
@@ -2383,9 +2391,10 @@ function consultarPresentaciones(&$insumo, $cco, $historia, $ingreso)
 {
     global $conex;
     global $wbasedato;
+	global $bd;
 
     $q = " SELECT Apppre, Artcom, Appcnv "
-     . "        FROM  " . $wbasedato . "_000009, movhos_000026 "
+     . "        FROM  " . $wbasedato . "_000009, ".$bd."_000026 "
      . "      WHERE  Appcod='" . $insumo['cod'] . "' "
      . "            and Appcco=mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
      . "            and Appest='on' "
@@ -2405,7 +2414,7 @@ function consultarPresentaciones(&$insumo, $cco, $historia, $ingreso)
             $presentacion[$i]['cnv'] = $row1['Appcnv']; 
             // consulto el ajuste que hay para la presentación
             $q = " SELECT Ajpart, Ajpcan, Ajpfve, Ajphve, Artcom, Artgen "
-             . "        FROM " . $wbasedato . "_000010, " . $wbasedato . "_000009, movhos_000026 "
+             . "        FROM " . $wbasedato . "_000010, " . $wbasedato . "_000009, ".$bd."_000026 "
              . "      WHERE Ajphis= '" . $historia . "' "
              . "            and Ajpest ='on' "
              . "            and Ajping = '" . $ingreso . "' "
@@ -2474,6 +2483,7 @@ function consultarPreparacion(&$escogidos)
 {
     global $conex;
     global $wbasedato;
+	global $bd;
 
     $q = " SELECT Tipcod, Tipdes "
      . "        FROM " . $wbasedato . "_000001 "
@@ -2488,7 +2498,7 @@ function consultarPreparacion(&$escogidos)
         $preparacion [$i]['nom'] = $row[1]; 
         // consulto los conceptos
         $q = " SELECT Apppre, C.Artcom, Appuni, Appcod"
-         . "        FROM " . $wbasedato . "_000002 A, " . $wbasedato . "_000009 B, movhos_000026 C "
+         . "        FROM " . $wbasedato . "_000002 A, " . $wbasedato . "_000009 B, ".$bd."_000026 C "
          . "      WHERE A.Arttip = '" . $row[0] . "' "
          . "        AND A.Artcod = B.Appcod "
          . "        AND A.Artest='on' "
@@ -2890,14 +2900,14 @@ if( isset($user) && $user == '' )
 else
 {
 	$aplicaron = false;
-    $wbasedato = 'cenpro';
+    //$wbasedato = 'cenpro';
     
     include_once( "cenpro/cargos.inc.php" );	//incluye las funciones para ciclos de produccion
     include_once( "conex.php" );
     
 //    $conex = mysql_connect('localhost', 'root', '')
 //    or die("No se ralizo Conexion");
-    
+     include_once("root/comun.php");
     
 
 
@@ -2909,7 +2919,8 @@ else
 	contingencia( $conex );
 	/******************************************************************/
 	
-    $bd = 'movhos'; 
+    //$bd = 'movhos'; 
+	
     // invoco la funcion connectOdbc del inlcude de ana, para saber si unix responde, en caso contrario,
     // este programa no debe usarse
     // include_once("pda/tablas.php");
@@ -2918,8 +2929,10 @@ else
     include_once("movhos/otros.php");
     include_once("cenpro/funciones.php");
     include_once("cenpro/carro.php");
+	$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
 	
-	include_once("root/comun.php");
 	
 	$tmpDispensacion = consultarTiempoDispensacionIncCM( $conex, "01" );
 	
@@ -2979,7 +2992,7 @@ else
         // estos se cargan en un select llamado ccos.
         // consultamos si el producto es codificado o no
         $q = "SELECT Artcom, Tipcdo, Tippro, Arttnc "
-         . "     FROM   " . $wbasedato . "_000002, movhos_000027, " . $wbasedato . "_000001 "
+         . "     FROM   " . $wbasedato . "_000002, ".$bd."_000027, ".$wbasedato."_000001 "
          . "   WHERE Artcod='" . $cod . "' "
          . "     AND Unicod = Artuni "
          . "     AND Tipcod = Arttip "

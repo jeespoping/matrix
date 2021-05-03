@@ -457,6 +457,7 @@
 <body>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 /*********************************************************
  * Recibo de carro de dispensacion
  *
@@ -777,6 +778,7 @@ function consultarListadoPendienteReciboLactario($servicio,$grupos){
 function consultarListadoRecibidoPaciente($historia,$ingreso,$consecutivo,$servicio,$causa){
 	global $conex;
 	global $wbasedato;
+	global $wcenmez;
 
 	$coleccion = array();
 
@@ -828,7 +830,7 @@ function consultarListadoRecibidoPaciente($historia,$ingreso,$consecutivo,$servi
 				$num2 = mysql_num_rows($res2);
 
 				if($num2 == 0){
-					$q2 = "SELECT Artcom, Artuni FROM cenpro_000002 WHERE Artcod = '".$info['Recart']."'";
+					$q2 = "SELECT Artcom, Artuni FROM ".$wcenmez."_000002 WHERE Artcod = '".$info['Recart']."'";
 					$res2 = mysql_query($q2,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q2 . " - " . mysql_error());
 					$info2 = mysql_fetch_array($res2);
 				}
@@ -1054,6 +1056,7 @@ function actualizarCausaFaltante($articulo){
 function consultarArticulosPendientesReciboPaciente($historia,$ingreso,$consecutivo,$servicio){
 	global $conex;
 	global $wbasedato;
+	global $wcenmez;
 
 	$tipo = "";
 
@@ -1211,7 +1214,7 @@ function consultarArticulosPendientesReciboPaciente($historia,$ingreso,$consecut
 			$num2 = mysql_num_rows($res2);
 
 			if($num2 == 0){
-				$q2 = "SELECT Artcom, Artuni FROM cenpro_000002 WHERE Artcod = '".$articulo."'";
+				$q2 = "SELECT Artcom, Artuni FROM ".$wcenmez."_000002 WHERE Artcod = '".$articulo."'";
 				$res2 = mysql_query($q2,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q2 . " - " . mysql_error());
 				$info2 = mysql_fetch_array($res2);
 			}
@@ -1267,9 +1270,10 @@ if(!$usuarioValidado){
 	$winstitucion = $institucion->nombre;
 
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 
 	//Forma
-	echo "<form name='forma' action='ReciboDispensacionLactario.php' method='post'>";
+	echo "<form name='forma' action='ReciboDispensacionLactario.php?wemp_pmla=".$wemp_pmla."' method='post'>";
 	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<input type='HIDDEN' NAME= 'wbasedato' value='".$wbasedato."'/>";
 	echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
@@ -1351,7 +1355,7 @@ if(!$usuarioValidado){
 							$cantidadDespachadaConsolidado    += $elemento->cantidadDespachada;
 							$cantidadDevueltaConsolidado      += $elemento->cantidadDevuelta;
 							$cantidadSinDevolucionConsolidado += $elemento->cantidadSinDevolucion;
-							$cantidadRecibidaConsolidado      += $elemento->cantidadRecibida;
+							@$cantidadRecibidaConsolidado      +=(integer)$elemento->cantidadRecibida;
 						}else{
 							$cantidadDespachadaConsolidado    = $elemento->cantidadDespachada;
 							$cantidadDevueltaConsolidado      = $elemento->cantidadDevuelta;

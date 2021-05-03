@@ -27,6 +27,10 @@ table.sample td {
 </center> 
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+// se convierte en la variable empresa ya que $empresa=cenpro
+$empresa = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+$bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 session_start();
 if(!isset($_SESSION['user']))
 echo "error";
@@ -37,8 +41,9 @@ else
 	
 
 
-	echo "<form name='planilla' action='planilla.php' method=post>";
-	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+	echo "<form name='planilla' action='planilla.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	//echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+	echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
 
 	if (!isset($pintar))
 	{
@@ -92,7 +97,7 @@ else
 
 		//Buscamos los insumos primero
 		$query = "SELECT Apppre, Artcom, ROUND((Appexi/Appcnv),2), Artuni, Unides";
-		$query .=" from ".$empresa."_000009, movhos_000026, movhos_000027 ";
+		$query .=" from ".$empresa."_000009, ".$bdMovhos."_000026,".$bdMovhos."_000027 ";
 		$query .= " where  Appest = 'on' ";
 		$query .= "   and  Apppre = Artcod ";
 		$query .= "   and  Artuni = Unicod ";
@@ -158,7 +163,7 @@ else
 
 		//Buscamos los producto
 		$query = "SELECT Karcod, Artcom, Karexi, Artuni, Unides ";
-		$query .=" from ".$empresa."_000002, ".$empresa."_000005, movhos_000027, ".$empresa."_000001 ";
+		$query .=" from ".$empresa."_000002, ".$empresa."_000005, ".$bdMovhos."_000027, ".$empresa."_000001 ";
 		$query .= " where  Karexi > 0 " ;
 		$query .= "   and  Artest = 'on' ";
 		$query .= "   and  Karcod = Artcod ";

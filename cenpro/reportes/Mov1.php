@@ -1,4 +1,4 @@
-<html>
+<html><input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
   	<title>MATRIX  Comprobante de Inventarios</title>
   	
@@ -20,12 +20,13 @@
 <BODY>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 function calcularValorProducto($cantidad, $lote, &$concepto1, &$documento1, $concepto)
 {
 	global $conex;
 	global $empresa;
 
-	$query = "SELECT Mdeart, Mdecan, Mdepre from ".$empresa."_000007 ";
+	$query = "SELECT Mdeart, Mdecan, Mdepre from ".$wcenpro."_000007 ";
 	$query .= " where  Mdecon='".$concepto."'";
 	$query .= "   and  Mdenlo='".$lote."'";
 	//echo $query;
@@ -37,7 +38,7 @@ function calcularValorProducto($cantidad, $lote, &$concepto1, &$documento1, $con
 		$row2 = mysql_fetch_array($err2);
 
 		$exp=explode('-',$lote);
-		$query = "SELECT plocin from ".$empresa."_000004 ";
+		$query = "SELECT plocin from ".$wcenpro."_000004 ";
 		$query .= " where  plopro='".$exp[1]."' and plocod='".$exp[0]."' ";
 		$errp = mysql_query($query,$conex);
 		$nump = mysql_num_rows($errp);
@@ -46,7 +47,7 @@ function calcularValorProducto($cantidad, $lote, &$concepto1, &$documento1, $con
 		if($row2[2]!='')
 		{
 
-			$query = "SELECT Appcos, Appcnv, Tipmat from ".$empresa."_000009, ".$empresa."_000001, ".$empresa."_000002 ";
+			$query = "SELECT Appcos, Appcnv, Tipmat from ".$wcenpro."_000009, ".$wcenpro."_000001, ".$wcenpro."_000002 ";
 			$query .= " where  Apppre='".$row2[2]."'";
 			$query .= " and  Appcod= artcod ";
 			$query .= " and  Arttip= tipcod ";
@@ -91,8 +92,10 @@ echo "error";
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='Mov1' action='Mov1.php' method=post>";
-	
+	echo "<form name='Mov1' action='Mov1.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	$conex = obtenerConexionBD("matrix");
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcenpro = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 
 	
 
@@ -112,21 +115,21 @@ else
 	}
 	else
 	{
-		$query = "SELECT   Artcom from movhos_000026  ";
+		$query = "SELECT   Artcom from ".$wmovhos."_000026  ";
 		$query .= " where  Artcod='".$wins."' ";
 		$query .= "     and   Artest='on' ";
 		$query .= " UNION ";
-		$query .= "SELECT  Artcom from ".$empresa."_000002  ";
+		$query .= "SELECT  Artcom from ".$wcenpro."_000002  ";
 		$query .= " where  Artcod='".$wins."' ";
 		$query .= "     and   Artest='on' ";
 
 		$err = mysql_query($query,$conex) or die (mysql_errno().":".mysql_error());
 		$row = mysql_fetch_array($err);
 
-		$query = "SELECT   Appcnv, Appcod from ".$empresa."_000009  ";
+		$query = "SELECT   Appcnv, Appcod from ".$wcenpro."_000009  ";
 		$query .= " where  Apppre='".$wins."' ";
 		$query .= " UNION ";
-		$query .= "SELECT  0 as appcnv,artcod from ".$empresa."_000002 ";
+		$query .= "SELECT  0 as appcnv,artcod from ".$wcenpro."_000002 ";
 		$query .= " where  artcod='".$wins."' ";
 
 		$err2 = mysql_query($query,$conex) or die (mysql_errno().":".mysql_error());
@@ -155,7 +158,7 @@ else
 
 		//2008-10-06
         //ACA CREO UNA TABLA TEMPORAL CON TODOS LOS MOVIMIENTOS
-		$query = "SELECT   Mencon, Menfec, Mendoc, Mdecan, Conind, Connom, Mencco, Menccd, Mdenlo,".$empresa."_000007.seguridad,descripcion  from ".$empresa."_000006, ".$empresa."_000007 , ".$empresa."_000008 , usuarios ";
+		$query = "SELECT   Mencon, Menfec, Mendoc, Mdecan, Conind, Connom, Mencco, Menccd, Mdenlo,".$wcenpro."_000007.seguridad,descripcion  from ".$wcenpro."_000006, ".$wcenpro."_000007 , ".$wcenpro."_000008 , usuarios ";
 		$query .= " where  Menfec between '".$wfeci."' and '".$wfecf."'";
 		$query .= "     and   Mencon=Mdecon ";
 		$query .= "     and   Mdedoc=Mendoc ";
@@ -163,18 +166,18 @@ else
 		$query .= "     and   Mdepre like '%".$wins."%' ";
 		$query .= "     and   Mdecon=Concod ";
 		$query .= "     and   Conane<>'on'";
-		//$query .= "     and   Mid( ".$empresa."_000007.seguridad, 3, instr( ".$empresa."_000007.seguridad, '-' ) + 3 ) = codigo";
-		$query .= "		and SUBSTRING( ".$empresa."_000007.seguridad FROM INSTR( ".$empresa."_000007.seguridad, '-' ) + 1 ) = codigo";
+		//$query .= "     and   Mid( ".$wcenpro."_000007.seguridad, 3, instr( ".$empresa."_000007.seguridad, '-' ) + 3 ) = codigo";
+		$query .= "		and SUBSTRING( ".$wcenpro."_000007.seguridad FROM INSTR( ".$wcenpro."_000007.seguridad, '-' ) + 1 ) = codigo";
 		$query .= " UNION ";
-		$query .= "SELECT   Mencon, Menfec, Mendoc, Mdecan, Conind, Connom, Mencco, Menccd, Mdenlo,".$empresa."_000007.seguridad,descripcion  from ".$empresa."_000006, ".$empresa."_000007 , ".$empresa."_000008 , usuarios ";
+		$query .= "SELECT   Mencon, Menfec, Mendoc, Mdecan, Conind, Connom, Mencco, Menccd, Mdenlo,".$wcenpro."_000007.seguridad,descripcion  from ".$wcenpro."_000006, ".$wcenpro."_000007 , ".$wcenpro."_000008 , usuarios ";
 		$query .= " where  Menfec between '".$wfeci."' and '".$wfecf."'";
 		$query .= "     and   Mencon=Mdecon ";
 		$query .= "     and   Mdedoc=Mendoc ";
 		$query .= "     and   Mdeart='".$wins."' ";
 		$query .= "     and   Mdecon=Concod ";
 		$query .= "     and   Conane<>'on'";
-		//$query .= "     and   Mid( ".$empresa."_000007.seguridad, 3, instr( ".$empresa."_000007.seguridad, '-' ) + 3 ) = codigo";
-		$query .= "		and SUBSTRING( ".$empresa."_000007.seguridad FROM INSTR( ".$empresa."_000007.seguridad, '-' ) + 1 ) = codigo";
+		//$query .= "     and   Mid( ".$wcenpro."_000007.seguridad, 3, instr( ".$empresa."_000007.seguridad, '-' ) + 3 ) = codigo";
+		$query .= "		and SUBSTRING( ".$wcenpro."_000007.seguridad FROM INSTR( ".$wcenpro."_000007.seguridad, '-' ) + 1 ) = codigo";
 		$query .= "    Order by Menfec ";
 		
 		$err = mysql_query($query,$conex) or die (mysql_errno().":".mysql_error());

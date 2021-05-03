@@ -3911,7 +3911,8 @@ function buscarCodigoNombreCamillero(){
 
 	global $bdCencam;
 
-	$bdCencam = "cencam";
+	//$bdCencam = "cencam";
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "cencam");
 
 	$val = '';
 
@@ -3988,7 +3989,7 @@ function nombreCcoCentralCamilleros( $codigo ){
 	$sql = "SELECT
 				Nombre
 			FROM
-				cencam_000004
+				{$bdCencam}_000004
 			WHERE
 				SUBSTRING_INDEX( cco, '-', 1 ) = '$codigo'
 				AND Estado = 'on'
@@ -4019,7 +4020,8 @@ function crearPeticionCamillero( $origen, $motivo, $hab, $destino, $solicita, $c
 	global $conex;
 	global $bdCencam;
 
-	$bdCencam = "cencam";
+	//$bdCencam = "cencam";
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "cencam"); 
 
 	$fecha = date( "Y-m-d" );
 	$hora = date( "H:i:s" );
@@ -4731,6 +4733,7 @@ function ArticulosXPacienteCM( $pac ){
 	global $fecDispensacion;
 	global $tipTrans;
 	global $tmpDispensacion;
+	global $wcenpro;
 
 	global $horaCorteDispensacion;
 	global $diasDispensacion;
@@ -4762,8 +4765,8 @@ function ArticulosXPacienteCM( $pac ){
 					  Kadcdi, Kaddis, Kadart, Artcom, Kadsus, 'P' as Artpos, Perequ, Kadfin, Kadhin, 'NU' as Kadpro, Kadcfr, Kadcma, Kaddma, Kaddia, Kadcpx, a.id, Kadsad, Kadreg, Kadcnd, '' as Artubi, Kadpri, Kadido, Artuni, Kadron, Kadfro, Kadaan
 				FROM 
 					{$bd}_000054 a, 
-					cenpro_000002 b, 
-					cenpro_000001 c,
+					{$wcenpro}_000002 b, 
+					{$wcenpro}_000001 c,
 					{$bd}_000043 d
 				WHERE 
 					kadhis='{$pac['his']}'  
@@ -7060,7 +7063,7 @@ function esUrgencias($servicio){
 		$q = "SELECT
 					Ccourg
 				FROM
-					movhos_000011
+					{$bd}_000011
 				WHERE
 					Ccocod = '".$servicio."'
 				";
