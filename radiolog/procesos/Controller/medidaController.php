@@ -1,7 +1,8 @@
 <?php
 
     //Clase
-    require_once("./Model/medida.php");
+    //require_once("../../../include/radiolog/medida.php");
+    include_once("radiolog/medida.php");
 
     /***
      * Creo una clase para el controlador de Medida

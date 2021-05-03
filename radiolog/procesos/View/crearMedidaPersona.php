@@ -11,7 +11,7 @@
         <link rel="stylesheet" type="text/css" href="../../../include/root/jquery.multiselect.filter.css" />
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.js"></script>
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.filter.js"></script>
-        <script type="text/javascript" src="medidapersona.js"></script>
+        <script type="text/javascript" src="./View/medidapersona.js"></script>
         <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
 
         <!-- Inicio estilos css -->
