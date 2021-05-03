@@ -1,5 +1,6 @@
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 /*************************************************************************************************
  * 												FUNCIONES
  *************************************************************************************************/
@@ -66,6 +67,7 @@ function consultarMedicamento( $art ){
 	
 	global $conex;
 	global $wbasedato;
+	global $wcenmez;
 	
 	$nomart = "";
 	
@@ -85,7 +87,7 @@ function consultarMedicamento( $art ){
 		$sql = "SELECT
 				artcom, artcod
 			FROM
-				cenpro_000002 a
+				{$wcenmez}_000002 a
 			WHERE
 				artcod = '$art' ";
 				
@@ -144,6 +146,7 @@ $wactualiz = "1.0 Octubre 14 de 2009";
 encabezado("REPORTE MEDICAMENTO FACTURADO POR PACIENTES", $wactualiz, "clinica");
 
 $wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 
 session_start();
 if(false && !isset($_SESSION['user'])){

@@ -62,6 +62,10 @@ refrescar();
         include("conex.php");
         include("root/comun.php");
         mysql_select_db("matrix");
+		$wbasedatomovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wbasedatocliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame"); 
+		$wbasedatocencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
+		
 
         $conex = obtenerConexionBD("matrix");
         $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
@@ -169,7 +173,7 @@ refrescar();
         ),
         '%s'
     ) AS 'seconds'	
-	from cliame_000100, cliame_000101, movhos_000018 m18 left join cencam_000003 c3 on (m18.ubihis=c3.historia and c3.fecha_data between m18.fecha_data and now() and c3.motivo='SOLICITUD DE CAMA' and Fec_asigcama='0000:00:00')
+	from ".$wbasedatocliame."_000100, ".$wbasedatocliame."_000101, ".$wbasedatomovhos."_000018 m18 left join ".$wbasedatocencam."_000003 c3 on (m18.ubihis=c3.historia and c3.fecha_data between m18.fecha_data and now() and c3.motivo='SOLICITUD DE CAMA' and Fec_asigcama='0000:00:00')
 	where Ubisac = '1130'
  	and  Ubiald = 'off'
  	and  ubihis = Inghis
@@ -218,7 +222,7 @@ refrescar();
 					$alta_definitiva = $resultado[13];
 					$Fec_asigcama = $resultado[14];
 					$Hora_asigcama = $resultado[15];
-					if ($hora >=20 and $days<=10){
+					if ($hora >=20 and $days<=31){
 						
 						?>
 						<tr>

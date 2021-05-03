@@ -35,6 +35,11 @@ table.sample td {
 </center> 
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+// se convierte en la variable empresa ya que $empresa=cenpro
+$empresa = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+$bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
 function calcularProducto($cantidad, $lote, $signo, $ano, $mes)
 {
 	global $conex;
@@ -159,9 +164,10 @@ else
 
 	
 
-
-	echo "<form name='planilla' action='planilla3.php' method=post>";
-	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+	echo "<form name='planilla' action='planilla3.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
+	//echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+	
 
 	if (!isset($fec))
 	{
@@ -190,7 +196,7 @@ else
 
 		//Buscamos los insumos que hay que ajustar
 		$query = "SELECT Invcod, Artcom, Invcan, Artuni, Unides, Invcon, Appcnv, Appcod";
-		$query .=" from ".$empresa."_000017, movhos_000026, movhos_000027, ".$empresa."_000009 ";
+		$query .=" from ".$empresa."_000017, ".$bdMovhos."_000026, ".$bdMovhos."_000027, ".$empresa."_000009 ";
 		$query .= " where  Invfec = '".$fec."' " ;
 		$query .= "   and  Invpro = 'off' ";
 		$query .= "   and  Invcod = Artcod ";
@@ -451,7 +457,7 @@ else
 
 		//Buscamos los productos
 		$query = "SELECT Invcod, Artcom, Invcan, Artuni, Unides, Invcon, 1 as karcos ";
-		$query .=" from ".$empresa."_000002, ".$empresa."_000017, movhos_000027, ".$empresa."_000005 ";
+		$query .=" from ".$empresa."_000002, ".$empresa."_000017, ".$bdMovhos."_000027, ".$empresa."_000005 ";
 		$query .= " where  Invfec = '".$fec."' " ;
 		$query .= "   and  Invpro = 'on' ";
 		$query .= "   and  Invaju <> 'on' ";

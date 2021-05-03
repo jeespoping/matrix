@@ -24,6 +24,10 @@
 </center> 
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+//se convierte en la variable empresa ya que $empresa=cenpro
+$empresa = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+$bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 function calcularProducto($cantidad, $lote, &$vector, $concepto, $tipo)
 {
@@ -122,12 +126,13 @@ echo "error";
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='tkardex' action='tkardex.php' method=post>";
+	echo "<form name='tkardex' action='tkardex.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	
 
 	
 
-	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+	//echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+	echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
 	if(!isset($wano) or !isset($wmes))
 	{
 		$wlinant="";
@@ -161,7 +166,7 @@ else
 		echo "<tr><td class='texto4'><font face='tahoma'><b>MES DE PROCESO : </b>".$wmes."</td></tr></table><br><br>";
 		$dsan=array();
 		//consultamos en la tabla de saldos de inventarios, el saldo inicial
-		$query = "SELECT  Salcco, Salcod, Salexi, Salvuc,  Artcom, Artuni, Unides, Salpro from ".$empresa."_000014 , movhos_000026, movhos_000027  ";
+		$query = "SELECT  Salcco, Salcod, Salexi, Salvuc,  Artcom, Artuni, Unides, Salpro from ".$empresa."_000014 , ".$bdMovhos."_000026, ".$bdMovhos."_000027  ";
 		$query .= " where  Salano=".$wanoa;
 		$query .= "     and   Salmes= ".$wmesa;
 		$query .= "     and   Salcod =Artcod ";
@@ -185,7 +190,7 @@ else
 
 		$dsac=array();
 		//consultamos en la tabla de saldos de inventarios el saldo actual
-		$query = "SELECT  Salcco, Salcod, Salexi, Salvuc, Artcom, Artuni, Unides, Salpro  from ".$empresa."_000014, movhos_000026, movhos_000027 ";
+		$query = "SELECT  Salcco, Salcod, Salexi, Salvuc, Artcom, Artuni, Unides, Salpro  from ".$empresa."_000014, ".$bdMovhos."_000026, ".$bdMovhos."_000027 ";
 		$query .= " where  Salano=".$wano;
 		$query .= "     and   Salmes=".$wmes;
 		$query .= "     and   Salcod =Artcod ";

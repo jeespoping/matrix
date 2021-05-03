@@ -77,6 +77,7 @@ if(!isset($wemp_pmla))
 $conex = obtenerConexionBD("matrix");
 $wbasedatohce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 conexionOdbc($conex, $wbasedato, $conexUnix, 'facturacion');
 global $conexUnix;
 
@@ -94,6 +95,7 @@ function actualizarMedicamentos($wemp_pmla)
 {
     global $conex;
     global $conexUnix;
+	global $wcenmez;
     $fecha1 = time();
 
     $campo_rango_consulta_ActMed_ERP = consultarAliasPorAplicacion($conex, $wemp_pmla, "campo_rango_consulta_ActMed_ERP");
@@ -686,7 +688,7 @@ function actualizarMedicamentos($wemp_pmla)
                                 if ($esdereemplazo =='si')
                                 {
                                     $querycenpro = "SELECT  Pdeins
-                                                      FROM  cenpro_000003
+                                                      FROM  ".$wcenmez."_000003
                                                      WHERE  Pdepro ='".$row['Tcarprocod']."'";
 
                                     $resquerycenpro=  mysql_query( $querycenpro, $conex  ) or die( mysql_errno()." - Error en el query $querycenpro - ".mysql_error() );
@@ -1888,6 +1890,7 @@ function consultarCargoInsumoPorLinea($conex, $conexUnix, $wbasedato, $wemp_pmla
  */
 function consultaCargosUnix($conex, $conexUnix, $wbasedato, $wemp_pmla, $wbasedato_movhos, $codEmpParticular, $wccos_rep, $row, &$data, &$arr_cargosReporte, &$arr_cargosHisFactNotas, &$Tcardoi_ant, &$fuente_insumo, &$drodocdoc, &$arr_DocumentosFuentes, &$arr_consultas_por_historia, &$proceso_actualizacion, &$arr_RIPS_msate, &$drodocdoc_facturado)
 {
+	global $wcenmez;
     $Tcarlin      = $row['linea_insumo'];
     $historia_rep = $row['Tcarhis'];
     $ingreso_rep  = $row['Tcaring'];
@@ -2085,7 +2088,7 @@ function consultaCargosUnix($conex, $conexUnix, $wbasedato, $wemp_pmla, $wbaseda
                     if($row['Logpro'] =='on')
                     {
                         $querycenpro = "SELECT  Pdeins
-                                        FROM    cenpro_000003
+                                        FROM    {$wcenmez}_000003
                                         WHERE   Pdepro ='{$row['Tcarprocod']}'";
                         // $data["evidencia_error"][] = "DEBUG querycenpro: ".$querycenpro.' > '.PHP_EOL;
                         // $arr_consultas_por_historia[$historia_ing][] = $querycenpro;

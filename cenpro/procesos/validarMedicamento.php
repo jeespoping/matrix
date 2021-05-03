@@ -15,7 +15,8 @@
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
+<head><input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Consultar Registro</title>
 
@@ -31,14 +32,16 @@
 <?php	
 	///////funcion validar el dato///////////		
 		//FUNCION BUSCAR INFORMACION DEL MEDICAMENTO.
+		$wbasedatocenpro = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
+		$wbasedatomovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 		$wcod = $_GET['wcod'];
 		if ($wcod !== null) {
 			$select_medicamento = mysql_query("SELECT Artcom, Artgen, Artreg
-											from movhos_000026
+											from ".$wbasedatomovhos."_000026
 											where Artcod='$wcod'");								
 			$resultado_medicamento=mysql_fetch_array($select_medicamento);
 			$select_lote = mysql_query("SELECT Plocod,Plopro 	
-										from cenpro_000004
+										from ".$wbasedatocenpro."_000004
 										where plopro = '$wcod'
 										order by Plocod DESC
 										limit 1;");

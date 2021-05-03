@@ -229,6 +229,7 @@ function BuscarTraslado($parcon, $parcon2, $parcon3, $insfor, $forcon)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 	
 	
 
@@ -338,7 +339,7 @@ function BuscarTraslado($parcon, $parcon2, $parcon3, $insfor, $forcon)
 		else if ($insfor == 'Nombre')
 		{
 			$q = "SELECT Mdecon, Mdedoc, Menfec "
-			. "     FROM   " . $wbasedato . "_000007, " . $wbasedato . "_000006, movhos_000011, " . $wbasedato . "_000008 "
+			. "     FROM   " . $wbasedato . "_000007, " . $wbasedato . "_000006, ".$bd."_000011, " . $wbasedato . "_000008 "
 			. "   WHERE Cconom like '%" . $parcon . "%' "
 			. "     AND Ccoest = 'on' "
 			. "     AND Mencco = Ccocod "
@@ -381,7 +382,7 @@ function BuscarTraslado($parcon, $parcon2, $parcon3, $insfor, $forcon)
 		else if ($insfor == 'Nombre')
 		{
 			$q = "SELECT Mdecon, Mdedoc, Menfec "
-			. "     FROM   " . $wbasedato . "_000007, " . $wbasedato . "_000006, movhos_000011, " . $wbasedato . "_000008 "
+			. "     FROM   " . $wbasedato . "_000007, " . $wbasedato . "_000006, ".$bd."_000011, " . $wbasedato . "_000008 "
 			. "   WHERE Cconom like '%" . $parcon . "%' "
 			. "     AND Ccoest = 'on' "
 			. "     AND Menccd = Ccocod "
@@ -427,12 +428,13 @@ function consultarUnidades($codigo, $cco, $unidad, &$insumo)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	if ($unidad != '') // cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
 		// consulto los conceptos
 		$q = " SELECT Apppre, Artcom, Artgen, Appcnv, Appexi, Artuni, Unides "
-		. "        FROM  " . $wbasedato . "_000009, movhos_000026, movhos_000027 "
+		. "        FROM  " . $wbasedato . "_000009, ".$bd."_000026,".$bd."_000027 "
 		. "      WHERE Apppre='" . $unidad . "' "
 		. "            and Appcco=mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
 		. "            and Appest='on' "
@@ -466,7 +468,7 @@ function consultarUnidades($codigo, $cco, $unidad, &$insumo)
 	}
 	// consulto los conceptos
 	$q = " SELECT Apppre, Artcom, Artgen, Appcnv, Appexi, Artuni, Unides "
-	. "        FROM  " . $wbasedato . "_000009, movhos_000026, movhos_000027 "
+	. "        FROM  " . $wbasedato . "_000009, ".$bd."_000026,".$bd."_000027 "
 	. "      WHERE " . $cadena . " "
 	. "             Appcod='" . $codigo . "' "
 	. "            and Appcco=mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
@@ -518,6 +520,7 @@ function consultarCentros($cco, $usuario, $origen, $wemp_pmla)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	if ($cco != '')
 	{
@@ -532,7 +535,7 @@ function consultarCentros($cco, $usuario, $origen, $wemp_pmla)
 	}
 
 	$q = " SELECT A.Ccoima "
-	. "      FROM movhos_000011 A, usuarios C "
+	. "      FROM ".$bd."_000011 A, usuarios C "
 	. "    WHERE  A.Ccoest = 'on' "
 	. "       AND A.Ccotra = 'on' "
 	. "       AND C.Ccostos = A.Ccocod "
@@ -546,7 +549,7 @@ function consultarCentros($cco, $usuario, $origen, $wemp_pmla)
 	if (($row[0] == 'on' and $origen == 'on') or ($row[0] != 'on' and $origen != 'on') or ($num < 0 and $origen != 'on'))
 	{
 		$q = " SELECT A.Ccocod, B.Cconom "
-		. "       FROM movhos_000011 A, costosyp_000005 B "
+		. "       FROM ".$bd."_000011 A, costosyp_000005 B "
 		. "    WHERE " . $cadena . " "
 		. "       A.Ccoest = 'on' "
 		. "       AND A.Ccotra = 'on' "
@@ -559,7 +562,7 @@ function consultarCentros($cco, $usuario, $origen, $wemp_pmla)
 	else
 	{
 		$q = " SELECT A.Ccocod, B.Cconom "
-		. "       FROM movhos_000011 A, costosyp_000005 B "
+		. "       FROM ".$bd."_000011 A, costosyp_000005 B "
 		. "    WHERE " . $cadena . " "
 		. "       A.Ccoest = 'on' "
 		. "       AND A.Ccotra = 'on' "
@@ -600,12 +603,13 @@ function consultarCco($cco)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 	
 
 	$exp = explode('-', $cco);
 
 	 $q = " SELECT Ccoima "
-	. "       FROM movhos_000011  "
+	. "       FROM ".$bd."_000011  "
 	. "    WHERE Ccocod = '" . $exp[0] . "' "
 	. "       AND Ccoest = 'on' "
 	. "       AND Ccotra = 'on' ";
@@ -656,6 +660,7 @@ function consultarInsumos($parbus, $forbus, $origen)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
     
 	if ($origen == 'on')
 	{
@@ -668,7 +673,7 @@ function consultarInsumos($parbus, $forbus, $origen)
 			. "    WHERE Artcod = '" . $parbus . "' "
 			. "       AND Artest = 'on' "
 			. "       AND Tipest = 'on' "
-			. "       AND Tipcod = Arttip ";
+			. "       AND Tipcod = Arttip "; 
 			
 			$res = mysql_query($q, $conex) or die (mysql_errno() . " - " . mysql_error());
 			$row = mysql_fetch_array($res);
@@ -677,7 +682,7 @@ function consultarInsumos($parbus, $forbus, $origen)
 			if (isset($row[0]) and $row[0] == 'on')
 			{
 				$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro "
-				. "       FROM " . $wbasedato . "_000002, " . $wbasedato . "_000001, movhos_000027 "
+				. "       FROM " . $wbasedato . "_000002, " . $wbasedato . "_000001, ".$bd."_000027 "
 				. "    WHERE Artcod = '" . $parbus . "' "
 				. "       AND Artest = 'on' "
 				. "       AND Artuni= Unicod "
@@ -685,12 +690,12 @@ function consultarInsumos($parbus, $forbus, $origen)
 				. "       AND Tipcod = Arttip "
 				. "       AND Tipcdo = 'on' "
 				. "       AND Uniest='on' "
-				. "    Order by 1 ";
+				. "    Order by 1 "; 
 			}
 			else
 			{
 				$q = " SELECT C.Artcod, C.Artcom, C.Artgen, C.Artuni, B.Unides, D.Tippro  "
-				. "       FROM movhos_000026 A, movhos_000027 B, " . $wbasedato . "_000002 C, " . $wbasedato . "_000001 D, " . $wbasedato . "_000009 E"
+				. "       FROM ".$bd."_000026 A, ".$bd."_000027 B, " . $wbasedato . "_000002 C, " . $wbasedato . "_000001 D, " . $wbasedato . "_000009 E"
 				. "    WHERE A. Artcod = '" . $parbus . "' "
 				. "       AND A. Artest = 'on' "
 				. "       AND A. Artcod = E.Apppre "
@@ -708,34 +713,34 @@ function consultarInsumos($parbus, $forbus, $origen)
 
 			case 'Codigo':
 			$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro "
-			. "       FROM " . $wbasedato . "_000002, " . $wbasedato . "_000001, movhos_000027 "
+			. "       FROM " . $wbasedato . "_000002, " . $wbasedato . "_000001, ".$bd."_000027 "
 			. "    WHERE Artcod like '%" . $parbus . "%' "
 			. "       AND Artest = 'on' "
 			. "       AND Artuni= Unicod "
 			. "       AND Tipest = 'on' "
 			. "       AND Tipcod = Arttip "
 			. "       AND Uniest='on' "
-			. "    Order by 1 ";
+			. "    Order by 1 "; 
 
 			break;
 			case 'Nombre comercial':
 
 			$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro "
-			. "       FROM " . $wbasedato . "_000002,  " . $wbasedato . "_000001, movhos_000027 "
+			. "       FROM " . $wbasedato . "_000002,  " . $wbasedato . "_000001, ".$bd."_000027 "
 			. "    WHERE Artcom like '%" . $parbus . "%' "
 			. "       AND Artest = 'on' "
 			. "       AND Tipest = 'on' "
 			. "       AND Tipcod = Arttip "
 			. "       AND Artuni= Unicod "
 			. "       AND Uniest='on' "
-			. "    Order by 1 ";
+			. "    Order by 1 "; 
 		
 
 			break;
 			case 'Nombre generico':
 
 			$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro "
-			. "       FROM " . $wbasedato . "_000002,  " . $wbasedato . "_000001, movhos_000027 "
+			. "       FROM " . $wbasedato . "_000002,  " . $wbasedato . "_000001, ".$bd."_000027 "
 			. "    WHERE Artgen like '%" . $parbus . "%' "
 			. "       AND Artest = 'on' "
 			. "       AND Tipest = 'on' "
@@ -756,17 +761,17 @@ function consultarInsumos($parbus, $forbus, $origen)
 			if (isset($exp[1]))
 			{
 				$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-				. "       FROM movhos_000026, movhos_000027 "
+				. "       FROM ".$bd."_000026, ".$bd."_000027 "
 				. "    WHERE Artcod = '" . $exp[0] . "' "
 				. "       AND Artest = 'on' "
 				. "       AND Artuni= Unicod "
 				. "       AND Uniest='on' "
-				. "    Order by 1 ";
+				. "    Order by 1 "; 
 			}
 			else
 			{
 				$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-				. "       FROM movhos_000026, movhos_000027 "
+				. "       FROM ".$bd."_000026, ".$bd."_000027 "
 				. "    WHERE Artcod = '" . $parbus . "' "
 				. "       AND Artest = 'on' "
 				. "       AND Artuni= Unicod "
@@ -777,7 +782,7 @@ function consultarInsumos($parbus, $forbus, $origen)
 
 			case 'Codigo':
 			$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			. "       FROM movhos_000026, movhos_000027 "
+			. "       FROM ".$bd."_000026, ".$bd."_000027 "
 			. "    WHERE Artcod like '%" . $parbus . "%' "
 			. "       AND Artest = 'on' "
 			. "       AND Artuni= Unicod "
@@ -788,18 +793,18 @@ function consultarInsumos($parbus, $forbus, $origen)
 			case 'Nombre comercial':
 
 			$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			. "       FROM movhos_000026,  movhos_000027 "
+			. "       FROM ".$bd."_000026,  ".$bd."_000027 "
 			. "    WHERE Artcom like '%" . $parbus . "%' "
 			. "       AND Artest = 'on' "
 			. "       AND Artuni= Unicod "
 			. "       AND Uniest='on' "
-			. "    Order by 1 ";
+			. "    Order by 1 "; 
 
 			break;
 			case 'Nombre generico':
 
 			$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			. "       FROM movhos_000026, movhos_000027 "
+			. "       FROM ".$bd."_000026, ".$bd."_000027 "
 			. "    WHERE Artgen like '%" . $parbus . "%' "
 			. "       AND Artest = 'on' "
 			. "       AND Artuni= Unicod "
@@ -867,7 +872,7 @@ function consultarInsumos($parbus, $forbus, $origen)
 		if ($origen == 'on')
 		{
 			$q = " SELECT C.Artcod, C.Artcom, C.Artgen, C.Artuni, B.Unides, D.Tippro  "
-			. "       FROM movhos_000026 A, movhos_000027 B, " . $wbasedato . "_000002 C, " . $wbasedato . "_000001 D, " . $wbasedato . "_000009 E"
+			. "       FROM ".$bd."_000026 A, ".$bd."_000027 B, " . $wbasedato . "_000002 C, " . $wbasedato . "_000001 D, " . $wbasedato . "_000009 E"
 			. "    WHERE A. Artcod = '" . $art['cod'] . "' "
 			. "       AND A. Artest = 'on' "
 			. "       AND A. Artcod = E.Apppre "
@@ -883,7 +888,7 @@ function consultarInsumos($parbus, $forbus, $origen)
 		else
 		{
 			$q = " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			. "       FROM movhos_000026, movhos_000027 "
+			. "       FROM ".$bd."_000026, ".$bd."_000027 "
 			. "    WHERE Artcod = '" . $art['cod'] . "' "
 			. "       AND Artest = 'on' "
 			. "       AND Artuni= Unicod "
@@ -1123,9 +1128,10 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$ccoOri, &$ccoDes, 
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	$q = "SELECT Mdeart, Mdecan, Mdepre, Mdenlo, Mencco, Menccd, Menest, Artcom, Artgen, Artuni, Unides "
-	. "     FROM   " . $wbasedato . "_000007 A, " . $wbasedato . "_000006, " . $wbasedato . "_000002, movhos_000027 "
+	. "     FROM   " . $wbasedato . "_000007 A, " . $wbasedato . "_000006, " . $wbasedato . "_000002, ".$bd."_000027 "
 	. "   WHERE Mdecon = '" . $concepto . "' "
 	. "     AND Mdedoc = '" . $consecutivo . "' "
 	. "     AND Mdecon = Mencon "
@@ -1155,7 +1161,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$ccoOri, &$ccoDes, 
 				$ind = $row1[0];
 
 				$q = "SELECT Cconom  "
-				. "     FROM   movhos_000011 "
+				. "     FROM   ".$bd."_000011 "
 				. "   WHERE Ccocod = '" . $row['Mencco'] . "' "
 				. "     AND Ccoest = 'on' ";
 				$res1 = mysql_query($q, $conex) or die (mysql_errno() . " - " . mysql_error());
@@ -1169,7 +1175,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$ccoOri, &$ccoDes, 
 				}
 
 				$q = "SELECT Cconom  "
-				. "     FROM   movhos_000011 "
+				. "     FROM   ".$bd."_000011 "
 				. "   WHERE Ccocod = '" . $row['Menccd'] . "' "
 				. "     AND Ccoest = 'on' ";
 				$res1 = mysql_query($q, $conex) or die (mysql_errno() . " - " . mysql_error());
@@ -1210,7 +1216,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$ccoOri, &$ccoDes, 
 				if ($ind == '-1')
 				{
 					$q = " SELECT Appcnv, Artcom, Artgen "
-					. "        FROM  " . $wbasedato . "_000009, movhos_000026 "
+					. "        FROM  " . $wbasedato . "_000009, ".$bd."_000026 "
 					. "      WHERE Appcod='" . $row['Mdeart'] . "' "
 					. "            and Appcco=mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
 					. "            and Appest='on' "
@@ -1220,7 +1226,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$ccoOri, &$ccoDes, 
 				else
 				{
 					$q = " SELECT Appcnv, Artcom, Artgen "
-					. "        FROM  " . $wbasedato . "_000009, movhos_000026 "
+					. "        FROM  " . $wbasedato . "_000009, ".$bd."_000026 "
 					. "      WHERE Appcod='" . $row['Mdeart'] . "' "
 					. "            and Appcco=mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
 					. "            and Appest='on' "
@@ -1390,6 +1396,7 @@ function convertirMatrix(&$inslis, $cco)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	$val = 2;
 
@@ -1398,7 +1405,7 @@ function convertirMatrix(&$inslis, $cco)
 		$inslis[$i]['est'] = 'on';
 		// buscamos el nombre del articulo para el inventario de Matrix, sus unidades y tipo
 		$q = " SELECT Appcod, Appcnv, tippro, Artuni, Unides "
-		. "        FROM  " . $wbasedato . "_000009, " . $wbasedato . "_000001, " . $wbasedato . "_000002, movhos_000027"
+		. "        FROM  " . $wbasedato . "_000009, " . $wbasedato . "_000001, " . $wbasedato . "_000002, ".$bd."_000027"
 		. "      WHERE Appcco=mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
 		. "            and Appest='on' "
 		. "            and Apppre='" . $inslis[$i]['cod'] . "' "
@@ -1466,6 +1473,7 @@ function cambiarCantidades1(&$inslis, $cco)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	for ($i = 0; $i < count($inslis); $i++)
 	{
@@ -1486,7 +1494,7 @@ function cambiarCantidades1(&$inslis, $cco)
 				$row1 = mysql_fetch_array($res1);
 				$inslis[$i]['can'] = $inslis[$i]['can'] / $row1[0];
 
-				$q = " SELECT Artuni, Unides FROM movhos_000026, movhos_000027 "
+				$q = " SELECT Artuni, Unides FROM ".$bd."_000026, ".$bd."_000027 "
 				. " where Artcod=mid('" . $inslis[$i]['prese'] . "',1,instr('" . $inslis[$i]['prese'] . "','-')-1) "
 				. " and Artuni=Unicod "
 				. " and Artest='on' ";
@@ -1509,6 +1517,7 @@ function cambiarCantidades2(&$inslis, $cco)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	for ($i = 0; $i < count($inslis); $i++)
 	{
@@ -1529,7 +1538,7 @@ function cambiarCantidades2(&$inslis, $cco)
 				$row1 = mysql_fetch_array($res1);
 				$inslis[$i]['can'] = $inslis[$i]['can'] / $row1[0];
 
-				$q = " SELECT Artuni, Unides FROM movhos_000026, movhos_000027 "
+				$q = " SELECT Artuni, Unides FROM ".$bd."_000026, ".$bd."_000027 "
 				. " where Artcod='" . $inslis[$i]['cod'] . "' "
 				. " and Artuni=Unicod "
 				. " and Artest='on' ";
@@ -2168,7 +2177,7 @@ if (!isset($_SESSION['user']))
 echo "error";
 else
 {
-	$wbasedato = 'cenpro';
+	//$wbasedato = 'cenpro';
 	
 	include_once( "conex.php" );
 //    $conex = obtenerConexionBD("matrix");
@@ -2181,7 +2190,7 @@ else
 	// pintarVersion(); //Escribe en el programa el autor y la version del Script.
 	pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
 
-	$bd = 'movhos';
+	//$bd = 'movhos';
 	// invoco la funcion connectOdbc del inlcude de ana, para saber si unix responde, en caso contrario,
 	// este programa no debe usarse
 	// include_once("pda/tablas.php");
@@ -2190,6 +2199,10 @@ else
 	include_once("movhos/otros.php");
 	include_once("cenpro/funciones.php");
 	include_once("root/barcod.php");
+
+	include_once("root/comun.php");
+	$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cenmez' );
+	$bd  = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
 	connectOdbc($conex_o, 'inventarios');
 

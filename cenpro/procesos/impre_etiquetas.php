@@ -1,5 +1,4 @@
  <html>
- 
 <head>
   <title>MATRIX</title>
   <script>
@@ -9,7 +8,7 @@
             var winl = (screen.width - ancho) / 2;
             var wint = 250;
 			settings2 = 'height=' + alto + ',width=' + ancho + ',top=' + wint + ',left=' + winl + ', scrollbars=yes, toolbar=no';
-			validacion = window.open ("validarMedicamento.php?wcod="+wcod,"miwin",settings2);
+			validacion = window.open ("validarMedicamento.php?wemp_pmla="+wemp_pmla.value+"&wcod="+wcod,"miwin",settings2);
 			validacion.focus();
 		}
    </script>
@@ -30,6 +29,7 @@
     include_once("root/comun.php");
 	$conex = obtenerConexionBD("matrix");
     $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
+	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -71,15 +71,16 @@ $wvia = $_POST['wvia'];
 $wobs = $_POST['wobs'];
 //---------------------------->>> SACAR USUARIO ACTUAL NOMBRE Y FIRMA<<<----------------------------------------
 $select_usuario = mysql_query("SELECT descripcion,Firfir 
-								from usuarios left join cenpro_000023 on codigo = fircod
+								from usuarios left join ".$wbasedato."_000023 on codigo = fircod
 								where codigo='$wuse'");
 			$resultado_usuario=mysql_fetch_array($select_usuario);
 				$user_nom = substr($resultado_usuario[0],0,21);
 				$respo_firma = $resultado_usuario[1];
 				//$concat_usuario = $wuse.'-'.$user_nom;
 
-  	echo "<form action='impre_etiquetas.php' method=post id='info_medicamento' name='info_medicamento'>";
+  	echo "<form action='impre_etiquetas.php?wemp_pmla=".$wemp_pmla."' method=post id='info_medicamento' name='info_medicamento'>";
   	echo "<INPUT TYPE='hidden' name='bd' value='$bd'>";
+	echo "<INPUT TYPE='hidden' name='wemp_pmla' value='$wemp_pmla' id='wemp_pmla'>";
 			echo "<center><table border=0>";
 			echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 			echo "<tr><td align=center colspan=2>CENTRAL DE MEZCLAS</td></tr>";
@@ -119,7 +120,7 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 							<td bgcolor=#cccccc>						
 									<select id="wapro" name="wapro">
 										<?php
-										$queryDetalle = "SELECT fircod,descripcion from usuarios, cenpro_000023 
+										$queryDetalle = "SELECT fircod,descripcion from usuarios, ".$wbasedato."_000023 
 															where codigo = fircod
 															and Activo = 'A'";
 										$resutlDetalle = mysql_query($queryDetalle, $conex) or die (mysql_errno()." - en el query: ".$queryDetalle." - ".mysql_error());
@@ -173,7 +174,7 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 			if 	($_POST['buscador']){			
 			/////////////////////////////--> REALIZAR CONSULTA DE LA FIRMA DE QUIEN APRUEBA <--////////////////////////////////////////
 			$select_aprobo = mysql_query("SELECT descripcion,Firfir 
-								from usuarios left join cenpro_000023 on codigo = fircod
+								from usuarios left join ".$wbasedato."_000023 on codigo = fircod
 								where codigo='$wapro'");					
 			$resultado_aprobo=mysql_fetch_array($select_aprobo);
 				$apro_nom = substr($resultado_aprobo[0],0,21);

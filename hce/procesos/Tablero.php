@@ -556,7 +556,7 @@ else
 
 	$key = substr($user,2,strlen($user));
 	//
-
+	$wemp_pmla = $codemp;
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
 	echo "<input type='HIDDEN' name= 'wdbhce' value='".$wdbhce."'>";
@@ -1296,7 +1296,7 @@ else
 									else
 									{
 										$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
-										$path1="/matrix/HCE/procesos/HCE_IGP.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
+										$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 									}
 									echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";
 								}
@@ -1313,7 +1313,7 @@ else
 								else
 								{
 									$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
-									$path1="/matrix/HCE/procesos/HCE_IGP.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
+									$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 								}
 								echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";
 							}
@@ -1330,8 +1330,8 @@ else
 							$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
 						else
 						{
-							$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
-							$path1="/matrix/HCE/procesos/HCE_IGP.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
+							$path="/matrix/HCE/procesos/HCE_iFrames.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
+							$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 						}
 						echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";
 					}

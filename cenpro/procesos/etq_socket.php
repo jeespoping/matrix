@@ -1,4 +1,4 @@
- <html>
+<html><input type='HIDDEN' NAME= 'wemp_pmla' value='<?php echo($wemp_pmla)?>'>
 <head>
   <title>MATRIX</title>
 </head>
@@ -31,6 +31,7 @@ include_once("conex.php");
  
 function consultarDatosLote($codProducto,$lote)
 {
+	global $wbasedatocenpro;
 	global $conex;
 	
 	// En el editor online de ZPL se cargan y se obtiene la firma que se almacena en cenpro_000023
@@ -40,14 +41,14 @@ function consultarDatosLote($codProducto,$lote)
 	// ancho: 160px y alto: 45px
 	
 	$queryUsuarios = "SELECT Ploela AS CodigoElabora,Plorev AS CodigoRevisa,b.Descripcion AS NombreElabora,c.Descripcion AS NombreRevisa,Plofcr AS FechaPreparacion,a.Hora_data AS HoraPreparacion,d.Firfir AS FirmaElabora,e.Firfir AS FirmaRevisa
-						FROM cenpro_000004 a
+						FROM ".$wbasedatocenpro."_000004 a
 				   LEFT JOIN usuarios b
 						  ON b.Codigo=Ploela
 				   LEFT JOIN usuarios c
 						  ON c.Codigo=Plorev
-				   LEFT JOIN cenpro_000023 d
+				   LEFT JOIN ".$wbasedatocenpro."_000023 d
 						  ON d.Fircod=Ploela
-				   LEFT JOIN cenpro_000023 e
+				   LEFT JOIN ".$wbasedatocenpro."_000023 e
 						  ON e.Fircod=Plorev	  
 					   WHERE Plopro='".$codProducto."' 
 						 AND Plocod='".$lote."';";
@@ -77,9 +78,10 @@ function consultarTiempoInfusion($codigo)
 {
 	global $conex;
 	global $wbasedato;
+	global $wcenpro;
 	
 	$queryTiempoInsusion = " SELECT Arttin 
-							   FROM ".$wbasedato."_000002 
+							   FROM ".$wcenpro."_000002 
 							  WHERE Artcod='".$codigo."';";
 
 	$resTiempoInsusion = mysql_query($queryTiempoInsusion,$conex) or die("Error: " . mysql_errno() . " - en el query: ".$queryTiempoInsusion." - ".mysql_error());
@@ -124,9 +126,10 @@ function registrarPreparacion($historia,$ingreso,$ido,$wnom1,$wnom2,$codDA,$wlot
 	global $wbasedato;
 	global $bd;
 	global $key;
+	global $wbasedatocenpro;
 	
 	$queryDA = " SELECT *
-				   FROM cenpro_000022
+				   FROM ".$wbasedatocenpro."_000022
 				  WHERE Prehis='".$historia."' 
 					AND Preing='".$ingreso."' 
 					AND Precod='".$codDA."' 
@@ -223,11 +226,12 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 	 return $nombre;
 }
 
-$wemp_pmla="01";
+//$wemp_pmla="01";
 $soloconsulta=true;
 
 include_once("root/comun.php");
 include_once(get_include_path()."/../matrix/cenpro/procesos/monitorProduccionDA.php");
+
 
 $conex = obtenerConexionBD("matrix");
 
@@ -235,7 +239,8 @@ if( !isset($bd) || empty($bd) ){
 	$bd = "cenmez";
 }
 
-$wbasedato = consultarAliasPorAplicacion( $conex, "01", $bd );
+$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, $bd );
+$wbasedatocenpro = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
 
 session_start();
 if(!isset($_SESSION['user']))
@@ -247,7 +252,7 @@ else
 
 //	
 
-  	echo "<form action='etq_socket.php' method=post>";
+  	echo "<form action='etq_socket.php?wemp_pmla=".$wemp_pmla."' method=post>";
   	echo "<INPUT TYPE='hidden' name='bd' value='$bd'>";
   	echo "<INPUT TYPE='hidden' name='whistoria' value='".$whistoria."'>";
   	echo "<INPUT TYPE='hidden' name='wingreso' value='".$wingreso."'>";

@@ -389,6 +389,7 @@ function BuscarTraslado($parcon, $parcon2,$parcon3, $insfor, $forcon, $pintar)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	switch ($forcon)
 	{
@@ -570,7 +571,7 @@ function BuscarTraslado($parcon, $parcon2,$parcon3, $insfor, $forcon, $pintar)
 			else if ($insfor=='Nombre')
 			{
 				$q= "SELECT Mdecon, Mdedoc, Menfec "
-				."     FROM   ".$wbasedato."_000007, ".$wbasedato."_000006, movhos_000011, ".$wbasedato."_000008 "
+				."     FROM   ".$wbasedato."_000007, ".$wbasedato."_000006, ".$bd."_000011, ".$wbasedato."_000008 "
 				."   WHERE Cconom like '%".$parcon."%' "
 				."     AND Ccoest = 'on' "
 				."     AND Mencco = Ccocod "
@@ -613,7 +614,7 @@ function BuscarTraslado($parcon, $parcon2,$parcon3, $insfor, $forcon, $pintar)
 			else if ($insfor=='Nombre')
 			{
 				$q= "SELECT Mdecon, Mdedoc, Menfec "
-				."     FROM   ".$wbasedato."_000007, ".$wbasedato."_000006, movhos_000011, ".$wbasedato."_000008 "
+				."     FROM   ".$wbasedato."_000007, ".$wbasedato."_000006, ".$bd."_000011, ".$wbasedato."_000008 "
 				."   WHERE Cconom like '%".$parcon."%' "
 				."     AND Ccoest = 'on' "
 				."     AND Menccd = Ccocod "
@@ -651,12 +652,13 @@ function consultarUnidades($codigo, $cco, $unidad, &$insumo)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	if ($unidad!='') //cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
 		//consulto los conceptos
 		$q =  " SELECT Apppre, Artcom, Artgen, Appcnv, Appexi, Artuni, Unides "
-		."        FROM  ".$wbasedato."_000009, movhos_000026, movhos_000027 "
+		."        FROM  ".$wbasedato."_000009, ".$bd."_000026, ".$bd."_000027 "
 		."      WHERE Apppre='".$unidad."' "
 		."            and Appcco=mid('".$cco."',1,instr('".$cco."','-')-1) "
 		."            and Appest='on' "
@@ -690,7 +692,7 @@ function consultarUnidades($codigo, $cco, $unidad, &$insumo)
 
 	//consulto los conceptos
 	$q =  " SELECT Apppre, Artcom, Artgen, Appcnv, Appexi, Artuni, Unides "
-	."        FROM  ".$wbasedato."_000009, movhos_000026, movhos_000027 "
+	."        FROM  ".$wbasedato."_000009, ".$bd."_000026, ".$bd."_000027 "
 	."      WHERE ".$cadena." "
 	."             Appcod='".$codigo."' "
 	."            and Appcco=mid('".$cco."',1,instr('".$cco."','-')-1) "
@@ -734,6 +736,9 @@ function consultarCentros($cco)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
+	global $wemp_pmla;
+	$wcostosyp = consultarAliasPorAplicacion($conex, $wemp_pmla, "COSTOS"); 
 
 	if ($cco!='') //cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
@@ -749,7 +754,7 @@ function consultarCentros($cco)
 
 	//consulto los conceptos
 	$q =  " SELECT A.Ccocod as codigo, B.Cconom as nombre"
-	."        FROM movhos_000011 A, costosyp_000005 B "
+	."        FROM ".$bd."_000011 A, ".$wcostosyp."_000005 B "
 	."      WHERE ".$cadena." "
 	."        A.Ccoima = 'on' "
 	."        AND A.Ccocod = B.Ccocod "
@@ -781,11 +786,12 @@ function consultarCco($cco)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	$exp=explode('-',$cco);
 
 	$q= " SELECT Ccoima "
-	."       FROM movhos_000011  "
+	."       FROM ".$bd."_000011  "
 	."    WHERE Ccocod = '".$exp[0]."' "
 	."       AND Ccoest = 'on' "
 	."       AND Ccotra = 'on' ";
@@ -848,6 +854,7 @@ function consultarInsumos($parbus, $forbus)
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	switch ($forbus)
 	{
@@ -866,7 +873,7 @@ function consultarInsumos($parbus, $forbus)
 			if (isset($row[0]) and $row[0]=='on')
 			{
 				$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro "
-				."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, movhos_000027 "
+				."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$bd."_000027 "
 				."    WHERE Artcod = '".$parbus."' "
 				."       AND Artest = 'on' "
 				."       AND Artuni= Unicod "
@@ -878,7 +885,7 @@ function consultarInsumos($parbus, $forbus)
 			else
 			{
 				$q= " SELECT C.Artcod, C.Artcom, C.Artgen, C.Artuni, B.Unides, D.Tippro  "
-				."       FROM movhos_000026 A, movhos_000027 B, ".$wbasedato."_000002 C, ".$wbasedato."_000001 D, ".$wbasedato."_000009 E"
+				."       FROM ".$bd."_000026 A, ".$bd."_000027 B, ".$wbasedato."_000002 C, ".$wbasedato."_000001 D, ".$wbasedato."_000009 E"
 				."    WHERE A. Artcod = '".$parbus."' "
 				."       AND A. Artest = 'on' "
 				."       AND A. Artcod = E.Apppre "
@@ -895,7 +902,7 @@ function consultarInsumos($parbus, $forbus)
 
 		case 'Codigo':
 			$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro "
-			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, movhos_000027 "
+			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$bd."_000027 "
 			."    WHERE Artcod like '%".$parbus."%' "
 			."       AND Artest = 'on' "
 			."       AND Artuni= Unicod "
@@ -908,7 +915,7 @@ function consultarInsumos($parbus, $forbus)
 		case 'Nombre comercial':
 
 			$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro "
-			."       FROM ".$wbasedato."_000002,  ".$wbasedato."_000001, movhos_000027 "
+			."       FROM ".$wbasedato."_000002,  ".$wbasedato."_000001, ".$bd."_000027 "
 			."    WHERE Artcom like '%".$parbus."%' "
 			."       AND Artest = 'on' "
 			."       AND Tipest = 'on' "
@@ -921,7 +928,7 @@ function consultarInsumos($parbus, $forbus)
 		case 'Nombre generico':
 
 			$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tippro "
-			."       FROM ".$wbasedato."_000002,  ".$wbasedato."_000001, movhos_000027 "
+			."       FROM ".$wbasedato."_000002,  ".$wbasedato."_000001, ".$bd."_000027 "
 			."    WHERE Artgen like '%".$parbus."%' "
 			."       AND Artest = 'on' "
 			."       AND Tipest = 'on' "
@@ -1106,9 +1113,10 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$ccoOri, &$ccoDes, 
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
 
 	$q= "SELECT Mdeart, Mdecan, Mdepre, Mdenlo, Mencco, Menccd, Menest, Artcom, Artgen, Artuni, Unides "
-	."     FROM   ".$wbasedato."_000007 A, ".$wbasedato."_000006, ".$wbasedato."_000002, movhos_000027 "
+	."     FROM   ".$wbasedato."_000007 A, ".$wbasedato."_000006, ".$wbasedato."_000002, ".$bd."_000027 "
 	."   WHERE Mdecon = '".$concepto."' "
 	."     AND Mdedoc = '".$consecutivo."' "
 	."     AND Mdecon = Mencon "
@@ -1139,7 +1147,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$ccoOri, &$ccoDes, 
 				$ind=$row1[0];
 
 				$q= "SELECT Cconom  "
-				."     FROM   movhos_000011 "
+				."     FROM   ".$bd."_000011 "
 				."   WHERE Ccocod = '".$row['Mencco']."' "
 				."     AND Ccoest = 'on' ";
 				$res1 = mysql_query($q,$conex);
@@ -1153,7 +1161,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$ccoOri, &$ccoDes, 
 				}
 
 				$q= "SELECT Cconom  "
-				."     FROM   movhos_000011 "
+				."     FROM   ".$bd."_000011 "
 				."   WHERE Ccocod = '".$row['Menccd']."' "
 				."     AND Ccoest = 'on' ";
 				$res1 = mysql_query($q,$conex);
@@ -1202,7 +1210,7 @@ function consultarTraslado($concepto, $consecutivo, $fecha, &$ccoOri, &$ccoDes, 
 			else
 			{
 				$q =  " SELECT Appcnv, Artcom, Artgen "
-				."        FROM  ".$wbasedato."_000009, movhos_000026 "
+				."        FROM  ".$wbasedato."_000009, ".$bd."_000026 "
 				."      WHERE Appcod='".$row['Mdeart']."' "
 				."            and Appcco=mid('".$cco."',1,instr('".$cco."','-')-1) "
 				."            and Appest='on' "
@@ -1825,7 +1833,8 @@ function eliminarInsumo($lista, $index)
  */
 function pintarTitulo($pintar)
 {
-
+	global $wemp_pmla;
+	
 	if ($pintar==0)
 	{
 		echo "<table ALIGN=CENTER width='50%'>";
@@ -1835,10 +1844,10 @@ function pintarTitulo($pintar)
 
 		echo "<table ALIGN=CENTER width='90%' >";
 		//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-		echo "<tr><td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cen_Mez.php?wbasedato=cen_mez'>PRODUCTOS</td></a>";
-		echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='lotes.php?wbasedato=lotes.php'>LOTES</a></td>";
-		echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cargoscm.php?wbasedato=lotes.php&tipo=C'>CARGOS A PACIENTES</a></td>";
-		echo "<td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='pos.php?wbasedato=pos.php&tipo=A'>VENTA EXTERNA</a></td></TR>";
+		echo "<tr><td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cen_Mez.php?wemp_pmla=".$wemp_pmla."'>PRODUCTOS</td></a>";
+		echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='lotes.php?wemp_pmla=".$wemp_pmla."'>LOTES</a></td>";
+		echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cargoscm.php?wemp_pmla=".$wemp_pmla."&tipo=C'>CARGOS A PACIENTES</a></td>";
+		echo "<td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='pos.php?wemp_pmla=".$wemp_pmla."&tipo=A'>VENTA EXTERNA</a></td></TR>";
 		//echo "<a href='cargos.php?wbasedato=lotes.php&tipo=A'><td class='texto5' width='15%'>AVERIAS</td></a>";
 		//echo "<a href='descarte.php?wbasedato=cenmez'><td class='texto5' width='15%'>DESCARTES</td></TR></a>";
 		echo "<tr><td class='texto6' >&nbsp;</td>";
@@ -1858,10 +1867,13 @@ function pintarTitulo($pintar)
 
 function pintarBusqueda($consultas, $forcon, $pintar)
 {
+	global $wemp_pmla;
+	
 	if( empty($consultas) )
 	$consultas = array();
 	echo "<table border=0 ALIGN=CENTER width=90%>";
-	echo "<form name='producto2' action='pos.php' method=post>";
+	echo "<form name='producto2' action='pos.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<tr><td class='titulo3' colspan='3' align='center'>Consulta: ";
 	echo "<select name='forcon' class='texto5' onchange='enter7()'>";
 	echo "<option>".$forcon."</option>";
@@ -1937,12 +1949,16 @@ function pintarBusqueda($consultas, $forcon, $pintar)
  */
 function pintarFormulario($estado, $ccos, $numtra, $fecha, $pintar)
 {
-	echo "<form name='producto3' action='pos.php' method=post>";
+	global $wemp_pmla;
+	
+	echo "<form name='producto3' action='pos.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<tr><td colspan=3 class='titulo3' align='center'><INPUT TYPE='submit' NAME='NUEVO' VALUE='Nuevo' class='texto5' ></td></tr>";
 	echo "<input type='hidden' name='pintar' value='".$pintar."'></td>";
 	echo "</table></form>";
 
-	echo "<form name='producto' action='pos.php' method=post>";
+	echo "<form name='producto' action='pos.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<table border=0 ALIGN=CENTER width=90%>";
 
 	echo "<tr><td colspan=3 class='titulo3' align='center'><b>Informacion general del traslado</b></td></tr>";
@@ -2180,13 +2196,18 @@ if(!isset($_SESSION['user']))
 echo "error";
 else
 {
-	$wbasedato='cenpro';
+	//$wbasedato='cenpro';
 //	$conex = mysql_connect('localhost','root','')
 //	or die("No se ralizo Conexion");
 	
 	include_once( "conex.php" );
 //    $conex = obtenerConexionBD("matrix");
+	include_once("cenpro/funciones.php");
+	include_once("root/comun.php");
 	
+	//$wemp_pmla = "01";
+	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 	
 
 
@@ -2202,7 +2223,7 @@ else
 
 	}
 	pintarTitulo($pintar);
-	$bd='movhos';
+	//$bd='movhos';
 	//invoco la funcion connectOdbc del inlcude de ana, para saber si unix responde, en caso contrario,
 	//este programa no debe usarse
 	//include_once("pda/tablas.php");

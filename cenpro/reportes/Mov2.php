@@ -20,15 +20,21 @@
 <BODY>
 <?php
 include_once("conex.php");
+
+include_once("root/comun.php");
+//wbasedato se convierte en la variable empresa ya que $empresa=cenpro
+$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+$bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
+
 function calcularValorProducto($cantidad, $lote, &$concepto1, &$documento1, $concepto)
 {
     global $conex;
-    global $empresa;
+    global $wbasedato;
 
-    $query = "SELECT Mdeart, Mdecan, Mdepre from " . $empresa . "_000007 ";
+    $query = "SELECT Mdeart, Mdecan, Mdepre from " . $wbasedato. "_000007 ";
     $query .= " where  Mdecon='" . $concepto . "'";
-    $query .= "   and  Mdenlo='" . $lote . "'"; 
-    // echo $query;
+    $query .= "   and  Mdenlo='" . $lote . "'";
     $err2 = mysql_query($query, $conex);
     $num2 = mysql_num_rows($err2);
 
@@ -37,7 +43,7 @@ function calcularValorProducto($cantidad, $lote, &$concepto1, &$documento1, $con
         $row2 = mysql_fetch_array($err2);
 
         $exp = explode('-', $lote);
-        $query = "SELECT plocin from " . $empresa . "_000004 ";
+        $query = "SELECT plocin from " . $wbasedato . "_000004 ";
         $query .= " where  plopro='" . $exp[1] . "' and plocod='" . $exp[0] . "' ";
         $errp = mysql_query($query, $conex);
         $nump = mysql_num_rows($errp);
@@ -45,7 +51,7 @@ function calcularValorProducto($cantidad, $lote, &$concepto1, &$documento1, $con
 
         if ($row2[2] != '')
         {
-            $query = "SELECT Appcos, Appcnv, Tipmat from " . $empresa . "_000009, " . $empresa . "_000001, " . $empresa . "_000002 ";
+            $query = "SELECT Appcos, Appcnv, Tipmat from " . $wbasedato . "_000009, " . $wbasedato . "_000001, " . $wbasedato . "_000002 ";
             $query .= " where  Apppre='" . $row2[2] . "'";
             $query .= " and  Appcod= artcod ";
             $query .= " and  Arttip= tipcod ";
@@ -88,12 +94,12 @@ if (!isset($_SESSION['user']))
 else
 {
     $key = substr($user, 2, strlen($user));
-    echo "<form name='Mov2' action='Mov2.php' method=post>";
+    echo "<form name='Mov2' action='Mov2.php?wemp_pmla=".$wemp_pmla."' method=post>";
     
 
     
-
-    echo "<input type='HIDDEN' name= 'empresa' value='" . $empresa . "'>";
+	echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
+    //echo "<input type='HIDDEN' name= 'empresa' value='" . $wbasedato . "'>";
     if (!isset($wfeci) or !isset($wfecf) or !isset($wins))
     {
         echo "<center><table border=0>";
@@ -109,7 +115,7 @@ else
     } 
     else
     {
-        $query = "SELECT   Artcom from " . $empresa . "_000002  ";
+        $query = "SELECT   Artcom from " . $wbasedato. "_000002  ";
         $query .= " where  Artcod='" . $wins . "' ";
         $query .= "     and   Artest='on' ";
 
@@ -135,7 +141,7 @@ else
         echo "<td align=center bgcolor=#999999 ><font face='tahoma' size=2><b>CARGO</b></font></td>";
         echo "<td align=center bgcolor=#999999 ><font face='tahoma' size=2><b>DEVOLUCION</b></font></td></tr>"; 
         // ACA CREO UNA TABLA TEMPORAL CON TODOS LOS MOVIMIENTOS
-        $query = "SELECT   Mencon, Menfec, Mendoc, Mdecan, Conind, Connom, Mencco, Menccd, Mdenlo, A.Hora_data, A.Seguridad from " . $empresa . "_000006 A, " . $empresa . "_000007 , " . $empresa . "_000008 ";
+        $query = "SELECT   Mencon, Menfec, Mendoc, Mdecan, Conind, Connom, Mencco, Menccd, Mdenlo, A.Hora_data, A.Seguridad from " . $wbasedato . "_000006 A, " . $wbasedato . "_000007 , " .$wbasedato . "_000008 ";
         $query .= " where  Menfec between '" . $wfeci . "' and '" . $wfecf . "'";
         $query .= "     and   Mencon=Mdecon ";
         $query .= "     and   Mdedoc=Mendoc ";
@@ -178,7 +184,7 @@ else
             {
                 echo "<td bgcolor=#cccccc align='left'><font face='tahoma' size=2><b>" . $row[7] . "</b></font></td>";
                 $exp = explode('-', $row[7]);
-                $q = "SELECT  ubihac from movhos_000018 ";
+                $q = "SELECT  ubihac from ".$bdMovhos."_000018 ";
                 $q .= " where  Ubiing='" . $exp[1] . "' ";
                 $q .= " and   Ubihis='" . $exp[0] . "' ";
 
@@ -194,7 +200,7 @@ else
             {
                 echo "<td bgcolor=#cccccc align='left'><font face='tahoma' size=2><b>" . $row[7] . "</b></font></td>";
                 $exp = explode('-', $row[7]);
-                $q = "SELECT  ubihac from movhos_000018 ";
+                $q = "SELECT  ubihac from ".$bdMovhos."_000018 ";
                 $q .= " where  Ubiing='" . $exp[1] . "' ";
                 $q .= " and   Ubihis='" . $exp[0] . "' ";
 

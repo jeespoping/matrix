@@ -1,3 +1,4 @@
+<html><input type='HIDDEN' NAME= 'wemp_pmla' value='<?php echo($wemp_pmla)?>'>
 <?php
 include_once("conex.php");
 
@@ -81,7 +82,7 @@ Sistematizar la gestión de inventario y cargo a pacientes para la central de mez
 lo más ajustado al físico.
 
 
-1.3 CARACTERISTICAS O HISTORIAS
+1.3 CARACTERISTICAS O HISTORIAS	
 
 1. TRASLADO DE INSUMOS HACIA LA CENTRAL
 
@@ -511,6 +512,7 @@ function actualizarFraccionArticulo( $articulo, $fraccion, $unidad, $tiempoVenci
 	global $conex;
 	global $wbasedato;
 	global $bd;
+	global $wfarstore;
 	
 	$sql = "UPDATE
 				{$bd}_000059
@@ -541,11 +543,13 @@ function centroCostos(){
 	
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
+	global $bd;
 	
 	$sql = "SELECT
 				Ccocod
 			FROM
-				movhos_000011
+				".$bd."_000011
 			WHERE
 				ccotra = 'on'
 				AND ccoima = 'on'
@@ -630,6 +634,7 @@ function registrarFraccion( $articulo, $fraccion, $unidad, $tiempoVencimiento, $
 	global $conex;
 	global $wbasedato;
 	global $wusuario;
+	global $wfarstore;
 	global $bd;
 	
 	$fecha = date( "Y-m-d" );
@@ -702,6 +707,7 @@ function consultarTipos($tipo)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	if ($tipo!='') //cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
@@ -763,6 +769,7 @@ function consultarInstituciones($insti)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	if ($insti!='') //cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
@@ -824,6 +831,7 @@ function consultarPorductosXInsumo($parbus, $parbus2, $forbus)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	if ($parbus2=='')
 	{
@@ -831,7 +839,7 @@ function consultarPorductosXInsumo($parbus, $parbus2, $forbus)
 		{
 			case 'Codigo':
 			$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, farstore_000002 "
+			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, ".consultarAliasPorAplicacion($conex, $wemp_pmla, "farmastore")."_000002 "
 			."    WHERE Artest = 'on' "
 			."       AND Pdeins like '%".$parbus."%' "
 			."       AND Pdeest= 'on'  "
@@ -843,7 +851,7 @@ function consultarPorductosXInsumo($parbus, $parbus2, $forbus)
 			case 'Nombre comercial':
 
 			$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, farstore_000002 "
+			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, ".$wfarstore."_000002 "
 			."    WHERE Artest = 'on' "
 			."       AND Pdeins in ( SELECT Artcod FROM ".$wbasedato."_000002 WHERE Artcom LIKE '%".$parbus."%' and artest='on' )"
 			."       AND Pdeest= 'on'  "
@@ -855,7 +863,7 @@ function consultarPorductosXInsumo($parbus, $parbus2, $forbus)
 			case 'Nombre genérico':
 
 			$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, farstore_000002 "
+			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, ".$wfarstore."_000002 "
 			."    WHERE Artest = 'on' "
 			."       AND Pdeins in ( SELECT Artcod FROM ".$wbasedato."_000002 WHERE Artgen LIKE '%".$parbus."%' and artest='on' )"
 			."       AND Pdeest= 'on'  "
@@ -872,7 +880,7 @@ function consultarPorductosXInsumo($parbus, $parbus2, $forbus)
 		{
 			case 'Codigo':
 			$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, farstore_000002 "
+			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, ".$wfarstore."_000002 "
 			."    WHERE Artest = 'on' "
 			."       AND Pdeins like '%".$parbus."%' "
 			."       AND Pdecan ='".$parbus2."' "
@@ -885,7 +893,7 @@ function consultarPorductosXInsumo($parbus, $parbus2, $forbus)
 			case 'Nombre comercial':
 
 			$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, farstore_000002 "
+			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, ".$wfarstore."_000002 "
 			."    WHERE Artest = 'on' "
 			."       AND Pdeins in ( SELECT Artcod FROM ".$wbasedato."_000002 WHERE Artcom LIKE '%".$parbus."%' and artest='on' )"
 			."       AND Pdecan ='".$parbus2."' "
@@ -898,7 +906,7 @@ function consultarPorductosXInsumo($parbus, $parbus2, $forbus)
 			case 'Nombre genérico':
 
 			$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, farstore_000002 "
+			."       FROM ".$wbasedato."_000002, ".$wbasedato."_000003, ".$wfarstore."_000002 "
 			."    WHERE Artest = 'on' "
 			."       AND Pdeins in ( SELECT Artcod FROM ".$wbasedato."_000002 WHERE Artgen LIKE '%".$parbus."%' and artest='on' )"
 			."       AND Pdecan ='".$parbus2."' "
@@ -948,12 +956,13 @@ function consultarCentral($parbus, $forbus)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	switch ($forbus)
 	{
 		case 'Codigo':
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, '' "
-		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE Artcod like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Tipest = 'on' "
@@ -967,7 +976,7 @@ function consultarCentral($parbus, $forbus)
 		case 'Nombre comercial':
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, '' "
-		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE Artcom like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Tipest = 'on' "
@@ -981,7 +990,7 @@ function consultarCentral($parbus, $forbus)
 		case 'Nombre genérico':
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, '' "
-		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE Artgen like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Tipest = 'on' "
@@ -996,7 +1005,7 @@ function consultarCentral($parbus, $forbus)
 		case 'Paciente':
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, '' "
-		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE Arthis like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Tipest = 'on' "
@@ -1015,7 +1024,7 @@ function consultarCentral($parbus, $forbus)
 		$fecha1= date('Y-m-d', $fecha1);
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Pacnom "
-		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000020, farstore_000002 "
+		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000020, ".$wfarstore."_000002 "
 		."    WHERE Artins = '".$parbus."' "
 		."       AND Artest = 'on' "
 		."       AND Artfec between  '".$fecha1."' and '".date('Y-m-d')."' "
@@ -1066,12 +1075,14 @@ function consultarProductos($parbus, $forbus)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
+	global $bd;
 
 	switch ($forbus)
 	{
 		case 'Codigo':
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-		."       FROM movhos_000026, farstore_000002 "
+		."       FROM ".$bd."_000026, ".$wfarstore."_000002 "
 		."    WHERE Artcod like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Artuni= Unicod "
@@ -1082,7 +1093,7 @@ function consultarProductos($parbus, $forbus)
 		case 'Nombre comercial':
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-		."       FROM movhos_000026, farstore_000002 "
+		."       FROM ".$bd."_000026, ".$wfarstore."_000002 "
 		."    WHERE Artcom like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Artuni= Unicod "
@@ -1093,7 +1104,7 @@ function consultarProductos($parbus, $forbus)
 		case 'Nombre genérico':
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-		."       FROM movhos_000026, farstore_000002 "
+		."       FROM ".$bd."_000026, ".$wfarstore."_000002 "
 		."    WHERE Artgen like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Artuni= Unicod "
@@ -1140,12 +1151,13 @@ function consultarInsumos($parbus, $forbus)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	switch ($forbus)
 	{
 		case 'Codigo':
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE Artcod like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Artuni= Unicod "
@@ -1159,7 +1171,7 @@ function consultarInsumos($parbus, $forbus)
 		case 'Nombre comercial':
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-		."       FROM ".$wbasedato."_000002,  ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002,  ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE Artcom like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Tipest = 'on' "
@@ -1173,7 +1185,7 @@ function consultarInsumos($parbus, $forbus)
 		case 'Nombre generico':
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides "
-		."       FROM ".$wbasedato."_000002,  ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002,  ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE Artgen like '%".$parbus."%' "
 		."       AND Artest = 'on' "
 		."       AND Tipest = 'on' "
@@ -1213,10 +1225,11 @@ function consultarNutriciones($tipo, $volumen)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 	global $purga;
 
 	$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tipppe, Tipmat, Artord "
-	."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+	."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 	."    WHERE tipinu = 'on' "
 	."       AND Tipmat <> 'on' "
 	."       AND Tipmmq <> 'on' "
@@ -1228,7 +1241,7 @@ function consultarNutriciones($tipo, $volumen)
 	."    Order by 8 ";
 	
 	$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tipppe, Tipmat, Artord, Artapp "
-	."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+	."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 	."    WHERE tipinu = 'on' "
 	."       AND Tipmat <> 'on' "
 	."       AND Tipmmq <> 'on' "
@@ -1262,7 +1275,7 @@ function consultarNutriciones($tipo, $volumen)
 
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tipppe, Tipmat, Artord "
-		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE tipinu = 'on' "
 		."       AND Tipmat <> 'on' "
 		."       AND Tipmmq = 'on' "
@@ -1273,7 +1286,7 @@ function consultarNutriciones($tipo, $volumen)
 		."       AND Uniest='on' ";
 		
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tipppe, Tipmat, Artord, Artapp "
-		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE tipinu = 'on' "
 		."       AND Tipmat <> 'on' "
 		."       AND Tipmmq = 'on' "
@@ -1310,7 +1323,7 @@ function consultarNutriciones($tipo, $volumen)
 		}
 
 		$q= " SELECT Artcod, Artcom, Artgen, Artuni, Unides, Tipppe, Tipmat, Artord, Tipvdi, Artapp, Artmin, Artmax "
-		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, farstore_000002 "
+		."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."    WHERE tipinu = 'on' "
 		."       AND Tipmat = 'on' "
 		."       AND Artest = 'on' "
@@ -1366,6 +1379,7 @@ function consultarNutriciones($tipo, $volumen)
 function consultarMas(&$inslis)
 {
 	global $conex;
+	global $wfarstore;
 	global $wbasedato;
 
 	$q= " SELECT Tipppe, Tipmat "
@@ -1408,6 +1422,7 @@ function consultarFactor($codigo, $peso, $tiempoInfusion)
 	global $conex;
 	global $wbasedato;
 	global $bd;
+	global $wfarstore;
 
 	$q = "SELECT Facval, Facdes, Facpes,Facreq,Reqmti 
 			FROM ".$wbasedato."_000015,".$bd."_000212 
@@ -1462,6 +1477,7 @@ function consultarExistencia($codigo)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	$q= " SELECT * "
 	."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001 "
@@ -1494,6 +1510,7 @@ function consultarAgua($codigo)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	$q= " SELECT * "
 	."       FROM ".$wbasedato."_000002, ".$wbasedato."_000001 "
@@ -1546,6 +1563,7 @@ function consultarProducto($codigo, &$via, &$tfd, &$tfh, &$tvd, &$tvh, &$fecha, 
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 	
 	$nuncaapp = true;
 
@@ -1573,7 +1591,11 @@ function consultarProducto($codigo, &$via, &$tfd, &$tfh, &$tvd, &$tvh, &$fecha, 
 		$neve=$row['Artnev'];
 		$peso=$row['Artpes'];
 		$purga=$row['Artpur'];
+		//$purga=1;
 		$historia=$row['Arthis'];
+		if( empty($purga) || $purga == '' ){
+		$purga = 0;
+	}
 
 		if ($row['Tipcdo']=='on')
 		{
@@ -1623,7 +1645,7 @@ function consultarProducto($codigo, &$via, &$tfd, &$tfh, &$tvd, &$tvh, &$fecha, 
 	}
 
 	$q= " SELECT Pdeins, Pdecan, Artcom, Artgen, Artuni, Unides, Pdefac, Tipppe, Tipmat, Artord, Pdeapp, Pdeant "
-	."       FROM ".$wbasedato."_000003, ".$wbasedato."_000002, farstore_000002, ".$wbasedato."_000001 "
+	."       FROM ".$wbasedato."_000003, ".$wbasedato."_000002, ".$wfarstore."_000002, ".$wbasedato."_000001 "
 	."    WHERE  Pdepro = '".$codigo."' "
 	."       AND Pdeest = 'on' "
 	."       AND Pdeins= Artcod "
@@ -1634,7 +1656,7 @@ function consultarProducto($codigo, &$via, &$tfd, &$tfh, &$tvd, &$tvh, &$fecha, 
 	."    Order by 10, 3 ";
 	
 	$q= " SELECT Pdeins, Pdecan, Artcom, Artgen, Artuni, Unides, Pdefac, Tipppe, Tipmat, Artord, Pdeapp "
-	."       FROM ".$wbasedato."_000003, ".$wbasedato."_000002, farstore_000002, ".$wbasedato."_000001 "
+	."       FROM ".$wbasedato."_000003, ".$wbasedato."_000002, ".$wfarstore."_000002, ".$wbasedato."_000001 "
 	."    WHERE  Pdepro = '".$codigo."' "
 	."       AND Pdeest = 'on' "
 	."       AND Pdeins= Artcod "
@@ -1750,6 +1772,7 @@ function consultarPresentaciones($presentacion, $tipo)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	if ($presentacion!='') //cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
@@ -1760,7 +1783,7 @@ function consultarPresentaciones($presentacion, $tipo)
 	else
 	{
 		$q =  " SELECT Tipuni, Unides "
-		."        FROM ".$wbasedato."_000001, farstore_000002 "
+		."        FROM ".$wbasedato."_000001, ".$wfarstore."_000002 "
 		."      WHERE Tipcod= mid('".$tipo."',1,instr('".$tipo."','-')-1) "
 		."            AND Tipest='on' "
 		."            AND Tipuni=Unicod "
@@ -1774,7 +1797,7 @@ function consultarPresentaciones($presentacion, $tipo)
 	}
 
 	$q =  " SELECT Unicod, Unides "
-	."        FROM farstore_000002 "
+	."        FROM ".$wfarstore."_000002 "
 	."      WHERE ".$cadena." "
 	."            Uniest='on' ";
 	$res1 = mysql_query($q,$conex);
@@ -1808,6 +1831,7 @@ function consultarVias($via)
 	global $conex;
 	global $wbasedato;
 	global $bd;
+	global $wfarstore;
 
 	if ($via!='') //cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
@@ -1872,6 +1896,7 @@ function consultarDes($via)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	if ($via!='') //cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
@@ -1924,6 +1949,7 @@ function consultarClase($tipo)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	//consulto los conceptos
 	$q =  " SELECT Tipdis, Tipcon, Tipnco "
@@ -1954,6 +1980,7 @@ function consultarClase($tipo)
 function consultarPermiso($codigo)
 {
 	global $conex;
+	global $wfarstore;
 	global $wbasedato;
 
 	$q =  " SELECT * "
@@ -1984,6 +2011,7 @@ function incrementarConsecutivo($tipo, $codigo)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	//consulto los conceptos
 	$q =  " SELECT Tipdis, Tipcdo "
@@ -2042,6 +2070,7 @@ function validarComposicion($inslis,$esDosisAdaptada)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	$q= "   SELECT Artcod from ".$wbasedato."_000002 "
 	."    WHERE Artest = 'on' ";
@@ -2092,15 +2121,17 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 {
 	global $conex;
 	global $wbasedato;
+	global $bd;
+	global $wfarstore;
 
 	if(is_numeric($historia))
 	{
-		$q = "SELECT Oriing, Pacno1, Pacno2, Pacap1, Pacap2 "
-		."      FROM root_000037, root_000036 "
-		."     WHERE Orihis = '".$historia."' "
-		."       AND Oriori = '01' "
-		."       AND Oriced = Pacced 
-				 AND Oritid = Pactid";
+		$q = "SELECT Oriing, Pacno1, Pacno2, Pacap1, Pacap2 
+		       FROM root_000037, root_000036 
+			  WHERE Orihis = '".$historia."' 
+				AND Oriori = '01' 
+				AND Oriced = Pacced 
+				AND Oritid = Pactid";
 
 		$err=mysql_query($q,$conex);
 		$num=mysql_num_rows($err);
@@ -2111,12 +2142,11 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 			$nombre=$row['Pacno1'].' '.$row['Pacno2'].' '.$row['Pacap1'].' '.$row['Pacap2'];
 
 			$q = "SELECT * "
-			."      FROM movhos_000018 "
+			."      FROM ".$bd."_000018 "
 			."     WHERE Ubihis = '".$historia."' "
 			."       AND Ubiing = '".$ingreso."' "
 			."       AND Ubialp <> 'on' "
 			."       AND Ubiald <> 'on' ";
-
 			$err1=mysql_query($q,$conex);
 			$num1=mysql_num_rows($err1);
 			if($num1 > 0 )
@@ -2150,6 +2180,7 @@ function consultarInstitucion($insti, &$mensaje)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	$exp=explode('-',$insti);
 	$q = "SELECT * "
@@ -2189,6 +2220,7 @@ function grabarProducto($codigo, $nom, $gen, $presentacion, $via, $tin, $tve, $f
 {	
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 	
 	if( empty($peso) || $peso == '' ){
 		$peso = 0;
@@ -2223,6 +2255,7 @@ function grabarInsumo($procod, $inscod, $inscan, $usuario, $fac, $app)
 	
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	$q= " INSERT INTO ".$wbasedato."_000003 (   Medico       ,   Fecha_data,                  Hora_data,              Pdepro,      Pdeins ,          Pdecan   ,  Pdefac     , Pdeest,   Pdeapp    , Pdeant, Seguridad    ) "
 	."                               VALUES ('".$wbasedato."',  '".date('Y-m-d')."', '".(string)date("H:i:s")."', '".$procod."', '".$inscod."', '".$inscan."' ,  '".$fac."' , 'on'  ,  '".$app."' ,  'on' ,'C-".$usuario."') ";
@@ -2243,6 +2276,7 @@ function desactivarProducto($producto)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	$q= "   UPDATE ".$wbasedato."_000002 "
 	."      SET Artest = 'off' "
@@ -2269,6 +2303,7 @@ function modificarProducto($codigo, $nom, $gen, $presentacion, $via, $tin, $tve,
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	$q= "   UPDATE ".$wbasedato."_000002 "
 	."      SET Artcom = '".$nom."', "
@@ -2300,6 +2335,7 @@ function borrarInsumos($procod)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 
 	$q= "   DELETE FROM ".$wbasedato."_000003 "
@@ -2314,6 +2350,7 @@ function realizarDescarte($cco, $usuario)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 
 	// $q = "SELECT * "
 	// ."      FROM ".$wbasedato."_000006, ".$wbasedato."_000008 "
@@ -2331,7 +2368,7 @@ function realizarDescarte($cco, $usuario)
 	."      AND Conest = 'on' "
 	."       AND Concod = Mencon "
 	."		 AND Mendoc IN (SELECT mdedoc 
-							  FROM cenpro_000007 
+							  FROM ".$wbasedato."_000007 
 							 WHERE Fecha_data='".date('Y-m-d')."'
 							   AND Mdeest='on'
 						  GROUP BY mdedoc)"
@@ -2451,6 +2488,7 @@ function eliminarInsumo($lista, $index)
  */
 function pintarTitulo()
 {
+	global $wemp_pmla;
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 	echo "<tr><td class='titulo1'>PRODUCCION CENTRAL DE MEZCLAS</td></tr>";
@@ -2458,10 +2496,11 @@ function pintarTitulo()
 
 	echo "<table ALIGN=CENTER width='90%' >";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-	echo "<tr><td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='cen_mez.php?wbasedato=cen_mez'><b>PRODUCTOS</b></a></td>";
-	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='lotes.php?wbasedato=lotes.php'>LOTES</a></td>";
-	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cargoscm.php?wbasedato=lotes.php&tipo=C'>CARGOS A PACIENTES</a></td>";
-	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='pos.php?wbasedato=lotes.php&tipo=A'>VENTA EXTERNA</a></td></TR>";
+	//echo "<tr><td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='cen_mez.php?wbasedato=cen_mez'><b>PRODUCTOS</b></a></td>";
+	echo "<tr><td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='cen_mez.php?wemp_pmla=$wemp_pmla'><b>PRODUCTOS</b></a></td>";
+	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='lotes.php?wemp_pmla=$wemp_pmla'>LOTES</a></td>";
+	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cargoscm.php?wemp_pmla=$wemp_pmla&tipo=C'>CARGOS A PACIENTES</a></td>";
+	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='pos.php?wemp_pmla=$wemp_pmla&tipo=A'>VENTA EXTERNA</a></td></TR>";
 	//echo "<a href='cargos.php?wbasedato=lotes.php&tipo=A'><td class='texto5' width='15%'>AVERIAS</td></a>";
 	//echo "<a href='descarte.php?wbasedato=cenmez'><td class='texto5' width='15%'>DESCARTES</td></TR></a>";
 	//echo "<a href='consulta.php?para=enviados'><td class='texto5' width='20%'>LISTADO POR PRODUCIR</td></a>";
@@ -2482,8 +2521,11 @@ function pintarTitulo()
  */
 function pintarBusqueda($consultas, $tipo, $forcon)
 {
+	global $wemp_pmla;
+	
 	echo "<table border=0 ALIGN=CENTER width=90%>";
-	echo "<form name='producto2' action='cen_mez.php' method=post>";
+	echo "<form name='producto2' action='cen_mez.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<tr><td class='titulo3' colspan='3' align='center'>Consulta de Productos: ";
 	echo "<select name='forcon' class='texto5' onchange='enter7()'>";
 	echo "<option>".$forcon."</option>";
@@ -2591,6 +2633,8 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 	global $bd;
 	global $conex;
 	global $wusuario;
+	global $wemp_pmla;
+	global $wfarstore;
 	
 	$esDosisAdaptada = consultarSiTipoEsDA($tipos[0]);
 	$esNPToDA = "off";
@@ -2610,7 +2654,8 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		$cantColspan = "3";
 	}
 	
-	echo "<form name='producto3' action='cen_mez.php' method=post>";
+	echo "<form name='producto3' action='cen_mez.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<tr><td colspan=3 class='titulo3' align='center'><INPUT TYPE='submit' NAME='NUEVO' VALUE='Nuevo' class='texto5' ></td></tr>";
 	echo "</table></form>";
 	
@@ -2619,7 +2664,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		pintarEncabezadoDA($DA_historia,$DA_ingreso,$cantColspan);
 	}
 
-	echo "<form name='producto' action='cen_mez.php' method=post>";
+	echo "<form name='producto' action='cen_mez.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<input type='hidden' name='wusuario' id='wusuario' value='".$wusuario."'/>";
 	echo "<input type='hidden' name='wbd' id='wbd' value='".$bd."'/>";
@@ -2686,6 +2731,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 			$wbasedato = $bd;
 			$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccodom = 'on'", "otros" );
 			$wbasedato = $wcenmez;
+			global $wfarstore;
 			
 			$tablasHabitaciones = [];
 	
@@ -2953,6 +2999,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 			global $wbasedato;
 			global $bd;
 			global $conex;
+			global $wfarstore;
 			
 			$qDosisAdaptadas = queryDA($wemp_pmla,$wbasedato,$bd);
 			// echo"<pre>".print_r($qDosisAdaptadas,true)."<pre>";
@@ -3367,10 +3414,10 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		case 'creado':
 		if($nutri=='off')
 		{
-			$linkCrearLote = "<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>";
+			$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>";
 			if($DA_historia!="")
 			{
-				$linkCrearLote = "<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1&whistoria=".$DA_historia."&wingreso=".$DA_ingreso."&warticuloda=".$DA_articulo."&idoda=".$DA_ido."&wronda=".$wronda."&wfecharonda=".$wfecharonda."'>";
+				$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1&whistoria=".$DA_historia."&wingreso=".$DA_ingreso."&warticuloda=".$DA_articulo."&idoda=".$DA_ido."&wronda=".$wronda."&wfecharonda=".$wfecharonda."'>";
 			}
 			
 			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO CREADO EXITOSAMENTE &nbsp;&nbsp;".$linkCrearLote."/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
@@ -3379,12 +3426,12 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		}
 		else
 		{
-			$rotuloNPT = "<a href='rotulo2.php?historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
+			$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			if($instituciones[0]['cod']==$wemp_pmla && $NPT_origen=="ordenes")
 			{
 				$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			}
-			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO CREADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
+			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO CREADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
 			// echo "<tr><td colspan=8 class='titulo3' align='center'>".$rotuloNPT."GENERAR ROTULO</a></td></tr>";
 			echo "<tr><td colspan=8 class='titulo3' align='center'>".$rotuloNPT."IMPRIMIR ROTULOS</a></td></tr>";
 			// echo "<tr><td colspan=7 class='titulo3' align='center'><a href='rotulo2.php?historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>GENERAR ROTULO</a></td></tr>";
@@ -3396,11 +3443,11 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		case 'desactivado':
 		if($nutri=='off')
 		{
-			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO DESACTIVADO EXITOSAMENTE &nbsp;&nbsp;<a href='cen_mez.php'>INICIAR</a> </td></tr>";
+			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO DESACTIVADO EXITOSAMENTE &nbsp;&nbsp;<a href='cen_mez.php?wemp_pmla=".$wemp_pmla."'>INICIAR</a> </td></tr>";
 		}
 		else
 		{
-			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO DESACTIVADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='cen_mez.php'>INICIAR</a> </td></tr>";
+			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO DESACTIVADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='cen_mez.php?wemp_pmla=".$wemp_pmla."'>INICIAR</a> </td></tr>";
 			
 			//Desactivar boton crear
 			echo"<script>desactivarBotonCrear();</script>";
@@ -3410,7 +3457,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		case 'modificado':
 		if($nutri=='off')
 		{
-			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO MODIFICADO EXITOSAMENTE &nbsp;&nbsp;<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></td></tr>";
+			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO MODIFICADO EXITOSAMENTE &nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></td></tr>";
 		}
 		else
 		{
@@ -3426,12 +3473,12 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 			$resOrigenOrdenes = mysql_query($qOrigenOrdenes,$conex);
 			$numOrigenOrdenes = mysql_num_rows($resOrigenOrdenes);					  
 			
-			$rotuloNPT = "<a href='rotulo2.php?historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
+			$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			if($numOrigenOrdenes>0)
 			{
 				$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			}
-			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO MODIFICADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></td></tr>";
+			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO MODIFICADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></td></tr>";
 			echo "<tr><td colspan=8 class='titulo3' align='center'>".$rotuloNPT."IMPRIMIR ROTULOS</a></td></tr>";
 			// echo "<tr><td colspan=7 class='titulo3' align='center'><a href='rotulo2.php?historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>GENERAR ROTULO</a></td></tr>";
 			
@@ -3442,12 +3489,12 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		case 'Creado':
 		if($nutri=='off')
 		{
-			$linkCrearLote = "<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>";
+			$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>";
 			if($esDosisAdaptada=="on")
 			{
 				if($DA_historia!="")
 				{
-					$linkCrearLote = "<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1&whistoria=".$DA_historia."&wingreso=".$DA_ingreso."&warticuloda=".$DA_articulo."&idoda=".$DA_ido."&wronda=".$wronda."&wfecharonda=".$wfecharonda."'>";
+					$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1&whistoria=".$DA_historia."&wingreso=".$DA_ingreso."&warticuloda=".$DA_articulo."&idoda=".$DA_ido."&wronda=".$wronda."&wfecharonda=".$wfecharonda."'>";
 					// echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO EXISTE ACTUALMENTE &nbsp;&nbsp;<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
 					echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO EXISTE ACTUALMENTE &nbsp;&nbsp;".$linkCrearLote."/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
 				}
@@ -3477,14 +3524,14 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 			$resOrigenOrdenes = mysql_query($qOrigenOrdenes,$conex);
 			$numOrigenOrdenes = mysql_num_rows($resOrigenOrdenes);					  
 			
-			$rotuloNPT = "<a href='rotulo2.php?historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
+			$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			
 			if($numOrigenOrdenes>0)
 			{
 				$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			}
 			
-			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO EXISTE ACTUALMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
+			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO EXISTE ACTUALMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
 			echo "<tr><td colspan=8 class='titulo3' align='center'>".$rotuloNPT."IMPRIMIR ROTULOS</a></td></tr>";
 			// echo "<tr><td colspan=7 class='titulo3' align='center'><a href='rotulo2.php?historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>GENERAR ROTULO</a></td></tr>";
 			
@@ -3493,7 +3540,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		}
 		break;
 		case 'Desactivado':
-		echo "<tr><td colspan=3 class='titulo3' align='center'><span class='blinkProdCreado'>PRODUCTO DESACTIVADO</span> &nbsp;&nbsp;<a href='cen_mez.php'>INICIAR</a> </td></tr>";
+		echo "<tr><td colspan=3 class='titulo3' align='center'><span class='blinkProdCreado'>PRODUCTO DESACTIVADO</span> &nbsp;&nbsp;<a href='cen_mez.php?wemp_pmla=".$wemp_pmla."'>INICIAR</a> </td></tr>";
 		break;
 
 	}
@@ -3527,6 +3574,7 @@ function pintarInsumos($insumos, $inslis, $compu, $nutri, $peso, $purga, $estado
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 	
 	$esDosisAdaptada = consultarSiTipoEsDA($tipos[0]);
 	
@@ -3862,6 +3910,7 @@ function pintarInsumosNPT($insumos, $inslis, $compu, $nutri, $peso, $purga, $est
 	global $wbasedato;
 	global $bd;
 	global $wemp_pmla;
+	global $wfarstore;
 	
 	if(isset($hacerSubmitInsumosNPT))
 	{
@@ -4208,6 +4257,7 @@ function marcarNPTRealizada($NPT_historia,$NPT_ingreso,$NPT_articulo,$NPT_ido,$c
 	global $wbasedato;
 	global $bd;
 	global $wemp_pmla;
+	global $wfarstore;
 	
 	
 	$qUpdateRealizada = "UPDATE ".$bd."_000214 
@@ -4229,6 +4279,7 @@ function guardarPrescripcionNPTCentralMezclas($NPT_historia,$NPT_ingreso,$NPT_ar
 	global $wbasedato;
 	global $bd;
 	global $wemp_pmla;
+	global $wfarstore;
 	
 	$qUpdateRealizada = "UPDATE ".$bd."_000215 
 							SET Dnupcm='".$prescripcion."' 
@@ -4249,6 +4300,7 @@ function ponerPrescripcionesEnCeroNPT($codProducto,$historia,$ingreso,$articulo,
 	global $wbasedato;
 	global $bd;
 	global $wemp_pmla;
+	global $wfarstore;
 	
 	//consultar origen
 	$qOrigenOrdenes = "SELECT Enuhis,Enuing,Enuart,Enuido,Dnucod 
@@ -4283,6 +4335,7 @@ function ponerPrescripcionesEnCeroNPT($codProducto,$historia,$ingreso,$articulo,
 			$resultadoUpdateRealizada = mysql_query($qUpdateRealizada,$conex) or die("Error: " . mysql_errno() . " - en el query: ".$qUpdateRealizada." - ".mysql_error());
 		}
 		
+
 	}
 }		
 
@@ -4292,6 +4345,7 @@ function actualizarPrescripcionNPTCentralMezclas($historia,$ingreso,$articulo,$i
 	global $wbasedato;
 	global $bd;
 	global $wemp_pmla;
+	global $wfarstore;
 	
 	$qUpdateRealizada = "UPDATE ".$bd."_000215 
 							SET Dnupcm='".$prescripcion."' 
@@ -4311,6 +4365,7 @@ function consultarTiempoInfusionPorRequerimieno($codigo)
 	global $conex;
 	global $wbasedato;
 	global $bd;
+	global $wfarstore;
 
 	$q= " SELECT Reqmti 
 			FROM ".$wbasedato."_000015,".$bd."_000212 
@@ -4346,6 +4401,7 @@ function consultarSiMultiplicaPorTiempoInfusion($codigoRequerimiento)
 	global $conex;
 	global $wbasedato;
 	global $bd;
+	global $wfarstore;
 
 	$q= " SELECT Reqmti 
 			FROM ".$bd."_000212 
@@ -4389,10 +4445,11 @@ function crearEncabezadoNPTKardex($historia,$ingreso,$articulo,$ido,$peso,$tiemp
 
 function mostrarCantidadNPTPendientes($actualizar)
 {
-	$wemp_pmla="01";
+	global $wemp_pmla;
 	$conex = obtenerConexionBD("matrix");
 	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
+	$wfarstore = consultarAliasPorAplicacion($conex, $wemp_pmla, "farmastore");
 	
 	$data = array('html'=>"");
 	
@@ -4512,6 +4569,7 @@ function queryDA($wemp_pmla,$wbasedatocm,$bd)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 	
 	$gruposAntibioticos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "gruposMedicamentosAntibioticos" );
 	
@@ -4543,6 +4601,7 @@ function queryDA($wemp_pmla,$wbasedatocm,$bd)
 	$wbasedato = $bd;
 	$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccodom = 'on'", "otros" );
 	$wbasedato = $wcenmez;
+	global $wfarstore;
 	
 	$tablasHabitaciones = [];
 	
@@ -4726,6 +4785,7 @@ function pintarInsumosDA($insumos, $inslis, $compu, $nutri, $peso, $purga, $esta
 	global $conex;
 	global $wbasedato;
 	global $wemp_pmla;
+	global $wfarstore;
 
 	echo "<table id='tablaInsumosDA' border=0 ALIGN=CENTER width=90%>";
 	
@@ -5065,9 +5125,11 @@ function consultarJeringas()
 	global $conex;
 	global $wbasedato;
 	global $bd;
+	global $wfarstore;
+	
 	
 	$qJeringas = "SELECT Artcod,Artcom,Artgen,Artuni,Unides
-					FROM ".$wbasedato."_000002,farstore_000002   
+					FROM ".$wbasedato."_000002,".$wfarstore."_000002   
 				   WHERE Artjer='on'
 					 AND Artest='on'
 					 AND Artuni= Unicod
@@ -5107,6 +5169,7 @@ function consultarDiluyentes($DA_articuloCM,$DA_cantidad,$DA_historia,$DA_cco)
 	global $wbasedato;
 	global $bd;
 	global $wemp_pmla;
+	global $wfarstore;
 	
 	$purgaDA = consultarPurgaDA($DA_cco);
 	
@@ -5121,7 +5184,7 @@ function consultarDiluyentes($DA_articuloCM,$DA_cantidad,$DA_historia,$DA_cco)
 	// $volumenSugerido = $volumenSugerido+$purgaDA;
 				 
 	$qDiluyentes = 	" SELECT Artcod,Artcom,Artgen,Artdex,Artsal,Artmin,Artmax,Artuni,Unides,CAST(Deffra AS UNSIGNED) AS Deffra,Deffru
-						FROM ".$wbasedato."_000002,farstore_000002,".$bd."_000059 
+						FROM ".$wbasedato."_000002,".$wfarstore."_000002,".$bd."_000059 
 					   WHERE (Artdex='on' OR Artsal='on' )
 						 AND Artest='on' 
 						 AND Artuni= Unicod 
@@ -5162,9 +5225,11 @@ function consultarValoresArticulo($DA_articuloCM,$DA_historia)
 {
 	global $conex;
 	global $wbasedato;
+	global $wemp_pmla;
+	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 	
 	$qDatos = 	" SELECT Edainf,Edadex,Edaemi,Edaema 
-					FROM cenpro_000021 
+					FROM ".$wbasedato."_000021 
 				   WHERE Edains='".$DA_articuloCM."' 
 					 AND Edaest='on'
 				ORDER BY Edaemi,Edaema;";
@@ -5301,10 +5366,11 @@ function grabarRelacionDA($DA_historia,$DA_ingreso,$DA_articulo,$DA_ido,$codigoD
 
 function mostrarCantidadDAPendientes($actualizar)
 {
-	$wemp_pmla="01";
+	global $wemp_pmla;
 	$conex = obtenerConexionBD("matrix");
 	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
+	$wfarstore = consultarAliasPorAplicacion($conex, $wemp_pmla, "farmastore");
 	
 	$data = array('html'=>"");
 	
@@ -5491,6 +5557,7 @@ function consultarSiTipoEsDA($tipoProducto)
 {
 	global $conex;
 	global $wbasedato;
+	global $wfarstore;
 	
 	$tipo = explode("-",$tipoProducto);
 	
@@ -5522,9 +5589,10 @@ function consultarSiTipoEsDA($tipoProducto)
 	{
 		global $conex;
 		global $wbasedato;
+		global $wfarstore;
 		
 		$qDA = 	" SELECT Arttip,Tiptpr,Tipdes  
-					FROM cenpro_000002,cenpro_000001
+					FROM ".$wbasedato."_000002,".$wbasedato."_000001
 				   WHERE Artcod='".$codProdCM."' 
 					 AND Artest='on'
 					 AND Arttip=Tipcod;";
@@ -5806,9 +5874,10 @@ if($noEsAjax)
 	{
 		$.post("cen_mez.php",
 		{
-			consultaAjax : 		'',
-			accion:   		'recargarCantDAPendientes',
-			actualizar:			'on'
+			consultaAjax 	: '',
+			accion			: 'recargarCantDAPendientes',
+			actualizar		: 'on',
+			wemp_pmla	 	: $('#wemp_pmla').val(),
 		
 		}
 		,function(data) {
@@ -5965,9 +6034,10 @@ if($noEsAjax)
 	{
 		$.post("cen_mez.php",
 		{
-			consultaAjax : 		'',
-			accion:   		'recargarCantNPTPendientes',
-			actualizar:			'on'
+			consultaAjax 	: 	'',
+			accion			:   'recargarCantNPTPendientes',
+			actualizar		:	'on',
+			wemp_pmla	 	: 	$('#wemp_pmla').val(),
 		
 		}
 		,function(data) {
@@ -6237,6 +6307,7 @@ if($noEsAjax)
 </head>
 
 <body onload="hacerFoco()">
+<input type='HIDDEN' NAME= 'wemp_pmla' value='<?php echo($wemp_pmla)?>'>
 
 <?php
 
@@ -6261,21 +6332,19 @@ else
 		$esDA = "on";
 	}
 	
-	$wbasedato='cenpro';
-	$bd = "movhos";
-	$wemp_pmla = "01";
+	
+	//$wbasedato='cenpro';
+	//$bd = "movhos";
+	//$wemp_pmla = "01";
 	//$conex = mysql_connect('localhost','root','')
 	//or die("No se ralizo Conexion");
 	
-	// 
-
-	
-	
-
-
 	include_once("cenpro/funciones.php");
-	include_once("root/comun.php");
-
+	//include_once("root/comun.php");
+	// $wemp_pmla = "01";
+	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
+	$wfarstore = consultarAliasPorAplicacion($conex, $wemp_pmla, "farmastore");
 	
 	if(!isset($NPT_origen))
 	{

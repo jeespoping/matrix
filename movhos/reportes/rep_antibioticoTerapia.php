@@ -14,6 +14,9 @@ include_once("conex.php");
 //                                                                                         													 |
 // ==========================================================================================================================================|
 include_once('conex.php');
+include_once('root/comun.php');
+$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 
 
 if(isset($queryAjax)){//cuando existan consultas ajax;
@@ -22,6 +25,7 @@ function crearTablaTemporalArticulos($tmpArts)//está funcion va a crear las tabl
 {
 	global $conex;
 	global $wbasedato;
+	global $wcenmez;
 	$qaux = "DROP TABLE IF EXISTS {$tmpArts}";
 	$rsArts = mysql_query($qaux, $conex);
 
@@ -33,7 +37,7 @@ function crearTablaTemporalArticulos($tmpArts)//está funcion va a crear las tabl
 				   AND artest='on'
 				 UNION ALL
 				SELECT Pdepro art, Artcom nom
-				  FROM cenpro_000003, cenpro_000002
+				  FROM {$wcenmez}_000003, {$wcenmez}_000002
 				 WHERE Pdeins like 'MA%'
 				   AND pdeest = 'on'
 				   AND artcod = Pdepro
@@ -348,8 +352,10 @@ if($queryAjax == 'detalleTerapia') //funcion que arma la tabla con el detalle de
 
 	function fechaInicio($his, $ing, $articulo)//elige la menor fecha asociada a una programación en kardex entre la 54 y la 15
 	{
+		global $wbasedato;
+		
 		$queryfei15 = "SELECT MIN(Aplfec)
-					   FROM movhos_000015
+					   FROM {$wbasedato}_000015
 					  WHERE Aplhis = '{$his}'
 					    AND Apling = '{$ing}'
 						AND Aplart = '{$articulo}'";
@@ -358,7 +364,7 @@ if($queryAjax == 'detalleTerapia') //funcion que arma la tabla con el detalle de
 		$fecini15 = $rowfei15[0];
 
 		$queryfei54 = "SELECT MIN(Aplfec)
-					   FROM movhos_000045
+					   FROM {$wbasedato}_000045
 					  WHERE Kadhis = '{$his}'
 					    AND Kading = '{$ing}'
 						AND Kadart = '{$articulo}'";
@@ -1438,12 +1444,7 @@ function abrirVentana(dir)
 }
 </script>
 <?php
-include_once('root/comun.php');
 
-
-
-
-$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 //FUNCIONES DEL MENÚ PRINCIPAL;
 function generarSelectCco()
 {

@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 	<title>HCE INFORMACION GENERAL DEL PACIENTE</title>
 	<link type='text/css' href='HCE_IGP.css' rel='stylesheet'>
@@ -15,8 +16,11 @@
 			}
 		}
 	</script>
-<?php
+<?php 
+$consultaAjax = '';
 include_once("conex.php");
+include("root/comun.php");
+
 /**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : HCE_IGP.php
@@ -112,23 +116,23 @@ function diferencia($fechaf,$fechai)
 if(!isset($accion))
 {
 	echo "<frameset rows='10%,15%,20%,20%,*'>";
-	echo "  <frame src='HCE_IGP.php?accion=T&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' frameborder=0 framespacing=0 scrolling=no>";
+	echo "  <frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=T&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' frameborder=0 framespacing=0 scrolling=no>";
 	echo "  <frameset cols='33%,33%,*'>";
-		echo "<frame src='HCE_IGP.php?accion=D&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
-		echo "<frame src='HCE_IGP.php?accion=M&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
-		echo "<frame src='HCE_IGP.php?accion=F&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
+		echo "<frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=D&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
+		echo "<frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=M&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
+		echo "<frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=F&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
 	echo "  </frameset>";
 	echo "  <frameset cols='50%,*'>";
-		echo "<frame src='HCE_IGP.php?accion=G&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
-		echo "<frame src='HCE_IGP.php?accion=A&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
+		echo "<frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=G&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
+		echo "<frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=A&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
 	echo "  </frameset>";
 	echo "  <frameset cols='50%,*'>";
-		echo "<frame src='HCE_IGP.php?accion=C&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
-		echo "<frame src='HCE_IGP.php?accion=P&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
+		echo "<frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=C&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
+		echo "<frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=P&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
 	echo "  </frameset>";
 	echo "  <frameset cols='50%,*'>";
-		echo "<frame src='HCE_IGP.php?accion=E&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
-		echo "<frame src='HCE_IGP.php?accion=I&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
+		echo "<frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=E&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
+		echo "<frame src='HCE_IGP.php?wemp_pmla=".$wemp_pmla."&accion=I&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' scrolling=yes frameborder=0 framespacing=0 location=no>";
 	echo "  </frameset>";
 	echo "</frameset>";
 }
@@ -140,17 +144,21 @@ else
 	else
 	{
 		$key = substr($user,2,strlen($user));
-		
-		
-		
+		global $wbasedatomovhos;
+		$user_session = explode('-', $_SESSION['user']);
+        $wuse = $user_session[1];
+        mysql_select_db("matrix");
+		$wbasedatocenpro = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
+		$wbasedatomovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+		$conex = obtenerConexionBD("matrix");
 
 		
  	
 		$key = substr($user,2,strlen($user));
 		//echo "<script type='text/javascript' src='HCE_Seguridad.js' ></script>";
-		echo "<form name='HCE_IGP' action='HCE_IGP.php' method=post>";
+		echo "<form name='HCE_IGP' action='HCE_IGP.php?wemp_pmla=".$wemp_pmla."' method=post>";
 		//                 0      1      2      3      4      5      6      7      8      9      10     11                     12
-		$query = "select Pacno1,Pacno2,Pacap1,Pacap2,Pacnac,Pacsex,Orihis,Oriing,Ingnre,Ubisac,Ubihac,Cconom,movhos_000016.fecha_data from root_000036,root_000037,movhos_000016,movhos_000018,movhos_000011 ";
+		$query = "select Pacno1,Pacno2,Pacap1,Pacap2,Pacnac,Pacsex,Orihis,Oriing,Ingnre,Ubisac,Ubihac,Cconom,".$wbasedatomovhos."_000016.fecha_data from root_000036,root_000037,".$wbasedatomovhos."_000016,".$wbasedatomovhos."_000018,".$wbasedatomovhos."_000011 ";
 		$query .= " where pacced = '".$wcedula."'";
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and  pacced = oriced ";
@@ -356,7 +364,7 @@ else
 				echo "<tr><td id=tipoL07GRID>NOMBRE</td><td id=tipoL07GRID>ESPECIALIDAD</td></tr>";
 				//                 0       1      2       3      4       5       6       7
 				$query = "select Methis,Meting,Medno1, Medno2, Medap1, Medap2, Metesp, Espnom, max(Metfek) ";
-				$query .= "  from movhos_000018,movhos_000047,movhos_000048,movhos_000044 "; 
+				$query .= "  from ".$wbasedatomovhos."_000018,".$wbasedatomovhos."_000047,".$wbasedatomovhos."_000048,".$wbasedatomovhos."_000044 "; 
 				$query .= "   where Ubiald = 'off' ";
 				$query .= " 	and Ubihis = '".$whis."' ";
 				$query .= " 	and Ubiing = '".$wing."' ";
@@ -1182,7 +1190,7 @@ else
 				echo "<tr><td id=tipoL07GRID>ARTICULO</td><td id=tipoL07GRID>NOMBRE GENERICO</td><td id=tipoL07GRID>DOSIS</td><td id=tipoL07GRID>UNIDAD</td><td id=tipoL07GRID>VIA</td><td id=tipoL07GRID>FRECUENCIA<br>DIAS</td></tr>";
 				//                 0                    1                  2                3                        4              5  
 				$query = "SELECT kadart as articulo, artgen as Generico, kadcfr as Dosis, kadufr as UnidadDeDosis, viades as via, perequ as frecuencia ";
-				$query .= "  FROM movhos_000054,movhos_000026,movhos_000043,movhos_000040 ";
+				$query .= "  FROM ".$wbasedatomovhos."_000054,".$wbasedatomovhos."_000026,".$wbasedatomovhos."_000043,".$wbasedatomovhos."_000040 ";
 				$query .= "  WHERE kadhis = '".$whis."' ";
 				$query .= "    AND kading = '".$wing."' ";
 				$query .= "    AND kadfec = '".$wfechat."'";
@@ -1216,7 +1224,7 @@ else
 				echo "<tr><td id=tipoL07GRID>ARTICULO</td><td id=tipoL07GRID>NOMBRE GENERICO</td><td id=tipoL07GRID>DOSIS</td><td id=tipoL07GRID>UNIDAD</td><td id=tipoL07GRID>VIA</td><td id=tipoL07GRID>FRECUENCIA<br>DIAS</td></tr>";
 				//                 0                    1                  2                3                        4              5  
 				$query = "SELECT kadart as articulo, artgen as Generico, kadcfr as Dosis, kadufr as UnidadDeDosis, viades as via, perequ as frecuencia ";
-				$query .= "  FROM movhos_000054,movhos_000026,movhos_000043,movhos_000040 ";
+				$query .= "  FROM ".$wbasedatomovhos."_000054,".$wbasedatomovhos."_000026,".$wbasedatomovhos."_000043,".$wbasedatomovhos."_000040 ";
 				$query .= "  WHERE kadhis = '".$whis."' ";
 				$query .= "    AND kading = '".$wing."' ";
 				$query .= "    AND kadfec BETWEEN '".$wfechai."' and '".$wfechaf."'";
@@ -1247,7 +1255,7 @@ else
 				
 				//                 0                   1                   2                3                 4              5                     6
 				$query = "SELECT kadart as articulo, artgen as Generico, kadcfr as Dosis, kadufr as Unidad, viades as via, perequ as frecuencia, kadfec as Fecha ";
-				$query .= " FROM movhos_000054,movhos_000026,movhos_000043,movhos_000040 ";
+				$query .= " FROM ".$wbasedatomovhos."_000054,".$wbasedatomovhos."_000026,".$wbasedatomovhos."_000043,".$wbasedatomovhos."_000040 ";
 				$query .= " WHERE kadhis = '".$whis."' ";
 				$query .= "   AND kading = '".$wing."' ";
 				$query .= "   AND kadest = 'on' ";	
@@ -1259,7 +1267,7 @@ else
 				$query .= "   AND kadper = percod ";
 				$query .= " UNION ";
 				$query .= " SELECT kadart as articulo, artgen as Generico, kadcfr as Dosis, kadufr as Unidad, viades as via, perequ as frecuencia, kadfec as Fecha ";
-				$query .= " FROM movhos_000054,cenpro_000002,movhos_000043,movhos_000040 ";
+				$query .= " FROM ".$wbasedatomovhos."_000054,".$wbasedatocenpro."_000002,".$wbasedatomovhos."_000043,".$wbasedatomovhos."_000040 ";
 				$query .= " WHERE kadhis = '".$whis."' ";
 				$query .= "   AND kading = '".$wing."' ";
 				$query .= "   AND kadest = 'on'	";
@@ -1268,7 +1276,7 @@ else
 				$query .= "   AND kadori = 'CM' ";
 				$query .= "   AND kadvia = viacod ";
 				$query .= "  AND kadper = percod ";
-				$query .= "  AND kadart IN (SELECT Pdepro FROM cenpro_000003, cenpro_000002 WHERE Pdeins like 'MA%' AND pdeest = 'on' AND artcod = Pdepro) ";
+				$query .= "  AND kadart IN (SELECT Pdepro FROM ".$wbasedatocenpro."_000003, ".$wbasedatocenpro."_000002 WHERE Pdeins like 'MA%' AND pdeest = 'on' AND artcod = Pdepro) ";
 				$query .= " order by 1,7 ";
 				$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$num1 = mysql_num_rows($err1);
@@ -1327,7 +1335,7 @@ else
 				echo "<tr><td id=tipoL07GRID>ESPECIALIDAD</td></tr>";
 				//                 0      1
 				$query = "select Firrol,Espnom ";
-				$query .= "   from ".$empresa."_000367,".$empresa."_000036,movhos_000044 ";
+				$query .= "   from ".$empresa."_000367,".$empresa."_000036,".$wbasedatomovhos."_000044 ";
 				$query .= "    where movhis = '".$whis."' ";
 				$query .= " 	 and moving = '".$wing."' ";   
 				$query .= " 	 and Firpro = '000367' ";

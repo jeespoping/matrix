@@ -58,7 +58,7 @@ else
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 		
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-	echo "<form name='Reporte_devoluciones' action='Reporte_devoluciones.php' method=post>";
+	echo "<form name='Reporte_devoluciones' action='Reporte_devoluciones.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<input type='HIDDEN' name='wemp_pmla' value='" . $wemp_pmla . "'>";
 	// echo "<input type='HIDDEN' name='wbasedato' value='".$wbasedato."'>";
 	$wfecha = date("Y-m-d");
@@ -193,7 +193,7 @@ else
 		if ($wcco == '1051')
 		{
 			$q = " SELECT devcon, fenhis, fening, fenfec, " . $wbasedato . "_000003.hora_data as hora, Count(distinct(Fdenum)), Devcfs, devjus, devcrf, devcff, devjuf , devobs, devfre, devhre, denori, denusu, fdeari, artcom, fdenum "
-			. "   FROM " . $wbasedato . "_000028, " . $wbasedato . "_000002, " . $wbasedato . "_000035, " . $wbasedato . "_000003, cenpro_000002 "
+			. "   FROM " . $wbasedato . "_000028, " . $wbasedato . "_000002, " . $wbasedato . "_000035, " . $wbasedato . "_000003, ".$wcenmez."_000002 "
 			. "  WHERE devfre <> '0000-00-00' "
 			. "    AND devhre <> '00:00:00' "
 			. "    AND devusu <> '' "
@@ -210,7 +210,7 @@ else
 		/*********************************************************************************************************************/			
 			. "  UNION "
 			. " SELECT devcon, fenhis, fening, fenfec, " . $wbasedato . "_000143.hora_data as hora, Count(distinct(Fdenum)), Devcfs, devjus, devcrf, devcff, devjuf , devobs, devfre, devhre, denori, denusu, fdeari, artcom, fdenum "
-			. "   FROM " . $wbasedato . "_000028, " . $wbasedato . "_000002, " . $wbasedato . "_000035, " . $wbasedato . "_000143, cenpro_000002 "
+			. "   FROM " . $wbasedato . "_000028, " . $wbasedato . "_000002, " . $wbasedato . "_000035, " . $wbasedato . "_000143, ".$wcenmez."_000002 "
 			. "  WHERE devfre <> '0000-00-00' "
 			. "    AND devhre <> '00:00:00' "
 			. "    AND devusu <> '' "
