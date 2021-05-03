@@ -3,7 +3,7 @@
     //session_start();
 
     //Agrego el controlador de medida
-    require_once("medidaController.php");
+    require_once("./Controller/medidaController.php");
 
     //Valido si envío parámetro "action" por URL
     if(isset($_REQUEST["action"])){

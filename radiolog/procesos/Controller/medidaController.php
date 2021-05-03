@@ -1,7 +1,7 @@
 <?php
 
     //Clase
-    require_once "medidaModel.php";
+    require_once("./Model/medida.php");
 
     /***
      * Creo una clase para el controlador de Medida
@@ -28,7 +28,7 @@
             $aMedidas = $oMedida->getAll();
 
             //Llamo a la vista
-            require("listarMedidaView.php");
+            require("./View/listarMedida.php");
         }
 
         /**
@@ -93,7 +93,7 @@
             else
             {
                 //Llamo a la vista
-                require("crearMedidaView.php");
+                require("./View/crearMedida.php");
 
                 //Limpio variables de sesión
                 unset($_SESSION['codigo']);
@@ -187,7 +187,7 @@
                 $aCentrosCosto = $oMedida->getCentrosCosto();
                 
                 //Llamo a la vista
-                require("crearMedidaPersonaView.php");
+                require("./View/crearMedidaPersona.php");
 
                 //Limpio variables de sesión
                 unset($_SESSION['idmedida']);
@@ -259,7 +259,7 @@
             $aMedidasPersonal = $oMedida->getAllMedidasxPersona();
             
             //Llamo a la vista
-            require("listarMedidaPersonaView.php");
+            require("./View/listarMedidaPersona.php");
 
             //Limpio variables de sesión
             unset($_SESSION['idmedida']);
@@ -326,7 +326,7 @@
                 $aMedidas = $oMedida->getAll();
 
                 //Llamo a la vista
-                require("informeMedidaPersonaView.php");
+                require("./View/informeMedidaPersona.php");
                 
                 return;
             }
@@ -335,7 +335,7 @@
                 $aMedidas = $oMedida->getAll();
                 
                 //Llamo a la vista
-                require("informeMedidaPersonaView.php");
+                require("./View/informeMedidaPersona.php");
 
                 //Limpio variables de sesión
                 unset($_SESSION['idmedida']);
