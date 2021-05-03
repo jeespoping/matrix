@@ -148,7 +148,6 @@
                     </br>
                     <input type="submit" name="buscar" id="buscar" value="Buscar">
                     <input type="submit" name="limpiar" id="limpiar" value="Limpiar">
-                    <a href='medidas.php?wemp_pmla=<?php echo $wemp_pmla; ?>'>Cancelar</a>
                 </form>
             </center>
             <table style="width:100%; text-align:center;">

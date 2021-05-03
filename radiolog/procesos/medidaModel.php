@@ -763,11 +763,13 @@
                                 CONCAT(mxp.mdpfme, ' ', DATE_FORMAT(mxp.mdphme, '%H:%i')) AS fechahoramedida, 
                                 CONCAT_WS('-', m.medcod, mednom) AS medida, 
                                 u.documento, u.codigo AS codigousuario, CONCAT(u.codigo, ' - ', u.descripcion) as nombreusuario, FORMAT(mxp.mdpvme, 2) AS valor, 
-                                CONCAT(ur.codigo, ' - ', ur.descripcion) AS personaregistro, CONCAT(mxp.Fecha_data, ' ', DATE_FORMAT(mxp.Hora_data, '%H:%i')) AS fecharegistro
+                                med.Unides AS unidadmedida, CONCAT(ur.codigo, ' - ', ur.descripcion) AS personaregistro, 
+                                CONCAT(mxp.Fecha_data, ' ', DATE_FORMAT(mxp.Hora_data, '%H:%i')) AS fecharegistro
                         FROM ".$wbasedato."_000002 mxp
                         INNER JOIN ".$wbasedato."_000001 m ON (mxp.mdpimp = m.id)
                         LEFT JOIN usuarios u ON (mxp.mdpcpm = u.Codigo)
                         LEFT JOIN usuarios ur ON (SUBSTRING(mxp.Seguridad, LOCATE('-', mxp.Seguridad)+1, LENGTH(mxp.Seguridad)) = ur.Codigo)
+                        LEFT JOIN mipres_000017 med ON (med.id = m.meduni)
                         WHERE 1=1 ".$sBusqueda."
                         ORDER BY fechahoramedida DESC";
 

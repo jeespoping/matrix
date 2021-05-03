@@ -152,7 +152,7 @@
                                         ".$oMedidaPersonal['nombreusuario']."
                                     </td>
                                     <td>
-                                        ".$oMedidaPersonal['valor']."
+                                        ".$oMedidaPersonal['valor']." ".$oMedidaPersonal['unidadmedida']."
                                     </td>
                                     <td>
                                         ".$oMedidaPersonal['fecharegistro']."

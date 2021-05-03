@@ -87,42 +87,7 @@
             }
 		    //--------------------------------------------------------- FIN ENCABEZADO ---------------------------------------------------
         ?>
-        <!-- <div class="container" style="text-align:center;">
-            <h1>Agregar Medida</h1>
-            <form method="post">
-                <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
-                <table style="width:100%">
-                    <tbody>
-                        <tr>
-                            <td style="min-width:35%; text-align:right;"><label for="codigo">C&oacute;digo:</label></td>
-                            <td style="min-width:65%"><input type="text" name="codigo" id="codigo" size="65"></td>
-                        </tr>
-                        <tr>
-                            <td style="min-width:35%; text-align:right;"><label for="nombre">Nombre:</label></td>
-                            <td style="min-width:65%"><input type="text" name="nombre" id="nombre" size="65"></td>
-                        </tr>
-                        <tr>
-                            <td style="min-width:35%; text-align:right;"><label for="descripcion">Descripci&oacute;n:</label></td>
-                            <td style="min-width:65%"><textarea type="text" name="descripcion" id="descripcion" rows="5" cols="50"></textarea></td>
-                        </tr>
-                        <tr>
-                            <td style="min-width:35%; text-align:right;"><label for="unidad">Unidad:</label></td>
-                            <td style="min-width:65%"><input type="text" name="unidad" id="unidad" size="65"></td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:center;" colspan="2">
-                                <input type="checkbox" name="enviarnotificacion" id="enviarnotificacion">
-                                <label for="enviarnotificacion">Enviar notificaci&oacute;n</label>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                </br>
-                <input type="submit" name="add" id="add" value="Guardar">
-                <input type="submit" name="cancel" value="Cancelar">
-            </form>
-        </div> -->
-
+        
         <div class="container" style="text-align:center; align:center;">
             <?php
                 //Llamo los mensajes flash
