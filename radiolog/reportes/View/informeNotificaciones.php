@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Medidas de personal - Listado</title>
+        <title>Notificaciones Medidas de personal - Listado</title>
         <meta charset="utf-8">
         <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
         <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
@@ -89,7 +89,7 @@
 		    //--------------------------------------------------------- FIN ENCABEZADO ---------------------------------------------------
         ?>
         <div class="container" style="text-align:center">
-            <h1>Listado de Medidas por Persona</h1>
+            <h1>Listado de Notificaciones Medidas por Persona</h1>
             <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
             <?php
                 //Llamo los mensajes flash
@@ -107,32 +107,25 @@
                 }
             ?>
 
-            <!-- Tabla de Medidas-->
-            <center>
-                <p>
-                    <br><br>
-                    <a href='medidas.php?wemp_pmla=<?php echo $wemp_pmla; ?>&action=createMedidaxPersona'>Agregar nueva</a>
-                </p>
-            </center>
+            <!-- Tabla de Notificaciones-->
             <table style="width:100%; text-align:center;">
                 <?php
-                    //No muestro tabla si no hay medidas
-                    if(isset($aMedidasPersonal) && count($aMedidasPersonal)>0)
+                    //No muestro tabla si no hay Notificaciones
+                    if(isset($aNotificaciones) && count($aNotificaciones)>0)
                     {
                         //Títulos de tabla
                         echo("<tr class='encabezadoTabla'>
-                                <th>Fecha</th>
+                                <th>Fecha Notificaci&oacute;n</th>
+                                <th>Persona</th>
+                                <th>Fecha medida</th>
                                 <th>Medida</th>
-                                <th>Documento</th>
-                                <th>Nombre</th>
                                 <th>Valor medida</th>
-                                <th>Fecha de registro</th>
-                                <th>Persona de registro</th>
+                                <th>Correo</th>
                             </tr>");
 
-                        //Elementos de la tabla de Medidas
+                        //Elementos de la tabla de Notificaciones
                         $iIndice = 0;
-                        foreach ( $aMedidasPersonal as $oMedidaPersonal ) 
+                        foreach ( $aNotificaciones as $oNotificacion ) 
                         {
                             //Defino la clase a partir del índice.
                             $iIndice++;
@@ -140,25 +133,22 @@
                             //Muestro la fila
                             echo "<tr class='".$sClaseFila."'>
                                     <td>
-                                        ".$oMedidaPersonal['fechahoramedida']."
+                                        ".$oNotificacion['fechanotificacion']."
                                     </td>
                                     <td>
-                                        ".$oMedidaPersonal['medida']."
+                                        ".$oNotificacion['persona']."
                                     </td>
                                     <td>
-                                        ".$oMedidaPersonal['documento']."
+                                        ".$oNotificacion['fechamedida']."
                                     </td>
                                     <td>
-                                        ".$oMedidaPersonal['nombreusuario']."
+                                        ".$oNotificacion['medida']."
                                     </td>
                                     <td>
-                                        ".$oMedidaPersonal['valor']." ".$oMedidaPersonal['unidadmedida']."
+                                        ".$oNotificacion['valormedida']."
                                     </td>
                                     <td>
-                                        ".$oMedidaPersonal['fecharegistro']."
-                                    </td>
-                                    <td>
-                                        ".$oMedidaPersonal['personaregistro']."
+                                        ".$oNotificacion['correo']."
                                     </td>
                                 </tr>";
                         }
@@ -170,10 +160,6 @@
                     }
                 ?>
             </table>
-            <p>
-                <br><br>
-                <a href='medidas.php?wemp_pmla=<?php echo $wemp_pmla; ?>&action=createMedidaxPersona'>Agregar nueva</a>
-            </p>
         </div>
     </body>
 </html>

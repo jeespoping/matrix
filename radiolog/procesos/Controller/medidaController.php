@@ -262,17 +262,6 @@
             //Llamo a la vista
             require("./View/listarMedidaPersona.php");
 
-            //Limpio variables de sesión
-            unset($_SESSION['idmedida']);
-            unset($_SESSION['personasselect']);
-            unset($_SESSION['fechamedida']);
-            unset($_SESSION['horamedida']);
-            unset($_SESSION['valormedida']);
-            unset($_SESSION['idmedidaxpersona']);
-            //unset($_SESSION['seguiringresando']);
-
-            unset($_SESSION['codigopersona']);
-            unset($_SESSION['tipobusqueda']);
         }
 
         /**
