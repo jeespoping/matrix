@@ -31,8 +31,20 @@ $wactualiz='2020-03-16';
 //--------------------------------------------------------------------------------------------------------------------------------------------
 // 	EJECUCION DEL SCRIPT
 //--------------------------------------------------------------------------------------------------------------------------------------------
+/** DESCOMENTAR REVISAR CON EDWIN */
+//if(!isset($_SESSION['user']))
+	
+/* 
+ * Iniciativa Cargos Automaticos (Estancia)	
+ * Cristhian Barros
+ * 28 Abr 2021
+	
+	Modificamos la validacion para que solo valide el usuario cuando no se realiace la peticion POST 
+	Por medio del crontab, es decir, cuando la variable $_POST['crontab'] no este definida.
+*/
 
-if(!isset($_SESSION['user']))
+$validar_usuario = !isset($_SESSION['user']) && !isset($_POST['crontab']) ? true : false;
+if($validar_usuario)
 {
     echo ' <div style="color: #676767;font-family: verdana;background-color: #E4E4E4;" >
                 [?] Usuario no autenticado en el sistema.<br />Recargue la p&aacute;gina principal de Matrix &oacute; Inicie sesi&oacute;n nuevamente.
@@ -1033,6 +1045,9 @@ else
 			$total_valor_hab = $total_valor_hab +   $vec_pension_final[$clave]['val_hab'];
 
 		}
+		
+		$html.="<input type='hidden' id='cantidad' value= '".$i."' />";
+		
 		$html.="<tr>";
 		$html.= "<td></td>
 				 <td></td>
@@ -1875,6 +1890,22 @@ else
 				$fechaingreso_liquidacion_parcial = $row['Fepfec'];
 				$horaingreso_liquidacion_parcial  = $row['Fephor'];
 			}
+		}
+		
+		if(!$existe_pension && date('Y-m-d') == $fechaingreso_liquidacion_parcial) {
+			$html = "	<br>
+							<br>
+							<br>
+							<table>
+								<tr>
+									<td><img width='15'height='15' src='../../images/medical/root/info.png' /></td><td>Lo sentimos, La historia ($whistoria-$wing), ya cuenta con Liquidaci&oacute;n de Estancia Parcial.</td>
+								</tr>
+							</table>
+							<br>
+							<br>
+							<br>";
+				echo $html;
+				return;
 		}
 		
 		
