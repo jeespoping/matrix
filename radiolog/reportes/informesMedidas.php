@@ -12,6 +12,10 @@
             case 'informeNotificaciones':
                 informeMedidaController::listNotificacionesMedida();
                 break;
+            
+            case 'informeBusquedas':
+                informeMedidaController::listBusquedasMedidasPorPersona();
+                break;
 
             default:
                 informeMedidaController::listNotificacionesMedida();

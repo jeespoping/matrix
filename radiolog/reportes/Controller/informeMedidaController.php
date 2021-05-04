@@ -24,6 +24,7 @@
             //Creo la variable medida
             $oMedida = new Medida($wemp_pmla);
 
+            //Obtengo el listado de notificaciones
             $aNotificaciones = $oMedida->getAllNotificaciones();
             
             //Llamo a la vista
@@ -44,10 +45,11 @@
             //Creo la variable medida
             $oMedida = new Medida($wemp_pmla);
 
-            $aMedidasPersonal = $oMedida->getAllMedidasxPersona();
+            //Obtengo el listado de búsquedas
+            $aBusquedas = $oMedida->getAllConsultas();
             
             //Llamo a la vista
-            require("./View/listarMedidaPersona.php");
+            require("./View/informeConsultas.php");
         }
     }
 ?>
