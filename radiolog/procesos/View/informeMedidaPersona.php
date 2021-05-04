@@ -123,10 +123,10 @@
                                     <select id="idmedida" name="idmedida" required>
                                         <option value="">--Seleccione una medida--</option>
                                         <?php
-                                            $sMedidaSelect = (isset($_SESSION['idmedida'])) ? $_SESSION['idmedida'] : $aMedidas[0]['codigo'];
+                                            $sMedidaSelect = (isset($_SESSION['idmedida'])) ? $_SESSION['idmedida'] : $aMedidas[0]['id'];
                                             foreach ($aMedidas as $oMedida) {
-                                                $sSelected = ($sMedidaSelect == $oMedida['codigo']) ? 'selected' : '';
-                                                echo "<option value='".$oMedida['codigo']."' ".$sSelected.">".$oMedida['codigo']." - ".$oMedida['nombre']."</option>";
+                                                $sSelected = ($sMedidaSelect == $oMedida['id']) ? 'selected' : '';
+                                                echo "<option value='".$oMedida['id']."' ".$sSelected.">".$oMedida['codigo']." - ".$oMedida['nombre']."</option>";
                                             }
                                         ?>
                                     </select>
@@ -137,7 +137,6 @@
                                     <select name="tipobusqueda" id="tipobusqueda">
                                         <option value="documento" <?= ($sTipoBusqueda == "documento") ? "selected" : "" ?> >Documento</option>
                                         <option value="codigo" <?= ($sTipoBusqueda == "codigo") ? "selected" : "" ?> >C&oacute;digo</option>
-                                        <option value="nombre" <?= ($sTipoBusqueda == "nombre") ? "selected" : "" ?>>Nombre</option>
                                     </select>
                                     <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>">
                                     </br></br>

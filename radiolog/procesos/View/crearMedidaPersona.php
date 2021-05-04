@@ -126,10 +126,10 @@
                                 <select id="idmedida" name="idmedida" required>
                                     <option value="">--Seleccione una medida--</option>
                                     <?php
-                                        $sMedidaSelect = (isset($_SESSION['idmedida'])) ? $_SESSION['idmedida'] : $aMedidas[0]['codigo'];
+                                        $sMedidaSelect = (isset($_SESSION['idmedida'])) ? $_SESSION['idmedida'] : $aMedidas[0]['id'];
                                         foreach ($aMedidas as $oMedida) {
-                                            $sSelected = ($sMedidaSelect == $oMedida['codigo']) ? 'selected' : '';
-                                            echo "<option value='".$oMedida['codigo']."' ".$sSelected.">".$oMedida['codigo']." - ".$oMedida['nombre']."</option>";
+                                            $sSelected = ($sMedidaSelect == $oMedida['id']) ? 'selected' : '';
+                                            echo "<option value='".$oMedida['id']."' ".$sSelected.">".$oMedida['codigo']." - ".$oMedida['nombre']."</option>";
                                         }
                                     ?>
                                 </select>

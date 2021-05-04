@@ -12,6 +12,7 @@
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.js"></script>
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.filter.js"></script>
         <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
+        <script type="text/javascript" src="./View/medidapersona.js"></script>
 
         <!-- Inicio estilos css -->
         <style type="text/css">
@@ -106,6 +107,49 @@
                     unset($_SESSION['success']);
                 }
             ?>
+            
+            <!-- Tabla de búsqueda -->
+            <center>
+                <form method="post">
+                    <table>
+                        <thead>
+                            <tr class="encabezadoTabla">
+                                <th>C&oacute;digo Medida</th>
+                                <th>Persona</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="fila2" style="text-align:center;">
+                                <td>
+                                    <select id="idmedida" name="idmedida">
+                                        <option value="">--Seleccione una medida--</option>
+                                        <?php
+                                            $sMedidaSelect = (isset($_SESSION['idmedida'])) ? $_SESSION['idmedida'] : '';
+                                            foreach ($aMedidas as $oMedida) {
+                                                $sSelected = ($sMedidaSelect == $oMedida['id']) ? 'selected' : '';
+                                                echo "<option value='".$oMedida['id']."' ".$sSelected.">".$oMedida['codigo']." - ".$oMedida['nombre']."</option>";
+                                            }
+                                        ?>
+                                    </select>
+                                </td>
+                                <td>
+                                    </br>B&uacute;squeda:
+                                    <?php $sTipoBusqueda = (isset($_SESSION['tipobusqueda'])) ? $_SESSION['tipobusqueda'] : "documento";  ?>
+                                    <select name="tipobusqueda" id="tipobusqueda">
+                                        <option value="documento" <?= ($sTipoBusqueda == "documento") ? "selected" : "" ?> >Documento</option>
+                                        <option value="codigo" <?= ($sTipoBusqueda == "codigo") ? "selected" : "" ?> >C&oacute;digo</option>
+                                    </select>
+                                    <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>">
+                                    </br></br>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </br>
+                    <input type="submit" name="buscar" id="buscar" value="Buscar">
+                    <input type="submit" name="limpiar" id="limpiar" value="Limpiar">
+                </form>
+            </center>
 
             <!-- Tabla de Notificaciones-->
             <table style="width:100%; text-align:center;">
