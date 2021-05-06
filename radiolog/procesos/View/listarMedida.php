@@ -133,7 +133,7 @@
                             //Muestro la fila
                             echo "<tr class='".$sClaseFila."'>
                                     <td>
-                                        <a href='medidas.php?action=viewMedida&id=".$oMedida['id']."'>".$oMedida['codigo']."</a>
+                                        ".$oMedida['codigo']."
                                     </td>
                                     <td>
                                         ".$oMedida['nombre']."
@@ -148,8 +148,7 @@
                                         ".$oMedida['enviarnotificaciontexto']."
                                     </td>
                                     <td>
-                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedida&id=".$oMedida['id']."'>Editar</a> / 
-                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=deleteMedida&id=".$oMedida['id']."'>Eliminar</a>
+                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedida&id=".$oMedida['id']."'>Editar</a>
                                     </td>
                                 </tr>";
                         }

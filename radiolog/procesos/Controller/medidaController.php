@@ -50,10 +50,12 @@
             {
 
                 //Valido existencia de datos
-                $sCodigo = isset($_POST['codigo']) ? $_POST['codigo'] : null;
+                $sCodigo = isset($_POST['codigomedida']) ? $_POST['codigomedida'] : null;
                 $sNombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
                 $sDescripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : null;
-                $sIdUnidad = isset($_POST['unidad']) ? $_POST['unidad'] : null;
+                $sIdUnidad = (isset($_POST['unidad']) && ($_POST['unidad'] != '')) ? $_POST['unidad'] : "NULL";
+                print_r('$sIdUnidad: '.$sIdUnidad);
+                //die();
                 $bEnviarNotificacion = !isset($_POST['enviarnotificacion']) ? false : true;
                 $sUsuario = $_SESSION['usera'];
                 $sSeguridad = "C-".$sUsuario;
@@ -80,7 +82,7 @@
                 }
 
                 //Limpio variables de sesión
-                unset($_SESSION['codigo']);
+                unset($_SESSION['codigomedida']);
                 unset($_SESSION['nombre']);
                 unset($_SESSION['descripcion']);
                 unset($_SESSION['unidad']);
@@ -93,11 +95,14 @@
             }
             else
             {
+                //Listado de unidades
+                $aUnidades = $oMedida->getUnidades();
+
                 //Llamo a la vista
                 require("./View/crearMedida.php");
 
                 //Limpio variables de sesión
-                unset($_SESSION['codigo']);
+                unset($_SESSION['codigomedida']);
                 unset($_SESSION['nombre']);
                 unset($_SESSION['descripcion']);
                 unset($_SESSION['unidad']);

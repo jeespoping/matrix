@@ -121,11 +121,30 @@
                     </thead>
                     <tbody>
                         <tr class="fila2" style="text-align:center;">
-                            <td><input type="text" name="codigo" id="codigo" required value="<?= $_SESSION['codigo']  ?>"></td>
-                            <td><input type="text" name="nombre" id="nombre" required value="<?= $_SESSION['nombre']  ?>"></td>
-                            <td><textarea type="text" name="descripcion" id="descripcion" rows="3" cols="50"><?= $_SESSION['descripcion']  ?></textarea></td>
-                            <td><input type="text" name="unidad" id="unidad" required value="<?= $_SESSION['unidad']  ?>"></td>
-                            <td><input type="checkbox" name="enviarnotificacion" id="enviarnotificacion" <?= $_SESSION['enviarnotificacion'] ?>></td>
+                            <td>
+                                <input type="text" name="codigomedida" id="codigomedida" required value="<?= $_SESSION['codigomedida']  ?>">
+                            </td>
+                            <td>
+                                <input type="text" name="nombre" id="nombre" required value="<?= $_SESSION['nombre']  ?>">
+                            </td>
+                            <td>
+                                <textarea type="text" name="descripcion" id="descripcion" rows="3" cols="50"><?= $_SESSION['descripcion']  ?></textarea>
+                            </td>
+                            <td>
+                                <select style="max-width:60%; width:60%" id="unidad" name="unidad">
+                                    <option value="" >--Seleccione una unidad--</option>
+                                    <?php
+                                        $sCodigoUnidadSelect = (isset($_SESSION['unidad'])) ? $_SESSION['unidad'] : null;
+                                        foreach ($aUnidades as $oUnidad) {
+                                            $sSelected = ($sCodigoUnidadSelect == $oUnidad['id']) ? 'selected' : '';
+                                            echo "<option value='".$oUnidad['id']."' ".$sSelected.">".$oUnidad['codigo']." - ".$oUnidad['nombre']."</option>";
+                                        }
+                                    ?>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="enviarnotificacion" id="enviarnotificacion" <?= $_SESSION['enviarnotificacion'] ?>>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
