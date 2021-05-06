@@ -16,6 +16,11 @@
             case 'informeBusquedas':
                 informeMedidaController::listBusquedasMedidasPorPersona();
                 break;
+            
+            case 'informeTotalMedidas':
+                informeMedidaController::listTotalMedidasPorPersona();
+                break;
+                
 
             default:
                 informeMedidaController::listNotificacionesMedida();

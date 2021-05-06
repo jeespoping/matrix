@@ -297,18 +297,6 @@
                 //Guardo y manejo los mensajes
                 $aMedidasPersonal = $oMedida->getAllMedidasxPersona($sTipoBusqueda, $sValorBusqueda, $iIdMedida, $bGuardarBusqueda);
 
-                //Limpio variables de sesión
-                unset($_SESSION['idmedida']);
-                unset($_SESSION['personasselect']);
-                unset($_SESSION['fechamedida']);
-                unset($_SESSION['horamedida']);
-                unset($_SESSION['valormedida']);
-                unset($_SESSION['idmedidaxpersona']);
-                //unset($_SESSION['seguiringresando']);
-
-                unset($_SESSION['codigopersona']);
-                unset($_SESSION['tipobusqueda']);
-
                 //Seteo la variable de respuesta
                 $_SESSION["success"] = $oMedida->getMensaje();
                 $_SESSION["success"] .= (count($aMedidasPersonal) == 0) ? ". No se encontraron registros con ".$sTipoBusqueda." ".$sValorBusqueda."." : ".";
@@ -326,18 +314,6 @@
                 
                 //Llamo a la vista
                 require("./View/informeMedidaPersona.php");
-
-                //Limpio variables de sesión
-                unset($_SESSION['idmedida']);
-                unset($_SESSION['personasselect']);
-                unset($_SESSION['fechamedida']);
-                unset($_SESSION['horamedida']);
-                unset($_SESSION['valormedida']);
-                unset($_SESSION['idmedidaxpersona']);
-                //unset($_SESSION['seguiringresando']);
-
-                unset($_SESSION['codigopersona']);
-                unset($_SESSION['tipobusqueda']);
             }
         }
     }
