@@ -12,6 +12,7 @@
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.js"></script>
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.filter.js"></script>
         <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
+        <script type="text/javascript" src="./View/medidapersona.js"></script>
 
         <!-- Inicio estilos css -->
         <style type="text/css">
@@ -58,6 +59,7 @@
         </style>
     </head>
     <body>
+        <a name='Arriba'></a>
         <?php
             //Validación de la variable de sesión
             if(!isset($_SESSION['user']) )
@@ -89,7 +91,7 @@
 		    //--------------------------------------------------------- FIN ENCABEZADO ---------------------------------------------------
         ?>
         <div class="container" style="text-align:center">
-            <h1>B&uacute;squeda de Medidas por Persona</h1>
+            <h1>B&uacute;squeda de medidas por persona</h1>
             <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
             <?php
                 //Llamo los mensajes flash
@@ -112,6 +114,9 @@
                 <form method="post">
                     <table>
                         <thead>
+                            <tr class='fila1'>
+                                <th colspan='2'><h3>B&uacute;squeda</h3></th>
+                            </tr>
                             <tr class="encabezadoTabla">
                                 <th>C&oacute;digo Medida</th>
                                 <th>Persona</th>
@@ -147,6 +152,7 @@
                     </br>
                     <input type="submit" name="buscar" id="buscar" value="Buscar">
                     <input type="submit" name="limpiar" id="limpiar" value="Limpiar">
+                    <input type='submit' id='Salir' name='Salir' class='button' value='Salir' onclick='cerrarVentana()'>
                 </form>
             </center>
             <table style="width:100%; text-align:center;">
@@ -155,7 +161,11 @@
                     if(isset($aMedidasPersonal) && count($aMedidasPersonal)>0)
                     {
                         //Títulos de tabla
-                        echo("<tr class='encabezadoTabla'>
+                        echo("
+                            <tr class='fila1'>
+                                <th colspan='7'><h3>Resultados</h3></th>
+                            </tr>
+                            <tr class='encabezadoTabla'>
                                 <th>Fecha</th>
                                 <th>Medida</th>
                                 <th>Documento</th>
@@ -200,6 +210,15 @@
                         
                     }
                 ?>
+            </table>
+            <table border=0 align=center>
+                <tr>
+                    <td align=center>
+                        <a href='#Arriba'>
+                            <b>Arriba</b>
+                        </a>
+                    </td>
+                </tr>
             </table>
         </div>
     </body>

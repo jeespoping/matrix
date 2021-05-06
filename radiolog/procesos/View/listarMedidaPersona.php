@@ -58,6 +58,7 @@
         </style>
     </head>
     <body>
+        <a name='Arriba'></a>
         <?php
             //Validación de la variable de sesión
             if(!isset($_SESSION['user']) )
@@ -89,7 +90,7 @@
 		    //--------------------------------------------------------- FIN ENCABEZADO ---------------------------------------------------
         ?>
         <div class="container" style="text-align:center">
-            <h1>Listado de Medidas por Persona</h1>
+            <h1>Listado de medidas por persona</h1>
             <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
             <?php
                 //Llamo los mensajes flash
@@ -172,7 +173,8 @@
             </table>
             <p>
                 <br><br>
-                <a href='medidas.php?wemp_pmla=<?php echo $wemp_pmla; ?>&action=createMedidaxPersona'>Agregar nueva</a>
+                <a href='medidas.php?wemp_pmla=<?php echo $wemp_pmla; ?>&action=createMedidaxPersona'><b>Agregar nueva</b></a> | 
+                <a href='#Arriba'><b>Arriba</b></a>
             </p>
         </div>
     </body>

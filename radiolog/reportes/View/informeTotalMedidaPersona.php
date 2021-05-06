@@ -59,6 +59,7 @@
         </style>
     </head>
     <body>
+        <A NAME='Arriba'></a>
         <?php
             //Validación de la variable de sesión
             if(!isset($_SESSION['user']) )
@@ -113,6 +114,9 @@
                 <form method="post">
                     <table>
                         <thead>
+                            <tr class='fila1'>
+                                <th colspan='3'><h3>B&uacute;squeda</h3></th>
+                            </tr>
                             <tr class="encabezadoTabla">
                                 <th>C&oacute;digo Medida</th>
                                 <th>Persona</th>
@@ -153,6 +157,7 @@
                     </br>
                     <input type="submit" name="buscar" id="buscar" value="Buscar">
                     <input type="submit" name="limpiar" id="limpiar" value="Limpiar">
+                    <input type='submit' id='Salir' name='Salir' class='button' value='Salir' onclick='cerrarVentana()'>
                 </form>
             </center>
 
@@ -163,7 +168,11 @@
                     if(isset($aTotalMedidasPersona) && count($aTotalMedidasPersona)>0)
                     {
                         //Títulos de tabla
-                        echo("<tr class='encabezadoTabla'>
+                        echo("
+                            <tr class='fila1'>
+                                <th colspan='3'><h3>Resultados</h3></th>
+                            </tr>
+                            <tr class='encabezadoTabla'>
                                 <th>Persona: C&oacute;digo - Nombre (Documento)</th>
                                 <th>Medida</th>
                                 <th>Total</th>
@@ -196,6 +205,15 @@
                         echo "<p>No se enontraron registros</p>";
                     }
                 ?>
+            </table>
+            <table border=0 align=center>
+                <tr>
+                    <td align=center>
+                        <a href='#Arriba'>
+                            <b>Arriba</b>
+                        </a>
+                    </td>
+                </tr>
             </table>
         </div>
     </body>

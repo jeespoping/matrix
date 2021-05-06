@@ -113,6 +113,9 @@
                 <form method="post">
                     <table>
                         <thead>
+                            <tr class='fila1'>
+                                <th colspan='3'><h3>B&uacute;squeda</h3></th>
+                            </tr>
                             <tr class="encabezadoTabla">
                                 <th>C&oacute;digo Medida</th>
                                 <th>Persona</th>
@@ -148,6 +151,7 @@
                     </br>
                     <input type="submit" name="buscar" id="buscar" value="Buscar">
                     <input type="submit" name="limpiar" id="limpiar" value="Limpiar">
+                    <input type='submit' id='Salir' name='Salir' class='button' value='Salir' onclick='cerrarVentana()'>
                 </form>
             </center>
 
@@ -158,7 +162,11 @@
                     if(isset($aNotificaciones) && count($aNotificaciones)>0)
                     {
                         //Títulos de tabla
-                        echo("<tr class='encabezadoTabla'>
+                        echo("
+                            <tr class='fila1'>
+                                <th colspan='6'><h3>Resultados</h3></th>
+                            </tr>
+                            <tr class='encabezadoTabla'>
                                 <th>Fecha Notificaci&oacute;n</th>
                                 <th>Persona</th>
                                 <th>Fecha medida</th>

@@ -186,13 +186,8 @@
                     </tbody>
                 </table>
                 </br>
-                <center>
-                    <input type="checkbox" name="seguiringresando" id="seguiringresando" <?= (isset($_SESSION['seguiringresando'])) ? $_SESSION['seguiringresando'] : null ?>>
-                    <label for="seguiringresando"> Continuar ingresando medidas al pulsar "Guardar"</label><br>
-                </center>
-                </br>
                 <input type="submit" name="add" id="add" value="Guardar">
-                <a href='medidas.php?wemp_pmla=<?php echo $wemp_pmla; ?>'>Cancelar</a>
+                <input type='submit' id='Salir' name='Salir' class='button' value='Salir' onclick='cerrarVentana()'>
             </form>
         </div>
     </body>

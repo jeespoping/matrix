@@ -33,6 +33,10 @@
                 medidaController::informeMedidaxPersona();
                 break;
 
+            case 'listMedidas':
+                medidaController::index();
+                break;
+
             default:
                 medidaController::index();
                 break;

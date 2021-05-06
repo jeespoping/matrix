@@ -134,7 +134,6 @@
                 $dHoraMedida = isset($_POST['horamedida']) ? $_POST['horamedida'] : null;
                 $dValorMedida = isset($_POST['valormedida']) ? $_POST['valormedida'] : null;
                 $iIdMedidaxPersonal = isset($_POST['idmedidaxpersona']) ? $_POST['idmedidaxpersona'] : null;
-                $bContinuarIngresando = !isset($_POST['seguiringresando']) ? false : true;
                 $sUsuario = $_SESSION['usera'];
                 $sSeguridad = "C-".$sUsuario;
 
@@ -155,7 +154,6 @@
                     $_SESSION["horamedida"] = $dHoraMedida;
                     $_SESSION["valormedida"] = $dValorMedida;
                     $_SESSION["idmedidaxpersona"] = $iIdMedidaxPersonal;
-                    $_SESSION['seguiringresando'] = ($bContinuarIngresando) ? "checked" : "";
                     $_SESSION["codigopersona"] = $sBusquedaPersona;
                     $_SESSION["tipobusqueda"] = $sTipoBusquedaPersona;
                     header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
@@ -169,7 +167,6 @@
                 unset($_SESSION['horamedida']);
                 unset($_SESSION['valormedida']);
                 unset($_SESSION['idmedidaxpersona']);
-                //unset($_SESSION['seguiringresando']);
 
                 unset($_SESSION['codigopersona']);
                 unset($_SESSION['tipobusqueda']);
@@ -202,7 +199,6 @@
                 unset($_SESSION['horamedida']);
                 unset($_SESSION['valormedida']);
                 unset($_SESSION['idmedidaxpersona']);
-                //unset($_SESSION['seguiringresando']);
 
                 unset($_SESSION['codigopersona']);
                 unset($_SESSION['tipobusqueda']);

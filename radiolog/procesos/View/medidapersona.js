@@ -1,5 +1,5 @@
 /**
- * Funcion para búsqueda de personas
+ * Función para búsqueda de personas
  * @by: sebastian.nevado
  * @date: 2021/04/27
  */
@@ -42,4 +42,17 @@ function buscarPersona(bLimpiar)
             return false;
         }
     );
+}
+
+/**
+ * Función para cerrar la ventana
+ * @by: sebastian.nevado
+ * @date: 2021/05/06
+ */
+function cerrarVentana()
+{ 
+    if (confirm("Esta seguro de salir?") == true)
+        window.close();
+    else
+        return false;
 }
