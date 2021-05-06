@@ -927,7 +927,7 @@ else
 							}
 							else
 							{
-								$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?DA_historia=".$whis."&DA_ingreso=".$wing."&DA_articulo=".$rows['kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=".$rows['Tipo']."&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
+								$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&DA_historia=".$whis."&DA_ingreso=".$wing."&DA_articulo=".$rows['kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=".$rows['Tipo']."&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
 							}
 						}
 						else
@@ -1014,7 +1014,7 @@ else
 							
 								$info = "Dosis adaptada genérica";
 								// crear producto DA
-								$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?DA_historia=".$whis."&DA_ingreso=".$wing."&DA_articulo=".$rows['kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=Generica&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
+								$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&DA_historia=".$whis."&DA_ingreso=".$wing."&DA_articulo=".$rows['kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=Generica&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
 							}
 							else
 							{
@@ -1052,14 +1052,14 @@ else
 									$tipoProtocoloNPT=$rowsDatosNPT['Tiptpr'];
 									
 									// crear NPT
-									$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?historia=".$whis."&NPT_historia=".$whis."&NPT_ingreso=".$wing."&NPT_articulo=".$rows['kadart']."&NPT_ido=".$rows['Kadido']."&peso=".$rowsDatosNPT['Enupes']."&purga=".$rowsDatosNPT['Enupur']."&volumen=".$rowsDatosNPT['Enuvol']."&NPT_tiempoInfusion=".$rowsDatosNPT['Enutin']."&NPT_origen=ordenes&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
+									$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&historia=".$whis."&NPT_historia=".$whis."&NPT_ingreso=".$wing."&NPT_articulo=".$rows['kadart']."&NPT_ido=".$rows['Kadido']."&peso=".$rowsDatosNPT['Enupes']."&purga=".$rowsDatosNPT['Enupur']."&volumen=".$rowsDatosNPT['Enuvol']."&NPT_tiempoInfusion=".$rowsDatosNPT['Enutin']."&NPT_origen=ordenes&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
 									
 								}
 								else
 								{
 									$info = "Nutrición parenteral genérica";
 									// crear NPT generica
-									$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?historia=".$whis."&NPT_historia=".$whis."&NPT_ingreso=".$wing."&NPT_articulo=".$rows['kadart']."&NPT_ido=".$rows['Kadido']."&&NPT_origen=kardex&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
+									$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&historia=".$whis."&NPT_historia=".$whis."&NPT_ingreso=".$wing."&NPT_articulo=".$rows['kadart']."&NPT_ido=".$rows['Kadido']."&&NPT_origen=kardex&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
 									
 								}
 							}
