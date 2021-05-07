@@ -129,6 +129,7 @@
                                 <th>Valor medida</th>
                                 <th>Fecha de registro</th>
                                 <th>Persona de registro</th>
+                                <th>Acciones</th>
                             </tr>");
 
                         //Elementos de la tabla de Medidas
@@ -160,6 +161,9 @@
                                     </td>
                                     <td>
                                         ".$oMedidaPersonal['personaregistro']."
+                                    </td>
+                                    <td>
+                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedidaPersona&id=".$oMedidaPersonal['idmedidapersona']."'>Editar</a>
                                     </td>
                                 </tr>";
                         }

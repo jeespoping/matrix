@@ -317,5 +317,101 @@
                 require("./View/informeMedidaPersona.php");
             }
         }
+
+        /**
+         * Funcion para edición de medidas por persona
+         * @by: sebastian.nevado
+         * @date: 2021/05/06
+         */
+        public function editMedidaxPersona()
+        {
+            //Obtengo el parámetro
+            $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
+            
+            //Creo la variable medida
+            $oMedida = new Medida($wemp_pmla);
+
+            // Proceso si doy aceptar
+            if ( isset($_POST['add']) )
+            {
+
+                //Valido existencia de datos
+                $iIdMedida = isset($_POST['idmedida']) ? $_POST['idmedida'] : null;
+                $sCodigoPersona = isset($_POST['personasselect']) ? $_POST['personasselect'] : null;
+                $dFechaMedida = isset($_POST['fechamedida']) ? $_POST['fechamedida'] : null;
+                $dHoraMedida = isset($_POST['horamedida']) ? $_POST['horamedida'] : null;
+                $dValorMedida = isset($_POST['valormedida']) ? $_POST['valormedida'] : null;
+                $iIdMedidaxPersonal = isset($_POST['idmedidaxpersona']) ? $_POST['idmedidaxpersona'] : null;
+                $sUsuario = $_SESSION['usera'];
+                $sSeguridad = "C-".$sUsuario;
+
+                $sBusquedaPersona = isset($_POST['codigopersona']) ? $_POST['codigopersona'] : null;
+                $sTipoBusquedaPersona = isset($_POST['tipobusqueda']) ? $_POST['tipobusqueda'] : null;
+
+                //Data validations
+                $oMedida->setId($iIdMedida);
+                $oMedida->setSeguridad($sSeguridad);
+
+                //Guardo y manejo los mensajes
+                if(!$oMedida->saveMedidaxPersona($sCodigoPersona, $dFechaMedida, $dHoraMedida, $dValorMedida, $iIdMedidaxPersonal))
+                {
+                    $_SESSION["error"]=$oMedida->getMensaje();
+                    $_SESSION["idmedida"] = $iIdMedida;
+                    $_SESSION["personasselect"] = $sCodigoPersona;
+                    $_SESSION["fechamedida"] = $dFechaMedida;
+                    $_SESSION["horamedida"] = $dHoraMedida;
+                    $_SESSION["valormedida"] = $dValorMedida;
+                    $_SESSION["idmedidaxpersona"] = $iIdMedidaxPersonal;
+                    $_SESSION["codigopersona"] = $sBusquedaPersona;
+                    $_SESSION["tipobusqueda"] = $sTipoBusquedaPersona;
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
+                    return;
+                }
+
+                //Limpio variables de sesión
+                unset($_SESSION['idmedida']);
+                unset($_SESSION['personasselect']);
+                unset($_SESSION['fechamedida']);
+                unset($_SESSION['horamedida']);
+                unset($_SESSION['valormedida']);
+                unset($_SESSION['idmedidaxpersona']);
+
+                unset($_SESSION['codigopersona']);
+                unset($_SESSION['tipobusqueda']);
+
+                //Seteo la variable de respuesta
+                $_SESSION["success"]="Medida por personal guardada";
+                if($bContinuarIngresando)
+                {
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
+                }
+                else
+                {
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=listMedidaxPersona");
+                }
+                return;
+            }
+            else
+            {
+                $iIdMedidaxPersonal = isset($_GET["idmedidaxpersona"]) ? $_GET["idmedidaxpersona"] : $_POST["idmedidaxpersona"];
+                $aMedidas = $oMedida->getAll();
+                $aPersonas = $oMedida->getUsuariosMedidas();
+                $aCentrosCosto = $oMedida->getCentrosCosto();
+                
+                //Llamo a la vista
+                require("./View/crearMedidaPersona.php");
+
+                //Limpio variables de sesión
+                unset($_SESSION['idmedida']);
+                unset($_SESSION['personasselect']);
+                unset($_SESSION['fechamedida']);
+                unset($_SESSION['horamedida']);
+                unset($_SESSION['valormedida']);
+                unset($_SESSION['idmedidaxpersona']);
+
+                unset($_SESSION['codigopersona']);
+                unset($_SESSION['tipobusqueda']);
+            }
+        }
     }
 ?>

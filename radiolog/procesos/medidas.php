@@ -36,6 +36,10 @@
             case 'listMedidas':
                 medidaController::index();
                 break;
+            
+            case 'editMedidaPersona':
+                medidaController::editMedidaPersona();
+                break;
 
             default:
                 medidaController::index();
