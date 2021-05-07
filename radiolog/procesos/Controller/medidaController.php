@@ -54,8 +54,6 @@
                 $sNombre = isset($_POST['nombre']) ? $_POST['nombre'] : null;
                 $sDescripcion = isset($_POST['descripcion']) ? $_POST['descripcion'] : null;
                 $sIdUnidad = (isset($_POST['unidad']) && ($_POST['unidad'] != '')) ? $_POST['unidad'] : "NULL";
-                print_r('$sIdUnidad: '.$sIdUnidad);
-                //die();
                 $bEnviarNotificacion = !isset($_POST['enviarnotificacion']) ? false : true;
                 $sUsuario = $_SESSION['usera'];
                 $sSeguridad = "C-".$sUsuario;
@@ -171,16 +169,8 @@
                 unset($_SESSION['codigopersona']);
                 unset($_SESSION['tipobusqueda']);
 
-                //Seteo la variable de respuesta
-                $_SESSION["success"]="Medida por personal guardada";
-                if($bContinuarIngresando)
-                {
-                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
-                }
-                else
-                {
-                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=listMedidaxPersona");
-                }
+                header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
+                
                 return;
             }
             else
@@ -342,6 +332,7 @@
                 $dHoraMedida = isset($_POST['horamedida']) ? $_POST['horamedida'] : null;
                 $dValorMedida = isset($_POST['valormedida']) ? $_POST['valormedida'] : null;
                 $iIdMedidaxPersonal = isset($_POST['idmedidaxpersona']) ? $_POST['idmedidaxpersona'] : null;
+                $sCodigoCentroCosto = isset($_POST['codigocentrocosto']) ? $_POST['codigocentrocosto'] : null;
                 $sUsuario = $_SESSION['usera'];
                 $sSeguridad = "C-".$sUsuario;
 
@@ -355,7 +346,7 @@
                 //Guardo y manejo los mensajes
                 if(!$oMedida->saveMedidaxPersona($sCodigoPersona, $dFechaMedida, $dHoraMedida, $dValorMedida, $iIdMedidaxPersonal))
                 {
-                    $_SESSION["error"]=$oMedida->getMensaje();
+                    $_SESSION["error"] = $oMedida->getMensaje();
                     $_SESSION["idmedida"] = $iIdMedida;
                     $_SESSION["personasselect"] = $sCodigoPersona;
                     $_SESSION["fechamedida"] = $dFechaMedida;
@@ -364,7 +355,8 @@
                     $_SESSION["idmedidaxpersona"] = $iIdMedidaxPersonal;
                     $_SESSION["codigopersona"] = $sBusquedaPersona;
                     $_SESSION["tipobusqueda"] = $sTipoBusquedaPersona;
-                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
+                    $_SESSION["codigocentrocosto"] = $sCodigoCentroCosto;
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedidaxPersona&idmedidaxpersona=".$iIdMedidaxPersonal);
                     return;
                 }
 
@@ -381,25 +373,31 @@
 
                 //Seteo la variable de respuesta
                 $_SESSION["success"]="Medida por personal guardada";
-                if($bContinuarIngresando)
-                {
-                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
-                }
-                else
-                {
-                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=listMedidaxPersona");
-                }
+                
+                header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=listMedidaxPersona");
+
                 return;
             }
             else
             {
                 $iIdMedidaxPersonal = isset($_GET["idmedidaxpersona"]) ? $_GET["idmedidaxpersona"] : $_POST["idmedidaxpersona"];
+                $oDatosMedidaPersona = $oMedida->loadMedidaPersona($iIdMedidaxPersonal);
+
+                $iIdMedida = isset($_SESSION['error']) ? $_SESSION['idmedida'] : $oDatosMedidaPersona['idmedida'];
+                $sCodigoPersona = isset($_SESSION['error']) ? $_SESSION['personasselect'] : $oDatosMedidaPersona['codigopersonamedida'];
+                $dFechaMedida = isset($_SESSION['error']) ? $_SESSION['fechamedida'] : $oDatosMedidaPersona['fechamedida'];
+                $dHoraMedida = isset($_SESSION['error']) ? $_SESSION['horamedida'] : $oDatosMedidaPersona['horamedida'];
+                $dValorMedida = isset($_SESSION['error']) ? $_SESSION['valormedida'] : $oDatosMedidaPersona['valormedida'];
+                $sCodigoCentroCosto = isset($_SESSION['error']) ? $_SESSION['codigocentrocosto'] : $oDatosMedidaPersona['codigocentrocosto'];
+                $sBusquedaPersona = isset($_SESSION['error']) ? $_SESSION['codigopersona'] : null;
+                $sTipoBusquedaPersona = isset($_SESSION['error']) ? $_SESSION['tipobusqueda'] : null;
+
                 $aMedidas = $oMedida->getAll();
-                $aPersonas = $oMedida->getUsuariosMedidas();
+                $aPersonas = $oMedida->getUsuariosMedidas('codigo', $sCodigoPersona, $sCodigoCentroCosto);
                 $aCentrosCosto = $oMedida->getCentrosCosto();
                 
                 //Llamo a la vista
-                require("./View/crearMedidaPersona.php");
+                require("./View/editarMedidaPersona.php");
 
                 //Limpio variables de sesión
                 unset($_SESSION['idmedida']);

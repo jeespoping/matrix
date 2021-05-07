@@ -163,7 +163,7 @@
                                         ".$oMedidaPersonal['personaregistro']."
                                     </td>
                                     <td>
-                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedidaPersona&id=".$oMedidaPersonal['idmedidapersona']."'>Editar</a>
+                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedidaPersona&idmedidaxpersona=".$oMedidaPersonal['idmedidapersona']."'>Editar</a>
                                     </td>
                                 </tr>";
                         }

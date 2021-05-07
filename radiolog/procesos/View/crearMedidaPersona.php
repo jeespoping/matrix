@@ -153,7 +153,6 @@
                                 <select name="tipobusqueda" id="tipobusqueda">
                                     <option value="documento" <?= ($sTipoBusqueda == "documento") ? "selected" : "" ?> >Documento</option>
                                     <option value="codigo" <?= ($sTipoBusqueda == "codigo") ? "selected" : "" ?> >C&oacute;digo</option>
-                                    <option value="nombre" <?= ($sTipoBusqueda == "nombre") ? "selected" : "" ?>>Nombre</option>
                                 </select>
                                 <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>">
                                 <!-- <input type="submit" name="busqueda" id="busqueda" value="Buscar" onclick="buscarPersona()"> -->

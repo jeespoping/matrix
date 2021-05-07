@@ -38,7 +38,7 @@
                 break;
             
             case 'editMedidaPersona':
-                medidaController::editMedidaPersona();
+                medidaController::editMedidaxPersona();
                 break;
 
             default:

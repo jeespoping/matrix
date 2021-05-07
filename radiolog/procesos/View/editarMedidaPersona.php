@@ -107,6 +107,7 @@
             ?>
             <form method="post">
                 <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
+                <input type='HIDDEN' name= 'idmedidaxpersona' id= 'idmedidaxpersona' value='<?php echo $iIdMedidaxPersonal?>'>
                 <table style="width:100%;">
                     <thead>
                         <tr class="fila1">
@@ -126,7 +127,7 @@
                                 <select id="idmedida" name="idmedida" required>
                                     <option value="">--Seleccione una medida--</option>
                                     <?php
-                                        $sMedidaSelect = (isset($_SESSION['idmedida'])) ? $_SESSION['idmedida'] : $aMedidas[0]['id'];
+                                        $sMedidaSelect = (isset($iIdMedida)) ? $iIdMedida : $aMedidas[0]['id'];
                                         foreach ($aMedidas as $oMedida) {
                                             $sSelected = ($sMedidaSelect == $oMedida['id']) ? 'selected' : '';
                                             echo "<option value='".$oMedida['id']."' ".$sSelected.">".$oMedida['codigo']." - ".$oMedida['nombre']."</option>";
@@ -140,22 +141,23 @@
                                 <select id="codigocentrocosto" name="codigocentrocosto" required onchange="buscarPersona(true)">
                                     <option value="">--Seleccione un centro de costo--</option>
                                     <?php
+                                        $sCodigoCCSelect = (isset($sCodigoCentroCosto)) ? $sCodigoCentroCosto : null;
                                         foreach ($aCentrosCosto as $oCentroCosto) {
                                             if($oCentroCosto['codigo'] != '*')
                                             {
-                                                echo "<option value='".$oCentroCosto['codigo']."'>".$oCentroCosto['codigo']." - ".$oCentroCosto['nombre']."</option>";
+                                                $sSelectedCC = ($sCodigoCCSelect == $oCentroCosto['codigo']) ? 'selected' : '';
+                                                echo "<option value='".$oCentroCosto['codigo']."' ".$sSelectedCC.">".$oCentroCosto['codigo']." - ".$oCentroCosto['nombre']."</option>";
                                             }
                                         }
                                     ?>
                                 </select>
                                 </br></br>B&uacute;squeda:
-                                <?php $sTipoBusqueda = (isset($_SESSION['tipobusqueda'])) ? $_SESSION['tipobusqueda'] : "documento";  ?>
+                                <?php $sTipoBusqueda = (isset($sTipoBusquedaPersona)) ? $sTipoBusquedaPersona : "documento";  ?>
                                 <select name="tipobusqueda" id="tipobusqueda">
                                     <option value="documento" <?= ($sTipoBusqueda == "documento") ? "selected" : "" ?> >Documento</option>
                                     <option value="codigo" <?= ($sTipoBusqueda == "codigo") ? "selected" : "" ?> >C&oacute;digo</option>
-                                    <option value="nombre" <?= ($sTipoBusqueda == "nombre") ? "selected" : "" ?>>Nombre</option>
                                 </select>
-                                <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>">
+                                <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($sBusquedaPersona)) ? $sBusquedaPersona : null  ?>">
                                 <!-- <input type="submit" name="busqueda" id="busqueda" value="Buscar" onclick="buscarPersona()"> -->
                                 <a onclick="buscarPersona(false)">Buscar</a> | 
                                 <a onclick="buscarPersona(true)">Limpiar</a>
@@ -164,7 +166,7 @@
                                 <select style="max-width:60%; width:60%" id="personasselect" name="personasselect" required>
                                     <option value="" >--Seleccione una persona--</option>
                                     <?php
-                                        $sCodigoPersonaSelect = (isset($_SESSION['personasselect'])) ? $_SESSION['personasselect'] : null;
+                                        $sCodigoPersonaSelect = (isset($sCodigoPersona)) ? $sCodigoPersona : null;
                                         foreach ($aPersonas as $oPersona) {
                                             $sSelected = ($sCodigoPersonaSelect == $oPersona['codigo']) ? 'selected' : '';
                                             echo "<option value='".$oPersona['codigo']."' ".$sSelected.">".$oPersona['codigo']." - ".$oPersona['nombre']." (".$oPersona['documento'].")"."</option>";
@@ -174,13 +176,13 @@
                                 </br></br>
                             </td>
                             <td>
-                                <input type="date" name="fechamedida" id="fechamedida" required value="<?= (isset($_SESSION['fechamedida'])) ? $_SESSION['fechamedida'] : null  ?>">
+                                <input type="date" name="fechamedida" id="fechamedida" required value="<?= (isset($dFechaMedida)) ? $dFechaMedida : null  ?>">
                             </td>
                             <td>
-                                <input type="time" name="horamedida" id="horamedida" required value="<?= isset($_SESSION['horamedida']) ? $_SESSION['horamedida'] : "00:00"  ?>">
+                                <input type="time" name="horamedida" id="horamedida" required value="<?= isset($dHoraMedida) ? $dHoraMedida : "00:00"  ?>">
                             </td>
                             <td>
-                                <input type="number" name="valormedida" id="valormedida" required step="0.01" value="<?= (isset($_SESSION['valormedida'])) ? $_SESSION['valormedida'] : null  ?>">
+                                <input type="number" name="valormedida" id="valormedida" required step="0.01" value="<?= (isset($dValorMedida)) ? $dValorMedida : null  ?>">
                             </td>
                         </tr>
                     </tbody>
