@@ -40,6 +40,10 @@
             case 'editMedidaPersona':
                 medidaController::editMedidaxPersona();
                 break;
+            
+            case 'deleteMedidaPersona':
+                medidaController::deleteMedidaxPersona();
+                break;
 
             default:
                 medidaController::index();

@@ -12,6 +12,7 @@
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.js"></script>
         <script type="text/javascript" src="../../../include/root/jquery.multiselect.filter.js"></script>
         <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
+        <script type="text/javascript" src="./View/medidapersona.js"></script>
 
         <!-- Inicio estilos css -->
         <style type="text/css">
@@ -163,7 +164,8 @@
                                         ".$oMedidaPersonal['personaregistro']."
                                     </td>
                                     <td>
-                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedidaPersona&idmedidaxpersona=".$oMedidaPersonal['idmedidapersona']."'>Editar</a>
+                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedidaPersona&idmedidaxpersona=".$oMedidaPersonal['idmedidapersona']."'>Editar</a> | 
+                                        <a href='#' onclick='eliminarMedidaPersonal(".$oMedidaPersonal['idmedidapersona'].")'>Eliminar</a>
                                     </td>
                                 </tr>";
                         }

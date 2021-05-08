@@ -224,8 +224,7 @@
             }
             $sHtml .= "</select>";
 
-            //$aDatos['personas'] = $aPersonas;
-		    $aDatos['mensaje'] = 'Se ha filtrado la información de personas.';
+            $aDatos['mensaje'] = 'Se ha filtrado la información de personas.';
             $aDatos['html'] = $sHtml;
 
             /** Limpiamos el buffer de salida de php para no retornar los datos de los "echos" que se hacen en los include **/
@@ -410,6 +409,49 @@
                 unset($_SESSION['codigopersona']);
                 unset($_SESSION['tipobusqueda']);
             }
+        }
+
+
+        /**
+         * Funcion para eliminación de medidas por persona
+         * @by: sebastian.nevado
+         * @date: 2021/05/07
+         */
+        public function deleteMedidaxPersona()
+        {
+            //Obtengo el parámetro
+            $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"];
+            $iIdMedidaxPersonal = isset($_POST['idmedidaxpersona']) ? $_POST['idmedidaxpersona'] : null;
+            
+            //Creo la variable medida
+            $oMedida = new Medida($wemp_pmla);
+
+            //Variable de respuesta
+            $aDatosRespuesta = array('error'=>0,'mensaje'=>'');
+
+            //Guardo y manejo los mensajes
+            if(!$oMedida->deleteMedidaxPersona($iIdMedidaxPersonal))
+            {
+                $_SESSION["idmedidaxpersona"] = $iIdMedidaxPersonal;
+                $_SESSION["error"] = $oMedida->getMensaje();
+                $aDatosRespuesta['mensaje'] = $oMedida->getMensaje();
+                $aDatosRespuesta['error'] = 1;
+            }
+            else
+            {
+                //Limpio variables de sesión
+                unset($_SESSION['idmedidaxpersona']);
+
+                //Seteo la variable de respuesta
+                $_SESSION["success"] = $oMedida->getMensaje();
+                $aDatosRespuesta['mensaje'] = $oMedida->getMensaje();
+            }
+
+            /** Limpiamos el buffer de salida de php para no retornar los datos de los "echos" que se hacen en los include **/
+            ob_end_clean();
+
+            echo json_encode($aDatosRespuesta);
+            return ;
         }
     }
 ?>
