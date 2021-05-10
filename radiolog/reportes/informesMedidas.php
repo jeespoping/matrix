@@ -5,29 +5,32 @@
     //Agrego el controlador de medida
     require_once("./Controller/informeMedidaController.php");
 
+    //Inicio la clase
+    $oInformeMedidaController = new informeMedidaController();
+
     //Valido si envío parámetro "action" por URL
     if(isset($_REQUEST["action"])){
         //Defino las acciones que se realizarán
         switch ($_REQUEST["action"]) {
             case 'informeNotificaciones':
-                informeMedidaController::listNotificacionesMedida();
+                $oInformeMedidaController->listNotificacionesMedida();
                 break;
             
             case 'informeBusquedas':
-                informeMedidaController::listBusquedasMedidasPorPersona();
+                $oInformeMedidaController->listBusquedasMedidasPorPersona();
                 break;
             
             case 'informeTotalMedidas':
-                informeMedidaController::listTotalMedidasPorPersona();
+                $oInformeMedidaController->listTotalMedidasPorPersona();
                 break;
                 
 
             default:
-                informeMedidaController::listNotificacionesMedida();
+                $oInformeMedidaController->listNotificacionesMedida();
                 break;
         }
     } else {
-        informeMedidaController::listNotificacionesMedida();
+        $oInformeMedidaController->listNotificacionesMedida();
     }
 
 

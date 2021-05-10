@@ -5,20 +5,23 @@
     //Agrego el controlador de medida
     require_once("./Controller/medidaController.php");
 
+    //Inicio la clase
+    $oMedidaController = new medidaController();
+
     //Valido si envío parámetro "action" por URL
     if(isset($_REQUEST["action"])){
         //Defino las acciones que se realizarán
         switch ($_REQUEST["action"]) {
             case 'createMedida':
-                medidaController::create();
+                $oMedidaController->create();
                 break;
             
             case 'createMedidaxPersona':
-                medidaController::createMedidaxPersona();
+                $oMedidaController->createMedidaxPersona();
                 break;
 
             case 'listMedidaxPersona':
-                medidaController::listMedidaxPersona();
+                $oMedidaController->listMedidaxPersona();
                 break;
 
             case 'buscarPersona':
@@ -26,31 +29,31 @@
                 ob_start();
                 /** Limpiamos el buffer de salida de php para no retornar los datos de los "echos" que se hacen en los include **/
                 ob_end_clean();
-                medidaController::buscarPersona();
+                $oMedidaController->buscarPersona();
                 break;
 
             case 'informeMedidaPersona':
-                medidaController::informeMedidaxPersona();
+                $oMedidaController->informeMedidaxPersona();
                 break;
 
             case 'listMedidas':
-                medidaController::index();
+                $oMedidaController->index();
                 break;
             
             case 'editMedidaPersona':
-                medidaController::editMedidaxPersona();
+                $oMedidaController->editMedidaxPersona();
                 break;
             
             case 'deleteMedidaPersona':
-                medidaController::deleteMedidaxPersona();
+                $oMedidaController->deleteMedidaxPersona();
                 break;
 
             default:
-                medidaController::index();
+                $oMedidaController->index();
                 break;
         }
     } else {
-        medidaController::index();
+        $oMedidaController->index();
     }
 
 

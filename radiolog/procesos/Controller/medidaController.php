@@ -158,6 +158,9 @@
                     return;
                 }
 
+                //Seteo la variable de respuesta
+                $_SESSION["success"] = $oMedida->getMensaje();
+
                 //Limpio variables de sesión
                 unset($_SESSION['idmedida']);
                 unset($_SESSION['personasselect']);
@@ -371,7 +374,7 @@
                 unset($_SESSION['tipobusqueda']);
 
                 //Seteo la variable de respuesta
-                $_SESSION["success"]="Medida por personal guardada";
+                $_SESSION["success"] = $oMedida->getMensaje();
                 
                 header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=listMedidaxPersona");
 
