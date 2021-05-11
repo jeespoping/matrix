@@ -177,7 +177,6 @@ $( function() {
         var busqueda = $( "#busquedapersona" ).val();
         if(busqueda == ''){
             $("#codigopersona").val("");
-            buscarPersona(true);
         }
     });
 });

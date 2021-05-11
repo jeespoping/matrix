@@ -361,7 +361,7 @@
                     $_SESSION["busquedapersona"] = $sBusquedaPersona;
                     $_SESSION["busquedacentrocosto"] = $sBusquedaCentroCosto;
 
-                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedidaxPersona&idmedidaxpersona=".$iIdMedidaxPersonal);
+                    header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedidaPersona&idmedidaxpersona=".$iIdMedidaxPersonal);
                     return;
                 }
 
