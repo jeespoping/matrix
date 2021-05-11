@@ -127,7 +127,8 @@
 
                 //Valido existencia de datos
                 $iIdMedida = isset($_POST['idmedida']) ? $_POST['idmedida'] : null;
-                $sCodigoPersona = isset($_POST['personasselect']) ? $_POST['personasselect'] : null;
+                $sCodigoPersona = isset($_POST['codigopersona']) ? $_POST['codigopersona'] : null;
+                $sCodigoCentroCosto = isset($_POST['codigocentrocosto']) ? $_POST['codigocentrocosto'] : null;
                 $dFechaMedida = isset($_POST['fechamedida']) ? $_POST['fechamedida'] : null;
                 $dHoraMedida = isset($_POST['horamedida']) ? $_POST['horamedida'] : null;
                 $dValorMedida = isset($_POST['valormedida']) ? $_POST['valormedida'] : null;
@@ -135,8 +136,8 @@
                 $sUsuario = $_SESSION['usera'];
                 $sSeguridad = "C-".$sUsuario;
 
-                $sBusquedaPersona = isset($_POST['codigopersona']) ? $_POST['codigopersona'] : null;
-                $sTipoBusquedaPersona = isset($_POST['tipobusqueda']) ? $_POST['tipobusqueda'] : null;
+                $sBusquedaCentroCosto = isset($_POST['busquedacentrocosto']) ? $_POST['busquedacentrocosto'] : null;
+                $sBusquedaPersona = isset($_POST['busquedapersona']) ? $_POST['busquedapersona'] : null;
 
                 //Data validations
                 $oMedida->setId($iIdMedida);
@@ -147,13 +148,14 @@
                 {
                     $_SESSION["error"]=$oMedida->getMensaje();
                     $_SESSION["idmedida"] = $iIdMedida;
-                    $_SESSION["personasselect"] = $sCodigoPersona;
+                    $_SESSION["codigopersona"] = $sCodigoPersona;
                     $_SESSION["fechamedida"] = $dFechaMedida;
                     $_SESSION["horamedida"] = $dHoraMedida;
                     $_SESSION["valormedida"] = $dValorMedida;
                     $_SESSION["idmedidaxpersona"] = $iIdMedidaxPersonal;
-                    $_SESSION["codigopersona"] = $sBusquedaPersona;
-                    $_SESSION["tipobusqueda"] = $sTipoBusquedaPersona;
+                    $_SESSION["busquedapersona"] = $sBusquedaPersona;
+                    $_SESSION["busquedacentrocosto"] = $sBusquedaCentroCosto;
+                    $_SESSION["codigocentrocosto"] = $sCodigoCentroCosto;
                     header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
                     return;
                 }
@@ -163,14 +165,15 @@
 
                 //Limpio variables de sesión
                 unset($_SESSION['idmedida']);
-                unset($_SESSION['personasselect']);
                 unset($_SESSION['fechamedida']);
                 unset($_SESSION['horamedida']);
                 unset($_SESSION['valormedida']);
                 unset($_SESSION['idmedidaxpersona']);
-
                 unset($_SESSION['codigopersona']);
-                unset($_SESSION['tipobusqueda']);
+                unset($_SESSION['codigocentrocosto']);
+
+                unset($_SESSION['busquedapersona']);
+                unset($_SESSION['busquedacentrocosto']);
 
                 header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=createMedidaxPersona");
                 
@@ -187,14 +190,15 @@
 
                 //Limpio variables de sesión
                 unset($_SESSION['idmedida']);
-                unset($_SESSION['personasselect']);
                 unset($_SESSION['fechamedida']);
                 unset($_SESSION['horamedida']);
                 unset($_SESSION['valormedida']);
                 unset($_SESSION['idmedidaxpersona']);
-
                 unset($_SESSION['codigopersona']);
-                unset($_SESSION['tipobusqueda']);
+                unset($_SESSION['codigocentrocosto']);
+
+                unset($_SESSION['busquedapersona']);
+                unset($_SESSION['busquedacentrocosto']);
             }
         }
 
@@ -208,8 +212,8 @@
             //Obtengo el parámetro
             $wemp_pmla = isset($_POST["wemp_pmla"]) ? $_POST["wemp_pmla"] : null;
             $sValorBusqueda = isset($_POST["busquedapersona"]) ? $_POST["busquedapersona"] : null;
-            $sTipoBusqueda = isset($_POST["tipoBusqueda"]) ? $_POST["tipoBusqueda"] : null;
-            $sCentroCosto = isset($_POST["codigoCentroCosto"]) ? $_POST["codigoCentroCosto"] : null;
+            $sTipoBusqueda = isset($_POST["tipobusqueda"]) ? $_POST["tipobusqueda"] : null;
+            $sCentroCosto = isset($_POST["codigocentrocosto"]) ? $_POST["codigocentrocosto"] : null;
             $bLimpiar = isset($_POST["limpiar"]) ? ($_POST["limpiar"]=="true") : false;
             
             //Creo la variable medida
@@ -326,17 +330,17 @@
 
                 //Valido existencia de datos
                 $iIdMedida = isset($_POST['idmedida']) ? $_POST['idmedida'] : null;
-                $sCodigoPersona = isset($_POST['personasselect']) ? $_POST['personasselect'] : null;
+                $sCodigoPersona = isset($_POST['codigopersona']) ? $_POST['codigopersona'] : null;
+                $sCodigoCentroCosto = isset($_POST['codigocentrocosto']) ? $_POST['codigocentrocosto'] : null;
                 $dFechaMedida = isset($_POST['fechamedida']) ? $_POST['fechamedida'] : null;
                 $dHoraMedida = isset($_POST['horamedida']) ? $_POST['horamedida'] : null;
                 $dValorMedida = isset($_POST['valormedida']) ? $_POST['valormedida'] : null;
                 $iIdMedidaxPersonal = isset($_POST['idmedidaxpersona']) ? $_POST['idmedidaxpersona'] : null;
-                $sCodigoCentroCosto = isset($_POST['codigocentrocosto']) ? $_POST['codigocentrocosto'] : null;
                 $sUsuario = $_SESSION['usera'];
                 $sSeguridad = "C-".$sUsuario;
 
-                $sBusquedaPersona = isset($_POST['codigopersona']) ? $_POST['codigopersona'] : null;
-                $sTipoBusquedaPersona = isset($_POST['tipobusqueda']) ? $_POST['tipobusqueda'] : null;
+                $sBusquedaCentroCosto = isset($_POST['busquedacentrocosto']) ? $_POST['busquedacentrocosto'] : null;
+                $sBusquedaPersona = isset($_POST['busquedapersona']) ? $_POST['busquedapersona'] : null;
 
                 //Data validations
                 $oMedida->setId($iIdMedida);
@@ -347,28 +351,31 @@
                 {
                     $_SESSION["error"] = $oMedida->getMensaje();
                     $_SESSION["idmedida"] = $iIdMedida;
-                    $_SESSION["personasselect"] = $sCodigoPersona;
                     $_SESSION["fechamedida"] = $dFechaMedida;
                     $_SESSION["horamedida"] = $dHoraMedida;
                     $_SESSION["valormedida"] = $dValorMedida;
                     $_SESSION["idmedidaxpersona"] = $iIdMedidaxPersonal;
-                    $_SESSION["codigopersona"] = $sBusquedaPersona;
-                    $_SESSION["tipobusqueda"] = $sTipoBusquedaPersona;
+                    $_SESSION["codigopersona"] = $sCodigoPersona;
                     $_SESSION["codigocentrocosto"] = $sCodigoCentroCosto;
+
+                    $_SESSION["busquedapersona"] = $sBusquedaPersona;
+                    $_SESSION["busquedacentrocosto"] = $sBusquedaCentroCosto;
+
                     header("Location: medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedidaxPersona&idmedidaxpersona=".$iIdMedidaxPersonal);
                     return;
                 }
 
                 //Limpio variables de sesión
                 unset($_SESSION['idmedida']);
-                unset($_SESSION['personasselect']);
                 unset($_SESSION['fechamedida']);
                 unset($_SESSION['horamedida']);
                 unset($_SESSION['valormedida']);
                 unset($_SESSION['idmedidaxpersona']);
-
                 unset($_SESSION['codigopersona']);
-                unset($_SESSION['tipobusqueda']);
+                unset($_SESSION['codigocentrocosto']);
+
+                unset($_SESSION['busquedapersona']);
+                unset($_SESSION['busquedacentrocosto']);
 
                 //Seteo la variable de respuesta
                 $_SESSION["success"] = $oMedida->getMensaje();
@@ -383,13 +390,13 @@
                 $oDatosMedidaPersona = $oMedida->loadMedidaPersona($iIdMedidaxPersonal);
 
                 $iIdMedida = isset($_SESSION['error']) ? $_SESSION['idmedida'] : $oDatosMedidaPersona['idmedida'];
-                $sCodigoPersona = isset($_SESSION['error']) ? $_SESSION['personasselect'] : $oDatosMedidaPersona['codigopersonamedida'];
+                $sCodigoPersona = isset($_SESSION['error']) ? $_SESSION['codigopersona'] : $oDatosMedidaPersona['codigopersonamedida'];
                 $dFechaMedida = isset($_SESSION['error']) ? $_SESSION['fechamedida'] : $oDatosMedidaPersona['fechamedida'];
                 $dHoraMedida = isset($_SESSION['error']) ? $_SESSION['horamedida'] : $oDatosMedidaPersona['horamedida'];
                 $dValorMedida = isset($_SESSION['error']) ? $_SESSION['valormedida'] : $oDatosMedidaPersona['valormedida'];
                 $sCodigoCentroCosto = isset($_SESSION['error']) ? $_SESSION['codigocentrocosto'] : $oDatosMedidaPersona['codigocentrocosto'];
-                $sBusquedaPersona = isset($_SESSION['error']) ? $_SESSION['codigopersona'] : null;
-                $sTipoBusquedaPersona = isset($_SESSION['error']) ? $_SESSION['tipobusqueda'] : null;
+                $sBusquedaPersona = isset($_SESSION['error']) ? $_SESSION['busquedapersona'] : $oDatosMedidaPersona['codigopersonamedida']." - ".$oDatosMedidaPersona['nombre']." (".$oDatosMedidaPersona['documento'].")";
+                $sBusquedaCentroCosto = isset($_SESSION['error']) ? $_SESSION['busquedacentrocosto'] : $oDatosMedidaPersona['codigocentrocosto']." - ".$oDatosMedidaPersona['nombrecentrocosto'];
 
                 $aMedidas = $oMedida->getAll();
                 $aPersonas = $oMedida->getUsuariosMedidas('codigo', $sCodigoPersona, $sCodigoCentroCosto);
@@ -400,14 +407,15 @@
 
                 //Limpio variables de sesión
                 unset($_SESSION['idmedida']);
-                unset($_SESSION['personasselect']);
                 unset($_SESSION['fechamedida']);
                 unset($_SESSION['horamedida']);
                 unset($_SESSION['valormedida']);
                 unset($_SESSION['idmedidaxpersona']);
-
                 unset($_SESSION['codigopersona']);
-                unset($_SESSION['tipobusqueda']);
+                unset($_SESSION['codigocentrocosto']);
+
+                unset($_SESSION['busquedapersona']);
+                unset($_SESSION['busquedacentrocosto']);
             }
         }
 

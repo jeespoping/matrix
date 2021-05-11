@@ -145,8 +145,8 @@ $( function() {
                     busquedapersona: request.term,
                     wemp_pmla : $("#wemp_pmla").val(),
                     action   : "buscarPersona",
-                    tipoBusqueda : "all",
-                    codigoCentroCosto : $("#codigocentrocosto").val(),
+                    tipobusqueda : "all",
+                    codigocentrocosto : $("#codigocentrocosto").val(),
                 },
                 success: function( data ) {
                 response( data );

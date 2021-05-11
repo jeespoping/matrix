@@ -137,42 +137,14 @@
                             </td>
                             <td style="width:40%">
                                 </br><b>Seleccione primero el centro de costo, y luego busque o seleccione la persona.</b>
-                                </br></br>Centro de costo:
-                                <select id="codigocentrocosto" name="codigocentrocosto" required onchange="buscarPersona(true)">
-                                    <option value="">--Seleccione un centro de costo--</option>
-                                    <?php
-                                        $sCodigoCCSelect = (isset($sCodigoCentroCosto)) ? $sCodigoCentroCosto : null;
-                                        foreach ($aCentrosCosto as $oCentroCosto) {
-                                            if($oCentroCosto['codigo'] != '*')
-                                            {
-                                                $sSelectedCC = ($sCodigoCCSelect == $oCentroCosto['codigo']) ? 'selected' : '';
-                                                echo "<option value='".$oCentroCosto['codigo']."' ".$sSelectedCC.">".$oCentroCosto['codigo']." - ".$oCentroCosto['nombre']."</option>";
-                                            }
-                                        }
-                                    ?>
-                                </select>
-                                </br></br>B&uacute;squeda:
-                                <?php $sTipoBusqueda = (isset($sTipoBusquedaPersona)) ? $sTipoBusquedaPersona : "documento";  ?>
-                                <select name="tipobusqueda" id="tipobusqueda">
-                                    <option value="documento" <?= ($sTipoBusqueda == "documento") ? "selected" : "" ?> >Documento</option>
-                                    <option value="codigo" <?= ($sTipoBusqueda == "codigo") ? "selected" : "" ?> >C&oacute;digo</option>
-                                </select>
-                                <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($sBusquedaPersona)) ? $sBusquedaPersona : null  ?>">
-                                <!-- <input type="submit" name="busqueda" id="busqueda" value="Buscar" onclick="buscarPersona()"> -->
-                                <a onclick="buscarPersona(false)">Buscar</a> | 
+                                </br></br> <b>Centro de costo:</b>
+                                <input type="text" name="busquedacentrocosto" id="busquedacentrocosto" value="<?= (isset($sBusquedaCentroCosto)) ? $sBusquedaCentroCosto : null  ?>" size="60">
+                                <input type="HIDDEN" name="codigocentrocosto" id="codigocentrocosto" value="<?= (isset($sCodigoCentroCosto)) ? $sCodigoCentroCosto : null  ?>">
+                                </br></br><b>Persona:</b>
+                                <input type="text" name="busquedapersona" id="busquedapersona" value="<?= (isset($sBusquedaPersona)) ? $sBusquedaPersona : null  ?>" size="60" require>
+                                <input type="HIDDEN" name="codigopersona" id="codigopersona" value="<?= (isset($sCodigoPersona)) ? $sCodigoPersona : null  ?>" require></br>
+                                </br>
                                 <a onclick="buscarPersona(true)">Limpiar</a>
-                                </br></br>
-                                Seleccione una persona:
-                                <select style="max-width:60%; width:60%" id="personasselect" name="personasselect" required>
-                                    <option value="" >--Seleccione una persona--</option>
-                                    <?php
-                                        $sCodigoPersonaSelect = (isset($sCodigoPersona)) ? $sCodigoPersona : null;
-                                        foreach ($aPersonas as $oPersona) {
-                                            $sSelected = ($sCodigoPersonaSelect == $oPersona['codigo']) ? 'selected' : '';
-                                            echo "<option value='".$oPersona['codigo']."' ".$sSelected.">".$oPersona['codigo']." - ".$oPersona['nombre']." (".$oPersona['documento'].")"."</option>";
-                                        }
-                                    ?>
-                                </select>
                                 </br></br>
                             </td>
                             <td>
