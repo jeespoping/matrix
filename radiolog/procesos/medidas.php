@@ -48,6 +48,10 @@
                 $oMedidaController->deleteMedidaxPersona();
                 break;
 
+            case 'buscarCentroCosto':
+                $oMedidaController->buscarCentrodeCosto();
+                break;
+
             default:
                 $oMedidaController->index();
                 break;

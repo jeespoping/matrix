@@ -125,13 +125,13 @@
                                 <input type="text" name="codigomedida" id="codigomedida" required value="<?= $_SESSION['codigomedida']  ?>">
                             </td>
                             <td>
-                                <input type="text" name="nombre" id="nombre" required value="<?= $_SESSION['nombre']  ?>">
+                                <input type="text" name="nombre" id="nombre" size="40" required value="<?= $_SESSION['nombre']  ?>">
                             </td>
                             <td>
                                 <textarea type="text" name="descripcion" id="descripcion" rows="3" cols="50"><?= $_SESSION['descripcion']  ?></textarea>
                             </td>
                             <td>
-                                <select style="max-width:60%; width:60%" id="unidad" name="unidad">
+                                <select style="max-width:60%; width:60%" id="unidad" name="unidad" required>
                                     <option value="" >--Seleccione una unidad--</option>
                                     <?php
                                         $sCodigoUnidadSelect = (isset($_SESSION['unidad'])) ? $_SESSION['unidad'] : null;

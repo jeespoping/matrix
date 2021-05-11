@@ -16,32 +16,13 @@ function buscarPersona(bLimpiar)
     //Si envío el parámtro en verdadero, limpio el campo de búsqueda
     if(bLimpiar == true)
     {
+        $("#busquedacentrocosto").val("");
+        $("#codigocentrocosto").val("");
+        $("#busquedapersona").val("");
         $("#codigopersona").val("");
     }
 
-    //Hago el llamado a la función que busca las personas
-    $.post("medidas.php",
-        {
-            action   : "buscarPersona",
-            codigoPersona : $("#codigopersona").val(),
-            wemp_pmla : $("#wemp_pmla").val(),
-            tipoBusqueda : $("#tipobusqueda").val(),
-            codigoCentroCosto : $("#codigocentrocosto").val(),
-            limpiar : bLimpiar
-        },
-        function(response)
-        {
-            //Obtengo los datos de respuesta
-            var dataJson = JSON.parse(response);
-            
-            //Reemplazo el select de personas
-            $("#personasselect").html(dataJson.html);
-
-            //Desbloqueo la pantalla
-            $.unblockUI();
-            return false;
-        }
-    );
+    $.unblockUI();
 }
 
 /**
@@ -102,3 +83,101 @@ function cerrarVentana()
         return false;
      }
  }
+
+$( function() {
+    // Single Select
+    $( "#busquedacentrocosto" ).autocomplete({
+        source: function( request, response ) {
+            // Fetch data
+            $.ajax({
+                url: "medidas.php",
+                type: 'post',
+                dataType: "json",
+                data: {
+                    busqueda: request.term,
+                    wemp_pmla : $("#wemp_pmla").val(),
+                    action   : "buscarCentroCosto"
+                },
+                success: function( data ) {
+                response( data );
+                }
+            });
+        },
+        select: function (event, ui) {
+            // Set selection
+            $('#busquedacentrocosto').val(ui.item.label); // display the selected text
+            $('#codigocentrocosto').val(ui.item.value); // save selected id to input
+            
+            $("#busquedapersona").val("");
+            $("#codigopersona").val("");
+            return false;
+        },
+            focus: function(event, ui){
+            $( "#busquedacentrocosto" ).val( ui.item.label );
+            $( "#codigocentrocosto" ).val( ui.item.value );
+            return false;
+        },
+        search: function(event, ui) {
+            $('#busquedacentrocosto')._addClass( "ui-autocomplete-loading" );
+        },
+        open: function(event, ui) {
+            $('#busquedacentrocosto')._addClass( "ui-autocomplete-loading" );
+        }
+    });
+
+    $( "#busquedacentrocosto" ).change(function() {
+        var busqueda = $( "#busquedacentrocosto" ).val();
+        if(busqueda == ''){
+            $("#codigocentrocosto").val("");
+            buscarPersona(true);
+        }
+    });
+
+
+    $( "#busquedapersona" ).autocomplete({
+        source: function( request, response ) {
+            // Fetch data
+            $.ajax({
+                url: "medidas.php",
+                type: 'post',
+                dataType: "json",
+                data: {
+                    busquedapersona: request.term,
+                    wemp_pmla : $("#wemp_pmla").val(),
+                    action   : "buscarPersona",
+                    tipoBusqueda : "all",
+                    codigoCentroCosto : $("#codigocentrocosto").val(),
+                },
+                success: function( data ) {
+                response( data );
+                }
+            });
+        },
+        select: function (event, ui) {
+            // Set selection
+            $('#busquedapersona').val(ui.item.label); // display the selected text
+            $('#codigopersona').val(ui.item.value); // save selected id to input
+            buscarPersona(false);
+            return false;
+        },
+        focus: function(event, ui){
+            $( "#busquedapersona" ).val( ui.item.label );
+            $( "#codigopersona" ).val( ui.item.value );
+            return false;
+        },
+        search: function(event, ui) {
+            $('#busquedapersona')._addClass( "ui-autocomplete-loading" );
+        },
+        open: function(event, ui) {
+            $('#busquedapersona')._addClass( "ui-autocomplete-loading" );
+        }
+    });
+
+    $( "#busquedapersona" ).change(function() {
+        var busqueda = $( "#busquedapersona" ).val();
+        if(busqueda == ''){
+            $("#codigopersona").val("");
+            buscarPersona(true);
+        }
+    });
+});

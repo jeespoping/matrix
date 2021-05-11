@@ -70,7 +70,7 @@
                 if(!$oMedida->save())
                 {
                     $_SESSION["error"] = $oMedida->getMensaje();
-                    $_SESSION["codigo"] = $sCodigo;
+                    $_SESSION["codigomedida"] = $sCodigo;
                     $_SESSION["nombre"] = $sNombre;
                     $_SESSION["descripcion"] = $sDescripcion;
                     $_SESSION["unidad"] = $sIdUnidad;
@@ -199,7 +199,7 @@
         }
 
         /**
-         * Funcion para creación de medidas
+         * Funcion para búsqueda de personas
          * @by: sebastian.nevado
          * @date: 2021/04/26
          */
@@ -207,7 +207,7 @@
         {
             //Obtengo el parámetro
             $wemp_pmla = isset($_POST["wemp_pmla"]) ? $_POST["wemp_pmla"] : null;
-            $sValorBusqueda = isset($_POST["codigoPersona"]) ? $_POST["codigoPersona"] : null;
+            $sValorBusqueda = isset($_POST["busquedapersona"]) ? $_POST["busquedapersona"] : null;
             $sTipoBusqueda = isset($_POST["tipoBusqueda"]) ? $_POST["tipoBusqueda"] : null;
             $sCentroCosto = isset($_POST["codigoCentroCosto"]) ? $_POST["codigoCentroCosto"] : null;
             $bLimpiar = isset($_POST["limpiar"]) ? ($_POST["limpiar"]=="true") : false;
@@ -216,24 +216,21 @@
             $oMedida = new Medida($wemp_pmla);
             $aPersonas = $oMedida->getUsuariosMedidas($sTipoBusqueda, $sValorBusqueda, $sCentroCosto);
             
-            $aDatos = array('error'=>0,'mensaje'=>'','html'=>'','personas'=>'');
-            $sHtml = '<select style="max-width:60%; width:60%" id="personasselect" name="personasselect">
-                        <option value="" selected>--Seleccione una persona--</option>';
-            
-            $sSelected = ($bLimpiar) ? "" : "selected";
+            $response = array();
+            if(count($aPersonas) == 0)
+            {
+                $response[] = array("value"=>"","label"=>"No se encontró ninguna persona");
+            }
             foreach ($aPersonas as $oPersona)
             {
-                $sHtml .= "<option value='".$oPersona['codigo']."' ".$sSelected.">".$oPersona['codigo']." - ".utf8_encode($oPersona['nombre'])." (".$oPersona['documento'].")"."</option>";
+                $response[] = array("value"=>$oPersona['codigo'],"label"=>$oPersona['codigo']." - ".$oPersona['nombre']." (".$oPersona['documento'].")");
             }
-            $sHtml .= "</select>";
 
-            $aDatos['mensaje'] = 'Se ha filtrado la información de personas.';
-            $aDatos['html'] = $sHtml;
 
             /** Limpiamos el buffer de salida de php para no retornar los datos de los "echos" que se hacen en los include **/
             ob_end_clean();
 
-            echo json_encode($aDatos);
+            echo json_encode($response);
             return ;
         }
 
@@ -454,6 +451,38 @@
             ob_end_clean();
 
             echo json_encode($aDatosRespuesta);
+            return ;
+        }
+
+        /**
+         * Funcion buscar centro de costo
+         * @by: sebastian.nevado
+         * @date: 2021/05/11
+         */
+        public function buscarCentrodeCosto()
+        {
+            //Obtengo el parámetro
+            $wemp_pmla = isset($_REQUEST["wemp_pmla"]) ? $_REQUEST["wemp_pmla"] : null;
+            $sValorBusqueda = isset($_REQUEST["busqueda"]) ? $_REQUEST["busqueda"] : null;
+            
+            //Creo la variable medida
+            $oMedida = new Medida($wemp_pmla);
+            $aCentroCostos = $oMedida->getCentrosCosto($sValorBusqueda);
+            
+            $response = array();
+            if(count($aCentroCostos) == 0)
+            {
+                $response[] = array("value"=>"","label"=>"No se encontró ningún centro de costo");
+            }
+            foreach ($aCentroCostos as $oCentroCosto)
+            {
+                $response[] = array("value"=>$oCentroCosto['codigo'],"label"=>$oCentroCosto['codigo']." - ".$oCentroCosto['nombre']);
+            }
+
+            /** Limpiamos el buffer de salida de php para no retornar los datos de los "echos" que se hacen en los include **/
+            ob_end_clean();
+
+            echo json_encode($response);
             return ;
         }
     }

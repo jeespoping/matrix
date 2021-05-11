@@ -120,7 +120,6 @@
                                 <th>Descripci&oacute;n</th>
                                 <th>Unidad</th>
                                 <th>Enviar Notificaci&oacute;n</th>
-                                <th>Acci&oacute;n</th>
                             </tr>");
 
                         //Elementos de la tabla de Medidas
@@ -146,9 +145,6 @@
                                     </td>
                                     <td>
                                         ".$oMedida['enviarnotificaciontexto']."
-                                    </td>
-                                    <td>
-                                        <a href='medidas.php?wemp_pmla=".$wemp_pmla."&action=editMedida&id=".$oMedida['id']."'>Editar</a>
                                     </td>
                                 </tr>";
                         }
