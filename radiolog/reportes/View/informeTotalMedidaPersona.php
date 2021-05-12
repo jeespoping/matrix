@@ -170,10 +170,12 @@
                         //Títulos de tabla
                         echo("
                             <tr class='fila1'>
-                                <th colspan='3'><h3>Resultados</h3></th>
+                                <th colspan='5'><h3>Resultados</h3></th>
                             </tr>
                             <tr class='encabezadoTabla'>
-                                <th>Persona: C&oacute;digo - Nombre (Documento)</th>
+                                <th>C&oacute;digo</th>
+                                <th>Documento</th>
+                                <th>Nombre</th>
                                 <th>Medida</th>
                                 <th>Total</th>
                             </tr>");
@@ -187,6 +189,12 @@
                             $sClaseFila = ($iIndice % 2 == 0) ? "fila2" : "fila1";
                             //Muestro la fila
                             echo "<tr class='".$sClaseFila."'>
+                                    <td>
+                                        ".$oTotalMedidaPersona['codigousuario']."
+                                    </td>
+                                    <td>
+                                        ".$oTotalMedidaPersona['documentousuario']."
+                                    </td>
                                     <td>
                                         ".$oTotalMedidaPersona['usuario']."
                                     </td>

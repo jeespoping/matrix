@@ -163,15 +163,17 @@
                         //Títulos de tabla
                         echo("
                             <tr class='fila1'>
-                                <th colspan='7'><h3>Resultados</h3></th>
+                                <th colspan='9'><h3>Resultados</h3></th>
                             </tr>
                             <tr class='encabezadoTabla'>
                                 <th>Fecha</th>
                                 <th>Medida</th>
                                 <th>Documento</th>
+                                <th>C&oacute;digo</th>
                                 <th>Nombre</th>
                                 <th>Valor medida</th>
                                 <th>Fecha de registro</th>
+                                <th>C&oacute;digo persona registro</th>
                                 <th>Persona de registro</th>
                             </tr>");
 
@@ -194,13 +196,19 @@
                                         ".$oMedidaPersonal['documento']."
                                     </td>
                                     <td>
+                                        ".$oMedidaPersonal['codigousuario']."
+                                    </td>
+                                    <td>
                                         ".$oMedidaPersonal['nombreusuario']."
                                     </td>
                                     <td>
-                                        ".$oMedidaPersonal['valor']."
+                                        ".$oMedidaPersonal['valor']." ".$oMedidaPersonal['unidadmedida']."
                                     </td>
                                     <td>
                                         ".$oMedidaPersonal['fecharegistro']."
+                                    </td>
+                                    <td>
+                                        ".$oMedidaPersonal['codigopersonalregistro']."
                                     </td>
                                     <td>
                                         ".$oMedidaPersonal['personaregistro']."

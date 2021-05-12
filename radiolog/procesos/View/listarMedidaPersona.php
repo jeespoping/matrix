@@ -125,6 +125,7 @@
                         echo("<tr class='encabezadoTabla'>
                                 <th>Fecha</th>
                                 <th>Medida</th>
+                                <th>C&oacute;digo</th>
                                 <th>Documento</th>
                                 <th>Nombre</th>
                                 <th>Valor medida</th>
@@ -147,6 +148,9 @@
                                     </td>
                                     <td>
                                         ".$oMedidaPersonal['medida']."
+                                    </td>
+                                    <td>
+                                        ".$oMedidaPersonal['codigousuario']."
                                     </td>
                                     <td>
                                         ".$oMedidaPersonal['documento']."

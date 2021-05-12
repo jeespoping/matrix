@@ -165,16 +165,19 @@
                         //Títulos de tabla
                         echo("
                             <tr class='fila1'>
-                                <th colspan='7'><h3>Resultados</h3></th>
+                                <th colspan='10'><h3>Resultados</h3></th>
                             </tr>
                             <tr class='encabezadoTabla'>
                                 <th>Fecha b&uacute;squeda</th>
                                 <th>B&uacute;squeda</th>
-                                <th>Persona asociada: C&oacute;digo - Nombre (Documento)</th>
+                                <th>C&oacute;digo persona asociada</th>
+                                <th>Nombre persona asociada</th>
+                                <th>Documento persona asociada</th>
                                 <th>Fecha medida</th>
                                 <th>Medida</th>
                                 <th>Valor medida</th>
-                                <th>Realizador de consulta: C&oacute;digo - Nombre (Documento)</th>
+                                <th>C&oacute;digo realizador de consulta</th>
+                                <th>Nombre realizador de consulta</th>
                             </tr>");
 
                         //Elementos de la tabla de Consultas
@@ -193,6 +196,12 @@
                                         ".$oBusqueda['consulta']."
                                     </td>
                                     <td>
+                                        ".$oBusqueda['codigopersonaresultado']."
+                                    </td>
+                                    <td>
+                                        ".$oBusqueda['documentopersonaresultado']."
+                                    </td>
+                                    <td>
                                         ".$oBusqueda['personaresultado']."
                                     </td>
                                     <td>
@@ -203,6 +212,9 @@
                                     </td>
                                     <td>
                                         ".$oBusqueda['valor']."
+                                    </td>
+                                    <td>
+                                        ".$oBusqueda['codigopersonabuscador']."
                                     </td>
                                     <td>
                                         ".$oBusqueda['personabuscador']."

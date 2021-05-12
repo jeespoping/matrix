@@ -164,11 +164,13 @@
                         //Títulos de tabla
                         echo("
                             <tr class='fila1'>
-                                <th colspan='6'><h3>Resultados</h3></th>
+                                <th colspan='8'><h3>Resultados</h3></th>
                             </tr>
                             <tr class='encabezadoTabla'>
                                 <th>Fecha Notificaci&oacute;n</th>
-                                <th>Persona</th>
+                                <th>C&oacute;digo</th>
+                                <th>Documento</th>
+                                <th>Nombre</th>
                                 <th>Fecha medida</th>
                                 <th>Medida</th>
                                 <th>Valor medida</th>
@@ -186,6 +188,12 @@
                             echo "<tr class='".$sClaseFila."'>
                                     <td>
                                         ".$oNotificacion['fechanotificacion']."
+                                    </td>
+                                    <td>
+                                        ".$oNotificacion['codigopersona']."
+                                    </td>
+                                    <td>
+                                        ".$oNotificacion['identificacionpersona']."
                                     </td>
                                     <td>
                                         ".$oNotificacion['persona']."
