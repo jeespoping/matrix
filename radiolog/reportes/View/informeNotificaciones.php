@@ -119,6 +119,7 @@
                             <tr class="encabezadoTabla">
                                 <th>C&oacute;digo Medida</th>
                                 <th>Persona</th>
+                                <th>Intervalo fechas notificaci&oacute;n</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -144,6 +145,10 @@
                                     </select>
                                     <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>">
                                     </br></br>
+                                </td>
+                                <td>
+                                    Desde: <input type="date" name="fechainicio" id="fechainicio" value="<?= (isset($_SESSION['fechainicio'])) ? $_SESSION['fechainicio'] : null  ?>"> 
+                                    Hasta: <input type="date" name="fechafin" id="fechafin" value="<?= (isset($_SESSION['fechafin'])) ? $_SESSION['fechafin'] : null  ?>">
                                 </td>
                             </tr>
                         </tbody>

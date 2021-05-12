@@ -115,11 +115,12 @@
                     <table>
                         <thead>
                             <tr class='fila1'>
-                                <th colspan='2'><h3>B&uacute;squeda</h3></th>
+                                <th colspan='3'><h3>B&uacute;squeda</h3></th>
                             </tr>
                             <tr class="encabezadoTabla">
                                 <th>C&oacute;digo Medida</th>
                                 <th>Persona</th>
+                                <th>Intervalo fechas b&uacute;squeda</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -145,6 +146,10 @@
                                     </select>
                                     <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>">
                                     </br></br>
+                                </td>
+                                <td>
+                                    Desde: <input type="date" name="fechainicio" id="fechainicio" value="<?= (isset($_SESSION['fechainicio'])) ? $_SESSION['fechainicio'] : null  ?>"> 
+                                    Hasta: <input type="date" name="fechafin" id="fechafin" value="<?= (isset($_SESSION['fechafin'])) ? $_SESSION['fechafin'] : null  ?>">
                                 </td>
                             </tr>
                         </tbody>

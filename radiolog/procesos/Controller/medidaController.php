@@ -271,6 +271,9 @@
             //Creo la variable medida
             $oMedida = new Medida($wemp_pmla);
 
+            $_SESSION["fechainicio"] = date("Y-m-d", strtotime("-1 years"));
+            $_SESSION["fechafin"] = date("Y-m-d");
+
             // Proceso si doy aceptar
             if ( isset($_POST['buscar']) )
             {
@@ -279,6 +282,8 @@
                 $sValorBusqueda = isset($_POST["codigopersona"]) ? $_POST["codigopersona"] : null;
                 $sTipoBusqueda = isset($_POST["tipobusqueda"]) ? $_POST["tipobusqueda"] : null;
                 $iIdMedida = isset($_POST['idmedida']) ? $_POST['idmedida'] : null;
+                $sFechaInicio = (isset($_POST["fechainicio"])  && ($_POST["fechainicio"] != '')) ? $_POST["fechainicio"] : null;
+                $sFechaFin = (isset($_POST["fechafin"])  && ($_POST["fechafin"] != '')) ? $_POST["fechafin"] : null;
                 $sUsuario = $_SESSION['usera'];
                 $sSeguridad = "C-".$sUsuario;
 
@@ -289,7 +294,7 @@
                 $bGuardarBusqueda=true;
 
                 //Guardo y manejo los mensajes
-                $aMedidasPersonal = $oMedida->getAllMedidasxPersona($sTipoBusqueda, $sValorBusqueda, $iIdMedida, $bGuardarBusqueda);
+                $aMedidasPersonal = $oMedida->getAllMedidasxPersona($sTipoBusqueda, $sValorBusqueda, $iIdMedida, $bGuardarBusqueda, $sFechaInicio, $sFechaFin);
 
                 //Seteo la variable de respuesta
                 $_SESSION["success"] = $oMedida->getMensaje();
