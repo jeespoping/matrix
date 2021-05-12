@@ -224,7 +224,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ){
 
 
     }else if( $_POST['movement'] == "homologate" ){
-
+      
       $arrayParametrosRequeridos = array(
         "internalProductCode",
         "provider",
@@ -241,7 +241,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ){
       endRoutine(  $respuesta  );
 
     }else if( $_POST['movement'] == "PurchaseOrder" ){
-
+      
       if( !$hay_unix or (!$conex_o && $_POST['reqSource'] != "interno") ){
           guardarPeticionParaEjecucionPosterior( json_encode($_POST), $userPl->userCode, "POST" );
       }
@@ -402,12 +402,12 @@ function consultarArticulosXproveedor( $proveedor ){
                       VALUES ( '{$fuenteXdocumento['fuente']}', '{$fuenteXdocumento['documento']}', '{$ano}', '{$mes}', '{$fechaActual}', '{$conceptoIngreso}', '{$servicioIngreso}', '{$nitProveedor}', '{$documentoRemision}', 0 )";
     $resFac = odbc_exec( $conex_o, $query ) or ( registrarErrorApi() );
 
-    //Grabación del detalle del movimiento en ivmovdet
+    //Grabación del detalle del movimiento en ivmovdet 
     $query  = " INSERT INTO ivmovdet ( movdetfue, movdetdoc, movdetite, movdetano, movdetmes, movdetcon, movdetart, movdetcan, movdetuni, movdetpre, movdetdes, movdetiva, movdettot, movdetcos, movdetanu  )
                       VALUES ( '{$fuenteXdocumento['fuente']}', '{$fuenteXdocumento['documento']}', {$item}, '{$ano}', '{$mes}', '{$conceptoIngreso}', '{$codigoArticuloInterno}', {$cantidad}, '{$unidad}', {$precioUnitario}, {$descuento}, {$ivaTotal}, {$total}, {$costo}, 0  )";
     $resFac = odbc_exec( $conex_o, $query ) or ( registrarErrorApi() );
 
-    //Actualización del
+    //Actualización del 
     $query  = " UPDATE ivsal
                    SET salent = salent + {$cantidad}
                  WHERE salano = '{$ano}'
@@ -667,12 +667,12 @@ function obtenerFuentesInventarioUnix( $fuenteBuscada, $ccoDestino='' ){
                 FROM ivfue
               WHERE fuecod = '{$fuenteBuscada}'
                 AND fuecco = '1060'";
-
+    
 
     $resFac                   = odbc_exec($conex_o,$query);
     $row                      = odbc_fetch_row($resFac);
     $datosFuente['fuente']    = odbc_result($resFac,'fuecod');
-    $datosFuente['documento'] = odbc_result($resFac,'fuesec');
+    $datosFuente['documento'] = odbc_result($resFac,'fuesec')+1;
 
 
     $query = "UPDATE ivfue
@@ -684,13 +684,13 @@ function obtenerFuentesInventarioUnix( $fuenteBuscada, $ccoDestino='' ){
 
     $query = "SELECT COUNT(*) as cantidad
                 FROM ivord
-               WHERE ordfue = '{$datosFuente['fuente']}'
+               WHERE ordfue = '{$datosFuente['fuente']}' 
                  AND orddoc = '{$datosFuente['documento']}'";
-
+    
     $resFac = odbc_exec( $conex_o,$query );
     $row    = odbc_fetch_row( $resFac );
     $documentoDisponible = ( odbc_result($resFac,'cantidad') > 0 ) ? false : true  ;
-
+    
   }
 
   return( $datosFuente );
@@ -718,7 +718,7 @@ function realizarTrasladoInsumo( $fuenteXdocumento ){
   $codigoArticuloInterno = $_POST['productCode'];
   $ccoOrigen = ( $_POST['stc'] == "on" ) ? $servicioTrasladosCons : $_POST['origin'];
   $cantidad = $_POST['amount'];
-
+  
   //--> traer datos del sistema asociados: Uni,  valor/uni, Dcto. total, Iva total, Vlr/Neto
   $datosArticulo  = consultarArticuloUnix( $codigoArticuloInterno );
   $unidad    = $datosArticulo['unidad'];
@@ -736,7 +736,7 @@ function realizarTrasladoInsumo( $fuenteXdocumento ){
   $row       = odbc_fetch_row($resFac);
   $ultimoPrecio = odbc_result($resFac,'salpro');
   $ultimoPrecio = ( $ultimoPrecio == "" or $ultimoPrecio == 0 )  ? $precio : $ultimoPrecio;
-
+  
   /*Grabación del encabezado del movimiento en ivmov*/
   $query  = " INSERT INTO ivmov ( movfue, movdoc, movano, movmes, movfec, movcon, movser, movse1, movanu )
                       VALUES ( '{$fuenteXdocumento['fuente']}', '{$fuenteXdocumento['documento']}', '{$ano}', '{$mes}', '{$fechaActual}', '{$conceptoTraslado}', '{$ccoOrigen}', '{$ccoDestino}', 0 )";
@@ -751,22 +751,22 @@ function realizarTrasladoInsumo( $fuenteXdocumento ){
   /*Verificación de la existencia de saldos previa, si el producto está recién creado estos registros no existen y el proceso fallará*/
   //saldos en centro de costos del que salen las existencias
   $query = " SELECT COUNT(*) cantidad
-               FROM ivsal
+               FROM ivsal 
               WHERE salano = '{$ano}'
                 AND salmes = '{$mes}'
                 AND salser = '{$ccoOrigen}'";
   $resFac  = odbc_exec( $conex_o, $query ) or ( registrarErrorApi() );
   $row     = odbc_fetch_row($resFac);
   $cantidadMesActualOrigen  = odbc_result($resFac,'cantidad');
-
+  
   if( $cantidadMesActualOrigen == 0 ){
     $query  = " INSERT INTO ivsal ( salano, salmes, salser, salart, saluni, salant, salvan, salent, salven, salsal, salvsa, salpro, salaju  )
                     VALUES ( '{$ano}', '{$mes}', {$ccoOrigen}, '{$codigoArticuloInterno}', '{$unidad}', 0, 0, 0, 0, {$cantidad}, {$valorMovimiento}, {$precio}, 0  )";
-    $resFac  = odbc_exec( $conex_o, $query ) or ( registrarErrorApi() );
+    $resFac  = odbc_exec( $conex_o, $query ) or ( registrarErrorApi() );  
   }
   //saldos en centro de costos al que entran las existencias
   $query = " SELECT COUNT(*) cantidad
-               FROM ivsal
+               FROM ivsal 
               WHERE salano = '{$ano}'
                 AND salmes = '{$mes}'
                 AND salser = '{$ccoDestino}'";
@@ -789,7 +789,7 @@ function realizarTrasladoInsumo( $fuenteXdocumento ){
                   AND salart = '{$codigoArticuloInterno}'";
     $resFac = odbc_exec( $conex_o, $query ) or ( registrarErrorApi() );
   }
-
+  
   /*Actualización del inventario en el destino */
   if( $cantidadMesActualDestino > 0 ){
     $query  = " UPDATE ivsal
@@ -849,21 +849,21 @@ function grabarMovimientoInventarioMatrix( $fuenteXdocumento, $conceptoIngreso,$
          $respuesta,
          $servicioTrasladosCons;
     $cantidadEncabezado = 0;
-
+    
     switch( $_POST['movement'] ){
       case "income":
         $cantidadEncabezado = $cantidad*1;
-        $ccoOrigen = "";
+        $ccoOrigen = ""; 
         $mueveCantidad = true;
         break;
       case "consumption":
         $cantidadEncabezado = $cantidad*(-1);
-        $ccoOrigen = "";
+        $ccoOrigen = ""; 
         $mueveCantidad = true;
         break;
       case "undoing":
         $cantidadEncabezado = $cantidad*1;
-        $_POST['origin'] = "";
+        $_POST['origin'] = ""; 
         $mueveCantidad = true;
         break;
       case "transfer":
@@ -1007,7 +1007,7 @@ function homologarArticuloInternoProveedor(){
           $wmovhos,
           $fechaActual,
           $horaActual,
-          $_POST,
+          $_POST, 
           $respuesta;
 
   //verifico que exista el articulo
@@ -1018,7 +1018,7 @@ function homologarArticuloInternoProveedor(){
   $rs     = mysql_query( $query, $conex );
   $row    = mysql_fetch_assoc( $rs );
   $creado = ( $row['cantidad'] > 0 ) ? true : false;
-
+  
   if( !$creado ){
     $respuesta['message'] = " Internal Code does not exist ";
     $respuesta['status'] = 404;
@@ -1033,7 +1033,7 @@ function homologarArticuloInternoProveedor(){
   $rs     = mysql_query( $query, $conex );
   $row    = mysql_fetch_assoc( $rs );
   $homologado = ( $row['cantidad'] >0 ) ? true : false;
-
+  
   if( $homologado ){
     $query = " UPDATE {$wbasedato}_000009
                   SET Axpcba = '{$_POST['providerProductCode']}'
@@ -1053,13 +1053,13 @@ function homologarArticuloInternoProveedor(){
   $rs     = mysql_query( $query, $conex );
   $row    = mysql_fetch_assoc( $rs );
   $homologado = ( $row['cantidad'] >0 ) ? true : false;
-
+  
   if( !$homologado ){
     $query = "INSERT INTO {$wbasedato}_000322 ( Medico, Fecha_data, Hora_data, Salart, Salsal, Salest, Seguridad )
     VALUES ( '{$wbasedato}', '{$fechaActual}', '{$horaActual}', '{$_POST['internalProductCode']}', '0', 'on', 'C-{$_POST['user']}')";
   }
   $rs  = mysql_query( $query, $conex ) or ( registrarErrorApi() );
-
+  
   $respuesta['result'] = array( 'internalCode'=>$_POST['internalProductCode'],'providerProductCode'=>$_POST['providerProductCode'], 'id'=> $nid );
   $respuesta['message'] = " The Codes have been homologated successfully ";
   $respuesta['status'] = 200;
@@ -1078,7 +1078,7 @@ function generarOrdenDeCompra( $producData, $fuenteXdocumento, $item, $cantItems
          $servicioTrasladosCons,
          $costoBrutoTotal,
          $valorIvaTotal;
-
+  
   //consulta de la información del iva y el costo para el producto.
   $datosArticulo   = consultarArticuloUnix( $producData['productCode'] );
   $valorIva        = (($datosArticulo['costo']*$datosArticulo['factorIva'])/100)*$producData['amount'];
@@ -1122,7 +1122,7 @@ function consultarArticuloUnix( $codigoArticulo ){
               WHERE artcod = '{$codigoArticulo}'
                 AND artact = 'S'";
   $resFac    = odbc_exec( $conex_o, $query );
-
+  
   if( odbc_fetch_row( $resFac ) ){
     $datosArticulo['unidad']    = odbc_result($resFac,'artuni');
     $datosArticulo['factorIva'] = odbc_result($resFac,'artiva');
@@ -1130,7 +1130,7 @@ function consultarArticuloUnix( $codigoArticulo ){
     $datosArticulo['nombre']     = odbc_result($resFac,'artnom');
   }
   return( $datosArticulo );
-
+  
 }
 
 function consultarTipoEmpresa( $nitProveedor ){
@@ -1142,7 +1142,7 @@ function consultarTipoEmpresa( $nitProveedor ){
               WHERE procod = '{$nitProveedor}'
                 AND proact = 'S'";
   $resFac    = odbc_exec( $conex_o, $query );
-
+  
   if( odbc_fetch_row( $resFac ) ){
     $datosProveedor['codigo']    = odbc_result($resFac,'procod');
     $datosProveedor['tipo'] = odbc_result($resFac,'protip');
