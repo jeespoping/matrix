@@ -57,7 +57,7 @@
             else
             {
                 //Obtengo el listado de notificaciones
-                $aNotificaciones = $oMedida->getAllNotificaciones();
+                //$aNotificaciones = $oMedida->getAllNotificaciones();
 
                 //Obtengo el listado de medidas
                 $aMedidas = $oMedida->getAll();
@@ -114,7 +114,7 @@
             else
             {
                 //Obtengo el listado de notificaciones
-                $aBusquedas = $oMedida->getAllConsultas();
+                //$aBusquedas = $oMedida->getAllConsultas();
                 
                 //Llamo a la vista
                 require("./View/informeConsultas.php");
@@ -138,6 +138,8 @@
 
             //Obtengo el listado de medidas
             $aMedidas = $oMedida->getAll();
+            $_SESSION["fechainicio"] = date("Y-m-d", strtotime("-1 years"));
+            $_SESSION["fechafin"] = date("Y-m-d");
 
             // Proceso si doy aceptar
             if ( isset($_POST['buscar']) )
@@ -171,7 +173,7 @@
             else
             {
                 //Obtengo el listado de notificaciones
-                $aTotalMedidasPersona = $oMedida->getTotalMedidasxPersona();
+                //$aTotalMedidasPersona = $oMedida->getTotalMedidasxPersona();
                 
                 //Llamo a la vista
                 require("./View/informeTotalMedidaPersona.php");
