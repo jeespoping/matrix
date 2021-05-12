@@ -120,7 +120,7 @@
                             <tr class="encabezadoTabla">
                                 <th>C&oacute;digo Medida</th>
                                 <th>Persona</th>
-                                <th>Intervalo fechas b&uacute;squeda</th>
+                                <th>Intervalo fechas</th>
                             </tr>
                         </thead>
                         <tbody>
