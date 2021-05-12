@@ -439,8 +439,19 @@ function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbas
 	
 	$condicion_tipo_origen = $columna_tipo_origen != '' ? " AND $columna_tipo_origen = 'on' " : "";
 	$condicion_fhce_confhce = ($ccaeve == 'on' || $ccadat == 'on') ? "AND ccafhce = '".$ccafhce."' AND ccachce = '".$ccachce."'" : '';
-		
-	$query_existe_cca = "SELECT id FROM ".$wbasedato_cliame."_000341 WHERE ccacon = '$ccacon' $condicion_proc_o_insumo $condicion_cco $condicion_tipo_origen $condicion_fhce_confhce";
+
+	// CONSULTA ANTERIOR SIN LA VALIDACION DE TIPO CARGO EVENTO
+	//$query_existe_cca = "SELECT id FROM ".$wbasedato_cliame."_000341 WHERE ccacon = '$ccacon' $condicion_proc_o_insumo $condicion_cco $condicion_tipo_origen $condicion_fhce_confhce $condicion_fhce";
+	
+	$query_existe_cca = "SELECT id FROM ".$wbasedato_cliame."_000341 ";
+	
+	if(is_null($id) && $ccaeve == 'on') {
+		$query_existe_cca .= " WHERE ccafhce NOT NULL $condicion_fhce_confhce $condicion_tipo_origen ";
+	} else {
+		$query_existe_cca .= " WHERE ccacon = '$ccacon' $condicion_proc_o_insumo $condicion_cco $condicion_tipo_origen $condicion_fhce_confhce ";
+	}
+	
+	$query_existe_cca = "SELECT id FROM ".$wbasedato_cliame."_000341 WHERE ccacon = '$ccacon' $condicion_proc_o_insumo $condicion_cco $condicion_tipo_origen $condicion_fhce_confhce $condicion_fhce";
 	
 	$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Tipo Evento): $query_existe_cca - ".mysql_error());
 	$num_reg = mysql_num_rows($exec);
@@ -858,12 +869,13 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					$wasunto = "Cargo Automatico (".$tipo_cargo.") - Tarifa en Cero";
 					$detalle1 = "Cargo Automatico (".$tipo_cargo.") - Tarifa en Cero";
 					$detalle2 = "El siguiente cargo automatico tiene tarifa en cero, por lo tanto no se realizo. \n Historia: ".$whis."-".$wing."\n Paciente:".$paciente." Documento:".$paciente_ced."\n Responsable: ".$wnomemp." - ".$nitEmpresa." Cod: ".$wcodemp." Tarifa: ".$wtar."\n Procedimiento o Articulo: ".$procOArtNom." - ".$procOArt." \n Concepto: ".$wcodcon;
-					$respuesta['Mensajes'] = [ 'error' => 'Cargo con tarifa en cero' ];
+					$respuesta['Mensajes'] = [ 'error' => 1, 'mensaje' => 'El cargo automatico no se realizo, porque tiene tarifa en cero.' ];
+					
 					enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, '');
 				}
 				
-				if($configCCA['ccadat'] == 'on' && $datos['wcantidad'] != null && $datos['wcantidad'] != 0 && $datos['wcantidad'] != '') {
-					$respuesta['Mensajes'] = [ 'error' => 'El campo con consecutivo '.$configCCA['Detcon'].'-'.$configCCA['Detnpa'].' de tipo '.$configCCA['Dettip'].' del formulario '.$configCCA['wformulario'].' tiene un valor null o vac&iacute;o. '.$configCCA['movdat'] ];
+				if($configCCA['ccadat'] == 'on' && $datos['wcantidad'] == null && $datos['wcantidad'] == 0 && $datos['wcantidad'] == '') {
+					$respuesta['Mensajes'] = [ 'error' => 1, 'mensaje' => 'El campo con consecutivo '.$configCCA['Detcon'].'-'.$configCCA['Detnpa'].' de tipo '.$configCCA['Dettip'].' del formulario '.$configCCA['wformulario'].' tiene un valor null o vac&iacute;o. '.$configCCA['movdat'] ];
 				}
 				
 				
@@ -1255,6 +1267,203 @@ function obtenerLogTransaccion($conex, $wbasedato_cliame, $esCCA, $fecha) {
 	
 }
 
+function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
+	
+	$Fecha_data = $fecha != '' ? $fecha : date('Y-m-d');
+	$Logtip = '';
+	
+	switch($esCCA) {
+		case 'cca':
+			$Logtip = 'cca';
+		break;
+		case 'ccaeve':
+			$Logtip = 'ccaeve';
+		break;
+		case 'ccadat':
+			$Logtip = 'ccadat';
+		break;
+		case 'ccaord':
+			$Logtip = 'ccaord';
+		break;
+		case 'ccapre':
+			$Logtip = 'ccapre';
+		break;
+		case 'estancia':	
+			$Logtip = 'estancia';
+		break;
+	}
+	
+	$condicion_Logtip = $Logtip != '' ? " AND Logtip = '".$Logtip."' " : '';
+	$condicion_Fecha_data = $fecha != '' ? " AND Fecha_data = '".$Fecha_data."' " : '';
+	$condicion_limit = $esCCA == '' && $fecha == '' ? ' LIMIT 100 ' : '';
+	
+	$query_logs = "SELECT Medico as medico, Fecha_data as fecha, Hora_data as hora, Logusu as usuario, Logdes, Logdes2, Logtip, Logerr, Logins, Logupd, Logdel, Seguridad FROM ".$wbasedato_cliame."_000342 WHERE Logest = 'on'  ".$condicion_Logtip." ".$condicion_Fecha_data." ORDER BY id DESC ".$condicion_limit;
+	$exec_query_logs = mysql_query($query_logs, $conex); 
+	
+	$html = "<table id='table_logs' class='display' style='width:100%'>
+				<thead>
+					<tr class='encabezadoTabla' style='font-size: 10pt;' align='center'>
+						<th>#</th>
+						<th>Fecha</th>
+						<th>Hora</th>
+						<th>Usuario</th>
+						<th>Detalle</th>
+						<th>Detalle 2</th>
+						<th>Tipo</th>
+						<th>Acci&oacute;n</th>
+						<th>Notas</th>
+					</tr>
+				</thead>";
+	$contador = 1;
+	while( $row = mysql_fetch_assoc($exec_query_logs)) {
+		
+		$class = $contador%2 == 0 ? 'fila1' : 'fila2';
+		
+		$Logdes = json_decode( $row['Logdes'], true);
+		$Logdes2 = json_decode( $row['Logdes2'], true);
+		
+		$detalle = '';
+		$detalle2 = '';
+		$tipo_log = '';
+		
+		if( $row['Logtip'] == 'cca' ) {
+			
+			$detalle  = '<strong>Concepto:</strong> '.$Logdes['ccacon'].'<br>';
+			$detalle .= !is_null($Logdes['ccacco'])  ? '<strong>C. Costos:</strong> '.$Logdes['ccacco'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['ccacup'])  ? '<strong>Procedimiento:</strong> '.$Logdes['ccacup'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['ccaart'])  ? '<strong>Art&iacute;culo:</strong> '.$Logdes['ccaart'].'<br>' : '';
+			$detalle .= !is_null($Logdes['ccafhce']) ? '<strong>Formulario HCE:</strong> '.$Logdes['ccafhce'].'<br>' : '';
+			$detalle .= !is_null($Logdes['ccachce']) ? '<strong>Campo HCE:</strong> '.$Logdes['ccachce'].'<br>' 	 : '';
+			
+			$detalle2 .= !is_null($Logdes2['ccacon'])  ? '<strong>Concepto:</strong> '.$Logdes2['ccacon'].'<br>'	    : '';
+			$detalle2 .= !is_null($Logdes2['ccacco'])  ? '<strong>C. Costos:</strong> '.$Logdes2['ccacco'].'<br>'   : '';
+			$detalle2 .= !is_null($Logdes2['ccacup'])  ? '<strong>Procedimiento:</strong> '.$Logdes2['ccacup'].'<br>'   : '';
+			$detalle2 .= !is_null($Logdes2['ccaart'])  ? '<strong>Art&iacute;culo:</strong> '.$Logdes2['ccaart'].'<br>' : '';
+			$detalle2 .= !is_null($Logdes2['ccafhce']) ? '<strong>Formulario HCE:</strong> '.$Logdes2['ccafhce'].'<br>' : '';
+			$detalle2 .= !is_null($Logdes2['ccachce']) ? '<strong>Campo HCE:</strong> '.$Logdes2['ccachce'].'<br>' 		: '';
+			
+			if($Logdes['ccaeve'] == 'on') {
+				$tipo_log = 'Configuraci&oacute;n Cargo Autom&aacute;tico - Evento';
+			} else if($Logdes['ccadat'] == 'on') {
+				$tipo_log = 'Configuraci&oacute;n Cargo Autom&aacute;tico - Dato';
+			} else if($Logdes['ccapre'] == 'on') {
+				$tipo_log = 'Configuraci&oacute;n Cargo Autom&aacute;tico - Prescripci&oacute;n';
+			} else if($Logdes['ccaord'] == 'on') {
+				$tipo_log = 'Configuraci&oacute;n Cargo Autom&aacute;tico - Orden';
+			}
+		} else if ($row['Logtip'] == 'ccaeve' || $row['Logtip'] == 'ccadat' || $row['Logtip'] == 'ccaord' || $row['Logtip'] == 'ccapre') {
+			
+			$detalle  = '<strong>Historia:</strong> '.$Logdes['whistoria'].'-'.$Logdes['wing'].'<br>';
+			$detalle .= !is_null($Logdes['wno1']) && 
+						!is_null($Logdes['wno2']) && 
+						!is_null($Logdes['wap1']) && 
+						!is_null($Logdes['wap2'])		  ? '<strong>Paciente:</strong> '.$Logdes['wno1'].' '.$Logdes['wno2'].' '.$Logdes['wap1'].' '.$Logdes['wap2'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['wdoc'])  		  ? '<strong>Doc:</strong> '.$Logdes['wdoc'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['ccoActualPac']) ? '<strong>C. Costos Paciente:</strong> '.$Logdes['ccoActualPac'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['tipoPaciente']) ? '<strong>Tipo Paciente:</strong> '.$Logdes['tipoPaciente'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['tipoIngreso'])  ? '<strong>Tipo Ingreso:</strong> '.$Logdes['tipoIngreso'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['wnomemp']) 	  ? '<strong>Responsable:</strong> '.$Logdes['wnomemp'].'<br>' : '';
+			$detalle .= !is_null($Logdes['wcodemp']) 	  ? '<strong>Cod Responsable:</strong> '.$Logdes['wcodemp'].'<br>' : '';
+			$detalle .= !is_null($Logdes['tipoEmpresa'])  ? '<strong>Tipo Responsable:</strong> '.$Logdes['tipoEmpresa'].'<br>' 	 : '';
+			$detalle .= !is_null($Logdes['wcodcon']) &&
+						!is_null($Logdes['wnomcon'])      ? '<strong>Concepto:</strong> '.$Logdes['wcodcon'].'-'.$Logdes['wnomcon'].'<br>' 	 : '';
+			$detalle .= !is_null($Logdes['wprocod']) &&
+						!is_null($Logdes['wpronom'])      ? '<strong>Procedimiento o Articulo:</strong> '.$Logdes['wprocod'].'-'.$Logdes['wpronom'].'<br>' 	 : '';
+			$detalle .= !is_null($Logdes['wcantidad']) 	  ? '<strong>Cantidad:</strong> '.$Logdes['wcantidad'].'<br>' : '';
+			$detalle .= !is_null($Logdes['wvaltar']) 	  ? '<strong>Valor. Uni:</strong> '.number_format($Logdes['wvaltar'], 0, ',', '.').'<br>' : '';
+			$detalle .= !is_null($Logdes['wvaltarReco'])  ? '<strong>Valor. Rec:</strong> '.number_format($Logdes['wvaltarReco'], 0, ',', '.').'<br>' : '';
+			$detalle .= !is_null($Logdes['wcantidad']) && 
+						!is_null($Logdes['wvaltar'])  	  ? '<strong>Valor. Tot:</strong> '.number_format($Logdes['wcantidad'] * $Logdes['wvaltar'], 0, ',', '.').'<br>' : '';
+			$detalle .= !is_null($Logdes['wfeccar']) && 
+						!is_null($Logdes['whora_cargo'])  ? '<strong>Fecha/Hora:</strong> '.$Logdes['wfeccar'].'/'.$Logdes['whora_cargo'].'<br>' : '';
+			$detalle .= !is_null($Logdes['idCargo'])      ? '<strong>id Cargo</strong> '.$Logdes['idCargo'].'<br>' : '';
+			
+			$detalle2 = '';
+			
+			if($row['Logtip'] == 'ccaeve') {
+				$tipo_log = 'Cargo Autom&aacute;tico - Evento';
+			} else if($row['Logtip'] == 'ccadat') {
+				$tipo_log = 'Cargo Autom&aacute;tico - Dato';
+			} else if($row['Logtip'] == 'ccapre') {
+				$tipo_log = 'Cargo Autom&aacute;tico - Prescripci&oacute;n';
+			} else if($row['Logtip'] == 'ccaord') {
+				$tipo_log = 'Cargo Autom&aacute;tico - Orden';
+			}
+		} else if($row['Logtip'] == 'estancia') {
+			
+			$detalle  = !is_null($Logdes['whistoria']) && 
+						!is_null($Logdes['wing']) 		  ? '<strong>Historia:</strong> '.$Logdes['whistoria'].'-'.$Logdes['wing'].'<br>' : '';
+			$detalle .= !is_null($Logdes['wno1']) && 
+						!is_null($Logdes['wno2']) && 
+						!is_null($Logdes['wap1']) && 
+						!is_null($Logdes['wap2'])		  ? '<strong>Paciente:</strong> '.$Logdes['wno1'].' '.$Logdes['wno2'].' '.$Logdes['wap1'].' '.$Logdes['wap2'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['wdoc'])  		  ? '<strong>Doc:</strong> '.$Logdes['wdoc'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['ccoActualPac']) ? '<strong>C. Costos Paciente:</strong> '.$Logdes['ccoActualPac'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['tipoPaciente']) ? '<strong>Tipo Paciente:</strong> '.$Logdes['tipoPaciente'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['tipoIngreso'])  ? '<strong>Tipo Ingreso:</strong> '.$Logdes['tipoIngreso'].'<br>'   : '';
+			$detalle .= !is_null($Logdes['wnomemp']) 	  ? '<strong>Responsable:</strong> '.$Logdes['wnomemp'].'<br>' : '';
+			$detalle .= !is_null($Logdes['wcodemp']) 	  ? '<strong>Cod Responsable:</strong> '.$Logdes['wcodemp'].'<br>' : '';
+			$detalle .= !is_null($Logdes['tipoEmpresa'])  ? '<strong>Tipo Responsable:</strong> '.$Logdes['tipoEmpresa'].'<br>' 	 : '';
+			$detalle .= !is_null($Logdes['wcodcon']) &&
+						!is_null($Logdes['wnomcon'])      ? '<strong>Concepto:</strong> '.$Logdes['wcodcon'].'-'.$Logdes['wnomcon'].'<br>' 	 : '';
+			$detalle .= !is_null($Logdes['wprocod']) &&
+						!is_null($Logdes['wpronom'])      ? '<strong>Habitaci&oacute;n:</strong> '.$Logdes['wprocod'].'-'.$Logdes['wpronom'].'<br>' 	 : '';
+			$detalle .= !is_null($Logdes['wcantidad']) 	  ? '<strong>Cantidad:</strong> '.$Logdes['wcantidad'].'<br>' : '';
+			$detalle .= !is_null($Logdes['wvaltar']) 	  ? '<strong>Valor. Uni:</strong> '.number_format($Logdes['wvaltar'], 0, ',', '.').'<br>' : '';
+			$detalle .= !is_null($Logdes['wvaltarReco'])  ? '<strong>Valor. Rec:</strong> '.number_format($Logdes['wvaltarReco'], 0, ',', '.').'<br>' : '';
+			$detalle .= !is_null($Logdes['wcantidad']) && 
+						!is_null($Logdes['wvaltar'])  	  ? '<strong>Valor. Tot:</strong> '.number_format($Logdes['wcantidad'] * $Logdes['wvaltar'], 0, ',', '.').'<br>' : '';
+			$detalle .= !is_null($Logdes['wfeccar']) && 
+						!is_null($Logdes['whora_cargo'])  ? '<strong>Fecha/Hora:</strong> '.$Logdes['wfeccar'].'/'.$Logdes['whora_cargo'].'<br>' : '';
+		}
+		
+		$tipo_transaccion = '';
+		
+		if($row['Logins'] == 'on') {
+			$tipo_transaccion = 'Inserci&oacute;n';
+		} else if($row['Logupd'] == 'on') {
+			$tipo_transaccion = 'Actualizaci&oacute;n';
+		} else if($row['Logdel'] == 'on') {
+			$tipo_transaccion = 'Eliminaci&oacute;n';
+		}
+		
+		
+		$html .= "<tr class='".$class."' style='background: none;'>
+					<td>".$contador."</td>
+					<td>".$row['fecha']."</td>
+					<td>".$row['hora']."</td>
+					<td>".$row['usuario']."</td>
+					<td>".$detalle."</td>
+					<td>".$detalle2."</td>
+					<td>".$tipo_log."</td>
+					<td>".$tipo_transaccion."</td>
+					<td></td>
+				</tr>";
+				
+		$contador++;
+	}
+	
+	$html.="
+			<tfoot>
+				<tr>
+					<th>#</th>
+					<th>Fecha</th>
+					<th>Hora</th>
+					<th>Usuario</th>
+					<th>Detalle</th>
+					<th>Detalle 2</th>
+					<th>Tipo</th>
+					<th>Acci&oacute;n</th>
+					<th>Notas</th>
+				</tr>
+			</tfoot>
+		</table>";
+	
+	
+	return $html;
+	
+}
+
 function enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1,$detalle2, $html) {
 	
 	// --> Enviar correo informando la publicacion
@@ -1341,6 +1550,7 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 		
 		$data_json = array( 
 			'wemp_pmla'	  	 			=> $wemp_pmla,
+			'accion'					=> 'validacion_cco_cargo_ERP',
 			'whistoria'	  	 			=> $whis,
 			'wing'		  	 			=> $wing,
 			'wno1' 		 				=> $wno1,
@@ -1429,6 +1639,11 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 		}
 	}
 	
+	$wno1 = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($wno1));
+	$wno2 = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($wno2));
+	$wap1 = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($wap1));
+	$wap2 = iconv('UTF-8', 'UTF-8//IGNORE', utf8_encode($wap2));
+	
 	//Conceptos de grabacion que en este caso sería el de estancia
 	$q_concepto_estancia   = "  SELECT  Grucod, Grudes  "
 		."    FROM ".$wbasedato_cliame."_000200 "
@@ -1475,6 +1690,7 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 	if(is_null($dom->getElementById('numero_responsables'))) {
 		$data_json = array( 
 			'wemp_pmla'	  	 			=> $wemp_pmla,
+			'accion'					=> 'validacion_dias_por_liquidar',
 			'whistoria'	  	 			=> $whis,
 			'wing'		  	 			=> $wing,
 			'wno1' 		 				=> $wno1,
@@ -1498,13 +1714,11 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 		$detalle2 = "La Historia ($whis-$wing), no cuenta con dias para liquidar.";
 		
 		enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, $html);
-		
 		logTransaccion($conex, $wbasedato_cliame, '', json_encode($data_json), '',  json_encode($data), 'on', 'INSERT', 'estancia', $html);
 		
 		return array( 'code' => 0, 'msj' => 'Lo sentimos, La historia ('.$whis.'-'.$wing.'), no cuenta con dias por liquidar.');
 	}
-
-	// RECORDAR QUE HAY QUE AÑADIR UN TAG CON ID cantidad EN EL CODIGO DEL ARCHIVO Liquidacion_pensionERP.php
+	
 	$cantidad = $dom->getElementById('cantidad')->getAttributeNode('value')->nodeValue;
 	
 	$grabar = 'si';
@@ -1530,34 +1744,53 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 	$validaciontarifa = 0;
 	
 	//--Validacion de cargos compartidos sin tercero
-	//--Se valida si el cargo pide tercero y si este tercero esta lleno, tambien se valida si el tercero trae porcentaje, si no , se pinta en rojo
 	$tieneporcentaje = 0;
 	$claveaux;
-	/* FALTA HOMOLOGAR EN PHP, HAY QUE ENCONTRAR LA FORMA DE VALIDAR ESTA PARTE CON OTRO PACIENTE EDWIN
-	$(".classporcentaje").each(function (){
-			claveaux = $(this).attr('auxclave');
-			if($(this).val() =='No tiene porcentaje')
-			{
-				
-				tieneporcentaje++;
-				if(!$("#habitacion_"+claveaux).hasClass('trrequerido-iab'))
-				{
-					$("#habitacion_"+claveaux).addClass('trrequerido-iab');
-					$("#tdnumerodiasppal_"+claveaux).addClass('trrequerido-ab');
-					$("#td_excedente_"+claveaux).addClass('trrequerido-ab');
-					$("#input_total_"+claveaux).addClass('trrequerido-dab');
-					$("#td_reconocido_"+claveaux).addClass('trrequerido-ab');
-					$(".tdselecthabitacion_"+claveaux).addClass('trrequerido-ab');
-					$( "#tdfechainicialppal_"+claveaux).addClass('trrequerido-a');
-					$( "#tdfechainiciocobroppal_"+claveaux).addClass('trrequerido-a');
-					$( "#tdfechafinalppal_"+claveaux).addClass('trrequerido-b');
-					$( "#tdfechafinalcobroppal_"+claveaux).addClass('trrequerido-b');
+	
+	for ($i = 1; $i <= $cantidad; $i++ ) {
+		$dias = $dom->getElementById('input_dias_'.$i)->getAttributeNode('value')->nodeValue;
+		for ($j = 0; $j < $dias; $j++ ) {
+			if(!is_null($dom->getElementById("idporcentaje_".$i."_".$j))) {
+				$id_porcentaje = $dom->getElementById("idporcentaje_".$i."_".$j);
+				$valor_porcentaje = $id_porcentaje->getAttributeNode('value')->nodeValue;
+				if($valor_porcentaje == 'No tiene porcentaje') {
+					$tieneporcentaje++;
 				}
-					
 			}
-			
-		});
-	*/
+		}
+	}
+	
+	if ($tieneporcentaje > 0) {
+		$data_json = array( 
+			'wemp_pmla'	  	 			=> $wemp_pmla,
+			'accion'	  	 			=> 'validacion_porcentaje_tercero',
+			'whistoria'	  	 			=> $whis,
+			'wing'		  	 			=> $wing,
+			'wno1' 		 				=> $wno1,
+			'wno2'  		 			=> $wno2,
+			'wap1'  		 			=> $wap1,
+			'wap2'		 	 			=> $wap2,
+			'wdoc' 		 				=> $wdoc,
+			'wprocedimiento' 			=> '',
+			'wnprocedimiento'			=> '',
+			'wcodemp'		 			=> '',
+			'wnomemp'		 			=> '',
+			'wnomcon'					=> '',
+		);
+		
+		$data = array();
+		$data['error'] = 1;
+		$data['mensaje'] = 'Lo sentimos, La historia ('.$whis.'-'.$wing.') tiene un concepto con tercero sin porcentaje, por lo tanto no se realiza el proceso automatico de estancia.';
+		
+		$wasunto = "Automatizacion Estancia - Historia (".$whis."-".$wing.") - Concepto con tercero sin porcentaje";
+		$detalle1 = "La Historia ".$whis."-".$wing.", Concepto con tercero sin porcentaje.";
+		$detalle2 = "La Historia ($whis-$wing), tiene un concepto con tercero sin porcentaje.";
+		
+		enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, $html);
+		logTransaccion($conex, $wbasedato_cliame, '', json_encode($data_json), '',  json_encode($data), 'on', 'INSERT', 'estancia', $html);
+		
+		return array( 'code' => 0, 'msj' => 'Lo sentimos, La historia ('.$whis.'-'.$wing.'), tiene un concepto con tercero sin porcentaje, por lo tanto no se realiza el proceso automatico de estancia.');
+	}
 	
 	/* EDWIN VALIDAR SI APLICA PARA LOS PACIENTES QUE VAMOS A LLAMAR EN LA CONSULTA PRINCIPAL, YA QUE SE SUPONE QUE TODOS LOS PACIENTES QUE TRAIGAMOS TIENEN FECHA DE ALTA PROGRAMADA
 		//--------
@@ -1573,55 +1806,53 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 		}
 	*/
 	
-	
-	
 	$numero_responsables = $dom->getElementById('numero_responsables')->getAttributeNode('value')->nodeValue;
 	//$numero_responsables = $dom->getElementById('numero_responsables')->getAttribute('value');
 	//echo "numero_responsables = $numero_responsables \n\n";
 	
 	$sel = $dom->getElementsByTagName("select");
-	
 	foreach ($sel as $select)
 	{
-	    $optionTags = $select->getElementsByTagName('option');
-		foreach ($optionTags as $tag)
-		{
-			if ($tag->hasAttribute("selected"))
+		if($select->hasAttribute('class') && $select->getAttributeNode('class')->nodeValue == 'habitacion') {
+			$optionTags = $select->getElementsByTagName('option');
+			foreach ($optionTags as $tag)
 			{
-				if(($tag->getAttributeNode('value')->nodeValue) == "" ) 
+				if ($tag->hasAttribute("selected"))
 				{
-					$post_fields_grabar_pension = array( 
-						'consultaAjax'	 			=> '',
-						'wemp_pmla'	  	 			=> $wemp_pmla,
-						'accion'	  	 			=> 'grabar_pension',
-						'whistoria'	  	 			=> $whis,
-						'wing'		  	 			=> $wing,
-						'wno1' 		 				=> $wno1,
-						'wno2'  		 			=> $wno2,
-						'wap1'  		 			=> $wap1,
-						'wap2'		 	 			=> $wap2,
-						'wdoc' 		 				=> $wdoc,
-						'wprocedimiento' 			=> '',
-						'wnprocedimiento'			=> '',
-						'wcodemp'		 			=> '',
-						'wnomemp'		 			=> '',
-						'wnomcon'					=> '',
-					);
-					
-					$post_fields_grabar_pension['estancias'] = 1;
-					$data = array();
-					$data['estancia0'] = [ 'idcargo' => 0, 'respuesta' => 'No hay tipo de habitacion seleccionado. Por lo tanto no se puede realizar el Guardado de Estancia Autom&aacute;tico.'];
-					$data['mensaje'] = "La Historia ".$whis."-".$wing.", no cuenta con un tipo de habitacion seleccionado, por lo tanto el proceso automatico de cargos de estancia no se realizo de manera exitosa.";
-					
-					logTransaccion($conex, $wbasedato_cliame, '', json_encode($post_fields_grabar_pension), '',  json_encode($data), 'on', 'INSERT', 'estancia', $html);
-					
-					$wasunto = "Automatizacion Estancia - Historia (".$whis."-".$wing.") - Tipo de Habitacion No Seleccionado";
-					$detalle1 = "La Historia ".$whis."-".$wing.", no cuenta con un tipo de habitacion seleccionado, por lo tanto el proceso automatico de cargos de estancia no se realizo de manera exitosa.";
-					$detalle2 = "No ha sido selecciona el tipo de habitación.";
-					
-					enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, $html);
-					
-					return array( 'code' => 0, 'msj' => "La Historia ".$whis."-".$wing.", no cuenta con un tipo de habitacion seleccionado, por lo tanto el proceso automatico de cargos de estancia no se realizo de manera exitosa.");
+					if(($tag->getAttributeNode('value')->nodeValue) == "" ) 
+					{
+						$post_fields_grabar_pension = array( 
+							'wemp_pmla'	  	 			=> $wemp_pmla,
+							'accion'					=> 'validacion_tipo_habitacion',
+							'whistoria'	  	 			=> $whis,
+							'wing'		  	 			=> $wing,
+							'wno1' 		 				=> $wno1,
+							'wno2'  		 			=> $wno2,
+							'wap1'  		 			=> $wap1,
+							'wap2'		 	 			=> $wap2,
+							'wdoc' 		 				=> $wdoc,
+							'wprocedimiento' 			=> '',
+							'wnprocedimiento'			=> '',
+							'wcodemp'		 			=> '',
+							'wnomemp'		 			=> '',
+							'wnomcon'					=> '',
+						);
+						
+						$post_fields_grabar_pension['estancias'] = 1;
+						$data = array();
+						$data['estancia0'] = [ 'idcargo' => 0, 'respuesta' => 'No hay tipo de habitacion seleccionado. Por lo tanto no se puede realizar el Guardado de Estancia Autom&aacute;tico.'];
+						$data['mensaje'] = "La Historia ".$whis."-".$wing.", no cuenta con un tipo de habitacion seleccionado, por lo tanto el proceso automatico de cargos de estancia no se realizo de manera exitosa.";
+						
+						logTransaccion($conex, $wbasedato_cliame, '', json_encode($post_fields_grabar_pension), '',  json_encode($data), 'on', 'INSERT', 'estancia', $html);
+						
+						$wasunto = "Automatizacion Estancia - Historia (".$whis."-".$wing.") - Tipo de Habitacion No Seleccionado";
+						$detalle1 = "La Historia ".$whis."-".$wing.", no cuenta con un tipo de habitacion seleccionado, por lo tanto el proceso automatico de cargos de estancia no se realizo de manera exitosa.";
+						$detalle2 = "No ha sido selecciona el tipo de habitación.";
+						
+						enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, $html);
+						
+						return array( 'code' => 0, 'msj' => "La Historia ".$whis."-".$wing.", no cuenta con un tipo de habitacion seleccionado, por lo tanto el proceso automatico de cargos de estancia no se realizo de manera exitosa.");
+					}
 				}
 			}
 		}
@@ -1678,7 +1909,6 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 	
 	for($i = 1; $i <= $cantidad; $i++) {
 	
-	
 		$td_fechainicial_ppal =$dom->getElementById('tdfechainicialppal_'.$i)->textContent;	
 		$explode_td_fechainicial_ppal = explode('/', $td_fechainicial_ppal);
 		
@@ -1694,727 +1924,463 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 		//echo var_dump($fecha_ingreso );
 		$dias = $dom->getElementById('input_dias_'.$i)->getAttributeNode('value')->nodeValue;
 		//$valor = 0;
-										//2021-02-18      2021-04-26		2021-02-18
+										
 		$liquidar_estancia = ($dias == 1 && $fecha_ingreso == $fecha_actual && ($fecha_ingreso == $fecha_actual || $fecha_ingreso == $ultimafecha)) ? false : true;
 		// $liquidar_estancia = ($dias == 1 && $fecha_ingreso == $fecha_actual && ($fecha_ingreso == $fecha_actual || $fecha_ingreso == $ultimafecha)) ? false : true;
-		 
-		//echo var_dump($liquidar_estancia);
+		
+		if(!$liquidar_estancia) {
+			
+			
+			$data_json = array( 
+				'wemp_pmla'	  	 			=> $wemp_pmla,
+				'accion'					=> 'validacion_tiempo_minimo_estancia',
+				'whistoria'	  	 			=> $whis,
+				'wing'		  	 			=> $wing,
+				'wno1' 		 				=> $wno1,
+				'wno2'  		 			=> $wno2,
+				'wap1'  		 			=> $wap1,
+				'wap2'		 	 			=> $wap2,
+				'wdoc' 		 				=> $wdoc,
+				'wprocedimiento' 			=> '',
+				'wnprocedimiento'			=> '',
+				'wcodemp'		 			=> '',
+				'wnomemp'		 			=> '',
+				'wnomcon'					=> '',
+			);
+			
+			$data = array();
+			$data['error'] = 1;
+			$data['mensaje'] = 'Lo sentimos, La historia ('.$whis.'-'.$wing.'), no cumple con el tiempo minimo de estancia.';
+			
+			$wasunto = "Automatizacion Estancia - Historia (".$whis."-".$wing.")";
+			$detalle1 = "Historia ".$whis."-".$wing.", no cumple con el tiempo minimo de estancia.";
+			$detalle2 = "La Historia ($whis-$wing), no cumple con el tiempo minimo de estancia, ya que no estuvo en la habitacion despues de las 12 de la madrugada.";
+				
+			enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, $html);
+			logTransaccion($conex, $wbasedato_cliame, '', json_encode($data_json), '',  json_encode($data), 'on', 'INSERT', 'estancia', $html);
+			
+			return array( 'code' => 0, 'msj' => 'La Historia ('.$whis.'-'.$wing.'), no cumple con el tiempo minimo de estancia, ya que no estuvo en la habitacion despues de las 12 de la madrugada.');
+		}
+		
 		if($liquidar_estancia) {
 			for($d = 0; $d < $dias; $d++ ) {
-			/*
-				$input_detalle_dia = $dom->getElementById("valhab_clave".$i."_".$d."_res1");
-				$valor += $input_detalle_dia->getAttribute('valor');
-			*/
-			
-			$tr_ppal_cobro = $dom->getElementById('id_tr_ppal_cobro_'.$i.'_'.$d);
-			$clave =  $tr_ppal_cobro->getAttributeNode('clave')->nodeValue;
-			$ndia = $tr_ppal_cobro->getAttributeNode('ndia')->nodeValue;
-			
-			//echo "id_tr_ppal_cobro_".$clave."_".$ndia." \n";
-			//return;
-			
-			//$fechacargo = $("#fechacargo_"+clave+"_"+ndia).attr("valor");
-			$fechacargo = $dom->getElementById('fechacargo_'.$clave.'_'.$ndia)->getAttributeNode('valor')->nodeValue;
-			//$whora_ingreso = $("#fechacargo_"+clave+"_"+ndia).attr("hora_ingreso");
-			$whora_ingreso = $dom->getElementById('fechacargo_'.$clave.'_'.$ndia)->getAttributeNode('hora_ingreso')->nodeValue;
-			//$whora_egreso = $("#fechacargo_"+clave+"_"+ndia).attr("hora_egreso");
-			$whora_egreso = $dom->getElementById('fechacargo_'.$clave.'_'.$ndia)->getAttributeNode('hora_egreso')->nodeValue;
-			//$ccogra = $(this).attr('ccogra');
-			$ccogra = $tr_ppal_cobro->getAttributeNode('ccogra')->nodeValue;
-			
-			/*
-			echo "fechacargo: $fechacargo \n";
-			echo "whora_ingreso: $whora_ingreso \n";
-			echo "whora_egreso: $whora_egreso \n";
-			echo "ccogra: $ccogra \n\n";
-			*/
-			
-			$aux_id_grabado = '';
-			
-			$wtercero = '';
-			$wnomtercero = '';
-			$auxwtercero = '';
-			
-			for($j = $numero_responsables ; $j >= 1; $j--)
-			{
-				$wprocedimiento = "";
-				$wnprocedimiento = "";
-				$wnumerohab = "";
-				$wvalor = "";
-				$wresponsable = "";
-				$wnresponsable = "";
-				$wtarifa = "";
-				$id_tope_afectado = "";
+				/*
+					$input_detalle_dia = $dom->getElementById("valhab_clave".$i."_".$d."_res1");
+					$valor += $input_detalle_dia->getAttribute('valor');
+				*/
 				
-				//if( (($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor') * 1)!=0 || $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('paf')=='si' || $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('escomplementario')=='si')   &&  $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).length)
+				$tr_ppal_cobro = $dom->getElementById('id_tr_ppal_cobro_'.$i.'_'.$d);
+				$clave =  $tr_ppal_cobro->getAttributeNode('clave')->nodeValue;
+				$ndia = $tr_ppal_cobro->getAttributeNode('ndia')->nodeValue;
 				
-				$reconocido_clave = $dom->getElementById('reconocido_clave'.$clave.'_'.$ndia.'_res'.$j);
-								
-				if(!is_null($reconocido_clave)) 
+				//echo "id_tr_ppal_cobro_".$clave."_".$ndia." \n";
+				//return;
+				
+				//$fechacargo = $("#fechacargo_"+clave+"_"+ndia).attr("valor");
+				$fechacargo = $dom->getElementById('fechacargo_'.$clave.'_'.$ndia)->getAttributeNode('valor')->nodeValue;
+				//$whora_ingreso = $("#fechacargo_"+clave+"_"+ndia).attr("hora_ingreso");
+				$whora_ingreso = $dom->getElementById('fechacargo_'.$clave.'_'.$ndia)->getAttributeNode('hora_ingreso')->nodeValue;
+				//$whora_egreso = $("#fechacargo_"+clave+"_"+ndia).attr("hora_egreso");
+				$whora_egreso = $dom->getElementById('fechacargo_'.$clave.'_'.$ndia)->getAttributeNode('hora_egreso')->nodeValue;
+				//$ccogra = $(this).attr('ccogra');
+				$ccogra = $tr_ppal_cobro->getAttributeNode('ccogra')->nodeValue;
+				
+				/*
+				echo "fechacargo: $fechacargo \n";
+				echo "whora_ingreso: $whora_ingreso \n";
+				echo "whora_egreso: $whora_egreso \n";
+				echo "ccogra: $ccogra \n\n";
+				*/
+				
+				$aux_id_grabado = '';
+				
+				$wtercero = '';
+				$wnomtercero = '';
+				$auxwtercero = '';
+				
+				for($j = $numero_responsables ; $j >= 1; $j--)
 				{
-					//$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor')
-					$valor_reconocido_clave_res = $reconocido_clave->getAttributeNode('valor')->nodeValue;
-					//$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('paf')
-					$paf_reconocido_clave_res = $reconocido_clave->getAttributeNode('paf')->nodeValue;
-					//$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('escomplementario')
-					$escomplementario_reconocido_clave_res = $reconocido_clave->getAttributeNode('escomplementario')->nodeValue;
-					//$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).length
+					$wprocedimiento = "";
+					$wnprocedimiento = "";
+					$wnumerohab = "";
+					$wvalor = "";
+					$wresponsable = "";
+					$wnresponsable = "";
+					$wtarifa = "";
+					$id_tope_afectado = "";
 					
-					/*
-					echo "valor_reconocido_clave_res: $valor_reconocido_clave_res \n";
-					echo "paf_reconocido_clave_res: $paf_reconocido_clave_res \n";
-					echo "escomplementario_reconocido_clave_res: $escomplementario_reconocido_clave_res \n";
-					*/
+					//if( (($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor') * 1)!=0 || $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('paf')=='si' || $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('escomplementario')=='si')   &&  $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).length)
 					
-					if((($valor_reconocido_clave_res * 1) != 0 || $paf_reconocido_clave_res == 'si' || $escomplementario_reconocido_clave_res == 'si' ))
+					$reconocido_clave = $dom->getElementById('reconocido_clave'.$clave.'_'.$ndia.'_res'.$j);
+									
+					if(!is_null($reconocido_clave)) 
 					{
-						//wnprocedimiento = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('nombre_hab');
-						$wnprocedimiento = $reconocido_clave->getAttributeNode('nombre_hab')->nodeValue;
-						//wnumerohab =	$('#habitacion_'+clave).attr('numero');
-						$wnumerohab 	 =	$dom->getElementById('habitacion_'.$clave)->getAttributeNode('numero')->nodeValue; 
-						//wvalor = ($('#valhab_clave'+clave+'_'+ndia+'_res'+j).attr('valor') *1);
-						$wvalor = ($dom->getElementById('valhab_clave'.$clave.'_'.$ndia.'_res'.$j)->getAttributeNode('valor')->nodeValue *1);
-						
-						//wreconocido = ($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor') * 1);
-						$wreconocido = ($valor_reconocido_clave_res * 1);
-						//wprocedimiento = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('procedimiento');
-						$wprocedimiento = $reconocido_clave->getAttributeNode('procedimiento')->nodeValue;
-						//wresponsable = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('responsable');
-						$wresponsable = $reconocido_clave->getAttributeNode('responsable')->nodeValue;
-						
-				
-						//wnresponsable = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('nresponsable');
-						$wnresponsable = $reconocido_clave->getAttributeNode('nresponsable')->nodeValue;
-						//wtarifa = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('tarifa');
-						$wtarifa = $reconocido_clave->getAttributeNode('tarifa')->nodeValue;
-						//tipoEmpresa = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('tresponsable');
-						$tipoEmpresa = $reconocido_clave->getAttributeNode('tresponsable')->nodeValue;
-						//nitEmpresa = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('nitresponsable');
-						$nitEmpresa = $reconocido_clave->getAttributeNode('nitresponsable')->nodeValue;
-						//concepto_cargo = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('concepto');
-						$concepto_cargo = $reconocido_clave->getAttributeNode('concepto')->nodeValue;
-						//wnconcepto =  $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('nconcepto');
-						$wnconcepto =  $reconocido_clave->getAttributeNode('nconcepto')->nodeValue;
-						//id_tope_afectado = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('id_tope_afectado');
-						$id_tope_afectado = $reconocido_clave->getAttributeNode('id_tope_afectado')->nodeValue;
+						//$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor')
+						$valor_reconocido_clave_res = $reconocido_clave->getAttributeNode('valor')->nodeValue;
+						//$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('paf')
+						$paf_reconocido_clave_res = $reconocido_clave->getAttributeNode('paf')->nodeValue;
+						//$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('escomplementario')
+						$escomplementario_reconocido_clave_res = $reconocido_clave->getAttributeNode('escomplementario')->nodeValue;
+						//$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).length
 						
 						/*
-						echo "wnprocedimiento: $wnprocedimiento \n";
-						echo "wnumerohab: $wnumerohab \n";
-						echo "wvalor: $wvalor \n";
-						echo "wreconocido: $wreconocido \n";
-						echo "wprocedimiento: $wprocedimiento \n";
-						echo "wresponsable: $wresponsable \n";
-						echo "wnresponsable: $wnresponsable \n";
-						echo "wtarifa: $wtarifa \n";
-						echo "tipoEmpresa: $tipoEmpresa \n";
-						echo "nitEmpresa: $nitEmpresa \n";
-						echo "concepto_cargo: $concepto_cargo \n";
-						echo "wnconcepto: $wnconcepto \n";
-						echo "id_tope_afectado: $id_tope_afectado \n\n";
+						echo "valor_reconocido_clave_res: $valor_reconocido_clave_res \n";
+						echo "paf_reconocido_clave_res: $paf_reconocido_clave_res \n";
+						echo "escomplementario_reconocido_clave_res: $escomplementario_reconocido_clave_res \n";
 						*/
 						
-						//--
-						//--Proceso para saber el tercero que corresponde a cada cargo de pension ; si es que se tiene
-						$busc_terceros_usuario = $dom->getElementById('busc_terceros_usuario_'.$clave.'_'.$ndia);
-						//if ($('#busc_terceros_usuario_'+clave+'_'+ndia).attr('contercero') =='si')
-						if(!is_null($busc_terceros_usuario) && $busc_terceros_usuario->hasAttribute('contercero') && $busc_terceros_usuario->getAttributeNode('contercero')->nodeValue == 'si') {
-							//if($('#porter_'+clave+'_'+ndia).length)
-							$porter_clave = $dom->getElementById('porter_'.$clave.'_'.$ndia);
-							if(!is_null($porter_clave))
-							{
-								//wtercero 				 =  $('#busc_terceros_usuario_'+clave+'_'+ndia).attr('ctercero');
-								$wtercero 				 =  $busc_terceros_usuario->getAttributeNode('ctercero')->nodeValue;
-								//wnomtercero			 =  $('#busc_terceros_usuario_'+clave+'_'+ndia).attr('nombre');
-								$wnomtercero			 =  $busc_terceros_usuario->getAttributeNode('nombre')->nodeValue;
-								//wtercero_especialidad	 =  $('#busc_terceros_usuario_'+clave+'_'+ndia).attr('cespecialidad');
-								$wtercero_especialidad	 =  $busc_terceros_usuario->getAttributeNode('cespecialidad')->nodeValue;
-								//wgraba_varios_terceros = 0;
-								$wgraba_varios_terceros  = 0;
-								//wporter  				 = $('#porter_'+clave+'_'+ndia).val();
-								$wporter 				 = $porter_clave->nodeValue;
-								//wtercero_unix 		 = $('#busc_terceros_usuario_'+clave+'_'+ndia).attr('ctercero_unix');							
-								$wtercero_unix 			 = $busc_terceros_usuario->getAttributeNode('ctercero_unix')->nodeValue;
-							}
-						
-						} else {
-							$wtercero 					= '';
-							$wnomtercero			 	= '';
-							$wgraba_varios_terceros 	= 0;
-							$wtercero_especialidad		= '';
-							$wporter 					= '';
-							$wtercero_unix 				= '';
-						}
-						
-						/*
-						echo "wtercero: $wtercero \n";
-						echo "wnomtercero: $wnomtercero \n";
-						echo "wgraba_varios_terceros: $wgraba_varios_terceros \n";
-						echo "wtercero_especialidad: $wtercero_especialidad \n";
-						echo "wporter: $wporter \n";
-						echo "wtercero_unix: $wtercero_unix \n\n";
-						*/
-						$aux = ($j*1) + 1;
-						$reconocido_clave_1 = $dom->getElementById('reconocido_clave'.$clave.'_'.$ndia.'_res'.$aux);
-						
-						if(!is_null($reconocido_clave_1)) {
-							$bool_reconocido_clave = true;
-						} else {
-							$bool_reconocido_clave=false;
-						}
-						
-						if($bool_reconocido_clave && ($reconocido_clave_1->getAttributeNode('valor')->nodeValue * 1) != 0 ) {
-							$wparalelo = $reconocido_clave_1->getAttributeNode('paralelo')->nodeValue;
-							$wvaltarExce=0;
-
-						} else {
-							$wparalelo ='off';
-							$reconocido_clave2=$dom->getElementById('reconocido_clave'.$clave.'_'.$ndia);
-							
-							if(!is_null($reconocido_clave2)) {
-							$reconocido_clave2=true;
-							} else {
-								$reconocido_clave2=false;
-							}
-							if(!$reconocido_clave2)
-							{
-								$wvaltarExce =0;
-							}
-							else
-							{
-								$wvaltarExce=$dom->getElementById('excedente_'.$clave.'_'.$ndia)->getAttributeNode('valor')->nodeValue;
-								if($tiene_paquete)
-								{
-									
-									$wvaltarExce= ($wvaltarExce*1) + ($auxiliarexcedente*1);
-									$tiene_paquete=false;
-								}
-							}
-						}
-						$dato_clave = $clave;
-						$dato_responsable = $wresponsable;
-						$existe = false;
-						/** Nunca entra EDWIN
-							for($jj=0;$jj<sizeof($datos);$jj++){
-							$datoget = $datos[$jj];
-							echo $datoget;
-							if($datoget['clave'] == $dato_clave && $datoget['wresponsable']==$dato_responsable ){
-								if ($dom->getElementById('busc_terceros_usuario_'.$clave.'_'.$ndia)->getAttributeNode('valor')->nodeValue=='si')
-								{
-										$datoget['ndia'] 			= (($datoget['ndia'])*1) + 1;
-										$datoget['whora_ingreso'] 	= $datoget['whora_ingreso'];
-										$datoget['whora_egreso']		= $whora_egreso;
-										$datoget['wfecha_ingreso']	= $datoget['fechacargo'];
-										$datoget['wfecha_egreso']	= $fechacargo;
-										$datoget['wreconocido']		= (($datoget['wreconocido']*1) + ($wreconocido*1))*1;
-										$existe = true;
-										
-										$datos[$jj] = $datoget;
-									
-								}
-								else
-								{
-										$datoget['ndia'] 			= (($datoget['ndia'])*1) + 1;
-										$datoget['whora_ingreso'] 	= $datoget['whora_ingreso'];
-										$datoget['whora_egreso']		= $whora_egreso;
-										$datoget['wfecha_ingreso']	= $datoget['fechacargo'];
-										$datoget['wfecha_egreso']	= $fechacargo;
-										$datoget['wreconocido']		= (($datoget['wreconocido']*1) + ($wreconocido*1))*1;
-										$existe = true;
-										
-										$datos[jj] = $datoget;
-									
-								}
-								
-							}
-							
-						}
-						*/
-					
-						//-- Aqui se construye el array principal inicial , este array contiene los datos de pension resumidos por traslado, pero
-						//-- no tenia en cuenta si en estos dias habian varios terceros y se tenia que partir el cargo, por esto se hizo otro vector mas abajo
-						//-- datosauxfinal 
-						if( $existe == false ){
-							$dato = array();
-							$dato['clave'] 					= $clave;
-							$dato['ndia']					= 1 ;
-							$dato['fechacargo']				= $fechacargo;
-							$dato['whora_ingreso']			= $whora_ingreso;
-							$dato['whora_egreso']			= $whora_egreso;
-							$dato['ccogra']					= $ccogra;
-							$dato['wnprocedimiento']		= $wnprocedimiento;
-							$dato['wnumerohab']				= $wnumerohab;
-							$dato['wvalor']					= $wvalor;
-							$dato['wreconocido']			= $wreconocido;
-							$dato['wprocedimiento']			= $wprocedimiento;
-							$dato['wresponsable']			= $wresponsable;
-							$dato['wnresponsable']			= $wnresponsable;
-							$dato['wtarifa']				= $wtarifa;
-							$dato['tipoEmpresa']			= $tipoEmpresa;
-							$dato['nitEmpresa']				= $nitEmpresa;
-							$dato['concepto_cargo']			= $concepto_cargo;
-							$dato['wnconcepto']				= $wnconcepto;
-							$dato['id_tope_afectado']		= $id_tope_afectado;
-							$dato['wtercero']				= $wtercero;
-							$dato['wtercero_nombre']		= $wnomtercero;
-							$dato['wtercero_unix']			= $wtercero_unix;
-							$dato['wtercero_especialidad']	= $wtercero_especialidad;
-							$dato['wgraba_varios_terceros']	= $wgraba_varios_terceros;
-							$dato['wporter']				= $wporter;
-							$dato['wparalelo']				= $wparalelo;
-							$dato['wvaltarExce']			= $wvaltarExce;
-							$dato['wfecha_ingreso']			= $fechacargo;
-							$dato['wfecha_egreso']			= $fechacargo;
-							
-							$datos[] = $dato;
-						}
-						//-------------------------------------------------------
-						
-						// se llena el objeto datoaux
-						//-- este vector contendra todos los cargos dia por dia, detallado , no resumido, para validar en unix si tiene tarifa, o si
-						//-- el tercero tiene concepto amarrado a los honorarios
-						$datoaux 							= array();
-						$datoaux['clave'] 					= $clave;
-						$datoaux['ndia']					= 1 ;
-						$datoaux['fechacargo']				= $fechacargo;
-						$datoaux['whora_ingreso']			= $whora_ingreso;
-						$datoaux['whora_egreso']			= $whora_egreso;
-						$datoaux['ccogra']					= $ccogra;
-						$datoaux['wnprocedimiento']			= $wnprocedimiento;
-						$datoaux['wnumerohab']				= $wnumerohab;
-						$datoaux['wvalor']					= $wvalor;
-						$datoaux['wreconocido']				= $wreconocido;
-						$datoaux['wprocedimiento']			= $wprocedimiento;
-						$datoaux['wresponsable']			= $wresponsable;
-						$datoaux['wnresponsable']			= $wnresponsable;
-						$datoaux['wtarifa']					= $wtarifa;
-						$datoaux['tipoEmpresa']				= $tipoEmpresa;
-						$datoaux['nitEmpresa']				= $nitEmpresa;
-						$datoaux['concepto_cargo']			= $concepto_cargo;
-						$datoaux['wnconcepto']				= $wnconcepto;
-						$datoaux['id_tope_afectado']		= $id_tope_afectado;
-						$datoaux['wtercero']				= $wtercero;
-						$datoaux['wtercero_nombre']			= $wnomtercero;
-						$datoaux['wtercero_unix']			= $wtercero_unix;
-						$datoaux['wtercero_especialidad']	= $wtercero_especialidad;
-						$datoaux['wgraba_varios_terceros']	= $wgraba_varios_terceros;
-						$datoaux['wporter']					= $wporter;
-						$datoaux['wparalelo']				= $wparalelo;
-						$datoaux['wvaltarExce']				= $wvaltarExce;
-						$datoaux['wfecha_ingreso']			= $fechacargo;
-						$datoaux['wfecha_egreso']			= $fechacargo;
-						$datosaux[] = $datoaux;
-						
-						if($numero_responsables == 1)
+						if((($valor_reconocido_clave_res * 1) != 0 || $paf_reconocido_clave_res == 'si' || $escomplementario_reconocido_clave_res == 'si' ))
 						{
-							$contadore++;
-						
-							//-Se inicia proceso para crear un vector discriminando  cargos por cada tercero
-							//------------------------------------------------
-							if($diasauxiliar1 == 0)
-							{
-								
-								$auxclave = $clave;
-								
-								$datoauxfinal_clave					= '';
-								$datoauxfinal_ndia					= 0;
-								$datoauxfinal_fechacargo			= $fechacargo;
-								$datoauxfinal_whora_ingreso			= $whora_ingreso;
-								$datoauxfinal_whora_egreso			= '';
-								$datoauxfinal_ccogra				= '';
-								$datoauxfinal_wnprocedimiento		= '';
-								$datoauxfinal_wnumerohab			= '';
-								$datoauxfinal_wvalor				= '';
-								$datoauxfinal_wreconocido			= 0;
-								$datoauxfinal_wprocedimiento		= '';
-								$datoauxfinal_wresponsable			= '';
-								$datoauxfinal_wnresponsable			= '';
-								$datoauxfinal_wtarifa				= '';
-								$datoauxfinal_tipoEmpresa			= '';
-								$datoauxfinal_nitEmpresa			= '';
-								$datoauxfinal_concepto_cargo		= '';
-								$datoauxfinal_wnconcepto			= '';
-								$datoauxfinal_id_tope_afectado		= '';
-								$datoauxfinal_wtercero				= '';
-								$datoauxfinal_wtercero_nom			= '';
-								$datoauxfinal_wtercero_unix			= '';
-								$datoauxfinal_wtercero_especialidad	= '';
-								$datoauxfinal_wgraba_varios_terceros	= '';
-								$datoauxfinal_wporter				= '';
-								$datoauxfinal_wparalelo				= '';
-								$datoauxfinal_wvaltarExce			= 0;
-								$datoauxfinal_wfecha_ingreso			= $fechacargo;
-								$datoauxfinal_wfecha_egreso			= '';
-							}	
+							//wnprocedimiento = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('nombre_hab');
+							$wnprocedimiento = $reconocido_clave->getAttributeNode('nombre_hab')->nodeValue;
+							//wnumerohab =	$('#habitacion_'+clave).attr('numero');
+							$wnumerohab 	 =	$dom->getElementById('habitacion_'.$clave)->getAttributeNode('numero')->nodeValue; 
+							//wvalor = ($('#valhab_clave'+clave+'_'+ndia+'_res'+j).attr('valor') *1);
+							$wvalor = ($dom->getElementById('valhab_clave'.$clave.'_'.$ndia.'_res'.$j)->getAttributeNode('valor')->nodeValue *1);
 							
-							if( $clave == $auxclave )
-							{
-								
-								if($datoaux['wtercero'] == $auxtercero  )
+							//wreconocido = ($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor') * 1);
+							$wreconocido = ($valor_reconocido_clave_res * 1);
+							//wprocedimiento = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('procedimiento');
+							$wprocedimiento = $reconocido_clave->getAttributeNode('procedimiento')->nodeValue;
+							//wresponsable = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('responsable');
+							$wresponsable = $reconocido_clave->getAttributeNode('responsable')->nodeValue;
+							
+					
+							//wnresponsable = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('nresponsable');
+							$wnresponsable = $reconocido_clave->getAttributeNode('nresponsable')->nodeValue;
+							//wtarifa = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('tarifa');
+							$wtarifa = $reconocido_clave->getAttributeNode('tarifa')->nodeValue;
+							//tipoEmpresa = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('tresponsable');
+							$tipoEmpresa = $reconocido_clave->getAttributeNode('tresponsable')->nodeValue;
+							//nitEmpresa = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('nitresponsable');
+							$nitEmpresa = $reconocido_clave->getAttributeNode('nitresponsable')->nodeValue;
+							//concepto_cargo = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('concepto');
+							$concepto_cargo = $reconocido_clave->getAttributeNode('concepto')->nodeValue;
+							//wnconcepto =  $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('nconcepto');
+							$wnconcepto =  $reconocido_clave->getAttributeNode('nconcepto')->nodeValue;
+							//id_tope_afectado = $('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('id_tope_afectado');
+							$id_tope_afectado = $reconocido_clave->getAttributeNode('id_tope_afectado')->nodeValue;
+							
+							/*
+							echo "wnprocedimiento: $wnprocedimiento \n";
+							echo "wnumerohab: $wnumerohab \n";
+							echo "wvalor: $wvalor \n";
+							echo "wreconocido: $wreconocido \n";
+							echo "wprocedimiento: $wprocedimiento \n";
+							echo "wresponsable: $wresponsable \n";
+							echo "wnresponsable: $wnresponsable \n";
+							echo "wtarifa: $wtarifa \n";
+							echo "tipoEmpresa: $tipoEmpresa \n";
+							echo "nitEmpresa: $nitEmpresa \n";
+							echo "concepto_cargo: $concepto_cargo \n";
+							echo "wnconcepto: $wnconcepto \n";
+							echo "id_tope_afectado: $id_tope_afectado \n\n";
+							*/
+							
+							//--
+							//--Proceso para saber el tercero que corresponde a cada cargo de pension ; si es que se tiene
+							$busc_terceros_usuario = $dom->getElementById('busc_terceros_usuario_'.$clave.'_'.$ndia);
+							//if ($('#busc_terceros_usuario_'+clave+'_'+ndia).attr('contercero') =='si')
+							if(!is_null($busc_terceros_usuario) && $busc_terceros_usuario->hasAttribute('contercero') && $busc_terceros_usuario->getAttributeNode('contercero')->nodeValue == 'si') {
+								//if($('#porter_'+clave+'_'+ndia).length)
+								$porter_clave = $dom->getElementById('porter_'.$clave.'_'.$ndia);
+								if(!is_null($porter_clave))
 								{
-									
-									$datoauxfinal_clave					= $clave;
-									$datoauxfinal_ndia					= (($datoauxfinal_ndia * 1) + 1);
-									$datoauxfinal_fechacargo				= $datoauxfinal_fechacargo;
-									$datoauxfinal_whora_ingreso			= $datoauxfinal_whora_ingreso;
-									$datoauxfinal_whora_egreso			= $whora_egreso;
-									$datoauxfinal_ccogra					= $ccogra;
-									$datoauxfinal_wnprocedimiento		= $wnprocedimiento;
-									$datoauxfinal_wnumerohab				= $wnumerohab;
-									$datoauxfinal_wvalor					= $wvalor;
-									$datoauxfinal_wreconocido			= (($datoauxfinal_wreconocido * 1) + ($wreconocido*1))*1;
-									$datoauxfinal_wprocedimiento			= $wprocedimiento;
-									$datoauxfinal_wresponsable			= $wresponsable;
-									$datoauxfinal_wnresponsable			= $wnresponsable;
-									$datoauxfinal_wtarifa				= $wtarifa;
-									$datoauxfinal_tipoEmpresa			= $tipoEmpresa;
-									$datoauxfinal_nitEmpresa				= $nitEmpresa;
-									$datoauxfinal_concepto_cargo			= $concepto_cargo;
-									$datoauxfinal_wnconcepto				= $wnconcepto;
-									$datoauxfinal_id_tope_afectado		= $id_tope_afectado;
-									$datoauxfinal_wtercero				= $wtercero;
-									$datoauxfinal_wtercero_nom			= $wnomtercero;
-									$datoauxfinal_wtercero_unix			= $wtercero_unix;
-									$datoauxfinal_wtercero_especialidad	= $wtercero_especialidad;
-									$datoauxfinal_wgraba_varios_terceros	= $wgraba_varios_terceros;
-									$datoauxfinal_wporter				= $wporter;
-									$datoauxfinal_wparalelo				= $wparalelo;
-									$datoauxfinal_wvaltarExce			= (($datoauxfinal_wvaltarExce * 1) + ($wvaltarExce*1))*1;
-									$datoauxfinal_wfecha_ingreso			= $datoauxfinal_wfecha_ingreso;
-									$datoauxfinal_wfecha_egreso			= $fechacargo;
-									
+									//wtercero 				 =  $('#busc_terceros_usuario_'+clave+'_'+ndia).attr('ctercero');
+									$wtercero 				 =  $busc_terceros_usuario->getAttributeNode('ctercero')->nodeValue;
+									//wnomtercero			 =  $('#busc_terceros_usuario_'+clave+'_'+ndia).attr('nombre');
+									$wnomtercero			 =  $busc_terceros_usuario->getAttributeNode('nombre')->nodeValue;
+									//wtercero_especialidad	 =  $('#busc_terceros_usuario_'+clave+'_'+ndia).attr('cespecialidad');
+									$wtercero_especialidad	 =  $busc_terceros_usuario->getAttributeNode('cespecialidad')->nodeValue;
+									//wgraba_varios_terceros = 0;
+									$wgraba_varios_terceros  = 0;
+									//wporter  				 = $('#porter_'+clave+'_'+ndia).val();
+									$wporter 				 = $porter_clave->nodeValue;
+									//wtercero_unix 		 = $('#busc_terceros_usuario_'+clave+'_'+ndia).attr('ctercero_unix');							
+									$wtercero_unix 			 = $busc_terceros_usuario->getAttributeNode('ctercero_unix')->nodeValue;
+								}
+							
+							} else {
+								$wtercero 					= '';
+								$wnomtercero			 	= '';
+								$wgraba_varios_terceros 	= 0;
+								$wtercero_especialidad		= '';
+								$wporter 					= '';
+								$wtercero_unix 				= '';
+							}
+							
+							/*
+							echo "wtercero: $wtercero \n";
+							echo "wnomtercero: $wnomtercero \n";
+							echo "wgraba_varios_terceros: $wgraba_varios_terceros \n";
+							echo "wtercero_especialidad: $wtercero_especialidad \n";
+							echo "wporter: $wporter \n";
+							echo "wtercero_unix: $wtercero_unix \n\n";
+							*/
+							$aux = ($j*1) + 1;
+							$reconocido_clave_1 = $dom->getElementById('reconocido_clave'.$clave.'_'.$ndia.'_res'.$aux);
+							
+							if(!is_null($reconocido_clave_1)) {
+								$bool_reconocido_clave = true;
+							} else {
+								$bool_reconocido_clave=false;
+							}
+							
+							if($bool_reconocido_clave && ($reconocido_clave_1->getAttributeNode('valor')->nodeValue * 1) != 0 ) {
+								$wparalelo = $reconocido_clave_1->getAttributeNode('paralelo')->nodeValue;
+								$wvaltarExce=0;
+
+							} else {
+								$wparalelo ='off';
+								$reconocido_clave2=$dom->getElementById('reconocido_clave'.$clave.'_'.$ndia);
+								
+								if(!is_null($reconocido_clave2)) {
+								$reconocido_clave2=true;
+								} else {
+									$reconocido_clave2=false;
+								}
+								if(!$reconocido_clave2)
+								{
+									$wvaltarExce =0;
 								}
 								else
 								{
-									$datoauxfinal = array();
-									$datoauxfinal['clave'] = $datoauxfinal_clave;
-									$datoauxfinal['ndia'] = $datoauxfinal_ndia;
-									$datoauxfinal['fechacargo'] = $datoauxfinal_fechacargo	;
-									$datoauxfinal['whora_ingreso'] = $datoauxfinal_whora_ingreso;
-									$datoauxfinal['whora_egreso'] = $datoauxfinal_whora_egreso;
-									$datoauxfinal['ccogra']	 = $datoauxfinal_ccogra	;
-									$datoauxfinal['wnprocedimiento'] = $datoauxfinal_wnprocedimiento;
-									$datoauxfinal['wnumerohab'] = $datoauxfinal_wnumerohab	;
-									$datoauxfinal['wvalor'] = $datoauxfinal_wvalor;
-									$datoauxfinal['wreconocido'] = $datoauxfinal_wreconocido;
-									$datoauxfinal['wprocedimiento'] = $datoauxfinal_wprocedimiento;
-									$datoauxfinal['wresponsable'] = $datoauxfinal_wresponsable;
-									$datoauxfinal['wnresponsable'] = $datoauxfinal_wnresponsable;
-									$datoauxfinal['wtarifa'] = $datoauxfinal_wtarifa;
-									$datoauxfinal['tipoEmpresa']	 = $datoauxfinal_tipoEmpresa;
-									$datoauxfinal['nitEmpresa'] = $datoauxfinal_nitEmpresa;
-									$datoauxfinal['concepto_cargo'] = $datoauxfinal_concepto_cargo;
-									$datoauxfinal['wnconcepto']	 = $datoauxfinal_wnconcepto;
-									$datoauxfinal['id_tope_afectado'] = $datoauxfinal_id_tope_afectado;
-									$datoauxfinal['wtercero'] = $datoauxfinal_wtercero;
-									$datoauxfinal['wtercero_nombre'] = $datoauxfinal_wtercero_nom;
-									$datoauxfinal['wtercero_unix'] = $datoauxfinal_wtercero_unix;
-									$datoauxfinal['wtercero_especialidad'] = $datoauxfinal_wtercero_especialidad;
-									$datoauxfinal['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros;
-									$datoauxfinal['wporter'] = $datoauxfinal_wporter;
-									$datoauxfinal['wparalelo'] = $datoauxfinal_wparalelo;
-									$datoauxfinal['wvaltarExce'] = $datoauxfinal_wvaltarExce;
-									$datoauxfinal['wfecha_ingreso'] = $datoauxfinal_wfecha_ingreso;
-									$datoauxfinal['wfecha_egreso'] = $datoauxfinal_wfecha_egreso;
+									$wvaltarExce=$dom->getElementById('excedente_'.$clave.'_'.$ndia)->getAttributeNode('valor')->nodeValue;
+									if($tiene_paquete)
+									{
+										
+										$wvaltarExce= ($wvaltarExce*1) + ($auxiliarexcedente*1);
+										$tiene_paquete=false;
+									}
+								}
+							}
+							$dato_clave = $clave;
+							$dato_responsable = $wresponsable;
+							$existe = false;
+							/** Nunca entra EDWIN
+								for($jj=0;$jj<sizeof($datos);$jj++){
+								$datoget = $datos[$jj];
+								echo $datoget;
+								if($datoget['clave'] == $dato_clave && $datoget['wresponsable']==$dato_responsable ){
+									if ($dom->getElementById('busc_terceros_usuario_'.$clave.'_'.$ndia)->getAttributeNode('valor')->nodeValue=='si')
+									{
+											$datoget['ndia'] 			= (($datoget['ndia'])*1) + 1;
+											$datoget['whora_ingreso'] 	= $datoget['whora_ingreso'];
+											$datoget['whora_egreso']		= $whora_egreso;
+											$datoget['wfecha_ingreso']	= $datoget['fechacargo'];
+											$datoget['wfecha_egreso']	= $fechacargo;
+											$datoget['wreconocido']		= (($datoget['wreconocido']*1) + ($wreconocido*1))*1;
+											$existe = true;
+											
+											$datos[$jj] = $datoget;
+										
+									}
+									else
+									{
+											$datoget['ndia'] 			= (($datoget['ndia'])*1) + 1;
+											$datoget['whora_ingreso'] 	= $datoget['whora_ingreso'];
+											$datoget['whora_egreso']		= $whora_egreso;
+											$datoget['wfecha_ingreso']	= $datoget['fechacargo'];
+											$datoget['wfecha_egreso']	= $fechacargo;
+											$datoget['wreconocido']		= (($datoget['wreconocido']*1) + ($wreconocido*1))*1;
+											$existe = true;
+											
+											$datos[jj] = $datoget;
+										
+									}
 									
-									//-- se hace push
-									$datosauxfinal[] = $datoauxfinal;
+								}
+								
+							}
+							*/
+						
+							//-- Aqui se construye el array principal inicial , este array contiene los datos de pension resumidos por traslado, pero
+							//-- no tenia en cuenta si en estos dias habian varios terceros y se tenia que partir el cargo, por esto se hizo otro vector mas abajo
+							//-- datosauxfinal 
+							if( $existe == false ){
+								$dato = array();
+								$dato['clave'] 					= $clave;
+								$dato['ndia']					= 1 ;
+								$dato['fechacargo']				= $fechacargo;
+								$dato['whora_ingreso']			= $whora_ingreso;
+								$dato['whora_egreso']			= $whora_egreso;
+								$dato['ccogra']					= $ccogra;
+								$dato['wnprocedimiento']		= $wnprocedimiento;
+								$dato['wnumerohab']				= $wnumerohab;
+								$dato['wvalor']					= $wvalor;
+								$dato['wreconocido']			= $wreconocido;
+								$dato['wprocedimiento']			= $wprocedimiento;
+								$dato['wresponsable']			= $wresponsable;
+								$dato['wnresponsable']			= $wnresponsable;
+								$dato['wtarifa']				= $wtarifa;
+								$dato['tipoEmpresa']			= $tipoEmpresa;
+								$dato['nitEmpresa']				= $nitEmpresa;
+								$dato['concepto_cargo']			= $concepto_cargo;
+								$dato['wnconcepto']				= $wnconcepto;
+								$dato['id_tope_afectado']		= $id_tope_afectado;
+								$dato['wtercero']				= $wtercero;
+								$dato['wtercero_nombre']		= $wnomtercero;
+								$dato['wtercero_unix']			= $wtercero_unix;
+								$dato['wtercero_especialidad']	= $wtercero_especialidad;
+								$dato['wgraba_varios_terceros']	= $wgraba_varios_terceros;
+								$dato['wporter']				= $wporter;
+								$dato['wparalelo']				= $wparalelo;
+								$dato['wvaltarExce']			= $wvaltarExce;
+								$dato['wfecha_ingreso']			= $fechacargo;
+								$dato['wfecha_egreso']			= $fechacargo;
+								
+								$datos[] = $dato;
+							}
+							//-------------------------------------------------------
+							
+							// se llena el objeto datoaux
+							//-- este vector contendra todos los cargos dia por dia, detallado , no resumido, para validar en unix si tiene tarifa, o si
+							//-- el tercero tiene concepto amarrado a los honorarios
+							$datoaux 							= array();
+							$datoaux['clave'] 					= $clave;
+							$datoaux['ndia']					= 1 ;
+							$datoaux['fechacargo']				= $fechacargo;
+							$datoaux['whora_ingreso']			= $whora_ingreso;
+							$datoaux['whora_egreso']			= $whora_egreso;
+							$datoaux['ccogra']					= $ccogra;
+							$datoaux['wnprocedimiento']			= $wnprocedimiento;
+							$datoaux['wnumerohab']				= $wnumerohab;
+							$datoaux['wvalor']					= $wvalor;
+							$datoaux['wreconocido']				= $wreconocido;
+							$datoaux['wprocedimiento']			= $wprocedimiento;
+							$datoaux['wresponsable']			= $wresponsable;
+							$datoaux['wnresponsable']			= $wnresponsable;
+							$datoaux['wtarifa']					= $wtarifa;
+							$datoaux['tipoEmpresa']				= $tipoEmpresa;
+							$datoaux['nitEmpresa']				= $nitEmpresa;
+							$datoaux['concepto_cargo']			= $concepto_cargo;
+							$datoaux['wnconcepto']				= $wnconcepto;
+							$datoaux['id_tope_afectado']		= $id_tope_afectado;
+							$datoaux['wtercero']				= $wtercero;
+							$datoaux['wtercero_nombre']			= $wnomtercero;
+							$datoaux['wtercero_unix']			= $wtercero_unix;
+							$datoaux['wtercero_especialidad']	= $wtercero_especialidad;
+							$datoaux['wgraba_varios_terceros']	= $wgraba_varios_terceros;
+							$datoaux['wporter']					= $wporter;
+							$datoaux['wparalelo']				= $wparalelo;
+							$datoaux['wvaltarExce']				= $wvaltarExce;
+							$datoaux['wfecha_ingreso']			= $fechacargo;
+							$datoaux['wfecha_egreso']			= $fechacargo;
+							$datosaux[] = $datoaux;
+							
+							if($numero_responsables == 1)
+							{
+								$contadore++;
+							
+								//-Se inicia proceso para crear un vector discriminando  cargos por cada tercero
+								//------------------------------------------------
+								if($diasauxiliar1 == 0)
+								{
 									
-									//-- se inicializan de nuevo las variables
-									$datoauxfinal_clave					= $clave;
-									$datoauxfinal_ndia					= 1 ;
+									$auxclave = $clave;
+									
+									$datoauxfinal_clave					= '';
+									$datoauxfinal_ndia					= 0;
 									$datoauxfinal_fechacargo			= $fechacargo;
 									$datoauxfinal_whora_ingreso			= $whora_ingreso;
-									$datoauxfinal_whora_egreso			= $whora_egreso;
-									$datoauxfinal_ccogra				= $ccogra;
-									$datoauxfinal_wnprocedimiento		= $wnprocedimiento;
-									$datoauxfinal_wnumerohab			= $wnumerohab;
-									$datoauxfinal_wvalor				= $wvalor;
-									$datoauxfinal_wreconocido			= $wreconocido ;
-									$datoauxfinal_wprocedimiento		= $wprocedimiento;
-									$datoauxfinal_wresponsable			= $wresponsable;
-									$datoauxfinal_wnresponsable			= $wnresponsable;
-									$datoauxfinal_wtarifa				= $wtarifa;
-									$datoauxfinal_tipoEmpresa			= $tipoEmpresa;
-									$datoauxfinal_nitEmpresa			= $nitEmpresa;
-									$datoauxfinal_concepto_cargo		= $concepto_cargo;
-									$datoauxfinal_wnconcepto			= $wnconcepto;
-									$datoauxfinal_id_tope_afectado		= $id_tope_afectado;
-									$datoauxfinal_wtercero				= $wtercero;
-									$datoauxfinal_wtercero_nom				= $wnomtercero;
-									$datoauxfinal_wtercero_unix				= $wtercero_unix;
-									$datoauxfinal_wtercero_especialidad		= $wtercero_especialidad;
-									$datoauxfinal_wgraba_varios_terceros	= $wgraba_varios_terceros;
-									$datoauxfinal_wporter				= $wporter;
-									$datoauxfinal_wparalelo				= $wparalelo;
-									$datoauxfinal_wvaltarExce			= $wvaltarExce;
-									$datoauxfinal_wfecha_ingreso			= $fechacargo;
-									$datoauxfinal_wfecha_egreso			= $fechacargo;
-								}
-							}
-							else
-							{
-								$datoauxfinal = array();
-								$datoauxfinal['clave'] 					= $datoauxfinal_clave;
-								$datoauxfinal['ndia'] 					= $datoauxfinal_ndia;
-								$datoauxfinal['fechacargo'] 			= $datoauxfinal_fechacargo	;
-								$datoauxfinal['whora_ingreso'] 			= $datoauxfinal_whora_ingreso;
-								$datoauxfinal['whora_egreso'] 			= $datoauxfinal_whora_egreso;
-								$datoauxfinal['ccogra']	 				= $datoauxfinal_ccogra	;
-								$datoauxfinal['wnprocedimiento'] 		= $datoauxfinal_wnprocedimiento;
-								$datoauxfinal['wnumerohab'] 			= $datoauxfinal_wnumerohab	;
-								$datoauxfinal['wvalor'] 				= $datoauxfinal_wvalor;
-								$datoauxfinal['wreconocido'] 			= $datoauxfinal_wreconocido;
-								$datoauxfinal['wprocedimiento'] 		= $datoauxfinal_wprocedimiento;
-								$datoauxfinal['wresponsable'] 			= $datoauxfinal_wresponsable;
-								$datoauxfinal['wnresponsable'] 			= $datoauxfinal_wnresponsable;
-								$datoauxfinal['wtarifa'] 				= $datoauxfinal_wtarifa;
-								$datoauxfinal['tipoEmpresa']	 		= $datoauxfinal_tipoEmpresa;
-								$datoauxfinal['nitEmpresa'] 			= $datoauxfinal_nitEmpresa;
-								$datoauxfinal['concepto_cargo'] 		= $datoauxfinal_concepto_cargo;
-								$datoauxfinal['wnconcepto']	 			= $datoauxfinal_wnconcepto;
-								$datoauxfinal['id_tope_afectado'] 		= $datoauxfinal_id_tope_afectado;
-								$datoauxfinal['wtercero'] 				= $datoauxfinal_wtercero;
-								$datoauxfinal['wtercero_nombre']		= $datoauxfinal_wtercero_nom;
-								$datoauxfinal['wtercero_unix'] 			= $datoauxfinal_wtercero_unix;
-								$datoauxfinal['wtercero_especialidad'] 	= $datoauxfinal_wtercero_especialidad;
-								$datoauxfinal['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros;
-								$datoauxfinal['wporter'] 				= $datoauxfinal_wporter;
-								$datoauxfinal['wparalelo'] 				= $datoauxfinal_wparalelo;
-								$datoauxfinal['wvaltarExce'] 			= $datoauxfinal_wvaltarExce;
-								$datoauxfinal['wfecha_ingreso'] 		= $datoauxfinal_wfecha_ingreso;
-								$datoauxfinal['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso;
-								//-- se hace push
-								
-								$datosauxfinal[] = $datoauxfinal;
-								//-- se inicializan de nuevo las variables
-								$datoauxfinal_clave						= $clave;
-								$datoauxfinal_ndia						= 1 ;
-								$datoauxfinal_fechacargo				= $fechacargo;
-								$datoauxfinal_whora_ingreso				= $whora_ingreso;
-								$datoauxfinal_whora_egreso				= $whora_egreso;
-								$datoauxfinal_ccogra					= $ccogra;
-								$datoauxfinal_wnprocedimiento			= $wnprocedimiento;
-								$datoauxfinal_wnumerohab				= $wnumerohab;
-								$datoauxfinal_wvalor					= $wvalor;
-								$datoauxfinal_wreconocido				= $wreconocido ;
-								$datoauxfinal_wprocedimiento			= $wprocedimiento;
-								$datoauxfinal_wresponsable				= $wresponsable;
-								$datoauxfinal_wnresponsable				= $wnresponsable;
-								$datoauxfinal_wtarifa					= $wtarifa;
-								$datoauxfinal_tipoEmpresa				= $tipoEmpresa;
-								$datoauxfinal_nitEmpresa				= $nitEmpresa;
-								$datoauxfinal_concepto_cargo			= $concepto_cargo;
-								$datoauxfinal_wnconcepto				= $wnconcepto;
-								$datoauxfinal_id_tope_afectado			= $id_tope_afectado;
-								$datoauxfinal_wtercero					= $wtercero;
-								$datoauxfinal_wtercero_nom				= $wnomtercero;
-								$datoauxfinal_wtercero_unix				= $wtercero_unix;
-								$datoauxfinal_wtercero_especialidad		= $wtercero_especialidad;
-								$datoauxfinal_wgraba_varios_terceros	= $wgraba_varios_terceros;
-								$datoauxfinal_wporter					= $wporter;
-								$datoauxfinal_wparalelo					= $wparalelo;
-								$datoauxfinal_wvaltarExce				= $wvaltarExce;
-								$datoauxfinal_wfecha_ingreso			= $fechacargo;
-								$datoauxfinal_wfecha_egreso				= $fechacargo;
-							
-							}
-							
-							$diasauxiliar1++;
-							if($diasauxiliar1 == $diasauxiliar)
-							{
-								$datoauxfinal 							= array();
-								$datoauxfinal['clave'] 					= $datoauxfinal_clave;
-								$datoauxfinal['ndia'] 					= $datoauxfinal_ndia;
-								$datoauxfinal['fechacargo'] 			= $datoauxfinal_fechacargo	;
-								$datoauxfinal['whora_ingreso'] 			= $datoauxfinal_whora_ingreso;
-								$datoauxfinal['whora_egreso'] 			= $datoauxfinal_whora_egreso;
-								$datoauxfinal['ccogra']	 				= $datoauxfinal_ccogra	;
-								$datoauxfinal['wnprocedimiento'] 		= $datoauxfinal_wnprocedimiento;
-								$datoauxfinal['wnumerohab'] 			= $datoauxfinal_wnumerohab	;
-								$datoauxfinal['wvalor'] 				= $datoauxfinal_wvalor;
-								$datoauxfinal['wreconocido'] 			= $datoauxfinal_wreconocido;
-								$datoauxfinal['wprocedimiento'] 		= $datoauxfinal_wprocedimiento;
-								$datoauxfinal['wresponsable'] 			= $datoauxfinal_wresponsable;
-								$datoauxfinal['wnresponsable'] 			= $datoauxfinal_wnresponsable;
-								$datoauxfinal['wtarifa'] 				= $datoauxfinal_wtarifa;
-								$datoauxfinal['tipoEmpresa']	 		= $datoauxfinal_tipoEmpresa;
-								$datoauxfinal['nitEmpresa'] 			= $datoauxfinal_nitEmpresa;
-								$datoauxfinal['concepto_cargo'] 		= $datoauxfinal_concepto_cargo;
-								$datoauxfinal['wnconcepto']	 			= $datoauxfinal_wnconcepto;
-								$datoauxfinal['id_tope_afectado'] 		= $datoauxfinal_id_tope_afectado;
-								$datoauxfinal['wtercero'] 				= $datoauxfinal_wtercero;
-								$datoauxfinal['wtercero_nombre'] 		= $datoauxfinal_wtercero_nom;
-								$datoauxfinal['wtercero_unix'] 			= $datoauxfinal_wtercero_unix;
-								$datoauxfinal['wtercero_especialidad']	= $datoauxfinal_wtercero_especialidad;
-								$datoauxfinal['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros;
-								$datoauxfinal['wporter'] 				= $datoauxfinal_wporter;
-								$datoauxfinal['wparalelo'] 				= $datoauxfinal_wparalelo;
-								$datoauxfinal['wvaltarExce'] 			= $datoauxfinal_wvaltarExce;
-								$datoauxfinal['wfecha_ingreso'] 		= $datoauxfinal_wfecha_ingreso;
-								$datoauxfinal['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso;
-								
-								$datosauxfinal[]	=	$datoauxfinal;
-								
-							}
-							//Fin de construccion de vector unificado, detallando dias de cobro para cada tercero-----------------------------------------------
-							//---------------------------------------------
-							$auxclave = $clave;
-							$auxtercero = $datoaux['wtercero'];
-						
-						}	else if($numero_responsables == 2) {
-							
-							if($j==1) 
-							{
-								if($diasauxiliar1 == 0) 
-								{
-									$auxclave = $clave;
-									
-									$datoauxfinal_clave						= 0;
-									$datoauxfinal_ndia						= 0;
-									$datoauxfinal_fechacargo				= $fechacargo;
-									$datoauxfinal_whora_ingreso				= $whora_ingreso;
-									$datoauxfinal_whora_egreso				= '';
-									$datoauxfinal_ccogra					= '';
-									$datoauxfinal_wnprocedimiento			= '';
-									$datoauxfinal_wnumerohab				= '';
-									$datoauxfinal_wvalor					= '';
-									$datoauxfinal_wreconocido				= 0;
-									$datoauxfinal_wprocedimiento			= '';
-									$datoauxfinal_wresponsable				= '';
-									$datoauxfinal_wnresponsable				= '';
-									$datoauxfinal_wtarifa					= '';
-									$datoauxfinal_tipoEmpresa				= '';
-									$datoauxfinal_nitEmpresa				= '';
-									$datoauxfinal_concepto_cargo			= '';
-									$datoauxfinal_wnconcepto				= '';
-									$datoauxfinal_id_tope_afectado			= '';
-									$datoauxfinal_wtercero					= '';
-									$datoauxfinal_wtercero_nom				= '';
-									$datoauxfinal_wtercero_unix				= '';
-									$datoauxfinal_wtercero_especialidad		= '';
+									$datoauxfinal_whora_egreso			= '';
+									$datoauxfinal_ccogra				= '';
+									$datoauxfinal_wnprocedimiento		= '';
+									$datoauxfinal_wnumerohab			= '';
+									$datoauxfinal_wvalor				= '';
+									$datoauxfinal_wreconocido			= 0;
+									$datoauxfinal_wprocedimiento		= '';
+									$datoauxfinal_wresponsable			= '';
+									$datoauxfinal_wnresponsable			= '';
+									$datoauxfinal_wtarifa				= '';
+									$datoauxfinal_tipoEmpresa			= '';
+									$datoauxfinal_nitEmpresa			= '';
+									$datoauxfinal_concepto_cargo		= '';
+									$datoauxfinal_wnconcepto			= '';
+									$datoauxfinal_id_tope_afectado		= '';
+									$datoauxfinal_wtercero				= '';
+									$datoauxfinal_wtercero_nom			= '';
+									$datoauxfinal_wtercero_unix			= '';
+									$datoauxfinal_wtercero_especialidad	= '';
 									$datoauxfinal_wgraba_varios_terceros	= '';
-									$datoauxfinal_wporter					= '';
-									$datoauxfinal_wparalelo					= '';
-									$datoauxfinal_wvaltarExce				= 0;
+									$datoauxfinal_wporter				= '';
+									$datoauxfinal_wparalelo				= '';
+									$datoauxfinal_wvaltarExce			= 0;
 									$datoauxfinal_wfecha_ingreso			= $fechacargo;
-									$datoauxfinal_wfecha_egreso				= '';
-								}
-							}
-							if($j==2)
-							{
-								if($diasauxiliar2 == 0)
+									$datoauxfinal_wfecha_egreso			= '';
+								}	
+								
+								if( $clave == $auxclave )
 								{
-									$auxclave = $clave;
-									$datoauxfinal_clave2					= 0;
-									$datoauxfinal_ndia2						= 0;
-									$datoauxfinal_fechacargo2				= $fechacargo;
-									$datoauxfinal_whora_ingreso2			= $whora_ingreso;
-									$datoauxfinal_whora_egreso2				= '';
-									$datoauxfinal_ccogra2					= '';
-									$datoauxfinal_wnprocedimiento2			= '';
-									$datoauxfinal_wnumerohab2				= '';
-									$datoauxfinal_wvalor2					= '';
-									$datoauxfinal_wreconocido2				= 0;
-									$datoauxfinal_wprocedimiento2			= '';
-									$datoauxfinal_wresponsable2				= '';
-									$datoauxfinal_wnresponsable2			= '';
-									$datoauxfinal_wtarifa2					= '';
-									$datoauxfinal_tipoEmpresa2				= '';
-									$datoauxfinal_nitEmpresa2				= '';
-									$datoauxfinal_concepto_cargo2			= '';
-									$datoauxfinal_wnconcepto2				= '';
-									$datoauxfinal_id_tope_afectado2			= '';
-									$datoauxfinal_wtercero2					= '';
-									$datoauxfinal_wtercero_nom2				= '';
-									$datoauxfinal_wtercero_unix2			= '';
-									$datoauxfinal_wtercero_especialidad2	= '';
-									$datoauxfinal_wgraba_varios_terceros2	= '';
-									$datoauxfinal_wporter2					= '';
-									$datoauxfinal_wparalelo2				= '';
-									$datoauxfinal_wvaltarExce2				= 0;
-									$datoauxfinal_wfecha_ingreso2			= $fechacargo;
-									$datoauxfinal_wfecha_egreso2			= '';
-								}
-							}
-							
-							//console.log("responsable: "+j+ " clave: "+clave+"---auxclave: "+auxclave);
-							if( $clave == $auxclave )
-							{
-								if($j==1)
-								{
+									
 									if($datoaux['wtercero'] == $auxtercero  )
 									{
-										//alert("entro responsable");
+										
 										$datoauxfinal_clave					= $clave;
 										$datoauxfinal_ndia					= (($datoauxfinal_ndia * 1) + 1);
-										//alert(datoauxfinal_ndia);
-										$datoauxfinal_fechacargo			= $datoauxfinal_fechacargo;
+										$datoauxfinal_fechacargo				= $datoauxfinal_fechacargo;
 										$datoauxfinal_whora_ingreso			= $datoauxfinal_whora_ingreso;
 										$datoauxfinal_whora_egreso			= $whora_egreso;
-										$datoauxfinal_ccogra				= $ccogra;
+										$datoauxfinal_ccogra					= $ccogra;
 										$datoauxfinal_wnprocedimiento		= $wnprocedimiento;
-										$datoauxfinal_wnumerohab			= $wnumerohab;
-										$datoauxfinal_wvalor				= $wvalor;
+										$datoauxfinal_wnumerohab				= $wnumerohab;
+										$datoauxfinal_wvalor					= $wvalor;
 										$datoauxfinal_wreconocido			= (($datoauxfinal_wreconocido * 1) + ($wreconocido*1))*1;
-										$datoauxfinal_wprocedimiento		= $wprocedimiento;
+										$datoauxfinal_wprocedimiento			= $wprocedimiento;
 										$datoauxfinal_wresponsable			= $wresponsable;
 										$datoauxfinal_wnresponsable			= $wnresponsable;
 										$datoauxfinal_wtarifa				= $wtarifa;
 										$datoauxfinal_tipoEmpresa			= $tipoEmpresa;
-										$datoauxfinal_nitEmpresa			= $nitEmpresa;
-										$datoauxfinal_concepto_cargo		= $concepto_cargo;
-										$datoauxfinal_wnconcepto			= $wnconcepto;
+										$datoauxfinal_nitEmpresa				= $nitEmpresa;
+										$datoauxfinal_concepto_cargo			= $concepto_cargo;
+										$datoauxfinal_wnconcepto				= $wnconcepto;
 										$datoauxfinal_id_tope_afectado		= $id_tope_afectado;
 										$datoauxfinal_wtercero				= $wtercero;
 										$datoauxfinal_wtercero_nom			= $wnomtercero;
 										$datoauxfinal_wtercero_unix			= $wtercero_unix;
 										$datoauxfinal_wtercero_especialidad	= $wtercero_especialidad;
-										$datoauxfinal_wgraba_varios_terceros= $wgraba_varios_terceros;
+										$datoauxfinal_wgraba_varios_terceros	= $wgraba_varios_terceros;
 										$datoauxfinal_wporter				= $wporter;
 										$datoauxfinal_wparalelo				= $wparalelo;
 										$datoauxfinal_wvaltarExce			= (($datoauxfinal_wvaltarExce * 1) + ($wvaltarExce*1))*1;
-										$datoauxfinal_wfecha_ingreso		= $datoauxfinal_wfecha_ingreso;
+										$datoauxfinal_wfecha_ingreso			= $datoauxfinal_wfecha_ingreso;
 										$datoauxfinal_wfecha_egreso			= $fechacargo;
-										//console.log(datoauxfinal_ndia);
+										
 									}
 									else
 									{
-										$datoauxfinal 							= array();
-										$datoauxfinal['clave'] 					= $datoauxfinal_clave;
-										$datoauxfinal['ndia'] 					= $datoauxfinal_ndia;
-										$datoauxfinal['fechacargo'] 			= $datoauxfinal_fechacargo	;
-										$datoauxfinal['whora_ingreso'] 			= $datoauxfinal_whora_ingreso;
-										$datoauxfinal['whora_egreso'] 			= $datoauxfinal_whora_egreso;
-										$datoauxfinal['ccogra']	 				= $datoauxfinal_ccogra	;
-										$datoauxfinal['wnprocedimiento'] 		= $datoauxfinal_wnprocedimiento;
-										$datoauxfinal['wnumerohab'] 			= $datoauxfinal_wnumerohab	;
-										$datoauxfinal['wvalor'] 				= $datoauxfinal_wvalor;
-										$datoauxfinal['wreconocido'] 			= $datoauxfinal_wreconocido;
-										$datoauxfinal['wprocedimiento'] 		= $datoauxfinal_wprocedimiento;
-										$datoauxfinal['wresponsable'] 			= $datoauxfinal_wresponsable;
-										$datoauxfinal['wnresponsable'] 			= $datoauxfinal_wnresponsable;
-										$datoauxfinal['wtarifa'] 				= $datoauxfinal_wtarifa;
-										$datoauxfinal['tipoEmpresa']	 		= $datoauxfinal_tipoEmpresa;
-										$datoauxfinal['nitEmpresa'] 			= $datoauxfinal_nitEmpresa;
-										$datoauxfinal['concepto_cargo'] 		= $datoauxfinal_concepto_cargo;
-										$datoauxfinal['wnconcepto']	 			= $datoauxfinal_wnconcepto;
-										$datoauxfinal['id_tope_afectado'] 		= $datoauxfinal_id_tope_afectado;
-										$datoauxfinal['wtercero'] 				= $datoauxfinal_wtercero;
-										$datoauxfinal['wtercero_nombre'] 		= $datoauxfinal_wtercero_nom;
-										$datoauxfinal['wtercero_unix'] 			= $datoauxfinal_wtercero_unix;
-										$datoauxfinal['wtercero_especialidad']	= $datoauxfinal_wtercero_especialidad;
+										$datoauxfinal = array();
+										$datoauxfinal['clave'] = $datoauxfinal_clave;
+										$datoauxfinal['ndia'] = $datoauxfinal_ndia;
+										$datoauxfinal['fechacargo'] = $datoauxfinal_fechacargo	;
+										$datoauxfinal['whora_ingreso'] = $datoauxfinal_whora_ingreso;
+										$datoauxfinal['whora_egreso'] = $datoauxfinal_whora_egreso;
+										$datoauxfinal['ccogra']	 = $datoauxfinal_ccogra	;
+										$datoauxfinal['wnprocedimiento'] = $datoauxfinal_wnprocedimiento;
+										$datoauxfinal['wnumerohab'] = $datoauxfinal_wnumerohab	;
+										$datoauxfinal['wvalor'] = $datoauxfinal_wvalor;
+										$datoauxfinal['wreconocido'] = $datoauxfinal_wreconocido;
+										$datoauxfinal['wprocedimiento'] = $datoauxfinal_wprocedimiento;
+										$datoauxfinal['wresponsable'] = $datoauxfinal_wresponsable;
+										$datoauxfinal['wnresponsable'] = $datoauxfinal_wnresponsable;
+										$datoauxfinal['wtarifa'] = $datoauxfinal_wtarifa;
+										$datoauxfinal['tipoEmpresa']	 = $datoauxfinal_tipoEmpresa;
+										$datoauxfinal['nitEmpresa'] = $datoauxfinal_nitEmpresa;
+										$datoauxfinal['concepto_cargo'] = $datoauxfinal_concepto_cargo;
+										$datoauxfinal['wnconcepto']	 = $datoauxfinal_wnconcepto;
+										$datoauxfinal['id_tope_afectado'] = $datoauxfinal_id_tope_afectado;
+										$datoauxfinal['wtercero'] = $datoauxfinal_wtercero;
+										$datoauxfinal['wtercero_nombre'] = $datoauxfinal_wtercero_nom;
+										$datoauxfinal['wtercero_unix'] = $datoauxfinal_wtercero_unix;
+										$datoauxfinal['wtercero_especialidad'] = $datoauxfinal_wtercero_especialidad;
 										$datoauxfinal['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros;
-										$datoauxfinal['wporter'] 				= $datoauxfinal_wporter;
-										$datoauxfinal['wparalelo'] 				= $datoauxfinal_wparalelo;
-										$datoauxfinal['wvaltarExce'] 			= $datoauxfinal_wvaltarExce;
-										$datoauxfinal['wfecha_ingreso'] 		= $datoauxfinal_wfecha_ingreso;
-										$datoauxfinal['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso;
+										$datoauxfinal['wporter'] = $datoauxfinal_wporter;
+										$datoauxfinal['wparalelo'] = $datoauxfinal_wparalelo;
+										$datoauxfinal['wvaltarExce'] = $datoauxfinal_wvaltarExce;
+										$datoauxfinal['wfecha_ingreso'] = $datoauxfinal_wfecha_ingreso;
+										$datoauxfinal['wfecha_egreso'] = $datoauxfinal_wfecha_egreso;
 										
 										//-- se hace push
-										//console.log("push 6");
-										//echo "push 6 \n";
-										//console.log(datoauxfinal);
 										$datosauxfinal[] = $datoauxfinal;
 										
 										//-- se inicializan de nuevo las variables
@@ -2438,157 +2404,20 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 										$datoauxfinal_wnconcepto			= $wnconcepto;
 										$datoauxfinal_id_tope_afectado		= $id_tope_afectado;
 										$datoauxfinal_wtercero				= $wtercero;
-										$datoauxfinal_wtercero_nom			= $wnomtercero;
-										$datoauxfinal_wtercero_unix			= $wtercero_unix;
-										$datoauxfinal_wtercero_especialidad	= $wtercero_especialidad;
-										$datoauxfinal_wgraba_varios_terceros= $wgraba_varios_terceros;
+										$datoauxfinal_wtercero_nom				= $wnomtercero;
+										$datoauxfinal_wtercero_unix				= $wtercero_unix;
+										$datoauxfinal_wtercero_especialidad		= $wtercero_especialidad;
+										$datoauxfinal_wgraba_varios_terceros	= $wgraba_varios_terceros;
 										$datoauxfinal_wporter				= $wporter;
 										$datoauxfinal_wparalelo				= $wparalelo;
 										$datoauxfinal_wvaltarExce			= $wvaltarExce;
-										$datoauxfinal_wfecha_ingreso		= $fechacargo;
+										$datoauxfinal_wfecha_ingreso			= $fechacargo;
 										$datoauxfinal_wfecha_egreso			= $fechacargo;
-										
 									}
 								}
-								else if($j==2)
+								else
 								{
-									if($datoaux['wtercero'] == $auxtercero  )
-									{
-										//console.log("responsable 2 datos tercero iguales");
-										$datoauxfinal_clave2	= $clave;
-										
-										//---En empresas paf solo suma si es diferente de cero
-										//$paf_reconocido_clave_res
-										if($reconocido_clave->hasAttribute('paf')) 
-										{
-											if($reconocido_clave->getAttributeNode('cuenta')->nodeValue == 'no') {
-												$datoauxfinal_ndia2		= (($datoauxfinal_ndia2 * 1));
-												$datoauxfinal_wvalor2	= 0;
-											} else
-											{
-												$datoauxfinal_ndia2		= (($datoauxfinal_ndia2 * 1) + 1);
-												$datoauxfinal_wvalor2	= $wvalor;
-											}
-											
-										} else 
-										{
-											$datoauxfinal_ndia2		= (($datoauxfinal_ndia2 * 1) + 1);
-											$datoauxfinal_wvalor2	= $wvalor;
-										}
-										
-										$datoauxfinal_fechacargo2				= $datoauxfinal_fechacargo2;
-										$datoauxfinal_whora_ingreso2			= $datoauxfinal_whora_ingreso2;
-										$datoauxfinal_whora_egreso2				= $whora_egreso;
-										$datoauxfinal_ccogra2					= $ccogra;
-										$datoauxfinal_wnprocedimiento2			= $wnprocedimiento;
-										$datoauxfinal_wnumerohab2				= $wnumerohab;
-										//datoauxfinal_wvalor2					= wvalor;
-										$datoauxfinal_wreconocido2				= (($datoauxfinal_wreconocido2 * 1) + ($wreconocido*1))*1;
-										//alert(datoauxfinal_wreconocido2);
-										$datoauxfinal_wprocedimiento2			= $wprocedimiento;
-										$datoauxfinal_wresponsable2				= $wresponsable;
-										$datoauxfinal_wnresponsable2			= $wnresponsable;
-										$datoauxfinal_wtarifa2					= $wtarifa;
-										$datoauxfinal_tipoEmpresa2				= $tipoEmpresa;
-										$datoauxfinal_nitEmpresa2				= $nitEmpresa;
-										$datoauxfinal_concepto_cargo2			= $concepto_cargo;
-										$datoauxfinal_wnconcepto2				= $wnconcepto;
-										$datoauxfinal_id_tope_afectado2			= $id_tope_afectado;
-										$datoauxfinal_wtercero2					= $wtercero;
-										$datoauxfinal_wtercero_nom2				= $wnomtercero;
-										$datoauxfinal_wtercero_unix2			= $wtercero_unix;
-										$datoauxfinal_wtercero_especialidad2	= $wtercero_especialidad;
-										$datoauxfinal_wgraba_varios_terceros2	= $wgraba_varios_terceros;
-										$datoauxfinal_wporter2					= $wporter;
-										$datoauxfinal_wparalelo2				= $wparalelo;
-										
-										$datoauxfinal_wvaltarExce2				= (($datoauxfinal_wvaltarExce2 * 1) + ($wvaltarExce*1))*1;
-										
-										$datoauxfinal_wfecha_ingreso2			= $datoauxfinal_wfecha_ingreso2;
-										$datoauxfinal_wfecha_egreso2			= $fechacargo;
-										
-									}
-									else
-									{
-										// --> 2020-03-16: Jerson Trujillo, cambian todas la variables ejem datoauxfinal_clave por datoauxfinal_clave2
-										//	ya que generaba un error js que decia que las variables no existian
-										$datoauxfinal2 								= array();
-										$datoauxfinal2['clave'] 					= $datoauxfinal_clave2;
-										$datoauxfinal2['ndia'] 						= $datoauxfinal_ndia2;
-										$datoauxfinal2['fechacargo'] 				= $datoauxfinal_fechacargo2	;
-										$datoauxfinal2['whora_ingreso'] 			= $datoauxfinal_whora_ingreso2;
-										$datoauxfinal2['whora_egreso'] 				= $datoauxfinal_whora_egreso2;
-										$datoauxfinal2['ccogra']	 				= $datoauxfinal_ccogra2	;
-										$datoauxfinal2['wnprocedimiento'] 			= $datoauxfinal_wnprocedimiento2;
-										$datoauxfinal2['wnumerohab'] 				= $datoauxfinal_wnumerohab2	;
-										$datoauxfinal2['wvalor'] 					= $datoauxfinal_wvalor2;
-										$datoauxfinal2['wreconocido'] 				= $datoauxfinal_wreconocido2;
-										//alert(datoauxfinal_wreconocido2);
-										$datoauxfinal2['wprocedimiento'] 			= $datoauxfinal_wprocedimiento2;
-										$datoauxfinal2['wresponsable'] 				= $datoauxfinal_wresponsable2;
-										$datoauxfinal2['wnresponsable'] 			= $datoauxfinal_wnresponsable2;
-										$datoauxfinal2['wtarifa'] 					= $datoauxfinal_wtarifa2;
-										$datoauxfinal2['tipoEmpresa']	 			= $datoauxfinal_tipoEmpresa2;
-										$datoauxfinal2['nitEmpresa'] 				= $datoauxfinal_nitEmpresa2;
-										$datoauxfinal2['concepto_cargo'] 			= $datoauxfinal_concepto_cargo2;
-										$datoauxfinal2['wnconcepto']	 			= $datoauxfinal_wnconcepto2;
-										$datoauxfinal2['id_tope_afectado'] 			= $datoauxfinal_id_tope_afectado2;
-										$datoauxfinal2['wtercero'] 					= $datoauxfinal_wtercero2;
-										$datoauxfinal2['wtercero_nombre'] 			= $datoauxfinal_wtercero_nom2;
-										$datoauxfinal2['wtercero_unix'] 			= $datoauxfinal_wtercero_unix2;
-										$datoauxfinal2['wtercero_especialidad'] 	= $datoauxfinal_wtercero_especialidad2;
-										$datoauxfinal2['wgraba_varios_terceros']	= $datoauxfinal_wgraba_varios_terceros2;
-										$datoauxfinal2['wporter'] 					= $datoauxfinal_wporter2;
-										$datoauxfinal2['wparalelo'] 				= $datoauxfinal_wparalelo2;
-										$datoauxfinal2['wvaltarExce'] 				= $datoauxfinal_wvaltarExce2;
-										$datoauxfinal2['wfecha_ingreso'] 			= $datoauxfinal_wfecha_ingreso2;
-										$datoauxfinal2['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso2;
-										
-										// --> 2020-03-16: Hasta aca
-										//-- se hace push
-										//console.log("push 5");
-										//console.log(datoauxfinal2);
-										$datosauxfinal[] = $datoauxfinal2;
-										
-										//-- se inicializan de nuevo las variables
-										$datoauxfinal_clave2				  = $clave;
-										$datoauxfinal_ndia2					  = 1 ;
-										$datoauxfinal_fechacargo2			  = $fechacargo;
-										$datoauxfinal_whora_ingreso2		  = $whora_ingreso;
-										$datoauxfinal_whora_egreso2			  = $whora_egreso;
-										$datoauxfinal_ccogra2				  = $ccogra;
-										$datoauxfinal_wnprocedimiento2		  = $wnprocedimiento;
-										$datoauxfinal_wnumerohab2			  = $wnumerohab;
-										$datoauxfinal_wvalor2				  = $wvalor;
-										$datoauxfinal_wreconocido2			  = $wreconocido ;
-										$datoauxfinal_wprocedimiento2		  = $wprocedimiento;
-										$datoauxfinal_wresponsable2			  = $wresponsable;
-										$datoauxfinal_wnresponsable2		  = $wnresponsable;
-										$datoauxfinal_wtarifa2				  = $wtarifa;
-										$datoauxfinal_tipoEmpresa2			  = $tipoEmpresa;
-										$datoauxfinal_nitEmpresa2			  = $nitEmpresa;
-										$datoauxfinal_concepto_cargo2		  = $concepto_cargo;
-										$datoauxfinal_wnconcepto2			  = $wnconcepto;
-										$datoauxfinal_id_tope_afectado2		  = $id_tope_afectado;
-										$datoauxfinal_wtercero2				  = $wtercero;
-										$datoauxfinal_wtercero_nom2			  = $wnomtercero;
-										$datoauxfinal_wtercero_unix2		  = $wtercero_unix;
-										$datoauxfinal_wtercero_especialidad2  = $wtercero_especialidad;
-										$datoauxfinal_wgraba_varios_terceros2 = $wgraba_varios_terceros;
-										$datoauxfinal_wporter2				  = $wporter;
-										$datoauxfinal_wparalelo2			  = $wparalelo;
-										$datoauxfinal_wvaltarExce2			  = $wvaltarExce;
-										$datoauxfinal_wfecha_ingreso2		  = $fechacargo;
-										$datoauxfinal_wfecha_egreso2		  = $fechacargo;
-									}
-								}
-							}
-							else
-							{
-								if($j==1)
-								{
-									//console.log("1      claves distintas  Clave"+clave+ "auxclave"+auxclave ); 
-									$datoauxfinal 							= array();
+									$datoauxfinal = array();
 									$datoauxfinal['clave'] 					= $datoauxfinal_clave;
 									$datoauxfinal['ndia'] 					= $datoauxfinal_ndia;
 									$datoauxfinal['fechacargo'] 			= $datoauxfinal_fechacargo	;
@@ -2609,8 +2438,8 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 									$datoauxfinal['wnconcepto']	 			= $datoauxfinal_wnconcepto;
 									$datoauxfinal['id_tope_afectado'] 		= $datoauxfinal_id_tope_afectado;
 									$datoauxfinal['wtercero'] 				= $datoauxfinal_wtercero;
-									$datoauxfinal['wtercero_nombre'] 		= $datoauxfinal_wtercero_nom;
-									$datoauxfinal['wtercero_unix']	 		= $datoauxfinal_wtercero_unix;
+									$datoauxfinal['wtercero_nombre']		= $datoauxfinal_wtercero_nom;
+									$datoauxfinal['wtercero_unix'] 			= $datoauxfinal_wtercero_unix;
 									$datoauxfinal['wtercero_especialidad'] 	= $datoauxfinal_wtercero_especialidad;
 									$datoauxfinal['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros;
 									$datoauxfinal['wporter'] 				= $datoauxfinal_wporter;
@@ -2618,13 +2447,9 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 									$datoauxfinal['wvaltarExce'] 			= $datoauxfinal_wvaltarExce;
 									$datoauxfinal['wfecha_ingreso'] 		= $datoauxfinal_wfecha_ingreso;
 									$datoauxfinal['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso;
-									
 									//-- se hace push
-									//console.log("push 4");
-									// echo "push 4 \n";
-									//console.log(datoauxfinal);
-									$datosauxfinal[] = $datoauxfinal;
 									
+									$datosauxfinal[] = $datoauxfinal;
 									//-- se inicializan de nuevo las variables
 									$datoauxfinal_clave						= $clave;
 									$datoauxfinal_ndia						= 1 ;
@@ -2655,96 +2480,10 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 									$datoauxfinal_wvaltarExce				= $wvaltarExce;
 									$datoauxfinal_wfecha_ingreso			= $fechacargo;
 									$datoauxfinal_wfecha_egreso				= $fechacargo;
-							
+								
 								}
-								else if($j==2)
-								{
-									//console.log("2  claves distintas  Clave"+clave+ "auxclave"+auxclave ); 
-									$datoauxfinal2 							 = array();
-									$datoauxfinal2['clave'] 				 = $datoauxfinal_clave2;
-									$datoauxfinal2['ndia'] 					 = $datoauxfinal_ndia2;
-									$datoauxfinal2['fechacargo'] 			 = $datoauxfinal_fechacargo2	;
-									$datoauxfinal2['whora_ingreso'] 		 = $datoauxfinal_whora_ingreso2;
-									$datoauxfinal2['whora_egreso'] 			 = $datoauxfinal_whora_egreso2;
-									$datoauxfinal2['ccogra']	 			 = $datoauxfinal_ccogra2	;
-									$datoauxfinal2['wnprocedimiento'] 		 = $datoauxfinal_wnprocedimiento2;
-									$datoauxfinal2['wnumerohab'] 			 = $datoauxfinal_wnumerohab2	;
-									$datoauxfinal2['wvalor'] 				 = $datoauxfinal_wvalor2;
-									$datoauxfinal2['wreconocido'] 			 = $datoauxfinal_wreconocido2;
-									$datoauxfinal2['wprocedimiento'] 		 = $datoauxfinal_wprocedimiento2;
-									$datoauxfinal2['wresponsable'] 			 = $datoauxfinal_wresponsable2;
-									$datoauxfinal2['wnresponsable'] 		 = $datoauxfinal_wnresponsable2;
-									$datoauxfinal2['wtarifa'] 				 = $datoauxfinal_wtarifa2;
-									$datoauxfinal2['tipoEmpresa']	 		 = $datoauxfinal_tipoEmpresa2;
-									$datoauxfinal2['nitEmpresa'] 			 = $datoauxfinal_nitEmpresa2;
-									$datoauxfinal2['concepto_cargo'] 		 = $datoauxfinal_concepto_cargo2;
-									$datoauxfinal2['wnconcepto']	 		 = $datoauxfinal_wnconcepto2;
-									$datoauxfinal2['id_tope_afectado'] 		 = $datoauxfinal_id_tope_afectado2;
-									$datoauxfinal2['wtercero'] 				 = $datoauxfinal_wtercero2;
-									$datoauxfinal2['wtercero_nombre'] 		 = $datoauxfinal_wtercero_nom2;
-									$datoauxfinal2['wtercero_unix'] 		 = $datoauxfinal_wtercero_unix2;
-									$datoauxfinal2['wtercero_especialidad']  = $datoauxfinal_wtercero_especialidad2;
-									$datoauxfinal2['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros2;
-									$datoauxfinal2['wporter'] 				 = $datoauxfinal_wporter2;
-									$datoauxfinal2['wparalelo'] 			 = $datoauxfinal_wparalelo2;
-									$datoauxfinal2['wvaltarExce'] 			 = $datoauxfinal_wvaltarExce2;
-									$datoauxfinal2['wfecha_ingreso'] 		 = $datoauxfinal_wfecha_ingreso2;
-									$datoauxfinal2['wfecha_egreso'] 		 = $datoauxfinal_wfecha_egreso2;
-									//alert(datoauxfinal_wreconocido2);
-									//-- se hace push
-									if ($datoauxfinal2['wreconocido'] > 0 )
-									{
-										if ($datoauxfinal2['ndia'] > 0 )
-										{
-											//console.log("push 3");
-											//echo "push 3\n";
-											//console.log(datoauxfinal2);
-											$datosauxfinal[] = $datoauxfinal2;
-										
-										}
-									}
-									
-									//-- se inicializan de nuevo las variables
-									$datoauxfinal_clave2					= $clave;
-									$datoauxfinal_ndia2						= 1 ;
-									$datoauxfinal_fechacargo2				= $fechacargo;
-									$datoauxfinal_whora_ingreso2			= $whora_ingreso;
-									$datoauxfinal_whora_egreso2				= $whora_egreso;
-									$datoauxfinal_ccogra2					= $ccogra;
-									$datoauxfinal_wnprocedimiento2			= $wnprocedimiento;
-									$datoauxfinal_wnumerohab2				= $wnumerohab;
-									$datoauxfinal_wvalor2					= $wvalor;
-									$datoauxfinal_wreconocido2				= $wreconocido ;
-									$datoauxfinal_wprocedimiento2			= $wprocedimiento;
-									$datoauxfinal_wresponsable2				= $wresponsable;
-									$datoauxfinal_wnresponsable2			= $wnresponsable;
-									$datoauxfinal_wtarifa2					= $wtarifa;
-									$datoauxfinal_tipoEmpresa2				= $tipoEmpresa;
-									$datoauxfinal_nitEmpresa2				= $nitEmpresa;
-									$datoauxfinal_concepto_cargo2			= $concepto_cargo;
-									$datoauxfinal_wnconcepto2				= $wnconcepto;
-									$datoauxfinal_id_tope_afectado2			= $id_tope_afectado;
-									$datoauxfinal_wtercero2					= $wtercero;
-									$datoauxfinal_wtercero_nom2				= $wnomtercero;
-									$datoauxfinal_wtercero_unix2			= $wtercero_unix;
-									$datoauxfinal_wtercero_especialidad2	= $wtercero_especialidad;
-									$datoauxfinal_wgraba_varios_terceros2	= $wgraba_varios_terceros;
-									$datoauxfinal_wporter2					= $wporter;
-									$datoauxfinal_wparalelo2				= $wparalelo;
-									$datoauxfinal_wvaltarExce2				= $wvaltarExce;
-									$datoauxfinal_wfecha_ingreso2			= $fechacargo;
-									$datoauxfinal_wfecha_egreso2			= $fechacargo;
-								}
-							}
-							
-							if($j==1) {
+								
 								$diasauxiliar1++;
-							} else {
-								$diasauxiliar2++;
-							}
-							
-							if($j==1)
-							{
 								if($diasauxiliar1 == $diasauxiliar)
 								{
 									$datoauxfinal 							= array();
@@ -2770,7 +2509,7 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 									$datoauxfinal['wtercero'] 				= $datoauxfinal_wtercero;
 									$datoauxfinal['wtercero_nombre'] 		= $datoauxfinal_wtercero_nom;
 									$datoauxfinal['wtercero_unix'] 			= $datoauxfinal_wtercero_unix;
-									$datoauxfinal['wtercero_especialidad'] 	= $datoauxfinal_wtercero_especialidad;
+									$datoauxfinal['wtercero_especialidad']	= $datoauxfinal_wtercero_especialidad;
 									$datoauxfinal['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros;
 									$datoauxfinal['wporter'] 				= $datoauxfinal_wporter;
 									$datoauxfinal['wparalelo'] 				= $datoauxfinal_wparalelo;
@@ -2778,101 +2517,626 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 									$datoauxfinal['wfecha_ingreso'] 		= $datoauxfinal_wfecha_ingreso;
 									$datoauxfinal['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso;
 									
-									if ($datoauxfinal['wreconocido'] >0 )
+									$datosauxfinal[]	=	$datoauxfinal;
+									
+								}
+								//Fin de construccion de vector unificado, detallando dias de cobro para cada tercero-----------------------------------------------
+								//---------------------------------------------
+								$auxclave = $clave;
+								$auxtercero = $datoaux['wtercero'];
+							
+							}	else if($numero_responsables == 2) {
+								
+								if($j==1) 
+								{
+									if($diasauxiliar1 == 0) 
 									{
-										if ($datoauxfinal['ndia'] >0 )
+										$auxclave = $clave;
+										
+										$datoauxfinal_clave						= 0;
+										$datoauxfinal_ndia						= 0;
+										$datoauxfinal_fechacargo				= $fechacargo;
+										$datoauxfinal_whora_ingreso				= $whora_ingreso;
+										$datoauxfinal_whora_egreso				= '';
+										$datoauxfinal_ccogra					= '';
+										$datoauxfinal_wnprocedimiento			= '';
+										$datoauxfinal_wnumerohab				= '';
+										$datoauxfinal_wvalor					= '';
+										$datoauxfinal_wreconocido				= 0;
+										$datoauxfinal_wprocedimiento			= '';
+										$datoauxfinal_wresponsable				= '';
+										$datoauxfinal_wnresponsable				= '';
+										$datoauxfinal_wtarifa					= '';
+										$datoauxfinal_tipoEmpresa				= '';
+										$datoauxfinal_nitEmpresa				= '';
+										$datoauxfinal_concepto_cargo			= '';
+										$datoauxfinal_wnconcepto				= '';
+										$datoauxfinal_id_tope_afectado			= '';
+										$datoauxfinal_wtercero					= '';
+										$datoauxfinal_wtercero_nom				= '';
+										$datoauxfinal_wtercero_unix				= '';
+										$datoauxfinal_wtercero_especialidad		= '';
+										$datoauxfinal_wgraba_varios_terceros	= '';
+										$datoauxfinal_wporter					= '';
+										$datoauxfinal_wparalelo					= '';
+										$datoauxfinal_wvaltarExce				= 0;
+										$datoauxfinal_wfecha_ingreso			= $fechacargo;
+										$datoauxfinal_wfecha_egreso				= '';
+									}
+								}
+								if($j==2)
+								{
+									if($diasauxiliar2 == 0)
+									{
+										$auxclave = $clave;
+										$datoauxfinal_clave2					= 0;
+										$datoauxfinal_ndia2						= 0;
+										$datoauxfinal_fechacargo2				= $fechacargo;
+										$datoauxfinal_whora_ingreso2			= $whora_ingreso;
+										$datoauxfinal_whora_egreso2				= '';
+										$datoauxfinal_ccogra2					= '';
+										$datoauxfinal_wnprocedimiento2			= '';
+										$datoauxfinal_wnumerohab2				= '';
+										$datoauxfinal_wvalor2					= '';
+										$datoauxfinal_wreconocido2				= 0;
+										$datoauxfinal_wprocedimiento2			= '';
+										$datoauxfinal_wresponsable2				= '';
+										$datoauxfinal_wnresponsable2			= '';
+										$datoauxfinal_wtarifa2					= '';
+										$datoauxfinal_tipoEmpresa2				= '';
+										$datoauxfinal_nitEmpresa2				= '';
+										$datoauxfinal_concepto_cargo2			= '';
+										$datoauxfinal_wnconcepto2				= '';
+										$datoauxfinal_id_tope_afectado2			= '';
+										$datoauxfinal_wtercero2					= '';
+										$datoauxfinal_wtercero_nom2				= '';
+										$datoauxfinal_wtercero_unix2			= '';
+										$datoauxfinal_wtercero_especialidad2	= '';
+										$datoauxfinal_wgraba_varios_terceros2	= '';
+										$datoauxfinal_wporter2					= '';
+										$datoauxfinal_wparalelo2				= '';
+										$datoauxfinal_wvaltarExce2				= 0;
+										$datoauxfinal_wfecha_ingreso2			= $fechacargo;
+										$datoauxfinal_wfecha_egreso2			= '';
+									}
+								}
+								
+								//console.log("responsable: "+j+ " clave: "+clave+"---auxclave: "+auxclave);
+								if( $clave == $auxclave )
+								{
+									if($j==1)
+									{
+										if($datoaux['wtercero'] == $auxtercero  )
 										{
-											//console.log("push 2");
+											//alert("entro responsable");
+											$datoauxfinal_clave					= $clave;
+											$datoauxfinal_ndia					= (($datoauxfinal_ndia * 1) + 1);
+											//alert(datoauxfinal_ndia);
+											$datoauxfinal_fechacargo			= $datoauxfinal_fechacargo;
+											$datoauxfinal_whora_ingreso			= $datoauxfinal_whora_ingreso;
+											$datoauxfinal_whora_egreso			= $whora_egreso;
+											$datoauxfinal_ccogra				= $ccogra;
+											$datoauxfinal_wnprocedimiento		= $wnprocedimiento;
+											$datoauxfinal_wnumerohab			= $wnumerohab;
+											$datoauxfinal_wvalor				= $wvalor;
+											$datoauxfinal_wreconocido			= (($datoauxfinal_wreconocido * 1) + ($wreconocido*1))*1;
+											$datoauxfinal_wprocedimiento		= $wprocedimiento;
+											$datoauxfinal_wresponsable			= $wresponsable;
+											$datoauxfinal_wnresponsable			= $wnresponsable;
+											$datoauxfinal_wtarifa				= $wtarifa;
+											$datoauxfinal_tipoEmpresa			= $tipoEmpresa;
+											$datoauxfinal_nitEmpresa			= $nitEmpresa;
+											$datoauxfinal_concepto_cargo		= $concepto_cargo;
+											$datoauxfinal_wnconcepto			= $wnconcepto;
+											$datoauxfinal_id_tope_afectado		= $id_tope_afectado;
+											$datoauxfinal_wtercero				= $wtercero;
+											$datoauxfinal_wtercero_nom			= $wnomtercero;
+											$datoauxfinal_wtercero_unix			= $wtercero_unix;
+											$datoauxfinal_wtercero_especialidad	= $wtercero_especialidad;
+											$datoauxfinal_wgraba_varios_terceros= $wgraba_varios_terceros;
+											$datoauxfinal_wporter				= $wporter;
+											$datoauxfinal_wparalelo				= $wparalelo;
+											$datoauxfinal_wvaltarExce			= (($datoauxfinal_wvaltarExce * 1) + ($wvaltarExce*1))*1;
+											$datoauxfinal_wfecha_ingreso		= $datoauxfinal_wfecha_ingreso;
+											$datoauxfinal_wfecha_egreso			= $fechacargo;
+											//console.log(datoauxfinal_ndia);
+										}
+										else
+										{
+											$datoauxfinal 							= array();
+											$datoauxfinal['clave'] 					= $datoauxfinal_clave;
+											$datoauxfinal['ndia'] 					= $datoauxfinal_ndia;
+											$datoauxfinal['fechacargo'] 			= $datoauxfinal_fechacargo	;
+											$datoauxfinal['whora_ingreso'] 			= $datoauxfinal_whora_ingreso;
+											$datoauxfinal['whora_egreso'] 			= $datoauxfinal_whora_egreso;
+											$datoauxfinal['ccogra']	 				= $datoauxfinal_ccogra	;
+											$datoauxfinal['wnprocedimiento'] 		= $datoauxfinal_wnprocedimiento;
+											$datoauxfinal['wnumerohab'] 			= $datoauxfinal_wnumerohab	;
+											$datoauxfinal['wvalor'] 				= $datoauxfinal_wvalor;
+											$datoauxfinal['wreconocido'] 			= $datoauxfinal_wreconocido;
+											$datoauxfinal['wprocedimiento'] 		= $datoauxfinal_wprocedimiento;
+											$datoauxfinal['wresponsable'] 			= $datoauxfinal_wresponsable;
+											$datoauxfinal['wnresponsable'] 			= $datoauxfinal_wnresponsable;
+											$datoauxfinal['wtarifa'] 				= $datoauxfinal_wtarifa;
+											$datoauxfinal['tipoEmpresa']	 		= $datoauxfinal_tipoEmpresa;
+											$datoauxfinal['nitEmpresa'] 			= $datoauxfinal_nitEmpresa;
+											$datoauxfinal['concepto_cargo'] 		= $datoauxfinal_concepto_cargo;
+											$datoauxfinal['wnconcepto']	 			= $datoauxfinal_wnconcepto;
+											$datoauxfinal['id_tope_afectado'] 		= $datoauxfinal_id_tope_afectado;
+											$datoauxfinal['wtercero'] 				= $datoauxfinal_wtercero;
+											$datoauxfinal['wtercero_nombre'] 		= $datoauxfinal_wtercero_nom;
+											$datoauxfinal['wtercero_unix'] 			= $datoauxfinal_wtercero_unix;
+											$datoauxfinal['wtercero_especialidad']	= $datoauxfinal_wtercero_especialidad;
+											$datoauxfinal['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros;
+											$datoauxfinal['wporter'] 				= $datoauxfinal_wporter;
+											$datoauxfinal['wparalelo'] 				= $datoauxfinal_wparalelo;
+											$datoauxfinal['wvaltarExce'] 			= $datoauxfinal_wvaltarExce;
+											$datoauxfinal['wfecha_ingreso'] 		= $datoauxfinal_wfecha_ingreso;
+											$datoauxfinal['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso;
+											
+											//-- se hace push
+											//console.log("push 6");
+											//echo "push 6 \n";
 											//console.log(datoauxfinal);
 											$datosauxfinal[] = $datoauxfinal;
+											
+											//-- se inicializan de nuevo las variables
+											$datoauxfinal_clave					= $clave;
+											$datoauxfinal_ndia					= 1 ;
+											$datoauxfinal_fechacargo			= $fechacargo;
+											$datoauxfinal_whora_ingreso			= $whora_ingreso;
+											$datoauxfinal_whora_egreso			= $whora_egreso;
+											$datoauxfinal_ccogra				= $ccogra;
+											$datoauxfinal_wnprocedimiento		= $wnprocedimiento;
+											$datoauxfinal_wnumerohab			= $wnumerohab;
+											$datoauxfinal_wvalor				= $wvalor;
+											$datoauxfinal_wreconocido			= $wreconocido ;
+											$datoauxfinal_wprocedimiento		= $wprocedimiento;
+											$datoauxfinal_wresponsable			= $wresponsable;
+											$datoauxfinal_wnresponsable			= $wnresponsable;
+											$datoauxfinal_wtarifa				= $wtarifa;
+											$datoauxfinal_tipoEmpresa			= $tipoEmpresa;
+											$datoauxfinal_nitEmpresa			= $nitEmpresa;
+											$datoauxfinal_concepto_cargo		= $concepto_cargo;
+											$datoauxfinal_wnconcepto			= $wnconcepto;
+											$datoauxfinal_id_tope_afectado		= $id_tope_afectado;
+											$datoauxfinal_wtercero				= $wtercero;
+											$datoauxfinal_wtercero_nom			= $wnomtercero;
+											$datoauxfinal_wtercero_unix			= $wtercero_unix;
+											$datoauxfinal_wtercero_especialidad	= $wtercero_especialidad;
+											$datoauxfinal_wgraba_varios_terceros= $wgraba_varios_terceros;
+											$datoauxfinal_wporter				= $wporter;
+											$datoauxfinal_wparalelo				= $wparalelo;
+											$datoauxfinal_wvaltarExce			= $wvaltarExce;
+											$datoauxfinal_wfecha_ingreso		= $fechacargo;
+											$datoauxfinal_wfecha_egreso			= $fechacargo;
+											
 										}
 									}
-								}
-							}
-							if ($j==2)
-							{
-								if($diasauxiliar2 == $diasauxiliar)
-								{
-									// console.log("Responsable 2 dias auxiliar es igual a diasauxiliar2");
-									//alert("diasauxiliar2");
-									$datoauxfinal2 							 = array();
-									$datoauxfinal2['clave'] 				 = $datoauxfinal_clave2;
-									$datoauxfinal2['ndia'] 					 = $datoauxfinal_ndia2;
-									$datoauxfinal2['fechacargo'] 			 = $datoauxfinal_fechacargo2	;
-									$datoauxfinal2['whora_ingreso'] 		 = $datoauxfinal_whora_ingreso2;
-									$datoauxfinal2['whora_egreso'] 			 = $datoauxfinal_whora_egreso2;
-									$datoauxfinal2['ccogra']	 			 = $datoauxfinal_ccogra2	;
-									$datoauxfinal2['wnprocedimiento'] 		 = $datoauxfinal_wnprocedimiento2;
-									$datoauxfinal2['wnumerohab'] 			 = $datoauxfinal_wnumerohab2	;
-									$datoauxfinal2['wvalor'] 				 = $datoauxfinal_wvalor2;
-									$datoauxfinal2['wreconocido'] 			 = $datoauxfinal_wreconocido2;
-									$datoauxfinal2['wprocedimiento'] 		 = $datoauxfinal_wprocedimiento2;
-									$datoauxfinal2['wresponsable'] 			 = $datoauxfinal_wresponsable2;
-									$datoauxfinal2['wnresponsable'] 		 = $datoauxfinal_wnresponsable2;
-									$datoauxfinal2['wtarifa'] 				 = $datoauxfinal_wtarifa2;
-									$datoauxfinal2['tipoEmpresa']	 		 = $datoauxfinal_tipoEmpresa2;
-									$datoauxfinal2['nitEmpresa'] 			 = $datoauxfinal_nitEmpresa2;
-									$datoauxfinal2['concepto_cargo'] 		 = $datoauxfinal_concepto_cargo2;
-									$datoauxfinal2['wnconcepto']	 		 = $datoauxfinal_wnconcepto2;
-									$datoauxfinal2['id_tope_afectado'] 		 = $datoauxfinal_id_tope_afectado2;
-									$datoauxfinal2['wtercero'] 				 = $datoauxfinal_wtercero2;
-									$datoauxfinal2['wtercero_nombre'] 		 = $datoauxfinal_wtercero_nom2;
-									$datoauxfinal2['wtercero_unix'] 		 = $datoauxfinal_wtercero_unix2;
-									$datoauxfinal2['wtercero_especialidad']  = $datoauxfinal_wtercero_especialidad2;
-									$datoauxfinal2['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros2;
-									$datoauxfinal2['wporter'] 				 = $datoauxfinal_wporter2;
-									$datoauxfinal2['wparalelo'] 			 = $datoauxfinal_wparalelo2;
-									$datoauxfinal2['wvaltarExce'] 			 = $datoauxfinal_wvaltarExce2;
-									$datoauxfinal2['wfecha_ingreso'] 		 = $datoauxfinal_wfecha_ingreso2;
-									$datoauxfinal2['wfecha_egreso'] 		 = $datoauxfinal_wfecha_egreso2;
-									//alert(datoauxfinal_wreconocido2);
-									if ($datoauxfinal2['wreconocido'] >0 )
+									else if($j==2)
 									{
-										if ($datoauxfinal2['ndia'] >0 )
+										if($datoaux['wtercero'] == $auxtercero  )
 										{
-											//console.log("push 1");
+											//console.log("responsable 2 datos tercero iguales");
+											$datoauxfinal_clave2	= $clave;
+											
+											//---En empresas paf solo suma si es diferente de cero
+											//$paf_reconocido_clave_res
+											if($reconocido_clave->hasAttribute('paf')) 
+											{
+												if($reconocido_clave->getAttributeNode('cuenta')->nodeValue == 'no') {
+													$datoauxfinal_ndia2		= (($datoauxfinal_ndia2 * 1));
+													$datoauxfinal_wvalor2	= 0;
+												} else
+												{
+													$datoauxfinal_ndia2		= (($datoauxfinal_ndia2 * 1) + 1);
+													$datoauxfinal_wvalor2	= $wvalor;
+												}
+												
+											} else 
+											{
+												$datoauxfinal_ndia2		= (($datoauxfinal_ndia2 * 1) + 1);
+												$datoauxfinal_wvalor2	= $wvalor;
+											}
+											
+											$datoauxfinal_fechacargo2				= $datoauxfinal_fechacargo2;
+											$datoauxfinal_whora_ingreso2			= $datoauxfinal_whora_ingreso2;
+											$datoauxfinal_whora_egreso2				= $whora_egreso;
+											$datoauxfinal_ccogra2					= $ccogra;
+											$datoauxfinal_wnprocedimiento2			= $wnprocedimiento;
+											$datoauxfinal_wnumerohab2				= $wnumerohab;
+											//datoauxfinal_wvalor2					= wvalor;
+											$datoauxfinal_wreconocido2				= (($datoauxfinal_wreconocido2 * 1) + ($wreconocido*1))*1;
+											//alert(datoauxfinal_wreconocido2);
+											$datoauxfinal_wprocedimiento2			= $wprocedimiento;
+											$datoauxfinal_wresponsable2				= $wresponsable;
+											$datoauxfinal_wnresponsable2			= $wnresponsable;
+											$datoauxfinal_wtarifa2					= $wtarifa;
+											$datoauxfinal_tipoEmpresa2				= $tipoEmpresa;
+											$datoauxfinal_nitEmpresa2				= $nitEmpresa;
+											$datoauxfinal_concepto_cargo2			= $concepto_cargo;
+											$datoauxfinal_wnconcepto2				= $wnconcepto;
+											$datoauxfinal_id_tope_afectado2			= $id_tope_afectado;
+											$datoauxfinal_wtercero2					= $wtercero;
+											$datoauxfinal_wtercero_nom2				= $wnomtercero;
+											$datoauxfinal_wtercero_unix2			= $wtercero_unix;
+											$datoauxfinal_wtercero_especialidad2	= $wtercero_especialidad;
+											$datoauxfinal_wgraba_varios_terceros2	= $wgraba_varios_terceros;
+											$datoauxfinal_wporter2					= $wporter;
+											$datoauxfinal_wparalelo2				= $wparalelo;
+											
+											$datoauxfinal_wvaltarExce2				= (($datoauxfinal_wvaltarExce2 * 1) + ($wvaltarExce*1))*1;
+											
+											$datoauxfinal_wfecha_ingreso2			= $datoauxfinal_wfecha_ingreso2;
+											$datoauxfinal_wfecha_egreso2			= $fechacargo;
+											
+										}
+										else
+										{
+											// --> 2020-03-16: Jerson Trujillo, cambian todas la variables ejem datoauxfinal_clave por datoauxfinal_clave2
+											//	ya que generaba un error js que decia que las variables no existian
+											$datoauxfinal2 								= array();
+											$datoauxfinal2['clave'] 					= $datoauxfinal_clave2;
+											$datoauxfinal2['ndia'] 						= $datoauxfinal_ndia2;
+											$datoauxfinal2['fechacargo'] 				= $datoauxfinal_fechacargo2	;
+											$datoauxfinal2['whora_ingreso'] 			= $datoauxfinal_whora_ingreso2;
+											$datoauxfinal2['whora_egreso'] 				= $datoauxfinal_whora_egreso2;
+											$datoauxfinal2['ccogra']	 				= $datoauxfinal_ccogra2	;
+											$datoauxfinal2['wnprocedimiento'] 			= $datoauxfinal_wnprocedimiento2;
+											$datoauxfinal2['wnumerohab'] 				= $datoauxfinal_wnumerohab2	;
+											$datoauxfinal2['wvalor'] 					= $datoauxfinal_wvalor2;
+											$datoauxfinal2['wreconocido'] 				= $datoauxfinal_wreconocido2;
+											//alert(datoauxfinal_wreconocido2);
+											$datoauxfinal2['wprocedimiento'] 			= $datoauxfinal_wprocedimiento2;
+											$datoauxfinal2['wresponsable'] 				= $datoauxfinal_wresponsable2;
+											$datoauxfinal2['wnresponsable'] 			= $datoauxfinal_wnresponsable2;
+											$datoauxfinal2['wtarifa'] 					= $datoauxfinal_wtarifa2;
+											$datoauxfinal2['tipoEmpresa']	 			= $datoauxfinal_tipoEmpresa2;
+											$datoauxfinal2['nitEmpresa'] 				= $datoauxfinal_nitEmpresa2;
+											$datoauxfinal2['concepto_cargo'] 			= $datoauxfinal_concepto_cargo2;
+											$datoauxfinal2['wnconcepto']	 			= $datoauxfinal_wnconcepto2;
+											$datoauxfinal2['id_tope_afectado'] 			= $datoauxfinal_id_tope_afectado2;
+											$datoauxfinal2['wtercero'] 					= $datoauxfinal_wtercero2;
+											$datoauxfinal2['wtercero_nombre'] 			= $datoauxfinal_wtercero_nom2;
+											$datoauxfinal2['wtercero_unix'] 			= $datoauxfinal_wtercero_unix2;
+											$datoauxfinal2['wtercero_especialidad'] 	= $datoauxfinal_wtercero_especialidad2;
+											$datoauxfinal2['wgraba_varios_terceros']	= $datoauxfinal_wgraba_varios_terceros2;
+											$datoauxfinal2['wporter'] 					= $datoauxfinal_wporter2;
+											$datoauxfinal2['wparalelo'] 				= $datoauxfinal_wparalelo2;
+											$datoauxfinal2['wvaltarExce'] 				= $datoauxfinal_wvaltarExce2;
+											$datoauxfinal2['wfecha_ingreso'] 			= $datoauxfinal_wfecha_ingreso2;
+											$datoauxfinal2['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso2;
+											
+											// --> 2020-03-16: Hasta aca
+											//-- se hace push
+											//console.log("push 5");
 											//console.log(datoauxfinal2);
 											$datosauxfinal[] = $datoauxfinal2;
-										
+											
+											//-- se inicializan de nuevo las variables
+											$datoauxfinal_clave2				  = $clave;
+											$datoauxfinal_ndia2					  = 1 ;
+											$datoauxfinal_fechacargo2			  = $fechacargo;
+											$datoauxfinal_whora_ingreso2		  = $whora_ingreso;
+											$datoauxfinal_whora_egreso2			  = $whora_egreso;
+											$datoauxfinal_ccogra2				  = $ccogra;
+											$datoauxfinal_wnprocedimiento2		  = $wnprocedimiento;
+											$datoauxfinal_wnumerohab2			  = $wnumerohab;
+											$datoauxfinal_wvalor2				  = $wvalor;
+											$datoauxfinal_wreconocido2			  = $wreconocido ;
+											$datoauxfinal_wprocedimiento2		  = $wprocedimiento;
+											$datoauxfinal_wresponsable2			  = $wresponsable;
+											$datoauxfinal_wnresponsable2		  = $wnresponsable;
+											$datoauxfinal_wtarifa2				  = $wtarifa;
+											$datoauxfinal_tipoEmpresa2			  = $tipoEmpresa;
+											$datoauxfinal_nitEmpresa2			  = $nitEmpresa;
+											$datoauxfinal_concepto_cargo2		  = $concepto_cargo;
+											$datoauxfinal_wnconcepto2			  = $wnconcepto;
+											$datoauxfinal_id_tope_afectado2		  = $id_tope_afectado;
+											$datoauxfinal_wtercero2				  = $wtercero;
+											$datoauxfinal_wtercero_nom2			  = $wnomtercero;
+											$datoauxfinal_wtercero_unix2		  = $wtercero_unix;
+											$datoauxfinal_wtercero_especialidad2  = $wtercero_especialidad;
+											$datoauxfinal_wgraba_varios_terceros2 = $wgraba_varios_terceros;
+											$datoauxfinal_wporter2				  = $wporter;
+											$datoauxfinal_wparalelo2			  = $wparalelo;
+											$datoauxfinal_wvaltarExce2			  = $wvaltarExce;
+											$datoauxfinal_wfecha_ingreso2		  = $fechacargo;
+											$datoauxfinal_wfecha_egreso2		  = $fechacargo;
 										}
 									}
-									
-									
 								}
-							}
-							//alert ("j:"+j+"auxclave:"+auxclave+"igual a "+clave);
-							$auxtercero = $datoaux['wtercero'];
-						} 
+								else
+								{
+									if($j==1)
+									{
+										//console.log("1      claves distintas  Clave"+clave+ "auxclave"+auxclave ); 
+										$datoauxfinal 							= array();
+										$datoauxfinal['clave'] 					= $datoauxfinal_clave;
+										$datoauxfinal['ndia'] 					= $datoauxfinal_ndia;
+										$datoauxfinal['fechacargo'] 			= $datoauxfinal_fechacargo	;
+										$datoauxfinal['whora_ingreso'] 			= $datoauxfinal_whora_ingreso;
+										$datoauxfinal['whora_egreso'] 			= $datoauxfinal_whora_egreso;
+										$datoauxfinal['ccogra']	 				= $datoauxfinal_ccogra	;
+										$datoauxfinal['wnprocedimiento'] 		= $datoauxfinal_wnprocedimiento;
+										$datoauxfinal['wnumerohab'] 			= $datoauxfinal_wnumerohab	;
+										$datoauxfinal['wvalor'] 				= $datoauxfinal_wvalor;
+										$datoauxfinal['wreconocido'] 			= $datoauxfinal_wreconocido;
+										$datoauxfinal['wprocedimiento'] 		= $datoauxfinal_wprocedimiento;
+										$datoauxfinal['wresponsable'] 			= $datoauxfinal_wresponsable;
+										$datoauxfinal['wnresponsable'] 			= $datoauxfinal_wnresponsable;
+										$datoauxfinal['wtarifa'] 				= $datoauxfinal_wtarifa;
+										$datoauxfinal['tipoEmpresa']	 		= $datoauxfinal_tipoEmpresa;
+										$datoauxfinal['nitEmpresa'] 			= $datoauxfinal_nitEmpresa;
+										$datoauxfinal['concepto_cargo'] 		= $datoauxfinal_concepto_cargo;
+										$datoauxfinal['wnconcepto']	 			= $datoauxfinal_wnconcepto;
+										$datoauxfinal['id_tope_afectado'] 		= $datoauxfinal_id_tope_afectado;
+										$datoauxfinal['wtercero'] 				= $datoauxfinal_wtercero;
+										$datoauxfinal['wtercero_nombre'] 		= $datoauxfinal_wtercero_nom;
+										$datoauxfinal['wtercero_unix']	 		= $datoauxfinal_wtercero_unix;
+										$datoauxfinal['wtercero_especialidad'] 	= $datoauxfinal_wtercero_especialidad;
+										$datoauxfinal['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros;
+										$datoauxfinal['wporter'] 				= $datoauxfinal_wporter;
+										$datoauxfinal['wparalelo'] 				= $datoauxfinal_wparalelo;
+										$datoauxfinal['wvaltarExce'] 			= $datoauxfinal_wvaltarExce;
+										$datoauxfinal['wfecha_ingreso'] 		= $datoauxfinal_wfecha_ingreso;
+										$datoauxfinal['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso;
+										
+										//-- se hace push
+										//console.log("push 4");
+										// echo "push 4 \n";
+										//console.log(datoauxfinal);
+										$datosauxfinal[] = $datoauxfinal;
+										
+										//-- se inicializan de nuevo las variables
+										$datoauxfinal_clave						= $clave;
+										$datoauxfinal_ndia						= 1 ;
+										$datoauxfinal_fechacargo				= $fechacargo;
+										$datoauxfinal_whora_ingreso				= $whora_ingreso;
+										$datoauxfinal_whora_egreso				= $whora_egreso;
+										$datoauxfinal_ccogra					= $ccogra;
+										$datoauxfinal_wnprocedimiento			= $wnprocedimiento;
+										$datoauxfinal_wnumerohab				= $wnumerohab;
+										$datoauxfinal_wvalor					= $wvalor;
+										$datoauxfinal_wreconocido				= $wreconocido ;
+										$datoauxfinal_wprocedimiento			= $wprocedimiento;
+										$datoauxfinal_wresponsable				= $wresponsable;
+										$datoauxfinal_wnresponsable				= $wnresponsable;
+										$datoauxfinal_wtarifa					= $wtarifa;
+										$datoauxfinal_tipoEmpresa				= $tipoEmpresa;
+										$datoauxfinal_nitEmpresa				= $nitEmpresa;
+										$datoauxfinal_concepto_cargo			= $concepto_cargo;
+										$datoauxfinal_wnconcepto				= $wnconcepto;
+										$datoauxfinal_id_tope_afectado			= $id_tope_afectado;
+										$datoauxfinal_wtercero					= $wtercero;
+										$datoauxfinal_wtercero_nom				= $wnomtercero;
+										$datoauxfinal_wtercero_unix				= $wtercero_unix;
+										$datoauxfinal_wtercero_especialidad		= $wtercero_especialidad;
+										$datoauxfinal_wgraba_varios_terceros	= $wgraba_varios_terceros;
+										$datoauxfinal_wporter					= $wporter;
+										$datoauxfinal_wparalelo					= $wparalelo;
+										$datoauxfinal_wvaltarExce				= $wvaltarExce;
+										$datoauxfinal_wfecha_ingreso			= $fechacargo;
+										$datoauxfinal_wfecha_egreso				= $fechacargo;
+								
+									}
+									else if($j==2)
+									{
+										//console.log("2  claves distintas  Clave"+clave+ "auxclave"+auxclave ); 
+										$datoauxfinal2 							 = array();
+										$datoauxfinal2['clave'] 				 = $datoauxfinal_clave2;
+										$datoauxfinal2['ndia'] 					 = $datoauxfinal_ndia2;
+										$datoauxfinal2['fechacargo'] 			 = $datoauxfinal_fechacargo2	;
+										$datoauxfinal2['whora_ingreso'] 		 = $datoauxfinal_whora_ingreso2;
+										$datoauxfinal2['whora_egreso'] 			 = $datoauxfinal_whora_egreso2;
+										$datoauxfinal2['ccogra']	 			 = $datoauxfinal_ccogra2	;
+										$datoauxfinal2['wnprocedimiento'] 		 = $datoauxfinal_wnprocedimiento2;
+										$datoauxfinal2['wnumerohab'] 			 = $datoauxfinal_wnumerohab2	;
+										$datoauxfinal2['wvalor'] 				 = $datoauxfinal_wvalor2;
+										$datoauxfinal2['wreconocido'] 			 = $datoauxfinal_wreconocido2;
+										$datoauxfinal2['wprocedimiento'] 		 = $datoauxfinal_wprocedimiento2;
+										$datoauxfinal2['wresponsable'] 			 = $datoauxfinal_wresponsable2;
+										$datoauxfinal2['wnresponsable'] 		 = $datoauxfinal_wnresponsable2;
+										$datoauxfinal2['wtarifa'] 				 = $datoauxfinal_wtarifa2;
+										$datoauxfinal2['tipoEmpresa']	 		 = $datoauxfinal_tipoEmpresa2;
+										$datoauxfinal2['nitEmpresa'] 			 = $datoauxfinal_nitEmpresa2;
+										$datoauxfinal2['concepto_cargo'] 		 = $datoauxfinal_concepto_cargo2;
+										$datoauxfinal2['wnconcepto']	 		 = $datoauxfinal_wnconcepto2;
+										$datoauxfinal2['id_tope_afectado'] 		 = $datoauxfinal_id_tope_afectado2;
+										$datoauxfinal2['wtercero'] 				 = $datoauxfinal_wtercero2;
+										$datoauxfinal2['wtercero_nombre'] 		 = $datoauxfinal_wtercero_nom2;
+										$datoauxfinal2['wtercero_unix'] 		 = $datoauxfinal_wtercero_unix2;
+										$datoauxfinal2['wtercero_especialidad']  = $datoauxfinal_wtercero_especialidad2;
+										$datoauxfinal2['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros2;
+										$datoauxfinal2['wporter'] 				 = $datoauxfinal_wporter2;
+										$datoauxfinal2['wparalelo'] 			 = $datoauxfinal_wparalelo2;
+										$datoauxfinal2['wvaltarExce'] 			 = $datoauxfinal_wvaltarExce2;
+										$datoauxfinal2['wfecha_ingreso'] 		 = $datoauxfinal_wfecha_ingreso2;
+										$datoauxfinal2['wfecha_egreso'] 		 = $datoauxfinal_wfecha_egreso2;
+										//alert(datoauxfinal_wreconocido2);
+										//-- se hace push
+										if ($datoauxfinal2['wreconocido'] > 0 )
+										{
+											if ($datoauxfinal2['ndia'] > 0 )
+											{
+												//console.log("push 3");
+												//echo "push 3\n";
+												//console.log(datoauxfinal2);
+												$datosauxfinal[] = $datoauxfinal2;
+											
+											}
+										}
+										
+										//-- se inicializan de nuevo las variables
+										$datoauxfinal_clave2					= $clave;
+										$datoauxfinal_ndia2						= 1 ;
+										$datoauxfinal_fechacargo2				= $fechacargo;
+										$datoauxfinal_whora_ingreso2			= $whora_ingreso;
+										$datoauxfinal_whora_egreso2				= $whora_egreso;
+										$datoauxfinal_ccogra2					= $ccogra;
+										$datoauxfinal_wnprocedimiento2			= $wnprocedimiento;
+										$datoauxfinal_wnumerohab2				= $wnumerohab;
+										$datoauxfinal_wvalor2					= $wvalor;
+										$datoauxfinal_wreconocido2				= $wreconocido ;
+										$datoauxfinal_wprocedimiento2			= $wprocedimiento;
+										$datoauxfinal_wresponsable2				= $wresponsable;
+										$datoauxfinal_wnresponsable2			= $wnresponsable;
+										$datoauxfinal_wtarifa2					= $wtarifa;
+										$datoauxfinal_tipoEmpresa2				= $tipoEmpresa;
+										$datoauxfinal_nitEmpresa2				= $nitEmpresa;
+										$datoauxfinal_concepto_cargo2			= $concepto_cargo;
+										$datoauxfinal_wnconcepto2				= $wnconcepto;
+										$datoauxfinal_id_tope_afectado2			= $id_tope_afectado;
+										$datoauxfinal_wtercero2					= $wtercero;
+										$datoauxfinal_wtercero_nom2				= $wnomtercero;
+										$datoauxfinal_wtercero_unix2			= $wtercero_unix;
+										$datoauxfinal_wtercero_especialidad2	= $wtercero_especialidad;
+										$datoauxfinal_wgraba_varios_terceros2	= $wgraba_varios_terceros;
+										$datoauxfinal_wporter2					= $wporter;
+										$datoauxfinal_wparalelo2				= $wparalelo;
+										$datoauxfinal_wvaltarExce2				= $wvaltarExce;
+										$datoauxfinal_wfecha_ingreso2			= $fechacargo;
+										$datoauxfinal_wfecha_egreso2			= $fechacargo;
+									}
+								}
+								
+								if($j==1) {
+									$diasauxiliar1++;
+								} else {
+									$diasauxiliar2++;
+								}
+								
+								if($j==1)
+								{
+									if($diasauxiliar1 == $diasauxiliar)
+									{
+										$datoauxfinal 							= array();
+										$datoauxfinal['clave'] 					= $datoauxfinal_clave;
+										$datoauxfinal['ndia'] 					= $datoauxfinal_ndia;
+										$datoauxfinal['fechacargo'] 			= $datoauxfinal_fechacargo	;
+										$datoauxfinal['whora_ingreso'] 			= $datoauxfinal_whora_ingreso;
+										$datoauxfinal['whora_egreso'] 			= $datoauxfinal_whora_egreso;
+										$datoauxfinal['ccogra']	 				= $datoauxfinal_ccogra	;
+										$datoauxfinal['wnprocedimiento'] 		= $datoauxfinal_wnprocedimiento;
+										$datoauxfinal['wnumerohab'] 			= $datoauxfinal_wnumerohab	;
+										$datoauxfinal['wvalor'] 				= $datoauxfinal_wvalor;
+										$datoauxfinal['wreconocido'] 			= $datoauxfinal_wreconocido;
+										$datoauxfinal['wprocedimiento'] 		= $datoauxfinal_wprocedimiento;
+										$datoauxfinal['wresponsable'] 			= $datoauxfinal_wresponsable;
+										$datoauxfinal['wnresponsable'] 			= $datoauxfinal_wnresponsable;
+										$datoauxfinal['wtarifa'] 				= $datoauxfinal_wtarifa;
+										$datoauxfinal['tipoEmpresa']	 		= $datoauxfinal_tipoEmpresa;
+										$datoauxfinal['nitEmpresa'] 			= $datoauxfinal_nitEmpresa;
+										$datoauxfinal['concepto_cargo'] 		= $datoauxfinal_concepto_cargo;
+										$datoauxfinal['wnconcepto']	 			= $datoauxfinal_wnconcepto;
+										$datoauxfinal['id_tope_afectado'] 		= $datoauxfinal_id_tope_afectado;
+										$datoauxfinal['wtercero'] 				= $datoauxfinal_wtercero;
+										$datoauxfinal['wtercero_nombre'] 		= $datoauxfinal_wtercero_nom;
+										$datoauxfinal['wtercero_unix'] 			= $datoauxfinal_wtercero_unix;
+										$datoauxfinal['wtercero_especialidad'] 	= $datoauxfinal_wtercero_especialidad;
+										$datoauxfinal['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros;
+										$datoauxfinal['wporter'] 				= $datoauxfinal_wporter;
+										$datoauxfinal['wparalelo'] 				= $datoauxfinal_wparalelo;
+										$datoauxfinal['wvaltarExce'] 			= $datoauxfinal_wvaltarExce;
+										$datoauxfinal['wfecha_ingreso'] 		= $datoauxfinal_wfecha_ingreso;
+										$datoauxfinal['wfecha_egreso'] 			= $datoauxfinal_wfecha_egreso;
+										
+										if ($datoauxfinal['wreconocido'] >0 )
+										{
+											if ($datoauxfinal['ndia'] >0 )
+											{
+												//console.log("push 2");
+												//console.log(datoauxfinal);
+												$datosauxfinal[] = $datoauxfinal;
+											}
+										}
+									}
+								}
+								if ($j==2)
+								{
+									if($diasauxiliar2 == $diasauxiliar)
+									{
+										// console.log("Responsable 2 dias auxiliar es igual a diasauxiliar2");
+										//alert("diasauxiliar2");
+										$datoauxfinal2 							 = array();
+										$datoauxfinal2['clave'] 				 = $datoauxfinal_clave2;
+										$datoauxfinal2['ndia'] 					 = $datoauxfinal_ndia2;
+										$datoauxfinal2['fechacargo'] 			 = $datoauxfinal_fechacargo2	;
+										$datoauxfinal2['whora_ingreso'] 		 = $datoauxfinal_whora_ingreso2;
+										$datoauxfinal2['whora_egreso'] 			 = $datoauxfinal_whora_egreso2;
+										$datoauxfinal2['ccogra']	 			 = $datoauxfinal_ccogra2	;
+										$datoauxfinal2['wnprocedimiento'] 		 = $datoauxfinal_wnprocedimiento2;
+										$datoauxfinal2['wnumerohab'] 			 = $datoauxfinal_wnumerohab2	;
+										$datoauxfinal2['wvalor'] 				 = $datoauxfinal_wvalor2;
+										$datoauxfinal2['wreconocido'] 			 = $datoauxfinal_wreconocido2;
+										$datoauxfinal2['wprocedimiento'] 		 = $datoauxfinal_wprocedimiento2;
+										$datoauxfinal2['wresponsable'] 			 = $datoauxfinal_wresponsable2;
+										$datoauxfinal2['wnresponsable'] 		 = $datoauxfinal_wnresponsable2;
+										$datoauxfinal2['wtarifa'] 				 = $datoauxfinal_wtarifa2;
+										$datoauxfinal2['tipoEmpresa']	 		 = $datoauxfinal_tipoEmpresa2;
+										$datoauxfinal2['nitEmpresa'] 			 = $datoauxfinal_nitEmpresa2;
+										$datoauxfinal2['concepto_cargo'] 		 = $datoauxfinal_concepto_cargo2;
+										$datoauxfinal2['wnconcepto']	 		 = $datoauxfinal_wnconcepto2;
+										$datoauxfinal2['id_tope_afectado'] 		 = $datoauxfinal_id_tope_afectado2;
+										$datoauxfinal2['wtercero'] 				 = $datoauxfinal_wtercero2;
+										$datoauxfinal2['wtercero_nombre'] 		 = $datoauxfinal_wtercero_nom2;
+										$datoauxfinal2['wtercero_unix'] 		 = $datoauxfinal_wtercero_unix2;
+										$datoauxfinal2['wtercero_especialidad']  = $datoauxfinal_wtercero_especialidad2;
+										$datoauxfinal2['wgraba_varios_terceros'] = $datoauxfinal_wgraba_varios_terceros2;
+										$datoauxfinal2['wporter'] 				 = $datoauxfinal_wporter2;
+										$datoauxfinal2['wparalelo'] 			 = $datoauxfinal_wparalelo2;
+										$datoauxfinal2['wvaltarExce'] 			 = $datoauxfinal_wvaltarExce2;
+										$datoauxfinal2['wfecha_ingreso'] 		 = $datoauxfinal_wfecha_ingreso2;
+										$datoauxfinal2['wfecha_egreso'] 		 = $datoauxfinal_wfecha_egreso2;
+										//alert(datoauxfinal_wreconocido2);
+										if ($datoauxfinal2['wreconocido'] >0 )
+										{
+											if ($datoauxfinal2['ndia'] >0 )
+											{
+												//console.log("push 1");
+												//console.log(datoauxfinal2);
+												$datosauxfinal[] = $datoauxfinal2;
+											
+											}
+										}
+										
+										
+									}
+								}
+								//alert ("j:"+j+"auxclave:"+auxclave+"igual a "+clave);
+								$auxtercero = $datoaux['wtercero'];
+							} 
+							
+						}	else {
+							
+							//console.log("no entro , Responsable "+j+"  valor reconocido = "+$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor') +"clave"+clave+"ndia"+ndia);
+							echo "no entro , Responsable $j  valor reconocido = ".$reconocido_clave->getAttributeNode('valor')->nodeValue." clave ".$clave." ndia".$ndia."<br><br>";
+							//alert($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor'));
+							//alert($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).length);
+							
+						}
 						
-					}	else {
+						if($j==1)
+						{
+							//console.log("aumento clave"+auxclave);
+							$auxclave = $clave;
+							//alert("j:"+j+"--"+wvalor);
+							
+						}
+						/*
+						if(j==2)
+						{
+							//alert("j:"+j+"--"+wvalor);
+						}
+						*/
 						
-						//console.log("no entro , Responsable "+j+"  valor reconocido = "+$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor') +"clave"+clave+"ndia"+ndia);
-						//echo "no entro , Responsable $j  valor reconocido = ".$reconocido_clave->getAttributeNode('valor')->nodeValue." clave $clave ndia$ndia";
-						//alert($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor'));
-						//alert($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).length);
-						
+						//$wdatos = json_encode($datosaux);
 					}
-					
-					if($j==1)
-					{
-						//console.log("aumento clave"+auxclave);
-						$auxclave = $clave;
-						//alert("j:"+j+"--"+wvalor);
-						
-					}
-					/*
-					if(j==2)
-					{
-						//alert("j:"+j+"--"+wvalor);
-					}
-					*/
-					
-					//$wdatos = json_encode($datosaux);
 				}
 			}
 		}
-		}
 	}
+	
 	/*
 	for($i=0 ;$i < count($datosauxfinal);$i++) {
 		if($datosauxfinal[$i]['ndia'] == 1 && $datosauxfinal[$i]['wfecha_ingreso'] == date('Y-m-d') &&  ($datosauxfinal[$i]['wfecha_ingreso'] == date('Y-m-d') || $datosauxfinal[$i]['wfecha_ingreso'] == $datosauxfinal[$i]['wfecha_egreso'] )) {
@@ -3434,6 +3698,13 @@ if(isset($_POST['accion'])) {
 			$data = obtenerLogTransaccion($conex, $wbasedato, $esCCA, $fecha);
 			
 			echo json_encode($data);
+		break;
+		case 'obtener_logs_html': 
+			$esCCA = $_POST['esCCA'];
+			$fecha = $_POST['fecha'];
+			
+			echo obtenerLogTransaccionHTML($conex, $wbasedato, $esCCA, $fecha);
+			
 		break;
 		case 'resumen_estancia_cron':
 			
