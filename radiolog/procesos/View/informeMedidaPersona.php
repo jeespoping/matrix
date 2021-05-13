@@ -91,7 +91,7 @@
 		    //--------------------------------------------------------- FIN ENCABEZADO ---------------------------------------------------
         ?>
         <div class="container" style="text-align:center">
-            <h1>B&uacute;squeda de medidas por persona</h1>
+            <h1>B&uacute;squeda de lecturas de medidas por persona</h1>
             <input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='<?php echo $wemp_pmla?>'>
             <?php
                 //Llamo los mensajes flash
