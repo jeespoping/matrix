@@ -123,7 +123,7 @@
                     {
                         //Títulos de tabla
                         echo("<tr class='encabezadoTabla'>
-                                <th>Fecha</th>
+                                <th>Fecha de lectura medida</th>
                                 <th>Medida</th>
                                 <th>C&oacute;digo</th>
                                 <th>Documento</th>

@@ -171,7 +171,7 @@
                                 <th colspan='9'><h3>Resultados</h3></th>
                             </tr>
                             <tr class='encabezadoTabla'>
-                                <th>Fecha</th>
+                                <th>Fecha de lectura medida</th>
                                 <th>Medida</th>
                                 <th>Documento</th>
                                 <th>C&oacute;digo</th>

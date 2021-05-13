@@ -176,7 +176,7 @@
                                 <th>C&oacute;digo</th>
                                 <th>Documento</th>
                                 <th>Nombre</th>
-                                <th>Fecha medida</th>
+                                <th>Fecha de lectura medida</th>
                                 <th>Medida</th>
                                 <th>Valor medida</th>
                                 <th>Correo</th>

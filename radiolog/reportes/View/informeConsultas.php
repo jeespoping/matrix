@@ -178,7 +178,7 @@
                                 <th>C&oacute;digo persona asociada</th>
                                 <th>Nombre persona asociada</th>
                                 <th>Documento persona asociada</th>
-                                <th>Fecha medida</th>
+                                <th>Fecha de lectura medida</th>
                                 <th>Medida</th>
                                 <th>Valor medida</th>
                                 <th>C&oacute;digo realizador de consulta</th>

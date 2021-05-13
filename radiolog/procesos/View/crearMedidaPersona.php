@@ -121,8 +121,8 @@
                         <tr class="encabezadoTabla">
                             <th>C&oacute;digo Medida</th>
                             <th style="width:40%">Persona</th>
-                            <th>Fecha medida</th>
-                            <th>Hora medida</th>
+                            <th>Fecha de lectura medida</th>
+                            <th>Hora de lectura medida</th>
                             <th>Valor Medida</th>
                         </tr>
                     </thead>
