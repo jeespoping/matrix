@@ -138,7 +138,7 @@
                                         $sCodigoUnidadSelect = (isset($_SESSION['unidad'])) ? $_SESSION['unidad'] : null;
                                         foreach ($aUnidades as $oUnidad) {
                                             $sSelected = ($sCodigoUnidadSelect == $oUnidad['id']) ? 'selected' : '';
-                                            echo "<option value='".$oUnidad['id']."' ".$sSelected.">".$oUnidad['codigo']." - ".$oUnidad['nombre']."</option>";
+                                            echo "<option value='".$oUnidad['id']."' ".$sSelected.">".$oUnidad['nombre']."</option>";
                                         }
                                     ?>
                                 </select>

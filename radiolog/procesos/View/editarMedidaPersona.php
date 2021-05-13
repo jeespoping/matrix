@@ -111,7 +111,7 @@
                 <table style="width:100%;">
                     <thead>
                         <tr class="fila1">
-                            <th colspan="5"><h2>Editar medida a persona<h2></th>
+                            <th colspan="5"><h2>Editar lectura de medida a persona<h2></th>
                         </tr>
                         <tr class="encabezadoTabla">
                             <th>C&oacute;digo Medida</th>
