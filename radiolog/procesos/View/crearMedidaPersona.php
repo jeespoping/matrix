@@ -141,13 +141,13 @@
                                 </select>
                             </td>
                             <td style="width:40%">
-                                </br><b>Seleccione primero el centro de costo, y luego busque o seleccione la persona.</b>
+                                </br><b>Seleccione primero el centro de costo, y luego busque la persona.</b>
                                 </br></br> <b>Centro de costo:</b>
                                 <input type="text" name="busquedacentrocosto" id="busquedacentrocosto" value="<?= (isset($_SESSION['busquedacentrocosto'])) ? $_SESSION['busquedacentrocosto'] : null  ?>" size="60">
                                 <input type="HIDDEN" name="codigocentrocosto" id="codigocentrocosto" value="<?= (isset($_SESSION['codigocentrocosto'])) ? $_SESSION['codigocentrocosto'] : null  ?>">
                                 </br></br><b>Persona:</b>
                                 <input type="text" name="busquedapersona" id="busquedapersona" value="<?= (isset($_SESSION['busquedapersona'])) ? $_SESSION['busquedapersona'] : null  ?>" size="60" require>
-                                <input type="HIDDEN" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>" require></br>
+                                <input type="HIDDEN" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>"></br>
                                 </br>
                                 <a onclick="buscarPersona(true)">Limpiar</a>
                                 </br></br>

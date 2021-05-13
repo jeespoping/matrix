@@ -70,6 +70,7 @@
             }
             include_once("root/comun.php");
             $wemp_pmla = isset($_GET["wemp_pmla"]) ? $_GET["wemp_pmla"] : $_POST["wemp_pmla"]  ;
+            global $conex;
 
             //----------------------------------------------------------ENCABEZADO--------------------------------------------------------
             $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
@@ -122,13 +123,13 @@
                     <tbody>
                         <tr class="fila2" style="text-align:center;">
                             <td>
-                                <input type="text" name="codigomedida" id="codigomedida" required value="<?= $_SESSION['codigomedida']  ?>">
+                                <input type="text" name="codigomedida" id="codigomedida" required value="<?= (isset($_SESSION['codigomedida'])) ? $_SESSION['codigomedida'] : null  ?>">
                             </td>
                             <td>
-                                <input type="text" name="nombre" id="nombre" size="40" required value="<?= $_SESSION['nombre']  ?>">
+                                <input type="text" name="nombre" id="nombre" size="40" required value="<?= (isset($_SESSION['nombre'])) ? $_SESSION['nombre'] : null  ?>">
                             </td>
                             <td>
-                                <textarea type="text" name="descripcion" id="descripcion" rows="3" cols="50"><?= $_SESSION['descripcion']  ?></textarea>
+                                <textarea type="text" name="descripcion" id="descripcion" rows="3" cols="50"><?= (isset($_SESSION['descripcion'])) ? $_SESSION['descripcion'] : null  ?></textarea>
                             </td>
                             <td>
                                 <select style="max-width:60%; width:60%" id="unidad" name="unidad" required>
@@ -143,7 +144,7 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="checkbox" name="enviarnotificacion" id="enviarnotificacion" <?= $_SESSION['enviarnotificacion'] ?>>
+                                <input type="checkbox" name="enviarnotificacion" id="enviarnotificacion" <?= (isset($_SESSION['enviarnotificacion'])) ? $_SESSION['enviarnotificacion'] : null  ?>>
                             </td>
                         </tr>
                     </tbody>

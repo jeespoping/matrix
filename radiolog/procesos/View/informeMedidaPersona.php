@@ -140,11 +140,11 @@
                                 <td>
                                     </br>B&uacute;squeda:
                                     <?php $sTipoBusqueda = (isset($_SESSION['tipobusqueda'])) ? $_SESSION['tipobusqueda'] : "documento";  ?>
-                                    <select name="tipobusqueda" id="tipobusqueda">
+                                    <select name="tipobusqueda" id="tipobusqueda" require>
                                         <option value="documento" <?= ($sTipoBusqueda == "documento") ? "selected" : "" ?> >Documento</option>
                                         <option value="codigo" <?= ($sTipoBusqueda == "codigo") ? "selected" : "" ?> >C&oacute;digo</option>
                                     </select>
-                                    <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>">
+                                    <input type="text" name="codigopersona" id="codigopersona" value="<?= (isset($_SESSION['codigopersona'])) ? $_SESSION['codigopersona'] : null  ?>" require>
                                     </br></br>
                                 </td>
                                 <td>
