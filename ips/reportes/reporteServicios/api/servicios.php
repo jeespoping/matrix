@@ -52,11 +52,13 @@ switch ($method) {
       $servicios->setNumeroHistoria($numeroHistoria);
       $servicios->setNumeroIngreso($numeroIngreso);
       $dataServicio = $servicios->getServicios();
-      // $estadoIngreso = $servicios->getDatosPaciente();
+      // $estadoIngreso = rand(0, 1) == 0 ? "off" : "on";
+      $estadoIngreso = $servicios->getEstadoPaciente();
       // $dataServicio[0]['servicio'] =
 
       if (!empty($dataServicio)) {
         for ($k = 0; $k < count($dataServicio); $k++) {
+          $dataServicio[$k]['estado'] = $estadoIngreso;
           array_push($result, $dataServicio[$k]);
         }
       }

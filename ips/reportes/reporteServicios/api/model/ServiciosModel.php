@@ -81,13 +81,11 @@ class ServiciosModel
    */
   function getSelectFrom()
   {
-    $this->estado = $this->getEstadoPaciente();
-
     $select = "SELECT c100.pachis as historia, c101.Ingnin AS ingreso,
                    c100.Pactdo as tipoDocumento, c100.pacdoc as Documento,
                    c100.Pacnoa as nombre, c101.Ingfei as fechaIngreso,
                    c101.Ingsei, m011.cconom as servicio, c101.Ingtin,
-                   c175.Tiides, '{$this->estado}' as estado ";
+                   c175.Tiides, '' as estado ";
     $from = "FROM {$this->baseDatos}_000100 AS c100, {$this->baseDatos}_000101 AS c101, {$this->baseDatos}_000175 AS c175, movhos_000011 AS m011 ";
     return $select . $from;
   }
@@ -119,16 +117,20 @@ class ServiciosModel
   function getEstadoPaciente()
   {
     $estado =  "off";
-
-    $conexUnix = odbc_connect('facturacion', 'informix', 'sco');
-    // --> Consultar si el ingreso está activo en unix.
-    $sqlIngAct = "SELECT pacnum FROM INPAC WHERE pachis = '{$this->numeroHistoria}'";
-    $resIngAct = odbc_exec($conexUnix, $sqlIngAct);
-    if (odbc_fetch_row($resIngAct)) {
-      if (trim(odbc_result($resIngAct, 'pacnum')) == $this->numeroIngreso) {
-        $estado = "on";
+    try {
+      $conexUnix = odbc_connect('facturacion', 'informix', 'sco');
+      // --> Consultar si el ingreso está activo en unix.
+      $sqlIngAct = "SELECT pacnum FROM INPAC WHERE pachis = '{$this->numeroHistoria}' AND pacnum = {$this->numeroIngreso}";
+      $resIngAct = odbc_exec($conexUnix, $sqlIngAct);
+      if (odbc_fetch_row($resIngAct)) {
+        if (trim(odbc_result($resIngAct, 'pacnum')) == $this->numeroIngreso) {
+          $estado = "on";
+        }
       }
+    } catch (\Throwable $th) {
+      throw $th;
     }
+
     return $estado;
   }
 
