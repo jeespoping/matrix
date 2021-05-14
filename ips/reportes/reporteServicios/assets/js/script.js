@@ -140,6 +140,7 @@ function getServicios(formData) {
             console.log(response.data)
             if (response.data) {
                 app.servicios = response.data;
+                console.log(response.data.estado);
             } else {
                 app.servicios = null;
                 Swal.fire({
