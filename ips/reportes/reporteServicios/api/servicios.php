@@ -52,7 +52,7 @@ switch ($method) {
       $servicios->setNumeroHistoria($numeroHistoria);
       $servicios->setNumeroIngreso($numeroIngreso);
       $dataServicio = $servicios->getServicios();
-      $estadoIngreso = $servicios->getDatosPaciente();
+      // $estadoIngreso = $servicios->getDatosPaciente();
       // $dataServicio[0]['servicio'] =
 
       if (!empty($dataServicio)) {
