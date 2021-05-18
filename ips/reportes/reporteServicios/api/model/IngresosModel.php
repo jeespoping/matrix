@@ -58,9 +58,9 @@ class IngresosModel
   {
     $sql = "WHERE ";
     if (!empty($this->numeroHistoria)) {
-      $sql .= "pachis = '{$this->numeroHistoria}' ";
+      $sql .= "c100.pachis = '{$this->numeroHistoria}' ";
     } elseif (!empty($this->numeroIdentificacion)) {
-      $sql .= "pacdoc = '{$this->numeroIdentificacion}' ";
+      $sql .= "c100.pacdoc = '{$this->numeroIdentificacion}' ";
     }
 
     if (!empty($this->fechaInicial) && !empty($this->fechaFinal)) {

@@ -1,7 +1,5 @@
 <?php
-// include_once("conex.php");
-// include_once("root/comun.php");
-// include_once("ips/funciones_facturacionERP.php");
+
 include_once("model/db.php");
 
 include "model/ServiciosModel.php";
@@ -14,25 +12,9 @@ $dbname = "Matrix";
 $id = '';
 $json = "";
 
-//$db = new DB($dbname);
-
 $method = $_SERVER['REQUEST_METHOD'];
-//$movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
-// $server = $_SERVER['PATH_INFO'];
-// $request = explode('/', trim($_SERVER['PATH_INFO'], '/'));
-//$input = json_decode(file_get_contents('php://input'),true);
 
 switch ($method) {
-  case 'GET':
-    // $sql = "select * from contacts" . ($id ? " where id=$id" : '');
-    if (isset($_GET['id'])) {
-      $id = $_GET['id'];
-      // $sql = $db->query('select * from contacts where id = ? ', $id);
-    } else {
-      $sql = $db->query('select tcaring, Tcarconnom, tcarfec, tcarest from matrix.cliame_000106 order by tcarfec LIMIT 0, 10');
-      // $sql = $db->query("select * from contacts");
-    }
-    break;
   case 'POST':
     $baseDatos = $_POST["baseDatos"];
     $numHis = $_POST["numHis"];

@@ -34,11 +34,11 @@ $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, $institucion->baseDeD
             <div class="row mb-1 justify-content-around">
                 <div class="col-6 col-lg-3 my-1">
                     <label for="numHis" class="form-label">N&uacute;mero Historia</label>
-                    <input type="text" class="form-control" id="numHis" placeholder="999999" v-model="numHis" v-on:keyup="bloquearCampo" :disabled="disNumHis==1" v-on:keyup.enter="filtrarServicios('<?php echo $baseDatos ?>')">
+                    <input type="text" class="form-control" id="numHis" placeholder="999999" v-model="numHis" v-on:keyup="bloquearCampo" :disabled="disNumHis==1" v-on:keyup.enter="filtrarServicios('<?php echo $wtabcco ?>')">
                 </div>
                 <div class="col-6 col-lg-3 align-self-center my-1">
                     <label for="numIde" class="form-label">Numero Identificaci&oacute;n</label>
-                    <input type="text" class="form-control" id="numIde" placeholder="Identificaci&oacute;n" v-model="numIde" v-on:keyup="bloquearCampo" :disabled="disNumIde==1" v-on:keyup.enter="filtrarServicios('<?php echo $baseDatos ?>')">
+                    <input type="text" class="form-control" id="numIde" placeholder="Identificaci&oacute;n" v-model="numIde" v-on:keyup="bloquearCampo" :disabled="disNumIde==1" v-on:keyup.enter="filtrarServicios('<?php echo $wtabcco ?>')">
                 </div>
                 <div class=" col-6 col-lg-3 align-self-center my-1">
                     <label for="fecIni" class="form-label">Fecha Inicial</label>
@@ -49,7 +49,7 @@ $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, $institucion->baseDeD
                     <input type="date" class="form-control" id="fecFin" placeholder="Fecha Fin" v-model="fecFin">
                 </div>
                 <div class="col-6 col-lg-12 align-self-center text-center my-1">
-                    <button type="button" class="btn btn-primary" @click="filtrarServicios('<?php echo $baseDatos ?>')">Filtrar</button>
+                    <button type="button" class="btn btn-primary" @click="filtrarServicios('<?php echo $wtabcco ?>')">Filtrar</button>
                 </div>
                 <div class="col-6 col-lg-12 align-self-center text-center my-1">
                     <button type="button" class="btn btn-primary" @click="resetForm()">Limpiar</button>
@@ -67,6 +67,7 @@ $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, $institucion->baseDeD
                         <th scope="col">Servicio</th>
                         <th scope="col">Fecha Ingreso</th>
                         <th scope="col">Estado</th>
+                        <th scope="col">Facturado</th>
                         <th class="d-none" scope="col">Acci&oacute;n</th>
                     </tr>
                 </thead>
@@ -83,6 +84,7 @@ $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, $institucion->baseDeD
                             <span class="badge rounded-pill bg-warning" v-else-if="servicio.estado == 'off'">Inactivo</span>
                             <span class="" v-else>&nbsp;</span>
                         </td>
+                        <td></td>
                         <td class="d-none"><button class="btn btn-outline-danger btn-sm">ReAbrir</button></td>
                     </tr>
                 </tbody>

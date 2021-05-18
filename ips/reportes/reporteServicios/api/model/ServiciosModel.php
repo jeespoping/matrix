@@ -118,17 +118,18 @@ class ServiciosModel
   {
     $estado =  "off";
     try {
-      $conexUnix = odbc_connect('facturacion', 'informix', 'sco');
-      // --> Consultar si el ingreso está activo en unix.
-      $sqlIngAct = "SELECT pacnum FROM INPAC WHERE pachis = '{$this->numeroHistoria}' AND pacnum = {$this->numeroIngreso}";
-      $resIngAct = odbc_exec($conexUnix, $sqlIngAct);
-      if (odbc_fetch_row($resIngAct)) {
-        if (trim(odbc_result($resIngAct, 'pacnum')) == $this->numeroIngreso) {
-          $estado = "on";
+      if ($conexUnix = odbc_connect('facturacion', 'informix', 'sco')) {
+        // --> Consultar si el ingreso está activo en unix.
+        $sqlIngAct = "SELECT pacnum FROM INPAC WHERE pachis = '{$this->numeroHistoria}' AND pacnum = {$this->numeroIngreso}";
+        $resIngAct = odbc_exec($conexUnix, $sqlIngAct);
+        if (odbc_fetch_row($resIngAct)) {
+          if (trim(odbc_result($resIngAct, 'pacnum')) == $this->numeroIngreso) {
+            $estado = "on";
+          }
         }
       }
-    } catch (\Throwable $th) {
-      throw $th;
+    } catch (\Exception $e) {
+      echo 'Excepción capturada: ',  $e->getMessage(), "\n";
     }
 
     return $estado;
