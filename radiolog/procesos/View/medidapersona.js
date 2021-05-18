@@ -85,7 +85,11 @@ function cerrarVentana()
  }
 
 $( function() {
-    // Single Select
+    /**
+     * Función para manejar el autocompletar de centro de costo
+     * @by: sebastian.nevado
+     * @date: 2021/05/12
+     */
     $( "#busquedacentrocosto" ).autocomplete({
         source: function( request, response ) {
             // Fetch data
@@ -125,6 +129,11 @@ $( function() {
         }
     });
 
+    /**
+     * Función para manejar el cambio de centro de costo
+     * @by: sebastian.nevado
+     * @date: 2021/05/12
+     */
     $( "#busquedacentrocosto" ).change(function() {
         var busqueda = $( "#busquedacentrocosto" ).val();
         if(busqueda == ''){
@@ -133,7 +142,11 @@ $( function() {
         }
     });
 
-
+    /**
+     * Función para manejar el autocompletar de persona
+     * @by: sebastian.nevado
+     * @date: 2021/05/12
+     */
     $( "#busquedapersona" ).autocomplete({
         source: function( request, response ) {
             // Fetch data
@@ -173,6 +186,11 @@ $( function() {
         }
     });
 
+    /**
+     * Función para manejar el cambio de persona
+     * @by: sebastian.nevado
+     * @date: 2021/05/12
+     */
     $( "#busquedapersona" ).change(function() {
         var busqueda = $( "#busquedapersona" ).val();
         if(busqueda == ''){
