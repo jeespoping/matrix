@@ -291,7 +291,9 @@ if (!$usuarioValidado)
 else
 {
 	
- $empre1='cominf';
+ //$empre1='cominf';
+ $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+ $empre1 = consultarAliasPorAplicacion($conex, $wemp_pmla, "invecla");
  
  //Conexion base de datos
  
@@ -302,12 +304,12 @@ else
 
 
  //Forma
- echo "<form name='forma' action='rep_proprioxevaluadotec.php' method='post'>";
+ echo "<form name='forma' action='rep_proprioxevaluadotec.php?wemp_pmla=".$wemp_pmla."' method='post'>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
  
 if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) or $pp == '')
   {
-  	echo "<form name='rep_proprioxevaluadotec' action='' method=post>";
+  	echo "<form name='rep_proprioxevaluadotec?wemp_pmla=".$wemp_pmla."' action='' method=post>";
   
 	//Cuerpo de la pagina
  	echo "<table align='center' border=0>";
@@ -322,7 +324,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 
 	//Generando lista de opciones de Centro de costos
 	$q = "SELECT ccocod,cconom 
-		  FROM movhos_000011
+		  FROM ".$wmovhos."_000011
 		  where ccocod<>'*'
 		  order by 1";
 

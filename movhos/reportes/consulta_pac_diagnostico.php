@@ -15,6 +15,7 @@
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -72,7 +73,7 @@
 
 
 <body width="1200" height="47">
-<form action="consulta_pac_diagnostico.php" method="post">
+<form action="consulta_pac_diagnostico.php?wemp_pmla=<?php echo($wemp_pmla) ?>" method="post">
   
   <table width="1200" border="1" align="center">
   	<tr>
@@ -125,12 +126,17 @@
 	
 		}else{
 			
+			include_once("root/comun.php");
+			
+			$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+			$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+			
 // Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
 			$select_diagnostico = mysql_query("SELECT count(*) cant
-    									from movhos_000243 m
+    									from ".$wmovhos."_000243 m
 										left join
 										 root_000011 r11 on ( m.Diacod = r11.Codigo),
-										cliame_000100 c100,cliame_000101 c101
+										".$wcliame."_000100 c100,".$wcliame."_000101 c101
 										Where
 											m.Diafhc between '$buscar' and '$buscar1' 
 											and m.Diahis = c100.Pachis

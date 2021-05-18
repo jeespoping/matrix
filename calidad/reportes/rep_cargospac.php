@@ -5,7 +5,7 @@
 
 	//Redirecciona a la pagina inicial
 	function inicioReporte(wfecini,wfecfin,wcco,wemp_pmla,bandera){
-	 	document.location.href='rep_cargospac.php?wfecini='+wfecini+'&wfecfin='+wfecfin+'&wccocod='+wcco+'&wemp_pmla='+wemp_pmla+'&bandera='+bandera;
+	 	document.location.href='rep_cargospac.php?wemp_pmla='+wemp_pmla+'&wfecini='+wfecini+'&wfecfin='+wfecfin+'&wccocod='+wcco+'&bandera='+bandera;
 	}
 
 	function Seleccionar()
@@ -62,16 +62,19 @@ else
 
 	include_once("root/comun.php");
 	$conex 		= 	obtenerConexionBD("matrix");
+	
+	$wbasedatomovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wbasedatocliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame"); 
 	$conexN = odbc_connect('facturacion','','') or die("No se realizo Conexion con la BD de facturacion en Informix");
 
 	//Llamo a la función para formar el encabezado del reporte llevándole Título, Fecha e Imagen o logo
 	encabezado("CARGOS DE PACIENTES HOSPITALIZADOS DADOS DE ALTA",$wactualiz,"clinica");  //Inicio ELSE reporte
 	
 
-  echo "<form name='forma' action='rep_cargospac.php' method=post onSubmit='return valida_enviar(this);'>";
+  echo "<form name='forma' action='rep_cargospac.php?wemp_pmla=".$wemp_pmla." method=post onSubmit='return valida_enviar(this);'>";
   $wfecha=date("Y-m-d");   
   
- /* echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";*/
+  echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."' id='wemp_pmla'>";
   echo "<input type='HIDDEN' NAME= 'form' value='forma'>";
 
   // Si no se han enviado datos por el formulario
@@ -146,7 +149,7 @@ else
 	echo "<td height='11' colspan='2'>";
 
 	// Botones de "Retornar" y "Cerrar ventana"
-	echo "<p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wfecini\",\"$wfecfin\",\"$wemp_pmla\",\"$bandera\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
+	echo "<p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wfecini\",\"$wfecfin\",\"\",\"$wemp_pmla\",\"$bandera\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
  	echo "</td></tr>";
  	echo "<tr>";
 	echo "<td height='11' colspan='2'>&nbsp;</td></tr>";
@@ -161,7 +164,7 @@ else
 	// QUERY PRINCIPAL DEL REPORTE MATRIX
 	//                1     2       3     4     5       6      7      8      9      10     11                  12                 
 	$q = "	SELECT Ubihis,Ubiing,Ubisac,Ubiald,Ubifad,Ingtpa,Ingcem,Empnom,Ingfei,Pactdo,Pacdoc,concat(Pacno1,' ',Pacno2,' ',Pacap1,' ',Pacap2 )  "
-		."	FROM movhos_000018,cliame_000100,cliame_000101,cliame_000024 "
+		."	FROM ".$wbasedatomovhos."_000018,".$wbasedatocliame."_000100,".$wbasedatocliame."_000101,".$wbasedatocliame."_000024 "
 		."	WHERE Ubifad BETWEEN '".$wfecini."' AND '".$wfecfin."' "
 		."    AND Ubihis = Inghis "		
 		."	  AND Ubisac in ('1182','1183','1184','1020','1021','1187','1180','1185','1186','1188','1190',

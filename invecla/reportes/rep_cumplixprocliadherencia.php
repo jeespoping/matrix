@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 <title>MATRIX - [REPORTE CUMPLIMIENTO - ADHERENCIAS]</title>
 
@@ -311,15 +312,15 @@ if (!$usuarioValidado)
 else
 {
 
- $empre1='cominf';
-
- 
-
- 
+$user_session = explode('-', $_SESSION['user']);
+        $wuse = $user_session[1];
+        mysql_select_db("matrix");
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wcominf = consultarAliasPorAplicacion($conex, $wemp_pmla, "invecla"); 
 
 
  //Forma
- echo "<form name='forma' action='rep_cumplixprocliadherencia.php' method='post'>";
+ echo "<form name='forma' action='rep_cumplixprocliadherencia.php?wemp_pmla=".$wemp_pmla."' method='post'>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
 
  if (!isset($pp) or $pp=='-' or !isset($fec1) or !isset($fec2))
@@ -339,7 +340,7 @@ else
 
 	//Generando lista de opciones de Centro de costos
 	$q = "SELECT ccocod,cconom
-		  FROM movhos_000011
+		  FROM ".$wmovhos."_000011
 		  where ccocod<>'*'
 		  order by 1";
 
@@ -389,11 +390,11 @@ else
    /////////////////////////////////////////////////////////////////////////// seleccion para los procesos prioritarios
    echo "<td align=CENTER colspan=2 bgcolor=#DDDDDD><b><font text color=#003366 size=3><B>Proceso Prioritario:</B><br></font></b><select name='pp' id='searchinput'>";
 
-   $query = " SELECT concat(subcodigo,'-',descripcion)"
-           ."   FROM det_selecciones"
-           ."  WHERE medico LIKE 'cominf'"
-           ."    AND codigo LIKE '113'"
-           ."    AND activo =  'A'";
+   $query = " SELECT concat(subcodigo,'-',descripcion)
+              FROM det_selecciones
+             WHERE medico LIKE 'cominf'
+               AND codigo LIKE '113'
+               AND activo =  'A'";
 
    $err3 = mysql_query($query,$conex);
    $num3 = mysql_num_rows($err3);
@@ -442,12 +443,12 @@ else
    echo "</tr>";
    echo "</table>";
 
-   $query = " SELECT ppacco,ppaproce,ppacrite1,ppacrite2,ppacrite3,ppacrite4,ppacrite15,ppacrite6,ppacrite7,ppacrite8"
-           ."   FROM ".$empre1."_000050"
-           ."  WHERE ppaproce = '".$tpp."'"
-           ."    AND ppafecha between '".$fec1."' and '".$fec2."'"
-		   ."    AND ppacco $ccos"
-           ."  ORDER BY ppacco,ppaproce";
+   $query = " SELECT ppacco,ppaproce,ppacrite1,ppacrite2,ppacrite3,ppacrite4,ppacrite15,ppacrite6,ppacrite7,ppacrite8
+              FROM ".$wcominf."_000050
+             WHERE ppaproce = '".$tpp."'
+               AND ppafecha between '".$fec1."' and '".$fec2."'
+		       AND ppacco $ccos
+             ORDER BY ppacco,ppaproce";
 
     $err1 = mysql_query($query,$conex);
     $num1 = mysql_num_rows($err1);
@@ -456,13 +457,13 @@ else
 
     $arrecrit=Array();
 
-    $query2 = "SELECT ppacco"
-           ."    FROM ".$empre1."_000050"
-           ."   WHERE ppaproce = '".$tpp."'"
-           ."     AND ppafecha between '".$fec1."' and '".$fec2."'"
-		   ."     AND ppacco $ccos"
-           ."   GROUP BY ppacco"
-		   ."   ORDER BY ppacco";
+    $query2 = "SELECT ppacco
+               FROM ".$wcominf."_000050
+              WHERE ppaproce = '".$tpp."'
+                AND ppafecha between '".$fec1."' and '".$fec2."'
+		        AND ppacco $ccos
+              GROUP BY ppacco
+		      ORDER BY ppacco";
 
     $err2 = mysql_query($query2,$conex);
     $num2 = mysql_num_rows($err2);

@@ -1,5 +1,4 @@
 <HTML LANG="es">
-
 <HEAD>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,6 +32,15 @@ else
   include_once("root/magenta.php");
   include_once("root/comun.php");
   include_once("movhos/movhos.inc.php");
+  $wemp_pmla=$_REQUEST['wemp_pmla'];
+  $consultaAjax = '';
+  
+  $whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+  $wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
+  $wcostosyp = consultarAliasPorAplicacion($conex, $wemp_pmla, "COSTOS");
+  $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+  $wgescal = consultarAliasPorAplicacion($conex, $wemp_pmla, "gescal");
+  $wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
   
   $conex = obtenerConexionBD("matrix");
   $archivo = fopen("plano01.txt","w"); 
@@ -100,7 +108,7 @@ else
 								Fecha_respuesta,Hora_respuesta,Fecha_llegada,Hora_llegada,Fecha_Cumplimiento,Hora_cumplimiento,
 								Anulada,Observ_central,Central,Usu_central,Historia,Hab_asignada,Fec_asigcama,Hora_asigcama,
 								Usu_anula,Fecha_anula,Hora_anula,Usuario_recibe,Tramiteok,Usutramitepok,Fechatramiteok,Horatramiteok,Seguridad
-							 from cencam_000003
+							 from ".$wcencam."_000003
 							 Where Fecha_data between '".$fecha1."' and '".$fecha2."' and Anulada = 'No' "; 
 								   
 				   $resultadoB = mysql_query($query);            // Ejecuto el query 
@@ -203,9 +211,9 @@ else
 							 from movhos_000018 a 
 								 left join 
 								 movhos_000022 b on (Ubihis = Cuehis and  Ubiing = Cueing ), 
-								 cliame_000101 d 
+								 ".$wcliame."_000101 d 
 								 left join 
-								 cliame_000109 c109 on ( Inghis = Diahis and  Ingnin = Diaing and Diatip = 'P')
+								 ".$wcliame."_000109 c109 on ( Inghis = Diahis and  Ingnin = Diaing and Diatip = 'P')
 							 where Ubifap between '".$fecha1."' and '".$fecha2."' 
 							  and  Ubisac in ('1182','1183','1184','1020','1021','1187','1180',
 											  '1185','1186','1188','1190','1189','1286',
@@ -275,7 +283,7 @@ else
 				   echo "</tr>";
 
 					$query = "select Ordhis,Ording,Ordfec,Ordhor,Ordtor,Ordusu,u.Descripcion,Detcod,h47.descripcion
-								from  hce_000027,hce_000028,usuarios u,hce_000047 h47
+								from  ".$whce."_000027,".$whce."_000028,usuarios u,".$whce."_000047 h47
 								where Ordtor in ('A22','P02','P03') 
 								 and  Ordfec between '".$fecha1."' and '".$fecha2."' 
 							  and  Ordest = 'on'
@@ -355,14 +363,14 @@ else
 				   
      			   $query = "select g1.Fecha_data,Nceccd,m11a.Cconom,Ncecpd,u.descripcion,m44.Espnom,Ncefed,Ncehod,Nceccg,m11b.Cconom,Ncedes,
 						            Ncenaf,Nceeaf,Nceiaf,Ncehca,Nceaci,Nceres,Ncenum
-							 from gescal_000001 g1 
+							 from ".$wgescal."_000001 g1 
 								  left join 
 								  movhos_000048 m48 on (Ncecpd = m48.Meduma)
 								  left join 
 								  movhos_000044 m44 on (m48.Medesp = m44.Espcod )
 								  left join
 								  usuarios u on (Ncecpd = u.codigo )
-								  ,costosyp_000005 m11a,costosyp_000005 m11b
+								  ,".$wcostosyp."_000005 m11a,".$wcostosyp."_000005 m11b
 							where g1.Fecha_data between '".$fecha1."' and '".$fecha2."'  
 									 and  Ncecne = 'EA' 
 									 and  Nceccd = m11a.Ccocod 
@@ -447,8 +455,8 @@ else
     			   
 				   $query = "SELECT a.Habhis,a.Habing,a.Habcod,a.Habcco,m.cconom,d.Ingfei,hc.fecha_data,hc.hora_data,hc.movpro,hc.movcon,hc.movdat 
 							FROM movhos_000020 a 
-								 inner join hce_000112 hc on (a.Habhis=hc.movhis and a.Habing=hc.moving and hc.movcon in (12,16)), 
-								 cliame_000101 d, movhos_000011 m 
+								 inner join ".$whce."_000112 hc on (a.Habhis=hc.movhis and a.Habing=hc.moving and hc.movcon in (12,16)), 
+								 ".$wcliame."_000101 d, movhos_000011 m 
 							WHERE a.Habhis = d.Inghis
 							 AND  a.Habing = d.Ingnin
 							 AND  a.Habcco = m.ccocod   "; 
@@ -518,7 +526,7 @@ else
 				   echo "</tr>";
     			   
 				   $query = "select Fecha_data,Hora_data,movhis,moving,movcon,movusu,movdat 
-							 from hce_000076 
+							 from ".$whce."_000076 
 							 where Fecha_data Between '".$fecha1."' and '".$fecha2."'  
 								and  movcon in (4,7,18,95,99,101,103,105,9,20,30,50) 
 							 order by movhis,moving  "; 
@@ -584,7 +592,7 @@ else
 				   echo "</tr>";
     			   
 				   $query = "select Fecha_data,Hora_data,movhis,moving,movcon,movusu,movdat 
-							 from hce_000077 
+							 from ".$whce."_000077 
 							 where Fecha_data Between '".$fecha1."' and '".$fecha2."'  
 							   and movcon in (2,22,41,69,81,79,77,70,71,3,23,4,5,6,7,11,12,50,59,52,99,92,47,57) 
 							 order by movhis,moving  "; 
@@ -650,7 +658,7 @@ else
 				   echo "</tr>";
     			   
 				   $query = "select Fecha_Data,Hora_Data,Movhis,Moving,Movcon,movusu,Movdat
-							 from hce_000122 
+							 from ".$whce."_000122 
 							 where Fecha_Data between '".$fecha1."' and '".$fecha2."'  
 							 order by movhis,moving  "; 
 								   
@@ -715,7 +723,7 @@ else
 				   echo "</tr>";
     			   
 				   $query = "select Fecha_Data,Hora_Data,Movhis,Moving,Movcon,movusu,Movdat
-							 from hce_000134 
+							 from ".$whce."_000134 
 							 where Fecha_Data between '".$fecha1."' and '".$fecha2."'  
 							 order by movhis,moving  "; 
 								   
@@ -780,7 +788,7 @@ else
 				   echo "</tr>";
     			   
 				   $query = "select Fecha_Data,Hora_Data,Movhis,Moving,Movcon,movusu,Movdat
-							 from hce_000432 
+							 from ".$whce."_000432 
 							 where Fecha_Data between '".$fecha1."' and '".$fecha2."'  
 							 order by movhis,moving  "; 
 								   
@@ -845,7 +853,7 @@ else
 				   echo "</tr>";
     			   
 				   $query = "select  Fecha_data,Hora_data,Firpro,Firhis,Firing,Firusu,Fircco 
-							 from hce_000036 
+							 from ".$whce."_000036 
 							 where Fecha_data Between '".$fecha1."' and '".$fecha2."'  
 							   and  Firpro in ('000367','000328')  
 							   and  Firrol = '100099' "; 
@@ -971,7 +979,7 @@ else
 									Turban,Turbok,Turpre,Turpan,Turpes,Turpep,Turpeq,Turper,Turpea,Turubi,Turmdo,Turtel,Turord,
 									Turcom,Turcir,Turmed,Turequ,Turusg,Turusm,Turcup,Turmaa,Turspa,Turrcu,Turest,Turaud,Turapi,
 									Turfhi,Turusi,Turfhf,Turusf,Turepc,Turcdi,Turcdt,Turcdr
-							 From tcx_000011 
+							 From ".$wtcx."_000011 
 							 where Turfec Between '".$fecha1."' and '".$fecha2."'  "; 
 								   
 				   $resultadoB = mysql_query($query);            // Ejecuto el query 
@@ -1309,7 +1317,7 @@ else
 				   echo "</tr>";
     			   
 				   $query = "select Fecha_Data,Hora_Data,Movhis,Moving,Movcon,movusu,Movdat
-							 from hce_000139  
+							 from ".$whce."_000139  
 							 where Fecha_Data between '".$fecha1."' and '".$fecha2."'  
 							 and movcon = 13
 							 order by movhis,moving  "; 
@@ -1379,14 +1387,14 @@ else
 					
 					$queryt2 = "insert into tempohis4
 								select 1,Movhis,Moving,Fecha_Data 
-								from hce_000360
+								from ".$whce."_000360
 								where Fecha_Data between '".$fecha1."' and '".$fecha2."' 
 								 and movcon = 4  
 								 and movdat like '%1130-URGENCIASHab.%'  ";
 					$resultadot2 = mysql_query($queryt2);            // Ejecuto el query 
 				   
 				    $query = "select Fecha_Data,Hora_Data,Movhis,Moving,Movcon,Movdat,movusu 
-							 from tempohis4,hce_000360
+							 from tempohis4,".$whce."_000360
 							 where historia = Movhis 
 							  and  ingreso =  Moving 
 							  and  Fecha_Data between '".$fecha1."' and '".$fecha2."'  
@@ -1457,7 +1465,7 @@ else
 				   echo "</tr>";
     			   
     			    $query = "select Fecha_data,Hora_data,Movhis,Moving,Movcon,Movdat,Movusu,Descripcion 
-							  from hce_000152 h152,usuarios 
+							  from ".$whce."_000152 h152,usuarios 
 						      where h152.Fecha_data between '".$fecha1."' and '".$fecha2."'  
 							   and  movcon in (1,2,86,104,105) 
 							   and  Movusu = Codigo 
@@ -1528,10 +1536,10 @@ else
 					$query = "select c.movhis,c.Moving,c.Fecha_data,Pactdo,Pacdoc,
 									 concat(Pacap1,' ',Pacap2,' ',Pacno1,' ',Pacno2),Pacfna,Pacsex,ubifad
 							  from (select  a.movhis, a.moving, min( id ) id 
-										from hce_000458 a
+										from ".$whce."_000458 a
 										where a.Fecha_data between '".$fecha1."' and '".$fecha2."' 
 										and a.movcon = 8
-										group by 1, 2 ) a, hce_000458 c,cliame_000100 d,movhos_000018 e
+										group by 1, 2 ) a, ".$whce."_000458 c,".$wcliame."_000100 d,movhos_000018 e
 							 where c.id = a.id 
 							 and  c.movhis = d.pachis 
 							 and  c.movhis = e.ubihis
@@ -1652,17 +1660,17 @@ else
 				   
 					$query = "select Inghis,Ingnin,Ingfei,Egrfee,Egrcae,Diacod,r11.Descripcion,Diamed,t1.nombre,
 									 Diaesm,m44.Espnom,Espmed,t2.nombre,d.Espcod,m.Espnom,Servicio,cconom 
-							   from cliame_000101 a,movhos_000033 f
+							   from ".$wcliame."_000101 a,movhos_000033 f
 									left join
 									movhos_000011 g on (Servicio = ccocod  )
-									,cliame_000108 b,cliame_000109 c
+									,".$wcliame."_000108 b,".$wcliame."_000109 c
 									left join
 									tempomovhos48 t1 on (Diamed = t1.Meddoc )
 									left join 
 									root_000011 r11 on ( c.Diacod = r11.Codigo    )
 									left join 
 									movhos_000044 m44 on (c.Diaesm = m44.Espcod   ),
-									cliame_000111 d
+									".$wcliame."_000111 d
 									left join 
 									tempomovhos48 t2 on (Espmed = t2.Meddoc )
 									left join 
@@ -1821,7 +1829,7 @@ else
 						             c.Fecha_egre_serv,c.Hora_egr_serv,c.Tipo_egre_serv,b.Ingfei
 							  from movhos_000032 a
 									 left join 
-									 cliame_000101 b on (a.Historia_clinica = b.Inghis and  a.Num_ingreso = b.Ingnin )
+									 ".$wcliame."_000101 b on (a.Historia_clinica = b.Inghis and  a.Num_ingreso = b.Ingnin )
 									 left join 
 									 movhos_000033 c on (a.Historia_clinica = c.Historia_clinica and a.Num_ingreso = c.Num_ingreso 
 											             and  a.Servicio = c.Servicio and a.Fecha_ing <= c.Fecha_egre_serv )
@@ -1890,11 +1898,11 @@ else
 				   echo "</tr>";
 				   
 				  	$query = "select a.Fecha_data,Liqtur,Liqhis,Liqing,Turtdo,Turdoc,Turnom,Turfec,Turtcx,Turcir,Tureps,Empnom,SUM(Liqvlf) 
-							  from   cliame_000198 a
+							  from   ".$wcliame."_000198 a
 									 inner join 
-									 tcx_000011 b on (a.Liqtur = b.Turtur)
+									 ".$wtcx."_000011 b on (a.Liqtur = b.Turtur)
 									 left join 
-									 cliame_000024 c on (b.Tureps = c.Empcod)
+									 ".$wcliame."_000024 c on (b.Tureps = c.Empcod)
 							  where  a.Fecha_data Between '".$fecha1."' and '".$fecha2."'  
 							    and  a.Liqest = 'on' 
 								and  a.Liqfac = 'S'
@@ -1941,7 +1949,7 @@ else
 					
 					default:
 					echo "Debes seleccionar el Query a Ejecutar";
-					echo "<A HREF='rep_gesis1.php'>Pagina Principal</A>";
+					echo "<A HREF='rep_gesis1.php?wemp_pmla=".$wemp_pmla."'>Pagina Principal</A>";
 					break;
 					
 			}
@@ -1958,7 +1966,7 @@ else
 }
 ?>
 
-[ <A HREF='rep_gesis1.php'>Pagina Principal</A> ]
+[ <A HREF='rep_gesis1.php?wemp_pmla=<?=$wemp_pmla?>'>Pagina Principal</A> ]
 			  </div>
 		</div>
 	</div>

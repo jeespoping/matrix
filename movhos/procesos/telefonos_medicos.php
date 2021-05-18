@@ -5,13 +5,13 @@ header("Content-Type: text/html;charset=ISO-8859-1");
 
 include_once("root/comun.php");
 
-
+$wbasedatoMov 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 global $wemp_pmla;
 
 if($operacion == 'grabatelefono' )
 {
 	
-	$q= "  UPDATE movhos_000048 "
+	$q= "  UPDATE ".$wbasedatoMov."_000048 "
 	   ."	  SET Medtel = '".$wtelefono."' "	
 	   ."   WHERE Meddoc = '".$wcodigo."' ";
 	   
@@ -24,7 +24,7 @@ if($operacion == 'grabatelefono' )
 if($operacion == 'grababiper' )
 {
 	
-$q= "  UPDATE movhos_000048 "
+$q= "  UPDATE ".$wbasedatoMov."_000048 "
    ."	  SET Medbip = '".$wbiper."' "	
    ."   WHERE Meddoc = '".$wcodigo."' ";
    
@@ -37,7 +37,7 @@ if($operacion == 'traermedicos' )
 {
 	
 $q= "  SELECT Medno1, Medno2, Medap1, Medap2 ,Meddoc  "
-   ."    FROM movhos_000048 "		
+   ."    FROM ".$wbasedatoMov."_000048 "		
    ."   WHERE Medesp LIKE '%".$wespecialidad."%' "
    ."     AND Medest = 'on' "
    ."     AND Medhdi = 'on' "
@@ -62,7 +62,7 @@ if($operacion == 'traedatos' )
 {
 	
 $q= "  SELECT Medno1, Medno2, Medap1, Medap2 ,Meddoc, Medtel,Medbip  "
-   ."    FROM movhos_000048 "		
+   ."    FROM ".$wbasedatoMov."_000048 "		
    ."   WHERE Meddoc = '".$wcodigo."' ";
    
 $res= mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -256,7 +256,7 @@ echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."
 echo"<table id='tabla_principal' width='500' align='center'>";
 echo "<tr align='left' id='tr_primer' ><td class='encabezadoTabla' >Seleccione Especialidad</td><td  align='left' class='fila1'>";
 $q= " SELECT Espnom,Espcod "
-	."  FROM movhos_000044  "
+	."  FROM ".$wbasedatoMov."_000044  "
 	." WHERE  Esphdi = 'on' ";
 	
 $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());	

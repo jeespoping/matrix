@@ -1,4 +1,5 @@
 <HTML>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <HEAD>
 <TITLE>PACIENTES QUE REINGRESAN A LA UNIDAD</TITLE>
 <script type="text/javascript">
@@ -31,15 +32,19 @@
 </HEAD>
 <BODY>
 
-  <!-- Estas 5 lineas es para que funcione el Calendar al capturar fechas -->
+  <!-- Estas 5 lineas es para que funcione el Calendar al capturar fechas 
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
-    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>    
+    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script> -->   
     
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+
+$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
 
 session_start();
 if(!isset($_SESSION['user']))
@@ -51,9 +56,9 @@ if(!isset($_SESSION['user']))
  $key = substr($user,2,strlen($user));
 	
  $wccocod="%-Todos los centros de costos";
-	
+ 
 
- echo "<form name='pacreingpisocco' action='pacreingpisocco.php' method=post>";  
+ echo "<form name='pacreingpisocco' action='pacreingpisocco.php?wemp_pmla=".$wemp_pmla."' method=post>";  
  
  if (!isset($wfec1) or !isset($wfec2) or !isset($wccocod) )
  {
@@ -91,11 +96,18 @@ if(!isset($_SESSION['user']))
    
    if (isset($wccocod))
 	{
+		
 		echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>Fecha Final  <br></font></b>";   
-		echo "<select name='wccocod'>";   
+		echo "<select name='wccocod'>";
+		
+		
+		
+		
+		
+		
   		// Consulto los centros de costos donde se generan facturas
   		$q= "   SELECT Ccocod,Cconom "
- 	       ."   FROM movhos_000011 "
+ 	       ."   FROM ".$wmovhos."_000011 "
  	       ."     Where Ccohos = 'on' "
  	       ."    ORDER by 1 "; 	
 		$res1 = mysql_query($q,$conex);
@@ -141,7 +153,7 @@ if(!isset($_SESSION['user']))
 
     echo "<br>";
      $query="Select b.Fecha_data,Eyrhis,Eyring,Eyrsor,Eyrsde,Eyrhor,Eyrhde"
-     ." from   movhos_000032 a,movhos_000017 b "
+     ." from   ".$wmovhos."_000032 a,".$wmovhos."_000017 b "
      ." where   a.Fecha_ing between '".$wfec1."' and '".$wfec2."'"
 	 ." and  a.Servicio like '%".$wcco[0]."' " 
 	 ." and  a.Servicio != '1016'  " 

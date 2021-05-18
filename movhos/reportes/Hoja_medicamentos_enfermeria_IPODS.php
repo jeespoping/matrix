@@ -108,7 +108,7 @@ function consultarVia( $conex, $wbasedato, $cod ){
 	$val = "";
 	
 	$sql = "SELECT Viades 
-			  FROM movhos_000040 
+			  FROM ".$wbasedato."_000040 
 			 WHERE Viacod =  '".$cod."'";
 				
 	$res = mysql_query( $sql, $conex ) or die( mysql_error()." - Error en el query $sql - ".mysql_error() );
@@ -778,7 +778,7 @@ else
             try
             {
                 var ajax = nuevoAjax();
-                ajax.open("POST", "Hoja_medicamentos_enfermeria_IPODS.php",false);
+                ajax.open("POST", "Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=<?php echo($wemp_pmla) ?>",false);
                 ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 ajax.send(parametros);
                 //alert(ajax.responseText);
@@ -799,7 +799,7 @@ else
             try
             {
                 var ajax = nuevoAjax();
-                ajax.open("POST", "Hoja_medicamentos_enfermeria_IPODS.php",false);
+                ajax.open("POST", "Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=<?php echo($wemp_pmla) ?>",false);
                 ajax.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                 ajax.send(parametros);
                 //alert(ajax.responseText);
@@ -1399,7 +1399,7 @@ else
         //=======================================================================================================
         //=======================================================================================================
 		if(!isset($retornarCodigo)){
-			echo "<form NAME=hojamed action='Hoja_medicamentos_enfermeria_IPODS.php' method=post>";
+			echo "<form NAME=hojamed action='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
 			echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
 			echo "<input type='HIDDEN' name='whce' value='".$whce."'>";

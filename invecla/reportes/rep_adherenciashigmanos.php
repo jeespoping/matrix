@@ -1,11 +1,12 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 <title>MATRIX - [REPORTE ADHERENCIA EN HIGIENE DE MANOS]</title>
 
 <script type="text/javascript">
 	function inicio()
 	{ 
-	 document.location.href='rep_adherenciashigmanos.php'; 
+	 document.location.href='rep_adherenciashigmanos.php?wemp_pmla='+wemp_pmla.value; 
 	}
 	
 	function enter()
@@ -291,7 +292,16 @@ if (!$usuarioValidado)
 else
 {
 	
- $empre1='cominf';
+ //$empre1='cominf';
+ $user_session = explode('-', $_SESSION['user']);
+        $wuse = $user_session[1];
+        //include_once("conex.php");
+        mysql_select_db("matrix");
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wcominf = consultarAliasPorAplicacion($conex, $wemp_pmla, "cominf"); 
+		
+
+        $conex = obtenerConexionBD("matrix");
  
  //Conexion base de datos
  
@@ -302,12 +312,12 @@ else
 
 
  //Forma
- echo "<form name='forma' action='rep_adherenciashigmanos.php' method='post'>";
+ echo "<form name='forma' action='rep_adherenciashigmanos.php?wemp_pmla=".$wemp_pmla."' method='post'>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
  
 if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) or $pp=='' or !isset($pm) or $pa=='' or !isset($pm) or $pm=='' or !isset($pr) or $pr=='')
   {
-  	echo "<form name='rep_adherenciashigmanos' action='' method=post>";
+  	echo "<form name='rep_adherenciashigmanos?wemp_pmla=".$wemp_pmla."' action='' method=post>";
   
 	//Cuerpo de la pagina
  	echo "<table align='center' border=0>";
@@ -322,7 +332,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 
 	//Generando lista de opciones de Centro de costos
 	$q = "SELECT ccocod,cconom 
-		  FROM movhos_000011
+		  FROM ".$wmovhos."_000011
 		  where ccocod<>'*'
 		  order by 1";
 
@@ -529,7 +539,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   IF ($tpr=='%')
 	   {
 	    $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 		  	    ."    AND adhunidad $ccos"
 			    ."  GROUP by 1,2,3,4,5"
@@ -545,7 +555,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   ELSE //$tpr=='%'
 	   {
 	    $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			    ."    AND adhunidad $ccos"
 			    ."    AND Adhriesgo = '".$tpr."'" 
@@ -565,7 +575,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   IF ($tpr=='%')
 	    {
 		 $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			    ."    AND adhunidad $ccos"
 			    ."    AND Adhaccion = '".$tpa."'"
@@ -582,7 +592,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   ELSE // 2do $tpr=='%'
         {
 	     $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                 ."   FROM ".$empre1."_000048 "
+                 ."   FROM ".$wcominf."_000048 "
                  ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			     ."    AND adhunidad $ccos"
 			     ."    AND Adhaccion = '".$tpa."'"
@@ -606,7 +616,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   IF ($tpr=='%')
 	   {
 	    $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			    ."    AND adhunidad $ccos"
 			    ."    AND Adhmomento = '".$tpm."'"
@@ -623,7 +633,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   ELSE
 	   {
 	   	 $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                 ."   FROM ".$empre1."_000048 "
+                 ."   FROM ".$wcominf."_000048 "
                  ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			     ."    AND adhunidad $ccos"
 			     ."    AND Adhmomento = '".$tpm."'"
@@ -644,7 +654,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
        IF ($tpr=='%')
 	   {
 	     $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                 ."   FROM ".$empre1."_000048 "
+                 ."   FROM ".$wcominf."_000048 "
                  ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			     ."    AND adhunidad $ccos"
 				 ."    AND Adhaccion = '".$tpa."'"
@@ -662,7 +672,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   ELSE
 	   {
 	    $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			    ."    AND adhunidad $ccos"
 			    ."    AND Adhmomento = '".$tpm."'"
@@ -690,7 +700,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   IF ($tpr=='%')
 	   {
 	    $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 		  	    ."    AND adhunidad $ccos"
 				."    AND Adhperobs = '".$tpp."'" 
@@ -707,7 +717,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   ELSE //$tpr=='%'
 	   {
 	    $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			    ."    AND adhunidad $ccos"
 			    ."    AND Adhriesgo = '".$tpr."'" 
@@ -728,7 +738,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   IF ($tpr=='%')
 	    {
 		 $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			    ."    AND adhunidad $ccos"
 			    ."    AND Adhaccion = '".$tpa."'"
@@ -746,7 +756,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   ELSE // 2do $tpr=='%'
         {
 	     $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                 ."   FROM ".$empre1."_000048 "
+                 ."   FROM ".$wcominf."_000048 "
                  ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			     ."    AND adhunidad $ccos"
 			     ."    AND Adhaccion = '".$tpa."'"
@@ -771,7 +781,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   IF ($tpr=='%')
 	   {
 	    $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			    ."    AND adhunidad $ccos"
 			    ."    AND Adhmomento = '".$tpm."'"
@@ -789,7 +799,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   ELSE
 	   {
 	   	 $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                 ."   FROM ".$empre1."_000048 "
+                 ."   FROM ".$wcominf."_000048 "
                  ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			     ."    AND adhunidad $ccos"
 			     ."    AND Adhmomento = '".$tpm."'"
@@ -811,7 +821,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
        IF ($tpr=='%')
 	   {
 	     $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                 ."   FROM ".$empre1."_000048 "
+                 ."   FROM ".$wcominf."_000048 "
                  ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			     ."    AND adhunidad $ccos"
 				 ."    AND Adhaccion = '".$tpa."'"
@@ -830,7 +840,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($pp) 
 	   ELSE
 	   {
 	    $query1 = "SELECT Adhunidad, Adhperobs, Adhmomento, Adhaccion, Adhriesgo ,count(*) as cant"
-                ."   FROM ".$empre1."_000048 "
+                ."   FROM ".$wcominf."_000048 "
                 ."  WHERE adhfecha between '".$fec1."' and '".$fec2."'"
 			    ."    AND adhunidad $ccos"
 			    ."    AND Adhmomento = '".$tpm."'"

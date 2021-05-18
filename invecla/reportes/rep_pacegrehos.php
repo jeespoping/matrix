@@ -67,13 +67,17 @@ else
 {
  
  //Forma
- echo "<form name='rep_pacegrehos' action='' method=post>";
+ echo "<form name='rep_pacegrehos?wemp_pmla=".$wemp_pmla."' action='' method=post>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
+ $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+ $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
  
  if (!isset($fec1) or !isset($fec2))
   {
-  	echo "<form name='rep_pacegrehos' action='' method=post>";
-  
+  	echo "<form name='rep_pacegrehos?wemp_pmla=".$wemp_pmla."' action='' method=post>";
+	
+	
+	 
 	//Cuerpo de la pagina
  	echo "<table align='center' border=0>";
 
@@ -118,7 +122,7 @@ else
    echo "</table>";
   	
    $query = " select Historia_clinica,Num_ingreso,Servicio,Cconom,Fecha_egre_serv,Tipo_egre_serv,Ubihac,Ingfei "
-           ."   from  movhos_000033,movhos_000011,movhos_000018,cliame_000101  "
+           ."   from  ".$wmovhos."_000033,".$wmovhos."_000011,".$wmovhos."_000018,".$wcliame."_000101  "
            ."  where Fecha_egre_serv between '".$fec1."' and '".$fec2."'"
            ."    and  Tipo_egre_serv in ('ALTA','MUERTE MAYOR A 48 HORAS','MUERTE MENOR A 48 HORAS','MUERTE') "
            ."    and  Servicio = Ccocod "

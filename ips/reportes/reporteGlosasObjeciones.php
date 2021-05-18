@@ -40,6 +40,7 @@ else
 
 	$conex 			= obtenerConexionBD("matrix");
 	$wbasedato 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+	$wmovhos 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 	$wfecha			= date("Y-m-d");   
     $whora 			= date("H:i:s");
 
@@ -116,11 +117,12 @@ else
 	{
 		global $conex;
 		global $wbasedato;
+		global $wmovhos;
 		
 		$arrayArticulo = array();
 		$sqlArt = "
 		SELECT Artcod, Artgen
-		  FROM movhos_000026
+		  FROM ".$wmovhos."_000026
 		";
 		$resArt = mysql_query($sqlArt, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlArt):</b><br>".mysql_error());
 		while($rowArt = mysql_fetch_array($resArt))
@@ -136,11 +138,12 @@ else
 	{
 		global $conex;
 		global $wbasedato;
+		global $wmovhos;
 		
 		$arrayCco = array();
 		$sqlCco   = "
 		SELECT Ccocod, Cconom
-		  FROM movhos_000011
+		  FROM ".$wmovhos."_000011
 		 WHERE Ccoest = 'on'
 		";
 		$resCco = mysql_query($sqlCco, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlCco):</b><br>".mysql_error());
@@ -181,20 +184,20 @@ else
 		global $conex;
 		global $wbasedato;
 		global $wemp_pmla;
+		global $wmovhos;
 		
 		$caracter_ok = array("a","e","i","o","u","A","E","I","O","U","n","N","u","U","-","-","-","a","e","i","o","u","A","E","I","O","U","A","S"," ","","N","N", "U", "");
 		$caracter_ma = array("á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","Ñ","ü","Ü",",","/","à","è","ì","ò","ù","À","È","Ì","Ò","Ù","Â","§","®","'","?æ","??", "?£", "°");
 		
 		$arrayRespon 	= array("" => "SIN CAUSANTE");
-		$movhos 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 		$sqlRespon 		= "
 		SELECT Meddoc as Codigo, CONCAT(Medno1, ' ', Medno2, ' ', Medap1, ' ', Medap2) as Nombre
-		  FROM ".$movhos."_000048
+		  FROM ".$wmovhos."_000048
 		 WHERE Medest = 'on'
 		 GROUP BY Meddoc
 		 UNION
 		SELECT Ccocod as Codigo, Cconom as Nombre
-		  FROM ".$movhos."_000011
+		  FROM ".$wmovhos."_000011
 		 WHERE Ccoest = 'on' 
 		";
 		$resRespon = mysql_query($sqlRespon, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlRespon):</b><br>".mysql_error());

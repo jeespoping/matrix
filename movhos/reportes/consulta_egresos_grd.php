@@ -23,6 +23,8 @@
 <?php
     include_once("conex.php");
     include_once("root/comun.php");
+	$wbasedatoMov 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	$wcliame 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -50,6 +52,7 @@
         mysql_select_db("matrix");
         $conex = obtenerConexionBD("matrix");
     }
+	
 ?>
     <script src="http://code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
     <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
@@ -72,12 +75,14 @@
 
 
 <body width="1200" height="47">
-<form action="consulta_egresos_grd.php" method="post">
+
+<form action="consulta_egresos_grd.php?wemp_pmla=<?php echo $wemp_pmla ?>"method="post">
   
   <table width="1200" border="1" align="center">
   	<tr>
   	  <td width="50%" align="" style="border: groove; width: 0%">
        <input type="image" id="btnVer" src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80">
+	   <input type='hidden' id='wemp_pmla' value='".$wemp_pmla."'>
     <td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong>GENERAR ARCHIVO DE PACIENTES EGRESADOS </strong></p> </td>
    </tr>
    </table>		
@@ -127,7 +132,7 @@
 			
 // Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
 			$select_grd = mysql_query("SELECT count(*) cant
-     									FROM cliame_000108 a, cliame_000112 b, cliame_000101 d, movhos_000011
+     									FROM ".$wcliame."_000108 a, ".$wcliame."_000112 b, ".$wcliame."_000101 d, ".$wbasedatoMov."_000011
     									WHERE Egrfee BETWEEN '$buscar' AND '$buscar1'
                							AND Egrhis = Serhis
 										AND Egring = Sering

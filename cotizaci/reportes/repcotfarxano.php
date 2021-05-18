@@ -14,6 +14,9 @@
 <center>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
 /*****************************************
 *     REPORTE de COTIZACION DE           *
 *    MEDICAMENTOS Y DISPOSITIVOS MEDICOS *
@@ -39,7 +42,8 @@ $wactualiz="(Versión 2012-01-23)";
 
 		$wfecha=date("Y-m-d");
 
-		echo "<form action='repcotfarxano.php' name=repcotfarxano method=post>";
+		echo "<form action='repcotfarxano.php?wemp_pmla=".$wemp_pmla."' name=repcotfarxano method=post>";
+		echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
 		
 			if (!isset($wfec1) or $wfec1=='')
 			 {
@@ -65,7 +69,7 @@ $wactualiz="(Versión 2012-01-23)";
 		     {
 			   	
                 $query = "   Select Cotcod,Cotmar,Cotpre,Cotreg,Cotvec,Cotcum,Cotcot,Cotiva,Artcom,Artuni,Artgru,Usucod,Usunit,Descripcion "
-               		   ."    from cotizaci_000003,movhos_000026,cotizaci_000005,usuarios "
+               		   ."    from cotizaci_000003,".$wmovhos."_000026,cotizaci_000005,usuarios "
 				       ."    where cotano = '".$wfec1."' "
 				       ."    and cotcod = artcod "
 				       ."    and cotnit = usunit "
@@ -73,7 +77,7 @@ $wactualiz="(Versión 2012-01-23)";
 					   ."    and Activo = 'A' " 
 					   ."    union " 
 					   ."    Select Cotcod,Cotmar,Cotpre,Cotreg,Cotvec,Cotcla,Cotcot,Cotiva,Artcom,Artuni,Artgru,Usucod,Usunit,Descripcion "
-               		   ."    from cotizaci_000004,movhos_000026,cotizaci_000005,usuarios "
+               		   ."    from cotizaci_000004,".$wmovhos."_000026,cotizaci_000005,usuarios "
 				       ."    where cotano = '".$wfec1."' "
 				       ."    and cotcod = artcod "
 				       ."    and cotnit = usunit "
@@ -81,7 +85,7 @@ $wactualiz="(Versión 2012-01-23)";
 					   ."    and Activo = 'A' " 
 					   ."    union " 
 					   ."    Select Cotcod,Cotmar,Cotpre,Cotreg,Cotvec,Cotcla,Cotcot,Cotiva,Artcom,Artuni,Artgru,Usucod,Usunit,Descripcion "
-               		   ."    from cotizaci_000007,movhos_000026,cotizaci_000005,usuarios "
+               		   ."    from cotizaci_000007,".$wmovhos."_000026,cotizaci_000005,usuarios "
 				       ."    where cotano = '".$wfec1."' "
 				       ."    and cotcod = artcod "
 				       ."    and cotnit = usunit "

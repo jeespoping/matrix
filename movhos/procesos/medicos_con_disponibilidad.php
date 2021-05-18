@@ -1,6 +1,7 @@
 <?php
 include_once("conex.php");
 header("Content-Type: text/html;charset=ISO-8859-1");
+
 /**
  * ACTUALIZACIONES
  * 2017-12-06 Edwar Jaramillo:
@@ -10,7 +11,7 @@ header("Content-Type: text/html;charset=ISO-8859-1");
 
 
 include_once("root/comun.php");
-
+$wbasedatoMov 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
 global $wemp_pmla;
 
@@ -21,7 +22,7 @@ $wuse         = $user_session[1];
 // query que actualiza si un determinado Medico hace Turno
 if($operacion == 'hacedisponibilidad')
 {
-	$q= "  UPDATE movhos_000048 "
+	$q= "  UPDATE ".$wbasedatoMov."_000048 "
 	   ."	  SET Medhdi = '".$wvalor."' "
 	   ."   WHERE Meddoc = '".$wcodigo."' ";
 
@@ -41,9 +42,9 @@ if($operacion == 'traermedicos' )
 	   ."     AND Medest = 'on'  "
 	   ."ORDER BY Medhdi Desc ,Medno1, Medno2, Medap1 " ;*/
 	$q = "	SELECT  mv48.Medno1, mv48.Medno2, mv48.Medap1, mv48.Medap2, mv48.Meddoc, mv48.Medhdi, mv48.Medtel , mv48.Medbip, mv48.Medcel
-			FROM    movhos_000065 AS mv65
+			FROM    ".$wbasedatoMov."_000065 AS mv65
 			        INNER JOIN
-			        movhos_000048 AS mv48 ON (mv65.Esmtdo = mv48.Medtdo AND mv65.Esmndo = mv48.Meddoc AND mv48.Medest = 'on')
+			        ".$wbasedatoMov."_000048 AS mv48 ON (mv65.Esmtdo = mv48.Medtdo AND mv65.Esmndo = mv48.Meddoc AND mv48.Medest = 'on')
 			WHERE   mv65.Esmcod LIKE '%{$wespecialidad}%'
 			GROUP BY mv65.Esmtdo, mv65.Esmndo
 			ORDER BY mv48.Medhdi Desc ,mv48.Medno1, mv48.Medno2, mv48.Medap1";
@@ -85,7 +86,7 @@ if($operacion == 'traermedicos' )
 //-- Cambia el telefono de un medico
 if($operacion == 'cambiatelefono' )
 {
-	$q= "  UPDATE movhos_000048 "
+	$q= "  UPDATE ".$wbasedatoMov."_000048 "
 	   ."	  SET Medtel = '".$wvalor."' "
 	   ."   WHERE Meddoc = '".$wcodigo."' ";
 
@@ -98,7 +99,7 @@ if($operacion == 'cambiatelefono' )
 //-- Cambia numero de biper
 if($operacion == 'cambiabiper' )
 {
-	$q= "  UPDATE movhos_000048 "
+	$q= "  UPDATE ".$wbasedatoMov."_000048 "
 	   ."	  SET Medbip = '".$wvalor."' "
 	   ."   WHERE Meddoc = '".$wcodigo."' ";
 
@@ -110,7 +111,7 @@ if($operacion == 'cambiabiper' )
 //-- Cambia numero de celular
 if($operacion == 'cambiacelular' )
 {
-	$q= "  UPDATE movhos_000048 "
+	$q= "  UPDATE ".$wbasedatoMov."_000048 "
 	   ."	  SET Medcel = '".$wvalor."' "
 	   ."   WHERE Meddoc = '".$wcodigo."' ";
 
@@ -353,7 +354,7 @@ echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."
 echo"<table id='tabla_principal' width='500' align='center'>";
 echo "<tr align='left' id='tr_primer' ><td class='encabezadoTabla' >Seleccione Especialidad</td><td  align='left' class='fila1'>";
 $q= "    SELECT Espnom,Espcod "
-	."     FROM movhos_000044  "
+	."     FROM ".$wbasedatoMov."_000044  "
 	."    WHERE  Esphdi = 'on' "
 	." ORDER BY Espnom";
 

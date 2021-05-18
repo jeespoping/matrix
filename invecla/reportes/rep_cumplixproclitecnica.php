@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 <title>MATRIX - [REPORTE PROCESOS PRIORITARIOS - TECNICA]</title>
 
@@ -311,7 +312,15 @@ if (!$usuarioValidado)
 else
 {
 
- $empre1='cominf';
+ //$empre1='cominf';
+ $user_session = explode('-', $_SESSION['user']);
+        $wuse = $user_session[1];
+        mysql_select_db("matrix");
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wcominf = consultarAliasPorAplicacion($conex, $wemp_pmla, "invecla"); 
+		
+
+        //$conex = obtenerConexionBD("matrix");
 
  
 
@@ -319,7 +328,7 @@ else
 
 
  //Forma
- echo "<form name='forma' action='rep_cumplixproclitecnica.php' method='post'>";
+ echo "<form name='forma' action='rep_cumplixproclitecnica.php?wemp_pmla=".$wemp_pmla."' method='post'>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
 
  if (!isset($pp) or $pp=='-' or !isset($fec1) or !isset($fec2))
@@ -339,9 +348,10 @@ else
 
 	//Generando lista de opciones de Centro de costos
 	$q = "SELECT ccocod,cconom
-		  FROM movhos_000011
+		  FROM ".$wmovhos."_000011
 		  where ccocod<>'*'
 		  order by 1";
+		  echo "f";
 
 	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	$num = mysql_num_rows($res);
@@ -389,11 +399,12 @@ else
    /////////////////////////////////////////////////////////////////////////// seleccion para los procesos prioritarios
    echo "<td align=CENTER colspan=2 bgcolor=#DDDDDD><b><font text color=#003366 size=3><B>Proceso Prioritario:</B><br></font></b><select name='pp' id='searchinput'>";
 
-   $query = " SELECT concat(subcodigo,'-',descripcion)"
-           ."   FROM det_selecciones"
-           ."  WHERE medico LIKE 'cominf'"
-           ."    AND codigo LIKE '106'"
-           ."    AND activo =  'A'";
+   $query = " SELECT concat(subcodigo,'-',descripcion)
+              FROM det_selecciones
+             WHERE medico LIKE 'cominf'
+               AND codigo LIKE '106'
+               AND activo =  'A'";
+			   echo "c";
 
    $err3 = mysql_query($query,$conex);
    $num3 = mysql_num_rows($err3);
@@ -442,12 +453,12 @@ else
    echo "</tr>";
    echo "</table>";
 
-   $query = " SELECT ppccco,ppcproce,ppccrite1,ppccrite2,ppccrite3,ppccrite4,ppccrite5,ppccrite6,ppccrite7,ppccrite8"
-           ."   FROM ".$empre1."_000047"
-           ."  WHERE ppcproce = '".$tpp."'"
-           ."    AND ppcfecha between '".$fec1."' and '".$fec2."'"
-		   ."    AND ppccco $ccos"
-           ."  ORDER BY ppccco,ppcproce";
+   $query = " SELECT ppccco,ppcproce,ppccrite1,ppccrite2,ppccrite3,ppccrite4,ppccrite5,ppccrite6,ppccrite7,ppccrite8
+              FROM ".$wcominf."_000047
+             WHERE ppcproce = '".$tpp."'
+               AND ppcfecha between '".$fec1."' and '".$fec2."'
+		       AND ppccco ".$ccos."
+             ORDER BY ppccco,ppcproce";
 
     $err1 = mysql_query($query,$conex);
     $num1 = mysql_num_rows($err1);
@@ -456,13 +467,13 @@ else
 
     $arrecrit=Array();
 
-    $query2 = "SELECT ppccco"
-           ."    FROM ".$empre1."_000047"
-           ."   WHERE ppcproce = '".$tpp."'"
-           ."     AND ppcfecha between '".$fec1."' and '".$fec2."'"
-		   ."     AND ppccco $ccos"
-           ."   GROUP BY ppccco"
-		   ."   ORDER BY ppccco";
+    $query2 = "SELECT ppccco
+               FROM ".$wcominf."_000047
+              WHERE ppcproce = '".$tpp."'
+                AND ppcfecha between '".$fec1."' and '".$fec2."'
+		        AND ppccco ".$ccos."
+              GROUP BY ppccco
+		      ORDER BY ppccco";
 
     $err2 = mysql_query($query2,$conex);
     $num2 = mysql_num_rows($err2);
@@ -676,7 +687,7 @@ else
     echo "<table border=0 align=CENTER size=100%>";
     echo "<Tr >";
     echo "<td align=CENTER bgcolor=#FFFFFF ><font size=2 color=#000000><b>TOTAL DEL PROCESO POR TODOS LOS CENTROS DE COSTOS: </b></font></td>";
-    echo "<td align=CENTER bgcolor=#FFFFFF ><font size=2 color=#000000>&nbsp;<b>$num1</b></font></td>";
+    echo "<td align=CENTER bgcolor=#FFFFFF ><font size=2 color=#000000>&nbsp;<b>".$num1."</b></font></td>";
     echo "</tr >";
     echo "</table>";
 

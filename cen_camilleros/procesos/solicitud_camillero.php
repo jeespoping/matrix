@@ -12,6 +12,7 @@ include_once("conex.php");
 
         include_once("root/comun.php");
         // $wbasedato       = consultarAliasPorAplicacion($conex, $wemp_pmla, 'root');
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
         $wbasedato = "root";
 
         $data = array('error'=>0,'mensaje'=>'','html'=>'','sql'=>'');
@@ -25,8 +26,8 @@ include_once("conex.php");
             */
             case 'verificar_entrega_paciente':
 
-                $sql_verif = "SELECT movhos_000017.Fecha_data, movhos_000017.Hora_data, ubihis, ubiing, ubisac, ubisan, eyrtip"
-                    . " FROM movhos_000018, movhos_000017"
+                $sql_verif = "SELECT ".$wmovhos."_000017.Fecha_data, ".$wmovhos."_000017.Hora_data, ubihis, ubiing, ubisac, ubisan, eyrtip"
+                    . " FROM ".$wmovhos."_000018, ".$wmovhos."_000017"
                         . " WHERE ubihis = '" . $historia . "'"
                                     . " AND ubihis = Eyrhis"
                                     . " AND Ubiing = Eyring"
@@ -38,8 +39,8 @@ include_once("conex.php");
                                     . " AND ubiptr = 'on'"
                                     . " -- AND eyrtip = 'Entrega'"
                                     . " AND Eyrest = 'on'"
-                            . " ORDER BY movhos_000018.Fecha_data DESC, movhos_000018.Hora_data DESC, "
-                                                . " movhos_000017.Fecha_data DESC, movhos_000017.Hora_data DESC;";
+                            . " ORDER BY ".$wmovhos."_000018.Fecha_data DESC, ".$wmovhos."_000018.Hora_data DESC, "
+                                                . " ".$wmovhos."_000017.Fecha_data DESC, ".$wmovhos."_000017.Hora_data DESC;";
 
                 $res = mysql_query($sql_verif, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql_verif . " - " . mysql_error());
 
@@ -92,7 +93,7 @@ include_once("conex.php");
 
 	function volver(wemp_pmla, wuso)
 	{
-	  location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso;
+	  location.href = 'solicitud_camillero	?wemp_pmla='+wemp_pmla+'&wuso='+wuso;
 	}
 
     function destinoautomatico()
@@ -490,7 +491,7 @@ else
 	$WMENSAJE = "*** POR FAVOR HAGA SU SOLICITUD CON LA MAYOR CLARIDAD POSIBLE ***";
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	echo "<form id='solicitud_camillero' action='solicitud_camillero.php' method=post>";
+	echo "<form id='solicitud_camillero' action='solicitud_camillero.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
     $wunidestsolcamas1 = consultarAliasPorAplicacion($conex, $wemp_pmla, 'UnidadDestinoSolCamas');
     $wunidestsolcamas_dato = explode("-", $wunidestsolcamas1);
@@ -521,7 +522,7 @@ else
 
 	echo "<input type='HIDDEN' id='wmotivo_solicitud' name='wmotivo_solicitud' value='".$wmotivo_solicitud."'>";
     echo "<input type='HIDDEN' id='wunidestsolcamas' value='".$wunidestsolcamas."'>";
-	echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
+	echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."' id='wemp_pmla'>";
 	echo "<input type='HIDDEN' name='wuso' value='".$wuso."'>";
 
 	//Entro aca si no se ha seleccionado el servicio origen
