@@ -86,7 +86,10 @@ class ServiciosModel
                    c100.Pacnoa as nombre, c101.Ingfei as fechaIngreso,
                    c101.Ingsei, m011.cconom as servicio, c101.Ingtin,
                    c175.Tiides, '' as estado ";
-    $from = "FROM {$this->baseDatos}_000100 AS c100, {$this->baseDatos}_000101 AS c101, {$this->baseDatos}_000175 AS c175, movhos_000011 AS m011 ";
+    $from = "FROM {$this->baseDatos}_000100 c100
+             JOIN {$this->baseDatos}_000101 c101 on c100.pachis = c101.Inghis
+             LEFT JOIN {$this->baseDatos}_000175 c175 ON c101.Ingtin = c175.Tiicod
+             LEFT JOIN movhos_000011 m011 ON c101.Ingsei = m011.Ccocod ";
     return $select . $from;
   }
 
@@ -96,7 +99,7 @@ class ServiciosModel
    */
   function getWhere()
   {
-    $where = "WHERE c100.pachis = ? AND c101.Ingnin = ? AND c100.pachis = c101.Inghis AND c101.Ingtin = c175.Tiicod AND c101.Ingsei = m011.Ccocod ";
+    $where = "WHERE c100.pachis = ? AND c101.Ingnin = ? ";
     return $where;
   }
 
