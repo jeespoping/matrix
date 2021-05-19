@@ -11,8 +11,10 @@
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>    
     
 <?php
+$consultaAjax = '';
 include_once("conex.php");
-
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -39,7 +41,8 @@ if(!isset($_SESSION['user']))
  $totala=0; 
   
  //Forma
- echo "<form name='ringxhor' action='ringxhor.php' method=post>";  
+ echo "<form name='ringxhor' action='ringxhor.php?wemp_pmla=".$wemp_pmla."' method=post>";
+ echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";  
  
  if (!isset($wfec1) or $wfec1=='')
  {
@@ -81,7 +84,10 @@ if(!isset($_SESSION['user']))
    
  }	
  else      // Cuando ya estan todos los datos escogidos
- {
+ { 
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	 
 	echo "<center><table border=0>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>INGRESO DE PACIENTES AL SERVICIO DE URGENCIAS POR HORAS</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
@@ -106,7 +112,7 @@ if(!isset($_SESSION['user']))
 	fclose($archivo);
     	 
 	 $query="Select inghis,ingnin,inghin,ingsei,ubiald"
-     ." From cliame_000101,movhos_000018 "
+     ." From ".$wcliame."_000101,".$wmovhos."_000018 "
      ." Where ingfei  between '".$wfec1."' and '".$wfec2."'"
      ." And ingsei = '1130' "
      ." And inghis = ubihis "
@@ -150,7 +156,7 @@ if(!isset($_SESSION['user']))
          echo "<td colspan=2 align=center bgcolor=".$wcf."><font text color=#003366 size=3>".$totales[$i]."</td>";
 		 echo "<td colspan=2 align=LEFT   bgcolor=".$wcf."><font text color=#003366 size=3>".round((($totales[$i]/$total)*100),2)."%</td>";
  		 echo "<td colspan=2 align=center bgcolor=".$wcf."><font text color=#003366 size=3>".$totact[$i]."</td>";
-         echo "<td><A HREF='medqaten.php?i=".($i-1)."&wfec1=".$wfec1."&wfec2=".$wfec2."' TARGET='_blank'>Detallar</A></td>";	
+         echo "<td><A HREF='medqaten.php?wemp_pmla=".$wemp_pmla."&i=".($i-1)."&wfec1=".$wfec1."&wfec2=".$wfec2."' TARGET='_blank'>Detallar</A></td>";	
 
 		 echo "</tr>";           
       }

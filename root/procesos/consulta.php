@@ -86,6 +86,8 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario)
 {
     global $conex;
     global $wbasedato;
+	global $wcostosyp;
+	global $wmovhos;
 
     if ($para == 'recibidos')
     {
@@ -199,7 +201,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario)
 			{
 				$ccosto=explode(")",$row['Reqccs']);
 				$q = " SELECT Cconom 
-						FROM movhos_000011 
+						FROM ".$wmovhos."_000011 
 					   WHERE Ccocod='".$ccosto[1]."'
 						 AND Ccoest='on';";
 
@@ -215,7 +217,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario)
 				else
 				{
 					$q2 = " SELECT Cconom 
-							FROM costosyp_000005 
+							FROM ".$wcostosyp."_000005 
 						   WHERE Ccocod='".$ccosto[1]."'
 							 AND Ccoest='on';";
 
@@ -260,7 +262,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario)
 			{
 				$ccosto=explode(")",$row['Reqccs']);
 				$q = " SELECT Cconom 
-						FROM movhos_000011 
+						FROM ".$wmovhos."_000011 
 					   WHERE Ccocod='".$ccosto[1]."'
 						 AND Ccoest='on';";
 
@@ -276,7 +278,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario)
 				else
 				{
 					$q2 = " SELECT Cconom 
-							FROM costosyp_000005 
+							FROM ".$wcostosyp."_000005 
 						   WHERE Ccocod='".$ccosto[1]."'
 							 AND Ccoest='on';";
 
@@ -391,8 +393,9 @@ function pintarVersion()
 
 function pintarTitulo($para,$wacutaliza, $titulo_requerimientos)
 {
+    global $wemp_pmla;
     echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica');
-    echo "<form name='informatica' action='consulta.php' method=post>";
+    echo "<form name='informatica' action='consulta.php?wemp_pmla=".$wemp_pmla."' method=post>";
     echo "<table ALIGN=CENTER width='50%'>";
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
     //echo "<tr><td class='titulo1'>SISTEMA DE REQUERIMIENTOS</td></tr>";
@@ -400,18 +403,18 @@ function pintarTitulo($para,$wacutaliza, $titulo_requerimientos)
 
     echo "<table ALIGN=CENTER width='96%' >";
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-    echo "<tr><td class='texto5' width='20%'><a href='informatica.php'>INGRESO DE REQUERIMIENTO</a></td>";
+    echo "<tr><td class='texto5' width='20%'><a href='informatica.php?wemp_pmla=".$wemp_pmla."'>INGRESO DE REQUERIMIENTO</a></td>";
     if ($para == 'recibidos')
     {
-        echo "<a href='consulta.php?para=recibidos'><td class='encabezadoTabla' width='20%'>REQUERIMIENTOS RECIBIDOS</td></a>";
-        echo "<td class='texto5' width='20%'><a href='consulta.php?para=enviados'>REQUERIMIENTOS ENVIADOS</a></td>";
+        echo "<a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=recibidos'><td class='encabezadoTabla' width='20%'>REQUERIMIENTOS RECIBIDOS</td></a>";
+        echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=enviados'>REQUERIMIENTOS ENVIADOS</a></td>";
     }
     else
     {
-        echo "<td class='texto5' width='20%'><a href='consulta.php?para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
-        echo "<a href='consulta.php?para=enviados'><td class='encabezadoTabla' width='20%'>REQUERIMIENTOS ENVIADOS</td></a>";
+        echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
+        echo "<a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=enviados'><td class='encabezadoTabla' width='20%'>REQUERIMIENTOS ENVIADOS</td></a>";
     }
-    echo "<td class='texto5' width='20%'><a href='enviado.php'>REQUERIMIENTOS ANT.</a></td></tr>";
+    echo "<td class='texto5' width='20%'><a href='enviado.php?wemp_pmla=".$wemp_pmla."'>REQUERIMIENTOS ANT.</a></td></tr>";
     echo "<tr class='fila1'><td class='' >&nbsp;</td>";
     echo "<td class='' >&nbsp;</td>";
     echo "<td class='' >&nbsp;</td>";
@@ -430,6 +433,7 @@ function pintarAlert2($mensaje)
 
 function pintarRequerimientos($requerimientos, $para, $orden, $orden2)
 {
+    global $wemp_pmla;
     echo "<table border=0 ALIGN=CENTER width=96%>";
     echo "<tr class='encabezadoTabla'>";
     echo "<td class='' align='center' height='50'><a onclick='enter(2)'><img src='/matrix/images/medical/iconos/gifs/i.p.previous[1].gif'></a><b>&nbsp;NUMERO&nbsp;</b><a onclick='enter2(2)'><img src='/matrix/images/medical/iconos/gifs/i.p.next[1].gif' ></a></td>";
@@ -463,7 +467,7 @@ function pintarRequerimientos($requerimientos, $para, $orden, $orden2)
         {
             $class = 'fila2';
         }
-        $url_href = "seguimiento.php?wcodigo_caso=".$requerimientos[$i]['wcodigo_caso']."&cco=" . $requerimientos[$i]['cco'] . "&req=" . $requerimientos[$i]['num'] . "&id_req=" . $requerimientos[$i]['id_req']."&id=" .$requerimientos[$i]['id']."&ids_segs_pte=".$requerimientos[$i]['mensajes_seguimiento']."&msj_para_creador=".$requerimientos[$i]['msj_para_creador'];
+        $url_href = "seguimiento.php?wemp_pmla=".$wemp_pmla."&wcodigo_caso=".$requerimientos[$i]['wcodigo_caso']."&cco=" . $requerimientos[$i]['cco'] . "&req=" . $requerimientos[$i]['num'] . "&id_req=" . $requerimientos[$i]['id_req']."&id=" .$requerimientos[$i]['id']."&ids_segs_pte=".$requerimientos[$i]['mensajes_seguimiento']."&msj_para_creador=".$requerimientos[$i]['msj_para_creador'];
         echo "<tr>";
         echo "<td class='" . $class . "' align='center' ><a href='".$url_href."' target='new' width='80%' class='numero'>" . $requerimientos[$i]['cco'] . "-" . $requerimientos[$i]['num'] . "</a></td>";
         echo "<td class='" . $class . "' align='center' >" . $requerimientos[$i]['fec'] . "</td>";
@@ -568,9 +572,12 @@ else
 
 
     include_once("root/comun.php");
+	$wemp_pmla=$_REQUEST['wemp_pmla'];
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcostosyp = consultarAliasPorAplicacion($conex, $wemp_pmla, "COSTOS");
 
-    $cco_auditoria_corporativa_clinica = consultarAliasPorAplicacion($conex, '01', 'centro_costo_auditoria_corporativa');
-    $auditoria_corporativa_titulos     = consultarAliasPorAplicacion($conex, '01', 'auditoria_corporativa_titulos');
+    $cco_auditoria_corporativa_clinica = consultarAliasPorAplicacion($conex, $wemp_pmla, 'centro_costo_auditoria_corporativa');
+    $auditoria_corporativa_titulos     = consultarAliasPorAplicacion($conex, $wemp_pmla, 'auditoria_corporativa_titulos');
     $titulo_requerimientos             = "SISTEMA DE REQUERIMIENTOS";
 
     $cco_user = centroCostoUsuario($conex, $user);
@@ -606,7 +613,7 @@ else
         pintarAlert2('NO TIENE REQUERIMIENTOS PENDIENTES');
     }
 
-    echo "<meta http-equiv='refresh' content='40;url=consulta.php?para=".$para."&orden=".$orden."&orden2=".$orden2."'>";
+    echo "<meta http-equiv='refresh' content='40;url=consulta.php?wemp_pmla=".$wemp_pmla."&para=".$para."&orden=".$orden."&orden2=".$orden2."'>";
 }
 /**
 * ===========================================================================================================================================

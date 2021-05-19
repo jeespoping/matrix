@@ -5,8 +5,8 @@ header("Content-Type: text/html;charset=ISO-8859-1");
 
 include_once("root/comun.php");
 include_once("../procesos/funciones_talhuma.php");
-
-
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 global $wemp_pmla;
 
 
@@ -93,7 +93,7 @@ if ($inicial=='no' AND $operacion=='mostrarAgrupaciones' )
 	}
 	else
 	{
-		$wbasedatocyp ='movhos_000011';
+		$wbasedatocyp =$wmovhos.'_000011';
 	}
 		$q = "  SELECT Cconom ,Ccocod "
 			."    FROM ".$wbasedatocyp." "
@@ -329,7 +329,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 			}
 			
 			$q1 = "SELECT  Encno1,Encno2, Encap1, Encap2, Evaevo, Evaevr, Evacal,Evadat,Comstr ,Desdes,Comtip,Enchis,EncFec,Cconom,encfce,".$wbasedato."_000036.id"
-				."  FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049 , ".$wbasedato."_000036 ,movhos_000011 "
+				."  FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049 , ".$wbasedato."_000036 ,".$wmovhos."_000011 "
 				." WHERE Evades = '".$row['Descod']."'"
 				."   AND Evafco = Encenc "
 				."   AND Enchis = Evaevo "

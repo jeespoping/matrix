@@ -1,5 +1,9 @@
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 
 if(isset($accionAjax)) 
 {
@@ -1843,6 +1847,7 @@ function MCA_TUR($key,$conex,$wnci,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$wh
 //FUNCION DE MODIFICACION DEL CONTENIDO DEL TURNO
 function MOD_TUR($key,$conex,$wnci,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$whis,$wnin,$wnom,$wfna,$wsex,$wins,$wtci,$wtip,$wtan,$weps,$wuci,$wbio,$winf,$wmat,$wban,$wpre,$wpes,$wpep,$wpeq,$wper,$wpea,$wubi,$wtel,$word,$wcom,$wcups,$wmata,$wcupsa,$wmataa,$west,$wcoma,$wturc,$wturm,$wture,$dataC,$NC,$dataM,$NM,$dataE,$NE,&$werr,&$e,$regcups)
 {
+	global $wmovhos;
 	global $empresa;
 	//                 0        1       2      3        4      5       6      7        8       9       10      11       12     13      14      15      16      17      18      19
 	$query = "select Turmat, Turord, Turdoc, Turnom, Turfna, Tursex, Turins, Turtcx, Turtip, Turtan, Turuci, Turbio, Turinf, Turmat, Turban, Turpre, Turord, Tureps, Turtdo, Turrcu from  ".$empresa."_000011 where Turtur=".$wnci." and Turqui='".substr($wqui,0,strpos($wqui,"-"))."' and Turhin='".$whin."' and Turhfi='".$whfi."' and Turfec='".$wfec."'";
@@ -1853,7 +1858,7 @@ function MOD_TUR($key,$conex,$wnci,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$wh
 		$row = mysql_fetch_array($err);
 		if(strlen($wcom) > 0 and strtoupper(substr($wcom,0,4)) == "BIT:")
 		{
-			$query = "select Bithis, Biting  from  movhos_000021 where Bithis=".$whis." and Biting='".$wnin."'";
+			$query = "select Bithis, Biting  from  ".$wmovhos."_000021 where Bithis=".$whis." and Biting='".$wnin."'";
 			$err1 = mysql_query($query,$conex) or die("ERROR CONSULTANDO ARCHIVO DE BITACORA : ".mysql_errno().":".mysql_error());
 			$num1 = mysql_num_rows($err1);
 			if ($num1 > 0)
@@ -1862,15 +1867,15 @@ function MOD_TUR($key,$conex,$wnci,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$wh
 				$wusr="1016";
 				$wreg="CX";
 				$wkey="TCX";
-				$query = "select Connum from movhos_000001 where Contip='Bitacora'";
+				$query = "select Connum from ".$wmovhos."_000001 where Contip='Bitacora'";
 				$err2 = mysql_query($query,$conex) or die("ERROR CONSULTANDO CONSECUTIVO");
 				$row2 = mysql_fetch_array($err2);
 				$wncix=$row2[0] + 1;
-				$query =  " update movhos_000001 set Connum = Connum + 1 where Contip='Bitacora'";
+				$query =  " update ".$wmovhos."_000001 set Connum = Connum + 1 where Contip='Bitacora'";
 				$err1 = mysql_query($query,$conex) or die("ERROR INCREMENTANDO CONSECUTIVO");
 				$fecha = date("Y-m-d");
 				$hora = (string)date("H:i:s");
-				$query = "insert movhos_000021 (medico,fecha_data,hora_data, Bithis, Biting, Bitnum, Bitser, Bitobs, Bitusr, Bittem, Seguridad) values ('";
+				$query = "insert ".$wmovhos."_000021 (medico,fecha_data,hora_data, Bithis, Biting, Bitnum, Bitser, Bitobs, Bitusr, Bittem, Seguridad) values ('";
 				$query .=  $empresaM."','";
 				$query .=  $fecha."','";
 				$query .=  $hora."','";
@@ -2351,7 +2356,7 @@ function ING_TUR($key,$conex,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$whis,$wn
 		return false;
 	}
 }
-
+global $wemp_pmla;
 @session_start();
 if(!isset($_SESSION["user"]))
 	echo "error";
@@ -2363,7 +2368,8 @@ else
 	// echo "<script type='text/javascript' src='../../../include/root/jquery.tooltip.js'></script>";	
 	
 	$key = substr($user,2,strlen($user));
-	echo "<form name='turnos' action='turnos.php' method=post>";
+	echo "<form name='turnos' action='turnos.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 
 
 	$operativo = ((!isset($operativo)) ? "off" : $operativo);			
@@ -2439,6 +2445,8 @@ else
 				Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'wfecha',button:'trigger1',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});
 			//]]></script>
 			<?php
+			global $wmovhos;
+			global $wcliame;
 			echo "<td rowspan=1 bgcolor='#cccccc'><input type='submit' value='IR'></td></tr>";
 			echo "</table><br>";
 			echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
@@ -2536,7 +2544,7 @@ else
 			}
 			//                 0      1       2         3       4      5      6        7       8       9       10      11     12       13     14       15     16      17       18     19      20      21      22      23       24      25      26
 			//$query = "SELECT Turtur, Turqui, Turhin, Turhfi, Turest, Turord, Turcir, Turtcx, Turtip, Turnom, Turfna, Turtel, Turtcx, Turtip, Turtan, Tureps, Turmed, Turequ, Turuci, Turbio, Turinf, Turmat, Turban, Turins, Entdes, Turpre, Turmdo  from ".$empresa."_000011, ".$empresa."_000003 ";
-			$query  = "SELECT Turtur, Turqui, Turhin, Turhfi, Turest, Turord, Turcir, Turtcx, Turtip, Turnom, Turfna, Turtel, Turtcx, Turtip, Turtan, Tureps, Turmed, Turequ, Turuci, Turbio, Turinf, Turmat, Turban, Turins, Empnom, Turpre, Turmdo, Turepc, Turcdi, Turcdt, Turcdr  from ".$empresa."_000011, cliame_000024 ";
+			$query  = "SELECT Turtur, Turqui, Turhin, Turhfi, Turest, Turord, Turcir, Turtcx, Turtip, Turnom, Turfna, Turtel, Turtcx, Turtip, Turtan, Tureps, Turmed, Turequ, Turuci, Turbio, Turinf, Turmat, Turban, Turins, Empnom, Turpre, Turmdo, Turepc, Turcdi, Turcdt, Turcdr  from ".$empresa."_000011, ".$wcliame."_000024 ";
 			$query .= " where turfec = '".$wfecha."' ";
 			$query .= "   and Tureps = Empcod ";
 			$query .= " UNION ";
@@ -2956,7 +2964,7 @@ else
 						$wordx="on";
 					$query = "lock table ".$empresa."_000008 LOW_PRIORITY WRITE, ".$empresa."_000009 LOW_PRIORITY WRITE, ";
 					$query .= $empresa."_000010 LOW_PRIORITY WRITE , ".$empresa."_000011 LOW_PRIORITY WRITE, ".$empresa."_000014 LOW_PRIORITY WRITE   ";
-					$query .= " ,movhos_000001 LOW_PRIORITY WRITE , movhos_000021 LOW_PRIORITY WRITE  ";
+					$query .= " ,".$wmovhos."_000001 LOW_PRIORITY WRITE , ".$wmovhos."_000021 LOW_PRIORITY WRITE  ";
 					$err1 = mysql_query($query,$conex) or die("ERROR BLOQUEANDO ARCHIVO DE ARCHIVOS : ".mysql_errno().":".mysql_error());
 					if($ok == 4)
 					{
@@ -3158,6 +3166,7 @@ else
 			}
 
 			//*******CONSULTA DE INFORMACION *********
+			global $wcliame;
 			if(isset($ok)  and $ok == 3)
 			{
 				if(!isset($whin))
@@ -3186,7 +3195,7 @@ else
 					if(isset($wcom) and strtoupper(substr($wcom,0,4)) == "EPS:")
 					{
 						//$query = "SELECT Entcod, Entdes  from ".$empresa."_000003 where Entdes like '%".substr($wcom,4)."%' and Entest='on'  order by Entdes";
-						$query = "SELECT Empcod, Empnom  from cliame_000024 where Empnom like '%".substr($wcom,4)."%' and Empest='on'  order by Empnom";
+						$query = "SELECT Empcod, Empnom  from ".$wcliame."_000024 where Empnom like '%".substr($wcom,4)."%' and Empest='on'  order by Empnom";
 
 						$err = mysql_query($query,$conex);
 						$num = mysql_num_rows($err);
@@ -3336,7 +3345,7 @@ else
 					$row1 = mysql_fetch_array($err1);
 					$wtan=$row1[0]."-".$row1[1];
 					//$query = "SELECT Entcod, Entdes  from ".$empresa."_000003 where Entcod ='".$row[16]."' ";
-					$query = "SELECT Empcod, Empnom  from cliame_000024 where Empcod ='".$row[16]."' ";
+					$query = "SELECT Empcod, Empnom  from ".$wcliame."_000024 where Empcod ='".$row[16]."' ";
 					$err1 = mysql_query($query,$conex);
 					$row1 = mysql_fetch_array($err1);
 					$weps=$row1[0]."-".$row1[1];
@@ -3745,6 +3754,7 @@ else
 				$query = "SELECT Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pacced='".$wdoc."' and Pactid='".$wtdo."' and Pacced=Oriced and Pactid=Oritid and Oriori='".$origen."' order by Oriori";
 			$err = mysql_query($query,$conex);
 			$num = mysql_num_rows($err);
+			global $wmovhos;
 			if ($num > 0)
 			{
 				$row = mysql_fetch_array($err);
@@ -3755,7 +3765,7 @@ else
 					$wsex="M-MASCULINO";
 				else
 					$wsex="F-FEMENINO";
-				$query = "SELECT Ubihis, Ubiing from movhos_000018 where Ubihis='".$row[6]."' and Ubiing='".$row[7]."' and Ubiald = 'off' ";
+				$query = "SELECT Ubihis, Ubiing from ".$wmovhos."_000018 where Ubihis='".$row[6]."' and Ubiing='".$row[7]."' and Ubiald = 'off' ";
 				$err1 = mysql_query($query,$conex);
 				$num1 = mysql_num_rows($err1);
 				if ($num1 > 0)
@@ -3819,7 +3829,8 @@ else
 							</script>
 							<?php
 						}
-
+			
+			global $wcliame;
 			echo "<td bgcolor=".$color." align=center>*Historia &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp- Nro Ing.<br><input type='TEXT' name='whis' size=9 maxlength=9  readonly='readonly' value='".$whis."' class=tipo3> - <input type='TEXT' name='wnin' size=4 maxlength=4  readonly='readonly' value='".$wnin."' class=tipo3></td>";
 			echo "<td bgcolor=".$color." align=center>*Nombre : <br><input type='TEXT' name='wnom' size=40 maxlength=40 value='".$wnom."' class=tipo3></td>";
 			if($weda > 0 and ($wfna == date("Y-m-d") or $wfna == ""))
@@ -3973,13 +3984,13 @@ else
 			if(isset($wepsw) and $wepsw != "")
 			{
 				//$query = "SELECT Entcod, Entdes from ".$empresa."_000003 where Entcod = '".$wepsw."' and Entest='on'  order by Entdes";
-				$query = "SELECT Empcod, Empnom from cliame_000024 where Empcod = '".$wepsw."' and Empest='on'  order by Empest";
+				$query = "SELECT Empcod, Empnom from ".$wcliame."_000024 where Empcod = '".$wepsw."' and Empest='on'  order by Empest";
 				$err = mysql_query($query,$conex);
 				$num = mysql_num_rows($err);
 				if ($num == 0)
 				{
 					//$query = "SELECT Entcod, Entdes  from ".$empresa."_000003 where Entdes like '%".$wepsw."%' and Entest='on'  order by Entdes";
-					$query = "SELECT Empcod, Empnom  from cliame_000024 where Empnom like '%".$wepsw."%' and Empest='on'  order by Empest";
+					$query = "SELECT Empcod, Empnom  from ".$wcliame."_000024 where Empnom like '%".$wepsw."%' and Empest='on'  order by Empest";
 					$err = mysql_query($query,$conex);
 					$num = mysql_num_rows($err);
 				}
@@ -4004,7 +4015,7 @@ else
 				{
 					$weps=ver1($weps);
 					//$query = "SELECT Entcod, Entdes  from ".$empresa."_000003 where Entcod = '".$weps."' and Entest='on' order by Entdes";
-					$query = "SELECT Empcod, Empnom  from cliame_000024 where Empcod = '".$weps."' and Empest='on' order by Empest";
+					$query = "SELECT Empcod, Empnom  from ".$wcliame."_000024 where Empcod = '".$weps."' and Empest='on' order by Empest";
 					$err = mysql_query($query,$conex);
 					$row = mysql_fetch_array($err);
 					echo "<option>".$row[0]."-".$row[1]."</option>";
@@ -4057,17 +4068,17 @@ else
 			if(isset($wcupsw) and $wcupsw != "")
 			{
 				$wepscups=$weps;
-				$query  = "SELECT CONCAT(Procod,'(',Procup,')'),Pronom from cliame_000103 where Procod like '%".$wcupsw."%' and Proest='on' ";
+				$query  = "SELECT CONCAT(Procod,'(',Procup,')'),Pronom from ".$wcliame."_000103 where Procod like '%".$wcupsw."%' and Proest='on' ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Procod,'(',Procup,')'),Pronom from cliame_000103 where Pronom like '%".$wcupsw."%' and Proest='on'  ";
+				$query .= "SELECT CONCAT(Procod,'(',Procup,')'),Pronom from ".$wcliame."_000103 where Pronom like '%".$wcupsw."%' and Proest='on'  ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Proemppro,'(',Proempcod,')'),Proempnom from cliame_000070 where Proemppro like '%".$wcupsw."%' and Proempest='on' and Proempemp = '".$wepscups."' ";
+				$query .= "SELECT CONCAT(Proemppro,'(',Proempcod,')'),Proempnom from ".$wcliame."_000070 where Proemppro like '%".$wcupsw."%' and Proempest='on' and Proempemp = '".$wepscups."' ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Proemppro,'(',Proempcod,')'),Proempnom from cliame_000070 where Proempnom like '%".$wcupsw."%' and Proempest='on' and Proempemp = '".$wepscups."' ";
+				$query .= "SELECT CONCAT(Proemppro,'(',Proempcod,')'),Proempnom from ".$wcliame."_000070 where Proempnom like '%".$wcupsw."%' and Proempest='on' and Proempemp = '".$wepscups."' ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Cprcod,'(',Cprcod,')'),Cprnom from cliame_000254 where Cprcod like '%".$wcupsw."%' and Cprest='on' and Cprnem = '".$wepscups."' ";
+				$query .= "SELECT CONCAT(Cprcod,'(',Cprcod,')'),Cprnom from ".$wcliame."_000254 where Cprcod like '%".$wcupsw."%' and Cprest='on' and Cprnem = '".$wepscups."' ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Cprcod,'(',Cprcod,')'),Cprnom from cliame_000254 where Cprnom like '%".$wcupsw."%' and Cprest='on' and Cprnem = '".$wepscups."' ";
+				$query .= "SELECT CONCAT(Cprcod,'(',Cprcod,')'),Cprnom from ".$wcliame."_000254 where Cprnom like '%".$wcupsw."%' and Cprest='on' and Cprnem = '".$wepscups."' ";
 				$query .= " order by 1 ";
 				$err = mysql_query($query,$conex);
 				$num = mysql_num_rows($err);

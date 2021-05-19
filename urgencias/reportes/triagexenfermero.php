@@ -28,6 +28,7 @@ if(!isset($_SESSION['user']))
 
 		include_once("root/comun.php");
 		
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 		$conex = obtenerConexionBD("matrix");
 	}
@@ -41,7 +42,7 @@ if(!isset($_SESSION['user']))
 		hizo el triage (campo Atuutr), del cual se conoce el nombre habiendo un join con la tabla de
 		usuarios*/
 		$query="SELECT T.Atuutr AS Codigo , U.Descripcion AS Descripcion, count(*) AS Pacientes
-				FROM movhos_000178  T
+				FROM ".$wmovhos."_000178  T
 				LEFT JOIN usuarios U
 				ON T.Atuutr=U.Codigo
 				WHERE T.Fecha_data  BETWEEN '".$fecha_inicial."' AND '".$fecha_final."'

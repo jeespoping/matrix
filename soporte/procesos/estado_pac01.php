@@ -1,4 +1,7 @@
+<?php include_once("conex.php"); ?>
 <!DOCTYPE html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='<?php echo($wemp_pmla); ?>'>
+
 <html lang="esp">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
@@ -13,13 +16,13 @@
     <script language="javascript">
         function modificar(idRegistro,tabla)
         {
-            miPopup4 = window.open("estado_pac02.php?idRegistro="+idRegistro.value+"&tabla="+tabla.value,"miwin1","width=750,height=310,top=300,left=550");
+            miPopup4 = window.open("estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla)?>&idRegistro="+idRegistro.value+"&tabla="+tabla.value,"miwin1","width=750,height=310,top=300,left=550");
             miPopup4.focus()
         }
     </script>
 
-    <?php
-include_once("conex.php");
+    <?php	
+
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -37,6 +40,10 @@ include_once("conex.php");
 
         include_once("root/comun.php");
         
+		$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+		$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 
 
         $conex = obtenerConexionBD("matrix");
@@ -53,7 +60,7 @@ include_once("conex.php");
                 </div>
 
                 <div style="padding-top:10px; position: relative; min-height: 1100px" class="panel-body" >
-                    <form method="post" name="loginform" id="loginform" class="form-horizontal" role="form" action="estado_pac01.php">
+                    <form method="post" name="loginform" id="loginform" class="form-horizontal" role="form" action="estado_pac01.php?wemp_pmla=<?php echo($wemp_pmla)?>">
                         <table align="center">
                             <tr>
                                 <td colspan="5" align="center">
@@ -172,12 +179,12 @@ include_once("conex.php");
                                     {
                                         if($historia != null)
                                         {
-                                            $query=mysql_query("select * from cliame_000100 WHERE Pachis = '$historia'");
+                                            $query=mysql_query("select * from ".$wcliame."_000100 WHERE Pachis = '$historia'");
 
                                             while($dato=mysql_fetch_array($query))
                                             {
                                                 ?>
-                                                <form id="formDATOS" method="post" action="estado_pac02.php">
+                                                <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla)?>">
                                                     <?php
                                                     $idCliame100 = $dato['id'];
                                                     $hcFind = $dato['Pachis'];
@@ -251,17 +258,17 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query2 = mysql_query("select * from cliame_000101 WHERE Inghis = '$historia'");
+                                            $query2 = mysql_query("select * from ".$wcliame."_000101 WHERE Inghis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query2 = mysql_query("select * from cliame_000101 WHERE Inghis = '$historia' AND Ingnin = '$ingreso'");
+                                            $query2 = mysql_query("select * from ".$wcliame."_000101 WHERE Inghis = '$historia' AND Ingnin = '$ingreso'");
                                         }
 
                                         while($dato2=mysql_fetch_array($query2))
                                         {
                                             ?>
-                                            <form id="formDATOS" method="post" action="estado_pac02.php">
+                                            <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla)?>">
                                                 <?php
                                                 $idCliame101 = $dato2['id'];
                                                 $hcFind2 = $dato2['Inghis'];
@@ -352,7 +359,7 @@ include_once("conex.php");
                                             while($dato3=mysql_fetch_array($query3))
                                             {
                                                 ?>
-                                                <form id="formDATOS" method="post" action="estado_pac02.php">
+                                                <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla)?>">
                                                     <?php
                                                     $idRoot36 = $dato3['id'];
                                                     $documentoPac = $dato3['Pacced'];
@@ -419,7 +426,7 @@ include_once("conex.php");
                                         while($dato4=mysql_fetch_array($query4))
                                         {
                                             ?>
-                                            <form id="formDATOS" method="post" action="estado_pac02.php">
+                                            <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla)?>">
                                                 <?php
                                                 $idRoot37 = $dato4['id'];
                                                 $documentoPac2 = $dato4['Oriced'];
@@ -478,17 +485,17 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query9 = mysql_query("select * from hce_000022 WHERE Mtrhis = '$historia'");
+                                            $query9 = mysql_query("select * from ".$whce."_000022 WHERE Mtrhis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query9 = mysql_query("select * from hce_000022 WHERE Mtrhis = '$historia' AND Mtring = $ingreso");
+                                            $query9 = mysql_query("select * from ".$whce."_000022 WHERE Mtrhis = '$historia' AND Mtring = $ingreso");
                                         }
 
                                         while($dato9=mysql_fetch_array($query9))
                                         {
                                             ?>
-                                            <form id="formDATOS" method="post" action="estado_pac02.php">
+                                            <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                 <?php
                                                 $hce22 = $dato9['id'];
                                                 $hcFind9 = $dato9['Mtrhis'];
@@ -550,12 +557,12 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso != null)
                                         {
-                                            $query10 = mysql_query("select * from hce_000036 WHERE Firhis = '$historia' AND Firing = $ingreso");
+                                            $query10 = mysql_query("select * from ".$whce."_000036 WHERE Firhis = '$historia' AND Firing = $ingreso");
 
                                             while($dato10=mysql_fetch_array($query10))
                                             {
                                                 ?>
-                                                <form id="formDATOS" method="post" action="estado_pac02.php">
+                                                <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                     <?php
                                                     $hce36 = $dato10['id'];
                                                     $hcFind10 = $dato10['Firhis'];
@@ -624,17 +631,17 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query5 = mysql_query("select * from movhos_000016 WHERE Inghis = '$historia'");
+                                            $query5 = mysql_query("select * from ".$wmovhos."_000016 WHERE Inghis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query5 = mysql_query("select * from movhos_000016 WHERE Inghis = '$historia' AND Inging = '$ingreso'");
+                                            $query5 = mysql_query("select * from ".$wmovhos."_000016 WHERE Inghis = '$historia' AND Inging = '$ingreso'");
                                         }
 
                                         while($dato5=mysql_fetch_array($query5))
                                         {
                                             ?>
-                                            <form id="formDATOS" method="post" action="estado_pac02.php">
+                                            <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                 <?php
                                                 $idMovhos16 = $dato5['id'];
                                                 $hcFind3 = $dato5['Inghis'];
@@ -699,17 +706,17 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query6 = mysql_query("select * from movhos_000018 WHERE Ubihis = '$historia'");
+                                            $query6 = mysql_query("select * from ".$wmovhos."_000018 WHERE Ubihis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query6 = mysql_query("select * from movhos_000018 WHERE Ubihis = '$historia' AND Ubiing = '$ingreso'");
+                                            $query6 = mysql_query("select * from ".$wmovhos."_000018 WHERE Ubihis = '$historia' AND Ubiing = '$ingreso'");
                                         }
 
                                         while($dato6=mysql_fetch_array($query6))
                                         {
                                             ?>
-                                            <form id="formDATOS" method="post" action="estado_pac02.php">
+                                            <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                 <?php
                                                 $idMovhos18 = $dato6['id'];
                                                 $hcFind4 = $dato6['Ubihis'];
@@ -776,17 +783,17 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query7 = mysql_query("select * from movhos_000020 WHERE Habhis = '$historia'");
+                                            $query7 = mysql_query("select * from ".$wmovhos."_000020 WHERE Habhis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query7 = mysql_query("select * from movhos_000020 WHERE Habhis = '$historia' AND Habing = '$ingreso'");
+                                            $query7 = mysql_query("select * from ".$wmovhos."_000020 WHERE Habhis = '$historia' AND Habing = '$ingreso'");
                                         }
 
                                         while($dato7=mysql_fetch_array($query7))
                                         {
                                             ?>
-                                            <form id="formDATOS" method="post" action="estado_pac02.php">
+                                            <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                 <?php
                                                 $idMovhos20 = $dato7['id'];
                                                 $hcFind5 = $dato7['Habhis'];
@@ -847,12 +854,12 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso != null)
                                         {
-                                            $query8 = mysql_query("select * from movhos_000004 WHERE Spahis = '$historia' AND Spaing = '$ingreso'");
+                                            $query8 = mysql_query("select * from ".$wmovhos."_000004 WHERE Spahis = '$historia' AND Spaing = '$ingreso'");
 
                                             while($dato8=mysql_fetch_array($query8))
                                             {
                                                 ?>
-                                                <form id="formDATOS" method="post" action="estado_pac02.php">
+                                                <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                     <?php
                                                     $idMovhos4 = $dato8['id'];
                                                     $hcFind6 = $dato8['Spahis'];
@@ -925,12 +932,12 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso != null)
                                         {
-                                            $query11 = mysql_query("select * from movhos_000015 WHERE Aplhis = '$historia' AND Apling = $ingreso");
+                                            $query11 = mysql_query("select * from ".$wmovhos."_000015 WHERE Aplhis = '$historia' AND Apling = $ingreso");
 
                                             while($dato11=mysql_fetch_array($query11))
                                             {
                                                 ?>
-                                                <form id="formDATOS" method="post" action="estado_pac02.php">
+                                                <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                     <?php
                                                     $movhos15 = $dato11['id'];
                                                     $hcFind11 = $dato11['Aplhis'];
@@ -1012,12 +1019,12 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso != null)
                                         {
-                                            $query12 = mysql_query("select * from movhos_000228 WHERE Movhis = '$historia' AND Moving = $ingreso");
+                                            $query12 = mysql_query("select * from ".$wmovhos."_000228 WHERE Movhis = '$historia' AND Moving = $ingreso");
 
                                             while($dato12=mysql_fetch_array($query12))
                                             {
                                                 ?>
-                                                <form id="formDATOS" method="post" action="estado_pac02.php">
+                                                <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                     <?php
                                                     $movhos228 = $dato12['id'];
                                                     $hcFind12 = $dato12['Movhis'];
@@ -1094,17 +1101,17 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query13 = mysql_query("select * from movhos_000033 WHERE Historia_clinica = '$historia'");
+                                            $query13 = mysql_query("select * from ".$wmovhos."_000033 WHERE Historia_clinica = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query13 = mysql_query("select * from movhos_000033 WHERE Historia_clinica = '$historia' AND Num_ingreso = '$ingreso'");
+                                            $query13 = mysql_query("select * from ".$wmovhos."_000033 WHERE Historia_clinica = '$historia' AND Num_ingreso = '$ingreso'");
                                         }
 
                                         while($dato13=mysql_fetch_array($query13))
                                         {
                                             ?>
-                                            <form id="formDATOS" method="post" action="estado_pac02.php">
+                                            <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                 <?php
                                                 $idMovhos33 = $dato13['id'];
                                                 $hcFind = $dato13['Historia_clinica'];
@@ -1167,12 +1174,12 @@ include_once("conex.php");
                                     {
                                         if($documentoPac != null)
                                         {
-                                            $query14=mysql_query("select * from tcx_000011 WHERE Turdoc = '$documentoPac'");
+                                            $query14=mysql_query("select * from ".$wtcx."_000011 WHERE Turdoc = '$documentoPac'");
 
                                             while($dato14=mysql_fetch_array($query14))
                                             {
                                                 ?>
-                                                <form id="formDATOS" method="post" action="estado_pac02.php">
+                                                <form id="formDATOS" method="post" action="estado_pac02.php?wemp_pmla=<?php echo($wemp_pmla) ?>">
                                                     <?php
                                                     $idTcx11 = $dato14['id'];
                                                     $documentoPac = $dato14['Turdoc'];

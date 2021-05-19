@@ -13,7 +13,11 @@
     
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame"); 
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -32,7 +36,8 @@ if(!isset($_SESSION['user']))
 
 
  //Forma
- echo "<form name='pacatendxmed' action='pacatendxmed.php' method=post>";  
+ echo "<form name='pacatendxmed' action='pacatendxmed.php' method=post>";
+ echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
  
 	//Cuerpo de la pagina
  	echo "<table align='center' border=0>";
@@ -53,7 +58,7 @@ if(!isset($_SESSION['user']))
 
 
     $query="SELECT a.inghis, a.ingnin, a.inghin, a.ingsei, ubiald, b.ingnre, mtrmed, descripcion "
-    ." FROM cliame_000101 a, movhos_000018, movhos_000016 b, hce_000022 "
+    ." FROM ".$wcliame."_000101 a, ".$wmovhos."_000018, ".$wmovhos."_000016 b, ".$whce."_000022 "
     ." LEFT JOIN usuarios ON mtrmed = Codigo "
     //." WHERE ingfei BETWEEN '2015-03-01' AND '2015-03-01' "
     ." WHERE a.ingfei BETWEEN '".$wfec1."' and '".$wfec2."'"
