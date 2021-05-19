@@ -5,6 +5,8 @@ include_once "model/db.php";
 
 include "model/PacientesModel.php";
 
+use ReporteServicios\Api\Model\PacientesModel;
+
 $dbname = "Matrix";
 $id = '';
 $json = "";

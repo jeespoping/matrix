@@ -1,4 +1,5 @@
 <?php
+namespace ReporteServicios\Api\Model;
 
 use ReporteServicios\Api\Model\DB;
 

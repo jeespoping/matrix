@@ -14,11 +14,9 @@ var app = new Vue({
         disNumHis: 0,
         disNumIde: 0
     },
-
     mounted: function () {
         console.log('Hello from Vue!')
     },
-
     methods: {
         abrirFactuacion: function (ingreso, servicio, wemp_pmla) {
             Swal.fire({

@@ -1,8 +1,5 @@
 <?php
-// include_once("conex.php");
 include_once("root/comun.php");
-// include "ips/funciones_facturacionERP.php";
-
 
 $wemp_pmla = empty($_GET['wemp_pmla']) ? 0 : $_GET['wemp_pmla'];
 $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
