@@ -37,6 +37,10 @@ else
 	$wuse = $user_session[1];
 	
 	include_once("root/comun.php");
+	$consultaAjax = '';
+	
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcostosyp = consultarAliasPorAplicacion($conex, $wemp_pmla, "COSTOS");
 	
 	$conex = obtenerConexionBD("matrix");
 	
@@ -51,11 +55,13 @@ else
 	function consultarCentroCostos($cco,$wemp_pmla)
 	{
 		global $wbasedato;
-		global $conex;	
+		global $conex;
+		global $wcostosyp;
+		global $wmovhos;
 		
 		$ccosto = explode(")",$cco);
 		$query = " SELECT Cconom 
-					FROM movhos_000011 
+					FROM ".$wmovhos."_000011 
 				   WHERE Ccocod='".$ccosto[1]."';";
 
 		$resultado = mysql_query($query, $conex);
@@ -69,7 +75,7 @@ else
 		else
 		{
 			$query2 = " SELECT Cconom 
-					FROM costosyp_000005 
+					FROM ".$wcostosyp."_000005 
 				   WHERE Ccocod='".$ccosto[1]."';";
 
 			$resultado2 = mysql_query($query2, $conex);
@@ -310,7 +316,8 @@ else
 	function consultarCostosInsumos($arrayInsumos)
 	{
 		global $conex;	
-		global $wemp_pmla;	
+		global $wemp_pmla;
+		global $wcostosyp;
 		
 		$ipMatrixFinanciero = consultarAliasPorAplicacion($conex, $wemp_pmla, 'ipMatrixFinanciero');
 		$conexMatrixFinanciero = auna_connectdb('Financiero') or die("No se realizo Conexion");
@@ -321,12 +328,12 @@ else
 			$stringInsumos = implode("','",$arrayInsumos);
 		
 			$queryCostos = "SELECT Pcacod, Pcapro,CONCAT_WS('-',Pcaano,LPAD(Pcames,2,'0'),'01') AS Fecha 
-							FROM costosyp_000097 a
+							FROM ".$wcostosyp."_000097 a
 							WHERE Pcacco='1082' 
 							  AND Pcaemp = '01' 
 							  AND Pcacod IN ('".$stringInsumos."')
 							  AND CONCAT_WS('-',Pcaano,LPAD(Pcames,2,'0'),'01') = (SELECT MAX(CONCAT_WS('-',Pcaano,LPAD(Pcames,2,'0'),'01')) 
-																					 FROM costosyp_000097 b 
+																					 FROM ".$wcostosyp."_000097 b 
 																				    WHERE b.Pcacod = a.Pcacod);";
 		
 			$resCostos = mysql_query($queryCostos,$conexMatrixFinanciero) or die("Error: " . mysql_errno() . " - en el query: ".$queryCostos." - ".mysql_error());

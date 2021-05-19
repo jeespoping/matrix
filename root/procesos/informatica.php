@@ -416,6 +416,7 @@ function consultarUsuarioReq($codigo, $cco)
 {
 	global $conex;
 	global $wbasedato;
+	global $wcostosyp;
 
 	//Si el centro de costos esta vacio, busca los datos para cualquier centro de costos
 	//Si tiene un valor busco los datos del usuario para ese centro de costos
@@ -457,7 +458,7 @@ function consultarUsuarioReq($codigo, $cco)
 			$res = mysql_query($q,$conex);
 			$row1 = mysql_fetch_array($res);
 
-			if ($row1[0]=='costosyp_000005')
+			if ($row1[0]==$wcostosyp.'_000005')
 			{
 				$q= " SELECT Cconom "
 				."       FROM ".$row1[0]
@@ -518,7 +519,7 @@ function consultarUsuarioReq($codigo, $cco)
 				$num = mysql_num_rows($res);
 				$row1 = mysql_fetch_array($res);
 
-				if ($row1[0]=='costosyp_000005')
+				if ($row1[0]==$wcostosyp.'_000005')
 				{
 					$q= " SELECT Cconom "
 					."       FROM ".$row1[0]
@@ -593,7 +594,7 @@ function consultarUsuarioXNombre($nombre, &$personas)
 {
 	global $conex;
 	global $wbasedato;
-
+	global $wcostosyp;
 
 	$q= " SELECT Codigo, Descripcion, Empresa, Ccostos "
 	."       FROM usuarios "
@@ -625,7 +626,7 @@ function consultarUsuarioXNombre($nombre, &$personas)
 					$num5 = mysql_num_rows($res5);
 					$row1 = mysql_fetch_array($res5);
 
-					if ($row1[0]=='costosyp_000005')
+					if ($row1[0]==$wcostosyp.'_000005')
 					{
 						$q= " SELECT Cconom "
 						."       FROM ".$row1[0]
@@ -639,7 +640,7 @@ function consultarUsuarioXNombre($nombre, &$personas)
 					}
 
 					$resn = mysql_query($q,$conex);
-					$row2 = mysql_fetch_array($resn);
+					@$row2 = mysql_fetch_array($resn);
 					$usuario['cco']='('.$row['Empresa'].')'.$row['Ccostos'].'-'.$row2[0];
 				}
 				else
@@ -700,6 +701,7 @@ function consultarCentros($usuario, $cco)
 {
 	global $conex;
 	global $wbasedato;
+	global $wmovhos;
 	
 	
 	if ($cco!='') //cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
@@ -738,7 +740,7 @@ function consultarCentros($usuario, $cco)
 	}
 	
 	$query = "SELECT Ccocod,Cconom 
-				FROM movhos_000011 
+				FROM ".$wmovhos."_000011 
 			   WHERE (Ccohos = 'on' 
 			      OR  Ccourg = 'on' 
 				  OR  Ccocir = 'on' 
@@ -2513,8 +2515,9 @@ function pintarVersion()
  */
 function pintarTitulo($wacutaliza, $titulo_requerimientos)
 {
+	global $wemp_pmla;
 	echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica');
-	echo "<form id='informatica' name='informatica' action='informatica.php' method=post >";
+	echo "<form id='informatica' name='informatica' action='informatica.php?wemp_pmla=".$wemp_pmla."' method=post >";
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 	//echo "<tr><td style='font-weight:bold; ' class='encabezadoTabla' style='font-size:15pt; text-align:center;'>SISTEMA DE REQUERIMIENTOS</td></tr>";
@@ -2522,10 +2525,10 @@ function pintarTitulo($wacutaliza, $titulo_requerimientos)
 
 	echo "<table ALIGN=CENTER width='90%' >";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-	echo "<tr><a href='informatica.php'><td style='font-weight:bold; ' class='encabezadoTabla' width='20%'>INGRESO DE REQUERIMIENTO</td></a>";
-	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='consulta.php?para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
-	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='consulta.php?para=enviados'>REQUERIMIENTOS ENVIADOS</a></td>";
-	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='enviado.php'>REQUERIMIENTOS ANT.</a></td></tr></a>";
+	echo "<tr><a href='informatica.php?wemp_pmla=".$wemp_pmla."'><td style='font-weight:bold; ' class='encabezadoTabla' width='20%'>INGRESO DE REQUERIMIENTO</td></a>";
+	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
+	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=enviados'>REQUERIMIENTOS ENVIADOS</a></td>";
+	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='enviado.php?wemp_pmla=".$wemp_pmla."'>REQUERIMIENTOS ANT.</a></td></tr></a>";
 	echo "<tr class='fila1'><td style='font-weight:bold; ' class='' >&nbsp;</td>";
 	echo "<td style='font-weight:bold; ' class='' >&nbsp;</td>";
 	echo "<td style='font-weight:bold; ' class='' >&nbsp;</td>";
@@ -3028,12 +3031,13 @@ function pintarAlert1($mensaje)
 
 function pintarAlert3($mensaje)
 {
+	global $wemp_pmla;
 	echo "</table></br>";
 	echo"<CENTER>";
 	echo "<table align='center' border=0 bordercolor=#000080 width=700>";
 	echo "<tr><td colspan='2' align=center><font size=5 color='#000080' face='arial' align=center><b>".$mensaje."</td></tr>";
 	echo "<tr><td colspan='2' align=center><font size=5 color='#000080' face='arial' align=center><b>&nbsp;</td></tr>";
-	echo "<tr><td colspan='2' align=center><font size=3 color='#000080' face='arial' align=center><b><a href='informatica.php'>Nuevo requerimiento</a></td></tr>";
+	echo "<tr><td colspan='2' align=center><font size=3 color='#000080' face='arial' align=center><b><a href='informatica.php?wemp_pmla=".$wemp_pmla."'>Nuevo requerimiento</a></td></tr>";
 
 	echo "</table>";
 }
@@ -3060,6 +3064,7 @@ function pintarAlertAM($mensaje)
 
 function consultarHorariosValidos($conex, $clases)
 {
+	global $wemp_pmla;
 	$clasesPorTipo = "";
 	foreach ($clases as $key => $value)
 	{
@@ -3122,6 +3127,9 @@ else
 	$wbasedato='root';
 	
 	include_once("root/comun.php");
+	$wemp_pmla=$_REQUEST['wemp_pmla'];
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+    $wcostosyp = consultarAliasPorAplicacion($conex, $wemp_pmla, "COSTOS");
 
     $cco_auditoria_corporativa_clinica = consultarAliasPorAplicacion($conex, '01', 'centro_costo_auditoria_corporativa');
     $auditoria_corporativa_titulos     = consultarAliasPorAplicacion($conex, '01', 'auditoria_corporativa_titulos');

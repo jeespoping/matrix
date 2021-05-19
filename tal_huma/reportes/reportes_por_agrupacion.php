@@ -13,6 +13,8 @@ include_once("conex.php");
 
 	$wbasedato    = consultarPrefijo($conex, $wemp_pmla, $wtema);
 	$wbasedatocli = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	$wcostosyp = consultarAliasPorAplicacion($conex, $wemp_pmla, 'COSTOS');
 	$fecha= date("Y-m-d");
 	$hora = date("H:i:s");
 
@@ -176,6 +178,8 @@ function cargar_hiddens_para_autocomplete_cco()
 	global $conex;
 	global $wbasedato;
 	global $wtema;
+	global $wmovhos;
+	global $wcostosyp;
 	$caracter_ok = array("a","e","i","o","u","A","E","I","O","U","n","N","u","U","-","-","-","a","e","i","o","u","A","E","I","O","U","A","S"," ","","N","N", "U", "");
 	$caracter_ma = array("�","�","�","�","�","�","�","�","�","�","�","�","�","�",",","/","�","�","�","�","�","�","�","�","�","�","�","�","�","'","?�","??", "?�", "�");
 
@@ -187,7 +191,7 @@ function cargar_hiddens_para_autocomplete_cco()
 
 	if ($wbasedatocyp=='')
 	{
-		$wbasedatocyp ='movhos_000011';
+		$wbasedatocyp =$wmovhos.'_000011';
 	}
 	
 	
@@ -199,7 +203,7 @@ function cargar_hiddens_para_autocomplete_cco()
 				WHERE Ccoest = 'on' ";
 	
 	//---se puso quemado para luego ser borrado
-	if($wbasedatocyp=="costosyp_000005")
+	if($wbasedatocyp==$wcostosyp."_000005")
 	{
 		 $q_cco = $q_cco." AND  Ccoemp ='01'";
 	}	
@@ -288,10 +292,10 @@ function consultarAplicacion($conexion, $codigoInstitucion, $nombreAplicacion){
 
 if($inicial2 =='no' AND $operacion=='cambiaresultadoseps')
 {
-
+global $wmovhos;
 $wbasedato = consultarPrefijo($conex, $wemp_pmla, $wtema);
 	$q 	= "  SELECT DISTINCT(Encent),Epsnom "
-		."     FROM ".$wbasedato."_000049  , movhos_000049"
+		."     FROM ".$wbasedato."_000049  , ".$wmovhos."_000049"
 		."    WHERE encfce  BETWEEN '".$wfechainicialeps."' AND  '".$wfechafinaleps."' "
 		."      AND Encese= 'cerrado' "
 		."      AND Encent LIKE Epsnom"
@@ -332,6 +336,7 @@ if ($operacion =='traersemaforo' AND $inicial=='no')
 
 if ($inicial=='no' AND $operacion=='traeresultadov3')
 {
+	global $wbasedatocli;
 	// consulta el tema interno de los reportes  para consultar su tipo
 	$wbasedato = consultarPrefijo($conex, $wemp_pmla, $wtema);
 	$q = " SELECT  	Fortip "
@@ -417,7 +422,7 @@ if ($inicial=='no' AND $operacion=='traeresultadov3')
 					//--Las tablas que tienen que ver en esta consulta son _000005 tabla de descriptores , _000007 tabla con el resultado de cada una de las preguntas
 					//--000049 encuestados en un periodo , _000051 que es de agrupaciones
 					$qpreguntas = 	" 			  SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos ,Grucod,Grunom "
-											."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049 ".$wbasedato."_000049  LEFT JOIN cliame_000024 ON Encdia = Empcod ,".$wbasedato."_000051  "
+											."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049 ".$wbasedato."_000049  LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod ,".$wbasedato."_000051  "
 											." 	   WHERE  Desagr = '".$wcagrupacion."' "
 											."   	 AND Evades = Descod"
 											."   	 AND Evafco = Encenc "
@@ -516,7 +521,7 @@ if ($inicial=='no' AND $operacion=='traeresultadov3')
 					//--Las tablas que tienen que ver en esta consulta son _000005 tabla de descriptores , _000007 tabla con el resultado de cada una de las preguntas
 					//--000049 encuestados en un periodo , _000051 que es de agrupaciones
 					$qpreguntas = 	" 			  SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos ,Grucod,Grunom "
-											."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 ,  ".$wbasedato."_000049  LEFT JOIN cliame_000024 ON Encdia = Empcod ,".$wbasedato."_000051  "
+											."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 ,  ".$wbasedato."_000049  LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod ,".$wbasedato."_000051  "
 											." 	   WHERE  Desagr = '".$wcagrupacion."' "
 											."   	 AND Evades = Descod"
 											."   	 AND Evafco = Encenc "
@@ -740,6 +745,7 @@ if ($inicial=='no' AND $operacion=='cambiar_semaforo')
 //--- se puede mirar quien fue el que contesto y que valor contesto.
 if ($inicial=='no' AND $operacion=='traeDetallePregunta')
 {
+	global $wbasedatocli;
     $q = " SELECT  	Fortip "
 		."   FROM  ".$wbasedato."_000042 "
 		."  WHERE Forcod = ".$wtemareportes." ";
@@ -838,7 +844,7 @@ if ($inicial=='no' AND $operacion=='traeDetallePregunta')
 			else
 			{
 				 $q = " 	  SELECT Encno1,Encno2, Encap1, Encap2, Evaevo, Evaevr, Evacal,Evadat,Comstr  "
-					."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod , ".$wbasedato."_000007  LEFT JOIN  ".$wbasedato."_000036  ON  Comdes = Evades AND Comucm = Evaevo "
+					."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod , ".$wbasedato."_000007  LEFT JOIN  ".$wbasedato."_000036  ON  Comdes = Evades AND Comucm = Evaevo "
 					." 	   WHERE ".$condicion." "
 					."   	 AND Evades = Descod"
 					."   	 AND Evafco = Encenc "
@@ -876,7 +882,7 @@ if ($inicial=='no' AND $operacion=='traeDetallePregunta')
 			else
 			{
 				$q = " 	  SELECT Encno1,Encno2, Encap1, Encap2, Evaevo, Evaevr, Evacal,Evadat,Comstr  "
-					."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod , ".$wbasedato."_000007  LEFT JOIN  ".$wbasedato."_000036  ON  Comdes = Evades AND Comucm = Evaevo"
+					."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod , ".$wbasedato."_000007  LEFT JOIN  ".$wbasedato."_000036  ON  Comdes = Evades AND Comucm = Evaevo"
 					." 	   WHERE ".$condicion." "
 					."   	 AND Evades = Descod"
 					."   	 AND Evafco = Encenc "
@@ -949,7 +955,7 @@ if ($inicial=='no' AND $operacion=='traeDetallePregunta')
 		if ( $tipodeformato == '03')
 		{
 			$q = " 	  SELECT Encno1,Encno2, Encap1, Encap2, Evaevo, Evaevr, Evacal,Evadat,Comstr "
-				."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod  , ".$wbasedato."_000007  LEFT JOIN  ".$wbasedato."_000036  ON ( Comdes = Evades  AND Comucm = Evaevo ) "
+				."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod  , ".$wbasedato."_000007  LEFT JOIN  ".$wbasedato."_000036  ON ( Comdes = Evades  AND Comucm = Evaevo ) "
 				." 	   WHERE ".$condicion."  "
 				."   	 AND Evades = Descod"
 				."   	 AND Evafco = Encenc "
@@ -962,7 +968,7 @@ if ($inicial=='no' AND $operacion=='traeDetallePregunta')
 		else
 		{
 			$q = " 	  SELECT Encno1,Encno2, Encap1, Encap2, Evaevo, Evaevr, Evacal,Evadat,Comstr "
-				."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod  , ".$wbasedato."_000007  LEFT JOIN  ".$wbasedato."_000036  ON  Comdes = Evades AND Comucm = Evaevo "
+				."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod  , ".$wbasedato."_000007  LEFT JOIN  ".$wbasedato."_000036  ON  Comdes = Evades AND Comucm = Evaevo "
 				." 	   WHERE ".$condicion."  "
 				."   	 AND Evades = Descod"
 				."   	 AND Evafco = Encenc "
@@ -1168,7 +1174,7 @@ if ($inicial=='no' AND $operacion=='traeDetallePregunta')
 // llena la ventana modal con el detalle de cada pregunta contestada con su respectivo promedio
 if ($inicial=='no' AND $operacion=='traeResultadosPorPregunta')
 {
-
+	global $wbasedatocli;
 	$q = " SELECT  	Fortip "
 		."   FROM  ".$wbasedato."_000042 "
 		."  WHERE Forcod = ".$wtemareportes." ";
@@ -1364,7 +1370,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosPorPregunta')
 			{
 
 				$qpreguntas = 	" SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos ,Grucod,Grunom"
-							."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 ,  ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod  ,".$wbasedato."_000051 "
+							."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 ,  ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod  ,".$wbasedato."_000051 "
 							." 	   WHERE Desagr = valoracambiar "
 							."   	 AND Evades = Descod"
 							."   	 AND Evafco = Encenc "
@@ -1378,7 +1384,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosPorPregunta')
 
 
 			$qpreguntas2 =  " SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos,Grucod,Grunom "
-						."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN cliame_000024 ON Encdia = Empcod  ,".$wbasedato."_000051  "
+						."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod  ,".$wbasedato."_000051  "
 						." 	   WHERE Desagr = valoracambiar "
 						."   	 AND Evades = Descod"
 						."   	 AND Evafco = Encenc "
@@ -1545,7 +1551,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosPorPregunta')
 			{
 
 				$qpreguntas = 	" 		  SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos ,Grucod,Grunom"
-									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN cliame_000024 ON Encdia = Empcod ,".$wbasedato."_000051  "
+									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod ,".$wbasedato."_000051  "
 									." 	   WHERE Desagr = valoracambiar "
 									."   	 AND Evades = Descod"
 									."   	 AND Evafco = Encenc "
@@ -1558,7 +1564,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosPorPregunta')
 			}
 
 			$qpreguntas2 =  " 			  SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos ,Grucod,Grunom"
-									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN cliame_000024 ON Encdia = Empcod ,".$wbasedato."_000051   "
+									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod ,".$wbasedato."_000051   "
 									." 	   WHERE ".$condicion." "
 									."   	 AND Evades = Descod"
 									."   	 AND Evafco = Encenc "
@@ -1732,7 +1738,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosPorPregunta')
 			{
 
 			$qpreguntas = 	" 			  SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos ,Grucod,Grunom"
-										."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 ,  ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod  ,".$wbasedato."_000051 "
+										."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 ,  ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod  ,".$wbasedato."_000051 "
 										." 	   WHERE Desagr = valoracambiar "
 										."   	 AND Evades = Descod"
 										."   	 AND Evafco = Encenc "
@@ -1745,7 +1751,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosPorPregunta')
 			}
 
 			$qpreguntas2 =  " 			  SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos,Grucod,Grunom "
-									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN cliame_000024 ON Encdia = Empcod  ,".$wbasedato."_000051  "
+									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod  ,".$wbasedato."_000051  "
 									." 	   WHERE Desagr = valoracambiar "
 									."   	 AND Evades = Descod"
 									."   	 AND Evafco = Encenc "
@@ -1924,7 +1930,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosPorPregunta')
 			{
 
 				$qpreguntas = 	" 		  SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos ,Grucod,Grunom"
-									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN cliame_000024 ON Encdia = Empcod ,".$wbasedato."_000051  "
+									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod ,".$wbasedato."_000051  "
 									." 	   WHERE Desagr = valoracambiar "
 									."   	 AND Evades = Descod"
 									."   	 AND Evafco = Encenc "
@@ -1938,7 +1944,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosPorPregunta')
 			}
 
 			$qpreguntas2 =  " 			  SELECT Descod,Desdes,SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos ,Grucod,Grunom"
-									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN cliame_000024 ON Encdia = Empcod ,".$wbasedato."_000051   "
+									."  	FROM ".$wbasedato."_000005, ".$wbasedato."_000007 , ".$wbasedato."_000049  LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod ,".$wbasedato."_000051   "
 									." 	   WHERE ".$condicion." "
 									."   	 AND Evades = Descod"
 									."   	 AND Evafco = Encenc "
@@ -2429,6 +2435,8 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 	//imprime-prueba
 	//echo $tipodeformato;
 	$wbasedatocentrocostos= consultarAliasPorAplicacion($conex, $wbasedato, 'centrocostos');
+	global $wcostosyp;
+	global $wbasedatocli;
 	switch($tipodeformato)
     {
                case '01':
@@ -2453,7 +2461,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 									."   AND ".$wbasedato."_000002.Fortip = '".$wtemareportes."' ";
 						
 						//---se puso quemado para luego ser borrado
-						if($wbasedatocentrocostos=="costosyp_000005")
+						if($wbasedatocentrocostos==$wcostosyp."_000005")
 						{
 							 $querycco = $querycco." AND  Ccoemp ='01'";
 						}
@@ -2689,7 +2697,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 						}
 						
 						//---se puso quemado para luego ser borrado
-						if($wbasedatocentrocostos=="costosyp_000005")
+						if($wbasedatocentrocostos==$wcostosyp."_000005")
 						{
 							 $querycco = $querycco." AND  Ccoemp ='01'";
 						}
@@ -2802,7 +2810,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 							}
 							
 							//---se puso quemado para luego ser borrado
-							if($wbasedatocentrocostos=="costosyp_000005")
+							if($wbasedatocentrocostos==$wcostosyp."_000005")
 							{
 								$querycco = $querycco." AND  Ccoemp ='01'";
 							}
@@ -2847,7 +2855,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 						if ($fechainicial1=='')
 						{
 						 	$qccoxagrupacion = 	"SELECT ".$wbasedato."_000049.Enccco, ".$wbasedato."_000051.Grucag, SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos, Empcod   "
-												."  FROM ".$wbasedato."_000005 left join ".$wbasedato."_000051 on (Desagr = Grucod), ".$wbasedato."_000007 , ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod "
+												."  FROM ".$wbasedato."_000005 left join ".$wbasedato."_000051 on (Desagr = Grucod), ".$wbasedato."_000007 , ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod "
 												." WHERE ".$arr_agrupacion." "
 												."   AND Evades = Descod"
 												."   AND Evafco = Encenc "
@@ -2863,7 +2871,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 						else
 						{
 							$qccoxagrupacion = 	" SELECT ".$wbasedato."_000049.Enccco, ".$wbasedato."_000051.Grucag, SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos,Empcod   "
-												."  FROM ".$wbasedato."_000005 left join ".$wbasedato."_000051 on (Desagr = Grucod), ".$wbasedato."_000007 , ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod  "
+												."  FROM ".$wbasedato."_000005 left join ".$wbasedato."_000051 on (Desagr = Grucod), ".$wbasedato."_000007 , ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod  "
 												." WHERE ".$arr_agrupacion." "
 												."   AND Evades = Descod"
 												."   AND Evafco = Encenc "
@@ -3434,7 +3442,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 						}
 						
 						//---se puso quemado para luego ser borrado
-						if($wbasedatocentrocostos=="costosyp_000005")
+						if($wbasedatocentrocostos==$wcostosyp."_000005")
 						{
 							 $querycco = $querycco." AND  Ccoemp ='01'";
 						}
@@ -3703,7 +3711,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 					
 					
 					//---se puso quemado para luego ser borrado
-					if($wbasedatocentrocostos=="costosyp_000005")
+					if($wbasedatocentrocostos==$wcostosyp."_000005")
 					{
 						 $querycco = $querycco." AND  Ccoemp ='01'";
 					}
@@ -3774,7 +3782,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 						
 						
 						//---se puso quemado para luego ser borrado
-						if($wbasedatocentrocostos=="costosyp_000005")
+						if($wbasedatocentrocostos==$wcostosyp."_000005")
 						{
 							 $querycco = $querycco." AND  Ccoemp ='01'";
 						}
@@ -3820,7 +3828,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 					if ($fechainicial1=='')
 					{
 						$qccoxagrupacion = 	"SELECT ".$wbasedato."_000049.Enccco, ".$wbasedato."_000051.Grucag, SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos, Empcod   "
-											."  FROM ".$wbasedato."_000005 left join ".$wbasedato."_000051 on (Desagr = Grucod), ".$wbasedato."_000007 , ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod "
+											."  FROM ".$wbasedato."_000005 left join ".$wbasedato."_000051 on (Desagr = Grucod), ".$wbasedato."_000007 , ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod "
 											." WHERE ".$arr_agrupacion." "
 											."   AND Evades = Descod"
 											."   AND Evafco = Encenc "
@@ -3836,7 +3844,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 					else
 					{
 						$qccoxagrupacion = 	" SELECT ".$wbasedato."_000049.Enccco, ".$wbasedato."_000051.Grucag, SUM(Evacal) AS Suma, COUNT(Evacal) AS Cuantos,Empcod   "
-											."  FROM ".$wbasedato."_000005 left join ".$wbasedato."_000051 on (Desagr = Grucod), ".$wbasedato."_000007 , ".$wbasedato."_000049 LEFT JOIN cliame_000024 ON Encdia = Empcod  "
+											."  FROM ".$wbasedato."_000005 left join ".$wbasedato."_000051 on (Desagr = Grucod), ".$wbasedato."_000007 , ".$wbasedato."_000049 LEFT JOIN ".$wbasedatocli."_000024 ON Encdia = Empcod  "
 											." WHERE ".$arr_agrupacion." "
 											."   AND Evades = Descod"
 											."   AND Evafco = Encenc "

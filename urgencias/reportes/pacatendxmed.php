@@ -1,4 +1,5 @@
 <HTML>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <HEAD>
 <TITLE>PACIENTES ATENDIDOS POR MEDICO EN EL SERVICIO</TITLE>
 </HEAD>
@@ -30,7 +31,8 @@ if(!isset($_SESSION['user']))
  $totala=0;
 
  //Forma
- echo "<form name='pacatendxmed' action='pacatendxmed.php' method=post>";  
+ echo "<form name='pacatendxmed' action='pacatendxmed.php?wemp_pmla=".$wemp_pmla."' method=post>";
+ echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>"; 
  
  if (!isset($wfec1) or $wfec1=='')
  {
@@ -74,6 +76,11 @@ if(!isset($_SESSION['user']))
  }	
  else      // Cuando ya estan todos los datos escogidos
  {
+	include_once("root/comun.php");
+	
+	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	
 	echo "<center><table border=0>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTES POR MEDICO EN URGENCIAS</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
@@ -89,7 +96,7 @@ if(!isset($_SESSION['user']))
     echo "<td colspan=2 align=center bgcolor=#DDDDDD><b>ACTIVOS<b></td>";
     echo "</tr>"; 
 
-    $query="Select mtrmed,Descripcion,count(*) From hce_000022  LEFT JOIN usuarios "
+    $query="Select mtrmed,Descripcion,count(*) From ".$whce."_000022  LEFT JOIN usuarios "
         . " ON mtrmed=Codigo"
         . " WHERE mtrcci= '".$wcco."'"
         . " And Fecha_data between '".$wfec1."' and '".$wfec2."'"
@@ -114,10 +121,10 @@ if(!isset($_SESSION['user']))
          echo "<td colspan=2 align=center bgcolor=".$wcf."><font text color=#003366 size=3>".$registro[1]."</td>";
 		 echo "<td colspan=2 align=LEFT   bgcolor=".$wcf."><font text color=#003366 size=3>".$registro[2]."</td>";
 		 
-		 $query="Select count(*) activos From hce_000022,movhos_000018"
+		 $query="Select count(*) activos From ".$whce."_000022,".$wmovhos."_000018"
          . " WHERE mtrcci = '".$wcco."'   "
          . " And Mtrmed='".$registro[0]."'"
-         . " And hce_000022.Fecha_data between '".$wfec1."' and '".$wfec2."'"
+         . " And ".$whce."_000022.Fecha_data between '".$wfec1."' and '".$wfec2."'"
          . " And Mtrhis = ubihis "
          . " And Mtring = ubiing "
          . " And ubiald = 'off' ";	 

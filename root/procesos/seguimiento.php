@@ -332,6 +332,8 @@ include_once("conex.php");
 	function consultarUsuarioSeg($id, $req)
 	{
 		global $conex;
+		global $wmovhos;
+		global $wcostosyp;
 		global $wbasedato, $id_req;
 
 		$q1= " SELECT Requso,Reqccs "
@@ -376,7 +378,7 @@ include_once("conex.php");
 			{
 				$ccosto=explode(")",$row1['Reqccs']);
 				$query = " SELECT Cconom 
-						FROM movhos_000011 
+						FROM ".$wmovhos."_000011 
 					   WHERE Ccocod='".$ccosto[1]."'
 						 AND Ccoest='on';";
 
@@ -395,7 +397,7 @@ include_once("conex.php");
 				else
 				{
 					$query2 = " SELECT Cconom 
-								FROM costosyp_000005 
+								FROM ".$wcostosyp."_000005 
 							   WHERE Ccocod='".$ccosto[1]."'
 								 AND Ccoest='on';";
 
@@ -2238,8 +2240,9 @@ include_once("conex.php");
 
 	function pintarTitulo($wacutaliza, $titulo_requerimientos)
 	{
+		global $wemp_pmla;
 		echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica');
-		echo "<form name='informatica' action='seguimiento.php' method=post>";
+		echo "<form name='informatica' action='seguimiento.php?wemp_pmla=".$wemp_pmla."' method=post>";
 		echo "<table ALIGN=CENTER width='50%'>";
 		//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 		//echo "<tr><td class='titulo1'>SISTEMA DE REQUERIMIENTOS</td></tr>";
@@ -4632,9 +4635,12 @@ include_once("conex.php");
 		$wbasedato='root';
 
 		include_once("root/comun.php");
+		$wemp_pmla=$_REQUEST['wemp_pmla'];
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wcostosyp = consultarAliasPorAplicacion($conex, $wemp_pmla, "COSTOS");
 
-		$cco_auditoria_corporativa_clinica = consultarAliasPorAplicacion($conex, '01', 'centro_costo_auditoria_corporativa');
-		$auditoria_corporativa_titulos     = consultarAliasPorAplicacion($conex, '01', 'auditoria_corporativa_titulos');
+		$cco_auditoria_corporativa_clinica = consultarAliasPorAplicacion($conex, $wemp_pmla, 'centro_costo_auditoria_corporativa');
+		$auditoria_corporativa_titulos     = consultarAliasPorAplicacion($conex, $wemp_pmla, 'auditoria_corporativa_titulos');
 		$titulo_requerimientos             = "SISTEMA DE REQUERIMIENTOS";
 
 		$id_req = (isset($id_req)) ? $id_req: '';

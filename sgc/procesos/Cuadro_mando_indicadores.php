@@ -60,6 +60,9 @@ else
 
 	$conex = obtenerConexionBD("matrix");
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'sgc');
+	$wcostosyp = consultarAliasPorAplicacion($conex, $wemp_pmla, 'COSTOS');
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	
 	$wfecha=date("Y-m-d");
     $whora = date("H:i:s");
 	$array_meses =	array( 1=>'Ene', 2=>'Feb', 3=>'Mar', 4=>'Abr', 5=>'May', 6=>'Jun', 7=>'Jul', 8=>'Ago', 9=>'Sep', 10=>'Oct',11=>'Nov', 12=>'Dic' );
@@ -115,6 +118,8 @@ else
 	{
 		global $conex;
 		global $wemp_pmla;
+		global $wcostosyp;
+		global $wmovhos;
 		$cadena_val = '';
 		$array_valores = array(" ", "(", ")", ".", "/", "-", "?");
 
@@ -131,15 +136,15 @@ else
 
 			if ($tabla_cco != 'NO APLICA')
 			{
-				if($tabla_cco=='costosyp_000005')
+				if($tabla_cco==$wcostosyp.'_000005')
 					$campo="Cconom";
 				else
 					$campo="Ccodes";
 
-				if($tabla_cco=='costosyp_000005'){
+				if($tabla_cco==$wcostosyp.'_000005'){
 
 					$q_2  = " SELECT A.Ccocod AS codigo, A.".$campo." AS nombre
-							    FROM ".$tabla_cco." AS A ".($tabla_cco=='costosyp_000005' ? 'LEFT JOIN movhos_000011 as B ON A.Ccocod = B.Ccocod' : '')."
+							    FROM ".$tabla_cco." AS A ".($tabla_cco==$wcostosyp.'_000005' ? 'LEFT JOIN '.$wmovhos.'_000011 as B ON A.Ccocod = B.Ccocod' : '')."
 							   WHERE A.Ccoest = 'on' 
 							     AND A.Ccoemp = '".$wemp_pmla."'
 							   ORDER BY nombre
@@ -147,7 +152,7 @@ else
 				}   
 				else{             
 					$q_2  = " SELECT A.Ccocod AS codigo, A.".$campo." AS nombre
-							    FROM ".$tabla_cco." AS A ".($tabla_cco=='costosyp_000005' ? 'LEFT JOIN movhos_000011 as B ON A.Ccocod = B.Ccocod' : '')."
+							    FROM ".$tabla_cco." AS A ".($tabla_cco==$wcostosyp.'_000005' ? 'LEFT JOIN '.$wmovhos.'_000011 as B ON A.Ccocod = B.Ccocod' : '')."
 							   WHERE A.Ccoest = 'on'
 							   ORDER BY nombre
 							";
@@ -422,6 +427,7 @@ else
 		global $conex;
 		global $wemp_pmla;
 		global $wbasedato;
+		global $wcostosyp;
 
 		$q_datos = " 	SELECT A.* , Descripcion, Prinom, Magnom
 						  FROM ".$wbasedato."_000001 as A, usuarios, ".$wbasedato."_000008, ".$wbasedato."_000006
@@ -645,6 +651,7 @@ else
 	{
 		global $conex;
 		global $wemp_pmla;
+		global $wcostosyp;
 		$nom_empresa='';
 		$nom_cco='';
 
@@ -660,14 +667,14 @@ else
 			$tabla_CCO = $row['Emptcc'];
 			$nom_cco = '';
 
-			if($tabla_CCO=='costosyp_000005')
+			if($tabla_CCO==$wcostosyp.'_000005')
 				$campo="Cconom";
 			else
 				$campo="Ccodes";
 
 			if ($tabla_CCO != 'NO APLICA' && $cco != '')
 			{
-				if($tabla_CCO=='costosyp_000005'){
+				if($tabla_CCO==$wcostosyp.'_000005'){
 
 					$q_2  = " SELECT ".$campo." AS nombre "
 							."  FROM ".$tabla_CCO.""

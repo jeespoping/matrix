@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
   	<title>MATRIX Cirugias Realizadas x Medicos del IDC Basados en la Descripcion Operatoria CXIDCDO.php</title>
   	<!-- UTF-8 is the recommended encoding for your pages -->
@@ -181,7 +182,7 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='CXIDCDO' action='CXIDCDO.php' method=post>";
+	echo "<form name='CXIDCDO' action='CXIDCDO.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	
 
 	
@@ -236,8 +237,13 @@ else
 	}
 	else
 	{
+		include_once("root/comun.php");
+		
+		$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		
 		$CX=array();
-		$query  = "SELECT Movdat, Fecha_data, Hora_data, movhis, moving, movusu FROM hce_000077 ";
+		$query  = "SELECT Movdat, Fecha_data, Hora_data, movhis, moving, movusu FROM ".$whce."_000077 ";
 		$query .= "  where Fecha_data between '".$wfecha1."' and '".$wfecha2."'";
 		$query .= "    and Movcon = 69 ";
 		$query .= "  Order by 1 ";
@@ -310,7 +316,7 @@ else
 			$pos=bi($CX,$numcx,$row[0]);
 			if($pos != -1)
 			{
-				$query  = "SELECT Movcon, Movdat FROM hce_000077 ";
+				$query  = "SELECT Movcon, Movdat FROM ".$whce."_000077 ";
 				$query .= " where Fecha_data = '".$CX[$pos][1]."'";
 				$query .= "   and Hora_data = '".$CX[$pos][2]."'";
 				$query .= "   and Movpro = '000077'";
@@ -362,7 +368,7 @@ else
 					$AYD = "SIN DATO";
 					$PCX = "SIN DATO";
 				}
-				$query  = "SELECT Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg FROM movhos_000048 ";
+				$query  = "SELECT Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg FROM ".$wmovhos."_000048 ";
 				$query .= " where Meduma = '".$CX[$pos][5]."'";
 				$err2 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$num2 = mysql_num_rows($err2);
