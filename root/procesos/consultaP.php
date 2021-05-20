@@ -1008,10 +1008,11 @@ function pintarVersion()
 	echo "</table></br></br></br>" ;
 }
 
-function pintarTitulo($wacutaliza)
+function pintarTitulo($wacutaliza, $wemp_pmla )
 {
 	echo encabezado("<div class='titulopagina2'>SISTEMA DE REQUERIMIENTOS</div>", $wacutaliza, 'clinica');
 	echo "<form name='informatica' action='consultaP.php' method=post>";
+	echo "<input type=hidden id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 	// echo "<tr><td class='titulo1'>SISTEMA DE REQUERIMIENTOS</td></tr>";
@@ -1027,7 +1028,7 @@ function pintarAlert2($mensaje)
 	echo "</table>";
 }
 
-function pintarRequerimientos($requerimientos, $para)
+function pintarRequerimientos($requerimientos, $para, $wemp_pmla )
 {
 	$fila='enter()';
 	$fila2='enter()';
@@ -1065,7 +1066,7 @@ function pintarRequerimientos($requerimientos, $para)
 			$class='fila2';
 		}
 		echo "<tr>";
-		echo "<td class='".$class."' align='center' ><a href='seguimiento.php?wcodigo_caso=".$requerimientos[$i]['wcodigo_caso']."&cco=".$requerimientos[$i]['cco']."&req=".$requerimientos[$i]['num']."&id_req=".$requerimientos[$i]['id_req']."&id=".$requerimientos[$i]['id']."&ids_segs_pte=".$requerimientos[$i]['mensajes_seguimiento']."&msj_para_creador=".$requerimientos[$i]['msj_para_creador']."' target='new' width='80%' class='numero' >".$requerimientos[$i]['cco']."-".$requerimientos[$i]['num']."</a></td>";
+		echo "<td class='".$class."' align='center' ><a href='seguimiento.php?wemp_pmla=".$wemp_pmla."&wcodigo_caso=".$requerimientos[$i]['wcodigo_caso']."&cco=".$requerimientos[$i]['cco']."&req=".$requerimientos[$i]['num']."&id_req=".$requerimientos[$i]['id_req']."&id=".$requerimientos[$i]['id']."&ids_segs_pte=".$requerimientos[$i]['mensajes_seguimiento']."&msj_para_creador=".$requerimientos[$i]['msj_para_creador']."' target='new' width='80%' class='numero' >".$requerimientos[$i]['cco']."-".$requerimientos[$i]['num']."</a></td>";
 		echo "<td class='".$class."' align='center' >".$requerimientos[$i]['fec']."</td>";
 		if($para=='recibidos')
 		{
@@ -1117,7 +1118,7 @@ else
 	$wbasedato='root';
 		
 	include_once("root/comun.php");	// pintarVersion();
-	pintarTitulo($wacutaliza);
+	pintarTitulo($wacutaliza, $wemp_pmla );
 
 	//consulto los datos del usuario de la sesion
 	$pos = strpos($user,"-");
@@ -1167,7 +1168,7 @@ else
 		$requerimientos= consultarRequerimientos($wusuario, $para,$cco, $tipreq, $estado, $clareq, $cco_origen, $fecha_inicio, $fecha_fin);
 		if (is_array($requerimientos))
 		{
-			pintarRequerimientos($requerimientos, $para);
+			pintarRequerimientos($requerimientos, $para, $wemp_pmla );
 		}
 		else
 		{
