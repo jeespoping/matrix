@@ -30,7 +30,7 @@ var app = new Vue({
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.open('/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=' + wemp_pmla + '&wtema=IPSERP&wing=' + ingreso + '&whistoria=' + this.numHis, '', 'fullscreen = no, status = no, menubar = no, toolbar = no, directories = no, resizable = yes, scrollbars = yes, titlebar = yes');
+                    window.open('/presap/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=' + wemp_pmla + '&wtema=IPSERP&wing=' + ingreso + '&whistoria=' + this.numHis, '', 'fullscreen = no, status = no, menubar = no, toolbar = no, directories = no, resizable = yes, scrollbars = yes, titlebar = yes');
                     window.close();
                 }
             })
