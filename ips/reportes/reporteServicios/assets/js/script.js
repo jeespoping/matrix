@@ -74,6 +74,7 @@ var app = new Vue({
         bloquearCampo: function () {
             this.disNumIde = 0;
             this.disNumHis = 0;
+            this.nombre = "";
             if (this.numHis != "" && this.numIde == "") {
                 this.disNumIde = 1;
                 this.disNumHis = 0;

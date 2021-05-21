@@ -64,7 +64,7 @@ $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, $institucion->baseDeD
                         <th scope="col">Servicio</th>
                         <th scope="col">Fecha Ingreso</th>
                         <th scope="col">Estado</th>
-                        <th scope="col">Facturado</th>
+                        <th class="d-none" scope="col">Facturado</th>
                         <th class="d-none" scope="col">Acci&oacute;n</th>
                     </tr>
                 </thead>
@@ -82,6 +82,7 @@ $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, $institucion->baseDeD
                             <span class="" v-else>&nbsp;</span>
                         </td>
                         <td></td>
+                        <td class="d-none"><button class="btn btn-outline-danger btn-sm">ReAbrir</button></td>
                         <td class="d-none"><button class="btn btn-outline-danger btn-sm">ReAbrir</button></td>
                     </tr>
                 </tbody>
