@@ -38,7 +38,8 @@ include_once("conex.php");
 	{
 		
 		global $conex;
-		global $wemp_pmla;	
+		global $wemp_pmla;
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 		
 		$fecha = date('Y-m-d');		
 		$wupdate = 0;
@@ -77,13 +78,14 @@ include_once("conex.php");
 			
 			//Busco la historia e ingreso en la tabla root_000037 y movhos_000018.
 			$query1 = " SELECT orihis, oriing, UNIX_TIMESTAMP (CONCAT ( B.Fecha_data, ' ', B.Hora_data )) as fecha_admision "
-					 ."   FROM root_000037 A, movhos_000018 B "
+					 ."   FROM root_000037 A, ".$wmovhos."_000018 B "
 					 ."	 WHERE oriced = '".$cedula."'"
 					 ."	   AND oritid = '".$tipo_doc."'"
 					 ."	   AND oriori = '".$wemp_pmla."'"
 					 ."	   AND orihis = ubihis "
 					 ."    AND oriing = oriing "
 					 ."	   AND ubiald = 'off' ";
+			//echo $query1;
 			$res1 = mysql_query($query1, $conex);
 			$row2 = mysql_fetch_array($res1);
 			

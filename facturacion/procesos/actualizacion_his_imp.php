@@ -47,6 +47,7 @@ else
 
 	$conex = obtenerConexionBD("matrix");
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'HCE');
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$wfecha=date("Y-m-d");
     $whora = date("H:i:s");
 
@@ -65,6 +66,8 @@ else
 	//--------------------------------------------------------------------------------
 	function obtener_querys()
 	{
+		global $wmovhos;
+		
 		$array_querys = array();
 		//----------------------------------------------
 		// --> Detcon = 89 (Direccion de residencia)
@@ -446,11 +449,11 @@ else
 		// --> Detcon = 100 (Ubicacion)
 		//----------------------------------------------------------------------------------
 		// --> Query inpac
-			$q = ' select CONCAT(movhos_000018.Ubisac,"-",movhos_000011.Cconom," Hab. ",movhos_000018.Ubihac) from movhos_000018,movhos_000011 where movhos_000018.ubihis=HIS   and  movhos_000018.ubiing=ING  and movhos_000018.ubisac= movhos_000011.ccocod
+			$q = ' select CONCAT('.$wmovhos.'_000018.Ubisac,"-",'.$wmovhos.'_000011.Cconom," Hab. ",'.$wmovhos.'_000018.Ubihac) from '.$wmovhos.'_000018,'.$wmovhos.'_000011 where '.$wmovhos.'_000018.ubihis=HIS   and  '.$wmovhos.'_000018.ubiing=ING  and '.$wmovhos.'_000018.ubisac= '.$wmovhos.'_000011.ccocod
 				';
 			$array_querys['100']['inpac'] = $q;
 		// --> Query inpaci
-			$q = ' select CONCAT(movhos_000018.Ubisac,"-",movhos_000011.Cconom," Hab. ",movhos_000018.Ubihac) from movhos_000018,movhos_000011 where movhos_000018.ubihis=HIS   and  movhos_000018.ubiing=ING  and movhos_000018.ubisac= movhos_000011.ccocod
+			$q = ' select CONCAT('.$wmovhos.'_000018.Ubisac,"-",'.$wmovhos.'_000011.Cconom," Hab. ",'.$wmovhos.'_000018.Ubihac) from '.$wmovhos.'_000018,'.$wmovhos.'_000011 where '.$wmovhos.'_000018.ubihis=HIS   and  '.$wmovhos.'_000018.ubiing=ING  and '.$wmovhos.'_000018.ubisac= '.$wmovhos.'_000011.ccocod
 				';
 			$array_querys['100']['inpaci'] = $q;
 

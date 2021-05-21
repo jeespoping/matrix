@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
 <!-- Loading Calendar JavaScript files -->
-    <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
+    <!--<script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
-    <!-- Loading language definition file -->
-    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
+    <!-- Loading language definition file 
+    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script> -->
     <style type="text/css">
     	//body{background:white url(portal.gif) transparent center no-repeat scroll;}
     	.saltopagina{page-break-after: always}
@@ -124,6 +124,8 @@
 </script>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$wbasedatomovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 /*
 *********************************************************************************************************************  
@@ -180,11 +182,11 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='BalanceDL' action='BalanceDL.php' method=post>";
+	echo "<form name='BalanceDL' action='BalanceDL.php?wemp_pmla=".$wemp_pmla."'' method=post>";
 	
 
 	
-
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<center><input type='HIDDEN' name= 'wtipo' value='".$wtipo."'>";
 	
@@ -294,7 +296,7 @@ else
 	}
 	else
 	{	
-		$query = "select Pacno1,Pacno2,Pacap1,Pacap2,Pacnac,Pacsex,Orihis,Oriing,Ingnre,Ubisac,Ubihac,Cconom from root_000036,root_000037,movhos_000016,movhos_000018,movhos_000011 ";
+		$query = "select Pacno1,Pacno2,Pacap1,Pacap2,Pacnac,Pacsex,Orihis,Oriing,Ingnre,Ubisac,Ubihac,Cconom from root_000036,root_000037,".$wbasedatomovhos."_000016,".$wbasedatomovhos."_000018,".$wbasedatomovhos."_000011 ";
 		$query .= " where pacced = '".$wcedula."'";
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and  pacced = oriced ";

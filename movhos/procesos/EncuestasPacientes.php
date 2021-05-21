@@ -721,11 +721,13 @@ $user_session = (count($user_session) > 1)? $user_session[1] : $user_session[0];
 $wusuario = $user_session;
 
 function traer_cco ()
+
 {
+	global $wbasedatoMov;
 	global $conex;
 	// query para hacer el select
 	$query = "SELECT  	Ccocod as 	ppal , Cconom as seleccionado
-				FROM movhos_000011 ";
+				FROM ".$wbasedatoMov."_000011 ";
 
 	$res = 	mysql_query($query,$conex) or die ("Error 3: ".mysql_errno()." - en el query: ".$query." - ".mysql_error());
 
@@ -750,8 +752,8 @@ if(isset($accion))
 		case "traerppal":
 		{
 			
-			$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'evapac');
-			$wbasedatoMov 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+			$wbasedato 			= consultarAliasPorAplicacion($conex, $wemp_pmla, 'evapac');
+			$wbasedatoMov 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 			$wbasedatocliame 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'facturacion');
 			
 			if($buscar=='')

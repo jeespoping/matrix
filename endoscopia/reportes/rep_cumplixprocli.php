@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 <title>MATRIX - [REPORTE PROCESOS PRIORITARIOS]</title>
 
@@ -268,6 +269,13 @@ $usuarioValidado = true;
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false;
 }else {
+	$user_session = explode('-', $_SESSION['user']);
+        $wuse = $user_session[1];
+        mysql_select_db("matrix");
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wcominf = consultarAliasPorAplicacion($conex, $wemp_pmla, "invecla");
+		
+        $conex = obtenerConexionBD("matrix");
 	if (strpos($user, "-") > 0)
 	$wuser = substr($user, (strpos($user, "-") + 1), strlen($user));
 }
@@ -290,7 +298,7 @@ if (!$usuarioValidado)
 else
 {
 	
- $empre1='cominf';
+ //$empre1='cominf';
 
  
 
@@ -298,7 +306,7 @@ else
 
 
  //Forma
- echo "<form name='forma' action='rep_cumplixprocli.php' method='post'>";
+ echo "<form name='forma' action='rep_cumplixprocli.php?wemp_pmla=".$wemp_pmla."' method='post'>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
  
  if (!isset($pp) or $pp=='-' or !isset($fec1) or !isset($fec2))
@@ -318,7 +326,7 @@ else
 
 	//Generando lista de opciones de Centro de costos
 	$q = "SELECT ccocod,cconom 
-		  FROM movhos_000011
+		  FROM ".$wmovhos."_000011
 		  where ccocod<>'*'
 		  order by 1";
 
@@ -424,17 +432,17 @@ else
 	$mesi=SUBSTR(".$fec1.",6,2);
     $mesf=SUBSTR(".$fec2.",6,2);  
   
-  $query = " SELECT ppccco,ppcproce,ppccrite1,ppccrite2,ppccrite3,ppccrite4,ppccrite5,ppccrite6,ppccrite7,ppccrite8,ppccrite9,ppccrite10,ppccrite11,ppccrite12,ppccrite13,ppccrite14,ppccrite15,ppccrite16,ppccrite17,ppccrite18,ppccrite19,Patotal"
-           ."   FROM ".$empre1."_000046 left join ".$empre1."_000045"
-		   	."    ON papp=ppcproce"
-            ."   AND pames=SUBSTRING(Ppcfecha,6,2)" 
-            ."   AND paano=SUBSTRING(Ppcfecha,1,4)"
-            ."   AND Pacco $ccos"
-            ."   AND pacco=ppccco"
-           ."  WHERE ppcproce = '".$tpp."'" 
-           ."    AND ppcfecha between '".$fec1."' and '".$fec2."'"
-		   ."    AND ppccco $ccos"
-           ."  ORDER BY ppccco,ppcproce";
+  $query = " SELECT ppccco,ppcproce,ppccrite1,ppccrite2,ppccrite3,ppccrite4,ppccrite5,ppccrite6,ppccrite7,ppccrite8,ppccrite9,ppccrite10,ppccrite11,ppccrite12,ppccrite13,ppccrite14,ppccrite15,ppccrite16,ppccrite17,ppccrite18,ppccrite19,Patotal
+              FROM ".$wcominf."_000046 left join ".$wcominf."_000045
+		   	    ON papp=ppcproce
+               AND pames=SUBSTRING(Ppcfecha,6,2)
+               AND paano=SUBSTRING(Ppcfecha,1,4)
+               AND Pacco $ccos
+               AND pacco=ppccco
+               AND ppcproce = '".$tpp."'
+               AND ppcfecha between '".$fec1."' and '".$fec2."'
+		       AND ppccco $ccos
+             ORDER BY ppccco,ppcproce";
    
     $err1 = mysql_query($query,$conex);
     $num1 = mysql_num_rows($err1);
@@ -600,16 +608,14 @@ else
       echo "<td  bgcolor=#FFFFFF align=center><font size=1><b>".number_format(($arrecrit[18]/$canti)*100)."%</b></font></td>";
 	  echo "<td  bgcolor=#FFFFFF align=center><font size=1><b>".number_format(($arrecrit[19]/$canti)*100)."%</b></font></td>";
       echo "</tr >";
-	  echo "</table>";
 	  
-	  echo "<table border=0 size=100%>";
-      echo "<Tr >";
-      echo "<td align=LEFT bgcolor=#FFFFFF ><font size=2 color=#000000><b>TOTAL DEL PROCESO CENTRO DE COSTO: </b></font></td>"; 
-      echo "<td align=left bgcolor=#FFFFFF ><font size=2 color=#000000>&nbsp;<b>$canti</b></font></td>";
-	  echo "<td align=left bgcolor=#FFFFFF ><font size=2 color=#000000>&nbsp;<b>$total</b></font></td>";
+	  
+	  echo "<Tr >";
+      echo "<td bgcolor=#FFFFFF align=left nowrap='nowrap'><font size=2 color=#000000><b>TOTAL DEL PROCESO CENTRO DE COSTO: </b></font></td>"; 
+      echo "<td bgcolor=#FFFFFF align=center nowrap='nowrap'><font size=2 color=#000000>&nbsp;<b>$canti</b></font></td>";
+	  echo "<td bgcolor=#FFFFFF align=center nowrap='nowrap'><font size=2 color=#000000>&nbsp;<b>$total</b></font></td>";
       echo "</tr >"; 
-      echo "</table>";
-	  
+      
 	  $canti=0;
 	  $total=0;
 	  for ($j=1; $j <=19; $j++)
@@ -732,21 +738,17 @@ else
     echo "<td  bgcolor=#FFFFFF align=center><font size=1><b>".number_format(($arrecrit[19]/$canti)*100)."%</b></font></td>";
     echo "</tr >";
 
-	echo "</table>";
-	
-	echo "<table border=0 size=100%>";
-    echo "<Tr >";
-    echo "<td align=LEFT bgcolor=#FFFFFF ><font size=2 color=#000000><b>TOTAL DEL PROCESO CENTRO DE COSTO: </b></font></td>"; 
-    echo "<td align=left bgcolor=#FFFFFF ><font size=2 color=#000000>&nbsp;<b>$canti</b></font></td>";
-	echo "<td align=left bgcolor=#FFFFFF ><font size=2 color=#000000>&nbsp;<b>$total</b></font></td>";
+	echo "<Tr >";
+    echo "<td bgcolor=#FFFFFF align=left nowrap='nowrap'><font size=2 color=#000000><b>TOTAL DEL PROCESO CENTRO DE COSTO: </b></font></td>"; 
+    echo "<td bgcolor=#FFFFFF align=center nowrap='nowrap'><font size=2 color=#000000>&nbsp;<b>$canti</b></font></td>";
+	echo "<td bgcolor=#FFFFFF align=center nowrap='nowrap'><font size=2 color=#000000>&nbsp;<b>$total</b></font></td>";
     echo "</tr >"; 
-    echo "</table>";
+    
   }
 	
-    echo "<table border=0 size=100%>";
     echo "<Tr >";
-    echo "<td align=LEFT bgcolor=#FFFFFF ><font size=2 color=#000000><b>TOTAL DEL PROCESO POR TODOS LOS CENTROS DE COSTOS: </b></font></td>"; 
-    echo "<td align=left bgcolor=#FFFFFF ><font size=2 color=#000000>&nbsp;<b>$num1</b></font></td>";
+    echo "<td bgcolor=#FFFFFF align=left nowrap='nowrap'><font size=2 color=#000000><b>TOTAL DEL PROCESO POR TODOS LOS CENTROS DE COSTOS: </b></font></td>"; 
+    echo "<td bgcolor=#FFFFFF align=center nowrap='nowrap'><font size=2 color=#000000>&nbsp;<b>$num1</b></font></td>";
     echo "</tr >"; 
     echo "</table>";
    

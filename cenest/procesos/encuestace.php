@@ -27,14 +27,16 @@ include_once("conex.php");
         
 
         include_once("root/comun.php");
-        
-
-
         $conex = obtenerConexionBD("matrix");
+		//$wemp_pmla = $_POST['wemp_pmla'];
+		$wbasedatomovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
     }
+	
+	
     ?>
 </head>
 <body>
+	
 <div class="container" style="margin-top: -30px">
     <div id="loginbox" style="margin-top:50px;" class="">
         <div class="panel panel-info" style="width: 1300px">
@@ -46,14 +48,18 @@ include_once("conex.php");
 
                 <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12">
                 </div>
-
-                <form id="encuestaform" name="encuestaform" class="form-horizontal" role="form" method="post" action="encuestace.php">
-                    <div style="margin-bottom: 25px" class="input-group">
+				
+				<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
+                
+				<form  id="encuestaform" name="encuestaform" class="form-horizontal" role="form" method="post" action="encuestace.php?wemp_pmla=<?php echo($wemp_pmla)?>">
+						
+						
+				   <div style="margin-bottom: 25px" class="input-group">
                         <div class="input-group">
                             <span class="input-group-addon"><label>Centro de Costos:</label></span>
                             <select id="centro_Costos" name="centro_Costos" class="form-control" style="width: 350px" required>
                                 <?php
-                                $consespe2 = mysql_query("select Ccocod,Cconom from movhos_000011");
+                                $consespe2 = mysql_query("select Ccocod,Cconom from ".$wbasedatomovhos."_000011");
                                 while($datoespe2 = mysql_fetch_array($consespe2))
                                 {
                                     echo "<option value='".$datoespe2['Ccocod']."'>".$datoespe2['Ccocod'].' '.$datoespe2['Cconom']."</option>";

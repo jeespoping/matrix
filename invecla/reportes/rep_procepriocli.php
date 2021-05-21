@@ -300,7 +300,9 @@ if (!$usuarioValidado)
 else
 {
 	
- $empre1='cominf';
+ //$empre1='cominf';
+ $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+ $empre1 = consultarAliasPorAplicacion($conex, $wemp_pmla, "invecla"); 
  //Conexion base de datos
  
 
@@ -335,7 +337,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or empty($txDes
 
 	//Generando lista de opciones de Centro de costos
 	$q = "SELECT ccocod,cconom 
-		  FROM movhos_000011
+		  FROM ".$wmovhos."_000011
 		  order by 1";
 
 	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -409,7 +411,7 @@ if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or empty($txDes
             ." GROUP BY 1,2,3,4,5"
             ." ORDER by 1,2,3";  
     
-   // echo $quer1."<br>";         
+    //echo $quer1."<br>";         
             
     $err4 = mysql_query($quer1, $conex) or die("ERROR EN QUERY");
     

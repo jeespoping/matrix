@@ -5,7 +5,9 @@ header("Content-Type: text/html;charset=ISO-8859-1");
 
 include_once("root/comun.php");
 include_once("../procesos/funciones_talhuma.php");
-
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wmovhos 	= consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+$wcostosyp  = consultarAliasPorAplicacion($conex, $wemp_pmla, "COSTOS");
 
 global $wemp_pmla;
 
@@ -33,7 +35,7 @@ if ($inicial=='no' AND $operacion=='mostrarAgrupaciones' )
 	}
 	else
 	{
-		$wbasedatocyp ='movhos_000011';
+		$wbasedatocyp =$wmovhos.'_000011';
 	}
 		$q = "  SELECT Cconom ,Ccocod "
 			."    FROM ".$wbasedatocyp." "
@@ -130,15 +132,15 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 {
 		
 		
-		$q = "SELECT  DISTINCT(Ideuse) as usuario,Ideno1,Ideno2,Ideap1,Ideap2 ,costosyp_000005.Cconom,Cardes "
-			."  FROM ".$wbasedato."_000050 , talhuma_000013, costosyp_000005,movhos_000011,root_000079 "
+		$q = "SELECT  DISTINCT(Ideuse) as usuario,Ideno1,Ideno2,Ideap1,Ideap2 ,".$wcostosyp."_000005.Cconom,Cardes "
+			."  FROM ".$wbasedato."_000050 , talhuma_000013, ".$wcostosyp."_000005,".$wmovhos."_000011,root_000079 "
 			." WHERE Peresc = Ideuse"
-			."   AND Idecco = costosyp_000005.Ccocod"
+			."   AND Idecco = ".$wcostosyp."_000005.Ccocod"
 			."   AND Ideccg = Carcod"
-			."   AND movhos_000011.Ccocod = costosyp_000005.Ccocod";
+			."   AND ".$wmovhos."_000011.Ccocod = ".$wcostosyp."_000005.Ccocod";
 		
 			if($wcodcco != "")
-				$q = $q . "  AND costosyp_000005.Ccocod = '".$wcodcco." '";
+				$q = $q . "  AND ".$wcostosyp."_000005.Ccocod = '".$wcodcco." '";
 			
 			// echo "<table><tr><td>".$q."</td></tr></table>";
 			// se agrega esto al query para que busque por centro de costos hospitalarios
@@ -170,7 +172,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 				$q = $q . " AND Ccoayu = 'on' ";
 			}		
 			
-			$q = $q . " ORDER BY costosyp_000005.Ccocod";
+			$q = $q . " ORDER BY ".$wmovhos."_000005.Ccocod";
 		
 		 // echo "<table><tr><td>".$q."</td></tr></table>";
 		  
@@ -196,7 +198,7 @@ if ($inicial=='no' AND $operacion=='traeResultadosReporte')
 			}
 			
 			$q1 = "SELECT  Encno1,Encno2, Encap1, Encap2,Enchis,Encfec,Enccom,Encenc"
-				."  FROM  ".$wbasedato."_000049 ,  ".$wbasedato."_000050 , costosyp_000005 "
+				."  FROM  ".$wbasedato."_000049 ,  ".$wbasedato."_000050 , ".$wcostosyp."_000005 "
 				." WHERE EncFec BETWEEN '".$fechainicial1."' AND '".$fechafinal1."'  "
 				."   AND Encese= 'cerrado'"
 				."   AND Enchis= Perhis "

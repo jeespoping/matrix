@@ -10,6 +10,7 @@ else
 {
 include("root/comun.php");
 $conex = obtenerConexionBD("matrix");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 ?>
 
 <!DOCTYPE html>
@@ -32,6 +33,7 @@ $conex = obtenerConexionBD("matrix");
                 <div style="padding-top:30px" class="panel-body" >
                     
 					<FORM CLASS="borde" ACTION="rep_gesis1form.php" METHOD="POST">
+					<input type='HIDDEN' NAME= 'wemp_pmla' value="<?$wemp_pmla?>">
 					    <select name="consulta" value="-Any-" >
                             <option>- Selecciona la Informacion a Buscar -</option>
                             <option value="camilleros">Camilleros</option>

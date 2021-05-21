@@ -43,6 +43,7 @@
 
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 
 /*******************************************************************************************************************************************
 *                                                REPORTE SEGUIMIENTO DE ACTUALIZACIONES                                                    *
@@ -81,6 +82,9 @@ if(!isset($_SESSION['user']))
 else
 {
   include_once("root/comun.php");
+  $wmovhos     = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+  $wcostosyp   = consultarAliasPorAplicacion($conex, $wemp_pmla, "COSTOS");
+  $wmagenta    = consultarAliasPorAplicacion($conex, $wemp_pmla, "afinidad");
   
   /////////////////////////////////////////////////encabezado general///////////////////////////////////
   $titulo = "SISTEMA DE COMENTARIOS Y SUGERENCIAS";
@@ -102,7 +106,7 @@ else
     echo "<tr><td align=center><font size=3>INGRESE POR FAVOR LAS FECHAS, DENTRO DEL SIGUIENTE RANGO:</font></td>";
     echo "</table></br></br>";
     echo "<fieldset align=center></br>";   	
-    echo "<form name='rep_segactuali' action='' method=post>";
+    echo "<form name='rep_segactuali.php?wemp_pmla=".$wemp_pmla."' action='' method=post>";
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////RANGO DE FECHAS
 
@@ -302,9 +306,9 @@ else
    $q3 = "CREATE TEMPORARY TABLE if not exists temp1  "
 		."(index idx_clidoc( clidoc,orihis, oriing ))"
 	    ." SELECT clidoc,clinom,cliap1,cliap2,'".$row1[1]."' as orihis,'".$row1[2]."' as oriing,'".$row1[4]."' as cco,clitip,'".$row1[7]."' as usua,'".$row2[0]."' as nomu,'".$row2[1]."' as ape1,'".$row1[8]."' as tipo  "
-	    ."   FROM magenta_000008 LEFT JOIN root_000037 "
-	    ."     ON magenta_000008.clidoc = root_000037.oriced" 
-	    ."  WHERE magenta_000008.clidoc = '".$row1[3]."' "
+	    ."   FROM ".$wmagenta."_000008 LEFT JOIN root_000037 "
+	    ."     ON ".$wmagenta."_000008.clidoc = root_000037.oriced" 
+	    ."  WHERE ".$wmagenta."_000008.clidoc = '".$row1[3]."' "
 	    ."  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12 "
 	    ."  ORDER BY 1 "; 
    
@@ -316,9 +320,9 @@ else
    $q3 = "CREATE TEMPORARY TABLE if not exists temp3 "
         ."(index idx_clidoc( clidoc,orihis, oriing ))"
 	    ." SELECT clidoc,clinom,cliap1,cliap2,'".$row1[1]."' as orihis,'".$row1[2]."' as oriing,'".$row1[4]."' as cco,clitip,'".$row1[7]."' as usua,'".$row2[0]."' as nomu,'".$row2[1]."' as ape1,'".$row1[8]."' as tipo "
-	    ."   FROM magenta_000008 LEFT JOIN root_000037 "
-	    ."     ON magenta_000008.clidoc = root_000037.oriced" 
-	    ."  WHERE magenta_000008.clidoc = '".$row1[3]."' "
+	    ."   FROM ".$wmagenta."_000008 LEFT JOIN root_000037 "
+	    ."     ON ".$wmagenta."_000008.clidoc = root_000037.oriced" 
+	    ."  WHERE ".$wmagenta."_000008.clidoc = '".$row1[3]."' "
 	    ."  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12 "
 	    ."  ORDER BY 1"; 
    $err3 = mysql_query($q3, $conex) or die (" Error: " . mysql_errno() . " - en el query_: " . $q3 . " - " . mysql_error());
@@ -329,9 +333,9 @@ else
    $q3 = "CREATE TEMPORARY TABLE if not exists temp4 "
 		."(index idx_clidoc( clidoc,orihis, oriing ))"
 	    ." SELECT clidoc,clinom,cliap1,cliap2,'".$row1[1]."' as orihis,'".$row1[2]."' as oriing,'".$row1[4]."' as cco,clitip,'".$row1[7]."' as usua,'".$row2[0]."' as nomu,'".$row2[1]."' as ape1,'".$row1[8]."' as tipo "
-	    ."   FROM magenta_000008 LEFT JOIN root_000037 "
-	    ."     ON magenta_000008.clidoc = root_000037.oriced" 
-	    ."  WHERE magenta_000008.clidoc = '".$row1[3]."' "
+	    ."   FROM ".$wmagenta."_000008 LEFT JOIN root_000037 "
+	    ."     ON ".$wmagenta."_000008.clidoc = root_000037.oriced" 
+	    ."  WHERE ".$wmagenta."_000008.clidoc = '".$row1[3]."' "
 	    ."  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12 "
 	    ."  ORDER BY 1 "; 
    $err3 = mysql_query($q3, $conex) or die("ERROR EN QUERY temporal ");
@@ -359,11 +363,11 @@ else
 	       ."   FROM temp1" 
            ."  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16"
 	       ."  UNION "
-           ." SELECT clidoc,clinom,cliap1,cliap2,eyrsde,eyrtip,eyrnum,movhos_000017.Fecha_data as fecha,movhos_000017.Hora_data as hora,orihis,oriing,clitip,usua,nomu,ape1,tipo"
-	       ."   FROM temp4,movhos_000017"
-	       ."  WHERE temp4.orihis=movhos_000017.eyrhis"
-	       ."    AND movhos_000017.eyring='".$row1[2]."'"
-	       ."    AND movhos_000017.eyrest='on'"
+           ." SELECT clidoc,clinom,cliap1,cliap2,eyrsde,eyrtip,eyrnum,".$wmovhos."_000017.Fecha_data as fecha,".$wmovhos."_000017.Hora_data as hora,orihis,oriing,clitip,usua,nomu,ape1,tipo"
+	       ."   FROM temp4,".$wmovhos."_000017"
+	       ."  WHERE temp4.orihis=".$wmovhos."_000017.eyrhis"
+	       ."    AND ".$wmovhos."_000017.eyring='".$row1[2]."'"
+	       ."    AND ".$wmovhos."_000017.eyrest='on'"
 	       ."    AND eyrtip='Recibo'"
 	       ."  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16";
 
@@ -376,12 +380,12 @@ else
        
 	  $q1 = "CREATE TEMPORARY TABLE if not exists temp2 "
 			."(index idx_clidoc( clidoc,orihis, oriing ))"
-	       ." SELECT clidoc,clinom,cliap1,cliap2,actrec,actact,eyrsde,eyrtip,eyrnum,fecha,hora,magenta_000001.Seguridad,clitip,orihis,oriing,usua,nomu,ape1,tipo"
-	       ."   FROM temp100 LEFT JOIN magenta_000001" 
-	       ."     ON temp100.clidoc = magenta_000001.actdoc"
-	       ."    AND temp100.orihis = magenta_000001.acthis"
-	       ."    AND magenta_000001.actfue='".$row1[0]."'"
-	       ."    AND temp100.eyrsde = magenta_000001.actcco"
+	       ." SELECT clidoc,clinom,cliap1,cliap2,actrec,actact,eyrsde,eyrtip,eyrnum,fecha,hora,".$wmagenta."_000001.Seguridad,clitip,orihis,oriing,usua,nomu,ape1,tipo"
+	       ."   FROM temp100 LEFT JOIN ".$wmagenta."_000001" 
+	       ."     ON temp100.clidoc = ".$wmagenta."_000001.actdoc"
+	       ."    AND temp100.orihis = ".$wmagenta."_000001.acthis"
+	       ."    AND ".$wmagenta."_000001.actfue='".$row1[0]."'"
+	       ."    AND temp100.eyrsde = ".$wmagenta."_000001.actcco"
 	       ."  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19";
 	       
 	  
@@ -400,7 +404,7 @@ else
 	$q2 ="CREATE TEMPORARY TABLE if not exists temp21 " 
 		 ."(index idx_clidoc( clidoc,orihis, oriing ))"
 	     ." SELECT clidoc,clinom,cliap1,cliap2,actrec,actact,eyrsde,cconom,eyrtip,eyrnum,fecha,hora,temp2.Seguridad,clitip as tip,orihis,oriing,usua,nomu,ape1,tipo"
-	     ."   FROM temp2 LEFT JOIN costosyp_000005"
+	     ."   FROM temp2 LEFT JOIN ".$wcostosyp."_000005"
 	     ."     ON eyrsde=ccocod"
 	     ."  ORDER BY 10,1,2,3,4";
 	

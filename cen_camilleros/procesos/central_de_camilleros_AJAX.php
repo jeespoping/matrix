@@ -1,6 +1,7 @@
 <?php
 include_once("conex.php");
 
+
     /**
      * Lógica de los llamados AJAX del todo el programa
      */
@@ -12,6 +13,7 @@ include_once("conex.php");
 
         include_once("root/comun.php");
         // $wbasedato       = consultarAliasPorAplicacion($conex, $wemp_pmla, 'root');
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
         $wbasedato = "root";
 
         $data = array('error'=>0,'mensaje'=>'','html'=>'','sql'=>'');
@@ -34,8 +36,8 @@ include_once("conex.php");
                 }
                 else
                 {
-                    $sql_verif = "SELECT movhos_000017.Fecha_data, movhos_000017.Hora_data, ubihis, ubiing, ubisac, ubisan, eyrtip"
-                        . " FROM movhos_000018, movhos_000017"
+                    $sql_verif = "SELECT ".$wmovhos."_000017.Fecha_data, ".$wmovhos."_000017.Hora_data, ubihis, ubiing, ubisac, ubisan, eyrtip"
+                        . " FROM ".$wmovhos."_000018, ".$wmovhos."_000017"
                             . " WHERE ubihis = '" . $historia . "'"
                                         . " AND ubihis = Eyrhis"
                                         . " AND Ubiing = Eyring"
@@ -47,8 +49,8 @@ include_once("conex.php");
                                         . " AND ubiptr = 'on'"
                                         . " -- AND eyrtip = 'Entrega'"
                                         . " AND Eyrest = 'on'"
-                                . " ORDER BY movhos_000018.Fecha_data DESC, movhos_000018.Hora_data DESC, "
-                                                    . " movhos_000017.Fecha_data DESC, movhos_000017.Hora_data DESC;";
+                                . " ORDER BY ".$wmovhos."_000018.Fecha_data DESC, ".$wmovhos."_000018.Hora_data DESC, "
+                                                    . " ".$wmovhos."_000017.Fecha_data DESC, ".$wmovhos."_000017.Hora_data DESC;";
 
                     $res = mysql_query($sql_verif, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql_verif . " - " . mysql_error());
 

@@ -103,6 +103,8 @@ else
 
   include_once("root/comun.php");
   
+  $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+  
 	                                                 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
   $wactualiz="Junio 21 de 2017";                    // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                                 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
@@ -282,7 +284,7 @@ else
   
   
   //FORMA ================================================================
-  echo "<form name='altas' action='estadisticas_altas.php' method=post>";
+  echo "<form name='altas' action='estadisticas_altas.php?wemp_pmla=".$wemp_pmla."' method=post>";
   
   echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
   
@@ -606,7 +608,7 @@ else
           ."            (MINUTE(TIMEDIFF(ubihad,ubihap))*60)+ "
           ."            (SECOND(TIMEDIFF(ubihad,ubihap)))), "
           ."            ubihis, ubiing, ubisac, ".$wtabcco.".cconom "
-          ."   FROM movhos_000018, ".$wtabcco.", ".$wbasedato."_000011 "
+          ."   FROM ".$wmovhos."_000018, ".$wtabcco.", ".$wbasedato."_000011 "
           ."  WHERE ubifad                 BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
           ."    AND ubisac                 LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
           ."    AND ubiald                 = 'on' "
@@ -1143,19 +1145,19 @@ else
           }
           
        //*** TIEMPO ENTRE LA DEVOLUCION O ALTA EN PROCESO HASTA QUE SE EMPIEZA A FACTURAR ***
-       $q = " SELECT SUM(HOUR(TIMEDIFF(A.ubihap, movhos_000022.hora_data))), " 
-		   ."        SUM(MINUTE(TIMEDIFF(A.ubihap, movhos_000022.hora_data))), " 
-		   ."        SUM(SECOND(TIMEDIFF(A.ubihap, movhos_000022.hora_data))), " 
+       $q = " SELECT SUM(HOUR(TIMEDIFF(A.ubihap, ".$wmovhos."_000022.hora_data))), " 
+		   ."        SUM(MINUTE(TIMEDIFF(A.ubihap, ".$wmovhos."_000022.hora_data))), " 
+		   ."        SUM(SECOND(TIMEDIFF(A.ubihap, ".$wmovhos."_000022.hora_data))), " 
 			."        COUNT(*), A.ubisac "
-			."   FROM movhos_000018 A, movhos_000022, movhos_000011, ( SELECT ubihis, ubiing " 
-			."                                                             FROM movhos_000018 "
+			."   FROM ".$wmovhos."_000018 A, ".$wmovhos."_000022, ".$wmovhos."_000011, ( SELECT ubihis, ubiing " 
+			."                                                             FROM ".$wmovhos."_000018 "
 			."                                                            WHERE CONCAT(ubihis,ubiing) NOT IN (SELECT CONCAT(denhis,dening) "
-			."                                                                                                  FROM movhos_000035 "
+			."                                                                                                  FROM ".$wmovhos."_000035 "
 			."                                                                                                 WHERE ubifad BETWEEN '2010-02-17' AND '2010-02-17' "
 			."                                                                                                   AND ubihis = denhis "
 			."                                                                                                   AND ubiing = dening "
-			."                                                                                                   AND ubifad = movhos_000035.fecha_data "
-			."                                                                                                   AND ubihap > movhos_000035.hora_data) "
+			."                                                                                                   AND ubifad = ".$wmovhos."_000035.fecha_data "
+			."                                                                                                   AND ubihap > ".$wmovhos."_000035.hora_data) "
 			."                                                              AND ubifad BETWEEN '2010-02-17' AND '2010-02-17') B "
 			."   WHERE A.ubifad  BETWEEN '2010-02-17' AND '2010-02-17' "
 			."     AND A.ubisac  LIKE '%' "
@@ -1163,7 +1165,7 @@ else
 			."     AND A.ubifap  = A.ubifad " 
 			."     AND A.ubihis  = cuehis " 
 			."     AND A.ubiing  = cueing "
-			."     AND A.ubifap  = movhos_000022.fecha_data " 
+			."     AND A.ubifap  = ".$wmovhos."_000022.fecha_data " 
 			."     AND A.ubisac  = ccocod "
 			."     AND ccohos  = 'on' "
 			."     AND ccopal  = 'on' " 

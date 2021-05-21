@@ -1,4 +1,5 @@
 <HTML>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <HEAD>
 <TITLE>PACIENTES QUE REINGRESAN A LA UNIDAD</TITLE>
 </HEAD>
@@ -14,6 +15,7 @@
 <?php
 include_once("conex.php");
 
+
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -26,7 +28,7 @@ if(!isset($_SESSION['user']))
 
 	
 
- echo "<form name='pacreingpiso' action='pacreingpiso.php' method=post>";  
+ echo "<form name='pacreingpiso' action='pacreingpiso.php?wemp_pmla=".$wemp_pmla."' method=post>";  
  
  if (!isset($wfec1) or $wfec1=='')
  {
@@ -69,6 +71,9 @@ if(!isset($_SESSION['user']))
  }	
  else      // Cuando ya estan todos los datos escogidos
  {
+	include_once("root/comun.php");
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	
 	echo "<center><table border=0>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTES REINGRESAN A CUIDADOS ESPECIALES</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
@@ -77,7 +82,7 @@ if(!isset($_SESSION['user']))
 
     echo "<br>";
      $query="Select b.Fecha_data,Eyrhis,Eyring,Eyrsor,Eyrsde,Eyrhor,Eyrhde"
-     ." from   movhos_000032 a,movhos_000017 b "
+     ." from   ".$wmovhos."_000032 a,".$wmovhos."_000017 b "
      ." where   a.Fecha_ing between '".$wfec1."' and '".$wfec2."'"
 	 ." and  a.Servicio = '1282'"
 	 ." and  a.Num_ing_serv >= '2'"

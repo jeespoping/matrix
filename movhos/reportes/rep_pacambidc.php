@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
   <title>REPORTE DE PACIENTES AMBULATORIOS CON ALTA DEFINITIVA</title>
 <script type="text/javascript">
@@ -32,6 +33,10 @@
 </head>
 <?php
 	include_once("conex.php");
+	include_once("root/comun.php");
+	
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 
   /******************************************************************************
    *     REPORTE PACIENTES AMBULATORIOS Y DADOS DE ALTA		                *
@@ -67,7 +72,7 @@ else
 	encabezado("PACIENTES AMBULATORIOS CON ALTA DEFINITIVA",$wactualiz,"clinica");  //Inicio ELSE reporte
 	
 
-  echo "<form name='forma' action='rep_pacambidc.php' method=post onSubmit='return valida_enviar(this);'>";
+  echo "<form name='forma' action='rep_pacambidc.php?wemp_pmla=".$wemp_pmla."' method=post onSubmit='return valida_enviar(this);'>";
   $wfecha=date("Y-m-d");   
   
  /* echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";*/

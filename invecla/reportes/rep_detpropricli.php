@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 <title>MATRIX - [REPORTE DETALLE DE PROCESOS PRIORITARIOS CLINICA]</title>
 
@@ -274,6 +275,11 @@ $usuarioValidado = true;
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false;
 }else {
+	$user_session = explode('-', $_SESSION['user']);
+        $wuse = $user_session[1];
+        mysql_select_db("matrix");
+		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wcominf = consultarAliasPorAplicacion($conex, $wemp_pmla, "invecla"); 
 	if (strpos($user, "-") > 0)
 	$wuser = substr($user, (strpos($user, "-") + 1), strlen($user));
 }
@@ -295,10 +301,10 @@ if (!$usuarioValidado)
 }
 else
 {
- $empresa='cominf';
+ //$empresa='cominf';
  
  //Forma
- echo "<form name='rep_detpropricli' action='' method=post>";
+ echo "<form name='forma' action='rep_detpropricli.php?wemp_pmla=".$wemp_pmla."' method=post>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
  
  if (!isset($pp) or $pp=='-' or !isset($fec1) or !isset($fec2) or empty($txDestino))
@@ -325,7 +331,7 @@ else
 
 	//Generando lista de opciones de Centro de costos
 	$q = "SELECT ccocod,cconom 
-		  FROM movhos_000011
+		  FROM ".$wmovhos."_000011
 		  where ccocod<>'*'
 		  order by 1";
 
@@ -420,13 +426,13 @@ else
    echo "</tr>";
    echo "</table>";
   	
-   $query = " SELECT ppcperso1,ppccargo1,ppcfecha,ppccco,ppcproce,ppccrite1,ppccrite2,ppccrite3,ppccrite4,ppccrite5,ppccrite6,ppccrite7,ppccrite8,ppccrite9,ppccrite10,ppccrite11,ppccrite12,ppccrite13,ppccrite14,ppccrite15,ppccrite16,ppccrite17,ppccrite18,ppccrite19,ppcobserva,ppcporce"
-           ."   FROM ".$empresa."_000046"
-           ."  WHERE ppcproce = '".$tpp."'" 
-           ."    AND ppcporce < 100"
-           ."    AND ppcfecha between '".$fec1."' and '".$fec2."'"
-           ."    AND ppccco $ccos"
-           ."  ORDER BY ppccco,ppcfecha,ppcperso1";
+   $query = " SELECT ppcperso1,ppccargo1,ppcfecha,ppccco,ppcproce,ppccrite1,ppccrite2,ppccrite3,ppccrite4,ppccrite5,ppccrite6,ppccrite7,ppccrite8,ppccrite9,ppccrite10,ppccrite11,ppccrite12,ppccrite13,ppccrite14,ppccrite15,ppccrite16,ppccrite17,ppccrite18,ppccrite19,ppcobserva,ppcporce
+              FROM ".$wcominf."_000046
+             WHERE ppcproce = '".$tpp."' 
+               AND ppcporce < 100
+               AND ppcfecha between '".$fec1."' and '".$fec2."'
+               AND ppccco ".$ccos."
+             ORDER BY ppccco,ppcfecha,ppcperso1";
            
    $err1 = mysql_query($query,$conex);
    $num1 = mysql_num_rows($err1);

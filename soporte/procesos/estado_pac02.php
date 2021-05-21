@@ -1,5 +1,6 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel='stylesheet' type='text/css'>
 <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+<input type='HIDDEN' NAME= 'wemp_pmla' value='<?php echo($wemp_pmla) ?>'>
 <style>
     .alternar:hover{ background-color:#e1edf7;}
 </style>
@@ -25,16 +26,22 @@ else
     $wuse = $user_session[1];
     
 
-    include_once("root/comun.php");
-    
-
+    include_once("root/comun.php");	
+	
+	$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+	
+    $consultaAjax = '';
+	
 
     $conex = obtenerConexionBD("matrix");
 }
 
-if($tabla == 'cliame_000100')
+if($tabla == $wcliame.'_000100')
 {
-    $query = mysql_query("select * from cliame_000100 where id = '$idRegistro'");
+    $query = mysql_query("select * from ".$wcliame."_000100 where id = '$idRegistro'");
     while($dato = mysql_fetch_array($query))
     {
         $historia = $dato['Pachis'];
@@ -113,7 +120,7 @@ if($tabla == 'cliame_000100')
 
         if($accion == 'cliame100')
         {
-            $queryCliame100 = mysql_query("update cliame_000100 set Pachis='$historia', Pactdo='$tipodoc', Pacdoc='$numdoc',
+            $queryCliame100 = mysql_query("update ".$wcliame."_000100 set Pachis='$historia', Pactdo='$tipodoc', Pacdoc='$numdoc',
                                        Pacap1='$primapel', Pacap2='$segapel', Pacno1='$primnom', Pacno2='$segnom', Pacact='$pacact'
                                        WHERE id = '$id'");
 
@@ -126,9 +133,9 @@ if($tabla == 'cliame_000100')
     }
 }
 
-if($tabla == 'cliame_000101')
+if($tabla == $wcliame.'_000101')
 {
-    $query2 = mysql_query("select * from cliame_000101 WHERE id = '$idRegistro'");
+    $query2 = mysql_query("select * from ".$wcliame."_000101 WHERE id = '$idRegistro'");
     while($dato2 = mysql_fetch_array($query2))
     {
         $Medico = $dato2['Medico']; $Fecha_data = $dato2['Fecha_data']; $Hora_data = $dato2['Hora_data'];
@@ -234,7 +241,7 @@ if($tabla == 'cliame_000101')
         {
             if($accion == 'cliame101')
             {
-                $queryCliame101 = mysql_query("update cliame_000101 set Fecha_data='$Fecha_data', Hora_data='$Hora_data', Inghis='$Inghis', Ingnin='$Ingnin', Ingfei='$Ingfei',
+                $queryCliame101 = mysql_query("update ".$wcliame."_000101 set Fecha_data='$Fecha_data', Hora_data='$Hora_data', Inghis='$Inghis', Ingnin='$Ingnin', Ingfei='$Ingfei',
                                            Ingsei='$Ingsei', Ingcem='$Ingcem', Ingent='$Ingent', Ingunx='$Ingunx', Ingniu='$Ingniu'
                                            WHERE id = '$id2'");
 
@@ -247,7 +254,7 @@ if($tabla == 'cliame_000101')
         }
         if(isset($_POST['btnInsertar']))
         {
-            $queryInsertCliame101 = mysql_query("insert into cliame_000101(Medico,Fecha_data,Hora_data,Inghis,Ingnin,Ingfei,Inghin,Ingsei,Ingtin,Ingcai,Ingtpa,Ingcem,Ingent,Ingord,
+            $queryInsertCliame101 = mysql_query("insert into ".$wcliame."_000101(Medico,Fecha_data,Hora_data,Inghis,Ingnin,Ingfei,Inghin,Ingsei,Ingtin,Ingcai,Ingtpa,Ingcem,Ingent,Ingord,
                                                                             Ingpol,Ingnco,Ingdie,Ingtee,Ingtar,Ingusu,Inglug,Ingdig,Ingdes,Ingpla,Ingfha,Ingnpa,Ingcac,Ingpco,Inghoa,
                                                                             Ingcla,Ingvre,Ingunx,Ingmei,Ingtut,Ingniu,Ingfiu,Inghiu,Seguridad,id)
                                                                     VALUES('cliame','$Fecha_data','$Hora_data','$Inghis','$Ingnin','$Ingfei','$Inghin','$Ingsei','$Ingtin','$Ingcai',
@@ -420,9 +427,9 @@ if($tabla == 'root_000037')
     }
 }
 
-if($tabla == 'movhos_000016')
+if($tabla == $wmovhos.'_000016')
 {
-    $query5 = mysql_query("select * from movhos_000016 WHERE id = '$idRegistro'");
+    $query5 = mysql_query("select * from ".$wmovhos."_000016 WHERE id = '$idRegistro'");
     while($dato5 = mysql_fetch_array($query5))
     {
         $Medico = $dato5['Medico']; $Fecha_data = $dato5['Fecha_data']; $Hora_data = $dato5['Hora_data'];
@@ -487,7 +494,7 @@ if($tabla == 'movhos_000016')
         {
             if($accion == 'movhos16')
             {
-                $queryCliame101 = mysql_query("update movhos_000016 set Fecha_data='$Fecha_data', Inghis='$Inghis', Inging='$Inging', Ingres='$Ingres', Ingnre='$Ingnre', Ingtip='$Ingtip'
+                $queryCliame101 = mysql_query("update ".$wmovhos."_000016 set Fecha_data='$Fecha_data', Inghis='$Inghis', Inging='$Inging', Ingres='$Ingres', Ingnre='$Ingnre', Ingtip='$Ingtip'
                                           WHERE id = '$id5'");
 
                 ?>
@@ -499,7 +506,7 @@ if($tabla == 'movhos_000016')
         }
         if(isset($_POST['btnInsertar']))
         {
-            $queryCliame101 = mysql_query("insert into movhos_000016(Medico,Fecha_data,Hora_data,Inghis,Inging,Ingres,Ingnre,Ingtip,Ingtel,Ingdir,Ingmun,Seguridad,id)
+            $queryCliame101 = mysql_query("insert into ".$wmovhos."_000016(Medico,Fecha_data,Hora_data,Inghis,Inging,Ingres,Ingnre,Ingtip,Ingtel,Ingdir,Ingmun,Seguridad,id)
                                                               VALUES('movhos','$Fecha_data','$Hora_data','$Inghis','$Inging','$Ingres','$Ingnre','$Ingtip','$Ingtel','$Ingdir',
                                                               '$Ingmun','$Seguridad','') ");
 
@@ -512,9 +519,9 @@ if($tabla == 'movhos_000016')
     }
 }
 
-if($tabla == 'movhos_000018')
+if($tabla == $wmovhos.'_000018')
 {
-    $query6 = mysql_query("select * from movhos_000018 WHERE id = '$idRegistro'");
+    $query6 = mysql_query("select * from ".$wmovhos."_000018 WHERE id = '$idRegistro'");
     while($dato6 = mysql_fetch_array($query6))
     {
         $Medico = $dato6['Medico']; $Fecha_data = $dato6['Fecha_data']; $Hora_data = $dato6['Hora_data'];
@@ -646,7 +653,7 @@ if($tabla == 'movhos_000018')
         {
             if($accion == 'movhos18')
             {
-                $queryCliame101 = mysql_query("update movhos_000018 set Ubihis='$Ubihis', Ubiing='$Ubiing', Ubisac='$Ubisac', Ubisan='$Ubisan',
+                $queryCliame101 = mysql_query("update ".$wmovhos."_000018 set Ubihis='$Ubihis', Ubiing='$Ubiing', Ubisac='$Ubisac', Ubisan='$Ubisan',
                                            Ubihac='$Ubihac', Ubihan='$Ubihan', Ubialp='$Ubialp', Ubiald='$Ubiald', Ubifap='$Ubifap', Ubihap='$Ubihap',
                                            Ubifad='$Ubifad', Ubihad='$Ubihad', Ubiptr='$Ubiptr', Ubimue='$Ubimue'
                                           WHERE id = '$id6'");
@@ -660,7 +667,7 @@ if($tabla == 'movhos_000018')
         }
         if(isset($_POST['btnInsertar']))
         {
-            $queryCliame101 = mysql_query("insert into movhos_000018 (Medico,Fecha_data,Hora_data,Ubihis,Ubiing,Ubisac,Ubisan,Ubihac,Ubihan,Ubialp,Ubiald,Ubifap,Ubihap,Ubifad,Ubihad,
+            $queryCliame101 = mysql_query("insert into ".$wmovhos."_000018 (Medico,Fecha_data,Hora_data,Ubihis,Ubiing,Ubisac,Ubisan,Ubihac,Ubihan,Ubialp,Ubiald,Ubifap,Ubihap,Ubifad,Ubihad,
                                                                       Ubiptr,Ubitmp,Ubimue,Ubiprg,Ubifho,Ubihho,Ubihot,Ubiuad,Ubiamd,Ubijus,Ubidie,Ubiste,Seguridad,id)
                                                               VALUES ('movhos','$Fecha_data','$Hora_data','$Ubihis','$Ubiing','$Ubisac','$Ubisan','$Ubihac','$Ubihan','$Ubialp','$Ubiald',
                                                                       '$Ubifap','$Ubihap','$Ubifad','$Ubihad','$Ubiptr','$Ubitmp','$Ubimue','$Ubiprg','$Ubifho','$Ubihho','$Ubihot','$Ubiuad',
@@ -675,9 +682,9 @@ if($tabla == 'movhos_000018')
     }
 }
 
-if($tabla == 'movhos_000020')
+if($tabla == $wmovhos.'_000020')
 {
-    $query7 = mysql_query("select * from movhos_000020 WHERE id = '$idRegistro'");
+    $query7 = mysql_query("select * from ".$wmovhos."_000020 WHERE id = '$idRegistro'");
     while($dato7 = mysql_fetch_array($query7))
     {
         $Habcod = $dato7['Habcod']; $Habcco = $dato7['Habcco']; $Habhis = $dato7['Habhis'];
@@ -763,7 +770,7 @@ if($tabla == 'movhos_000020')
 
         if($accion == 'movhos20')
         {
-            $queryCliame101 = mysql_query("update movhos_000020 set Habcod='$Habcod', Habcco='$Habcco', Habhis='$Habhis', Habing='$Habing',
+            $queryCliame101 = mysql_query("update ".$wmovhos."_000020 set Habcod='$Habcod', Habcco='$Habcco', Habhis='$Habhis', Habing='$Habing',
                                            Habali='$Habali', Habdis='$Habdis', Habest='$Habest', habpro='$habpro', Habcpa='$Habcpa'
                                           WHERE id = '$id7'");
 
@@ -776,9 +783,9 @@ if($tabla == 'movhos_000020')
     }
 }
 
-if($tabla == 'movhos_000004')
+if($tabla == $wmovhos.'_000004')
 {
-    $query8 = mysql_query("select * from movhos_000004 WHERE id = '$idRegistro'");
+    $query8 = mysql_query("select * from ".$wmovhos."_000004 WHERE id = '$idRegistro'");
     while($dato8 = mysql_fetch_array($query8))
     {
         $Spahis = $dato8['Spahis']; $Spaing = $dato8['Spaing']; $Spacco = $dato8['Spacco'];
@@ -835,7 +842,7 @@ if($tabla == 'movhos_000004')
 
         if($accion == 'movhos4')
         {
-            $queryCliame101 = mysql_query("update movhos_000004 set Spahis='$Spahis', Spaing='$Spaing', Spacco='$Spacco', Spaart='$Spaart',
+            $queryCliame101 = mysql_query("update ".$wmovhos."_000004 set Spahis='$Spahis', Spaing='$Spaing', Spacco='$Spacco', Spaart='$Spaart',
                                            Spauen='$Spauen', Spausa='$Spausa', Spaaen='$Spaaen', Spaasa='$Spaasa'
                                           WHERE id = '$id8'");
 
@@ -848,9 +855,9 @@ if($tabla == 'movhos_000004')
     }
 }
 
-if($tabla == 'hce_000022')
+if($tabla == $whce.'_000022')
 {
-    $query9 = mysql_query("select * from hce_000022 WHERE id = '$idRegistro'");
+    $query9 = mysql_query("select * from ".$whce."_000022 WHERE id = '$idRegistro'");
     while($dato9 = mysql_fetch_array($query9))
     {
         $Fecha_data = $dato9['Fecha_data'];
@@ -934,7 +941,7 @@ if($tabla == 'hce_000022')
 
         if($accion == 'hce22')
         {
-            $queryCliame101 = mysql_query("update hce_000022 set Mtrhis='$Mtrhis', Mtring='$Mtring', Mtrmed='$Mtrmed', Mtrtra='$Mtrtra',
+            $queryCliame101 = mysql_query("update ".$whce."_000022 set Mtrhis='$Mtrhis', Mtring='$Mtring', Mtrmed='$Mtrmed', Mtrtra='$Mtrtra',
                                            Mtreme='$Mtreme', Mtrcon='$Mtrcon', Mtrcur='$Mtrcur', Mtrcci='$Mtrcci', Mtrccu='$Mtrccu', Mtrtur='$Mtrtur'
                                           WHERE id = '$id9'");
 
@@ -947,9 +954,9 @@ if($tabla == 'hce_000022')
     }
 }
 
-if($tabla == 'hce_000036')
+if($tabla == $whce.'_000036')
 {
-    $query10 = mysql_query("select * from hce_000036 WHERE id = '$idRegistro'");
+    $query10 = mysql_query("select * from ".$whce."_000036 WHERE id = '$idRegistro'");
     while($dato10 = mysql_fetch_array($query10))
     {
         $Fecha_data = $dato10['Fecha_data'];
@@ -1022,9 +1029,9 @@ if($tabla == 'hce_000036')
     }
 }
 
-if($tabla == 'movhos_000033')
+if($tabla == $wmovhos.'_000033')
 {
-    $query11 = mysql_query("select * from movhos_000033 WHERE id = '$idRegistro'");
+    $query11 = mysql_query("select * from ".$wmovhos."_000033 WHERE id = '$idRegistro'");
     while($dato11 = mysql_fetch_array($query11))
     {
         $Medico = $dato11['Medico'];                        $Fecha_data = $dato11['Fecha_data'];            $Hora_data = $dato11['Hora_data'];
@@ -1097,7 +1104,7 @@ if($tabla == 'movhos_000033')
         {
             if($accion == 'movhos33')
             {
-                $queryCliame101 = mysql_query("update movhos_000033 set Fecha_data='$Fecha_data', Historia_clinica='$Historia_clinica', Num_ingreso='$Num_ingreso',
+                $queryCliame101 = mysql_query("update ".$wmovhos."_000033 set Fecha_data='$Fecha_data', Historia_clinica='$Historia_clinica', Num_ingreso='$Num_ingreso',
                                            Servicio='$Servicio', Num_ing_serv='$Num_ing_serv', Fecha_egre_serv='$Fecha_egre_serv', Hora_egr_serv='$Hora_egr_serv',
                                            Tipo_egre_serv='$Tipo_egre_serv', Dias_estan_serv='$Dias_estan_serv'
                                           WHERE id = '$id11'");
@@ -1111,7 +1118,7 @@ if($tabla == 'movhos_000033')
         }
         if(isset($_POST['btnInsertar']))
         {
-            $queryCliame101 = mysql_query("insert into movhos_000033(Medico,Fecha_data,Hora_data,Historia_clinica,Num_ingreso,Servicio,Num_ing_serv,Fecha_egre_serv,Hora_egr_serv,
+            $queryCliame101 = mysql_query("insert into ".$wmovhos."_000033(Medico,Fecha_data,Hora_data,Historia_clinica,Num_ingreso,Servicio,Num_ing_serv,Fecha_egre_serv,Hora_egr_serv,
                                           Tipo_egre_serv,Dias_estan_serv,Seguridad,id)
                                     VALUES('movhos','$Fecha_data','$Hora_data','$Historia_clinica','$Num_ingreso','$Servicio','$Num_ing_serv','$Fecha_egre_serv','$Hora_egr_serv',
                                           '$Tipo_egre_serv','$Dias_estan_serv','C-Movhos','') ");
@@ -1125,9 +1132,9 @@ if($tabla == 'movhos_000033')
     }
 }
 
-if($tabla == 'tcx_000011')
+if($tabla == $wtcx.'_000011')
 {
-    $query12 = mysql_query("select * from tcx_000011 WHERE id = '$idRegistro'");
+    $query12 = mysql_query("select * from ".$wtcx."_000011 WHERE id = '$idRegistro'");
     while($dato12 = mysql_fetch_array($query12))
     {
         $Fecha_data = $dato12['Fecha_data'];
@@ -1199,7 +1206,7 @@ if($tabla == 'tcx_000011')
 
         if($accion == 'tcx11')
         {
-            $queryCliame101 = mysql_query("update tcx_000011 set Fecha_data='$Fecha_data', Turtur='$Turtur', Turqui='$Turqui',
+            $queryCliame101 = mysql_query("update ".$wtcx."_000011 set Fecha_data='$Fecha_data', Turtur='$Turtur', Turqui='$Turqui',
                                            Turfec='$Turfec', Turndt='$Turndt', Turtdo='$Turtdo', Turdoc='$Turdoc',
                                            Turhis='$Turhis', Turnin='$Turnin', Turnom='$Turnom', Turcir='$Turcir'
                                           WHERE id = '$id12'");

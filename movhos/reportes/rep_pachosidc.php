@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
   <title>REPORTE DE PACIENTES HOSPITALIZADOS CON ALTA DEFINITIVA</title>
 <script type="text/javascript">
@@ -67,7 +68,7 @@ else
 	encabezado("PACIENTES HOSPITALIZADOS CON ALTA DEFINITIVA",$wactualiz,"clinica");  //Inicio ELSE reporte
 	
 
-  echo "<form name='forma' action='rep_pachosidc.php' method=post onSubmit='return valida_enviar(this);'>";
+  echo "<form name='forma' action='rep_pachosidc.php?wemp_pmla=".$wemp_pmla."' method=post onSubmit='return valida_enviar(this);'>";
   $wfecha=date("Y-m-d");   
   
  /* echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";*/
@@ -120,6 +121,11 @@ else
 //RESULTADO DE CONSULTA DEL REPORTE
 else
   {
+	include_once("root/comun.php");
+	
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+	
 	//Inicio tabla de resultados
     echo "<table border=0 cellspacing=2 cellpadding=0 align=center>"; 
  	
@@ -159,10 +165,10 @@ else
 	// QUERY PRINCIPAL DEL REPORTE MATRIX
 	   //           1      2       3     4      5       6      7      8      9      10     11    12                     13                               14
 	$q = "  select Ubihis,Ubiing,Ubisac,Ubihac,Ubiald,Ubifad,Ingtpa,Ingcem,Empnom,Ingfei,Pactdo,Pacdoc,concat(Pacno1,' ',Pacno2,' ',Pacap1,' ',Pacap2 ),Oriori 
-			from movhos_000018 m18,cliame_000100 c100
+			from ".$wmovhos."_000018 m18,".$wcliame."_000100 c100
 				 left join 
 				 root_000037 r37 on (Pactdo = Oritid and Pacdoc = Oriced and Oriori = '10' ) 
-				 ,cliame_000101 c101,cliame_000024 c24
+				 ,".$wcliame."_000101 c101,".$wcliame."_000024 c24
 			where m18.Ubifad between '".$wfecini."' AND '".$wfecfin."' 
 			 and  Ubisac in ('1182','1183','1184','1020','1187','1180','1185','1186','1188','1190',
 										 '1189','1286','1282','1281','1283','1284','1285','1179') 

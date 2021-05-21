@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 <title>MATRIX</title>
 </head>
@@ -32,8 +33,10 @@ $wactualiz="(Versión 2018-05-21)";
 	 { 
 			$key = substr($user,2,strlen($user));
 			
+			include_once("root/comun.php");
 
-			
+			$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+			$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 			$wfecha1=date("Y-m-d");
 			//$wfecha2=date("Y-m-d", strtotime("$fecha_inicio + 3 month"));
@@ -41,9 +44,9 @@ $wactualiz="(Versión 2018-05-21)";
 		
 			{
                 $query = "   select m20.Habcod,m20.Habcco,m20.Habhis,m20.Habing,h36.Fecha_data,h36.Firpro,h36.Firusu,u.Descripcion    
-               		         from movhos_000020 as m20 
+               		         from ".$wmovhos."_000020 as m20 
 							      left join 
-							      hce_000036 as h36 on (m20.Habhis = h36.Firhis and m20.Habing = Firing 
+							      ".$whce."_000036 as h36 on (m20.Habhis = h36.Firhis and m20.Habing = Firing 
 							                       and h36.Fecha_data = '".$wfecha1."' and Firpro in ('000367','000328') ) 
 								  left join 
 								  usuarios as u on (h36.firusu = u.codigo)
