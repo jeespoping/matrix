@@ -241,7 +241,7 @@ else
 				$arrayRequerimientos[$row['Reqcco']."-".$row['Reqnum']]['clase'] = utf8_encode($arrayClasesReq[$row['Reqcla']]);
 				$arrayRequerimientos[$row['Reqcco']."-".$row['Reqnum']]['descripcion'] = utf8_encode($row['Reqdes']);
 				$arrayRequerimientos[$row['Reqcco']."-".$row['Reqnum']]['estado'] = utf8_encode($row['Estnom']);
-				$arrayRequerimientos[$row['Reqcco']."-".$row['Reqnum']]['url'] = "seguimiento.php?cco=".$row['Reqcco']."&id_req=".$row['id_req']."&req=".$row['Reqnum']."&id=".$tipoRequerimiento;
+				$arrayRequerimientos[$row['Reqcco']."-".$row['Reqnum']]['url'] = "seguimiento.php?wemp_pmla=".$wemp_pmla."&cco=".$row['Reqcco']."&id_req=".$row['id_req']."&req=".$row['Reqnum']."&id=".$tipoRequerimiento;
 				$arrayRequerimientos[$row['Reqcco']."-".$row['Reqnum']]['colorEstado'] = $row['Estcol'];
 			}
 		}
