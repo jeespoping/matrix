@@ -446,12 +446,10 @@ function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbas
 	$query_existe_cca = "SELECT id FROM ".$wbasedato_cliame."_000341 ";
 	
 	if(is_null($id) && $ccaeve == 'on') {
-		$query_existe_cca .= " WHERE ccafhce NOT NULL $condicion_fhce_confhce $condicion_tipo_origen ";
+		$query_existe_cca .= " WHERE ccafhce IS NOT NULL $condicion_fhce_confhce $condicion_tipo_origen ";
 	} else {
 		$query_existe_cca .= " WHERE ccacon = '$ccacon' $condicion_proc_o_insumo $condicion_cco $condicion_tipo_origen $condicion_fhce_confhce ";
 	}
-	
-	$query_existe_cca = "SELECT id FROM ".$wbasedato_cliame."_000341 WHERE ccacon = '$ccacon' $condicion_proc_o_insumo $condicion_cco $condicion_tipo_origen $condicion_fhce_confhce $condicion_fhce";
 	
 	$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Tipo Evento): $query_existe_cca - ".mysql_error());
 	$num_reg = mysql_num_rows($exec);
@@ -696,7 +694,7 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 				$wnomter=''; 
 				$wporter=0;
 		
-				if(($configCCA['ccaeve'] == 'on' || $configCCA['ccadat'] == 'on') && $wcontip=="C"){
+				if(($configCCA['ccaeve'] == 'on' || $configCCA['ccadat'] == 'on') && $wcontip=="C") {
 					
 					$qMec =  "SELECT * FROM ".$wbasedato_movhos."_000048 WHERE `Meduma` = '".$wuse."'";
 					$res = mysql_query($qMec,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -874,11 +872,10 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, '');
 				}
 				
-				if($configCCA['ccadat'] == 'on' && $datos['wcantidad'] == null && $datos['wcantidad'] == 0 && $datos['wcantidad'] == '') {
+				if($configCCA['ccadat'] == 'on' && ($datos['wcantidad'] == null || $datos['wcantidad'] == 0 || trim($datos['wcantidad']) == '')) {
 					$respuesta['Mensajes'] = [ 'error' => 1, 'mensaje' => 'El campo con consecutivo '.$configCCA['Detcon'].'-'.$configCCA['Detnpa'].' de tipo '.$configCCA['Dettip'].' del formulario '.$configCCA['wformulario'].' tiene un valor null o vac&iacute;o. '.$configCCA['movdat'] ];
 				}
-				
-				
+
 				$json_datos = json_encode($datos);
 				logTransaccion($conex, $wbasedato_cliame, $wuse, $json_datos, NULL, json_encode($respuesta['Mensajes']), 'on', 'INSERT', $logTip);
 								
@@ -1496,10 +1493,14 @@ function enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1,$detalle2, $html)
 			<td style='background-color:#C3D9FF;color:#000000;font-size:9pt;padding:1px;font-family:verdana;'>Detalle</td>
 			<td style='background-color:#E8EEF7;color:#000000;font-size:9pt;padding:1px;font-family:verdana;'>".$detalle2."</td>
 		</tr>
-		<tr>
-			".$html."
-		</tr>
-	</table>
+	</table>";
+		
+	if($html != '') {
+		$mensaje.= $html;
+	}
+
+	$mensaje .= "
+	
 	</body>
 	</html>							
 	";
@@ -1810,6 +1811,7 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 	//$numero_responsables = $dom->getElementById('numero_responsables')->getAttribute('value');
 	//echo "numero_responsables = $numero_responsables \n\n";
 	
+	
 	$sel = $dom->getElementsByTagName("select");
 	foreach ($sel as $select)
 	{
@@ -1856,6 +1858,98 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 				}
 			}
 		}
+	}
+	
+	/* AGREGAMOS LA VALIDACION PARA LA PARTE DE TARIFA EN CERO */
+	$existen_tarifas_en_cero = false;
+	$array_info = [];
+	for($i = 1; $i <= $cantidad; $i++) {
+		$dias = $dom->getElementById('input_dias_'.$i)->getAttributeNode('value')->nodeValue;
+		
+		$td_fechainicial_ppal =$dom->getElementById('tdfechainicialppal_'.$i)->textContent;	
+		$td_fechafinal_ppal =$dom->getElementById('tdfechafinalppal_'.$i)->textContent;	
+		
+		$responsable = '';
+		
+		for($d = 0; $d < $dias; $d++ ) {
+			
+			$tr_ppal_cobro = $dom->getElementById('id_tr_ppal_cobro_'.$i.'_'.$d);
+			$clave =  $tr_ppal_cobro->getAttributeNode('clave')->nodeValue;
+			$ndia = $tr_ppal_cobro->getAttributeNode('ndia')->nodeValue;
+			
+			for($j = $numero_responsables ; $j >= 1; $j--) {
+				$valor_tarifa = ($dom->getElementById('valhab_clave'.$clave.'_'.$ndia.'_res'.$j)->getAttributeNode('valor')->nodeValue *1);
+				
+				if($valor_tarifa == 0) {
+					$existen_tarifas_en_cero = true;
+				}
+				
+				$reconocido_clave = $dom->getElementById('reconocido_clave'.$clave.'_'.$ndia.'_res'.$j);
+				$nresponsable = !is_null($reconocido_clave) ? $reconocido_clave->getAttributeNode('nresponsable')->nodeValue : '';
+				
+				if(!is_null($reconocido_clave) && $valor_tarifa == 0 && $responsable != $nresponsable && $d == 0) {
+					$texto_tarifa_cero = '';
+					$texto_tarifa_cero2 = '';
+
+					$texto_tarifa_cero2 = 'Responsable: '.$reconocido_clave->getAttributeNode('nresponsable')->nodeValue.'<br>';
+					$texto_tarifa_cero2.= 'Nit: '.$reconocido_clave->getAttributeNode('nitresponsable')->nodeValue.'<br>';
+					$texto_tarifa_cero2.= 'Tarifa: '.$reconocido_clave->getAttributeNode('tarifa')->nodeValue.'<br>';
+					$texto_tarifa_cero2.= 'Cod Concepto: '.$reconocido_clave->getAttributeNode('concepto')->nodeValue.'<br>';
+					$texto_tarifa_cero2.= 'Concepto: '.$reconocido_clave->getAttributeNode('nconcepto')->nodeValue.'<br>';
+					$texto_tarifa_cero2.= 'Habitaci&oacute;n: '.$reconocido_clave->getAttributeNode('procedimiento')->nodeValue.'-'.$reconocido_clave->getAttributeNode('nombre_hab')->nodeValue.'<br>';
+					
+					$texto_tarifa_cero = 'Fecha de Ingreso: '.trim($td_fechainicial_ppal).'<br>';
+					$texto_tarifa_cero.= 'Fecha de Egreso: '.trim($td_fechafinal_ppal).'<br>';
+					$texto_tarifa_cero.= 'D&iacute;as: '.$dias.'<br>';
+					$texto_tarifa_cero.= $texto_tarifa_cero2;
+					
+					$texto_tarifa_cero.= '<br><br>';
+					
+					$array_info[] = $texto_tarifa_cero;	
+				}
+				
+				$responsable = $reconocido_clave->getAttributeNode('nresponsable')->nodeValue;
+			}
+		}
+	}
+	
+	$texto_array_info = '';
+	if($existen_tarifas_en_cero) {
+		$num_array_info = sizeof($array_info);
+		for($i = 0; $i < $num_array_info; $i++) {
+			$texto_array_info.= $array_info[$i];
+		}
+		
+		$data_json = array( 
+			'wemp_pmla'	  	 			=> $wemp_pmla,
+			'accion'					=> 'validacion_tarifa_cero',
+			'whistoria'	  	 			=> $whis,
+			'wing'		  	 			=> $wing,
+			'wno1' 		 				=> $wno1,
+			'wno2'  		 			=> $wno2,
+			'wap1'  		 			=> $wap1,
+			'wap2'		 	 			=> $wap2,
+			'wdoc' 		 				=> $wdoc,
+			'wprocedimiento' 			=> '',
+			'wnprocedimiento'			=> '',
+			'wcodemp'		 			=> '',
+			'wnomemp'		 			=> '',
+			'wnomcon'					=> '',
+		);
+		
+		$data = array();
+		$data['error'] = 1;
+		$data['mensaje'] = 'Lo sentimos, La historia ('.$whis.'-'.$wing.') tiene estancias con tarifa en cero.';
+		
+		$wasunto = "Automatizacion Estancia - Historia (".$whis."-".$wing.")";
+		$detalle1 = "Historia ".$whis."-".$wing." - Estancias Con Tarifa en Cero";
+		$detalle2 = 'La siguiente liquidaci&oacute;n de estancia contiene una o varias tarifas sin definir, por lo tanto no se realiza la liquidaci&oacute;n autom&aacute;tica de estancia. <br><br>'.$texto_array_info;
+		
+		enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, $html);
+		logTransaccion($conex, $wbasedato_cliame, '', json_encode($data_json), '',  json_encode($data), 'on', 'INSERT', 'estancia', $html);
+		
+		return array( 'code' => 0, 'msj' => 'La Historia ('.$whis.'-'.$wing.'), tiene algunas estancias sin tarifa definida, por lo tanto no se realiza el proceso autom&aacute;tico de liquidaci&oacute;n de estancia.');
+		
 	}
 	
 	//--------------------------------------------------------
@@ -3110,7 +3204,7 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 						}	else {
 							
 							//console.log("no entro , Responsable "+j+"  valor reconocido = "+$('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor') +"clave"+clave+"ndia"+ndia);
-							echo "no entro , Responsable $j  valor reconocido = ".$reconocido_clave->getAttributeNode('valor')->nodeValue." clave ".$clave." ndia".$ndia."<br><br>";
+							//echo "no entro , Responsable $j  valor reconocido = ".$reconocido_clave->getAttributeNode('valor')->nodeValue." clave ".$clave." ndia".$ndia."<br><br>";
 							//alert($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).attr('valor'));
 							//alert($('#reconocido_clave'+clave+'_'+ndia+'_res'+j).length);
 							
@@ -3661,6 +3755,8 @@ if(isset($_POST['accion'])) {
 			$wing = $_POST['wing'];
 			$wformulario = $_POST['wformulario'];
 			$movusu = $_POST['movusu'];
+			$str_consecutivos_formulario = $_POST['str_consecutivos_formulario'];
+			$explode_consecutivos = explode('|', $str_consecutivos_formulario);
 			
 			$wuse = $movusu;
 			
@@ -3668,7 +3764,11 @@ if(isset($_POST['accion'])) {
 			$numCCA = sizeof($configCCA);
 			
 			for($i = 0; $i < $numCCA; $i++) {
-				guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $wuse, $whis, $wing, $configCCA[$i]);
+				if($configCCA[$i]['ccaeve'] == 'on' || 
+					($configCCA[$i]['ccadat'] == 'on' && 
+					 in_array($configCCA[$i]['Detcon'], $explode_consecutivos, true))) {
+					guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $wuse, $whis, $wing, $configCCA[$i]);
+				}
 			}
 			
 		break;
