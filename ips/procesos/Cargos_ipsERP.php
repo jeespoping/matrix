@@ -15,12 +15,12 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  CAMBIOS PARA MIGRACION
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-	CODIGO	|	FECHA		|	AUTOR 	|	DESCRIPCION	
+	CODIGO	|	FECHA		|	AUTOR 	|	DESCRIPCION
 ----------------------------------------------------------------------------------------------------------------------------------------------
 	MIGRA_1	|	2019-01-22	|	Jerson	|	Se corrige tilde en el tooltip para mostrar si se aplic� alguna politica
 	MIGRA_2	|	2019-01-31	|	Jerson	|	Se agrega coma(,) en el select del query
 
-	
+
 
 
 */
@@ -34,7 +34,7 @@ $wactualiza = '(2020-03-04)';
 2020-01-22, Jerson: Mostrar mensaje de ventana de mantenimiento dependiendo de variables en la root_51
 Noviembre 18 2019: Jerson, Se coloca trim en la variable historia, al momento de imprimir el sticker de solicitud de examen.
 Septiembre 12-09-2019: Jerson
-	- Se agrega nueva funcionalidad para grabar iva 
+	- Se agrega nueva funcionalidad para grabar iva
 Agosto 21-08-2019: Jerson
 		Para los conceptos de inventario validar si se est� actualizando el cron de tarifas de medicamentos y materiales, para no dejar grabar cargos
 Julio 16 de 2019 Jerson Trujillo:
@@ -48,18 +48,18 @@ Septiembre 09 2018 Jerson Trujillo:
 	  No se permite grabar.
 Mayo 16 2018: Jerson Trujillo
 	- Se corrige incosistencia en la impresion del soporte del cargo, ya que no aparecia el valor del descuento del cargo.
-	- Se modifica la impresion del soporte del cargo, para que se incluya el valor del recargo, si lo hubo. 
+	- Se modifica la impresion del soporte del cargo, para que se incluya el valor del recargo, si lo hubo.
 Abril 11 2018: Jerson Trujillo
 	- Nueva validacion, cuando se de click en el check de devolucion solo se desplegaran los conceptos que muevan inventario.
 Noviembre 08 2017:
  * Se corrige incosistencia, con la politica de tercero por defecto que estaba grabando tercero cunado este ya habia sido borrado.
 Octubre 11 2017: Jerson Trujillo
- * Se marca de color rojo lo cargos de materiales que no hayan integrado y se agrega tooltip en la columna de registro en el detalle de los cargos 
+ * Se marca de color rojo lo cargos de materiales que no hayan integrado y se agrega tooltip en la columna de registro en el detalle de los cargos
 	  indicando el numero de registro en unix.
 
 Septiembre 14 2017: Jerson Andres Trujillo:
- * 	Se crea una nueva funcionalidad para que dependiendo de un permiso en la cliame_000030, el grabador pueda seleccionar si se va 
-		a aplicar recargo, es decir si el cargo tiene una politica de recargo pero el grabador selecciono que NO aplica recrago, entonces	
+ * 	Se crea una nueva funcionalidad para que dependiendo de un permiso en la cliame_000030, el grabador pueda seleccionar si se va
+		a aplicar recargo, es decir si el cargo tiene una politica de recargo pero el grabador selecciono que NO aplica recrago, entonces
 		se omitira la aplicacion de la politica del recargo.
 Marzo 28 2017: Camilo Zapata
  * se modifican las consultas que tienen que ver con la tabla 205 para que tengan en cuenta si el responsable est� descartado o no Resdes
@@ -1435,7 +1435,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 		$sqlCar = "
 	SELECT count(*) AS CANT
 	  FROM " . $wbasedato . "_000106 INNER JOIN " . $wbasedato . "_000200 ON(Tcarconcod = Grucod AND Gruinv != 'on')
-	 WHERE Tcarhis = '" . $historia . "'			  
+	 WHERE Tcarhis = '" . $historia . "'
 	   AND Tcaring = '" . $ingreso . "'
 	   AND Tcarreg = 'pen'
 	   AND Tcarest = 'on'
@@ -1543,7 +1543,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 					$sqlTur = "
 			SELECT Turtur
 			  FROM tcx_000011
-			 WHERE Turhis = '" . $whistoria . "' 
+			 WHERE Turhis = '" . $whistoria . "'
 			   AND Turnin = '" . $data['wwing'] . "'
 			   AND Turest = 'on'
 			";
@@ -1592,7 +1592,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 					$wbasedatoMov 					= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
 					// -->  Por ahora solo se va a hacer est� validacion si el cco de grabacion es urgencias, para las ayudas no se debe hacer.
-					//		NOTA: Queda pendiente activar validacion para hospitalizacion, cuando se este grabando en pisos.			
+					//		NOTA: Queda pendiente activar validacion para hospitalizacion, cuando se este grabando en pisos.
 					$sqlCco = "
 			SELECT Ccocod
 			  FROM " . $wbasedatoMov . "_000011
@@ -1602,7 +1602,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 					$resCco = mysql_query($sqlCco, $conex) or die("Error: " . mysql_errno() . " - en el sqlCco: " . $sqlCco . " - " . mysql_error());
 					if (mysql_num_rows($resCco) > 0) {
 						$sqlInsumos = "
-				SELECT Carins, SUM(Carcca - Carcap - Carcde) as saldo_insumos, Caraux, Descripcion  
+				SELECT Carins, SUM(Carcca - Carcap - Carcde) as saldo_insumos, Caraux, Descripcion
 				  FROM " . $wbasedatoMov . "_000227 LEFT JOIN usuarios on(Caraux = Codigo)
 				 WHERE Carhis = '" . $historia . "'
 				   AND Caring = '" . $ingreso . "'
@@ -1676,14 +1676,14 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 
 								// --> Si el codigo que se va a grabar est� en el maestro de vacunas
 								$sqlCodVac = "
-						SELECT Vaccom as Cod 
+						SELECT Vaccom as Cod
 						  FROM " . $wbasedato . "_000297
 						 WHERE Vaccom = '" . $wprocod . "'
 						   AND Vacest = 'on'
 						 UNION
 						SELECT Artcod as Cod
 					      FROM " . $wbasedatoMov . "_000026
-					     WHERE Artcod = '" . $wprocod . "' 
+					     WHERE Artcod = '" . $wprocod . "'
 						   AND Artest = 'on'
 					       AND Artvac = 'on'
 						";
@@ -1964,8 +1964,8 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 
 
 					//--> Grabar cargo en matrix
-					$sql106 = " 
-			INSERT INTO " . $wbasedato . "_000106 SET 
+					$sql106 = "
+			INSERT INTO " . $wbasedato . "_000106 SET
 			Medico		= '" . $wbasedato . "',
 			Fecha_data	= '" . date("Y-m-d") . "',
 			Hora_data	= '" . date("H:i:s") . "',
@@ -2006,8 +2006,8 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 
 					$ultimoid 	= mysql_insert_id();
 
-					$sql107 = " 
-			INSERT INTO " . $wbasedato . "_000107 SET 
+					$sql107 = "
+			INSERT INTO " . $wbasedato . "_000107 SET
 			Medico		= '" . $wbasedato . "',
 			Fecha_data	= '" . date("Y-m-d") . "',
 			Hora_data	= '" . date("H:i:s") . "',
@@ -2264,8 +2264,8 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 					break;
 				}
 			case 'comfirmar_revision': {
-					$q =  " 	UPDATE " . $wbasedato . "_000106 
-			               SET Tcarreg = 'OM'   
+					$q =  " 	UPDATE " . $wbasedato . "_000106
+			               SET Tcarreg = 'OM'
 					     WHERE id = '" . $idregistro . "' ";
 
 					$err = mysql_query($q, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
@@ -2518,7 +2518,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 					$sqlInfoCar = "
 			SELECT Tcarconcod, Tcarconnom, Tcarprocod, Tcarpronom, Tcarcan, Tcartun, Tcarvun, Tcarvto, Tcarvre, Tcarvro, Gruinv, Tcarpor, Emptem
 			  FROM " . $wbasedato . "_000106 AS A INNER JOIN " . $wbasedato . "_000200 ON(Tcarconcod = Grucod AND Gruinv != 'on')
-				   LEFT JOIN " . $wbasedato . "_000024 AS C ON(A.Tcarres = C.Empcod)	
+				   LEFT JOIN " . $wbasedato . "_000024 AS C ON(A.Tcarres = C.Empcod)
 			 WHERE A.id IN(" . $inIdCaro . ")
 			   AND Tcarest = 'on'
 			   AND Tcarfac = 'S' ";
@@ -3336,9 +3336,11 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 								// TODO: Edier
 								console.log(data.grabarCargos);
 								$('#grabarCargos').val(data.grabarCargos);
-								if (data.grabarCargos == 'on'){
+								if (data.grabarCargos == 'on') {
 									if ($("#ingresoActivoUnix").attr("estado") == "off") {
 										$("#botonGrabar").attr('disabled', 'disabled');
+									} else if ($("#ingresoActivoUnix").attr("estado") == "off") {
+										$("#botonGrabar").removeAttribute('disabled');
 									}
 								}
 
@@ -6349,14 +6351,14 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 
 			// --> Div oculto para grabar iva
 			echo "
-	<div id='modalGrabarIva' style='display:none;font-family: verdana;font-size: 9pt;' align='center'>		
+	<div id='modalGrabarIva' style='display:none;font-family: verdana;font-size: 9pt;' align='center'>
 		<br>
 		<br>
 		<table>
 			<tr class='fila1'>
-				<td>Concepto</td>			
+				<td>Concepto</td>
 			</tr>
-			<tr class='fila2'>				
+			<tr class='fila2'>
 				<td>
 					<select id='selecConceptoIva' onChange='inactivarGrabarIva(true)'>
 						<option value=''>Seleccione...</option>";
