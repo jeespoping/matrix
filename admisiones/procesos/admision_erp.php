@@ -4,145 +4,145 @@ define('MYSQL_ASSOC',MYSQLI_ASSOC);
 //header("Content-Type: text/html;charset=UTF8");
 /****************************************************************************
 * accion
-2020-09-03 Jessica Madrid MejÃ­a: Para los pacientes con tipo de documento configurado en el parÃ¡metro tipoDocumentoPacienteInternacional en root_000051 se envÃ­a correo notificando que son pacientes internacionales al hacer 
-								 la admisiÃ³n o si se modifica el tipo de documento, los correos de destino estÃ¡n configurados en el parÃ¡metro emailDestinoPacienteInternacional en root_000051
-2020-08-12 Camilo Zapata: Manejo del error 12 de unix, nuevo tratamiento para las tablas que quedan sin grabar en una admisiÃ³n de manera que deshaga todos los cambios y deje el proceso unix para ejecuciÃ³n desde el cronjob.
-2020-06-13 Camilo Zapata: Modificaciones necesarias para permitir la actualizaciÃ³n de ingresos anteriores. buscar esta fecha en caso de ser necesario
-2020-04-29 Camilo Zapata: ModificaciÃ³n requerida para abrir el programa que imprime el sticker de historia inmediatamente se ha realizado la admisiÃ³n
-2020-03-20 Camilo Zapata: Se hacen las modificaciones para que refresque la pantalla cuando la admisiÃ³n se realizÃ³ correctamente pero el parÃ¡metro de soportesAutomaticos, estÃ¡ desactivada.
-2019-12-03 Camilo Zapata: Se valida para los adultos sin identificaciÃ³n, que puedan ingresar con el mismo nÃºmero de documento( historia ) asignados la primer vez,
+2020-09-03 Jessica Madrid Mejía: Para los pacientes con tipo de documento configurado en el parámetro tipoDocumentoPacienteInternacional en root_000051 se envía correo notificando que son pacientes internacionales al hacer 
+								 la admisión o si se modifica el tipo de documento, los correos de destino están configurados en el parámetro emailDestinoPacienteInternacional en root_000051
+2020-08-12 Camilo Zapata: Manejo del error 12 de unix, nuevo tratamiento para las tablas que quedan sin grabar en una admisión de manera que deshaga todos los cambios y deje el proceso unix para ejecución desde el cronjob.
+2020-06-13 Camilo Zapata: Modificaciones necesarias para permitir la actualización de ingresos anteriores. buscar esta fecha en caso de ser necesario
+2020-04-29 Camilo Zapata: Modificación requerida para abrir el programa que imprime el sticker de historia inmediatamente se ha realizado la admisión
+2020-03-20 Camilo Zapata: Se hacen las modificaciones para que refresque la pantalla cuando la admisión se realizó correctamente pero el parámetro de soportesAutomaticos, está desactivada.
+2019-12-03 Camilo Zapata: Se valida para los adultos sin identificación, que puedan ingresar con el mismo número de documento( historia ) asignados la primer vez,
 						  implicando esto la continuidad en el consecutivo de ingreso asociado.
-2019-11-07 Andres Alvarez: Se adiciona funcionalidad para que realice la busqueda del paciente por el nÃºmero de cedula en alguna de las otras empresas.
+2019-11-07 Andres Alvarez: Se adiciona funcionalidad para que realice la busqueda del paciente por el número de cedula en alguna de las otras empresas.
 2019-09-18 Camilo Zapata: modificaciones en el programa para que en los centros de costos marcados con "off" en el campo Ccomdi en movhos_000011 no exija
-						  diagnÃ³stico ni mÃ©dico de ingreso.
-2019-07-08 Camilo Zapata: modificaciones en el manejo de la conversiÃ³n a utf8 de variables para optimizar la escritura y la lectura de caracteres especiales.
+						  diagnóstico ni médico de ingreso.
+2019-07-08 Camilo Zapata: modificaciones en el manejo de la conversión a utf8 de variables para optimizar la escritura y la lectura de caracteres especiales.
 2019-06-26 Jerson Trujillo: Se adapta el programa para que soporte dos campos del formulario de triage de la hce, para definir si se da de alta alvalidarCamposCedRes() paciente.
-2019-01-24 camilo zapata: correcciÃ³n en la validaciÃ³n del paso de una admisiÃ³n a unix, si no hay ping, el indicador debe permanecer en off
-2019-01-14 camilo zapata: aumento del tamaÃ±o permitido para el documento de identificaciÃ³n de 11 a 15 caracteres.
-2018-08-31 camilo zapata: correcciÃ³n de validacion del tope y el saldo a la hora de cambiar el tipo de causa de ingreso de accidente a
-						  cualquier otro ya que tenÃ­a errores en los tipos de datos, nunca coincidian.
-2018-08-30 camilo zapata: correcciÃ³n del proceso para pacientes sin identificaciÃ³n, de tal manera que siempre coincidan el nÃºmero de
-						  identifcaciÃ³n y la historia asignada.
-						  Tambien se adiciona la asignaciÃ³n de la historia asignada a las variables asociadas en unix, para que se haga el guardado correcto en el primer intento.
-2018-08-13 camilo zapata: adicion de atributos referentes a las novedades de remisiÃ³n para unix. buscar "ux_nov" para identificar
-                          los campos que se mapearÃ¡n en la tabla fanovacc, adicionalmente se hace lo necesario para que el "valor remitido" sea requerido u omitido dependiendo de la selecciÃ³n que se haga para el paciente, remitido o no.
-2018-07-30 camilo zapata: se realizan las siguientes modificaciones en la gestiÃ³n de los accidentes de trÃ¡nsito.
-						  - siempre que haya un cambio en la fecha del accidente, se consultarÃ¡ el tope correspondiente a dicha fecha.
-						  - se adiciona la funciÃ³n validarFacturacionUnix, para que al intentar cambiar el responsable original de un accidente
-						    de transito se asegure que el responsable anterior no tiene facturas activas pendientes en unix, o que tenga las notas crÃ©ditos correspodientes, esto se hace a partir de una consulta a la tabla fasalacc donde el saldo debe estar
+2019-01-24 camilo zapata: corrección en la validación del paso de una admisión a unix, si no hay ping, el indicador debe permanecer en off
+2019-01-14 camilo zapata: aumento del tamaño permitido para el documento de identificación de 11 a 15 caracteres.
+2018-08-31 camilo zapata: corrección de validacion del tope y el saldo a la hora de cambiar el tipo de causa de ingreso de accidente a
+						  cualquier otro ya que tenía errores en los tipos de datos, nunca coincidian.
+2018-08-30 camilo zapata: corrección del proceso para pacientes sin identificación, de tal manera que siempre coincidan el número de
+						  identifcación y la historia asignada.
+						  Tambien se adiciona la asignación de la historia asignada a las variables asociadas en unix, para que se haga el guardado correcto en el primer intento.
+2018-08-13 camilo zapata: adicion de atributos referentes a las novedades de remisión para unix. buscar "ux_nov" para identificar
+                          los campos que se mapearán en la tabla fanovacc, adicionalmente se hace lo necesario para que el "valor remitido" sea requerido u omitido dependiendo de la selección que se haga para el paciente, remitido o no.
+2018-07-30 camilo zapata: se realizan las siguientes modificaciones en la gestión de los accidentes de tránsito.
+						  - siempre que haya un cambio en la fecha del accidente, se consultará el tope correspondiente a dicha fecha.
+						  - se adiciona la función validarFacturacionUnix, para que al intentar cambiar el responsable original de un accidente
+						    de transito se asegure que el responsable anterior no tiene facturas activas pendientes en unix, o que tenga las notas créditos correspodientes, esto se hace a partir de una consulta a la tabla fasalacc donde el saldo debe estar
 						    en cero para que permita hacer el cambio de responsable.
-2018-07-19 camilo zapata: CorrecciÃ³n en la carga inicial de un paciente egresado con admisiones anteriores, para que el menu de tipo de 								  afilicaciÃ³n  traiga las opciones correctas, puesto que no estaba cargando nada inicialmente
+2018-07-19 camilo zapata: Corrección en la carga inicial de un paciente egresado con admisiones anteriores, para que el menu de tipo de 								  afilicación  traiga las opciones correctas, puesto que no estaba cargando nada inicialmente
 2018-07-13 camilo zapata: A la hora de guardar los responsables se verifica la tabla 000313 la cual almacena el cambio de responsable
-                           automÃ tico en cargos para que el segundo responsable se mantenga como principal en las tablas correspondientes 101, 16, etc pero manteniendo el orden de responsabilidad
+                           automàtico en cargos para que el segundo responsable se mantenga como principal en las tablas correspondientes 101, 16, etc pero manteniendo el orden de responsabilidad
 						   original en la tabla 205.
-2018-07-10 camilo zapata: implementaciÃ³n de relacion entre la cobertura en salud - tipo de afiliaciÃ³n y el pago compartido, por medio de la tabla 000316 (buscar dicha tabla y hacer seguimiento en caso de ser requerido) de tal manera que cada opciÃ³n tenga un vinculo establecido con el menÃº siguiente, ejemplo cobertura en salud: "subsidiado" - tipo de afiliaciÃ³n: "no aplica".
-2018-07-03 camilo zapata: adicion de codigo para que asocie las preanestesias automÃ¡ticamente cuando un paciente tenga una de estas pendiente a su servicio de ingreso.
-2018-06-29 Jessica Madrid: Se modifica la funciÃ³n grabartoperesponsable() y se agrega la funciÃ³n registrarLogTopes() para que cada vez
+2018-07-10 camilo zapata: implementación de relacion entre la cobertura en salud - tipo de afiliación y el pago compartido, por medio de la tabla 000316 (buscar dicha tabla y hacer seguimiento en caso de ser requerido) de tal manera que cada opción tenga un vinculo establecido con el menú siguiente, ejemplo cobertura en salud: "subsidiado" - tipo de afiliación: "no aplica".
+2018-07-03 camilo zapata: adicion de codigo para que asocie las preanestesias automáticamente cuando un paciente tenga una de estas pendiente a su servicio de ingreso.
+2018-06-29 Jessica Madrid: Se modifica la función grabartoperesponsable() y se agrega la función registrarLogTopes() para que cada vez
 						   que se inserten o se eliminen topes guarde el registro en la tabla log de topes (cliame_000315) con el fin
-						   de conservar un registro de como estaban los topes antes de cada modificaciÃ³n.
-2018-06-26 camilo zapata: cambio de la funciÃ³n alerta() de javascript para que utilice una versiÃ³n basada en dialog, y no en blockui para evitar el conflicto con otras posibles ventanas emergentes llamadas con anterioridad, principalmente en el formulario soat.
-2018-06-26 Jessica Madrid: Al admitir un paciente con preadmisiÃ³n se envÃ­a topesPreadmision en true y se agrega la validaciÃ³n en el llamado ajax guardarDatos
-						   para evitar que se borren los topes cada vez que actualizan la admisiÃ³n.
+						   de conservar un registro de como estaban los topes antes de cada modificación.
+2018-06-26 camilo zapata: cambio de la función alerta() de javascript para que utilice una versión basada en dialog, y no en blockui para evitar el conflicto con otras posibles ventanas emergentes llamadas con anterioridad, principalmente en el formulario soat.
+2018-06-26 Jessica Madrid: Al admitir un paciente con preadmisión se envía topesPreadmision en true y se agrega la validación en el llamado ajax guardarDatos
+						   para evitar que se borren los topes cada vez que actualizan la admisión.
 2018-06-22 camilo zapata: se modifica el progama para que muestre los botones de nueva admision y preadmision sin que consulte los datos de los admitidos del dia
-2018-06-20 Camilo Zapata: - se adiciona atributo "_ux_ordfec" a la fecha de la autorizaciÃ²n para que esta viaje a unix
+2018-06-20 Camilo Zapata: - se adiciona atributo "_ux_ordfec" a la fecha de la autorizaciòn para que esta viaje a unix
                           - se evita que en la carga inicial muestre el listado completo de admitidos.
-2018-05-29 Jerson Trujillo: El llamado automÃ¡tico para pintar la lista de pacientes con triage, se harÃ¡ mientras no se estÃ© haciendo una admisiÃ³n.
-2018-05-11 camilo zapata: se le quita el atributo ux al campo del detalle de la direcciÃ³n, para que siempre guarde el campo direcciÃ³n en ux 	                          evitando  que se reemplace este Ãºltimo, cuando ambos estÃ¡n diligenciados
-2018-04-11 camilo zapata: adiciÃ³n de asociaciÃ³n de preanestesia en ingresos de ayudas diagnÃ³sticas.
+2018-05-29 Jerson Trujillo: El llamado automático para pintar la lista de pacientes con triage, se hará mientras no se esté haciendo una admisión.
+2018-05-11 camilo zapata: se le quita el atributo ux al campo del detalle de la dirección, para que siempre guarde el campo dirección en ux 	                          evitando  que se reemplace este último, cuando ambos están diligenciados
+2018-04-11 camilo zapata: adición de asociación de preanestesia en ingresos de ayudas diagnósticas.
 2018-03-07 Jonatan Lopez: Se agrega observacion del triage en la descripcion del triage, sera controlado por el parametro ObservacionesFormHCETriage en root_000051 que tendra la tabla y lo consecutivos que tienen la observacion.
-2018-01-17 camilo zapata: se modifica la consulta del tope del accidente, para que no traiga el tope segÃºn el dia del ingreso sino la fecha del accidente, puesto que puede haber un ingreso el dia de hoy referente a un accidente dado el aÃ±o anterior y por lo tanto debe traer el tope del aÃ±o anterior
-2017-12-11 camilo zapata: correcciÃ³n de nombres de tipo de documento al consultar un paciente particular, de manera que al consultar no se daÃ±en los datos que viajan a unix
+2018-01-17 camilo zapata: se modifica la consulta del tope del accidente, para que no traiga el tope según el dia del ingreso sino la fecha del accidente, puesto que puede haber un ingreso el dia de hoy referente a un accidente dado el año anterior y por lo tanto debe traer el tope del año anterior
+2017-12-11 camilo zapata: corrección de nombres de tipo de documento al consultar un paciente particular, de manera que al consultar no se dañen los datos que viajan a unix
 2017-11-23 camilo zapata: se valida que el campo poliza de los responsables no tenga el valor de la marca de agua al guardar para que no quede en unix.
-2017-11-10  camilo zapata: se modifica la validaciÃ³n de caracteres en los campos de nombres y apellidos para que permitan eÃ±es y tildes. adicional se parcha el ingtip de movhos_000016 procurando detectar un punto ocasional
-2017-10-17  Camilo Zapata: se permite al campo que recibe el documento del acompaÃ±ante recibir letras tambien para aquellos que son extranjeros.
-2017-09-19  Veronica Arismendy se modifica cÃ³digo para agregar un parametro en la 51 para el barrio de un pais de residencia extranjero, se correigen tildes javascript
-2017-08-31  camilo zapata: cambios para ejecuciÃ³n del cambio de consorcio fosyga
-2017-06-25  Camilo Zapata: validaciÃ³n de servicio de ingreso para asociaciÃ³n de triage.
-2017-06-22  Camilo Zapata: bloqueo de tabla wbasedato_000040 para el consecutivo y evitar daÃ±os con la concurrencia.
-2017-06-20  Veronica Arismendy se modifica para agregar validaicÃ³n si el centro de costo esta usando el nuevo sistema de ayudas diagnosticas con el fin de que modifique los campos de la nueva estructura de la tabla citasen_000023
+2017-11-10  camilo zapata: se modifica la validación de caracteres en los campos de nombres y apellidos para que permitan eñes y tildes. adicional se parcha el ingtip de movhos_000016 procurando detectar un punto ocasional
+2017-10-17  Camilo Zapata: se permite al campo que recibe el documento del acompañante recibir letras tambien para aquellos que son extranjeros.
+2017-09-19  Veronica Arismendy se modifica código para agregar un parametro en la 51 para el barrio de un pais de residencia extranjero, se correigen tildes javascript
+2017-08-31  camilo zapata: cambios para ejecución del cambio de consorcio fosyga
+2017-06-25  Camilo Zapata: validación de servicio de ingreso para asociación de triage.
+2017-06-22  Camilo Zapata: bloqueo de tabla wbasedato_000040 para el consecutivo y evitar daños con la concurrencia.
+2017-06-20  Veronica Arismendy se modifica para agregar validaicón si el centro de costo esta usando el nuevo sistema de ayudas diagnosticas con el fin de que modifique los campos de la nueva estructura de la tabla citasen_000023
 			pero si no que se conserve la forma en como se hacia antes.
-			Se agrega la funciÃ³n getInfoCc para consultar la configuraciÃ³n del centro de costo en la tabla root_0000117 que es nueva para ayudas diagnosticas
+			Se agrega la función getInfoCc para consultar la configuración del centro de costo en la tabla root_0000117 que es nueva para ayudas diagnosticas
 2017-06-12: camilo zapata. que no muestre la agenda de preadmision en urgencias.
 2017-05-23: camilo zapata. se modifica el programa para que al encontrar una historia en unix de un documento que NO EXISTE EN MATRIX, lo agregue en el ingreso correcto en matrix y en unix.( buscar 2017-05-23 )
 2017-05-16: camilo zapata.
-			- priorizarPermiso81 la idea de este parametro es que se respete la configuraciÃ³n de permisos realizada en la tabla 81 modificaciÃ³n realizada por solicitud de clinica del sur.
+			- priorizarPermiso81 la idea de este parametro es que se respete la configuración de permisos realizada en la tabla 81 modificación realizada por solicitud de clinica del sur.
 2017-05-16: camilo zapata.
-			- se valida la asociaciÃ³n de las preanestesias a aquellos ingresos que sean por admisiones o por cirugia. y se agrega un parametro en la 51 que habilita la solicitud de cambio de documento.
+			- se valida la asociación de las preanestesias a aquellos ingresos que sean por admisiones o por cirugia. y se agrega un parametro en la 51 que habilita la solicitud de cambio de documento.
 2017-05-05: camilo zapata.
-			- adicion de la opciÃ³n "solicitud de cambio de documento", el cual se encarga de hacer envio de solicitudes de cambio de documentos al personal de registros mÃ©dicos, para que ellos realicen el procedimiento
+			- adicion de la opción "solicitud de cambio de documento", el cual se encarga de hacer envio de solicitudes de cambio de documentos al personal de registros médicos, para que ellos realicen el procedimiento
 			  necesario para que el proceso se realice de manera satisfactoria.
 2017-04-28: Camilo Zapata.
 			- Se adiciona el manejo de las preanestesias, para que reemplace en las tablas necesarias( movhos_000204, tcx_000011 y hce_000075), la historia temporal asignada por el proceso de preanestesia,
-			- se adiciona la opciÃ³n de que se muestre para los pacientes de urgencias un tooltip con la informaciÃ³n del motivo de consulta ( descripciÃ³n del triage )
+			- se adiciona la opción de que se muestre para los pacientes de urgencias un tooltip con la información del motivo de consulta ( descripción del triage )
 2017-04-28:	Edwar Jaramillo.
-			- HacÃ­a falta mostrar el botÃ³n "Alta definitiva/Egreso" para usuarios en la unidad de urgencias (Se estaba mostrando solo para usuarios de ayudas).
+			- Hacía falta mostrar el botón "Alta definitiva/Egreso" para usuarios en la unidad de urgencias (Se estaba mostrando solo para usuarios de ayudas).
 2017-04-24:	Edwar Jaramillo.
-			- Se agregÃ³ plugin jAlert.
-			- Nuevo botÃ³n para buscar y dar de alta a historias con ingresos de otras unidades diferentes a urgencias.
-			- ModificaciÃ³n en la validaciÃ³n de sesiÃ³n de usuario al cargar el programa.
-			- InicializaciÃ³n de algunas variables que generaban warnings.
-			- Se creÃ³ el parÃ¡metro "admin_erp_ver_boton_alta_egreso" para permitir mostrar u ocultar el botÃ³n de dar alta definitiva y agreso a pacientes desde el programa de admisiÃ³n.
-2017-04-04 camilo zapata: se corrige el valor que toma el tope del soat cuando es por reingreso, debe tomar el tope del aÃ±o en el que ingresÃ³ inicialmente, adicional a eso se agrega el comportamiento debido al valor remitido
+			- Se agregó plugin jAlert.
+			- Nuevo botón para buscar y dar de alta a historias con ingresos de otras unidades diferentes a urgencias.
+			- Modificación en la validación de sesión de usuario al cargar el programa.
+			- Inicialización de algunas variables que generaban warnings.
+			- Se creó el parámetro "admin_erp_ver_boton_alta_egreso" para permitir mostrar u ocultar el botón de dar alta definitiva y agreso a pacientes desde el programa de admisión.
+2017-04-04 camilo zapata: se corrige el valor que toma el tope del soat cuando es por reingreso, debe tomar el tope del año en el que ingresó inicialmente, adicional a eso se agrega el comportamiento debido al valor remitido
 						  de tal manera que se reste al saldo cuando corresponda
-2017-03-28  camilo zapata: modificacion en la forma que se cambian los responsables, eliminando la restricciÃ³n del cambio de saldo, y el borrado de topes para nuevos registros.
-2017-02-07  camilo zapata: modificaciÃ³n que permite consultar datos de un paciente de manera mas eficiente y sin incurrir en errores de ajax( si se estÃ¡ consultando no haga otras llamados ajax), que impidan el funcionamiento correcto.
-2017-01-11  camilo zapata: modificaciÃ³n que permite actualizar los datos del accidente para todos los ingresos que pertenezcan al mismo accidente previo en caso de ser necesario buscar: " while( $accPrevioReal != "") "
-2016-27-12  camilo zapata: modificaciÃ³n que permite cambiar cualquier ingreso, activo o inactivo para causa "accidente de transito"
-2016-12-05   camilo zapata: se implementa la eliminaciÃ³n del registro en la tabla 32 cuando se requiere anular un ingreso en un servicio de ayuda diangnÃ³stica.
-2016-11-30   camilo zapata: inserciÃ³n en la tabla movhos_33 de pacientes que ingresan en las ayudas diagnÃ³sticas.
-2016-11-28   camilo zapata: correcciÃ³n de anulaciÃ³n de ingreso para que tenga en cuenta la empresa en root37
-2016-11-18   camilo zapata: se valida el bloqueo de la tabla inpac, para suspender la grabaciÃ³n. en caso de bloqueo de inpac reintenta varias veces con diferencia de 3 segundos.
-2016-10-24  camilo zapata: se desarrolla lo necesario para que reintente hacer el ingreso de aquellos pacientes cuya grabaciÃ³n en unix falla.
-2016-10-19  camilo zapata: se adicionan campos de acompaÃ±ante para los pacientes de ayudas diagnÃ³sticas. buscar $cco_usuario_ayuda;
+2017-03-28  camilo zapata: modificacion en la forma que se cambian los responsables, eliminando la restricción del cambio de saldo, y el borrado de topes para nuevos registros.
+2017-02-07  camilo zapata: modificación que permite consultar datos de un paciente de manera mas eficiente y sin incurrir en errores de ajax( si se está consultando no haga otras llamados ajax), que impidan el funcionamiento correcto.
+2017-01-11  camilo zapata: modificación que permite actualizar los datos del accidente para todos los ingresos que pertenezcan al mismo accidente previo en caso de ser necesario buscar: " while( $accPrevioReal != "") "
+2016-27-12  camilo zapata: modificación que permite cambiar cualquier ingreso, activo o inactivo para causa "accidente de transito"
+2016-12-05   camilo zapata: se implementa la eliminación del registro en la tabla 32 cuando se requiere anular un ingreso en un servicio de ayuda diangnóstica.
+2016-11-30   camilo zapata: inserción en la tabla movhos_33 de pacientes que ingresan en las ayudas diagnósticas.
+2016-11-28   camilo zapata: corrección de anulación de ingreso para que tenga en cuenta la empresa en root37
+2016-11-18   camilo zapata: se valida el bloqueo de la tabla inpac, para suspender la grabación. en caso de bloqueo de inpac reintenta varias veces con diferencia de 3 segundos.
+2016-10-24  camilo zapata: se desarrolla lo necesario para que reintente hacer el ingreso de aquellos pacientes cuya grabación en unix falla.
+2016-10-19  camilo zapata: se adicionan campos de acompañante para los pacientes de ayudas diagnósticas. buscar $cco_usuario_ayuda;
 2016-09-20  camilo zapata: se corrige para la seleccion de un responsable desde el tab.
 2016-09-14  camilo zapata: se adiciona filtro de centro de costos para que muestre los pacientes ingresados en el servicio seleccionado
-2016-09-08  camilo zapata: se habilita la opciÃ³n de que se pueda elegir la fecha que sea, sin restricciÃ³n (no aplica para las preadmisiones, en ese caso se guardan la fecha y la hora del sistema ). y que el listado de centros de costos pueda ser limitado por la tabla 000081 en el campo Percca
-2016-06-19: camilo zapata: se validan los cargos en unix antes de hacer una anulaciÃ³n de ingreso.
-2016-06-22: ( camilo zz): se modifica el script para que libere la habitaciÃ³n cuando se anula un ingreso buscar _000020 en caso de ser necesario
-2016-05-16: ( camilo zz): modificaciÃ³n del script para que valide que el campo de alta definitiva de la movhos 18 sea distinto de ='off'. de tal manera que ya tenga alta definitiva. bsucar "2016-05-16"
-2016-03-28: ( camilo zz): se modifica la consulta de historia e ingresos para que los ordene nÃºmericamente y se corrige para que no consulte el consecutivo de historia en unix a menos de que el parÃ¡metro de conexiÃ³n a unix estÃ© activo
-2016-03-16: ( camilo zz): se modifica el programa para que al elegir pacientes sin identificaciÃ³n se guarde el nÃºmero de historia en lugar del documento. y modificaciones de clinica del sur, como impresion de la historia y orden de consulta
+2016-09-08  camilo zapata: se habilita la opción de que se pueda elegir la fecha que sea, sin restricción (no aplica para las preadmisiones, en ese caso se guardan la fecha y la hora del sistema ). y que el listado de centros de costos pueda ser limitado por la tabla 000081 en el campo Percca
+2016-06-19: camilo zapata: se validan los cargos en unix antes de hacer una anulación de ingreso.
+2016-06-22: ( camilo zz): se modifica el script para que libere la habitación cuando se anula un ingreso buscar _000020 en caso de ser necesario
+2016-05-16: ( camilo zz): modificación del script para que valide que el campo de alta definitiva de la movhos 18 sea distinto de ='off'. de tal manera que ya tenga alta definitiva. bsucar "2016-05-16"
+2016-03-28: ( camilo zz): se modifica la consulta de historia e ingresos para que los ordene númericamente y se corrige para que no consulte el consecutivo de historia en unix a menos de que el parámetro de conexión a unix esté activo
+2016-03-16: ( camilo zz): se modifica el programa para que al elegir pacientes sin identificación se guarde el número de historia en lugar del documento. y modificaciones de clinica del sur, como impresion de la historia y orden de consulta
 2016-03-03: ( camilo zz): se modifica el programa para que filtre los usuarios admitidos por centros de costos siempre y cuando el usuario sea de un cco ayuda diagnostica para cualquier duda buscar "filtrarCcoAyuda"
 2016-03-01: ( camilo zz): se modifica el programa para que se pueda abrir desde el programa de "citas" o "agenda" guardando el turno en la tabla de log correspondiente.
-2016-02-24: ( camilo zz): se modifica el programa para que se incluya el campo zona geogrÃ¡fica en la admision de clinica del sur.
+2016-02-24: ( camilo zz): se modifica el programa para que se incluya el campo zona geográfica en la admision de clinica del sur.
 2016-02-22: ( camilo zz): se modifica el programa que el cco de costo por defecto lo tome de la tabla cliame_81
-2016-02-08: ( camilo zz): se modifica el programa que tenga en cuenta los siguientes parÃ¡metros en clÃ­nica del sur:
-							- filtraEspecialidadClinica ( en el mÃ©dico de ingreso solo utilizarÃ¡ los mÃ©dicos cuya especialidad se mÃ©dica )
-							- tipoUsuarioDefecto        ( pra clÃ­nica del sur el tipo de usuario cargarÃ¡ por defecto en general, no en institucional )
-							- pideTipoServicio          ( pide el tipo de servicio asociado al tipo de atenciÃ³n definida por el centro de costos: ejemplo, en clinica del sur
-														 el centro de costos medicina domiciliaria tiene los servicios Agudo, cronico y hospitalizaciÃ³n )
+2016-02-08: ( camilo zz): se modifica el programa que tenga en cuenta los siguientes parámetros en clínica del sur:
+							- filtraEspecialidadClinica ( en el médico de ingreso solo utilizará los médicos cuya especialidad se médica )
+							- tipoUsuarioDefecto        ( pra clínica del sur el tipo de usuario cargará por defecto en general, no en institucional )
+							- pideTipoServicio          ( pide el tipo de servicio asociado al tipo de atención definida por el centro de costos: ejemplo, en clinica del sur
+														 el centro de costos medicina domiciliaria tiene los servicios Agudo, cronico y hospitalización )
 														 este cambio es el mas profundo puesto que se utiliza la tabla clisur_000174
-2015-12-14: ( camilo zz): se modifica el programa para que grabar el ingreso primero en matrix y luego en unix, y se graba la hora de inicio del proceso de admisiÃ³n
-2015-10-15: ( camilo zz): se quita la clase requerido a los campos creados por jerson para el manejo de los cursos, se modifica el programa para que libere la habitaciÃ³n
-						  cuando se anula un ingreso y este estÃ¡ en proceso de traslado y sin movimientos hospitalarios anteriores. tambien se anula el turno en caso de que este tenga
-2015-09-07: ( camilo zz): se verifica al entrar a editar un ingreso, que si este paciente tiene ingresos posteriores, ya no deje modificar al que el usuario estÃ¡ viendo.
+2015-12-14: ( camilo zz): se modifica el programa para que grabar el ingreso primero en matrix y luego en unix, y se graba la hora de inicio del proceso de admisión
+2015-10-15: ( camilo zz): se quita la clase requerido a los campos creados por jerson para el manejo de los cursos, se modifica el programa para que libere la habitación
+						  cuando se anula un ingreso y este está en proceso de traslado y sin movimientos hospitalarios anteriores. tambien se anula el turno en caso de que este tenga
+2015-09-07: ( camilo zz): se verifica al entrar a editar un ingreso, que si este paciente tiene ingresos posteriores, ya no deje modificar al que el usuario está viendo.
 2015-08-24: (Jerson Trujillo): Se implementa una nueva funcionalidad para el manejo del turnero, la cual permite visualizar
-			una lista de pacientes que estan en turno y desde ahÃ­ iniciar el proceso de la admisiÃ³n.
+			una lista de pacientes que estan en turno y desde ahí iniciar el proceso de la admisión.
 2015-08-05: ( Camilo zz): se modifica el programa adicionando los campos de inicio y final de responsabilidad por parte de la entidad, tambien se modifica el programa para que
-			permita la selecciÃ³n de un responsable como complementario para la liquidaciÃ³n de cirugÃ­as.
-2015-07-27: ( Camilo zz): se modifica el programa para que tenga en cuenta si el tipo de documento que se va a ingresar es alfanumÃ©rico o no.
+			permita la selección de un responsable como complementario para la liquidación de cirugías.
+2015-07-27: ( Camilo zz): se modifica el programa para que tenga en cuenta si el tipo de documento que se va a ingresar es alfanumérico o no.
 2015-07-23: ( Camilo zz): se modifica el programa para que siempre que haya un unico responsable tenga como fecha de inicio de responsabilidad, la fecha del ingreso del paciente
-2015-07-14: ( Camilo zz): Se habilita la autorizacion de uso de datos personales por parte de la organizaciÃ³n y el guardado de la misma en la tabla de pacientes y en el log
-2015-07-14: ( Camilo zz): se restringe el ingreso de los valores del tope y el porcentaje reconocido, con el propÃ³sito de evitar errores de diligenciamiento.
-2015-07-14: ( Camilo zz): se evita la modificaciÃ³n del campo resfir, en la tabla 205.
-2015-06-25: ( Camilo zz): se modificÃ³ el programa asignandolese un nuevo valor de ux al campo de pais de nacimiento, para recibirlo y guardarlo en unix si se trata de un extranjero
-2015-06-12: ( Camilo zz): se modificÃ³ el programa consultaAseguradoras, para que en el autocompletar solo se puedan elegir, entidades activas.
-2015-06-02: ( Camilo zz): se adicionÃ³ a la funciÃ³n javascript $(document).ready --> que no permita escribir comilla simple en ningÃºn input, para evitar que se rompan los strings en el servidor
-2015-05-22: ( camilo zz):  se modificÃ³ el programa no permita el guion en la cÃ©dula ni lineas de mas de 11 caracteres, para que haya concordancia con los documentos en unix
-2015-05-21: ( camilo zz):  se modificÃ³ el programa para que permita editar siempre un ingreso, sin importar el ccco de ingreso y el del usuario
-2015-05-19: (camilo zz): se modifica el programa para que cuando carga datos demogrÃ¡ficos desde la base de datos, y estos no existan en los maestros, se notifique al usuario pero permitan continuar
-			en caso de que se requiere elminar dicho cambio buscar "permitir la carga para correcciÃ³n", poner la variable ['error'] = 1 y borrar dos lineas mas abajo donde se hace vacÃ­a la variable buscada
+2015-07-14: ( Camilo zz): Se habilita la autorizacion de uso de datos personales por parte de la organización y el guardado de la misma en la tabla de pacientes y en el log
+2015-07-14: ( Camilo zz): se restringe el ingreso de los valores del tope y el porcentaje reconocido, con el propósito de evitar errores de diligenciamiento.
+2015-07-14: ( Camilo zz): se evita la modificación del campo resfir, en la tabla 205.
+2015-06-25: ( Camilo zz): se modificó el programa asignandolese un nuevo valor de ux al campo de pais de nacimiento, para recibirlo y guardarlo en unix si se trata de un extranjero
+2015-06-12: ( Camilo zz): se modificó el programa consultaAseguradoras, para que en el autocompletar solo se puedan elegir, entidades activas.
+2015-06-02: ( Camilo zz): se adicionó a la función javascript $(document).ready --> que no permita escribir comilla simple en ningún input, para evitar que se rompan los strings en el servidor
+2015-05-22: ( camilo zz):  se modificó el programa no permita el guion en la cédula ni lineas de mas de 11 caracteres, para que haya concordancia con los documentos en unix
+2015-05-21: ( camilo zz):  se modificó el programa para que permita editar siempre un ingreso, sin importar el ccco de ingreso y el del usuario
+2015-05-19: (camilo zz): se modifica el programa para que cuando carga datos demográficos desde la base de datos, y estos no existan en los maestros, se notifique al usuario pero permitan continuar
+			en caso de que se requiere elminar dicho cambio buscar "permitir la carga para corrección", poner la variable ['error'] = 1 y borrar dos lineas mas abajo donde se hace vacía la variable buscada
 			ejemplo 'pac_muh = ""'
-2015-04-23: (camilo zz): se modifica el programa para que no permita anular una admisiÃ³n si el paciente estÃ¡ inactivo en unix. en caso de necesitar eliminar el cambio buscar "correccion 2015-04-23"
-2015-03-13: se nodificÃ³ el programa para que no tenga en cuenta los campos que se llengan por defecto en el formulario en caso de que se estÃ© consultando la informaciÃ³n de un paciente buscar "correccion consulta de pacientes" --> camilo zapata
-2015-03-12: se modificÃ³ el programa para que limpie el formulario cuando se busque una cÃ©dula que no existe y ya se ha llenado el mismo con datos de un ingreso anterior
-2015-03-04: se modificÃ³ el programa para que utilice la perfilizaciÃ³n, de usuarios de la tabla 000081( usuarios- cajeros ) y tabla 000241( usuarios externos que solo consultan ), adicionalmente se evita el
+2015-04-23: (camilo zz): se modifica el programa para que no permita anular una admisión si el paciente está inactivo en unix. en caso de necesitar eliminar el cambio buscar "correccion 2015-04-23"
+2015-03-13: se nodificó el programa para que no tenga en cuenta los campos que se llengan por defecto en el formulario en caso de que se esté consultando la información de un paciente buscar "correccion consulta de pacientes" --> camilo zapata
+2015-03-12: se modificó el programa para que limpie el formulario cuando se busque una cédula que no existe y ya se ha llenado el mismo con datos de un ingreso anterior
+2015-03-04: se modificó el programa para que utilice la perfilización, de usuarios de la tabla 000081( usuarios- cajeros ) y tabla 000241( usuarios externos que solo consultan ), adicionalmente se evita el
 			ingreso de caracteres especiales en el nombre del paciente
-2015-01-13: Se modificÃ³ el programa para que guarde los datos de residencia siempre nacionales, y en el extranjero solo el pais, la direcciÃ³n y el telÃ©fono.
-2014-12-29: Se modificÃ³ el programa para que permita el ingreso del espacio en blanco en el campo del documento, antes de guardarse, se quitan los espacios al inicio y al final
+2015-01-13: Se modificó el programa para que guarde los datos de residencia siempre nacionales, y en el extranjero solo el pais, la dirección y el teléfono.
+2014-12-29: Se modificó el programa para que permita el ingreso del espacio en blanco en el campo del documento, antes de guardarse, se quitan los espacios al inicio y al final
 2014-12-12: Se comentaron las partes que agregan la opcion "NO APLICA" a la busqueda de departamento y municipio
-2014-12-11: se modifica el programa para que no deje continuar una admision si el paciente a admitir estÃ¡ en la lista de rechazados. Buscar "consultarSiRechazado"
-2014-12-05: se modifica el programa para que no reaccine el valor del campo infdav( direcciÃ³n del acudiente en la tabla inpacinf )
+2014-12-11: se modifica el programa para que no deje continuar una admision si el paciente a admitir está en la lista de rechazados. Buscar "consultarSiRechazado"
+2014-12-05: se modifica el programa para que no reaccine el valor del campo infdav( dirección del acudiente en la tabla inpacinf )
 2014-11-05: Se cambia el query para buscar los medicos, se despliega la lista de medicos encima del input, se busca nombre de la aseguradora si es tipo empresa
 2014-10-30: Se realizan cambios cuando el responsable de la cuenta es particular.
 2014-10-14: Se actualiza la tabla cliame 000207, solicitado por Juan Carlos.
@@ -504,7 +504,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 	//2014-08-26
 	global $pac_no1txtPriNom,$pac_no2txtSegNom,$pac_ap1txtPriApe,$pac_ap2txtSegApe;
-	$caracteres = array( "Ã¡","Ã©","Ã­","Ã³","Ãº","Ã","Ã‰","Ã","Ã“","Ãš","Ã±","Ã‘","Ã¼","Ãœ",",","\\","Ã ","Ã¨","Ã¬","Ã²","Ã¹","Ã€","Ãˆ","ÃŒ","Ã’","Ã™","Ã‚","Â§","Â®","'","?Ã¦","??","?Â£", "Â°");
+	$caracteres = array( "á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","Ñ","ü","Ü",",","\\","à","è","ì","ò","ù","À","È","Ì","Ò","Ù","Â","§","®","'","?æ","??","?£", "°");
 	$caracteres2 = array("a","e","i","o","u","A","E","I","O","U","n","N","u","U","","","a","e","i","o","u","A","E","I","O","U","A","S","", "", "N", "N", "U", "");
 	$pac_no1txtPriNom = str_replace( $caracteres, $caracteres2, utf8_decode($pac_no1txtPriNom) );
 	$pac_no2txtSegNom = str_replace( $caracteres, $caracteres2, utf8_decode($pac_no2txtSegNom) );
@@ -544,7 +544,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 	$datosEnc="";
 	/************************************************************************************************************
 	 * Septiembre 03 de 2013
-	 * Si tiene una preadmisiÃ³n y no es en la misma fecha posible de admisiÃ³n no se deja hacer la admisiÃ³n
+	 * Si tiene una preadmisión y no es en la misma fecha posible de admisión no se deja hacer la admisión
 	 ************************************************************************************************************/
 	/*$sql = "select Pacdoc,Pacfec,id,Pacact
 			  from ".$wbasedato."_000166
@@ -562,7 +562,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				if( $rowsPre[ 'Pacfec' ] != date( "Y-m-d" ) )
 				{
 					$data[ 'error' ] = 1;
-					$data[ 'mensaje' ] = utf8_encode( "No se puede realizar el ingreso,\ntiene una preadmisiÃ³n para el dÃ­a ".$rowsPre[ 'Pacfec' ] );
+					$data[ 'mensaje' ] = utf8_encode( "No se puede realizar el ingreso,\ntiene una preadmisión para el día ".$rowsPre[ 'Pacfec' ] );
 					echo json_encode($data);
 					return;
 				}
@@ -585,10 +585,10 @@ if (isset($accion) and $accion == 'guardarDatos'){
 	//1. Consultar por documento
 	//	- Si el documento no se encuentra en la BD, significa que la historia no existe para el paciente
 	//	- Si no se encuentra el documento, consultar la nueva historia
-	//	- Si existe el documento, consulto la historia y el numero de ingreso nuevo (Esto es sumarle uno al Ãºltimo ingreso)
+	//	- Si existe el documento, consulto la historia y el numero de ingreso nuevo (Esto es sumarle uno al último ingreso)
 
 	//2020-07-04
-	/*Consulto los datos del eventual accidente de trÃ¡nsito para revisar en caso de que haya algun cambio al respecto tengamos los datos necesarios*/
+	/*Consulto los datos del eventual accidente de tránsito para revisar en caso de que haya algun cambio al respecto tengamos los datos necesarios*/
 	$sqlpro = "SELECT Accres, Accrei
 				FROM {$wbasedato}_000148 
 			   WHERE Acchis = '{$historia}'
@@ -598,7 +598,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 	
 	$accResponsableActual = "";
 	$accNuevoResponsable  = $_POST['_ux_accres'];
-	if( $num2 > 0 ){//si antes de la modificaciÃ³n el ingreso corresponde a un accidente de trÃ¡nsito.
+	if( $num2 > 0 ){//si antes de la modificación el ingreso corresponde a un accidente de tránsito.
 		$rows2 = mysql_fetch_array($res2);
 		$accResponsableActual = $rows2['Accres'];
 		
@@ -656,7 +656,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			{
 				$rows2=mysql_fetch_array($res2);
 				if( $rows2[0] == '02' ){ //Si el origen de la atencion es accidente de transito
-					// si el saldo estÃ¡ intacto pero tiene ingresos posteriores asociados a este
+					// si el saldo está intacto pero tiene ingresos posteriores asociados a este
 					$sqlpro = "SELECT COUNT(*) cantidad
 								 FROM {$wbasedato}_000148 
 								WHERE Acchis = '{$historia}'
@@ -717,8 +717,8 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				$ingresoUx  = $_POST[ 'ing_nintxtNumIng' ];
 			}
 
-			//--> consultar si estÃ¡ llegando el Ãºltimo ingreso
-			if( $modoConsulta == "true" ){//-->2016-12-27 -> para mantener la siguiente consulta solo para el Ãºltimo ingreso
+			//--> consultar si está llegando el último ingreso
+			if( $modoConsulta == "true" ){//-->2016-12-27 -> para mantener la siguiente consulta solo para el último ingreso
 
 				$sql = " SELECT pachis, pacact, max(ingnin*1) ultimoIngreso
 						   FROM {$wbasedato}_000101, {$wbasedato}_000100
@@ -832,7 +832,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			else//no tiene registros con ese documento
 			{
 
-				//--> si no lo encontrÃ³ en la 100, pero aÃºn asÃ­ tiene historia en unix;
+				//--> si no lo encontró en la 100, pero aún así tiene historia en unix;
 				if( isset( $historiaUx ) and $historiaUx != "" ){//-->2017-05-23
 					$historia         = $historiaUx;
 					$ingreso          = $ingresoUx;
@@ -841,7 +841,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				}else{
 					//es una admision nueva y consulto el consecutivo
 					//
-					//se bloquea la tabla //2017-06-22--> bloqueo de tablas para el consecutivo y evitar daÃ±os con la concurrencia.
+					//se bloquea la tabla //2017-06-22--> bloqueo de tablas para el consecutivo y evitar daños con la concurrencia.
 					$query = " UNLOCK TABLES ";
 					$resquery = mysql_query($query,$conex) or ( $data[ 'mensaje' ] = utf8_encode( "Error desbloqueando la tabla de consecutivo de historias " .mysql_errno()." - Error en el query $sql4 - ".mysql_error() ) );
 
@@ -896,7 +896,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 	}
 	/***fin consulta o actualizacion de historia e ingreso***/
 
-	// validar si el tipo de documento es Adulto sin identificaciÃ³n, para que reasigne la historia encontrada al nÃºmero de documento
+	// validar si el tipo de documento es Adulto sin identificación, para que reasigne la historia encontrada al número de documento
 	// y todos los campos asociados a este
 	$pac_tdoselTipoDoc  = trim( $pac_tdoselTipoDoc );
 	if( trim( $pac_tdoselTipoDoc ) == "AS" ){
@@ -915,7 +915,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 		$_POST[ 'pac_doctxtNumDoc' ] = $historia;
 		$pac_doctxtNumDoc            = $historia;
-		if( $ingreso < 1 )//2019-12-03 linea adicionada para permitir reingresos a adultos sin identificaciÃ³n.
+		if( $ingreso < 1 )//2019-12-03 linea adicionada para permitir reingresos a adultos sin identificación.
 			$ingreso  = 1;
 
 	}
@@ -979,7 +979,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$ing_cemhidCodAse = consultarAplicacion2($conex,$wemp_pmla,"codigoempresaparticular");
 					$tarifa = consultarAplicacion2($conex,$wemp_pmla,"tarifaparticular");
 				}
-				//--> validaciÃ³n de cambio de codigo de responsable para la tabla 101 variable $ing_cemhidCodAse.
+				//--> validación de cambio de codigo de responsable para la tabla 101 variable $ing_cemhidCodAse.
 				$cambiarCodigoEntidad = consultarAplicacion2( $conex, $wemp_pmla, "responsable101particular" );
 				if($cambiarCodigoEntidad == "c"){
 					$ing_cemhidCodAse = consultarAplicacion2($conex,$wemp_pmla,"codigoempresaparticular");
@@ -1055,7 +1055,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				}
 
 
-				//2014-03-10 El campo ingunx indica si el ingreso se guardÃ³ en unix
+				//2014-03-10 El campo ingunx indica si el ingreso se guardó en unix
 				//El campo consecutivoHistoriaDeUnix es true cuando la admision ya se guardo en unix
 				$datosEnc[ "ingunx" ] = "off";
 				if( $consecutivoHistoriaDeUnix == true )
@@ -1081,7 +1081,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 				if( mysql_affected_rows() > 0 )
 				{	//si inserto la 101
-					$data[ "mensaje" ] = utf8_encode( "Se registrÃ³ correctamente" );
+					$data[ "mensaje" ] = utf8_encode( "Se registró correctamente" );
 				}
 				else
 				{
@@ -1107,7 +1107,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				while( $rowCA   = mysql_fetch_assoc( $rsCA )){
 
 					if( $rowCA['cantidad']*1 > 0 ){//->2018-07-13
-						//---> esto quiere decir que el programa de cargos hizo un cambio automÃ tico por consumo de saldo y que el principal
+						//---> esto quiere decir que el programa de cargos hizo un cambio automàtico por consumo de saldo y que el principal
 						//     responsable ya no es la empresa tipo soat
 						$arrayAuxV        = array();
 						$arrayAuxV        = $responsables1[0];
@@ -1120,7 +1120,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				$rowsEnc = mysql_fetch_array( $res );
 				$remitidoAnterior = $rowsEnc[ 'ingvre' ]*1;
 
-				//Si se encontraron datos, significa que es una actualizaciÃ³n
+				//Si se encontraron datos, significa que es una actualización
 				$datosTabla = crearArrayDatos( $wbasedato, "ing", "ing_", 3 );
 
 				/*unset( $datosTabla[ "ingfei" ] );2016-09-08
@@ -1168,14 +1168,14 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$datosEnc[ "ingpla" ] = "";
 					$datosEnc[ "ingord" ] = "";
 				}
-				//CONSULTA PARA VERIFICAR SI EL RESPONSABLE PRINCIPAL HA SIDO CAMBIADO AUTOMÃ€TICAMENTE POR EL PROGRAMA DE CARGOS, PARA OMITIR ESTE MOVIMIENTO.
+				//CONSULTA PARA VERIFICAR SI EL RESPONSABLE PRINCIPAL HA SIDO CAMBIADO AUTOMÀTICAMENTE POR EL PROGRAMA DE CARGOS, PARA OMITIR ESTE MOVIMIENTO.
 
-				//2014-03-10 El campo ingunx indica si el ingreso se guardÃ³ en unix
+				//2014-03-10 El campo ingunx indica si el ingreso se guardó en unix
 				//El campo consecutivoHistoriaDeUnix es true cuando la admision ya se guardo en unix
 				/*$datosTabla[ "ingunx" ] = "off";
 				if( $consecutivoHistoriaDeUnix == true )
 					$datosTabla[ "ingunx" ] = "on";*/
-				$datosTabla["ingunx"] = $rowsEnc['Ingunx'];//--> 2015-11-11 si ya se habÃ­a guardado en unix, que cargue el dato para que en erp_unix se hagan actualizaciones y no inserciones.
+				$datosTabla["ingunx"] = $rowsEnc['Ingunx'];//--> 2015-11-11 si ya se había guardado en unix, que cargue el dato para que en erp_unix se hagan actualizaciones y no inserciones.
 
 				$sqlUpdate = crearStringUpdate( $wbasedato."_000101", $datosTabla );
 
@@ -1225,6 +1225,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			if( $res1 )
 			{
 				$num1 = mysql_num_rows( $res1 );
+				
 				//Si no se encontraron los datos, significa que es un registro nuevo
 				if( $num1 == 0 ) //hace el insert
 				{
@@ -1250,6 +1251,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$datosEnc['pacap2'] = strtoupper($datosEnc['pacap2']);
 					$datosEnc['pacno1'] = strtoupper($datosEnc['pacno1']);
 					$datosEnc['pacno2'] = strtoupper($datosEnc['pacno2']);
+					
 					if( $pacienteNN == "on"){
 						$datosEnc['pacdoc'] = $documento;
 					}
@@ -1260,13 +1262,13 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 					if( mysql_affected_rows() > 0 )
 					{	//si inserto
-						$data[ "mensaje" ] = utf8_encode( "Se registrÃ³ correctamente" );
+						$data[ "mensaje" ] = utf8_encode( "Se registró correctamente" );
 						/********************************************************************************
 						 * Agosto 15 de 2013
 						 *
-						 * Si se registra correctamente verifico que halla un registro en preadmisiÃ³n
-						 * Si hay un registro con el mismo documento en preadmisiÃ³n, cancelo la preadmisiÃ³n
-						 * si la preadmisiÃ³n es de la fecha actual
+						 * Si se registra correctamente verifico que halla un registro en preadmisión
+						 * Si hay un registro con el mismo documento en preadmisión, cancelo la preadmisión
+						 * si la preadmisión es de la fecha actual
 						 ********************************************************************************/
 						$sql = "UPDATE
 									".$wbasedato."_000166
@@ -1327,7 +1329,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					}
 					
 					$fechaIngreso = $rowsEnc['ingfei'];
-					//Si se encontraron datos, significa que es una actualizaciÃ³n
+					//Si se encontraron datos, significa que es una actualización
 					$datosTabla = crearArrayDatos( $wbasedato, "pac", "pac_", 3 );
 
 					unset( $datosTabla[ "pacfec" ] ); //elimina la posicion
@@ -1364,9 +1366,9 @@ if (isset($accion) and $accion == 'guardarDatos'){
 							/********************************************************************************
 							 * Agosto 15 de 2013
 							 *
-							 * Si se registra correctamente verifico que halla un registro en preadmisiÃ³n
-							 * Si hay un registro con el mismo documento en preadmisiÃ³n, cancelo la preadmisiÃ³n
-							 * si la preadmisiÃ³n es de la fecha actual
+							 * Si se registra correctamente verifico que halla un registro en preadmisión
+							 * Si hay un registro con el mismo documento en preadmisión, cancelo la preadmisión
+							 * si la preadmisión es de la fecha actual
 							 ********************************************************************************/
 							$sql = "UPDATE
 										".$wbasedato."_000166
@@ -1555,7 +1557,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				$resCancPre = mysql_query( $sql, $conex ) or die(  $data[ 'mensaje' ] = utf8_encode( mysql_errno()." - Error en el query admision $sql - ".mysql_error() )  );
 			}
 
-			/**Se guarda eventos catastrÃ³ficos**/
+			/**Se guarda eventos catastróficos**/
 			if( !empty( $ing_caiselOriAte ) && $ing_caiselOriAte == '06' ){
 
 				if ($relEvento == 'off')
@@ -1583,7 +1585,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 		/******************* Guardar en la tabla de responsables 000205****************/
 		if( $data[ "error" ] == 0 )
 		{
-			//-->nueva funcion para actualizaciÃ³n de responsables
+			//-->nueva funcion para actualización de responsables
 			if( true ){
 
 				//if( !empty( $responsables1 ) && count( $responsables1 ) > 0 ){
@@ -1620,11 +1622,11 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 					foreach( $responsablesActuales as $keyResA => $datosResponsableActual ){
 						if(  ( in_array( $datosResponsableActual['codigoResponsable'], $responsablesNuevos ) )  ){
-							//--> si entra acÃ¡ quiere decir que el responsable almacenado actualmente sigue existiendo entre los responsables del paciente
+							//--> si entra acá quiere decir que el responsable almacenado actualmente sigue existiendo entre los responsables del paciente
 							array_push( $responsablesActualizar, $datosResponsableActual['codigoResponsable'] );
 
 						}else{
-							//--> el responsable almacenado ya no se encuentra entre los responsables del paciente, asÃ­ que debe descartarse.
+							//--> el responsable almacenado ya no se encuentra entre los responsables del paciente, así que debe descartarse.
 							array_push( $responsablesDescartados, $datosResponsableActual['codigoResponsable'] );
 
 						}
@@ -1713,7 +1715,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 						if (!$resEnc){
 							$data['error']=1;
-						}else{ //20140221 -------------------> nueva funciÃ³n de cups
+						}else{ //20140221 -------------------> nueva función de cups
 
 							if( $datosEnc[ "resord" ]*1 == 1 ){
 								$sqlDel="DELETE FROM ".$wbasedato."_000209
@@ -1825,8 +1827,8 @@ if (isset($accion) and $accion == 'guardarDatos'){
 		if( $data[ "error" ] == 0 )
 		{
 			if( !empty( $ing_caiselOriAte ) && $ing_caiselOriAte == '02' ){
-				//se consulta el tope de accidente de transito para el aÃ±o en curso
-				$idSoat = "";//--> variable que me dirÃ¡ si hay que hacer insert o update, y si es el segundo caso, me dirÃ¡ cual registro actualizar
+				//se consulta el tope de accidente de transito para el año en curso
+				$idSoat = "";//--> variable que me dirá si hay que hacer insert o update, y si es el segundo caso, me dirá cual registro actualizar
 				$fechaAccidente = $_POST['dat_Accfec_ux_accfec'];//-->2018-01-17 si falla cambiar la variable abajo por date('y-m-d');
 				$sqlTopeSoat = "  SELECT Toptpr
 									FROM ".$wbasedato."_000194
@@ -1928,7 +1930,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 						$_POST['ing_vretxtValRem'] = 0;
 
 				if( $idSoat == "" ){
-					//--> agregar fragmento de cÃ³digo que tiene en cuenta el valor remitido
+					//--> agregar fragmento de código que tiene en cuenta el valor remitido
 					$datosEnc[ "topsal" ] = $datosEnc[ "topsal" ]*1 - $_POST['ing_vretxtValRem']*1;
 					$sqlInsertSOAT = crearStringInsert( $wbasedato."_000204", $datosEnc );
 				}else{
@@ -2022,7 +2024,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 						$datosEnc[ "Seguridad" ] =	"C-".$usuario;
 						//	print_r($datosEnc);
 
-						unset( $empresasConTopes[ $valueRes['top_reshidTopRes'] ] );// si esta acÃ¡ es porque tiene minimo un tope
+						unset( $empresasConTopes[ $valueRes['top_reshidTopRes'] ] );// si esta acá es porque tiene minimo un tope
 						if (!($valueRes['top_tcoselTipCon'] == '*' && $valueRes['top_clahidClaTop'] == '*' && $valueRes['top_ccohidCcoTop'] == '*'
 						&& $valueRes['top_toptxtValTop'] == '' && $valueRes['top_rectxtValRec'] == ''))
 						{
@@ -2094,7 +2096,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 		/******************* Fin Guardar en la tabla de topes 000204************/
 
-		//--> segmento de cÃ³digo encargado de la regrabaciÃ³n.
+		//--> segmento de código encargado de la regrabación.
 		$ordenNuevos = 0;
 		$cantidadCambios = 0;
 		if( !isset( $responsablesNuevos ) )
@@ -2103,7 +2105,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			$ordenNuevos++;
 			$responsableAnterior = $responsablesActualesOrd[$ordenNuevos];
 
-			if( $valueNresponsable != $responsableAnterior and $valueNresponsable != "" and $responsableAnterior != ""){//--> si hubo cambio de responsable se debe realizar el anÃ¡lisis y la correspondiente regrabaciÃ³n.
+			if( $valueNresponsable != $responsableAnterior and $valueNresponsable != "" and $responsableAnterior != ""){//--> si hubo cambio de responsable se debe realizar el análisis y la correspondiente regrabación.
 				/*if( $cantidadCambios == 0 ){
 					include_once("ips/funciones_facturacionERP.php");
 				}*/
@@ -2130,7 +2132,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				//--> no hay cambio de responsable en este punto
 			}
 		}
-		//--> fin de la regrabaciÃ³n
+		//--> fin de la regrabación
 	} //historia e ingreso vacios
 	else
 	{
@@ -2545,7 +2547,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 		}
 
 		if( $historiaTemporal != "" ){
-			//--> actualizaciÃ³n de tablas con el triaje
+			//--> actualización de tablas con el triaje
 			$queryUp36 =  "UPDATE {$wbasedatoHce}_000036
 							  SET Firhis = '$historia',
 							      Firing = '$ingreso'
@@ -2874,12 +2876,12 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 
 
-	/* Insercion en tabla movhos_000033 para los pacientes que estÃ¡n ingresando a un centro de costos de ayudas diagnÃ³sticas*/
+	/* Insercion en tabla movhos_000033 para los pacientes que están ingresando a un centro de costos de ayudas diagnósticas*/
 	$aplMovhos    = consultarAplicacion2($conex,$wemp_pmla,"movhos");
 	$servicioIng1 = explode("-",$ing_seisel_serv_ing);
 	$servicioIng  = $servicioIng1[1];
 	$ccoIngresoAyuda = verificarCcoIngresoAyuda( $servicioIng );
-	if( $ccoIngresoAyuda && $modoConsulta != "true" ){//--> 2016-12-27 inserts de alta automÃ¡tica para ayudas diagnÃ³sticas.
+	if( $ccoIngresoAyuda && $modoConsulta != "true" ){//--> 2016-12-27 inserts de alta automática para ayudas diagnósticas.
 
 		// Si el paciente a estado antes en el servicio para el mismo ingreso, traigo cuantas veces para sumarle una
 		$q32 = " SELECT COUNT(*)
@@ -2952,7 +2954,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 		FIN SE COMPRUEBA EL ESTADO DEL PACIENTE EN UNIX ANTES DE ADMITIR
 		*/
 
-		// se devuelve al estado estandar con orden de responsables original para que unix haga la respectiva validaciÃ²n y guarde los datos correctamente
+		// se devuelve al estado estandar con orden de responsables original para que unix haga la respectiva validaciòn y guarde los datos correctamente
 		if( $cambioTemporalSaldoCero ){//-->2018-07-13
 			$arrayAuxV        = $responsables1[0];
 			$responsables1[0] = $responsables1[1];
@@ -2973,7 +2975,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 		//if( $modoConsulta == "false" || ( $modoConsulta == "true" && $estadoPaciente == true ) ){
 		if( true ){//2020-06-13
 			//$ping_unix = ping_unix();
-			//-->2018-08-28 debido a que el orden de grabaciÃ³n cambiÃ³, entonces reasignar los valores de historia e ingreso para unix
+			//-->2018-08-28 debido a que el orden de grabación cambió, entonces reasignar los valores de historia e ingreso para unix
 			while( $reintentar && $intentos*1 <= $intentosIngreso*1 && $ping_unix && $tieneConexionUnix == 'on'){
 					$a = new admisiones_erp();
 					if( $a->conex_u && $ping_unix == true){
@@ -2984,19 +2986,19 @@ if (isset($accion) and $accion == 'guardarDatos'){
 						if( $data['error'] == 1 ){
 							$errorUnix = true;
 							$data['mensaje'] = "Error al grabar la admision en UNIX ".$data['mensaje'];
-							$data[ "error" ] = 4;//--> no grabÃ³ en unix
+							$data[ "error" ] = 4;//--> no grabó en unix
 							//echo json_encode($data);
 							//return;//--2016-10-21
 						}
 					}else if( $a->conex_u === false && $ping_unix == true ){
-						$data[ "error" ] = 4; //--> no grabÃ³ en unix unix unix unix unix
+						$data[ "error" ] = 4; //--> no grabó en unix unix unix unix unix
 						$errorUnix = true;
 						$data[ "mensaje" ] = utf8_encode("No se puede grabar en UNIX desde Matrix. Comuniquese con informatica.");
 						//echo json_encode($data);
 						//return;//--2016-10-21
 					}
 
-					//--> validar si se guardÃ³ bien :D
+					//--> validar si se guardó bien :D
 					unset( $a );
 					if( $errorUnix ){
 						$reintentar = true;
@@ -3017,7 +3019,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 		$_POST[ 'pac_doctxtNumDoc' ] = $_POST[ 'pac_doctxtNumDocOriginal' ];
 	}
 
-	// FIN INSERCIÃ“N EN UNIX.
+	// FIN INSERCIÓN EN UNIX.
 	//para enviarlos y colocarlos en las cajas de texto correspondientes despues de guardar
 	$data[ 'historia' ]  = $historia;
 	$data[ 'ingreso' ]   = $ingreso;
@@ -3025,20 +3027,20 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 	if( $data["error"] == 0 ){
 		if( $modoConsulta == "false" && $ping_unix && $tieneConexionUnix == 'on' ){
-			//--> si llegÃ³ hasta acÃ¡ es porque guardÃ³ en unix, entonces se actualiza el campo ingunx en la tabla 101 de ingresos
+			//--> si llegó hasta acá es porque guardó en unix, entonces se actualiza el campo ingunx en la tabla 101 de ingresos
 			$query = "UPDATE {$wbasedato}_000101
 						 SET ingunx = 'on'
 					   WHERE inghis = '{$historia}'
 					     AND ingnin = '{$ingreso}'";
 			$rsunx = mysql_query( $query, $conex );
-			$data[ "mensaje" ] = "Se registrÃ³ correctamente";
+			$data[ "mensaje" ] = "Se registró correctamente";
 		}else{
 			$data[ "mensaje" ] = utf8_encode("Se actualizo correctamente" );
 		}
 	}else{
 		if( $data["error"] == 12 ){
 			$data["error"] = 0;
-			$data[ "mensaje" ] = "Se registrÃ³ correctamente";
+			$data[ "mensaje" ] = "Se registró correctamente";
 		}
 	}
 
@@ -3050,7 +3052,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 		// Si es un paciente internacional
 		if(in_array($tipodoc,$tipoDocumentoPacienteInternacional))
 		{
-			// Si la admisiÃ³n es nueva o si es modificada y actualizaron el tipo de documento debe notificar el paciente internacional
+			// Si la admisión es nueva o si es modificada y actualizaron el tipo de documento debe notificar el paciente internacional
 			if(($estadoAdmision == "Nueva") || ($estadoAdmision == "Modificada" && $cambiaTipoDocumento))
 			{
 				$nombrePaciente = $datosTabla['pacno1']." ".$datosTabla['pacno2']." ".$datosTabla['pacap1']." ".$datosTabla['pacap2'];
@@ -3086,7 +3088,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 	global $conex;
 
 
-	///---> para ignorar los datos iniciales siempre que se estÃ© consultando ----> //correccion consulta de pacientes
+	///---> para ignorar los datos iniciales siempre que se esté consultando ----> //correccion consulta de pacientes
 	unset($_POST['ing_lugselLugAte']);
 	unset($_POST['ing_feitxtFecIng']);
 	unset($_POST['ing_hintxtHorIng']);
@@ -3189,7 +3191,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'].=" - No se encontro el codigo del pais \n";
 							$data[ 'infopac' ][ 'pac_pan' ] = "";
 						}
@@ -3215,7 +3217,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'].=" - No se encontro el codigo del departamento \n";
 							$data[ 'infopac' ][ 'pac_dep' ] = "";
 						}
@@ -3241,7 +3243,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'].=" - No se encontro el codigo del municipio \n";
 							$data[ 'infopac' ][ 'pac_ciu' ] = "";
 						}
@@ -3267,7 +3269,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'].=" - No se encontro el codigo del pais de residencia \n";
 							$data[ 'infopac' ][ 'pac_pah' ] = "";
 						}
@@ -3293,7 +3295,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .=" - No se encontro el codigo del departamento residencia \n";
 							$data[ 'infopac' ][ 'pac_deh' ] = "";
 						}
@@ -3319,7 +3321,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 						}
 						else
 						{
-							$data[ 'error' ]= 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ]= 0;//--> permitir la carga para corrección
 							$data['mensaje']=" - No se encontro el codigo del municipio de residencia \n";
 							$data['infopac']['pac_muh'] = "";
 						}
@@ -3345,7 +3347,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .= " - No se encontro el codigo del barrio de residencia \n ";
 						}
 					}
@@ -3370,7 +3372,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 							}
 							else
 							{
-								$data[ 'error' ]  = 0;//--> permitir la carga para correcciÃ³n
+								$data[ 'error' ]  = 0;//--> permitir la carga para corrección
 								$data['mensaje']=" - No se encontro el codigo del barrio de residencia \n ";
 							}
 						}
@@ -3421,7 +3423,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 						}
 						else
 						{
-							$data[ 'error' ]= 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ]= 0;//--> permitir la carga para corrección
 							$data['mensaje']=" - No se encontro el codigo del departamento responsable del usuario \n ";
 						}
 					}
@@ -3446,7 +3448,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 						}
 						else
 						{
-							$data[ 'error' ]  = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ]  = 0;//--> permitir la carga para corrección
 							$data['mensaje']="No se encontro el codigo del municipio del responsable del usuario  \n";
 						}
 					}
@@ -4143,7 +4145,7 @@ if( isset($accion) and $accion == 'enviarnivelsiguiente' )
 			$identificacion = "{$whis}-{$wing}";
 			insertLog( $conex, $wfachos, $usuario, $accion, "000011", $err, $descripcion, $identificacion, $sql_error = '', '', '', '', '' );
 		}*/
-		//----------------------------------------------------------------------------INSERCIÃ“N INICIAL EN TABLA DE MOVIMIENTO---------------------------------------------------------------------//
+		//----------------------------------------------------------------------------INSERCIÓN INICIAL EN TABLA DE MOVIMIENTO---------------------------------------------------------------------//
 		/*$query = "INSERT
 				    INTO {$wfachos}_000020 (Medico, Fecha_data, Hora_data, lmohis, lmoing, lmotip, lmoori, lmodes, lmofot, lmoest, seguridad)
 				  VALUES ('fachos','{$hoy}','{$hora}','{$whis}','{$wing}', 'UPDATE' ,'{$nivelanterior}','{$nivelSiguiente}', '{$foto}','on','{$usuario}')";
@@ -4472,7 +4474,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 					$resinsert = mysql_query($insert, $conex) or die("<b>ERROR EN QUERY(sqlDet):</b><br>".mysql_error());
 					$html.= "  inserte";
 
-					//----------------------------------------------------------------------------INSERCIÃ“N INICIAL EN TABLA DE MOVIMIENTO--------------------------------------------------------------//
+					//----------------------------------------------------------------------------INSERCIÓN INICIAL EN TABLA DE MOVIMIENTO--------------------------------------------------------------//
 					$query = "INSERT
 								INTO {$wfachos}_000020 (Medico, Fecha_data, Hora_data, lmohis, lmoing, lmoori, lmodes, lmoest, seguridad)
 							  VALUES ('fachos','{$hoy}','{$hora}','{$whis}','{$wing}','','{$nivelUsuario}','on','{$usuario}')";
@@ -4541,7 +4543,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 					// $resinsert = mysql_query($insert, $conex) or die("<b>ERROR EN QUERY(sqlDet):</b><br>".mysql_error());
 					// $html.= "  inserte";
 
-					// ----------------------------------------------------------------------------INSERCIÃ“N INICIAL EN TABLA DE MOVIMIENTO--------------------------------------------------------------//
+					// ----------------------------------------------------------------------------INSERCIÓN INICIAL EN TABLA DE MOVIMIENTO--------------------------------------------------------------//
 					// $query = "INSERT
 								// INTO {$wfachos}_000020 (Medico, Fecha_data, Hora_data, lmohis, lmoing, lmoori, lmodes, lmoest, seguridad)
 							  // VALUES ('fachos','{$hoy}','{$hora}','{$whis}','{$wing}','','{$nivelUsuario}','on','{$usuario}')";
@@ -4786,7 +4788,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 
 
 
-		$caracteres  = array("Ã¡","Ã©","Ã­","Ã³","Ãº","Ã","Ã‰","Ã","Ã“","Ãš","Ã±","Ã‘","Ã¼","Ãœ",",","/","Ã ","Ã¨","Ã¬","Ã²","Ã¹","Ã€","Ãˆ","ÃŒ","Ã’","Ã™","Ã‚","Â§","Â®","'","?Ã¦","??", "?Â£");
+		$caracteres  = array("á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","Ñ","ü","Ü",",","/","à","è","ì","ò","ù","À","È","Ì","Ò","Ù","Â","§","®","'","?æ","??", "?£");
 		$caracteres2 = array("a","e","i","o","u","A","E","I","O","U","n","N","u","U","-","-","-","a","e","i","o","u","A","E","I","O","U","A","S"," ","","N","N", "U");
 		$estadoListado = 'SIN';
 		$wcliame = 'cliame';
@@ -4839,7 +4841,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 		$planesArray   = array();
 		$estadosArray  = array();
 		$formatosArray = array();
-		$serviciosVisitados     = array(); /*almacena los servicios que a utilizado el paciente segÃºn los centros de costos por los que ha pasado*/
+		$serviciosVisitados     = array(); /*almacena los servicios que a utilizado el paciente según los centros de costos por los que ha pasado*/
 
 
 
@@ -4880,7 +4882,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 
 		//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-		//---------------------------------------------------------------------AsociaciÃ³n de centro de costos visitados por Servicios--------------------------------------------------------//
+		//---------------------------------------------------------------------Asociación de centro de costos visitados por Servicios--------------------------------------------------------//
 		foreach( $cco as $keyCco => $dato)
 		{
 			foreach( $servicios as $keyServicio=>$campoVerificacion)
@@ -4917,7 +4919,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 
 
 		//-----------------------------------------------------------------------------SE CONSULTAN LOS PLANES ASOCIADOS A LA HISTORIA----------------------------------------------------------//
-		/*El string resultante se transformarÃ¡ para consultar con la propiedad IN de mysql de tal manera que se consulten todo los soportes asociados a estos planes*/
+		/*El string resultante se transformará para consultar con la propiedad IN de mysql de tal manera que se consulten todo los soportes asociados a estos planes*/
 		( $esAdmin == "on" ) ? $condicionNivelUsuario = "" : $condicionNivelUsuario = " AND ( lenrac = '{$nivelUsuario}' OR lencer='on' ) ";
 		$query = " SELECT lenemp, lenobs observacion, lencer cerrado, id num, lenran nivelAnterior, lenrac nivelActual, fecha_data fechaCreacion, lenfeu fechaRecibo, lenhou horaRecibo, lenpro proceso
 					 FROM {$wfachos}_000011
@@ -4961,7 +4963,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 		//-------------------------------------------------------------CONSULTA QUE ARMA EL LISTADO A PRESENTAR EN PANTALLA---------------------------------------------------------------------/
 		if($hayPlanesEmpresa)
 		{
-			//-----------------------------------------------------------> consulta el nombre del proceso que rije su revisiÃ³n <----------------------------------------------------------------//
+			//-----------------------------------------------------------> consulta el nombre del proceso que rije su revisión <----------------------------------------------------------------//
 
 			$query = " SELECT pronom nombre
 						 FROM {$wfachos}_000014
@@ -4971,7 +4973,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 			$row['nombre'] = str_replace( $caracteres, $caracteres2, $row['nombre'] );
 			$nombreProceso = $row['nombre'];
 
-			//----------------------------------------------------------->consulta los soportes que ya estÃ¡n guardados<---------------------------------------------/
+			//----------------------------------------------------------->consulta los soportes que ya están guardados<---------------------------------------------/
 			/*$hora1 = str_replace( ":", "_", $hora);
 			$hoy1  = str_replace( "-", "_", $hoy);
 			$tmp   = "tmpSoportes{$hoy1}_{$hora1}";
@@ -5012,7 +5014,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 			$rs = mysql_query( $query, $conex ) or die( mysql_error() );
 
 
-			while( $row = mysql_fetch_array($rs) )//ACA SE ESTAN GUARDANDO EN EL ARREGLO AQUELLOS SOPORTES QUE YA TIENEN ALGUN TIPO DE CONFIGURACIÃ“N EN EL LISTADO
+			while( $row = mysql_fetch_array($rs) )//ACA SE ESTAN GUARDANDO EN EL ARREGLO AQUELLOS SOPORTES QUE YA TIENEN ALGUN TIPO DE CONFIGURACIÓN EN EL LISTADO
 			{
 
 				$hayDatos = true;
@@ -5079,7 +5081,7 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 
 				while( $row = mysql_fetch_array($rs) )
 				{
-					( trim($row['servicios']) == "") ? $aplicaEnTodos = true : $aplicaEnTodos = false;  //variable para controlas si un soporte aplica para todos los servicios o solo para los que estÃ¡ filtrado;
+					( trim($row['servicios']) == "") ? $aplicaEnTodos = true : $aplicaEnTodos = false;  //variable para controlas si un soporte aplica para todos los servicios o solo para los que está filtrado;
 
 					$servicios = explode( ",", $row['servicios']);// separo los servicios en los que aplica dicho soporte
 
@@ -5090,11 +5092,11 @@ if( isset($accion) and $accion == 'crearListaAutomatica' )
 						$hayDatos = true;
 						$entro1="1";
 
-						if( in_array( $keyServicio, $servicios) or ($aplicaEnTodos) )//se pregunta si el soporte aplica para cada servicio, sea por especificaciÃ³n o porque el soporte no tiene filtro de servicios
+						if( in_array( $keyServicio, $servicios) or ($aplicaEnTodos) )//se pregunta si el soporte aplica para cada servicio, sea por especificación o porque el soporte no tiene filtro de servicios
 						{
 							$entro2="2";
 							$keyServicio = 'n';
-							if(!isset($consolidado[$row['codigoEmpresa']][$row['codigoPlan']][$keyServicio][$row['soporte']]))//ESTO FILTRA QUE EL SOPORTE NO EXISTA YA EN LA TABLA, DE SER ASÃ SE CONSERVAN LOS DATOS YA GUARDADOS EN {$wfachos}_000012
+							if(!isset($consolidado[$row['codigoEmpresa']][$row['codigoPlan']][$keyServicio][$row['soporte']]))//ESTO FILTRA QUE EL SOPORTE NO EXISTA YA EN LA TABLA, DE SER ASÍ SE CONSERVAN LOS DATOS YA GUARDADOS EN {$wfachos}_000012
 							{
 								$entro3="3";
 								$row['nombre'] = str_replace( $caracteres, $caracteres2, $row['nombre'] );
@@ -5318,7 +5320,7 @@ if (isset($accion) and $accion == 'guardarDatosPreadmision')
 	//1. Consultar por documento
 	//	- Si el documento no se encuentra en la BD, significa que la historia no existe para el paciente
 	//	- Si no se encuentra el documento, consultar la nueva historia
-	//	- Si existe el documento, consulto la historia y el numero de ingreso nuevo (Esto es sumarle uno al Ãºltimo ingreso)
+	//	- Si existe el documento, consulto la historia y el numero de ingreso nuevo (Esto es sumarle uno al último ingreso)
 
 	/***consulta o actualizacion de historia e ingreso***/
 	if( empty ($documento) ) //se consulta si ese documento existe
@@ -5338,7 +5340,7 @@ if (isset($accion) and $accion == 'guardarDatosPreadmision')
 					and Pacdoc = '".utf8_decode($documento)."'
 					and pacact = 'on'";
 		}else{
-			//Si ubiald != 'on' es porque todavia estÃ¡ hospitalizado o activo
+			//Si ubiald != 'on' es porque todavia está hospitalizado o activo
 			$sql = "select a.*
 					from ".$wbasedato."_000100 a, ".$aplicacion."_000018 b
 					where Pactdo = '".utf8_decode($tipodoc)."'
@@ -5351,7 +5353,7 @@ if (isset($accion) and $accion == 'guardarDatosPreadmision')
 		$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
 		$num = mysql_num_rows( $res );
 
-		//Solo se puede hacer preadmisiÃ³n si el paciente no esta activo
+		//Solo se puede hacer preadmisión si el paciente no esta activo
 		if( $num == 0 )
 		{
 			//Consulto si existe el registo
@@ -5458,10 +5460,10 @@ if (isset($accion) and $accion == 'guardarDatosPreadmision')
 						/******************************************************************************
 						 * Agosto 23 de 2013
 						 ******************************************************************************/
-						//Guardo el id del Ãºltimo insert de datos de ingreso de preadmisiÃ³n
+						//Guardo el id del último insert de datos de ingreso de preadmisión
 						$idIngreso = mysql_insert_id();
 						/******************************************************************************/
-						$data[ "mensaje" ] = utf8_encode( "Se registrÃ³ la preadmisiÃ³n correctamente" );
+						$data[ "mensaje" ] = utf8_encode( "Se registró la preadmisión correctamente" );
 					}
 					else
 					{
@@ -5472,7 +5474,7 @@ if (isset($accion) and $accion == 'guardarDatosPreadmision')
 				else //hace la actualizacion
 				{
 					$rowsEnc = mysql_fetch_array( $res );
-					//Si se encontraron datos, significa que es una actualizaciÃ³n
+					//Si se encontraron datos, significa que es una actualización
 					$datosTabla = crearArrayDatos( $wbasedato, "ing", "ing_", 3 );
 
 					$datosTabla[ 'id' ] = $rowsEnc[ 'id' ];
@@ -5584,7 +5586,7 @@ if (isset($accion) and $accion == 'guardarDatosPreadmision')
 						$resEnc = mysql_query( $sqlInsert, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( mysql_errno()." - Error en el query admision $sqlInsert - ".mysql_error() ) );
 
 						if( mysql_affected_rows() > 0 ){
-							$data[ "mensaje" ] = utf8_encode( "Se registrÃ³ correctamente" );
+							$data[ "mensaje" ] = utf8_encode( "Se registró correctamente" );
 						}else{
 							$data[ "error" ] = 1;
 							// $data[ "mensaje" ] = utf8_encode( mysql_errno()." - Error en el query $sqlInsert - ".mysql_error() );
@@ -5594,7 +5596,7 @@ if (isset($accion) and $accion == 'guardarDatosPreadmision')
 					{
 						$rowsEnc = mysql_fetch_array( $res1 );
 
-						//Si se encontraron datos, significa que es una actualizaciÃ³n
+						//Si se encontraron datos, significa que es una actualización
 						$datosTabla = crearArrayDatos( $wbasedato, "pac", "pac_", 3 );
 
 						unset( $datosTabla[ "pacciu" ] ); //elimina la posicion
@@ -5864,7 +5866,7 @@ if (isset($accion) and $accion == 'guardarDatosPreadmision')
 		else
 		{
 			$data[ "error" ] = 1;
-			$data[ "mensaje" ] = utf8_encode( "El paciente se encuentra activo en el sistema.\nNo se puede realizar la preadmisiÃ³n" );
+			$data[ "mensaje" ] = utf8_encode( "El paciente se encuentra activo en el sistema.\nNo se puede realizar la preadmisión" );
 		}
 		/**fin admision**/
 	} //historia e ingreso vacios
@@ -6910,7 +6912,7 @@ if(isset($accion) and $accion == 'anularAdmision')
 	if($hay_unix && $tieneConexionUnix == 'on' )
 	{
 
-		//--> primero validar en unix si estÃ¡ inactivo... correccion 2015-04-23.
+		//--> primero validar en unix si está inactivo... correccion 2015-04-23.
 		$cedula  = trim ($cedula);
 		$tipoDoc = strtoupper( $tipoDoc );
 		$cedula  = strtoupper( $cedula );
@@ -6924,7 +6926,7 @@ if(isset($accion) and $accion == 'anularAdmision')
 			return;
 		}
 		unset( $a );
-		//--> comentar hasta aquÃ­ si se necesita deshacer el cambio
+		//--> comentar hasta aquí si se necesita deshacer el cambio
 
 		$a = new admisiones_erp( 'anular', $historia, $ingreso );
 		$data = $a->data;
@@ -6938,7 +6940,7 @@ if(isset($accion) and $accion == 'anularAdmision')
 		unset( $a );
 	}
 
-	//Borro el Ãºltimo ingreso
+	//Borro el último ingreso
 	$sql = "SELECT *
 			  FROM ".$wbasedato."_000100, ".$wbasedato."_000101
 			 WHERE pachis = '".$historia."'
@@ -6950,9 +6952,9 @@ if(isset($accion) and $accion == 'anularAdmision')
 	$num = mysql_num_rows( $resInfPac );
 	$rowsInfo = mysql_fetch_array( $resInfPac );
 
-	//Si no encontrÃ³ paciente no se hace ningÃºn borrado
+	//Si no encontró paciente no se hace ningún borrado
 	if( $num == 0 ){
-		$data[ 'mensaje' ] = utf8_encode( 'No se encontrÃ³ paciente para anular la admisiÃ³n' );
+		$data[ 'mensaje' ] = utf8_encode( 'No se encontró paciente para anular la admisión' );
 		return;
 	}
 
@@ -6971,7 +6973,7 @@ if(isset($accion) and $accion == 'anularAdmision')
 		$liberarHabitacion = true;
 		$liberarHabitacionTxt = "si";
 	}
-	/*$data[ 'mensaje' ] = utf8_encode( 'liberar habitaciÃ³n  '.$liberarHabitacionTxt." /n {$sqlhab}" );
+	/*$data[ 'mensaje' ] = utf8_encode( 'liberar habitación  '.$liberarHabitacionTxt." /n {$sqlhab}" );
 	$data[ 'error' ] = 1;
 	echo json_encode( $data );
 	return;*/
@@ -7022,7 +7024,7 @@ if(isset($accion) and $accion == 'anularAdmision')
 	{
 		if( mysql_affected_rows() > 0 )
 		{
-			//Borro el Ãºltimo ingreso
+			//Borro el último ingreso
 			$sql = "DELETE FROM
 						".$wbasedato."_000101
 					WHERE
@@ -7040,8 +7042,8 @@ if(isset($accion) and $accion == 'anularAdmision')
 
 					logAdmsiones( 'Admision anulada', $historia, $ingreso, $rowsInfo[ 'Pacdoc' ] );
 
-					//Busco si el paciente tiene una preadmisiÃ³n para la misma fecha de ingreso
-					//De ser asÃ­ activo la preadmisiÃ³n
+					//Busco si el paciente tiene una preadmisión para la misma fecha de ingreso
+					//De ser así activo la preadmisión
 					$sqlPre = "UPDATE
 								{$wbasedato}_000166
 							SET
@@ -7095,7 +7097,7 @@ if(isset($accion) and $accion == 'anularAdmision')
 							$data1[ 'error' ] = 1;
 						}
 
-						//libero la habitaciÃ³n de ser necesario. 2015-10-15
+						//libero la habitación de ser necesario. 2015-10-15
 						$sqlhab = "UPDATE {$aplMovhos}_000020
 									  SET habhis = '',
 										  habing = '',
@@ -7161,8 +7163,8 @@ if(isset($accion) and $accion == 'anularAdmision')
 						}
 					}
 
-					//Si ya borro el registro de ingreso procedo a eliminar accidentes de trÃ¡nsito
-					//Borro el Ãºltimo ingreso
+					//Si ya borro el registro de ingreso procedo a eliminar accidentes de tránsito
+					//Borro el último ingreso
 					$sqlAcc = "DELETE FROM
 								".$wbasedato."_000148
 							WHERE
@@ -7215,8 +7217,8 @@ if(isset($accion) and $accion == 'anularAdmision')
 						}
 					}
 
-					//Si ya borro el registro de ingreso procedo a eliminar accidentes de trÃ¡nsito
-					//Borro el Ãºltimo ingreso
+					//Si ya borro el registro de ingreso procedo a eliminar accidentes de tránsito
+					//Borro el último ingreso
 					$sqlRes = "DELETE FROM
 								".$wbasedato."_000204
 							WHERE
@@ -7236,8 +7238,8 @@ if(isset($accion) and $accion == 'anularAdmision')
 						$data1[ 'error' ] = 1;
 					}
 
-					//Si ya borro el registro de ingreso procedo a eliminar encabezado de eventos catastrÃ³ficos
-					//Borro el Ãºltimo ingreso
+					//Si ya borro el registro de ingreso procedo a eliminar encabezado de eventos catastróficos
+					//Borro el último ingreso
 					$sqlEv = "DELETE ".$wbasedato."_000149 , ".$wbasedato."_000150  FROM
 								".$wbasedato."_000149 , ".$wbasedato."_000150
 							WHERE Evnhis = '".$historia."'
@@ -7344,7 +7346,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 			if ($res5)
 			{
 				$num5= mysql_num_rows($res5);
-				/** Si se encuentra alguna informaciÃ³n con el documento  */
+				/** Si se encuentra alguna información con el documento  */
 				if ($num5 > 0)
 				{
 					  $rowsee = mysqli_fetch_array($res5);
@@ -7367,7 +7369,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 
 					  $wemp_pmla = $wemp_pmla_anterior;
 
-					  /** Se genera query para traer la informaciÃ³n del paciente para el autocomplete de admisiones */
+					  /** Se genera query para traer la información del paciente para el autocomplete de admisiones */
 					  $sql = "select Pactdo,Pacdoc,Pactat,Pacap1,Pacap2,Pacno1,Pacno2,Pacfna,Pacsex,Pacest,Pacdir,Pactel,
 					  Paciu,Pacbar,Pacdep,Paczon,Pactus,Pacofi,Paccea,Pacnoa,Pactea,Pacdia,Pacpaa,Pacact,Paccru,Pacnru,
 					  Pactru,Pacdru,Pacpru,Paccor,Pactam,Pacpan,Pacpet,Pacded,Pactrh,Pacpah,Pacdeh,Pacmuh,Pacmov,Pacned,
@@ -7478,7 +7480,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .=" - No se encontro el codigo del departamento \n";
 						}
 
@@ -7504,7 +7506,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .= " - No se encontro el codigo del municipio \n";
 							$data[ 'infopac' ][ 'pac_ciu' ] = "";
 						}
@@ -7531,7 +7533,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .=" - No se encontro el codigo del pais de residencia \n";
 						}
 
@@ -7557,7 +7559,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .=" - No se encontro el codigo del departamento residencia \n";
 							$data[ 'infopac' ][ 'pac_deh' ] = "";
 						}
@@ -7585,7 +7587,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .= " - No se encontro el codigo del municipio de residencia \n";
 							$data[ 'infopac' ][ 'pac_muh' ] = "";
 						}
@@ -7612,7 +7614,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .=" - No se encontro el codigo del barrio de residencia \n";
 						}
 
@@ -7638,7 +7640,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 							}
 							else
 							{
-								$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+								$data[ 'error' ] = 0;//--> permitir la carga para corrección
 								$data['mensaje'] .=" - No se encontro el codigo del barrio de residencia \n";
 							}
 
@@ -7691,7 +7693,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .=" - No se encontro el codigo del departamento responsable del usuario \n";
 							$data[ 'infopac' ][ 'pac_dre' ] = "";
 						}
@@ -7718,7 +7720,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						else
 						{
-							$data[ 'error' ] = 0;//--> permitir la carga para correcciÃ³n
+							$data[ 'error' ] = 0;//--> permitir la carga para corrección
 							$data['mensaje'] .=" - No se encontro el codigo del municipio del responsable del usuario \n";
 							$data[ 'infopac' ][ 'pac_mre' ] = "";
 						}
@@ -8732,22 +8734,22 @@ if (isset($accion) and $accion == 'llamarPacienteAtencion'){
 
 		if($rowValLla['Atullv'] == 'on')
 		{
-			$respuesta['Mensaje'] 	= "El paciente ya estÃ¡ siendo llamado a admisiÃ³n por ";
+			$respuesta['Mensaje'] 	= "El paciente ya está siendo llamado a admisión por ";
 			$usuario				= $rowValLla['Atuusu'];
 		}
 		elseif($rowValLla['Atupad'] == 'on')
 			{
-				$respuesta['Mensaje'] 	= "El paciente estÃ¡ en proceso de admisiÃ³n con ";
+				$respuesta['Mensaje'] 	= "El paciente está en proceso de admisión con ";
 				$usuario				= $rowValLla['Atuusu'];
 			}
 			elseif($rowValLla['Atuart'] == 'on')
 				{
-					$respuesta['Mensaje'] 	= "El paciente estÃ¡ siendo llamado a reclasificaciÃ³n triage por ";
+					$respuesta['Mensaje'] 	= "El paciente está siendo llamado a reclasificación triage por ";
 					$usuario				= $rowValLla['Atuurt'];
 				}
 				elseif($rowValLla['Atuetr'] == 'on')
 					{
-						$respuesta['Mensaje'] 	= "El paciente estÃ¡ en proceso de reclasificaciÃ³n triage con ";
+						$respuesta['Mensaje'] 	= "El paciente está en proceso de reclasificación triage con ";
 						$usuario				= $rowValLla['Atuurt'];
 					}
 
@@ -8847,22 +8849,22 @@ if (isset($accion) and $accion == 'cancelarTurno'){
 
 		if($rowValLla['Atullv'] == 'on')
 		{
-			$respuesta['Mensaje'] 	= "No se puede cancelar el turno, el paciente ya estÃ¡ siendo llamado a admisiÃ³n por ";
+			$respuesta['Mensaje'] 	= "No se puede cancelar el turno, el paciente ya está siendo llamado a admisión por ";
 			$usuario				= $rowValLla['Atuusu'];
 		}
 		elseif($rowValLla['Atupad'] == 'on')
 			{
-				$respuesta['Mensaje'] 	= "No se puede cancelar el turno, el paciente estÃ¡ en proceso de admisiÃ³n con ";
+				$respuesta['Mensaje'] 	= "No se puede cancelar el turno, el paciente está en proceso de admisión con ";
 				$usuario				= $rowValLla['Atuusu'];
 			}
 			elseif($rowValLla['Atuart'] == 'on')
 				{
-					$respuesta['Mensaje'] 	= "No se puede cancelar el turno, el paciente estÃ¡ siendo llamado a reclasificaciÃ³n triage por ";
+					$respuesta['Mensaje'] 	= "No se puede cancelar el turno, el paciente está siendo llamado a reclasificación triage por ";
 					$usuario				= $rowValLla['Atuurt'];
 				}
 				elseif($rowValLla['Atuetr'] == 'on')
 					{
-						$respuesta['Mensaje'] 	= "No se puede cancelar el turno, el paciente estÃ¡ en proceso de reclasificaciÃ¡n triage con ";
+						$respuesta['Mensaje'] 	= "No se puede cancelar el turno, el paciente está en proceso de reclasificacián triage con ";
 						$usuario				= $rowValLla['Atuurt'];
 					}
 
@@ -8949,7 +8951,7 @@ if (isset($accion) and $accion == 'verTurnosCancelados'){
 	   AND Logusu = codigo
 	 GROUP BY Logtur
 	 UNION
-	SELECT A.*, B.Fecha_data AS FechaCan, B.Hora_data AS HoraCan, descripcion, 'Sin finalizar admisiÃ³n' estado
+	SELECT A.*, B.Fecha_data AS FechaCan, B.Hora_data AS HoraCan, descripcion, 'Sin finalizar admisión' estado
 	  FROM ".$wbasedatoMov."_000178 AS A, ".$wbasedatoMov."_000179 AS B, usuarios
 	 WHERE A.Fecha_data BETWEEN '".date('Y-m-d', $dateMenos2)."' AND '".date('Y-m-d')."'
 	   AND Atuest = 'on'
@@ -9247,13 +9249,13 @@ if (isset($accion) and $accion == 'consultar_historia_activa'){
 		else
 		{
 			$data["error"] = 1;
-			$data["mensaje"] = ("No se encontraron datos en Matrix para la historia ingresada nÃºmero [$historia_alta].\n\nEs posible que estÃ© INACTIVA.");
+			$data["mensaje"] = ("No se encontraron datos en Matrix para la historia ingresada número [$historia_alta].\n\nEs posible que esté INACTIVA.");
 		}
 	}
 	else
 	{
 		$data["error"]     = 1;
-		$data["mensaje"]   = ("No se pudo consultar informaciÃ³n de la historia [$historia_alta].");
+		$data["mensaje"]   = ("No se pudo consultar información de la historia [$historia_alta].");
 		$data["sql_error"] = mysql_error().PHP_EOL.$sql;
 	}
 	echo json_encode($data);
@@ -9457,7 +9459,7 @@ $(document).ready(function() {
 		   activarPrimerTurno();
 
 		// --> Llamado automatico, para que la lista de turnos se este actualizando
-		// --> 2018-05-29: El llamado automÃ¡tico se harÃ¡ mientras no se estÃ© haciendo una admisiÃ³n, Jerson Trujillo.
+		// --> 2018-05-29: El llamado automático se hará mientras no se esté haciendo una admisión, Jerson Trujillo.
 		if($("#permitirVerListaTurnos").val())
 		{
 			setInterval(function(){
@@ -9477,7 +9479,7 @@ $(document).ready(function() {
 	$('#tr_titulo_tercer_resp').hide(); //se oculta
 	/************************************************************************************************
 	 * Septiembre 02 de 2013
-	 * Creo clon de los options de ORIGEN DE LA ATENCIÃ“N para poder quitar y agregarlos cada vez que
+	 * Creo clon de los options de ORIGEN DE LA ATENCIÓN para poder quitar y agregarlos cada vez que
 	 * se requiera. Esto se hace al seleccionar el radio button de ADMISION o PREADMISION.
 	 ************************************************************************************************/
 	optOrigenAtencion = $( "option[value=02],option[value=06]", $( "#ing_caiselOriAte" ) ).clone();
@@ -9494,13 +9496,13 @@ $(document).ready(function() {
 	/************************************************************************************************/
 
 
-	$( "#div_datosIng_Per_Aco,#div_datos_acompaÃ±ante,#div_datos_responsable,#div_datos_Pag_Aut,#div_otros_datos_ingreso,#div_accidente_evento,#div_ext_agendaPreadmision" )
+	$( "#div_datosIng_Per_Aco,#div_datos_acompañante,#div_datos_responsable,#div_datos_Pag_Aut,#div_otros_datos_ingreso,#div_accidente_evento,#div_ext_agendaPreadmision" )
 		.attr( "acordeon", "" );
 
 
    $( "table", $( "#div_admisiones" ) ).addClass( "anchotabla" );
    $( "table", $( "#div_int_otros_datos_ing" ) ).removeClass( "anchotabla" );
-   $( "table", $( "#div_int_datos_acompaÃ±ante" ) ).removeClass( "anchotabla" );
+   $( "table", $( "#div_int_datos_acompañante" ) ).removeClass( "anchotabla" );
     $( "table", $("#tabla_eps" )).removeClass( "anchotabla" );
 
 
@@ -9527,7 +9529,7 @@ $(document).ready(function() {
 		}
 	});
 
-	$( "H3", $( "#div_datos_acompaÃ±ante,#div_datos_responsable,#div_datos_Pag_Aut,#div_otros_datos_ingreso,#div_accidente_evento" ) ).attr( "acclick", "false" );
+	$( "H3", $( "#div_datos_acompañante,#div_datos_responsable,#div_datos_Pag_Aut,#div_otros_datos_ingreso,#div_accidente_evento" ) ).attr( "acclick", "false" );
 
 	//Agregar el atributo msgError a todos los input para que sean obligatorios
 	$( "input[type=text],input[type=radio],input[type=checkbox],select,textarea", $( "#div_admisiones" ) ).each(function(x){
@@ -9541,7 +9543,7 @@ $(document).ready(function() {
 	/************************************************************************************************
 	 * Agosto 15 de 2013
 	 ************************************************************************************************/
-	//Borro los atributos de msgerror para los radios de admisiÃ³n y preadmisiÃ³n
+	//Borro los atributos de msgerror para los radios de admisión y preadmisión
 	$( "input[type=radio]", document.getElementById( "radAdmision" ).parentNode.parentNode ).each(function(x){
 		$( this ).removeAttr( "msgerror" );
 	});
@@ -9644,7 +9646,7 @@ $(document).ready(function() {
 
 	$( "#ing_hintxtHorIng,#ing_hoatxtHorAut" ).on({
 		focus: function(){
-			//Si es igual a vacÃ­o o a la mascara que tenga por defecto
+			//Si es igual a vacío o a la mascara que tenga por defecto
 			if( $( this ).val() == '' || $( this ).val() == '__:__:__' ){
 				$( this ).val( $( "#horaAct" ).val() );
 			}
@@ -9712,8 +9714,9 @@ $(document).ready(function() {
 	$( "[name='res_firtxtNumcon'][value='']" ).val( $("#fechaAct").val() );
 	$( "[name='res_ffrtxtNumcon'][value='']" ).val('0000-00-00');
 
-	//Pongo limite de fecha mÃ¡xima, la cual es la actual
+	//Pongo limite de fecha máxima, la cual es la actual
 	$( "#pac_fnatxtFecNac" ).datepicker( "option", "maxDate", "+0d" );
+	$( "#pac_fedtxtFecExpDoc" ).datepicker( "option", "maxDate", "+0d" );
 	$( "#dat_Accfec" ).datepicker( "option", "maxDate", "+0d" );
 	$( "[name=dat_Accvfi_ux_accfin]" ).datepicker( "option", "maxDate", "+0d" );
 	$( "[name=dat_Accvfi_ux_accffi]" ).datepicker( "option", "minDate", new Date( dateActual[0], dateActual[1]-1, dateActual[2] ) );
@@ -9814,7 +9817,7 @@ $(document).ready(function() {
 		mostrarAdmisionDesdeAgendaMedica();
 	}
 
-	//para que oculte el tipo de atenciÃ³n inicialmente.
+	//para que oculte el tipo de atención inicialmente.
 	validacionServicioIngreso( "cargaInicial" );
 	$("#ing_seisel_serv_ing > option").click(function(){
 		validacionServicioIngreso();
@@ -9848,6 +9851,9 @@ $(document).ready(function() {
 	// $('#iframeModalTablero').load(function() {
 		// RunAfterIFrameLoaded();
 	// });
+	setInterval(() => {
+		$( "#pac_fedtxtFecExpDoc" ).removeClass( "campoRequerido" );
+	}, 100);
 
 
  });
@@ -10003,7 +10009,7 @@ function buscarPaises()
 					$("#"+idBarTxt).attr("disabled", "disabled");
 					$("#"+idBarTxt).removeClass("campoRequerido");
 					$("#"+idBarid).val( $("#bar_no_aplica").val() );
-					//--> solicitud de campos de direcciÃ³n y telÃ©fono locales para extranjeros
+					//--> solicitud de campos de dirección y teléfono locales para extranjeros
 					$("#pac_tle").attr( "msgError", $("#pac_tle").attr( "msgcampo") );
 					$("#pac_dle").attr( "msgError", $("#pac_dle").attr( "msgcampo") );
 					marcarAqua( '#pac_tle', 'msgError', 'campoRequerido' );
@@ -11181,8 +11187,8 @@ function enviarDatos( automatico = '')
       al ingreso que se esta mostrando y && informacionIngresos en la posicion infoIng e infoIng en la posicion actual(posAct) que
       que esta dentro de informacionIngresos todo lo anterior es:(el ingreso que se esta mostrando en pantalla )	y que este on
 	  */
-	/* 1.Si NO estÃ¡ en modo consulta se guarda la admisÃ³n
-	   2.Si esta en modoConsulta se pregunta si es el Ãºltimo ingreso, de ser asÃ­ entonces se actualiza la admisiÃ³n
+	/* 1.Si NO está en modo consulta se guarda la admisón
+	   2.Si esta en modoConsulta se pregunta si es el último ingreso, de ser así entonces se actualiza la admisión
 	*/
 	//2020-06-13
 	//if (!modoConsulta || (modoConsulta && informacionIngresos.ultimoIngreso[$( "#ing_histxtNumHis" ).val()] == $( "#ing_nintxtNumIng" ).val() && informacionIngresos.infoing[ informacionIngresos.posAct ].pac_act == 'on' ) || ( modoConsulta && cambioDeCausaAacc ) )
@@ -11258,7 +11264,7 @@ function enviarDatos( automatico = '')
 				objJson.ing_cemhidCodAse =  $( "#ing_cemhidCodAse"+prefijo_trEps ).val();
 
 
-				objJson.accion       = "guardarDatos";	//agrego un parametro mÃ¡s
+				objJson.accion       = "guardarDatos";	//agrego un parametro más
 				objJson.intentos     = intentos;	//reintentos
 				objJson.wbasedato    = $( "#wbasedato" ).val();
 				objJson.consultaAjax = "";
@@ -11307,7 +11313,7 @@ function enviarDatos( automatico = '')
 					objJson.responsables1[ 0 ].res_nom = $("#restxtCodRes").val();//2014-10-22
 					objJson.responsables1[ 0 ].ing_tpaselTipRes = "E";
 					objJson.responsables1[ 0 ].ing_plaselPlan = "00";
-					if( $("input[name='dat_Accpol_ux_accpol']").val() == "NÃºmero de pÃ³liza")
+					if( $("input[name='dat_Accpol_ux_accpol']").val() == "Número de póliza")
 						$("input[name='dat_Accpol_ux_accpol']").val("");
 					objJson.responsables1[ 0 ].ing_poltxtNumPol = $("input[name=dat_Accpol_ux_accpol]").val();
 					objJson.responsables1[ 0 ].ing_ncotxtNumCon = "";
@@ -11387,11 +11393,11 @@ function enviarDatos( automatico = '')
 				/****************************************************************
 				 * Agosto 15 de 2013
 				 *
-				 * Si estÃ¡ activo preadmisiÃ³n se guarda el dato como preadmisiÃ³n
+				 * Si está activo preadmisión se guarda el dato como preadmisión
 				 ****************************************************************/
 				if( $( "[name=radPreAdmi]:checked" ).val() == 'preadmision' || $("input[name='btRegistrarActualizar']").val().toUpperCase() == 'PREADMITIR' )
 				{
-					objJson.accion = "guardarDatosPreadmision";	//agrego un parametro mÃ¡s
+					objJson.accion = "guardarDatosPreadmision";	//agrego un parametro más
 					objJson.modoConsulta = false;
 				}
 				/****************************************************************/
@@ -11399,7 +11405,7 @@ function enviarDatos( automatico = '')
 				/********************************************************
 				 * Septiembre 19 de 2013
 				 ********************************************************/
-				//Busco los campos que son depends y estÃ¡n vacios con propiedad ux
+				//Busco los campos que son depends y están vacios con propiedad ux
 				$( "[depend][ux]" ).each(function()
 				{
 					if( $( this ).val() == '' || ( $( this ).val() == $( this ).attr( this.aqAttr ) ) )
@@ -11423,7 +11429,7 @@ function enviarDatos( automatico = '')
 					objJson._ux_mreemp_ux_pacemp_ux_accemp = "E";
 					objJson._ux_pacres_ux_mreres = $("#dat_AccreshidCodRes24").val();
 					objJson._ux_mrepla = "00";
-					if( $("input[name='dat_Accpol_ux_accpol']").val() == "NÃºmero de pÃ³liza")
+					if( $("input[name='dat_Accpol_ux_accpol']").val() == "Número de póliza")
 						$("input[name='dat_Accpol_ux_accpol']").val("");
 					objJson._ux_pacpol = $("input[name=dat_Accpol_ux_accpol]").val();
 				}
@@ -11604,7 +11610,7 @@ function enviarDatos( automatico = '')
 
 
 
-																//Si se registrÃ³ muestro se imprime el sticker
+																//Si se registró muestro se imprime el sticker
 																if( data.historia != '' && data.mensaje != "No se actualizo porque no se registraron cambios" )
 																{
 																	var edad = calcular_edad_detalle( $( "#pac_fnatxtFecNac" ).val() );
@@ -11694,7 +11700,7 @@ function enviarDatos( automatico = '')
 
 
 
-																//Si se registrÃ³ muestro se imprime el sticker
+																//Si se registró muestro se imprime el sticker
 																if( data.historia != '' && data.mensaje != "No se actualizo porque no se registraron cambios" )
 																{
 																	var edad = calcular_edad_detalle( $( "#pac_fnatxtFecNac" ).val() );
@@ -11880,10 +11886,10 @@ function enviarDatos( automatico = '')
 
 
 
-										//Si se registrÃ³ muestro se imprime el sticker
+										//Si se registró muestro se imprime el sticker
 										if( data.historia != '' && data.mensaje != "No se actualizo porque no se registraron cambios" )
 										{
-											console.log(" deberÃ­a imprimir el sticker ");
+											console.log(" debería imprimir el sticker ");
 											var edad = calcular_edad_detalle( $( "#pac_fnatxtFecNac" ).val() );
 
 
@@ -12332,7 +12338,7 @@ function onloadDesdeSoportes()
 
 
 
-			//Si se registrÃ³ muestro se imprime el sticker
+			//Si se registró muestro se imprime el sticker
 			if( historia != '' && mensaje != "No se actualizo porque no se registraron cambios" )
 			{
 				var edad = calcular_edad_detalle( $( "#pac_fnatxtFecNac" ).val() );
@@ -12476,7 +12482,7 @@ function mostrarDatos( documento, ingreso, tipoDocumento )
 
 		var objJson = cearUrlPorCamposJson( $( "#div_admisiones" ),'id' );
 
-		objJson.accion = "mostrarDatosAlmacenados";	//agrego un parametro mÃ¡s
+		objJson.accion = "mostrarDatosAlmacenados";	//agrego un parametro más
 		objJson.wbasedato = $( "#wbasedato" ).val();
 		objJson.consultaAjax = "";
 		objJson.historia = $( "#ing_histxtNumHis" ).val();
@@ -12503,7 +12509,7 @@ function mostrarDatos( documento, ingreso, tipoDocumento )
 			}
 		});
 
-		//Si el documento esta vaciÃ³ mando el numero de documento vacio
+		//Si el documento esta vació mando el numero de documento vacio
 		if( $.trim($( "#pac_doctxtNumDoc" ).val()) == '' || $.trim($( "#pac_doctxtNumDoc" ).val()) == $( "#pac_doctxtNumDoc" ).attr( "msgerror" ) )
 		{
 			objJson.documento = objJson.pac_doctxtNumDoc;
@@ -12645,8 +12651,8 @@ function navegacionIngresos( incremento )
 		if( $( "#ing_caiselOriAte" ).val() == '02' ){
 			$( "#div_accidente_evento").css( {display: ""} );
 			$( "td", $( "#div_accidente_evento") ).eq(0).css( {display: ""} );	//Mostrar accidentes de transito
-			$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: "none"} );	//oculto el boton de eventos catastrÃ³ficos
-			$( "td", $( "#div_accidente_evento") ).eq(2).css( {display: "none"} ); //oculto el boton de listar eventos catastrÃ³ficos
+			$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: "none"} );	//oculto el boton de eventos catastróficos
+			$( "td", $( "#div_accidente_evento") ).eq(2).css( {display: "none"} ); //oculto el boton de listar eventos catastróficos
 
 			var objJson = cearUrlPorCamposJson( $( "#infDatosAcc" ) );
 			var contenedor = $( "#accidentesTransito" )[0];
@@ -12667,7 +12673,7 @@ function navegacionIngresos( incremento )
 			consultaEvento = true;
 			$( "#div_accidente_evento").css( {display: ""} );
 			$( "td", $( "#div_accidente_evento") ).eq(0).css( {display: "none"} );	//oculto el boton de accidentes de transito
-			$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: ""} );	//mostrar el boton de eventos catastrÃ³ficos
+			$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: ""} );	//mostrar el boton de eventos catastróficos
 			$( "td", $( "#div_accidente_evento") ).eq(2).css( {display: ""} ); //se muestra el tercer boton
 
 			var objJson = cearUrlPorCamposJson( $( "#eventosCatastroficos" ) );
@@ -12796,7 +12802,7 @@ function navegacionIngresos( incremento )
 
 
 							if( j > 0 ){
-								//console.log( "estÃ¡ entrando a agregar fila para tope" );
+								//console.log( "está entrando a agregar fila para tope" );
 								if (data.infoing[ data.posAct ]['topes'][i]['total'] == 'off' && agregarFila == true)
 								{
 									idCodResp = idResp;
@@ -12894,9 +12900,9 @@ function validarCamposCedAco(){
 		$('#pac_teatxtTelAco').val($('#pac_teltxtTelFij').val()); //telefono
 
 
-		resetAqua( $( "#div_int_datos_acompaÃ±ante" ) );
+		resetAqua( $( "#div_int_datos_acompañante" ) );
 		//Simular onblur para todos los campos con atributo depend en el div de datos del responsable
-		$( "[depend]", $( "#div_int_datos_acompaÃ±ante" ) ).blur();
+		$( "[depend]", $( "#div_int_datos_acompañante" ) ).blur();
 		llenadoAutomatico = false;
 		llenarDatosLog( true );
 	}
@@ -13191,8 +13197,8 @@ function verificarLogAdmision()
 
 						if( $( "#ing_caiselOriAte" ).val() == '02' ){
 							$( "#div_accidente_evento").css( {display: ""} );
-							$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: "none"} );	//oculto el boton de eventos catastrÃ³ficos
-							$( "td", $( "#div_accidente_evento") ).eq(0).css( {display: ""} );	//oculto el boton de eventos catastrÃ³ficos
+							$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: "none"} );	//oculto el boton de eventos catastróficos
+							$( "td", $( "#div_accidente_evento") ).eq(0).css( {display: ""} );	//oculto el boton de eventos catastróficos
 
 							var objJson = cearUrlPorCamposJson( $( "#infDatosAcc" ) );
 							var contenedor = $( "#accidentesTransito" )[0];
@@ -13201,8 +13207,8 @@ function verificarLogAdmision()
 						}
 						else if( $( "#ing_caiselOriAte" ).val() == '06' ){
 							$( "#div_accidente_evento").css( {display: ""} );
-							$( "td", $( "#div_accidente_evento") ).eq(0).css( {display: "none"} );	//oculto el boton de eventos catastrÃ³ficos
-							$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: ""} );	//oculto el boton de eventos catastrÃ³ficos
+							$( "td", $( "#div_accidente_evento") ).eq(0).css( {display: "none"} );	//oculto el boton de eventos catastróficos
+							$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: ""} );	//oculto el boton de eventos catastróficos
 
 							var objJson = cearUrlPorCamposJson( $( "#eventosCatastroficos" ) );
 							var contenedor = $( "#eventosCatastroficos" )[0];
@@ -13484,7 +13490,7 @@ function opcionAdmisionPreadmision()
 
 			$( "option[value^=4]", $( "#ing_seisel_serv_ing" ) ).remove();
 
-			//Si no hay nada en agenda de preadmision traigo los datos del dÃ­a en la agenda de preadmisiÃ³n
+			//Si no hay nada en agenda de preadmision traigo los datos del día en la agenda de preadmisión
 			if( $( "#dvAgendaPreadmision" ).html() == '' )
 			{
 				consultarAgendaPreadmision( $( "#fechaAct" ).val(), 0 );
@@ -13498,8 +13504,8 @@ function opcionAdmisionPreadmision()
 /****************************************************************************************************
  * Agosto 20 de 2013
  *
- * Oculta o muestra los datos necesarios al dar click sobre admision o preadmisiÃ³n
- * TambiÃ©n se usa al dar click sobre el botÃ³n ingresar en la agenda
+ * Oculta o muestra los datos necesarios al dar click sobre admision o preadmisión
+ * También se usa al dar click sobre el botón ingresar en la agenda
  ****************************************************************************************************/
 function mostarOcultarDatosPreadmisiones( ocultar )
 {
@@ -13559,7 +13565,7 @@ function mostarOcultarDatosPreadmisiones( ocultar )
 /************************************************************************************************
  * Agosto 20 de 2013
  ************************************************************************************************/
-//Indica cual fue la Ãºltimo paciente que fue cargado con preadmisiÃ³n
+//Indica cual fue la último paciente que fue cargado con preadmisión
 //Esto para validar que no se vuelva a preguntar si desea cargar los datos
 var ultimaPreadmisionCargada = '';
 /************************************************************************************************/
@@ -13574,7 +13580,7 @@ function mostrarDatosPreadmision( documento )
 		// $( "input[name='btRegistrarActualizar']" ).val( "Actualizar" );
 	}
 
-	//No haga el llamado si el documento estÃ¡ vacio
+	//No haga el llamado si el documento está vacio
 	if( $.trim($( "#pac_doctxtNumDoc" ).val()) == '' )
 		return;
 
@@ -13587,7 +13593,7 @@ function mostrarDatosPreadmision( documento )
 
 		var objJson = cearUrlPorCamposJson( $( "#div_admisiones" ),'id' );
 
-		objJson.accion = "mostrarDatosAlmacenadosPreadmision";	//agrego un parametro mÃ¡s
+		objJson.accion = "mostrarDatosAlmacenadosPreadmision";	//agrego un parametro más
 		objJson.wbasedato = $( "#wbasedato" ).val();
 		objJson.consultaAjax = "";
 		objJson.historia = $( "#ing_histxtNumHis" ).val();
@@ -13628,7 +13634,7 @@ function mostrarDatosPreadmision( documento )
 					if( data.infoing )
 					{
 						if( $( "#radPreadmision" ).is(":checked") ){
-							if( ultimaPreadmisionCargada != data.infoing[0].pac_doc && ( documento || confirm( "El paciente tiene preadmisiÃ³n. Desea traer los datos?" ) ) )
+							if( ultimaPreadmisionCargada != data.infoing[0].pac_doc && ( documento || confirm( "El paciente tiene preadmisión. Desea traer los datos?" ) ) )
 							{
 								informacionIngresos = data;
 								informacionIngresos.regTotal = data.infoing.length;
@@ -13657,7 +13663,7 @@ function mostrarDatosPreadmision( documento )
 								$( "input[name='btRegistrarActualizar']" ).val( "Actualizar" );
 							}
 						}else{
-							if( confirm( "El paciente tiene preadmisiÃ³n. Desea traer los datos para admitir?" )  )
+							if( confirm( "El paciente tiene preadmisión. Desea traer los datos para admitir?" )  )
 							{
 								informacionIngresos = data;
 								informacionIngresos.regTotal = data.infoing.length;
@@ -13714,8 +13720,8 @@ function navegacionIngresosPreadmision( incremento )
 		if( $("#ing_caiselOriAte").val() == '02' ){
 			$("#div_accidente_evento").css( {display: ""} );
 			$("td", $( "#div_accidente_evento") ).eq(0).css( {display: ""} );	//Mostrar accidentes de transito
-			$("td", $( "#div_accidente_evento") ).eq(1).css( {display: "none"} );	//oculto el boton de eventos catastrÃ³ficos
-			$("td", $( "#div_accidente_evento") ).eq(2).css( {display: "none"} ); //oculto el boton de listar eventos catastrÃ³ficos
+			$("td", $( "#div_accidente_evento") ).eq(1).css( {display: "none"} );	//oculto el boton de eventos catastróficos
+			$("td", $( "#div_accidente_evento") ).eq(2).css( {display: "none"} ); //oculto el boton de listar eventos catastróficos
 
 			if( data.infoing[ data.posAct ].dat_Accrei ){
 				$("#accidente_previo").val( data.infoing[ data.posAct ].dat_Accrei );
@@ -13843,12 +13849,12 @@ function navegacionIngresosPreadmision( incremento )
 /**************************************************************************************************
  * Agosto 16 de 2013
  *
- * Realiza el ajax para consultar los datos de preadmisiÃ³n
+ * Realiza el ajax para consultar los datos de preadmisión
  **************************************************************************************************/
 function consultarAgendaPreadmision( fecha, incremento )
 {
 	var objJson = {};	//Creo el objeto
-	objJson.accion = "consultarPreadmision";	//agrego un parametro mÃ¡s
+	objJson.accion = "consultarPreadmision";	//agrego un parametro más
 	objJson.wbasedato = $( "#wbasedato" ).val();
 	objJson.consultaAjax = "";
 	objJson.wemp_pmla = $( "#wemp_pmla" ).val();
@@ -13878,7 +13884,7 @@ function consultarAgendaPreadmision( fecha, incremento )
 					$( "#dvAgendaPreamdisionDatos [fecha]" ).datepicker({
 						dateFormat:"yy-mm-dd",
 						fontFamily: "verdana",
-						dayNames: [ "Lunes", "Martes", "MiÃ©rcoles", "Jueves", "Viernes", "SÃ¡bado", "Domingo" ],
+						dayNames: [ "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" ],
 						monthNames: [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
 						dayNamesMin: [ "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa" ],
 						dayNamesShort: [ "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa" ],
@@ -13907,10 +13913,10 @@ function consultarAgendaPreadmision( fecha, incremento )
  **************************************************************************************************/
 function cancelarPreadmision( campo, fecha, incremento, tdo, doc )
 {
-	if( confirm( "Desea cancelar la preadmisiÃ³n?" ) )
+	if( confirm( "Desea cancelar la preadmisión?" ) )
 	{
 		var objJson = {};	//Creo el objeto
-		objJson.accion = "cancelarPreadmision";	//agrego un parametro mÃ¡s
+		objJson.accion = "cancelarPreadmision";	//agrego un parametro más
 		objJson.wbasedato = $( "#wbasedato" ).val();
 		objJson.consultaAjax = "";
 		objJson.wemp_pmla = $( "#wemp_pmla" ).val();
@@ -13961,7 +13967,7 @@ function ingresarPreadmision( campo, tdoc, doc )
 
 	var objJson = cearUrlPorCamposJson( $( "#div_admisiones" ),'id' );
 
-	objJson.accion = "mostrarDatosAlmacenadosPreadmision";	//agrego un parametro mÃ¡s
+	objJson.accion = "mostrarDatosAlmacenadosPreadmision";	//agrego un parametro más
 	objJson.wbasedato = $( "#wbasedato" ).val();
 	objJson.consultaAjax = "";
 	objJson.historia = $( "#ing_histxtNumHis" ).val();
@@ -14015,8 +14021,8 @@ function ingresarPreadmision( campo, tdoc, doc )
 					  al ingreso que se esta mostrando y && informacionIngresos en la posicion infoIng e infoIng en la posicion actual(posAct) que
 					  que esta dentro de informacionIngresos todo lo anterior es:(el ingreso que se esta mostrando en pantalla )	y que este on
 					  */
-					/* 1.Si NO estÃ¡ en modo consulta se guarda la admisÃ³n
-					   2.Si esta en modoConsulta se pregunta si es el Ãºltimo ingreso, de ser asÃ­ entonces se actualiza la admisiÃ³n
+					/* 1.Si NO está en modo consulta se guarda la admisón
+					   2.Si esta en modoConsulta se pregunta si es el último ingreso, de ser así entonces se actualiza la admisión
 					*/
 					//      1.                   2.
 					//Procedo a guardar los datos
@@ -14061,7 +14067,7 @@ function ingresarPreadmision( campo, tdoc, doc )
 								objJson.ing_tpaselTipRes =  $( "#ing_tpaselTipRes"+prefijo_trEps ).val();
 								objJson.ing_cemhidCodAse =  $( "#ing_cemhidCodAse"+prefijo_trEps ).val();
 
-								objJson.accion = "guardarDatos";	//agrego un parametro mÃ¡s
+								objJson.accion = "guardarDatos";	//agrego un parametro más
 								objJson.wbasedato = $( "#wbasedato" ).val();
 								objJson.consultaAjax = "";
 								objJson.historia = $( "#ing_histxtNumHis" ).val();
@@ -14091,7 +14097,7 @@ function ingresarPreadmision( campo, tdoc, doc )
 									objJson.responsables1[ 0 ].res_nom = $("#restxtCodRes").val();//2014-10-22
 									objJson.responsables1[ 0 ].ing_tpaselTipRes = "E";
 									objJson.responsables1[ 0 ].ing_plaselPlan = "00";
-									if( $("input[name='dat_Accpol_ux_accpol']").val() == "NÃºmero de pÃ³liza")
+									if( $("input[name='dat_Accpol_ux_accpol']").val() == "Número de póliza")
 										$("input[name='dat_Accpol_ux_accpol']").val("");
 									objJson.responsables1[ 0 ].ing_poltxtNumPol = $("input[name=dat_Accpol_ux_accpol]").val();
 									objJson.responsables1[ 0 ].ing_ncotxtNumCon = "";
@@ -14201,7 +14207,7 @@ function ingresarPreadmision( campo, tdoc, doc )
 								/********************************************************
 								 * Septiembre 19 de 2013
 								 ********************************************************/
-								//Busco los campos que son depends y estÃ¡n vacios con propiedad ux
+								//Busco los campos que son depends y están vacios con propiedad ux
 								$( "[depend][ux]" ).each(function()
 								{
 									if( $( this ).val() == '' || ( $( this ).val() == $( this ).attr( this.aqAttr ) ) )
@@ -14219,7 +14225,7 @@ function ingresarPreadmision( campo, tdoc, doc )
 									objJson._ux_mreemp_ux_pacemp_ux_accemp = "E";
 									objJson._ux_pacres_ux_mreres = $("#dat_AccreshidCodRes24").val();
 									objJson._ux_mrepla = "00";
-									if( $("input[name='dat_Accpol_ux_accpol']").val() == "NÃºmero de pÃ³liza")
+									if( $("input[name='dat_Accpol_ux_accpol']").val() == "Número de póliza")
 										$("input[name='dat_Accpol_ux_accpol']").val("");
 									objJson._ux_pacpol = $("input[name=dat_Accpol_ux_accpol]").val();
 								}
@@ -14379,7 +14385,7 @@ function ingresarPreadmision( campo, tdoc, doc )
 
 																					alerta( data.mensaje+".\nCon historia "+data.historia+"-"+data.ingreso );
 
-																					//Si se registrÃ³ muestro se imprime el sticker
+																					//Si se registró muestro se imprime el sticker
 																					alert(data.historia);
 																					if( data.historia != '' ){
 																						alert("entro*"+data.historia);
@@ -14464,7 +14470,7 @@ function ingresarPreadmision( campo, tdoc, doc )
 
 																						alerta( data.mensaje+".\nCon historia "+data.historia+"-"+data.ingreso );
 
-																						//Si se registrÃ³ muestro se imprime el sticker
+																						//Si se registró muestro se imprime el sticker
 
 																						if( data.historia != '' ){
 
@@ -14711,7 +14717,7 @@ function resetear2( inicio )
 
 /************************************************************************
  * Agosto 21 de 2013
- * Calcula la edad de un paciente con aÃ±os, meses y dÃ­as
+ * Calcula la edad de un paciente con años, meses y días
  ************************************************************************/
 function calcular_edad_detalle( fecha )
 {
@@ -14830,7 +14836,7 @@ function iniciar()
 
 function consultarConsecutivo(){
 	var objJson = {};	//Creo el objeto
-	objJson.accion = "consultarConsecutivo";	//agrego un parametro mÃ¡s
+	objJson.accion = "consultarConsecutivo";	//agrego un parametro más
 	objJson.wbasedato = $( "#wbasedato" ).val();
 	objJson.consultaAjax = "";
 	objJson.wemp_pmla = $( "#wemp_pmla" ).val();
@@ -15079,7 +15085,7 @@ function mostrarPreadmision()
 function consultarAgendaAdmitidos( fecha, incremento )
 {
 	var objJson = {};	//Creo el objeto
-	objJson.accion          = "consultarAdmitidos";	//agrego un parametro mÃ¡s
+	objJson.accion          = "consultarAdmitidos";	//agrego un parametro más
 	objJson.wbasedato       = $( "#wbasedato" ).val();
 	objJson.consultaAjax    = "";
 	objJson.wemp_pmla       = $( "#wemp_pmla" ).val();
@@ -15114,7 +15120,7 @@ function consultarAgendaAdmitidos( fecha, incremento )
 					$( "#dvAgendaAmdisionDatos [fecha]" ).datepicker({
 						dateFormat:"yy-mm-dd",
 						fontFamily: "verdana",
-						dayNames: [ "Lunes", "Martes", "MiÃ©rcoles", "Jueves", "Viernes", "SÃ¡bado", "Domingo" ],
+						dayNames: [ "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" ],
 						monthNames: [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
 						dayNamesMin: [ "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa" ],
 						dayNamesShort: [ "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa" ],
@@ -15134,14 +15140,14 @@ function consultarAgendaAdmitidos( fecha, incremento )
 
 /*****************************************************************************************
  * Septiembre 02 de 2013
- * Creo clones de los options de ORIGEN E LA ATENCIÃ“N, solo los de accidentes de transito
- * y evento catastrÃ³ficos
+ * Creo clones de los options de ORIGEN E LA ATENCIÓN, solo los de accidentes de transito
+ * y evento catastróficos
  *****************************************************************************************/
 optOrigenAtencion = '';
 /*****************************************************************************************/
 
 /********************************************************************************************************************************
- * Anula una admisiÃ³n
+ * Anula una admisión
  ********************************************************************************************************************************/
 function anularAdmision( historia, ingreso, tipoDoc, cedula, automatico = '' ){
 
@@ -15149,7 +15155,7 @@ function anularAdmision( historia, ingreso, tipoDoc, cedula, automatico = '' ){
 	if( automatico == "on" ){
 		continuar = true;
 	}else{
-		if( confirm( "Desea anular la admisiÃ³n?" ) ){
+		if( confirm( "Desea anular la admisión?" ) ){
 			continuar = true;
 		}else{
 			continuar = false;
@@ -15159,7 +15165,7 @@ function anularAdmision( historia, ingreso, tipoDoc, cedula, automatico = '' ){
 	if( continuar ){
 
 		var objJson = {};	//Creo el objeto
-		objJson.accion = "anularAdmision";	//agrego un parametro mÃ¡s
+		objJson.accion = "anularAdmision";	//agrego un parametro más
 		objJson.wbasedato = $( "#wbasedato" ).val();
 		objJson.consultaAjax = "";
 		objJson.wemp_pmla = $( "#wemp_pmla" ).val();
@@ -15213,7 +15219,7 @@ function imprimirHistoria( historia, ingreso ){
 
 function mostrarDatosDemograficos()
 {
-	//No haga el llamado si el documento estÃ¡ vacio
+	//No haga el llamado si el documento está vacio
 	if($.trim($( "#pac_doctxtNumDoc" ).val()) == '' )
 		return;
 
@@ -15225,7 +15231,7 @@ function mostrarDatosDemograficos()
 
 		var objJson = {};
 
-		objJson.accion = "mostrarDatosDemograficos";	//agrego un parametro mÃ¡s
+		objJson.accion = "mostrarDatosDemograficos";	//agrego un parametro más
 		objJson.wbasedato = $( "#wbasedato" ).val();
 		objJson.consultaAjax = "";
 		objJson.pac_tdo = $( "#pac_tdoselTipoDoc" ).val();
@@ -15577,7 +15583,7 @@ function listarEventosCatastroficos()
 			);
 		if(informacionIngresos != "")
 				{
-					//codigo del evento despues de consultar la informaciÃ³n del paciente ya registrada en BD
+					//codigo del evento despues de consultar la información del paciente ya registrada en BD
 					var codEven = informacionIngresos.infoing[ informacionIngresos.posAct ].det_Catcod
 					if ( codEven )
 					{
@@ -15621,7 +15627,7 @@ function listarEventosCatastroficos()
 
 				// if(informacionIngresos != "")
 				// {
-					// //codigo del evento despues de consultar la informaciÃ³n del paciente ya registrada en BD
+					// //codigo del evento despues de consultar la información del paciente ya registrada en BD
 					// var codEven = informacionIngresos.infoing[ informacionIngresos.posAct ].det_Catcod
 					// if ( codEven )
 					// {
@@ -15734,11 +15740,11 @@ function guardarRelacionHistoriaEvento()
 		alerta("Debe seleccionar un Evento Catastrofico");
 	}
 
-	//Si se guarda la informaciÃ³n, muestro el div correspondiente con el botÃ³n para mostrar
+	//Si se guarda la información, muestro el div correspondiente con el botón para mostrar
 			//el formulario de eventos catastroficos
 			$( "#div_accidente_evento").css( {display: ""} );	//muestro el div que tiene los botones para abrir los formularios
 			$( "td", $( "#div_accidente_evento") ).eq(0).css( {display: "none"} );	//oculto el boton de accidentes de transito
-			$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: "none"} );	//oculto el boton de eventos catastrÃ³ficos
+			$( "td", $( "#div_accidente_evento") ).eq(1).css( {display: "none"} );	//oculto el boton de eventos catastróficos
 			$( "td", $( "#div_accidente_evento") ).eq(2).css( {display: ""} );  //muestro el nuevo boton que me lleva a la lista de eventos
 
 			//para poner el foco en el select de origen de la atencion cuando se cierre el blockui
@@ -15844,7 +15850,7 @@ function buscarCcoTopes(tabla_referencia)
 					|| ( cmp._lastCodigo && cmp._lastCodigo != $( "input[type=hidden]", cmp.parentNode ).val() )
 				)
 				{
-					alerta( " Digite un Centro de costo vÃ¡lida" )
+					alerta( " Digite un Centro de costo válida" )
 					$( "input[type=hidden]", cmp.parentNode ).val( '' );
 					cmp.value = '';
 					cmp.focus();
@@ -16142,7 +16148,7 @@ function guardartopes(codRespGlobal ,DivTopes)
 					/****************************************************************
 					 * Agosto 15 de 2013
 					 *
-					 * Si estÃ¡ activo preadmisiÃ³n se guarda el dato como preadmisiÃ³n
+					 * Si está activo preadmisión se guarda el dato como preadmisión
 					 ****************************************************************/
 
 
@@ -16277,7 +16283,7 @@ function guardartopes(codRespGlobal ,DivTopes)
 					/****************************************************************
 					 * Agosto 15 de 2013
 					 *
-					 * Si estÃ¡ activo preadmisiÃ³n se guarda el dato como preadmisiÃ³n
+					 * Si está activo preadmisión se guarda el dato como preadmisión
 					 ****************************************************************/
 
 
@@ -17664,7 +17670,7 @@ function buscarClasificacionConceptosFac(tabla_referencia)
 						|| ( cmp._lastCodigo && cmp._lastCodigo != $( "input[type=hidden]", cmp.parentNode ).val() )
 					)
 					{
-						alerta( " Digite una ClasificaciÃ³n vÃ¡lida" )
+						alerta( " Digite una Clasificación válida" )
 						$( "input[type=hidden]", cmp.parentNode ).val('');
 						cmp.value = '';
 						cmp.focus();
@@ -17672,7 +17678,7 @@ function buscarClasificacionConceptosFac(tabla_referencia)
 					}
 				}, 500 );
 			}else{
-				alerta( " Digite una ClasificaciÃ³n vÃ¡lida" )
+				alerta( " Digite una Clasificación válida" )
 				$( "input[type=hidden]", cmp.parentNode ).val('');
 				cmp.value = '';
 			}
@@ -17743,7 +17749,7 @@ function salir(div, noesblockui)
 	}
 	else
 	{
-		if( confirm( 'La informaciÃ³n nueva ingresada no se tomarÃ¡ en cuenta' ) )
+		if( confirm( 'La información nueva ingresada no se tomará en cuenta' ) )
 		{
 			// var nuevaInfoDivTablaTopes =$( "#div_cont_tabla_topes"+idCodResp ).find( $("#"+div).html() );
 			// var nuevaInfoDivTablaTopes = $("#"+div).html();
@@ -17785,7 +17791,7 @@ function salir(div, noesblockui)
 	// });
 	// var contenedor = objJson;
 	// if( contenedor.lastInfo && contenedor.lastInfo != '' ){
-		// if( confirm( 'Desea cerrar el formulario\nLa informaciÃ³n nueva ingresada no se tomarÃ¡ en cuenta' ) ){
+		// if( confirm( 'Desea cerrar el formulario\nLa información nueva ingresada no se tomará en cuenta' ) ){
 			// $.unblockUI();
 			// setDatos( contenedor.lastInfo, $( "#tabla_topes" ) );
 		// }
@@ -18310,7 +18316,7 @@ function cancelarTurno(turno)
 		return;
 	}
 
-	if(confirm("Â¿ Esta seguro que desea cancelar el turno "+turno+" ?"))
+	if(confirm("¿ Esta seguro que desea cancelar el turno "+turno+" ?"))
 	{
 		$.post("admision_erp.php",
 		{
@@ -18390,7 +18396,7 @@ function cargar_elementos_datapicker()
 //----------------------------------------------------
 function habilitarTurno(turno, elemento)
 {
-	if(confirm("Â¿ Esta seguro que desea habilitar el turno "+turno+" ?"))
+	if(confirm("¿ Esta seguro que desea habilitar el turno "+turno+" ?"))
 	{
 		$.post("admision_erp.php",
 		{
@@ -18663,7 +18669,7 @@ function abrirEgresarPaciente(path)
 }
 
 /**
- * [parametrosComunes: Genera un json con las variables mÃ¡s comunes que se deben enviar en los llamados ajax, evitando tener que crear los mismos parÃ¡metros de envÃ­o
+ * [parametrosComunes: Genera un json con las variables más comunes que se deben enviar en los llamados ajax, evitando tener que crear los mismos parámetros de envío
  *                     en cada llamado ajax de forma manual.]
  * @return {[type]} [description]
  */
@@ -18739,8 +18745,8 @@ function mensajeFailAlert(mensaje, xhr, textStatus, errorThrown)
 
 
 /**
- * [fnModalLoading: Es funciÃ³n se encarga de mostrar una ventana modal cada vez que se hace un llamado ajax con el fin de bloquear la pÃ¡gina web hasta que se
- *                    se genere una respuesta y evitar que el usuario genere mÃ¡s eventos (click) sin terminar la peticiÃ³n anterior y evitar problemas
+ * [fnModalLoading: Es función se encarga de mostrar una ventana modal cada vez que se hace un llamado ajax con el fin de bloquear la página web hasta que se
+ *                    se genere una respuesta y evitar que el usuario genere más eventos (click) sin terminar la petición anterior y evitar problemas
  *                    en la veracidad de datos]
  * @return {[type]} [description]
  */
@@ -18783,7 +18789,7 @@ function fnModalLoading()
 }
 
 /**
- * [fnModalLoading_Cerrar: complemento a la funciÃ³n fnModalLoading, esta se encarga de cerrar la ventana modal]
+ * [fnModalLoading_Cerrar: complemento a la función fnModalLoading, esta se encarga de cerrar la ventana modal]
  * @return {[type]} [description]
  */
 function fnModalLoading_Cerrar()
@@ -18889,6 +18895,13 @@ function solicitarCambioDocumento( obj, historia, ingreso, tipoDocumentoAnterior
         title: "SOLICITAR CAMBIO DE DOCUMENTO"
     });
 }
+
+function imprimirStickerAdmision(obj, historia, ingreso) {
+    let wemp = $('#wemp_pmla').val();
+    window.open("../reportes/stickersAdmision.php?wemp_pmla="+wemp+"&nHis="+historia+"&nIng="+ingreso ,'_blank','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=490');
+    obj.checked = false;
+}
+
 function parpadear( cantidad ){
 
 	if( cantidad <= 15 ){
@@ -19140,7 +19153,7 @@ Este software se desarrolla para la admision y el ingreso de pacientes en la cli
 se realiza con las especificaciones necesarias de acuerdo con las normas que son exigidas por el ministerio de salud, este debe validar automanticamente
 a que empresa se le esta haciendo la admision, ademas el resto de validaciones que se necesitan.
 
-Este formulario permite el ingreso de los datos del ingreso, personales, del acompaÃ±ante, del responsable, del pagador, de la autorizacion y otros
+Este formulario permite el ingreso de los datos del ingreso, personales, del acompañante, del responsable, del pagador, de la autorizacion y otros
 datos del ingreso.
 ==================================================================================================================================================*/
 
@@ -19256,7 +19269,7 @@ function empresaEmpleado($wemp_pmla, $conex, $wbasedato, $cod_use_emp)
         $row = mysql_fetch_array($res);
         $user_session = ( strlen($user_session) > 5) ? substr($user_session,-5): $user_session;
 
-        $use_emp = $user_session.'-'.$row['Empresa']; // concatena los Ãºltimos 5 digitos del cÃ³digo del usuario con el cÃ³digo de la empresa a la que pertenece.
+        $use_emp = $user_session.'-'.$row['Empresa']; // concatena los últimos 5 digitos del código del usuario con el código de la empresa a la que pertenece.
     }
     return $use_emp;
 }
@@ -19278,7 +19291,7 @@ function consultarPermisosUsuario( $wcodigoUsuario ){
 	}
 
 
-	//$cod_use_Talhuma  = empresaEmpleado($wemp_pmla, $conex, $wbasedato, $wcodigoUsuario );--> los permisos estÃ¡n asociados a los usuarios de cajas( cliame_000030 )
+	//$cod_use_Talhuma  = empresaEmpleado($wemp_pmla, $conex, $wbasedato, $wcodigoUsuario );--> los permisos están asociados a los usuarios de cajas( cliame_000030 )
 	$q51   = " SELECT Detval
 				 FROM root_000051
 				WHERE Detapl = 'fuente_hce'
@@ -19565,7 +19578,7 @@ function consultarBarrios( $bar, $mun ){
 		}
 	}
 
-	// 2017-09-19 Se anexa siempre la opciÃ³n sin dato
+	// 2017-09-19 Se anexa siempre la opción sin dato
 	$sqlGeneral = "SELECT Detval FROM root_000051 WHERE Detapl = 'barrioGenerico'";
 
 	$res = mysql_query($sqlGeneral, $conex);
@@ -20022,7 +20035,7 @@ function buscarDatosNoAplicaExtranjeros(){
 
 	global $conex, $wemp_pmla;
 	$noAplica = array();
-	//2017-09-19 El valor para el barrio sin dato se tomarÃ¡ de la configuraciÃ³n de la tabla root_000051 Detapl = BarrioGenerico
+	//2017-09-19 El valor para el barrio sin dato se tomará de la configuración de la tabla root_000051 Detapl = BarrioGenerico
 	$query = "SELECT Detval as codigo
 			  FROM root_000051
 			  WHERE Detapl = 'BarrioGenerico'
@@ -20202,7 +20215,7 @@ function consultaNombreTarifa($codTarifa)
  * La variable Post es: indpersonas = 'Armando Calle'
  * Ejecutando la funcion: $a = crearArrayDatos( 'movhos', 'Per', 'ind', 3 );
  *
- * El array que retorna la funciÃ³n es:
+ * El array que retorna la función es:
  *						$a[ 'Perper' ] = 'Armando Calle'
  *						$a[ 'Medico' ] = 'movhos'
  *						$a[ 'Fecha_data' ] = '2013-05-22'
@@ -20231,7 +20244,7 @@ function crearArrayDatos( $wbasedato, $prefijoBD, $prefijoHtml, $longitud ){
 		}
 	}
 
-	//Estos campos se llenan automÃ¡ticamente y toda tabla debe tener esots campos
+	//Estos campos se llenan automáticamente y toda tabla debe tener esots campos
 	if( $crearDatosExtras ){
 		global $user;
 		$user2 = explode("-",$user);
@@ -20306,7 +20319,7 @@ function crearStringUpdate( $tabla, $datos ){
 }
 
 /**************************************************************************************************
- * Crea o actualiza los registros de un accidente de trÃ¡nsito
+ * Crea o actualiza los registros de un accidente de tránsito
  **************************************************************************************************/
 function guardarAccidentes( $his, $ing ){
 
@@ -20383,7 +20396,7 @@ function guardarAccidentes( $his, $ing ){
 
 					$rsaccp = mysql_query( $qaccp, $conex );
 					$numacc = mysql_num_rows($rsaccp);
-					if( $numacc > 0 ){//hay un reingreso mayor al que se estÃ¡ registrando
+					if( $numacc > 0 ){//hay un reingreso mayor al que se está registrando
 
 						$rowacc = mysql_fetch_assoc( $rsaccp );
 						$accPrevioReal =  $rowacc['accrei'];
@@ -20413,14 +20426,14 @@ function guardarAccidentes( $his, $ing ){
 
 				//--> aca se actualizan los otros accidentes asociados. 2017-01-04
 				while( $accPrevioReal != "" ){
-					//--> se mueve por los ingresos anteriores que estÃ¡n asociados al mismo accidente de trÃ¡nsito 2017-01-04
+					//--> se mueve por los ingresos anteriores que están asociados al mismo accidente de tránsito 2017-01-04
 					$qaccp = " SELECT  Accing, accrei, id
 								 FROM {$wbasedato}_000148
 								WHERE acchis = '{$his}'
 								  AND accing = '{$accPrevioReal}'";
 					$rsaccp = mysql_query( $qaccp, $conex );
 					$numacc = mysql_num_rows($rsaccp);
-					if( $numacc > 0 ){//hay un reingreso mayor al que se estÃ¡ registrando
+					if( $numacc > 0 ){//hay un reingreso mayor al que se está registrando
 						$rowacc = mysql_fetch_assoc( $rsaccp );
 						/*$datosTabla[ 'Acchis' ] = $his;
 						$datosTabla[ 'Accing' ] = $accPrevioReal;*/
@@ -20460,7 +20473,7 @@ function guardarAccidentes( $his, $ing ){
 			else{
 				$rows = mysql_fetch_array( $res );
 
-				//Si se encontraron datos, significa que es una actualizaciÃ³n de registro de accidentes de trÃ¡nsito
+				//Si se encontraron datos, significa que es una actualización de registro de accidentes de tránsito
 				$datosTabla = crearArrayDatos( $wbasedato, "Acc", "dat_Acc", 3 );
 
 				unset( $datosTabla['Acchis'] );
@@ -20495,7 +20508,7 @@ function guardarAccidentes( $his, $ing ){
 							   HAVING ( MIN( Accing*1 ) ) ";
 					$rsaccp = mysql_query( $qaccp, $conex );
 					$numacc = mysql_num_rows($rsaccp);
-					if( $numacc > 0 ){//hay un reingreso mayor al que se estÃ¡ registrando
+					if( $numacc > 0 ){//hay un reingreso mayor al que se está registrando
 						$rowacc = mysql_fetch_assoc( $rsaccp );
 						$accPrevioReal =  $rowacc['accrei'];
 						$qaccp2 = " UPDATE {$wbasedato}_000148
@@ -20516,14 +20529,14 @@ function guardarAccidentes( $his, $ing ){
 
 				//--> aca se actualizan los otros accidentes asociados. 2017-01-04
 				while( $accPrevioReal != "" ){
-					//--> se mueve por los ingresos anteriores que estÃ¡n asociados al mismo accidente de trÃ¡nsito 2017-01-04
+					//--> se mueve por los ingresos anteriores que están asociados al mismo accidente de tránsito 2017-01-04
 					$qaccp = " SELECT  Accing, accrei, id
 								 FROM {$wbasedato}_000148
 								WHERE acchis = '{$his}'
 								  AND accing = '{$accPrevioReal}'";
 					$rsaccp = mysql_query( $qaccp, $conex );
 					$numacc = mysql_num_rows($rsaccp);
-					if( $numacc > 0 ){//hay un reingreso mayor al que se estÃ¡ registrando
+					if( $numacc > 0 ){//hay un reingreso mayor al que se está registrando
 						$rowacc = mysql_fetch_assoc( $rsaccp );
 						/*$datosTabla[ 'Acchis' ] = $his;
 						$datosTabla[ 'Accing' ] = $accPrevioReal;*/
@@ -20612,7 +20625,7 @@ function guardarEventos( $his, $ing ){
 				global $cod;
 				if (empty($cod))
 				{
-					//Consulto el cÃ³digo del evento, es un consecutivo
+					//Consulto el código del evento, es un consecutivo
 					$sqlCon="select max(Devcod) as Devcod
 							from ".$wbasedato."_000149
 							where Devest = 'on'";
@@ -20642,7 +20655,7 @@ function guardarEventos( $his, $ing ){
 				//Creo el encabezado
 				$datosEnc[ "Evnhis" ] = $his;
 				$datosEnc[ "Evning" ] = $ing;
-				$datosEnc[ "Evncod" ] = $cod;			//Consulto el cÃ³digo del evento, es un consecutivo
+				$datosEnc[ "Evncod" ] = $cod;			//Consulto el código del evento, es un consecutivo
 				$datosEnc[ "Evnest" ] = "on";
 				$datosEnc[ "Medico" ] = $wbasedato;
 				$datosEnc[ "Fecha_data" ] = date( "Y-m-d" );
@@ -20668,7 +20681,7 @@ function guardarEventos( $his, $ing ){
 
 					if( $res1 ){
 						if( mysql_affected_rows() > 0 ){
-							$data[ "mensaje" ] = utf8_encode( "Se registrÃ³ correctamente" );
+							$data[ "mensaje" ] = utf8_encode( "Se registró correctamente" );
 
 							// $datosEnc[ "Evncod" ] = $cod;
 							// $datosEnc[ "id" ] = $cod;
@@ -20704,7 +20717,7 @@ function guardarEventos( $his, $ing ){
 
 					$rowsDet = mysql_fetch_array( $resDet );
 
-					//Si se encontraron datos, significa que es una actualizaciÃ³n de registro de evento catastrofico
+					//Si se encontraron datos, significa que es una actualización de registro de evento catastrofico
 					$datosTabla = crearArrayDatos( $wbasedato, "Dev", "det_Cat", 3 );
 
 					$datosTabla[ 'id' ] = $rowsDet[ 'id' ];
@@ -20750,7 +20763,7 @@ function guardarEventos( $his, $ing ){
 }
 
 /***********************************************************************************************
-	 * Consulta del codigo de matrix viejo en el maestro de selecciones de la soluciÃ³n correspondiente.
+	 * Consulta del codigo de matrix viejo en el maestro de selecciones de la solución correspondiente.
 	 * El maestro de selecciones es la tabla 000105
 	 ***********************************************************************************************/
 function consultarCodigoAnteriorMatrix( $tip, $cod )
@@ -20781,7 +20794,7 @@ function consultarCodigoAnteriorMatrix( $tip, $cod )
 	}
 
 /**************************************************************************************************
- * Consulta los accidentes de trÃ¡nsito para un paciente segÃºn la historia e ingreso
+ * Consulta los accidentes de tránsito para un paciente según la historia e ingreso
  **************************************************************************************************/
 function consultarAccidentesAlmacenados( $his, $ing, &$data )
 {
@@ -20933,7 +20946,7 @@ function consultarAccidentesAlmacenados( $his, $ing, &$data )
 
 
 /**************************************************************************************************
- * Consulta los eventos catastrÃ³ficos para un paciente segÃºn la historia e ingreso
+ * Consulta los eventos catastróficos para un paciente según la historia e ingreso
  **************************************************************************************************/
 function consultarEventosCatastroficos( $his, $ing, &$data )
 {
@@ -21155,7 +21168,7 @@ function agendaAdmisiones( $fecha, $incremento = 0 )
 
 	/****************************************************************************************************
 	 * Agosto 30 de 2013
-	 * Solo se puede hacer ingreso si la preadmisiÃ³n es del dÃ­a actual
+	 * Solo se puede hacer ingreso si la preadmisión es del día actual
 	 ****************************************************************************************************/
 	$disabled = '';
 	if( date( "Y-m-d" ) != $fechaMostrar ){
@@ -21579,12 +21592,14 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 	global $filtrarCcoAyuda;
 	global $user2;
 	global $imprimirHistoria;
+	global $imprimirStickerAdmision;
 
 	$data = array('error'=>0,'mensaje'=>'','html'=>'');
 
 	$aplMovhos=consultarAplicacion2($conex,$wemp_pmla,"movhos");
 	$wbasedatoHce = consultarAplicacion2( $conex, $wemp_pmla, "hce" );
 	$imprimirHistoria = consultarAplicacion2($conex,$wemp_pmla,"imprimirHistoria");
+	$imprimirStickerAdmision = consultarAplicacion2($conex,$wemp_pmla,"imprimirStickerAdmision");
 	$habilitarSolicitarCambioDocumento = consultarAplicacion2($conex,$wemp_pmla,"habilitarSolicitarCambioDocumento");
 	$admin_erp_ver_boton_alta_egreso = consultarAplicacion2($conex,$wemp_pmla,"admin_erp_ver_boton_alta_egreso");
 	$priorizarPermiso81 = consultarAplicacion2($conex,$wemp_pmla,"priorizarPermiso81");
@@ -21601,7 +21616,7 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 
 	/****************************************************************************************************
 	 * Agosto 30 de 2013
-	 * Solo se puede hacer ingreso si la preadmisiÃ³n es del dÃ­a actual
+	 * Solo se puede hacer ingreso si la preadmisión es del día actual
 	 ****************************************************************************************************/
 	$disabled  = '';
 	$disabled2 = '';
@@ -21688,7 +21703,7 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 
 			/****************************************************************************************************
 			 * Agosto 30 de 2013
-			 * Solo se puede hacer ingreso si la preadmisiÃ³n es del dÃ­a actual
+			 * Solo se puede hacer ingreso si la preadmisión es del día actual
 			 ****************************************************************************************************/
 			$disabled = '';
 			if( date( "Y-m-d" ) != $fechaMostrar ){
@@ -21775,7 +21790,7 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 
 
 	$filtroCco = ($filtrarCcoPorUsuario) ? " AND ingsei in ($ccoPermitidos) " : "";
-	//Busco los pacientes que tienen admisiÃ³n el dÃ­a actual
+	//Busco los pacientes que tienen admisión el día actual
 	$sql = "SELECT
 				a.*, b.Ingnin, b.Ingsei,b.Ingcem ,b.fecha_data as fechaCarpeta
 			FROM
@@ -21844,7 +21859,7 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 
 			/****************************************************************************************************
 			 * Agosto 30 de 2013
-			 * Solo se puede hacer ingreso si la preadmisiÃ³n es del dÃ­a actual
+			 * Solo se puede hacer ingreso si la preadmisión es del día actual
 			 ****************************************************************************************************/
 			$disabled = '';
 			if( date( "Y-m-d" ) != $fechaMostrar ){
@@ -21900,6 +21915,9 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 				$data[ 'html' ] .= "<td>Solicitud<br>Cambio<br>documento</td>";
 			}
 
+            if( $imprimirStickerAdmision == "on" ) {
+                $data['html'] .= "<td>Sticker</td>";
+            }
 
 			//---------------------------------------------------
 			// mirar el codigo de la empresa
@@ -22066,6 +22084,13 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 					$data[ 'html' ] .= "</td>";
 				}
 
+				// Imprimir Sticker
+                if ($imprimirStickerAdmision == "on"){
+                    $data['html'] .= "<td>";
+                    $data['html'] .= "<input class='printSticker' type='radio' onClick='imprimirStickerAdmision(this,".$rows[ 'Pachis' ].",".$rows[ 'Ingnin' ].");'>";
+                    $data['html'] .= "</td>";
+                }
+
 				//------tener en cuenta el campo
 				if($TableroDigitalizacionUrgencias =='on')
 				{
@@ -22139,7 +22164,7 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 
 
 /****************************************************************************************************
- * Consulto el tipo de atenciÃ³n segÃºn el cco
+ * Consulto el tipo de atención según el cco
  ****************************************************************************************************/
 function consultarTipoAtencion( $wbasedato, $cco ){
 
@@ -22169,7 +22194,7 @@ function consultarTipoAtencion( $wbasedato, $cco ){
 
 
 /****************************************************************************************************
- * Consulto el tipo de atenciÃ³n segÃºn el cco
+ * Consulto el tipo de atención según el cco
  ****************************************************************************************************/
 function consultarTipoIngreso( $wbasedato, $cco ){
 
@@ -22198,7 +22223,7 @@ function consultarTipoIngreso( $wbasedato, $cco ){
 }
 
 /****************************************************************************************************
- * Consulto el tipo de atenciÃ³n segÃºn el cco
+ * Consulto el tipo de atención según el cco
  ****************************************************************************************************/
 function consultarTipoServicio( $wbasedato, $cco ){
 
@@ -22348,7 +22373,7 @@ function guardarRelacion($historia, $ingreso, $hidcodEvento)
 
 					if ($resEnc)
 					{
-						$data['mensaje'] = utf8_encode( "Se registrÃ³ correctamente" );
+						$data['mensaje'] = utf8_encode( "Se registró correctamente" );
 					}
 					else
 					{
@@ -23608,7 +23633,7 @@ function ping_unix(){
 	if( $direccion_ipunix != "" ){
 		$cmd_result = shell_exec("ping -c 1 -w 1 ". $direccion_ipunix);
 		$result = explode(",",$cmd_result);
-		// la funciÃ³n "eregi" ya estÃ¡ en desuso por eso se cambia a preg_match que es soportada en versiones posteriores de PHP
+		// la función "eregi" ya está en desuso por eso se cambia a preg_match que es soportada en versiones posteriores de PHP
 		// if(eregi("1 received", $result[1])){
 		if(preg_match('/(1 received)/', $result[1])){
 			$ret = true;
@@ -23934,7 +23959,7 @@ function verificarCcoIngresoAyuda( $ccoIngreso ){
 }
 
 // Veronica Arismendy 2017-06-20
-// FunciÃ³n para consultar la informaciÃ³n del centro de costo configurada en root_000117 para el nuevo programa de ayudas diagnosticas bajo esquema de procesos
+// Función para consultar la información del centro de costo configurada en root_000117 para el nuevo programa de ayudas diagnosticas bajo esquema de procesos
 function getInfoCc($nameCco, $conex){
 	$sql = "SELECT descripcion, centroCosto
 			FROM root_000117
@@ -23993,7 +24018,7 @@ if(!array_key_exists('user', $_SESSION)){
 if (isset($_SERVER['HTTP_USER_AGENT'])) {
     $agent = $_SERVER['HTTP_USER_AGENT'];
 	if (strlen(strstr($agent, 'MSIE')) > 0) {
-		echo "<center><font size=5><br><br>El programa de admisiones no estÃ¡ habilitado para el navegador Internet Explorer.<br>
+		echo "<center><font size=5><br><br>El programa de admisiones no está habilitado para el navegador Internet Explorer.<br>
 		<a target='_blank' href='http://www.mozilla.org/es-ES/firefox/new/'><img src='../../images/medical/root/boton5.png'></a>
 		</font></center>";
 		exit;
@@ -24110,7 +24135,7 @@ echo "<input type='hidden' value='.' ux='_ux_infcon'>";	//Campo vacio para unix
 
 /**************************************************************************************************
  * Agosto 13 de 2013
- * NavegaciÃ³n superior al consultar
+ * Navegación superior al consultar
  **************************************************************************************************/
 echo "<div id='bot_navegacion1' style='display:none'>";
 echo "<center><table style='width:500;' border='0'>";
@@ -24136,7 +24161,7 @@ echo "</div>";//div botones navegacion
 /*********************************************************************************************************
  * Agsoto 17 de 2013
  *
- * Div que contiene la informaciÃ³n de los pacientes que tienen preadmision
+ * Div que contiene la información de los pacientes que tienen preadmision
  *********************************************************************************************************/
 
 
@@ -24175,7 +24200,7 @@ else
 	if(mysql_fetch_array($resCcoUrg))
 		$verListaTurnos = TRUE;
 
-	// --> si el cco es de ayuda DiagnÃ³stica
+	// --> si el cco es de ayuda Diagnóstica
 	$sqlCcoAyu =  "SELECT Ccocod
 					FROM {$wbasedatoMov}_000011
 				   WHERE Ccocod = '{$cco_usuario}'
@@ -24216,11 +24241,11 @@ echo "</div>";
 
 /**************************************************************************************************
  * Agosto 15 de 2013
- * Radios para elegir opciÃ³n de admisiÃ³n o no
+ * Radios para elegir opción de admisión o no
  **************************************************************************************************/
 
 echo "<div id='div_datosAdmiPreadmi'>";
- //INGRESO - DATOS PERSONALES - DATOS ACOMPAÃ‘ANTE
+ //INGRESO - DATOS PERSONALES - DATOS ACOMPAÑANTE
 echo "<input type='hidden' id='wfiniAdm' value=''>";
 echo "<input type='hidden' id='whiniAdm' value=''>";
 //BOTONES
@@ -24254,16 +24279,16 @@ echo "<center><table class='anchotabla'>";
 // echo "<tr style='background-color:#C3D9FF'>";
 echo "<tr style='background-color:#E8EEF7'>";
 
-//Se agrega radio button de admisiÃ³n y preadmisiÃ³n
+//Se agrega radio button de admisión y preadmisión
 echo "<td align='center' style='display:none'>";
 echo "<INPUT type='radio' id='radAdmision' name='radPreAdmi' value='admision' onClick='opcionAdmisionPreadmision();' checked style='width:14'>";
 echo "</td>";
-echo "<td  style='display:none'>AdmisiÃ³n</td>";
+echo "<td  style='display:none'>Admisión</td>";
 
 echo "<td align='center'  style='display:none'>";
 echo "<INPUT type='radio' id='radPreadmision' name='radPreAdmi' value='preadmision' onClick='opcionAdmisionPreadmision();' style='width:14'>";
 echo "</td>";
-echo "<td  style='display:none'>PreadmisiÃ³n</td>";
+echo "<td  style='display:none'>Preadmisión</td>";
 
 echo "<td id='txtAdmisionPreadmision' style='background-color:lightyellow;color:black;font-size:18pt;' align='center'><b></b></td>";
 
@@ -24286,7 +24311,7 @@ echo "
 // /*********************************************************************************************************
  // * Agsoto 17 de 2013
  // *
- // * Div que contiene la informaciÃ³n de los pacientes que tienen preadmision
+ // * Div que contiene la información de los pacientes que tienen preadmision
  // *********************************************************************************************************/
 // echo "<div id='dvAgendaPreadmision' style='display:none'>";
 // // $d = agendaAdmisiones( date( "Y-m-d" ) );
@@ -24410,8 +24435,9 @@ echo "<div id='div_int_datos_personales'>";
 echo "<center><table>";
 echo "<th class='encabezadotabla' colspan='8'>Datos Personales Paciente</th>";
 echo "<tr>";
-echo "<td class='fila1' colspan='2' style='width:16%'>Tipo de Documento</td>";
+echo "<td class='fila1' colspan='1' style='width:8%'>Tipo de Documento</td>";
 echo "<td class='fila1' style='width:16%'>N&uacute;mero Documento</td>";
+echo"<td class='fila1' colspan='1' style='width:8%'>Fecha de Expedici&oacute;n</td>";
 echo "<td class='fila1' style='width:16%'>Primer Apellido</td>";
 echo "<td class='fila1' style='width:16%'>Segundo Apellido</td>";
 echo "<td class='fila1' style='width:16%'>Primer Nombre</td>";
@@ -24419,11 +24445,12 @@ echo "<td class='fila1' colspan='2' style='width:16%'>Segundo Nombre</td>";
 echo "</tr>";
 echo "<tr>";
 $param="class='reset' msgError msgcampo='Tipo de documento' ux='_ux_pactid_ux_midtii' onChange='cambiarTipoDocumento( this );'";
-echo "<td class='fila1espacio' colspan='2'>";$res1=consultaMaestros('root_000007','Codigo,Descripcion,alfanumerico, docigualhis',$where="Estado='on'",'','');
+echo "<td class='fila1espacio' colspan='1'>";$res1=consultaMaestros('root_000007','Codigo,Descripcion,alfanumerico, docigualhis',$where="Estado='on'",'','');
 crearSelectHTMLAcc($res1,'pac_tdoselTipoDoc','pac_tdoselTipoDoc',$param);
 
 echo "</td>";
 echo "<td class='fila1espacio'><input type='text' msgcampo='Documento' name='pac_doctxtNumDoc' id='pac_doctxtNumDoc' class='reset' msgError='Digite el numero de documento' ux='_ux_pacced_ux_midide' onblur='verificarDocumento();verificarTriageUrgencias();'></td>";
+echo "<td class='fila1espacio'><input type='text' name='pac_fedtxtFecExpDoc' id='pac_fedtxtFecExpDoc' class='reset' fecha  placeholder='Seleccione fecha de expedicion' onblur=''></td>";
 echo "<td class='fila1espacio'><input type='text' msgcampo='Primer Apellido' name='pac_ap1txtPriApe' id='pac_ap1txtPriApe' class='reset' msgError='Digite el primer apellido' alfabetico ux='_ux_pacap1_ux_midap1' onblur=''></td>";
 echo "<td class='fila1espacio'><input type='text' name='pac_ap2txtSegApe' id='pac_ap2txtSegApe' class='reset' placeholder='Digite el segundo apellido' alfabetico ux='_ux_pacap2_ux_midap2' onblur=''></td>";
 echo "<td class='fila1espacio'><input type='text' msgcampo='Primer nombre' name='pac_no1txtPriNom' id='pac_no1txtPriNom' class='reset' msgError='Digite el primer nombre' alfabetico ux='_ux_pnom1_ux_midno1' onblur=''></td>";
@@ -24638,11 +24665,11 @@ echo "</div>"; //externo
 
 
 
-//DATOS ACOMPAÃ‘ANTE
-echo "<div id='div_datos_acompaÃ±ante'>";
+//DATOS ACOMPAÑANTE
+echo "<div id='div_datos_acompañante'>";
 echo "<h3>DATOS ACOMPA&Ntilde;ANTE</h3>";
-//datos acompaÃ±ante
-echo "<div id='div_int_datos_acompaÃ±ante'>";
+//datos acompañante
+echo "<div id='div_int_datos_acompañante'>";
 echo "<center><table width='70%'>";
 echo "<th class='encabezadotabla' colspan='8'>Datos del Acompa&ntilde;ante</th>";
 if( $cco_usuario_ayuda == "on" ){
@@ -24652,23 +24679,23 @@ if( $cco_usuario_ayuda == "on" ){
 	$res1res=consultaMaestros('root_000007','Codigo,Descripcion,alfanumerico, docigualhis',$where="Estado='on'",'','');
 	crearSelectHTMLAcc($res1res,'','Pac_ceaselTipoDocAco',$param);
 	echo"</td>";*/
-	echo "<td class='fila1' width='10%'>NÃºmero Documento</td>";
-	echo "<td class='fila2' width='17%'><input msgcampo='Telefono del acompaÃ±ante' type='text' name='pac_ceatxtCelAco' id='pac_ceatxtCelAco' class='reset' ux='_ux_otrcea' msgError='Digite el Documento' onblur='validarCamposCedAco();'></td>";
+	echo "<td class='fila1' width='10%'>Número Documento</td>";
+	echo "<td class='fila2' width='17%'><input msgcampo='Telefono del acompañante' type='text' name='pac_ceatxtCelAco' id='pac_ceatxtCelAco' class='reset' ux='_ux_otrcea' msgError='Digite el Documento' onblur='validarCamposCedAco();'></td>";
 	echo "<td class='fila1' width='25%'>Nombres y Apellidos del Acompa&ntilde;ante</td>";
-	echo "<td class='fila2' width='25%'><input msgcampo='Nombre del acompaÃ±ante' type='text' name='pac_noatxtNomAco' id='pac_noatxtNomAco' class='reset' ux='_ux_otrnoa' msgError='Digite los Nombres y Apellidos'></td>";
+	echo "<td class='fila2' width='25%'><input msgcampo='Nombre del acompañante' type='text' name='pac_noatxtNomAco' id='pac_noatxtNomAco' class='reset' ux='_ux_otrnoa' msgError='Digite los Nombres y Apellidos'></td>";
 	echo "</tr>";
 	echo "<tr>";
 	echo "<td class='fila1' width='10%'>Tel&eacute;fono &nbsp;&nbsp;&nbsp;&nbsp; </td>";
-	echo "<td class='fila2' width='17%'><input msgcampo='Telefono del acompaÃ±ante' type='text' name='pac_teatxtTelAco' id='pac_teatxtTelAco' class='reset' ux='_ux_otrtra' msgError='Digite el Telefono' numerico></td>";
+	echo "<td class='fila2' width='17%'><input msgcampo='Telefono del acompañante' type='text' name='pac_teatxtTelAco' id='pac_teatxtTelAco' class='reset' ux='_ux_otrtra' msgError='Digite el Telefono' numerico></td>";
 	echo "<td class='fila1' width='10%'>Direcci&oacute;n &nbsp;&nbsp;&nbsp;&nbsp; </td>";
-	echo "<td class='fila2' width='17%'><input msgcampo='Direccion del acompaÃ±ante' type='text' name='pac_diatxtDirAco' id='pac_diatxtDirAco' class='reset' ux='_ux_otrdra' msgError='Digite la direccion' numerico></td>";
+	echo "<td class='fila2' width='17%'><input msgcampo='Direccion del acompañante' type='text' name='pac_diatxtDirAco' id='pac_diatxtDirAco' class='reset' ux='_ux_otrdra' msgError='Digite la direccion' numerico></td>";
 	echo "</tr>";
 }else{
 	echo "<tr>";
 	echo "<td class='fila1' width='25%'>Nombres y Apellidos del Acompa&ntilde;ante</td>";
-	echo "<td class='fila2' width='25%'><input msgcampo='Nombre del acompaÃ±ante' type='text' name='pac_noatxtNomAco' id='pac_noatxtNomAco' class='reset' ux='_ux_otrnoa' msgError='Digite los Nombres y Apellidos'></td>";
+	echo "<td class='fila2' width='25%'><input msgcampo='Nombre del acompañante' type='text' name='pac_noatxtNomAco' id='pac_noatxtNomAco' class='reset' ux='_ux_otrnoa' msgError='Digite los Nombres y Apellidos'></td>";
 	echo "<td class='fila1' width='10%'>Tel&eacute;fono &nbsp;&nbsp;&nbsp;&nbsp; </td>";
-	echo "<td class='fila2' width='17%'><input msgcampo='Telefono del acompaÃ±ante' type='text' name='pac_teatxtTelAco' id='pac_teatxtTelAco' class='reset' ux='_ux_otrtra' msgError='Digite el Telefono' numerico></td>";
+	echo "<td class='fila2' width='17%'><input msgcampo='Telefono del acompañante' type='text' name='pac_teatxtTelAco' id='pac_teatxtTelAco' class='reset' ux='_ux_otrtra' msgError='Digite el Telefono' numerico></td>";
 	echo "</tr>";
 }
 echo "</table></center>";
@@ -24805,7 +24832,7 @@ echo "</table></center>";
 	echo "<td><table>";
 	echo "<tr>
 			<td style='width:45;' class='numeroresponsable corchete' rowspan=4>R1</td>
-			<td class='encabezadotabla titulo_responsable' colspan='9' align='center' nowrap='nowrap'>RESPONSABLE <p style='display:none;'>( <input type='radio' style='width:16px; height:16px;' name='res_comtxtNumcon' estadoAnterior='off' onclick=' cambiarEstadoComplementariedad( this ); ' id='res_comtxtNumcon{$id_fila}'> Aplica complementariedad en cirugÃ­a )</p></td>
+			<td class='encabezadotabla titulo_responsable' colspan='9' align='center' nowrap='nowrap'>RESPONSABLE <p style='display:none;'>( <input type='radio' style='width:16px; height:16px;' name='res_comtxtNumcon' estadoAnterior='off' onclick=' cambiarEstadoComplementariedad( this ); ' id='res_comtxtNumcon{$id_fila}'> Aplica complementariedad en cirugía )</p></td>
 			<td style='width:45;' class='corchetei' rowspan=4><img border=0 src='../../images/medical/root/borrar.png' onclick='removerFila(\"".$id_fila."\",\"".$wbasedato."\",\"tabla_eps\");'/></td>
 		</tr>";
 	echo "<tr>";
@@ -24813,7 +24840,7 @@ echo "</table></center>";
 
 	/*2014-10-20 DATOS PARA RESPONSABLE PARTICULAR*/
 	echo "<td class='fila1 dato_particulares' style='display:none;'>Tipo Documento</td>";
-	echo "<td class='fila1 dato_particulares' style='display:none;'>NÃºmero Documento</td>";
+	echo "<td class='fila1 dato_particulares' style='display:none;'>Número Documento</td>";
 	echo "<td class='fila1 dato_particulares' style='display:none;'>Nombre Responsable</td>";
 	$permiteCambioTarifaParticular = consultarAplicacion2($conex,$wemp_pmla,"cambiaTarifaParticular");
 	if( $permiteCambioTarifaParticular ){
@@ -24821,7 +24848,7 @@ echo "</table></center>";
 	}
 	/*FIN*/
 	
-	//Se cierra conexiÃ³n de la base de datos :)
+	//Se cierra conexión de la base de datos :)
 	//Se comenta cierre de conexion para la version estable de matrix :)
 	//mysql_close($conex);
 	
@@ -25013,7 +25040,7 @@ echo "</div>";
 echo "<div id='realizarIngresoCompleto' style='display:none'>";
 echo "<center><table style='width:400' border='0'>";
 echo "<tr>";
-echo "<td>Â¿DESEA REALIZAR EL INGRESO?</td>";
+echo "<td>¿DESEA REALIZAR EL INGRESO?</td>";
 echo "<td align=right>Si<td><input type='radio' name='realizarIng' id='realizarIngS' value='S' onclick='realizarIngreso();' style='display:none'></td>";
 echo "<td align=right>&nbsp;&nbsp;No<td><input type='radio' name='realizarIng' id='realizarIngN' value='N' onclick='realizarIngreso();' style='display:none'></td></tr>";
 echo "</tr>";
@@ -25122,7 +25149,7 @@ echo "<div id='div_doc_change' class='fila2' style='display:none;'><br>
 	 			<input type='hidden' id='asociarPreanestesia' value='off'>
 	 			<input type='hidden' id='turnoPreAnestesia' value=''>
 				<p> Este paciente tiene una preanestesia asociada al turno de cirug&iacute;a n&uacute;mero: <span  class='subtituloPagina2' id='turno_preanestesia'>  </span> </p>
-				 <p> Â¿ Desea asociar dicha preanestesia a este ingreso ? </p><br>
+				 <p> ¿ Desea asociar dicha preanestesia a este ingreso ? </p><br>
 				 <button class='boton_preanestesia' type='button' id='btn_si_preanestesia' onkeypress='return false;' onclick='asociarPreanestesia( this )'>SI</button>&nbsp;&nbsp;<button class='boton_preanestesia' type='button' id='btn_no_preanestesia' onkeypress='return false;' onclick='asociarPreanestesia( this )'>NO</button>
 				 <input type='text' id='input_aux_prea' value='' style='display:none;'>
 	 	   </div>";
