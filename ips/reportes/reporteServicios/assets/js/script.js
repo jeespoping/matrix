@@ -19,7 +19,7 @@ var app = new Vue({
         abrirFactuacion: (ingreso, servicio, wemp_pmla) => {
             Swal.fire({
                 title: `Usar el ingreso ${ingreso} del servicio ${servicio}`,
-                text: 'Si la informaciÃ³n es correcta por favor continue.',
+                text: 'Si la información es correcta por favor continue.',
                 icon: 'question',
                 showCancelButton: true,
                 // confirmButtonColor: '#3085d6',
@@ -38,7 +38,7 @@ var app = new Vue({
                 Swal.fire({
                     icon: 'error',
                     title: 'Algo salio mal!',
-                    text: 'Debes ingresar el numero de Historia o Documento',
+                    text: 'Debes ingresar el número de Historia o Documento',
                     footer: 'Los campos Fecha inicial y Fecha final son opcionales.'
                 });
                 return;
@@ -50,8 +50,8 @@ var app = new Vue({
             formData.append('fecIni', this.fecIni)
             formData.append('fecFin', this.fecFin)
 
-            var servicio = {};
-            formData.forEach(function (value, key) { servicio[key] = value; });
+            let servicio = {};
+            formData.forEach((value, key) => { servicio[key] = value; });
 
 
             Swal.fire({
@@ -98,7 +98,7 @@ const getPaciente = (formData) => {
         data: formData,
         config: { headers: { 'Content-Type': 'multipart/form-data' } }
     }).then((response) => {
-        let data = response.data[0];
+        const data = response.data[0];
         app.numHis = data.numeroHistoria;
         app.tipoDocumento = data.tipoDocumento;
         app.numIde = data.documento;
@@ -121,12 +121,12 @@ const getServicios = (formData) => {
         //handle success
         if (response.data) {
             app.servicios = response.data;
-            console.log(response.data.estado);
+            // console.log(response.data.estado);
         } else {
             app.servicios = null;
             Swal.fire({
                 title: 'No se encuentran datos del paciente!',
-                text: 'Verifique la informaciÃ³n e intente nuevamente!',
+                text: 'Verifique la información e intente nuevamente!',
                 icon: 'error',
                 didOpen: () => { app.resetForm() }
             });

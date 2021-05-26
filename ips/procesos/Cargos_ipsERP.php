@@ -3333,8 +3333,8 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 										"color": "red"
 									}).html("<b>Inactivo</b>").attr("estado", "off");
 
-								// Implementacion validacion del estado del ingreso, para permitir grabar cargos si el estado esta activo.
-								console.log('Validar estado ingreso: ' + data.grabarCargos);
+								// Implementacion validacion del estado del ingreso, para permitir grabar cargos si el estado esta activo. Edier
+								console.log(`Validar estado ingreso: ${data.grabarCargos}`);
 								$('#grabarCargos').val(data.grabarCargos);
 								if (data.grabarCargos == 'on') {
 									if ($("#ingresoActivoUnix").attr("estado") == "off") {
