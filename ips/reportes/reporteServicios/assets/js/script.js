@@ -14,11 +14,9 @@ var app = new Vue({
         disNumHis: 0,
         disNumIde: 0
     },
-    mounted: function () {
-        console.log('Hello from Vue!')
-    },
+    mounted: () => console.log('Reporte de Servicios'),
     methods: {
-        abrirFactuacion: function (ingreso, servicio, wemp_pmla) {
+        abrirFactuacion: (ingreso, servicio, wemp_pmla) => {
             Swal.fire({
                 title: `Usar el ingreso ${ingreso} del servicio ${servicio}`,
                 text: 'Si la información es correcta por favor continue.',
@@ -35,9 +33,7 @@ var app = new Vue({
                 }
             })
         },
-        filtrarServicios: function (baseDatos) {
-            console.log("Consultar servicio!")
-
+        filtrarServicios: (baseDatos) => {
             if (this.numHis == "" && this.numIde == "") {
                 Swal.fire({
                     icon: 'error',
@@ -48,7 +44,6 @@ var app = new Vue({
                 return;
             }
             let formData = new FormData();
-            console.log("numHis:", this.numHis)
             formData.append('baseDatos', baseDatos)
             formData.append('numHis', this.numHis)
             formData.append('numIde', this.numIde)
@@ -69,9 +64,8 @@ var app = new Vue({
                     getServicios(formData);
                 }
             })
-
         },
-        bloquearCampo: function () {
+        bloquearCampo: () => {
             this.disNumIde = 0;
             this.disNumHis = 0;
             this.nombre = "";
@@ -83,7 +77,7 @@ var app = new Vue({
                 this.disNumHis = 1;
             }
         },
-        resetForm: function () {
+        resetForm: () => {
             this.numHis = '';
             this.numIde = '';
             this.fecIni = '';
@@ -92,10 +86,7 @@ var app = new Vue({
             this.disNumIde = 0;
             this.servicios = [];
         },
-        cerrarVentana: function () {
-            window.close();
-        }
-
+        cerrarVentana: () => window.close()
     }
 
 });
@@ -106,22 +97,18 @@ const getPaciente = (formData) => {
         url: 'reporteServicios/api/paciente.php',
         data: formData,
         config: { headers: { 'Content-Type': 'multipart/form-data' } }
-    }).then(function (response) {
-        //handle success
+    }).then((response) => {
         let data = response.data[0];
-        console.log(data);
         app.numHis = data.numeroHistoria;
         app.tipoDocumento = data.tipoDocumento;
         app.numIde = data.documento;
         app.nombre = data.nombre;
-        // app.resetForm();
     }).catch((error) => {
         Swal.insertQueueStep({
             icon: 'error',
             title: error
         })
     })
-    // .catch(function (response) { console.log(response) });
 }
 
 const getServicios = (formData) => {
@@ -130,9 +117,8 @@ const getServicios = (formData) => {
         url: 'reporteServicios/api/servicios.php',
         data: formData,
         config: { headers: { 'Content-Type': 'multipart/form-data' } }
-    }).then(function (response) {
+    }).then((response) => {
         //handle success
-        console.log(response.data)
         if (response.data) {
             app.servicios = response.data;
             console.log(response.data.estado);
@@ -151,5 +137,4 @@ const getServicios = (formData) => {
             title: error
         })
     })
-    // .catch(function (response) { console.log(response) });
 }
