@@ -20,7 +20,7 @@ var app = new Vue({
     methods: {
         abrirFactuacion: function (ingreso, servicio, wemp_pmla) {
             Swal.fire({
-                title: 'Usar el ingreso ' + ingreso + ' del servicio ' + servicio,
+                title: `Usar el ingreso ${ingreso} del servicio ${servicio}`,
                 text: 'Si la información es correcta por favor continue.',
                 icon: 'question',
                 showCancelButton: true,
@@ -30,7 +30,7 @@ var app = new Vue({
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.open('/presap/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=' + wemp_pmla + '&wtema=IPSERP&wing=' + ingreso + '&whistoria=' + this.numHis, '', 'fullscreen = no, status = no, menubar = no, toolbar = no, directories = no, resizable = yes, scrollbars = yes, titlebar = yes');
+                    window.open(`/presap/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=${wemp_pmla}&wtema=IPSERP&wing=${ingreso}&whistoria=${this.numHis}, '', 'fullscreen = no, status = no, menubar = no, toolbar = no, directories = no, resizable = yes, scrollbars = yes, titlebar = yes`);
                     window.close();
                 }
             })
@@ -100,63 +100,56 @@ var app = new Vue({
 
 });
 
-function getPaciente(formData) {
+const getPaciente = (formData) => {
     axios({
         method: 'post',
         url: 'reporteServicios/api/paciente.php',
         data: formData,
         config: { headers: { 'Content-Type': 'multipart/form-data' } }
+    }).then(function (response) {
+        //handle success
+        let data = response.data[0];
+        console.log(data);
+        app.numHis = data.numeroHistoria;
+        app.tipoDocumento = data.tipoDocumento;
+        app.numIde = data.documento;
+        app.nombre = data.nombre;
+        // app.resetForm();
+    }).catch((error) => {
+        Swal.insertQueueStep({
+            icon: 'error',
+            title: error
+        })
     })
-        .then(function (response) {
-            //handle success
-            let data = response.data[0];
-            console.log(data);
-            app.numHis = data.numeroHistoria;
-            app.tipoDocumento = data.tipoDocumento;
-            app.numIde = data.documento;
-            app.nombre = data.nombre;
-            // app.resetForm();
-        })
-        .catch((error) => {
-            Swal.insertQueueStep({
-                icon: 'error',
-                title: error
-            })
-        })
     // .catch(function (response) { console.log(response) });
 }
 
-function getServicios(formData) {
-
+const getServicios = (formData) => {
     axios({
         method: 'post',
         url: 'reporteServicios/api/servicios.php',
         data: formData,
         config: { headers: { 'Content-Type': 'multipart/form-data' } }
-    })
-        .then(function (response) {
-            //handle success
-            console.log(response.data)
-            if (response.data) {
-                app.servicios = response.data;
-                console.log(response.data.estado);
-            } else {
-                app.servicios = null;
-                Swal.fire({
-                    title: 'No se encuentran datos del paciente!',
-                    text: 'Verifique la información e intente nuevamente!',
-                    icon: 'error',
-                    didOpen: () => { app.resetForm() }
-
-                });
-            }
-
-        })
-        .catch((error) => {
-            Swal.insertQueueStep({
+    }).then(function (response) {
+        //handle success
+        console.log(response.data)
+        if (response.data) {
+            app.servicios = response.data;
+            console.log(response.data.estado);
+        } else {
+            app.servicios = null;
+            Swal.fire({
+                title: 'No se encuentran datos del paciente!',
+                text: 'Verifique la información e intente nuevamente!',
                 icon: 'error',
-                title: error
-            })
+                didOpen: () => { app.resetForm() }
+            });
+        }
+    }).catch((error) => {
+        Swal.insertQueueStep({
+            icon: 'error',
+            title: error
         })
+    })
     // .catch(function (response) { console.log(response) });
 }
