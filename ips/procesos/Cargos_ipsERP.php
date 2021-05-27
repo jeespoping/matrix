@@ -3543,8 +3543,10 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 						$("#tdVias1").hide(0);
 						$("#tdVias2").hide(0);
 						$("#botonGrabar").html('DEVOLVER');
-						// Si el parametro GrabarCargos esta activo y el estado del ingreso esta inactivo, bloquea el boton. Edier
-						if ($('#grabarCargos').val() == 'on'){
+						// Implementacion validacion del estado del ingreso, para permitir grabar cargos si el estado esta activo. Edier
+						console.log(`Validar estado ingreso: ${data.grabarCargos}`);
+						$('#grabarCargos').val(data.grabarCargos);
+						if (data.grabarCargos == 'on') {
 							if ($("#ingresoActivoUnix").attr("estado") == "off") {
 								$("#botonGrabar").attr('disabled', 'disabled');
 							} else if ($("#ingresoActivoUnix").attr("estado") == "on") {
@@ -3562,8 +3564,10 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 						$("#tdVias1").hide(0);
 						$("#tdVias2").hide(0);
 						$("#botonGrabar").html('GRABAR CARGO');
-						// Si el parametro GrabarCargos esta activo y el estado del ingreso esta inactivo, bloquea el boton. Edier
-						if ($('#grabarCargos').val() == 'on') {
+						// Implementacion validacion del estado del ingreso, para permitir grabar cargos si el estado esta activo. Edier
+						console.log(`Validar estado ingreso: ${data.grabarCargos}`);
+						$('#grabarCargos').val(data.grabarCargos);
+						if (data.grabarCargos == 'on') {
 							if ($("#ingresoActivoUnix").attr("estado") == "off") {
 								$("#botonGrabar").attr('disabled', 'disabled');
 							} else if ($("#ingresoActivoUnix").attr("estado") == "on") {
