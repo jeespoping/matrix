@@ -3543,10 +3543,15 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 						$("#tdVias1").hide(0);
 						$("#tdVias2").hide(0);
 						$("#botonGrabar").html('DEVOLVER');
-						//TODO :edier
-						if ($("#ingresoActivoUnix").attr("estado") == "off") {
-							$("#botonGrabar").attr('disabled', 'disabled');
+						// Si el parametro GrabarCargos esta activo y el estado del ingreso esta inactivo, bloquea el boton. Edier
+						if ($('#grabarCargos').val() == 'on'){
+							if ($("#ingresoActivoUnix").attr("estado") == "off") {
+								$("#botonGrabar").attr('disabled', 'disabled');
+							} else if ($("#ingresoActivoUnix").attr("estado") == "on") {
+								$("#botonGrabar").removeAttribute('disabled');
+							}
 						}
+					}
 						traer_conceptos('on');
 						break;
 					}
@@ -3557,9 +3562,13 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 						$("#tdVias1").hide(0);
 						$("#tdVias2").hide(0);
 						$("#botonGrabar").html('GRABAR CARGO');
-						//TODO :edier
-						if ($("#ingresoActivoUnix").attr("estado") == "off") {
-							$("#botonGrabar").attr('disabled', 'disabled');
+						// Si el parametro GrabarCargos esta activo y el estado del ingreso esta inactivo, bloquea el boton. Edier
+						if ($('#grabarCargos').val() == 'on') {
+							if ($("#ingresoActivoUnix").attr("estado") == "off") {
+								$("#botonGrabar").attr('disabled', 'disabled');
+							} else if ($("#ingresoActivoUnix").attr("estado") == "on") {
+								$("#botonGrabar").removeAttribute('disabled');
+							}
 						}
 						traer_conceptos('%');
 						break;
