@@ -3543,6 +3543,10 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 						$("#tdVias1").hide(0);
 						$("#tdVias2").hide(0);
 						$("#botonGrabar").html('DEVOLVER');
+						//TODO :edier
+						if ($("#ingresoActivoUnix").attr("estado") == "off") {
+							$("#botonGrabar").attr('disabled', 'disabled');
+						}
 						traer_conceptos('on');
 						break;
 					}
