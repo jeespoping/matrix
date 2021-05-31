@@ -16,10 +16,10 @@ var app = new Vue({
     },
     mounted: () => console.log('Reporte de Servicios'),
     methods: {
-        abrirFactuacion: (ingreso, servicio, wemp_pmla) => {
+        abrirFactuacion: function (ingreso, servicio, wemp_pmla) {
             Swal.fire({
                 title: `Usar el ingreso ${ingreso} del servicio ${servicio}`,
-                text: 'Si la información es correcta por favor continue.',
+                text: 'Si la informaci&oacute;n es correcta por favor continue.',
                 icon: 'question',
                 showCancelButton: true,
                 // confirmButtonColor: '#3085d6',
@@ -28,17 +28,17 @@ var app = new Vue({
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.open(`/presap/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=${wemp_pmla}&wtema=IPSERP&wing=${ingreso}&whistoria=${this.numHis}, '', 'fullscreen = no, status = no, menubar = no, toolbar = no, directories = no, resizable = yes, scrollbars = yes, titlebar = yes`);
+                    window.open(`/presap/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=${wemp_pmla}&wtema=IPSERP&wing=${ingreso}&whistoria=${this.numHis}`, '', 'fullscreen=no,status=no,menubar=no,toolbar=no,directories = no, resizable = yes, scrollbars = yes,titlebar=yes');
                     window.close();
                 }
             })
         },
-        filtrarServicios: (baseDatos) => {
+        filtrarServicios: function (baseDatos) {
             if (this.numHis == "" && this.numIde == "") {
                 Swal.fire({
                     icon: 'error',
                     title: 'Algo salio mal!',
-                    text: 'Debes ingresar el número de Historia o Documento',
+                    text: 'Debes ingresar el n&oacute;mero de Historia o Documento',
                     footer: 'Los campos Fecha inicial y Fecha final son opcionales.'
                 });
                 return;
@@ -56,7 +56,7 @@ var app = new Vue({
 
             Swal.fire({
                 title: 'Consultando datos del paciente!',
-                timer: 2000,
+                timer: 3000,
                 timerProgressBar: true,
                 didOpen: () => {
                     Swal.showLoading();
@@ -65,7 +65,7 @@ var app = new Vue({
                 }
             })
         },
-        bloquearCampo: () => {
+        bloquearCampo: function () {
             this.disNumIde = 0;
             this.disNumHis = 0;
             this.nombre = "";
@@ -77,7 +77,7 @@ var app = new Vue({
                 this.disNumHis = 1;
             }
         },
-        resetForm: () => {
+        resetForm: function () {
             this.numHis = '';
             this.numIde = '';
             this.fecIni = '';
@@ -86,7 +86,7 @@ var app = new Vue({
             this.disNumIde = 0;
             this.servicios = [];
         },
-        cerrarVentana: () => window.close()
+        cerrarVentana: function () { window.close() }
     }
 
 });
@@ -126,7 +126,7 @@ const getServicios = (formData) => {
             app.servicios = null;
             Swal.fire({
                 title: 'No se encuentran datos del paciente!',
-                text: 'Verifique la información e intente nuevamente!',
+                text: 'Verifique la informaciï¿½n e intente nuevamente!',
                 icon: 'error',
                 didOpen: () => { app.resetForm() }
             });

@@ -75,7 +75,7 @@ class IngresosModel
 
   function getOrder()
   {
-    return "ORDER BY c101.ingfei DESC ";
+    return "ORDER BY c101.ingfei DESC, c101.Ingnin Desc ";
   }
 
   public function __destruct()

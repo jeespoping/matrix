@@ -3336,13 +3336,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 								// Implementacion validacion del estado del ingreso, para permitir grabar cargos si el estado esta activo. Edier
 								console.log(`Validar estado ingreso: ${data.grabarCargos}`);
 								$('#grabarCargos').val(data.grabarCargos);
-								if (data.grabarCargos == 'on') {
-									if ($("#ingresoActivoUnix").attr("estado") == "off") {
-										$("#botonGrabar").attr('disabled', 'disabled');
-									} else if ($("#ingresoActivoUnix").attr("estado") == "on") {
-										$("#botonGrabar").removeAttribute('disabled');
-									}
-								}
+								validarEstadoIngreso();
 
 								// --> Datos del alta definitiva, si tiene alta definitiva muestro el enlace para egresar
 								if ($.trim(data.altaDefinitiva) == "on" && $.trim(data.enUrgencias) == "on" && $.trim(data.tieneEgreso) != "on") {
@@ -3571,13 +3565,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 				
 				// Implementacion validacion del estado del ingreso, para permitir grabar cargos si el estado esta activo. Edier
 				console.log(`Validar estado ingreso..`);
-				if ($('#grabarCargos').val() == 'on') {
-					if ($("#ingresoActivoUnix").attr("estado") == "off") {
-						$("#botonGrabar").attr('disabled', 'disabled');
-					} else if ($("#ingresoActivoUnix").attr("estado") == "on") {
-						$("#botonGrabar").removeAttribute('disabled');
-					}
-				}
+				validarEstadoIngreso();
 			}
 			//----------------------------------------------------------------
 			//	--> Pintar seleccionador de vias.
@@ -5251,6 +5239,8 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 						$("#botonGrabar").html('GRABAR').removeAttr("disabled");
 						$("#botonGrabar").tooltip("destroy");
 					}
+					
+					validarEstadoIngreso();
 
 				}, 'json');
 			}
@@ -5784,7 +5774,16 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 				}
 			}
 
-
+			// Validar el estado del ingreso para determinar si permite grabar nuevos cargos.
+			function validarEstadoIngreso() {
+				if ($('#grabarCargos').val() == 'on') {
+					if ($("#ingresoActivoUnix").attr("estado") == "off") {
+						$("#botonGrabar").attr('disabled', 'disabled');
+					} else if ($("#ingresoActivoUnix").attr("estado") == "on") {
+						$("#botonGrabar").removeAttribute('disabled');
+					}
+				}
+			}
 
 			//=======================================================================================================================================================
 			//	F I N  F U N C I O N E S  J A V A S C R I P T
