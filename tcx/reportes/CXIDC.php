@@ -128,6 +128,7 @@
 </script>
 <?php
 include_once("conex.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 function bi($d,$n,$k)
 {
 	$n--;
@@ -188,7 +189,7 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='CXIDC' action='CXIDC.php' method=post>";
+	echo "<form name='CXIDC' action='CXIDC.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	
 
 	
@@ -244,7 +245,11 @@ else
 	else
 	{
 		$CX=array();
-		$query  = "SELECT Movdat, Fecha_data, Hora_data, movhis, moving FROM hce_000077 ";
+		include_once("root/comun.php");
+		
+		$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+		
+		$query  = "SELECT Movdat, Fecha_data, Hora_data, movhis, moving FROM ".$whce."_000077 ";
 		$query .= "  where Movcon = '69'";
 		$query .= "  Order by 1 ";
 		$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
@@ -303,7 +308,7 @@ else
 			$pos=bi($CX,$numcx,$row[0]);
 			if($pos != -1)
 			{
-				$query  = "SELECT Movcon, Movdat FROM hce_000077 ";
+				$query  = "SELECT Movcon, Movdat FROM ".$whce."_000077 ";
 				$query .= " where Fecha_data = '".$CX[$pos][1]."'";
 				$query .= "   and Hora_data = '".$CX[$pos][2]."'";
 				$query .= "   and Movpro = '000077'";
