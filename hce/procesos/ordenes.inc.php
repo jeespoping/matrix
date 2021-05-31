@@ -233,10 +233,10 @@ $strPendientesCTC="";
  
  $grupoControl = "CTR";
 
-$centroCostosServicioFarmaceutico = "1050";
+$centroCostosServicioFarmaceutico = consultarCcoSF( $conex, $wemp_pmla );
 
 if( $wemp_pmla == '02')
-	$centroCostosServicioFarmaceutico = "1505";
+	$centroCostosServicioFarmaceutico = consultarCcoCM( $conex, $wemp_pmla );
 
 $centroCostosCentralMezclas = "1051";
 
@@ -1072,6 +1072,62 @@ class AccionPestanaDTO{
 /***********************************
  * FUNCIONES
  ***********************************/
+
+function consultarCcoSF( $conex, $wemp_pmla ){
+	
+	$val = '';
+	
+	if( empty($wemp_pmla) )
+		$wemp_pmla = '01';
+
+	$wmovhos 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+	
+	//Consultando el nombre del estudio
+	$sql = "SELECT Ccocod
+			  FROM ".$wmovhos."_000011 a
+			 WHERE a.ccotra  = 'on'
+			   AND a.ccoest  = 'on'
+			   AND a.ccoima != 'on' 
+			   AND a.ccofac  = 'on' 
+			   AND a.ccodom != 'on'
+			 ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
+	
+	if( $rows = mysql_fetch_array ($res) ){
+		$val = $rows['Ccocod'];
+	}
+	
+	return $val;
+}
+
+function consultarCcoCM( $conex, $wemp_pmla ){
+	
+	$val = '';
+	
+	if( empty($wemp_pmla) )
+		$wemp_pmla = '01';
+
+	$wmovhos 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+	
+	//Consultando el nombre del estudio
+	$sql = "SELECT Ccocod
+			  FROM ".$wmovhos."_000011 a
+			 WHERE a.ccotra  = 'on'
+			   AND a.ccoest  = 'on'
+			   AND a.ccoima  = 'on' 
+			   AND a.ccofac  = 'on' 
+			   AND a.ccodom != 'on'
+			 ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
+	
+	if( $rows = mysql_fetch_array ($res) ){
+		$val = $rows['Ccocod'];
+	}
+	
+	return $val;
+}
 
 /**
  * Consulta los dias de dispensación por centro de costos donde se encuentra ubicado el paciente
