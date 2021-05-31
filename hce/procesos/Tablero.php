@@ -545,6 +545,12 @@ function valgen($ok,$conex,$wtem,&$werr,&$e)
 }
 
 @session_start();
+$esAmbulatoria = "SELECT * FROM root_000051 WHERE Detemp = '".$codemp."' AND Detapl = 'admisionAmbulatoria' AND Detval = 'on'";
+				$esAmbulatoria = mysql_query($esAmbulatoria, $conex) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla root_000051 ".mysql_errno()." - Error en el query $esAmbulatoria - ".mysql_error() ) );
+				$numAmbulatoria = mysql_num_rows($esAmbulatoria);
+$logFile = fopen("log.txt", 'a') or die("Error creando archivo");
+fwrite($logFile, "\n".date("d/m/Y H:i:s")." - Inicio modulo con empresa: ".$codemp) or die("Error escribiendo en el archivo");
+fclose($logFile);
 if(!isset($_SESSION["user"]))
 	echo "error";
 else
@@ -556,7 +562,7 @@ else
 
 	$key = substr($user,2,strlen($user));
 	//
-	$wemp_pmla = $codemp;
+
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
 	echo "<input type='HIDDEN' name= 'wdbhce' value='".$wdbhce."'>";
@@ -692,9 +698,12 @@ else
 			$query .= " 	and Metdoc = Meddoc "; 
 			$query .= " 	and Metesp = Espcod ";			
 			$query .= "   group by Methis, Meting, Metdoc";
-			$query .= "   order by 1,2,9 desc,3,4,5,6 ";
+			$query .= "   order by 1,2,9 DESC,3,4,5,6 ";
 			$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 			$num = mysql_num_rows($err);
+			$logFile = fopen("log.txt", 'a') or die("Error creando archivo");
+			fwrite($logFile, "\n".date("d/m/Y H:i:s")." - Query linea 691") or die("Error escribiendo en el archivo");
+			fclose($logFile);
 			if($num > 0)
 			{
 				$wkey="";
@@ -750,7 +759,10 @@ else
 				$query .= "  and Ccohos = 'on' ";  
 				$query .= "  and Ccourg != 'on' ";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
-				
+				$logFile = fopen("log.txt", 'a') or die("Error creando archivo");
+				fwrite($logFile, "\n".date("d/m/Y H:i:s")." - Query linea 751") or die("Error escribiendo en el archivo");
+				fclose($logFile);
+
 				$query = "DROP TABLE IF EXISTS MHSHCE";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$query = "CREATE TEMPORARY TABLE if not exists MHSHCE as ";
@@ -915,6 +927,9 @@ else
 					$query .= " and oriing = inging  ";
 					$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
 					$query .= "  order by 11,19,17 ";
+					$logFile = fopen("log.txt", 'a') or die("Error creando archivo");
+					fwrite($logFile, "\n".date("d/m/Y H:i:s")." - Query linea 799") or die("Error escribiendo en el archivo");
+					fclose($logFile);
 				}
 				elseif(isset($x) and $x == 1)
 					{
@@ -936,6 +951,9 @@ else
 						$query .= " and oriing = inging  ";
 						$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
 						$query .= "  order by 11,19,17 ";
+						$logFile = fopen("log.txt", 'a') or die("Error creando archivo");
+						fwrite($logFile, "\n".date("d/m/Y H:i:s")." - Query linea 934") or die("Error escribiendo en el archivo");
+						fclose($logFile);
 					}
 					elseif(isset($x) and $x == 2)
 						{
@@ -953,6 +971,9 @@ else
 							$query .= "    and oriing = inging ";
 							$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
 							$query .= "  order by 11,19,17 "; 
+							$logFile = fopen("log.txt", 'a') or die("Error creando archivo");
+							fwrite($logFile, "\n".date("d/m/Y H:i:s")." - Query linea 956") or die("Error escribiendo en el archivo");
+							fclose($logFile);
 						}
 						elseif(isset($x) and $x == 3)
 							{
@@ -971,6 +992,9 @@ else
 								$query .= "    and oriing = inging "; 
 								$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
 								$query .= "  order by 11,19,17 ";
+								$logFile = fopen("log.txt", 'a') or die("Error creando archivo");
+								fwrite($logFile, "\n".date("d/m/Y H:i:s")." - Query linea 975") or die("Error escribiendo en el archivo");
+								fclose($logFile);
 							}
 							elseif(isset($x) and $x == 4)
 							{
@@ -990,6 +1014,9 @@ else
 								$query .= " and oriing = inging  ";
 								$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
 								$query .= "  order by 11,19,17 ";
+								$logFile = fopen("log.txt", 'a') or die("Error creando archivo");
+								fwrite($logFile, "\n".date("d/m/Y H:i:s")." - Query linea 995") or die("Error escribiendo en el archivo");
+								fclose($logFile);
 							}
 				
 			}
@@ -1296,7 +1323,7 @@ else
 									else
 									{
 										$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
-										$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
+										$path1="/matrix/HCE/procesos/HCE_IGP.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 									}
 									echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";
 								}
@@ -1313,7 +1340,7 @@ else
 								else
 								{
 									$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
-									$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
+									$path1="/matrix/HCE/procesos/HCE_IGP.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 								}
 								echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";
 							}
@@ -1330,8 +1357,8 @@ else
 							$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
 						else
 						{
-							$path="/matrix/HCE/procesos/HCE_iFrames.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
-							$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
+							$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
+							$path1="/matrix/HCE/procesos/HCE_IGP.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 						}
 						echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";
 					}
