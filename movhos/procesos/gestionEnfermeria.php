@@ -12974,7 +12974,7 @@ function pintarDatosFila( $datos ){
 
 
 				//*** Link a Turnos de Cirugia
-				$path = "/matrix/tcx/reportes/ListaG.php?empresa=tcx&TIP=0";
+				$path = "/matrix/tcx/reportes/ListaG.php?wemp_pmla=".$wemp_pmla."&empresa=tcx&TIP=0";
 
 
 

@@ -136,6 +136,7 @@
 </script>
 <?php
 include_once("conex.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 /**********************************************************************************************************************  
 	   PROGRAMA : CamasCXF.php
 	   Fecha de Liberacion : 2011-08-25
@@ -160,7 +161,7 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='CamasUCI' action='CamasUCI.php' method=post>";
+	echo "<form name='CamasUCI' action='CamasUCI.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	
 
 	
@@ -211,6 +212,11 @@ else
 		Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'wfecha',button:'trigger1',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});	
 	//]]></script>
 	<?php
+	$consultaAjax = '';
+	include_once("root/comun.php");
+	
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+	
 	echo "<tr><td bgcolor='#cccccc' align=center colspan=4><input type='submit' value='IR'></td></tr>";
 	echo "</table><br>";
 	$wimpre=array();
@@ -224,7 +230,7 @@ else
 	$query .= "   and Turuci = 'on' ";
 	$query .= "   and Tureps = Entcod ";
 	$query .= "   UNION ALL ";
-	$query .= " SELECT Turtur, Turdoc, Turhis, Turnin, Turnom, Tureps, Turcir, Empnom FROM ".$empresa."_000011,cliame_000024 ";
+	$query .= " SELECT Turtur, Turdoc, Turhis, Turnin, Turnom, Tureps, Turcir, Empnom FROM ".$empresa."_000011,".$wcliame."_000024 ";
 	$query .= " where turfec = '".$wfecha."' ";
 	$query .= "   and turest = 'on' ";
 	$query .= "   and Turtcx = 'H' ";

@@ -49,6 +49,7 @@
     $conex = obtenerConexionBD("matrix");
     //Validación de la tabla para la empresa :)
     $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'servicioListaEspera');
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
     if  (empty($wbasedato)){
         echo 'Para la empresa no se tiene información configurada.';
     }
@@ -398,7 +399,7 @@
 
         $sql =
             " SELECT Plades "
-            . "  FROM cliame_000153 "
+            . "  FROM ".$wcliame."_000153 "
             . "  WHERE Plaest = 'on'"
             . "	AND Plaemp = '"
             . $id . $service . "' ";

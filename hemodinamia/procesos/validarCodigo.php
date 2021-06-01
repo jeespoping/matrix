@@ -29,10 +29,13 @@
         mysql_select_db("matrix");
 		$conex = obtenerConexionBD("matrix");
         $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
+		$wemp_pmla=$_REQUEST['wemp_pmla'];
+		$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 ?>
 </head>
 <body>
 <?php	
+global $wcliame;
 $CodPro = $_GET['CodPro'];
 //echo 'MUESTRA'.$validacion;
 
@@ -88,8 +91,8 @@ $CodPro = $_GET['CodPro'];
 		echo 'la tipo id entro es ='.$Tid;
 		if ($Identificacion !== null) {
 			$select_paciente = mysql_query("SELECT Inghis,Ingnin,Pactdo,Pacdoc,Pacap1,Pacap2,Pacno1,Pacno2,Pacact 
-											from cliame_000100 left join cliame_000101 on cliame_000100.Pachis=cliame_000101.Inghis 
-											where Pacdoc='$Identificacion' and Pactdo='$TidR' order by cliame_000101.id desc
+											from ".$wcliame."_000100 left join ".$wcliame."_000101 on ".$wcliame."_000100.Pachis=".$wcliame."_000101.Inghis 
+											where Pacdoc='$Identificacion' and Pactdo='$TidR' order by ".$wcliame."_000101.id desc
 limit 1");
 			$resultado_paciente=mysql_fetch_array($select_paciente);
 			$Inghis = $resultado_paciente[0];

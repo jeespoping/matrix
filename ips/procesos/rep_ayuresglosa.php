@@ -6,7 +6,7 @@
 <script type="text/javascript">
 	function inicio()
 	{ 
-	 document.location.href='rep_ayuresglosa.php'; 
+	 document.location.href='rep_ayuresglosa.php?wemp_pmla=<?=$wemp_pmla?>'; 
 	}
 	
 	function enter()
@@ -22,7 +22,8 @@
 
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 /*******************************************************************************************************************************************
 *                                             INFORME PARA ANALIZAR GLOSAS                                              *
 ********************************************************************************************************************************************/
@@ -45,7 +46,7 @@ include_once("root/comun.php");
 $conex     = obtenerConexionBD("matrix");
 $conex_o   = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
 $wactualiz = "1.0 22-Sept-2020";
-
+$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 $empresa='root';
 
 $usuarioValidado = true;
@@ -76,7 +77,7 @@ else
 {
 
  //Forma
- echo "<form name='forma' action='rep_ayuresglosa.php' method='post'>";
+ echo "<form name='forma' action='rep_ayuresglosa.php?wemp_pmla=".$wemp_pmla."' method='post'>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
  
 if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
@@ -325,7 +326,7 @@ if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
 												$indicador='S';
 								echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".$indicador."</b></font></td>";
 						$query_o8="SELECT Regcod	
-									 FROM cliame_000270
+									 FROM ".$wcliame."_000270
 									 WHERE Regcod = '".$codigo."' 
 									  and  Regest = 'on' ";		  
 								$err8 = mysql_query($query_o8,$conex);
@@ -485,7 +486,7 @@ if (!isset($codigo) or $codigo=='' or !isset($fac) or $fac == '' )
 		echo "</table>";
 		echo "<br><br><br>";
 	    echo "<center><table>";
-	    echo "<tr><td><A HREF='rep_ayuresglosa.php' >Retornar</A></td></tr>";
+	    echo "<tr><td><A HREF='rep_ayuresglosa.php?wemp_pmla=".$wemp_pmla."' >Retornar</A></td></tr>";
 	    echo "</table>";
 		 	 
  }

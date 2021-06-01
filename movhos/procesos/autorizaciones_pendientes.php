@@ -2735,7 +2735,7 @@ include_once("conex.php");
 
             //Marco izquierdo, link a otros programas
             $path_disp_espec = "http://mx.lasamericas.com.co/matrix/movhos/procesos/Consul_disponibilidad_especialidad.php?wemp_pmla=01";
-            $path_cirugia = "http://mx.lasamericas.com.co/matrix/tcx/reportes/ListaG.php?empresa=tcx&TIP=0";
+            $path_cirugia = "http://mx.lasamericas.com.co/matrix/tcx/reportes/ListaG.php?wemp_pmla=".$wemp_pmla."&empresa=tcx&TIP=0";
             echo "<table id='tblContenido' align=center width=80%><tr>";
             echo "<td class='clsfiltro1' width=25%>";
             echo "  <table align=left   style='border-collapse: collapse;'>";

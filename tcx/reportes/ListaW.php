@@ -152,6 +152,7 @@
 </script>
 <?php
 include_once("conex.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 /**********************************************************************************************************************  
 	   PROGRAMA : ListaW.php
 	   Fecha de Liberacion : 2010-03-03
@@ -217,7 +218,7 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='ListaW' action='ListaW.php' method=post>";
+	echo "<form name='ListaW' action='ListaW.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	//echo "<meta http-equiv='refresh' content='60;url=/matrix/TCX/reportes/ListaW.php?empresa=".$empresa."'>";
 	
 
@@ -406,7 +407,12 @@ else
 				$wimpre[$i][16] = $days;
 			    $wimpre[$i][17] = "D";
 			}
-		$query = "SELECT Empnom FROM cliame_000024  ";
+		$consultaAjax = '';
+		include_once("root/comun.php");
+		
+		$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+		
+		$query = "SELECT Empnom FROM ".$wcliame."_000024  ";
 		$query .= " where Empcod = '".$row[16]."'";
 		$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$num1 = mysql_num_rows($err1);
