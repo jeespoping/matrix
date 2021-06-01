@@ -33,7 +33,7 @@ else
   
     include_once("root/magenta.php");
     include_once("root/comun.php");
-  
+	
     $conex = obtenerConexionBD("matrix");
 	
     
@@ -42,13 +42,14 @@ else
     $wactualiz="(Octubre 6 de 2011)";                            // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
             
-  					    
+							
   					    
   	$key = substr($user,2,strlen($user));
 		
 	if (strpos($user,"-") > 0)
           $wusuario = substr($user,(strpos($user,"-")+1),strlen($user)); 
-         
+		  
+	$wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");    
           
     function actualizar_operador($wcentral, $wcodope, $whorope)
       {
@@ -57,12 +58,13 @@ else
 	   global $whorope;
 	   global $hora;
 	   global $wusuario;
+	   global $wcencam;
 	   global $conex;
 	   
 	   
 	   //Traigo el operario que tiene actualmente y la hora hasta la que se queda en turno
 	   $q = " SELECT cenope, cenhop "
-	       ."   FROM cencam_000006 "
+	       ."   FROM ".$wcencam."_000006 "
 	       ."  WHERE codcen = '".$wcentral."'"
 	       ."    AND cenest = 'on' ";
 	   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -77,7 +79,7 @@ else
 	   //Busco si el usuario es un camillero de la misma central para colocarlo como operario de la central
 	   //esto beneficia mucho la central de Servicio Farmaceutico
 	   $q = " SELECT COUNT(*) "
-	       ."   FROM cencam_000002 "
+	       ."   FROM ".$wcencam."_000002 "
 	       ."  WHERE codced  = '".$wusuario."'"
 	       ."    AND central = '".$wcentral."'";
 	   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -98,7 +100,7 @@ else
 		   
 		   if ($whor_reg=="00:00:00")               //Si entra por aca  es porque es primera vez que se asigna el Operario a esta central
 		      {
-			   $q = " UPDATE cencam_000006 "
+			   $q = " UPDATE ".$wcencam."_000006 "
 			       ."    SET cenope = '".$wusuario."', "
 			       ."        cenhop = '".$whor_gra."' "
 			       ."  WHERE codcen = '".$wcentral."' "
@@ -111,7 +113,7 @@ else
 				    {
 					 if ($wusuario != $wope_reg)   //Si el usuario que entro es diferente al que esta como operario, entonces entro a cambiarlo
 					    {   
-						 $q = " UPDATE cencam_000006 "
+						 $q = " UPDATE ".$wcencam."_000006 "
 						     ."    SET cenope  = '".$wusuario."', "
 						     ."        cenhop  = '".$whor_gra."'  "
 						     ."  WHERE codcen  = '".$wcentral."'  "
@@ -132,13 +134,13 @@ else
 	
 	$wfecha=date("Y-m-d"); 
 	$hora = (string)date("H:i:s");
-	
+	global $wcencam;
 	$pos = strpos($user,"-");
     $wusuario = substr($user,$pos+1,strlen($user));
   
 	
 	$q = " SELECT nomcen, centre, cenvig, cenest, cenope, cenhop "
-	    ."   FROM cencam_000006 "
+	    ."   FROM ".$wcencam."_000006 "
 	    ."  WHERE codcen = '".$wcentral."'";
 	$res = mysql_query($q,$conex);    
 	$num = mysql_num_rows($res);
@@ -158,7 +160,7 @@ else
 	   
 	  }		        
 	 else
-	    echo "<tr><td align=center bgcolor=#fffffff colspan=13><font size=3 text color=#CC0000><b>FALTA DEFINIR EN LA TABLA cencam_000006 EL CODIGO DE LA CENTRAL</b></font></td></tr>";
+	    echo "<tr><td align=center bgcolor=#fffffff colspan=13><font size=3 text color=#CC0000><b>FALTA DEFINIR EN LA TABLA ".$wcencam."_000006 EL CODIGO DE LA CENTRAL</b></font></td></tr>";
 	    
 	    
 	    
@@ -166,7 +168,7 @@ else
 	  { 
 	    //====================================================================================================================================
 	    //COMIENZA LA FORMA      
-	    echo "<form name=central action='central_de_camilleros.php' method=post>";
+	    echo "<form name=central action='central_de_camilleros.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	    
 	    echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 		echo "<input type='HIDDEN' NAME= 'wcentral' value='".$wcentral."'>";
@@ -180,7 +182,7 @@ else
 	    //===================================================================================================================================================
 	    $q = "  SELECT A.Hora_data, Origen, Motivo, Observacion, Destino, Solicito, Camillero, "
 	        ."         Hora_llegada, Hora_Cumplimiento, A.Id, Habitacion, Observ_central, A.fecha_data "
-		    ."    FROM cencam_000003 A, cencam_000001 B"
+		    ."    FROM ".$wcencam."_000003 A, ".$wcencam."_000001 B"
 		    ."   WHERE Anulada           = 'No' "
 		    ."     AND TIMESTAMPDIFF(HOUR,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT('".$wfecha."',' ','".$hora."')) <= ".$wvigencia_solicitudes 
 		    ."     AND Hora_cumplimiento = '00:00:00' "
@@ -273,7 +275,7 @@ else
 		            $wcodigo = substr($wcamillero[$i],0,(strpos($wcamillero[$i],"-")-1));       		     
 			        
 				    $q = " SELECT Codigo, Nombre, 1 AS Tip "  //El tipo lo utilizo para poder ordenar el query por nombre, trayendo primero el registro que selecciono el usuario
-				        ."    FROM cencam_000002 "
+				        ."    FROM ".$wcencam."_000002 "
 				        ."   WHERE Codigo = '".$wcodigo."'"
 				        ."     AND Unidad != 'INACTIVO' "
 				        ."     AND central = '".$wcentral."'"
@@ -281,7 +283,7 @@ else
 		                ."   UNION "
 				            
 				        ."  SELECT Codigo, Nombre, 2 AS Tip "
-				        ."    FROM cencam_000002 "
+				        ."    FROM ".$wcencam."_000002 "
 				        ."   WHERE Codigo != '".$wcodigo."'"
 				        ."     AND Unidad != 'INACTIVO' "
 				        ."     AND central = '".$wcentral."'"
@@ -301,7 +303,7 @@ else
 			      }    
 				 else     
 			       $q = "  SELECT Codigo, Nombre "
-		               ."    FROM cencam_000002 " 
+		               ."    FROM ".$wcencam."_000002 " 
 		               ."   WHERE Unidad != 'INACTIVO' " 
 		               ."     AND central = '".$wcentral."'"
 		               ."   ORDER BY Nombre ";
@@ -318,7 +320,7 @@ else
 				    $wcodigo = substr($row[6],0,(strpos($row[6],"-")-1));     
 				             		     
 					$q = "  SELECT Codigo, Nombre, 1 AS Tip "
-					    ."    FROM cencam_000002 "
+					    ."    FROM ".$wcencam."_000002 "
 					    ."   WHERE Codigo = '".$wcodigo."'"
 					    ."     AND Unidad != 'INACTIVO' "
 					    ."     AND central = '".$wcentral."'"
@@ -326,7 +328,7 @@ else
 					    ."   UNION "
 					            
 					    ."  SELECT Codigo, Nombre, 2 AS Tip "
-					    ."    FROM cencam_000002 "
+					    ."    FROM ".$wcencam."_000002 "
 					    ."   WHERE Codigo != '".$wcodigo."'"
 					    ."     AND Unidad != 'INACTIVO' "
 					    ."     AND central = '".$wcentral."'"
@@ -358,7 +360,7 @@ else
 		       {
 			    if ($wcamillero[$i] != $row[6] and !isset($wllegada[$i]))  
 			       {
-				    $q= "  UPDATE cencam_000003 "
+				    $q= "  UPDATE ".$wcencam."_000003 "
 				       ."     SET Camillero       = '".$wcamillero[$i]."', "
 				       ."         Hora_respuesta  = '".$hora."', "
 				       ."         Central         = '".$wcentral."', "
@@ -379,7 +381,7 @@ else
 		       //Tiene hora de llegada pero no tiene asignado camillero, entonces coloco la hora de llegada en ceros
 		       if (strpos($row[6],"-") == 0 )
 		          {
-			       $q = "   UPDATE cencam_000003 "
+			       $q = "   UPDATE ".$wcencam."_000003 "
 			           ."      SET Hora_llegada = '00:00:00' "       //Llevo nulo
 			           ."    WHERE Id = ".$row[9];
 			       $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
@@ -390,7 +392,7 @@ else
 	          else
 		         if (isset($wllegada[$i]) and strpos($wcamillero[$i],"-") >= 1)
 		            {
-			         $q = "   UPDATE cencam_000003 "
+			         $q = "   UPDATE ".$wcencam."_000003 "
 			             ."      SET Hora_llegada   = '".$hora."'"
 			             ."    WHERE Id = ".$row[9];
 			         $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error()); 
@@ -399,7 +401,7 @@ else
 		            } 
 		           else //Si esta desmarcada la casilla, borro la hora que tenia grabada en este campo
 		              {   
-			           $q = "   UPDATE cencam_000003 "
+			           $q = "   UPDATE ".$wcencam."_000003 "
 			             ."      SET Hora_llegada   = '00:00:00' "       //Llevo nulo
 			             ."    WHERE Id = ".$row[9];
 			           $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
@@ -413,7 +415,7 @@ else
 		      else
 		         if (isset($wcumplimiento[$i]) and isset($wllegada[$i]) and (strpos($row[6],"-") >= 1))
 		            {
-			         $q = "   UPDATE cencam_000003 "
+			         $q = "   UPDATE ".$wcencam."_000003 "
 			             ."      SET Hora_cumplimiento = '".$hora."'"
 			             ."    WHERE Id = ".$row[9];
 			         $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error()); 
@@ -423,7 +425,7 @@ else
 		            } 
 		           else   //Si esta desmarcada la casilla, borro la hora que tenia grabada en este campo
 		              {
-			           $q = "   UPDATE cencam_000003 "
+			           $q = "   UPDATE ".$wcencam."_000003 "
 			             ."      SET Hora_cumplimiento = '00:00:00'"    //Llevo un nulo
 			             ."    WHERE Id = ".$row[9];
 			           $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());    
@@ -434,7 +436,7 @@ else
 		    //Evaluo si ha sido ANULADA la solicitud
 		    if (isset($wanulada[$i]) and $row[7] == "00:00:00" and $row[8] == "00:00:00") 
 		       {
-			    $q = "   UPDATE cencam_000003 "
+			    $q = "   UPDATE ".$wcencam."_000003 "
 			        ."      SET Anulada = 'Si'"
 			        ."    WHERE Id = ".$row[9];
 			    $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error()); 
@@ -455,7 +457,7 @@ else
 		           {
 			        if ($wobscc[$i] != $row[11]) 
 				      {  
-				       $q = "   UPDATE cencam_000003 "
+				       $q = "   UPDATE ".$wcencam."_000003 "
 				           ."      SET Observ_central = '".$wobscc[$i]."'"
 				           ."    WHERE Id = ".$row[9];
 				       $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());   
