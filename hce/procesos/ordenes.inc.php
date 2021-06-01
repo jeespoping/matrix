@@ -235,10 +235,7 @@ $strPendientesCTC="";
 
 $centroCostosServicioFarmaceutico = consultarCcoSF( $conex, $wemp_pmla );
 
-if( $wemp_pmla == '02')
-	$centroCostosServicioFarmaceutico = consultarCcoCM( $conex, $wemp_pmla );
-
-$centroCostosCentralMezclas = "1051";
+$centroCostosCentralMezclas = consultarCcoCM( $conex, $wemp_pmla );
 
 $codigoServicioFarmaceutico = "SF";
 $codigoCentralMezclas = "CM";
