@@ -1005,14 +1005,14 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 								$row = mysql_fetch_array($err);
 								if($row[3] == 1000)
 								{
-									$queryF  = "select Medtdo,Meddoc,Medreg,Firrol  from movhos_000048, ".$empresa."_000036 ";
+									$queryF  = "select Medtdo,Meddoc,Medreg,Firrol  from ".$wbasedato."_000048, ".$empresa."_000036 ";
 									$queryF .= "   where Meduma = '".$row[5]."' ";
 									$queryF .= " 	and Meduma = Firusu ";
 									$queryF .= " 	and Firpro = '".$wforant."' ";
 									$queryF .= " 	and Firhis = '".$whis."' "; 
 									$queryF .= " 	and Firing = '".$wing."' ";
-									$queryF .= " 	and hce_000036.Fecha_data = '".$wfecant."' "; 
-									$queryF .= " 	and hce_000036.Hora_data = '".$whorant."' "; 
+									$queryF .= " 	and ".$empresa."_000036.Fecha_data = '".$wfecant."' "; 
+									$queryF .= " 	and ".$empresa."_000036.Hora_data = '".$whorant."' "; 
 /*
 									$queryF  = " select Medtdo,Meddoc,Medreg,Medesp  from movhos_000048 ";
 									$queryF .= "  where Meduma ='".$row[5]."' ";
@@ -1024,7 +1024,7 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 										$rowF = mysql_fetch_array($errF);
 										if(strpos($rowF[3],"-") === false)
 										{
-											$queryE  = " select Espnom  from movhos_000044 ";
+											$queryE  = " select Espnom  from ".$wbasedato."_000044 ";
 											$queryE .= "  where Espcod ='".$rowF[3]."' ";
 											$errE = mysql_query($queryE,$conex) or die(mysql_errno().":".mysql_error());
 											$numE = mysql_num_rows($errE);
@@ -1048,7 +1048,7 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 									$kn++;
 									$notas[$kn]=$row[4];
 									
-									$queryF  = " select Medtdo,Meddoc,Medreg,Medesp  from movhos_000048 ";
+									$queryF  = " select Medtdo,Meddoc,Medreg,Medesp  from ".$wbasedato."_000048 ";
 									$queryF .= "  where Meduma ='".$row[5]."' ";
 									$errF = mysql_query($queryF,$conex) or die(mysql_errno().":".mysql_error());
 									$numF = mysql_num_rows($errF);
@@ -1057,7 +1057,7 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 										$rowF = mysql_fetch_array($errF);
 										if(strpos($rowF[3],"-") === false)
 										{
-											$queryE  = " select Espnom  from movhos_000044 ";
+											$queryE  = " select Espnom  from ".$wbasedato."_000044 ";
 											$queryE .= "  where Espcod ='".$rowF[3]."' ";
 											$errE = mysql_query($queryE,$conex) or die(mysql_errno().":".mysql_error());
 											$numE = mysql_num_rows($errE);
@@ -1617,14 +1617,14 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 						$row = mysql_fetch_array($err);
 						if($row[3] == 1000)
 						{
-							$queryF  = "select Medtdo,Meddoc,Medreg,Firrol  from movhos_000048, ".$empresa."_000036 ";
+							$queryF  = "select Medtdo,Meddoc,Medreg,Firrol  from ".$wbasedato."_000048, ".$empresa."_000036 ";
 							$queryF .= "   where Meduma = '".$row[5]."' ";
 							$queryF .= " 	and Meduma = Firusu ";
 							$queryF .= " 	and Firpro = '".$wforant."' ";
 							$queryF .= " 	and Firhis = '".$whis."' "; 
 							$queryF .= " 	and Firing = '".$wing."' ";
-							$queryF .= " 	and hce_000036.Fecha_data = '".$wfecant."' "; 
-							$queryF .= " 	and hce_000036.Hora_data = '".$whorant."' "; 
+							$queryF .= " 	and ".$empresa."_000036.Fecha_data = '".$wfecant."' "; 
+							$queryF .= " 	and ".$empresa."_000036.Hora_data = '".$whorant."' "; 
 /*
 							$queryF  = " select Medtdo,Meddoc,Medreg,Medesp  from movhos_000048 ";
 							$queryF .= "  where Meduma ='".$row[5]."' ";
@@ -1636,7 +1636,7 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 								$rowF = mysql_fetch_array($errF);
 								if(strpos($rowF[3],"-") === false)
 								{
-									$queryE  = " select Espnom  from movhos_000044 ";
+									$queryE  = " select Espnom  from ".$wbasedato."_000044 ";
 									$queryE .= "  where Espcod ='".$rowF[3]."' ";
 									$errE = mysql_query($queryE,$conex) or die(mysql_errno().":".mysql_error());
 									$numE = mysql_num_rows($errE);
@@ -1659,14 +1659,14 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 						{
 							$kn++;
 							$notas[$kn]=$row[4];
-							$queryF  = "select Medtdo,Meddoc,Medreg,Firrol  from movhos_000048, ".$empresa."_000036 ";
+							$queryF  = "select Medtdo,Meddoc,Medreg,Firrol  from ".$wbasedato."_000048, ".$empresa."_000036 ";
 							$queryF .= "   where Meduma = '".$row[5]."' ";
 							$queryF .= " 	and Meduma = Firusu ";
 							$queryF .= " 	and Firpro = '".$wforant."' ";
 							$queryF .= " 	and Firhis = '".$whis."' "; 
 							$queryF .= " 	and Firing = '".$wing."' ";
-							$queryF .= " 	and hce_000036.Fecha_data = '".$wfecant."' "; 
-							$queryF .= " 	and hce_000036.Hora_data = '".$whorant."' "; 
+							$queryF .= " 	and ".$empresa."_000036.Fecha_data = '".$wfecant."' "; 
+							$queryF .= " 	and ".$empresa."_000036.Hora_data = '".$whorant."' "; 
 /*
 							$queryF  = " select Medtdo,Meddoc,Medreg,Medesp  from movhos_000048 ";
 							$queryF .= "  where Meduma ='".$row[5]."' ";
@@ -1678,7 +1678,7 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 								$rowF = mysql_fetch_array($errF);
 								if(strpos($rowF[3],"-") === false)
 								{
-									$queryE  = " select Espnom  from movhos_000044 ";
+									$queryE  = " select Espnom  from ".$wbasedato."_000044 ";
 									$queryE .= "  where Espcod ='".$rowF[3]."' ";
 									$errE = mysql_query($queryE,$conex) or die(mysql_errno().":".mysql_error());
 									$numE = mysql_num_rows($errE);
