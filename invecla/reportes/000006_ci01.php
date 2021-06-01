@@ -6,7 +6,9 @@
 <BODY TEXT="#000066">
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wcominf = consultarAliasPorAplicacion($conex, $wemp_pmla, "invecla");
   /***************************************************
 	*	REPORTE DE HISTORIAS CLINICAS Y SEGUIMIENTOS *
 	*			PARA MEDICOS PEDIATRAS	V.1.00		 *
@@ -25,7 +27,7 @@ else
 	// COMPROBAR QUE LOS PARAMETROS ESTEN puestos(paciente medico y fecha)
 	if(!isset($pachis)  or !isset($pacingr) or !isset($fecha))
 	{
-		echo "<form action='000006_ci01.php' method=post>";
+		echo "<form action='000006_ci01.php?wemp_pmla=".$wemp_pmla."' method=post>";
 		echo "<center><table border=0 width=400>";
 		echo "<tr><td align=center colspan=3><b>CLÍNICA MEDICA LAS AMERICAS </b></td></tr>";
 		echo "<tr><td align=center colspan=3>APACHE II</td></tr>";
@@ -59,7 +61,7 @@ else
 			if(isset($pachis))
 			{
 				/* Si el medico  ya esta set traer los pacientes a los cuales les ha hecho seguimiento*/
-				$query = "select Nro_ingreso from cominf_000006 where Nro_historia='".$pachis."' order by Nro_ingreso ";
+				$query = "select Nro_ingreso from ".$wcominf."_000006 where Nro_historia='".$pachis."' order by Nro_ingreso ";
 				$err = mysql_query($query,$conex);
 				$num = mysql_num_rows($err);
 				if($num>0)
@@ -81,7 +83,7 @@ else
 		{
 			/*Si ya se tiene el paciente buscar las fechas de los seguimiento para este y
 			 construir el drop down */
-			$query = "select Fecha from cominf_000006 where Nro_historia='".$pachis."' and Nro_ingreso='".$pacingr."' ";
+			$query = "select Fecha from ".$wcominf."_000006 where Nro_historia='".$pachis."' and Nro_ingreso='".$pacingr."' ";
 			echo $query;
 			$err = mysql_query($query,$conex);
 			$num = mysql_num_rows($err);
@@ -101,7 +103,7 @@ else
 	{
 		if(!isset($glas)  or !isset($pacnom))
 		{
-			$query = "select Datos_pac,Glasgow,Apache,Rata_muerte,Rata_muerte_ajustada from cominf_000006 where Nro_historia='".$pachis."' and Nro_ingreso='".$pacingr."' and Fecha='".$fecha."' ";
+			$query = "select Datos_pac,Glasgow,Apache,Rata_muerte,Rata_muerte_ajustada from ".$wcominf."_000006 where Nro_historia='".$pachis."' and Nro_ingreso='".$pacingr."' and Fecha='".$fecha."' ";
 			$err = mysql_query($query,$conex);
 			$num = mysql_num_rows($err);
 			if($num>0)
