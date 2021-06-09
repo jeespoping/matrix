@@ -402,7 +402,7 @@ $nit_empresa = explode("-",$rownit['Empnit']);
 	}
 						
 	$query = "SELECT * FROM (
-			  SELECT Ubihis AS pachis, Ubiing AS pacnum, pacced, Pactid, CONCAT( c100.Pacno1, ' ', c100.Pacno2 ) AS pacnom, c100.pacap1, c100.pacap2, Habcod AS trahab, 'H' AS pachos, ".$wbasedato."_000018.Fecha_data AS pacfec, ".$wbasedato."_000018.Hora_data AS pachor, ingpol, pactel, Ingcem AS empnit, Ingpla as pacmrepla, Ingres
+			  SELECT Ubihis AS pachis, Ubiing AS pacnum, pacced, Pactid, CONCAT( c100.Pacno1, ' ', c100.Pacno2 ) AS pacnom, c100.pacap1, c100.pacap2, Habcod AS trahab, 'H' AS pachos, ".$wbasedato."_000018.Fecha_data AS pacfec, ".$wbasedato."_000018.Hora_data AS pachor, ingpol, c100.pactel, Ingcem AS empnit, Ingpla as pacmrepla, Ingres
 				FROM ".$wbasedato."_000018, ".$wbasedato."_000011, ".$wbasedato."_000020, root_000037, root_000036, ".$wbasedato."_000016 AS m16, ".$wcliame."_000100 AS c100, ".$wcliame."_000101 AS c101
 			   WHERE ubiald =  'off'
 				AND ubisac = Ccocod
@@ -421,7 +421,7 @@ $nit_empresa = explode("-",$rownit['Empnit']);
 				AND Pacdoc = pacced
 				AND c100.Pachis = c101.inghis
 			  UNION
-			 SELECT Ubihis AS pachis, Ubiing AS pacnum, pacced, Pactid, CONCAT( c100.Pacno1, ' ', c100.Pacno2 ) AS pacnom, c100.pacap1, c100.pacap2, 'URG' AS trahab, 'U' AS pachos, ".$wbasedato."_000018.Fecha_data AS pacfec, ".$wbasedato."_000018.Hora_data AS pachor, ingpol, pactel, Ingcem AS empnit, Ingpla as pacmrepla, Ingres
+			 SELECT Ubihis AS pachis, Ubiing AS pacnum, pacced, Pactid, CONCAT( c100.Pacno1, ' ', c100.Pacno2 ) AS pacnom, c100.pacap1, c100.pacap2, 'URG' AS trahab, 'U' AS pachos, ".$wbasedato."_000018.Fecha_data AS pacfec, ".$wbasedato."_000018.Hora_data AS pachor, ingpol, c100.pactel, Ingcem AS empnit, Ingpla as pacmrepla, Ingres
 			  from ".$wbasedato."_000018,".$wbasedato."_000011,root_000037,root_000036,".$wbasedato."_000016 AS m16, ".$wcliame."_000100 AS c100, ".$wcliame."_000101 AS c101, ".$whce."_000022
 			  WHERE timestamp(concat(".$wbasedato."_000018.Fecha_data,' ', ".$wbasedato."_000018.Hora_data )) < timestamp(DATE_SUB( NOW() , INTERVAL ".$horasPacienteUrgArchivoPlano." HOUR ) )
 			    AND ubiald = 'off' 
