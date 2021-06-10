@@ -1811,7 +1811,6 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 	//$numero_responsables = $dom->getElementById('numero_responsables')->getAttribute('value');
 	//echo "numero_responsables = $numero_responsables \n\n";
 	
-	
 	$sel = $dom->getElementsByTagName("select");
 	foreach ($sel as $select)
 	{
@@ -1878,7 +1877,7 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 			$ndia = $tr_ppal_cobro->getAttributeNode('ndia')->nodeValue;
 			
 			for($j = $numero_responsables ; $j >= 1; $j--) {
-				$valor_tarifa = ($dom->getElementById('valhab_clave'.$clave.'_'.$ndia.'_res'.$j)->getAttributeNode('valor')->nodeValue *1);
+				$valor_tarifa = !is_null($dom->getElementById('valhab_clave'.$clave.'_'.$ndia.'_res'.$j)) ? ($dom->getElementById('valhab_clave'.$clave.'_'.$ndia.'_res'.$j)->getAttributeNode('valor')->nodeValue *1) : 0;
 				
 				if($valor_tarifa == 0) {
 					$existen_tarifas_en_cero = true;
@@ -1887,7 +1886,7 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 				$reconocido_clave = $dom->getElementById('reconocido_clave'.$clave.'_'.$ndia.'_res'.$j);
 				$nresponsable = !is_null($reconocido_clave) ? $reconocido_clave->getAttributeNode('nresponsable')->nodeValue : '';
 				
-				if(!is_null($reconocido_clave) && $valor_tarifa == 0 && $responsable != $nresponsable && $d == 0) {
+				if(!is_null($reconocido_clave) && $valor_tarifa == 0 && $responsable != 'no-tiene-responsable' && $responsable != $nresponsable && $d == 0) {
 					$texto_tarifa_cero = '';
 					$texto_tarifa_cero2 = '';
 
@@ -1908,7 +1907,7 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 					$array_info[] = $texto_tarifa_cero;	
 				}
 				
-				$responsable = $reconocido_clave->getAttributeNode('nresponsable')->nodeValue;
+				$responsable = !is_null($reconocido_clave) ? $reconocido_clave->getAttributeNode('nresponsable')->nodeValue : 'no-tiene-responsable';
 			}
 		}
 	}
@@ -1939,17 +1938,16 @@ function guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $
 		
 		$data = array();
 		$data['error'] = 1;
-		$data['mensaje'] = 'Lo sentimos, La historia ('.$whis.'-'.$wing.') tiene estancias con tarifa en cero.';
+		$data['mensaje'] = 'Lo sentimos, La historia ('.$whis.'-'.$wing.') tiene estancias con tarifa sin definir.';
 		
 		$wasunto = "Automatizacion Estancia - Historia (".$whis."-".$wing.")";
-		$detalle1 = "Historia ".$whis."-".$wing." - Estancias Con Tarifa en Cero";
+		$detalle1 = "Historia ".$whis."-".$wing." - Estancias Sin Tarifa Definida";
 		$detalle2 = 'La siguiente liquidaci&oacute;n de estancia contiene una o varias tarifas sin definir, por lo tanto no se realiza la liquidaci&oacute;n autom&aacute;tica de estancia. <br><br>'.$texto_array_info;
 		
 		enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, $html);
 		logTransaccion($conex, $wbasedato_cliame, '', json_encode($data_json), '',  json_encode($data), 'on', 'INSERT', 'estancia', $html);
 		
 		return array( 'code' => 0, 'msj' => 'La Historia ('.$whis.'-'.$wing.'), tiene algunas estancias sin tarifa definida, por lo tanto no se realiza el proceso autom&aacute;tico de liquidaci&oacute;n de estancia.');
-		
 	}
 	
 	//--------------------------------------------------------

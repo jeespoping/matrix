@@ -1,7 +1,9 @@
 <?php
 include_once("conex.php");
 /**
- *
+ * 2021-05-12 Juan David Rodriguez. Se agrega validación para que se haga consulta a las tablas backup de movhos_000015
+ *                      ubicadas en la base de datos matrixp, se agrega configuración en root_000051 (Detapl = 'hoja_medicamentos_historica'), 
+ *                      donde se guardan los nombres de las tablas. Se agrega tooltip en la fecha de administración de medicamento solo a los datos historicos
  */
  
 function consultarImprimeMedicamentoOriginal($conex,$wcenmez,$codigoArticulo)
@@ -115,6 +117,19 @@ function consultarVia( $conex, $wbasedato, $cod ){
 	
 	if( $row = mysql_fetch_array( $res ) ){
 		$val = $row[ 'Viades' ];
+	}
+	
+	return $val;
+}
+
+function consultarUnidad( $conex, $wbasedato, $cod ){
+	$val = "";
+	
+	$sql = "SELECT Artuni FROM ".$wbasedato."_000026 WHERE Artcod =  '".$cod."'";
+	$res = mysql_query( $sql, $conex ) or die( mysql_error()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $row = mysql_fetch_array( $res ) ){
+		$val = $row[ 'Artuni' ];
 	}
 	
 	return $val;
@@ -557,7 +572,7 @@ else
                                 {
                                     data1 = data + " " + formulario;
                                     var aux2 = document.createElement( "div" );
-                                    aux2.innerHTML = "<a>PÃ¡gina: "+paginas+"<br><br></a>";
+                                    aux2.innerHTML = "<a>P&aacute;gina: "+paginas+"<br><br></a>";
 
                                     aux2.innerHTML =    "<a>"
                                                         +"<table width='1070px'>"
@@ -661,7 +676,7 @@ else
                         {
                             data1 = data + " " + formulario;
                             var aux2 = document.createElement( "div" );
-                            aux2.innerHTML = "<a>PÃ¡gina: "+paginas+"<br><br></a>";
+                            aux2.innerHTML = "<a>P&aacute;gina: "+paginas+"<br><br></a>";
 
                             aux2.innerHTML = "<a>"
                                             +"<table width='1070px'>"
@@ -860,7 +875,10 @@ else
         $wactualiz="2019-09-26";
 		
 		$horasPares = 12;
-        
+        //=========================================================================================================================
+        // 2021-05-12 Juan David Rodriguez. Se agrega validación para que se haga consulta a las tablas backup de movhos_000015
+        //                                  ubicadas en la base de datos matrixp, se agrega configuración en root_000051 (Detapl = 'hoja_medicamentos_historica'), 
+        //                                  donde se guardan los nombres de las tablas
         //=========================================================================================================================
 		// 2019-09-26 Jessica Madrid Mejía.	Para los tipos de productos de central de mezclas que estén configurados en cenpro_000001
 		//		 							con el campo Tippro='on' debe mostrar el artículo que prescribió el médico (antes de 
@@ -956,29 +974,58 @@ else
         //=======================================================================================================
 
         function tomar_ronda($wron)
-          {
-           $wronda=explode(":",$wron);
+        {
+            $wronda=explode(":",$wron);
 
-           if ((integer)$wronda[0] < 12)
-              {
-               if (isset($wronda[1]) and strpos($wronda[1],"PM") > 0)
-                  {
+            if ((integer)$wronda[0] < 12)
+            {
+                if (isset($wronda[1]) and strpos($wronda[1],"PM") > 0)
+                {
                    return $wronda[0]+12;
-                  }
-                 else
+                }
+                else
                     return $wronda[0];
-              }
-             else
+            }
+            else
                 if ((integer)$wronda[0]==12)
-                   {
+                {
                     if (strpos($wronda[1],"PM") > 0)
-                       return $wronda[0];                //Devuelve 12. que equivale a 12:00 PM osea del medio dia
-                      else
-                         return $wronda[0]-12;
-                   }
-                  else
-                     return $wronda[0];
-         }
+                        return $wronda[0];                //Devuelve 12. que equivale a 12:00 PM osea del medio dia
+                    else
+                        return $wronda[0]-12;
+                }
+                else
+                    return $wronda[0];
+        }
+        /**
+         * Esta función establece la ronda a las tablas backup de movhos_15, que años anteriores tenían la misma hora
+         * que la hora de aplicacion
+         */
+        function ronda($wron)
+        {
+            $pos = strpos($wron, ':');
+            $pos1 = strpos($wron, '.');
+            $pos2 = strpos($wron, '-');
+            if ($pos) {
+                $wronda=explode(":",$wron);
+                $h=explode("-",$wronda[1]);
+            }
+            elseif($pos1){
+                $wronda=explode(".",$wron);
+                $h=explode("-",$wronda[1]);
+            }
+            else{
+                $wronda=explode("-",$wron);
+            }
+
+            if($wronda[0]%2 == 0){
+                return $wronda[0].":00 - ".$h[1];
+            }
+            else{
+                $wronda[0]--;
+                return $wronda[0].":00 - ".$h[1];
+            }
+        }
 
 
 		function consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato ){
@@ -1447,7 +1494,16 @@ else
 				
 				$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco1[0] );
 
-                encabezado("ADMINISTRACION DE MEDICAMENTOS (HOJA DE MEDICAMENTOS)", $wactualiz, 'clinica');
+                $wbasedato1 = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion" );
+
+                if ($wemp_pmla == 01)
+                {
+                    encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, $wbasedato1);
+                }
+                else
+                {
+                    encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, "logo_".$wbasedato1);
+                }
 
                 echo "<center><table>";
 
@@ -1574,9 +1630,18 @@ else
                     $wkar_ele = $row[0];        //Indica que tiene kardex electronico
                     //=======================================================================================================
                     */
-if( !isset($retornarCodigo) ){
-                    encabezado("REPORTE ADMINISTRACION DE MEDICAMENTOS A PACIENTES", $wactualiz, 'clinica');
-}
+                    if( !isset($retornarCodigo) ){
+                        $wbasedato1 = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion" );
+
+                        if ($wemp_pmla == 01)
+                        {
+                            encabezado("REPORTE ADMINISTRACION DE MEDICAMENTOS A PACIENTES ",$wactualiz, $wbasedato1);
+                        }
+                        else
+                        {
+                            encabezado("REPORTE ADMINISTRACION DE MEDICAMENTOS A PACIENTES ",$wactualiz, "logo_".$wbasedato1);
+                        }
+                    }
                     // 2012-05-17 Paso intermedio para seleccionar rango de fechas si el ingreso supera los 30 días
                     /******/
                     $query_rango = "SELECT  Ubihis, Ubiing, Ubialp as alta_pac, Fecha_data AS fecha_ingreso, Hora_data, Ubifad AS fecha_alta, Ubihad
@@ -1606,10 +1671,6 @@ if( !isset($retornarCodigo) ){
                         }
 
                         $rango['dif_fechas'] = diasEntreFechas($rango['fecha_ingreso'],$rango['fecha_alta']);
-
-                        // echo '<pre>';
-                        // print_r($rango);
-                        // echo '</pre><hr>';
 
                         $dLimite = consultarAliasPorAplicacion($conex, $wemp_pmla, 'dias_hoja_medicamentos');
                     }else{
@@ -1939,19 +2000,19 @@ if( !isset($retornarCodigo) ){
                             break;
 
                         }
-            //Modificacion 18 de Febrero 2019  Freddy Saenz
-            //Quitar insulinas y analgesias , o cualquier otro medicamento que este en la tabla movhos_000091  
-            //para configurar correctamente Citostáticos y Coadyuvantes
-            //Arkcod not in ( SELECT Arscod FROM `matrix`.`movhos_000091` WHERE Arstip <> '' );
-//Arkcod not in ( SELECT Arscod FROM `matrix`.`movhos_000091`  );
+                        //Modificacion 18 de Febrero 2019  Freddy Saenz
+                        //Quitar insulinas y analgesias , o cualquier otro medicamento que este en la tabla movhos_000091  
+                        //para configurar correctamente Citostáticos y Coadyuvantes
+                        //Arkcod not in ( SELECT Arscod FROM `matrix`.`movhos_000091` WHERE Arstip <> '' );
+                        //Arkcod not in ( SELECT Arscod FROM `matrix`.`movhos_000091`  );
 
                         if ($and_arktip != ''){
                            $and_arktip .= " AND Arkcod NOT IN ( SELECT Arscod FROM " . $wbasedato . "_000091 ) ";
                          // $and_arktip .= " AND Arkcod NOT IN ( SELECT Arscod FROM " . $wbasedato . "_000091 WHERE Arstip <> '' ) ";
                         }
 					
-			//,".$wbasedato."_000099
-      // and  Tarcod = B.Arktip                  
+                        //,".$wbasedato."_000099
+                        // and  Tarcod = B.Arktip                  
 
 
 
@@ -1992,8 +2053,60 @@ if( !isset($retornarCodigo) ){
                             //Agosto 22 de 2011
                             //Aca traigo todos los registros de las rondas que NO se aplicaron
 
+                        /** 
+                         * 2021-05-12 Juan David Rodriguez
+                         * Se consulta historia e ingreso en las tablas de backup, para así, si encuentra información, agregarla en la tabla temporal
+                        */
+                        $tablasBackup = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hoja_medicamentos_historica');
+                        $tablasBackup1 = explode(',',$tablasBackup); 
+                        $datosHistoricos = false;
+                        
+                        for ($i=0; $i < count($tablasBackup1); $i++) { 
+                            $query = "SELECT * FROM ".$tablasBackup1[$i]." WHERE Aplhis = '".$whis."' AND Apling = '".$wing."'";
+                            $res = mysql_query($query,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$query." - ".mysql_error());
+                            $num = mysql_num_rows($res);
+                            // realizo la consulta para validar que no este en la tabla de producción, que solo este en los backup para mostrar tooltip de datos historicos
+                            $query2 = "SELECT * FROM ".$wbasedato."_000015 WHERE Aplhis = '".$whis."' AND Apling = '".$wing."'";
+                            $res2 = mysql_query($query2,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$query." - ".mysql_error());
+                            $num2 = mysql_num_rows($res2);
 
-                                        
+                            if ($num > 0) {
+                                if ($num2 == 0) {
+                                    $datosHistoricos = true;
+                                
+                                    $q .= "
+                                    UNION ALL
+
+                                    SELECT  UPPER(aplart) art, aplfec fec, aplron ron, aplcan can, artcom com, aplufr ufr, apldos dos, artgen gen, 'on' apl, '' jus, ccokar kar, aplcco cco, Aplvia, DATE_FORMAT(A.Hora_data, '%H:%i' ) as Aplhor
+                                    FROM    ".$tablasBackup1[$i]." A LEFT JOIN ".$wbasedato."_000068 B ON A.Aplart = B.Arkcod, ".$wbasedato."_000026, ".$wbasedato."_000029, ".$wbasedato."_000011
+                                    WHERE   aplhis                                = '".$whis."'
+                                            AND apling                            = '".$wing."'
+                                            AND aplest                            = 'on'
+                                            AND aplart                            = artcod                                        
+                                            AND mid(artgru,1,instr(artgru,'-')-1) = gjugru
+                                            AND gjujus                            = 'on'
+                                            AND aplcco                            = ccocod
+
+                                            $and_art_posnopos
+                                            $and_arktip
+                                            $filtro_fec_query1_2
+
+                                    UNION ALL
+
+                                    SELECT  UPPER(aplart) art, aplfec fec, aplron ron, aplcan can, artcom com, aplufr ufr, apldos dos, artgen gen, 'on' apl, '' jus, ccokar kar, aplcco cco, Aplvia, DATE_FORMAT(A.Hora_data, '%H:%i' ) as Aplhor
+                                    FROM    ".$tablasBackup1[$i]." A, ".$wcenmez."_000002, ".$wbasedato."_000011, ".$wcenmez."_000001
+                                    WHERE   aplhis      = '".$whis."'
+                                            AND apling  = '".$wing."'
+                                            AND aplest  = 'on'
+                                            AND aplart  = artcod
+                                            AND Arttip  = Tipcod
+                                            AND aplart  NOT IN (SELECT artcod FROM ".$wbasedato."_000026)
+                                            AND aplcco  = ccocod
+                                            $and_tiptpr
+                                            $filtro_fec_query1_2";
+                                }
+                            }
+                        }
 
                         $q .= "
                                 UNION ALL
@@ -2028,17 +2141,9 @@ if( !isset($retornarCodigo) ){
                                         $filtro_fec_query3_4
                                 ORDER BY 2 desc, 1, 3 ";
  
-                            //On
-                            //	   if ($whis == "422057" )
-                            //	       echo $q."<br>";
 
-                         // echo '<pre>'; print_r($q); echo '</pre><hr>';
-
-
-
-
-                        $res3 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-
+                                $res3 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                        //               0         1    2      3       4    5       6      7    8   9    10   11    12      13     
                         $q = " SELECT UPPER(art), fec, ron, SUM(can), com, ufr, SUM(dos), gen, apl, jus, kar, cco, Aplvia, Aplhor "
                             ."   FROM TEMPO "
                             ."  GROUP BY 1, 2, 3, 5, 6, 8, 9, 10, 11, 12, 13 "
@@ -2071,14 +2176,14 @@ if( !isset($retornarCodigo) ){
 						$arrayMedicamentos = array();
                         while ($j <= $wnr)
                         {
-                            $wfec  = $row[1];
-                            $wart  = $row[0];
-                            $wdesc = $row[4];
+                            $wfec  = $row[1]; // fecha de aplicación
+                            $wart  = $row[0]; // codigo de articulo
+                            $wdesc = $row[4]; // nombre comercial medicamento
 
-                            $Afechas[$i]    = $row[1];
-                            $Aarticulos[$i] = $row[0];
+                            $Afechas[$i]    = $row[1];  // fecha de aplicación
+                            $Aarticulos[$i] = $row[0];  // codigo de articulo
                             $Adesc[$i]      = $row[4];    //Nombre Comercial
-							$Avia[$i]		= consultarVia( $conex, $wbasedato, $row[12] );                    //Indica la via             Abril 28 de 2011
+							$Avia[$i]		= consultarVia( $conex, $wbasedato, $row[12] ); //Indica la via             Abril 28 de 2011
                             $Agen           = $row[7];    //Nombre Generico
                             $Akar           = $row[10];   //Es electronico
                             $Acco           = $row[11];   //CCo donde se aplico
@@ -2092,6 +2197,11 @@ if( !isset($retornarCodigo) ){
 
                             while ($wart==$row[0] and $wfec==$row[1] and $wdesc==$row[4])
                             {
+                                if ( $datosHistoricos == true && empty($row[5]) && empty($row[6]) && $row[9] == '' ) {
+                                    $row[5]	= consultarUnidad( $conex, $wbasedato, $row[0] );
+                                    $row[6] = $row[3];
+                                    $row[2] = ronda($row[2]);
+                                }
                                 $wronda=(integer)tomar_ronda($row[2]);
 
                                 /*  Nov 3 de 2011
@@ -2105,7 +2215,8 @@ if( !isset($retornarCodigo) ){
                                 }
                                 else //tiene fraccion   */
 								
-								$Avia[$i]		= ( empty( $Avia[$i] ) ) ? consultarVia( $conex, $wbasedato, $row[12] ) : $Avia[$i];
+								$Avia[$i] = ( empty( $Avia[$i] ) ) ? consultarVia( $conex, $wbasedato, $row[12] ) : $Avia[$i];
+                                
 
                                 $Mrondas[$i][$wronda]=$Mrondas[$i][$wronda]+$row[6];    //Cantidad (este dato es la dosis que se coloco en el kardex)
                                 $Mrondas[$i]["fraccion".$wronda]=$row[5];               //Fraccion que hay en la 000015 basado en la dosis del kardex
@@ -2187,64 +2298,60 @@ if( !isset($retornarCodigo) ){
                         $td = 0;
                         while ($i < $t)   //Recorro la matriz con cada articulo
                         {
-                            $wuni=".";
-                            $wnomart=$Adesc[$i];
-                            //$wnomgen=$Agen[$i];
+                            $wuni = ".";
+                            $wnomart = $Adesc[$i]; // nombre comercial
+                            //$wnomgen = $Agen[$i]; // nombre generico
                             if ($Aarticulos[$i] != "999")
-                            {
-                              //$q =  " SELECT artcom, artuni, artgen "
-                              $q =  " SELECT artcom, deffru, artgen "
+                            {   // TRAE NOMBRE COMERCIAL, UNIDAD Y NOMBRE GENERICO
+                                //$q =  " SELECT artcom, artuni, artgen "
+                                $q =  " SELECT artcom, deffru, artgen "
                                    ."   FROM ".$wbasedato."_000026, ".$wbasedato."_000059 "
                                    ."  WHERE artcod = '".$Aarticulos[$i]."'"
                                    ."    AND artcod = defart ";
-                              $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-                              $wfilas = mysql_num_rows($res);
-                              if ($wfilas==0)                                 //Si no existe en movhos lo busco en central de mezclas
-                                 {
-                                  //$q =  " SELECT artcom, artuni, artgen "
-                                  $q =  " SELECT artcom, deffru, artgen "
-                                       ."   FROM ".$wcenmez."_000002, ".$wbasedato."_000059 "
-                                       ."  WHERE artcod = '".$Aarticulos[$i]."'"
-                                       ."    AND artcod = defart ";
-                                  $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-                                  $wfilas = mysql_num_rows($res);  //Nov 3 2011
+                                $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                                $wfilas = mysql_num_rows($res);
+                                if ($wfilas==0)                                 //Si no existe en movhos lo busco en central de mezclas
+                                {
+                                    //$q =  " SELECT artcom, artuni, artgen "
+                                    $q =  " SELECT artcom, deffru, artgen "
+                                        ."   FROM ".$wcenmez."_000002, ".$wbasedato."_000059 "
+                                        ."  WHERE artcod = '".$Aarticulos[$i]."'"
+                                        ."    AND artcod = defart ";
+                                    $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                                    $wfilas = mysql_num_rows($res);  //Nov 3 2011
 
-                                  if ($wfilas==0)   //Nov 3 2011                              //Si no existe en movhos lo busco en central de mezclas
-                                     {
-                                      $q =  " SELECT artcom, artuni, artgen "
+                                    if ($wfilas==0)   //Nov 3 2011                              //Si no existe en movhos lo busco en central de mezclas
+                                    {
+                                        $q =  " SELECT artcom, artuni, artgen "
                                            ."   FROM ".$wcenmez."_000002 "
                                            ."  WHERE artcod = '".$Aarticulos[$i]."'";
-                                      $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-                                      $wfilas = mysql_num_rows($res);
+                                        $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                                        $wfilas = mysql_num_rows($res);
 
-                                      if ($wfilas==0)                                 //Si no existe en movhos lo busco en central de mezclas
-                                         {
-                                          $q =  " SELECT artcom, artuni, artgen "
+                                        if ($wfilas==0)                                 //Si no existe en movhos lo busco en central de mezclas
+                                        {
+                                            $q =  " SELECT artcom, artuni, artgen "
                                                ."   FROM ".$wbasedato."_000026 "
                                                ."  WHERE artcod = '".$Aarticulos[$i]."'";
-                                          $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-                                         } //Nov 3 2011
-                                     }     //Nov 3 2011
-                                 }
-                              $row = mysql_fetch_array($res);
+                                            $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                                        } //Nov 3 2011
+                                    }     //Nov 3 2011
+                                }
+                                $row = mysql_fetch_array($res);
 
-                              $wnomart = $row[0];
-                              $wuni    = $row[1];
-                              $wgen    = $row[2];
+                                $wnomart = $row[0]; // Nombre comercial
+                                $wuni    = $row[1]; // unidad
+                                $wgen    = $row[2]; // Nombre generico
                             }
 
                             //Traigo la cantidad de articulos(distintos) por cada FECHA
-                            // $q = " SELECT COUNT(DISTINCT(art)) "   //
                             $q = " SELECT COUNT(DISTINCT(art)) "
                               ."   FROM TEMPO "
                               ."  WHERE fec  = '".$Afechas[$i]."'";
                             $res4 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
                             $wfilas = mysql_fetch_array($res4);
 
-                            if (is_integer(($i+$cont_serv)/2))
-                            { $wclass = "fila1"; }
-                            else
-                            { $wclass = "fila2"; }
+                            $wclass = ( is_integer(($i+$cont_serv)/2) ) ? "fila1" : "fila2";
 
 							$wsaltopag = "";
 							if( isset($retornarCodigo) ) $wsaltopag = "<br>";
@@ -2255,40 +2362,34 @@ if( !isset($retornarCodigo) ){
                             $fl_tmp = $wfilas[0];
                             $atributo_celda = "id='".$Afechas[$i]."|".$fl_tmp."|".$fila_por_fecha."|[CONT]'";
                             $atributo_f = str_replace('[CONT]','f',$atributo_celda);
-							//if( !isset($retornarCodigo) ){
-								if ($wfec != $Afechas[$i])
-								{
-									// echo "<tr><td bgcolor=DDDDDD colspan=29>&nbsp;</td></tr>";
-									// echo "<tr>";
-									echo "  <td $atributo_f
-												class='".$wclass."'
-												rowspan=".$fl_tmp."
-												align=center>
-													<div class='nobreakhm'>
-													<font size=2>
-														<b>".$Afechas[$i]."</b>
-													</font>
-													</div>
-											</td>"; //editado 2012-04-24
-									// echo "</tr>";
-									$wfec = $Afechas[$i];
-								}
-							/*}else {
-								if ($wfec != $Afechas[$i])
-								{
-									echo "  <td class='".$wclass."'
-												align=center>
-													<div class='nobreakhm'>
-													<font size=2>".$wsaltopag."
-														<b>".$Afechas[$i]."</b>
-													</font>
-													</div>
-											</td>"; //editado 2012-04-24
-									$wfec = $Afechas[$i];
-								}else{
-									echo "<td><div class='nobreakhm'>".$wsaltopag."</div></td>"; 
-								}
-							}*/
+                            $atributo_c = str_replace('[CONT]','c',$atributo_celda);
+                            $atributo_d = str_replace('[CONT]','d',$atributo_celda);
+
+							// Imprime la fecha de aplicación del medicamento
+                            if ($wfec != $Afechas[$i])
+                            {
+                                if ($datosHistoricos == true) {
+                                    echo "  <td $atributo_f class='".$wclass."' rowspan=".$fl_tmp." align=center>
+                                                <div class='nobreakhm tooltip2'>
+                                                    <font size=2>
+                                                        <b>".$Afechas[$i]."</b>
+                                                    </font>
+                                                    <span class='tooltiptext'>Datos hist&oacute;ricos</span>
+                                                </div>
+                                            </td>";
+                                    echo "";
+                                }else{
+                                    echo "  <td $atributo_f class='".$wclass."' rowspan=".$fl_tmp." align=center>
+                                                <div class='nobreakhm'>
+                                                    <font size=2>
+                                                        <b>".$Afechas[$i]."</b>
+                                                    </font>
+                                                </div>
+                                            </td>"; //editado 2012-04-24
+                                }
+                                // echo "</tr>";
+                                $wfec = $Afechas[$i];
+                            }
 							
 							// Si $Aarticulos[$i] es un producto de central de mezclas debe mostrar el nombre comercial y genérico 
 							// del artículo previo al reemplazo
@@ -2300,16 +2401,14 @@ if( !isset($retornarCodigo) ){
 							
                             $wsuspendido=false;
                             $wsuspendido=buscarSiEstaSuspendido($whis, $wing, $Aarticulos[$i], $Afechas[$i]);    //, &$whorsus);
+                            //Imprime Codigo Articulo
+                            echo "<td $atributo_c class='".$wclass."'><div class='nobreakhm'>".$wsaltopag."".$Aarticulos[$i]."</div></td>";  
 
-                            $atributo_c = str_replace('[CONT]','c',$atributo_celda);
-                            $atributo_d = str_replace('[CONT]','d',$atributo_celda);
-                            echo "<td $atributo_c class='".$wclass."'><div class='nobreakhm'>".$wsaltopag."".$Aarticulos[$i]."</div></td>";                                  //Codigo Articulo
-                           // echo "<td $atributo_d class='".$wclass."'>Com.: ".$wnomart."<br>Gen.: ".$wgen."</td>";                //Nombre Comercial y Generico
 						    $texton = "Com.: ".$wnomart."<br>Gen.: ".$wgen;
 							if( $wnomart == $wgen ) $texton = "Com. y Gen.:<br> ".$wnomart;
-                            echo "<td $atributo_d class='".$wclass."'><div class='nobreakhm'>".$wsaltopag."".$texton."</div></td>";                //Nombre Comercial y Generico
-                            echo "<td $atributo_d class='".$wclass."' align=center><div style='font-size:6pt'>".$Avia[$i]."</div></td>";                //Nombre Comercial y Generico
-                            //echo "<td align=center>".$wuni."</td>";                               //Unidad de Medida
+                            echo "<td $atributo_d class='".$wclass."'><div class='nobreakhm'>".$wsaltopag."".$texton."</div></td>";     //Nombre Comercial y Generico
+                            echo "<td $atributo_d class='".$wclass."' align=center><div style='font-size:6pt'>".$Avia[$i]."</div></td>";    // Vía por la cual se administra el medicamento
+
                             $j=0;
                             $wtotal=0;
 							$widhtheightimages = " width=25 height=25 ";
@@ -2323,47 +2422,47 @@ if( !isset($retornarCodigo) ){
 							}
                             while ($j <= 23)
                             {
-                                    if ($j >= 12)
-                                    {
-                                        if ($j == 12)
-                                        { $wmsg=$j." PM"; }
-                                        else
-                                        { $wmsg=($j-12)." PM"; }
-                                    }
-                                    else
-                                    { $wmsg=$j." AM"; }
-                                    $atributo_id = str_replace('[CONT]',$j,$atributo_celda);
+                                if ($j >= 12)
+                                {
+                                    $wmsg = ( $j == 12 ) ? $j." PM" : ($j-12)." PM";
+                                }
+                                else
+                                {
+                                    $wmsg=$j." AM"; 
+                                }
 
-                                    //Agosto 22 de 2011 - page_cross.gif   msgbox04.ico
-                                    if ($Mrondas[$i][$j] == 0)
-                                    {										
-                                        if (isset($Mrondas[$i]["jus".$j]) and  $Mrondas[$i]["jus".$j] != '')
-                                        {
-                                            echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg.", No se aplicó: ".$Mrondas[$i]["jus".$j]."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/info.png'></div></td>";
-                                        }
-                                        else
-                                        { 
-											echo "<td $atributo_id class='".$wclass."' align=center><div class='nobreakhm'>".$wsaltopag."</div></td>"; 
-										}
-                                        if (!isset($wultfra))
-                                         $wultfra = '';   //Ultima Unidad de Medida
+                                $atributo_id = str_replace('[CONT]',$j,$atributo_celda);
+
+                                //Agosto 22 de 2011 - page_cross.gif   msgbox04.ico
+                                if ($Mrondas[$i][$j] == 0)
+                                {
+                                    if (isset($Mrondas[$i]["jus".$j]) and  $Mrondas[$i]["jus".$j] != '')
+                                    {
+                                        echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg.", No se aplicó: ".$Mrondas[$i]["jus".$j]."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/info.png'></div></td>";
                                     }
                                     else
-                                    {										
-                                        $wultapl=buscarUltimaAplicacionDia($Mrondas, $i, $j);
-                                        if ($wsuspendido and $wultapl=="on")
-                                        {
-                                            echo "<td $atributo_id class='".$wclass."' align=center bgcolor='FEAAA4' title='".$wmsg.", Luego de esta aplicación fue Suspendido'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/".$iconoCheck."'> ".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>";
-                                        }
-                                        else
-                                        { 
-											echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/".$iconoCheck."'><br>".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>"; 
-										}
-                                        $wtotal = $wtotal + $Mrondas[$i][$j];
-                                        $wultfra= $Mrondas[$i]["fraccion".$j];   //Ultima Unidad de Medida
+                                    {
+                                        echo "<td $atributo_id class='".$wclass."' align=center><div class='nobreakhm'>".$wsaltopag."</div></td>"; 
                                     }
-                                  //  $j++;
-                                    $j= $j +(ceil(24/$horasPares));
+                                    if (!isset($wultfra))
+                                        $wultfra = '';   //Ultima Unidad de Medida
+                                }
+                                else
+                                {
+                                    $wultapl=buscarUltimaAplicacionDia($Mrondas, $i, $j);
+                                    if ($wsuspendido && $wultapl=="on")
+                                    {
+                                        echo "<td $atributo_id class='".$wclass."' align=center bgcolor='FEAAA4' title='".$wmsg.", Luego de esta aplicación fue Suspendido'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/".$iconoCheck."'> ".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>";
+                                    }
+                                    else
+                                    {
+                                        echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/".$iconoCheck."'><br>".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>"; 
+                                    }
+                                    $wtotal = $wtotal + $Mrondas[$i][$j];
+                                    $wultfra= $Mrondas[$i]["fraccion".$j];   //Ultima Unidad de Medida
+                                }
+                                //  $j++;
+                                $j= $j +(ceil(24/$horasPares));
                             }
 
                             $atributo_t = str_replace('[CONT]','T',$atributo_celda);
@@ -2395,14 +2494,14 @@ if( !isset($retornarCodigo) ){
                         }
 
                         if (!isset($wced) and !isset($wtid) and !$imprimir)
-                           {
+                        {
                             echo "<center><table>";
-							if($esServicioDomiciliario)
-								echo "<tr><td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&servicioDomiciliario=on'> Retornar</A></font></td></tr>";
-							else
-								echo "<tr><td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'> Retornar</A></font></td></tr>";
+                            if($esServicioDomiciliario)
+                                echo "<tr><td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&servicioDomiciliario=on'> Retornar</A></font></td></tr>";
+                            else
+                                echo "<tr><td><font size=3><A href='Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'> Retornar</A></font></td></tr>";
                             echo "</table></center>";
-                           }
+                        }
 
                         echo "<br>";
                         if (!$imprimir)
@@ -2418,57 +2517,57 @@ if( !isset($retornarCodigo) ){
                             }
                         }
                     }
-                  }
-                  else   //Septiembre 27 de 2011
-                     {
-                      ?>
-                       <script>
-                         alert("No tiene PERMISO para acceder a esta Hístoria");
-                       </script>
-                      <?php
+                }
+                else   //Septiembre 27 de 2011
+                {
+                    ?>
+                    <script>
+                        alert("No tiene PERMISO para acceder a esta Hístoria");
+                    </script>
+                    <?php
 
-                      unset($whis);
-                      unset($wing);
-                      echo "<meta http-equiv='refresh' content='0;url=Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'>";
-                     }
-               }
+                    unset($whis);
+                    unset($wing);
+                    echo "<meta http-equiv='refresh' content='0;url=Hoja_medicamentos_enfermeria_IPODS.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."'>";
+                }
+            }
         }
 
-       if (!isset($wced) and !isset($wtid) and !$imprimir)
-          {
-           echo "<br>";
-           echo "<center><table>";
-           echo "<tr><td align=center colspan=9><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
-           echo "</table></center>";
-          }
+        if (!isset($wced) and !isset($wtid) and !$imprimir)
+        {
+            echo "<br>";
+            echo "<center><table>";
+            echo "<tr><td align=center colspan=9><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
+            echo "</table></center>";
+        }
     }
     include_once("free.php");
 
     if (isset($imprimir) && $imprimir == true && !isset($retornarCodigo))
     {
     ?>
-        <style type="text/css">
+    <style type="text/css">
 
-            @media print
-            {
-                .page-break { page-break-before: always; }
-            }
-            .saltopagina{page-break-after: always}
+        @media print
+        {
+            .page-break { page-break-before: always; }
+        }
+        .saltopagina{page-break-after: always}
 
-            table{  font-size:12px; font-family: Arial, Helvetica, sans-serif; }
-            table.tipoTABLE { }
-            th {  font-size:0.6886em; font-family: Arial, Helvetica, sans-serif; }
-            b  { font-size: 11px; font-family: Arial, Helvetica, sans-serif; }
+        table{  font-size:12px; font-family: Arial, Helvetica, sans-serif; }
+        table.tipoTABLE { }
+        th {  font-size:0.6886em; font-family: Arial, Helvetica, sans-serif; }
+        b  { font-size: 11px; font-family: Arial, Helvetica, sans-serif; }
 
-            img.small{width: 22px; height: 22px;}
-        </style>
+        img.small{width: 22px; height: 22px;}
+    </style>
     <?php
     }else if(isset($retornarCodigo)){
-		return;    
-	}
+        return;    
+    }
     ?>
-    </body>
-    </html>
+</body>
+</html>
 <?php
 }
 ?>

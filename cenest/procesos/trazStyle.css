@@ -1,0 +1,89 @@
+.alternar:hover
+{
+    background-color: #D9EDF7;
+}
+
+.titulo1
+{
+    text-align: center;
+}
+
+.selectPpal
+{
+    margin-top: 20px;
+    width: 100%;
+}
+
+.selectPpal select
+{
+    width: 220px;
+}
+
+.contenidoTab
+{
+    margin-left: 0;
+    margin-top: 20px;
+}
+
+.selectDispo
+{
+    margin-top: 10px;
+}
+
+.divDatosMaestro
+{
+    overflow-x: auto;
+    min-height: 262px;
+    height: 262px;
+    margin-top: 5px;
+}
+
+.divInforme
+{
+    overflow-x: auto;
+    min-height: 210px;
+    height: 210px;
+    margin-top: 5px;
+}
+
+.contenidoMaestro
+{
+    width: 1050px;
+    text-align: center;
+}
+
+.divDatosGestion
+{
+    overflow-x: auto;
+    min-height: 250px;
+    height: 250px;
+    margin-top: 5px;
+}
+
+.tblDatosReuso
+{
+    font-size: medium;
+}
+
+.tblRexServicio label
+{
+    font-size: medium;
+    font-weight: normal;
+}
+.tblRexServicio a
+{
+    font-size: large;
+}
+
+.tblDatosReuso2
+{
+    /*font-size: 12px;*/
+    font: bold 13px/1.5 Verdana, Arial, Helvetica, sans-serif;
+}
+
+.divExcel
+{
+    text-align: center;
+    margin-top: 3px;
+    display: block;
+}
