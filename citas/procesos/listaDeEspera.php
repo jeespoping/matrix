@@ -2,6 +2,8 @@
 /****************************************************************************************
  * Modificaciones:
  *
+ * Actualizado: 18-Ene-2021 (Fernando Meneses): Creación de log en Guardar, descartar, guardar valor, verificar pago y admitir.
+ * Actualizado: 21-Ene-2021 (Fernando Meneses): Se inhabilita Aseguradora al inicio de la carga para evitar error de carga en Plan.
  * Enero 15 de 2021 		Edwin MG:	- Se valida que el usuario este logueado.
  ****************************************************************************************/
 
@@ -49,6 +51,7 @@
     $conex = obtenerConexionBD("matrix");
     //Validación de la tabla para la empresa :)
     $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'servicioListaEspera');
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
     if  (empty($wbasedato)){
         echo 'Para la empresa no se tiene información configurada.';
     }
@@ -101,6 +104,16 @@
 //CONSULTAS  Y DATOS :)
 
 //FUNCIONES Y METODOS :)
+//**************************ENCARGADO DE RECIBIR LOS LLAMADOS CON AJAX********************************************//
+    if(isset($accion)){
+        switch($accion){
+            case 'escribirLog':
+            	escribirLog($proceso, $idreg, $data);
+            break;
+        }
+		exit;
+    }
+    
     //Funcionalidad para consultar los examenes asociados aún servidicio :)
     if (isset($_POST['servicioSeleccionado']) && $_POST['servicioSeleccionado'] == 'DM') {
 
@@ -310,7 +323,7 @@
     }
 
     //Funcionalidad para recibir pago  :)
-    if (isset($_POST['confirmarPago'])) :
+    if (isset($_POST['confirmarPago'])) {
         // write query
         $id = $_POST['confirmarPago'];
 
@@ -322,10 +335,10 @@
 
         print_r($pagoConfirmado);
         exit;
-    endif;
+    }
 
     //Se adiciona funcionalidad para descartar pagos Mavila 23-10-2020 :)
-    if (isset($_POST['descartarPaciente'])) :
+    if (isset($_POST['descartarPaciente'])) {
         // write query
         $id = $_POST['descartarPaciente'];
         $date = date('Y-m-d H:i:s');
@@ -335,8 +348,8 @@
         $pacienteDescartado = mysqli_fetch_all($result, MYSQLI_ASSOC);
         print_r($pacienteDescartado);
         exit;
-    endif;
-
+    }
+    
     if (isset($_POST['obtenerExamenes'])) {
         # code...
         // write query
@@ -398,7 +411,7 @@
 
         $sql =
             " SELECT Plades "
-            . "  FROM cliame_000153 "
+            . "  FROM ".$wcliame."_000153 "
             . "  WHERE Plaest = 'on'"
             . "	AND Plaemp = '"
             . $id . $service . "' ";
@@ -509,7 +522,7 @@
         $id = $_POST['examenesParaComentarios'];
         $sql = "SELECT drvcup,
             drvnex,
-            drvaut " . "FROM citaslc_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
+            drvaut " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
 
         $result = mysqli_query($conex, $sql);
         $html = "";
@@ -566,10 +579,10 @@
             $drvcla = mysqli_real_escape_string($conex, $data['clasificacionCasoPost']);
             $fecha_data = date("Y-m-d");
             $hora_data = date("H:i:s");
-            //Nueva validacion de datos sencibles :)        
+            //Nueva validacion de datos sensibles :)        
             if (!empty($drvidp)) {
                 // Create sql
-                $sql = "INSERT INTO ".$wbasedato."_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla, drvvcr, drvest, Seguridad) VALUES('drvtru', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla', 0,'on','$wuse' )";
+                $sql = "INSERT INTO ".$wbasedato."_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla, drvvcr, drvest, Seguridad) VALUES('".$wbasedato."', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla', 0,'on','$wuse' )";
                 //Validamos el insertar si se guarda la información :)
                 if (mysqli_query($conex, $sql)) {
                     //Se procede a insertar los datos de los examenes :)
@@ -583,7 +596,7 @@
                         $drvnex = mysqli_real_escape_string($conex, $data['examName-' . $i]);
                         $drvpos = $i + 1;
                         //Se construye la consula de los examenes :)
-                        $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
+                        $inserts = $inserts . "('".$wbasedato."','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
                         // Se agrega coma hasta el pen&uacute;ltimo elemento :)
                         if ($i !== $drvexa - 1) {
                             $inserts = $inserts . ",";
@@ -595,25 +608,30 @@
                     if (mysqli_query($conex, $sqlExamenes)) {
                         $response['code'] = '200';
                         $response['content'] = 'Se registran los datos correctamente.';
+                        escribirLog ('Cita creada','-1',$data);
                         echo json_encode($response);
                     } else {
                         $response['code'] = '404';
                         $response['content'] = 'query error' . mysqli_error($conex);
+                        escribirLog ('Error creando cita: '. mysqli_error($conex),'-1',$data);
                         echo json_encode($response);
-                    }                
+                    }                          
                 } else {
                     $response['code'] = '404';
                     $response['content'] = 'query error' . mysqli_error($conex);
+                    escribirLog ('Error creando cita: '. mysqli_error($conex),'-1',$data);
                     echo json_encode($response);
                 }
             }else{
                 $response['code'] = '404';
                 $response['content'] = 'No hay datos para procesar el registro.';
+                escribirLog ('Error creando cita: No hay datos para procesar el registro.','-1',$data);
                 echo json_encode($response);
             }            
         } else {
             $response['code'] = '400';
             $response['content'] = 'No hay datos para procesar el registro.';
+            escribirLog ('Error creando cita: No hay datos para procesar el registro.','-1',$data);
             echo json_encode($response);
         } 
         return;
@@ -621,7 +639,6 @@
 
     //Funcionalidad para cuando se guarda la información :)
     if (isset($_POST['submit'])) {
-
 
         // Validaci&oacute;n
 
@@ -795,7 +812,7 @@
             $hora_data = date("H:i:s");
 
             // Create sql
-            $sql = "INSERT INTO ".$wbasedato."_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla,drvest, Seguridad) VALUES('drvtru', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla','on','$wuse' )";
+            $sql = "INSERT INTO ".$wbasedato."_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla,drvest, Seguridad) VALUES('".$wbasedato."', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla','on','$wuse' )";
 
             if (mysqli_query($conex, $sql)) {
                 // Sucess
@@ -812,7 +829,7 @@
                     $drvcup = mysqli_real_escape_string($conex, $_POST['exam-' . $i]);
                     $drvnex = mysqli_real_escape_string($conex, $_POST['examName-' . $i]);
                     $drvpos = $i + 1;
-                    $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
+                    $inserts = $inserts . "('".$wbasedato."','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
                     // Se agrega coma hasta el pen&uacute;ltimo elemento
                     if ($i !== $drvexa - 1) {
                         # code...
@@ -820,8 +837,8 @@
                     }
                 }
 
-                $sql = "INSERT INTO citaslc_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
-
+                //$sql = "INSERT INTO citaslc_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
+                $sql = "INSERT INTO ".$wbasedato."_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
 
                 if (mysqli_query($conex, $sql)) {
                     header('Location: ' . $url);
@@ -829,12 +846,73 @@
                     # code...
                     echo 'query error' . mysqli_error($conex);
                 }
+                
+                //
             } else {
                 echo 'query error' . mysqli_error($conex);
             }
         }
     }
 
+    // Escribir log específico para la Lista de espera Citas.
+    function escribirLog ($proceso, $idreg='-1', $data='') {
+
+        global $conex, $wusuario_logueado, $wuse, $wbasedato, $registros; //, $drvidp, $drvnom,$drvap1,$drvap2;
+        $fecha_data = date("Y-m-d");
+        $hora_data = date("H:i:s");        
+        
+        if (is_array($data))
+        {
+            // escribir el mensaje con los campos de edición (crear cita), o precargados como en descartarPaciente
+            $drvidp = $data['doc'];
+			$drvtid = $data['docType'];
+            $sql ="insert into ".$wbasedato."_000038 (Medico ,Fecha_data,  Hora_data, logprc , logtid, logidp , Seguridad)
+                            values ('".$wbasedato."', '$fecha_data','$hora_data', '$proceso','$drvtid','$drvidp', '$wuse')";
+            mysql_query($sql,$conex) or die ("Error 4: ".mysql_errno()." - en el query: ".$update_log." - ".mysql_error());
+        }
+        else {
+            // buscar en el arreglo de registros.
+            $fila = array();
+			$ok = false;
+            foreach ($registros as $fila) 
+            {
+                if($fila['id']==$idreg){
+                    $drvidp = $fila['drvidp'];
+                    $drvtid = $fila['drvtid'];
+                    $sql ="insert into ".$wbasedato."_000038 (Medico ,Fecha_data,  Hora_data, logprc , logtid, logidp , Seguridad)
+                            values ('".$wbasedato."', '$fecha_data','$hora_data', '$proceso','$drvtid','$drvidp', '$wuse')";
+                    mysql_query($sql,$conex) or die ("Error 4: ".mysql_errno()." - en el query: ".$update_log." - ".mysql_error());
+					$ok = true;
+                    break;
+                }
+            }
+        }
+        return;
+        // citaslc_000032
+        /*
+        $drvtid = mysqli_real_escape_string($conex, $_POST['docType']);
+        $drvidp = mysqli_real_escape_string($conex, $_POST['doc']);
+            $drvnom = mysqli_real_escape_string($conex, $_POST['names']);
+            $drvap1 = mysqli_real_escape_string($conex, $_POST['lastname1']);
+            $drvap2 = mysqli_real_escape_string($conex, $_POST['lastname2']);
+            $drvbdy = mysqli_real_escape_string($conex, $_POST['birthday']);
+            $drvsex = mysqli_real_escape_string($conex, $_POST['sex']);
+            $drvtel = mysqli_real_escape_string($conex, $_POST['phone']);
+            $drvmov = mysqli_real_escape_string($conex, $_POST['cellphone']);
+            $drvdir = mysqli_real_escape_string($conex, $_POST['addr']);
+            $drvbar = mysqli_real_escape_string($conex, $_POST['barrio']);
+            $drvema = mysqli_real_escape_string($conex, $_POST['email']);
+            $drvase = mysqli_real_escape_string($conex, $_POST['eps']);
+            $drvpol = mysqli_real_escape_string($conex, $_POST['epsNumber']);
+            $drvser = mysqli_real_escape_string($conex, $_POST['service']);
+            $drvcpl = mysqli_real_escape_string($conex, $_POST['plan']);
+            $drvexa = mysqli_real_escape_string($conex, $_POST['numeroExamenes']);
+            $drvfsi = mysqli_real_escape_string($conex, $_POST['fechaSintomas']);
+            $drvsin = mysqli_real_escape_string($conex, $_POST['sintomasPost']);
+            $drvcla = mysqli_real_escape_string($conex, $_POST['clasificacionCasoPost']);
+            */
+                
+    }
 
     //Change4: Funcion para el estilo de los campos según estados Mavila :)
     function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){ 
@@ -857,10 +935,10 @@
         return  $class_campoValor;
     }
 //FUNCIONES Y METODOS :)
-
 // mysqli_close($conex);
-
+//if( isset($consultaAjax) == false ){    
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1112,8 +1190,10 @@
     <link type="text/css" rel="stylesheet" href="../../../include/root/matrix.css" />
     <!-- <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css"> -->
     <!-- Se relaciona libreria para mensajes de alerta Mavila 23-10-2020 -->
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> REVISAR -->
+    
 </head>
+<?php // }  ?>
 
 <body>
     <?php // --> Se muestra encabezado Mavila :)  ?>
@@ -1277,9 +1357,9 @@
                             </td>
                             <td> <label for="service">Tipo de servicio</label></td>
                             <td>
-                                <select name="service" class="input-select" id="service">
+                                <select name="service" class="input-select" id="service" >
                                     <option value="">Elija un servicio</option>
-                                    <?php //Se adiciona validacion del barrio seleccionado :) ?>
+                                    <?php //Se adiciona validacion del servicio seleccionado :) ?>
                                     <?php if( ($service_seleccionado) != ''): ?>
                                         <?php foreach ($servicios as $servicio) : ?>
                                             <option <?php echo htmlspecialchars($servicio['drvcse']) == $service_seleccionado ? 'selected':'';?> value=<?php echo htmlspecialchars($servicio['drvcse']); ?>>
@@ -1301,9 +1381,9 @@
                         <tr>
                             <td> <label for="eps">Aseguradora</label></td>
                             <td>
-                                <select name="eps" class="input-select" id="eps">
+                                <select name="eps" class="input-select" id="eps" disabled>
                                     <option value="" selected><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>                                
-                                    <?php //Se adiciona validacion del barrio seleccionado :) ?>
+                                    <?php //Se adiciona validacion de eps seleccionada :) ?>
                                     <?php if( ($eps_seleccionada) != ''): ?>
                                         <?php foreach ($eps as $ep) : ?>
                                             <option <?php echo htmlspecialchars($ep['drvnlb']) == $eps_seleccionada ? 'selected':'';?> value=<?php echo htmlspecialchars($ep['drvnlb']); ?>>
@@ -1327,7 +1407,7 @@
 
                             <td> <label for="plan">Plan</label></td>
                             <td>
-                                <select name="plan" class="input-select" id="plan"></select>
+                                <select name="plan" class="input-select" id="plan" disabled></select>
                                 <b id="msn_plan" class="red-text"><?php echo $errors['plan']; ?></b>
                             </td>
 
@@ -1526,7 +1606,7 @@
                                     Editar datos
                                 </button>
                                 <button class="btn btn-info btn-sm mt-1" type="button" 
-                                    onclick="descartarPaciente('<?php echo htmlspecialchars($registro['id']); ?>', '<?php echo htmlspecialchars($registro['drvidp']); ?>')" >
+                                    onclick="descartarPaciente('<?php echo htmlspecialchars($registro['id']); ?>', '<?php echo htmlspecialchars($registro['drvidp']); ?>', '<?php echo htmlspecialchars($registro['drvtid']); ?>')" >
                                     Descartar
                                 </button>
                             </td>
@@ -1673,7 +1753,7 @@
                             <?php //Se adiciona para dar estilo del campo teniendo encuenta el valor :) ?>
                             <td class=<?php echo $class_campoAgenda ?> id=<?php echo "admitirTD" . $key; ?>>
                                 <button  class="btn btn-info btn-sm mt-2" type="button" 
-                                    name="admitir" id="admitir"
+                                    name="admitir" id=<?php echo "admitir" . $key; ?>
                                     onclick="admitir(<?php echo $key; ?>,
                                         '<?php echo htmlspecialchars($registro['id']); ?>',
                                         '<?php echo htmlspecialchars($registro['drvidp']); ?>',
@@ -1773,11 +1853,15 @@
 </body>
 
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->  <!-- REVISAR -->
+    <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="../../../include/root/jquery_1_7_2/js/jquery.validate.js"></script>
+    <script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js"></script>
+    <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->  <!-- REVISAR -->
 
     <!-- Change11: Se relaciona para mascara de valor Mavila 05-10-2020 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.min.js"></script>
+    <script src="../../../include/root/jquery.maskedinput.js" type="text/javascript"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.min.js"></script> -->  <!-- REVISAR -->
         
     <!-- JS -->
     <!-- <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script> -->
@@ -2261,7 +2345,22 @@
 
         }
 
-
+		function EscribirLog (id, strproc='',datos) {
+			if (strproc != '') {
+				var str_id  = '' + id.toString();
+				//alert('*' + str_id);
+				//alert('*' + datos['docType']);
+				$.post(urlMatrix,
+                {
+                    consultaAjax: '',
+                    accion: 'escribirLog',
+                    idreg: str_id,
+                    proceso: strproc,
+					data: datos
+                });  
+			}
+		}
+		
         function verificarPago(id) {
             //alert(id);
             let ref = id;
@@ -2303,22 +2402,25 @@
                                 setTimeout(function(){
                                     $(`#resultado_pago${ref}`).html('Confirmado');
                                     //location.reload()
-                                }, 4000);                                
+                                }, 4000);  
+								EscribirLog (id, 'Verificar pago. (Confirmado)');								
                             },
                             error: function() {                                
                                 $(`#resultado_pago${ref}`).html('Cargando...'); 
                                 setTimeout(function(){
                                     $(`#resultado_pago${ref}`).html('Pendiente');
                                 }, 4000);
-                                
+								EscribirLog (id, 'Verificar pago. (Pendiente)');								                                
                             }
                             
                         });
+                        
                     }else{
                         $(`#resultado_pago${ref}`).html('Cargando.'); 
                         setTimeout(function(){
                             $(`#resultado_pago${ref}`).html('Pendiente');
                         }, 4000);
+						EscribirLog (id, 'Verificar pago. (Pendiente)');								                                
                     }  
                 },
                 failure: function (data) {
@@ -2328,6 +2430,7 @@
                     setTimeout(function(){
                         $(`#resultado_pago${ref}`).html('Pendiente');
                     }, 4000);
+					EscribirLog (id, 'Verificar pago. (Pendiente)');								                                
                 },
                 error: function (data) {
                     //$(`#resultado_pago${ref}`).html('Pendiente');
@@ -2335,14 +2438,15 @@
                     setTimeout(function(){
                         $(`#resultado_pago${ref}`).html('Pendiente');
                     }, 4000);
+					EscribirLog (id, 'Verificar pago. (Pendiente)');								                                
                 }
             }); 
 
         }
 
         //Se adiciona funcionaliad para descartar al paciente de la lista Mavila 23-10-2020 :)
-        function descartarPaciente(id, paciente) {
-            
+        function descartarPaciente(id, paciente, tipoDoc) {
+
             swal({
                 title: "Descartar paciente.",
                 text: "Desea descartar el paciente.",
@@ -2358,6 +2462,7 @@
                     data: {
                         "descartarPaciente": id,
                         "paciente": paciente
+					
                     },
                     beforeSend: function() {},
                     success: function(response) {
@@ -2369,16 +2474,19 @@
                             location.reload();
                         });
                         //alert("Paciente descartado.");
+						var datos={'doc':paciente, 'docType':tipoDoc};
+						EscribirLog (id, 'Paciente descartado',datos);								                                
                         
                     },
                     error: function() {
                         //Se envia mensaje de confirmación con la nueva libreria Mavila 23-10-2020 :)
                         swal("Error al descartar paciente");
                         //alert("Error al descartar paciente.")
+						EscribirLog (id, 'Error al descartar paciente.');								                                
                     }
                 })    
 
-                
+             
             } 
             });
                         
@@ -2427,10 +2535,11 @@
                     comentarios = respuesta.replace(/\s/g, "_")
                     let edad = getAge(fechaNacimiento)
                     window.open(`/matrix/citas/procesos/calendar.php?empresa=citaslc&wemp_pmla=01&caso=2&wsw=&fest=off&consultaAjax=&id=${id}&cedula=${cedula}&paciente=${paciente}&telefono=${telefono}&email=${email}&url=${url}&edad=${edad}&comentarios=${comentarios}&aseguradora=${aseguradora}`, "_blank")
-
+					//EscribirLog (id, 'Abrir agenda');		
                 },
                 error: function() {
-                    alert("error")
+                    alert("error");
+					//EscribirLog (id, 'Error al abrir agenda');		
                 }
             })
 
@@ -2511,26 +2620,29 @@
 
 
         function admitir(index, id, identificacion, tipodedocumento, apellido1, apellido2, nombres, fechaDeNacimiento, sexo, direccion, celular, email, fijo, aseguradora, plan, poliza, valorACancelar, fechaSintomas, sintomas, clasificacion) {
+
+			EscribirLog (id, 'Admitir paciente.');								                                
+
             // console.log(plan);
-            let usuario = '<?php echo $wuse; ?>'
-            let date = new Date()
-            let year = date.getFullYear()
-            let month = date.getMonth()
-            month = month < "10" ? `0${month+1}` : month
-            let day = date.getDate()
-            day = day < "10" ? `0${day}` : day
+            let usuario = '<?php echo $wuse; ?>';
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = date.getMonth();
+            month = month < "10" ? `0${month+1}` : month;     
+            let day = date.getDate();
+            day = day < "10" ? `0${day}` : day;				
 
-            let hour = date.getHours()
-            hour = hour < "10" ? `0${hour}` : hour
-            let minutes = date.getMinutes()
-            minutes = minutes < "10" ? `0${minutes}` : minutes
-            let seconds = date.getSeconds()
-            seconds = seconds < "10" ? `0${seconds}` : seconds
+            let hour = date.getHours();
+            hour = hour < "10" ? `0${hour}` : hour;
+            let minutes = date.getMinutes();
+            minutes = minutes < "10" ? `0${minutes}` : minutes;
+            let seconds = date.getSeconds();
+            seconds = seconds < "10" ? `0${seconds}` : seconds    	//>
 
-            let aaaammddhhmmss = year + month + day + hour + minutes + seconds
+            let aaaammddhhmmss = year + month + day + hour + minutes + seconds;
 
 
-            let aaaammdd = fechaDeNacimiento.replaceAll("-", "")
+            let aaaammdd = fechaDeNacimiento.replaceAll("-", "");
 
 
             $.ajax({
@@ -2594,8 +2706,9 @@
 
                             // console.log(obrs);
                             let mensaje = msh + "<br>" + pid + "<br>" + in1 + "<br>" + orc + "<br>" + nte1 + "<br>" + nte2 + "<br>" + nte3 + "<br>" + nte4 + "<br>" + nte5 + "<br>" + nte6 + "<br>" + nte7 + "<br>" + nte8 + "<br>" + nte9 + "<br>" + joinedObrs
-                            $('#admitir')
-                                .prop('disabled', true)
+                            $(`#admitir${index}`)
+                                .attr('disabled', 'disabled');
+
                             $(`#orden${index}`).html('Creando orden...');
                             $(`#orden${index}`).addClass('showOrderCreatedSuccess');
                             $.ajax({
@@ -2613,8 +2726,8 @@
                                 beforeSend: function() {},
                                 success: function(response) {
                                     if (response.orden !== "") {
-                                        $('#admitir')
-                                            .prop('disabled', true)
+                                        $(`#admitir${index}`)
+                                            .attr('disabled', 'disabled');
                                         $(`#orden${index}`).html(`Orden creada ${response.orden}`);
                                         $(`#orden${index}`).addClass('showOrderCreatedSuccess');
 
@@ -2639,8 +2752,8 @@
                                             }
                                         })
                                     } else {
-                                        $('#admitir')
-                                            .prop('disabled', false)
+                                        $(`#admitir${index}`)
+                                            .attr('disabled', false);
                                         $(`#orden${index}`).html(`La orden no se pudo crear.`);
                                         $(`#orden${index}`).addClass('showOrderCreatedSuccess');
                                     }
@@ -2892,6 +3005,16 @@
                     alert("error")
                 }
             })
+                // Crear LOG
+                var str_id  = '' + id.toString();
+                $.post(urlMatrix,
+                {
+                    consultaAjax: '',
+                    accion: 'escribirLog',
+                    idreg: str_id,
+                    proceso: 'Guardar valor total (' + valor.toString() + ')'
+                });                
+            
         }
 
         function guardarLink(index, id) {
