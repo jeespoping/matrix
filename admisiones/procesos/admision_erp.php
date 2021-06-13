@@ -1045,8 +1045,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				if( $res1 )
 				{
 					$data[ "mensaje" ] = utf8_encode( "Se actualizo correctamente" );
-					if( mysql_affected_rows() > 0 ){
-					}
 				}
 				else
 				{
@@ -1068,8 +1066,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			$resdel = mysql_query( $sqldel, $conex );
 			if( $resdel ){
 				logAdmsiones( 'Registro borrado por documento duplicado', $historia, $tipodoc, $documento);
-				if( mysql_affected_rows() > 0 ){
-				}
 			}
 
 			/**admision**/
@@ -1135,16 +1131,9 @@ if (isset($accion) and $accion == 'guardarDatos'){
 									AND pacact = 'on' AND pacfec <= '".date( "Y-m-d" )."'";
 
 						$resCancPre = mysql_query( $sql, $conex ) or die(  $data[ 'mensaje' ] = utf8_encode( mysql_errno()." - Error en el query admision $sql - ".mysql_error() )  );
-
-						if( !$resCancPre ){
-							//$data[ "error" ] = 1;
-						}
-						else{
-							// $data1 = logAdmsiones( "Preadmision anulada", $historia, $ingreso, $pac_doctxtNumDoc );
+						if( $resCancPre ){
 							$preadmisionAnulada = true;
 						}
-						/********************************************************************************/
-
 
 						/********2014-10-17***********/
 						/* Se actualiza la tabla cliame 000207, solicitado por Juan Carlos*/
@@ -1401,7 +1390,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 						  AND Resest = 'on'
 						  AND Topest = 'on'
 						  AND Resdes = 'off'";
-			//echo $sqlpro;
+
 			$respro = mysql_query( $sqlpro, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000205 ".mysql_errno()." - Error en el query $sqlpro - ".mysql_error() ) );
 			if ($respro){
 				$numpro=mysql_num_rows($respro);
@@ -1413,7 +1402,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					}
 				}
 			}
-			//echo "<br>Array Topes viejos".json_encode($arr_topes_responsables);
 
 			//Se crea un arreglo con los nuevos responsables y nuevos topes
 			$arr_topes_nuevos = array();
@@ -1894,10 +1882,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$data['error']=1;
 				}
 			}
-			else
-			{
-
-			}
 		}
 		/*******************Fin para guardar el tope de soat***************/
 
@@ -2064,8 +2048,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$data = $data1;
 				}
 				if($resCargos){
-					if( $cargosAregrabar > 0 ){
-					}
 					guardarPendientesRegrabacion( $historia, $ingreso, $responsableAnterior, $valueNresponsable, "admision_erp.php");
 				}
 			}else{
@@ -2442,8 +2424,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			$rsup152    = mysql_query( $queryUp152,$conex );
 			$regAfectados152 = mysql_affected_rows();
 			if($rsup36 and $rsup152){
-				if( $regAfectados36*1 > 0 and $regAfectados152*1 > 0){
-				}
 					$queryUp204 = "UPDATE  {$wbasedatoMov}_000204
 									   SET ahtahc = 'on',
 											  ahthis = '$historia',
@@ -7000,7 +6980,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 	$sql .=" Order by  a.Pacced  ";
 
 	$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla root_36 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-	// $res1 = $res;
+
 	if ($res)
 	{
 		$traerDeEmpresa = false;
@@ -7015,7 +6995,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 			$traerDeEmpresa = true;
 		}
 
-		if( $num == 0 || $traerDeEmpresa == true ){
+		if( $num == 0 || $traerDeEmpresa ){
 			/* Se busca documento y tipo de documentos en la root_00037, 
 			 	trae la empresa ordenados por fecha de la mas reciente a la mas antigua. */
 			$sql5 = "SELECT Oriori FROM root_000037
@@ -7041,7 +7021,6 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 							/** Se guarda la empresa actual del programa */
 							$wbasedato_anterior = $wbasedato;
 							/** Se busca la empresa a la que pertenece al informacion encontrada en la root_00037 */
-							// $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion" );
 							$wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 							$wbasedato = $wbasedato1->baseDeDatos;
 
@@ -7058,15 +7037,15 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 							  $sql .=" Group by  Pachis  ";
 							  $sql .=" Order by  Pacdoc  ";
 		
-							$res = mysql_query($sql, $conex ) || ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
+							$res = mysql_query($sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
 							if($res){
 								$num = mysql_num_rows($res);
 								$rows=mysql_fetch_assoc($res);
-							}
-							if($num > 0){
-								/** Se reestable la empresa inicial del programa */
-								$wbasedato =  $wbasedato_anterior;
-								break;
+								if($num > 0){
+									/** Se reestable la empresa inicial del programa */
+									$wbasedato =  $wbasedato_anterior;
+									break;
+								}
 							}
 						}
 					}
@@ -7079,7 +7058,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 		$data['numRegistrosPac'] = $num;
 		if ($num>0)
 		{	
-			if($traerDeEmpresa == false){
+			if( !$traerDeEmpresa ){
 
 				$sql5 = "SELECT Oriori FROM root_000037
 					  	WHERE Oritid='".utf8_decode($datosEnc['pactdo'])."' AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' 
@@ -7103,7 +7082,6 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 								/** Se guarda la empresa actual del programa */
 								$wbasedato_anterior = $wbasedato;
 								/** Se busca la empresa a la que pertenece al informacion encontrada en la root_00037 */
-								// $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion" );
 								$wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 								$wbasedato = $wbasedato1->baseDeDatos;
 
