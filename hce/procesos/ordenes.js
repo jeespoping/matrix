@@ -1196,9 +1196,9 @@ function validarEleccionInsumosNPT(indice,tipoProtocolo){
 		mensajeValidacion += "- La purga debe ser menor o igual a 30 ml \n";
 	}
 	
-	if( parseInt(tiempoInfusionNPT)<12)
+	if( parseInt(tiempoInfusionNPT)<10)
 	{
-		mensajeValidacion += "- El tiempo de infusión debe ser mayor o igual a 12 horas \n";
+		mensajeValidacion += "- El tiempo de infusión debe ser mayor o igual a 10 horas \n";
 	}
 	
 	if( parseInt(tiempoInfusionNPT)>24)
@@ -17798,10 +17798,98 @@ function grabarKardex(wimprimir){
 					// );
 				// }
 			// );
+					debugger;
+					console.log(wemp_pmla);
+					
+						$.ajax({
+							url: "/matrix/interoperabilidad/procesos/funcionesGeneralesEnvioHL7.php",
+							type: "GET",
+							data:{
+								accion              :'consultarInteroperabilidades',
+								wemp_pmla			: wemp_pmla
+								
+							},
+							async: false,
+							success:function(data) {
+															
+							if(data.includes('Hiroku')){
+										$.ajax({
+												url	: "ordenes.inc.php", 
+												type: "POST",
+												data:{ 
+													historia			: document.forms.forma.whistoria.value,
+													ingreso				: document.forms.forma.wingreso.value, 
+													consultaAjaxKardex	: 'imagenologiaHiruko', 
+													consultaAjax		: '' , 
+													wemp_pmla			: wemp_pmla,
+												}, 
+												async: false,
+												success: function(data){
+													console.log('enviado hiroku');
+													console.log(data);
+												
+												}
+											});
+										}
+									
+								if(data.includes('Dinamica')){
+										$.ajax({
+												url	: "ordenes.inc.php", 
+												type: "POST",
+												data:{
+													consultaAjaxKardex	: 'insertarOrdenWs',
+													wemp_pmla			: wemp_pmla,
+													wusuario		  	  	: $('#usuario').val(),
+													historia		  	: document.forms.forma.whistoria.value,
+													ingreso			  	: document.forms.forma.wingreso.value,
+							                    }, 
+												async: false,
+												success: function(data){
+													console.log('enviado laboratorio');
+													console.log(data);
+												}
+											});
+										}	
+											if(data.includes('SABBAG')){
+										$.ajax({
+												url	: "ordenes.inc.php", 
+												type: "GET",
+												data:{
+													consultaAjaxKardex	: 'OrdenSABBAG',
+													wemp_pmla			: wemp_pmla,
+													historia		  	: document.forms.forma.whistoria.value,
+													ingreso			  	: document.forms.forma.wingreso.value,
+							                    }, 
+												async: false,
+												success: function(data){
+													console.log('enviado Sabbag');
+													console.log(data);
+												}
+											});
+										}	
+											if(data.includes('ordenTrabajoLaboratorio')){
+										$.ajax({
+												url	: "ordenes.inc.php", 
+												type: "GET",
+												data:{
+													consultaAjaxKardex	: 'ordenTrabajoLaboratorio',
+													wemp_pmla			: wemp_pmla,
+													wusuario		  	: $('#usuario').val(),
+													historia		  	: document.forms.forma.whistoria.value,
+													ingreso			  	: document.forms.forma.wingreso.value,
+							                    }, 
+												async: false,
+												success: function(data){
+													console.log('enviado LABORATORIO');
+													console.log(data);
+												}
+											});
+										}	
+							}
+								});
 			
-			
-			//Primero se envia los mensajes de interoperabilidad con HIRUKO - IMEXHS
-			$.ajax({
+				//Primero se envia los mensajes de interoperabilidad con HIRUKO - IMEXHS
+		/*	$.ajax({
 				url	: "ordenes.inc.php", 
 				type: "POST",
 				data:{ 
@@ -17813,14 +17901,12 @@ function grabarKardex(wimprimir){
 				}, 
 				async: false,
 				success: function(data){
-					
-					//Una vez terminado los proceso de envio de datos de HIRUKO - IMEX se hace los de laboratorio
-					//Esto es para crear el msgHL para realizar la orden de trabajo para laboratorio
+
 					$.ajax({
 							url: "ordenes.inc.php",
-							type: "POST",
+							type: "GET",
 							data:{
-								consultaAjaxKardex	: 'ordenTrabajoLaboratorio',
+								consultaAjaxKardex	: 'insertarOrdenWs',
 								wemp_pmla			: wemp_pmla,
 								wusuario		  	  	: $('#usuario').val(),
 								historia		  	: document.forms.forma.whistoria.value,
@@ -17828,15 +17914,33 @@ function grabarKardex(wimprimir){
 							},
 							async: false,
 							success:function(data_json) {
-								
+								//Una vez terminado los proceso de envio de datos de HIRUKO - IMEX se hace los de laboratorio
+								//Esto es para crear el msgHL para realizar la orden de trabajo para laboratorio
+								$.ajax({
+										url: "ordenes.inc.php",
+										type: "POST",
+										data:{
+											consultaAjaxKardex	: 'ordenTrabajoLaboratorio',
+											wemp_pmla			: wemp_pmla,
+											wusuario		  	  	: $('#usuario').val(),
+											historia		  	: document.forms.forma.whistoria.value,
+											ingreso			  	: document.forms.forma.wingreso.value,
+										},
+										async: false,
+										success:function(data_json) {
+											
+										}
+									}
+								);
 							}
 						}
+					
 					);
 				}
 			});
 
 			
-
+*/
 
 			var conf = document.getElementById('wconfdisp').checked == true ? 'on' : 'off';
 

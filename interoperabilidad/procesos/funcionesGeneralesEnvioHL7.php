@@ -1,5 +1,5 @@
 <?php
-
+include_once("root/comun.php");
 /**
  * Modificaciones
  * =============================================================================================================================================
@@ -235,7 +235,7 @@ function ccoConInteroperabilidadLaboratorio( $conex, $wbasedato, $his, $ing ){
 /**
  * Registra el mensaje en el log
  */
-function registrarDetalleLog( $conex, $wmovhos, $his, $ing, $tor, $nro, $ite, $clave, $msg ){
+function registrarDetalleLog( $conex, $wmovhos, $his, $ing, $tor, $nro, $ite, $clave, $msg,$ack = null){
 	
 	$val = false;
 	
@@ -243,8 +243,8 @@ function registrarDetalleLog( $conex, $wmovhos, $his, $ing, $tor, $nro, $ite, $c
 	$hora 	= date("H:i:s");
 	
 	$sql = "INSERT INTO 
-				".$wmovhos."_000273(     Medico    , Fecha_data  , Hora_data  ,   Loghis  , Loging    ,  Logtor   ,   Lognro  ,   Logite  ,    Logcla   ,              Logtxt              , Logest ,    Seguridad     ) 
-							VALUES ( '".$wmovhos."', '".$fecha."', '".$hora."', '".$his."', '".$ing."', '".$tor."', '".$nro."', '".$ite."', '".$clave."', '".mysql_escape_string( $msg )."',  'on'  , 'C-".$wmovhos."' )
+				".$wmovhos."_000273(     Medico    , Fecha_data  , Hora_data  ,   Loghis  , Loging    ,  Logtor   ,   Lognro  ,   Logite  ,    Logcla   ,              Logtxt              , Logest , Logack,   Seguridad     ) 
+							VALUES ( '".$wmovhos."', '".$fecha."', '".$hora."', '".$his."', '".$ing."', '".$tor."', '".$nro."', '".$ite."', '".$clave."', '".mysql_escape_string( $msg )."',  'on'  , '".$ack."' ,'C-".$wmovhos."' )
 			   ";
 			 
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ". mysql_error() );
@@ -262,7 +262,7 @@ function registrarDetalleLog( $conex, $wmovhos, $his, $ing, $tor, $nro, $ite, $c
 /**
  * Registra el mensaje en el log
  */
-function registrarMsgLogHl7( $conex, $wmovhos, $his, $ing, $tdo, $ndo, $des, $tor, $nro, $ite, $msg ){
+function registrarMsgLogHl7( $conex, $wmovhos, $his, $ing, $tdo, $ndo, $des, $tor, $nro, $ite, $msg,$ack = null ){
 	
 	$val = false;
 	
@@ -270,8 +270,8 @@ function registrarMsgLogHl7( $conex, $wmovhos, $his, $ing, $tdo, $ndo, $des, $to
 	$hora 	= date("H:i:s");
 	
 	$sql = "INSERT INTO 
-				".$wmovhos."_000270(     Medico    , Fecha_data  , Hora_data  , `Loghis`  ,  `Loging` , `Logtdo`  , `Logndo`  , `Logdes`  ,  Logfec     , Loghor     , Logtor    , Lognro    , Logite    ,           Logmsg                 , Logest ,   Seguridad      ) 
-							VALUES ( '".$wmovhos."', '".$fecha."', '".$hora."', '".$his."', '".$ing."', '".$tdo."', '".$ndo."', '".$des."', '".$fecha."', '".$hora."', '".$tor."', '".$nro."', '".$ite."', '".mysql_escape_string( $msg )."',  'on'  , 'C-".$wmovhos."' )
+				".$wmovhos."_000270(     Medico    , Fecha_data  , Hora_data  , `Loghis`  ,  `Loging` , `Logtdo`  , `Logndo`  , `Logdes` ,  Logfec     , Loghor     , Logtor    , Lognro    , Logite    ,           Logmsg          ,      Logest ,     Logack        ,  Seguridad      ) 
+							VALUES ( '".$wmovhos."', '".$fecha."', '".$hora."', '".$his."', '".$ing."', '".$tdo."', '".$ndo."', '".$des."', '".$fecha."', '".$hora."', '".$tor."', '".$nro."', '".$ite."', '".mysql_escape_string( $msg )."',  'on'  ,'".$ack."' , 'C-".$wmovhos."' )
 			   ";
 			 
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ". mysql_error() );
@@ -436,7 +436,22 @@ function consultarDepartamento( $conex, $pais, $dep ){
 	
 	return $val;
 }
+function consultarNombrePlan($conex,$wcliame,$codigo){
+	
+	
+	
 
+	$sql = "SELECT Seldes
+			  FROM ".$wcliame."_000105 a
+			 WHERE Seltip ='16'
+			   AND SelCod = '".$codigo."'
+			";
+	
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	 $row = mysql_fetch_array( $res);
+	return  $row[0];
+
+}	
 function consultarPais( $conex, $codigo ){
 	
 	$val = '';
@@ -460,10 +475,11 @@ function consultarResponsable( $conex, $wcliame, $historia, $ingreso ){
 	
 	$val = [];
 	
-	$sql = "SELECT b.Empcod, b.Empnom , b.Empnit 
-			  FROM ".$wcliame."_000205 a, ".$wcliame."_000024 b 
+	$sql = "SELECT b.Empcod, b.Empnom , b.Empnit, b.Emptse,c.Temdes
+			  FROM ".$wcliame."_000205 a, ".$wcliame."_000024 b ,".$wcliame."_000029 c 
 			 WHERE a.reshis = '".$historia."' 
 			   AND a.resing = '".$ingreso."' 
+			   AND b.Emptem=c.Temcod
 			   AND b.Empcod = resnit 
 			   AND a.resord = 1
 			   AND a.resest = 'on'
@@ -475,6 +491,8 @@ function consultarResponsable( $conex, $wcliame, $historia, $ingreso ){
 		$val['codigoResponsable'] 	= $row[ 'Empcod' ];
 		$val['nombreResponsable']	= $row[ 'Empnom' ];
 		$val['nitResponsable']		= $row[ 'Empnit' ];
+		$val['tipoServicio']		= $row[ 'Emptse' ];
+	    $val['tipoEmpresa']         = $row[ 'Temdes' ];
 	}
 	
 	return $val;
@@ -513,8 +531,41 @@ function informacionMedico( $conex, $wbasedato, $wemp_pmla, $codigo ){
 	
 	return $medico;
 }
+function informacionMedicoArray( $conex, $wbasedato, $wemp_pmla, $codigo ){
 
+	
 
+	$q = "SELECT Meddoc, Medtdo, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Meduma, Medesp, a.id  
+			FROM ".$wbasedato."_000048 a
+		   WHERE Medest='on'
+			 AND Meduma = '".$codigo."'
+		GROUP BY Meddoc, Medtdo";
+
+	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
+	$num = mysql_num_rows($res);
+array();
+	if ($num > 0)
+	{
+		if( $info = mysql_fetch_assoc($res) ){
+				  $respuesta=array(
+					"tipoDocumento"=> $info['Medtdo'],
+					"numeroDocumento"	=> $info['Meddoc'],
+					"nombre1" => $info['Medno1'],
+					"nombre2" => $info['Medno2'],
+					"apellido1" => $info['Medap1'],
+					"apellido2" => $info['Medap2'],
+					"registroMedico" => $info['Medreg'],
+					"telefono" => utf8_encode($info['Medtel']),
+					"codigoEspecialidad" => $info['Medesp'],
+					"usuarioMatrix" => $info['Meduma'],
+					"id" => $info['id'],
+				 )  ;
+			
+		}
+	}
+	return $respuesta;
+
+}
 
 
 function informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso ){
@@ -525,9 +576,10 @@ function informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso ){
 	$wmovhos 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
 	$wcliame 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
 	
+	
 	$sql = "SELECT *
-			  FROM ".$wcliame."_000100 a, ".$wcliame."_000101 b
-			 WHERE pachis = '".$historia."'
+			  FROM ".$wcliame."_000100 a, ".$wcliame."_000101 b, root_000098 c
+              WHERE pachis = '".$historia."'
 			   AND Inghis = pachis
 			   AND Ingnin = '".$ingreso."'
 			";
@@ -551,7 +603,7 @@ function informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso ){
 				'nombre1'			=> $row['Pacno1'],
 				'nombre2' 			=> $row['Pacno2'],
 				'apellido1' 		=> $row['Pacap1'],
-				'apellido2' 		=> $row['Pacap2'],
+				'apellido2' 		=> $row['Pacap2'],	
 				'nombresCompletos' 	=> $nombresCompletos,
 				'apellidosCompletos'=> $apellidosCompletos,
 				'nombreCompleto' 	=> trim( $nombresCompletos." ".$apellidosCompletos ),
@@ -572,12 +624,144 @@ function informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso ){
 				'codigoResponsable'	=> $responsable['codigoResponsable'],
 				'nombreResponsable'	=> $responsable['nombreResponsable'],
 				'nitResponsable'	=> $responsable['nitResponsable'],
+				'tipoServicio'		=> $responsable['tipoServicio'],
+				'tipoEmpresa'       => $responsable['tipoEmpresa'],
 				'tarifa'			=> $row['Ingtar'],
 				'codigoBarrio'		=> $row['Pacbar'],
+				'raza' => $row['Petdes'],
+				'tipoPlan' => $row['Pactaf']!= null? consultarNombrePlan($conex, $wcliame, $row['Pactaf']): consultarNombrePlan($conex, $wcliame, 3),
+				'fechaAdmision'=>fechaAdmision($conex,$wemp_pmla,$historia,$ingreso),
 			];
 	}
 	
 	return $val;
 }
+function fechaAdmision($conex,$wemp_pmla,$his,$ing){
+		$wcliame 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+	
+	$sql = "SELECT a.Fecha_data, a.Hora_data
+			  FROM ".$wcliame."_000101 a
+			 WHERE Inghis = '".$his."'
+			   AND Ingnin = '".$ing."'
+			";
+	
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	$row = mysql_fetch_array( $res);
+	return date("Ymdhis", strtotime($row[0].$row[1]));
+	
+
+
+}
+function consultarNombreCups( $conex,$codigo){
+	 $sql = "SELECT a.Nombre
+			  FROM root_000012 a
+			 WHERE a.Codigo = '".$codigo."'
+			    ";
+	
+	$res 	= mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	$rows = mysql_fetch_array( $res );
+	return $rows[0];
+}
+
+function consultarEstudios( $conex, $whce,$wcliame, $tor, $nro,$paciente ){
+	
+	$val =[];
+	
+	//Consulto si existe cups ofertados por tipo de orden
+	$sql = "SELECT b.Codigo,a.Detite,CONCAT(a.Fecha_data, a.Hora_data)as fechaOrden,a.Detjus,a.Detesi
+			  FROM ".$whce."_000028 a, root_000012 b
+			 WHERE Dettor = '".$tor."'
+			   AND Detnro = '".$nro."'
+			   AND Detcod = Codigo
+			   AND b.Estado='ON'
+			 ";
+	
+	$res 	= mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	
+	while( $rows = mysql_fetch_array( $res ) ){
+		$val[]=["cups"=>$rows[0],"nombreCups"=> consultarNombreCups($conex,$rows[0]),"numeroItemEnOrden"=>$rows[1], "fechaOrdenamiento"=>$rows[2],"numeroOrden"=>$nro,"tipoOrden"=>$tor,"justificacionEstudio"=>$rows[3],"estadoEstudio"=>$rows[4],"tarifaEstudio"=>consultarTarifaPorprocedimiento($conex,$wcliame,$rows[0],$paciente['tarifa'],$paciente['servicioActual'])];
+	}
+	return $val;
+	
+	
+}
+
+function consultarInteroperabilidades($conex,$wemp_pmla){
+	
+		$val=[];
+
+	
+		$val[]=consultarAliasPorAplicacion( $conex, $wemp_pmla, "interoperabilidadRis" );
+		$val[]=consultarAliasPorAplicacion( $conex, $wemp_pmla, "interoperabilidadLis" );
+	
+	return $val;
+	
+	
+}
+function consultarTarifaPorprocedimiento($conex , $wcliame,$cups,$tarifa,$servicioActual){
+
+	$sql = "SELECT Tarvac,Tarvan,Tarfec,Tarcco
+				  FROM ".$wcliame."_000104 a
+				 WHERE a.Tarcod = '".$cups."'
+				   AND a.Tartar = '".$tarifa."'";
+			$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+			
+			
+			$retorno=0;//variable para controlar el retorno en caso de que existan mas de 1 registro
+			while( $rows = mysql_fetch_array( $res ) ){
+				if($rows[3]==$servicioActual && $retorno==0 ){//Si se encuentra el centro de costo se retorna la tarifa para dicho centro de costo
+				if(date("Y-m-d")>= $rows[2]){
+					return $rows[0];
+					}else{
+					 return $rows[1];
+					}	
+				$retorno=1;
+			}elseif($rows[3]=="*" && $retorno==0){
+				if(date("Y-m-d")>= $rows[2]){
+					return $rows[0];
+					}else{
+					 return $rows[1];
+					}	
+			 $retorno=1;	
+			}
+			}
+			
+		
+}
+function consultarTipoOrdenenviarPoringreso($conex,$whce,$historia,$ingreso){
+	$val=[];
+	$sql = "SELECT DISTINCT a.Dettor
+				  FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c
+				 WHERE a.Detcod = b.codigo
+				   AND a.Detenv = 'on'
+				   AND a.Detest = 'on'
+				   AND b.Estado = 'on'
+				   AND b.Codcups= c.Codigo
+				   AND d.Ordtor = a.Dettor
+				   AND d.Ordnro = a.Detnro
+				   AND d.Ordhis = '".$historia."'
+				   AND d.Ording = '".$ingreso."'";
+			$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+			
+			while( $rows = mysql_fetch_array( $res ) ){
+				$val[]=$rows[0];
+			}
+			return $val;
+}
+ switch($_GET['accion']) {
+    case 'consultarInteroperabilidades':
+		$wemp_pmla=$_GET['wemp_pmla'];
+        print_r(consultarInteroperabilidades($conex,$wemp_pmla));
+        break;
+  /*  case 'consultarTipoOrdenenviarPoringreso':
+		$historia=$_GET['historia'];
+	    $ingreso=$_GET['ingreso'];
+		$wemp_pmla=$_GET['wemp_pmla'];
+		$whce=consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce' );
+        print_r(consultarTipoOrdenenviarPoringreso($conex,$whce,$historia,$ingreso));
+        break;*/
+   
+} 
+	
 
 
