@@ -3648,8 +3648,9 @@ else
 															 *Descripción: se realiza llamado de factura inteligente.
 															 *Autor: sebastian.nevado
 															*/
+															$sNombreArticulo = substr($var, strlen($exp[0]."-"), strlen($var)-1);
 															echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
-															$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $var, $art['can'], $tipTrans);
+															$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $sNombreArticulo, $art['can'], $tipTrans);
 															if(!$aResultadoFactInteligente->exito)
 															{
 																echo $aResultadoFactInteligente->mensaje;
@@ -3841,8 +3842,9 @@ else
 																 *Descripción: se realiza llamado de factura inteligente.
 																 *Autor: sebastian.nevado
 																*/
+																$sNombreArticulo = substr($var, strlen($exp[0]."-"), strlen($var)-1);
 																echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
-																$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $var, $art['can'], $tipTrans);
+																$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $sNombreArticulo, $art['can'], $tipTrans);
 																if(!$aResultadoFactInteligente->exito)
 																{
 																	echo $aResultadoFactInteligente->mensaje;
