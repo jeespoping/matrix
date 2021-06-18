@@ -80,7 +80,7 @@
 </head>
 <body>
 <?php
-echo "<br>Inicio 83<br>"; //##BORRAR_SEBASTIAN_NEVADO
+//echo "<br>Inicio 83<br>"; //##BORRAR_SEBASTIAN_NEVADO
 include_once("conex.php");
 /****************************************************************************************************************************************
  *
@@ -422,7 +422,7 @@ function consultarCantidadANoDevolver( $conex, $wbasedato, $art, $his, $ing, $cc
 
 function procesoDevMatrix($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTrans, $aprov,$usuario,&$error)
 {
-	echo "<br>procesoDevMatrix 424<br>"; //##BORRAR_SEBASTIAN_NEVADO
+	//echo "<br>procesoDevMatrix 424<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	global $bd;
 	global $conex;
 	global $ccoUsu;
@@ -432,10 +432,10 @@ function procesoDevMatrix($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $
 
 	if( validacionDevolucion($cco,$pac,$art,$aprov,false,$error))
 	{
-		echo "<br>If validacionDevolucion 434<br>"; //##BORRAR_SEBASTIAN_NEVADO
+		//echo "<br>If validacionDevolucion 434<br>"; //##BORRAR_SEBASTIAN_NEVADO
 		if(TarifaSaldoMatrix($art,$cco,"D",$aprov,$error))
 		{
-			echo "<br>If TarifaSaldoMatrix 437<br>"; //##BORRAR_SEBASTIAN_NEVADO
+			//echo "<br>If TarifaSaldoMatrix 437<br>"; //##BORRAR_SEBASTIAN_NEVADO
 			$dronum="";
 			$drolin="";
 			$date=date("Y-m-d");
@@ -451,7 +451,7 @@ function procesoDevMatrix($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $
 
 			if(Numeracion($pac, $fuente, 'D', $aprov, $cco, $date, $cns, $dronum, $drolin, $pac['dxv'], $usuario, $error ))
 			{	
-				echo "<br>Llamo la facturación inteligente 450<br>"; //##BORRAR_SEBASTIAN_NEVADO
+				//echo "<br>Llamo la facturación inteligente 450<br>"; //##BORRAR_SEBASTIAN_NEVADO
 				CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 				
 				$wcenpro = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
@@ -562,7 +562,7 @@ function procesoDevMatrix($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $
 		}
 		else
 		{
-			echo "<br>Else TarifaSaldoMatrix 437<br>"; //##BORRAR_SEBASTIAN_NEVADO
+			//echo "<br>Else TarifaSaldoMatrix 437<br>"; //##BORRAR_SEBASTIAN_NEVADO
 			//Sin tarifa, saldo
 			return(false);
 		}
@@ -2222,7 +2222,7 @@ function Carro($pac, $cco, $aprov, $art)
  */
 function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTrans, $aprov,$usuario,&$error)
 {
-	echo "<br>procesoDev 2220<br>"; //##BORRAR_SEBASTIAN_NEVADO
+	//echo "<br>procesoDev 2220<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	global $bd;
 	global $conex;
 	global $ccoUsu;
@@ -2233,10 +2233,10 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 
 	if( validacionDevolucion($cco,$pac,$art,$aprov,false,$error))
 	{
-		echo "<br>validacionDevolucion 2231<br>"; //##BORRAR_SEBASTIAN_NEVADO
+		//echo "<br>validacionDevolucion 2231<br>"; //##BORRAR_SEBASTIAN_NEVADO
 		if(TarifaSaldo($art,$cco,"D",$aprov,$error))
 		{
-			echo "<br>TarifaSaldo 2234<br>"; //##BORRAR_SEBASTIAN_NEVADO
+			//echo "<br>TarifaSaldo 2234<br>"; //##BORRAR_SEBASTIAN_NEVADO
 			$dronum="";
 			$drolin="";
 			$date=date("Y-m-d");
@@ -2252,7 +2252,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 
 			if(Numeracion($pac, $fuente, 'D', $aprov, $cco, $date, $cns, $dronum, $drolin, $pac['dxv'], $usuario, $error ))
 			{
-				echo "<br>Numeracion 2250<br>"; //##BORRAR_SEBASTIAN_NEVADO
+				//echo "<br>Numeracion 2250<br>"; //##BORRAR_SEBASTIAN_NEVADO
 				$wcenpro = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
 				$art['fra'] = 1;
 				
@@ -2273,7 +2273,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 				// }
 
 				if( @mysql_num_rows( $reInsProducto ) == 0 || !$admiteEquivalencia ){
-					echo "<br>If reInsProducto 2271<br>"; //##BORRAR_SEBASTIAN_NEVADO
+					//echo "<br>If reInsProducto 2271<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 					/****************************************************************************
 					 * Noviembre 12 de 2013
@@ -2290,7 +2290,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 					/****************************************************************************/
 					$artValido =registrarItdro($dronum, $drolin, $fuente, $date, $cco, $pac, $art, $error);
 					//Octubre 13 de 2015. Cargos ERp
-					echo "<br>Llamo la facturación inteligente 2283<br>"; //##BORRAR_SEBASTIAN_NEVADO
+					//echo "<br>Llamo la facturación inteligente 2283<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 
 					/************************************************************************************
@@ -2325,7 +2325,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 					/************************************************************************************/
 				}
 				else{
-					echo "<br>Else reInsProducto 2323<br>"; //##BORRAR_SEBASTIAN_NEVADO
+					//echo "<br>Else reInsProducto 2323<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					registrarInsumosProducto( $reInsProducto, $cco, $dronum, $drolin, $fuente, $date, $pac, $art, $error, $tipTrans, $aprov );
 
 					//Se hace un ajuste de entrada para cada uno de los insumos igual a la cantidad dispensado
@@ -2334,7 +2334,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntradaDevolucion" ) );
 					}
 					ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
-					echo "<br>Llamo la facturación inteligente 2326<br>"; //##BORRAR_SEBASTIAN_NEVADO
+					//echo "<br>Llamo la facturación inteligente 2326<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 					
 					$artValido = true;
@@ -2343,28 +2343,28 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 				// if(registrarItdro($dronum, $drolin, $fuente, $date, $cco, $pac, $art, &$error))
 				if( $artValido )
 				{
-					echo "<br>If artValido 2341<br>"; //##BORRAR_SEBASTIAN_NEVADO
+					//echo "<br>If artValido 2341<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					$art['ubi']='US';
 					$art['ini']=$art['cod'];
 					//Mover elsaldo en la tabla de saldos normales.
 					$art['lot']=" ";
 					if(registrarDetalleCargo($date, $dronum, $drolin, $art, $usuario,$error))
 					{
-						echo "<br>If registrarDetalleCargo 2348<br>"; //##BORRAR_SEBASTIAN_NEVADO
+						//echo "<br>If registrarDetalleCargo 2348<br>"; //##BORRAR_SEBASTIAN_NEVADO
 						if(registrarSaldosNoApl($pac,$art,$cco,$aprov,$usuario,"D",false,$error))
 						{
-							echo "<br>If registrarSaldosNoApl 2351<br>"; //##BORRAR_SEBASTIAN_NEVADO
+							//echo "<br>If registrarSaldosNoApl 2351<br>"; //##BORRAR_SEBASTIAN_NEVADO
 							/******************************************************************************************************
 							 * Abril 15 de 2013
 							 ******************************************************************************************************/
 							$resAut = consultarArticulosACargarAutomaticamente( $art['cod'] );
 
 							if( $resAut ){
-								echo "<br>If resAut 2358<br>"; //##BORRAR_SEBASTIAN_NEVADO
+								//echo "<br>If resAut 2358<br>"; //##BORRAR_SEBASTIAN_NEVADO
 								$numResAut = mysql_num_rows( $resAut );
 
 								if( $numResAut > 0 ){
-									echo "<br>If numResAut 2362<br>"; //##BORRAR_SEBASTIAN_NEVADO
+									//echo "<br>If numResAut 2362<br>"; //##BORRAR_SEBASTIAN_NEVADO
 									while( $rowsResAut = mysql_fetch_array( $resAut ) ){
 
 										$art2['cod'] = $rowsResAut[ 'Artcod' ];
@@ -2570,10 +2570,10 @@ else
 			/****************************************************************************************
 			 * Con conexion con Unix
 			 ****************************************************************************************/
-			echo "<br>Conexion Unix 2573<br>"; //##BORRAR_SEBASTIAN_NEVADO
+			//echo "<br>Conexion Unix 2573<br>"; //##BORRAR_SEBASTIAN_NEVADO
 			if(!isset($historia))
 			{
-				echo "<br>If historia 2576<br>"; //##BORRAR_SEBASTIAN_NEVADO
+				//echo "<br>If historia 2576<br>"; //##BORRAR_SEBASTIAN_NEVADO
 				echo "<center><table border='0' width='300' align='center'>";
 				echo "<form name='devApl' action='' method='POST'> ";
 				if(!isset($ccoCod))
@@ -2651,7 +2651,7 @@ else
 
 				if($ok)
 				{
-					echo "<br>If OK 2653<br>"; //##BORRAR_SEBASTIAN_NEVADO
+					//echo "<br>If OK 2653<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					if($cco['sel'])
 					{
 						echo "<tr><td class='titulo1'>USUARIO: ".$usuario;
@@ -2704,7 +2704,7 @@ else
 			}
 			else
 			{
-				echo "<br>Else historia 2707<br>"; //##BORRAR_SEBASTIAN_NEVADO
+				//echo "<br>Else historia 2707<br>"; //##BORRAR_SEBASTIAN_NEVADO
 				if($historia != "")
 				{
 					$pac['his']=ltrim(rtrim($historia));
@@ -2742,7 +2742,7 @@ else
 					
 					if( $pac['act'] )
 					{
-						echo "<br>If Paciente act 2745<br>"; //##BORRAR_SEBASTIAN_NEVADO
+						//echo "<br>If Paciente act 2745<br>"; //##BORRAR_SEBASTIAN_NEVADO
 						/************************************************************************************
 						 * Marzo 17 de 2015
 						 ************************************************************************************/
@@ -2853,7 +2853,7 @@ else
 
 					if($total>0)
 					{
-						echo "<br>If total>0 2856<br>"; //##BORRAR_SEBASTIAN_NEVADO
+						//echo "<br>If total>0 2856<br>"; //##BORRAR_SEBASTIAN_NEVADO
 						$procesar=true;
 						$eligioAlMenosUno=false;//Mínimodebe haber elegido un artículo para devolver.
 						//Ciclo que recorre los artículos
@@ -2909,10 +2909,10 @@ else
 
 					if($total>0)
 					{
-						echo "<br>If total>0 2911<br>"; //##BORRAR_SEBASTIAN_NEVADO
+						//echo "<br>If total>0 2911<br>"; //##BORRAR_SEBASTIAN_NEVADO
 						if($eligioAlMenosUno and $procesar and isset($aceptar))
 						{
-							echo "<br>If procesar 2914<br>"; //##BORRAR_SEBASTIAN_NEVADO
+							//echo "<br>If procesar 2914<br>"; //##BORRAR_SEBASTIAN_NEVADO
 							//Generar el número de la devolucion
 							$okDevCons = devCons($devCons,$ccoUsu,$pac,$usuario);
 							if($okDevCons)
@@ -2989,10 +2989,10 @@ else
 										*/
 										if( $array[$i]['cco'][$j]['fueA']['cdv']>0)
 										{
-											echo "<br>If fueA cdv 2992<br>"; //##BORRAR_SEBASTIAN_NEVADO
+											//echo "<br>If fueA cdv 2992<br>"; //##BORRAR_SEBASTIAN_NEVADO
 											if( $array[$i]['art']['cmz'] or $cco[$codCco]['ima'])
 											{
-												echo "<br>If CMZ o IMA 2995<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>If CMZ o IMA 2995<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												/**
 												 * Si el código del artículo fue encontrado en la central o el centro de costos
 												 * tiene inventario por MATRIX entonces la devolución se realiza de otra forma.
@@ -3011,9 +3011,9 @@ else
 														$dronum="";
 														$drolin="";
 														
-														echo "<br>Devolucion DM 3011<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														//echo "<br>Devolucion DM 3011<br>"; //##BORRAR_SEBASTIAN_NEVADO
 														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
-														echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														//echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
 														/**************************************************
 														 *Fecha: 2021-06-18
 														 *Descripción: se realiza llamado de factura inteligente.
@@ -3048,7 +3048,7 @@ else
 																$ok=false;
 															}
 															else{
-																echo "<br>Else Movimiento de devoluciones 3041<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																//echo "<br>Else Movimiento de devoluciones 3041<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																$articulosDevueltos++;
 																if( !$solicitudCamillero ){
 																	if( esTraslado( $cco[$codCco]['cod'] ) && true ){
@@ -3072,7 +3072,7 @@ else
 											}
 											else
 											{
-												echo "<br>Else CMZ o IMA 3065<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>Else CMZ o IMA 3065<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												$array[$i]['art']['can'] = $array[$i]['cco'][$j]['fueA']['cdv'];
 												$ok=procesoDev($devCons, $pac,$array[$i]['art'],$array[$i]['cco'][$j]['fueA']['jde'],$array[$i]['cco'][$j]['fueA']['cfa'],$array[$i]['cco'][$j]['fueA']['jfa'],$cco[$codCco],"D",true,$usuario,$error);
 
@@ -3095,7 +3095,7 @@ else
 											}
 											else
 											{
-												echo "<br>Devolución Exitosa 3088<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>Devolución Exitosa 3088<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												$array[$i]['cco'][$j]['fueA']['msg']="LA DEVOLUCIÓN FUE REALIZADA CON EXITO.<br><IMG SRC='/matrix/images/medical/root/feliz.ico'>";
 												$array[$i]['cco'][$j]['fueA']['class'] = "exito";
 											}
@@ -3107,7 +3107,7 @@ else
 										 */
 										if($array[$i]['cco'][$j]['fueA']['cds']>0)
 										{
-											echo "<br>Descarte 3103<br>"; //##BORRAR_SEBASTIAN_NEVADO
+											//echo "<br>Descarte 3103<br>"; //##BORRAR_SEBASTIAN_NEVADO
 											/**
                                          * El decarte debe ser un movimiento en el saldo del artículo para el centro de costos y la fuente y
                                          * ademas debe ser un registro de ajuste de aplicación, es decir un registro en la tabla de aplicación donde Aplaap='on'
@@ -3225,10 +3225,10 @@ else
 														$wbasdat="cenpro";
 														$dronum="";
 														$drolin="";
-														echo "<br>devolucionCM 3222<br>"; //##BORRAR_SEBASTIAN_NEVADO
-														print_r($array[$i]['art']); //##BORRAR_SEBASTIAN_NEVADO
+														//echo "<br>devolucionCM 3222<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														//print_r($array[$i]['art']); //##BORRAR_SEBASTIAN_NEVADO
 														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
-														echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														//echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
 														/**************************************************
 														 *Fecha: 2021-06-18
 														 *Descripción: se realiza llamado de factura inteligente.
@@ -3291,9 +3291,9 @@ else
 											}
 											else
 											{
-												echo "<br>ELSE 3279<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>ELSE 3279<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												$array[$i]['art']['can'] = $array[$i]['cco'][$j]['fueS']['cdv'];
-												echo "<br>Devolución Exitosa 3281".$array[$i]['art']['can']."<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>Devolución Exitosa 3281".$array[$i]['art']['can']."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												$ok=procesoDev($devCons, $pac,$array[$i]['art'],$array[$i]['cco'][$j]['fueS']['jde'],$array[$i]['cco'][$j]['fueS']['cfa'],$array[$i]['cco'][$j]['fueS']['jfa'],$cco[$codCco],"D",false,$usuario,$error);
 
 												//Agosto 16 de 2011
@@ -3312,13 +3312,13 @@ else
 											if(!$ok)
 											{
 												//Hubo un error
-												echo "<br>Devolución Error 3299<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>Devolución Error 3299<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												$array[$i]['cco'][$j]['fueS']['class'] = "error";
 												$array[$i]['cco'][$j]['fueS']['msg'] = $error['ok']."<br><IMG SRC='/matrix/images/medical/root/Malo.ico'>";
 											}
 											else
 											{
-												echo "<br>Devolución Exitosa 3302<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>Devolución Exitosa 3302<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												$array[$i]['cco'][$j]['fueS']['msg']="LA DEVOLUCIÓN FUE REALIZADA CON EXITO <br><IMG SRC='/matrix/images/medical/root/feliz.ico'>";
 												$array[$i]['cco'][$j]['fueS']['class'] = "exito";
 											}
@@ -4011,7 +4011,7 @@ else
 														$dronum="";
 														$drolin="";
 														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
-														echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														//echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
 														/**************************************************
 														 *Fecha: 2021-06-18
 														 *Descripción: se realiza llamado de factura inteligente.
@@ -4072,7 +4072,7 @@ else
 											else
 											{
 												$array[$i]['art']['can'] = $array[$i]['cco'][$j]['fueA']['cdv'];
-												echo "<br>Llamado procesoDevMatrix<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>Llamado procesoDevMatrix<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												die("Llamado procesoDevMatrix");
 												$ok=procesoDevMatrix($devCons, $pac,$array[$i]['art'],$array[$i]['cco'][$j]['fueA']['jde'],$array[$i]['cco'][$j]['fueA']['cfa'],$array[$i]['cco'][$j]['fueA']['jfa'],$cco[$codCco],"D",true,$usuario,$error);
 
@@ -4095,7 +4095,7 @@ else
 											}
 											else
 											{
-												echo "<br>Devolución Exitosa 4072<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>Devolución Exitosa 4072<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												$array[$i]['cco'][$j]['fueA']['msg']="LA DEVOLUCIÓN FUE REALIZADA CON EXITO.<br><IMG SRC='/matrix/images/medical/root/feliz.ico'>";
 												$array[$i]['cco'][$j]['fueA']['class'] = "exito";
 											}
@@ -4225,7 +4225,7 @@ else
 														$dronum="";
 														$drolin="";
 														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
-														echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														//echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
 														/**************************************************
 														 *Fecha: 2021-06-18
 														 *Descripción: se realiza llamado de factura inteligente.
@@ -4313,7 +4313,7 @@ else
 											}
 											else
 											{
-												echo "<br>Devolución Exitosa 4283<br>"; //##BORRAR_SEBASTIAN_NEVADO
+												//echo "<br>Devolución Exitosa 4283<br>"; //##BORRAR_SEBASTIAN_NEVADO
 												$array[$i]['cco'][$j]['fueS']['msg']="LA DEVOLUCIÓN FUE REALIZADA CON EXITO <br><IMG SRC='/matrix/images/medical/root/feliz.ico'>";
 												$array[$i]['cco'][$j]['fueS']['class'] = "exito";
 											}
