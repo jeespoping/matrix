@@ -452,7 +452,7 @@ function procesoDevMatrix($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $
 			if(Numeracion($pac, $fuente, 'D', $aprov, $cco, $date, $cns, $dronum, $drolin, $pac['dxv'], $usuario, $error ))
 			{	
 				echo "<br>Llamo la facturación inteligente 450<br>"; //##BORRAR_SEBASTIAN_NEVADO
-				CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+				CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 				
 				$wcenpro = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
 				
@@ -2223,7 +2223,6 @@ function Carro($pac, $cco, $aprov, $art)
 function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTrans, $aprov,$usuario,&$error)
 {
 	echo "<br>procesoDev 2220<br>"; //##BORRAR_SEBASTIAN_NEVADO
-	return(false);
 	global $bd;
 	global $conex;
 	global $ccoUsu;
@@ -2292,7 +2291,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 					$artValido =registrarItdro($dronum, $drolin, $fuente, $date, $cco, $pac, $art, $error);
 					//Octubre 13 de 2015. Cargos ERp
 					echo "<br>Llamo la facturación inteligente 2283<br>"; //##BORRAR_SEBASTIAN_NEVADO
-					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 
 					/************************************************************************************
 					 * Febrero 27 de 2014
@@ -2336,7 +2335,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 					}
 					ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
 					echo "<br>Llamo la facturación inteligente 2326<br>"; //##BORRAR_SEBASTIAN_NEVADO
-					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 					
 					$artValido = true;
 				}
@@ -3222,6 +3221,7 @@ else
 														$dronum="";
 														$drolin="";
 														echo "<br>devolucionCM 3222<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														print_r($array[$i]['art']); //##BORRAR_SEBASTIAN_NEVADO
 														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
 														echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
 														CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
