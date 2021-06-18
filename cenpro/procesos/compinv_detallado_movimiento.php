@@ -28,24 +28,49 @@
 /******************************************************************************************************************************************
  * Modificaciones
  *
+ * 2021-06-16	Edwin MG : Se realiza cambios para que los productos devueltos (Se identifican con concepto 05) NO realice un producto
+ *						   cartesiano
  * 2020-03-20	Edwin MG : Se registra en tabla nueva DETALLE ARTICULO - GENERACION DE INVENTARIO (cenpro_000024) el comprobante
  *						   de inventario detallada por articulos
  ******************************************************************************************************************************************/
 
 include_once("conex.php");
+include_once("root/comun.php");
 
-function consultarDatosFiltros( $conex, $wcenmez ){
+function consultarDatosFiltros( $conex, $wcenmez, $wmovhos ){
 
+	// $val = [ 
+			// 'fuentes' 	=> [],  
+			// 'conceptos' => [],  
+			// 'cuentas' 	=> [],  
+			// 'ccos' 		=> [ 
+					// '1051' => '1051',
+					// '1050' => '1050',
+					// '1060' => '1060',
+				// ],  
+		// ];
+		
 	$val = [ 
 			'fuentes' 	=> [],  
 			'conceptos' => [],  
 			'cuentas' 	=> [],  
-			'ccos' 		=> [ 
-					'1051' => '1051',
-					'1050' => '1050',
-					'1060' => '1060',
-				],  
+			'ccos' 		=> [],  
 		];
+		
+	$sql = "SELECT Ccocod, Ccoima
+			  FROM ".$wmovhos."_000011
+			 WHERE ccoest  = 'on'
+			   AND ccotra  = 'on'
+			   AND ccodom != 'on'
+		  ORDER BY Ccoima DESC
+			";
+
+	$res = mysql_query( $sql, $conex );
+
+	while( $rows = mysql_fetch_array( $res ) ){
+		$val['ccos'][$rows['Ccocod']] = $rows['Ccocod'];
+	}
+
 
 	$sql = "SELECT Icccon, Iccfue, Icccde
 			  FROM ".$wcenmez."_000013
@@ -71,7 +96,7 @@ function consultarDatosFiltros( $conex, $wcenmez ){
 	return $val;
 }
 
-function consultarUsuario( $conex, $cod ){
+function consultarUsuarioCenpro( $conex, $cod ){
 
 	$val = "";
 
@@ -108,7 +133,8 @@ function consultarArticulo( $conex, $wmovhos, $cod ){
 }
 
 function calcularValorProducto($cantidad, $lote, &$debito1, &$credito1, &$debito2, &$credito2, $concepto, $numli, &$articulos, $extra )
-{
+{ 
+	//echo "Entro....";
 	global $conex;
 	global $empresa;
 	global $articulos_por_presentacion;
@@ -116,8 +142,8 @@ function calcularValorProducto($cantidad, $lote, &$debito1, &$credito1, &$debito
 
 	$query = "SELECT Mdeart, Mdecan, Mdepre, fecha_data, Mdecon, Seguridad from ".$empresa."_000007 ";
 	$query .= " where  Mdecon='".$concepto."'";
-	$query .= "   and  Mdenlo='".$lote."'";
-	//echo $query;
+	$query .= "   and  Mdenlo='".$lote."'"; 
+// echo "<br>3: ".$query;
 	$err2 = mysql_query($query,$conex);
 	$num2 = mysql_num_rows($err2);
 
@@ -152,6 +178,7 @@ function calcularValorProducto($cantidad, $lote, &$debito1, &$credito1, &$debito
 				$row[2] = $articulos_por_presentacion[ $row2[2] ][ $row2[0] ]['mat'];
 			}
 
+			//if($row[2]=='on' and $numli>1)
 			if($row[2]=='on' and $numli>1)
 			{
 
@@ -175,7 +202,7 @@ function calcularValorProducto($cantidad, $lote, &$debito1, &$credito1, &$debito
 							];
 			}
 			else
-			{
+			{	
 				$debito1 +=$row[0]*$row2[1]*$cantidad/($row[1]*$rowp[0]);
 				$credito1 +=$row[0]*$row2[1]*$cantidad/($row[1]*$rowp[0]);
 
@@ -219,15 +246,15 @@ echo "error";
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='compinv' action='compinv_detallado_movimiento.php' method=post>";
+	echo "<form name='compinv' action='compinv_detallado_movimiento.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
-
+	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 
 
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	if(!isset($wfeci) or !isset($wfecf) or !isset($wano) or !isset($wmes))
 	{
-		$consultarDatosFiltros = consultarDatosFiltros( $conex, "cenpro" );
+		$consultarDatosFiltros = consultarDatosFiltros( $conex, $empresa, $wmovhos );
 		
 		echo "<center><table border=0 class='table_datos'>";
 		echo "<tr><td class='texto5' colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
@@ -298,6 +325,18 @@ else
 		// $cco_filtro = '1051';
 		// $cuenta_filtro = '14300503';
 		// $naturaleza_filtro = '1';
+		
+		//Consultando concepto de devolucion
+		$query = "SELECT concod 
+					FROM ".$empresa."_000008 
+				   WHERE conind='1' 
+				     AND concar='on' ";
+
+		$res = mysql_query($query,$conex) or die( "No se encuentra el concepto de devolución" );
+		
+		$rows = mysql_fetch_array( $res );
+		
+		$conDevolucion = $rows[ 'concod' ];
 
 
 		$datos_por_funte = [];
@@ -325,9 +364,9 @@ else
 			$query = "SELECT   Mencon, Menfec, Mendoc, Mencco, Menccd, Congec from ".$empresa."_000006,".$empresa."_000008 ";
 			$query .= " where  Menfec between '".$wfeci."' and '".$wfecf."'";
 			$query .= "     and   Mencon=Concod ";
-			$query .= "     and   Congec='on' ";
+			$query .= "     and   Congec='on'"; // and mendoc = '85640'
 			$query .= "    Order by Mencon, Mendoc ";
-
+// echo "<br><br><br>0:".$query;
 			$err = mysql_query($query,$conex) or die (mysql_errno().":".mysql_error());
 
 			/*		//ACA CREO UNA TABLA TEMPORAL CON TODOS LOS MOVIMIENTOS
@@ -369,7 +408,7 @@ else
 				$query = "SELECT  Iccfue, Icccde, Iccccd, Iccted, Iccccr, Iccccc, Icctec, Icclin, Iccnig, Iccbad, Iccbac from ".$empresa."_000013 ";
 				$query .= " where  Icccon='".$row[0]."' ";
 				$query .= "    Order by Icclin ";
-
+// echo "<br><br>1:".$query;
 				$errli = mysql_query($query,$conex) or die (mysql_errno().":".mysql_error());
 				$numli = mysql_num_rows($errli);
 				$rowli = mysql_fetch_array($errli);
@@ -489,7 +528,7 @@ else
 				$query .= "     and   Mdedoc='".$row[2]."'";
 				$query .= "     and   Mdeart=artcod ";
 				$query .= "     and   Arttip=Tipcod ";
-
+// echo "<br>2:".$query;
 				$err1 = mysql_query($query,$conex);
 				$num1 = mysql_num_rows($err1);
 
@@ -499,6 +538,18 @@ else
 
 					if($row1[1]=='on')
 					{
+						// Esto si es un producto
+						
+						/**
+						 * Si el concepto es el de devolución ( Concepto 05 al momento de realizar el cambio )
+						 * La cantidad del lote siempre es 1
+						 * Esto debido a que al realizar la devolución de un producto, la cantidad es siempre 1.
+						 * Por ejemplo si es el programa de devolución de enfermería se hace una devolución de un producto, 
+						 * realiza el mismo procedimiento tantas veces sea necesario
+						 */
+						if( $conDevolucion == $row[2] )
+							$row1[3] = 1;
+						
 						//consultamos el movimiento de fabricación del lotes
 						$query = "SELECT concod from   ".$empresa."_000008 ";
 						$query .= " where  conind='-1' and congas='on' ";
@@ -508,11 +559,14 @@ else
 
 						//consultamos los valores para productos codificados
 						//para esto hay que desglosarlo primero en insumos
-						$res=calcularValorProducto($row1[3],$row1[4],$wtotd1, $wtotc1, $wtotd2, $wtotc2, $row2[0], $numli, $articulos, [ 'con' => $row1['Mdecon'], 'doc' => $row1['Mdedoc'] , 'usu' => $row1['Seguridad'], 'anx' => $row['Menccd'] ] );
-
+						if( empty( $lotes[$row1[4]."-".$row1[9]] ) )
+							$res=calcularValorProducto($row1[3],$row1[4],$wtotd1, $wtotc1, $wtotd2, $wtotc2, $row2[0], $numli, $articulos, [ 'con' => $row1['Mdecon'], 'doc' => $row1['Mdedoc'] , 'usu' => $row1['Seguridad'], 'anx' => $row['Menccd'] ] );
+						$lotes[$row1[4]."-".$row1[9]] = 1;
 					}
 					else if($row1[1] != 'on')
 					{
+						//Cuando no es un producto....
+						
 						$exp=explode( '-', strtoupper( $row1[2] ) );	//presentacion del insumo
 						$cod=explode( '-', strtoupper( $row1[0] ) );	//codigo del insumo
 
@@ -541,17 +595,17 @@ else
 
 						if($row1[5]=='on' and $numli>1)
 						{
-							$wtotd2 +=$row2[0]*$row1[3]/$row2[1];
-							$wtotc2 +=$row2[0]*$row1[3]/$row2[1];
+							@$wtotd2 +=$row2[0]*$row1[3]/$row2[1];
+							@$wtotc2 +=$row2[0]*$row1[3]/$row2[1];
 
-							$articulos[ 'fuente2' ][ $exp[0] ] +=$row2[0]*$row1[3]/$row2[1];
+							@$articulos[ 'fuente2' ][ $exp[0] ] +=$row2[0]*$row1[3]/$row2[1];
 
 							$datos_por_funte[ 'fuente2' ][] = [
 								'concepto' 	=> $row1[7],
 								'fecha' 	=> $row1[6],
 								'codigo' 	=> $exp[0],
 								'cantidad' 	=> $row1[3],
-								'valor' 	=> round( $row2[0]*$row1[3]/$row2[1], 2 ),
+								'valor' 	=> @round( $row2[0]*$row1[3]/$row2[1], 2 ),
 								'usuario' 	=> $row1[8],
 								'documento'	=> $row1['Mdecon']."-".$row1['Mdedoc'],
 								'producto'	=> explode( "-", $row1['Mdenlo'] )[1],
@@ -562,6 +616,7 @@ else
 						}
 						else
 						{
+
 							$wtotd1 +=$row2[0]*$row1[3]/$row2[1];
 							$wtotc1 +=$row2[0]*$row1[3]/$row2[1];
 
@@ -594,8 +649,8 @@ else
 
 						foreach( $datos_por_funte['fuente1'] as $key => $dato )
 						{
-							$articulo = consultarArticulo( $conex, "movhos", $dato['codigo'] );
-							$usuario = consultarUsuario( $conex, explode( "-", $dato['usuario'] )[1] );
+							$articulo = consultarArticulo( $conex, $wmovhos, $dato['codigo'] );
+							$usuario = consultarUsuarioCenpro( $conex, explode( "-", $dato['usuario'] )[1] );
 
 							$datos_totales_por_funte[] = [
 										'fecha' 			=> $dato['fecha'],
@@ -629,8 +684,8 @@ else
 
 						foreach( $datos_por_funte['fuente1'] as $key => $dato )
 						{
-							$articulo = consultarArticulo( $conex, "movhos", $dato['codigo'] );
-							$usuario = consultarUsuario( $conex, explode( "-", $dato['usuario'] )[1] );
+							$articulo = consultarArticulo( $conex, $wmovhos, $dato['codigo'] );
+							$usuario = consultarUsuarioCenpro( $conex, explode( "-", $dato['usuario'] )[1] );
 
 							$datos_totales_por_funte[] = [
 										'fecha' 			=> $dato['fecha'],
@@ -669,8 +724,8 @@ else
 
 						foreach( $datos_por_funte['fuente2'] as $key => $dato )
 						{
-							$articulo = consultarArticulo( $conex, "movhos", $dato['codigo'] );
-							$usuario = consultarUsuario( $conex, explode( "-", $dato['usuario'] )[1] );
+							$articulo = consultarArticulo( $conex, $wmovhos, $dato['codigo'] );
+							$usuario = consultarUsuarioCenpro( $conex, explode( "-", $dato['usuario'] )[1] );
 
 							$datos_totales_por_funte[] = [
 										'fecha' 			=> $dato['fecha'],
@@ -704,8 +759,8 @@ else
 
 						foreach( $datos_por_funte['fuente2'] as $key => $dato )
 						{
-							$articulo = consultarArticulo( $conex, "movhos", $dato['codigo'] );
-							$usuario = consultarUsuario( $conex, explode( "-", $dato['usuario'] )[1] );
+							$articulo = consultarArticulo( $conex, $wmovhos, $dato['codigo'] );
+							$usuario = consultarUsuarioCenpro( $conex, explode( "-", $dato['usuario'] )[1] );
 
 							$datos_totales_por_funte[] = [
 										'fecha' 			=> $dato['fecha'],
