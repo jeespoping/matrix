@@ -3014,6 +3014,11 @@ else
 														echo "<br>Devolucion DM 3011<br>"; //##BORRAR_SEBASTIAN_NEVADO
 														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
 														echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														/**************************************************
+														 *Fecha: 2021-06-18
+														 *Descripción: se realiza llamado de factura inteligente.
+														 *Autor: sebastian.nevado
+														***************************************************/
 														CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
 
 														if( $ok ){
@@ -3224,6 +3229,11 @@ else
 														print_r($array[$i]['art']); //##BORRAR_SEBASTIAN_NEVADO
 														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
 														echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														/**************************************************
+														 *Fecha: 2021-06-18
+														 *Descripción: se realiza llamado de factura inteligente.
+														 *Autor: sebastian.nevado
+														***************************************************/
 														CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
 
 														if( $ok ){															
@@ -4002,6 +4012,11 @@ else
 														$drolin="";
 														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
 														echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														/**************************************************
+														 *Fecha: 2021-06-18
+														 *Descripción: se realiza llamado de factura inteligente.
+														 *Autor: sebastian.nevado
+														***************************************************/
 														CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
 
 														if( $ok ){
@@ -4211,6 +4226,11 @@ else
 														$drolin="";
 														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
 														echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														/**************************************************
+														 *Fecha: 2021-06-18
+														 *Descripción: se realiza llamado de factura inteligente.
+														 *Autor: sebastian.nevado
+														***************************************************/
 														CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
 
 														if( $ok ){
