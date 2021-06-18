@@ -3375,7 +3375,7 @@ else
 																				 *Descripción: se realiza llamado de factura inteligente.
 																				 *Autor: sebastian.nevado
 																				*/
-																				echo "<br>Llamo función de la facturación inteligente<br>";
+																				echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
 																				if(!$aResultadoFactInteligente->exito)
 																				{
@@ -3439,7 +3439,7 @@ else
 																				 *Descripción: se realiza llamado de factura inteligente.
 																				 *Autor: sebastian.nevado
 																				*/
-																				echo "<br>Llamo función de la facturación inteligente<br>";
+																				echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $exp[1], $art['can'], $tipTrans);
 																				if(!$aResultadoFactInteligente->exito)
 																				{
@@ -4156,7 +4156,7 @@ else
 																				 *Descripción: se realiza llamado de factura inteligente.
 																				 *Autor: sebastian.nevado
 																				*/
-																				echo "<br>Llamo función de la facturación inteligente<br>";
+																				echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
 																				if(!$aResultadoFactInteligente->exito)
 																				{
@@ -4237,7 +4237,7 @@ else
 																				 *Descripción: se realiza llamado de factura inteligente.
 																				 *Autor: sebastian.nevado
 																				*/
-																				echo "<br>Llamo función de la facturación inteligente<br>";
+																				echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $exp[1], $art['can'], $tipTrans);
 																				if(!$aResultadoFactInteligente->exito)
 																				{
@@ -4560,34 +4560,37 @@ else
 } 
 
 /**
- * include_once("ips/funciones_facturacionERP.php")
+ * Función para hacer el proceso de factura inteligente.
+ * @by: sebastian.nevado
+ * @date: 2021-06-11
+ * @return: array
  */
 function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $numCargoInv, $linCargoInv )
 {
 	try{
-		echo "<br>CargarCargosErp 4502<br>";
+		echo "<br>CargarCargosErp 4502<br>";//##BORRAR_SEBASTIAN_NEVADO
 		//global $pac;
 		global $emp;
-		echo "<br>emp: <br>";
-		print_r($emp);
+		echo "<br>emp: <br>";//##BORRAR_SEBASTIAN_NEVADO
+		print_r($emp); //##BORRAR_SEBASTIAN_NEVADO
 		global $wbasedato;
-		echo "<br>wbasedato: <br>";
-		print_r($wbasedato);
+		echo "<br>wbasedato: <br>";//##BORRAR_SEBASTIAN_NEVADO
+		print_r($wbasedato); //##BORRAR_SEBASTIAN_NEVADO
 		global $usuario;
-		echo "<br>usuario: <br>";
-		print_r($usuario);
+		echo "<br>usuario: <br>";//##BORRAR_SEBASTIAN_NEVADO
+		print_r($usuario); //##BORRAR_SEBASTIAN_NEVADO
 		global $wuse;
-		echo "<br>wuse: <br>";
-		print_r($wuse);
+		echo "<br>wuse: <br>"; //##BORRAR_SEBASTIAN_NEVADO
+		print_r($wuse); //##BORRAR_SEBASTIAN_NEVADO
 		global $cco;
-		echo "<br>cco: <br>";
-		print_r($cco);
+		echo "<br>cco: <br>"; //##BORRAR_SEBASTIAN_NEVADO
+		print_r($cco); //##BORRAR_SEBASTIAN_NEVADO
 		global $desde_CargosPDA;
-		echo "<br>desde_CargosPDA: <br>";
-		print_r($desde_CargosPDA);
-		echo "<br>pac: <br>";
-		print_r($pac);
-		echo "<br>";
+		echo "<br>desde_CargosPDA: <br>"; //##BORRAR_SEBASTIAN_NEVADO
+		print_r($desde_CargosPDA); //##BORRAR_SEBASTIAN_NEVADO
+		echo "<br>pac: <br>"; //##BORRAR_SEBASTIAN_NEVADO
+		print_r($pac); //##BORRAR_SEBASTIAN_NEVADO
+		echo "<br>"; //##BORRAR_SEBASTIAN_NEVADO
 		$desde_CargosPDA = true;
 		global $accion_iq;
 		$accion_iq = '';
@@ -4596,7 +4599,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 				 WHERE ccocod = '".$pac['sac']."'
 			";
 		
-		echo "<br>sql: ".$sql."<br>";
+		echo "<br>sql: ".$sql."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 		
 		$resCco = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
 		$numCco = mysql_num_rows( $resCco );
@@ -4607,10 +4610,10 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 		
 		//Si el cco no maneja cargo ERP o no está activo los cargos ERP no se ejecuta esta acción
 		$cargarEnErp = consultarAliasPorAplicacion( $conex, $emp, "cargosPDA_ERP" );
-		echo "<br>cargarEnErp: ".$cargarEnErp."<br>";
-		echo "<br>CcoErp: ".$CcoErp."<br>";
+		echo "<br>cargarEnErp: ".$cargarEnErp."<br>"; //##BORRAR_SEBASTIAN_NEVADO
+		echo "<br>CcoErp: ".$CcoErp."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 		if( !$CcoErp || $cargarEnErp != 'on' ){
-			echo "<br>Return abrupto 4526<br>";
+			echo "<br>Return abrupto 4526<br>"; //##BORRAR_SEBASTIAN_NEVADO
 			return;
 		}
 		
@@ -4781,7 +4784,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 						$datos['wvaltarReco'] = round($wcantidad*$wvaltar);
 					
 					//Llamo la función de cargos de CARGOS DE ERP
-					echo "<br>validar_y_grabar_cargo 4697<br>";
+					echo "<br>validar_y_grabar_cargo 4697<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					$respuesta = validar_y_grabar_cargo($datos, false);
 					print_r( $respuesta );
 					
@@ -4802,14 +4805,15 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 	
 }
 
-/*
-	*Fecha: 2021-06-11
-	*Descripción: se realiza llamado de factura inteligente.
-	*Autor: sebastian.nevado
-*/
+/**
+ * Se realiza llamado de factura inteligente.
+ * @by: sebastian.nevado
+ * @date: 2021-06-11
+ * @return: object
+ */
 function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $dCantidad, $tipTrans, $numCargoInv = '', $linCargoInv = '')
 {
-	echo "<br>Inicia la facturación inteligente<br>";
+	echo "<br>Inicia la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	global $wemp_pmla;
 	global $conex;
 	$pac['sac'] = $cCentroCosto;
@@ -4831,7 +4835,7 @@ function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $
 	$artFactInteligente['can'] = $dCantidad;
 	print_r($artFactInteligente);
 	CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $artFactInteligente, $tipTrans, $numCargoInv, $linCargoInv);
-	echo "<br>Finaliza la facturación inteligente<br>";
+	echo "<br>Finaliza la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 	$aResultado = new stdClass();
 	$aResultado->exito = true;
@@ -4841,6 +4845,12 @@ function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $
 	return $aResultado;
 }
 
+/**
+ * Se obtiene el nombre del paciente
+ * @by: sebastian.nevado
+ * @date: 2021-06-11
+ * @return: array
+ */
 function consultarNombresPaciente( $conex, $his, $emp ){
 
 	$val = false;
@@ -4863,9 +4873,12 @@ function consultarNombresPaciente( $conex, $his, $emp ){
 	return $val;
 }
 
-/************************************************************************************
+/**
  * Consulta el nombre del concepto de acuerdo a su codigo
- ************************************************************************************/
+ * @by: sebastian.nevado
+ * @date: 2021-06-11
+ * @return: array
+ */
 function consultarNombreConceptos( $conex, $wcliame, $con ){
 
 	$val = false;
