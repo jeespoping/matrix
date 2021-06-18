@@ -140,6 +140,19 @@ else
 		echo "<tr><td class='texto4'><font face='tahoma'><b>Fecha Final : </b>".$wfecf."</td></tr>";
 		echo "</tr></table><br><br>";
 		
+		
+		//Consultando concepto de devolucion
+		$query = "SELECT concod 
+					FROM ".$empresa."_000008 
+				   WHERE conind='1' 
+				     AND concar='on' ";
+
+		$res = mysql_query($query,$conex) or die( "No se encuentra el concepto de devolución" );
+		
+		$rows = mysql_fetch_array( $res );
+		
+		$conDevolucion = $rows[ 'concod' ];
+		
 		//Guardar articulos por presentación
 		$articulos_por_presentacion = [];
 
@@ -327,6 +340,18 @@ else
 
 					if($row1[1]=='on')
 					{
+						// Esto si es un producto
+						
+						/**
+						 * Si el concepto es el de devolución ( Concepto 05 al momento de realizar el cambio )
+						 * La cantidad del lote siempre es 1
+						 * Esto debido a que al realizar la devolución de un producto, la cantidad es siempre 1.
+						 * Por ejemplo si es el programa de devolución de enfermería se hace una devolución de un producto, 
+						 * realiza el mismo procedimiento tantas veces sea necesario
+						 */
+						if( $conDevolucion == $row[2] )
+							$row1[3] = 1;
+						
 						//consultamos el movimiento de fabricación del lotes
 						$query = "SELECT concod from   ".$empresa."_000008 ";
 						$query .= " where  conind='-1' and congas='on' ";
@@ -336,7 +361,10 @@ else
 
 						//consultamos los valores para productos codificados
 						//para esto hay que desglosarlo primero en insumos
-						$res=calcularValorProducto($row1[3],$row1[4],$wtotd1, $wtotc1, $wtotd2, $wtotc2, $row2[0], $numli, $articulos );
+						//consultamos los valores para productos codificados
+						//para esto hay que desglosarlo primero en insumos
+						if( empty( $lotes[$row1[4]."-".$row1[9]] ) )
+							$res=calcularValorProducto($row1[3],$row1[4],$wtotd1, $wtotc1, $wtotd2, $wtotc2, $row2[0], $numli, $articulos );
 
 					}
 					else if($row1[1] != 'on')
