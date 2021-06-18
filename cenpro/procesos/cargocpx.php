@@ -3583,8 +3583,12 @@ else
 						} 
 						else
 						{
+							echo "<br> var: 3586<br>"; //##BORRAR_SEBASTIAN_NEVADO
+							echo $var."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 							$art['lot'] = '';
 							$exp = explode('-', $var);
+							echo "<br> exp: 3590<br>"; //##BORRAR_SEBASTIAN_NEVADO
+							print_r($exp); //##BORRAR_SEBASTIAN_NEVADO
 							$art['cod'] = $exp[0];
 							$art['neg'] = false;
 							$art['can'] = 1;
@@ -3638,6 +3642,20 @@ else
 															descontarArticuloMatrix($cod, $cco, '', $art['cod']);
 															grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $centro['cod'], $historia . '-' . $ingreso, $wusuario);
 															grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, $var, '', '', '', 1, 1);
+															
+															/*
+															 *Fecha: 2021-06-11
+															 *Descripción: se realiza llamado de factura inteligente.
+															 *Autor: sebastian.nevado
+															*/
+															echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
+															$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $var, $art['can'], $tipTrans);
+															if(!$aResultadoFactInteligente->exito)
+															{
+																echo $aResultadoFactInteligente->mensaje;
+															}
+															// FIN MODIFICACION
+															
 															$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, $error);
 															if (!$res)
 															{
@@ -3817,6 +3835,19 @@ else
 																	// pintarAlerta('EL ARTICULO NO HA PODIDO SER CARGADO A ITDRO');
 																	// $art['ubi'] = 'M';
 																// } 
+																
+																/*
+																 *Fecha: 2021-06-11
+																 *Descripción: se realiza llamado de factura inteligente.
+																 *Autor: sebastian.nevado
+																*/
+																echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $var, $art['can'], $tipTrans);
+																if(!$aResultadoFactInteligente->exito)
+																{
+																	echo $aResultadoFactInteligente->mensaje;
+																}
+																// FIN MODIFICACION
 																
 																$validar = registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, $error, "000143" );
 																
