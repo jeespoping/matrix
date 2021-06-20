@@ -365,6 +365,8 @@ else
 						//para esto hay que desglosarlo primero en insumos
 						if( empty( $lotes[$row1[4]."-".$row1[9]] ) )
 							$res=calcularValorProducto($row1[3],$row1[4],$wtotd1, $wtotc1, $wtotd2, $wtotc2, $row2[0], $numli, $articulos );
+						
+						$lotes[$row1[4]."-".$row1[9]] = 1;
 
 					}
 					else if($row1[1] != 'on')
