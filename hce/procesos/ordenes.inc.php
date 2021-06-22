@@ -25272,9 +25272,9 @@ function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tip
 	
 	//Carga los articulos del la extensión del detalle del kardex a la temporal
 	$sql = "INSERT INTO ".$wbasedato."_000209
-					(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Seguridad  )
+					(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Seguridad  )
 				SELECT
-					 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, a.Seguridad
+					 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, a.Seguridad
 				FROM
 					".$wbasedato."_000208 a, ".$wbasedato."_000060 b
 				WHERE
@@ -26418,9 +26418,9 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				
 				//Carga los articulos del la extensión del detalle del kardex a la temporal
 				$sqlExt = "INSERT INTO ".$wbasedato."_000209
-							(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing,   Ekxfec    , Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Seguridad  )
+							(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing,   Ekxfec    , Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Seguridad  )
 						SELECT
-							 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, '".$fecha."', Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, a.Seguridad
+							 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, '".$fecha."', Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, a.Seguridad
 						FROM
 							".$wbasedato."_000208 a, ".$wbasedato."_000060 b
 						WHERE
@@ -27339,9 +27339,9 @@ function cargarArticulosADefinitivo( $historia, $ingreso, $fecha, $esPrimerKarde
 	
 	//Carga los articulos del la extensión del detalle del kardex a la temporal
 	$sql = "INSERT INTO ".$wbasedato."_000208
-				(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Seguridad  )
+				(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Seguridad  )
 			SELECT
-				 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, a.Seguridad
+				 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, a.Seguridad
 			FROM
 				".$wbasedato."_000209 a, ".$wbasedato."_000054 b
 			WHERE
