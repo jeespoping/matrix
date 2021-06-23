@@ -1073,6 +1073,29 @@ class AccionPestanaDTO{
  * FUNCIONES
  ***********************************/
 
+function articuloTieneTarifa( $conex, $wcliame, $wmovhos, $codigo, $tarifa ){
+	
+	$val = false;
+	
+	//Consultando el nombre del estudio
+	$sql = "SELECT Artcod
+			  FROM ".$wmovhos."_000026 a, ".$wcliame."_000026 b
+			 WHERE a.artcod = b.mtaart
+			   AND a.artest = 'on'
+			   AND b.mtaest = 'on'
+			   AND b.mtatar = '".$tarifa."'
+			   AND a.artcod = '".$codigo."'
+			 ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
+	
+	if( $rows = mysql_fetch_array ($res) ){
+		$val = true;
+	}
+	
+	return $val;
+}
+
 /**
  * Consulta los dias de dispensación por centro de costos donde se encuentra ubicado el paciente
  * 
@@ -16578,6 +16601,12 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			echo "<INPUT TYPE='hidden' name='wconmed1$articulo->tipoProtocolo$contArticulos' id='wconmed1$articulo->tipoProtocolo$contArticulos' value='".$articulo->conInsumo1."'>";
 			echo "<INPUT TYPE='hidden' name='wconmed2$articulo->tipoProtocolo$contArticulos' id='wconmed2$articulo->tipoProtocolo$contArticulos' value='".$articulo->conInsumo2."'>";
 			echo "<INPUT TYPE='hidden' name='wporprotocolo$articulo->tipoProtocolo$contArticulos' id='wporprotocolo$articulo->tipoProtocolo$contArticulos' value='".( $articulo->porProtocolo ? 'on' : 'off' )."'>";
+			
+			//Campo que indica si es requerido para que el director médico lo autorice
+			echo "<INPUT TYPE='hidden' name='wdrautorizado$articulo->tipoProtocolo$contArticulos' id='wdrautorizado$articulo->tipoProtocolo$contArticulos' value='".( $articulo->autorizadoPorDirector ? 'on' : 'off' )."'>";
+			
+			//Campo de justificacion para autorizar
+			echo "<INPUT TYPE='hidden' name='wjusparaautorizar$articulo->tipoProtocolo$contArticulos' id='wjusparaautorizar$articulo->tipoProtocolo$contArticulos' value='".( $articulo->jusParaAutorizar ? 'on' : 'off' )."'>";
 			
 			//Busco la última aplicación del articulo y cuanto tiempo de acuerdo a la frecuencia
 			//Este cambio se hace para saber a partir de que momento se puede cambiar la fecha y hora de inicio en caso de tener ya una aplicación
@@ -36401,7 +36430,7 @@ function prepararDivisor( $numero )
 /*
  * AJAX::ConsultarArticulosPorNombre
  */
-function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPaciente, $presentacion, $medida, $dosis, $administracion, $eps, $bsq ){
+function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPaciente, $presentacion, $medida, $dosis, $administracion, $eps, $bsq, $his, $ing ){
 
 	global $conex;
 	global $wemp_pmla;
@@ -36412,6 +36441,10 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 	$gruposAntibioticos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "gruposMedicamentosAntibioticos" );
 	$gruposAntibioticos = explode( ",", $gruposAntibioticos );
 			
+	$validarTarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripcionConTarifa' );
+	$validarTarifa 	= $validarTarifa == 'on';
+	
+	
 	$indexArPes = 0;
 	foreach( $expPesMedicamentosBD as $keyPesMed => $valuePesMed ){
 		
@@ -37611,6 +37644,18 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 					$boolAtc = true;
 				}
 				
+				//Por defecto tiene tarifa
+				$con_tarifa = 'on';
+				if( $validarTarifa ){
+					
+					$infopac 	 = informacionPaciente( $conex, $wemp_pmla, $his, $ing );
+					$tieneTarifa = articuloTieneTarifa( $conex, $wcliame, $wmovhos, $articuloCodigoConsulta, $infopac['tarifa'] );
+					
+					if( !$tieneTarifa ){
+						$con_tarifa = 'off';
+					}
+				}
+				
 				$consulta .= "<font color=gray><b>Generico:</b></font> ".htmlentities($articuloNombreGenerico)." <font color=gray><b>Comercial:</b></font> ".htmlentities($articuloNombreComercial).
 				"|".strtoupper($articuloCodigoConsulta).
 				"|".htmlentities($articuloNombreGenerico).
@@ -37654,6 +37699,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				"|".$rs['Defcpa'].
 				"|".$rs['Defcsa'].
 				"|".$famAtc.
+				"|".$con_tarifa.
 				"\n";
 			}
 			
@@ -38703,7 +38749,7 @@ if(isset($consultaAjaxKardex)){
 				}
 			}
 
-			echo consultarArticulosFamilia($basedatos,$cenmez, utf8_decode( $q ), $ccoPaciente, $pre, $med, $dos, $adm, $eps, $bsq );
+			echo consultarArticulosFamilia($basedatos,$cenmez, utf8_decode( $q ), $ccoPaciente, $pre, $med, $dos, $adm, $eps, $bsq, $his, $ing );
 			break;
 			
 		case 36:

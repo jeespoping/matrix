@@ -10669,7 +10669,9 @@ function eleccionMedicamento(porProtocolo)
 						 +"&dos="+dosis
 						 +"&adm="+administracion
 						 +"&eps="+$( "#pacEPS" ).val()
-						 +"&bsq="+bsqFamilia;
+						 +"&bsq="+bsqFamilia
+						 +"&his="+document.forms.forma.whistoria.value
+						 +"&ing="+document.forms.forma.wingreso.value;
 
 			try{
 
@@ -10778,6 +10780,8 @@ function eleccionMedicamento(porProtocolo)
 						
 						var familiaATC 		= item[42];
 						
+						var conTarifa 		= item[43];
+						
 						
 						// if(dosis!=cantidadDosisFija)
 						// {
@@ -10800,7 +10804,7 @@ function eleccionMedicamento(porProtocolo)
 
 						agregarArticulo( "detKardexAdd" + tipoProtocolo );
 
-						seleccionarArticulo(codigoArticulo,reemplazarTodo(nombreComercial," ","_"),reemplazarTodo(nombreGenerico," ","_"),origen,grupoMedicamento,formaFarmaceutica,unidadMedida,pos,unidadFraccion,cantidadFraccion,vencimiento,diasEstabilidad,dispensable,duplicable,diasMaximosSugeridos,dosisMaximasSugeridas,viaAdministracion,tipoProtocolo,tipoMedicamentoLiquido,esGenerico,abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija,condicionSuministroFija,confirmadaPreparacionFija,diasMaximosFija,dosisMaximasFija,observacionesFija,componentesTipo,noEnviar,'off',codPrincipioActivo,desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,medicamentoPorProtocolo,familiaATC);
+						seleccionarArticulo(codigoArticulo,reemplazarTodo(nombreComercial," ","_"),reemplazarTodo(nombreGenerico," ","_"),origen,grupoMedicamento,formaFarmaceutica,unidadMedida,pos,unidadFraccion,cantidadFraccion,vencimiento,diasEstabilidad,dispensable,duplicable,diasMaximosSugeridos,dosisMaximasSugeridas,viaAdministracion,tipoProtocolo,tipoMedicamentoLiquido,esGenerico,abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija,condicionSuministroFija,confirmadaPreparacionFija,diasMaximosFija,dosisMaximasFija,observacionesFija,componentesTipo,noEnviar,'off',codPrincipioActivo,desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,medicamentoPorProtocolo,familiaATC,conTarifa);
 
 						document.getElementById("btnCerrarVentana").style.display = 'none';
 
@@ -10855,7 +10859,9 @@ function eleccionMedicamento(porProtocolo)
 								 +"&dos="+dosis
 								 +"&adm="+administracion
 								 +"&eps="+$( "#pacEPS" ).val()
-								 +"&bsq="+bsqFamilia;
+								 +"&bsq="+bsqFamilia
+								 +"&his="+document.forms.forma.whistoria.value
+								 +"&ing="+document.forms.forma.wingreso.value;
 
 					try{
 
@@ -10956,6 +10962,8 @@ function eleccionMedicamento(porProtocolo)
 								var conMedicamento2 = item[41];
 								
 								var familiaATC 		= item[42];
+								
+								var conTarifa 		= item[43];
 
 								var array_dosis = new Array();
 								var i = 0;
@@ -11046,6 +11054,7 @@ function eleccionMedicamento(porProtocolo)
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	conMedicamento2;
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	medicamentoPorProtocolo;
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	familiaATC;
+								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	conTarifa;
 
 								
 								//Agrego la fecha y hora de inicio del medicamento calculada para el H.E
@@ -11720,7 +11729,6 @@ function eleccionMedicamentoAlta()
 	//buscando el medicamento
 	var mensaje = "";
 
-
 	parametros = "consultaAjaxKardex=35&wemp_pmla="+document.forms.forma.wemp_pmla.value
 				 +"&basedatos="+document.forms.forma.wbasedato.value
 				 +"&cenmez="+document.forms.forma.wcenmez.value
@@ -11731,7 +11739,9 @@ function eleccionMedicamentoAlta()
 				 +"&dos="+dosis
 				 +"&adm="+administracion
 				 +"&eps="+$( "#pacEPS" ).val()
-				 +"&bsq="+bsqFamilia;
+				 +"&bsq="+bsqFamilia
+				 +"&his="+document.forms.forma.whistoria.value
+				 +"&ing="+document.forms.forma.wingreso.value;
 
 	try{
 
@@ -11840,6 +11850,8 @@ function eleccionMedicamentoAlta()
 				var conMedicamento2 = item[41];
 				
 				var familiaATC 		= item[42];
+				
+				var conTarifa 		= item[43];
 
 				// if(dosis!=cantidadDosisFija)
 				// {
@@ -11864,7 +11876,7 @@ function eleccionMedicamentoAlta()
 
 				agregarArticulo( "detKardexAddImp", true );
 
-				seleccionarArticulo(codigoArticulo,reemplazarTodo(nombreComercial," ","_"),reemplazarTodo(nombreGenerico," ","_"),origen,grupoMedicamento,formaFarmaceutica,unidadMedida,pos,unidadFraccion,cantidadFraccion,vencimiento,diasEstabilidad,dispensable,duplicable,diasMaximosSugeridos,dosisMaximasSugeridas,viaAdministracion,tipoProtocolo,tipoMedicamentoLiquido,esGenerico,abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija,condicionSuministroFija,confirmadaPreparacionFija,diasMaximosFija,cantidadAltaFija,observacionesFija,componentesTipo,noEnviar,deAlta,codPrincipioActivo,desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,false,familiaATC);
+				seleccionarArticulo(codigoArticulo,reemplazarTodo(nombreComercial," ","_"),reemplazarTodo(nombreGenerico," ","_"),origen,grupoMedicamento,formaFarmaceutica,unidadMedida,pos,unidadFraccion,cantidadFraccion,vencimiento,diasEstabilidad,dispensable,duplicable,diasMaximosSugeridos,dosisMaximasSugeridas,viaAdministracion,tipoProtocolo,tipoMedicamentoLiquido,esGenerico,abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija,condicionSuministroFija,confirmadaPreparacionFija,diasMaximosFija,cantidadAltaFija,observacionesFija,componentesTipo,noEnviar,deAlta,codPrincipioActivo,desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,false,familiaATC,conTarifa);
 
 				document.getElementById("btnCerrarVentana").style.display = 'none';
 
@@ -18394,6 +18406,8 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 
 	idIndiceMovimiento = "tr" + tipoProtocoloAux;
 	
+	var wdrautorizado	= 'wdrautorizado' + tipoProtocoloAux + posicionActual;
+	var wjusparaautorizar	= 'wjusparaautorizar' + tipoProtocoloAux + posicionActual;
 	
 
 	if(!elementoAnteriorDetalle || elementoAnteriorDetalle.value != '' || posicionActual == 0){
@@ -18889,6 +18903,19 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		inATC.setAttribute('name',idFamiliaATC);
 		inATC.setAttribute('id',idFamiliaATC);
 		
+		var inDrAutorizado = document.createElement("input");
+		inDrAutorizado.setAttribute('id', wdrautorizado);
+		inDrAutorizado.setAttribute('name', wdrautorizado);
+		inDrAutorizado.setAttribute('type','hidden');
+		inDrAutorizado.setAttribute('value','on');
+		
+		
+		var inJusParaAutorizar = document.createElement("input");
+		inJusParaAutorizar.setAttribute('id', wjusparaautorizar);
+		inJusParaAutorizar.setAttribute('name', wjusparaautorizar);
+		inJusParaAutorizar.setAttribute('type','hidden');
+		inJusParaAutorizar.setAttribute('value','');
+		
 
 		/*******************************************************************************
 		ANEXAR CONTENIDO A LAS COLUMNAS
@@ -18975,6 +19002,12 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		cntDetalleKardex.appendChild(inTimeUltimaAplicacion);
 
 		cntDetalleKardex.appendChild(inATC);
+		
+		//Campo nuevo que indica si el campo esta autorizado o no
+		cntDetalleKardex.appendChild(inDrAutorizado);
+		
+		//Campo de justificacion para autorizar
+		cntDetalleKardex.appendChild(inJusParaAutorizar);
 		
 		columna15.style.display = "none";
 
@@ -24312,7 +24345,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 		vencimiento, diasVencimiento, dispensable, duplicable, diasMaximos, dosisMaximas, via, tipoProtocolo, tipoMedLiquido, esGenerico,
 		abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija, condicionSuministroFija,
 		confirmadaPreparacionFija,diasMaximosFija,dosisMaximasFija,observacionesFija,componentesTipo,noEnviar,deAlta,codPrincipioActivo,
-		desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,porProtocolo,familiaATC){
+		desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,porProtocolo,familiaATC,conTarifa){
 			
 	porProtocolo = porProtocolo ? porProtocolo: false;
 	
@@ -24813,6 +24846,8 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 				}
 			}
 		
+			//Se le agrega la tarifa del paciente
+			document.getElementById("wdrautorizado"+tipoProtocoloAux+idx).value = conTarifa;
 		
 			$.when( objDfr.promise() ).then(function(x){
 
@@ -25055,799 +25090,831 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 						objDfr.resolve( true );
 					}
 					/************************************************************************************************************************/
-
+					
 					$.when( objDfr.promise() ).then(function(x){
 						
-						if(!adicionar){
-
-							$( "#trFil"+idx ).attr( "pActivo", codPrincipioActivo );
-
-							var informacion = " - <div style='font-family:verdana;font-size:10pt'><b>"+nombreComercial+"</b>";
-							informacion += "<br><br><b>Nombre Comercial:</b> " + nombreGenerico;
-							// informacion += "<br><br>"+ cantidadDosisFija +" "+ $( "[value="+unidadFraccion+"]", $( "#wmfftica" ) ).text() + " POR " + $( "[value="+unidad+"]", $( "#wmfftica" ) ).text();
-							informacion += "</div>";
-							informacion = informacion.replace( /_+/g, " " );
-							$( "#wcolmed"+tipoProtocoloAux+idx ).attr( "title", informacion );
-							$( "#wcolmed"+tipoProtocoloAux+idx ).tooltip({track: true, delay: 0, showURL: false, showBody: ' - ', opacity: 0.95, left: 15, top: 25 });
-
-							//Creo variable nueva que indica que tipo de protocolo le corresponde la familia
-							if( !familiasAgregadasIdx[ tipoProtocoloAux+idx ] ){
-								familiasAgregadasIdx[ tipoProtocoloAux+idx ] = new Array();
-							}
-
-							familiasAgregadasIdx[ tipoProtocoloAux+idx ] = nombreFamilia.toUpperCase();
-
-							//creo un array global, cada vez que se adicione un medicamentos queda la familia y el codigo del medicamento
-							//Esto para que al momento de adicionar un medicamento se pueda verificar si ya se agrego la familia o no
-							if( !familiasAgregadas[ nombreFamilia.toUpperCase() ] ){
-								familiasAgregadas[ nombreFamilia.toUpperCase() ] = new Array();
-							}
-
-							familiasAgregadas[ nombreFamilia.toUpperCase() ][ familiasAgregadas[ nombreFamilia.toUpperCase() ].length ] = codigo;
-
-							var mCantDosis = cantFracciones;
-							var mUnidadDosis = unidadFraccion;
-							var mDiasTto = diasMaximos;
-							var mDosisTto = dosisMaximas;
-							var mVia = via;
-
-							var mNoEnviar = "";
-							var mFrecuencia = "";
-							var mCondicion = "";
-							var mConfirmaPreparacion = "";
-							var mObservaciones = "";
-
-							mNoEnviar = noEnviarFija;
-							mFrecuencia = frecuenciaFija;
-							mCondicion = condicionSuministroFija;
-							mConfirmaPreparacion = confirmadaPreparacionFija;
-							mObservaciones = observacionesFija;
-
-							//Marca de no enviar
-							if(document.getElementById("wchkdisp"+tipoProtocoloAux+idx))
-							{
-								document.getElementById("wchkdisp"+tipoProtocoloAux+idx).checked = false;
-
-								//Enero 29 de 2013
-								// Si es un insumo no dispensable marquese como no enviar
-								if(mNoEnviar == "on")
-									document.getElementById("wchkdisp"+tipoProtocoloAux+idx).checked = true;
-
-								//Abril 25 de 2011
-								//Si es ustock marquese como no enviar
-								if( noEnviar == 'on' )
-									document.getElementById("wchkdisp"+tipoProtocoloAux+idx).checked = true;
-							}
-
-							//Frecuencia
-							if(document.getElementById("wperiod"+tipoProtocoloAux+idx) && mFrecuencia != ""){
-								document.getElementById("wperiod"+tipoProtocoloAux+idx).value = mFrecuencia;
-							}
-
-							//Condicion
-							if(document.getElementById("wcondicion"+tipoProtocoloAux+idx) && mCondicion != ""){
-								document.getElementById("wcondicion"+tipoProtocoloAux+idx).value = mCondicion;
-							}
-
-							//Confirma preparación
-							if( $( "#enUrgencias" ).val() == 'on' ){
-								document.getElementById("wchkconf"+tipoProtocoloAux+idx).checked = true;
-							}
-							else if(origen == 'CM' && document.getElementById("wchkconf"+tipoProtocoloAux+idx) && mConfirmaPreparacion != ""){
-								if(mConfirmaPreparacion == "on"){
-									document.getElementById("wchkconf"+tipoProtocoloAux+idx).checked = true;
-								}
-								else{
-									document.getElementById("wchkconf"+tipoProtocoloAux+idx).checked = false;
-								}
-							}
-
-							//Observaciones
-							if(document.getElementById("wtxtobs"+tipoProtocoloAux+idx)&& mObservaciones != ""){
-								document.getElementById("wtxtobs"+tipoProtocoloAux+idx).value = mObservaciones;
-							}
-
-							//Si el articulo tiene parametros preestablecidos, se cargan en el detalle
-							if(cantidadDosisFija != ""){
-								mCantDosis = cantidadDosisFija;
-							}
-
-							if(unidadDosisFija != ""){
-								mUnidadDosis = unidadDosisFija;
-							}
-
-							if(diasMaximosFija != ""){
-								mDiasTto = diasMaximosFija;
-							}
-
-							if(dosisMaximasFija != ""){
-								mDosisTto = dosisMaximasFija;
-							}
-
-							if(viasAdministracionFija != ""){
-								mVia = viasAdministracionFija;
-							}
-
-							if(fechaInicioFija && fechaInicioFija!=""){
-								mFechaInicio = fechaInicioFija;
-							}
-
-							//Abre la ventana emergente
-							// if(abreVentanaFija == "S" && componentesTipo != "" || tipoMedLiquido == "L"){
-							if(abreVentanaFija == "S" && componentesTipo != "" || abreVentanaFija == "S" && infoNutriciones != "" || tipoMedLiquido == "L"){
-								// if(mFrecuencia!="H.E.")
-								if( $( "#wfrecuencia" ).val() !="H.E.")
-								{
-									if(componentesTipo != "")
+						var objDfr = $.Deferred();
+						
+						if(x)
+						{
+							if( conTarifa != 'on' ){
+								jConfirm( "ARTICULO SIN TARIFA #######","ALERTA DUPLICIDAD TERAPEUTICA",function(x){
+									if(!x)
 									{
-										abrirModalArticulos(codigo,nombreComercial,nombreGenerico,tipoMedLiquido,esGenerico,idx,componentesTipo,tipoProtocoloAux);
-									}
-									else if(infoNutriciones != "")
-									{
-										// abrirModalNutriciones(idx,tipoProtocoloAux);
-										abrirModalNutriciones(idx,tipoProtocoloAux,"nuevo");
-									}
-								}
-								else
-								{
-									strPendientesModal += 'articulo|'+codigo+'|'+nombreComercial+'|'+nombreGenerico+'|'+tipoMedLiquido+'|'+esGenerico+'|'+idx+'|'+componentesTipo+'|'+tipoProtocoloAux+'\r\n';
-								}
-								
-								// if( $( "#wfrecuencia" ).val() !="H.E.")
-									// abrirModalArticulos(codigo,nombreComercial,nombreGenerico,tipoMedLiquido,esGenerico,idx,componentesTipo,tipoProtocoloAux);
-								// else
-									// strPendientesModal += 'articulo|'+codigo+'|'+nombreComercial+'|'+nombreGenerico+'|'+tipoMedLiquido+'|'+esGenerico+'|'+idx+'|'+componentesTipo+'|'+tipoProtocoloAux+'\r\n';
-							}
+										objDfr.resolve( false );
+										
+										var trEliminar = document.getElementById("trFil"+idx);
+										cntDetalleKardex.removeChild(trEliminar);
 
-							if(elemento.tagName != 'DIV'){
-
-								//En esta seccion se dan los posibles avisos
-								//Grupo de control
-								var nombreArticuloGrabar = nombreComercial;
-
-								if(grupo == 'CTR'){
-									//Verifica si se genera la formula de control de forma automatica.
-									if($("#medicamentosControlAuto").val() == 'on'){
-										jAlert("Este medicamento se encuentra en el grupo de control.  La fórmula de control se generará automaticamente al grabar.","ALERTA",function(){
-											preguntarPorVisaulizarMedControl = true;
-											if( $( "#inCIE10" ).val() == '' )
-												$.blockUI({ message: $( "#dvCIE10" ) });
-										});
+										return false;
 									}
 									else{
-										jAlert("Este medicamento se encuentra en el grupo de control.  Recuerde diligencia el formato manual de medicamentos de control.","ALERTA");
+										objDfr.resolve( true );
 									}
+								});
+							}
+							else{
+								objDfr.resolve( true );
+							}
+						}
+						else{
+							objDfr.resolve( true );
+						}
+						
+						$.when( objDfr.promise() ).then(function(x){
+							
+							if(!adicionar){
 
-									nombreArticuloGrabar = nombreComercial.replace(/_/g," ") + " (de control)";
-								}
-								else{
-									//Se elimna este campo por que solo es necesario si es un articulo de control
-									$( "#wcontrolimp"+tipoProtocoloAux+idx ).remove();
-									
-									nombreArticuloGrabar =  nombreComercial.replace(/_/g," ");
-								}
-								elemento.value = codigo + "-" + origen + "-" + nombreArticuloGrabar;
+								$( "#trFil"+idx ).attr( "pActivo", codPrincipioActivo );
 
-								//Se agrega atributo value al input para que se pueda comparar con otros en acciones posteriores.
-								$( elemento ).attr("value", codigo + "-" + origen + "-" + nombreArticuloGrabar );
+								var informacion = " - <div style='font-family:verdana;font-size:10pt'><b>"+nombreComercial+"</b>";
+								informacion += "<br><br><b>Nombre Comercial:</b> " + nombreGenerico;
+								// informacion += "<br><br>"+ cantidadDosisFija +" "+ $( "[value="+unidadFraccion+"]", $( "#wmfftica" ) ).text() + " POR " + $( "[value="+unidad+"]", $( "#wmfftica" ) ).text();
+								informacion += "</div>";
+								informacion = informacion.replace( /_+/g, " " );
+								$( "#wcolmed"+tipoProtocoloAux+idx ).attr( "title", informacion );
+								$( "#wcolmed"+tipoProtocoloAux+idx ).tooltip({track: true, delay: 0, showURL: false, showBody: ' - ', opacity: 0.95, left: 15, top: 25 });
 
-								// Se establece si la cadena msjNoPos ya tiene el codigo del artículo actual
-								var avisoNoPos = msjNoPos.indexOf(codigo)
-								msjNoPos += codigo+',';
-
-								//Si no tiene fracciones en la unidad de manejo ni unidad de fraccion se avisa
-								if( (mUnidadDosis == '' || mCantDosis == '') && !esLiquidoEndovenoso ){
-									alert('El articulo con codigo ' + codigo + ' no tiene unidad de fraccion o fracciones por unidad de manejo.  Por favor notifique a servicio farmaceutico.');
-								}
-
-								//Habilita o inhabilita la marca de confirmacion de preparacion
-								if(origen != 'CM' && document.getElementById("wchkconf"+tipoProtocoloAux+idx)){
-									document.getElementById("wchkconf"+tipoProtocoloAux+idx).disabled = true;
-								}
-								else{
-									if(document.getElementById("wchkconf"+tipoProtocoloAux+idx))
-										document.getElementById("wchkconf"+tipoProtocoloAux+idx).disabled = false;
+								//Creo variable nueva que indica que tipo de protocolo le corresponde la familia
+								if( !familiasAgregadasIdx[ tipoProtocoloAux+idx ] ){
+									familiasAgregadasIdx[ tipoProtocoloAux+idx ] = new Array();
 								}
 
-								//Unidad dosis
-								if(document.getElementById("wudosis"+tipoProtocoloAux+idx)){
-									document.getElementById("wudosis"+tipoProtocoloAux+idx).value = mUnidadDosis;
+								familiasAgregadasIdx[ tipoProtocoloAux+idx ] = nombreFamilia.toUpperCase();
+
+								//creo un array global, cada vez que se adicione un medicamentos queda la familia y el codigo del medicamento
+								//Esto para que al momento de adicionar un medicamento se pueda verificar si ya se agrego la familia o no
+								if( !familiasAgregadas[ nombreFamilia.toUpperCase() ] ){
+									familiasAgregadas[ nombreFamilia.toUpperCase() ] = new Array();
 								}
 
-								//Unidad manejo
-								if(document.getElementById("wcundmanejo"+tipoProtocoloAux+idx)){
-									document.getElementById("wcundmanejo"+tipoProtocoloAux+idx).value = unidad;
+								familiasAgregadas[ nombreFamilia.toUpperCase() ][ familiasAgregadas[ nombreFamilia.toUpperCase() ].length ] = codigo;
+
+								var mCantDosis = cantFracciones;
+								var mUnidadDosis = unidadFraccion;
+								var mDiasTto = diasMaximos;
+								var mDosisTto = dosisMaximas;
+								var mVia = via;
+
+								var mNoEnviar = "";
+								var mFrecuencia = "";
+								var mCondicion = "";
+								var mConfirmaPreparacion = "";
+								var mObservaciones = "";
+
+								mNoEnviar = noEnviarFija;
+								mFrecuencia = frecuenciaFija;
+								mCondicion = condicionSuministroFija;
+								mConfirmaPreparacion = confirmadaPreparacionFija;
+								mObservaciones = observacionesFija;
+
+								//Marca de no enviar
+								if(document.getElementById("wchkdisp"+tipoProtocoloAux+idx))
+								{
+									document.getElementById("wchkdisp"+tipoProtocoloAux+idx).checked = false;
+
+									//Enero 29 de 2013
+									// Si es un insumo no dispensable marquese como no enviar
+									if(mNoEnviar == "on")
+										document.getElementById("wchkdisp"+tipoProtocoloAux+idx).checked = true;
+
+									//Abril 25 de 2011
+									//Si es ustock marquese como no enviar
+									if( noEnviar == 'on' )
+										document.getElementById("wchkdisp"+tipoProtocoloAux+idx).checked = true;
 								}
 
-								//Cantidad maxima de fracciones en la unidad de manejo
-								if(document.getElementById("wdosis"+tipoProtocoloAux+idx)){
-									document.getElementById("wdosis"+tipoProtocoloAux+idx).value = mCantDosis;
-									// 2012-06-27
-									// Se adiciona el atributo "readonly" para que este campo siempre sea de solo lectura, que no se pueda modificar
-									if(!adicionMultiple)
-										document.getElementById("wdosis"+tipoProtocoloAux+idx).readOnly = true;
+								//Frecuencia
+								if(document.getElementById("wperiod"+tipoProtocoloAux+idx) && mFrecuencia != ""){
+									document.getElementById("wperiod"+tipoProtocoloAux+idx).value = mFrecuencia;
 								}
 
-								//Oculto para maximo de unidades del articulo
-								if(document.getElementById("whcmanejo"+tipoProtocoloAux+idx)){
-									document.getElementById("whcmanejo"+tipoProtocoloAux+idx).value = mCantDosis;
+								//Condicion
+								if(document.getElementById("wcondicion"+tipoProtocoloAux+idx) && mCondicion != ""){
+									document.getElementById("wcondicion"+tipoProtocoloAux+idx).value = mCondicion;
 								}
 
-								//Oculto vence
-								if(document.getElementById("whvence"+tipoProtocoloAux+idx)){
-									document.getElementById("whvence"+tipoProtocoloAux+idx).value = vencimiento;
+								//Confirma preparación
+								if( $( "#enUrgencias" ).val() == 'on' ){
+									document.getElementById("wchkconf"+tipoProtocoloAux+idx).checked = true;
+								}
+								else if(origen == 'CM' && document.getElementById("wchkconf"+tipoProtocoloAux+idx) && mConfirmaPreparacion != ""){
+									if(mConfirmaPreparacion == "on"){
+										document.getElementById("wchkconf"+tipoProtocoloAux+idx).checked = true;
+									}
+									else{
+										document.getElementById("wchkconf"+tipoProtocoloAux+idx).checked = false;
+									}
 								}
 
-								//Oculto para maximo de unidades del articulo
-								if(document.getElementById("whartpro"+tipoProtocoloAux+idx)){
-									document.getElementById("whartpro"+tipoProtocoloAux+idx).value = tipoProtocolo;
+								//Observaciones
+								if(document.getElementById("wtxtobs"+tipoProtocoloAux+idx)&& mObservaciones != ""){
+									document.getElementById("wtxtobs"+tipoProtocoloAux+idx).value = mObservaciones;
 								}
 
-								//La forma farmaceutica se graba igual, mas no se muestra en el kardex
-								if(document.getElementById("wfftica"+tipoProtocoloAux+idx)){
-									document.getElementById("wfftica"+tipoProtocoloAux+idx).value = forma;
+								//Si el articulo tiene parametros preestablecidos, se cargan en el detalle
+								if(cantidadDosisFija != ""){
+									mCantDosis = cantidadDosisFija;
 								}
 
-								//Oculto dias vencimiento
-								if(document.getElementById("whdiasvence"+tipoProtocoloAux+idx)){
-									document.getElementById("whdiasvence"+tipoProtocoloAux+idx).value = diasVencimiento;
+								if(unidadDosisFija != ""){
+									mUnidadDosis = unidadDosisFija;
 								}
 
-								//Oculto dispensable
-								if(document.getElementById("whdispensable"+tipoProtocoloAux+idx)){
-									document.getElementById("whdispensable"+tipoProtocoloAux+idx).value = dispensable;
+								if(diasMaximosFija != ""){
+									mDiasTto = diasMaximosFija;
 								}
 
-								//Oculto duplicable
-								if(document.getElementById("whduplicable"+tipoProtocoloAux+idx)){
-									document.getElementById("whduplicable"+tipoProtocoloAux+idx).value = duplicable;
+								if(dosisMaximasFija != ""){
+									mDosisTto = dosisMaximasFija;
 								}
 
-								//Asigno dias maximos
-								if(document.getElementById("wdiastto"+tipoProtocoloAux+idx) && parseInt(mDiasTto) > 0){
-									if( !esAntibiotico )
-										document.getElementById("wdiastto"+tipoProtocoloAux+idx).value = mDiasTto;
-								}
-								else{
-									document.getElementById("wdiastto"+tipoProtocoloAux+idx).value = '';
+								if(viasAdministracionFija != ""){
+									mVia = viasAdministracionFija;
 								}
 
-								//Asigno dosis maximas
-								if(document.getElementById("wdosmax"+tipoProtocoloAux+idx) && parseInt(mDosisTto) > 0){
-									document.getElementById("wdosmax"+tipoProtocoloAux+idx).value = mDosisTto;
-								}
-								else{
-									document.getElementById("wdosmax"+tipoProtocoloAux+idx).value = '';
+								if(fechaInicioFija && fechaInicioFija!=""){
+									mFechaInicio = fechaInicioFija;
 								}
 
-								//Asigno via
-								if(document.getElementById("wviadmon"+tipoProtocoloAux+idx)){
-									document.getElementById("wviadmon"+tipoProtocoloAux+idx).value = mVia;
-								}
-								else{
-									document.getElementById("wviadmon"+tipoProtocoloAux+idx).value = '';
-								}
-
-								if(document.getElementById("wfinicio"+tipoProtocoloAux+idx) && mFechaInicio){
-									document.getElementById("wfinicio"+tipoProtocoloAux+idx).value = mFechaInicio;
-								}
-								// else
-								//	document.getElementById("wviadmon"+tipoProtocoloAux+idx).value = '';
-								//
-								if(document.getElementById("whfinicio"+tipoProtocoloAux+idx) && mFechaInicio){
-									document.getElementById("whfinicio"+tipoProtocoloAux+idx).value = mFechaInicio;
-								}
-								
-								//Si se agrega el articulo por protcolo el campo wporprotocolo queda activo
-								if( porProtocolo ){
-									$( "#wporprotocolo"+tipoProtocoloAux+idx ).val('on');
-									$( "#wperiod"+tipoProtocoloAux+idx ).attr({disabled:false});
-								}
-								
-								$( "#wnmmed"+tipoProtocoloAux+idx ).attr( "pos", pos );
-								
-								$( famsAtc ).each(function(){
-								
-									$( "#watc"+tipoProtocoloAux+idx ).attr( "data-atc-"+this.codigo, this.descripcion );
-									$( "#watc"+tipoProtocoloAux+idx ).val( elemento.value );
-								})
-								
-								//Dosis máxima por profilaxis
-								//var dmaxProfilaxis = 24/valFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ];
-								
-								if( esAntibiotico ){
-									
-									$( "#trPrescripcionPediatrica" ).css({ display: '' });
-									if( !esCompuesto )
-										$( "#trPrescripcionPediatrica" ).css({ display: 'none' });
-									
-									$( "#wesantibiotico"+tipoProtocoloAux+idx ).val( 'on' );
-									$( "#wdosmax"+tipoProtocoloAux+idx ).prop({readOnly:true});
-									$( "#wdosmax"+tipoProtocoloAux+idx ).attr({readOnly:true});
-									$( "#wdosmax"+tipoProtocoloAux+idx ).val('');
-									
-									//No permito que la dosis máxima sea superior a la 24/frecuencia
-									$( "#wdosmax"+tipoProtocoloAux+idx ).change(function(){
-										if( $( "#wprofilaxis"+tipoProtocoloAux+idx )[0].checked ){
-											var dmaxSup = 24/valFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ];
-											if( dmaxSup <= 1 ) dmaxSup = 1;
-											if( $( this ).val() > dmaxSup ){
-												jAlert( "La dosis máxima no debe ser superior a "+dmaxSup, "ALERTA" );
-												$( this ).val( dmaxSup );
-											}
+								//Abre la ventana emergente
+								// if(abreVentanaFija == "S" && componentesTipo != "" || tipoMedLiquido == "L"){
+								if(abreVentanaFija == "S" && componentesTipo != "" || abreVentanaFija == "S" && infoNutriciones != "" || tipoMedLiquido == "L"){
+									// if(mFrecuencia!="H.E.")
+									if( $( "#wfrecuencia" ).val() !="H.E.")
+									{
+										if(componentesTipo != "")
+										{
+											abrirModalArticulos(codigo,nombreComercial,nombreGenerico,tipoMedLiquido,esGenerico,idx,componentesTipo,tipoProtocoloAux);
 										}
-									});
-									
-									//No permito que la dosis máxima sea superior a la 24/frecuencia
-									$( "#wdiastto"+tipoProtocoloAux+idx ).change(function(){
-										if( $( "#wprofilaxis"+tipoProtocoloAux+idx )[0].checked ){
-											var dmaxSup = 1;
-											if( $( this ).val() > dmaxSup ){
-												console.log( $( this ).val() );
-												jAlert( "Los d&iacute;as de tratamiento no puede ser superior a "+dmaxSup, "ALERTA" );
-												$( this ).val( dmaxSup );
-											}
+										else if(infoNutriciones != "")
+										{
+											// abrirModalNutriciones(idx,tipoProtocoloAux);
+											abrirModalNutriciones(idx,tipoProtocoloAux,"nuevo");
 										}
-									});
-								}
-								else
-									$( "#wesantibiotico"+tipoProtocoloAux+idx ).val( 'off' );
-								
-								if( !esAntibiotico ){
-									$( "[name=wfiltroantibiotico"+tipoProtocoloAux+idx+"]" ).css({display:"none"});
-									$( "[name=wfiltroantibiotico"+tipoProtocoloAux+idx+"]" ).parent().find("label").css({display:"none"});
-								}
-								
-								$( "#wprofilaxis"+tipoProtocoloAux+idx ).attr('onClick',"dttoPorFiltroAntibiotico(this,'"+tipoProtocoloAux+idx+"','1','"+(mDosisTto*1)+"')");
-								// $( "#wprofilaxis"+tipoProtocoloAux+idx ).attr('onClick',"dttoPorFiltroAntibiotico(this,'"+tipoProtocoloAux+idx+"','1','0')");
-								$( "#wtratamiento"+tipoProtocoloAux+idx ).attr('onClick',"dttoPorFiltroAntibiotico(this,'"+tipoProtocoloAux+idx+"','"+(mDiasTto*1)+"','"+(mDosisTto*1)+"')");
-
-								//Vias
-			//					debugger;
-								document.getElementById("wviadmon"+tipoProtocoloAux+idx).innerHTML = "";
-								if(via != ''){
-									var opcionesMaestro = document.getElementById("wmviaadmon").options;
-
-									var cont1 = 0;
-									var splVia = via.split(",");
-
-									/************************************************************************************
-									 * Marzo 7 de 2011
-									 ************************************************************************************/
-									//Si tiene mas de una via se agregar un campo mas en blanco
-									//para que agregue el option 'seleccione'
-									if( splVia.length > 1 ){
-										splVia = (","+via).split(",");
 									}
-
-									var opcionTmp = null;
-
-									while(cont1 < opcionesMaestro.length){
-
-										for( var i = 0 ; i < splVia.length; i++ ){
-
-											if( splVia[i] == opcionesMaestro[cont1].value ){
-
-												opcionTmp = document.createElement("option");
-
-												opcionTmp.text = opcionesMaestro[cont1].text;
-												opcionTmp.value = opcionesMaestro[cont1].value;
-
-												document.getElementById("wviadmon"+tipoProtocoloAux+idx).options.add(opcionTmp);
-											}
-										}
-
-										cont1++;
-									}
-									/************************************************************************************/
-
-								}
-								else{
-									var opcionesMaestro = document.getElementById("wmviaadmon").options;
-
-									var cont1 = 0;
-									var splVia = mVia.split(",");
-									var opcionTmp = null;
-
-									while(cont1 < opcionesMaestro.length){
-										opcionTmp = document.createElement("option");
-										document.getElementById("wviadmon"+tipoProtocoloAux+idx).options.add(opcionTmp);
-
-										opcionTmp.text = opcionesMaestro[cont1].text;
-										opcionTmp.value = opcionesMaestro[cont1].value;
-
-										cont1++;
-									}
-								}
-
-								//Si es un articulo agregado por dextrometer
-								//Se deja los campos correspondientes de solo lectura
-								if( agregandoArticuloPorDextrometer ){
-									
-									var arrIds = [ "wperiod"+tipoProtocoloAux+idx, "wcondicion"+tipoProtocoloAux+idx, "wviadmon"+tipoProtocoloAux+idx ];
-									$( arrIds ).each(function(){
-										//this son los ids que se encuentran en el array y son textos
-										var opVias = $( "#"+this+" option" );
-										var valVia = $( "#"+this ).val();
-
-										opVias.css({display:"none"});
-										opVias.attr({disabled:true});
-
-										//this para este caso es el codigo de la via
-										//Se muestran solo las vias que puedan ser seleccionadas segun el medicamento
-										opVias.filter( "[value="+valVia+"]" ).css({display:""});
-										opVias.filter( "[value="+valVia+"]" ).attr({disabled:false});
-									});
-
-									//Las observaciones son iguales a las del dextrometer
-									$( "#wtxtobs"+tipoProtocoloAux+idx ).val( $( "#txtDextrometer" ).val() );
-									$( "#wtxtobs"+tipoProtocoloAux+idx ).attr({readonly:true});
-
-									//No se puede editar dias de tratamiento
-									$( "#wdiastto"+tipoProtocoloAux+idx ).attr({readonly:true});
-								}
-								
-								borrarDosisMaximaPorFrecuencia( $( "#wperiod"+tipoProtocoloAux+idx ) );
-								
-								$("#wperiod"+tipoProtocoloAux+idx).change();
-								$("#wcondicion"+tipoProtocoloAux+idx).change();
-															
-								if( esAntibiotico ){
-									
-									var perDmax = true; //$( "#waccN\\.13" ).val().split( "," )[0] == 'S' ? true: false;
-
-									$( "#dvModalFiltroAntibiotico" ).html( $( "#dvFiltroAntibiotico" ).html());
-									
-									$( "#dvModalFiltroAntibiotico #bTituloFiltroAntibiotico" ).html( nombreArticuloAlert.toUpperCase() );
-									
-									$( "#dvModalFiltroAntibiotico #bFrecuencia" ).html( $( "#wperiod"+tipoProtocoloAux+idx+" option:selected" ).text().toUpperCase() );
-									if( $( "#wcondicion"+tipoProtocoloAux+idx ).val() != '' )
-										$( "#dvModalFiltroAntibiotico #bCondicion" ).html( $( "#wcondicion"+tipoProtocoloAux+idx+" option:selected" ).text().toUpperCase() );
 									else
-										$( "#dvModalFiltroAntibiotico #bCondicion" ).parent().css({display:"none"});
-									
-									var radioProfilaxis 	= $( "#ckFiltroProfilaxis", $( "#dvModalFiltroAntibiotico" ) );
-									var radioTratamiento 	= $( "#ckFiltroTratamiento", $( "#dvModalFiltroAntibiotico" ) );
-									var inFiltroDtto 		= $( "#dvModalFiltroAntibiotico input:text" ).eq(0);
-									var inFiltroDmax 		= $( "#dvModalFiltroAntibiotico input:text" ).eq(1);
-									
-									var btnGrabar = $( "#dvModalFiltroAntibiotico input:button[value=Grabar]" );
-									var btnCerrar = $( "#dvModalFiltroAntibiotico input:button[value=Cerrar]" );
-									
-									// radioProfilaxis.click(function(){
-									// $( "#dvModalFiltroAntibiotico input:radio" ).click(function(){
-									$( "[id^=ckFiltroProfilaxis]", $( "#dvModalFiltroAntibiotico" ) ).click(function(){
-									
-										if( mDiasTto*1 > 0 ){
-											inFiltroDmax.val( '' );
-											inFiltroDtto.val( mDiasTto );
-											// inFiltroDtto.change();
-										}
-										else if(mDosisTto*1 > 0 ){
-											inFiltroDtto.val( '' );
-											inFiltroDmax.val( mDosisTto );
-											// inFiltroDmax.change();
-										}
-										else if( this.id == 'ckFiltroProfilaxis' ){
-											if( inFiltroDmax.val()*1 == 0 )
-												inFiltroDtto.val( 1 );
-											// inFiltroDtto.change();
-										}
-										
-										if( inFiltroDmax.val()*1 > 0 ){
-											inFiltroDmax.change();
-										}
-										else if( inFiltroDtto.val()*1 > 0 ){
-											inFiltroDtto.change();
-										}
-									});
-									
-									//Asigno función al boton cerrar
-									btnCerrar.click(function(){
-										// $.unblockUI();
-										// setTimeout( function(){ fnInternaCTC() }, 500 );
-										jConfirm( "Está seguro que desea eliminar el artículo","ALERTA",function(x){
-											if(x){
-											$.unblockUI();
-												setTimeout( function(){ agregarMultiplesArticulos(); }, 500 );
-												quitarArticulo(idx, tipoProtocoloAux, document.getElementById( "wperiod"+tipoProtocoloAux+idx ), '', true );
-											}
-										});
-									});
-									
-									if( esCompuesto ){
-										$( '#wconmed1' + tipoProtocoloAux + idx ).val(conMedicamento1);
-										$( '#wconmed2' + tipoProtocoloAux + idx ).val(conMedicamento2);
-										
-										$( "#wckpediatrico"+ tipoProtocoloAux + idx ).css({display:''});									
-										$( "label", $( "#wckpediatrico"+ tipoProtocoloAux + idx ).parent() ).css({display: ''});
+									{
+										strPendientesModal += 'articulo|'+codigo+'|'+nombreComercial+'|'+nombreGenerico+'|'+tipoMedLiquido+'|'+esGenerico+'|'+idx+'|'+componentesTipo+'|'+tipoProtocoloAux+'\r\n';
 									}
 									
-									//Asigno función al boton Grabar
-									btnGrabar.click(function(){
-										
-										$( "#wprofilaxis"+tipoProtocoloAux+idx )[0].checked = radioProfilaxis[0].checked;
-										$( "#wtratamiento"+tipoProtocoloAux+idx )[0].checked = radioTratamiento[0].checked;
-										$( "#wdiastto"+tipoProtocoloAux+idx ).val( inFiltroDtto.val() );
-										$( "#wdosmax"+tipoProtocoloAux+idx ).val( inFiltroDmax.val() );
-										
-										var filtroMsg = "";
-										var filtroValido = false;
-										if( $( "#dvModalFiltroAntibiotico [name=ckFiltroAntibiotico]:checked" ).length > 0 ){
-											if( inFiltroDtto.val()*1 > 0 || inFiltroDmax.val()*1 > 0  ){
-												filtroValido = true;
-											}
-											else{
-												if( inFiltroDtto.val()*1 <= 0 && inFiltroDmax.val()*1 <= 0 && perDmax )
-													filtroMsg = "Debe ingresar un valor mayor a 0 para <b>DOSIS M&Aacute;XIMA</b> o <b>D&Iacute;AS DE TRATAMIENTO</b>";
-												else if( perDmax && inFiltroDmax.val()*1 <= 0 )
-													//Muestra el mensaje solo si tiene permiso para dosis máxima
-													filtroMsg = "Debe ingresar un valor mayor a 0 para <b>DOSIS M&Aacute;XIMA</b>";
-												else if( inFiltroDtto.val()*1 <= 0 )
-													filtroMsg = "Debe ingresar un valor mayor a 0 para <b>D&Iacute;AS DE TRATAMIENTO</b>";
-											}
+									// if( $( "#wfrecuencia" ).val() !="H.E.")
+										// abrirModalArticulos(codigo,nombreComercial,nombreGenerico,tipoMedLiquido,esGenerico,idx,componentesTipo,tipoProtocoloAux);
+									// else
+										// strPendientesModal += 'articulo|'+codigo+'|'+nombreComercial+'|'+nombreGenerico+'|'+tipoMedLiquido+'|'+esGenerico+'|'+idx+'|'+componentesTipo+'|'+tipoProtocoloAux+'\r\n';
+								}
+
+								if(elemento.tagName != 'DIV'){
+
+									//En esta seccion se dan los posibles avisos
+									//Grupo de control
+									var nombreArticuloGrabar = nombreComercial;
+
+									if(grupo == 'CTR'){
+										//Verifica si se genera la formula de control de forma automatica.
+										if($("#medicamentosControlAuto").val() == 'on'){
+											jAlert("Este medicamento se encuentra en el grupo de control.  La fórmula de control se generará automaticamente al grabar.","ALERTA",function(){
+												preguntarPorVisaulizarMedControl = true;
+												if( $( "#inCIE10" ).val() == '' )
+													$.blockUI({ message: $( "#dvCIE10" ) });
+											});
 										}
 										else{
-											filtroMsg = "Debe seleccionar si el antibiótico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b>";
+											jAlert("Este medicamento se encuentra en el grupo de control.  Recuerde diligencia el formato manual de medicamentos de control.","ALERTA");
 										}
+
+										nombreArticuloGrabar = nombreComercial.replace(/_/g," ") + " (de control)";
+									}
+									else{
+										//Se elimna este campo por que solo es necesario si es un articulo de control
+										$( "#wcontrolimp"+tipoProtocoloAux+idx ).remove();
 										
-										if( $( "#trPrescripcionPediatrica" ).css( "display" ) != 'none' ){
-											if( $( "[name=rdPrescripcionPediatrica]:checked" ).length == 0 ){
-												filtroValido = false;
-												filtroMsg = "Por favor indique si la prescripcion es Pediatrica o no.";
+										nombreArticuloGrabar =  nombreComercial.replace(/_/g," ");
+									}
+									elemento.value = codigo + "-" + origen + "-" + nombreArticuloGrabar;
+
+									//Se agrega atributo value al input para que se pueda comparar con otros en acciones posteriores.
+									$( elemento ).attr("value", codigo + "-" + origen + "-" + nombreArticuloGrabar );
+
+									// Se establece si la cadena msjNoPos ya tiene el codigo del artículo actual
+									var avisoNoPos = msjNoPos.indexOf(codigo)
+									msjNoPos += codigo+',';
+
+									//Si no tiene fracciones en la unidad de manejo ni unidad de fraccion se avisa
+									if( (mUnidadDosis == '' || mCantDosis == '') && !esLiquidoEndovenoso ){
+										alert('El articulo con codigo ' + codigo + ' no tiene unidad de fraccion o fracciones por unidad de manejo.  Por favor notifique a servicio farmaceutico.');
+									}
+
+									//Habilita o inhabilita la marca de confirmacion de preparacion
+									if(origen != 'CM' && document.getElementById("wchkconf"+tipoProtocoloAux+idx)){
+										document.getElementById("wchkconf"+tipoProtocoloAux+idx).disabled = true;
+									}
+									else{
+										if(document.getElementById("wchkconf"+tipoProtocoloAux+idx))
+											document.getElementById("wchkconf"+tipoProtocoloAux+idx).disabled = false;
+									}
+
+									//Unidad dosis
+									if(document.getElementById("wudosis"+tipoProtocoloAux+idx)){
+										document.getElementById("wudosis"+tipoProtocoloAux+idx).value = mUnidadDosis;
+									}
+
+									//Unidad manejo
+									if(document.getElementById("wcundmanejo"+tipoProtocoloAux+idx)){
+										document.getElementById("wcundmanejo"+tipoProtocoloAux+idx).value = unidad;
+									}
+
+									//Cantidad maxima de fracciones en la unidad de manejo
+									if(document.getElementById("wdosis"+tipoProtocoloAux+idx)){
+										document.getElementById("wdosis"+tipoProtocoloAux+idx).value = mCantDosis;
+										// 2012-06-27
+										// Se adiciona el atributo "readonly" para que este campo siempre sea de solo lectura, que no se pueda modificar
+										if(!adicionMultiple)
+											document.getElementById("wdosis"+tipoProtocoloAux+idx).readOnly = true;
+									}
+
+									//Oculto para maximo de unidades del articulo
+									if(document.getElementById("whcmanejo"+tipoProtocoloAux+idx)){
+										document.getElementById("whcmanejo"+tipoProtocoloAux+idx).value = mCantDosis;
+									}
+
+									//Oculto vence
+									if(document.getElementById("whvence"+tipoProtocoloAux+idx)){
+										document.getElementById("whvence"+tipoProtocoloAux+idx).value = vencimiento;
+									}
+
+									//Oculto para maximo de unidades del articulo
+									if(document.getElementById("whartpro"+tipoProtocoloAux+idx)){
+										document.getElementById("whartpro"+tipoProtocoloAux+idx).value = tipoProtocolo;
+									}
+
+									//La forma farmaceutica se graba igual, mas no se muestra en el kardex
+									if(document.getElementById("wfftica"+tipoProtocoloAux+idx)){
+										document.getElementById("wfftica"+tipoProtocoloAux+idx).value = forma;
+									}
+
+									//Oculto dias vencimiento
+									if(document.getElementById("whdiasvence"+tipoProtocoloAux+idx)){
+										document.getElementById("whdiasvence"+tipoProtocoloAux+idx).value = diasVencimiento;
+									}
+
+									//Oculto dispensable
+									if(document.getElementById("whdispensable"+tipoProtocoloAux+idx)){
+										document.getElementById("whdispensable"+tipoProtocoloAux+idx).value = dispensable;
+									}
+
+									//Oculto duplicable
+									if(document.getElementById("whduplicable"+tipoProtocoloAux+idx)){
+										document.getElementById("whduplicable"+tipoProtocoloAux+idx).value = duplicable;
+									}
+
+									//Asigno dias maximos
+									if(document.getElementById("wdiastto"+tipoProtocoloAux+idx) && parseInt(mDiasTto) > 0){
+										if( !esAntibiotico )
+											document.getElementById("wdiastto"+tipoProtocoloAux+idx).value = mDiasTto;
+									}
+									else{
+										document.getElementById("wdiastto"+tipoProtocoloAux+idx).value = '';
+									}
+
+									//Asigno dosis maximas
+									if(document.getElementById("wdosmax"+tipoProtocoloAux+idx) && parseInt(mDosisTto) > 0){
+										document.getElementById("wdosmax"+tipoProtocoloAux+idx).value = mDosisTto;
+									}
+									else{
+										document.getElementById("wdosmax"+tipoProtocoloAux+idx).value = '';
+									}
+
+									//Asigno via
+									if(document.getElementById("wviadmon"+tipoProtocoloAux+idx)){
+										document.getElementById("wviadmon"+tipoProtocoloAux+idx).value = mVia;
+									}
+									else{
+										document.getElementById("wviadmon"+tipoProtocoloAux+idx).value = '';
+									}
+
+									if(document.getElementById("wfinicio"+tipoProtocoloAux+idx) && mFechaInicio){
+										document.getElementById("wfinicio"+tipoProtocoloAux+idx).value = mFechaInicio;
+									}
+									// else
+									//	document.getElementById("wviadmon"+tipoProtocoloAux+idx).value = '';
+									//
+									if(document.getElementById("whfinicio"+tipoProtocoloAux+idx) && mFechaInicio){
+										document.getElementById("whfinicio"+tipoProtocoloAux+idx).value = mFechaInicio;
+									}
+									
+									//Si se agrega el articulo por protcolo el campo wporprotocolo queda activo
+									if( porProtocolo ){
+										$( "#wporprotocolo"+tipoProtocoloAux+idx ).val('on');
+										$( "#wperiod"+tipoProtocoloAux+idx ).attr({disabled:false});
+									}
+									
+									$( "#wnmmed"+tipoProtocoloAux+idx ).attr( "pos", pos );
+									
+									$( famsAtc ).each(function(){
+									
+										$( "#watc"+tipoProtocoloAux+idx ).attr( "data-atc-"+this.codigo, this.descripcion );
+										$( "#watc"+tipoProtocoloAux+idx ).val( elemento.value );
+									})
+									
+									//Dosis máxima por profilaxis
+									//var dmaxProfilaxis = 24/valFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ];
+									
+									if( esAntibiotico ){
+										
+										$( "#trPrescripcionPediatrica" ).css({ display: '' });
+										if( !esCompuesto )
+											$( "#trPrescripcionPediatrica" ).css({ display: 'none' });
+										
+										$( "#wesantibiotico"+tipoProtocoloAux+idx ).val( 'on' );
+										$( "#wdosmax"+tipoProtocoloAux+idx ).prop({readOnly:true});
+										$( "#wdosmax"+tipoProtocoloAux+idx ).attr({readOnly:true});
+										$( "#wdosmax"+tipoProtocoloAux+idx ).val('');
+										
+										//No permito que la dosis máxima sea superior a la 24/frecuencia
+										$( "#wdosmax"+tipoProtocoloAux+idx ).change(function(){
+											if( $( "#wprofilaxis"+tipoProtocoloAux+idx )[0].checked ){
+												var dmaxSup = 24/valFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ];
+												if( dmaxSup <= 1 ) dmaxSup = 1;
+												if( $( this ).val() > dmaxSup ){
+													jAlert( "La dosis máxima no debe ser superior a "+dmaxSup, "ALERTA" );
+													$( this ).val( dmaxSup );
+												}
 											}
+										});
+										
+										//No permito que la dosis máxima sea superior a la 24/frecuencia
+										$( "#wdiastto"+tipoProtocoloAux+idx ).change(function(){
+											if( $( "#wprofilaxis"+tipoProtocoloAux+idx )[0].checked ){
+												var dmaxSup = 1;
+												if( $( this ).val() > dmaxSup ){
+													console.log( $( this ).val() );
+													jAlert( "Los d&iacute;as de tratamiento no puede ser superior a "+dmaxSup, "ALERTA" );
+													$( this ).val( dmaxSup );
+												}
+											}
+										});
+									}
+									else
+										$( "#wesantibiotico"+tipoProtocoloAux+idx ).val( 'off' );
+									
+									if( !esAntibiotico ){
+										$( "[name=wfiltroantibiotico"+tipoProtocoloAux+idx+"]" ).css({display:"none"});
+										$( "[name=wfiltroantibiotico"+tipoProtocoloAux+idx+"]" ).parent().find("label").css({display:"none"});
+									}
+									
+									$( "#wprofilaxis"+tipoProtocoloAux+idx ).attr('onClick',"dttoPorFiltroAntibiotico(this,'"+tipoProtocoloAux+idx+"','1','"+(mDosisTto*1)+"')");
+									// $( "#wprofilaxis"+tipoProtocoloAux+idx ).attr('onClick',"dttoPorFiltroAntibiotico(this,'"+tipoProtocoloAux+idx+"','1','0')");
+									$( "#wtratamiento"+tipoProtocoloAux+idx ).attr('onClick',"dttoPorFiltroAntibiotico(this,'"+tipoProtocoloAux+idx+"','"+(mDiasTto*1)+"','"+(mDosisTto*1)+"')");
+
+									//Vias
+				//					debugger;
+									document.getElementById("wviadmon"+tipoProtocoloAux+idx).innerHTML = "";
+									if(via != ''){
+										var opcionesMaestro = document.getElementById("wmviaadmon").options;
+
+										var cont1 = 0;
+										var splVia = via.split(",");
+
+										/************************************************************************************
+										 * Marzo 7 de 2011
+										 ************************************************************************************/
+										//Si tiene mas de una via se agregar un campo mas en blanco
+										//para que agregue el option 'seleccione'
+										if( splVia.length > 1 ){
+											splVia = (","+via).split(",");
+										}
+
+										var opcionTmp = null;
+
+										while(cont1 < opcionesMaestro.length){
+
+											for( var i = 0 ; i < splVia.length; i++ ){
+
+												if( splVia[i] == opcionesMaestro[cont1].value ){
+
+													opcionTmp = document.createElement("option");
+
+													opcionTmp.text = opcionesMaestro[cont1].text;
+													opcionTmp.value = opcionesMaestro[cont1].value;
+
+													document.getElementById("wviadmon"+tipoProtocoloAux+idx).options.add(opcionTmp);
+												}
+											}
+
+											cont1++;
+										}
+										/************************************************************************************/
+
+									}
+									else{
+										var opcionesMaestro = document.getElementById("wmviaadmon").options;
+
+										var cont1 = 0;
+										var splVia = mVia.split(",");
+										var opcionTmp = null;
+
+										while(cont1 < opcionesMaestro.length){
+											opcionTmp = document.createElement("option");
+											document.getElementById("wviadmon"+tipoProtocoloAux+idx).options.add(opcionTmp);
+
+											opcionTmp.text = opcionesMaestro[cont1].text;
+											opcionTmp.value = opcionesMaestro[cont1].value;
+
+											cont1++;
+										}
+									}
+
+									//Si es un articulo agregado por dextrometer
+									//Se deja los campos correspondientes de solo lectura
+									if( agregandoArticuloPorDextrometer ){
+										
+										var arrIds = [ "wperiod"+tipoProtocoloAux+idx, "wcondicion"+tipoProtocoloAux+idx, "wviadmon"+tipoProtocoloAux+idx ];
+										$( arrIds ).each(function(){
+											//this son los ids que se encuentran en el array y son textos
+											var opVias = $( "#"+this+" option" );
+											var valVia = $( "#"+this ).val();
+
+											opVias.css({display:"none"});
+											opVias.attr({disabled:true});
+
+											//this para este caso es el codigo de la via
+											//Se muestran solo las vias que puedan ser seleccionadas segun el medicamento
+											opVias.filter( "[value="+valVia+"]" ).css({display:""});
+											opVias.filter( "[value="+valVia+"]" ).attr({disabled:false});
+										});
+
+										//Las observaciones son iguales a las del dextrometer
+										$( "#wtxtobs"+tipoProtocoloAux+idx ).val( $( "#txtDextrometer" ).val() );
+										$( "#wtxtobs"+tipoProtocoloAux+idx ).attr({readonly:true});
+
+										//No se puede editar dias de tratamiento
+										$( "#wdiastto"+tipoProtocoloAux+idx ).attr({readonly:true});
+									}
+									
+									borrarDosisMaximaPorFrecuencia( $( "#wperiod"+tipoProtocoloAux+idx ) );
+									
+									$("#wperiod"+tipoProtocoloAux+idx).change();
+									$("#wcondicion"+tipoProtocoloAux+idx).change();
+																
+									if( esAntibiotico ){
+										
+										var perDmax = true; //$( "#waccN\\.13" ).val().split( "," )[0] == 'S' ? true: false;
+
+										$( "#dvModalFiltroAntibiotico" ).html( $( "#dvFiltroAntibiotico" ).html());
+										
+										$( "#dvModalFiltroAntibiotico #bTituloFiltroAntibiotico" ).html( nombreArticuloAlert.toUpperCase() );
+										
+										$( "#dvModalFiltroAntibiotico #bFrecuencia" ).html( $( "#wperiod"+tipoProtocoloAux+idx+" option:selected" ).text().toUpperCase() );
+										if( $( "#wcondicion"+tipoProtocoloAux+idx ).val() != '' )
+											$( "#dvModalFiltroAntibiotico #bCondicion" ).html( $( "#wcondicion"+tipoProtocoloAux+idx+" option:selected" ).text().toUpperCase() );
+										else
+											$( "#dvModalFiltroAntibiotico #bCondicion" ).parent().css({display:"none"});
+										
+										var radioProfilaxis 	= $( "#ckFiltroProfilaxis", $( "#dvModalFiltroAntibiotico" ) );
+										var radioTratamiento 	= $( "#ckFiltroTratamiento", $( "#dvModalFiltroAntibiotico" ) );
+										var inFiltroDtto 		= $( "#dvModalFiltroAntibiotico input:text" ).eq(0);
+										var inFiltroDmax 		= $( "#dvModalFiltroAntibiotico input:text" ).eq(1);
+										
+										var btnGrabar = $( "#dvModalFiltroAntibiotico input:button[value=Grabar]" );
+										var btnCerrar = $( "#dvModalFiltroAntibiotico input:button[value=Cerrar]" );
+										
+										// radioProfilaxis.click(function(){
+										// $( "#dvModalFiltroAntibiotico input:radio" ).click(function(){
+										$( "[id^=ckFiltroProfilaxis]", $( "#dvModalFiltroAntibiotico" ) ).click(function(){
+										
+											if( mDiasTto*1 > 0 ){
+												inFiltroDmax.val( '' );
+												inFiltroDtto.val( mDiasTto );
+												// inFiltroDtto.change();
+											}
+											else if(mDosisTto*1 > 0 ){
+												inFiltroDtto.val( '' );
+												inFiltroDmax.val( mDosisTto );
+												// inFiltroDmax.change();
+											}
+											else if( this.id == 'ckFiltroProfilaxis' ){
+												if( inFiltroDmax.val()*1 == 0 )
+													inFiltroDtto.val( 1 );
+												// inFiltroDtto.change();
+											}
+											
+											if( inFiltroDmax.val()*1 > 0 ){
+												inFiltroDmax.change();
+											}
+											else if( inFiltroDtto.val()*1 > 0 ){
+												inFiltroDtto.change();
+											}
+										});
+										
+										//Asigno función al boton cerrar
+										btnCerrar.click(function(){
+											// $.unblockUI();
+											// setTimeout( function(){ fnInternaCTC() }, 500 );
+											jConfirm( "Está seguro que desea eliminar el artículo","ALERTA",function(x){
+												if(x){
+												$.unblockUI();
+													setTimeout( function(){ agregarMultiplesArticulos(); }, 500 );
+													quitarArticulo(idx, tipoProtocoloAux, document.getElementById( "wperiod"+tipoProtocoloAux+idx ), '', true );
+												}
+											});
+										});
+										
+										if( esCompuesto ){
+											$( '#wconmed1' + tipoProtocoloAux + idx ).val(conMedicamento1);
+											$( '#wconmed2' + tipoProtocoloAux + idx ).val(conMedicamento2);
+											
+											$( "#wckpediatrico"+ tipoProtocoloAux + idx ).css({display:''});									
+											$( "label", $( "#wckpediatrico"+ tipoProtocoloAux + idx ).parent() ).css({display: ''});
 										}
 										
-										if( filtroValido ){
+										//Asigno función al boton Grabar
+										btnGrabar.click(function(){
 											
-											if( $( "#rdPediatricoSi", $( "#dvModalFiltroAntibiotico" ) )[0].checked ){
-												
-												if( esCompuesto && conMedicamento1 && conMedicamento2 ){
-													
-													if( conMedicamento1*1 > 0 && conMedicamento2*1 > 0 ){
-														
-														$( '#wespediatrico' + tipoProtocoloAux + idx ).val( 'on' );
-														$( '#wconmed1' + tipoProtocoloAux + idx ).val(conMedicamento1);
-														$( '#wconmed2' + tipoProtocoloAux + idx ).val(conMedicamento2);
-														$( '#wckpediatrico'+ tipoProtocoloAux + idx )[0].checked = true;
-														
-														$( "#wckpediatrico"+ tipoProtocoloAux + idx ).click(function(){
-															if( this.checked ){
-																$( '#wespediatrico'+ tipoProtocoloAux + idx ).val( 'on' );
-															}
-															else{
-																$( '#wespediatrico'+ tipoProtocoloAux + idx ).val( 'off' );
-															}
-														}).css({display:''});
-														
-														$( "label", $( "#wckpediatrico"+ tipoProtocoloAux + idx ).parent() ).css({display: ''});
-													}
+											$( "#wprofilaxis"+tipoProtocoloAux+idx )[0].checked = radioProfilaxis[0].checked;
+											$( "#wtratamiento"+tipoProtocoloAux+idx )[0].checked = radioTratamiento[0].checked;
+											$( "#wdiastto"+tipoProtocoloAux+idx ).val( inFiltroDtto.val() );
+											$( "#wdosmax"+tipoProtocoloAux+idx ).val( inFiltroDmax.val() );
+											
+											var filtroMsg = "";
+											var filtroValido = false;
+											if( $( "#dvModalFiltroAntibiotico [name=ckFiltroAntibiotico]:checked" ).length > 0 ){
+												if( inFiltroDtto.val()*1 > 0 || inFiltroDmax.val()*1 > 0  ){
+													filtroValido = true;
+												}
+												else{
+													if( inFiltroDtto.val()*1 <= 0 && inFiltroDmax.val()*1 <= 0 && perDmax )
+														filtroMsg = "Debe ingresar un valor mayor a 0 para <b>DOSIS M&Aacute;XIMA</b> o <b>D&Iacute;AS DE TRATAMIENTO</b>";
+													else if( perDmax && inFiltroDmax.val()*1 <= 0 )
+														//Muestra el mensaje solo si tiene permiso para dosis máxima
+														filtroMsg = "Debe ingresar un valor mayor a 0 para <b>DOSIS M&Aacute;XIMA</b>";
+													else if( inFiltroDtto.val()*1 <= 0 )
+														filtroMsg = "Debe ingresar un valor mayor a 0 para <b>D&Iacute;AS DE TRATAMIENTO</b>";
+												}
+											}
+											else{
+												filtroMsg = "Debe seleccionar si el antibiótico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b>";
+											}
+											
+											if( $( "#trPrescripcionPediatrica" ).css( "display" ) != 'none' ){
+												if( $( "[name=rdPrescripcionPediatrica]:checked" ).length == 0 ){
+													filtroValido = false;
+													filtroMsg = "Por favor indique si la prescripcion es Pediatrica o no.";
 												}
 											}
 											
-											$.unblockUI();
-											setTimeout( function(){ fnInternaCTC() }, 500 );
-										}
-										else{
-											jAlert( filtroMsg, "ALERTA" );
-										}
-									});
-									
-									//Si tiene permisos para dosis máxima, permito escribir las dosis máxima
-									if( !perDmax ){
-										inFiltroDmax.attr({
-											disabled:true,
-											readOnly:true,
-										});
-									}
-									//No permito que la dosis máxima sea superior a la 24/frecuencia
-									//Asigno el evento change al filtro de Dosis máxima
-									inFiltroDmax.change(function(){
-										
-										$( this ).css({ disabled: false });
-										
-										var dmaDef = false;
-										try{
-											dmaDef = dmaPorFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ].dma;
-										}
-										catch(e){
-											dmaDef = false;
-										}
-										
-										if( !dmaDef ){
-											try{
-												dmaDef = dmaPorCondicionesSuministro[ $( "#wcondicion"+tipoProtocoloAux+idx ).val() ].dma;
-											}
-											catch(e){
-												dmaDef = false;
-											}
-										}
-										
-										if( dmaDef && dmaDef*1 > 0 ){
-											$( this ).val( dmaDef*1 );
-											$( this ).attr({ disabled: true });
-										}
-										
-										if( radioProfilaxis[0].checked ){
-											var dmaxSup = 24/valFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ];
-											if( dmaxSup <= 1 ) dmaxSup = 1;
-											if( dmaDef && dmaDef*1>0){
-												dmaxSup = Math.min(dmaDef*1,dmaxSup);
-											}
-											if( $( this ).val() > dmaxSup ){
-												jAlert( "La dosis máxima no debe ser superior a "+dmaxSup, "ALERTA" );
-												$( this ).val( dmaxSup );
-											}
-										}
-										
-										if( $(this).val() != '' ){
-											inFiltroDtto.attr({readOnly: true});
-										}
-										else{
-											inFiltroDtto.attr({readOnly: false});
-										}
-									});
-									
-									//No permito que la dosis máxima sea superior a la 24/frecuencia
-									//Asigno el evento change al filtro de Días de tratamiento
-									inFiltroDtto.change(function(){
-										
-										$( this ).attr({ readOnly: false });
-										
-										var dmaDef = false;
-										try{
-											dmaDef = dmaPorFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ].dma;
-										}
-										catch(e){
-											dmaDef = false;
-										}
-										
-										if( !dmaDef ){
-											try{
-												dmaDef = dmaPorCondicionesSuministro[ $( "#wcondicion"+tipoProtocoloAux+idx ).val() ].dma;
-											}
-											catch(e){
-												dmaDef = false;
-											}
-										}
-										
-										if( ( dmaDef && dmaDef*1 > 0 ) || inFiltroDmax.val()*1 > 0 ){
-											$( this ).val( '' );
-											$( this ).attr({ readOnly: true });
-										}
-										
-										if( radioProfilaxis[0].checked ){
-											// $( this ).val(1);
-											var dmaxSup = 1;
-											if( $( this ).val()*1 > dmaxSup ){
-												jAlert( "Los d&iacute;as de tratamiento no puede ser superior a "+dmaxSup, "ALERTA" );
-												$( this ).val( dmaxSup );
-											}
-										}
-										
-										if( $(this).val() != '' ){
-											inFiltroDmax.attr({readOnly: true});
-										}
-										else{
-											inFiltroDmax.attr({readOnly: false});
-										}
-									});
-									
-									inFiltroDtto.change();
-									inFiltroDmax.change();
-									
-									$.blockUI({ message: $( "#dvModalFiltroAntibiotico" ) });
-								}
-								else
-									fnInternaCTC();
-									// agregarMultiplesArticulos();
-								
-								
-								/**
-								 * Valida si el medicamento es de CTC o no
-								 */
-								function fnInternaCTC(){
-									var conctc = false;
-									//Paciente No pos
-									if( $( "#pacEPS" ).val() == 'on' ){
-
-										if(avisoNoPos == -1 && pos == 'N'){
-
-											if( $( "#esMedico" ).val() == 'on' ){
-												// var entidad_responsable = $("#entidad_responsable").val(); //Entidad responsable del paciente.
-												// var datos_entidad_responsable = entidad_responsable.split("-"); //Nit y digito de verificacion.
-												var array_entidadesCTC = Array();
-												// var nit_entidad_resp = datos_entidad_responsable[0]; //Nit sin el digito de verificacion.
+											if( filtroValido ){
 												
-												var nit_entidad_resp = $("#entidad_responsable").val(); //Entidad responsable del paciente.
+												if( $( "#rdPediatricoSi", $( "#dvModalFiltroAntibiotico" ) )[0].checked ){
+													
+													if( esCompuesto && conMedicamento1 && conMedicamento2 ){
+														
+														if( conMedicamento1*1 > 0 && conMedicamento2*1 > 0 ){
+															
+															$( '#wespediatrico' + tipoProtocoloAux + idx ).val( 'on' );
+															$( '#wconmed1' + tipoProtocoloAux + idx ).val(conMedicamento1);
+															$( '#wconmed2' + tipoProtocoloAux + idx ).val(conMedicamento2);
+															$( '#wckpediatrico'+ tipoProtocoloAux + idx )[0].checked = true;
+															
+															$( "#wckpediatrico"+ tipoProtocoloAux + idx ).click(function(){
+																if( this.checked ){
+																	$( '#wespediatrico'+ tipoProtocoloAux + idx ).val( 'on' );
+																}
+																else{
+																	$( '#wespediatrico'+ tipoProtocoloAux + idx ).val( 'off' );
+																}
+															}).css({display:''});
+															
+															$( "label", $( "#wckpediatrico"+ tipoProtocoloAux + idx ).parent() ).css({display: ''});
+														}
+													}
+												}
+												
+												$.unblockUI();
+												setTimeout( function(){ fnInternaCTC() }, 500 );
+											}
+											else{
+												jAlert( filtroMsg, "ALERTA" );
+											}
+										});
+										
+										//Si tiene permisos para dosis máxima, permito escribir las dosis máxima
+										if( !perDmax ){
+											inFiltroDmax.attr({
+												disabled:true,
+												readOnly:true,
+											});
+										}
+										//No permito que la dosis máxima sea superior a la 24/frecuencia
+										//Asigno el evento change al filtro de Dosis máxima
+										inFiltroDmax.change(function(){
+											
+											$( this ).css({ disabled: false });
+											
+											var dmaDef = false;
+											try{
+												dmaDef = dmaPorFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ].dma;
+											}
+											catch(e){
+												dmaDef = false;
+											}
+											
+											if( !dmaDef ){
+												try{
+													dmaDef = dmaPorCondicionesSuministro[ $( "#wcondicion"+tipoProtocoloAux+idx ).val() ].dma;
+												}
+												catch(e){
+													dmaDef = false;
+												}
+											}
+											
+											if( dmaDef && dmaDef*1 > 0 ){
+												$( this ).val( dmaDef*1 );
+												$( this ).attr({ disabled: true });
+											}
+											
+											if( radioProfilaxis[0].checked ){
+												var dmaxSup = 24/valFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ];
+												if( dmaxSup <= 1 ) dmaxSup = 1;
+												if( dmaDef && dmaDef*1>0){
+													dmaxSup = Math.min(dmaDef*1,dmaxSup);
+												}
+												if( $( this ).val() > dmaxSup ){
+													jAlert( "La dosis máxima no debe ser superior a "+dmaxSup, "ALERTA" );
+													$( this ).val( dmaxSup );
+												}
+											}
+											
+											if( $(this).val() != '' ){
+												inFiltroDtto.attr({readOnly: true});
+											}
+											else{
+												inFiltroDtto.attr({readOnly: false});
+											}
+										});
+										
+										//No permito que la dosis máxima sea superior a la 24/frecuencia
+										//Asigno el evento change al filtro de Días de tratamiento
+										inFiltroDtto.change(function(){
+											
+											$( this ).attr({ readOnly: false });
+											
+											var dmaDef = false;
+											try{
+												dmaDef = dmaPorFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ].dma;
+											}
+											catch(e){
+												dmaDef = false;
+											}
+											
+											if( !dmaDef ){
+												try{
+													dmaDef = dmaPorCondicionesSuministro[ $( "#wcondicion"+tipoProtocoloAux+idx ).val() ].dma;
+												}
+												catch(e){
+													dmaDef = false;
+												}
+											}
+											
+											if( ( dmaDef && dmaDef*1 > 0 ) || inFiltroDmax.val()*1 > 0 ){
+												$( this ).val( '' );
+												$( this ).attr({ readOnly: true });
+											}
+											
+											if( radioProfilaxis[0].checked ){
+												// $( this ).val(1);
+												var dmaxSup = 1;
+												if( $( this ).val()*1 > dmaxSup ){
+													jAlert( "Los d&iacute;as de tratamiento no puede ser superior a "+dmaxSup, "ALERTA" );
+													$( this ).val( dmaxSup );
+												}
+											}
+											
+											if( $(this).val() != '' ){
+												inFiltroDmax.attr({readOnly: true});
+											}
+											else{
+												inFiltroDmax.attr({readOnly: false});
+											}
+										});
+										
+										inFiltroDtto.change();
+										inFiltroDmax.change();
+										
+										$.blockUI({ message: $( "#dvModalFiltroAntibiotico" ) });
+									}
+									else
+										fnInternaCTC();
+										// agregarMultiplesArticulos();
+									
+									
+									/**
+									 * Valida si el medicamento es de CTC o no
+									 */
+									function fnInternaCTC(){
+										var conctc = false;
+										//Paciente No pos
+										if( $( "#pacEPS" ).val() == 'on' ){
 
-												var entidadesConfirmanCTC = $("#entidades_confirmanCTC").val(); //Nit de entidades que confirman CTC.
-												var array_entidadesCTC = entidadesConfirmanCTC.split(","); //Array de entidades que confirman CTC.
+											if(avisoNoPos == -1 && pos == 'N'){
 
-												var validar_entidad = jQuery.inArray(nit_entidad_resp, array_entidadesCTC); //Verifica si el array de entidades que confirman CTC esta la entidad responsable del paciente.
-												conctc = true;
-												//Si la respuesta es 0(cero) entonces el nit si s encuentra en las entidades que confirman CTC, entonces muestra un alert para llenarlo o no.
-												if(validar_entidad != -1){
+												if( $( "#esMedico" ).val() == 'on' ){
+													// var entidad_responsable = $("#entidad_responsable").val(); //Entidad responsable del paciente.
+													// var datos_entidad_responsable = entidad_responsable.split("-"); //Nit y digito de verificacion.
+													var array_entidadesCTC = Array();
+													// var nit_entidad_resp = datos_entidad_responsable[0]; //Nit sin el digito de verificacion.
+													
+													var nit_entidad_resp = $("#entidad_responsable").val(); //Entidad responsable del paciente.
 
-													var confirmaCTC = confirm("¿Desea realizar el CTC del medicamento para el paciente?");
+													var entidadesConfirmanCTC = $("#entidades_confirmanCTC").val(); //Nit de entidades que confirman CTC.
+													var array_entidadesCTC = entidadesConfirmanCTC.split(","); //Array de entidades que confirman CTC.
 
-													if(!confirmaCTC){
-														$( "#wnmmed"+tipoProtocoloAux+idx ).attr( "pos", "P" );
-														arCTCArticulos[ codigo ] = "artsinctc";
-														conctc = false;
-														return false;
+													var validar_entidad = jQuery.inArray(nit_entidad_resp, array_entidadesCTC); //Verifica si el array de entidades que confirman CTC esta la entidad responsable del paciente.
+													conctc = true;
+													//Si la respuesta es 0(cero) entonces el nit si s encuentra en las entidades que confirman CTC, entonces muestra un alert para llenarlo o no.
+													if(validar_entidad != -1){
+
+														var confirmaCTC = confirm("¿Desea realizar el CTC del medicamento para el paciente?");
+
+														if(!confirmaCTC){
+															$( "#wnmmed"+tipoProtocoloAux+idx ).attr( "pos", "P" );
+															arCTCArticulos[ codigo ] = "artsinctc";
+															conctc = false;
+															return false;
+														}
+													}
+													else{
+														// alert("El medicamento " + nombreArticuloAlert + " es NO POS");
+														if($( "#esContributivo" ).val())
+														{
+															alert("El medicamento " + nombreArticuloAlert + " es NO POS, al firmar la orden debe llenar el MIPRES en la plataforma del Ministerio de Salud");
+														}
+														else
+														{
+															alert("El medicamento " + nombreArticuloAlert + " es NO POS");
+														}
 													}
 												}
 												else{
-													// alert("El medicamento " + nombreArticuloAlert + " es NO POS");
+													alert("El medicamento " + nombreArticuloAlert + " es NO POS");
+												}
+											}
+										}
+
+										if(pos == 'N'){
+
+											if(conctc){
+												if(!adicionMultiple)
+												{
+													// //if( !arCTCArticulos[ codigo ] ){
+														// mostrarCtcArticulos2( codigo, tipoProtocoloAux, idx, deAlta );
+													// //}
+													
+													//Validacion CTC contributivo para que pida el CTC sino que se abra la pagina del ministerio parar llenarlo
 													if($( "#esContributivo" ).val())
 													{
-														alert("El medicamento " + nombreArticuloAlert + " es NO POS, al firmar la orden debe llenar el MIPRES en la plataforma del Ministerio de Salud");
+														// agregar medicamento a la cadena para mostrar el CTC al grabar y crear las notas medicas
+														cadenaCTCcontributivo += "medicamento|"+codigo+"|"+$.trim(nombreArticuloAlert)+"|"+tipoProtocoloAux+"|"+idx+"***";
+														
 													}
 													else
 													{
-														alert("El medicamento " + nombreArticuloAlert + " es NO POS");
+														mostrarCtcArticulos2( codigo, tipoProtocoloAux, idx, deAlta );
 													}
-												}
-											}
-											else{
-												alert("El medicamento " + nombreArticuloAlert + " es NO POS");
-											}
-										}
-									}
-
-									if(pos == 'N'){
-
-										if(conctc){
-											if(!adicionMultiple)
-											{
-												// //if( !arCTCArticulos[ codigo ] ){
-													// mostrarCtcArticulos2( codigo, tipoProtocoloAux, idx, deAlta );
-												// //}
-												
-												//Validacion CTC contributivo para que pida el CTC sino que se abra la pagina del ministerio parar llenarlo
-												if($( "#esContributivo" ).val())
-												{
-													// agregar medicamento a la cadena para mostrar el CTC al grabar y crear las notas medicas
-													cadenaCTCcontributivo += "medicamento|"+codigo+"|"+$.trim(nombreArticuloAlert)+"|"+tipoProtocoloAux+"|"+idx+"***";
 													
 												}
 												else
 												{
-													mostrarCtcArticulos2( codigo, tipoProtocoloAux, idx, deAlta );
-												}
-												
-											}
-											else
-											{
-												// strPendientesCTC += 'articulo|'+codigo+'|'+tipoProtocoloAux+'|'+idx+'\r\n';
-												
-												if($( "#esContributivo" ).val())
-												{
-													// agregar medicamento a la cadena para mostrar el CTC al grabar y crear las notas medicas
-													cadenaCTCcontributivo += "medicamento|"+codigo+"|"+$.trim(nombreArticuloAlert)+"|"+tipoProtocoloAux+"|"+idx+"***";
-												}
-												else
-												{
-													strPendientesCTC += 'articulo|'+codigo+'|'+tipoProtocoloAux+'|'+idx+'\r\n';
+													// strPendientesCTC += 'articulo|'+codigo+'|'+tipoProtocoloAux+'|'+idx+'\r\n';
+													
+													if($( "#esContributivo" ).val())
+													{
+														// agregar medicamento a la cadena para mostrar el CTC al grabar y crear las notas medicas
+														cadenaCTCcontributivo += "medicamento|"+codigo+"|"+$.trim(nombreArticuloAlert)+"|"+tipoProtocoloAux+"|"+idx+"***";
+													}
+													else
+													{
+														strPendientesCTC += 'articulo|'+codigo+'|'+tipoProtocoloAux+'|'+idx+'\r\n';
+													}
 												}
 											}
 										}
+										
+										agregarMultiplesArticulos();
 									}
-									
-									agregarMultiplesArticulos();
+								}
+								else{
+									jAlert('Debe agregar un nuevo articulo.', 'ALERTA');
 								}
 							}
-							else{
-								jAlert('Debe agregar un nuevo articulo.', 'ALERTA');
+							else {
+								$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sí para el boton de aceptar
+								$.alerts.cancelButton = "Cancelar";	//Dejo por defecto el valor no para el boton cancelar
+								jAlert('El articulo ya se encuentra en la lista.  No se puede agregar porque esta configurado como no duplicable.', 'ALERTA');
+								$( "#trFil"+idx ).remove();
 							}
-						}
-						else {
-							$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sí para el boton de aceptar
-							$.alerts.cancelButton = "Cancelar";	//Dejo por defecto el valor no para el boton cancelar
-							jAlert('El articulo ya se encuentra en la lista.  No se puede agregar porque esta configurado como no duplicable.', 'ALERTA');
-							$( "#trFil"+idx ).remove();
-						}
+						});
+					
 					});
 				});
 			});
