@@ -4073,7 +4073,7 @@ else
 											{
 												$array[$i]['art']['can'] = $array[$i]['cco'][$j]['fueA']['cdv'];
 												//echo "<br>Llamado procesoDevMatrix<br>"; //##BORRAR_SEBASTIAN_NEVADO
-												die("Llamado procesoDevMatrix");
+												//die("Llamado procesoDevMatrix");
 												$ok=procesoDevMatrix($devCons, $pac,$array[$i]['art'],$array[$i]['cco'][$j]['fueA']['jde'],$array[$i]['cco'][$j]['fueA']['cfa'],$array[$i]['cco'][$j]['fueA']['jfa'],$cco[$codCco],"D",true,$usuario,$error);
 
 												//Agosto 16 de 2011
