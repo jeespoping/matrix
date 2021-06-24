@@ -492,8 +492,8 @@ if(!isset($accion))
 	echo "		<table border=0 style='width : 100%'>";	
 	echo "			<tr><td align=center id=tipo5 colspan=2><IMG SRC='/matrix/images/medical/root/boton-9.png'></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
-	echo "			<tr><td align=center id=tipo4>C&oacute;digo</td><td align=center><input class='input-login' type='text' name='codigo' size=10 maxlength=8></td></tr>";
-	echo "			<tr><td align=center id=tipo4>Clave</td><td align=center><input class='input-login'  type='password' name='password' size=10 maxlength=8></td></tr>";
+	echo "			<tr><td align=center id=tipo4>C&oacute;digo</td><td align=center><input class='input-login' type='text' name='codigo' size=18 maxlength=8></td></tr>";
+	echo "			<tr><td align=center id=tipo4>Clave</td><td align=center><input class='input-login'  type='password' name='password' size=18 maxlength=30></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
 	echo "			<tr><td align=center colspan=2><button onClick='enter()' class='tipoHIDE'><IMG SRC='/matrix/images/medical/root/boton-10.png'></button></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' id='restablecerPassword' colspan=2 >

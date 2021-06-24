@@ -31,38 +31,44 @@
 		variable.value = hex_sha1(variable.value);
 	}
 	$(document).on('ready', function(){
-	$('#mostrar').on('click', function(e){
-      e.preventDefault();
-	  
-	  var current = $(this).attr('action');
-	  if (current == 'hide'){
-		  $(this).prev().attr('type','text');
-		  $(this).removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close').attr('action','show');
-		  
-	  }
-	  if (current == 'show'){
-		  $(this).prev().attr('type','password');
-		  $(this).removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open').attr('action','hide');
-		}
-	  })
-	})
+		$('#mostrar').on('mousedown mouseup', function(e){
+			var current = $(this).attr('action');
+			if (current == 'hide'){
+					$(this).prev().attr('type','text');
+					$(this).removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close').attr('action','show');
+			}
+			if (current == 'show'){
+					$(this).prev().attr('type','password');
+					$(this).removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open').attr('action','hide');
+			}
+		});
+		
+		$('#mostrar2').on('mousedown mouseup', function(e){
+			var current2 = $(this).attr('action');
+			if (current2 == 'hide'){
+				$(this).prev().attr('type','text');
+				$(this).removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close').attr('action','show');
+			}
+			if (current2 == 'show'){
+				$(this).prev().attr('type','password');
+				$(this).removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open').attr('action','hide');
+			}
+		});
+	});
 	
-	$(document).on('ready', function(){
-	$('#mostrar2').on('click', function(e){
-      e.preventDefault();
-	  
-	  var current = $(this).attr('action');
-	  if (current == 'hide'){
-		  $(this).prev().attr('type','text');
-		  $(this).removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close').attr('action','show');
-		  
-	  }
-	  if (current == 'show'){
-		  $(this).prev().attr('type','password');
-		  $(this).removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open').attr('action','hide');
-		}
-	  })
-	})
+	// $(document).on('ready', function(){
+	// 	$('#mostrar2').on('mousedown mouseup', function(e){
+	// 		var current2 = $(this).attr('action');
+	// 		if (current2 == 'hide'){
+	// 			$(this).prev().attr('type','text');
+	// 			$(this).removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close').attr('action','show');
+	// 		}
+	// 		if (current2 == 'show'){
+	// 			$(this).prev().attr('type','password');
+	// 			$(this).removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open').attr('action','hide');
+	// 		}
+	// 	});
+	// });
 	</script>
 	
 </head>
@@ -78,13 +84,21 @@
 //4. SE AGREGA VALIDACION DEL PASSWORD DIGITADO, QUE CUMPLA CON UN MINIMO DE 8 Y MAXIMO 12 CARACTERES
 //5. SE AGREGA VALIDACION DEL PASSWORD DIGITADO, QUE CUMPLA COMO MINIMO 3 DE LAS SIGUIENTES CARACTERISTICAS:
 //											- un caracter especial, - una mayuscula, - un numero, una minusculas.
+//*************************************************************************************************** */
+// POR: JULIAN MEJIA
+//FECHA DE MODIFICACION: 				2021/06/24
+// SE MODIFICA EL ÍCONO PARA VER LA CONTRASEÑA Y QUE SOLO SE VEA SI DEJO EL MOUSE EN CLICK SOSTENIDO
+// SE AMPLIA LA CONTRASEÑA A MINIMO 12 CARACTERES Y CON EL CONDICIONAL DE QUE DEBE CUMPLIR TODAS LAS CARACTERISTICAS
+//											- un caracter especial, - una mayuscula, - un numero, una minusculas.
+// SE CAMBIA EL TIEMPO DE CADUCIDAD DE LA CONTRASEÑA A DOS MESES
+
 	 
 include_once("conex.php");
 function bisiesto($year)
 {
 	return(($year % 4 == 0 and $year % 100 != 0) or $year % 400 == 0);
 }
-@session_start();
+//@session_start(); //TODO JULIAN
 if(!isset($_SESSION['user']))
 	echo "error";
 else
@@ -106,16 +120,16 @@ else
 				echo "<tr><td align=center colspan=2><p>&nbsp;</p></td></tr>";
 				echo "<tr><td align=center colspan=2>POR FAVOR TENER PRESENTE AL ACTUALIZAR LA CLAVE:</td></tr>";
 				echo "<tr><td align=center colspan=2>POLITICA DE INFORMATICA.</td></tr>";
-				echo "<tr><td align=center colspan=2>1. La clave debe contar con una longitud de 8 caracteres.</td></tr>";
-				echo "<tr><td align=center colspan=2>2. Que tenga combinaciones may&uacute;sculas, min&uacute;sculas, caracteres especiales y n&uacute;meros.</td></tr>";
+				echo "<tr><td align=center colspan=2>1. La clave debe contar con una longitud M&iacute;nima de 12 caracteres.</td></tr>";
+				echo "<tr><td align=center colspan=2>2. Que tenga combinaciones may&uacute;sculas (al menos 1), min&uacute;sculas, caracteres especiales (al menos 1) y n&uacute;meros (al menos 1).</td></tr>";
 				echo "<tr><td align=center colspan=2><b>NOTA:</b> La combinaci&oacute;n debe cumplir con al menos 3 de las caracter&iacute;sticas del paso 2.</td></tr>";
 				echo "<tr><td align=center colspan=2><p>&nbsp;</p></td></tr>";
 				echo "<tr><td align=center colspan=2>CAMBIO DE PASSWORD</td></tr>";
 				echo "<td bgcolor=#cccccc align=center>Password Nuevo</td>";
-				echo "<td bgcolor=#cccccc align=center><input type='password' name='wpass' size=20 maxlength=8>
+				echo "<td bgcolor=#cccccc align=center><input type='password' name='wpass' size=25 minlength=12>
 						<span class='glyphicon glyphicon-eye-open' action='hide' id='mostrar'></span></td></tr>";
 				echo "<td bgcolor=#cccccc align=center>Redigite Password</td>";
-				echo "<td bgcolor=#cccccc align=center><input type='password' name='wpassr' size=20 maxlength=8>
+				echo "<td bgcolor=#cccccc align=center><input type='password' name='wpassr' size=25 minlength=12>
 						<span class='glyphicon glyphicon-eye-open' action='hide' id='mostrar2'></span></td></tr>";		
 				echo "<tr><td bgcolor=#cccccc align=center colspan=2><input type='submit' value='IR'></td></tr></table>";
 			}
@@ -167,16 +181,16 @@ else
 				$row = mysql_fetch_array($err);
 				$wfecw=date("Y-m-d");
 				$wfecw=date_create($wfecw);
-				date_add($wfecw, date_interval_create_from_date_string('6 months'));	
+				date_add($wfecw, date_interval_create_from_date_string('2 months'));	
 				$wfecw1=date_format($wfecw, 'Y-m-d');
 				
-				if($wpass != "" and $wpass==$wpassr and $wpass != $row[0] and strlen($wpass) >= 8 and strlen($wpass) <= 8)
+				if($wpass != "" and $wpass==$wpassr and $wpass != $row[0] and strlen($wpass) >= 12 ) //and strlen($wpass) <= 8
 				{
 					$contador =0;
 					//validar minusculas
-					if(preg_match('`[a-z]`',$wpass)){
-						$contador = $contador + 1;
-					}
+					// if(preg_match('`[a-z]`',$wpass)){
+					// 	$contador = $contador + 1;
+					// }
 					//validar mayusculas
 					if(preg_match('`[A-Z]`',$wpass)){
 						$contador = $contador + 1;
@@ -224,7 +238,7 @@ else
 				{
 					echo "<center><table border=0 aling=center>";
 					echo "<tr><td><IMG SRC='/matrix/images/medical/root/cabeza.gif' ></td><tr></table></center>";
-					echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#ffff00 LOOP=-1>ERROR EN LA DIGITACION O LONGITUD SON DE (8 CARACTERES) aaaa !!!!</MARQUEE></FONT>";
+					echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#ffff00 LOOP=-1>ERROR EN LA DIGITACION O LONGITUD ES DE (12 CARACTERES) aaaa!!!!</MARQUEE></FONT>";
 					echo "<br><br>";
 				}
 			}
