@@ -1346,7 +1346,7 @@ else
 										sumarArticuloMatrix($cod, $cco, 'on', $var);
 										anularCargo($cco, $historia . '-' . $ingreso, $cod, $var, 'on');
 										grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
-										grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $var . '-' . $cod, '', '', 1, 1);										
+										grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $var . '-' . $cod, '', '', 1, 1);
 										// $res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
 										// if (!$res)
 										// {
@@ -1700,7 +1700,7 @@ else
  * @date: 2021-06-11
  * @return: array
  */
-function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $numCargoInv, $linCargoInv )
+function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto )
 {
 	//echo "<br>CargarCargosErp 4502<br>";//##BORRAR_SEBASTIAN_NEVADO
 	//global $pac;
@@ -1710,9 +1710,9 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 	global $wbasedato;
 	//echo "<br>wbasedato: <br>";//##BORRAR_SEBASTIAN_NEVADO
 	//print_r($wbasedato); //##BORRAR_SEBASTIAN_NEVADO
-	global $usuario;
-	//echo "<br>usuario: <br>";//##BORRAR_SEBASTIAN_NEVADO
-	//print_r($usuario); //##BORRAR_SEBASTIAN_NEVADO
+	global $wusuario;
+	//echo "<br>wusuario: <br>";//##BORRAR_SEBASTIAN_NEVADO
+	//print_r($wusuario); //##BORRAR_SEBASTIAN_NEVADO
 	global $wuse;
 	//echo "<br>wuse: <br>"; //##BORRAR_SEBASTIAN_NEVADO
 	//print_r($wuse); //##BORRAR_SEBASTIAN_NEVADO
@@ -1826,10 +1826,10 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 				//Reemplazo las variables necesarias para la función validar_y_grabar_cargo
 				$auxWbasedato = $wbasedato;
 				$wbasedato = $wcliame;
-				$wuse = $usuario;
+				$wuse = $wusuario;
 				
 				//$dosProc = datos_desde_procedimiento(codigoArticulo, codigoConcepto, wccogra    , ccoActualPac, wcodemp , wfeccar, '', '*', 'on', false, '', fecha  , hora  , '*', '*');
-				$datosProc = datos_desde_procedimiento( $art['cod']  , $wcodcon      , $cco['cod'], $pac['sac'] , $wcodemp, $wfecha, '', '*', 'on', false, '', $wfecha, $whora, '*', '*');
+				$datosProc = datos_desde_procedimiento( $art['cod']  , $wcodcon      , $cCentroCosto, $pac['sac'] , $wcodemp, $wfecha, '', '*', 'on', false, '', $wfecha, $whora, '*', '*');
 				
 				$wvaltar = $datosProc[ 'wvaltar' ];
 				
@@ -1867,8 +1867,8 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 				$datos['wvaltar']		=$wvaltar;	//			--> valor PENDIENTE FUNCION
 				$datos['wrecexc']		='R'; // $wrecexc;				--> 'R'
 				$datos['wfacturable']	='S'; // $wfacturable;			--> 'S'
-				$datos['wcco']			=$cco['cod'];	// $wcco;					--> Centro de costos graba
-				$datos['wccogra']		=$cco['cod'];// $wccogra;				--> cco paciente
+				$datos['wcco']			=$cCentroCosto;	// $wcco;					--> Centro de costos graba
+				$datos['wccogra']		=$cCentroCosto;// $wccogra;				--> cco paciente
 				$datos['wfeccar']		=$wfecha; // $wfeccar;				--> Fecha del cargo
 				$datos['whora_cargo']	=$whora; // $whora_cargo.':00';	-->	Hora del cargo
 				$datos['wconinv']		='on'; //$wconinv;				--> 'on'
@@ -1946,13 +1946,14 @@ function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $
 	//echo "<br>Inicia la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	global $wemp_pmla;
 	global $conex;
-	$pac['sac'] = $cCentroCosto;
 
 	//Obtengo el alias por aplicación y defino parámetros
 	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 	//$numCargoInv = '';
 	//$linCargoInv = '';
+	$pac['sac'] = consultarCcoPaciente($conex, $pac['his'], $pac['ing']);
+	//echo "<br>cCentroCosto:".$cCentroCosto."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 	//Llamo facturación inteligente
 	$artFactInteligente = array();
@@ -1964,7 +1965,7 @@ function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $
 	$artFactInteligente['nom'] = $sNombre;
 	$artFactInteligente['can'] = $dCantidad;
 	//print_r($artFactInteligente); //##BORRAR_SEBASTIAN_NEVADO
-	CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $artFactInteligente, $tipTrans, $numCargoInv, $linCargoInv);
+	CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $artFactInteligente, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto);
 	//echo "<br>Finaliza la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 	$aResultado = new stdClass();
@@ -2066,6 +2067,36 @@ function esMMQ( $art ){
 	}
 	
 	return $mmq;
+}
+
+/**
+ * Consulta el nombre del concepto de acuerdo a su codigo
+ * @by: sebastian.nevado
+ * @date: 2021-06-22
+ * @return: array
+ */
+function consultarCcoPaciente( $conex, $sHistoria, $sIngreso ){
+	
+	global $wemp_pmla;
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
+	$sQuery = "SELECT Ubisac
+			FROM ".$wmovhos."_000018 
+			WHERE Ubihis = ? AND Ubiing = ?
+			ORDER BY id DESC
+			LIMIT 1";
+	
+	//Preparo y envío los parámetros
+	$sentencia = mysqli_prepare($conex, $sQuery);
+	mysqli_stmt_bind_param($sentencia, "ss", $sHistoria, $sIngreso );
+	mysqli_stmt_execute($sentencia);
+
+	mysqli_stmt_bind_result($sentencia, $iCCo);
+	mysqli_stmt_fetch($sentencia);
+	
+	$bResultado = isset($iCCo) ? $iCCo : null;
+
+	return $bResultado;
 }
 
 ?>
