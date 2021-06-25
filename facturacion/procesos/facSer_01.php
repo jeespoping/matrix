@@ -191,166 +191,209 @@
                 //////// GRABAR LA FACTURA:
                 if($accion == 'grabar')
                 {
+					$ok = false;
                     // OBTENER CONSECUTIVO NUEVA FACTURA:
+					txtLog("INICIO GRABACION FACTURA PARA DOC: $numFactu", true);
                     $nuevaFactura = obtenerNumFactura($fuente,$cCostos ,$conex_o);
 
-                    //SUMAR $PLAZO A LA FECHA ACTUAL:
-                    $fecha_Actual2 = strtotime(date('Y-m-d'));
-                    $mesMas = date("Y-m-d", strtotime("+$plazo day", $fecha_Actual2));
-                    $carfev = $mesMas;
-
-                    //FECHA Y HORA ACTUAL:
-                    $fecha_data = date('Y-m-d h:i:s');  $anoActualMesActual = $ano_Actual.$mes_Actual;  $fteFactura = $fuente.'-'.$nuevaFactura;
-                    $doctdo = 'F'.$tipResp; //para AHDOC
-
-                    //OBTENER VALOR NETO DE LA FACTURA DESDE LA TABLA TEMPORAL:
-                    $querySumFacTemp = "select sum(vlrneto) from amefactmp WHERE fac = '$numFactu'";
-                    $commSumFacTemp = odbc_do($conex_o, $querySumFacTemp);
-                    $totFactura = odbc_result($commSumFacTemp,1);
-
-                    //GUARDAR EN CACAR:
-                    $insertCacar = "insert into cacar VALUES('$fuente','$nuevaFactura','1','$ano_Actual','$mes_Actual','$cCostos','$fecha_Actual','$carfev',
-                                                             '00','','','$tipResp','$docPac','$nomPac','E','$nitResp','$desResp','$fuente','$nuevaFactura',
-                                                             '$totFactura','$totFactura','0','','0','0')";
-                    $comInsertCacar = odbc_do($conex_o, $insertCacar);
-                    if($comInsertCacar){?><!--<h4>CACAR => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN CACAR</h4><?php }
-
-                    //GUARDAR EN CACARCON:
-                    $insertCacarcon = "insert into cacarcon VALUES('$fuente','$nuevaFactura','0','$fuente','$nuevaFactura','8888','0','0','0','$totFactura','S','C')";
-                    $comInsertCacarcon = odbc_do($conex_o, $insertCacarcon);
-                    if($comInsertCacarcon){?><!--<h4>CACARCON => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN CACARCON</h4><?php }
-
-                    //GUARDAR CACARDES:
-                    $insertCacardes = "insert into cacardes VALUES('$fuente','$nuevaFactura','$fuente','$nuevaFactura')";
-                    $comInsertCacardes = odbc_do($conex_o, $insertCacardes);
-                    if($comInsertCacardes){?><!--<h4>CACARDES => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN CACARDES</h4><?php }
-
-                    //GUARDAR CACAROBS:
-					$linea = lineaDeString ($obsFac, 1, 60);
-					if ($linea != "") {
-						//echo("<br>grabando lineas:<br>$linea");
-						$insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','1','$linea','0')";
-						$comInsertCacarobs = odbc_do($conex_o, $insertCacarobs);
+					if ( $nuevaFactura < 0 )
+                    {
+						txtLog("NO SE PUDO GENERAR NUEVO CONSECUTIVO DE FACTURA. INTENTE DE NUEVO.");
+						echo "<h4>___________________________________</h4>";
+						echo "<h4>NO SE PUDO GENERAR NUEVO CONSECUTIVO DE FACTURA PARA EL DOC: $numFactu</h4>";
 					}
-					if($comInsertCacarobs) {
-						$linea = lineaDeString ($obsFac, 2, 60);
+					else
+					{
+						txtLog("GRABANDO FACTURA: $newConsecutivo");
+						
+						//SUMAR $PLAZO A LA FECHA ACTUAL:
+						$fecha_Actual2 = strtotime(date('Y-m-d'));
+						$mesMas = date("Y-m-d", strtotime("+$plazo day", $fecha_Actual2));
+						$carfev = $mesMas;
+
+						//FECHA Y HORA ACTUAL:
+						$fecha_data = date('Y-m-d h:i:s');  $anoActualMesActual = $ano_Actual.$mes_Actual;  $fteFactura = $fuente.'-'.$nuevaFactura;
+						$doctdo = 'F'.$tipResp; //para AHDOC
+
+						//OBTENER VALOR NETO DE LA FACTURA DESDE LA TABLA TEMPORAL:
+						$querySumFacTemp = "select sum(vlrneto) from amefactmp WHERE fac = '$numFactu'";
+						$commSumFacTemp = odbc_do($conex_o, $querySumFacTemp);
+						$totFactura = odbc_result($commSumFacTemp,1);
+
+						//GUARDAR EN CACAR:
+						$insertCacar = "insert into cacar VALUES('$fuente','$nuevaFactura','1','$ano_Actual','$mes_Actual','$cCostos','$fecha_Actual','$carfev',
+																 '00','','','$tipResp','$docPac','$nomPac','E','$nitResp','$desResp','$fuente','$nuevaFactura',
+																 '$totFactura','$totFactura','0','','0','0')";
+						$comInsertCacar = odbc_do($conex_o, $insertCacar);
+						if($comInsertCacar){?><!--<h4>CACAR => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN CACAR</h4><?php }
+
+						//GUARDAR EN CACARCON:
+						$insertCacarcon = "insert into cacarcon VALUES('$fuente','$nuevaFactura','0','$fuente','$nuevaFactura','8888','0','0','0','$totFactura','S','C')";
+						$comInsertCacarcon = odbc_do($conex_o, $insertCacarcon);
+						if($comInsertCacarcon){?><!--<h4>CACARCON => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN CACARCON</h4><?php }
+
+						//GUARDAR CACARDES:
+						$insertCacardes = "insert into cacardes VALUES('$fuente','$nuevaFactura','$fuente','$nuevaFactura')";
+						$comInsertCacardes = odbc_do($conex_o, $insertCacardes);
+						if($comInsertCacardes){?><!--<h4>CACARDES => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN CACARDES</h4><?php }
+
+						//GUARDAR CACAROBS:
+						$linea = lineaDeString ($obsFac, 1, 60);
 						if ($linea != "") {
-							//echo("<br>$linea");
-							$insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','2','$linea','0')";
+							//echo("<br>grabando lineas:<br>$linea");
+							$insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','1','$linea','0')";
 							$comInsertCacarobs = odbc_do($conex_o, $insertCacarobs);
 						}
 						if($comInsertCacarobs) {
-							$linea = lineaDeString ($obsFac, 3, 60);
+							$linea = lineaDeString ($obsFac, 2, 60);
 							if ($linea != "") {
 								//echo("<br>$linea");
-								$insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','3','$linea','0')";
+								$insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','2','$linea','0')";
 								$comInsertCacarobs = odbc_do($conex_o, $insertCacarobs);
 							}
+							if($comInsertCacarobs) {
+								$linea = lineaDeString ($obsFac, 3, 60);
+								if ($linea != "") {
+									//echo("<br>$linea");
+									$insertCacarobs = "insert into cacarobs VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','3','$linea','0')";
+									$comInsertCacarobs = odbc_do($conex_o, $insertCacarobs);
+								}
+							}
 						}
+						if($comInsertCacarobs){?><!--<h4>CACAROBS => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR TODO EN CACAROBS</h4><?php }
+
+						//GUARDAR EN CAENC:
+						$insertCaenc = "insert into caenc VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','','0','$wuse','AP')";
+						$comInsertCaenc = odbc_do($conex_o, $insertCaenc);
+						if($comInsertCaenc){?><!--<h4>CAENC => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN CAENC</h4><?php }
+
+						//GUARDAR EN CAESTMOV:
+						$insertCaestmov = "insert into caestmov VALUES('$fuente','$nuevaFactura','$anoActualMesActual','1','E','AP','$fuente','$nuevaFactura',
+																	   'AP','$wuse','$fecha_data')";
+						$comInsertCaestmov = odbc_do($conex_o, $insertCaestmov);
+						if($comInsertCaestmov){?><!--<h4>CAESTMOV => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN CAESTMOV</h4><?php }
+
+						//GUARDAR EN CASALLIN:
+						$insertCasallin = "insert into casallin VALUES('$fuente','$nuevaFactura','$cCostos','$fecha_Actual','$carfev','00','','','E','$docPac',
+																	   '$nomPac','$tipResp','$nitResp','$desResp','$totFactura','$totFactura','0','0','0','0')";
+						$comInsertCasallin = odbc_do($conex_o, $insertCasallin);
+						if($comInsertCasallin){?><!--<h4>CASALLIN => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN CASALLIN</h4><?php }
+
+						//GUARDAR EN FAMOV:
+						$insertFamov = "insert into famov VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','$fecha_Actual','$plazo','00','','',
+																 '$docPac','$tipResp','$nitResp','$desResp','E','E','6','01','0')";
+						$comInsertFamov = odbc_do($conex_o, $insertFamov);
+						if($comInsertFamov){?><!--<h4>FAMOV => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN FAMOV</h4><?php }
+
+						//GUARDAR EN FAMOVDET:
+						$queryFacTmp = "select * from amefactmp WHERE fac = '$numFactu'";
+						$commFacTmp = odbc_do($conex_o, $queryFacTmp);
+						txtLog("guardando detalle--------------");
+						while(odbc_fetch_row($commFacTmp))
+						{
+							$concTmp = odbc_result($commFacTmp,'con');      $cCostTmp = odbc_result($commFacTmp, 'ccos');
+							$valConTmp = odbc_result($commFacTmp, 'vlrcon');
+
+							$insertFamovdet = "insert into famovdet VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','$fecha_Actual','$concTmp',
+																		   '$cCostTmp','0','$valConTmp','0','0','0','0')";
+							txtLog($insertFamovdet);
+							$commInsertFamovdet = odbc_do($conex_o, $insertFamovdet);
+							if($commInsertFamovdet){?><!--<h4>FAMOVDET - CONCEPTO : <?php // echo $concTmp ?> => OK</h4>--><?php }
+							else{?><h4>NO SE PUDO INSERTAR EN FAMOVDET, CARGO: <?php echo $concTmp ?> </h4><?php }
+						}
+						txtLog("------------------------------");
+
+						//GUARDAR FAMOVOTR:
+						$insertFamovotr = "insert into famovotr VALUES('$fuente','$nuevaFactura','','0','0','$totFactura','N')";
+						$commInsertFamovotr = odbc_do($conex_o, $insertFamovotr);
+						if($commInsertFamovotr){?><!--<h4>FAMOVOTR => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN FAMOVOTR</h4><?php }
+
+						//GUARDAR EN AHDOC:
+						$insertAhdoc = "insert into ahdoc VALUES('$fteFactura','$doctdo','$desResp','','$cCostos','','$fecha_Actual','','N','','','$nitResp',
+																 '','','','$wuse','$fecha_data','','')";
+						$commInsertahdoc = odbc_do($conex_o, $insertAhdoc);
+						if($commInsertahdoc){?><!--<h4>AHDOC => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN AHDOC</h4><?php }
+
+						//CONSULTAR CONSECUTIVO parsmo(AHPAR) Y REALIZAR UPDATE PARA AUMENTARLO EN 1:
+						IncConsecutivoAHPAR($conex_o);
+
+						//GUARDAR EN AHDOCACT:
+						$insertAhdocact = "insert into ahdocact VALUES('$fteFactura','CARTERA','UBIPAL','$nuevaFactura','0','AR','$parsmo','1','0','$fecha_data')";
+						$commInsertAhdocact = odbc_do($conex_o, $insertAhdocact);
+						if($commInsertAhdocact){?><!--<h4>AHDOCACT => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN AHDOCACT</h4><?php }
+
+						//GUARDAR EN FAMOVADJ:
+						$insertFamovadj = "insert into famovadj VALUES('','$fuente','$nuevaFactura','','$fuente','$nuevaFactura','0')";
+						$commInsertFamovadj = odbc_do($conex_o, $insertFamovadj);
+						if($commInsertFamovadj){?><!--<h4>FAMOVADJ => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN FAMOVADJ</h4><?php }
+
+						//GUARDAR EN FALOG:
+						$insertFalog = "insert into falog VALUES('$wuse','$wuse','facSer_01.php','Fac-Automatica','Fte Factura','$fuente','Nro Factura',
+																 '$nuevaFactura','','','','I','famov','$fecha_data')";
+						$commInsertFalog = odbc_do($conex_o, $insertFalog);
+						if($commInsertFalog){?><!--<h4>FALOG => OK</h4>--><?php }
+						else{?><h4>NO SE PUDO INSERTAR EN FALOG</h4><?php }
+						
+						$ok = true;
+						
+					} // if $nuevaFactura < 0 else
+
+					// Si se pudo grabar la factura
+					if ($ok){
+						echo '<div class="card bg-light divContHome" style="border: none">
+						<div class="navigation" style="margin-top: 80px">
+							<form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
+								<h3>FACTURA GRABADA</h3>
+								<h4>' . $nuevaFactura . '</h4>
+								<input type="hidden" name="accion" value="home">
+								<input type="hidden" name="subaccion" value="inicio">
+								<input type="submit" class="btn btn-info btn-sm" value="ACEPTAR" style="margin: 50px auto 50px auto">
+							</form>
+						</div>
+					</div>';
 					}
-                    if($comInsertCacarobs){?><!--<h4>CACAROBS => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR TODO EN CACAROBS</h4><?php }
+					else {
+						echo '<div class="card bg-light divContHome" style="border: none">
+						<div class="navigation" style="margin-top: 80px">
+							<form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
+								<h3>INTENTE DE NUEVO EN UN MINUTO<br><br></h3>
+								<input type="text" id="numFactu" name="numFactu" class="form-control form-sm" value=' . $numFactu . ' style="display:none;" readonly>
+								<input type="hidden" id="accion" name="accion" value="grabar">
+								<input type="submit" class="btn btn-success btn-sm" value="REINTENTAR" title="Reintentar" style="margin: 50px auto 50px auto">
+							</form>
+						</div>
+					</div>';
+					                                
+                                
 
-                    //GUARDAR EN CAENC:
-                    $insertCaenc = "insert into caenc VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','','0','$wuse','AP')";
-                    $comInsertCaenc = odbc_do($conex_o, $insertCaenc);
-                    if($comInsertCaenc){?><!--<h4>CAENC => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN CAENC</h4><?php }
-
-                    //GUARDAR EN CAESTMOV:
-                    $insertCaestmov = "insert into caestmov VALUES('$fuente','$nuevaFactura','$anoActualMesActual','1','E','AP','$fuente','$nuevaFactura',
-                                                                   'AP','$wuse','$fecha_data')";
-                    $comInsertCaestmov = odbc_do($conex_o, $insertCaestmov);
-                    if($comInsertCaestmov){?><!--<h4>CAESTMOV => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN CAESTMOV</h4><?php }
-
-                    //GUARDAR EN CASALLIN:
-                    $insertCasallin = "insert into casallin VALUES('$fuente','$nuevaFactura','$cCostos','$fecha_Actual','$carfev','00','','','E','$docPac',
-                                                                   '$nomPac','$tipResp','$nitResp','$desResp','$totFactura','$totFactura','0','0','0','0')";
-                    $comInsertCasallin = odbc_do($conex_o, $insertCasallin);
-                    if($comInsertCasallin){?><!--<h4>CASALLIN => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN CASALLIN</h4><?php }
-
-                    //GUARDAR EN FAMOV:
-                    $insertFamov = "insert into famov VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','$fecha_Actual','$plazo','00','','',
-                                                             '$docPac','$tipResp','$nitResp','$desResp','E','E','6','01','0')";
-                    $comInsertFamov = odbc_do($conex_o, $insertFamov);
-                    if($comInsertFamov){?><!--<h4>FAMOV => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN FAMOV</h4><?php }
-
-                    //GUARDAR EN FAMOVDET:
-                    $queryFacTmp = "select * from amefactmp WHERE fac = '$numFactu'";
-                    $commFacTmp = odbc_do($conex_o, $queryFacTmp);
-
-                    while(odbc_fetch_row($commFacTmp))
-                    {
-                        $concTmp = odbc_result($commFacTmp,'con');      $cCostTmp = odbc_result($commFacTmp, 'ccos');
-                        $valConTmp = odbc_result($commFacTmp, 'vlrcon');
-
-                        $insertFamovdet = "insert into famovdet VALUES('$fuente','$nuevaFactura','$ano_Actual','$mes_Actual','$fecha_Actual','$concTmp',
-                                                                       '$cCostTmp','0','$valConTmp','0','0','0','0')";
-                        $commInsertFamovdet = odbc_do($conex_o, $insertFamovdet);
-                        if($commInsertFamovdet){?><!--<h4>FAMOVDET - CONCEPTO : <?php // echo $concTmp ?> => OK</h4>--><?php }
-                        else{?><h4>NO SE PUDO INSERTAR EN FAMOVDET, CARGO: <?php echo $concTmp ?> </h4><?php }
-                    }
-
-                    //GUARDAR FAMOVOTR:
-                    $insertFamovotr = "insert into famovotr VALUES('$fuente','$nuevaFactura','','0','0','$totFactura','N')";
-                    $commInsertFamovotr = odbc_do($conex_o, $insertFamovotr);
-                    if($commInsertFamovotr){?><!--<h4>FAMOVOTR => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN FAMOVOTR</h4><?php }
-
-                    //GUARDAR EN AHDOC:
-                    $insertAhdoc = "insert into ahdoc VALUES('$fteFactura','$doctdo','$desResp','','$cCostos','','$fecha_Actual','','N','','','$nitResp',
-                                                             '','','','$wuse','$fecha_data','','')";
-                    $commInsertahdoc = odbc_do($conex_o, $insertAhdoc);
-                    if($commInsertahdoc){?><!--<h4>AHDOC => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN AHDOC</h4><?php }
-
-                    //CONSULTAR CONSECUTIVO parsmo(AHPAR) Y REALIZAR UPDATE PARA AUMENTARLO EN 1:
-                    $queryAhpar = "select parsmo from ahpar";
-                    $commitAhpar = odbc_do($conex_o, $queryAhpar);
-                    $parsmo = odbc_result($commitAhpar, 1); $newParsmo = $parsmo + 1;
-
-                    $updateAhpar = "update ahpar set parsmo = '$newParsmo'";
-                    odbc_do($conex_o, $updateAhpar);
-
-                    //GUARDAR EN AHDOCACT:
-                    $insertAhdocact = "insert into ahdocact VALUES('$fteFactura','CARTERA','UBIPAL','$nuevaFactura','0','AR','$parsmo','1','0','$fecha_data')";
-                    $commInsertAhdocact = odbc_do($conex_o, $insertAhdocact);
-                    if($commInsertAhdocact){?><!--<h4>AHDOCACT => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN AHDOCACT</h4><?php }
-
-                    //GUARDAR EN FAMOVADJ:
-                    $insertFamovadj = "insert into famovadj VALUES('','$fuente','$nuevaFactura','','$fuente','$nuevaFactura','0')";
-                    $commInsertFamovadj = odbc_do($conex_o, $insertFamovadj);
-                    if($commInsertFamovadj){?><!--<h4>FAMOVADJ => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN FAMOVADJ</h4><?php }
-
-                    //GUARDAR EN FALOG:
-                    $insertFalog = "insert into falog VALUES('$wuse','$wuse','facSer_01.php','Fac-Automatica','Fte Factura','$fuente','Nro Factura',
-                                                             '$nuevaFactura','','','','I','famov','$fecha_data')";
-                    $commInsertFalog = odbc_do($conex_o, $insertFalog);
-                    if($commInsertFalog){?><!--<h4>FALOG => OK</h4>--><?php }
-                    else{?><h4>NO SE PUDO INSERTAR EN FALOG</h4><?php }
-
-                    ?>
-                    <div class="card bg-light divContHome" style="border: none">
-                        <div class="navigation" style="margin-top: 80px">
-                            <form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
-                                <h3>FACTURA GRABADA: </h3>
-                                <h4><?php echo $nuevaFactura ?></h4>
-                                <input type="hidden" name="accion" value="home">
-                                <input type="hidden" name="subaccion" value="inicio">
-                                <input type="submit" class="btn btn-info btn-sm" value="ACEPTAR" style="margin: 50px auto 50px auto">
-                            </form>
-                        </div>
-                    </div>
-                    <?php
-
+					}
+					
+					/*
+					<div class="card bg-light divContHome" style="border: none">
+						<div class="navigation" style="margin-top: 80px">
+							<form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
+								<h3><?php echo ($nuevaFactura>0?'FACTURA GRABADA:':'VOLVER') ?>  </h3>
+								<h4><?php echo ($nuevaFactura>0?$nuevaFactura:'-') ?></h4>
+								<input type="hidden" name="accion" value="home">
+								<input type="hidden" name="subaccion" value="inicio">
+								<input type="submit" class="btn btn-info btn-sm" value="ACEPTAR" style="margin: 50px auto 50px auto">
+							</form>
+						</div>
+					</div>
+					*/
+					
                 }
                 //////// DILIGENCIAR LA FACTURA:
                 else
@@ -815,21 +858,93 @@ function obtenerDatosUsuario($parametro,$wuse,$conex)
 
 function obtenerNumFactura($fuente,$cCostos ,$conex_o)
 {
+
+	/*
+    $query0 = "select count(*) as cantreg from cafue";
+    $commit0 = odbc_do($conex_o, $query0);
+    $cantreg = odbc_result($commit0, 1);    
+	txtLog("cantreg: $cantreg");
+	*/
+	
     $query1 = "select fuesfu, fuecse from cafue WHERE fuecod = '$fuente' AND fuecco = '$cCostos'";
     $commit1 = odbc_do($conex_o, $query1);
-    $fuesfu = odbc_result($commit1, 1);    $fuecse = odbc_result($commit1, 2);
+    $fuesfu = odbc_result($commit1, 1);    
+	$fuecse = odbc_result($commit1, 2);
+	txtLog("query1: $query1");
+	txtLog("fuesfu: $fuesfu");
+	txtLog("fuecse: $fuecse");
 
     $query2 = "select * from cafue WHERE fuecod = '$fuesfu' AND fuecco = '$fuecse'";
     $commit2 = odbc_do($conex_o, $query2);
-    $fuecod = odbc_result($commit2, 2); $fuesec = odbc_result($commit2,14); $fuecco = odbc_result($commit2, 5);
+    $fuecod = odbc_result($commit2, 2); 
+	$fuesec = odbc_result($commit2,14); 
+	$fuecco = odbc_result($commit2, 5);
+	txtLog("query2: $query2");
+	txtLog("fuecod: $fuecod, fuesec: $fuesec, fuecco: $fuecco");
     $newConsecutivo = $fuesec + 1;
-
-    $query3 = "update cafue set fuesec = '$newConsecutivo' WHERE fuecod = '$fuecod' AND fuecco = '$fuecco'";
-    odbc_do($conex_o, $query3);
-    //echo $newConsecutivo;
+	
+	txtLog("sig consecutivo encontrado: $newConsecutivo");
+	
+    $query3 = "update cafue set fuesecx = '$newConsecutivo' WHERE fuecod = '$fuecod' AND fuecco = '$fuecco'";
+	$conq = 0;
+	while ($conq++ < 4) {
+		$res = odbc_do($conex_o, $query3);
+		if ($res)
+			break;
+		else {
+			// Si no se puede reservar el consecutivo, retornar -1
+			$newConsecutivo=-1;
+            txtLog (odbc_errormsg($conex_o));
+		    echo '<script>
+		    document.getElementById("tabs-1").innerHTML = ""
+			</script>
+			<br>Se presentó un error generando nuevo consecutivo:<br>'.odbc_errormsg($conex_o).'
+			<br>'.$query3;
+			txtLog("NO se pudo reservar consecutivo... $conq");
+			// esperar 3 segundos
+			usleep(3000000);
+		}
+	}
+	//echo $newConsecutivo;
     return $newConsecutivo;
 }
 
+function IncConsecutivoAHPAR($conex_o)
+{
+
+	$IncConsecutivo = false;
+	//CONSULTAR CONSECUTIVO parsmo(AHPAR) Y REALIZAR UPDATE PARA AUMENTARLO EN 1:
+	$queryAhpar = "select parsmo from ahpar";
+	$commitAhpar = odbc_do($conex_o, $queryAhpar);
+	$parsmo = odbc_result($commitAhpar, 1); 
+	$newParsmo = $parsmo + 1;
+	
+	$updateAhpar = "update ahpar set parsmo = '$newParsmo'";
+	txtLog("$updateAhpar");
+	$conq = 0;
+	while ($conq++ < 4) {
+		$res = odbc_do($conex_o, $updateAhpar);
+		if ($res) {
+			$IncConsecutivo = true;
+			break;
+		}
+		else {
+			// Si no se puede actualizar el consecutivo, reintentar
+			if ( $conq== 4){
+				echo '<br>Se presentó un error actualizando consecutivo en ahpar:<br>'.odbc_errormsg($conex_o).'
+						<br>'.$updateAhpar;
+			}
+			txtLog("Se presentó un error actualizando consecutivo en ahpar: ".odbc_errormsg($conex_o));
+			// esperar 3 segundos
+			usleep(3000000);
+		}
+	}
+    return $IncConsecutivo;
+}
+
+// Consecutivo generado en matrix, que se muestra al llenar la factura
+// pero no será el que grabará finalmente en unix.
+// PUEDE MEJORARSE, GRABÁNDOLO ÚNICAMENTE SI SE LOGRA GRABAR EN UNIX.
 function obtenerNumFacturaTEMP($fuente,$cCostos ,$conex)
 {
     $query = "select * from equipos_000009 ORDER BY consecutivo DESC LIMIT 1";
@@ -842,8 +957,22 @@ function obtenerNumFacturaTEMP($fuente,$cCostos ,$conex)
     $query2 = "insert into equipos_000009 VALUES('','$newConsecutivo','$cCostos')";
     mysql_query($query2, $conex) or die (mysql_errno()." - en el query: ".$query2." - ".mysql_error());
 
+	//txtLog("obtenerNumFacturaTEMP: $newConsecutivo");
     echo $newConsecutivo;
 }
+
+function txtLog($txt, $inicializar=false)
+    {
+        try {
+                $l = date('H:i:s', time()) . ' ' . $txt . "\n";
+				if ($inicializar)
+					file_put_contents('log_la.txt', $l, LOCK_EX);
+				else
+					file_put_contents('log_la.txt', $l, FILE_APPEND | LOCK_EX);
+        } catch (\Exception $e) {
+        }
+}
+
 ?>
 <script>
     const number = document.querySelector('.tvc2');
