@@ -940,7 +940,6 @@ else
 			/************************************************************
 			 * Con conexión con Unix
 			 ************************************************************/
-			//echo "<br>conexión con Unix 943<br>"; //##BORRAR_SEBASTIAN_NEVADO
 			switch ($row1[2])
 			{
 				case 'on':
@@ -954,7 +953,6 @@ else
 						$art['lot'] = $var;
 						if ($row1[1] == 'on' && $row1[3] != 'on' )
 						{
-							//echo "<br>Producto codificado 957<br>"; //##BORRAR_SEBASTIAN_NEVADO
 							$art['cod'] = $cod;
 							$art['neg'] = false;
 							$art['can'] = 1;
@@ -1040,7 +1038,6 @@ else
 						} 
 						else
 						{ 
-							//echo "<br>No Codificado 1043<br>"; //##BORRAR_SEBASTIAN_NEVADO
 							// consulto los articulos a devolver
 							$inslis = consultarMovimiento($cod, $historia, $ingreso, $var, $cco);
 							$art['neg'] = false;
@@ -1085,7 +1082,6 @@ else
 
 								if (isset($fin))
 								{
-									//echo "<br>Guardo mvtos 1088<br>"; //##BORRAR_SEBASTIAN_NEVADO
 									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
 									$ind = 1;
 									grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
@@ -1130,7 +1126,6 @@ else
 											 *Descripción: se realiza llamado de factura inteligente.
 											 *Autor: sebastian.nevado
 											*/
-											//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 											$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $inslis[$i]['prese']['nom'], $art['can'], $tipTrans);
 											if(!$aResultadoFactInteligente->exito)
 											{
@@ -1191,7 +1186,6 @@ else
 					} 
 					break;
 				default:
-					//echo "<br>Case Default 1194<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					if (!isset($var) or $var == '')
 					{
 						pintarAlerta('DEBE SELECCIONAR LA PRESENTACION  QUE VA A DEVOLVER');
@@ -1220,7 +1214,6 @@ else
 
 								if ($res)
 								{
-									//echo "<br>Guardo mvts 1223<br>"; //##BORRAR_SEBASTIAN_NEVADO
 									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
 									grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
 									grabarDetalleEntradaMatrix($cod, $codigo, $consecutivo, $wusuario, $var, '', '', '');
@@ -1235,7 +1228,6 @@ else
 									 *Autor: sebastian.nevado
 									*/
 									$sNombreArticulo = substr($var, strlen($exp[0]."-"), strlen($var)-1);
-									//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 									$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $sNombreArticulo, $art['can'], $tipTrans);
 									if(!$aResultadoFactInteligente->exito)
 									{
@@ -1414,7 +1406,6 @@ else
 						} 
 						else
 						{ 
-							//echo "<br>Producto NO codificado 1432<br>"; //##BORRAR_SEBASTIAN_NEVADO
 							// consulto los articulos a devolver
 							$inslis = consultarMovimiento($cod, $historia, $ingreso, $var, $cco);
 							$art['neg'] = false;
@@ -1503,7 +1494,6 @@ else
 											 *Descripción: se realiza llamado de factura inteligente.
 											 *Autor: sebastian.nevado
 											*/
-											//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 											$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $inslis[$i]['prese']['nom'], $art['can'], $tipTrans);
 											if(!$aResultadoFactInteligente->exito)
 											{
@@ -1575,7 +1565,6 @@ else
 					} 
 					break;
 				default:
-					//echo "<br>Case Default 1593<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					if (!isset($var) or $var == '')
 					{
 						pintarAlerta('DEBE SELECCIONAR LA PRESENTACION  QUE VA A DEVOLVER');
@@ -1617,7 +1606,6 @@ else
 										*Descripción: se realiza llamado de factura inteligente.
 										*Autor: sebastian.nevado
 									*/
-									//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 									$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $inslis[$i]['prese']['nom'], $art['can'], $tipTrans);
 									if(!$aResultadoFactInteligente->exito)
 									{
@@ -1702,29 +1690,12 @@ else
  */
 function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto )
 {
-	//echo "<br>CargarCargosErp 4502<br>";//##BORRAR_SEBASTIAN_NEVADO
-	//global $pac;
 	global $emp;
-	//echo "<br>emp: <br>";//##BORRAR_SEBASTIAN_NEVADO
-	//print_r($emp); //##BORRAR_SEBASTIAN_NEVADO
 	global $wbasedato;
-	//echo "<br>wbasedato: <br>";//##BORRAR_SEBASTIAN_NEVADO
-	//print_r($wbasedato); //##BORRAR_SEBASTIAN_NEVADO
 	global $wusuario;
-	//echo "<br>wusuario: <br>";//##BORRAR_SEBASTIAN_NEVADO
-	//print_r($wusuario); //##BORRAR_SEBASTIAN_NEVADO
 	global $wuse;
-	//echo "<br>wuse: <br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//print_r($wuse); //##BORRAR_SEBASTIAN_NEVADO
 	global $cco;
-	//echo "<br>cco: <br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//print_r($cco); //##BORRAR_SEBASTIAN_NEVADO
 	global $desde_CargosPDA;
-	//echo "<br>desde_CargosPDA: <br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//print_r($desde_CargosPDA); //##BORRAR_SEBASTIAN_NEVADO
-	//echo "<br>pac: <br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//print_r($pac); //##BORRAR_SEBASTIAN_NEVADO
-	//echo "<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	$desde_CargosPDA = true;
 	global $accion_iq;
 	$accion_iq = '';
@@ -1733,7 +1704,6 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 			 WHERE ccocod = '".$pac['sac']."'
 		";
 	
-	//echo "<br>sql: ".$sql."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	
 	$resCco = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
 	$numCco = mysql_num_rows( $resCco );
@@ -1744,10 +1714,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 	
 	//Si el cco no maneja cargo ERP o no está activo los cargos ERP no se ejecuta esta acción
 	$cargarEnErp = consultarAliasPorAplicacion( $conex, $emp, "cargosPDA_ERP" );
-	//echo "<br>cargarEnErp: ".$cargarEnErp."<br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//echo "<br>CcoErp: ".$CcoErp."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	if( !$CcoErp || $cargarEnErp != 'on' ){
-		//echo "<br>Return abrupto 4526<br>"; //##BORRAR_SEBASTIAN_NEVADO
 		return;
 	}
 	
@@ -1918,9 +1885,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 					$datos['wvaltarReco'] = round($wcantidad*$wvaltar);
 				
 				//Llamo la función de cargos de CARGOS DE ERP
-				//echo "<br>validar_y_grabar_cargo 4697<br>"; //##BORRAR_SEBASTIAN_NEVADO
 				$respuesta = validar_y_grabar_cargo($datos, false);
-				//print_r( $respuesta ); //##BORRAR_SEBASTIAN_NEVADO
 				
 				
 				//echo "<h1>"; var_dump( $respuesta ); echo "</h1>";
@@ -1943,17 +1908,13 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
  */
 function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $dCantidad, $tipTrans, $numCargoInv = '', $linCargoInv = '')
 {
-	//echo "<br>Inicia la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	global $wemp_pmla;
 	global $conex;
 
 	//Obtengo el alias por aplicación y defino parámetros
 	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
-	//$numCargoInv = '';
-	//$linCargoInv = '';
 	$pac['sac'] = consultarCcoPaciente($conex, $pac['his'], $pac['ing']);
-	//echo "<br>cCentroCosto:".$cCentroCosto."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 	//Llamo facturación inteligente
 	$artFactInteligente = array();
@@ -1964,9 +1925,7 @@ function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $
 	$artFactInteligente['cod'] = $sCodigo;
 	$artFactInteligente['nom'] = $sNombre;
 	$artFactInteligente['can'] = $dCantidad;
-	//print_r($artFactInteligente); //##BORRAR_SEBASTIAN_NEVADO
 	CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $artFactInteligente, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto);
-	//echo "<br>Finaliza la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 	$aResultado = new stdClass();
 	$aResultado->exito = true;
@@ -2045,8 +2004,6 @@ function esMMQServicioFarmaceutico( $art ){
 
 	global $conex;
 	global $bd;
-	
-	echo "<br>esMMQ CargoCPX<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 	$esmmq = false;
 

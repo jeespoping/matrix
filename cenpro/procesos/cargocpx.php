@@ -3012,8 +3012,6 @@ else
 			 * Con conexión con Unix
 			 ******************************************************************************/
 			
-			//echo "<br>conexión con Unix 3012<br>"; //##BORRAR_SEBASTIAN_NEVADO
-			
 			switch ($row1[2])
 			{
 				case 'on':
@@ -3036,7 +3034,6 @@ else
 						{
 							if ($row1[1] == 'on' && $row1[3] != 'on' )	//Producto codificado
 							{//1
-								//echo "<br>Producto codificado 3036<br>"; //##BORRAR_SEBASTIAN_NEVADO
 								$art['cod'] = $cod;
 								$art['neg'] = false;
 								$art['can'] = 1;
@@ -3062,7 +3059,7 @@ else
 														if( !$packe['ke'] || $packe['nut'] || $packe['nka'] || ( $packe['ke'] && $packe['sal'] > 0 ) || $packe['mmq'] )
 														{
 															if( true || !isset( $hiReemplazar ) || ( isset( $hiReemplazar ) && isset($rdArticulo) && !empty($rdArticulo)  ) ){
-																//echo "<br>If Kardex Electrónico 3062<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																
 																$val = false;
 																// grabo el encabezado del movimiento
 																$dronum = '';			                      
@@ -3179,7 +3176,6 @@ else
 							}//fin1 
 							else
 							{	//Producto NO CODIFICADO
-								//echo "<br>No Codificado 3179<br>"; //##BORRAR_SEBASTIAN_NEVADO
 								if (!isset($grabar))
 								{ 
 									// consulto la lista de insumos que componen el producto
@@ -3286,7 +3282,6 @@ else
 										} 
 										if (!isset($fin))
 										{
-											//echo "<br>Busco la información del paciente con Kardex Electronico 3286<br>"; //##BORRAR_SEBASTIAN_NEVADO
 											//Busco la información del paciente con Kardex Electronico
 											//esKE( $pac['his'], $pac['ing'], $packe );
 											$packe = $pac;
@@ -3313,7 +3308,6 @@ else
 															{
 																if( !isset( $hiReemplazar ) || ( isset( $hiReemplazar ) && isset($rdArticulo) && !empty($rdArticulo)  )
 																  ){
-																	//echo "<br>If reemplazando el artículo 3313<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																	//Reemplazando el articulo
 																	if( isset( $hiReemplazar ) && isset($rdArticulo) && !empty($rdArticulo) && $val ){
 																		
@@ -3339,8 +3333,6 @@ else
 																	Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
 																	$ind = 1;
 																	grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $dronum);
-																	//echo "<br>cco grabarEncabezadoSalidaMatrix: <br>"; //##BORRAR_SEBASTIAN_NEVADO
-																	//print_r($cco); //##BORRAR_SEBASTIAN_NEVADO
 																	$numtra = $codigo . '-' . $consecutivo; //actualizamos el numero del movimeinto real
 																	$dato = $var . "-" . $cod;
 																	grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $dato, '', '', 1, 1);
@@ -3393,7 +3385,6 @@ else
 																					*Descripción: se realiza llamado de factura inteligente.
 																					*Autor: sebastian.nevado
 																					*/
-																					//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																					$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
 																					if(!$aResultadoFactInteligente->exito)
 																					{
@@ -3423,10 +3414,7 @@ else
 																				$exp = explode('-', $preparacion[$i][$j]);
 																				$art['cod'] = $exp[0];
 																				$art['can'] = $exp[2];
-																				//echo "<br>cargamos los insumos de preparacion 3423<br>"; //##BORRAR_SEBASTIAN_NEVADO
-																				//echo "<br>Cod: ".$art['cod']."<br>"; //##BORRAR_SEBASTIAN_NEVADO
-																				//echo "<br>can: ".$art['can']."<br>"; //##BORRAR_SEBASTIAN_NEVADO
-																				//echo "<br>exp[1]: ".$exp[1]."<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																				
 																				grabarDetalleSalidaMatrix($exp[3], $codigo, $consecutivo, $wusuario, $exp[0], '', '', 0, 1, $exp[2]);
 																				Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, false, $usu, $error);
 																				$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, $error);
@@ -3442,7 +3430,6 @@ else
 																				 *Descripción: se realiza llamado de factura inteligente.
 																				 *Autor: sebastian.nevado
 																				*/
-																				//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $exp[1], $art['can'], $tipTrans);
 																				if(!$aResultadoFactInteligente->exito)
 																				{
@@ -3570,7 +3557,6 @@ else
 					} 
 					break;
 				default:
-					//echo "<br>Case Default 3536<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					if (!isset($var) or $var == '')
 					{
 						pintarAlerta('DEBE SELECCIONAR LA PRESENTACION  QUE VA A CARGAR');
@@ -3586,12 +3572,8 @@ else
 						} 
 						else
 						{
-							//echo "<br> var: 3586<br>"; //##BORRAR_SEBASTIAN_NEVADO
-							//echo $var."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 							$art['lot'] = '';
 							$exp = explode('-', $var);
-							//echo "<br> exp: 3590<br>"; //##BORRAR_SEBASTIAN_NEVADO
-							//print_r($exp); //##BORRAR_SEBASTIAN_NEVADO
 							$art['cod'] = $exp[0];
 							$art['neg'] = false;
 							$art['can'] = 1;
@@ -3632,8 +3614,6 @@ else
 															$solicitudCamillero = false;
 														}
 														
-														//echo "<br>Cumple If Kardex Electrónico 3582<br>"; //##BORRAR_SEBASTIAN_NEVADO
-														
 														for( $i = 0; $i < $cantidadACargar; $i++ ){
 															$val = false;
 															// grabo el encabezado del movimiento
@@ -3652,7 +3632,6 @@ else
 															 *Autor: sebastian.nevado
 															*/
 															$sNombreArticulo = substr($var, strlen($exp[0]."-"), strlen($var)-1);
-															//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 															$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $sNombreArticulo, $art['can'], $tipTrans);
 															if(!$aResultadoFactInteligente->exito)
 															{
@@ -3772,11 +3751,9 @@ else
 			/******************************************************************************
 			 * Sin conexión con Unix
 			 ******************************************************************************/
-			//echo "<br>Sin conexión con Unix 3719<br>"; //##BORRAR_SEBASTIAN_NEVADO
 			switch ($row1[2])
 			{
 				case 'on':
-					//echo "<br>Case ON 3723<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					if (!isset($var) or $var == '')
 					{
 						pintarAlerta('DEBE SELECCIONAR EL LOTE QUE VA A CARGAR');
@@ -3795,7 +3772,6 @@ else
 						{
 							if ( $row1[1] == 'on' && $row1[3] != 'on' )	//Producto codificado
 							{//1
-								//echo "<br>Producto codificado 3742<br>"; //##BORRAR_SEBASTIAN_NEVADO
 								$art['cod'] = $cod;
 								$art['neg'] = false;
 								$art['can'] = 1;
@@ -3821,7 +3797,7 @@ else
 														if( !$packe['ke'] || $packe['nut'] || $packe['nka'] || ( $packe['ke'] && $packe['sal'] > 0 ) || $packe['mmq'] )
 														{
 															if( true || !isset( $hiReemplazar ) || ( isset( $hiReemplazar ) && isset($rdArticulo) && !empty($rdArticulo)  ) ){
-																//echo "<br>Busco información Kardex Electrónico 3768<br>"; //##BORRAR_SEBASTIAN_NEVADO
+
 																$val = false;
 																// grabo el encabezado del movimiento
 																$dronum = '';			                      
@@ -3951,7 +3927,6 @@ else
 							{	//Producto NO CODIFICADO
 								if (!isset($grabar))
 								{ 
-									//echo "<br>Producto NO codificado 3898<br>"; //##BORRAR_SEBASTIAN_NEVADO
 									// consulto la lista de insumos que componen el producto
 									consultarInsumos($cod, $inslis); 
 									// para cada insumo consultamos las presentaciones y su ajuste
@@ -4056,7 +4031,6 @@ else
 										} 
 										if (!isset($fin))
 										{
-											//echo "<br>Busca información Kardex Electrónico 4003<br>"; //##BORRAR_SEBASTIAN_NEVADO
 											//Busco la información del paciente con Kardex Electronico
 											//esKE( $pac['his'], $pac['ing'], $packe );
 											$packe = $pac;
@@ -4083,7 +4057,6 @@ else
 															{
 																if( !isset( $hiReemplazar ) || ( isset( $hiReemplazar ) && isset($rdArticulo) && !empty($rdArticulo)  ) )
 																{
-																	//echo "<br>Reemplazo el artículo 4030<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																	//Reemplazando el articulo
 																	if( isset( $hiReemplazar ) && isset($rdArticulo) && !empty($rdArticulo) && $val ){
 																		
@@ -4103,7 +4076,6 @@ else
 																			exit;
 																		}
 																	}
-																	//echo "<br>Grabo encabezado mvto 4050<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																	// grabo el encabezado del movimiento
 																	$dronum = '';
 																	Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
@@ -4145,7 +4117,6 @@ else
 																				 *Descripción: se realiza llamado de factura inteligente.
 																				 *Autor: sebastian.nevado
 																				*/
-																				//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
 																				if(!$aResultadoFactInteligente->exito)
 																				{
@@ -4226,7 +4197,6 @@ else
 																				 *Descripción: se realiza llamado de factura inteligente.
 																				 *Autor: sebastian.nevado
 																				*/
-																				//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $exp[1], $art['can'], $tipTrans);
 																				if(!$aResultadoFactInteligente->exito)
 																				{
@@ -4354,7 +4324,6 @@ else
 					} 
 					break;
 				default:
-					//echo "<br>Case Default 4297<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					if (!isset($var) or $var == '')
 					{
 						pintarAlerta('DEBE SELECCIONAR LA PRESENTACION  QUE VA A CARGAR');
@@ -4381,7 +4350,6 @@ else
 								$res = TarifaSaldoMatrix($art, $centro, $tipTrans, $aprov, $error);
 								if ($res)
 								{//3
-									//echo "<br>TransferenciaMatrix 4324<br>"; //##BORRAR_SEBASTIAN_NEVADO
 									//Busco la información del paciente con Kardex Electronico
 									//esKE( $pac['his'], $pac['ing'], $packe );
 									$packe = $pac;
@@ -4412,8 +4380,6 @@ else
 														if( !isset($solicitudCamillero) ){
 															$solicitudCamillero = false;
 														}
-														
-														//echo "<br>Cumple Kardex Electrónico 4356<br>"; //##BORRAR_SEBASTIAN_NEVADO
 														
 														for( $i = 0; $i < $cantidadACargar; $i++ ){
 															$val = false;
@@ -4556,29 +4522,12 @@ else
  */
 function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto )
 {
-	//echo "<br>CargarCargosErp 4502<br>";//##BORRAR_SEBASTIAN_NEVADO
-	//global $pac;
 	global $emp;
-	//echo "<br>emp: <br>";//##BORRAR_SEBASTIAN_NEVADO
-	//print_r($emp); //##BORRAR_SEBASTIAN_NEVADO
 	global $wbasedato;
-	//echo "<br>wbasedato: <br>";//##BORRAR_SEBASTIAN_NEVADO
-	//print_r($wbasedato); //##BORRAR_SEBASTIAN_NEVADO
 	global $wusuario;
-	//echo "<br>wusuario: <br>";//##BORRAR_SEBASTIAN_NEVADO
-	//print_r($wusuario); //##BORRAR_SEBASTIAN_NEVADO
 	global $wuse;
-	//echo "<br>wuse: <br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//print_r($wuse); //##BORRAR_SEBASTIAN_NEVADO
 	global $cco;
-	//echo "<br>cco: <br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//print_r($cco); //##BORRAR_SEBASTIAN_NEVADO
 	global $desde_CargosPDA;
-	//echo "<br>desde_CargosPDA: <br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//print_r($desde_CargosPDA); //##BORRAR_SEBASTIAN_NEVADO
-	//echo "<br>pac: <br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//print_r($pac); //##BORRAR_SEBASTIAN_NEVADO
-	//echo "<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	$desde_CargosPDA = true;
 	global $accion_iq;
 	$accion_iq = '';
@@ -4586,10 +4535,6 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 			  FROM ".$wmovhos."_000011
 			 WHERE ccocod = '".$pac['sac']."'
 		";
-	
-	//echo "<br>sql: ".$sql."<br>"; //##BORRAR_SEBASTIAN_NEVADO
-	
-	//echo "<br>cco['cod']: ".$cco['cod']."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	
 	$resCco = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
 	$numCco = mysql_num_rows( $resCco );
@@ -4600,10 +4545,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 	
 	//Si el cco no maneja cargo ERP o no está activo los cargos ERP no se ejecuta esta acción
 	$cargarEnErp = consultarAliasPorAplicacion( $conex, $emp, "cargosPDA_ERP" );
-	//echo "<br>cargarEnErp: ".$cargarEnErp."<br>"; //##BORRAR_SEBASTIAN_NEVADO
-	//echo "<br>CcoErp: ".$CcoErp."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	if( !$CcoErp || $cargarEnErp != 'on' ){
-		//echo "<br>Return abrupto 4526<br>"; //##BORRAR_SEBASTIAN_NEVADO
 		return;
 	}
 	
@@ -4774,9 +4716,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 					$datos['wvaltarReco'] = round($wcantidad*$wvaltar);
 				
 				//Llamo la función de cargos de CARGOS DE ERP
-				//echo "<br>validar_y_grabar_cargo 4697<br>"; //##BORRAR_SEBASTIAN_NEVADO
 				$respuesta = validar_y_grabar_cargo($datos, false);
-				//print_r( $respuesta ); //##BORRAR_SEBASTIAN_NEVADO
 				
 				
 				//echo "<h1>"; var_dump( $respuesta ); echo "</h1>";
@@ -4799,17 +4739,13 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
  */
 function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $dCantidad, $tipTrans, $numCargoInv = '', $linCargoInv = '')
 {
-	//echo "<br>Inicia la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 	global $wemp_pmla;
 	global $conex;
 
 	//Obtengo el alias por aplicación y defino parámetros
 	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
-	//$numCargoInv = '';
-	//$linCargoInv = '';
 	$pac['sac'] = consultarCcoPaciente($conex, $pac['his'], $pac['ing']);
-	//echo "<br>cCentroCosto:".$cCentroCosto."<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 	//Llamo facturación inteligente
 	$artFactInteligente = array();
@@ -4820,9 +4756,7 @@ function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $
 	$artFactInteligente['cod'] = $sCodigo;
 	$artFactInteligente['nom'] = $sNombre;
 	$artFactInteligente['can'] = $dCantidad;
-	//print_r($artFactInteligente); //##BORRAR_SEBASTIAN_NEVADO
 	CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $artFactInteligente, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto);
-	//echo "<br>Finaliza la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 	$aResultado = new stdClass();
 	$aResultado->exito = true;
@@ -4901,8 +4835,6 @@ function esMMQServicioFarmaceutico( $art ){
 
 	global $conex;
 	global $bd;
-	
-	echo "<br>esMMQ CargoCPX<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
 	$esmmq = false;
 
