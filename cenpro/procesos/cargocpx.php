@@ -3839,20 +3839,6 @@ else
 																	// $art['ubi'] = 'M';
 																// } 
 																
-																/*
-																 *Fecha: 2021-06-11
-																 *Descripción: se realiza llamado de factura inteligente.
-																 *Autor: sebastian.nevado
-																*/
-																$sNombreArticulo = substr($var, strlen($exp[0]."-"), strlen($var)-1);
-																//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
-																$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $sNombreArticulo, $art['can'], $tipTrans);
-																if(!$aResultadoFactInteligente->exito)
-																{
-																	echo $aResultadoFactInteligente->mensaje;
-																}
-																// FIN MODIFICACION
-																
 																$validar = registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, $error, "000143" );
 																
 																if( $validar ){

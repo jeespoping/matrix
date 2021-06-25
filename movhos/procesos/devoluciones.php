@@ -451,7 +451,7 @@ function procesoDevMatrix($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $
 
 			if(Numeracion($pac, $fuente, 'D', $aprov, $cco, $date, $cns, $dronum, $drolin, $pac['dxv'], $usuario, $error ))
 			{	
-				//echo "<br>Llamo la facturación inteligente 450<br>"; //##BORRAR_SEBASTIAN_NEVADO
+				echo "<br>Llamo la facturación inteligente 450<br>"; //##BORRAR_SEBASTIAN_NEVADO
 				CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 				
 				$wcenpro = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
@@ -2290,7 +2290,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 					/****************************************************************************/
 					$artValido =registrarItdro($dronum, $drolin, $fuente, $date, $cco, $pac, $art, $error);
 					//Octubre 13 de 2015. Cargos ERp
-					//echo "<br>Llamo la facturación inteligente 2283<br>"; //##BORRAR_SEBASTIAN_NEVADO
+					echo "<br>Llamo la facturación inteligente 2283<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 
 					/************************************************************************************
@@ -2334,7 +2334,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntradaDevolucion" ) );
 					}
 					ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
-					//echo "<br>Llamo la facturación inteligente 2326<br>"; //##BORRAR_SEBASTIAN_NEVADO
+					echo "<br>Llamo la facturación inteligente 2326<br>"; //##BORRAR_SEBASTIAN_NEVADO
 					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 					
 					$artValido = true;
@@ -3012,14 +3012,14 @@ else
 														$drolin="";
 														
 														//echo "<br>Devolucion DM 3011<br>"; //##BORRAR_SEBASTIAN_NEVADO
-														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
-														//echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin, true);
+														echo "<br>CargarCargosErp 3016<br>"; //##BORRAR_SEBASTIAN_NEVADO
 														/**************************************************
 														 *Fecha: 2021-06-18
 														 *Descripción: se realiza llamado de factura inteligente.
 														 *Autor: sebastian.nevado
 														***************************************************/
-														CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
+														//CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
 
 														if( $ok ){
 
@@ -3225,16 +3225,8 @@ else
 														$wbasdat="cenpro";
 														$dronum="";
 														$drolin="";
-														//echo "<br>devolucionCM 3222<br>"; //##BORRAR_SEBASTIAN_NEVADO
-														//print_r($array[$i]['art']); //##BORRAR_SEBASTIAN_NEVADO
-														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
-														//echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
-														/**************************************************
-														 *Fecha: 2021-06-18
-														 *Descripción: se realiza llamado de factura inteligente.
-														 *Autor: sebastian.nevado
-														***************************************************/
-														CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
+														echo "<br>devolucionCM 3222<br>"; //##BORRAR_SEBASTIAN_NEVADO
+														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin, true);
 
 														if( $ok ){															
 															devolucionesKE( $array[$i]['art'], $pac, $cco[$codCco], $idRegistro, false );
@@ -3266,6 +3258,20 @@ else
 															}
 															else{
 																$articulosDevueltos++;
+																echo "<br>articulosDevueltos ++ 3261<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																print_r($array[$i]['art']); //##BORRAR_SEBASTIAN_NEVADO
+																echo "<br>cco 3263<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																//$cco['cod'] = $cco[$codCco]['cod'];
+																print_r($cco[$codCco]); //##BORRAR_SEBASTIAN_NEVADO
+																echo "<br>codCco 3266<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																print_r($codCco); //##BORRAR_SEBASTIAN_NEVADO
+																echo "<br>CargarCargosErp 3268<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																/**************************************************
+																 *Fecha: 2021-06-18
+																 *Descripción: se realiza llamado de factura inteligente.
+																 *Autor: sebastian.nevado
+																***************************************************/
+																//CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
 
 																if( !$solicitudCamillero ){
 																	if( esTraslado( $cco[$codCco]['cod'] ) && true ){
@@ -4010,14 +4016,7 @@ else
 														$wbasdat="cenpro";
 														$dronum="";
 														$drolin="";
-														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
-														//echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
-														/**************************************************
-														 *Fecha: 2021-06-18
-														 *Descripción: se realiza llamado de factura inteligente.
-														 *Autor: sebastian.nevado
-														***************************************************/
-														CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
+														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin, true);
 
 														if( $ok ){
 															// echo "11111111111CM.......<pre>"; var_dump( $pac ); echo "</pre>";
@@ -4049,6 +4048,13 @@ else
 															}
 															else{
 																$articulosDevueltos++;
+																echo "<br>CargarCargosErp 4014<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																/**************************************************
+																 *Fecha: 2021-06-18
+																 *Descripción: se realiza llamado de factura inteligente.
+																 *Autor: sebastian.nevado
+																***************************************************/
+																//CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
 																if( !$solicitudCamillero ){
 																	if( esTraslado( $cco[$codCco]['cod'] ) && true ){
 //																		peticionCamillero( 'on', '', '', $usuario, substr($ccoCod,3), $cco[$codCco]['cod'], '',$pac['his'], $pac['ing']  );
@@ -4073,7 +4079,7 @@ else
 											{
 												$array[$i]['art']['can'] = $array[$i]['cco'][$j]['fueA']['cdv'];
 												//echo "<br>Llamado procesoDevMatrix<br>"; //##BORRAR_SEBASTIAN_NEVADO
-												//die("Llamado procesoDevMatrix");
+												//die("Llamado procesoDevMatrix");//##BORRAR_SEBASTIAN_NEVADO
 												$ok=procesoDevMatrix($devCons, $pac,$array[$i]['art'],$array[$i]['cco'][$j]['fueA']['jde'],$array[$i]['cco'][$j]['fueA']['cfa'],$array[$i]['cco'][$j]['fueA']['jfa'],$cco[$codCco],"D",true,$usuario,$error);
 
 												//Agosto 16 de 2011
@@ -4224,14 +4230,7 @@ else
 														$wbasdat="cenpro";
 														$dronum="";
 														$drolin="";
-														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
-														//echo "<br>CargarCargosErp 3224<br>"; //##BORRAR_SEBASTIAN_NEVADO
-														/**************************************************
-														 *Fecha: 2021-06-18
-														 *Descripción: se realiza llamado de factura inteligente.
-														 *Autor: sebastian.nevado
-														***************************************************/
-														CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
+														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin, true);
 
 														if( $ok ){
 															// echo "2222222CM.......<pre>"; var_dump( $pac ); echo "</pre>";
@@ -4266,6 +4265,14 @@ else
 															}
 															else{
 																$articulosDevueltos++;
+																
+																echo "<br>CargarCargosErp 4228<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																/**************************************************
+																 *Fecha: 2021-06-18
+																 *Descripción: se realiza llamado de factura inteligente.
+																 *Autor: sebastian.nevado
+																***************************************************/
+																//CargarCargosErp( $conex, $bd, "cliame", $array[$i]['art'], 'D', $dronum, $drolin );
 
 																if( !$solicitudCamillero ){
 																	if( esTraslado( $cco[$codCco]['cod'] ) && true ){
