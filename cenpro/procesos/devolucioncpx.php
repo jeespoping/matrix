@@ -1811,7 +1811,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 				
 				//Conceptos de grabación
 				$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_medicamentos_mueven_inv" );
-				if( esMMQ($art['cod']) )
+				if( esMMQServicioFarmaceutico($art['cod']) )
 					$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_materiales_mueven_inv" );
 				
 				$wnomcon = consultarNombreConceptos( $conex, $wcliame, $wcodcon );
@@ -2030,43 +2030,47 @@ function consultarNombreConceptos( $conex, $wcliame, $con ){
 }
 
 /**
- * Indica si un aritculo es Material Medico Quirurgico (MMQ)
- * 
+ * Dice si un articulo es Material Medico Quirurgico por medio de servicio farmacéutico
+ *
  * @param $art
  * @return unknown_type
+ * @author: sebastian.nevado
+ * @date: 2021/06/25
+ *
+ * Nota: SE considera material medico quirurgico si el grupo del
+ * articulo no se encuentra en la taba 66 o pertenezca al grupo E00 o V00.
+ * Ya no se considera MMQ los articulos del grupo V00
  */
-function esMMQ( $art ){
-	
-	global $conex;
-    global $wbasedato;
-    
-    $mmq = false;
+function esMMQServicioFarmaceutico( $art ){
 
-    //Buscando si el articulo es Material Medico Quirurgico
-    //MMQ
-	$sql = "SELECT
-				tipmat
-			FROM
-				{$wbasedato}_000002, {$wbasedato}_000001
-			WHERE
-				artcod = '$art' 
-				AND arttip = tipcod";
-				
-	$res =  mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en la consulta - $sql - ". mysql_error() );
+	global $conex;
+	global $bd;
 	
-	if( $row = mysql_fetch_array($res) ){
-		if( $row[0] == 'on' ){
-			$mmq = true;			
+	echo "<br>esMMQ CargoCPX<br>"; //##BORRAR_SEBASTIAN_NEVADO
+
+	$esmmq = false;
+
+	$sql = "SELECT
+				artcom, artgen, artgru, melgru, meltip
+			FROM
+				{$bd}_000026 LEFT OUTER JOIN {$bd}_000066
+				ON melgru = SUBSTRING_INDEX( artgru, '-', 1 )
+			WHERE
+				artcod = '$art'
+			";
+
+	$res = mysql_query( $sql, $conex );
+
+	if( $rows = mysql_fetch_array( $res ) ){
+		if( (empty( $rows['melgru'] ) || $rows['melgru'] == 'E00' ) && !empty($rows['artcom']) ){
+			$esmmq = true;
 		}
 		else{
-			$mmq = false;
+			$esmmq = false;
 		}
 	}
-	else{
-		$mmq = false;
-	}
-	
-	return $mmq;
+
+	return $esmmq;
 }
 
 /**

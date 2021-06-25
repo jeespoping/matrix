@@ -3372,19 +3372,6 @@ else
 																					grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $dato, $presen[$i][$j]['cod'] . '-' . $presen[$i][$j]['nom'], $presen[$i][$j]['caj'], 0, $presen[$i][$j]['caj']);
 																				} 
 																				
-																				/*
-																				 *Fecha: 2021-06-11
-																				 *Descripción: se realiza llamado de factura inteligente.
-																				 *Autor: sebastian.nevado
-																				*/
-																				//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
-																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
-																				if(!$aResultadoFactInteligente->exito)
-																				{
-																					echo $aResultadoFactInteligente->mensaje;
-																				}
-																				// FIN MODIFICACION
-																				
 																				actualizarAjuste($presen[$i][$j]['cod'], $presen[$i][$j]['caj'], $can, $historia, $centro['cod'], $wusuario, $ingreso, $presen[$i][$j]['cnv'], $tot);
 							
 																				if ($presen[$i][$j]['can'] > 0)
@@ -3400,6 +3387,20 @@ else
 																					{
 																						Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, false, $usu, $error);
 																					} 
+
+																					/*
+																					*Fecha: 2021-06-11
+																					*Descripción: se realiza llamado de factura inteligente.
+																					*Autor: sebastian.nevado
+																					*/
+																					//echo "<br>Llamo función de la facturación inteligente<br>"; //##BORRAR_SEBASTIAN_NEVADO
+																					$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
+																					if(!$aResultadoFactInteligente->exito)
+																					{
+																						echo $aResultadoFactInteligente->mensaje;
+																					}
+																					// FIN MODIFICACION
+																					
 																					$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, $error);
 																					if (!$res)
 																					{
@@ -4666,7 +4667,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 				
 				//Conceptos de grabación
 				$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_medicamentos_mueven_inv" );
-				if( esMMQ($art['cod']) )
+				if( esMMQServicioFarmaceutico($art['cod']) )
 					$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_materiales_mueven_inv" );
 				
 				$wnomcon = consultarNombreConceptos( $conex, $wcliame, $wcodcon );
@@ -4885,33 +4886,47 @@ function consultarNombreConceptos( $conex, $wcliame, $con ){
 }
 
 /**
- * Consulta el nombre del concepto de acuerdo a su codigo
- * @by: sebastian.nevado
- * @date: 2021-06-22
- * @return: array
+ * Dice si un articulo es Material Medico Quirurgico por medio de servicio farmacéutico
+ *
+ * @param $art
+ * @return unknown_type
+ * @author: sebastian.nevado
+ * @date: 2021/06/25
+ *
+ * Nota: SE considera material medico quirurgico si el grupo del
+ * articulo no se encuentra en la taba 66 o pertenezca al grupo E00 o V00.
+ * Ya no se considera MMQ los articulos del grupo V00
  */
-function consultarCcoPaciente( $conex, $sHistoria, $sIngreso ){
-	
-	global $wemp_pmla;
-	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+function esMMQServicioFarmaceutico( $art ){
 
-	$sQuery = "SELECT Ubisac
-			FROM ".$wmovhos."_000018 
-			WHERE Ubihis = ? AND Ubiing = ?
-			ORDER BY id DESC
-			LIMIT 1";
+	global $conex;
+	global $bd;
 	
-	//Preparo y envío los parámetros
-	$sentencia = mysqli_prepare($conex, $sQuery);
-	mysqli_stmt_bind_param($sentencia, "ss", $sHistoria, $sIngreso );
-	mysqli_stmt_execute($sentencia);
+	echo "<br>esMMQ CargoCPX<br>"; //##BORRAR_SEBASTIAN_NEVADO
 
-	mysqli_stmt_bind_result($sentencia, $iCCo);
-	mysqli_stmt_fetch($sentencia);
-	
-	$bResultado = isset($iCCo) ? $iCCo : null;
+	$esmmq = false;
 
-	return $bResultado;
+	$sql = "SELECT
+				artcom, artgen, artgru, melgru, meltip
+			FROM
+				{$bd}_000026 LEFT OUTER JOIN {$bd}_000066
+				ON melgru = SUBSTRING_INDEX( artgru, '-', 1 )
+			WHERE
+				artcod = '$art'
+			";
+
+	$res = mysql_query( $sql, $conex );
+
+	if( $rows = mysql_fetch_array( $res ) ){
+		if( (empty( $rows['melgru'] ) || $rows['melgru'] == 'E00' ) && !empty($rows['artcom']) ){
+			$esmmq = true;
+		}
+		else{
+			$esmmq = false;
+		}
+	}
+
+	return $esmmq;
 }
 
 ?>
