@@ -529,6 +529,13 @@ class detalleKardexDTO {
 			$this->conInsumoCalculado2 	= $datos['Ekxin2'];	//concentracion insumo 2
 			$this->esAntibioticoCompuesto=$datos['Defcmp'] == 'on' ? true: false;	//concentracion insumo 2
 			$this->porProtocolo			= $datos['Ekxayu'] != '' ? true: false;	//concentracion insumo 2
+			
+			$this->autorizadoPorDirector= $datos['Ekxaut'] == 'on' ? true: false;	//Articulo con tarifa
+			$this->jusParaAutorizar		= $datos['Ekxjus'];	//Justificación parar odenar el medicamento sin tarifa
+			$this->fechaAutorizado		= $datos['Ekxfau'];	//Fecha de aprobación del articulo por director Médico
+			$this->horaAutorizado		= $datos['Ekxhau'];	//Hora de aprobacion del articulo por director médico
+			$this->directorMedico		= $datos['Ekxmau'];	//Director médico que autoriza el medicamento
+			$this->justificacionDM		= $datos['Ekxjau'];	//Justificación del director médico
 		}
 	}
 	
@@ -1072,6 +1079,35 @@ class AccionPestanaDTO{
 /***********************************
  * FUNCIONES
  ***********************************/
+
+function hayArticuloAutorizado( $conex, $wmovhos, $codigo, $his, $ing ){
+	
+	$val = false;
+	
+	//Consultando el nombre del estudio
+	$sql = "SELECT Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau
+			  FROM ".$wmovhos."_000208 a
+			 WHERE a.Ekxaut  = 'on'
+			   AND a.Ekxhis  = '".$his."'
+			   AND a.Ekxing  = '".$ing."'
+			   AND a.Ekxart  = '".$codigo."'
+			 UNION
+			SELECT Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau
+			  FROM ".$wmovhos."_000208 a
+			 WHERE a.Ekxaut  = 'on'
+			   AND a.Ekxhis  = '".$his."'
+			   AND a.Ekxing  = '".$ing."'
+			   AND a.Ekxart  = '".$codigo."'
+			 ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
+	
+	if( $rows = mysql_fetch_array ($res) ){
+		$val = true;
+	}
+	
+	return $val;
+}
 
 function articuloTieneTarifa( $conex, $wcliame, $wmovhos, $codigo, $tarifa ){
 	
@@ -16371,12 +16407,17 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 				}
 			}
 			
-		
+			$informacion .= " - Justificaci&oacute;n para actualizar: ".$articulo->jusParaAutorizar;
 			
 			echo "<tr id='trFil".$contArticulos."' idtr=trFil".$tipoProtocolo.$contArticulos." title=' - ".$informacion."' class='".$clase."'".$filaVisible." style='$mostrarFila'>";
 			
 			if( $esEditable ){
 				$eventosQuitarTooltip = " onMouseOver='quitarTooltip( this )' onMouseOut='reestablecerTooltip( this );'";	//Creo los eventos que quitan el tooltip si el kardex es editable
+			}
+
+			$classAutRequerido = '';
+			if( !$articulo->autorizadoPorDirector ){
+				$classAutRequerido = " style='background : brown;' ";
 			}
 
 			//Acciones			
@@ -16434,7 +16475,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 					echo "<a id='wcontrolimp$articulo->tipoProtocolo.$contArticulos' href=#null onclick='mostrarMedicamentoControlAImprimir( \"".$articulo->tipoProtocolo.$contArticulos."\" )'><img src='../../images/medical/root/americassu.png' width=17 height=17 border=0 title='ver formato de control'></a>";
 				}
 				
-				echo "<td align=center>";
+				echo "<td align=center $classAutRequerido>";
 				echo "<div id='imgImprimir' style='display:inline'>";
 				echo "<img width='18' height='18' border='0' src='../../images/medical/hce/icono_imprimir.png'><br>";		
 				crearCampo("5","wchkimp_art$articulo->tipoProtocolo$contArticulos",@$accionesPestana[$indicePestana.".$tipoProtocolo"."20"], array("onClick"=>"marcarCambio('$articulo->tipoProtocolo','$contArticulos');","checked"=>"checked"),"");
@@ -16443,15 +16484,16 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 				echo "&nbsp;";
 			}
 			echo "</td>";
-
+			
 			//Articulo
-			echo "<td $claseEliminar  ".$funcionOnclickAbrirNPT.">";
+			echo "<td $claseEliminar  ".$funcionOnclickAbrirNPT." $classAutRequerido>";
 			if($esEditable){
 				echo "<div id='wnmmed$articulo->tipoProtocolo$contArticulos'>$articulo->codigoArticulo</div>";
 			} else {
 				echo $articulo->codigoArticulo;
 			}
 			echo "</td>";
+			
 
 			//Nombre del protocolo
 			echo "<td align=center style='display:none'>";
@@ -30776,7 +30818,7 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
  * @param unknown_type $usuario
  * @return unknown
  ************************************************************************************************************************************************/
-function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosisMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fInicioAnt,$hInicioAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$cantidadAlta,$impresion,$deAlta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$id_original,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo){
+function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosisMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fInicioAnt,$hInicioAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$cantidadAlta,$impresion,$deAlta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$id_original,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo, $wdrautorizado, $wjusparaautorizar ){
 	
 	global $horaCorteDispensacion;	
 	global $whce;	
@@ -31330,9 +31372,9 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 						//Se crea query para insertar los datos en la extensión de la tabla temporal
 						//a este query le falta el filtro de kadido que se agrega más adelante
 						$sql_ext = "INSERT INTO ".$wbasedato."_000209
-										( Medico , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest,    Ekxpro    ,    Ekxtra     ,     Ekxped     ,   Ekxin1     ,   Ekxin2     ,    Ekxayu     , Seguridad   )
+										( Medico , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest,    Ekxpro    ,    Ekxtra     ,     Ekxped     ,   Ekxin1     ,   Ekxin2     ,    Ekxayu     ,     Ekxaut     ,        Ekxjus       , Seguridad   )
 									SELECT
-										 b.Medico, b.Fecha_data, b.Hora_data, Kadhis, Kading, Kadfec, Kadart, Kadido, Kadest, '$profilaxis', '$tratamiento', '$esPediatrico', '$conInsumo1', '$conInsumo2', '$ccoAyudaDx',b.Seguridad
+										 b.Medico, b.Fecha_data, b.Hora_data, Kadhis, Kading, Kadfec, Kadart, Kadido, Kadest, '$profilaxis', '$tratamiento', '$esPediatrico', '$conInsumo1', '$conInsumo2', '$ccoAyudaDx', '$wdrautorizado', '$wjusparaautorizar', b.Seguridad
 									FROM
 										".$wbasedato."_000060 b
 									WHERE
@@ -36434,6 +36476,8 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 
 	global $conex;
 	global $wemp_pmla;
+	
+	$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, "facturacion" );
 
 	$pesMedicamentosBD = consultarAliasPorAplicacion( $conex, $wemp_pmla, "pesMedicamentos" );
 	$expPesMedicamentosBD = explode( ";", $pesMedicamentosBD );
@@ -37646,13 +37690,15 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				
 				//Por defecto tiene tarifa
 				$con_tarifa = 'on';
-				if( $validarTarifa ){
-					
-					$infopac 	 = informacionPaciente( $conex, $wemp_pmla, $his, $ing );
-					$tieneTarifa = articuloTieneTarifa( $conex, $wcliame, $wmovhos, $articuloCodigoConsulta, $infopac['tarifa'] );
-					
-					if( !$tieneTarifa ){
-						$con_tarifa = 'off';
+				if( !$articuloGenerico ){
+					if( $validarTarifa ){
+						
+						$infopac 	 = informacionPaciente( $conex, $wemp_pmla, $his, $ing );
+						$tieneTarifa = articuloTieneTarifa( $conex, $wcliame, $wbasedato, $articuloCodigoConsulta, $infopac['tarifa'] );
+						
+						if( !$tieneTarifa ){
+							$con_tarifa = 'off';
+						}
 					}
 				}
 				
@@ -38595,7 +38641,7 @@ if(isset($consultaAjaxKardex)){
 
 	switch($consultaAjaxKardex){
 		case 1:
-			echo grabarArticuloDetalle($basedatos,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fIniAnt,$hIniAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$wcantidadAlta,$wimpresion,$walta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$idoriginal,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo);
+			echo grabarArticuloDetalle($basedatos,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fIniAnt,$hIniAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$wcantidadAlta,$wimpresion,$walta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$idoriginal,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo,$wdrautorizado,$wjusparaautorizar);
 			break;
 		case 2:
 			if(!isset($tipoProtocolo)){

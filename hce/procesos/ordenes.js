@@ -21464,6 +21464,10 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 	
 	var articulosGrabadoAnteriormente = false;
 
+	var wdrautorizado = document.getElementById('wdrautorizado'+tipoProtocolo+idxElemento).value;
+	var wjusparaautorizar = $( document.getElementById('wjusparaautorizar'+tipoProtocolo+idxElemento) ).val();
+	
+	
 	artdosisAdaptada = false;
 
 	if(dosisAdaptada !== null)	{
@@ -21873,8 +21877,8 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 	/***
 	GRABACION DEL ARTICULO
 	***/
-	if(valido){
-		grabarArticuloElemento(historia,ingreso,fechaKardex,codigoArticulo,cantDosis.value,unidadDosis.value,periodicidad.value,formaFtica.value,fechaInicio,horaInicio,via.value,artConfirmado,diasTto.value,obsmerge,origenArticulo,usuario,condicion.value,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,equivHorasFrecuencia,fechaInicioAnterior,horaInicioAnterior,artNoDispensar,artProtocolo,centroCostosGrabacion,prioridad,idxElemento,nombreArticulo,cantidadAlta,impresion,deAlta, firma, artdosisAdaptada,idoriginal,artnoEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo);
+	if(valido){		
+		grabarArticuloElemento(historia,ingreso,fechaKardex,codigoArticulo,cantDosis.value,unidadDosis.value,periodicidad.value,formaFtica.value,fechaInicio,horaInicio,via.value,artConfirmado,diasTto.value,obsmerge,origenArticulo,usuario,condicion.value,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,equivHorasFrecuencia,fechaInicioAnterior,horaInicioAnterior,artNoDispensar,artProtocolo,centroCostosGrabacion,prioridad,idxElemento,nombreArticulo,cantidadAlta,impresion,deAlta, firma, artdosisAdaptada,idoriginal,artnoEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar);
 	}
 	return valido;
 }
@@ -23332,7 +23336,7 @@ function cambiarDisplay(id) {
 /*****************************************************************************************************************************
  * Llamada ajax para la inserción o modificación de un articulo
  ******************************************************************************************************************************/
-function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDosis,per,fftica,fini,hini,via,conf,dtto,obs,origenArticulo,usuario,condicion,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,horasFrecuencia,fechaInicioAnt,horaInicioAnt,noDispensar,tipoProtocolo,centroCostosGrabacion,prioridad,idElemento,nombreArticulo,cantidadAlta,impresion,deAlta,firma,artdosisAdaptada,idoriginal,noEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo){
+function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDosis,per,fftica,fini,hini,via,conf,dtto,obs,origenArticulo,usuario,condicion,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,horasFrecuencia,fechaInicioAnt,horaInicioAnt,noDispensar,tipoProtocolo,centroCostosGrabacion,prioridad,idElemento,nombreArticulo,cantidadAlta,impresion,deAlta,firma,artdosisAdaptada,idoriginal,noEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar){
 	var parametros = "";
 	var mensaje = "";
 		// alert( "familiasAgregadasIdx["+tipoProtocolo+idElemento+"]:" + familiasAgregadasIdx[ tipoProtocolo+idElemento ] );
@@ -23343,7 +23347,8 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 		+"&noDispensar="+noDispensar+"&tipoProtocolo="+tipoProtocolo+"&centroCostosGrabacion="+centroCostosGrabacion+"&prioridad="+prioridad
 		+"&nombreArticulo="+nombreArticulo+"&wcantidadAlta="+cantidadAlta+"&wimpresion="+impresion+"&walta="+deAlta+"&familia="+familiasAgregadasIdx[ tipoProtocolo+idElemento ]+"&firma="+firma+"&tipoDocumento="+$( "#wtipodoc" ).val()+"&wcedula="+$( "#wcedula" ).val()+"&artdosisAdaptada="+artdosisAdaptada+"&artnoEsteril="+noEsteril
 		+"&idoriginal="+idoriginal+"&profilaxis="+profilaxis+"&tratamiento="+tratamiento
-		+"&esPediatrico="+esPediatrico+"&conInsumo1="+conInsumo1+"&conInsumo2="+conInsumo2+"&porProtocolo="+porProtocolo;
+		+"&esPediatrico="+esPediatrico+"&conInsumo1="+conInsumo1+"&conInsumo2="+conInsumo2+"&porProtocolo="+porProtocolo
+		+"&wdrautorizado="+wdrautorizado+"&wjusparaautorizar="+wjusparaautorizar;
 
 	try{
 //		$.blockUI({ message: $('#msjEspere') });
@@ -25097,21 +25102,57 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 						
 						if(x)
 						{
-							if( conTarifa != 'on' ){
-								jConfirm( "ARTICULO SIN TARIFA #######","ALERTA DUPLICIDAD TERAPEUTICA",function(x){
-									if(!x)
-									{
-										objDfr.resolve( false );
+							if( conTarifa != 'on' )
+							{
+								$('#taJusParaArtsSinTarifas').val('');
+								
+								$.blockUI({ message: $('#question'), css: { width: '500px' } });
+
+								$('#btnAceptarAST')
+									.attr({disabled:true})
+									.off( "click" )
+									.click(function() {
+										$( "#wjusparaautorizar"+tipoProtocoloAux+idx ).val( $('#taJusParaArtsSinTarifas').val() );
 										
+										// update the block message
+										objDfr.resolve( true );
+											
+										$.unblockUI();
+										
+										$( this ).off( "click" );
+										
+										return false;
+										
+									});
+									
+								
+								var esDelGrupoGenerico = null;
+								try{
+									var esDelGrupoGenerico = grupoGenerico == undefined ? null : grupoGenerico;
+								}
+								catch(e){}
+								
+								
+								$('#btnCerrarAST')
+									.off( "click" )
+									.click(function() {
+										objDfr.resolve( false );
+											
 										var trEliminar = document.getElementById("trFil"+idx);
 										cntDetalleKardex.removeChild(trEliminar);
 
+										$.unblockUI();
+										
+										$( this ).off( "click" );
+										
+										if( esDelGrupoGenerico && $.trim( esDelGrupoGenerico ) != '' ){
+											// cancerlarModalArticulosLEVIC();
+											console.log( document.getElementById('indiceArticuloComponentes').value );
+											quitarArticulo( document.getElementById('indiceArticuloComponentes').value, 'LQ','','detKardexAddLQ', 'LQ');
+										}
+										
 										return false;
-									}
-									else{
-										objDfr.resolve( true );
-									}
-								});
+									});
 							}
 							else{
 								objDfr.resolve( true );
@@ -27035,6 +27076,15 @@ $(document).ready(function () {
 	$( "[href=#fragment-7]" ).click(function(){
 		mostrarAuditoria();
 	});
+	
+	$('#taJusParaArtsSinTarifas').blur(function(){
+		if( $(this).val() != '' ){
+			$( "#btnAceptarAST" ).attr({disabled:false});
+		}
+		else{
+			$( "#btnAceptarAST" ).attr({disabled:true});			
+		}
+	})
 	
 });
 
