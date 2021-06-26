@@ -3385,7 +3385,7 @@ else
 																					*Descripción: se realiza llamado de factura inteligente.
 																					*Autor: sebastian.nevado
 																					*/
-																					$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
+																					$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $presen[$i][$j]['nom'], $can, $tipTrans);
 																					if(!$aResultadoFactInteligente->exito)
 																					{
 																						echo $aResultadoFactInteligente->mensaje;
@@ -4817,6 +4817,36 @@ function consultarNombreConceptos( $conex, $wcliame, $con ){
 	}
 	
 	return $val;
+}
+
+/**
+ * Consulta el nombre del concepto de acuerdo a su codigo
+ * @by: sebastian.nevado
+ * @date: 2021-06-22
+ * @return: array
+ */
+function consultarCcoPaciente( $conex, $sHistoria, $sIngreso ){
+	
+	global $wemp_pmla;
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
+	$sQuery = "SELECT Ubisac
+			FROM ".$wmovhos."_000018 
+			WHERE Ubihis = ? AND Ubiing = ?
+			ORDER BY id DESC
+			LIMIT 1";
+	
+	//Preparo y envío los parámetros
+	$sentencia = mysqli_prepare($conex, $sQuery);
+	mysqli_stmt_bind_param($sentencia, "ss", $sHistoria, $sIngreso );
+	mysqli_stmt_execute($sentencia);
+
+	mysqli_stmt_bind_result($sentencia, $iCCo);
+	mysqli_stmt_fetch($sentencia);
+	
+	$bResultado = isset($iCCo) ? $iCCo : null;
+
+	return $bResultado;
 }
 
 /**
