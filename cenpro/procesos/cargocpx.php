@@ -4112,18 +4112,6 @@ else
 																					grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $dato, $presen[$i][$j]['cod'] . '-' . $presen[$i][$j]['nom'], $presen[$i][$j]['caj'], 0, $presen[$i][$j]['caj']);
 																				}
 
-																				/*
-																				 *Fecha: 2021-06-11
-																				 *Descripción: se realiza llamado de factura inteligente.
-																				 *Autor: sebastian.nevado
-																				*/
-																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
-																				if(!$aResultadoFactInteligente->exito)
-																				{
-																					echo $aResultadoFactInteligente->mensaje;
-																				}
-																				// FIN MODIFICACION
-
 																				actualizarAjuste($presen[$i][$j]['cod'], $presen[$i][$j]['caj'], $can, $historia, $centro['cod'], $wusuario, $ingreso, $presen[$i][$j]['cnv'], $tot);
 							
 																				if ($presen[$i][$j]['can'] > 0)
@@ -4139,6 +4127,19 @@ else
 																					{
 																						Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, false, $usu, $error);
 																					} 
+
+																					/*
+																					*Fecha: 2021-06-11
+																					*Descripción: se realiza llamado de factura inteligente.
+																					*Autor: sebastian.nevado
+																					*/
+																					$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
+																					if(!$aResultadoFactInteligente->exito)
+																					{
+																						echo $aResultadoFactInteligente->mensaje;
+																					}
+																					// FIN MODIFICACION
+
 																					// $res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
 																					// if (!$res)
 																					// {
