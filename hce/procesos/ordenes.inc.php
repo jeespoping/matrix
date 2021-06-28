@@ -11780,8 +11780,10 @@ function recalcularKardex( $conex, $wbasedato, $historia, $ingreso, $fecha ){
  ************************************************************************************************/
 function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $historia, $ingreso, $wemp_pmla)
 {
-$vptarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripcionConTarifa' );
-	$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+	//Para dejar ordenar ya se hace es por el monitor de autorización del director médico
+	$vptarifa = 'off';
+	
+	$wcliame  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
 	// Esta es la variable que contendrá todos los datos de los artículos 
 	// que correspondan con la búsqueda de la familia
 	$val = "";
@@ -11816,30 +11818,32 @@ $vptarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripci
 
 		
 	if($vptarifa == "off"){		
-	$sql = "SELECT
-				Famcod
-			FROM
-				{$wbasedato}_000114 h,
-				{$wbasedato}_000115 i
-			WHERE
-				famcod = relfam
-				AND famnom  LIKE '%$familia%'
-				AND relest = 'on'
-				AND famest = 'on'
-			UNION
-			SELECT
-				Famcod
-			FROM
-				{$wbasedato}_000114 h,
-				{$wbasedato}_000115 i
-			WHERE
-				famcod = relfam
-				AND relart  LIKE '%$familia%'
-				AND relest = 'on'
-				AND famest = 'on'
-			GROUP BY 1 ";
-	}else{
+		$sql = "SELECT
+					Famcod
+				FROM
+					{$wbasedato}_000114 h,
+					{$wbasedato}_000115 i
+				WHERE
+					famcod = relfam
+					AND famnom  LIKE '%$familia%'
+					AND relest = 'on'
+					AND famest = 'on'
+				UNION
+				SELECT
+					Famcod
+				FROM
+					{$wbasedato}_000114 h,
+					{$wbasedato}_000115 i
+				WHERE
+					famcod = relfam
+					AND relart  LIKE '%$familia%'
+					AND relest = 'on'
+					AND famest = 'on'
+				GROUP BY 1 ";
+	}
+	else{
 		$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
+		
 		$sql = "SELECT
 				Famcod
 			FROM
@@ -11884,18 +11888,19 @@ $vptarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripci
 	//Consulto las familias que tienen articulo cuyo nombre generico o comercial tengan la familia buscada
 	
 	if($vptarifa == "off"){
-	$sql = "SELECT
-				Relfam
-			FROM
-				{$wbasedato}_000115 c,
-				{$wbasedato}_000026 d
-			WHERE relest = 'on'
-				AND artcod = relart
-				AND ( artgen LIKE '%$familia%' OR artcom LIKE '%$familia%' OR artcod LIKE '%$familia%' )
-				AND artest = 'on'
-				AND relfam NOT IN( $strInFamCod )
-			GROUP BY 1";
-	}else{
+		$sql = "SELECT
+					Relfam
+				FROM
+					{$wbasedato}_000115 c,
+					{$wbasedato}_000026 d
+				WHERE relest = 'on'
+					AND artcod = relart
+					AND ( artgen LIKE '%$familia%' OR artcom LIKE '%$familia%' OR artcod LIKE '%$familia%' )
+					AND artest = 'on'
+					AND relfam NOT IN( $strInFamCod )
+				GROUP BY 1";
+	}
+	else{
 		$sql = "SELECT
 				Relfam
 			FROM
