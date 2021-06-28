@@ -31351,7 +31351,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 					}
 					
 					//Si el articulo no es aprobado por el director médico no puede quedar aprobado por el regente ni confirmado de preparación
-					if($wdrautorizado == 'on' ){
+					if( $wdrautorizado == 'on' ){
 						$artAprobado = 'off';
 						$conf 		 = 'off';
 					}
