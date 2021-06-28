@@ -928,7 +928,7 @@ elseif (!isset($pac['his']))
 					}
 					else
 					{
-						$warning = "EL PACIENTE CON HISTORIA:".$pac['his']." FUE DADO DE ALTA DE LA INSTITUCIÓN!!!";
+						$warning = "EL PACIENTE CON HISTORIA:".$pac['his']." FUE DADO DE ALTA DE LA INSTITUCIÓN!!! N09";
 						$error['codInt']='0009';
 						$error['codSis']=".";
 						$error['descSis']=".";
@@ -1335,7 +1335,7 @@ elseif (!isset($pac['his']))
 					}
 					else
 					{
-						$warning = "EL PACIENTE CON HISTORIA:".$pac['his']." FUE DADO DE ALTA DE LA INSTITUCIÓN!!!";
+						$warning = "EL PACIENTE CON HISTORIA:".$pac['his']." FUE DADO DE ALTA DE LA INSTITUCIÓN!!! N10";
 						$error['codInt']='0009';
 						$error['codSis']=".";
 						$error['descSis']=".";
