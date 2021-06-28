@@ -1,0 +1,133 @@
+.chkSeleccionado {
+    background-color: lightyellow;
+}
+
+.faltantes {
+    background-color: #F7D358;
+}
+
+.efecto_boton {
+    cursor: pointer;
+    border-bottom: 1px solid orange;
+    color: orange;
+    font-weight: bold;
+}
+
+.class_div {
+    overflow-x: scroll
+    overflow-y: scroll
+}
+
+.j2 {
+    background-color: #00CCCC;
+}
+
+.campoRequerido {
+    border: 1px orange solid;
+    background-color: lightyellow;
+    color: gray;
+}
+
+.sel_enviadas_color {
+    background-color: #E8EEF7;
+    font-size: 10pt;
+}
+
+.fila1 {
+    border-right: 2px #fff solid;
+}
+
+.fila2 {
+    border-right: 2px #fff solid;
+}
+
+.fila1espacio {
+    border-right: 2px #fff solid;
+    border-bottom: 2px #fff solid;
+    font-size: smaller;
+}
+
+.fila2espacio {
+    border-right: 2px #fff solid;
+    border-bottom: 2px #fff solid;
+    font-size: smaller;
+}
+
+.anchotabla {
+    width: 90%;
+}
+
+select {
+    width: 100%;
+}
+
+input {
+    width: 100%;
+    height: 23px;
+}
+
+.bordes {
+    border-radius: 15px;
+}
+
+.estadoInactivo {
+    font-size: larger;
+    color: red;
+}
+
+.estadoActivo {
+    font-size: larger;
+    color: green;
+}
+
+.errorMensajes {
+    color: red;
+    BACKGROUND-COLOR: lightyellow;
+}
+
+.mensajeValido {
+    color: black;
+}
+
+.inputblank {
+    color: gray;
+}
+
+.tooltip {
+    display: none;
+    background: #FFFFCC;
+    font-size: 14px;
+    height: 20px;
+    width: 190px;
+    padding: 10px;
+    color: black;
+    text-align: left;
+    position: absolute;
+
+}
+
+.div_error {
+    background: #FFFFCC;
+    font-size: 14px;
+    height: 40px;
+    width: 300px;
+    margin: 0 auto 0 auto;
+    text-align: center;
+    border: 1px orange solid;
+    background-color: lightyellow;
+    color: red;
+    /*para Firefox*/
+    -moz-border-radius: 15px 15px 15px 15px;
+    /*para Safari y Chrome*/
+    -webkit-border-radius: 15px 15px 15px 15px;
+    /* para Opera */
+    border-radius: 15px 15px 15px 15px;
+}
+
+.corchete {
+    background-image: url("../../images/medical/root/corchete.png");
+    background-position: right top;
+    background-repeat: no-repeat;
+    background-size: 23px 98%;
+    margin: 0 auto;
+}
