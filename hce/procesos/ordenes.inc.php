@@ -31349,6 +31349,12 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 					if($esArticuloNutricion){
 						$conf = 'on';
 					}
+					
+					//Si el articulo no es aprobado por el director médico no puede quedar aprobado por el regente ni confirmado de preparación
+					if($wdrautorizado == 'on' ){
+						$artAprobado = 'off';
+						$conf 		 = 'off';
+					}
 
 					//Si la pestaña no es de alta inserta en la tabla movhos_000060 y si el paciente es diferente de urgencias insertará en la movhos_000168.
 					if($deAlta != 'on'){
