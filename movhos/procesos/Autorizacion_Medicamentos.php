@@ -3,7 +3,11 @@
 	include_once("Autorizacion_Medicamentos_Backend.php");
 
 	$wactualiz='Julio 27 de 2021';
-	encabezado( "AUTORIZACION DE MEDICAMENTOS" ,$wactualiz, "clinica" );
+	
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	
+	encabezado( "AUTORIZACION DE MEDICAMENTOS", $wactualiz, $institucion->baseDeDatos );
+	
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,6 +41,7 @@
 		echo' <table id="table" class="encabezado tabla striped" style="margin:20px; ">';?>
 		<thead >
        
+			<th scope="col" style=" background: #000066; color:#C3D9FF">Paciente</th>
 			<th scope="col" style=" background: #000066; color:#C3D9FF">Cod Medicamento</th>
 			<th scope="col"style=" background: #000066; color:#C3D9FF">Nombre Medicamento</th>
 			<th scope="col"style=" background: #000066; color:#C3D9FF">Cod Medico ordena</th>
@@ -57,24 +62,27 @@
     
 	$wemp_pmla=$_GET['wemp_pmla'];
 	
-    $autorizaiones=cargartabla($conex,$wemp_pmla);
+    $autorizaiones = cargartabla($conex,$wemp_pmla);
+	
 	if( $autorizaiones>0)
-	{   
+	{  
 		foreach ($autorizaiones as  $autorizaion)
-		{ 
+		{
 			echo '<tr id="tr'.$autorizaion["codigo"].'" >';
+			echo '<td scope="row" id="paciente'.$autorizaion["historia"]."-".$autorizaion["ingreso"].'">'.$autorizaion["historia"]."-".$autorizaion["ingreso"]." ".$autorizaion["nombre_paciente"].'</td>';//Cod Medicamento
 			echo '<td scope="row" id="codigo'.$autorizaion["codigo"].'">'.$autorizaion["codigo"].'</td>';//Cod Medicamento
 			echo '<td scope="row" id="n_medicamento'.$autorizaion["codigo"].'" >'.$autorizaion["nombre_medicamento"].'</td>';//Nombre Medicamento
 			echo '<td scope="row" id="c_medico_ordena'.$autorizaion["codigo"].'">'.$autorizaion["usuario_ordena"].'</td>';//Cod Medico ordena
 			echo '<td scope="row" id="n_medico'.$autorizaion["codigo"].'">'.$autorizaion["nombre_medico"].'</td>';//Cod Medico ordena
 			echo '<td scope="row" id="j_medico_ordena'.$autorizaion["codigo"].'">'.$autorizaion["justificacion_ordena"].'</td>';//Justificacion Ordenamiento
 		  
-			echo '<td><textarea name="" id="j_medico_autoriza'.$autorizaion["codigo"].'" cols="30" rows="10"></textarea></td>';
+			echo '<td><textarea name="" id="j_medico_autoriza'.$autorizaion["codigo"].'" cols="30" rows="5"></textarea></td>';
+			
 			echo '<td><select name="" id="autoriza'.$autorizaion["codigo"].'">';
 			echo '<option value="on">Si</option>';
 			echo '<option value="off" selected>No</option>';
-			
 			echo '</select></td>';
+			
 			echo '<input id="historia'.$autorizaion["codigo"].'" name="" type="hidden" value='.$autorizaion["historia"].'>';//Justificacion Ordenamiento
 			echo '<input id="ingreso'.$autorizaion["codigo"].'" name="" type="hidden" value='.$autorizaion["ingreso"].'>';//Justificacion Ordenamiento
 			
@@ -85,8 +93,7 @@
 				echo'<td scope="row"><button type="button" id="enviar'.$autorizaion["codigo"].'" onclick="guardar(\'' .$codigo . '\')" class="btn btn-primary  align-items-center" >Guardar</button></td>';
 			}
 			  
-		  echo' </tr>';
-	   
+			echo' </tr>';
 		}
 	} 
 	?>

@@ -15,6 +15,7 @@ function Buscar_nombre_medico( $conex, $wemp_pmla, $c_medico ){
 		return $rows['nombres'];		
 	}
 }
+
 function cargartabla( $conex, $wemp_pmla){
 	
 	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
@@ -35,8 +36,20 @@ function cargartabla( $conex, $wemp_pmla){
 			
 	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
 	
-	while($rows = mysql_fetch_array($res)){
-		$autorizaciones[]=array( "codigo"=>$rows[0],"usuario_ordena" => $rows[2],"justificacion_ordena"=>$rows[3],"nombre_medicamento"=>$rows[1],"historia"=>$rows[4],"ingreso"=>$rows[5],"nombre_medico"=>Buscar_nombre_medico($conex,$wemp_pmla,$rows[2]));
+	while($rows = mysql_fetch_array($res))
+	{
+		$paciente = consultarInfoPacientePorHistoria( $conex, $rows[4], $wemp_pmla );
+		
+		$autorizaciones[] = array( 
+					"codigo"				=> $rows[0],
+					"usuario_ordena" 		=> $rows[2],
+					"justificacion_ordena"	=> $rows[3],
+					"nombre_medicamento"	=> $rows[1],
+					"historia"				=> $rows[4],
+					"ingreso"				=> $rows[5],
+					"nombre_medico"			=> Buscar_nombre_medico($conex,$wemp_pmla,$rows[2]),
+					"nombre_paciente"		=> $paciente->nombre1." ".$paciente->nombre2." ".$paciente->apellido1." ".$paciente->apellido2,
+				);
 	}
 
 	return $autorizaciones;
