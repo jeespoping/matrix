@@ -1076,6 +1076,24 @@ class AccionPestanaDTO{
 /***********************************
  * FUNCIONES
  ***********************************/
+ 
+function consultarCcoLactario( $conex, $wbasedato ){
+	
+	$val = false;
+	
+	//Consultando el nombre del estudio
+	$sql = "SELECT Ccocod 
+			  FROM ".$wbasedato."_000011 
+			 WHERE ccolac = 'on'";
+
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
+	
+	if( $rows = mysql_fetch_array ($res) ){
+		$val = $rows['Ccocod'];
+	}
+	
+	return $val;
+}
 
 
 function hayArticuloAutorizado( $conex, $wmovhos, $codigo, $his, $ing ){
@@ -23615,7 +23633,7 @@ function consultarArticulosLactario($historia,$ingreso,$fecha,$tipoProtocolo){
 				AND Kadfec = '$fecha'
 				AND Kadpro LIKE '$tipoProtocolo'
 				AND Kadori = 'SF'
-				AND Kadcco = '1120'
+				AND Kadcco IN ( SELECT ccocod FROM ".$wbasedato."_000011 WHERE ccolac = 'on' )
 				AND Artcod = Kadart			
 			ORDER BY Artcom ";
 
@@ -31128,7 +31146,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	
 	$esArticuloNutricion = esArticuloNutricion( $conexion, $wcenmez, $codArticulo );
 	
-	$ccoLac = '1120';
+	$ccoLac = consultarCcoLactario( $conex, $wbasedato );
 	$esArtLactario = false;
 	if( $tipoProtocolo != 'LQ' && esArticuloLactario($conexion, $wbasedato, $codArticulo ) ){
 		$tipoProtocolo = "N";
