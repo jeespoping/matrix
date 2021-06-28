@@ -885,7 +885,7 @@ function obtenerNumFactura($fuente,$cCostos ,$conex_o)
 	
 	txtLog("sig consecutivo encontrado: $newConsecutivo");
 	
-    $query3 = "update cafue set fuesecx = '$newConsecutivo' WHERE fuecod = '$fuecod' AND fuecco = '$fuecco'";
+    $query3 = "update cafue set fuesec = '$newConsecutivo' WHERE fuecod = '$fuecod' AND fuecco = '$fuecco'";
 	$conq = 0;
 	while ($conq++ < 4) {
 		$res = odbc_do($conex_o, $query3);
