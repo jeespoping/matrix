@@ -20,7 +20,7 @@ function estaAutorizadoArticulo( $conex, $wmovhos, $codigo, $his, $ing ){
 			   AND a.Ekxart  = '".$codigo."'
 			 UNION
 			SELECT Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau
-			  FROM ".$wmovhos."_000208 a
+			  FROM ".$wmovhos."_000209 a
 			 WHERE a.Ekxaut  = 'on'
 			   AND a.Ekxhis  = '".$his."'
 			   AND a.Ekxing  = '".$ing."'
@@ -11876,9 +11876,9 @@ function pendientes_ordenes($conex, $wbasedato, $programa, $historia, $ingreso, 
 
 			if( $mostarArticulo ){
 				
-				$estaAutorizado = estaAutorizadoArticulo( $conex, $wbasedato, $row_med['Kadart'], $historia, $ingreso )
+				$estaAutorizado = estaAutorizadoArticulo( $conex, $wbasedato, $row_med['Kadart'], $historia, $ingreso );
 				
-				$no_autorizado = "";
+				$no_autorizado = "A - ";
 				if( !$estaAutorizado )
 					$no_autorizado = "NA - ";
 
