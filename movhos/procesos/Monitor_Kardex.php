@@ -5,6 +5,34 @@ include_once("conex.php");
    *             MONITOR DEL KARDEX              *
    *     		  CONEX, FREE => OK		         *
    ***********************************************/
+  function consultarConcentracionArticuloSF( $conex, $wmovhos, $artcod )
+  {
+
+	  $val = 1;
+
+	  //Consulto el codigo correspondiente en CM
+	  $sql = "SELECT Relcon
+				FROM ".$wmovhos."_000026 a, ".$wmovhos."_000115 b, ".$wmovhos."_000059 c, ".$wmovhos."_000011 d
+			   WHERE a.artcod = '".$artcod."'
+				 AND a.artcod = b.relart
+				 AND c.defart = a.artcod
+				 AND a.artuni != c.deffru
+				 AND c.defcco = d.ccocod
+				 AND d.ccofac LIKE 'on' 
+				 AND d.ccotra LIKE 'on' 
+				 AND d.ccoima !='on' 
+				 AND d.ccodom !='on'
+			  ";
+	  //echo $sql;
+	  $res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - $sql - ".mysql_error() );
+	  
+	  if( $rows = mysql_fetch_array($res) ){
+		  $val = $rows[ 'Relcon' ];
+	  }
+	  
+	  return $val;
+  }
+
 session_start();
 
 if (!isset($user))
@@ -21,8 +49,10 @@ else
   
   $conex = obtenerConexionBD("matrix");
   $wfecha=date("Y-m-d");   
-  $whora = (string)date("H:i:s");	                                                           
-
+  $whora = (string)date("H:i:s");
+  
+  $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+  //$test = consultarConcentracionArticuloSF( $conex, $wmovhos, $artcod );echo $test;
   
   
                                                    // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
@@ -167,29 +197,7 @@ else
   //=====================================================================================================================================================================
   
    //funcion
-	function consultarConcentracionArticuloSF( $conex, $wmovhos, $artcod )
-	{
-
-		$val = 1;
-
-		//Consulto el codigo correspondiente en CM
-		$sql = "SELECT Relcon
-				  FROM ".$wmovhos."_000026 a, ".$wmovhos."_000115 b, ".$wmovhos."_000059 c
-				 WHERE a.artcod = '".$artcod."'
-				   AND a.artcod = b.relart
-				   AND c.defart = a.artcod
-				   AND a.artuni != c.deffru
-				   AND c.defcco = '1050'
-				";
-		
-		$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - $sql - ".mysql_error() );
-		
-		if( $rows = mysql_fetch_array($res) ){
-			$val = $rows[ 'Relcon' ];
-		}
-		
-		return $val;
-	}
+	
 	
 	function quitarMarcaDA($wbasedato,$wemp_pmla,$wusuario,$historia,$ingreso,$codArticulo,$ido,$marcado)
 	{

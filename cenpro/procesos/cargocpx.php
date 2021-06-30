@@ -210,7 +210,28 @@ function consultarNombrePaciente($historia,$ingreso)
 	
 	return $paciente;
 }
-
+function centroCostosCM()
+	{
+		global $conex;
+		global $bd;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$bd."_000011
+				WHERE
+					ccofac LIKE 'on'
+					AND ccotra LIKE 'on'
+					AND ccoima !='off'
+					AND ccodom !='on'
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			return $rows[ 'Ccocod' ];
+		}
+	}
 /**********************************************************************************************
  * Si se hace una aplicacion se actualiza el campo Unidad de fraccion y cantidad de fraccion
  * segun el kardex en la tabla 15 de movhos
@@ -2933,7 +2954,7 @@ else
 	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
 	
-	
+	//$test = centroCostosCM(); echo $test;
 	$tmpDispensacion = consultarTiempoDispensacionIncCM( $conex, "01" );
 	
     connectOdbc($conex_o, 'facturacion');
@@ -3097,7 +3118,8 @@ else
 																		$trans['lin'] = '';
 																	} 
 																	$val = registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
-																	actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, 1051 );	//Noviembre 8 de 2011
+																	$ccoCM = centroCostosCM();
+																	actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, $ccoCM );	//Noviembre 8 de 2011
 																	$aplicaron = true;
 																} 
 																
@@ -3440,7 +3462,8 @@ else
 																			$trans['lin'] = '';
 																		} 
 																	   $val =  registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
-																	   actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, 1051 );	//Noviembre 8 de 2011
+																	   $ccoCM = centroCostosCM();
+																	   actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, $ccoCM );	//Noviembre 8 de 2011
 																	   $aplicaron = true;
 																	}
 																	
@@ -3632,7 +3655,8 @@ else
 																	$trans['lin'] = '';
 																} 
 																$val = registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
-																actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, 1051 );	//Noviembre 8 de 2011
+																$ccoCM = centroCostosCM();
+																actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, $ccoCM );	//Noviembre 8 de 2011
 																$aplicaron = true;
 															} 
 															
@@ -3809,7 +3833,8 @@ else
 																		$trans['lin'] = '';
 																	} 
 																	$val = registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
-																	actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, 1051 );	//Noviembre 8 de 2011
+																	$ccoCM = centroCostosCM();
+																	actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, $ccoCM );	//Noviembre 8 de 2011
 																	$aplicaron = true;
 																} 
 																
@@ -4172,7 +4197,8 @@ else
 																			$trans['lin'] = '';
 																		} 
 																	   $val =  registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
-																	   actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, 1051 );	//Noviembre 8 de 2011
+																	   $ccoCM = centroCostosCM();
+																	   actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, $ccoCM );	//Noviembre 8 de 2011
 																	   $aplicaron = true;
 																	}
 																	
@@ -4376,7 +4402,8 @@ else
 																	$trans['lin'] = '';
 																} 
 																$val = registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
-																actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, 1051 );	//Noviembre 8 de 2011
+																$ccoCM = centroCostosCM();
+																actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $centro, $art, $dronum, $drolin, $ccoCM );	//Noviembre 8 de 2011
 																$aplicaron = true;
 															} 
 															

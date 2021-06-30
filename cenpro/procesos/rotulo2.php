@@ -37,7 +37,28 @@ include_once("conex.php");
 
 //2009-04-24: Se creo una nueva clase para aumentar el tamaño del nombre y de la cama, la clase es la (texto5)
 
-
+function centroCostosCM()
+	{
+		global $conex;
+		global $wbasedatoMovhos;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$wbasedatoMovhos."_000011
+				WHERE
+					ccofac LIKE 'on' 
+					AND ccotra LIKE 'on' 
+					AND ccoima !='off' 
+					AND ccodom !='on'
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			return $rows[ 'Ccocod' ];
+		}
+	}
 
 
 ////////////////////////////////////////////////////PROGRAMA/////////////////////////////////////////////////////////
@@ -73,7 +94,7 @@ else
 	$pos = strpos($user,"-");
 	$wusuario = substr($user,$pos+1,strlen($user)); //extraigo el codigo del usuario
 
-	
+	//$test = centroCostosCM();echo $test;
 /**
  * A cada mes le encuentra su numero
  *
@@ -124,13 +145,14 @@ function numero_mes($mes){
 }
 
 
+
 function pintarUsuarios($nombreCampo,$codigoUsuario,$consulta)
 {
 	global $conex;
-	
+	$cco = centroCostosCM();
 	$queryUsuarios = "SELECT Codigo,Descripcion 
 						FROM usuarios 
-					   WHERE Ccostos='1051' 
+					   WHERE Ccostos=".$cco." 
 					ORDER BY Descripcion;";
 					
 	$resUsuarios = mysql_query($queryUsuarios,$conex);

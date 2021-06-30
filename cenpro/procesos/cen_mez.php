@@ -539,11 +539,9 @@ function actualizarFraccionArticulo( $articulo, $fraccion, $unidad, $tiempoVenci
  * Hallo el codigo del centro de costos de central de Mezclas
  * @return unknown_type
  */
-function centroCostos(){
+function centroCostosCM(){
 	
 	global $conex;
-	global $wbasedato;
-	global $wfarstore;
 	global $bd;
 	
 	$sql = "SELECT
@@ -551,9 +549,10 @@ function centroCostos(){
 			FROM
 				".$bd."_000011
 			WHERE
-				ccotra = 'on'
-				AND ccoima = 'on'
-				AND ccoest = 'on'
+				ccofac LIKE 'on' 
+				AND ccotra LIKE 'on' 
+				AND ccoima !='off' 
+				AND ccodom !='on'
 			";
 	
 	$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -5711,11 +5710,15 @@ function consultarSiTipoEsDA($tipoProducto)
 		//****************************************************************************************************************************************
 		//Consulto el codigo correspondiente en CM
 		$sql = "SELECT Deffra as Relcon
-				  FROM ".$wmovhos."_000026 a, ".$wmovhos."_000059 c
+				  FROM ".$wmovhos."_000026 a, ".$wmovhos."_000059 c, ".$wmovhos."_000011 d
 				 WHERE a.artcod = '".$artcod."'
 				   AND c.defart = a.artcod
 				   AND a.artuni != c.deffru
-				   AND c.defcco = '1050'
+				   AND c.defcco = d.ccocod
+				   AND d.ccofac LIKE 'on' 
+				   AND d.ccotra LIKE 'on' 
+				   AND d.ccoima !='on' 
+				   AND d.ccodom !='on'
 				";
 		
 		$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - $sql - ".mysql_error() );
@@ -6363,7 +6366,7 @@ else
 	pintarManuales($wusuario);
 	
 	pintarTitulo();  //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
-
+	$test = centroCostosCM();	echo $test;
 	//se incializa el estado de las transaccion en 'inicio'
 	if (!isset($estado))
 	{
@@ -6472,7 +6475,7 @@ else
 						$fraccion =  consultarFraccionProducto( $unidad, $inslis );
 						
 						$unidad = explode( "-", $unidad );
-						$cco = centroCostos();
+						$cco = centroCostosCM();
 						
 						list( $viaAux ) = explode( "-", $via );
 						$viaCM = consultarViaMovhos( $conex, $bd, trim( $viaAux ) );
@@ -6551,7 +6554,7 @@ else
 						$unidad = consultarUnidadInsumoMaximo($inslis);
 						$unidad = explode( "-", $unidad );
 						
-						$cco = centroCostos();
+						$cco = centroCostosCM();
 						list( $viaAux ) = explode( "-", $via );
 						$viaCM = consultarViaMovhos( $conex, $bd, trim( $viaAux ) );
 						registrarFraccion( $productos[0]['cod'], $vol+(float)$purga, $unidad[0], intval((float)$tve/24), $viaCM, $cco );
@@ -6676,7 +6679,7 @@ else
 					//2007-07-09 se agrega que se pueda modificar foto y neve
 					modificarProducto($productos[0]['cod'], $productos[0]['nom'], $productos[0]['gen'], $presentacion, $via, $tin, $tve, $fecha, $exp[0], $des, $foto, $neve, $peso, $purga);
 					
-					$cco = centroCostos();
+					$cco = centroCostosCM();
 					$unidad = consultarUnidadInsumoMaximo($inslis);
 					
 					
@@ -7250,7 +7253,9 @@ else
 	}
 	
 	//se va a realizar el descarte de las vias que se debe hacer diariamente
-	realizarDescarte('1051', $wusuario);
+	//$cco = "SELECT Ccocod FROM ".$wmovhos."_000011 WHERE ccofac LIKE 'on' AND ccotra LIKE 'on' and ccoima !='off' AND ccodom !='on';";
+	$cco = centroCostosCM();
+	realizarDescarte($cco, $wusuario);
 
 	if($NPT_tiempoInfusion!="")
 	{

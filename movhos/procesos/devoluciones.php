@@ -2425,6 +2425,50 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 	}
 }
 
+function centroCostosCM()
+	{
+		global $conex;
+		global $wmovhos;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$wmovhos."_000011
+				WHERE
+					ccofac LIKE 'on'
+					AND ccotra LIKE 'on'
+					AND ccoima !='off'
+					AND ccodom !='on'
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			return $rows[ 'Ccocod' ];
+		}
+	}
+	function centroCostosSF()
+	{
+		global $conex;
+		global $wmovhos;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$wmovhos."_000011 
+					WHERE 	ccofac 		LIKE 'on' 
+					AND 	ccotra 		LIKE 'on' 
+					and 	ccoima 		!='on' 
+					AND 	ccodom 		!='on'
+				
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			return $rows[ 'Ccocod' ];
+		}
+	}
 
 /**
  * PROGRAMA DE DEVOLUCIÓN DE ARTÍCULOS DE UN PACIENTE
@@ -2519,12 +2563,13 @@ include_once("movhos/cargosSF.inc.php");
 include_once("ips/funciones_facturacionERP.php");
 
 
-$wcenpro  = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
-$bdCencam = consultarAliasPorAplicacion( $conex, $emp, "camilleros" );
+$wcenpro  	= consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
+$bdCencam 	= consultarAliasPorAplicacion( $conex, $emp, "camilleros" );
+$wmovhos 	= consultarAliasPorAplicacion( $conex, $emp, "movhos" );
 
-$serviciofarmaceutico = '1050';
-$centraldemezclas = '1051';
-
+$serviciofarmaceutico = centroCostosSF();
+$centraldemezclas	  = centroCostosCM();
+//echo $serviciofarmaceutico; echo $centraldemezclas;
 
 if(!isset($_SESSION['user']))
 echo "error";
