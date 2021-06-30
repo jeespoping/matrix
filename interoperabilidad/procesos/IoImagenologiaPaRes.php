@@ -104,23 +104,27 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 		//Si tiene tipo de orden, numero de orden e item significa que está en orden y por tanto voy a actualizar los datos necesario en ordenes
 		if( !empty($tipoOrden) && !empty($nroOrden) && !empty($item) ){
 			if(!empty($estado)){
-				$valEstado = "E";
-				if($estado == "IP"){
-					$valEstado = "EP";
-				}else if($estado == "SC"){
-					$valEstado = "EP";
-					$comentario = "Cancelado por parte de SABBAG";
-				}else if($estado == "CM"){
-					if(!empty($obxObservationId)){
-						$fechaCita = date("Y-m-d", strtotime($fechaHoraResultado));
-						$horaCita = date("H:i:s", strtotime($fechaHoraResultado));
-						if($obxObservationId == "REP"){
-							$valEstado = "F";
-						}else if($obxObservationId == "ADT"){
-							$valEstado = "C";
-						}
-					}
-				}
+				// $valEstado = "E";
+				// if($estado == "IP"){
+					// $valEstado = "EP";
+				// }else if($estado == "SC"){
+					// $valEstado = "EP";
+					// $comentario = "Cancelado por parte de SABBAG";
+				// }else if($estado == "CM"){
+					// if(!empty($obxObservationId)){
+						// $fechaCita = date("Y-m-d", strtotime($fechaHoraResultado));
+						// $horaCita = date("H:i:s", strtotime($fechaHoraResultado));
+						// if($obxObservationId == "REP"){
+							// $valEstado = "F";
+						// }else if($obxObservationId == "ADT"){
+							// $valEstado = "C";
+						// }
+					// }
+				// }
+				
+				$valEstado = $estado;
+				$fechaCita 	= ""; 
+				$horaCita	= "";
 				cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, $valEstado, $fechaCita, $horaCita, $comentario, $historiaClinica, $ingresoClinica, $detUrl, $detUrp );	
 			}
 		}

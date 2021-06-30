@@ -22,7 +22,7 @@ function marcarOrdenesEnviadasSabbag( $conex, $whce, $wbasedato, $tor, $nro ){
 	
 	$sql = "UPDATE ".$whce."_000028 a
 			   SET Detenv = 'off', 
-				   Deteex = 'E'
+				   Deteex = 'O'
 			 WHERE Dettor = '".$tor."'
 			   AND Detnro = '".$nro."'
 		";
@@ -31,7 +31,7 @@ function marcarOrdenesEnviadasSabbag( $conex, $whce, $wbasedato, $tor, $nro ){
 		
 	$sql = "UPDATE ".$wbasedato."_000159 a
 			   SET Detenv = 'off', 
-				   Deteex = 'E'
+				   Deteex = 'O'
 			 WHERE Dettor = '".$tor."'
 			   AND Detnro = '".$nro."'
 		";
@@ -53,7 +53,7 @@ function armarMsgHL7($paciente,$estudio){
 					."PV1||I||".$paciente['habitacion']."|||||||||||||||".$paciente['ingreso']."|||||||||||||||||||||||||".$paciente['fechaAdmision']."\r"
 					."IN1|||CPA|||||\r"
 					."ORC|".$estado."|A04-".$estudio['numeroOrden']."-".$estudio['numeroItemEnOrden']."|||SC||".date("Ymdhis", strtotime($estudio['fechaOrdenamiento']))."|||||||\r"
-					."OBR||A04-".$estudio['numeroOrden']."-".$estudio['numeroItemEnOrden']."||".$estudio['cups']."^".$estudio['nombreCups']."||".date("Ymdhis", strtotime($estudio['fechaOrdenamiento']))."|||||||"."Tarifa Estudio: ".$estudio['tarifaEstudio']."||||||||||||||||||"."\034\015";
+					."OBR||".$estudio['tipoOrden']."-".$estudio['numeroOrden']."-".$estudio['numeroItemEnOrden']."||".$estudio['cups']."^".$estudio['nombreCups']."||".date("Ymdhis", strtotime($estudio['fechaOrdenamiento']))."|||||||"."Tarifa Estudio: ".$estudio['tarifaEstudio']."||||||||||||||||||".$estudio['justificacionEstudio']."\034\015";
 return $mensaje;
 }
 function enviarMsgHL7($mensaje,$conexionSabbag){
