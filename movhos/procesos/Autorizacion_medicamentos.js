@@ -26,6 +26,11 @@ jQuery(document).ready(function() {
 });
    function guardar(id){
 	
+	if( $('#autoriza'+id).val() == '' ){
+		alert( "Indique si autoriza o no el medicamentos" );
+		return;
+	}
+	
 	alert('Guardado exitosamente');
       var codigo_medicamento = $('#codigo'+id).text();
       var nombre_medicamento = $('#n_medicamento'+id).text();
@@ -65,6 +70,8 @@ jQuery(document).ready(function() {
     url: "Autorizacion_Medicamentos_Backend.php",
     data: {'fila':fila,'wemp_pmla':wemp_pmla},
     success: function () {
+		$( "."+historia+"-"+ingreso+"-"+codigo_medicamento ).hide();
+		$("#table").DataTable().draw();
 	},
 
     error: function () {

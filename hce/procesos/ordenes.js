@@ -2508,7 +2508,9 @@ function agregarMedicamentoPorProcAgrupado(codArt,frec,via,dosisArt,tipoOrdenAgr
 				 +"&ccoPaciente="+document.forms.forma.wservicio.value
 				 +"&q="+articulo
 				 +"&dos="+dosis
-				 +"&adm="+administracion;
+				 +"&adm="+administracion
+				 +"&historia="+$('#whistoria').val()
+				 +"&ingreso="+$('#wingreso').val();
 
 	try{
 
@@ -11156,7 +11158,9 @@ function eleccionMedicamento(porProtocolo)
 								 +"&ccoPaciente="+document.forms.forma.wservicio.value
 								 +"&q="+articulo
 								 +"&dos="+dosis
-								 +"&adm="+administracion;
+								 +"&adm="+administracion
+								 +"&historia="+$('#whistoria').val()
+								 +"&ingreso="+$('#wingreso').val();
 
 					try{
 
@@ -12142,7 +12146,9 @@ function eleccionMedicamentosInsumos( strInsumos, indice, tipPro, tipo )
 					 +"&ccoPaciente="+document.forms.forma.wservicio.value
 					 +"&q="+articulo
 					 +"&dos="+dosis
-					 +"&adm="+administracion;
+					 +"&adm="+administracion
+					 +"&historia="+$('#whistoria').val()
+					 +"&ingreso="+$('#wingreso').val();
 
 
 		try{
@@ -17261,12 +17267,11 @@ function grabarKardex(wimprimir){
 
 			//El encabezado del kardex se encuentra dividido en las pestañas
 			var pestanasActivas = document.getElementById("hpestanas").value;
-
-
-
-
-			if(wimprimir!='cenimp' && wimprimir!='cenimpexam')
-				$.blockUI({ message: $('#msjEspere') });
+			
+			try{
+				if(wimprimir!='cenimp' && wimprimir!='cenimpexam')
+					$.blockUI({ message: $('#msjEspere') });
+			}catch(e){}
 
 			//Grabacion automatica de las pestanas
 //			var arrProtocolos = new Array("%","N","A","U","Q","2","4");

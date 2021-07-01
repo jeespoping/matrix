@@ -37988,7 +37988,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 /*
  * AJAX::ConsultarArticulosPorNombre
  */
-function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPaciente, $dosis, $administracion ){
+function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPaciente, $dosis, $administracion, $his, $ing ){
 	//Variable que se necesitan
 	$centroCostos = "1183";
 	$criterio = strtoupper($criterio);
@@ -38002,7 +38002,12 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 	
 	$gruposAntibioticos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "gruposMedicamentosAntibioticos" );
 	$gruposAntibioticos = explode( ",", $gruposAntibioticos );
+	
+	$validarTarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripcionConTarifa' );
+	$validarTarifa 	= $validarTarifa == 'on';
 			
+	$wcliame 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'facturacion' );
+	
 	$indexArPes = 0;
 	foreach( $expPesMedicamentosBD as $keyPesMed => $valuePesMed ){
 		
@@ -38537,6 +38542,20 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 					$boolAtc = true;
 				}
 				
+				//Por defecto tiene tarifa
+				$con_tarifa = 'on';
+				if( !$articuloGenerico ){
+					if( $validarTarifa ){
+						
+						$infopac 	 = informacionPaciente( $conex, $wemp_pmla, $his, $ing );
+						$tieneTarifa = articuloTieneTarifa( $conex, $wcliame, $wbasedato, $articuloCodigoConsulta, $infopac['tarifa'] );
+						
+						if( !$tieneTarifa ){
+							$con_tarifa = 'off';
+						}
+					}
+				}
+				
 				$consulta .= "<font color=gray><b>Generico:</b></font> ".htmlentities($articuloNombreGenerico)." <font color=gray><b>Comercial:</b></font> ".htmlentities($articuloNombreComercial).
 				"|".strtoupper($articuloCodigoConsulta).
 				"|".htmlentities($articuloNombreGenerico).
@@ -38575,6 +38594,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 				"|".@$dessFam.
 				"|".@$principioActivo.
 				"|".@$esAntibiotico.
+				"|".@$con_tarifa.
 				"\n";
 			}
 			
@@ -39102,7 +39122,7 @@ if(isset($consultaAjaxKardex)){
 					$q = strtolower($HTTP_GET_VARS["q"]);
 				}
 			}
-			echo consultarArticulosProtocolo($basedatos,$cenmez,prepararCriterio($q), $ccoPaciente, $dos, $adm );
+			echo consultarArticulosProtocolo($basedatos,$cenmez,prepararCriterio($q), $ccoPaciente, $dos, $adm, $historia, $ingreso );
 			break;
 
 		case 37:
