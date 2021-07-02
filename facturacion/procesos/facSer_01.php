@@ -166,10 +166,32 @@
     $fuente = '20';
     $fecha_Actual = date('Y-m-d');  $hora_Actual = date('H:m:s');
     $ano_Actual = date('Y');        $mes_Actual = date('m');
-    $cCostos = obtenerDatosUsuario(1,$wuse,$conex);
+	
+	// Tomar el centro de costos de la url (cco=xxxx).
+	// Si no se recibe allí, tomar el cco del usuario.
+	if(isset($_POST['cco']))
+		$cco = $_POST['cco'];
+	if(isset($cco))
+		$cCostos = $cco;
+	else 
+	{
+		if(isset($_POST['cCostos']))
+			$cCostos = $_POST['cCostos'];
+		else
+			$cCostos = obtenerDatosUsuario(1,$wuse,$conex);
+	}
+	txtLog("load FacSer_01-php: wuse $wuse, cCostos $cCostos", true);
+	//$nuevaFactura = obtenerNumFactura($fuente,$cCostos ,$conex_o);  // para pruebas.
+	
     $accion = $_POST['accion']; $numFactu = $_POST['numFactu']; $plazo = $_POST['plazo'];       $tipResp = $_POST['tipoResp'];
     $docPac = $_POST['docPac']; $nomPac = $_POST['nomPac'];     $nitResp = $_POST['nitResp'];   $desResp = $_POST['descResp'];
     $obsFac = $_POST['observacionFac']; $subaccion = $_POST['subaccion'];
+
+	txtLog("datos: accion $accion, subaccion $subaccion, numFactu $numFactu, plazo $plazo");
+	txtLog("datos: docPac $docPac, nomPac $nomPac");
+	txtLog("datos: tipResp $tipResp, nitResp $nitResp, desResp $desResp");
+	txtLog("datos: obsFac $obsFac");
+
     ?>
 </head>
 
@@ -193,7 +215,7 @@
                 {
 					$ok = false;
                     // OBTENER CONSECUTIVO NUEVA FACTURA:
-					txtLog("INICIO GRABACION FACTURA PARA DOC: $numFactu", true);
+					txtLog("INICIO GRABACION FACTURA PARA DOC: $numFactu");
                     $nuevaFactura = obtenerNumFactura($fuente,$cCostos ,$conex_o);
 
 					if ( $nuevaFactura < 0 )
@@ -212,7 +234,9 @@
 						$carfev = $mesMas;
 
 						//FECHA Y HORA ACTUAL:
-						$fecha_data = date('Y-m-d h:i:s');  $anoActualMesActual = $ano_Actual.$mes_Actual;  $fteFactura = $fuente.'-'.$nuevaFactura;
+						$fecha_data = date('Y-m-d h:i:s');  
+						$anoActualMesActual = $ano_Actual.$mes_Actual;  
+						$fteFactura = $fuente.'-'.$nuevaFactura;
 						$doctdo = 'F'.$tipResp; //para AHDOC
 
 						//OBTENER VALOR NETO DE LA FACTURA DESDE LA TABLA TEMPORAL:
@@ -357,6 +381,7 @@
 							<form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
 								<h3>FACTURA GRABADA</h3>
 								<h4>' . $nuevaFactura . '</h4>
+								<input type="text" id="cCostos" name="cCostos" class="form-control form-sm" value="' . $cCostos . '" style="display:none;" readonly>
 								<input type="hidden" name="accion" value="home">
 								<input type="hidden" name="subaccion" value="inicio">
 								<input type="submit" class="btn btn-info btn-sm" value="ACEPTAR" style="margin: 50px auto 50px auto">
@@ -365,11 +390,25 @@
 					</div>';
 					}
 					else {
+						/* 	$numFactu = $_POST['numFactu']; $plazo = $_POST['plazo'];       
+							$tipResp = $_POST['tipoResp']; $docPac = $_POST['docPac']; 
+							$nomPac = $_POST['nomPac']; $nitResp = $_POST['nitResp'];   
+							$desResp = $_POST['descResp']; $obsFac = $_POST['observacionFac'];
+						*/
+						// conservar los datos entre reintentos.
 						echo '<div class="card bg-light divContHome" style="border: none">
 						<div class="navigation" style="margin-top: 80px">
 							<form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
 								<h3>INTENTE DE NUEVO EN UN MINUTO<br><br></h3>
-								<input type="text" id="numFactu" name="numFactu" class="form-control form-sm" value=' . $numFactu . ' style="display:none;" readonly>
+								<input type="text" id="numFactu" name="numFactu" class="form-control form-sm" value="' . $numFactu . '" style="display:none;" readonly>
+								<input type="text" id="cCostos" name="cCostos" class="form-control form-sm" value="' . $cCostos . '" style="display:none;" readonly>
+								<input type="text" id="plazo" name="plazo" class="form-control form-sm" value="' . $plazo . '" style="display:none;" readonly>
+								<input type="text" id="tipoResp" name="tipoResp" class="form-control form-sm" value="' . $tipResp . '" style="display:none;" readonly>
+								<input type="text" id="docPac" name="docPac" class="form-control form-sm" value="' . $docPac . '" style="display:none;" readonly>
+								<input type="text" id="nomPac" name="nomPac" class="form-control form-sm" value="' . $nomPac . '" style="display:none;" readonly>
+								<input type="text" id="nitResp" name="nitResp" class="form-control form-sm" value="' . $nitResp . '" style="display:none;" readonly>
+								<input type="text" id="descResp" name="descResp" class="form-control form-sm" value="' . $desResp . '" style="display:none;" readonly>
+								<input type="text" id="observacionFac" name="observacionFac" class="form-control form-sm" value="' . $obsFac . '" style="display:none;" readonly>
 								<input type="hidden" id="accion" name="accion" value="grabar">
 								<input type="submit" class="btn btn-success btn-sm" value="REINTENTAR" title="Reintentar" style="margin: 50px auto 50px auto">
 							</form>
@@ -803,6 +842,7 @@
                                 <form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
                                     <h3>GRABACION DE FACTURAS</h3>
                                     <input type="hidden" name="subaccion" value="crearFac">
+                                    <input type="hidden" id="cCostos" name="cCostos" value="<?php echo $cCostos ?>">
                                     <input type="submit" class="btn btn-primary" value="NUEVA FACTURA" style="margin: 50px auto 50px auto">
                                 </form>
                             </div>
@@ -870,9 +910,11 @@ function obtenerNumFactura($fuente,$cCostos ,$conex_o)
     $commit1 = odbc_do($conex_o, $query1);
     $fuesfu = odbc_result($commit1, 1);    
 	$fuecse = odbc_result($commit1, 2);
+	
 	txtLog("query1: $query1");
 	txtLog("fuesfu: $fuesfu");
 	txtLog("fuecse: $fuecse");
+	
 
     $query2 = "select * from cafue WHERE fuecod = '$fuesfu' AND fuecco = '$fuecse'";
     $commit2 = odbc_do($conex_o, $query2);
@@ -962,7 +1004,7 @@ function obtenerNumFacturaTEMP($fuente,$cCostos ,$conex)
 }
 
 function txtLog($txt, $inicializar=false)
-    {
+{
         try {
                 $l = date('H:i:s', time()) . ' ' . $txt . "\n";
 				if ($inicializar)
