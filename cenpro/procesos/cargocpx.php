@@ -3385,7 +3385,7 @@ else
 																					*Descripción: se realiza llamado de factura inteligente.
 																					*Autor: sebastian.nevado
 																					*/
-																					$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $presen[$i][$j]['nom'], $can, $tipTrans);
+																					$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $presen[$i][$j]['nom'], $can, $tipTrans, $dronum, $drolin);
 																					if(!$aResultadoFactInteligente->exito)
 																					{
 																						echo $aResultadoFactInteligente->mensaje;
@@ -3430,7 +3430,7 @@ else
 																				 *Descripción: se realiza llamado de factura inteligente.
 																				 *Autor: sebastian.nevado
 																				*/
-																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $exp[1], $art['can'], $tipTrans);
+																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $exp[1], $art['can'], $tipTrans, $dronum, $drolin);
 																				if(!$aResultadoFactInteligente->exito)
 																				{
 																					echo $aResultadoFactInteligente->mensaje;
@@ -3632,7 +3632,7 @@ else
 															 *Autor: sebastian.nevado
 															*/
 															$sNombreArticulo = substr($var, strlen($exp[0]."-"), strlen($var)-1);
-															$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $sNombreArticulo, $art['can'], $tipTrans);
+															$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $sNombreArticulo, $art['can'], $tipTrans, $dronum, $drolin);
 															if(!$aResultadoFactInteligente->exito)
 															{
 																echo $aResultadoFactInteligente->mensaje;
@@ -4133,7 +4133,7 @@ else
 																					*Descripción: se realiza llamado de factura inteligente.
 																					*Autor: sebastian.nevado
 																					*/
-																					$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans);
+																					$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $presen[$i][$j]['cod'], $row1[0], $can, $tipTrans, $dronum, $drolin);
 																					if(!$aResultadoFactInteligente->exito)
 																					{
 																						echo $aResultadoFactInteligente->mensaje;
@@ -4198,7 +4198,7 @@ else
 																				 *Descripción: se realiza llamado de factura inteligente.
 																				 *Autor: sebastian.nevado
 																				*/
-																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $exp[1], $art['can'], $tipTrans);
+																				$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $exp[1], $art['can'], $tipTrans, $dronum, $drolin);
 																				if(!$aResultadoFactInteligente->exito)
 																				{
 																					echo $aResultadoFactInteligente->mensaje;
