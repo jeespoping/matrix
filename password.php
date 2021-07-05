@@ -31,7 +31,8 @@
 		variable.value = hex_sha1(variable.value);
 	}
 	$(document).on('ready', function(){
-		$('#mostrar').on('mousedown mouseup', function(e){
+		$('#mostrar').on('click', function(e){
+			e.preventDefault();
 			var current = $(this).attr('action');
 			if (current == 'hide'){
 					$(this).prev().attr('type','text');
@@ -43,7 +44,8 @@
 			}
 		});
 		
-		$('#mostrar2').on('mousedown mouseup', function(e){
+		$('#mostrar2').on('click', function(e){
+			e.preventDefault();
 			var current2 = $(this).attr('action');
 			if (current2 == 'hide'){
 				$(this).prev().attr('type','text');
@@ -87,18 +89,55 @@
 //*************************************************************************************************** */
 // POR: JULIAN MEJIA
 //FECHA DE MODIFICACION: 				2021/06/24
-// SE MODIFICA EL ÍCONO PARA VER LA CONTRASEÑA Y QUE SOLO SE VEA SI DEJO EL MOUSE EN CLICK SOSTENIDO
-// SE AMPLIA LA CONTRASEÑA A MINIMO 12 CARACTERES Y CON EL CONDICIONAL DE QUE DEBE CUMPLIR TODAS LAS CARACTERISTICAS
-//											- un caracter especial, - una mayuscula, - un numero, una minusculas.
-// SE CAMBIA EL TIEMPO DE CADUCIDAD DE LA CONTRASEÑA A DOS MESES
+// 1. SE AMPLIA LA CONTRASEÑA A MINIMO 12 CARACTERES Y CON EL CONDICIONAL DE QUE DEBE CUMPLIR TODAS LAS CARACTERISTICAS
+//											- un caracter especial, - una mayuscula, - un numero, una minuscula.
+// 2. SE MODIFICA EL TEXTO DE CONDICIONES DEL PASSWORD
+// 3. SE CAMBIA EL TIEMPO DE CADUCIDAD DE LA CONTRASEÑA A DOS MESES Y SE DEJA PARAMETRIZABLE
+// 4. SE REALIZA EL HISTORIAL DE LAS 5 ULTIMAS PASSWORD CON SU RESPECTIVA VALIDACION
 
 	 
 include_once("conex.php");
+include_once("root/comun.php");
+
+/************************* FUNCIONES PHP ************************************ */
 function bisiesto($year)
 {
 	return(($year % 4 == 0 and $year % 100 != 0) or $year % 400 == 0);
 }
-//@session_start(); //TODO JULIAN
+
+function findRepNumPass($conex, $codigo, $wpassSha)
+{
+	$isRepeated = false;
+	$num = 0;
+	$q = " SELECT Password FROM
+					historial_password
+				WHERE 
+					Codigo = '$codigo'";
+	$res = mysql_query($q, $conex);
+	$num = mysql_num_rows($res);
+	if ($num > 0){
+		while( $info = mysql_fetch_assoc( $res ) ){
+ 			if ($info['Password'] == $wpassSha) $isRepeated = true;
+		}
+	}else return array($isRepeated,$num);
+	
+	return array($isRepeated,$num);
+}
+
+function deleteLastPass($conex, $codigo)
+{
+
+	$q = " DELETE FROM historial_password
+				WHERE 
+					Codigo = '$codigo'
+					ORDER by Fecha_data, Hora_data 
+					LIMIT 1";
+	mysql_query($q, $conex);
+	// return mysql_affected_rows($conex);
+}
+
+/************************* FIN FUNCIONES PHP ************************************ */
+@session_start();
 if(!isset($_SESSION['user']))
 	echo "error";
 else
@@ -121,8 +160,14 @@ else
 				echo "<tr><td align=center colspan=2>POR FAVOR TENER PRESENTE AL ACTUALIZAR LA CLAVE:</td></tr>";
 				echo "<tr><td align=center colspan=2>POLITICA DE INFORMATICA.</td></tr>";
 				echo "<tr><td align=center colspan=2>1. La clave debe contar con una longitud M&iacute;nima de 12 caracteres.</td></tr>";
-				echo "<tr><td align=center colspan=2>2. Que tenga combinaciones may&uacute;sculas (al menos 1), min&uacute;sculas, caracteres especiales (al menos 1) y n&uacute;meros (al menos 1).</td></tr>";
-				echo "<tr><td align=center colspan=2><b>NOTA:</b> La combinaci&oacute;n debe cumplir con al menos 3 de las caracter&iacute;sticas del paso 2.</td></tr>";
+				echo "<tr><td align=center colspan=2>2. Que tenga las siguientes condiciones como m&iacute;nimo:";
+				echo "<ul>";
+				echo "<li>&nbsp;Una May&uacute;scula</li>";
+				echo "<li>&nbsp;Una Min&uacute;scula</li>";
+				echo "<li>&nbsp;Un Caracter especial</li>";
+				echo "<li>&nbsp;Entre 1 y 4 n&uacute;meros</li></ul></td></tr>";
+				echo "<tr><td align=center colspan=2>3. La clave no debe ser igual a las 5 &uacute;ltimas claves registradas.</td></tr>";
+				//echo "<tr><td align=center colspan=2><b>NOTA:</b> La combinaci&oacute;n debe cumplir con al menos 3 de las caracter&iacute;sticas del paso 2.</td></tr>";
 				echo "<tr><td align=center colspan=2><p>&nbsp;</p></td></tr>";
 				echo "<tr><td align=center colspan=2>CAMBIO DE PASSWORD</td></tr>";
 				echo "<td bgcolor=#cccccc align=center>Password Nuevo</td>";
@@ -176,21 +221,23 @@ else
 		{  
 			if($wtipo == "N")
 			{
+				$diasExp = consultarAliasPorAplicacion($conex, '*', 'tiempoExpiracionPassword');
+				$strDays = ($diasExp == 1) ? 'day' : 'days';
 				$query = "select password,feccap from usuarios where codigo='".$codigo."'";
 				$err = mysql_query($query,$conex); 
 				$row = mysql_fetch_array($err);
 				$wfecw=date("Y-m-d");
 				$wfecw=date_create($wfecw);
-				date_add($wfecw, date_interval_create_from_date_string('2 months'));	
+				date_add($wfecw, date_interval_create_from_date_string($diasExp . ' ' . $strDays));	
 				$wfecw1=date_format($wfecw, 'Y-m-d');
 				
 				if($wpass != "" and $wpass==$wpassr and $wpass != $row[0] and strlen($wpass) >= 12 ) //and strlen($wpass) <= 8
 				{
 					$contador =0;
 					//validar minusculas
-					// if(preg_match('`[a-z]`',$wpass)){
-					// 	$contador = $contador + 1;
-					// }
+					if(preg_match('`[a-z]`',$wpass)){
+						$contador = $contador + 1;
+					}
 					//validar mayusculas
 					if(preg_match('`[A-Z]`',$wpass)){
 						$contador = $contador + 1;
@@ -203,27 +250,51 @@ else
 					if(preg_match('/[\'\/~`\!@#\$%\^&\*\(\)_\-\+=\{\}\[\]\|;:"\<\>,\.\?\\\]/',$wpass)){
 						$contador = $contador + 1;
 					}
-					if ($contador >= 3) {
+					if ($contador >= 4) {
 						
-						$query = "UPDATE usuarios 
-									 SET password=SHA('".$wpass."'), 
-										 feccap='".$wfecw1."'  
-								   WHERE codigo='".$codigo."'";
-								   
-						$err = mysql_query($query,$conex);
-						if($err !=1)
-						{
-							echo "<center><table border=0 aling=center>";
-							echo "<tr><td><IMG SRC='/matrix/images/medical/root/cabeza.gif' ></td><tr></table></center>";
-							echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#FF0000 LOOP=-1>EL PASSWORD NO SE PUDO CAMBIAR !!!!</MARQUEE></FONT>";
-							echo "<br><br>";
+						$cntPassHis = 0;
+						$esPassRepetida = false; 
+						$wpassSha = sha1( $wpass );
+						list($esPassRepetida, $cntPassHis) = findRepNumPass($conex, $codigo, $wpassSha); // funcion que valida si el password esta repetido y el numero de pass
+						if (!$esPassRepetida){
+							if ($cntPassHis >= 5) deleteLastPass($conex, $codigo); // se debe eliminar el ultimo registro para insertar el nuevo (fn)
+							$fechaActual = date( "Y-m-d" );
+							$horaActual = date( "H:i:s" );
+							$queryHis = "INSERT INTO historial_password 
+													(Codigo, Password, Fecha_data, Hora_data) 
+											VALUES 
+													('{$codigo}', SHA('".$wpass."'),'{$fechaActual}','{$horaActual}')";
+							$errHis = mysql_query($queryHis,$conex);
+
+							$query = "UPDATE usuarios 
+										SET password=SHA('".$wpass."'), 
+											feccap='".$wfecw1."'  
+									WHERE codigo='".$codigo."'";
+									
+							$err = mysql_query($query,$conex);
+							if($err !=1)
+							{
+								echo "<center><table border=0 aling=center>";
+								echo "<tr><td><IMG SRC='/matrix/images/medical/root/cabeza.gif' ></td><tr></table></center>";
+								echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#FF0000 LOOP=-1>EL PASSWORD NO SE PUDO CAMBIAR !!!!</MARQUEE></FONT>";
+								echo "<br><br>";
+							}
+							else
+							{
+								echo "<center><table border=0 aling=center>";
+								echo "<tr><td><IMG SRC='/matrix/images/medical/laboratorio/mario.gif' ></td><tr></table></center>";
+								echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#99CCFF LOOP=-1>EL PASSWORD SE CAMBIO SATISFACTORIAMENTE !!!!</MARQUEE></FONT>";
+								echo "<br><br>";
+							}
 						}
 						else
 						{
+
 							echo "<center><table border=0 aling=center>";
-							echo "<tr><td><IMG SRC='/matrix/images/medical/laboratorio/mario.gif' ></td><tr></table></center>";
-							echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#99CCFF LOOP=-1>EL PASSWORD SE CAMBIO SATISFACTORIAMENTE !!!!</MARQUEE></FONT>";
-							echo "<br><br>";
+							echo "<tr><td><IMG SRC='/matrix/images/medical/root/cabeza.gif' ></td><tr></table></center>";
+							echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#ffff00 LOOP=-1>LA CLAVE NUEVA NO PUEDE SER IGUAL A LAS ULTIMAS 5 CLAVES !!!!</MARQUEE></FONT>";
+							echo "<br><br>";							
+
 						}
 					}
 					else
