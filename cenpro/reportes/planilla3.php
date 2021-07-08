@@ -38,7 +38,7 @@ table.sample td {
 /********************************************************************************************************************************
  * 
  * Actualización: 	2021-07-08 - sebastian.nevado: Se reemplaza el "C-cenpro" del campo Seguridad las inserciones en base de datos 
-* 						para que indique el usuario que realiza la acción.
+ * 						para que indique el usuario que realiza la acción.
  * 
  ********************************************************************************************************************************/
 

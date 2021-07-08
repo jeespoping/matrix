@@ -26,6 +26,12 @@ table.sample td {
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b>planilla.php Ver. 1.00</b></font></tr></td></table></br>
 </center> 
 <?php
+/********************************************************************************************************************************
+ * 
+ * Actualización: 	2021-07-08 - sebastian.nevado: se agrega en las validaciones S/N que se permitan las letras en minúscula.
+ * 
+ ********************************************************************************************************************************/
+
 include_once("conex.php");
 include_once("root/comun.php");
 // se convierte en la variable empresa ya que $empresa=cenpro
