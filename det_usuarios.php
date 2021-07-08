@@ -161,6 +161,7 @@ else
 			$FechaPasswordTemp=$row[14];
 			$HoraPasswordTemp=$row[15];
 			$wpar=1;
+			$selectDisabled = 'disabled';
 		}
 		else
 		{
@@ -182,6 +183,7 @@ else
 			$HoraPasswordTemp="00:00:00";
 			$tablacc="";
 			$wpar=2;
+			$selectDisabled = '';
 		}
 	}
 	echo "<input type='HIDDEN' name= 'wpar' value='".$wpar."'>";	
@@ -291,8 +293,8 @@ else
 	echo "</td></tr>";
 	echo "<tr>";
 	echo "<td bgcolor=#cccccc>Activo</td>";
-	echo "<td bgcolor=#cccccc>";			
-	echo "<select name='Activo' id='tipo1' title='Solo se puede activar o inactivar desde Maestros Matrix' disabled>";
+	echo "<td bgcolor=#cccccc>";
+	echo "<select name='Activo' id='tipo1' title='Solo se puede activar o inactivar desde Maestros Matrix' $selectDisabled>";
 	if ($Activo == substr("A-Activo", 0, 1))
 		echo "<option selected>A-Activo</option>";
 	else

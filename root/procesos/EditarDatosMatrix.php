@@ -1771,8 +1771,8 @@ if(isset($accion))
 			$campobuscar = '';
 			global $conex;
 			global $wempla;
-
-			$select_count_tabla = "SELECT  Max(id) as maximo
+			$idName = findIdName($tablappal);
+			$select_count_tabla = "SELECT  Max({$idName}) as maximo
 									 FROM ".$tablappal." ";
 
 			$res = 	mysql_query($select_count_tabla,$conex) or die ("Error 3.3: ".mysql_errno()." - en el query: ".$select_count_tabla." - ".mysql_error());
@@ -1786,7 +1786,7 @@ if(isset($accion))
 			$wprincipio = ($maximo*1) -30;
 			if($wprincipio < 0)
 			{
-					$select_count_tabla = "SELECT  count(id) as cuantos
+					$select_count_tabla = "SELECT  count({$idName}) as cuantos
 											FROM ".$tablappal." ";
 					$res = 	mysql_query($select_count_tabla,$conex) or die ("Error 3.4: ".mysql_errno()." - en el query: ".$select_count_tabla." - ".mysql_error());
 					if($row = mysql_fetch_array($res))
@@ -1835,6 +1835,26 @@ if(isset($accion))
 
 }
 
+function findIdName($tabla){
+	global $conex;
+	$q = "SELECT COLUMN_NAME
+				FROM INFORMATION_SCHEMA.COLUMNS
+				WHERE table_name = '$tabla'
+				ORDER BY ORDINAL_POSITION;";
+	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
+	$num = mysql_num_rows($res);
+	$idReturn = "id";
+	if ($num > 0)
+	{
+		while ($rs = mysql_fetch_assoc($res)){
+            
+            if ($rs['COLUMN_NAME'] == 'id') $idReturn = $rs['COLUMN_NAME'];
+            elseif ($rs['COLUMN_NAME'] == 'ids')$idReturn = $rs['COLUMN_NAME'];
+        }
+		
+	} 
+	return $idReturn;
+}
 
 function abrir_tabla ($wtabla,$wusuario,$wnombreopc,$parametro,$campobuscar,$wid,$wbusqueda='',$campos='',$parametros='',$operaciones='')
 {
@@ -1918,9 +1938,9 @@ function grabar_tabla($tablappal,$wset_update,$wid)
 	// 22 Mayo 2020 Freddy Saenz
 
 	$valSelect = "";//valores del select , como estaba la bd antes.
-
+	$idName = findIdName($tablappal);
 //aqui se puede hacer el select de como estaba el registro en la base de datos
-	$qselect = "SELECT * FROM ".$tablappal."  WHERE id ='".$wid."' ";
+	$qselect = "SELECT * FROM ".$tablappal."  WHERE {$idName} ='".$wid."' ";
 	$vcamposmodificados = "";
 	$vvaloresnuevos = utf8_decode( $wset_update );
 
@@ -1967,7 +1987,7 @@ function grabar_tabla($tablappal,$wset_update,$wid)
 			$vcamposmodificados = " NO HUBO CAMBIOS ";
 		}
 
-		$valSelect = "REGISTRO ANTES DE LA MODIFICACION :\r\nUPDATE  ".$tablappal." SET ".utf8_decode($valSelect)."  WHERE id = '".$wid."' ";//aqui esta el registro , original , antes de ser modificado
+		$valSelect = "REGISTRO ANTES DE LA MODIFICACION :\r\nUPDATE  ".$tablappal." SET ".utf8_decode($valSelect)."  WHERE {$idName} = '".$wid."' ";//aqui esta el registro , original , antes de ser modificado
 		$valSelect = "CAMPOS MODIFICADOS: $vcamposmodificados \r\n".$valSelect;
 		$valSelect .= "\r\n" ;
 		$valSelect .= "========= ========= =========\r\nREGISTRO MODIFICADO\r\n" ;
@@ -1975,7 +1995,7 @@ function grabar_tabla($tablappal,$wset_update,$wid)
 //Fin Modificacion 22 Mayo 2020
 
 
-	$update_tabla = "UPDATE  ".$tablappal." SET ".utf8_decode($wset_update)."  WHERE id ='".$wid."' ";
+	$update_tabla = "UPDATE  ".$tablappal." SET ".utf8_decode($wset_update)."  WHERE {$idName} ='".$wid."' ";
 
 	$resultado = 0;
 
@@ -3055,7 +3075,7 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 							   <th></th></tr></thead>";
 			//totalizo los datos de la tabla
 
-
+			$idName = findIdName($wtabla);
 			if($wbusqueda=='')
 			{
 				if($whasta =='')
@@ -3078,9 +3098,9 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 					$contador = $whasta;
 					$lohago = 'no';
 				}
-				$select_tabla = "SELECT ".$campos_tabla." , id
+				$select_tabla = "SELECT ".$campos_tabla." , {$idName}
 								   FROM ".$wtabla."
-								  ORDER BY id
+								  ORDER BY {$idName}
 								  LIMIT ".$wprincipio.", ".$wfinal."";
 
 			}
@@ -3107,10 +3127,10 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 								      WHERE ".$campobuscar." like '%".$parametro."%'
 								   ORDER BY id
 								      LIMIT ".$wprincipio.", ".$wfinal."";*/
-					$select_tabla = "SELECT ".$campos_tabla." , id
+					$select_tabla = "SELECT ".$campos_tabla." , {$idName}
 								       FROM ".$wtabla."
 								      WHERE ".$html_query."
-								   ORDER BY id
+								   ORDER BY {$idName}
 								      LIMIT ".$wprincipio.", ".$wfinal."";
 
 				$cambioinicioyfin="on";
@@ -3130,13 +3150,13 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 					$wcf="fila2"; // color de fondo de la fila
 
 
-				$html .="<tr class='".$wcf."' id='tr_".$row["id"]."' >
+				$html .="<tr class='".$wcf."' id='tr_".$row[$idName]."' >
 							<td align='center'>
 								".($numerador_filas+1)."
 							</td>
 							<td nowrap='nowrap'>
-								<div  id='div_operacione_".$row["id"]."'  >
-									<div id='editar_".$row["id"]."'  style='cursor: pointer;' title='Editar' onclick='editar(".$row["id"].");'><img  src='../../images/medical/hce/mod.PNG'>&nbsp;<font style='color: #235a81'>Editar</font></div>
+								<div  id='div_operacione_".$row[$idName]."'  >
+									<div id='editar_".$row[$idName]."'  style='cursor: pointer;' title='Editar' onclick='editar(".$row[$idName].");'><img  src='../../images/medical/hce/mod.PNG'>&nbsp;<font style='color: #235a81'>Editar</font></div>
 								</div>
 							</td>";
 				$numerador_filas = $numerador_filas+1;
@@ -3162,34 +3182,34 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 					if($vector_tipo_campos[$j]=='18')
 					{
 						// se adiciona el atributo title a donde se lleva la descripcion del registro de la tabla relacionada para que se muestre como tooltip. Leandro Meneses 2021-01-14
-						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row["id"]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' class='msg_ne' onMouseover='mostrarTooltip( this );' title='".obtener_tooltip_relacion_ne($vector_comentario[$j],$nom_tabla, $row["".$vector_campos[$j].""])."'  >".substr($row["".$vector_campos[$j].""],0,30)." </td>";
+						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row[$idName]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' class='msg_ne' onMouseover='mostrarTooltip( this );' title='".obtener_tooltip_relacion_ne($vector_comentario[$j],$nom_tabla, $row["".$vector_campos[$j].""])."'  >".substr($row["".$vector_campos[$j].""],0,30)." </td>";
 						
 					}
 					elseif($vector_tipo_campos[$j]=='9')
 					{
-						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row["id"]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' >".substr($row["".$vector_campos[$j].""],0,30)."</td>";
+						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row[$idName]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' >".substr($row["".$vector_campos[$j].""],0,30)."</td>";
 
 					}
 					elseif($vector_tipo_campos[$j]=='10')
 					{
-						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row["id"]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' >".substr($row["".$vector_campos[$j].""],0,30)."</td>";
+						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row[$idName]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' >".substr($row["".$vector_campos[$j].""],0,30)."</td>";
 
 					}elseif($vector_tipo_campos[$j]=='3')
 					{
-						$html .="<td nowrap='nowrap'  id='td_".$vector_campos[$j]."_".$row["id"]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' >".substr($row["".$vector_campos[$j].""],0,30)."</td>";
+						$html .="<td nowrap='nowrap'  id='td_".$vector_campos[$j]."_".$row[$idName]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' >".substr($row["".$vector_campos[$j].""],0,30)."</td>";
 
 					}
 					else
 					{
-						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row["id"]."' ".$atributo." nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' valor='".$row["".$vector_campos[$j].""]."' >".substr($row["".$vector_campos[$j].""],0,30)."</td>";
+						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row[$idName]."' ".$atributo." nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' valor='".$row["".$vector_campos[$j].""]."' >".substr($row["".$vector_campos[$j].""],0,30)."</td>";
 					}
 
 
 
 				}
 				$html .="<td nowrap='nowrap'>
-								<div  id='div_operacione2_".$row["id"]."'  >
-									<div id='editar2_".$row["id"]."'  style='cursor: pointer;' title='Editar' onclick='editar(".$row["id"].");'><img  src='../../images/medical/hce/mod.PNG'>&nbsp;<font style='color: #235a81'>Editar</font></div>
+								<div  id='div_operacione2_".$row[$idName]."'  >
+									<div id='editar2_".$row[$idName]."'  style='cursor: pointer;' title='Editar' onclick='editar(".$row[$idName].");'><img  src='../../images/medical/hce/mod.PNG'>&nbsp;<font style='color: #235a81'>Editar</font></div>
 								</div>
 							</td></tr>";
 				$i++;
@@ -3226,7 +3246,7 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 										{
 
 											$html2.= "<tr>";
-											if($vector_campos_completos[$j] != 'id' && $vector_campos_completos[$j]!= 'ID' && $vector_campos_completos[$j]!='Id')
+											if($vector_campos_completos[$j] != $idName && $vector_campos_completos[$j]!= 'ID' && $vector_campos_completos[$j]!='Id') //ojo
 											{
 
 												$html2.="<td class='encabezadoTabla' nowrap='nowrap'>".$vector_diccionario_completos[$j]." <br> (".$vector_campos_completos[$j].")</td>";
