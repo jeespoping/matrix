@@ -65,7 +65,7 @@ else
 		echo "<tr><td bgcolor=#dddddd><font face='tahoma'><b>HORA : </b>".date('h:i:s')."</td></tr>";
 
 
-		if ($almacenar=='S')
+		if ($almacenar=='S' || $almacenar=='s')
 		{
 			$query = "SELECT * ";
 			$query .=" from ".$empresa."_000017 ";
@@ -75,7 +75,7 @@ else
 			$num = mysql_num_rows($err);
 			if($num>0)
 			{
-				if($reemplazar=='S')
+				if($reemplazar=='S' || $reemplazar=='s')
 				{
 					$query = "delete  from ".$empresa."_000017 ";
 					$query .= "  where Invfec = '".date('Y-m-d')."' ";
@@ -107,7 +107,7 @@ else
 		$num = mysql_num_rows($err);
 
 		echo "</table></br><table align=center class='sample' cellspacing=0>";
-		if ($pintar=='S')
+		if ($pintar=='S' || $pintar=='s')
 		{
 			$colspan='6';
 		}
@@ -118,7 +118,7 @@ else
 		echo "<tr><td align=center bgcolor=#999999 colspan='".$colspan."'><font face='tahoma' size=2><b>INSUMOS</b></font></td>";
 		echo "<tr><td align=center bgcolor=#999999><font face='tahoma' size=1><b>ARTICULO</b></font></td>";
 		echo "<td align=center bgcolor=#999999><font face='tahoma' size=1><b>UNIDAD</b></font></td>";
-		if ($pintar=='S')
+		if ($pintar=='S' || $pintar=='s')
 		{
 			echo "<td align=center bgcolor=#999999><font face='tahoma' size=1><b>CANTIDAD</b></font></td>";
 		}
@@ -142,7 +142,7 @@ else
 			echo "<tr>";
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>".$row[0]."-".$row[1]."</font></td>";
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>".$row[3]."-".$row[4]."</font></td>";
-			if ($pintar=='S')
+			if ($pintar=='S' || $pintar=='s')
 			{
 				echo "<td bgcolor=".$color." align='right'><font face='tahoma' size=2>".number_format($row[2],2,'.',',')."</font></td>";
 			}
@@ -151,7 +151,7 @@ else
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>&nbsp;</font></td>";
 			echo "</tr>";
 
-			if ($almacenar=='S')
+			if ($almacenar=='S' || $almacenar=='s')
 			{
 				$query = "insert ".$empresa."_000017 (medico,fecha_data,hora_data, Invfec, Invcod, Invcan, Invpro, Seguridad) ";
 				$query .= "values ('".$empresa."','".date('Y-m-d')."','".date('H:i:s')."','".date('Y-m-d')."','".$row[0]."',".$row[2].",'off','C-".$empresa."')";
@@ -179,7 +179,7 @@ else
 		echo "<tr><td align=center bgcolor=#999999 colspan='".$colspan."'><font face='tahoma' size=2><b>PRODUCTOS</b></font></td>";
 		echo "<tr><td align=center bgcolor=#999999><font face='tahoma' size=1><b>ARTICULO</b></font></td>";
 		echo "<td align=center bgcolor=#999999><font face='tahoma' size=1><b>UNIDAD</b></font></td>";
-		if ($pintar=='S')
+		if ($pintar=='S' || $pintar=='s')
 		{
 			echo "<td align=center bgcolor=#999999><font face='tahoma' size=1><b>CANTIDAD</b></font></td>";
 		}
@@ -203,7 +203,7 @@ else
 			echo "<tr>";
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>".$row[0]."-".$row[1]."</font></td>";
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>".$row[3]."-".$row[4]."</font></td>";
-			if ($pintar=='S')
+			if ($pintar=='S' || $pintar=='s')
 			{
 				echo "<td bgcolor=".$color." align='right'><font face='tahoma' size=2>".number_format($row[2],2,'.',',')."</font></td>";
 			}
@@ -212,7 +212,7 @@ else
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>&nbsp;</font></td>";
 			echo "</tr>";
 
-			if ($almacenar=='S')
+			if ($almacenar=='S' || $almacenar=='s')
 			{
 				$query = "insert ".$empresa."_000017 (medico,fecha_data,hora_data, Invfec, Invcod, Invcan, Invpro, Seguridad) ";
 				$query .= "values ('".$empresa."','".date('Y-m-d')."','".date('H:i:s')."','".date('Y-m-d')."','".$row[0]."',".$row[2].",'on','C-".$empresa."')";
