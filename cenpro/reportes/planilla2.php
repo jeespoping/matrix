@@ -299,7 +299,7 @@ else
 
 					$erri = mysql_query($query,$conex);
 					$rowi = mysql_fetch_array($erri);
-					$row[6]=$row[6]+($rowi[0]*$rowp[1]/$rowi[1]);
+					$row[6] = (isset($rowi[1])) ? $row[6]+($rowi[0]*$rowp[1]/$rowi[1]) : null;
 				}
 			}
 
