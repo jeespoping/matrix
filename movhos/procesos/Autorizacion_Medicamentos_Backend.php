@@ -1,6 +1,69 @@
 <?php
 include_once("root/comun.php");
-  
+
+function registrarAuditoriaKardexAutorizaciones( $conexion, $wbasedato, $auditoria ){
+
+	$q = "INSERT INTO ".$wbasedato."_000055
+				(Medico, Fecha_data, Hora_data, Kauhis, Kauing, Kaudes, Kaufec, Kaumen, Kauido, Seguridad)
+			VALUES
+				('movhos','".date("Y-m-d")."','".date("H:i:s")."','$auditoria->historia','$auditoria->ingreso','$auditoria->descripcion','$auditoria->fechaKardex','$auditoria->mensaje','$auditoria->idOriginal','A-$auditoria->seguridad')";
+
+	$res = mysql_query($q, $conexion); // or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
+}
+
+
+function suspenderMedicamentoAutorizaciones( $conex, $wmovhos, $historia, $ingreso, $fecha, $art, $ido, $user ){
+	
+	$val = false;
+	
+	$sql = "UPDATE ".$wmovhos."_000060 
+			   SET Kadsus = 'on',
+				   Kadare = 'off'
+			 WHERE Kadhis = '$historia'
+			   AND Kading = '$ingreso'
+			   AND Kadfec = '$fecha'
+			   AND Kadart = '$art'
+			   AND Kadido = '$ido'
+			  ";
+	
+	$resTemp = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - No actualizo suspension de articulo en temporal" );
+	
+	$sql = "UPDATE ".$wmovhos."_000054 
+			   SET Kadsus = 'on',
+				   Kadare = 'off'
+			 WHERE Kadhis = '$historia'
+			   AND Kading = '$ingreso'
+			   AND Kadfec = '$fecha'
+			   AND Kadart = '$art'
+			   AND Kadido = '$ido'
+			  ";
+	
+	$resDef = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - No actualizo suspension de articulo en definitivo" );
+	
+	if( $resDef || $resTemp ){
+		
+		$val = true;
+		
+		//Registro de auditoria
+		$auditoria = new class {};
+
+		$auditoria->historia 	= $historia;
+		$auditoria->ingreso 	= $ingreso;
+		$auditoria->descripcion = $art;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= "Ariculo suspendido desde autorizaciones";
+		$auditoria->seguridad 	= $user;
+		$auditoria->idOriginal 	= $ido;
+	
+		registrarAuditoriaKardexAutorizaciones( $conex, $wmovhos, $auditoria );
+	}
+	else{
+		echo "No se registro suspención de medicamentos";
+	}
+	
+	return $val;
+}
+
 function Buscar_nombre_medico( $conex, $wemp_pmla, $c_medico ){
 	
 	$wmovhos=consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
@@ -101,35 +164,115 @@ function actualizar($conex,$autorizacion,$wemp_pmla){
 	
 	list($id, $user) = explode("-",$_SESSION['user']);
 	
+	$fecha 			  = date( "Y-m-d" );
+	$estadoSuspension = 'on';
+	
 	$wmovhos=consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 	
+	$sqlK = " SELECT a.* 
+			    FROM ".$wmovhos."_000054 a, ".$wmovhos."_000208 b
+			   WHERE Kadhis  = '".$autorizacion['historia']."' 
+				 AND Kading  = '".$autorizacion['ingreso']."' 
+				 AND Kadart  = '".$autorizacion['codigo_medicamento']."' 
+				 AND Kadhis  = Ekxhis
+				 AND Kading  = Ekxing
+				 AND Kadfec  = Ekxfec
+				 AND Kadido  = Ekxido
+				 AND Kadart  = Ekxart
+				 AND Ekxfau  = '0000-00-00'
+				 AND Kadfec  = '".$fecha."'
+			   UNION
+			  SELECT a.* 
+			    FROM ".$wmovhos."_000060 a, ".$wmovhos."_000209 b
+			   WHERE Kadhis  = '".$autorizacion['historia']."' 
+				 AND Kading  = '".$autorizacion['ingreso']."' 
+				 AND Kadart  = '".$autorizacion['codigo_medicamento']."' 
+				 AND Kadhis  = Ekxhis
+				 AND Kading  = Ekxing
+				 AND Kadfec  = Ekxfec
+				 AND Kadido  = Ekxido
+				 AND Kadart  = Ekxart
+				 AND Ekxfau  = '0000-00-00'
+				 AND Kadfec  = '".$fecha."'";
+
+	$resK = mysql_query( $sqlK, $conex ) or die ( "Error: ".mysql_errno()." - Al consultar pacientes 33 - " . mysql_error() );
+	
+	
+	
 	$sql = " UPDATE ".$wmovhos."_000208
-			    SET ".$wmovhos."_000208.Ekxaut='".$autorizacion['autoriza']."',
-					".$wmovhos."_000208.Ekxfau='".date(' Y-m-j')."',
-					".$wmovhos."_000208.Ekxhau='".date("H:i:s")."',
-					".$wmovhos."_000208.Ekxmau='".$user."',
-					".$wmovhos."_000208.Ekxjau='".$autorizacion['justificacion_medico_autoriza']."'
-			  WHERE ".$wmovhos."_000208.Ekxhis='".$autorizacion['historia']."' 
-			    AND ".$wmovhos."_000208.Ekxing='".$autorizacion['ingreso']."' 
-				AND ".$wmovhos."_000208.Ekxart='".$autorizacion['codigo_medicamento']."' 
-				AND ".$wmovhos."_000208.Ekxfec='".date( "Y-m-d" )."'";
+			    SET ".$wmovhos."_000208.Ekxaut  = '".$autorizacion['autoriza']."',
+					".$wmovhos."_000208.Ekxfau  = '".date(' Y-m-d')."',
+					".$wmovhos."_000208.Ekxhau  = '".date("H:i:s")."',
+					".$wmovhos."_000208.Ekxmau  = '".$user."',
+					".$wmovhos."_000208.Ekxjau  = '".$autorizacion['justificacion_medico_autoriza']."'
+			  WHERE ".$wmovhos."_000208.Ekxhis  = '".$autorizacion['historia']."' 
+			    AND ".$wmovhos."_000208.Ekxing  = '".$autorizacion['ingreso']."' 
+				AND ".$wmovhos."_000208.Ekxart  = '".$autorizacion['codigo_medicamento']."' 
+				AND ".$wmovhos."_000208.Ekxfau  = '0000-00-00'
+				AND ".$wmovhos."_000208.Ekxfec  = '".date( "Y-m-d" )."'";
 			
 	////////////////////////////////////////////////////
 	$sql2 = " UPDATE ".$wmovhos."_000209
 				 SET ".$wmovhos."_000209.Ekxaut='".$autorizacion['autoriza']."',
-					 ".$wmovhos."_000209.Ekxfau='".date(' Y-m-j')."',
+					 ".$wmovhos."_000209.Ekxfau='".date(' Y-m-d')."',
 					 ".$wmovhos."_000209.Ekxhau='".date("H:i:s")."',
 					 ".$wmovhos."_000209.Ekxmau='".$user."',
 					 ".$wmovhos."_000209.Ekxjau='".$autorizacion['justificacion_medico_autoriza']."'
 			   WHERE ".$wmovhos."_000209.Ekxhis='".$autorizacion['historia']."' 
 				 AND ".$wmovhos."_000209.Ekxing='".$autorizacion['ingreso']."' 
 				 AND ".$wmovhos."_000209.Ekxart='".$autorizacion['codigo_medicamento']."' 
+				 AND ".$wmovhos."_000209.Ekxfau= '0000-00-00'
 				 AND ".$wmovhos."_000209.Ekxfec='".date( "Y-m-d" )."'";
 
-	$res = mysql_query( $sql, $conex ) or die ( "Error: ".mysql_errno()." - Al actualizar autorizacion - " . mysql_error() );
-	$res = mysql_query( $sql2, $conex ) or die ( "Error: ".mysql_errno()." - Al actualizar autorizacion - " . mysql_error() );
+	$res = mysql_query( $sql, $conex ) or die ( "Error: ".mysql_errno()." - Al actualizar autorizacion 11 - " . mysql_error() );
+	$res = mysql_query( $sql2, $conex ) or die ( "Error: ".mysql_errno()." - Al actualizar autorizacion  22 - " . mysql_error() );
 
 	registrarlog( $conex, $autorizacion, $wemp_pmla, $user );
+	
+	if( $autorizacion['autoriza'] != 'on' ){
+		
+		while( $rows = mysql_fetch_array( $resK ) ){
+			
+			$ido = $rows[ 'Kadido' ];
+			
+			$sqlLEVIC = " SELECT Levido, Levlev
+							FROM ".$wmovhos."_000171 a
+						   WHERE levhis = '".$autorizacion['historia']."' 
+							 AND leving = '".$autorizacion['ingreso']."'
+							 AND levins = '".$autorizacion['codigo_medicamento']."'
+							 AND levidi = '".$ido."'
+						 ";
+
+			$resLEVIC = mysql_query( $sqlLEVIC, $conex ) or die ( "Error: ".mysql_errno()." - Verificando si es un IC - " );			
+			$numLEVIC = mysql_num_rows( $resLEVIC );
+			
+			if( $numLEVIC == 0 ){
+				suspenderMedicamentoAutorizaciones( $conex, $wmovhos, $autorizacion['historia'], $autorizacion['ingreso'], $fecha, $autorizacion['codigo_medicamento'], $ido, $user );				
+			}
+			else{
+				$rowLEVIC = mysql_fetch_array( $resLEVIC );
+				
+				suspenderMedicamentoAutorizaciones( $conex, $wmovhos, $autorizacion['historia'], $autorizacion['ingreso'], $fecha, $rowLEVIC['Levlev'], $rowLEVIC['Levido'], $user );
+				
+				$sqlItem = "  SELECT Levidi, Levins 
+								FROM ".$wmovhos."_000171 a
+							   WHERE levhis = '".$autorizacion['historia']."' 
+								 AND leving = '".$autorizacion['ingreso']."'
+								 AND levido = '".$rowLEVIC['Levido']."'
+							 ";
+
+				$resItem = mysql_query( $sqlItem, $conex ) or die ( "Error: ".mysql_errno()." - Consultando items de IC para suspender - " );
+				
+				while( $item = mysql_fetch_array( $resItem ) )
+				{
+					$idi 	 = $item[ 'Levidi' ];
+					$artItem = $item[ 'Levins' ];
+					
+					suspenderMedicamentoAutorizaciones( $conex, $wmovhos, $autorizacion['historia'], $autorizacion['ingreso'], $fecha, $artItem, $idi, $user );				
+				}
+			}
+		}
+	}
 }
 
 function registrarlog($conex,$autorizacion,$wemp_pmla,$user){
@@ -156,22 +299,82 @@ function registrarlog($conex,$autorizacion,$wemp_pmla,$user){
 	   $res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
 }
 
-/*switch ($accion) {
-    case 'cargardatos':
-        cargartabla($conex,$wemp_pmla);
-        break;
-    case 'actualizar':
-        actualizar($conex,$autorizacion,$wemp_pmla);
-        break;
-   
+
+function consultarLog( $conex, $wmovhos, $his, $ing ){
+	  
+	$val = [ 'data' => [] ]; 
+	
+	$sql = "SELECT Kauhis, Kauing, Kaufec, Kaudes, Kaumen, Kauido, a.Seguridad, Descripcion, Pacno1, Pacno2, Pacap1, Pacap2, Pactid, Pacced
+			  FROM ".$wmovhos."_000055 a, usuarios b, root_000036, root_000037
+			 WHERE Kaumen = 'Proceso autorizacion'
+			   AND Kauhis = '".$his."'
+			   AND Kauing = '".$ing."'
+			   AND Codigo = SUBSTRING(a.Seguridad FROM INSTR(a.Seguridad,'-')+1)
+			   AND orihis = kauhis
+			   AND oritid = pactid
+			   AND oriced = pacced
+			 LIMIT 1, 100 ";
+	
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." Al consultar log - " . mysql_error());
+	
+	while( $rows = mysql_fetch_array($res) )
+	{
+		// $val['data'][] = [
+				// 'historia' 		=> $rows[ 'Kauhis' ],
+				// 'ingreso' 		=> $rows[ 'Kauing' ],
+				// 'paciente' 		=> $rows[ 'Pacno1' ]." ".$rows[ 'Pacno2' ]." ".$rows[ 'Pacap1' ]." ".$rows[ 'Pacap2' ],
+				// 'mensaje' 		=> $rows[ 'Kaumen' ],
+				// 'fecha' 		=> $rows[ 'Kaufec' ],
+				// 'descripcion' 	=> $rows[ 'Kaudes' ],
+				// 'medico' 		=> explode( "-", $rows[ 'Seguridad' ] )[1]."-".utf8_encode( $rows[ 'Descripcion' ] ),
+				// // 'codigoMedico'	=> explode( "-", $rows[ 'Seguridad' ] )[1],
+			// ];
+			
+		$val['data'][] = [
+				'0' 		=> $rows[ 'Kauhis' ]."-".$rows[ 'Kauing' ],
+				'1' 		=> $rows[ 'Pacno1' ]." ".$rows[ 'Pacno2' ]." ".$rows[ 'Pacap1' ]." ".$rows[ 'Pacap2' ],
+				'2' 		=> $rows[ 'Kaufec' ],
+				'3' 		=> $rows[ 'Kaudes' ],
+				'4' 		=> explode( "-", $rows[ 'Seguridad' ] )[1]."-".utf8_encode( $rows[ 'Descripcion' ] ),
+				'5'	=> explode( "-", $rows[ 'Seguridad' ] )[1],
+				'6' 		=> $rows[ 'Kaumen' ],
+			];
+	}
+	
+	return $val;
 }
-*/
 
+if( $_GET['accion'] ){
+	
+	$wemp_pmla = $_GET['wemp_pmla'];
 
-$wemp_pmla = $_GET['wemp_pmla'];
-
-if( empty($wemp_pmla) )
-	$wemp_pmla=$_POST['wemp_pmla'];
-
-$autorizacion=$_POST['fila'];
-actualizar($conex,$autorizacion,$wemp_pmla);
+	if( empty($wemp_pmla) )
+		$wemp_pmla = $_POST['wemp_pmla'];
+	
+	switch( $accion ){
+		
+		case 'consultarLog':
+		
+			$historia = $_POST['historia'];
+			$ingreso  = $_POST['ingreso'];
+			$wmovhos  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
+			
+			$result = consultarLog( $conex, $wmovhos, $historia, $ingreso );
+			
+			echo json_encode( $result );
+			
+			break;
+			
+		case 'cargardatos':
+			cargartabla($conex,$wemp_pmla);
+			break;
+		
+		case 'actualizar':
+			$autorizacion = $_POST['fila'];
+			actualizar($conex,$autorizacion,$wemp_pmla);
+			break;
+	   
+	}
+	
+	exit();
+}

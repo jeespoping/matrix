@@ -25,7 +25,7 @@ define("OBR_ESTUDIO", 4 );
 define("OBR_FECHAHORA", 6 );
 define("OBR_FECHAHORARESULTADO", 7 );
 define("OBR_CODIGO_PACS", 18 );
-define("OBR_STATUS", 25 );
+define("OBR_STATUS", 24 );
 
 function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 {	
@@ -35,6 +35,7 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 	//Siempre se espera un segmento OBR
 	if( $HL7['ORC'] && $HL7['OBR'] )
 	{
+		$status = '';
 		$historiaClinica 	= '';
 		$ingresoClinica 	= '';
 		$tipoOrden	= ''; 
@@ -72,6 +73,7 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 			$fechaHoraProcedimiento= $OBR[ OBR_FECHAHORA ];
 			$fechaHoraResultado = $OBR[ OBR_FECHAHORARESULTADO ];
 			$codigoPACS = $OBR[ OBR_CODIGO_PACS ];
+			$status = $OBR[ OBR_STATUS ];
 			break;
 		}
 
@@ -123,6 +125,12 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 				// }
 				
 				$valEstado = $estado;
+				if($estado == "CM"){
+					if(!empty($status)){
+						$valEstado = $status;
+					}
+				}
+				
 				$fechaCita 	= ""; 
 				$horaCita	= "";
 				cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, $valEstado, $fechaCita, $horaCita, $comentario, $historiaClinica, $ingresoClinica, $detUrl, $detUrp );	

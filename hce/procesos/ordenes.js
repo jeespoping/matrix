@@ -5627,7 +5627,14 @@ function agregarMultiplesArticulos(){
 					datos[33],
 					datos[34],
 					datos[35],
-					datos[36]
+					datos[36],
+					undefined,
+					undefined,
+					undefined,
+					undefined,
+					undefined,
+					undefined,
+					datos[37],
 				);
 			break;
 			
@@ -12255,6 +12262,8 @@ function eleccionMedicamentosInsumos( strInsumos, indice, tipPro, tipo )
 					var codPrincipioActivo = item[34];
 					var desPrincipioActivo = $.trim(item[36]);
 					var esAntibiotico = $.trim( item[37] ) == 'on' ? true: false;
+					
+					var conTarifa = $.trim( item[38] );
 
 					var	noEnviar = item[33];	//Abril 25 de 2011
 
@@ -12309,6 +12318,8 @@ function eleccionMedicamentosInsumos( strInsumos, indice, tipPro, tipo )
 					multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	codPrincipioActivo;	//34
 					multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	desPrincipioActivo;	//35
 					multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	esAntibiotico;	//36
+					
+					multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	conTarifa;	//38
 
 					//Agrego la fecha y hora de inicio del medicamento calculada para el H.E
 					multiplesMedicamentos[idxMulArt].fechaInicioFija = 	fechaInicioFija;

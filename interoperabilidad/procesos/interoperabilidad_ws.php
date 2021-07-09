@@ -1079,6 +1079,10 @@ function utf8ize($d) {
     return $d;
 }
 
+if( !preg_match( '/^\d+$/', $wemp_pmla ) ){
+	die( "Solicitud no encontrada" );
+}
+
 if( $_POST ){
         if(isset($_POST['accion'])){
             $accion = $_POST['accion'];
