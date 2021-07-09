@@ -1046,10 +1046,13 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				{
 					$data[ "mensaje" ] = utf8_encode( "Se actualizo correctamente" );
 <<<<<<< HEAD
+<<<<<<< HEAD
 					if( mysql_affected_rows() > 0 ){
 					}
 =======
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				}
 				else
 				{
@@ -1072,10 +1075,13 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			if( $resdel ){
 				logAdmsiones( 'Registro borrado por documento duplicado', $historia, $tipodoc, $documento);
 <<<<<<< HEAD
+<<<<<<< HEAD
 				if( mysql_affected_rows() > 0 ){
 				}
 =======
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 			}
 
 			/**admision**/
@@ -1893,12 +1899,15 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				}
 			}
 <<<<<<< HEAD
+<<<<<<< HEAD
 			else
 			{
 
 			}
 =======
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 		}
 		/*******************Fin para guardar el tope de soat***************/
 
@@ -2066,10 +2075,13 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				}
 				if($resCargos){
 <<<<<<< HEAD
+<<<<<<< HEAD
 					if( $cargosAregrabar > 0 ){
 					}
 =======
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 					guardarPendientesRegrabacion( $historia, $ingreso, $responsableAnterior, $valueNresponsable, "admision_erp.php");
 				}
 			}else{
@@ -2447,10 +2459,13 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			$regAfectados152 = mysql_affected_rows();
 			if($rsup36 and $rsup152){
 <<<<<<< HEAD
+<<<<<<< HEAD
 				if( $regAfectados36*1 > 0 and $regAfectados152*1 > 0){
 				}
 =======
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 					$queryUp204 = "UPDATE  {$wbasedatoMov}_000204
 									   SET ahtahc = 'on',
 											  ahthis = '$historia',
@@ -6993,14 +7008,20 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 	$where = str_replace("pactdo", "pactid", $where);
 	$where = str_replace("pacdoc", "Pacced", $where);
 <<<<<<< HEAD
+<<<<<<< HEAD
 			// Se consulta si hay datos demograficos en la table root_000036 y se reemplazan
 =======
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 	/* 
 		En mayo 2021, se cambió para que los datos demográficos del paciente estén en root_36 y de ahí se consulten.
 		Se añadieron los campos con valor por defecto vacio y a medida de que el paciente haga un nuevo ingreso se irán 
 		cargando de la tabla 100 de la última empresa que visitó.
 	*/
+<<<<<<< HEAD
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 	$sql = "select a.Pactid as pactdo,a.Pacced as pacdoc,a.pacfed,a.Pacap1,a.Pacap2,a.Pacno1,a.Pacno2,a.Pacnac as pacfna,
 				a.Pacsex,a.Pacest,a.Pacdir,a.Pactel,a.Paciu,a.Pacbar,a.Pacdep,a.Paczon,a.Pactus,a.Pacofi,a.Paccor,a.Pacpan,a.Pacpet,
 				a.Pacded,a.Pactrh,a.Pacpah,a.Pacdeh,a.Pacmuh,a.Pacmov,a.Pacned,a.Pacemp,a.Pactem,a.Paceem,a.Pactaf,a.Pacrem,a.Pacire,
@@ -7010,6 +7031,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 	$sql .= $where;
 	$sql .=" Order by  a.Pacced  ";
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
 	$res1 = $res;
@@ -7051,6 +7073,23 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 			$traerDeEmpresa = true;
 		}
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+	$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla root_36 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
+
+	if ($res)
+	{
+		$traerDeEmpresa = false;
+		$num=mysql_num_rows($res);
+
+		$rows=mysql_fetch_assoc($res);
+		/*
+			Valida si en la tabla root_36 estan los datos incompletos, 
+			si es así, se pone una bandera para buscar los datos en la última empresa que visitó.
+		*/
+		if($rows['Pacpan'] == '' && $rows['Paciu'] == '' && $rows['Pacest'] == '' && $rows['Pacpah'] == ''){
+			$traerDeEmpresa = true;
+		}
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 
 		if( $num == 0 || $traerDeEmpresa ){
 			/* Se busca documento y tipo de documentos en la root_00037, 
@@ -7066,6 +7105,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 				/** Si se encuentra alguna información con el documento  */
 				if ($num5 > 0)
 				{
+<<<<<<< HEAD
 <<<<<<< HEAD
 					  $rowsee = mysqli_fetch_array($res5);
 
@@ -7107,6 +7147,8 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 					$wbasedato =  $wbasedato_anterior;
 
 =======
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 					/** Se guarda la wemp_pmla actual */
 					$wemp_pmla_anterior = $wemp_pmla;
 
@@ -7149,7 +7191,10 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 					}
 					/** Se reestablece $wemp_pmla con la empresa actual del programa */
 					$wemp_pmla = $wemp_pmla_anterior;
+<<<<<<< HEAD
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				}
 			}
 		}
@@ -7157,6 +7202,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 		$data['numRegistrosPac'] = $num;
 		if ($num>0)
 		{	
+<<<<<<< HEAD
 <<<<<<< HEAD
 			/*se inicializa la i en el for de la consulta de la 100 pero se incrementa en el for de la
 			consulta de la 101
@@ -7168,12 +7214,17 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' ORDER BY Fecha_data DESC LIMIT 1";
 
 =======
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 			if( !$traerDeEmpresa ){
 
 				$sql5 = "SELECT Oriori FROM root_000037
 					  	WHERE Oritid='".utf8_decode($datosEnc['pactdo'])."' AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' 
 					  	ORDER BY Fecha_data DESC";
+<<<<<<< HEAD
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				$res5 = mysql_query( $sql5, $conex );
 				if ($res5)
 				{
@@ -7181,6 +7232,7 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 					/** Si se encuentra alguna información con el documento  */
 					if ($num5 > 0)
 					{
+<<<<<<< HEAD
 <<<<<<< HEAD
 					  	$rowsee = mysqli_fetch_array($res5);
 						/** Se guarda la wemp_pmla actual */
@@ -7216,6 +7268,8 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						$wbasedato =  $wbasedato_anterior;
 
 =======
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 						/** Se guarda la wemp_pmla actual */
 						$wemp_pmla_anterior = $wemp_pmla;
 
@@ -7256,7 +7310,10 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						/** Se reestablece $wemp_pmla con la empresa actual del programa */
 						$wemp_pmla = $wemp_pmla_anterior;
+<<<<<<< HEAD
 >>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 					}
 				}
 			}
@@ -9271,6 +9328,9 @@ if(isset($accion) and $accion == 'solicitarCambioDocumento'){
 			font-weight:bold;
 		}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 
 	.div_especiales {
 		background:#FFFFCC;
@@ -9309,6 +9369,7 @@ if(isset($accion) and $accion == 'solicitarCambioDocumento'){
 		-o-transform:scaleX(-1);
 		transform:scaleX(-1);
 	}
+<<<<<<< HEAD
 
 	.ac_results {
 		max-height: 400px;
@@ -9378,6 +9439,29 @@ if(isset($accion) and $accion == 'solicitarCambioDocumento'){
 
 </style>
 
+=======
+
+	.ac_results {
+		max-height: 400px;
+		overflow-y: auto;
+		/* prevent horizontal scrollbar */
+		overflow-x: hidden;
+	}
+
+	.boton_preanestesia{
+		padding: 10px 24px;
+		border-radius: 8px;
+		font-weight:bold;
+	}
+
+	.boton_preanestesia:hover {
+		background-color: #004A91; /* Green */
+		color: white;
+	}
+
+</style>
+
+>>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 </head>
 <body>
 <?php
