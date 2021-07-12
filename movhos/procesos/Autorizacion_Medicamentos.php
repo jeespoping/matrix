@@ -4,9 +4,14 @@
 
 	$wactualiz='Julio 27 de 2021';
 	
+	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+	
 	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
 	
 	encabezado( "AUTORIZACION DE MEDICAMENTOS", $wactualiz, $institucion->baseDeDatos );
+	
+	list($id, $user) = explode("-",$_SESSION['user']);
+	$director = puedeAutorizarArticulos( $conex, $wmovhos, $user );
 ?>
 
 <!DOCTYPE html>
@@ -20,11 +25,11 @@
     <link rel="stylesheet" href="datatables.min.css" >
             
 	<style type="text/css">
-		table.striped tr:nth-child(odd) {
+		table.striped > tbody > tr:nth-child(odd) {
 			background-color: #c4dcfc;
 			font-size: 10pt;
 		}
-		table.striped tr:nth-child(even) {
+		table.striped > tbody > tr:nth-child(even) {
 			background-color: #ececf4;
 			font-size: 10pt;
 		}
@@ -62,8 +67,7 @@
 						<th scope="col"style=" background: #000066;">Justificacion Autorizacion</th>
 						<th scope="col"style=" background: #000066;">Autoriza?</th>
 						<?php
-							$director=$_GET['director'];
-							if(  $director==="on"){
+							if( $director ){
 								echo' <th scope="col" style=" background: #000066;">Accion</th>';
 							}
 						?>
@@ -106,10 +110,9 @@
 					
 					echo '</td>';
 					
-					$director = $_GET['director'];
 					$codigo   = $autorizaion["consecutivo"];
 					
-					if( $director==="on"){
+					if( $director ){
 						echo'<td scope="row"><button type="button" id="enviar'.$autorizaion["codigo"].'" onclick="guardar(\'' .$codigo . '\')" class="btn btn-primary  align-items-center" >Guardar</button></td>';
 					}
 					  
@@ -124,7 +127,6 @@
 			
 			<form>
 				<?=' <input name="wemp_pmla"  type="hidden" value='.  $wemp_pmla.'>';?>
-				<?=' <input name="director"  type="hidden" value='.  $_GET['director'] .'>';?>
 			</form>
 
 			<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="crossorigin="anonymous"></script>-->
@@ -192,14 +194,21 @@
 		
 		<div id="dvLog" style="width:100%;">
 			
-			<input type='text' id='logHis' value=''>
-			<input type='text' id='logIng' value=''>
-			<input type='button' id='consultarLog' value='buscar'>
+			<div style='margin:0 auto;width:500px;padding:10px;' class='fila1'>
+				<div style='width:100%;padding:5px;text-align:center;' class='encabezadotabla'>
+					Busqueda por historia
+				</div>
+				<div style='width:100%;'>
+					<input type='text' id='logHis' value='' placeholder='Ingrese la historia'>
+					<input type='text' id='logIng' value='' placeholder='Ingrese el ingreso'>
+					<input type='button' id='consultarLog' value='Buscar'>
+				</div>
+			</div>
 			
 			
-			<table id="tableLog" class="encabezadotabla display" style="width:100%;margin :20px;">
+			<table id="tableLog" class="striped" style="width:100%;margin :20px;">
 				<thead>
-					<tr>
+					<tr class='encabezadotabla'>
 						<th>Historia</th>
 						<th>Paciente</th>
 						<th>Fecha</th>

@@ -31588,6 +31588,8 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 						$cod_log_nuevo1 = $row_log_n1['Logcod'];
 						
 						$obs = mysqli_real_escape_string($conexion,$obs);
+						
+						$wjusparaautorizar =  utf8_decode( $wjusparaautorizar );
 					
 						$q = "INSERT INTO ".$wbasedato."_000060
 								(Medico  ,Fecha_data         ,    Hora_data      ,  Kadhis   , Kading   ,     Kadart   , Kadcfr     ,   Kadufr , Kaddia, Kadest,    Kadess    ,  Kadper,   Kadffa  , Kadfin, Kadhin, Kadvia,      Kadfec      , Kadcon, Kadobs,   Kadori        , Kadsus,   Kadcnd   , Kaddma    ,   Kadcan    ,     Kaduma    ,     Kadcma      , Kaddis, Kadhdi , Kadsal,      Kadcdi    ,   Kadpri   ,     Kadpro     ,        Kadcco          ,   Kadare     ,      Kadsad        , Kadnar          , Kadreg,   Kadusu    ,       Kadcpx        ,    Kadcal     ,  Kadimp    , Kadalt  ,    Kadusp    ,        Kadpen           ,    Kadctr    , Kadlev , Kadfir , Kaddoa           , Kadnes         ,      Kadlog     , Seguridad     )

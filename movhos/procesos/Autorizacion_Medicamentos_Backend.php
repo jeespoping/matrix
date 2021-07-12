@@ -1,6 +1,34 @@
 <?php
 include_once("root/comun.php");
 
+function puedeAutorizarArticulos( $conex, $wmovhos, $user ){
+	
+	$val = false;
+	
+	$sql = "SELECT *
+			  FROM ".$wmovhos."_000294
+			 WHERE Dirusu = ?
+			   AND Direst = 'on'
+			 ";
+			 
+	$st = mysqli_prepare( $conex, $sql );
+
+	mysqli_stmt_bind_param( $st, "s", $user );
+
+	/* Ejecutar la sentencia */
+	$num = mysqli_stmt_execute( $st ) or die ( mysqli_errno($conex) . " - Error al consultar director médico" );
+	
+	$res = mysqli_stmt_get_result($st);
+	
+	mysqli_stmt_close( $st );
+	
+	if( $row = mysql_fetch_array($res) ){
+		$val = true;
+	}
+	
+	return $val;
+}
+
 function registrarAuditoriaKardexAutorizaciones( $conexion, $wbasedato, $auditoria ){
 
 	$q = "INSERT INTO ".$wbasedato."_000055
@@ -167,6 +195,9 @@ function actualizar($conex,$autorizacion,$wemp_pmla){
 	$fecha 			  = date( "Y-m-d" );
 	$estadoSuspension = 'on';
 	
+	$autorizacion['justificacion_medico_autoriza'] = utf8_decode( $autorizacion['justificacion_medico_autoriza'] );
+	$autorizacion['justificacion_medico_ordena'] = utf8_decode( $autorizacion['justificacion_medico_ordena'] );
+	
 	$wmovhos=consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 	
 	$sqlK = " SELECT a.* 
@@ -277,26 +308,30 @@ function actualizar($conex,$autorizacion,$wemp_pmla){
 
 function registrarlog($conex,$autorizacion,$wemp_pmla,$user){
 		
-		$wmovhos=consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
-		
-		$mensaje="";
-		
-		$fecha=date(' Y-m-j');
-		$hora=date("H:i:s");
-		
-		if($autorizacion['autoriza']=="off"){
-			$mensaje="Medicamento no autorizado";
-		}
-		else{
-			$mensaje="Medicamento autorizado";
-		}
-		
-		$sql ="INSERT INTO 
-				".$wmovhos."_000055(    Medico     , Fecha_data  ,  Hora_data ,       Kauhis                   ,  Kauing                       ,  Kaufec     ,           Kaudes                                        ,       Kaumen          , Kauido ,   Seguridad   ) 
-							VALUES ( '".$wmovhos."', '".$fecha."', '".$hora."', '".$autorizacion['historia']."', '".$autorizacion['ingreso']."', '".$fecha."', '".$autorizacion['codigo_medicamento']." - ".$mensaje."', 'Proceso autorizacion',   '0'  , 'C-".$user."' )
-			   "; 
-	   
-	   $res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	$wmovhos=consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+	
+	$mensaje="";
+	
+	$fecha=date(' Y-m-j');
+	$hora=date("H:i:s");
+	
+	if($autorizacion['autoriza']=="off"){
+		$mensaje="Medicamento no autorizado";
+	}
+	else{
+		$mensaje="Medicamento autorizado";
+	}
+	
+	$descripcion = $autorizacion['codigo_medicamento']." - ".$mensaje
+				   ."<br>Justificacion al ordenar: ".$autorizacion['justificacion_medico_ordena']
+				   ."<br>Justificacion al autorizar: ".$autorizacion['justificacion_medico_autoriza'];
+	
+	$sql ="INSERT INTO 
+			".$wmovhos."_000055(    Medico     , Fecha_data  ,  Hora_data ,       Kauhis                   ,  Kauing                       ,  Kaufec     ,        Kaudes     ,       Kaumen          , Kauido ,   Seguridad   ) 
+						VALUES ( '".$wmovhos."', '".$fecha."', '".$hora."', '".$autorizacion['historia']."', '".$autorizacion['ingreso']."', '".$fecha."', '".$descripcion."', 'Proceso autorizacion',   '0'  , 'C-".$user."' )
+		   "; 
+   
+   $res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
 }
 
 
@@ -334,9 +369,9 @@ function consultarLog( $conex, $wmovhos, $his, $ing ){
 				'0' 		=> $rows[ 'Kauhis' ]."-".$rows[ 'Kauing' ],
 				'1' 		=> $rows[ 'Pacno1' ]." ".$rows[ 'Pacno2' ]." ".$rows[ 'Pacap1' ]." ".$rows[ 'Pacap2' ],
 				'2' 		=> $rows[ 'Kaufec' ],
-				'3' 		=> $rows[ 'Kaudes' ],
+				'3' 		=> utf8_encode( $rows[ 'Kaudes' ] ),
 				'4' 		=> explode( "-", $rows[ 'Seguridad' ] )[1]."-".utf8_encode( $rows[ 'Descripcion' ] ),
-				'5'	=> explode( "-", $rows[ 'Seguridad' ] )[1],
+				'5'			=> explode( "-", $rows[ 'Seguridad' ] )[1],
 				'6' 		=> $rows[ 'Kaumen' ],
 			];
 	}
