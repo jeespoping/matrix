@@ -176,8 +176,8 @@
                                 <th>Fecha b&uacute;squeda</th>
                                 <th>B&uacute;squeda</th>
                                 <th>C&oacute;digo persona asociada</th>
-                                <th>Nombre persona asociada</th>
                                 <th>Documento persona asociada</th>
+                                <th>Nombre persona asociada</th>
                                 <th>Fecha de lectura medida</th>
                                 <th>Medida</th>
                                 <th>Valor medida</th>
