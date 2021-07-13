@@ -1,6 +1,7 @@
 <?php
-
+$consultaAjax = '';
 include_once("conex.php");
+include_once("root/comun.php");
 /**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : F1.php
@@ -1238,6 +1239,37 @@ else
 							}
 							else
 							{
+								$token 	  = '';
+								$datosJWT = array_pop( explode( "/", $DATA[$i][2] ) );
+								$JWT 	  = explode( "-", $datosJWT );
+								if( $JWT[0] == "JWT" )
+								{
+									if( $_SESSION && $_SESSION['codigo'] )
+									{
+										$encabezado	= [
+														'alg' => 'HS256', 
+														'typ' => 'JWT' 
+													];
+													
+										$datos 		= [
+														'usuario' 	=> $_SESSION['codigo'], 
+														'password' 	=> $_SESSION['password'], 
+														'wemp_pmla'	=> $JWT[1], 
+														'iat'		=> time(), 
+														'exp'		=> time()+24*3600, 
+													];
+													
+										$secret_key = consultarAliasPorAplicacion( $conex, $JWT[1], "jwtLaravelToyota" );
+										$cifrado 	= 'sha256';
+										
+										$token = crearTokenJwt( $encabezado, $datos, $secret_key, $cifrado );
+										
+										$dt = explode( "/", $DATA[$i][2] );
+										$dt[ count($dt)-1 ] = "?token=".$token;
+										$DATA[$i][2] = implode( "/", $dt );
+									}
+								}
+								
 								if(strtoupper(substr($DATA[$i][3],0,3)) == "JSP")
 								{
 									$path=substr($DATA[$i][3],3).$DATA[$i][2];
