@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Notificaciones Medidas de personal - Listado</title>
+        <title>Informe totalizado Medidas de personal - Listado</title>
         <meta charset="utf-8">
         <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
         <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
