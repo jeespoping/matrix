@@ -25224,11 +25224,24 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 						{
 							if( conTarifa != 'on' )
 							{
-								$('#taJusParaArtsSinTarifas').val('');
+								var modalTarifa = $('#question').clone();
 								
-								$.blockUI({ message: $('#question'), css: { width: '500px' } });
+								modalTarifa.html( modalTarifa.html().replace( "@Articulo", "<b>"+nombreArticuloAlert+"</b>" ) );
+								
+								$('#taJusParaArtsSinTarifas', modalTarifa ).val('');
+								
+								$('#taJusParaArtsSinTarifas', modalTarifa ).blur(function(){
+										if( $(this).val() != '' ){
+											$( "#btnAceptarAST", modalTarifa ).attr({disabled:false});
+										}
+										else{
+											$( "#btnAceptarAST", modalTarifa ).attr({disabled:true});			
+										}
+									});
+								
+								$.blockUI({ message: modalTarifa, css: { width: '500px' } });
 
-								$('#btnAceptarAST')
+								$('#btnAceptarAST', modalTarifa )
 									.attr({disabled:true})
 									.off( "click" )
 									.click(function() {
@@ -25253,7 +25266,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 								catch(e){}
 								
 								
-								$('#btnCerrarAST')
+								$('#btnCerrarAST', modalTarifa )
 									.off( "click" )
 									.click(function() {
 										objDfr.resolve( false );
@@ -27196,15 +27209,6 @@ $(document).ready(function () {
 	$( "[href=#fragment-7]" ).click(function(){
 		mostrarAuditoria();
 	});
-	
-	$('#taJusParaArtsSinTarifas').blur(function(){
-		if( $(this).val() != '' ){
-			$( "#btnAceptarAST" ).attr({disabled:false});
-		}
-		else{
-			$( "#btnAceptarAST" ).attr({disabled:true});			
-		}
-	})
 	
 });
 
