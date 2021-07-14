@@ -1225,7 +1225,8 @@ function consultarDiasDispensacion( $conex, $wmovhos, $his, $ing ){
 	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
 	
 	if( $rows = mysql_fetch_array ($res) ){
-		$val = $rows['Ccoddi'];
+		if( !empty( $rows['Ccoddi'] ) && is_numeric( $rows['Ccoddi'] ) )
+			$val = $rows['Ccoddi'];
 	}
 	
 	return $val;
