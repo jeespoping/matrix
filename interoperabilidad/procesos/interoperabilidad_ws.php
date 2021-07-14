@@ -127,6 +127,80 @@ class medicoDTO{
     
 };
 
+function consultarRelacionOrdenesMatrixDinamica( $conex, $wmovhos, $tor, $nro, $cons ){
+	
+	$val = false;
+	
+	$fecha = date( "Y-m-d" );
+	$hora  = date( "H:i:s" );
+	
+	$sql = "SELECT Rodite
+			  FROM ".$wmovhos."_000295
+			 WHERE Rodtor = '".$tor."'
+			   AND Rodnro = ".$nro."
+			   AND Rodcid = ".$cons."
+			   AND Rodest = 'on'
+			";
+						 
+	$res = mysql_query( $sql, $conex );
+	
+	if( $res ){
+		
+		if( $rows = mysql_fetch_array($res) ){
+			$val = $rows['Rodite'];
+		}
+	}
+	else{
+		echo "Error consultando Relacion Ordenes Matrix Dinamica";
+	}
+	
+	return $val;
+	
+}
+
+function guardandoRelacionOrdenesMatrixDinamica( $conex, $wmovhos, $tor, $nro, $ite, $cons ){
+	
+	$val = false;
+	
+	$fecha = date( "Y-m-d" );
+	$hora  = date( "H:i:s" );
+	
+	$sql = "		INSERT INTO 
+			".$wmovhos."_000295(      medico   , Fecha_data  ,  Hora_data ,   Rodtor  ,  Rodnro ,  Rodite ,  Rodcid  , Rodest,   Seguridad      ) 
+						 VALUES( '".$wmovhos."', '".$fecha."', '".$hora."', '".$tor."', ".$nro.", ".$ite.", ".$cons.",  'on' , 'C-".$wmovhos."' )";
+						 
+	$resEstado = mysql_query( $sql, $conex );
+	
+	if( $resEstado ){
+		$val = true;
+	}
+	
+	if( !$val ){
+		registrarDetalleLog( $conex, $wmovhos, '', '', $tor, $nro, $ite, 'Error al insertar relacion entre matrix y dinámica', $cons );
+	}
+	
+	return true;
+}
+
+/**
+ * Guarda la relacion de lo guardado con respecto a lo insertado
+ */
+function relacionOrdenesMatrixDinamica( $conex, $wmovhos, $ordenes ){
+	
+	 foreach( $ordenes as $key => $orden ){
+		
+		list( $tor, $nro ) = explode( "-", $key );
+		
+		foreach( $orden['items'] as $item )
+        {			
+			$ite  = $item['item'];
+			$cons = $item['consecutivo'];
+			
+			guardandoRelacionOrdenesMatrixDinamica( $conex, $wmovhos, $tor, $nro, $ite, $cons );
+        }
+	}
+}
+
 function cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, $estado, $fecha, $hora, $justificacion, $historia, $ingreso ){
     
     $respuesta = array('message'=>'', 'result'=>array(), 'status'=>'' );
@@ -341,31 +415,31 @@ function consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $historia, $ingreso
         
         
         $sql = "SELECT a.Dettor, a.Detnro, a.Detite, a.Detcod, c.Codigo, c.Nombre, b.Codcups, a.id, Detesi, Detlog, Detjus, Deteex, b.Codigo as Codlma, Detusu
-                FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c
-                WHERE a.Dettor = '".$tipoOrden."'
-                AND a.Detcod = b.codigo
-                AND a.Detenv = 'on'
-                AND a.Detest = 'on'
-                AND b.Estado = 'on'
-                AND b.Codcups= c.Codigo
-                AND d.Ordtor = a.Dettor
-                AND d.Ordnro = a.Detnro
-                AND d.Ordhis = '".$historia."'
-                AND d.Ording = '".$ingreso."'
-                UNION
+                  FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c
+                 WHERE a.Dettor = '".$tipoOrden."'
+                   AND a.Detcod = b.codigo
+                   AND a.Detenv = 'on'
+                   AND a.Detest = 'on'
+                   AND b.Estado = 'on'
+                   AND b.Codcups= c.Codigo
+                   AND d.Ordtor = a.Dettor
+                   AND d.Ordnro = a.Detnro
+                   AND d.Ordhis = '".$historia."'
+                   AND d.Ording = '".$ingreso."'
+                 UNION
                 SELECT a.Dettor, a.Detnro, a.Detite, a.Detcod, c.Codigo, c.Nombre, b.Codcups, a.id, Detesi, Detlog, Detjus, Deteex, b.Codigo as Codlma, Detusu
-                FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000017 b, root_000012 c
-                WHERE a.Dettor = '".$tipoOrden."'
-                AND a.Detcod = b.codigo
-                AND a.Detest = 'on'
-                AND a.Detenv = 'on'
-                AND b.Nuevo  = 'on'
-                AND b.Estado = 'on'
-                AND b.Codcups= c.Codigo
-                AND d.Ordtor = a.Dettor
-                AND d.Ordnro = a.Detnro
-                AND d.Ordhis = '".$historia."'
-                AND d.Ording = '".$ingreso."'
+                  FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000017 b, root_000012 c
+                 WHERE a.Dettor = '".$tipoOrden."'
+                   AND a.Detcod = b.codigo
+                   AND a.Detest = 'on'
+                   AND a.Detenv = 'on'
+                   AND b.Nuevo  = 'on'
+                   AND b.Estado = 'on'
+                   AND b.Codcups= c.Codigo
+                   AND d.Ordtor = a.Dettor
+                   AND d.Ordnro = a.Detnro
+                   AND d.Ordhis = '".$historia."'
+                   AND d.Ording = '".$ingreso."'
                 ";
         
         $res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -374,9 +448,9 @@ function consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $historia, $ingreso
                         
             //Busco si el cups es ofertado
             $sql = "SELECT *
-                    FROM ".$tabla." a
-                    WHERE a.".$c_estado." = 'on'
-                    AND a.".$campo." = '".$row['Codcups']."'
+                      FROM ".$tabla." a
+                     WHERE a.".$c_estado." = 'on'
+                       AND a.".$campo." = '".$row['Codcups']."'
                     ";
             
             $resOfertas = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -392,6 +466,7 @@ function consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $historia, $ingreso
                     $val[ $index ]['medico'] = $row[ 'Detusu' ];
                     $val[ $index ]['items'] = [];
                 }
+				
                 $val[ $index ]['tipoServicioWS']= $tipoServicio;
                 $val[ $index ]['items'][] = [
                                 'codigo' 		=> $row[ 'Codcups' ] ,
@@ -401,7 +476,7 @@ function consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $historia, $ingreso
                                 'justificacion'	=> $row[ 'Detjus' ] ,
                                 'estadoExterno'	=> $row[ 'Deteex' ] ,	//Estado en que se encuentra la cita hl7
                                 'medico'		=> $row[ 'Detusu' ] ,	//Estado en que se encuentra la cita hl7
-                                
+                                'consecutivo'	=> count( $val[ $index ]['items'] )+1,	//Usado solo par enviar el orden consecutivo a dinámica
                             ];
             }
             else
@@ -415,7 +490,7 @@ function consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $historia, $ingreso
 }
 
 
-function crearXMLPorHistoria( $conex, $wemp_pmla, $his, $ing ){
+function crearXMLPorHistoria( $conex, $wemp_pmla, $his, $ing, $ordenes ){
     
     $wmovhos	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
     $whce		= consultarAliasPorAplicacion( $conex, $wemp_pmla, "hce" );
@@ -423,7 +498,8 @@ function crearXMLPorHistoria( $conex, $wemp_pmla, $his, $ing ){
     
     $paciente = informacionPaciente( $conex, $wemp_pmla, $his, $ing );
     
-    $ordenes 	= consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $his, $ing );
+	//Se usa como parametro
+    // $ordenes 	= consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $his, $ing );
 
     $codigoDepartamentoWS	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "codigoDepartamentoWS" );
     $codigoInstitucionRemiteWS	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "codigoInstitucionRemiteWS" );
@@ -433,6 +509,7 @@ function crearXMLPorHistoria( $conex, $wemp_pmla, $his, $ing ){
     //echo "<pre>"; var_dump($ordenes); echo "</pre>";
     //echo "<pre>"; var_dump($medico); echo "</pre>";
     $datos = array();
+	
     foreach( $ordenes as $key => $orden ){
         
         list( $tipoOrden, $nroOrden ) = explode( "-", $key );
@@ -679,7 +756,7 @@ function crearXMLPorHistoria( $conex, $wemp_pmla, $his, $ing ){
             $xw->endElement();
             //$xw->startElement( "consecutivoPrestExterno" );
             $xw->startElement( "consecutivo" );
-            $xw->text( $item['item'] );
+            $xw->text( $item['consecutivo'] );
             $xw->endElement();
             
             
@@ -720,17 +797,17 @@ function crearXMLPorHistoria( $conex, $wemp_pmla, $his, $ing ){
         
         //marcarOrdenesEnviadas( $conex, $whce, $wmovhos, $tipoOrden, $nroOrden);
         
-        $datos[]= array(
-        "msgXML" => $msgXML,
-        "tipoOrden" => $tipoOrden,
-        "nroOrden" => $nroOrden,
-        "wmovhos" => $wmovhos,
-        "paciente" => $paciente,
-        "whce" => $whce
+        $datos[] = array(
+			"msgXML" 	=> $msgXML,
+			"tipoOrden" => $tipoOrden,
+			"nroOrden" 	=> $nroOrden,
+			"wmovhos" 	=> $wmovhos,
+			"paciente" 	=> $paciente,
+			"whce"		=> $whce,
         );
     }
+	
     return $datos;
-    
 }
 
 
@@ -742,7 +819,8 @@ function conexionws($conex, $wemp_pmla, $estructura){
         
     try{
         $soap_do = curl_init(); 
-        curl_setopt($soap_do, CURLOPT_URL,            $url );   
+        
+		curl_setopt($soap_do, CURLOPT_URL,            $url );   
         curl_setopt($soap_do, CURLOPT_CONNECTTIMEOUT, 10); 
         curl_setopt($soap_do, CURLOPT_TIMEOUT,        10); 
         curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, true );
@@ -751,9 +829,12 @@ function conexionws($conex, $wemp_pmla, $estructura){
         curl_setopt($soap_do, CURLOPT_POST,           true ); 
         curl_setopt($soap_do, CURLOPT_POSTFIELDS,    $estructura); 
         curl_setopt($soap_do, CURLOPT_HTTPHEADER,     array('Content-Type: text/xml; charset=utf-8', 'Content-Length: '.strlen($estructura) ));
-        $result = curl_exec($soap_do);
-        return $result;
-    }catch(Exception $e){
+        
+		$result = curl_exec($soap_do);
+        
+		return $result;
+    }
+	catch(Exception $e){
         echo "Error en la conexion ". $e;
     }
     
@@ -851,39 +932,43 @@ function cambiarEstadoExamenWs( $conex, $whce, $wmovhos, $tor, $nro, $tipoRespue
 
 
 function insertarOrden($conex, $wemp_pmla, $historia, $ingreso){
-    //$conexiondinamica = conexionws($conex, $wemp_pmla);
-    
-    
-        $datos= crearXMLPorHistoria( $conex, $wemp_pmla, $historia, $ingreso );
-        if(!empty($datos)){
-            foreach($datos as $arrXML){
-            
-            //$msgXML = simplexml_load_string($arrXML['msgXML']);
-            
-            
-        
-                $respuesta = conexionws($conex, $wemp_pmla, $arrXML['msgXML']);
-                if(!empty($respuesta)){
-                    $DOM = new DOMDocument('1.1', 'utf-8');
-                    $DOM->loadXML($respuesta);
-                    $res = trim($DOM->textContent);
-                    $status =  $res;
-                    registrarMsgLogHl7( $conex, $arrXML['wmovhos'], $historia, $ingreso, $arrXML['paciente']['tipoDocumento'], $arrXML['paciente']['nroDocumento'], 'XML enviado con respuesta:'.$status, $arrXML['tipoOrden'], $arrXML['nroOrden'], '',$arrXML['msgXML'] );
-                    registrarDetalleLog( $conex, $arrXML['wmovhos'], $historia, $ingreso, $arrXML['tipoOrden'], $arrXML['nroOrden'], '', 'XML enviado con respuesta:'.$status, $arrXML['msgXML'] );
-                    if( $status == "S"){
-                        marcarOrdenesEnviadas( $conex, $arrXML['whce'], $arrXML['wmovhos'],$arrXML['tipoOrden'], $arrXML['nroOrden']);
-                        echo "Envio Exitoso.";
-                    }
-                }
-            }
-        }else{
-                $wmovhos	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
-                
-                registrarMsgLogHl7( $conex,$wmovhos, $historia, $ingreso, $arrXML['paciente']['tipoDocumento'], $arrXML['paciente']['nroDocumento'], 'Error en la generacion del XML', $arrXML['tipoOrden'], $arrXML['nroOrden'], '',$arrXML['msgXML'] );
-                registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso, $arrXML['tipoOrden'], $arrXML['nroOrden'], '',  'Error en la generacion del XML', $arrXML['msgXML'] );
-                echo "No se pudo generar XML porque el examen no esta ofertado";
-        }
-    
+	
+	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+	$whce	 = consultarAliasPorAplicacion( $conex, $wemp_pmla, "hce" );
+
+	$ordenes = consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $historia, $ingreso );
+
+	$datos = crearXMLPorHistoria( $conex, $wemp_pmla, $historia, $ingreso, $ordenes );
+	
+	if( !empty($datos ))
+	{
+		foreach($datos as $arrXML)
+		{	
+			$respuesta = conexionws($conex, $wemp_pmla, $arrXML['msgXML']);
+			
+			if(!empty($respuesta))
+			{
+				$DOM = new DOMDocument('1.1', 'utf-8');
+				$DOM->loadXML($respuesta);
+				$res = trim($DOM->textContent);
+				$status =  $res;
+				registrarMsgLogHl7( $conex, $arrXML['wmovhos'], $historia, $ingreso, $arrXML['paciente']['tipoDocumento'], $arrXML['paciente']['nroDocumento'], 'XML enviado con respuesta:'.$status, $arrXML['tipoOrden'], $arrXML['nroOrden'], '',$arrXML['msgXML'] );
+				registrarDetalleLog( $conex, $arrXML['wmovhos'], $historia, $ingreso, $arrXML['tipoOrden'], $arrXML['nroOrden'], '', 'XML enviado con respuesta:'.$status, $arrXML['msgXML'] );
+				if( $status == "S")
+				{
+					marcarOrdenesEnviadas( $conex, $arrXML['whce'], $arrXML['wmovhos'],$arrXML['tipoOrden'], $arrXML['nroOrden']);
+					relacionOrdenesMatrixDinamica( $conex, $wmovhos, $ordenes );
+					
+					echo "Envio Exitoso.";
+				}
+			}
+		}
+	}
+	else{   
+			registrarMsgLogHl7( $conex,$wmovhos, $historia, $ingreso, $arrXML['paciente']['tipoDocumento'], $arrXML['paciente']['nroDocumento'], 'Error en la generacion del XML', $arrXML['tipoOrden'], $arrXML['nroOrden'], '',$arrXML['msgXML'] );
+			registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso, $arrXML['tipoOrden'], $arrXML['nroOrden'], '',  'Error en la generacion del XML', $arrXML['msgXML'] );
+			echo "No se pudo generar XML porque el examen no esta ofertado";
+	}
 }
 
 
@@ -943,80 +1028,104 @@ function WSRecepcion_De_Resultados($valorRespuesta){
     $tipoRespuesta = analizarxml($valorRespuesta);
     
 
-    if((isset($tipoRespuesta)) && !(empty($tipoRespuesta))){
-            $wemp_pmla= $GLOBALS['wemp_pmla'];
+    if((isset($tipoRespuesta)) && !(empty($tipoRespuesta)))
+	{
+		$wemp_pmla= $GLOBALS['wemp_pmla'];
             
-                    if((isset($valorRespuesta)) && !(empty($valorRespuesta))){
-                            if((isset($wemp_pmla)) && !(empty($wemp_pmla))){
-                                $wmovhos	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
-                                $whce		= consultarAliasPorAplicacion( $conex, $wemp_pmla, "hce" );
-                                $wcliame	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
-                                $xml = simplexml_load_string($valorRespuesta);
-                            
-                                    if($tipoRespuesta == "resultados"){
-                                                list( $tipoOrden, $nroOrden ) =  explode('-',$xml->resultados->infoGeneral->numeroOrden);
-                                                list( $historia, $ingreso  ) =  explode('-',$xml->resultados->paciente->numeroHistoria);
-                                                $item = $xml->resultados->resultado->examen->consecutivo;
-                                                
-                                                $respuesta = array(
-                                                                        'Rldtio'=> $tipoOrden,
-                                                                        'Rldnuo'=> $nroOrden,
-                                                                        'Rldite' => $item,
-                                                                        'Rldxml' => utf8_encode($valorRespuesta),
-                                                                        'Rldhis' => $historia,
-                                                                        'Rlding' => $ingreso
-                                                                        );
-                                                guardarResultadoWs($conex,$wmovhos, $respuesta);
-                                                $result = cambiarEstadoExamenWs( $conex, $whce, $wmovhos, $tipoOrden, $nroOrden, $tipoRespuesta, $wemp_pmla, strval($item));
-                                                if($result ){
-                                                    $datos = obtenerPacienteXml($xml, $tipoRespuesta );	
-                                                    registrarMsgLogHl7( $conex,$wmovhos, $historia, $ingreso, $datos['paciente']->kdni, $datos['paciente']->dni, 'Se ha cambiado el estado  a Finalizado', $datos['orden']['tipoOrden'], $datos['orden']['numOrden'] ,'',$xml->asXML());
-                                                    registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso,$datos['orden']['tipoOrden'], $datos['orden']['numOrden'] , '',  'Se ha cambiado el estado a Finalizado', $xml->asXML() );
-                                                    
-                                                        $resultado = array( "codigo"=> 200,
-                                                                        "msgError"=> "",
-                                                                        "status"=> "S");
-                                                
-                                                    return  json_encode($resultado);
-                                                
-                                                }else{
-                                                    $resultado = array( "codigo"=> 201,
-                                                                        "msgError"=> "La orden no exite",
-                                                                        "status"=> "N");
-                                                    
-                                                        return  json_encode($resultado);
-                                                    
-                                                }
-                                        
-                                    }elseif($tipoRespuesta == "estado"){
-                                            list( $tipoOrden, $nroOrden ) =  explode('-',$xml->notificacionCambioEstadoExterno->encabezado->nroRemisionExterno);
-                                            $item = $xml->notificacionCambioEstadoExterno->detalle->consecutivoPrestExterno;
-                                            $result = cambiarEstadoExamenWs( $conex, $whce, $wmovhos, $tipoOrden, $nroOrden, $tipoRespuesta, $wemp_pmla, $item);
-                                            if($result ){
-                                                $datos = obtenerPacienteXml($xml, $tipoRespuesta );
-                                                    list( $historia, $ingreso  ) =  explode('-',$datos['paciente']->numeroHistoria);	
-                                                    registrarMsgLogHl7( $conex,$wmovhos, $historia, $ingreso, $datos['paciente']->kdni, $datos['paciente']->dni, 'Se ha cambiado el estado en proceso',$tipoOrden, $nroOrden ,'',$xml->asXML());
-                                                    registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso,$tipoOrden, $nroOrden , '',  'Se ha cambiado el estado en proceso', $xml->asXML() );
-                                                
-                                                    $resultado = array( "codigo"=> 200,
-                                                                        "msgError"=> "",
-                                                                        "status"=> "S");
-                                                
-                                                    return  json_encode($resultado);
-                                                
-                                            }else{
-                                                $resultado = array( "codigo"=> 201,
-                                                                    "msgError"=> "La orden no exite",
-                                                                    "status"=> "N");
-                                                
-                                                    return  json_encode($resultado);
-                                                
-                                            }
-                                            
-                                    }
-                        }
-                    }	
-                }
+		if((isset($valorRespuesta)) && !(empty($valorRespuesta)))
+		{
+			if((isset($wemp_pmla)) && !(empty($wemp_pmla)))
+			{
+				$wmovhos	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+				$whce		= consultarAliasPorAplicacion( $conex, $wemp_pmla, "hce" );
+				$wcliame	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
+				$xml 		= simplexml_load_string($valorRespuesta);
+			
+				if($tipoRespuesta == "resultados")
+				{
+					list( $tipoOrden, $nroOrden ) =  explode('-',$xml->resultados->infoGeneral->numeroOrden);
+					list( $historia, $ingreso  ) =  explode('-',$xml->resultados->paciente->numeroHistoria);
+					$item = $xml->resultados->resultado->examen->consecutivo;
+					
+					echo $item = consultarRelacionOrdenesMatrixDinamica( $conex, $wmovhos, $tipoOrden, $nroOrden, $item );
+					
+					if( $item !== false )
+					{
+						$respuesta = array(
+										'Rldtio'=> $tipoOrden,
+										'Rldnuo'=> $nroOrden,
+										'Rldite' => $item,
+										'Rldxml' => utf8_encode($valorRespuesta),
+										'Rldhis' => $historia,
+										'Rlding' => $ingreso
+									);
+						
+						guardarResultadoWs($conex,$wmovhos, $respuesta);
+						
+						$result = cambiarEstadoExamenWs( $conex, $whce, $wmovhos, $tipoOrden, $nroOrden, $tipoRespuesta, $wemp_pmla, strval($item));
+						
+						if($result )
+						{
+							$datos = obtenerPacienteXml($xml, $tipoRespuesta );	
+							registrarMsgLogHl7( $conex,$wmovhos, $historia, $ingreso, $datos['paciente']->kdni, $datos['paciente']->dni, 'Se ha cambiado el estado  a Finalizado', $datos['orden']['tipoOrden'], $datos['orden']['numOrden'] ,'',$xml->asXML());
+							registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso,$datos['orden']['tipoOrden'], $datos['orden']['numOrden'] , '',  'Se ha cambiado el estado a Finalizado', $xml->asXML() );
+							
+							$resultado = array( "codigo"=> 200,
+												"msgError"=> "",
+												"status"=> "S");
+						
+							return  json_encode($resultado);
+						
+						}
+						else{
+							$resultado = array( "codigo"=> 201,
+												"msgError"=> "La orden no existe",
+												"status"=> "N");
+							
+							return  json_encode($resultado);
+							
+						}
+					}
+					else{
+						$resultado = array( "codigo"=> 201,
+											"msgError"=> "La orden no existe - Item no encontrado",
+											"status"=> "N");
+							
+						return  json_encode($resultado);
+					}
+				}
+				elseif($tipoRespuesta == "estado")
+				{
+					list( $tipoOrden, $nroOrden ) =  explode('-',$xml->notificacionCambioEstadoExterno->encabezado->nroRemisionExterno);
+					$item = $xml->notificacionCambioEstadoExterno->detalle->consecutivoPrestExterno;
+					$result = cambiarEstadoExamenWs( $conex, $whce, $wmovhos, $tipoOrden, $nroOrden, $tipoRespuesta, $wemp_pmla, $item);
+					
+					if($result )
+					{
+						$datos = obtenerPacienteXml($xml, $tipoRespuesta );
+						list( $historia, $ingreso  ) =  explode('-',$datos['paciente']->numeroHistoria);	
+						registrarMsgLogHl7( $conex,$wmovhos, $historia, $ingreso, $datos['paciente']->kdni, $datos['paciente']->dni, 'Se ha cambiado el estado en proceso',$tipoOrden, $nroOrden ,'',$xml->asXML());
+						registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso,$tipoOrden, $nroOrden , '',  'Se ha cambiado el estado en proceso', $xml->asXML() );
+					
+						$resultado = array( "codigo"=> 200,
+											"msgError"=> "",
+											"status"=> "S");
+					
+						return  json_encode($resultado);
+						
+					}
+					else
+					{
+						$resultado = array( "codigo"=> 201,
+											"msgError"=> "La orden no exite",
+											"status"=> "N");
+						
+						return  json_encode($resultado);
+					}  
+				}
+			}
+		}	
+	}
 }
 
 
