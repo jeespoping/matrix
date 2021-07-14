@@ -8,7 +8,7 @@
 	
 	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
 	
-	encabezado( "AUTORIZACION DE MEDICAMENTOS", $wactualiz, $institucion->baseDeDatos );
+	encabezado( "AUTORIZACION ARTICULOS SIN CONVENIO", $wactualiz, $institucion->baseDeDatos );
 	
 	list($id, $user) = explode("-",$_SESSION['user']);
 	$director = puedeAutorizarArticulos( $conex, $wmovhos, $user );
