@@ -335,7 +335,7 @@ function registrarlog($conex,$autorizacion,$wemp_pmla,$user){
 }
 
 
-function consultarLog( $conex, $wmovhos, $his, $ing ){
+function consultarLog( $conex, $wemp_pmla, $wmovhos, $his, $ing ){
 	  
 	$val = [ 'data' => [] ]; 
 	
@@ -348,7 +348,8 @@ function consultarLog( $conex, $wmovhos, $his, $ing ){
 			   AND orihis = kauhis
 			   AND oritid = pactid
 			   AND oriced = pacced
-			 LIMIT 1, 100 ";
+			   AND oriori = '".$wemp_pmla."'
+			";
 	
 	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." Al consultar log - " . mysql_error());
 	
@@ -394,7 +395,7 @@ if( $_GET['accion'] ){
 			$ingreso  = $_POST['ingreso'];
 			$wmovhos  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
 			
-			$result = consultarLog( $conex, $wmovhos, $historia, $ingreso );
+			$result = consultarLog( $conex, $wemp_pmla, $wmovhos, $historia, $ingreso );
 			
 			echo json_encode( $result );
 			
