@@ -1047,7 +1047,7 @@ function WSRecepcion_De_Resultados($valorRespuesta){
 					list( $historia, $ingreso  ) =  explode('-',$xml->resultados->paciente->numeroHistoria);
 					$item = $xml->resultados->resultado->examen->consecutivo;
 					
-					echo $item = consultarRelacionOrdenesMatrixDinamica( $conex, $wmovhos, $tipoOrden, $nroOrden, $item );
+					$item = consultarRelacionOrdenesMatrixDinamica( $conex, $wmovhos, $tipoOrden, $nroOrden, $item );
 					
 					if( $item !== false )
 					{
@@ -1098,6 +1098,9 @@ function WSRecepcion_De_Resultados($valorRespuesta){
 				{
 					list( $tipoOrden, $nroOrden ) =  explode('-',$xml->notificacionCambioEstadoExterno->encabezado->nroRemisionExterno);
 					$item = $xml->notificacionCambioEstadoExterno->detalle->consecutivoPrestExterno;
+					
+					$item = consultarRelacionOrdenesMatrixDinamica( $conex, $wmovhos, $tipoOrden, $nroOrden, $item );
+					
 					$result = cambiarEstadoExamenWs( $conex, $whce, $wmovhos, $tipoOrden, $nroOrden, $tipoRespuesta, $wemp_pmla, $item);
 					
 					if($result )
@@ -1117,7 +1120,7 @@ function WSRecepcion_De_Resultados($valorRespuesta){
 					else
 					{
 						$resultado = array( "codigo"=> 201,
-											"msgError"=> "La orden no exite",
+											"msgError"=> "La orden no existe",
 											"status"=> "N");
 						
 						return  json_encode($resultado);
