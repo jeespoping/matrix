@@ -228,9 +228,12 @@ function centroCostosCM()
 		
 		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 		
-		if( $rows = mysql_fetch_array( $res ) ){
-			return $rows[ 'Ccocod' ];
-		}
+		if ( mysql_num_rows($res) > 1 )
+	{
+		return "Hay más de 1 centro de costos con los mismos parámetros";
+	}
+	$rows = mysql_fetch_array( $res );
+	return $rows[ 'Ccocod' ];
 	}
 /**********************************************************************************************
  * Si se hace una aplicacion se actualiza el campo Unidad de fraccion y cantidad de fraccion

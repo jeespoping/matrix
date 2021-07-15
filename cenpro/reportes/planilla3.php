@@ -58,9 +58,12 @@ function centroCostosCM()
 		
 		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 		
-		if( $rows = mysql_fetch_array( $res ) ){
-			return $rows[ 'Ccocod' ];
-		}
+		if ( mysql_num_rows($res) > 1 )
+	{
+		return "Hay más de 1 centro de costos con los mismos parámetros";
+	}
+	$rows = mysql_fetch_array( $res );
+	return $rows[ 'Ccocod' ];
 	}
 
 function calcularProducto($cantidad, $lote, $signo, $ano, $mes)
