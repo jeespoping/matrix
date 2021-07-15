@@ -25247,10 +25247,10 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 									.click(function() {
 										$( "#wjusparaautorizar"+tipoProtocoloAux+idx ).val( $('#taJusParaArtsSinTarifas').val() );
 										
+										$.unblockUI()
+										
 										// update the block message
-										objDfr.resolve( true );
-											
-										$.unblockUI();
+										setTimeout( function(){ objDfr.resolve( true ); }, 500 );
 										
 										$( this ).off( "click" );
 										
