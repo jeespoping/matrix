@@ -24,43 +24,13 @@
 </center>
 <?php
 //2020-08-02, DIDIER OROZCO MODIFICA: SE AGREGAN LOS NUEVOS CAMPOS QUE SE CREARON EN LA TABLA Usuarios CON EL FIN DE RECUPERAR LA CONTRASEÑA.
-//2021-06-30, JULIAN MEJIA MODIFICA: SE AGREGA VALIDACION DE USUARIO PERMITIDO PARA ACCEDER A ESTE SCRIPT Y SE DESHABILITA EL CAMPO 'ACTIVO'.
+//2021-06-30, JULIAN MEJIA MODIFICA: SE DESHABILITA EL CAMPO 'ACTIVO' PARA LA EDICION DE UN USUARIO.
 include_once("conex.php");
 @session_start();
 if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
-
-	include_once("root/comun.php");
-	$usuarioPermitidoAux = 'root';
-	$permitirAcceso = false;
-	$usuarioPermitido = consultarAliasPorAplicacion($conex,'*', 'maestroUsuarios');
-	$usuarioPermitido = ($usuarioPermitido == '') ? $usuarioPermitidoAux : $usuarioPermitido;
-	if ($usuarioPermitido != ''){
-		$pos = strpos('*', $usuarioPermitido);
-		if ($pos !== false) $permitirAcceso = true;
-		else
-		{
-			$codigosP = explode(',',$usuarioPermitido);
-			if (is_array($codigosP)){
-				$user_session = explode('-', $_SESSION['user']);
-				$wuse = $user_session[1];
-				if (in_array($wuse,$codigosP)) $permitirAcceso = true;
-			}
-		}
-	}
-	
-    if(!$permitirAcceso){
-        ?>
-        <div align="center">
-            <label>USUARIO NO AUTORIZADO PARA CONSULTAR<br/>
-            Ingrese de nuevo a Matrix con un usuario v&aacutelido</label>
-        </div>
-        <?php
-        return;
-    }
-	
 	$superglobals = array($_SESSION,$_REQUEST);
 	foreach ($superglobals as $keySuperglobals => $valueSuperglobals)
 	{

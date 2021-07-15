@@ -1,6 +1,7 @@
 <?php
-
+$consultaAjax = '';
 include_once("conex.php");
+include_once("root/comun.php");
 /**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : F1.php
@@ -264,7 +265,7 @@ function resetIntentos($codigo,$conex){
     // return $num;
 }
 
-function consultarAliasPorAplicacion($conexion, $codigoInstitucion, $nombreAplicacion){
+function consultarAliasPorAplicacionAux($conexion, $codigoInstitucion, $nombreAplicacion){
 	$q = " SELECT
 				Detval
 			FROM
@@ -732,8 +733,8 @@ else
 				/* cerrar sentencia */
 				mysqli_stmt_close($stmt);
 
-				$minutos =  consultarAliasPorAplicacion($conex, '*', 'tiempoBloqueoIntentos');
-				$limiteIntentos =  consultarAliasPorAplicacion($conex, '*', 'numeroIntentosPassword');
+				$minutos =  consultarAliasPorAplicacionAux($conex, '*', 'tiempoBloqueoIntentos');
+				$limiteIntentos =  consultarAliasPorAplicacionAux($conex, '*', 'numeroIntentosPassword');
 				$msgIntentos = false;
 				
 				if($activo=="A")
@@ -807,15 +808,17 @@ else
 				}
 
 				if ($msgIntentos){
-					$fechaLimCompleta = $fechaLimIntentos . " " . $horaLimIntentos;
-					$mensajeLoginIntentos = 'NUMERO DE INTENTOS EXCEDIDO, DEBE ESPERAR HASTA: ' . $fechaLimCompleta . ' PARA VOLVER A INGRESAR';
+					// $fechaLimCompleta = $fechaLimIntentos . " " . $horaLimIntentos;
+					$fechaLimCompleta = $horaLimIntentos;
+					// $mensajeLoginIntentos = 'NUMERO DE INTENTOS EXCEDIDO, DEBE ESPERAR HASTA: ' . $fechaLimCompleta . ' PARA VOLVER A INGRESAR';
+					$mensajeLoginIntentos = 'N&Uacute;MERO DE INTENTOS EXCEDIDO, PARA VOLVER A INGRESAR DEBE HACER LA GESTI&Oacute;N DE RESTABLECER CONTRASE&Ntilde;A';
 					echo "<body bgcolor=#FFFFFF class='fondo'>";
 					echo "<BODY TEXT='#000066'>";
 					echo "<table  border=0 align=center>";
 					echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
 					echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
 					@session_destroy();
-					echo "<td id=tipo1><A HREF='f1.php?END=on'>".$mensajeLoginIntentos."</a></td></tr></table></body>";
+					echo "<td id=tipo1><A HREF='F1.php?END=on'>".$mensajeLoginIntentos."</a></td></tr></table></body>";
 					return;
 				}
 				
@@ -1376,6 +1379,37 @@ else
 							}
 							else
 							{
+								$token 	  = '';
+								$datosJWT = array_pop( explode( "/", $DATA[$i][2] ) );
+								$JWT 	  = explode( "-", $datosJWT );
+								if( $JWT[0] == "JWT" )
+								{
+									if( $_SESSION && $_SESSION['codigo'] )
+									{
+										$encabezado	= [
+														'alg' => 'HS256', 
+														'typ' => 'JWT' 
+													];
+													
+										$datos 		= [
+														'usuario' 	=> $_SESSION['codigo'], 
+														'password' 	=> $_SESSION['password'], 
+														'wemp_pmla'	=> $JWT[1], 
+														'iat'		=> time(), 
+														'exp'		=> time()+24*3600, 
+													];
+													
+										$secret_key = consultarAliasPorAplicacion( $conex, $JWT[1], "jwtLaravelToyota" );
+										$cifrado 	= 'sha256';
+										
+										$token = crearTokenJwt( $encabezado, $datos, $secret_key, $cifrado );
+										
+										$dt = explode( "/", $DATA[$i][2] );
+										$dt[ count($dt)-1 ] = "?token=".$token;
+										$DATA[$i][2] = implode( "/", $dt );
+									}
+								}
+
 								if(strtoupper(substr($DATA[$i][3],0,3)) == "JSP")
 								{
 									$path=substr($DATA[$i][3],3).$DATA[$i][2];

@@ -835,7 +835,7 @@ function userDetails(){
 
 					}
 
-					if($(this).attr('nombrecampo')=='id' || $(this).attr('nombrecampo')=='Id' || $(this).attr('nombrecampo')=='Fecha_data' || $(this).attr('nombrecampo')=='fecha_data' || $(this).attr('nombrecampo')=='Seguridad' || $(this).attr('nombrecampo')=='seguridad' || $(this).attr('nombrecampo')=='Hora_data' || $(this).attr('nombrecampo')=='hora_data' || $(this).attr('nombrecampo')=='Medico' || $(this).attr('nombrecampo')=='medico')
+					if($(this).attr('nombrecampo')=='id' || $(this).attr('nombrecampo')=='Id' || $(this).attr('nombrecampo')=='ids' || $(this).attr('nombrecampo')=='Ids' || $(this).attr('nombrecampo')=='Fecha_data' || $(this).attr('nombrecampo')=='fecha_data' || $(this).attr('nombrecampo')=='Seguridad' || $(this).attr('nombrecampo')=='seguridad' || $(this).attr('nombrecampo')=='Hora_data' || $(this).attr('nombrecampo')=='hora_data' || $(this).attr('nombrecampo')=='Medico' || $(this).attr('nombrecampo')=='medico')
 					{
 
 						$(this).html('');
