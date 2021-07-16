@@ -24,6 +24,7 @@
 </center>
 <?php
 //2020-08-02, DIDIER OROZCO MODIFICA: SE AGREGAN LOS NUEVOS CAMPOS QUE SE CREARON EN LA TABLA Usuarios CON EL FIN DE RECUPERAR LA CONTRASEÑA.
+//2021-06-30, JULIAN MEJIA MODIFICA: SE DESHABILITA EL CAMPO 'ACTIVO' PARA LA EDICION DE UN USUARIO.
 include_once("conex.php");
 @session_start();
 if(!isset($_SESSION['user']))
@@ -65,7 +66,10 @@ else
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				break;
 				case 2:
-				$query = "insert usuarios values ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
+				$query = "INSERT INTO
+							usuarios (Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo,Empresa,Ccostos,Activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp)
+							VALUES ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
+				// $query = "insert usuarios values ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				break;
 			}
@@ -127,6 +131,7 @@ else
 			$FechaPasswordTemp=$row[14];
 			$HoraPasswordTemp=$row[15];
 			$wpar=1;
+			$selectDisabled = 'disabled';
 		}
 		else
 		{
@@ -148,6 +153,7 @@ else
 			$HoraPasswordTemp="00:00:00";
 			$tablacc="";
 			$wpar=2;
+			$selectDisabled = '';
 		}
 	}
 	echo "<input type='HIDDEN' name= 'wpar' value='".$wpar."'>";	
@@ -258,7 +264,7 @@ else
 	echo "<tr>";
 	echo "<td bgcolor=#cccccc>Activo</td>";
 	echo "<td bgcolor=#cccccc>";			
-	echo "<select name='Activo' id=tipo1>";
+	echo "<select name='Activo' id='tipo1' title='Solo se puede activar o inactivar desde Maestros Matrix' $selectDisabled>";
 	if ($Activo == substr("A-Activo", 0, 1))
 		echo "<option selected>A-Activo</option>";
 	else
