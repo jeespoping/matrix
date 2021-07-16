@@ -136,7 +136,7 @@ function eliminarPasswordTemporal($conex, $codigo)
 				   SET PasswordTemporal='',
 					   FechaPasswordTemp='0000-00-00',
 					   HoraPasswordTemp='00:00:00'
-					   WHERE Codigo=?;";
+				 WHERE Codigo=?;";
 	
 	$stUpdate = mysqli_prepare( $conex, $update );
 
@@ -704,7 +704,7 @@ else
 			
 			mysql_select_db("matrix") or die ("ERROR AL CONECTARSE A MATRIX");
 			
-			$query = "SELECT codigo,prioridad,grupo,password,activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp,Intentos,FechaLimIntentos,HoraLimIntentos
+			$query = "SELECT codigo,prioridad,grupo,password,activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp,Intentos,FechaLimIntentos,HoraLimIntentos 
 						FROM usuarios 
 					   WHERE codigo=?";
 			
@@ -733,8 +733,8 @@ else
 				/* cerrar sentencia */
 				mysqli_stmt_close($stmt);
 
-				$minutos =  consultarAliasPorAplicacion($conex, '*', 'tiempoBloqueoIntentos');
-				$limiteIntentos =  consultarAliasPorAplicacion($conex, '*', 'numeroIntentosPassword');
+				$minutos =  consultarAliasPorAplicacionAux($conex, '*', 'tiempoBloqueoIntentos');
+				$limiteIntentos =  consultarAliasPorAplicacionAux($conex, '*', 'numeroIntentosPassword');
 				$msgIntentos = false;
 				
 				if($activo=="A")
@@ -754,9 +754,9 @@ else
 						{
 							$login = false;
 							//Se modifica mensaje de respuesta Mavila 29-10-2020 :)
-							//$mensajeLogin = "CONTRASE&Ntilde;A INCORRECTA";
+							//$mensajeLogin = "CONTRASE&Ntilde;A INCORRECTA";	
 							if (!procesarIntentos($codigo,$conex, $intentos, $fechaLimIntentos, $horaLimIntentos,$minutos,$limiteIntentos)) $msgIntentos = true;
-								
+							
 							$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";	
 						}
 						else
@@ -805,6 +805,21 @@ else
 					if (!procesarIntentos($codigo,$conex, $intentos, $fechaLimIntentos, $horaLimIntentos,$minutos,$limiteIntentos)) $msgIntentos = true;		
 					
 					$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";					
+				}
+
+				if ($msgIntentos){
+					// $fechaLimCompleta = $fechaLimIntentos . " " . $horaLimIntentos;
+					$fechaLimCompleta = $horaLimIntentos;
+					// $mensajeLoginIntentos = 'NUMERO DE INTENTOS EXCEDIDO, DEBE ESPERAR HASTA: ' . $fechaLimCompleta . ' PARA VOLVER A INGRESAR';
+					$mensajeLoginIntentos = 'N&Uacute;MERO DE INTENTOS EXCEDIDO, PARA VOLVER A INGRESAR DEBE HACER LA GESTI&Oacute;N DE RESTABLECER CONTRASE&Ntilde;A';
+					echo "<body bgcolor=#FFFFFF class='fondo'>";
+					echo "<BODY TEXT='#000066'>";
+					echo "<table  border=0 align=center>";
+					echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
+					echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
+					@session_destroy();
+					echo "<td id=tipo1><A HREF='F1.php?END=on'>".$mensajeLoginIntentos."</a></td></tr></table></body>";
+					return;
 				}
 				
 				if ($msgIntentos){

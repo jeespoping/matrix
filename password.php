@@ -57,6 +57,20 @@
 			}
 		});
 	});
+	
+	// $(document).on('ready', function(){
+	// 	$('#mostrar2').on('mousedown mouseup', function(e){
+	// 		var current2 = $(this).attr('action');
+	// 		if (current2 == 'hide'){
+	// 			$(this).prev().attr('type','text');
+	// 			$(this).removeClass('glyphicon-eye-open').addClass('glyphicon-eye-close').attr('action','show');
+	// 		}
+	// 		if (current2 == 'show'){
+	// 			$(this).prev().attr('type','password');
+	// 			$(this).removeClass('glyphicon-eye-close').addClass('glyphicon-eye-open').attr('action','hide');
+	// 		}
+	// 	});
+	// });
 	</script>
 	
 </head>
@@ -237,7 +251,7 @@ else
 						$contador = $contador + 1;
 					}
 					if ($contador >= 4) {
-
+						
 						$cntPassHis = 0;
 						$esPassRepetida = false; 
 						$wpassSha = sha1( $wpass );

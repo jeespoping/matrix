@@ -67,8 +67,8 @@ else
 				break;
 				case 2:
 				$query = "INSERT INTO
-							usuarios (Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo,Empresa,Ccostos,Activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp)
-							VALUES ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
+							 usuarios (Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo,Empresa,Ccostos,Activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp)
+							 VALUES ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
 				// $query = "insert usuarios values ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				break;
@@ -263,7 +263,7 @@ else
 	echo "</td></tr>";
 	echo "<tr>";
 	echo "<td bgcolor=#cccccc>Activo</td>";
-	echo "<td bgcolor=#cccccc>";			
+	echo "<td bgcolor=#cccccc>";
 	echo "<select name='Activo' id='tipo1' title='Solo se puede activar o inactivar desde Maestros Matrix' $selectDisabled>";
 	if ($Activo == substr("A-Activo", 0, 1))
 		echo "<option selected>A-Activo</option>";
