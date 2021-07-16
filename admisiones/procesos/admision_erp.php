@@ -1045,8 +1045,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				if( $res1 )
 				{
 					$data[ "mensaje" ] = utf8_encode( "Se actualizo correctamente" );
-					if( mysql_affected_rows() > 0 ){
-					}
 				}
 				else
 				{
@@ -1068,8 +1066,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			$resdel = mysql_query( $sqldel, $conex );
 			if( $resdel ){
 				logAdmsiones( 'Registro borrado por documento duplicado', $historia, $tipodoc, $documento);
-				if( mysql_affected_rows() > 0 ){
-				}
 			}
 
 			/**admision**/
@@ -1135,16 +1131,9 @@ if (isset($accion) and $accion == 'guardarDatos'){
 									AND pacact = 'on' AND pacfec <= '".date( "Y-m-d" )."'";
 
 						$resCancPre = mysql_query( $sql, $conex ) or die(  $data[ 'mensaje' ] = utf8_encode( mysql_errno()." - Error en el query admision $sql - ".mysql_error() )  );
-
-						if( !$resCancPre ){
-							//$data[ "error" ] = 1;
-						}
-						else{
-							// $data1 = logAdmsiones( "Preadmision anulada", $historia, $ingreso, $pac_doctxtNumDoc );
+						if( $resCancPre ){
 							$preadmisionAnulada = true;
 						}
-						/********************************************************************************/
-
 
 						/********2014-10-17***********/
 						/* Se actualiza la tabla cliame 000207, solicitado por Juan Carlos*/
@@ -1401,7 +1390,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 						  AND Resest = 'on'
 						  AND Topest = 'on'
 						  AND Resdes = 'off'";
-			//echo $sqlpro;
+
 			$respro = mysql_query( $sqlpro, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000205 ".mysql_errno()." - Error en el query $sqlpro - ".mysql_error() ) );
 			if ($respro){
 				$numpro=mysql_num_rows($respro);
@@ -1413,7 +1402,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					}
 				}
 			}
-			//echo "<br>Array Topes viejos".json_encode($arr_topes_responsables);
 
 			//Se crea un arreglo con los nuevos responsables y nuevos topes
 			$arr_topes_nuevos = array();
@@ -1894,10 +1882,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$data['error']=1;
 				}
 			}
-			else
-			{
-
-			}
 		}
 		/*******************Fin para guardar el tope de soat***************/
 
@@ -2064,8 +2048,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$data = $data1;
 				}
 				if($resCargos){
-					if( $cargosAregrabar > 0 ){
-					}
 					guardarPendientesRegrabacion( $historia, $ingreso, $responsableAnterior, $valueNresponsable, "admision_erp.php");
 				}
 			}else{
@@ -2442,8 +2424,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			$rsup152    = mysql_query( $queryUp152,$conex );
 			$regAfectados152 = mysql_affected_rows();
 			if($rsup36 and $rsup152){
-				if( $regAfectados36*1 > 0 and $regAfectados152*1 > 0){
-				}
 					$queryUp204 = "UPDATE  {$wbasedatoMov}_000204
 									   SET ahtahc = 'on',
 											  ahthis = '$historia',
@@ -6985,7 +6965,11 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 	
 	$where = str_replace("pactdo", "pactid", $where);
 	$where = str_replace("pacdoc", "Pacced", $where);
-			// Se consulta si hay datos demograficos en la table root_000036 y se reemplazan
+	/* 
+		En mayo 2021, se cambió para que los datos demográficos del paciente estén en root_36 y de ahí se consulten.
+		Se añadieron los campos con valor por defecto vacio y a medida de que el paciente haga un nuevo ingreso se irán 
+		cargando de la tabla 100 de la última empresa que visitó.
+	*/
 	$sql = "select a.Pactid as pactdo,a.Pacced as pacdoc,a.pacfed,a.Pacap1,a.Pacap2,a.Pacno1,a.Pacno2,a.Pacnac as pacfna,
 				a.Pacsex,a.Pacest,a.Pacdir,a.Pactel,a.Paciu,a.Pacbar,a.Pacdep,a.Paczon,a.Pactus,a.Pacofi,a.Paccor,a.Pacpan,a.Pacpet,
 				a.Pacded,a.Pactrh,a.Pacpah,a.Pacdeh,a.Pacmuh,a.Pacmov,a.Pacned,a.Pacemp,a.Pactem,a.Paceem,a.Pactaf,a.Pacrem,a.Pacire,
@@ -6995,30 +6979,28 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 	$sql .= $where;
 	$sql .=" Order by  a.Pacced  ";
 
-	$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-	$res1 = $res;
+	$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla root_36 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
+
 	if ($res)
 	{
 		$traerDeEmpresa = false;
-		$num=mysql_num_rows($res1);
+		$num=mysql_num_rows($res);
 
-		$rows1=mysql_fetch_assoc($res1);
-		// Valida si en la tabla root_36 estan los datos incompletos, si es así los datos se traerán de la empresa donde estuvo mas recientemente.
-		if($rows1['Pacpan'] == '' && $rows1['Paciu'] == '' && $rows1['Pacest'] == '' && $rows1['Pacpah'] == ''){
+		$rows=mysql_fetch_assoc($res);
+		/*
+			Valida si en la tabla root_36 estan los datos incompletos, 
+			si es así, se pone una bandera para buscar los datos en la última empresa que visitó.
+		*/
+		if($rows['Pacpan'] == '' && $rows['Paciu'] == '' && $rows['Pacest'] == '' && $rows['Pacpah'] == ''){
 			$traerDeEmpresa = true;
 		}
-		/*En ocasiones, el tipo y numero de documento de cliame 100 no coincide con root 36,
-		Esto debido a que hacen cambio de documento en UNIX y no en MATRIX, y el kron de pacientes refleja ese cambio en root 36 y no en cliame 100
-		El objetivo es, que si no existe en cliame 100 que se busque en root 36 con ese tipo y numero de documento, si existe, coger ese numero de historia
-		y actualizar en cliame 100 el documento del registro que tenga ese mismo # de historia
-		*/
-		if( $num == 0 || $traerDeEmpresa == true ){
-			/** Se busca documento y tipo de documentos en la root_00037 */
-			$sql5 = "SELECT Oriori FROM root_000037
-					  WHERE Oritid='".utf8_decode($datosEnc['pactdo'])."'
-					  AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' 
-					  ORDER BY Fecha_data DESC LIMIT 1";
 
+		if( $num == 0 || $traerDeEmpresa ){
+			/* Se busca documento y tipo de documentos en la root_00037, 
+			 	trae la empresa ordenados por fecha de la mas reciente a la mas antigua. */
+			$sql5 = "SELECT Oriori FROM root_000037
+					  WHERE Oritid='".utf8_decode($datosEnc['pactdo'])."' AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' 
+					  ORDER BY Fecha_data DESC";
 
 			$res5 = mysql_query( $sql5, $conex );
 			if ($res5)
@@ -7027,45 +7009,48 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 				/** Si se encuentra alguna información con el documento  */
 				if ($num5 > 0)
 				{
-					  $rowsee = mysqli_fetch_array($res5);
+					/** Se guarda la wemp_pmla actual */
+					$wemp_pmla_anterior = $wemp_pmla;
 
-					  /** Se guarda la wemp_pmla actual */
-					  $wemp_pmla_anterior = $wemp_pmla;
+					for($k=0; $k<$num5; $k++){
+						$rowsee = mysqli_fetch_array($res5);
+						/** Se actualiza la $wemp_pmla  con la primera encontra en el root_000037 */
+						$wemp_pmla = $rowsee['Oriori'];
+						$validaExistenciaTabla = validarExisteTabla100($conex, $wemp_pmla);
+						if($validaExistenciaTabla){
+							/** Se guarda la empresa actual del programa */
+							$wbasedato_anterior = $wbasedato;
+							/** Se busca la empresa a la que pertenece al informacion encontrada en la root_00037 */
+							$wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+							$wbasedato = $wbasedato1->baseDeDatos;
 
-					  /** Se actualiza la $wemp_pmla  con la primera encontra en el root_000037 */
-					  $wemp_pmla = $rowsee['Oriori'];
-
-                      /** Se guarda la empresa actual del programa */
-					  $wbasedato_anterior = $wbasedato;
-
-					  /** Se busca la empresa a la que pertenece al informacion encontrada en la root_00037 */
-					  $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion" );
-
-					  /** Se reestablece $wemp_pmla con la empresa actual del programa */
-
-					  $wemp_pmla = $wemp_pmla_anterior;
-
-					  /** Se genera query para traer la información del paciente para el autocomplete de admisiones */
-					$where = str_replace("pactid", "pactdo", $where);
-					$where = str_replace("Pacced", "pacdoc", $where);
-					$sql = "select Pactdo,Pacdoc,pacfed,Pactat,Pacap1,Pacap2,Pacno1,Pacno2,Pacfna,Pacsex,Pacest,Pacdir,Pactel,Paciu,Pacbar,
-						Pacdep,Paczon,Pactus,Pacofi,Paccea,Pacnoa,Pactea,Pacdia,Pacpaa,Pacact,Paccru,Pacnru,Pactru,Pacdru,Pacpru,Paccor,
-						Pactam,Pacpan,Pacpet,Pacded,Pactrh,Pacpah,Pacdeh,Pacmuh,Pacmov,Pacned,Pacemp,Pactem,Paceem,
-						Pactaf,Pacrem,Pacire,Paccac,Pactda,Pacddr,Pacdre,Pacmre,Pacmor,Paccre,a.Fecha_data, Pacdle, Pactle, Pacaud, Paczog 
-						from ".$wbasedato."_000100 a
-						where Pachis !='0'";
-					  $sql .= $where;
-					  $sql .=" Group by  Pachis  ";
-					  $sql .=" Order by  Pacdoc  ";
-
-					$res = mysql_query($sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-					if($res){
-						$num = mysql_num_rows($res);
+							/** Se genera query para traer la información del paciente para el autocomplete de admisiones */
+							$where = str_replace("pactid", "pactdo", $where);
+							$where = str_replace("Pacced", "pacdoc", $where);
+							$sql = "select Pactdo,Pacdoc,pacfed,Pactat,Pacap1,Pacap2,Pacno1,Pacno2,Pacfna,Pacsex,Pacest,Pacdir,Pactel,Paciu,Pacbar,
+								Pacdep,Paczon,Pactus,Pacofi,Paccea,Pacnoa,Pactea,Pacdia,Pacpaa,Pacact,Paccru,Pacnru,Pactru,Pacdru,Pacpru,Paccor,
+								Pactam,Pacpan,Pacpet,Pacded,Pactrh,Pacpah,Pacdeh,Pacmuh,Pacmov,Pacned,Pacemp,Pactem,Paceem,
+								Pactaf,Pacrem,Pacire,Paccac,Pactda,Pacddr,Pacdre,Pacmre,Pacmor,Paccre,a.Fecha_data, Pacdle, Pactle, Pacaud, Paczog 
+								from ".$wbasedato."_000100 a
+								where Pachis !='0'";
+							  $sql .= $where;
+							  $sql .=" Group by  Pachis  ";
+							  $sql .=" Order by  Pacdoc  ";
+		
+							$res = mysql_query($sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
+							if($res){
+								$num = mysql_num_rows($res);
+								$rows=mysql_fetch_assoc($res);
+								if($num > 0){
+									/** Se reestable la empresa inicial del programa */
+									$wbasedato =  $wbasedato_anterior;
+									break;
+								}
+							}
+						}
 					}
-
-					  /** Se reestable la empresa inicial del programa */
-					$wbasedato =  $wbasedato_anterior;
-
+					/** Se reestablece $wemp_pmla con la empresa actual del programa */
+					$wemp_pmla = $wemp_pmla_anterior;
 				}
 			}
 		}
@@ -7073,15 +7058,11 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 		$data['numRegistrosPac'] = $num;
 		if ($num>0)
 		{	
-			/*se inicializa la i en el for de la consulta de la 100 pero se incrementa en el for de la
-			consulta de la 101
-			*/
-			$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-			$rows=mysql_fetch_assoc($res);
-			if($traerDeEmpresa == false){
-				$sql5 = "SELECT Oriori FROM root_000037 WHERE Oritid='".utf8_decode($datosEnc['pactdo'])."'
-						AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' ORDER BY Fecha_data DESC LIMIT 1";
+			if( !$traerDeEmpresa ){
 
+				$sql5 = "SELECT Oriori FROM root_000037
+					  	WHERE Oritid='".utf8_decode($datosEnc['pactdo'])."' AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' 
+					  	ORDER BY Fecha_data DESC";
 				$res5 = mysql_query( $sql5, $conex );
 				if ($res5)
 				{
@@ -7089,39 +7070,46 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 					/** Si se encuentra alguna información con el documento  */
 					if ($num5 > 0)
 					{
-					  	$rowsee = mysqli_fetch_array($res5);
 						/** Se guarda la wemp_pmla actual */
 						$wemp_pmla_anterior = $wemp_pmla;
-						/** Se actualiza la $wemp_pmla  con la primera encontra en el root_000037 */
-						$wemp_pmla = $rowsee['Oriori'];
-						/** Se guarda la empresa actual del programa */
-						$wbasedato_anterior = $wbasedato;
-						/** Se busca la empresa a la que pertenece al informacion encontrada en la root_00037 */
-						$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion" );
+
+						for($k=0; $k<$num5; $k++){
+							$rowsee = mysqli_fetch_array($res5);
+							/** Se actualiza la $wemp_pmla  con la primera encontra en el root_000037 */
+							$wemp_pmla = $rowsee['Oriori'];
+							$validaExistenciaTabla = validarExisteTabla100($conex, $wemp_pmla);
+							if($validaExistenciaTabla){
+								/** Se guarda la empresa actual del programa */
+								$wbasedato_anterior = $wbasedato;
+								/** Se busca la empresa a la que pertenece al informacion encontrada en la root_00037 */
+								$wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+								$wbasedato = $wbasedato1->baseDeDatos;
+
+								/** Se genera query para traer la información del paciente para el autocomplete de admisiones */
+								$where = str_replace("pactid", "pactdo", $where);
+								$where = str_replace("Pacced", "pacdoc", $where);
+								$sql = "select Pactat,Paccea,Pacnoa,Pactea,Pacdia,Pacpaa,Pacact,Paccru,Pacnru,Pactru,Pacdru,Pacpru,
+									Pactam,Pactda,Pacddr,Pacdre,Pacmre,Pacmor,Paccre
+									from ".$wbasedato."_000100 a
+									where Pachis !='0'";
+								$sql .= $where;
+								$sql .=" Group by  Pachis  ";
+								$sql .=" Order by  Pacdoc  ";
+			
+								$res2 = mysql_query($sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
+								if($res2){
+									$num = mysql_num_rows($res2);
+									$rows2=mysql_fetch_assoc($res2);
+									$result = array_merge($rows, $rows2);
+									$rows = $result;
+								}
+								/** Se reestable la empresa inicial del programa */
+								$wbasedato =  $wbasedato_anterior;
+								break;
+							}
+						}
 						/** Se reestablece $wemp_pmla con la empresa actual del programa */
 						$wemp_pmla = $wemp_pmla_anterior;
-						/** Se genera query para traer la información del paciente para el autocomplete de admisiones */
-						$where = str_replace("pactid", "pactdo", $where);
-						$where = str_replace("Pacced", "pacdoc", $where);
-						$sql = "select Pactat,Paccea,Pacnoa,Pactea,Pacdia,Pacpaa,Pacact,Paccru,Pacnru,Pactru,Pacdru,Pacpru,
-							Pactam,Pactda,Pacddr,Pacdre,Pacmre,Pacmor,Paccre
-							from ".$wbasedato."_000100 a
-							where Pachis !='0'";
-						$sql .= $where;
-						$sql .=" Group by  Pachis  ";
-						$sql .=" Order by  Pacdoc  ";
-
-						$res2 = mysql_query($sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-						if($res2){
-							$num = mysql_num_rows($res2);
-							$rows2=mysql_fetch_assoc($res2);
-							$result = array_merge($rows, $rows2);
-							$rows = $result;
-						}
-
-						/** Se reestable la empresa inicial del programa */
-						$wbasedato =  $wbasedato_anterior;
-
 					}
 				}
 			}

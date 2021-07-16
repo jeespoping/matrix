@@ -1,5 +1,18 @@
 <?php 
 
+function validarExisteTabla100($conex, $wemp_pmla){
+	$wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato = $wbasedato1->baseDeDatos;
+
+	$query = "SELECT COUNT(*) AS count FROM information_schema.tables 
+				WHERE table_schema = 'matrix' AND table_name = '".$wbasedato."_000100'";
+	$res = mysql_query($query, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."_000100 ".mysql_errno()." - Error en el query $query - ".mysql_error() ) );
+	$rows = mysqli_fetch_array($res);
+	$result = $rows[0] == 1 ? true : false;
+	
+	return $result;
+}
+
 function notificarPacienteInternacional($conex, $wemp_pmla, $historia, $ingreso, $nombrePaciente, $servicioIng)
 {
 	$correoDestino = consultarAliasPorAplicacion( $conex, $wemp_pmla, "emailDestinoPacienteInternacional");

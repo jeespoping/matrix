@@ -9,9 +9,10 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2015-07-01';
+			$wactualiz='2021-07-05';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                    
 //--------------------------------------------------------------------------------------------------------------------------------------------
+//	2021-07-05 Luis F Meneses: Se aplican nuevos estilos (/matrix/ips/procesos/CartDig.css)
 //	2018-08-06 Jerson Trujillo: Las consultas de los turnos ya no se haran 24 horas antes, sino 12 horas antes.
 
 //--------------------------------------------------------------------------------------------------------------------------------------------
@@ -59,6 +60,8 @@ include_once("conex.php");
 		$primeraVez	 	= true;
 		$arrayId 		= array();
 
+		/*
+		// ANTES DE APLICAR NUEVO ESTILO
 		$htmlAlertas = "
 		<table width='100%' style='color:#000000;font-family: verdana;font-weight: normal;font-size: 4rem;'>
 			<tr style='background-color: #2a5db0;color:#ffffff;font-weight:bold;'>
@@ -66,6 +69,9 @@ include_once("conex.php");
 				<td align='center'>Por favor pasar a:</td>
 			</tr>
 		";
+		*/
+
+		$htmlAlertas = "<table id = 'tablaAlerta'>";
 
 		// --> 	Consultar turnos de maximo 24 horas atras.
 		// 		1 SELECT: Alerta de llamado para el triage
@@ -118,10 +124,23 @@ include_once("conex.php");
 				$respAlertas['hayAlertas'] 	= true;
 			}
 			$colorFila = (($colorFila == '#DCE5F2') ? '#F2F5F7;' : '#DCE5F2');
+
+			/*
 			$htmlAlertas.= "
 				<tr style='background-color:".$colorFila."'>
 					<td align='center'>".substr($rowAlertas['Atutur'], 7)."</td>
 					<td align='center'>".$rowAlertas['Puenom']."</td>
+				</tr>
+			";
+			*/
+			// Cada alerta tiene su título con el turno
+			// y en otra fila con el mensaje
+			$htmlAlertas.= "
+				<tr>
+					<td class='tdAzul' width='100%'>TURNO ".substr($rowAlertas['Atutur'], 7)."</td>
+				</tr>
+				<tr>
+					<td class='tdNormal' width='100%'>Por favor pasar a:<br>".$rowAlertas['Puenom']."</td>
 				</tr>
 			";
 		}
@@ -145,6 +164,8 @@ include_once("conex.php");
 		global $arraySalas;
 		global $numRegistrosPorPagina;
 
+		// ENCABEZADO ANTERIOR
+		/*
 		$html 		= "
 		<div style='background-color:#FFFFFF;color:#E2007A;font-family: verdana;font-weight: normal;font-size: 2.2rem;'>
 			La atenci&oacuten ser&aacute de acuerdo a la clasificaci&oacuten por prioridad.
@@ -157,8 +178,19 @@ include_once("conex.php");
 				<td width='35%'>Ubicaci&oacuten</td>
 			</tr>
 		";
+		*/
 
-		// --> Consultar turnos de maximo 24 horas atras.
+		$html = "<center>
+		<table id='tablaTurnos'>
+			<tr>
+				<th width='15%'>TURNO</td>
+				<th width='35%'>ESTADO</td>
+				<th width='20%'>SALA</td>
+				<th width='30%'>UBICACI&Oacute;N</td>
+			</tr>
+		";
+
+		// --> Consultar turnos de maximo 24 horas atras.  movhos_000178
 		$sqlTurnos = "
 		SELECT Atutur, Atuetr, Atucta, Atupad, Atuadm, Fecha_data, Hora_data
 		  FROM ".$wbasedato."_000178
@@ -168,6 +200,16 @@ include_once("conex.php");
 		   "./*AND (Atusea = '".$monitorSala."' OR Atusea = '*')*/"
 		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
 		";
+		
+		// HABILITAR PARA PRUEBAS.
+		/*
+		$sqlTurnos = "
+		SELECT Atutur, Atuetr, Atucta, Atupad, Atuadm, Fecha_data, Hora_data
+		  FROM ".$wbasedato."_000178
+		 WHERE Fecha_data >= '2021-06-01'
+		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
+		";
+		*/
 		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
 
 		$colorFila		= '#F2F5F7;';
@@ -195,13 +237,25 @@ include_once("conex.php");
 					else
 						$respuesta	= obtenerEstadoUbicacionTurno($rowTurnos['Atutur']);
 			}
+			
+			// PARA PRUEBAS. COMENTARIAR PARA PRODUCCIÓN ------------
+			/*
+			if (random_int(1, 3) == 2)
+			{
+				$respuesta["altaOmuerte"] = false ;
+				if (random_int(1, 3) == 2)
+					$respuesta["enAltaMedica"] = true ;
+			}
+			*/
+			// -----------------------------------------------------
+			
 			// --> Si el turno no ha sido dado de alta, muerte u hospitalizacion Y no se genero ningun error.
 			if(!$respuesta["altaOmuerte"] && !$respuesta["error"])
 			{
 				$colorFila 		= (($colorFila == '#FFFFFF') ? '#F2F5F7;' : '#FFFFFF');
 				// --> Cuando el estado sea alta debo mostrarlo de color verde.
 				$colorFila 		= (($respuesta["enAltaMedica"]) ? '#C2E8CE;' : $colorFila);
-
+				/*
 				$arrFilasTur[] = "
 					<tr style='background-color:".$colorFila."'>
 						<td align='center' style=''>
@@ -218,6 +272,18 @@ include_once("conex.php");
 						</td>
 					</tr>
 				";
+				*/
+				$clase = ($respuesta["enAltaMedica"]?'tdAzul':'tdNormal');
+				$arrFilasTur[] = "
+					<tr>
+						<td class='$clase'>".substr($rowTurnos['Atutur'], 7)."</td>
+						<td class='$clase'>".utf8_encode($respuesta["estado"])."</td>
+						<td class='$clase'>".utf8_encode((($respuesta["sala"] != '') ? $respuesta["sala"] : ""))."</td>
+						<td class='$clase'>".utf8_encode((($respuesta["ubicacion"] != '') ? $respuesta["ubicacion"] : ""))."</td>
+					</tr>
+				";
+				
+				
 			}
 		}
 
@@ -465,10 +531,13 @@ else
 	  <title></title>
 	</head>
 		<meta charset="UTF-8">
+		<!--
 		<link type="text/css" href="../../../include/root/jquery_1_7_2/css/themes/base/jquery-ui.css" rel="stylesheet"/>
 		<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
+		-->
 		<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
 		<script src="../../../include/root/jquery_1_7_2/js/jquery-ui.js" type="text/javascript"></script>
+		<link rel='stylesheet' href='/matrix/ips/procesos/CartDig.css'/>
 
 	<script type="text/javascript">
 //=====================================================================================================================================================================
@@ -480,23 +549,27 @@ else
 
 	$(function(){
 
+		/*
 		$("#accordionPrincipal").accordion({
 			collapsible: false,
 			heightStyle: "content"
 		});
-		$( "#accordionPrincipal" ).accordion( "option", "icons", {} );
+		*/
+		//$( "#accordionPrincipal" ).accordion( "option", "icons", {} );
 
-		$("#divContenido").css({"padding": "0.1em"});
+		//$("#divContenido").css({"padding": "0.1em"});
 
 		// --> Ajustar la vista a la resolucion de la pantalla
-		obtenerResolucioPantalla();
-		width1 		= width*0.99;
-		height1 	= height*0.99;
+		//obtenerResolucioPantalla();
+		//width1 		= width*0.99;
+		//height1 	= height*0.99;
 
+		/*
 		if(width1 > 0 && height1 > 0)
 			$("#accordionPrincipal").css({"width":width1});
 		else
 			$("#accordionPrincipal").css({"width": "99 %"});
+		*/
 
 		// --> Llamado automatico, para que el monitor este actualizando
 		setInterval(function(){
@@ -509,6 +582,7 @@ else
 	//-------------------------------------------------------------------
 	function obtenerResolucioPantalla()
 	{
+		
 		if (self.screen){     // for NN4 and IE4
 			width 	= screen.width;
 			height 	= screen.height
@@ -522,6 +596,7 @@ else
 				height 	= scrsize.height;
 			}
 		}
+		
 	}
 
 	//---------------------------------------------------------
@@ -546,28 +621,36 @@ else
 				$("#ventanaAlertas").html(respuesta.htmlAlertas);
 				$("#ventanaAlertas").dialog({
 					modal	: true,
-					title	: "<div align='center' id='barraAtencion' style='font-size: 4rem;color:#D83933'>Atenci&oacuten!</div>",
-					width	: width*0.8,
-					height	: height*0.7,
+					title	: "<div id='barraAtencion' style='width:70%; margin: 0 auto; text-align:center; font-size: 50px; color:rgb(255,0,0); background-color:rgba(255,255,255,0.5)'>Atenci&oacuten!</div>",
 					show	: { effect: "slide", duration: 400 },
-					hide	: { effect: "fold", duration: 400 }
+					hide	: { effect: "fold", duration: 400 },
+					closeText: " (x)",
+					dialogClass: 'ventanaAlertas'
 				});
+								
+				$("#ventanaAlertas").dialog("widget").position({
+					my: 'center',
+					at: 'center',
+					/*of: $(this)*/
+				});
+				
+				
 				// --> Blink al mensaje de "¡Atencion!"
 				var mensajeAtencion = setInterval(function(){
 					$("#barraAtencion").css('visibility' , $("#barraAtencion").css('visibility') === 'hidden' ? '' : 'hidden')
-				}, 400);
+				}, 700);
 
-				// --> Sonido de alerta
+				// --> Sonido de alerta				
 				var sonidoAlerta = setInterval(function(){
 					$("#sonidoAlerta")[0].play();
 				}, 2000);
 
 				// --> Cerrar la ventana emergente automaticamente despues de 15 segundos
 				setTimeout(function(){
-					 clearInterval(mensajeAtencion);
+					clearInterval(mensajeAtencion);
 					$("#ventanaAlertas").html("");
 					$("#ventanaAlertas").dialog("close");
-				}, 7000);
+				}, 7000);  // 7000   120000
 
 				// --> Apagar el sonido de alerta
 				setTimeout(function(){
@@ -576,8 +659,11 @@ else
 			}
 
 			// --> Ajustar la vista a la resolucion de la pantalla
-			obtenerResolucioPantalla();
-			height1 	= (height*0.99)-$("#encabezado").height();
+			//obtenerResolucioPantalla();
+			//height1 	= (height*0.99)-$("#encabezado").height();
+			//height1 	= (height*0.99)-$("#titTurnos").height();
+			//alert (height1);
+			
 
 			// --> Actualizar la lista de turnos, con el efecto de paginacion
 			// $("#divContenido").hide('fade', 800, function(){
@@ -587,8 +673,13 @@ else
 			// });
 
 			// --> Actualizar la lista de turnos, con el efecto de paginacion
+			/*
 			$("#divContenido").hide('fade', 800, function(){
 				$(this).html(respuesta.htmlListaTurnos).height(height1).show( "blind", {}, 1200)
+			});
+			*/
+			$("#divContenido").hide('fade', 800, function(){
+				$(this).html(respuesta.htmlListaTurnos).show( "blind", {}, 1200)
 			});
 
 			// --> Numero de pagina actual
@@ -605,31 +696,83 @@ else
 //=======================================================================================================================================================
 	</script>
 
-
-<!--=====================================================================================================================================================================
-	E S T I L O S
-=====================================================================================================================================================================-->
-	<style type="text/css">
-		// --> Estylo para los placeholder
-		/*Chrome*/
-		[tipo=obligatorio]::-webkit-input-placeholder {color:red; background:lightyellow;font-size:2rem}
-		/*Firefox*/
-		[tipo=obligatorio]::-moz-placeholder {color:red; background:lightyellow;font-size:2rem}
-		/*Interner E*/
-		[tipo=obligatorio]:-ms-input-placeholder {color:red; background:lightyellow;font-size:2rem}
-		[tipo=obligatorio]:-moz-placeholder {color:red; background:lightyellow;font-size:2rem}
-	</style>
-<!--=====================================================================================================================================================================
-	F I N   E S T I L O S
-=====================================================================================================================================================================-->
-
-
-
 <!--=====================================================================================================================================================================
 	I N I C I O   B O D Y
 =====================================================================================================================================================================-->
-	<BODY style="overflow:hidden">
+	<body>
 	<?php
+	
+	$wfecha=date("Y-m-d");
+	$year = (integer)substr($wfecha,0,4);
+	$month = (integer)substr($wfecha,5,2);
+	$day = (integer)substr($wfecha,8,2);
+	$nomdia=mktime(0,0,0,$month,$day,$year);
+	$nomdia = strftime("%w",$nomdia);
+	switch ($nomdia)
+	{
+		case 0:
+			$diasem = "Domingo";
+			break;
+		case 1:
+			$diasem = "Lunes";
+			break;
+		case 2:
+			$diasem = "Martes";
+			break;
+		case 3:
+			$diasem = "Mi&eacute;rcoles";
+			break;
+		case 4:
+			$diasem = "Jueves";
+			break;
+		case 5:
+			$diasem = "Viernes";
+			break;
+		case 6:
+			$diasem = "S&aacute;bado";
+			break;
+	}
+	switch ($month)
+	{
+		case 1:
+			$monthN = "enero";
+			break;
+		case 2:
+			$monthN = "febrero";
+			break;
+		case 3:
+			$monthN = "marzo";
+			break;
+		case 4:
+			$monthN = "abril";
+			break;
+		case 5:
+			$monthN = "mayo";
+			break;
+		case 6:
+			$monthN = "junio";
+			break;
+		case 7:
+			$monthN = "julio";
+			break;
+		case 8:
+			$monthN = "agosto";
+			break;
+		case 9:
+			$monthN = "septiembre";
+			break;
+		case 10:
+			$monthN = "octubre";
+			break;
+		case 11:
+			$monthN = "noviembre";
+			break;
+		case 12:
+			$monthN = "diciembre";
+			break;
+	}
+	$wfechaG=$day." de ".$monthN." de ".$year;
+	
 	// --> Consultar maestro de salas
 	$arraySalas = array();
 
@@ -653,6 +796,8 @@ else
 	else
 		$numRegistrosPorPagina = 6;
 
+	$numRegistrosPorPagina = 11;	// POR AHORA FIJO
+
 	// --> Pintar pantalla para asignar el turno
 	echo "
 	<input type='hidden' id='wemp_pmla' 				value='".$wemp_pmla."'>
@@ -660,11 +805,16 @@ else
 	<input type='hidden' id='numRegistrosPorPagina' 	value='".$numRegistrosPorPagina."'>
 	<input type='hidden' id='arraySalas' 				value='".json_encode($arraySalas)."'>
 	<input type='hidden' id='numPagina' 				value='1'>
-	<input type='hidden' id='totalPaginas' 				value='1'>
+	<input type='hidden' id='totalPaginas' 				value='1'>";
 
-	<div id='accordionPrincipal' align='center' style='margin: auto auto;'>
-		<h1 id='encabezado' align='center' style='background:#75C3EB'>
-			<table width='100%' style='font-size: 4rem;color:#ffffff;font-family: verdana;font-weight:bold;'>
+	//echo "<div id='accordionPrincipal' align='center' style='margin: auto auto;'>
+	//	<h1 id='encabezado' align='center' style='background:#75C3EB'>";
+
+	//echo "<center><div id='accordionPrincipal' width='100%'";
+
+	// TÍTULO ANTERIOR	
+	/*
+    echo "<table width='100%' style='font-size: 4rem;color:#ffffff;font-family: verdana;font-weight:bold;'>
 				<tr>
 					<td align='left' 	width='15%'>
 						<img width='153' heigth='75' src='../../images/medical/root/logoClinicaGrande.png'>
@@ -678,20 +828,26 @@ else
 						<img width='66' heigth='30' src='../../images/medical/root/Logo_MatrixAzulClaro.png'>
 					</td>
 				</tr>
-			</table>
-		</h1>
-		<div id='divContenido'align='center'>";
-			$respListaTurnos = listarTurnos(1);
-			echo $respListaTurnos['html'];
-	echo "
-		</div>
-	</div>
+			</table>";
+	*/
+    echo "<table id='titTurnos'>";
+	echo "<tr><td id='tdTitLogo'></td>";
+	echo "<td id='tdTitDescrip'>&nbsp;ATENCI&Oacute;N<br>URGENCIAS</td>";
+	echo "<td id='tdTitFecha' align=right colspan=2>".$diasem."<br>".$wfechaG."</td></tr>";
+	echo "</table><br>";
+
+	echo "<div id='divContenido' style='width:100%;text-align:left;'>";
+	$respListaTurnos = listarTurnos(1);
+	echo $respListaTurnos['html'];
+	echo "</div>"; // divContenido
+	//echo "</div>divacordf"; // accordionPrincipal
+
+	echo "<center><table id='lineaInf'><tr><td colspan='100%'></td></tr></table>
 	<div id='ventanaAlertas' style='display:none' align='center'></div>
 	<audio id='sonidoAlerta'><source type='audio/mp3' src='../../images/medical/root/alertaMensaje.mp3' ></audio>
 	";
-
 	?>
-	</BODY>
+	</body>
 <!--=====================================================================================================================================================================
 	F I N   B O D Y
 =====================================================================================================================================================================-->

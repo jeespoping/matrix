@@ -582,6 +582,7 @@ $(document).ready(function() {
 					idDepid  = "pac_dephidDepNac";
 					idMunTxt = "pac_ciutxtMunNac";
 					idMunid  = "pac_ciuhidMunNac";
+					$("#pac_deptxtDepNac, #pac_ciutxtMunNac").val(""); // Si se cambia el país, se pone vacio departamento y municipio de nacimiento
 				}else{
 					idDepTxt = "pac_dehtxtDepRes";
 					idDepid  = "pac_dehhidDepRes";
@@ -590,6 +591,7 @@ $(document).ready(function() {
 					idBarTxt = "pac_bartxtBarRes";
 					idBarid  = "pac_barhidBarRes";
 					buscabarrio = true;
+					$("#pac_dehtxtDepRes, #pac_muhtxtMunRes, pac_bartxtBarRes").val(""); // Si se cambia el país, se pone en vacio departamento, municipio y barrio de residencia
 				}
 
 				if( datos[0].valor.cod != $("#cod_colombia").val() ){
@@ -716,6 +718,12 @@ $(document).ready(function() {
 				// //convierto el string en formato json
 				eval( "var datos = "+item );
 
+				if( $(this).attr("id") == "pac_deptxtDepNac" ){
+					$("#pac_ciutxtMunNac").val(""); // Si se cambia el departamento, se pone vacio el municipio de nacimiento
+				}else{
+					$("#pac_muhtxtMunRes, #pac_bartxtBarRes").val(""); // Si se cambia el departamento, se pone vacio el municipio de nacimiento
+				}
+
 				//Guardo el ultimo valor que selecciona el usuario
 				//Esto en una propiedad inventada
 				this.value = datos[0].valor.des;
@@ -789,6 +797,10 @@ $(document).ready(function() {
 				// //La respuesta es un json
 				// //convierto el string en formato json
 				eval( "var datos = "+item );
+
+				if( $(this).attr("id") == "pac_muhtxtMunRes" ){
+					$("#pac_bartxtBarRes").val(""); // Si se cambia el municipio, se pone vacio el barrio de residencia
+				}
 
 				//Guardo el ultimo valor que selecciona el usuario
 				//Esto en una propiedad inventada

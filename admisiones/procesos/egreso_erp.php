@@ -296,31 +296,31 @@ if (isset($accion)) {
                 $ping_unix = ping_unix();
 
 
-//                if ($saveUnix == 'on') {
-//                    if ($hay_unix && $tieneConexionUnix == 'on' && $ping_unix) //se descomento
-//                    {
-//                        $a = new egreso_erp();
-//                        if ($a->conex_u) {
-//                            $a->realizarEgreso($historia, $ingreso);
-//                            //echo json_encode( $a->data );
-//                            if ($a->data['error'] == 1) //si hay errores guardando en unix
-//                            {
-//                                $data['mensaje'] = "Error al grabar en UNIX " . $data['mensaje'];
-//                                echo json_encode($a->data);
-//                                exit;
-//                                return;
-//                            }
-//                            if ($a->data['error'] == 2) //si hay errores guardando en unix
-//                            {
-//                                $data['mensaje'] = " El paciente esta siendo modificado en unix, por lo tanto no se puede realizar el egreso en este momento ";
-//                                echo json_encode($a->data);
-//                                exit;
-//                                return;
-//                            }
-//                            $guardoEgresoUnix = true;
-//                        }
-//                    }
-//                }
+                if ($saveUnix == 'on') {
+                    if ($hay_unix && $tieneConexionUnix == 'on' && $ping_unix) //se descomento
+                    {
+                        $a = new egreso_erp();
+                        if ($a->conex_u) {
+                            $a->realizarEgreso($historia, $ingreso);
+                            //echo json_encode( $a->data );
+                            if ($a->data['error'] == 1) //si hay errores guardando en unix
+                            {
+                                $data['mensaje'] = "Error al grabar en UNIX " . $data['mensaje'];
+                                echo json_encode($a->data);
+                                exit;
+                                return;
+                            }
+                            if ($a->data['error'] == 2) //si hay errores guardando en unix
+                            {
+                                $data['mensaje'] = " El paciente esta siendo modificado en unix, por lo tanto no se puede realizar el egreso en este momento ";
+                                echo json_encode($a->data);
+                                exit;
+                                return;
+                            }
+                            $guardoEgresoUnix = true;
+                        }
+                    }
+                }
 
                 //Consulto si existe el registo
                 $sql = "select Egrhis,Egring,id,Egract
@@ -4654,7 +4654,7 @@ echo "</div>"; //datos egreso
         </td></tr>";
     echo "</table>";
     echo "</td>";
-    echo " <td><input type='checkbox' name='dia_cbm_checkbox'id='dia_cbm_checkbox' class='checkbox-unico cbm_checkbox_class'  ux='_ux_diacbm' onclick='marcarUnicoCheckbox(this)'></td>"; // Causa basica de muerte (CBM)
+    echo " <td><input type='checkbox' name='dia_cbm_checkbox'id='dia_cbm_checkbox' class='checkbox-unico cbm_checkbox_class'  onclick='marcarUnicoCheckbox(this)'></td>"; // Causa basica de muerte (CBM)
 
 //PENDIENTE FRODO echo" <td><input type='checkbox' name='dia_egr_chDiaEgr' id='dia_egr_chDiaEgr' ux='_ux_dxegr' onClick='validacionDiagnosticoEgreso(this)'></td>";
     echo "</tr>";

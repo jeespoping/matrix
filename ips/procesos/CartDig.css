@@ -1,0 +1,164 @@
+/* 2021-07-01 LUIS F MENESES */
+/* ESTILOS PARA CARTELERAS DIGITALES. SE UTILIZA EN: */
+/* /matrix/tcx/procesos/Programa.php */
+/* /matrix/movhos/procesos/monitorUrgencias.php */
+/* /matrix/citas/procesos/monitorCitasEndoscopia.php */
+/* /var/www/matrix/ips/procesos/monitorTurnero.php */
+
+@font-face {
+    font-family: AxiformaBold;
+    src: url("/matrix/ips/procesos/AxiformaBold.otf") format("opentype");
+}
+
+/* TABLA CON LISTA DE TURNOS */
+#tablaTurnos {
+	width:100%;  /* 100%;  600px; */
+	text-align:center;
+	font-family:AxiformaBold;
+	border-collapse: separate;
+	border-spacing: 8px;
+	background-color: white;
+}
+#tablaTurnos th {
+	padding: 15px 0 10px 0;
+	line-height: 1.1;
+	font-size: 20px;
+	color: white;
+    background-color: #B0D201;
+	border-radius: 0 0 10px 10px;
+}
+#tablaTurnos td.tdNormal {
+	padding: 15px 0 13px 0;
+	line-height: 1.1;
+	border : 1px solid #777777;
+	font-size: 18px;
+	color: #777777;
+	border-radius: 4px 4px 4px 4px;
+}
+#tablaTurnos td.tdAzul {
+	padding: 15px 0 13px 0;
+	line-height: 1.1;
+	border : 1px solid #01ACC8;
+	font-size: 18px;
+	color: #01ACC8;
+	border-radius: 4px 4px 4px 4px;
+}
+#tablaTurnos td.tdNormalSinPadding {
+	padding: 0px 0 0px 0;
+	line-height: 1.1;
+	border : 1px solid #777777;
+	font-size: 18px;
+	color: #777777;
+	border-radius: 4px 4px 4px 4px;
+}
+#tablaTurnos td.tdAzulSinPadding {
+	padding: 0px 0 0px 0;
+	border : 1px solid #01ACC8;
+	font-size: 18px;
+	color: #01ACC8;
+	border-radius: 4px 4px 4px 4px;
+}
+/* ENCABEZADO CON EL NOMBRE DE LA LISTA */
+#titTurnos {
+	width: 100%;   /*  100% 600px */
+	text-align:left;  
+	margin-bottom: 5px;
+	border : 0px solid blue;
+	border-radius: 0 0 10px 10px;
+	border-spacing: 0px;
+    color: white;
+    background-color: #01ACC8;
+	border-collapse: collapse;
+	font-family:AxiformaBold;
+	line-height: 1.1;
+}
+#tdTitLogo {
+	width:25%;
+	padding: 10px;
+	text-align:left;
+	background-image: url("/matrix/images/medical/tcx/logoaunala.png");
+	background-origin: content-box;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: left; 
+}
+#tdTitDescrip {
+	width:50%;
+	padding-top: 5px;
+	padding-left: 20px;
+	text-align:center;
+	font-size: 30px;
+}
+#tdTitFecha {
+	width:25%;
+	padding: 10px;
+	vertical-align: bottom;
+	text-align:right;
+	font-size: 12px;
+}
+
+/* Ventana Alerta*/
+#tablaAlerta {
+	min-width: 500px;  /* 100%;  500px; */
+	margin: 0 0 0 0;
+	/* table-layout: fixed;*/
+	text-align:center;
+	font-family:AxiformaBold;
+	border-collapse: separate;
+	border-spacing: 8px;
+	/*background-color: #000000; */ /* #000000; white;*/	
+	background-color: rgba(255,255,255,0.2); /* En este caso sería color de fondo blanco con 50% de transparencia.*/
+}
+#tablaAlerta td.tdAzul {
+	padding: 15px 0 10px 0;
+	line-height: 1;
+	font-size: 40px;
+	color: white;
+    background-color: #01ACC8;
+	border-radius: 0 0 10px 10px;
+}
+#tablaAlerta td.tdNormal {
+	padding: 10px 10px 10px 10px;
+	line-height: 1.2;
+	border : 1px solid #777777;
+	font-size: 38px;
+	color: #777777;
+	background-color: white;
+	border-radius: 4px 4px 4px 4px;
+}
+.ui-dialog.ventanaAlertas {
+	position: 	absolute;
+	width	: 	500px !important;
+	/*height	: 600px !important;*/
+	/*display:	block; */
+	overflow: 	auto;
+	/* top		: 	7% !important; */
+	top: 		50% !important;
+	/* left	: 	0px !important;*/
+	left: 		300px !important;
+	transform: 	translate(-50%, -50%);    
+	font-family: font-family:AxiformaBold !important;
+    font-size: 15px !important;
+}
+
+/* LINEA INFERIOR DE LA PÁGINA*/
+#lineaInf {
+    width: 570px;
+	padding-left: 1%;
+	padding-right: 1%;
+	text-align:center;
+	border-top:12px solid #01ACC8;
+	border-radius: 4px 4px 0 0;
+	background-color: white;
+	position: absolute; 
+	bottom:0px;
+}
+
+/* body */
+body {
+	width:570px !important; 
+	height:1080px !important; 
+	overflow:hidden !important
+}
+
+

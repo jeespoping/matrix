@@ -864,6 +864,8 @@ else
     include_once( "conex.php" );
     include_once( "cenpro/cargos.inc.php" );
     
+	$desde_CargosPDA = true; //#SEBASTIAN_NEVADO
+	$accion_iq = ''; //#SEBASTIAN_NEVADO
 
 
     pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
@@ -875,6 +877,7 @@ else
     include_once("movhos/registro_tablas.php");
     include_once("movhos/otros.php");
     include_once("cenpro/funciones.php");
+	include_once("ips/funciones_facturacionERP.php"); //#SEBASTIAN_NEVADO
     connectOdbc($conex_o, 'facturacion');
 	
 	
@@ -937,7 +940,6 @@ else
 			/************************************************************
 			 * Con conexión con Unix
 			 ************************************************************/
-			
 			switch ($row1[2])
 			{
 				case 'on':
@@ -1117,7 +1119,19 @@ else
 											else
 											{
 												Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, false, $usu, $error);
-											} 
+											}
+											
+											/*
+											 *Fecha: 2021-06-11
+											 *Descripción: se realiza llamado de factura inteligente.
+											 *Autor: sebastian.nevado
+											*/
+											$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $inslis[$i]['prese']['nom'], $art['can'], $tipTrans, $dronum, $drolin);
+											if(!$aResultadoFactInteligente->exito)
+											{
+												echo $aResultadoFactInteligente->mensaje;
+											}
+											// FIN MODIFICACION
 
 											$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, $error);
 											if (!$res)
@@ -1172,7 +1186,6 @@ else
 					} 
 					break;
 				default:
-
 					if (!isset($var) or $var == '')
 					{
 						pintarAlerta('DEBE SELECCIONAR LA PRESENTACION  QUE VA A DEVOLVER');
@@ -1208,6 +1221,20 @@ else
 									anularCargo($cco, $historia . '-' . $ingreso, $cod, $var, '');
 									grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
 									grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, $var, '', '', '', 1, 1);
+									
+									/*
+									 *Fecha: 2021-06-11
+									 *Descripción: se realiza llamado de factura inteligente.
+									 *Autor: sebastian.nevado
+									*/
+									$sNombreArticulo = substr($var, strlen($exp[0]."-"), strlen($var)-1);
+									$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $sNombreArticulo, $art['can'], $tipTrans, $dronum, $drolin);
+									if(!$aResultadoFactInteligente->exito)
+									{
+										echo $aResultadoFactInteligente->mensaje;
+									}
+									// FIN MODIFICACION
+									
 									$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, $error);
 									if (!$res)
 									{
@@ -1461,6 +1488,19 @@ else
 											{
 												Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, false, $usu, $error);
 											} 
+											
+											/*
+											 *Fecha: 2021-06-11
+											 *Descripción: se realiza llamado de factura inteligente.
+											 *Autor: sebastian.nevado
+											*/
+											$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $inslis[$i]['prese']['nom'], $art['can'], $tipTrans, $dronum, $drolin);
+											if(!$aResultadoFactInteligente->exito)
+											{
+												echo $aResultadoFactInteligente->mensaje;
+											}
+											// FIN MODIFICACION
+											
 
 											// $res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
 											// if (!$res)
@@ -1525,7 +1565,6 @@ else
 					} 
 					break;
 				default:
-
 					if (!isset($var) or $var == '')
 					{
 						pintarAlerta('DEBE SELECCIONAR LA PRESENTACION  QUE VA A DEVOLVER');
@@ -1561,6 +1600,18 @@ else
 									anularCargo($cco, $historia . '-' . $ingreso, $cod, $var, '');
 									grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
 									grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, $var, '', '', '', 1, 1);
+
+									/*
+										*Fecha: 2021-06-11
+										*Descripción: se realiza llamado de factura inteligente.
+										*Autor: sebastian.nevado
+									*/
+									$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $inslis[$i]['prese']['nom'], $art['can'], $tipTrans, $dronum, $drolin);
+									if(!$aResultadoFactInteligente->exito)
+									{
+										echo $aResultadoFactInteligente->mensaje;
+									}
+									// FIN MODIFICACION
 									// $res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
 									// if (!$res)
 									// {
@@ -1629,7 +1680,385 @@ else
 			} // switch
 		}
 	} 
-} 
+}
+
+/**
+ * Función para hacer el proceso de factura inteligente.
+ * @by: sebastian.nevado
+ * @date: 2021-06-11
+ * @return: array
+ */
+function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto )
+{
+	global $emp;
+	global $wbasedato;
+	global $wusuario;
+	global $wuse;
+	global $cco;
+	global $desde_CargosPDA;
+	$desde_CargosPDA = true;
+	global $accion_iq;
+	$accion_iq = '';
+	$sql = "SELECT Ccoerp
+			  FROM ".$wmovhos."_000011
+			 WHERE ccocod = '".$pac['sac']."'
+		";
+	
+	
+	$resCco = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
+	$numCco = mysql_num_rows( $resCco );
+	$CcoErp = false;
+	if( $rowsCco = mysql_fetch_array( $resCco) ){
+		$CcoErp = $rowsCco[ 'Ccoerp' ] == 'on' ? true: false;
+	}
+	
+	//Si el cco no maneja cargo ERP o no está activo los cargos ERP no se ejecuta esta acción
+	$cargarEnErp = consultarAliasPorAplicacion( $conex, $emp, "cargosPDA_ERP" );
+	if( !$CcoErp || $cargarEnErp != 'on' ){
+		return;
+	}
+	
+	$sql = "SELECT *
+			  FROM ".$wmovhos."_000016
+			 WHERE inghis = '".$pac['his']."'
+			   AND inging = '".$pac['ing']."'
+		";
+	
+	$resRes = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
+	$numRes = mysql_num_rows( $resRes );
+	if( $rowsRes = mysql_fetch_array( $resRes) ){
+		
+				
+		$sql = "SELECT *
+				  FROM ".$wcliame."_000101
+				 WHERE Inghis = '".$pac['his']."'
+				   AND Ingnin = '".$pac['ing']."'
+			";
+		
+		$resIng = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		$numIng = mysql_num_rows( $resIng );
+	
+		if( $rowsIng = mysql_fetch_array( $resIng) ){
+		
+			
+			$codEmpParticular = consultarAliasPorAplicacion($conex, $emp, 'codigoempresaparticular');
+		
+			if( $rowsIng[ 'Ingtpa' ] == 'P' ){
+				$empresa = $codEmpParticular;
+			}
+			else{
+				$empresa = $rowsIng[ 'Ingcem' ];
+			}
+			
+			$sql = "SELECT *
+					  FROM ".$wcliame."_000024
+					 WHERE empcod = '".$empresa."'
+					";
+		
+			$resEmp = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+			$numEmp = mysql_num_rows( $resEmp );
+			
+			if( $rowsEmp = mysql_fetch_array( $resEmp ) ){
+		
+				//Información de empresa
+				$wcodemp 	  = $rowsEmp[ 'Empcod' ];
+				$wnomemp 	  = $rowsEmp[ 'Empnom' ];
+				$tipoEmpresa  = $rowsEmp[ 'Emptem' ];
+				$nitEmpresa   = $rowsEmp[ 'Empnit' ];
+				$wtar		  = $rowsEmp[ 'Emptar' ];
+			
+				//Información del paciente
+				$tipoPaciente = $rowsIng[ 'Ingcla' ];
+				$tipoIngreso  = $rowsIng[ 'Ingtin' ];
+				$wser		  = $rowsIng[ 'Ingsei' ];
+				$wfecing	  = $rowsIng[ 'Ingfei' ];
+				
+				//Consulta información de pacientes
+				$infoPacienteCargos = consultarNombresPaciente( $conex, $pac['his'], $emp );
+				
+				//Conceptos de grabación
+				$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_medicamentos_mueven_inv" );
+				if( esMMQServicioFarmaceutico($art['cod']) )
+					$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_materiales_mueven_inv" );
+				
+				$wnomcon = consultarNombreConceptos( $conex, $wcliame, $wcodcon );
+				
+				$wexidev = 0;
+				
+				$wcantidad = $art['can'];
+				
+				$wfecha=date("Y-m-d");		
+				$whora = date("H:i:s");
+				
+				//Reemplazo las variables necesarias para la función validar_y_grabar_cargo
+				$auxWbasedato = $wbasedato;
+				$wbasedato = $wcliame;
+				$wuse = $wusuario;
+				
+				//$dosProc = datos_desde_procedimiento(codigoArticulo, codigoConcepto, wccogra    , ccoActualPac, wcodemp , wfeccar, '', '*', 'on', false, '', fecha  , hora  , '*', '*');
+				$datosProc = datos_desde_procedimiento( $art['cod']  , $wcodcon      , $cCentroCosto, $pac['sac'] , $wcodemp, $wfecha, '', '*', 'on', false, '', $wfecha, $whora, '*', '*');
+				
+				$wvaltar = $datosProc[ 'wvaltar' ];
+				
+				$wdevol = 'off';
+				if( $tipTrans != 'C' )
+					$wdevol  = 'on';
+				
+				$datos=array();
+				$datos['whistoria']		=$pac['his']; // $whistoria;
+				$datos['wing']			=$pac['ing']; // $wing;
+				$datos['wno1']			=$infoPacienteCargos['Pacno1']; // $wno1;
+				$datos['wno2']			=$infoPacienteCargos['Pacno2']; // $wno2;
+				$datos['wap1']			=$infoPacienteCargos['Pacap1'];
+				$datos['wap2']			=$infoPacienteCargos['Pacap2'];
+				$datos['wdoc']			=$pac['doc']; // $wdoc;
+				$datos['wcodemp']		=$wcodemp;	//				--> cliame_000024
+				$datos['wnomemp']		=$wnomemp;	//			--> cliame_000024
+				$datos['tipoEmpresa']	=$tipoEmpresa;	//			--> cliame_000024
+				$datos['nitEmpresa']	=$nitEmpresa;	//			--> cliame_000024
+				$datos['tipoPaciente']	=$tipoPaciente;	//		--> cliame_000101 Ingcla
+				$datos['tipoIngreso']	=$tipoIngreso;	//		--> cliame_000101 Ingtin
+				$datos['wser']			=$wser;			//		--> cliame_000101 Ingsei
+				$datos['wfecing']		=$wfecing;		//		--> cliame_000101 Ingfei
+				$datos['wtar']			=$wtar;			//		--> cliame_000024
+				$datos['wcodcon']		=$wcodcon;		//		--> Codigo del concepto (0626 = materiales, 0616 = medicamentos)
+				$datos['wnomcon']		=$wnomcon;		//		--> Nombre del concepto Cliame 200
+				$datos['wprocod']		=$art['cod']; // $wprocod;				--> Codigo del articulo o del medicamento
+				$datos['wpronom']		=$art['nom'];// $wpronom;				--> Nombre del articulo Artcom
+				$datos['wcodter']		=''; // $wcodter;				--> ''
+				$datos['wnomter']		=''; //$wnomter;				--> ''
+				$datos['wporter']		=''; // $wporter;				--> ''
+				$datos['grupoMedico']	=''; // $grupoMedico;			--> ''
+				$datos['wterunix']		=''; // $wterunix;				--> ''
+				$datos['wcantidad']		=$wcantidad; //$wcantidad;			--> cantidad
+				$datos['wvaltar']		=$wvaltar;	//			--> valor PENDIENTE FUNCION
+				$datos['wrecexc']		='R'; // $wrecexc;				--> 'R'
+				$datos['wfacturable']	='S'; // $wfacturable;			--> 'S'
+				$datos['wcco']			=$cCentroCosto;	// $wcco;					--> Centro de costos graba
+				$datos['wccogra']		=$cCentroCosto;// $wccogra;				--> cco paciente
+				$datos['wfeccar']		=$wfecha; // $wfeccar;				--> Fecha del cargo
+				$datos['whora_cargo']	=$whora; // $whora_cargo.':00';	-->	Hora del cargo
+				$datos['wconinv']		='on'; //$wconinv;				--> 'on'
+				$datos['wconabo']		=''; //$wconabo;				--> ''
+				$datos['wdevol']		=$wdevol; // $wdevol;				--> 'off'
+				$datos['waprovecha']	='off'; // $waprovecha;			--> 'off'
+				$datos['wconmvto']		=''; //$wconmvto;				--> ''
+				//$datos['wexiste']		=$wexiste;				--> cantidad existente PENDIENTE FUNCION
+				$datos['wexiste']		=$datosProc[ 'wexiste' ];	//				--> cantidad existente PENDIENTE FUNCION
+				$datos['wbod']			='off'; //$wbod;					--> 'off'
+				$datos['wconser']		='H'; //$wconser;				--> 'H'
+				//$datos['wtipfac']		=$wtipfac;				--> tipo facturacion PENDIENTE FUNCION
+				$datos['wtipfac']		="CODIGO";	//			--> tipo facturacion PENDIENTE FUNCION
+				$datos['wexidev']		=$wexidev;	//			--> 0 
+				$datos['wfecha']		=$wfecha;	//				--> fecha act
+				$datos['whora']			=$whora;	//			--> hora act
+				$datos['nomCajero']		=''; //$nomCajero;			--> ''
+				$datos['cobraHonorarios']		= ''; // $cobraHonorarios;			--> ''
+				$datos['wespecialidad']			= '*';
+				$datos['wgraba_varios_terceros']= ''; // $wgraba_varios_terceros;		''
+				$datos['wcodcedula']			= ''; // $wcodcedula;					''
+				$datos['estaEnTurno']			= ''; // $estaEnTurno;					''
+				$datos['tipoCuadroTurno']		= ''; // $tipoCuadroTurno;				''
+				$datos['ccoActualPac']			= $pac['sac']; //$ccoActualPac;				--> Centro de costos actual del paciente	
+				$datos['codHomologar']			= ''; // $codHomologar;				--> ''	
+				$datos['validarCondicMedic']	= true;	//						--> FALSE
+				$datos['estadoMonitor']			= '';
+				$datos['respuesta_array']			= 'on';
+				$datos['numCargoInv']			= $numCargoInv;
+				$datos['linCargoInv']			= $linCargoInv;
+				
+				//Esto es nuevo
+				$datos['desde_CargosPDA']			= true;
+
+				//$codEmpParticular = consultarAliasPorAplicacion($conex, $wemp_pmla, 'codigoempresaparticular');
+				$codEmpParticular = consultarAliasPorAplicacion($conex, $emp, 'codigoempresaparticular');
+
+				// --> Si la empresa es particular esto se graba como excedente
+				if($wcodemp == $codEmpParticular)
+					$datos['wrecexc'] = 'R';	//Septiembre 11 de 2017
+
+				// --> Valor excedente
+				if($datos['wrecexc'] == 'E')
+					$datos['wvaltarExce'] = round($wcantidad*$wvaltar);
+				// --> Valor reconocido
+				else
+					$datos['wvaltarReco'] = round($wcantidad*$wvaltar);
+				
+				//Llamo la función de cargos de CARGOS DE ERP
+				$respuesta = validar_y_grabar_cargo($datos, false);
+				
+				
+				//echo "<h1>"; var_dump( $respuesta ); echo "</h1>";
+				//Dejo las variables como estaban
+				$wbasedato = $auxWbasedato;
+			}
+			//else{ echo "<h1>empresa</h1>" ;}
+		}
+		//else{ echo "<h1>ingreso cliame</h1>" ;}
+	}
+	//else{ echo "<h1>ingreso movhos</h1>" ;}
+	
+}
+
+/**
+ * Se realiza llamado de factura inteligente.
+ * @by: sebastian.nevado
+ * @date: 2021-06-11
+ * @return: object
+ */
+function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $dCantidad, $tipTrans, $numCargoInv = '', $linCargoInv = '')
+{
+	global $wemp_pmla;
+	global $conex;
+
+	//Obtengo el alias por aplicación y defino parámetros
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+	$pac['sac'] = consultarCcoPaciente($conex, $pac['his'], $pac['ing']);
+
+	//Llamo facturación inteligente
+	$artFactInteligente = array();
+	// $artFactInteligente['cod'] = $presen[$i][$j]['cod'];
+	// $artFactInteligente['nom'] = $row1[0];
+	// $artFactInteligente['can'] = $can;
+	
+	$artFactInteligente['cod'] = $sCodigo;
+	$artFactInteligente['nom'] = $sNombre;
+	$artFactInteligente['can'] = $dCantidad;
+	CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $artFactInteligente, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto);
+
+	$aResultado = new stdClass();
+	$aResultado->exito = true;
+	$aResultado->mensaje = '';
+
+	//Fin facturación inteligente
+	return $aResultado;
+}
+
+/**
+ * Se obtiene el nombre del paciente
+ * @by: sebastian.nevado
+ * @date: 2021-06-11
+ * @return: array
+ */
+function consultarNombresPaciente( $conex, $his, $emp ){
+
+	$val = false;
+
+	$sql = "SELECT *
+			  FROM root_000036, root_000037
+			 WHERE orihis = '".$his."'
+			   AND pacced = oriced
+			   AND pactid = oritid
+			   AND oriori = '".$emp."'
+		";
+		
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
+	$num = mysql_num_rows( $res );
+	
+	if( $rows = mysql_fetch_array( $res ) ){
+		$val = $rows;
+	}
+	
+	return $val;
+}
+
+/**
+ * Consulta el nombre del concepto de acuerdo a su codigo
+ * @by: sebastian.nevado
+ * @date: 2021-06-11
+ * @return: array
+ */
+function consultarNombreConceptos( $conex, $wcliame, $con ){
+
+	$val = false;
+
+	$sql = "SELECT *
+			  FROM ".$wcliame."_000200
+			 WHERE Grucod = '".$con."'
+		";
+		
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
+	$num = mysql_num_rows( $res );
+	
+	if( $rows = mysql_fetch_array( $res ) ){
+		$val = $rows[ 'Grudes' ];
+	}
+	
+	return $val;
+}
+
+/**
+ * Dice si un articulo es Material Medico Quirurgico por medio de servicio farmacéutico
+ *
+ * @param $art
+ * @return unknown_type
+ * @author: sebastian.nevado
+ * @date: 2021/06/25
+ *
+ * Nota: SE considera material medico quirurgico si el grupo del
+ * articulo no se encuentra en la taba 66 o pertenezca al grupo E00 o V00.
+ * Ya no se considera MMQ los articulos del grupo V00
+ */
+function esMMQServicioFarmaceutico( $art ){
+
+	global $conex;
+	global $bd;
+
+	$esmmq = false;
+
+	$sql = "SELECT
+				artcom, artgen, artgru, melgru, meltip
+			FROM
+				{$bd}_000026 LEFT OUTER JOIN {$bd}_000066
+				ON melgru = SUBSTRING_INDEX( artgru, '-', 1 )
+			WHERE
+				artcod = '$art'
+			";
+
+	$res = mysql_query( $sql, $conex );
+
+	if( $rows = mysql_fetch_array( $res ) ){
+		if( (empty( $rows['melgru'] ) || $rows['melgru'] == 'E00' ) && !empty($rows['artcom']) ){
+			$esmmq = true;
+		}
+		else{
+			$esmmq = false;
+		}
+	}
+
+	return $esmmq;
+}
+
+/**
+ * Consulta el nombre del concepto de acuerdo a su codigo
+ * @by: sebastian.nevado
+ * @date: 2021-06-22
+ * @return: array
+ */
+function consultarCcoPaciente( $conex, $sHistoria, $sIngreso ){
+	
+	global $wemp_pmla;
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
+	$sQuery = "SELECT Ubisac
+			FROM ".$wmovhos."_000018 
+			WHERE Ubihis = ? AND Ubiing = ?
+			ORDER BY id DESC
+			LIMIT 1";
+	
+	//Preparo y envío los parámetros
+	$sentencia = mysqli_prepare($conex, $sQuery);
+	mysqli_stmt_bind_param($sentencia, "ss", $sHistoria, $sIngreso );
+	mysqli_stmt_execute($sentencia);
+
+	mysqli_stmt_bind_result($sentencia, $iCCo);
+	mysqli_stmt_fetch($sentencia);
+	
+	$bResultado = isset($iCCo) ? $iCCo : null;
+
+	return $bResultado;
+}
 
 ?>
 </body>
