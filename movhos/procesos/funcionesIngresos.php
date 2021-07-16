@@ -4,10 +4,14 @@
     function HC_e_ingresos_de_Egresos_automaticos(){
         global $conex;
         global $wcliame;
+		$fecha = date('Y-m-d');
         $historias_ingresos = array();
+		$historia = $_POST['whisconsultada'];
     
-        $query = "SELECT historia, ingreso FROM {$wcliame}_000343 WHERE egresado = 1 and ingresado is null";
-		//$query = "SELECT historia, ingreso FROM {$wcliame}_000343 WHERE egresado = 1 and ingresado = 1";
+        $query = "SELECT historia, ingreso FROM {$wcliame}_000343 WHERE egresado = 1 AND ingresado is null";
+		if( $historia != '' ){
+			$query .= " AND historia = '{$historia}'";
+		}
         $res = mysql_query($query, $conex);
         while ($row = mysql_fetch_assoc($res)) {
             array_push($historias_ingresos, array($row['historia'], $row['ingreso']));
@@ -63,11 +67,14 @@
 		return $res3;
     }
 
-    function obtener_datos($historias_ingresos, $tabla, $c_tabla, $historia, $ingreso){
+    function obtener_datos($historias_ingresos, $tabla, $c_tabla, $historia, $ingreso, $filtro = ''){
         global $conex;
         $historias = array();
 
         $query = "SELECT * FROM {$tabla}{$c_tabla} WHERE {$historia} = '{$historias_ingresos[0]}' AND {$ingreso} = '{$historias_ingresos[1]}'";
+		if( $filtro != ''){
+			$query .= $filtro;
+		}
         $res = mysql_query($query, $conex);
         $num = mysql_num_rows($res);
         if ($num > 0){
@@ -134,6 +141,19 @@
 
     }
 
+	function traer_cco( $historiaIngreso ){
+		global $conex;
+		global $wcliame;
+
+        $query = "SELECT Ingsei FROM {$wcliame}_000101 WHERE Inghis = '{$historiaIngreso[0]}' AND Ingnin = '{$historiaIngreso[1]}'";
+        $res = mysql_query($query, $conex);
+        $num = mysql_num_rows($res);
+        if ($num > 0){
+			$row = mysql_fetch_assoc($res);
+        }
+        return $row;
+	}
+
 	function autoIncremento_movhos_000018($datos, $historiaIngreso){
         global $conex;
         global $wmovhos;
@@ -166,16 +186,73 @@
                 rollbackIngreso($historiaIngreso);
                 return $result;
             }else{
+				$cco = $datos[0]['Ubisac'];
+				$historiaIngreso[1] = $historiaIngreso[1] - 1;
+				$filtro = " AND Tipo_egre_serv = 'ALTA'";
+                $datos = obtener_datos($historiaIngreso, $wmovhos, '_000033', 'Historia_clinica', 'Num_ingreso', $filtro);
+				$historiaIngreso[1] = $historiaIngreso[1] + 1;
+                $result = autoIncremento_movhos_000033($datos, $historiaIngreso, $cco);
+                return $result;
+            }
+        }else{
+			$cco = traer_cco( $historiaIngreso );
+			$filtro = " AND Tipo_egre_serv = 'ALTA'";
+            $datos = obtener_datos($historiaIngreso, $wcliame, '_000033', 'Historia_clinica', 'Num_ingreso', $filtro);
+            $result = autoIncremento_movhos_000033( $datos, $historiaIngreso, $cco['Ingsei'] );
+            return $result;
+        }
+
+    }
+
+	function autoIncremento_movhos_000033($datos, $historiaIngreso, $cco){
+        global $conex;
+        global $wmovhos;
+		global $wcliame;
+		global $wemp_pmla;
+
+		$user = $_SESSION['user'];
+    	$usuario = explode("-", $user);
+
+        $error = array();
+        $consulta = consultarColumnasTabla($wmovhos, '_000033');
+        array_pop($consulta);
+        $fecha = date('Y-m-d');
+        $hora = date('H:i:s');
+        $columnasTabla = implode(', ', $consulta);
+
+        if(count($datos) > 0){
+            $ingresoAumentado = $datos[0]['Num_ingreso'] + 1;
+            $query = "INSERT INTO {$wmovhos}_000033 ({$columnasTabla})
+                    VALUES ('{$datos[0]['Medico']}', '{$fecha}', 
+                    '{$hora}', '{$datos[0]['Historia_clinica']}', '{$ingresoAumentado}', 
+                    '{$cco}', '{$datos[0]['Num_ing_serv']}', '{$fecha}', 
+                    '{$hora}', '{$datos[0]['Tipo_egre_serv']}', '{$datos[0]['Dias_estan_serv']}', 
+					'C-{$usuario[1]}')";
+			$res = mysql_query($query,$conex)  or ($descripcion = utf8_encode("Error: " . mysql_error()));
+            if (!$res) {
+                $datosPaciente = obtenerDatosPaciente($historiaIngreso[0], $historiaIngreso[1]);
+                array_push($error, array('historia' => $historiaIngreso[0], 'ingreso' => $historiaIngreso[1], 'tipo_documento' => $datosPaciente['tipo_documento'], 'documento' => $datosPaciente['documento_paciente'], 'paciente' => $datosPaciente['paciente'], 'descripcion' => $descripcion));
+                $result['finalizados'] = 0;
+                $result['fallidos'] = $error[0];
+                rollbackIngreso($historiaIngreso);
+                return $result;
+            }else{
                 $datos = obtener_datos($historiaIngreso, $wcliame, '_000101', 'Inghis', 'Ingnin');
                 $result = autoIncremento_historiasPor_Admitir($datos, $historiaIngreso);
                 return $result;
             }
         }else{
+			$wbasedatoMovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos" );
+
+			$query = "INSERT INTO {$wmovhos}_000033 ({$columnasTabla})
+                    VALUES ('{$wbasedatoMovhos}', '{$fecha}', '{$hora}', '{$historiaIngreso[0]}', '{$historiaIngreso[1]}', 
+                    '{$cco}', '1', '{$fecha}', '{$hora}', 'ALTA', '0', 'C-{$usuario[1]}')";
+			$res = mysql_query($query,$conex)  or ($descripcion = utf8_encode("Error: " . mysql_error()));
+
             $datos = obtener_datos($historiaIngreso, $wcliame, '_000101', 'Inghis', 'Ingnin');
             $result = autoIncremento_historiasPor_Admitir($datos, $historiaIngreso);
             return $result;
         }
-
     }
 
     function autoIncremento_historiasPor_Admitir($datos, $historiaIngreso){
@@ -228,7 +305,7 @@
 			return $result;
         }
 
-    }
+    } 
 
     function autoIncremento_responsables($datos, $historiaIngreso){
         global $conex;
@@ -709,6 +786,7 @@
 					return $inacc;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inpaci de Unix';
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -746,6 +824,8 @@
 					return $inaccdet;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inacc de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -816,6 +896,8 @@
 					return $inaccpro;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inaccdet de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -871,6 +953,8 @@
 					return $inaccobs;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inaccpro de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -901,6 +985,8 @@
 					return $inpacevc;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inaccobs de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -931,6 +1017,8 @@
 					return $inpacinf;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inpacevc de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -996,6 +1084,8 @@
 					return $inpacusu;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inpacinf de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -1028,6 +1118,8 @@
 					return $inpacotr;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inpacusu de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -1068,6 +1160,8 @@
 					return $inpacmre;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inpacotr de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -1111,6 +1205,8 @@
 					return $msate;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inpacmre de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -1161,6 +1257,8 @@
 					return $msateid;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Msate de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -1389,6 +1487,8 @@
 					return $inurg;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inpacars de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -1419,6 +1519,8 @@
 					return $inpacord;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inurg de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -1548,6 +1650,8 @@
 					return $fanovacc;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Inorddet de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{
@@ -1587,6 +1691,8 @@
 					return $fanovacc;
 				}else{
 					$error['error'] = 'Error al insertar en la tabla Fanovacc de Unix';
+					$ingresoAumentado = $ingreso + 1;
+					$rollback = new admisiones_erp('rollback', $historia, $ingresoAumentado);
 					return $error;
 				}
 			}else{

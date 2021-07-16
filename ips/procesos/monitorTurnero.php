@@ -1,5 +1,6 @@
 <?php
 include_once("conex.php");
+// matrix/ips/procesos/monitorTurnero.php
 //=========================================================================================================================================\\
 //       	MONITOR DEL TURNERO DEL LOBBY
 //=========================================================================================================================================\\
@@ -8,14 +9,15 @@ include_once("conex.php");
 //FECHA DE CREACION:	2018-01-16
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES
-//---------------------------------------------------------------------------------------------------------2020-01-13 Arleyda Insignares C.
+//	2021-07-05 Luis F Meneses: Se aplican nuevos estilos (/matrix/ips/procesos/CartDig.css)
+//  2020-01-13 Arleyda Insignares C.
 //         Se crea el campo 'codaso' en cliame_000305 para indicar que un tema está asociado a otro y de 
 //         esta forma el monitor podrá llamar un paciente que en el turno indique un servicio pero esté 
 //         siendo llamado de un servicio diferente.
 //         Se crea el campo 'codlog' en cliame_000305 para indicar el nombre del logo que debe mostrar en 
 //         la vista al usuario.
 //
-			$wactualiz='2020-01-13';
+			$wactualiz='2021-07-05';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //
 //
@@ -49,6 +51,7 @@ include_once("conex.php");
 	$wfecha					= date("Y-m-d");
     $whora 					= date("H:i:s");
 	$numRegistrosPorPagina 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'numRegistrosPorPaginaParaTurneroLobby');
+	$numRegistrosPorPagina =14;
 
 
 //=====================================================================================================================================================================
@@ -71,6 +74,8 @@ include_once("conex.php");
 		$arrayId 	 = array();
 		$conadi      = '';
 
+		/*
+		// ANTES DE APLICAR NUEVO ESTILO
 		$htmlAlertas = "
 		<table width='100%' style='color:#000000;font-family: verdana;font-weight: normal;font-size: 4rem;'>
 			<tr style='background-color: #2a5db0;color:#ffffff;font-weight:bold;'>
@@ -79,7 +84,7 @@ include_once("conex.php");
 				<td align='center'></td> 
 			</tr>
 		";
-
+		*/
 
 		if ($temaso != '')
 		{
@@ -103,9 +108,12 @@ include_once("conex.php");
 		   AND Turtem = '".$tema."'
 		   AND Turest = 'on'
 		   AND Turllv = 'on'
-		   ".$conadi."
+		 $conadi
 		";
-        
+
+
+		$htmlAlertas = "<table id = 'tablaAlerta'>";
+		//$htmlAlertas .= "<tr><td>$sqlAlertas</td></tr>";
 
 		$resAlertas = mysql_query($sqlAlertas, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlAlertas):</b><br>".mysql_error());
 		while($rowAlertas = mysql_fetch_array($resAlertas))
@@ -123,7 +131,7 @@ include_once("conex.php");
 			$colorFila 		= (($colorFila == '#DCE5F2') ? '#F2F5F7;' : '#DCE5F2');
 			$turno 			= substr($rowAlertas['Turtur'], 7);
 			$turno 			= substr($turno, 0, 2)." ".substr($turno, 2, 5);
-			
+			/*
 			$htmlAlertas.= "
 				<tr style='background-color:".$colorFila."'>
 					<td align='center'>".$turno."</td>
@@ -131,6 +139,19 @@ include_once("conex.php");
 					".(($rowAlertas['Conpri'] == 'on') ? "<td align='center' style='font-size:3rem;color:#D83933'>Aten. Prioritaria</td>" : "")."
 				</tr>
 			";
+			*/
+			// Cada alerta tiene su título con el turno
+			// y un otra fila con el mensaje
+			$htmlAlertas.= "
+				<tr>
+					<td class='tdAzul' width='100%'>TURNO ".$turno."</td>
+				</tr>
+				<tr>
+					<td class='tdNormal' width='100%'>Por favor pasar a:<br>".$rowAlertas['Puenom']."
+					".(($rowAlertas['Conpri'] == 'on') ? "<br><span align='center' style='font-size:40px;color:#D83933'>Aten. Prioritaria</span>" : "")."
+					</td>
+				</tr>
+			";			
 		}
 
 		$htmlAlertas.= "
@@ -156,6 +177,42 @@ include_once("conex.php");
 		//<div style='background-color:#FFFFFF;color:#E2007A;font-family: verdana;font-weight: normal;font-size: 2.2rem;'>
 			// La atención será de acuerdo a la clasificación por prioridad.
 		// </div>
+		
+		// --> Consultar turnos de maximo 24 horas atras.
+		/* 
+			SELECT Tur.Fecha_data, Tur.Hora_data, Tur.Turtur, Conpri, Puenom 
+			FROM cliame_000304 AS Tur 
+			INNER JOIN cliame_000299 ON (Tur.Turupr = Concod) 
+			INNER JOIN cliame_000301 ON (Tur.Turtem = Puetem AND Tur.Turven = Puecod) 
+			WHERE Tur.Fecha_data >= '2021-06-15' AND Tur.Turtem = '01' AND Tur.Turest = 'on' AND Tur.Turpat = 'on' 
+			ORDER BY REPLACE(Tur.Turtur, '-', '')*1 ASC 
+		*/
+		
+		$sqlTurnos = "
+		SELECT Tur.Fecha_data, Tur.Hora_data, Tur.Turtur, Con.Conpri, Puenom
+		  FROM ".$wbasedato."_000304 AS Tur INNER JOIN ".$wbasedato."_000299 as Con ON(Tur.Turupr = Con.Concod)
+		       INNER JOIN ".$wbasedato."_000301 as Pue ON(Tur.Turtem = Pue.Puetem AND Tur.Turven = Pue.Puecod)
+		 WHERE Tur.Fecha_data >= '".date('Y-m-d',strtotime('-1 day'))."'
+		   AND Tur.Turtem = '".$tema."'
+		   AND Tur.Turest = 'on'
+		   AND Tur.Turpat = 'on'
+		 ORDER BY REPLACE(Tur.Turtur, '-', '')*1 ASC
+		";
+		// HABILITAR PARA PRUEBAS
+		/*
+		$sqlTurnos = "
+		SELECT Tur.Fecha_data, Tur.Hora_data, Tur.Turtur, Con.Conpri, Puenom
+		  FROM ".$wbasedato."_000304 AS Tur INNER JOIN ".$wbasedato."_000299 as Con ON(Tur.Turupr = Con.Concod)
+		       INNER JOIN ".$wbasedato."_000301 as Pue ON(Tur.Turtem = Pue.Puetem AND Tur.Turven = Pue.Puecod)
+		 WHERE Tur.Fecha_data >= '".date('Y-m-d',strtotime('-15 day'))."'
+		   AND Tur.Turtem = '".$tema."'
+		 ORDER BY REPLACE(Tur.Turtur, '-', '')*1 ASC
+		";
+		*/
+		//echo $sqlTurnos;
+		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
+
+		/*
 		$html 		= "
 		
 		<table width='100%' style='background-color:#DBDBDB;cellspacing:0.1rem;color:#000000;font-family: verdana;font-weight: normal;font-size: 3.5rem;'>
@@ -165,23 +222,17 @@ include_once("conex.php");
 				<td width='40%'>Aten. Prioritaria</td>
 			</tr>
 		";
+		*/
 
-		// --> Consultar turnos de maximo 24 horas atras.
-		$sqlTurnos = "
-		SELECT A.Fecha_data, A.Hora_data, Turtur, Conpri, Puenom
-		  FROM ".$wbasedato."_000304 AS A INNER JOIN ".$wbasedato."_000299 ON(Turupr = Concod)
-		       INNER JOIN ".$wbasedato."_000301 ON(Turtem = Puetem AND Turven = Puecod)
-		 WHERE A.Fecha_data >= '".date('Y-m-d',strtotime('-1 day'))."'
-		   AND Turtem = '".$tema."'
-		   AND Turest = 'on'
-		   AND Turpat = 'on'
-		 ORDER BY REPLACE(Turtur, '-', '')*1 ASC
-		";
-		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
+        $html = "<center><table id='tablaTurnos'>
+            <tr>
+                <th width='20%'>TURNO</th>
+                <th width='40%'>UBICACI&Oacute;N</th>
+                <th width='40%'>ATENCI&Oacute;N PRIORITARIA</th>
+            </tr>
+        ";
 		
-		
-
-		$colorFila		= '#F2F5F7;';
+		$colorFila		= '#F2F5F7;';	// En versión anterior se utilizaba para alternar colores de las filas
 		$arrFilasTur 	= array();
 		while($rowTurnos = mysql_fetch_array($resTurnos))
 		{
@@ -194,16 +245,10 @@ include_once("conex.php");
 			$turno 			= substr($turno, 0, 2)." ".substr($turno, 2, 5);
 			
 			$arrFilasTur[] = "
-				<tr style='background-color:".$colorFila."'>
-					<td align='center' style=''>
-						".$turno."
-					</td>
-					<td align='center'>
-						&nbsp;".utf8_encode($rowTurnos["Puenom"])."
-					</td>
-					<td align='center' style=''>
-						&nbsp;".utf8_encode((($rowTurnos["Conpri"] == 'on') ? "SI" : ""))."
-					</td>
+				<tr>
+					<td class='tdNormal'>".$turno."</td>
+					<td class='tdNormal'>".utf8_encode($rowTurnos["Puenom"])."</td>
+					<td class='tdNormal'>".utf8_encode((($rowTurnos["Conpri"] == 'on') ? "SI" : ""))."</td>
 				</tr>
 			";
 		}
@@ -287,10 +332,13 @@ else
 	  <title>Monitor Turnero</title>
 	</head>
 		<meta charset="UTF-8">
+		<!--
 		<link type="text/css" href="../../../include/root/jquery_1_7_2/css/themes/base/jquery-ui.css" rel="stylesheet"/>
 		<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
+		-->
 		<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
 		<script src="../../../include/root/jquery_1_7_2/js/jquery-ui.js" type="text/javascript"></script>
+		<link rel='stylesheet' href='/matrix/ips/procesos/CartDig.css'/>
 
 	<script type="text/javascript">
 //=====================================================================================================================================================================
@@ -311,6 +359,7 @@ else
 		$("#divContenido").css({"padding": "0.1em"});
 
 		// --> Ajustar la vista a la resolucion de la pantalla
+		/*
 		obtenerResolucioPantalla();
 		width1 		= width*0.99;
 		height1 	= height*0.99;
@@ -319,11 +368,12 @@ else
 			$("#accordionPrincipal").css({"width":width1});
 		else
 			$("#accordionPrincipal").css({"width": "99 %"});
+		*/
 
 		// --> Llamado automatico, para que el monitor este actualizando
 		setInterval(function(){
 			actualizarMonitor();
-		}, 10000);
+		}, 15000);
 
 	});
 	//-------------------------------------------------------------------
@@ -369,12 +419,18 @@ else
 				$("#ventanaAlertas").html(respuesta.htmlAlertas);
 				$("#ventanaAlertas").dialog({
 					modal	: true,
-					title	: "<div align='center' id='barraAtencion' style='font-size: 4rem;color:#D83933'>&iexcl;Atenci&oacute;n!</div>",
-					width	: width*0.9,
-					height	: height*0.7,
+					title	: "<div id='barraAtencion' style='width:70%; margin: 0 auto; text-align:center; font-size: 50px; color:rgb(255,0,0); background-color:rgba(255,255,255,0.5)'>Atenci&oacuten!</div>",
 					show	: { effect: "slide", duration: 400 },
-					hide	: { effect: "fold", duration: 400 }
+					hide	: { effect: "fold", duration: 400 },
+					closeText: " (x)",
+					dialogClass: 'ventanaAlertas'
 				});
+				$("#ventanaAlertas").dialog("widget").position({
+					my: 'center',
+					at: 'center',
+					/*of: $(this)*/
+				});
+				
 				// --> Blink al mensaje de "¡Atencion!"
 				var mensajeAtencion = setInterval(function(){
 					$("#barraAtencion").css('visibility' , $("#barraAtencion").css('visibility') === 'hidden' ? '' : 'hidden')
@@ -399,9 +455,10 @@ else
 			}
 
 			// --> Ajustar la vista a la resolucion de la pantalla
+			/*
 			obtenerResolucioPantalla();
 			height1 	= (height*0.99)-$("#encabezado").height();
-
+			*/
 			// --> Actualizar la lista de turnos, con el efecto de paginacion
 			// $("#divContenido").hide('fade', 800, function(){
 				// $(this).html(respuesta.htmlListaTurnos).height(height1).effect( "slide", {}, 1000, function(){
@@ -410,8 +467,15 @@ else
 			// });
 
 			// --> Actualizar la lista de turnos, con el efecto de paginacion
+			/*
 			$("#divContenido").hide('fade', 800, function(){
 				$(this).html(respuesta.htmlListaTurnos).height(height1).show( "blind", {}, 1200)
+			});
+			*/
+
+			// --> Actualizar la lista de turnos, con el efecto de paginacion
+			$("#divContenido").hide('fade', 800, function(){
+				$(this).html(respuesta.htmlListaTurnos).show( "blind", {}, 1200)
 			});
 
 			// --> Numero de pagina actual
@@ -432,16 +496,7 @@ else
 <!--=====================================================================================================================================================================
 	E S T I L O S
 =====================================================================================================================================================================-->
-	<style type="text/css">
-		// --> Estylo para los placeholder
-		/*Chrome*/
-		[tipo=obligatorio]::-webkit-input-placeholder {color:red; background:lightyellow;font-size:2rem}
-		/*Firefox*/
-		[tipo=obligatorio]::-moz-placeholder {color:red; background:lightyellow;font-size:2rem}
-		/*Interner E*/
-		[tipo=obligatorio]:-ms-input-placeholder {color:red; background:lightyellow;font-size:2rem}
-		[tipo=obligatorio]:-moz-placeholder {color:red; background:lightyellow;font-size:2rem}
-	</style>
+
 <!--=====================================================================================================================================================================
 	F I N   E S T I L O S
 =====================================================================================================================================================================-->
@@ -451,14 +506,89 @@ else
 <!--=====================================================================================================================================================================
 	I N I C I O   B O D Y
 =====================================================================================================================================================================-->
-	<BODY style="overflow:hidden">
+    <body>
 	<?php
+
+	$wfecha=date("Y-m-d");
+	$year = (integer)substr($wfecha,0,4);
+	$month = (integer)substr($wfecha,5,2);
+	$day = (integer)substr($wfecha,8,2);
+	$nomdia=mktime(0,0,0,$month,$day,$year);
+	$nomdia = strftime("%w",$nomdia);
+	switch ($nomdia)
+	{
+		case 0:
+			$diasem = "Domingo";
+			break;
+		case 1:
+			$diasem = "Lunes";
+			break;
+		case 2:
+			$diasem = "Martes";
+			break;
+		case 3:
+			$diasem = "Mi&eacute;rcoles";
+			break;
+		case 4:
+			$diasem = "Jueves";
+			break;
+		case 5:
+			$diasem = "Viernes";
+			break;
+		case 6:
+			$diasem = "S&aacute;bado";
+			break;
+	}
+	switch ($month)
+	{
+		case 1:
+			$monthN = "enero";
+			break;
+		case 2:
+			$monthN = "febrero";
+			break;
+		case 3:
+			$monthN = "marzo";
+			break;
+		case 4:
+			$monthN = "abril";
+			break;
+		case 5:
+			$monthN = "mayo";
+			break;
+		case 6:
+			$monthN = "junio";
+			break;
+		case 7:
+			$monthN = "julio";
+			break;
+		case 8:
+			$monthN = "agosto";
+			break;
+		case 9:
+			$monthN = "septiembre";
+			break;
+		case 10:
+			$monthN = "octubre";
+			break;
+		case 11:
+			$monthN = "noviembre";
+			break;
+		case 12:
+			$monthN = "diciembre";
+			break;
+	}
+	$wfechaG=$day." de ".$monthN." de ".$year;
+
+
 	// --> Consultar nombre del tema
 	$nomTema = "";
 	$nomlogo = "";
 
 	if($tema != '')
 	{
+		// cliame__000305
+		// $tema=01 PAP, 02 Fisiatria, 03 Radiologia, 04 Centro Medico Las Americas, 05 Consulta Institucional
 		$sqlTema = "
 		SELECT Codnom,Codlog,Codaso
 		  FROM ".$wbasedato."_000305
@@ -508,8 +638,10 @@ else
 	<input type='hidden' id='numPagina' 				value='1'>
 	<input type='hidden' id='totalPaginas' 				value='1'>
 
-	<div id='accordionPrincipal' align='center' style='margin: auto auto;'>
-		<h1 id='encabezado' align='center' style='background:#75C3EB'>
+	<div id='accordionPrincipal' width='100%' align='center' style='margin: auto auto;'>
+		<h1 id='encabezado' align='center' style='background:#75C3EB'>";
+	// ENCABEZADO AMTERIOR
+	/*
 			<table width='100%' style='font-size: 4rem;color:#ffffff;font-family: verdana;font-weight:bold;'>
 				<tr>
 					<td align='left' 	width='15%'>
@@ -525,27 +657,34 @@ else
 					</td>
 				</tr>
 			</table>
-		</h1>
+	*/
+    echo "<table id='titTurnos'>
+			<tr><td id='tdTitLogo'></td>
+				<td id='tdTitDescrip'>".$nomTema."</td>
+				<td id='tdTitFecha' align=right colspan=2>".$diasem."<br>".$wfechaG."</td></tr>
+		</table>";			
+
+	echo "</h1>
 		<div id='divContenido'align='center'>";
 			$respListaTurnos = listarTurnos(1);
 			echo $respListaTurnos['html'];
 	echo "
 		</div>
-	</div>
+    </div><br>";
+	echo "<center><table id='lineaInf'><tr><td colspan='100%'></td></tr></table>
 	<div id='ventanaAlertas' style='display:none' align='center'></div>
 	<audio id='sonidoAlerta'><source type='audio/mp3' src='../../images/medical/root/alertaMensaje.mp3' ></audio>
 	";
-		
 		
 		//Se cierra conexión de la base de datos :)
 		//Se comenta cierre de conexion para la version estable de matrix :)
 		//mysql_close($conex);
 	?>
-	</BODY>
+	</body>
 <!--=====================================================================================================================================================================
 	F I N   B O D Y
 =====================================================================================================================================================================-->
-	</HTML>
+	</html>
 	<?php
 //=======================================================================================================================================================
 //	F I N  E J E C U C I O N   N O R M A L
