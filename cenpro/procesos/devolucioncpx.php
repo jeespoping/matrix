@@ -355,6 +355,7 @@ function pintarBoton()
 
 /**
 * De cada isnumo de consulta que presentacion se cargo y si fue cargada o por ajuste de presentacion
+* Modificación 2021-07-19 sebastian.nevado: se quita el lote de la segunda consulta para traer los insumos. Además, se modifican el where de las consultas de presentación y conversión para que aplique a los insumos.
 * 
 * @param vector $inslis lista de insumos del producto cargado
 * @param caracter $cco centro de costos que cargo
@@ -399,7 +400,6 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
      . "            and Mendan='" . $row1[0] . "-" . $row1[1] . "' "
      . "            and Mdecon = Mencon "
      . "            and Mdedoc = Mendoc "
-     . "            and Mdenlo = '" . $lote . "-" . $codigo . "' "
      . "            and Mdeest = 'on' "
      . "            and Menest = 'on' "
      . "        ORDER BY " . $wbasedato . "_000006.id desc";
@@ -429,9 +429,11 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
 
             if ($row1[1] != '')
             {
+				$sWhereArtCod = (strpos($row1[1], "-") !== false) ? "mid('" . $row1[1] . "',1,instr('" . $row1[1] . "','-')-1) " : "'".$row1[1]."'";
+
                 $q = " SELECT Artcom "
                  . "        FROM  ".$bd."_000026 "
-                 . "      WHERE Artcod = mid('" . $row1[1] . "',1,instr('" . $row1[1] . "','-')-1) "
+				 . "      WHERE Artcod = ".$sWhereArtCod
                  . "            and Artest='on' ";
 
                 $res2 = mysql_query($q, $conex);
@@ -444,7 +446,7 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
 
                 $q = " SELECT Appcnv"
                  . "        FROM " . $wbasedato . "_000009 "
-                 . "      WHERE Apppre = mid('" . $row1[1] . "',1,instr('" . $row1[1] . "','-')-1) "
+				 . "      WHERE Apppre = ".$sWhereArtCod
                  . "            and Appest='on' ";
 
                 $res2 = mysql_query($q, $conex);
