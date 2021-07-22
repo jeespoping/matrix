@@ -3436,6 +3436,14 @@ else
 																					echo $aResultadoFactInteligente->mensaje;
 																				}
 																				// FIN MODIFICACION
+
+																				/*
+																				*Fecha: 2021-07-22
+																				*Descripción: reduzco el inventario para los insumos
+																				*Autor: sebastian.nevado
+																				*/
+																				descontarArticuloMatrix($exp[3], $cco, '', $art['cod']);
+																				// FIN MODIFICACION
 																				
 	//						                                                    echo $art['cod']."......".$exp[1];
 	//						                                                    registrarSaldoInsumosPreparacion( $pac['his'], $pac['ing'], $art['cod'], $art['can'], $centro['cod'] );
@@ -4203,6 +4211,14 @@ else
 																				{
 																					echo $aResultadoFactInteligente->mensaje;
 																				}
+																				// FIN MODIFICACION
+																				
+																				/*
+																				*Fecha: 2021-07-22
+																				*Descripción: reduzco el inventario para los insumos
+																				*Autor: sebastian.nevado
+																				*/
+																				descontarArticuloMatrix($exp[3], $cco, '', $art['cod']);
 																				// FIN MODIFICACION
 																				
 	//						                                                    echo $art['cod']."......".$exp[1];
