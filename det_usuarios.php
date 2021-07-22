@@ -131,7 +131,6 @@ else
 			$FechaPasswordTemp=$row[14];
 			$HoraPasswordTemp=$row[15];
 			$wpar=1;
-			$selectDisabled = 'disabled';
 		}
 		else
 		{
@@ -153,7 +152,6 @@ else
 			$HoraPasswordTemp="00:00:00";
 			$tablacc="";
 			$wpar=2;
-			$selectDisabled = '';
 		}
 	}
 	echo "<input type='HIDDEN' name= 'wpar' value='".$wpar."'>";	
@@ -264,15 +262,26 @@ else
 	echo "<tr>";
 	echo "<td bgcolor=#cccccc>Activo</td>";
 	echo "<td bgcolor=#cccccc>";
-	echo "<select name='Activo' id='tipo1' title='Solo se puede activar o inactivar desde Maestros Matrix' $selectDisabled>";
-	if ($Activo == substr("A-Activo", 0, 1))
-		echo "<option selected>A-Activo</option>";
-	else
-		echo "<option>A-Activo</option>";
-	if ($Activo == substr("I-Inactivo", 0, 1))
-		echo "<option selected>I-Inactivo</option>";
-	else
-		echo "<option>I-Inactivo</option>";	
+	if ($pos === "0"){
+		echo "<select name='Activo' id='tipo1'>";
+		if ($Activo == substr("A-Activo", 0, 1))
+			echo "<option selected>A-Activo</option>";
+		else
+			echo "<option>A-Activo</option>";
+		if ($Activo == substr("I-Inactivo", 0, 1))
+			echo "<option selected>I-Inactivo</option>";
+		else
+			echo "<option>I-Inactivo</option>";	
+	}else{
+		if (isset($Activo)){ 
+			if ($Activo == substr("A-Activo", 0, 1))$valueText = 'A-Activo';
+			elseif ($Activo == substr("I-Inactivo", 0, 1))$valueText = 'I-Inactivo';
+			else $valueText = $Activo;
+		}else $valueText = '';
+		echo "<span class='tipo1'><label for='valueActivo' title='Solo se puede activar o inactivar desde Maestros Matrix'>".$valueText."</label></span>";
+		echo "<input type='HIDDEN' name='Activo' value='".$valueText."'>";
+	}
+	
 	echo "</td>";	
 	echo "</tr>";
 	

@@ -309,7 +309,7 @@ else
 				{
 					echo "<center><table border=0 aling=center>";
 					echo "<tr><td><IMG SRC='/matrix/images/medical/root/cabeza.gif' ></td><tr></table></center>";
-					echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#ffff00 LOOP=-1>ERROR EN LA DIGITACION O LONGITUD ES DE (12 CARACTERES) aaaa!!!!</MARQUEE></FONT>";
+					echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#ffff00 LOOP=-1>ERROR EN LA DIGITACION O LONGITUD (ES DE 12 CARACTERES)</MARQUEE></FONT>";
 					echo "<br><br>";
 				}
 			}

@@ -265,32 +265,6 @@ function resetIntentos($codigo,$conex){
     // return $num;
 }
 
-function consultarAliasPorAplicacionAux($conexion, $codigoInstitucion, $nombreAplicacion){
-	$q = " SELECT
-				Detval
-			FROM
-				root_000051
-			WHERE
-				Detemp = '".$codigoInstitucion."'
-				AND Detapl = '".$nombreAplicacion."'";
-
-//	echo $q;
-	$res = mysql_query($q, $conexion) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
-	$num = mysql_num_rows($res);
-
-	$alias = "";
-	if ($num > 0)
-	{
-		$rs = mysql_fetch_array($res);
-
-		$alias = $rs['Detval'];
-	} else {
-		//terminarEjecucion("La institucion con el codigo :".$codigoInstitucion." no se encuentra, ni la aplicacion: ".$nombreAplicacion.".  Por favor verifique el valor de wemp_pmla");
-	}
-	return $alias;
-}
-
-
 $includeLibrerias = "	<script src='../../../include/root/jquery.min.js'></script>
 						<script src='../../../include/root/jquery-ui-1.12.1/jquery-ui.min.js' type='text/javascript'></script>
 						<link type='text/css' href='../../../include/root/jquery-ui-1.12.1/jquery-ui.min.css' rel='stylesheet'/>
@@ -733,8 +707,8 @@ else
 				/* cerrar sentencia */
 				mysqli_stmt_close($stmt);
 
-				$minutos =  consultarAliasPorAplicacionAux($conex, '*', 'tiempoBloqueoIntentos');
-				$limiteIntentos =  consultarAliasPorAplicacionAux($conex, '*', 'numeroIntentosPassword');
+				$minutos =  consultarAliasPorAplicacion($conex, '*', 'tiempoBloqueoIntentos');
+				$limiteIntentos =  consultarAliasPorAplicacion($conex, '*', 'numeroIntentosPassword');
 				$msgIntentos = false;
 				
 				if($activo=="A")
@@ -807,21 +781,6 @@ else
 					$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";					
 				}
 
-				if ($msgIntentos){
-					// $fechaLimCompleta = $fechaLimIntentos . " " . $horaLimIntentos;
-					$fechaLimCompleta = $horaLimIntentos;
-					// $mensajeLoginIntentos = 'NUMERO DE INTENTOS EXCEDIDO, DEBE ESPERAR HASTA: ' . $fechaLimCompleta . ' PARA VOLVER A INGRESAR';
-					$mensajeLoginIntentos = 'N&Uacute;MERO DE INTENTOS EXCEDIDO, PARA VOLVER A INGRESAR DEBE HACER LA GESTI&Oacute;N DE RESTABLECER CONTRASE&Ntilde;A';
-					echo "<body bgcolor=#FFFFFF class='fondo'>";
-					echo "<BODY TEXT='#000066'>";
-					echo "<table  border=0 align=center>";
-					echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
-					echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
-					@session_destroy();
-					echo "<td id=tipo1><A HREF='F1.php?END=on'>".$mensajeLoginIntentos."</a></td></tr></table></body>";
-					return;
-				}
-				
 				if ($msgIntentos){
 					// $fechaLimCompleta = $fechaLimIntentos . " " . $horaLimIntentos;
 					$fechaLimCompleta = $horaLimIntentos;
