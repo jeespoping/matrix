@@ -11,6 +11,9 @@
 </center>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 function ver($chain)
 {
 	if(strpos($chain,"-") === false)
@@ -28,7 +31,7 @@ function ver($chain)
 
 
 
-	echo "<form action='Turxepsxfec.php' method=post>";
+	echo "<form action='Turxepsxfec.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	if(!isset($v0) or !isset($v1) or !isset($v2))
 	{
@@ -52,7 +55,7 @@ function ver($chain)
 		echo "</select>";
 		echo"</td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Entidad Sistema Actual</td><td bgcolor=#cccccc align=center>";
-		$query = "SELECT Empcod, Empnom from cliame_000024 where Empest='on' order by Empnom ";
+		$query = "SELECT Empcod, Empnom from ".$wcliame."_000024 where Empest='on' order by Empnom ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$num = mysql_num_rows($err);
 		echo "<select name='v3'>";

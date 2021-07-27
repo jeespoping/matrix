@@ -23,6 +23,7 @@
 </center>
 <?php
 include_once("conex.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
  function buscar($item,$data)
  {
 	 for ($i=0;$i<8;$i++)
@@ -41,7 +42,7 @@ include_once("conex.php");
 
 	
 
-	echo "<form action='Repcirxent.php' method=post>";
+	echo "<form action='Repcirxent.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	if(!isset($v0) or !isset($v1))
 	{
 		if(!isset($v0))
@@ -62,6 +63,12 @@ include_once("conex.php");
 	}
 	else
 	{
+		$consultaAjax = '';
+		include_once("root/comun.php");
+		
+		$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
+		$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+		
 		$TE = array();
 		$TE[0][0] = "EPS";
 		$TE[0][1] = "09";
@@ -89,17 +96,17 @@ include_once("conex.php");
 		}
 		$win1 .= ")"; 
 		$win2 .= ")"; 
-		$query  = "select Turtur,Turqui,Turhin,Turhfi,Turfec,Turdoc,Turnom,Empnom,Turcir,Turmed,Turequ,Turtel from tcx_000011,cliame_000024 ";
+		$query  = "select Turtur,Turqui,Turhin,Turhfi,Turfec,Turdoc,Turnom,Empnom,Turcir,Turmed,Turequ,Turtel from ".$wtcx."_000011,".$wcliame."_000024 ";
 		$query .= "where Turfec = '".$v0."' ";
 		$query .= "  and Tureps = Empcod ";
 		$query .= "  and Emptem in ".$win2." ";
-		$query .= "  and tcx_000011.Fecha_data >= '2015-02-24' ";
+		$query .= "  and ".$wtcx."_000011.Fecha_data >= '2015-02-24' ";
 		$query .= "  UNION ALL ";
-		$query .= "select Turtur,Turqui,Turhin,Turhfi,Turfec,Turdoc,Turnom,Entdes,Turcir,Turmed,Turequ,Turtel from tcx_000011,tcx_000003 ";
+		$query .= "select Turtur,Turqui,Turhin,Turhfi,Turfec,Turdoc,Turnom,Entdes,Turcir,Turmed,Turequ,Turtel from ".$wtcx."_000011,".$wtcx."_000003 ";
 		$query .= "where Turfec = '".$v0."' ";
 		$query .= "  and Tureps = Entcod ";
 		$query .= "  and Enttip in ".$win1." ";
-		$query .= "  and tcx_000011.Fecha_data < '2015-02-24' ";
+		$query .= "  and ".$wtcx."_000011.Fecha_data < '2015-02-24' ";
 		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		echo "<table border=1>";

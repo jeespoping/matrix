@@ -29,7 +29,11 @@
 </script>
 
 <?php
+$consultaAjax = '';
 include_once("conex.php");
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 /*
    Este programa permite Generar Archivo Plano definido para GRD y como trae informacion de Unix en nulo
    no lo puedo publicar en Matrix Asi que INVECLA lo ejecuta desde mi equipo directamente El link para su
@@ -173,7 +177,7 @@ function BNombre($s,$conexW)
 
 */
 	 
-echo "<form name='gengrd01' action='gengrd01.php' method=post>";
+echo "<form name='gengrd01' action='gengrd01.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
 			echo "<center><table border=0>";
 			echo "<tr><td align=center><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
@@ -210,7 +214,7 @@ echo "<form name='gengrd01' action='gengrd01.php' method=post>";
 	   Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'wfec2',button:'trigger2',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});
 	   //]]></script>
 	<?php
-
+	global $wcliame;
      echo "<tr><td bgcolor=#cccccc align=center><input type=checkbox name=conf>Confirmar&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
      echo "<input type='submit' value='Generar'></td></tr></table>";
 
@@ -280,7 +284,7 @@ echo $q."<br>";
 			}
 			
 	        // De Matrix traigo hasta 10 medicos que hayan atendido el paciente (Segun el order by el medico con especialidad ppal queda de 1ro)
-		    $q="SELECT esptip,espmed FROM cliame_000111 WHERE esphis=".TRIM(odbc_result($resultado,3))." And esping=".TRIM(odbc_result($resultado,4))." order by esptip ";
+		    $q="SELECT esptip,espmed FROM ".$wcliame."_000111 WHERE esphis=".TRIM(odbc_result($resultado,3))." And esping=".TRIM(odbc_result($resultado,4))." order by esptip ";
 	
 	        $result3 = mysql_query($q);          // Ejecuto el query   
 	        $nroreg = mysql_num_rows($result3);
@@ -302,7 +306,7 @@ echo $q."<br>";
 			
 			
 			// De Matrix traigo hasta 30 DIAGNOSTICOS (Segun el order by el Dx Ppal queda de 1ro)
-		    $q="SELECT diatip,diacod FROM cliame_000109 WHERE diahis=".TRIM(odbc_result($resultado,3))." And diaing =".TRIM(odbc_result($resultado,4))." order by diatip ";
+		    $q="SELECT diatip,diacod FROM ".$wcliame."_000109 WHERE diahis=".TRIM(odbc_result($resultado,3))." And diaing =".TRIM(odbc_result($resultado,4))." order by diatip ";
 	
 	        $result3 = mysql_query($q);          // Ejecuto el query   
 	        $nroreg = mysql_num_rows($result3);
@@ -322,7 +326,7 @@ echo $q."<br>";
 	        }
 			
 			// De Matrix traigo los datos de hasta 45 PROCEDIMIENTOS (Segun el order by el Procedimiento Ppal queda de 1ro)
-		    $q="SELECT procod,profec,promed,proser FROM cliame_000110 WHERE prohis=".TRIM(odbc_result($resultado,3))." And proing =".TRIM(odbc_result($resultado,4))." order by protip ";
+		    $q="SELECT procod,profec,promed,proser FROM ".$wcliame."_000110 WHERE prohis=".TRIM(odbc_result($resultado,3))." And proing =".TRIM(odbc_result($resultado,4))." order by protip ";
 	
 	        $result3 = mysql_query($q);          // Ejecuto el query   
 	        $nroreg = mysql_num_rows($result3);

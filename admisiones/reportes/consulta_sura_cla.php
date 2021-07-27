@@ -23,6 +23,8 @@
 <?php
     include_once("conex.php");
     include_once("root/comun.php");
+    $wemp_pmla=$_REQUEST['wemp_pmla'];
+    $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -72,7 +74,7 @@
 
 
 <body width="1200" height="47">
-<form action="consulta_sura_cla.php" method="post">
+<form action="consulta_sura_cla.php?wemp_pmla=<?php echo($wemp_pmla) ?>" method="post">
   
   <table width="1200" border="1" align="center">
   	<tr>
@@ -125,11 +127,14 @@
 	
 		}else{
 			
+			
+			
 // Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
+global $wcliame;
 			$select_grd = mysql_query("SELECT count(*) cant
-     									FROM  cliame_000101 a 
+     									FROM  ".$wcliame."_000101 a 
 										left join
-										cliame_000024 b on (a.Ingcem = b.Empcod), cliame_000100 c 
+										".$wcliame."_000024 b on (a.Ingcem = b.Empcod), ".$wcliame."_000100 c 
     									WHERE Ingfei BETWEEN '$buscar' AND '$buscar1' 
 										AND Ingsei in ('1800','1016','1130') 
 										AND Ingcem IN ('800088702-2','800088702CO','800088702SB' )

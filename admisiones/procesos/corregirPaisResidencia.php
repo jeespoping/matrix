@@ -5,7 +5,10 @@
 <body>
 <?php
 include_once("conex.php");
-    include_once("root/comun.php");
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+
+$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
     
 
     
@@ -16,7 +19,7 @@ include_once("conex.php");
     $conexunix      = odbc_connect('admisiones','informix','sco') or die("No se realizó Conexion con el Unix");
 
     $query = " SELECT pactdo, pacdoc, pacpah
-                 FROM cliame_000100
+                 FROM ".$wcliame."_000100
                 WHERE pacpah != '{$codigoColombia}'
                   AND pacpah != ''
                   AND pacpah != '01'";

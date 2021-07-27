@@ -41,7 +41,11 @@
 ?>
 </head>
 <body>
-	<?php	
+	<?php
+include_once("conex.php");
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 		// RECIBIR PARAMETROS DE MENUPLANTILLA PARA REALIZAR EL QUERY EL CLIAME_000337
 		$BcodplaR=$_GET['bcodplaR'];
 		$Btidr=$_GET['btidr'];
@@ -49,12 +53,12 @@
 		$Bfecha=$_GET['bfecha'];
 		$BempcodR=$_GET['bempcodR'];
 		//Obtener descripciones
-		$select_nomPlan = mysql_query("SELECT * from cliame_000329 where Codpla='$BcodplaR'");
+		$select_nomPlan = mysql_query("SELECT * from ".$wcliame."_000329 where Codpla='$BcodplaR'");
 		$resultado_nomPlan=mysql_fetch_array($select_nomPlan);
 		//$Placod = $resultado_nomPlan[3];
 		$Nompla = $resultado_nomPlan[4];
 		// query para obtener la tarifa
-		$select_tarifa = mysql_query("SELECT Empcod,Empnom,Emptar from cliame_000024 where Empcod='$BempcodR'");
+		$select_tarifa = mysql_query("SELECT Empcod,Empnom,Emptar from ".$wcliame."_000024 where Empcod='$BempcodR'");
 		$resultado_tarifa=mysql_fetch_array($select_tarifa);
 		//$EmpcodR = $resultado_tarifa[0];
 		$EmpnomR = $resultado_tarifa[1];
@@ -63,8 +67,8 @@
 		//Obtener tarifas y descripciones
 		
 		//Obtener los datos de las cotizaciones
-		$select_cliame_337 = mysql_query ("select * from cliame_000337 where CodplaR = '$BcodplaR' and TidR = '$Btidr' and Identificacion='$Bidentificacion' and Fecha='$Bfecha' and EmpcodR='$BempcodR'");
-		$select_cliame_337_D = mysql_query ("select * from cliame_000337 where CodplaR = '$BcodplaR' and TidR = '$Btidr' and Identificacion='$Bidentificacion' and Fecha='$Bfecha' and EmpcodR='$BempcodR'");
+		$select_cliame_337 = mysql_query ("select * from ".$wcliame."_000337 where CodplaR = '$BcodplaR' and TidR = '$Btidr' and Identificacion='$Bidentificacion' and Fecha='$Bfecha' and EmpcodR='$BempcodR'");
+		$select_cliame_337_D = mysql_query ("select * from ".$wcliame."_000337 where CodplaR = '$BcodplaR' and TidR = '$Btidr' and Identificacion='$Bidentificacion' and Fecha='$Bfecha' and EmpcodR='$BempcodR'");
 		$resultado=mysql_fetch_array($select_cliame_337);
 		$Identificacion = $resultado[3];
 		$TidR = $resultado[4];

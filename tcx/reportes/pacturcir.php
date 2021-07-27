@@ -13,7 +13,7 @@
     
 <?php
 include_once("conex.php");
-
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -26,7 +26,7 @@ if(!isset($_SESSION['user']))
 
 	
 
- echo "<form name='pacturcir' action='pacturcir.php' method=post>";  
+ echo "<form name='pacturcir' action='pacturcir.php?wemp_pmla=".$wemp_pmla."' method=post>";  
  
  if (!isset($wfec1) or $wfec1=='')
  {
@@ -74,6 +74,12 @@ if(!isset($_SESSION['user']))
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: pacturcir.php Ver. 2014/09/18<br>AUTOR: Gabriel Agudelo</font></b><br>";
     echo "</table>";
+	
+	$consultaAjax = '';
+	include_once("root/comun.php");
+	
+	$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 
     echo "<br>";
 	 //$query="Select Turfec,Orihis ,Oriing ,Turdoc,Turnom,Tureps,Empnom,Turcir,Turmed"
@@ -82,7 +88,7 @@ if(!isset($_SESSION['user']))
 	 //." and   Turest = 'on' and  Tureps = Empcod";
 	 //                  0      1      2      3      4      5       6       7       8      9     10     11     12     13     14   
 	 $query  = "Select Turtur,Turqui,Turhin,Turhfi,Turfec,Turhis ,Turnin ,Turtcx,Turdoc,Turnom,Empnom,Turcir,Mednom,Medesp,Espdet ";
-	 $query .= " from  tcx_000011, tcx_000010, tcx_000006, tcx_000005, cliame_000024 ";
+	 $query .= " from  ".$wtcx."_000011, ".$wtcx."_000010, ".$wtcx."_000006, ".$wtcx."_000005, ".$wcliame."_000024 ";
 	 $query .= " where Turfec between '".$wfec1."' and '".$wfec2."'";
 	 $query .= "   and Turest = 'on' "; 
 	 $query .= "   and Turtur = Mmetur ";
