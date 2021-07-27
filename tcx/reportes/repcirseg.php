@@ -13,7 +13,7 @@
     
 <?php
 include_once("conex.php");
-
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -26,7 +26,7 @@ if(!isset($_SESSION['user']))
 
 	
 
- echo "<form name='repcirseg' action='repcirseg.php' method=post>";
+ echo "<form name='repcirseg' action='repcirseg.php?wemp_pmla=".$wemp_pmla."' method=post>";
  
  if (!isset($wfec1) or $wfec1=='')
  {
@@ -69,13 +69,19 @@ if(!isset($_SESSION['user']))
  }	
  else      // Cuando ya estan todos los datos escogidos
  {
+	include_once("root/comun.php");
+	
+	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+	$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
+	
 	echo "<center><table border=1>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>SEGUIMIENTO PACIENTES DE CIRUGIA</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: repcirseg.php Ver. 2018/05/16<br>AUTOR: Angela Ocampo V.</font></b><br>";
     echo "</table>";
 
-
+	
 
 	echo "<br>";
 
@@ -83,11 +89,11 @@ if(!isset($_SESSION['user']))
 	 $query= "Select pactdo,pacdoc,turfna,pacno1,pacno2,pacap1,pacap2,Turtel,turhis,turnin,
                      Tureps,Empnom,turtur,Turtcx,Turmed,turfec,
                      turcir,egrcae,codigo,nombre,movcon,movdat
-             from tcx_000011 left join cliame_000024 on (tureps=Empcod)
-                             left join cliame_000108 on (turhis=Egrhis and turnin=egring)
-                             left join hce_000107 on (turhis=movhis and turnin=moving and movcon=298)
-                             left join cliame_000110 on (turhis=prohis and turnin=proing)
-                             left join root_000012 on (Procod=codigo), cliame_000100
+             from ".$wtcx."_000011 left join ".$wcliame."_000024 on (tureps=Empcod)
+                             left join ".$wcliame."_000108 on (turhis=Egrhis and turnin=egring)
+                             left join ".$whce."_000107 on (turhis=movhis and turnin=moving and movcon=298)
+                             left join ".$wcliame."_000110 on (turhis=prohis and turnin=proing)
+                             left join root_000012 on (Procod=codigo), ".$wcliame."_000100
             where turhis=pachis
                  and turfec between '".$wfec1."' and '".$wfec2."'
 	               group by turtur";

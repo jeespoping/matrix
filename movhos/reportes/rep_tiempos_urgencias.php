@@ -1462,7 +1462,7 @@ if(!isset($accion))
                                             {
                                                 $SQLPosibleTurno = "
                                                 SELECT Atutur
-                                                  FROM {$wbasedato_cliame}_000100, movhos_000178 AS B
+                                                  FROM {$wbasedato_cliame}_000100, ".$wbasedato_movhos."_000178 AS B
                                                  WHERE Pachis = '".$info_detalle['historia_clinica']."'
                                                    AND Pacdoc = Atudoc
                                                    AND Pactdo = Atutdo
@@ -1785,7 +1785,7 @@ if(!isset($accion))
                                             {
                                                 $SQLPosibleHistoria = "
                                                 SELECT Mtrhis, Mtring
-                                                  FROM movhos_000178 AS A INNER JOIN {$wbasedato_cliame}_000100 AS B ON (Atudoc = Pacdoc AND Atutdo = Pactdo) INNER JOIN {$wbasedato_hce}_000022 AS C ON B.Pachis = C.Mtrhis
+                                                  FROM ".$wbasedato_movhos."_000178 AS A INNER JOIN {$wbasedato_cliame}_000100 AS B ON (Atudoc = Pacdoc AND Atutdo = Pactdo) INNER JOIN {$wbasedato_hce}_000022 AS C ON B.Pachis = C.Mtrhis
                                                  WHERE Atutur = '".$info_detalle['turno']."'
 												   AND C.Fecha_data = A.Fecha_data
                                                 ";
@@ -2386,7 +2386,7 @@ if(!isset($accion))
             objson['form']     = 'cargar_selects_usuarios_especialidades';
             objson['proceso']  = proceso;
             objson['promedio'] = promedio;
-            $.post("rep_tiempos_urgencias.php",
+            $.post("rep_tiempos_urgencias.php?wemp_pmla=".$wemp_pmla."",
                     objson,
                 function(data){
                     if(data.error == 1)
@@ -2473,7 +2473,7 @@ if(!isset($accion))
             $("#btn_filtrar_fechas").html("Consultando... <img style='cursor:pointer;' width='20' height='20' src='../../images/medical/ajax-loader11.gif'>");
             $("#resConsulta").html("<h3><b>Espere un momento por favor... </b></h3><center><img style='cursor:pointer;' src='../../images/medical/ajax-loader11.gif'></center>");
 
-            $.post("rep_tiempos_urgencias.php",
+            $.post("rep_tiempos_urgencias.php?wemp_pmla=".$wemp_pmla."",
             objson,
             function(data){
                 if(data.error == 1)

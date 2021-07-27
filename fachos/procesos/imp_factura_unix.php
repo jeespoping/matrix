@@ -21,7 +21,8 @@ if(!isset($_SESSION['user']) )
 
 include_once("root/comun.php");
 include_once("root/montoescrito.php");
-
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 
 //@$conexunix = odbc_pconnect('informix','informix','sco') or die("No se ralizo Conexion con el Unix"); //2012-02-29
 @$conexunix = odbc_connect('facturacion','informix','sco') or die("No se ralizo Conexion con el Unix");
@@ -827,7 +828,7 @@ if( $consultaAjax == "on" ){
 
           if( trim( $servicioIngreso ) == trim( $servicioFisiatria ) ){
             $querySalida = " SELECT max( Fecha_data )
-                               FROM hce_000036
+                               FROM ".$whce."_000036
                               WHERE Firhis = '{$whis}'
                                 AND Firing = '{$wing}'";
             $rsSalida  = mysql_query( $querySalida, $conex );

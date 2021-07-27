@@ -1976,7 +1976,7 @@ else{	//si no hay ajax
 		
 										
 		$qCTCcontributivo = " SELECT a.Fecha_data,Ctchis,Ctcing,Ctctor,Ctcnro,Ctcite,Ctcmed,Ctcacc,Detcod,Detfec,Detesi,Ubihac,Ubisac,Cconom,Pacno1,Pacno2,Pacap1,Pacap2,Pacced,Pactid,b.Descripcion AS NombreProc,Ingres,Ingnre,c.Descripcion AS NombreMedico,Rolcod,Roldes,Ctcmip
-								FROM ".$wbasedato."_000135 a, hce_000028,".$wbasedato."_000018,".$wbasedato."_000011,root_000036,root_000037,hce_000047 b,".$wbasedato."_000016,usuarios c,hce_000019,hce_000020
+								FROM ".$wbasedato."_000135 a, ".$whce."_000028,".$wbasedato."_000018,".$wbasedato."_000011,root_000036,root_000037,".$whce."_000047 b,".$wbasedato."_000016,usuarios c,".$whce."_000019,".$whce."_000020
 							   WHERE Ctcacc IN ('E','EM') 
 								 AND a.Fecha_data BETWEEN ".$rangoFechaMipres."
 								 AND Ctcest='on' 
@@ -2002,7 +2002,7 @@ else{	//si no hay ajax
 								 UNION
 								 
 							  SELECT a.Fecha_data,Ctchis,Ctcing,Ctctor,Ctcnro,Ctcite,Ctcmed,Ctcacc,Detcod,Detfec,Detesi,Ubihac,Ubisac,Cconom,Pacno1,Pacno2,Pacap1,Pacap2,Pacced,Pactid,b.Descripcion AS NombreProc,Ingres,Ingnre,c.Descripcion AS NombreMedico,Rolcod,Roldes,Ctcmip 
-								FROM ".$wbasedato."_000135 a, ".$wbasedato."_000159,".$wbasedato."_000018,".$wbasedato."_000011,root_000036,root_000037,hce_000047 b,".$wbasedato."_000016,usuarios c,hce_000019,hce_000020
+								FROM ".$wbasedato."_000135 a, ".$wbasedato."_000159,".$wbasedato."_000018,".$wbasedato."_000011,root_000036,root_000037,".$whce."_000047 b,".$wbasedato."_000016,usuarios c,".$whce."_000019,".$whce."_000020
 							   WHERE Ctcacc IN ('E','EM') 
 								 AND a.Fecha_data BETWEEN ".$rangoFechaMipres."
 								 AND Ctcest='on' 

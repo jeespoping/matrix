@@ -5,12 +5,13 @@
 
 <?php
 include_once("conex.php");
-
 include_once("root/comun.php");
 $conex = obtenerConexionBD("matrix");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 
 $q = " SELECT encpro "
-    ."   FROM hce_000001 ";
+    ."   FROM ".$whce."_000001 ";
 $res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 $wnum = mysql_num_rows($res1);
 
@@ -35,7 +36,7 @@ for ($i=1; $i<=$wnum;$i++)
 	//$q = " DROP INDEX hisingusutip_idx ON HCE_".$row[0];
 	//$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	
-	$q= " CREATE INDEX hising_idx ON HCE_".$row[0]." ( movhis, "
+	$q= " CREATE INDEX hising_idx ON ".$whce."_".$row[0]." ( movhis, "
 	   ."                                              moving )";
 	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	
