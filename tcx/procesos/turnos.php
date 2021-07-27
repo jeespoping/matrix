@@ -1,9 +1,5 @@
 <?php
 include_once("conex.php");
-include_once("root/comun.php");
-$wemp_pmla=$_REQUEST['wemp_pmla'];
-$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
-$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 
 if(isset($accionAjax)) 
 {
@@ -740,12 +736,12 @@ function Deep(&$menu,$limit,$nivel,$exp,$empresa,$wfecha,$swiches,$origen)
 			$itemy[(integer)substr($itemx[$j],0,strpos($itemx[$j],"-"))]=substr($itemx[$j],strpos($itemx[$j],"-")+1);
 		if($menu[$nivel*10+$i][0] > 0 and $itemy[$nivel*10+$i] == 1)
 		{
-			echo "<tr><td id=".$tipM.">".$blank."-<A HREF='/MATRIX/tcx/Procesos/Turnos.php?wemp_pmla=".$wemp_pmla."&ok=99&root=".$root."&origen=".$origen."&swiches=".$swiches."&empresa=".$empresa."&wfecha=".$wfecha."'>".$menu[$nivel*10+$i][1]."</td></tr>";
+			echo "<tr><td id=".$tipM.">".$blank."-<A HREF='/MATRIX/tcx/Procesos/Turnos.php?ok=99&root=".$root."&origen=".$origen."&swiches=".$swiches."&empresa=".$empresa."&wfecha=".$wfecha."'>".$menu[$nivel*10+$i][1]."</td></tr>";
 			Deep($menu,$menu[$nivel*10+$i][0],$nivel*10+$i,$exp+1,$empresa,$wfecha,$swiches,$origen);
 		}
 		else
 			if($menu[$nivel*10+$i][0] > 0)
-				echo "<tr><td id=".$tipM.">".$blank."+<A HREF='/MATRIX/tcx/Procesos/Turnos.php?wemp_pmla=".$wemp_pmla."&ok=99&root=".$root."&origen=".$origen."&swiches=".$swiches."&empresa=".$empresa."&wfecha=".$wfecha."'>".$menu[$nivel*10+$i][1]."</td></tr>";
+				echo "<tr><td id=".$tipM.">".$blank."+<A HREF='/MATRIX/tcx/Procesos/Turnos.php?ok=99&root=".$root."&origen=".$origen."&swiches=".$swiches."&empresa=".$empresa."&wfecha=".$wfecha."'>".$menu[$nivel*10+$i][1]."</td></tr>";
 			else
 			{
 				$blank .= "&nbsp&nbsp";
@@ -1847,7 +1843,6 @@ function MCA_TUR($key,$conex,$wnci,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$wh
 //FUNCION DE MODIFICACION DEL CONTENIDO DEL TURNO
 function MOD_TUR($key,$conex,$wnci,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$whis,$wnin,$wnom,$wfna,$wsex,$wins,$wtci,$wtip,$wtan,$weps,$wuci,$wbio,$winf,$wmat,$wban,$wpre,$wpes,$wpep,$wpeq,$wper,$wpea,$wubi,$wtel,$word,$wcom,$wcups,$wmata,$wcupsa,$wmataa,$west,$wcoma,$wturc,$wturm,$wture,$dataC,$NC,$dataM,$NM,$dataE,$NE,&$werr,&$e,$regcups)
 {
-	global $wmovhos;
 	global $empresa;
 	//                 0        1       2      3        4      5       6      7        8       9       10      11       12     13      14      15      16      17      18      19
 	$query = "select Turmat, Turord, Turdoc, Turnom, Turfna, Tursex, Turins, Turtcx, Turtip, Turtan, Turuci, Turbio, Turinf, Turmat, Turban, Turpre, Turord, Tureps, Turtdo, Turrcu from  ".$empresa."_000011 where Turtur=".$wnci." and Turqui='".substr($wqui,0,strpos($wqui,"-"))."' and Turhin='".$whin."' and Turhfi='".$whfi."' and Turfec='".$wfec."'";
@@ -1858,7 +1853,7 @@ function MOD_TUR($key,$conex,$wnci,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$wh
 		$row = mysql_fetch_array($err);
 		if(strlen($wcom) > 0 and strtoupper(substr($wcom,0,4)) == "BIT:")
 		{
-			$query = "select Bithis, Biting  from  ".$wmovhos."_000021 where Bithis=".$whis." and Biting='".$wnin."'";
+			$query = "select Bithis, Biting  from  movhos_000021 where Bithis=".$whis." and Biting='".$wnin."'";
 			$err1 = mysql_query($query,$conex) or die("ERROR CONSULTANDO ARCHIVO DE BITACORA : ".mysql_errno().":".mysql_error());
 			$num1 = mysql_num_rows($err1);
 			if ($num1 > 0)
@@ -1867,15 +1862,15 @@ function MOD_TUR($key,$conex,$wnci,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$wh
 				$wusr="1016";
 				$wreg="CX";
 				$wkey="TCX";
-				$query = "select Connum from ".$wmovhos."_000001 where Contip='Bitacora'";
+				$query = "select Connum from movhos_000001 where Contip='Bitacora'";
 				$err2 = mysql_query($query,$conex) or die("ERROR CONSULTANDO CONSECUTIVO");
 				$row2 = mysql_fetch_array($err2);
 				$wncix=$row2[0] + 1;
-				$query =  " update ".$wmovhos."_000001 set Connum = Connum + 1 where Contip='Bitacora'";
+				$query =  " update movhos_000001 set Connum = Connum + 1 where Contip='Bitacora'";
 				$err1 = mysql_query($query,$conex) or die("ERROR INCREMENTANDO CONSECUTIVO");
 				$fecha = date("Y-m-d");
 				$hora = (string)date("H:i:s");
-				$query = "insert ".$wmovhos."_000021 (medico,fecha_data,hora_data, Bithis, Biting, Bitnum, Bitser, Bitobs, Bitusr, Bittem, Seguridad) values ('";
+				$query = "insert movhos_000021 (medico,fecha_data,hora_data, Bithis, Biting, Bitnum, Bitser, Bitobs, Bitusr, Bittem, Seguridad) values ('";
 				$query .=  $empresaM."','";
 				$query .=  $fecha."','";
 				$query .=  $hora."','";
@@ -2356,7 +2351,7 @@ function ING_TUR($key,$conex,$wqui,$whin,$whfi,$wfec,$wndt,$wtdo,$wdoc,$whis,$wn
 		return false;
 	}
 }
-global $wemp_pmla;
+
 @session_start();
 if(!isset($_SESSION["user"]))
 	echo "error";
@@ -2368,8 +2363,7 @@ else
 	// echo "<script type='text/javascript' src='../../../include/root/jquery.tooltip.js'></script>";	
 	
 	$key = substr($user,2,strlen($user));
-	echo "<form name='turnos' action='turnos.php?wemp_pmla=".$wemp_pmla."' method=post>";
-	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
+	echo "<form name='turnos' action='turnos.php' method=post>";
 
 
 	$operativo = ((!isset($operativo)) ? "off" : $operativo);			
@@ -2399,7 +2393,7 @@ else
 				function ira(){document.turnos.wfecha.focus();}
 			</script>
 			<?php
-			echo "<tr><td align=center colspan=5 id=tipo19><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../tcx/procesos/turnos.php?wemp_pmla=".$wemp_pmla."' target='_blank'>Ver. 2020-05-04</A></td></tr>";
+			echo "<tr><td align=center colspan=5 id=tipo19><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../tcx/procesos/turnos.php' target='_blank'>Ver. 2020-05-04</A></td></tr>";
 			echo "<tr>
 			<td align=center rowspan=2><img  width='60%' height='60%' SRC='../../images/medical/root/clinica.jpg'></td>
 			<td align=center colspan=5 id=tipo14>TURNOS EN CIRUGIA</td>
@@ -2445,8 +2439,6 @@ else
 				Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'wfecha',button:'trigger1',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});
 			//]]></script>
 			<?php
-			global $wmovhos;
-			global $wcliame;
 			echo "<td rowspan=1 bgcolor='#cccccc'><input type='submit' value='IR'></td></tr>";
 			echo "</table><br>";
 			echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
@@ -2454,9 +2446,9 @@ else
 			echo "<table border=0 align=center id=tipo2>";
 			echo "<tr><td bgcolor='#CCCCCC' rowspan=2><IMG SRC='/matrix/images/medical/tcx/procesos.png'  alt='PROCESOS'><td align=center bgcolor='#999999'>Turno Nuevo</td><td align=center bgcolor='#999999'>Consulta de Turnos</td><td align=center bgcolor='#999999'>Impresion Turnos</td><td align=center bgcolor='#999999'>Visor de Turnos</td><td align=center bgcolor='#999999'>Anestesiologos</td></tr>";
 			if($wniv == 1)
-				echo "<tr><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Procesos/turnos.php?wemp_pmla=".$wemp_pmla."&ok=9&empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."&wnew=1'><IMG SRC='/matrix/images/medical/TCX/icono.png' alt='Nuevo'></A></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Procesos/turnos.php?wemp_pmla=".$wemp_pmla."&ok=9&empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."&wnew=0'><IMG SRC='/matrix/images/medical/TCX/Consulta.png' alt='Consulta'></A></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Reportes/impretur.php?wemp_pmla=".$wemp_pmla."&empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."'  target='_Blank'><IMG SRC='/matrix/images/medical/TCX/Informe.png' alt='Impresion'></A></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Reportes/VisorT.php?wemp_pmla=".$wemp_pmla."&empresa=".$empresa."&wfecha=".$wfecha."'  target='_Blank'><IMG SRC='/matrix/images/medical/TCX/Visor.png' alt='Visor'></A></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Procesos/Anestesiologos.php?wemp_pmla=".$wemp_pmla."&empresa=".$empresa."&wfecha=".$wfecha."'  target='_Blank'><IMG SRC='/matrix/images/medical/TCX/anestesia.png' alt='Anestesia'></A></td></tr></table>";
+				echo "<tr><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Procesos/turnos.php?ok=9&empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."&wnew=1'><IMG SRC='/matrix/images/medical/TCX/icono.png' alt='Nuevo'></A></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Procesos/turnos.php?ok=9&empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."&wnew=0'><IMG SRC='/matrix/images/medical/TCX/Consulta.png' alt='Consulta'></A></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Reportes/impretur.php?empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."'  target='_Blank'><IMG SRC='/matrix/images/medical/TCX/Informe.png' alt='Impresion'></A></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Reportes/VisorT.php?empresa=".$empresa."&wfecha=".$wfecha."'  target='_Blank'><IMG SRC='/matrix/images/medical/TCX/Visor.png' alt='Visor'></A></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Procesos/Anestesiologos.php?empresa=".$empresa."&wfecha=".$wfecha."'  target='_Blank'><IMG SRC='/matrix/images/medical/TCX/anestesia.png' alt='Anestesia'></A></td></tr></table>";
 			else
-				echo "<tr><td align=center bgcolor='#dddddd'><IMG SRC='/matrix/images/medical/TCX/icono.png' alt='Nuevo'></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Procesos/turnos.php?wemp_pmla=".$wemp_pmla."&ok=9&empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."&wnew=0'><IMG SRC='/matrix/images/medical/TCX/Consulta.png' alt='Consulta'></A></td><td align=center bgcolor='#dddddd'><IMG SRC='/matrix/images/medical/TCX/Informe.png' alt='Impresion'></td><td align=center bgcolor='#dddddd'><IMG SRC='/matrix/images/medical/TCX/Visor.png' alt='Visor'></td><td align=center bgcolor='#dddddd'><IMG SRC='/matrix/images/medical/TCX/anestesia.png' alt='Anestesia'></td></tr></table>";
+				echo "<tr><td align=center bgcolor='#dddddd'><IMG SRC='/matrix/images/medical/TCX/icono.png' alt='Nuevo'></td><td align=center bgcolor='#dddddd'><A HREF='/MATRIX/tcx/Procesos/turnos.php?ok=9&empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."&wnew=0'><IMG SRC='/matrix/images/medical/TCX/Consulta.png' alt='Consulta'></A></td><td align=center bgcolor='#dddddd'><IMG SRC='/matrix/images/medical/TCX/Informe.png' alt='Impresion'></td><td align=center bgcolor='#dddddd'><IMG SRC='/matrix/images/medical/TCX/Visor.png' alt='Visor'></td><td align=center bgcolor='#dddddd'><IMG SRC='/matrix/images/medical/TCX/anestesia.png' alt='Anestesia'></td></tr></table>";
 			$Grid=array();
 			$Grid[0][0]["tur"]=0;
 			$Grid[0][0]["tex"]="";
@@ -2544,7 +2536,7 @@ else
 			}
 			//                 0      1       2         3       4      5      6        7       8       9       10      11     12       13     14       15     16      17       18     19      20      21      22      23       24      25      26
 			//$query = "SELECT Turtur, Turqui, Turhin, Turhfi, Turest, Turord, Turcir, Turtcx, Turtip, Turnom, Turfna, Turtel, Turtcx, Turtip, Turtan, Tureps, Turmed, Turequ, Turuci, Turbio, Turinf, Turmat, Turban, Turins, Entdes, Turpre, Turmdo  from ".$empresa."_000011, ".$empresa."_000003 ";
-			$query  = "SELECT Turtur, Turqui, Turhin, Turhfi, Turest, Turord, Turcir, Turtcx, Turtip, Turnom, Turfna, Turtel, Turtcx, Turtip, Turtan, Tureps, Turmed, Turequ, Turuci, Turbio, Turinf, Turmat, Turban, Turins, Empnom, Turpre, Turmdo, Turepc, Turcdi, Turcdt, Turcdr  from ".$empresa."_000011, ".$wcliame."_000024 ";
+			$query  = "SELECT Turtur, Turqui, Turhin, Turhfi, Turest, Turord, Turcir, Turtcx, Turtip, Turnom, Turfna, Turtel, Turtcx, Turtip, Turtan, Tureps, Turmed, Turequ, Turuci, Turbio, Turinf, Turmat, Turban, Turins, Empnom, Turpre, Turmdo, Turepc, Turcdi, Turcdt, Turcdr  from ".$empresa."_000011, cliame_000024 ";
 			$query .= " where turfec = '".$wfecha."' ";
 			$query .= "   and Tureps = Empcod ";
 			$query .= " UNION ";
@@ -2672,7 +2664,7 @@ else
 								$Grid[$k][$row[1]]["for"]=1;
                                 $Grid[$k][$row[1]]["alt"]=$msg;
 								$Grid[$k][$row[1]]["title"]=$title;
-								$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+								$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 							break;
 							case "on":
 								switch ($row[5]) // VERIFICACION ORDEN
@@ -2689,7 +2681,7 @@ else
 													$Grid[$k][$row[1]]["for"]=1;
                                                     $Grid[$k][$row[1]]["alt"]=$msg;
 													$Grid[$k][$row[1]]["title"]=$title;
-													$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+													$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													$Grid[$k][$row[1]]["esUrgente"] = "on";
 												}
 												else
@@ -2701,7 +2693,7 @@ else
 														$Grid[$k][$row[1]]["for"]=2;
                                                         $Grid[$k][$row[1]]["alt"]=$msg;
 														$Grid[$k][$row[1]]["title"]=$title;
-														$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+														$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													}
 													else
 													{
@@ -2711,7 +2703,7 @@ else
 														$Grid[$k][$row[1]]["for"]=3;
                                                         $Grid[$k][$row[1]]["alt"]=$msg;
 														$Grid[$k][$row[1]]["title"]=$title;
-														$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+														$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													}
 											break;
 											case "off":
@@ -2723,7 +2715,7 @@ else
 													$Grid[$k][$row[1]]["for"]=2;
                                                     $Grid[$k][$row[1]]["alt"]=$msg;
 													$Grid[$k][$row[1]]["title"]=$title;
-													$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+													$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													$Grid[$k][$row[1]]["esUrgente"] = "on";
 												}
 												else
@@ -2735,7 +2727,7 @@ else
 														$Grid[$k][$row[1]]["for"]=3;
                                                         $Grid[$k][$row[1]]["alt"]=$msg;
 														$Grid[$k][$row[1]]["title"]=$title;
-														$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+														$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													}
 													else
 													{
@@ -2745,7 +2737,7 @@ else
 														$Grid[$k][$row[1]]["for"]=4;
                                                         $Grid[$k][$row[1]]["alt"]=$msg;
 														$Grid[$k][$row[1]]["title"]=$title;
-														$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+														$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													}
 											break;
 										}
@@ -2762,7 +2754,7 @@ else
 													$Grid[$k][$row[1]]["for"]=1;
                                                     $Grid[$k][$row[1]]["alt"]=$msg;
 													$Grid[$k][$row[1]]["title"]=$title;
-													$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+													$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													$Grid[$k][$row[1]]["esUrgente"] = "on";
 												}
 												else
@@ -2774,7 +2766,7 @@ else
 														$Grid[$k][$row[1]]["for"]=2;
                                                         $Grid[$k][$row[1]]["alt"]=$msg;
 														$Grid[$k][$row[1]]["title"]=$title;
-														$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+														$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													}
 													else
 													{
@@ -2784,7 +2776,7 @@ else
 														$Grid[$k][$row[1]]["for"]=3;
                                                         $Grid[$k][$row[1]]["alt"]=$msg;
 														$Grid[$k][$row[1]]["title"]=$title;
-														$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+														$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													}
 											break;
 											case "off":
@@ -2796,7 +2788,7 @@ else
 													$Grid[$k][$row[1]]["for"]=2;
                                                     $Grid[$k][$row[1]]["alt"]=$msg;
 													$Grid[$k][$row[1]]["title"]=$title;
-													$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+													$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													$Grid[$k][$row[1]]["esUrgente"] = "on";
 												}
 												else
@@ -2808,7 +2800,7 @@ else
 														$Grid[$k][$row[1]]["for"]=1;
                                                         $Grid[$k][$row[1]]["alt"]=$msg;
 														$Grid[$k][$row[1]]["title"]=$title;
-														$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+														$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													}
 													else
 													{
@@ -2818,7 +2810,7 @@ else
 														$Grid[$k][$row[1]]["for"]=4;
                                                         $Grid[$k][$row[1]]["alt"]=$msg;
 														$Grid[$k][$row[1]]["title"]=$title;
-														$Grid[$k][$row[1]]["url"]="turnos.php?wemp_pmla=".$wemp_pmla."&ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
+														$Grid[$k][$row[1]]["url"]="turnos.php?ok=3&wfecha=".$wfecha."&wnci=".$row[0]."&empresa=".$empresa."&origen=".$origen."&wnew=0";
 													}
 											break;
 										}
@@ -2841,7 +2833,7 @@ else
 					if($Grid[$i][$j]["url"] != "")
 					{
 						echo '
-						<td id="'.$tipo.'" estProcesoOper="'.$Grid[$i][$j]["estProcesoOper"].'" esUrgente="'.$Grid[$i][$j]["esUrgente"].'" numQuirofano="'.$j.'" idTurno="'.$Grid[$i][$j]["tur"].'" name="'.$tipo.'" ondblclick="ejecutar(\'/MATRIX/tcx/Procesos/InfoTur.php?wemp_pmla='.$wemp_pmla.'&empresa='.$empresa.'&MENSAGE='.$Grid[$i][$j]["tur"].'\',1)" onKeyPress="ejecutar(\'/MATRIX/tcx/Reportes/sticker_TCX.php?wnci='.$Grid[$i][$j]["tur"].'\',1)" tieneTitle="on" title="'.$Grid[$i][$j]["title"].'">
+						<td id="'.$tipo.'" estProcesoOper="'.$Grid[$i][$j]["estProcesoOper"].'" esUrgente="'.$Grid[$i][$j]["esUrgente"].'" numQuirofano="'.$j.'" idTurno="'.$Grid[$i][$j]["tur"].'" name="'.$tipo.'" ondblclick="ejecutar(\'/MATRIX/tcx/Procesos/InfoTur.php?empresa='.$empresa.'&MENSAGE='.$Grid[$i][$j]["tur"].'\',1)" onKeyPress="ejecutar(\'/MATRIX/tcx/Reportes/sticker_TCX.php?wnci='.$Grid[$i][$j]["tur"].'\',1)" tieneTitle="on" title="'.$Grid[$i][$j]["title"].'">
 							<A HREF="'.$Grid[$i][$j]["url"].'">
 							<img src="/matrix/images/medical/TCX/tic.png" alt="'.$Grid[$i][$j]["alt"].'" ></A><br>'.$Grid[$i][$j]["tex"].'
 						</td>'; //atl='".$Grid[$i][$j]["alt"]."'
@@ -2850,7 +2842,7 @@ else
 					else
 						if($tipo == "tipoG11")
 							if($wniv == 1)
-								echo "<td id=".$tipo." sinTurno ><A HREF='/MATRIX/tcx/Procesos/turnos.php?wemp_pmla=".$wemp_pmla."&ok=9&empresa=".$empresa."&origen=".$origen."&wfecha=".$wfecha."&wnew=1&wqui=".$j."&whin=".substr($Grid[$i][0]["tex"],0,strpos($Grid[$i][0]["tex"],"-"))."'>".$j."</A></td>";
+								echo "<td id=".$tipo." sinTurno ><A HREF='/MATRIX/tcx/Procesos/turnos.php?ok=9&empresa=".$empresa."&origen=".$origen."&wfecha=".$wfecha."&wnew=1&wqui=".$j."&whin=".substr($Grid[$i][0]["tex"],0,strpos($Grid[$i][0]["tex"],"-"))."'>".$j."</A></td>";
 							else
 								echo "<td id=".$tipo." sinTurno >".$j."</td>";
 						else
@@ -2964,7 +2956,7 @@ else
 						$wordx="on";
 					$query = "lock table ".$empresa."_000008 LOW_PRIORITY WRITE, ".$empresa."_000009 LOW_PRIORITY WRITE, ";
 					$query .= $empresa."_000010 LOW_PRIORITY WRITE , ".$empresa."_000011 LOW_PRIORITY WRITE, ".$empresa."_000014 LOW_PRIORITY WRITE   ";
-					$query .= " ,".$wmovhos."_000001 LOW_PRIORITY WRITE , ".$wmovhos."_000021 LOW_PRIORITY WRITE  ";
+					$query .= " ,movhos_000001 LOW_PRIORITY WRITE , movhos_000021 LOW_PRIORITY WRITE  ";
 					$err1 = mysql_query($query,$conex) or die("ERROR BLOQUEANDO ARCHIVO DE ARCHIVOS : ".mysql_errno().":".mysql_error());
 					if($ok == 4)
 					{
@@ -3166,7 +3158,6 @@ else
 			}
 
 			//*******CONSULTA DE INFORMACION *********
-			global $wcliame;
 			if(isset($ok)  and $ok == 3)
 			{
 				if(!isset($whin))
@@ -3195,7 +3186,7 @@ else
 					if(isset($wcom) and strtoupper(substr($wcom,0,4)) == "EPS:")
 					{
 						//$query = "SELECT Entcod, Entdes  from ".$empresa."_000003 where Entdes like '%".substr($wcom,4)."%' and Entest='on'  order by Entdes";
-						$query = "SELECT Empcod, Empnom  from ".$wcliame."_000024 where Empnom like '%".substr($wcom,4)."%' and Empest='on'  order by Empnom";
+						$query = "SELECT Empcod, Empnom  from cliame_000024 where Empnom like '%".substr($wcom,4)."%' and Empest='on'  order by Empnom";
 
 						$err = mysql_query($query,$conex);
 						$num = mysql_num_rows($err);
@@ -3345,7 +3336,7 @@ else
 					$row1 = mysql_fetch_array($err1);
 					$wtan=$row1[0]."-".$row1[1];
 					//$query = "SELECT Entcod, Entdes  from ".$empresa."_000003 where Entcod ='".$row[16]."' ";
-					$query = "SELECT Empcod, Empnom  from ".$wcliame."_000024 where Empcod ='".$row[16]."' ";
+					$query = "SELECT Empcod, Empnom  from cliame_000024 where Empcod ='".$row[16]."' ";
 					$err1 = mysql_query($query,$conex);
 					$row1 = mysql_fetch_array($err1);
 					$weps=$row1[0]."-".$row1[1];
@@ -3625,7 +3616,7 @@ else
 					}
 				}
 			}
-			echo "<tr><td align=center colspan=5 id=tipo19><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../tcx/procesos/turnos.php?wemp_pmla=".$wemp_pmla."' target='_blank'>Ver. 2020-05-04</A></td></tr>";
+			echo "<tr><td align=center colspan=5 id=tipo19><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../tcx/procesos/turnos.php' target='_blank'>Ver. 2020-05-04</A></td></tr>";
 			echo "<tr><td align=center colspan=5 id=tipo14>TURNOS EN CIRUGIA </td></tr>";
 			$color="#dddddd";
 			$color1="#000099";
@@ -3754,7 +3745,6 @@ else
 				$query = "SELECT Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pacced='".$wdoc."' and Pactid='".$wtdo."' and Pacced=Oriced and Pactid=Oritid and Oriori='".$origen."' order by Oriori";
 			$err = mysql_query($query,$conex);
 			$num = mysql_num_rows($err);
-			global $wmovhos;
 			if ($num > 0)
 			{
 				$row = mysql_fetch_array($err);
@@ -3765,7 +3755,7 @@ else
 					$wsex="M-MASCULINO";
 				else
 					$wsex="F-FEMENINO";
-				$query = "SELECT Ubihis, Ubiing from ".$wmovhos."_000018 where Ubihis='".$row[6]."' and Ubiing='".$row[7]."' and Ubiald = 'off' ";
+				$query = "SELECT Ubihis, Ubiing from movhos_000018 where Ubihis='".$row[6]."' and Ubiing='".$row[7]."' and Ubiald = 'off' ";
 				$err1 = mysql_query($query,$conex);
 				$num1 = mysql_num_rows($err1);
 				if ($num1 > 0)
@@ -3829,8 +3819,7 @@ else
 							</script>
 							<?php
 						}
-			
-			global $wcliame;
+
 			echo "<td bgcolor=".$color." align=center>*Historia &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp- Nro Ing.<br><input type='TEXT' name='whis' size=9 maxlength=9  readonly='readonly' value='".$whis."' class=tipo3> - <input type='TEXT' name='wnin' size=4 maxlength=4  readonly='readonly' value='".$wnin."' class=tipo3></td>";
 			echo "<td bgcolor=".$color." align=center>*Nombre : <br><input type='TEXT' name='wnom' size=40 maxlength=40 value='".$wnom."' class=tipo3></td>";
 			if($weda > 0 and ($wfna == date("Y-m-d") or $wfna == ""))
@@ -3984,13 +3973,13 @@ else
 			if(isset($wepsw) and $wepsw != "")
 			{
 				//$query = "SELECT Entcod, Entdes from ".$empresa."_000003 where Entcod = '".$wepsw."' and Entest='on'  order by Entdes";
-				$query = "SELECT Empcod, Empnom from ".$wcliame."_000024 where Empcod = '".$wepsw."' and Empest='on'  order by Empest";
+				$query = "SELECT Empcod, Empnom from cliame_000024 where Empcod = '".$wepsw."' and Empest='on'  order by Empest";
 				$err = mysql_query($query,$conex);
 				$num = mysql_num_rows($err);
 				if ($num == 0)
 				{
 					//$query = "SELECT Entcod, Entdes  from ".$empresa."_000003 where Entdes like '%".$wepsw."%' and Entest='on'  order by Entdes";
-					$query = "SELECT Empcod, Empnom  from ".$wcliame."_000024 where Empnom like '%".$wepsw."%' and Empest='on'  order by Empest";
+					$query = "SELECT Empcod, Empnom  from cliame_000024 where Empnom like '%".$wepsw."%' and Empest='on'  order by Empest";
 					$err = mysql_query($query,$conex);
 					$num = mysql_num_rows($err);
 				}
@@ -4015,7 +4004,7 @@ else
 				{
 					$weps=ver1($weps);
 					//$query = "SELECT Entcod, Entdes  from ".$empresa."_000003 where Entcod = '".$weps."' and Entest='on' order by Entdes";
-					$query = "SELECT Empcod, Empnom  from ".$wcliame."_000024 where Empcod = '".$weps."' and Empest='on' order by Empest";
+					$query = "SELECT Empcod, Empnom  from cliame_000024 where Empcod = '".$weps."' and Empest='on' order by Empest";
 					$err = mysql_query($query,$conex);
 					$row = mysql_fetch_array($err);
 					echo "<option>".$row[0]."-".$row[1]."</option>";
@@ -4068,17 +4057,17 @@ else
 			if(isset($wcupsw) and $wcupsw != "")
 			{
 				$wepscups=$weps;
-				$query  = "SELECT CONCAT(Procod,'(',Procup,')'),Pronom from ".$wcliame."_000103 where Procod like '%".$wcupsw."%' and Proest='on' ";
+				$query  = "SELECT CONCAT(Procod,'(',Procup,')'),Pronom from cliame_000103 where Procod like '%".$wcupsw."%' and Proest='on' ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Procod,'(',Procup,')'),Pronom from ".$wcliame."_000103 where Pronom like '%".$wcupsw."%' and Proest='on'  ";
+				$query .= "SELECT CONCAT(Procod,'(',Procup,')'),Pronom from cliame_000103 where Pronom like '%".$wcupsw."%' and Proest='on'  ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Proemppro,'(',Proempcod,')'),Proempnom from ".$wcliame."_000070 where Proemppro like '%".$wcupsw."%' and Proempest='on' and Proempemp = '".$wepscups."' ";
+				$query .= "SELECT CONCAT(Proemppro,'(',Proempcod,')'),Proempnom from cliame_000070 where Proemppro like '%".$wcupsw."%' and Proempest='on' and Proempemp = '".$wepscups."' ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Proemppro,'(',Proempcod,')'),Proempnom from ".$wcliame."_000070 where Proempnom like '%".$wcupsw."%' and Proempest='on' and Proempemp = '".$wepscups."' ";
+				$query .= "SELECT CONCAT(Proemppro,'(',Proempcod,')'),Proempnom from cliame_000070 where Proempnom like '%".$wcupsw."%' and Proempest='on' and Proempemp = '".$wepscups."' ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Cprcod,'(',Cprcod,')'),Cprnom from ".$wcliame."_000254 where Cprcod like '%".$wcupsw."%' and Cprest='on' and Cprnem = '".$wepscups."' ";
+				$query .= "SELECT CONCAT(Cprcod,'(',Cprcod,')'),Cprnom from cliame_000254 where Cprcod like '%".$wcupsw."%' and Cprest='on' and Cprnem = '".$wepscups."' ";
 				$query .= " UNION ALL ";
-				$query .= "SELECT CONCAT(Cprcod,'(',Cprcod,')'),Cprnom from ".$wcliame."_000254 where Cprnom like '%".$wcupsw."%' and Cprest='on' and Cprnem = '".$wepscups."' ";
+				$query .= "SELECT CONCAT(Cprcod,'(',Cprcod,')'),Cprnom from cliame_000254 where Cprnom like '%".$wcupsw."%' and Cprest='on' and Cprnem = '".$wepscups."' ";
 				$query .= " order by 1 ";
 				$err = mysql_query($query,$conex);
 				$num = mysql_num_rows($err);
@@ -4424,7 +4413,7 @@ else
 					$wposs=0;
 				echo "&nbsp Registro Nro. : <input type='TEXT' name='wposs' size=5 maxlength=10  value='".$wposs."' OnBlur='enter()' class=tipo3>";
 				if($CHECKBOX[5] == "enabled")
-					echo "&nbsp <IMG SRC='/matrix/images/medical/tcx/comentario.jpg'  alt='ACTUALIZACION A COMENTARIOS' OnClick='ejecutar(".chr(34)."/MATRIX/tcx/Procesos/Cambcom.php?wemp_pmla=".$wemp_pmla."&empresa=".$empresa."&wndt=".$wnci."&ok=9".chr(34).",2)'>";
+					echo "&nbsp <IMG SRC='/matrix/images/medical/tcx/comentario.jpg'  alt='ACTUALIZACION A COMENTARIOS' OnClick='ejecutar(".chr(34)."/MATRIX/tcx/Procesos/Cambcom.php?empresa=".$empresa."&wndt=".$wnci."&ok=9".chr(34).",2)'>";
 			}
 			echo "</td>";
 			if($wnew == 1)
@@ -4432,7 +4421,7 @@ else
 			else
 				echo "<td bgcolor=#cccccc align=center><input type='RADIO' name=ok value=2 disabled onclick='enter()'><b>GRABAR</b></td></tr>";
 			echo "<tr><td bgcolor=#999999 colspan=5 align=center><input type='submit' value='OK'></td></tr>";
-			echo "<tr><td bgcolor=#ffffff colspan=5 align=center><A HREF='/MATRIX/tcx/Procesos/turnos.php?wemp_pmla=".$wemp_pmla."&ok=99&empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."'><IMG SRC='/matrix/images/medical/TCX/icono.png' alt='Planilla de Turnos'><br>Planilla de Turnos</A></td></tr>";
+			echo "<tr><td bgcolor=#ffffff colspan=5 align=center><A HREF='/MATRIX/tcx/Procesos/turnos.php?ok=99&empresa=".$empresa."&wfecha=".$wfecha."&origen=".$origen."'><IMG SRC='/matrix/images/medical/TCX/icono.png' alt='Planilla de Turnos'><br>Planilla de Turnos</A></td></tr>";
 			echo "<tr><td align=center bgcolor=#ffffff colspan=5><b><A NAME='Abajo'>LA CONSULTA DE PACIENTES PUEDE HACERSE POR LOS CAMPOS MARCADOS CON ASTERISCO (*)</A></b></td></tr></table><br><br></center>";
 			if(isset($werr) and isset($e) and $e > -1)
 			{
@@ -4687,7 +4676,7 @@ else
 		</script>
 		<?php
 		echo "<tr><td align=center colspan=5><IMG SRC'../../images/medical/root/clinica.jpg' heigth='76' with='120'></td></tr>";
-		echo "<tr><td align=center colspan=5 id=tipo19><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../tcx/procesos/turnos.php?wemp_pmla=".$wemp_pmla."' target='_blank'>Ver. 2020-04-27</A></td></tr>";
+		echo "<tr><td align=center colspan=5 id=tipo19><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../tcx/procesos/turnos.php' target='_blank'>Ver. 2020-04-27</A></td></tr>";
 		echo "<tr><td align=center colspan=5 id=tipo14>TURNOS EN CIRUGIA</td></tr>";
 		if (!isset($wfecha))
 			$wfecha=date("Y-m-d");
