@@ -49,14 +49,14 @@ else
 	// or die("No se ralizo Conexion con el Unix");
 	include_once("root/magenta.php");
 	include_once("movhos/otros.php");
-	$bd = 'movhos';
+	$bd = $wbasedato;
 	$wactualiz = "Noviemnbre 7 de 2013"; // Aca se coloca la ultima fecha de actualizacion de este programa //
 	$titulo = "REPORTE DE DEVOLUCIONES";
 	encabezado($titulo,$wactualiz, "clinica");  
 	connectOdbc($conex_o, 'facturacion');
 	connectOdbc($conex_i, 'inventarios');
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-		
+	//$test = centroCostosCM();echo $test;
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 	echo "<form name='Reporte_devoluciones' action='Reporte_devoluciones.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<input type='HIDDEN' name='wemp_pmla' value='" . $wemp_pmla . "'>";
@@ -189,8 +189,9 @@ else
 	
 
 		//$wcco = trim($wcco);
+		$ccoCM = centroCostosCM();
 
-		if ($wcco == '1051')
+		if ($wcco == $ccoCM)
 		{
 			$q = " SELECT devcon, fenhis, fening, fenfec, " . $wbasedato . "_000003.hora_data as hora, Count(distinct(Fdenum)), Devcfs, devjus, devcrf, devcff, devjuf , devobs, devfre, devhre, denori, denusu, fdeari, artcom, fdenum "
 			. "   FROM " . $wbasedato . "_000028, " . $wbasedato . "_000002, " . $wbasedato . "_000035, " . $wbasedato . "_000003, ".$wcenmez."_000002 "
@@ -362,6 +363,27 @@ else
 		echo "</table>";
 	} // if de register
 }
+function centroCostosCM()
+	{
+		global $conex;
+		global $wbasedato;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$wbasedato."_000011
+				WHERE
+					ccotra = 'on'
+					AND ccoima = 'on'	
+					AND ccoest = 'on'
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			return $rows[ 'Ccocod' ];
+		}
+	}
 echo "<input type='HIDDEN' name='wemp_pmla' value='" . $wemp_pmla . "'>";
 echo "<input type='HIDDEN' name='wbasedato' value='" . $wbasedato . "'>";
 
