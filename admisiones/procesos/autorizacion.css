@@ -1,0 +1,87 @@
+/**
+ * * PROGRAMA					: autorizacion.css
+ * * DESCRIPCION				: Archivo donde se encuentran todos los estilos de la vista de
+ * *							  autorización hce.
+ */
+
+.btn.focus, .btn:focus {
+	outline: 0;
+	box-shadow: 0 0 0 0.2rem rgb(255 255 255 / 25%) !important;
+}
+
+span.center-titulo {
+	text-align: center !important;
+}
+
+th.encabezado-consulta,
+th.encabezado-datos-basicos,
+th.encabezado-autorizaciones {
+	padding: 5px !important;
+	font-size: 18px !important;
+	text-align: center !important;
+	border-radius: 2px;
+}
+
+th.encabezado-autorizacion-informacion {
+	text-align: center !important;
+}
+
+th.encabezado-autorizacion-informacion,
+td.encabezado-personas-autorizadas,
+td.encabezado-personas-reclaman,
+td.encabezado-observaciones {
+	background-color: #5990ea !important;
+}
+
+td.fila1-consulta {
+	border-radius: 2px;
+}
+
+button.consultar-datos,
+button.guardar-datos,
+button.actualizar-datos,
+button.regresar {
+	background-color: #c3d9ff !important;
+	color: #212529 !important;
+}
+
+div#div_datos_autorizaciones {
+	margin-top: 15px !important; 
+}
+
+input.error, div.error {
+	border: 1px dashed red;
+	font-weight: 300;
+	color: red;
+}
+
+form#form-consultar-parametros,
+div#div-carga,
+div#div-boton-consultar {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+table#tabla-consulta-datos {
+	width: 50%;
+}
+
+table#tabla_autorizaciones {
+	width: 75% !important;
+}
+
+div.oculto {
+	display: none !important;
+}
+
+div.div-buttons {
+	margin-top: 10px !important;
+}
+
+div.alerta, div.alerta-respuesta {
+	position: inherit;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+}

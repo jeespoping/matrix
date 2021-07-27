@@ -2,6 +2,8 @@
 include_once("conex.php");
 /***********************************************************************************************************************************************
  * Actualizaciones
+ * 2021-06-18 ( Joel Payares) - Se modifica el software, independizando segmento de formulario de autorización de acceso a historia clínica en un archivo
+ *                            independiente, permitiendo centralizar el formulario para posibles cambios. Esta modificación se realizó en la linea de código 8151
  * 2021-04-27 - Johan Córdoba:
  * 2020-03-25 Camilo Zapata: Dado que un procedimiento puede repetirse siempre y cuando se realicen en diferentes dias, se corrige la validación realizada en este aspecto
  * incluyendo el campo de fecha del procedimiento como criterio diferenciador.
@@ -4939,99 +4941,101 @@ echo "</div>"; //datos egreso
     echo "</div>";
 
 //AUTORIZACIONES
-    $msjPermisoUsuario = consultarAliasPorAplicacion($conex, $wemp_pmla, "preguntaPermisoEgreso");
+    $msjPermisoUsuario = consultarAliasPorAplicacion($conex, $wemp_pmla, "preguntaPermisoEgreso" );
     echo "<div id='div_datos_autorizaciones'>";
     echo "<h3>AUTORIZACIONES PARA ACCEDER A LA HISTORIA </h3>";
     echo "<div id='div_int_datos_autorizaciones'>";
-    echo "<center><table width='50%' id='tabla_autorizaciones'>";
-    echo "<tr><th class='encabezadotabla' colspan='8'>Autorizaciones</th></tr>";
-    echo "<tr>";
-    echo "<td class='fila1' colspan=3>{$msjPermisoUsuario}</td>";
-    echo "<td class='fila2'>";
-    echo "<table width='100%' border='0'>";
-    echo "<tr><td width='50%' align='center' style='font-size: 11px;' nowrap>
-            Si &nbsp; <input egresoAutomatico='no' type='radio' msgcampo='Autoriza informacion o publicidad' style='width:14px;height:12px;' name='aut_inf_radAut' id='aut_inf_radAutS' value='on' onclick='' msgaqua=''>";
-    echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            No &nbsp; <input egresoAutomatico='no' type='radio' msgcampo='Autoriza informacion o publicidad' style='width:14px;height:12px;' name='aut_inf_radAut' id='aut_inf_radAutN' value='off' onclick='' msgaqua=''>
-        </td></tr>";
-    echo "</table>";
-    echo "</td>";
-    echo "</tr>";
 
-    echo "<tr>";
-    echo "<td class='encabezadotabla' colspan=4 align='center'>
-    Personas Autorizadas";
-    echo "<span style='float:right' id=\"spn_tabla_diagnostico\" onclick=\"addFila2('tabla_personas_autorizadas');\" class=''>" . NOMBRE_ADICIONAR . "</span>";
-    echo "</td>";
-    echo "</tr>";
+    include_once 'form_autorizacion.inc.php';
+    // echo "<center><table width='50%' id='tabla_autorizaciones'>";
+    // echo "<tr><th class='encabezadotabla' colspan='8'>Autorizaciones</th></tr>";
+    // echo "<tr>";
+    // echo "<td class='fila1' colspan=3>{$msjPermisoUsuario}</td>";
+    // echo "<td class='fila2'>";
+    // echo "<table width='100%' border='0'>";
+    // echo "<tr><td width='50%' align='center' style='font-size: 11px;' nowrap>
+    //             Si &nbsp; <input egresoAutomatico='no' type='radio' msgcampo='Autoriza informacion o publicidad' style='width:14px;height:12px;' name='aut_inf_radAut' id='aut_inf_radAutS' value='on' onclick='' msgaqua=''>";
+    // echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    //             No &nbsp; <input egresoAutomatico='no' type='radio' msgcampo='Autoriza informacion o publicidad' style='width:14px;height:12px;' name='aut_inf_radAut' id='aut_inf_radAutN' value='off' onclick='' msgaqua=''>
+    //         </td></tr>";
+    // echo "</table>";
+    // echo "</td>";
+    // echo "</tr>";
 
-    echo "<tr><td colspan=4><table width='100%' id='tabla_personas_autorizadas'>";
+    // echo "<tr>";
+    // echo "<td class='encabezadotabla' colspan=4 align='center'>
+    //     Personas Autorizadas";
+    // echo "<span style='float:right' id=\"spn_tabla_diagnostico\" onclick=\"addFila2('tabla_personas_autorizadas');\" class=''>".NOMBRE_ADICIONAR."</span>";
+    // echo "</td>";
+    // echo "</tr>";
 
-//personas autorizadas
-    echo "<tr class='encabezadotabla'>";
-    echo "<td>Tipo Doc.</td><td>Documento</td><td>Nombre</td><td>Parentesco</td>";
-    echo "</tr>";
-    echo "<tr class='fila2 fila_personas_autorizadas'>";
-    echo "<td>";
-    mysql_data_seek($resTiposDoc, 0);
-    echo crearSelectHTMLAcc($resTiposDoc, 'dau_tdo', 'dau_tdo', "", "egresoAutomatico='no'");
-    echo "<input  type='hidden' name='dau_tip'  egresoAutomatico='no' value='1' >"; //dautip es el tipo de persona, 1 para personas autorizadas
-    echo "</td>";
-    echo "<td><input type='text' name='dau_doc' msgaqua='Documento' egresoAutomatico='no'></td>";
-    echo "<td><input type='text' name='dau_nom' msgaqua='Nombre' egresoAutomatico='no'></td>";
+    // echo "<tr><td colspan=4><table width='100%' id='tabla_personas_autorizadas'>";
 
-    $resPare = consultaMaestros('root_000103', 'Parcod,Pardes', $where = "Parest='on'", '', '');
-    echo "<td>";
-    echo crearSelectHTMLAcc($resPare, 'dau_par', 'dau_par', "", "egresoAutomatico='no'");
-    echo "</td>";
-    echo "</tr>";
+    // //personas autorizadas
+    // echo "<tr class='encabezadotabla'>";
+    // echo "<td>Tipo Doc.</td><td>Documento</td><td>Nombre</td><td>Parentesco</td>";
+    // echo "</tr>";
+    // echo "<tr class='fila2 fila_personas_autorizadas'>";
+    // echo "<td>";
+    // mysql_data_seek ( $resTiposDoc , 0 );
+    // echo crearSelectHTMLAcc($resTiposDoc,'dau_tdo','dau_tdo',"",  "egresoAutomatico='no'");
+    // echo "<input  type='hidden' name='dau_tip'  egresoAutomatico='no' value='1' >"; //dautip es el tipo de persona, 1 para personas autorizadas
+    // echo "</td>";
+    // echo "<td><input type='text' name='dau_doc' msgaqua='Documento' egresoAutomatico='no'></td>";
+    // echo "<td><input type='text' name='dau_nom' msgaqua='Nombre' egresoAutomatico='no'></td>";
 
-    echo "</table>";
-    echo "</td>";
-    echo "</tr>";
+    // $resPare=consultaMaestros('root_000103','Parcod,Pardes',$where="Parest='on'",'','');
+    // echo "<td>";
+    // echo crearSelectHTMLAcc($resPare,'dau_par','dau_par',"", "egresoAutomatico='no'");
+    // echo "</td>";
+    // echo "</tr>";
 
-    echo "<tr>";
-    echo "<td class='encabezadotabla' colspan=4 align='center'>
-    Personas que reclaman historia";
-    echo "<span style='float:right' id=\"spn_tabla_diagnostico\" onclick=\"addFila2('tabla_personas_reclaman');\" class=''>" . NOMBRE_ADICIONAR . "</span>";
-    echo "</td>";
-    echo "</tr>";
+    // echo "</table>";
+    // echo "</td>";
+    // echo "</tr>";
 
-    echo "<tr><td colspan=4><table width='100%' id='tabla_personas_reclaman'>";
-//personas que reclaman historia
+    // echo "<tr>";
+    // echo "<td class='encabezadotabla' colspan=4 align='center'>
+    //     Personas que reclaman historia";
+    // echo "<span style='float:right' id=\"spn_tabla_diagnostico\" onclick=\"addFila2('tabla_personas_reclaman');\" class=''>".NOMBRE_ADICIONAR."</span>";
+    // echo "</td>";
+    // echo "</tr>";
 
-    echo "<tr class='encabezadotabla'>";
-    echo "<td>Tipo Doc.</td><td>Documento</td><td>Nombre</td><td>Parentesco</td>";
-    echo "</tr>";
-    echo "<tr class='fila2 fila_personas_reclaman'>";
-    echo "<td>";
-    mysql_data_seek($resTiposDoc, 0);
-    echo crearSelectHTMLAcc($resTiposDoc, 'dau_tdo', 'dau_tdo', "", "egresoAutomatico='no'");
-    echo "<input type='hidden' name='dau_tip' value='2'  egresoAutomatico='no'>"; //dautip es el tipo de persona, 2 para personas que reclaman
-    echo "</td>";
-    echo "<td><input type='text' name='dau_doc' msgaqua='Documento' egresoAutomatico='no'></td>";
-    echo "<td><input type='text' name='dau_nom' msgaqua='Nombre'    egresoAutomatico='no'></td>";
+    // echo "<tr><td colspan=4><table width='100%' id='tabla_personas_reclaman'>";
+    //personas que reclaman historia
 
-    mysql_data_seek($resPare, 0);
-    echo "<td> caraio";
-    echo crearSelectHTMLAcc($resPare, 'dau_par', 'dau_par', "", "egresoAutomatico='no'");
-    echo "</td>";
-    echo "</tr>";
+    // echo "<tr class='encabezadotabla'>";
+    // echo "<td>Tipo Doc.</td><td>Documento</td><td>Nombre</td><td>Parentesco</td>";
+    // echo "</tr>";
+    // echo "<tr class='fila2 fila_personas_reclaman'>";
+    // echo "<td>";
+    // mysql_data_seek ( $resTiposDoc , 0 );
+    // echo crearSelectHTMLAcc($resTiposDoc,'dau_tdo','dau_tdo',"","egresoAutomatico='no'");
+    // echo "<input type='hidden' name='dau_tip' value='2'  egresoAutomatico='no'>"; //dautip es el tipo de persona, 2 para personas que reclaman
+    // echo "</td>";
+    // echo "<td><input type='text' name='dau_doc' msgaqua='Documento' egresoAutomatico='no'></td>";
+    // echo "<td><input type='text' name='dau_nom' msgaqua='Nombre'    egresoAutomatico='no'></td>";
 
-    echo "</table>";
-    echo "</td>";
-    echo "</tr>";
+    // mysql_data_seek ( $resPare , 0 );
+    // echo "<td> caraio";
+    // echo crearSelectHTMLAcc($resPare,'dau_par','dau_par',"", "egresoAutomatico='no'");
+    // echo "</td>";
+    // echo "</tr>";
 
-    echo "<tr>";
-    echo "<td class='encabezadotabla' colspan=4 align='center'>Observaciones</td>";
-    echo "</tr>";
-    echo "<tr>";
-    echo "<td colspan=4 align='center' class='fila2'><textarea rows='3' cols='70' name='aut_obs' id='aut_obs' egresoAutomatico='no'></textarea></td>";
-    echo "</tr>";
+    // echo "</table>";
+    // echo "</td>";
+    // echo "</tr>";
 
-    echo "</table>";
-    echo "</center>";
-    echo "</div>";
+    // echo "<tr>";
+    // echo "<td class='encabezadotabla' colspan=4 align='center'>Observaciones</td>";
+    // echo "</tr>";
+    // echo "<tr>";
+    // echo "<td colspan=4 align='center' class='fila2'><textarea rows='3' cols='70' name='aut_obs' id='aut_obs' egresoAutomatico='no'></textarea></td>";
+    // echo "</tr>";
+
+    // echo"</table>";
+    // echo"</center>";
+    echo"</div>";
     echo "</div>";
 
 
