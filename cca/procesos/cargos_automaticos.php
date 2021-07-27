@@ -36,7 +36,9 @@ $wactualiz = "(Febrero 23 de 2021)";
 	<script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
     <script type="text/javascript" src="../../../include/root/jqueryalert.js?v=<?=md5_file('../../../include/root/jqueryalert.js');?>"></script>
     <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
-	
+	<!-- <script src="../../../include/root/jquery_1_7_2/js/jquery.dataTables.min.js" type="text/javascript"></script> -->
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
    <script type="text/javascript">
 	
 	var _URL_AJAX = "http://<?php echo $_SERVER['SERVER_NAME']; ?>/matrix/cca/procesos/ajax_cargos_automaticos.php?wemp_pmla=<?php echo $wemp_pmla; ?>";
@@ -109,7 +111,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 	//	Controlar que el input no quede con basura, sino solo con un valor seleccionado
 	//----------------------------------------------------------------------------------
 	function limpiaAutocomplete(idInput)
-	{
+	{	
 		$( "#"+idInput ).val().replace(/ /gi, "");
 		$( "#"+idInput ).val("");
 		$( "#"+idInput ).attr("valor","");
@@ -117,7 +119,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 	}
 	
 	function validarCheckBoxProcOArt(grupInv) {
-		
+			
 		document.getElementById("wccogra_1").innerHTML = '';
 		var radiosTipoCargo = document.getElementsByName('radio');
 		
@@ -130,12 +132,19 @@ $wactualiz = "(Febrero 23 de 2021)";
 		});
 		
 		if(str_tipo_cargo == '') {
-			jAlert('El campo Tipo Cargo es requerido.', 'Mensaje');
+			jAlert('El campo "Tipo Cargo" es requerido.', 'Mensaje');
 			$( "#busc_concepto_1" ).val('');
 			$( "#busc_concepto_1" ).attr('valor', '');
 			$( "#busc_concepto_1" ).attr('nombre', '');
 			
 			return;
+		}
+		
+		if(str_tipo_cargo == 'orden' && grupInv == 'on'){
+			jAlert('En el tipo cargo "orden", no se permite seleccionar un concepto con movimiento de inventario', 'Mensaje');
+			$( "#busc_concepto_1" ).val('');
+			$( "#busc_concepto_1" ).attr('valor', '');
+			$( "#busc_concepto_1" ).attr('nombre', '');
 		}
 
 		if(str_tipo_cargo == 'evento' || str_tipo_cargo == 'dato') {
@@ -369,9 +378,25 @@ $wactualiz = "(Febrero 23 de 2021)";
 			accion:           	'listado',
 			
 		}, function (response){
-		
+			
 			if(response.code) {
-				$("#listado").html("");
+				$("#div-tabla-configs").html("");
+				let html = '<table align="center"   id="mytable"  style="width: 100%;margin:auto">\
+							<thead>\
+								<tr id="tr_enc_det_concepto" class="encabezadoTabla" style="font-size: 10pt;" align="center">\
+									<th>Concepto</th>\
+									<th>Cen. Costos</th>\
+									<th>Procedimientos</th>\
+									<th>Articulo</th>\
+									<th>Formulario HCE</th>\
+									<th>Campo HCE</th>\
+									<th>Tipo de Cargo</th>\
+									<th>Tipo Cen. Costos</th>\
+									<th>Eliminar</th>\
+									<th>Editar</th>\
+								</tr>\
+							</thead>\
+							<tbody>';
 				var data = response.data;
 				var fila = "";
 				var tr = "";
@@ -397,13 +422,22 @@ $wactualiz = "(Febrero 23 de 2021)";
 						  + "<td>"+data[id]['hce']+"</td>"
 						  + "<td>"+data[id]['consecutivo']+"</td>"
 						  + "<td>"+tipo+"</td>"
+						  + "<td>"+data[id]['cad_tipo_cco']+"</td>"
 						  + "<td style='text-align: center'><button  onclick='eliminar(\""+id+"\")'><img src='http://132.1.18.12/matrix/images/medical/root/borrar.png' alt=''></button></td>"
-						  + "<td style='text-align: center'><button  onclick='editar(\""+id+"\",\""+data[id]['concepto']+"\",\""+data[id]['c_costos']+"\",\""+data[id]['procedimiento']+"\",\""+data[id]['articulo']+"\",\""+data[id]['hce']+"\",\""+data[id]['consecutivo']+"\",\""+tipo+"\")'><img src='http://132.1.18.11/matrix/images/medical/root/grabar.png' alt=''></button></td>"
+						  + "<td style='text-align: center'><button  onclick='editar(\""+id+"\",\""+data[id]['concepto']+"\",\""+data[id]['c_costos']+"\",\""+data[id]['procedimiento']+"\",\""+data[id]['articulo']+"\",\""+data[id]['hce']+"\",\""+data[id]['consecutivo']+"\",\""+tipo+"\",\""+data[id]['tipo_cco']+"\")'><img src='http://132.1.18.11/matrix/images/medical/root/grabar.png' alt=''></button></td>"
 					+   "</tr>";
 				}
 				
 				tr = tr == "" ? "<tr class='fila1'><td colspan='9' style='text-align: center;'>No existen registros en la base de datos.</td></tr>" : tr;
-				$("#listado").append(tr);
+				
+				html += tr+"</tbody><table>";
+				
+				$("#div-tabla-configs").append(html);
+				
+				$('#mytable').DataTable({
+					"language": {"url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"}
+				});
+				$('#mytable').removeClass('dataTable');	
 			} else {
 				jAlert( response.msj, 'Alerta');
 			}
@@ -432,6 +466,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 	}
 	
 	var cargo_editado=0;
+	
 	var obj_cargo = {
 		concepto: '',
 		c_costos: '',
@@ -439,23 +474,27 @@ $wactualiz = "(Febrero 23 de 2021)";
 		articulo: '',
 		hce : '',
 		consecutivo: '',
-		tipo: ''
+		tipo: '',
+		tipo_cco: []
 	};
 	
-	function editar(id,concepto,c_costos,procedimiento,articulo,hce,consecutivo,tipo) {
+	function editar(id,concepto,c_costos,procedimiento,articulo,hce,consecutivo,tipo, tipo_cco) {
 		jConfirm('Seguro quieres editar esta configuracion?', 'Mensaje', function(e) { 
 			if(e){
 				
-				obj_cargo.concepto=concepto;
-				obj_cargo.c_costos=c_costos;
-				obj_cargo.procedimiento=procedimiento;
-				obj_cargo.articulo=articulo;
-				obj_cargo.hce=hce;
-				obj_cargo.consecutivo=consecutivo;
-				obj_cargo.tipo=tipo;
+				obj_cargo.concepto = concepto;
+				obj_cargo.c_costos = c_costos;
+				obj_cargo.procedimiento = procedimiento;
+				obj_cargo.articulo = articulo;
+				obj_cargo.hce = hce;
+				obj_cargo.consecutivo = consecutivo;
+				obj_cargo.tipo = tipo;
+				obj_cargo.tipo_cco = tipo_cco.split(",");			
 				
-				this.cargo_editado=id;
+				this.cargo_editado = id;
+				
 				openTab(event,'configurar');
+				
 				document.getElementById("button_guardar").innerText="Editar Configuracion";
 				document.getElementById("button_guardar").disabled=true;
 		
@@ -486,20 +525,28 @@ $wactualiz = "(Febrero 23 de 2021)";
 				var splitConsecFormularioHCE = '';
 				var codigoConsecFormularioHCE = '';
 			
-				if(tipo=="dato"){
+				if(tipo == "dato") {
 					$("#dato").prop("checked", true);
 					activar();
-				}else if(tipo=="evento"){
+				} else if( tipo == "evento" ) {
 					$("#evento").prop("checked", true);
 					activar();
-				}else if(tipo=="orden"){
+				} else if(tipo=="orden") {
 					$("#orden").prop("checked", true);
 					desactivar();
-				}else{
+				} else {
 					$("#pre").prop("checked", true);
 					desactivar();
 				}
-		  
+				
+				/* NUEVO */
+				var checksTcc = document.getElementsByName('check_tcc');			
+				checksTcc.forEach(function (el) {
+					if(tipo_cco.includes(el.value)) {
+						el.checked = true;
+					}
+				});
+				
 				splitConcepto = concepto.split('-');
 				codigoConcepto = splitConcepto[0];
 				nombreConcepto = splitConcepto[1];
@@ -566,23 +613,43 @@ $wactualiz = "(Febrero 23 de 2021)";
 		
 		var radiosTipoCargo = document.getElementsByName('radio');
 		var radiosProcOIns = document.getElementsByName('radio_p');
+		/* NUEVO */
+		var checksTipoCco = document.getElementsByName('check_tcc');
+				
 		
 		var msjErrores = '';
 		var tipo_cargo = '';
 		var procOInsu = '';
+		/* NUEVO */
+		var tipo_cco = '';
 
-		if(centro_costos=="0") centro_costos='';
+		if(centro_costos=="0") {
+			centro_costos='';
+		}
 
 		radiosTipoCargo.forEach(function (el) {
 			if(el.checked) {
 				tipo_cargo = el.value;
 			}
 			
-			msjErrores = tipo_cargo == '' ? 'El campo Tipo Cargo es requerido. \n' : '';
+			msjErrores = tipo_cargo == '' ? 'El campo "Tipo Cargo" es requerido. \n' : '';
 		});
 		
+		/* NUEVO */
+		checksTipoCco.forEach(function (el) {
+			if(el.checked) {
+				tipo_cco += el.value+',';
+			}
+		});
+		
+		tipo_cco = tipo_cco.replace(/(^[,\s]+)|([,\s]+$)/g, '');		
+		
+		if(tipo_cco == '') {
+			msjErrores += 'Debe seleccionar al menos un tipo de centro de costo. \n';
+		}
+				
 		if(concepto == '') {
-			msjErrores += 'El campo Concepto es requerido. \n';
+			msjErrores += 'El campo "Concepto" es requerido. \n';
 		}
 		
 		radiosProcOIns.forEach(function (el) {
@@ -592,15 +659,15 @@ $wactualiz = "(Febrero 23 de 2021)";
 		});
 		
 		if(procOInsu == '' || procedimiento_insumo == '') {
-			msjErrores += 'El campo Procedimiento o Articulo es requerido. \n';
+			msjErrores += 'El campo "Procedimiento o Articulo" es requerido. \n';
 		}
 		
 		if((tipo_cargo == 'dato') && (formulario_hce == '' || consecutivo_hce == '')) {
-			msjErrores += formulario_hce == ''  ? 'El campo Formulario HCE es requerido.\n' : '';
-			msjErrores += consecutivo_hce == ''  ? 'El campo Consecutivo HCE es requerido.\n' : '';
+			msjErrores += formulario_hce == ''  ? 'El campo "Formulario HCE" es requerido.\n' : '';
+			msjErrores += consecutivo_hce == ''  ? 'El campo "Campo HCE" es requerido.\n' : '';
 		}
 		if((tipo_cargo == 'evento') && (formulario_hce == '')) {
-			msjErrores += formulario_hce == ''  ? 'El campo Formulario HCE es requerido.\n' : '';
+			msjErrores += formulario_hce == ''  ? 'El campo "Formulario HCE" es requerido.\n' : '';
 		
 		}
 		if(msjErrores != '') {
@@ -622,6 +689,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 				confhce: consecutivo_hce,
 				tc: tipo_cargo,
 				poi: procOInsu,
+				/* NUEVO */
+				tcco: tipo_cco,
 				id: this.cargo_editado
 				
 			}, function (data){
@@ -646,6 +715,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 				fhce: formulario_hce,
 				confhce: consecutivo_hce,
 				tc: tipo_cargo,
+				/* NUEVO */
+				tcco: tipo_cco,
 				poi: procOInsu
 				
 			}, function (data){
@@ -672,17 +743,16 @@ $wactualiz = "(Febrero 23 de 2021)";
 						btn_editar_cca.removeAttribute('disabled');
 						limpiarFormulario(false);
 						this.obj_cargo = {
-						concepto: '',
-						c_costos: '',
-						procedimiento: '',
-						articulo: '',
-						hce : '',
-						consecutivo: '',
-						tipo: ''
-						};
-						
+											concepto: '',
+											c_costos: '',
+											procedimiento: '',
+											articulo: '',
+											hce : '',
+											consecutivo: '',
+											tipo: '',
+											tipo_cco: ''
+										};
 					} else {
-						//editar(this.cargo_editado,this.obj_cargo.concepto,this.obj_cargo.c_costos,this.obj_cargo.procedimiento,this.obj_cargo.articulo,this.obj_cargo.hce,this.obj_cargo.consecutivo,this.obj_cargo.tipo);
 						btn_editar_cca.setAttribute('disabled', true);
 					}
 				break;
@@ -751,6 +821,20 @@ $wactualiz = "(Febrero 23 de 2021)";
 						btn_editar_cca.setAttribute('disabled', true);
 					}
 				break;
+				case 'tipo_cco':
+					let array_tcc = [];
+					var checksTipoCco = document.getElementsByName('check_tcc');
+					checksTipoCco.forEach(function (el) {
+						if(el.checked) {
+							array_tcc.push(el.value);
+						}
+					});
+					if(array_tcc.join()!==this.obj_cargo.tipo_cco.join()) {	
+						btn_editar_cca.removeAttribute('disabled');												
+					} else {					
+						btn_editar_cca.setAttribute('disabled', true);
+					}
+				break;
 			}
 		} else {
 			if(section == 'tipo_origen') {
@@ -775,7 +859,12 @@ $wactualiz = "(Febrero 23 de 2021)";
 		
 		limpiaAutocomplete('busc_concepto_1');
 		limpiaAutocomplete('busc_procedimiento_1');
-		limpiaAutocomplete('busc_formulario_hce_1');
+		limpiaAutocomplete('busc_formulario_hce_1');	
+
+		var checksTipoCco = document.getElementsByName('check_tcc');	
+		checksTipoCco.forEach(function (el) {
+			el.checked = false;
+		});
 	}
 	
     $(document).ready(function(){
@@ -787,6 +876,27 @@ $wactualiz = "(Febrero 23 de 2021)";
     function cerrarVentanaPpal()
     {
         window.close();
+    }
+	
+	function mostrarDetalleCargo(btn, indice)
+    {  
+		var src = btn.src.split("/");
+		src = src[src.length - 1];
+		if(src === "menos.PNG"){
+			document.getElementById("det_cargo_"+indice).style.display = "none";
+			btn.src = "../../images/medical/hce/mas.PNG";
+			return;
+		}
+		var elm = document.getElementsByName("det_cargo");
+		elm.forEach(function (el) {			
+			el.style.display = "none";
+		});
+		var elmButton = document.getElementsByName("btn-det-cargo");
+		elmButton.forEach(function (el) {			
+			el.src = "../../images/medical/hce/mas.PNG";
+		});
+		btn.src = "../../images/medical/hce/menos.PNG";
+		document.getElementById("det_cargo_"+indice).style.display = "block";
     }
 	
     function openTab(evt, cityName, mostrar_msj_editar = false) {
@@ -836,7 +946,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 			}
 			
 		} else if ( cityName == 'log') {
-			traer_log();
+			//traer_log();
+			obtenerListadoLog();
 		}
       
 		var i, tabcontent, tablinks;
@@ -853,35 +964,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 			evt.currentTarget.className += " active";
 		}
             
-	}
-          
-	$(document).ready(function(){
-		$("#search").keyup(function(){
-			
-			_this = this;
-			// Show only matching TR, hide rest of them
-			$.each($("#mytable tbody tr"), function() {
-				
-				if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1) {
-					$(this).hide();
-				} else {
-					$(this).show();
-				}
-			});
-		});
-			$("#search2").keyup(function(){
-				
-			_this = this;
-			// Show only matching TR, hide rest of them
-			$.each($("#mytable2 tbody tr"), function() {
-				if($(this).text().toLowerCase().indexOf($(_this).val().toLowerCase()) === -1) {
-					$(this).hide();
-				} else {
-					$(this).show();
-				}
-			});
-		});
-	});
+	}        
+	
 
 	//validar el buscador de procedimientos e insumos 
 	function validar() {
@@ -902,10 +986,10 @@ $wactualiz = "(Febrero 23 de 2021)";
 				traer_procedimientos();
 			}
 		} else  {
-			jAlert('El campo Tipo Concepto es requerido.', 'Mensaje');
+			jAlert('El campo "Tipo Concepto" es requerido.', 'Mensaje');
 		}
-	}
-
+	}	
+	
 	function desactivar() {
 		document.getElementById("busc_formulario_hce_1").setAttribute('disabled', true);
 		document.getElementById("wconfhce_1").setAttribute('disabled', true);
@@ -917,7 +1001,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 		change_edit('tipo_origen');
 		document.getElementById("input_pro").disabled = false; 
 		document.getElementById("input_insu").disabled = false;
-
+		
 		var radio_checked = '';
 		if(document.querySelector('input[name="radio"]:checked')) {
 			radio_checked = document.querySelector('input[name="radio"]:checked').value;
@@ -959,9 +1043,10 @@ $wactualiz = "(Febrero 23 de 2021)";
 	
 	//----------------------------------------------------------
 	function traer_log(){
+		
 		var tipo = document.getElementById('select_dos').value;
 		var esCCA = '';
-		//console.log(tipo);
+		
 		$.post(_URL_AJAX,
 		{
 			consultaAjax:	'',
@@ -981,7 +1066,6 @@ $wactualiz = "(Febrero 23 de 2021)";
 				var des = '';
 				var des2 = '';
 				var err = ''; 
-				console.log(data);
 				for (var id in data) {
 					
 					err = data[id]['Logerr'] == null ? '' : data[id]['Logerr'];
@@ -991,20 +1075,25 @@ $wactualiz = "(Febrero 23 de 2021)";
 					}
 					
 					if(data[id]['Logtip']=='estancia'){
-						cantidad=data[id]['Logdes']['estancias'];
-						if(data[id]['Logerr']!=null){
-							err = data[id]['Logerr']['mensaje'] == null ? '' : data[id]['Logerr']['mensaje']+" - ";
-							if(err==''){
-								err+="cantidad_Hab:"+(cantidad)+"-";
-								for(var i=0;i<cantidad;i++){
-									err += "Estancia: "+data[id]['Logerr']['estancia'+i]['idcargo']+"- respuesta: "+data[id]['Logerr']['estancia'+i]['respuesta'];
+						try {
+							cantidad=data[id]['Logdes']['estancias'];
+							if(data[id]['Logerr']!=null){
+								err = data[id]['Logerr']['mensaje'] == null ? '' : data[id]['Logerr']['mensaje']+" - ";
+								if(err==''){
+									err+="cantidad_Hab:"+(cantidad)+"-";
+									for(var i=0;i<cantidad;i++){
+										err += "Estancia: "+data[id]['Logerr']['estancia'+i]['idcargo']+"- respuesta: "+data[id]['Logerr']['estancia'+i]['respuesta'];
+									}
 								}
 							}
+						} catch(error) {
+							console.log(error);
 						}
-					
-						//console.log(err);
 						
-						des="doc: "+data[id]['Logdes']['wdoc']+"- nombre: "+data[id]['Logdes']['wno1']+" "+data[id]['Logdes']['wno2']+" "+data[id]['Logdes']['wap1']+"-Historia: "+data[id]['Logdes']['whistoria']+"-Ingreso: "+data[id]['Logdes']['wing']+
+						
+						//des="doc: "+data[id]['Logdes']['wdoc']+"- nombre: "+data[id]['Logdes']['wno1']+" "+data[id]['Logdes']['wno2']+" "+data[id]['Logdes']['wap1']+"-Historia: "+data[id]['Logdes']['whistoria']+"-Ingreso: "+data[id]['Logdes']['wing']+
+						//"-"+data[id]['Logdes']['wnomcon']+"-"+data[id]['Logdes']['wnomemp']+"-"+data[id]['Logdes']['wnprocedimiento'];
+						des="doc: - nombre: "+data[id]['Logdes']['wno1']+" "+data[id]['Logdes']['wno2']+" "+data[id]['Logdes']['wap1']+"-Historia: "+data[id]['Logdes']['whistoria']+"-Ingreso: "+data[id]['Logdes']['wing']+
 						"-"+data[id]['Logdes']['wnomcon']+"-"+data[id]['Logdes']['wnomemp']+"-"+data[id]['Logdes']['wnprocedimiento'];
 					} else if(data[id]['Logdes'] != null && data[id]['Logtip'] == 'cca' && data[id]['Logdes']['ccato']!='') {
 						des = data[id]['Logdes']['ccacon']+"-"
@@ -1060,11 +1149,11 @@ $wactualiz = "(Febrero 23 de 2021)";
 		var msjErrores = '';
 		
 		if( whis.value == '') {
-			msjErrores += 'El campo Historia es requerido. \n';
+			msjErrores += 'El campo "Historia" es requerido. \n';
 		}
 		
 		if(wing.value == '') {
-			msjErrores += 'El campo Ingreso es requerido. \n';
+			msjErrores += 'El campo "Ingreso" es requerido. \n';
 		}
 
 		if(msjErrores != '') {
@@ -1091,6 +1180,29 @@ $wactualiz = "(Febrero 23 de 2021)";
 			jAlert(data.msj, "Mensaje");
 		}, 'json');
 		 
+	}
+	
+	function obtenerListadoLog() {
+		
+		var div_tabla_log = document.getElementById('div_table_logs');
+		var tipo = document.getElementById('select_dos').value;
+		var esCCA = '';
+		
+		$.post(_URL_AJAX,
+		{
+			consultaAjax:	'',
+			wemp_pmla:		$('#wemp_pmla').val(),
+			esCCA:			tipo,
+			fecha: 			$('#fecha').val(),
+			accion:			'obtener_logs_html',
+			
+		}, function (response) {
+			div_tabla_log.innerHTML = response;
+			$('#table_logs').DataTable({
+				"language": {"url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"}
+			});
+			$('#table_logs').removeClass('dataTable');
+		});		
 	}
 
 </script>
@@ -1313,7 +1425,7 @@ border-top: none;
   }
     </style>
 </head>
-<body >
+<body style="width: 80%;">
     <center>
     <div id="contenedor_centrado">
 <?php
@@ -1333,52 +1445,19 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 <div id="listadoA" class="prueba ui-tabs-panel ui-widget-content ui-corner-bottom"  style="display: none;">
 <br>
 <br>
-<i class="fa fa-search" aria-hidden="true"></i>
-<input type="text"  id="search"   placeholder="Buscar..."  title="Type in a name" style="border-radius: 12px;">
-
-<br>
-<br>
   <tr align='center'>
   			<td align='center' style='98%'>
-  		
-  <table align='center'   id="mytable"  style=" width: 80%;  ">
-  <thead>
-      <tr id='tr_enc_det_concepto' class='encabezadoTabla' style='font-size: 10pt;' align='center'>
-    
-        <th>Concepto</th>
-    
-        <td>Cen. Costos</td>
-    
-        <td>Procedimientos</td>
-        
-        <td>Articulo</td>
-    	
-    	  <td>Formulario HCE</td>
-    	 
-    	  <td>Consecutivo</td>
-    	  
-    	  <td>Tipo de Cargo</td>
-    	   
-     	  <td>Eliminar</td>
-          
-        <td>Editar</td>
-    
-      </tr>
-   </thead>
-  <tbody id="listado">
- 
-  
- </tbody>
-</table>
-
+  	<div id = "div-tabla-configs">
+	
+	</div>
     </td>
   </tr>
 <p></p> 
 </div>
 
 <!-- TAB CONFIGURACIÓN -->
-<br>
-<br>
+<!--<br>
+<br>-->
 <input type="hidden" value="<?php echo $wemp_pmla; ?>" id="wemp_pmla" />
 <div id="configurar" class="prueba ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: block;">
 	<?php
@@ -1386,51 +1465,63 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 	?>
 	<input type="hidden" value="<?php echo $session[1]; ?>" id="wuse" />
 	<form name="form_cca" id="form_cca">
-		<table>
+		<table style="width: 100%;">
 			<tr align='center'>
 				<td align='center' style='98%'>
-					<table align='center' id='tabla_ingreso_cargos'>
+					<table align='center' id='tabla_ingreso_cargos' style="width: 100%;">
 						<tr>
 							<td align=center colspan='6' class='encabezadoTabla'><b>I N G R E S O &nbsp&nbsp&nbsp D E &nbsp&nbsp&nbsp C A R G O S &nbsp&nbsp&nbsp AUTOMATICOS</b></td>
 						</tr>
 						<tr class='encabezadoTabla'  align="center">
 							<td>
 								Tipo Cargo
-								
 							</td>
 							<td class="fila2 cargo_cargo" colspan="5" align="left" >
 								Evento <input name="radio" value="evento" id="evento" type="radio" onclick="activar();"/>
 								Dato <input name="radio" value="dato" id="dato" type="radio" onclick="activar();" />
-								Prescripcion <input name="radio" value="prescripcion" id="pre" type="radio" onclick="desactivar();" />
 								Orden <input name="radio" value="orden" id="orden" type="radio" onclick="desactivar();" />
 							</td>
 						</tr>
-						<tr id='tr_enc_det_concepto' class='encabezadoTabla'  align='center'>
-							<td> Concepto </td>
-							<td> Cen.Costos </td>
+						<!-- NUEVO -->
+						<tr class='encabezadoTabla'  align="center">
 							<td>
+								Tipo Centro Costos
+							</td>
+							<td class="fila2 cargo_cargo" colspan="5" align="left" >
+								Hospitalizaci&oacute;n <input name="check_tcc" value="H" id="hospitalizacion" type="checkbox" onclick="change_edit('tipo_cco');" />
+							    Domiciliaria <input name="check_tcc" value="D" id="domicilaria" type="checkbox" onclick="change_edit('tipo_cco');" />
+								Ayudas <input name="check_tcc" value="A" id="ayudas" type="checkbox" onclick="change_edit('tipo_cco');" />
+								Urgencia <input name="check_tcc" value="U" id="urgencias" type="checkbox" onclick="change_edit('tipo_cco');" />
+								Cirug&iacute;a <input name="check_tcc" value="Cx" id="cirugia" type="checkbox" onclick="change_edit('tipo_cco');" />
+							</td>
+						</tr>
+						<!-- FIN NUEVO -->
+						<tr id='tr_enc_det_concepto' class='encabezadoTabla'  align='center' style="width:100%">
+							<td style="width:20%"> Concepto </td>
+							<td style="width:20%"> Cen.Costos que realiza</td>
+							<td style="width:30%">
 								Procedimiento <input name="radio_p" value='procedimiento' id="input_pro" onclick="change_edit('proc_o_insu');" type="radio" /> 
 								Articulo <input name="radio_p" value='insumo' onclick="change_edit('proc_o_insu');" id="input_insu" type="radio" />
 							</td>
-							<td> Formulario HCE </td>
-							<td> Consecutivo HCE </td>
+							<td style="width:20%"> Formulario HCE </td>
+							<td style="width:10%"> Campo HCE </td>
 						</tr>
 						<tr class='fila2 cargo_cargo'>
 							<td align='left' >
-								<input type='text' name="con" id='busc_concepto_1' value='' valor='' onchange="change_edit('concepto')" nombre='' size='21' style="text-transform:uppercase;" >
+								<input type='text' name="con" id='busc_concepto_1' value='' valor='' onchange="change_edit('concepto')" nombre='' size='21' style="text-transform:uppercase; width: 97%;" >
 							</td>
 							<td align='left'>
-								<select name="cco" id='wccogra_1' style='width:200px' onchange="change_edit('centro_costo')"></select>
+								<select name="cco" id='wccogra_1' style='width: 100%;' onchange="change_edit('centro_costo')"></select>
 							</td>
 							<td align='left'>
 								<input type='text' name="procoins" id='busc_procedimiento_1' value='' valor='' nombre='' oninput="validar()"  size='30'  style="width: 97%;text-transform:uppercase;"/>
 							</td>
 						
 							<td align='left'>
-								<input type='text' name="fhce" id='busc_formulario_hce_1' value='' valor='' nombre='' oninput="traer_fhce()" size='30'  />
+								<input type='text' name="fhce" id='busc_formulario_hce_1' value='' valor='' nombre='' oninput="traer_fhce()" size='30' style="width: 97%;" />
 							</td>
 							<td align='left'>
-								<select name='confhce' id='wconfhce_1' oninput="traer_fhce();" onchange="change_edit('consecutivo_hce');" style='width:200px;text-transform:uppercase;'></select>
+								<select name='confhce' id='wconfhce_1' oninput="traer_fhce();" onchange="change_edit('consecutivo_hce');" style='width:100%;text-transform:uppercase;'></select>
 							</td>
 						</tr>
 					</table>
@@ -1443,7 +1534,7 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 	<table align='center'>
 		<tr>
 			<td align='center' colspan=9>
-				<button type='button' id="button_guardar" onclick='guardar_cca()' >Grabar Configuraci&oacute;n</button>
+				<button type='button' id="button_guardar" onclick='guardar_cca()' >Guardar Configuraci&oacute;n</button>
 			</td>
 		</tr>
 	</table>
@@ -1455,26 +1546,28 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 	<br>
 	<br>
 	<div class="row" style="display:block;">
-		<i class="fa fa-search" aria-hidden="true"></i>
-		<input type="text"  id="search2"   placeholder="Buscar..."  title="Type in a name" style="border-radius: 12px;    width: 20%;">
-			
-		<select id="select_dos" class="form-control form-control-sm">
-		  <option value="" selected>(seleccione) Tipo log</option>
-		  <option value="cca">Configuraci&oacute;n Cargo Autom&aacute;tico</option>
-		  <option value="ccadat">Cargo Autom&aacute;tico (Dato)</option>
-		  <option value="ccaeve">Cargo Autom&aacute;tico (Evento)</option>
-		  <option value="ccaord">Cargo Autom&aacute;tico (Orden)</option>
-		  <option value="ccapre">Cargo Autom&aacute;tico (Prescripci&oacute;n)</option>
-		  <option value="estancia">Cargo Autom&aacute;tico (Estancia)</option>
-		</select>
-		<input type="text" name="fecha" value="" size="21" id="fecha" placeholder="Fecha"   />
-		
-		<input type='button' value='Obtener' onclick='traer_log();'>
-		
-		
+		<!--
+			<i class="fa fa-search" aria-hidden="true"></i>
+			<input type="text"  id="search2"   placeholder="Buscar..."  title="Type in a name" style="border-radius: 12px;    width: 20%;">
+		-->
+		 <fieldset>
+			<legend>Par&aacute;metros de B&uacute;squeda</legend>
+			<select id="select_dos" class="form-control form-control-sm">
+			  <option value="" selected>(seleccione) Tipo log</option>
+			  <option value="cca">Configuraci&oacute;n Cargo Autom&aacute;tico</option>
+			  <option value="ccadat">Cargo Autom&aacute;tico (Dato)</option>
+			  <option value="ccaeve">Cargo Autom&aacute;tico (Evento)</option>
+			  <option value="ccaord">Cargo Autom&aacute;tico (Orden)</option>
+			  <!-- <option value="ccapre">Cargo Autom&aacute;tico (Prescripci&oacute;n)</option>-->
+			  <option value="estancia">Cargo Autom&aacute;tico (Estancia)</option>
+			</select>
+			<input type="text" name="fecha" value="" size="21" id="fecha" placeholder="Fecha"   />
+			<input type='button' value='Obtener' onclick='obtenerListadoLog();'>
+		 </fieldset>
 	</div>
 	<br>
 	<br>
+	<!--
 	<tr align='center'>
 		<td align='center' style='98%'>
 			<table align='center'   id="mytable2"  style=" width: 80%;  ">
@@ -1493,7 +1586,8 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 			</table>
 		</td>
 	</tr>
-	<p></p> 
+	-->
+	<div id="div_table_logs"></div>
 </div>
 <!-- TAB CONFIGURACIÓN -->
 <div id="estancia" class="prueba ui-tabs-panel ui-widget-content ui-corner-bottom"  style="display: none;">
