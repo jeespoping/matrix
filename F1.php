@@ -1240,7 +1240,7 @@ else
 							else
 							{
 								$token 	  = '';
-								$datosJWT = array_pop( explode( "/", $DATA[$i][2] ) );
+								$datosJWT = array_pop( explode( "/", parse_url( $DATA[$i][2] )['path'] ) );
 								$JWT 	  = explode( "-", $datosJWT );
 								if( $JWT[0] == "JWT" )
 								{
@@ -1265,7 +1265,7 @@ else
 										$token = crearTokenJwt( $encabezado, $datos, $secret_key, $cifrado );
 										
 										$dt = explode( "/", $DATA[$i][2] );
-										$dt[ count($dt)-1 ] = "?token=".$token;
+										$dt[ count($dt)-1 ] = "token/".$token.( parse_url( $DATA[$i][2] )['query'] ? "?".parse_url( $DATA[$i][2] )['query'] : '' );
 										$DATA[$i][2] = implode( "/", $dt );
 									}
 								}
