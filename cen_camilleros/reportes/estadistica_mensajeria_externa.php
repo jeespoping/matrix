@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 <title>MATRIX</title>
 </head>
@@ -7,6 +8,8 @@
 <center>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 /************************************
 *     REPORTE MENSAJERIA EXTERNA    *
 *									*
@@ -35,7 +38,10 @@ echo "</center>";
 		
 
 		$wfecha=date("Y-m-d");
-		echo "<form action='estadistica_mensajeria_externa.php' name=estadistica_mensajeria_externa method=post>";
+		
+		$wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
+		
+		echo "<form action='estadistica_mensajeria_externa.php?wemp_pmla=".$wemp_pmla."' name=estadistica_mensajeria_externa method=post>";
 		
 		if (!isset($wfecini) or !isset($wfecfin) )
 		   {
@@ -60,7 +66,7 @@ echo "</center>";
 		  else
 		     {
                 $query = "   SELECT Habitacion, count(Habitacion) "
-               		   ."    FROM cencam_000003 "
+               		   ."    FROM ".$wcencam."_000003 "
 				       ."    WHERE Fecha_data between '".$wfecini."' AND '".$wfecfin."' "
 				       ."    AND Central = 'MSGEXT' "
 				       ."    AND Anulada = 'No' "

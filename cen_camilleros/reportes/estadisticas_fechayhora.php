@@ -1,5 +1,5 @@
 <head>
-  <title>ESTADISTICAS DE CAMILLEROS</title>
+	<title>ESTADISTICAS DE CAMILLEROS</title>
 </head>
 <body BGCOLOR="">
 <BODY TEXT="#000000">
@@ -22,7 +22,7 @@ else
 	
 
 	include_once("root/comun.php");
-						
+	$wemp_pmla=$_REQUEST['wemp_pmla'];						
     mysql_select_db("matrix") or die("No se ralizo Conexion");
     
 	//$conexunix = odbc_pconnect('facturacion','facadm','1201')
@@ -37,11 +37,13 @@ else
           
     //====================================================================================================================================
     //COMIENZA LA FORMA      
-    echo "<form action='estadisticas_fechayhora.php' method=post>";
+    echo "<form action='estadisticas_fechayhora.php?wemp_pmla=".$wemp_pmla."' method=post>";
     
     $wfecha=date("Y-m-d"); 
     $hora = (string)date("H:i:s");
 	$wactualiz = "2012-06-06";
+	
+	$wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
     //encabezado("ESTADISTICAS SERVICIO DE CAMILLEROS POR RANGO DE HORAS EN EL PERIODO",$wactualiz, "clinica");
     echo "<center><table>";
     //echo "<tr><td align=center class='fila1' colspan=5><b>CLINICA LAS AMERICAS</b></td></tr>";
@@ -102,7 +104,7 @@ else
 		    // QUERY: CANTIDAD DE SERVICIOS EN ** EL PERIODO **
 		    //===================================================================================================================================================
 		    $q =  "  SELECT count(*) "
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -131,7 +133,7 @@ else
 				 ." 	   SUM(DAY(TIMEDIFF(fecha_llegada,fecha_data))),"
 				 ." 	   SUM(MONTH(TIMEDIFF(fecha_llegada,fecha_data))),"
 				 ."		   SUM(YEAR(TIMEDIFF(fecha_llegada,fecha_data)))"
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -172,7 +174,7 @@ else
 					 ."				  (HOUR(TIMEDIFF(hora_llegada,hora_data))*60) + "
 					 ."				   MINUTE(TIMEDIFF(hora_llegada,hora_data)) +"
 					 ."					(SECOND(TIMEDIFF(hora_llegada,hora_data)))/60)"
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -191,7 +193,7 @@ else
 				echo "<td colspan=2><font size=4>Solicitud que tardo MAS en ser atendida (en minutos): </font></td>";
 				$wsegundos=60*(($row[1]-(integer)$row[1])/100);
 				echo "<td colspan=2 align=center>".number_format(((integer)$row[1]+$wsegundos),2,'','')."</td>";
-				echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&wid=".$row[0]."' TARGET='_blank'> Detallar</A></font></td>";
+				echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&wid=".$row[0]."&wemp_pmla=".$wemp_pmla."' TARGET='_blank'> Detallar</A></font></td>";
 				echo "</tr>";
 		       }   
 		       
@@ -205,7 +207,7 @@ else
 					 ."				  (HOUR(TIMEDIFF(hora_llegada,hora_data))*60) + "
 					 ."				   MINUTE(TIMEDIFF(hora_llegada,hora_data)) +"
 					 ." 			  (SECOND(TIMEDIFF(hora_llegada,hora_data)))/60)"
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -224,7 +226,7 @@ else
 				echo "<td colspan=2><font size=4>Solicitud que tardo MENOS en ser atendida (en minutos): </font></td>";
 				$wsegundos=60*(($row[1]-(integer)$row[1])/100);
 				echo "<td colspan=2 align=center>".number_format(((integer)$row[1]+$wsegundos),2,'','')."</td>";
-				echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&amp;wid=".$row[0]."' TARGET='_blank'> Detallar</A></font></td>";
+				echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&amp;wid=".$row[0]."&wemp_pmla=".$wemp_pmla."' TARGET='_blank'> Detallar</A></font></td>";
 				echo "</tr>";
 		       }   
 		          
@@ -232,7 +234,7 @@ else
 		    // QUERY: CANTIDAD DE SERVICIOS ASIGNADOS PERO NO ATENDIDOS ** EN EL PERIODO **
 		    //===================================================================================================================================================
 		    $q=   "  SELECT count(*) "
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -258,7 +260,7 @@ else
 		    // QUERY: CANTIDAD DE SERVICIOS EN ** MENOS O IGUAL AL PROMEDIO **
 		    //===================================================================================================================================================
 		    $q=   "  SELECT count(*) "
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ." 	  AND ((YEAR(TIMEDIFF(fecha_llegada,fecha_data))*12*30*24*60) +"
 				 ."           (MONTH(TIMEDIFF(fecha_llegada,fecha_data))*30*24*60) +"
@@ -288,7 +290,7 @@ else
 		    // QUERY: CANTIDAD DE SERVICIOS EN ** MAS DEL PROMEDIO **
 		    //===================================================================================================================================================
 		    $q=   "  SELECT count(*) "
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ." 	  AND ((YEAR(TIMEDIFF(fecha_llegada,fecha_data))*12*30*24*60) +"
 				 ."           (MONTH(TIMEDIFF(fecha_llegada,fecha_data))*30*24*60) +"
@@ -318,7 +320,7 @@ else
 		    // QUERY: CANTIDAD DE SERVICIOS ** ANULADOS ** EN EL PERIODO
 		    //===================================================================================================================================================
 		    $q=   "  SELECT count(*) "
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'Si' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -341,7 +343,7 @@ else
 		    // QUERY: CANTIDAD DE SERVICIOS ** NO ATENDIDOS ** EN EL PERIODO
 		    //===================================================================================================================================================
 		    $q=   "  SELECT count(*) "
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -371,7 +373,7 @@ else
 				 ."				  					(HOUR(TIMEDIFF(hora_llegada,hora_data))*60) + "
 				 ."				  					 MINUTE(TIMEDIFF(hora_llegada,hora_data)) +"
 				 ." 			  					(SECOND(TIMEDIFF(hora_llegada,hora_data)))/60)"
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -430,7 +432,7 @@ else
 					 ."				  					(HOUR(TIMEDIFF(hora_llegada,hora_data))*60) + "
 					 ."				  					 MINUTE(TIMEDIFF(hora_llegada,hora_data)) +"
 					 ." 			  					(SECOND(TIMEDIFF(hora_llegada,hora_data)))/60)"
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -467,7 +469,7 @@ else
 				    echo "<td colspan=1 align=RIGHT>".number_format(($row[1]/$wtotser)*100,2,',','')." %</td>";
 				    $wsegundos=60*((($row[2]/$row[1])-(integer)($row[2]/$row[1]))/100);
 				    echo "<td colspan=1 align=RIGHT>".number_format(((integer)($row[2]/$row[1])+$wsegundos),2,',','')."</td>";         //Tiempo promedio por solicitud, por servicio
-				    echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&wser=".$row[0]."&word=S"."' TARGET='_blank'> Detallar</A></font></td>";
+				    echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&wser=".$row[0]."&word=S"."&wemp_pmla=".$wemp_pmla."' TARGET='_blank'> Detallar</A></font></td>";
 				    $wtotal=$wtotal+$row[1];   
 				   }
 				echo "<tr class=fila1>";
@@ -483,7 +485,7 @@ else
 		    // QUERY: CANTIDAD DE SERVICIOS ** POR MOTIVO ** EN EL PERIODO
 		    //===================================================================================================================================================
 		    $q=   "  SELECT Motivo, COUNT(*) "
-		         ."    FROM cencam_000003 "
+		         ."    FROM ".$wcencam."_000003 "
 		         ."   WHERE Anulada = 'No' " 
 		         ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		         ."     AND Hora_data  BETWEEN '".$whora_i."'  AND '".$whora_f."'"
@@ -518,7 +520,7 @@ else
 				    echo "<td colspan=1 align=RIGHT>".number_format($row[1],0,',','')."</td>";
 				    echo "<td colspan=1 align=RIGHT>".number_format(($row[1]/$wtotser)*100,2,',','')." %</td>";
 				    //echo "<td>&nbsp</td>";
-				    echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&wmotivo=".$row[0]."&word=S"."&wser='' ' TARGET='_blank'> Detallar</A></font></td>";
+				    echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&wmotivo=".$row[0]."&word=S"."&wser=''' TARGET='_blank'> Detallar</A></font></td>";
 				    $wtotal=$wtotal+$row[1];   
 				   }
 				echo "<tr class='encabezadotabla'>";
