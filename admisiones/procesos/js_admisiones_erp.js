@@ -582,10 +582,7 @@ $(document).ready(function() {
 					idDepid  = "pac_dephidDepNac";
 					idMunTxt = "pac_ciutxtMunNac";
 					idMunid  = "pac_ciuhidMunNac";
-<<<<<<< HEAD
-=======
 					$("#pac_deptxtDepNac, #pac_ciutxtMunNac").val(""); // Si se cambia el país, se pone vacio departamento y municipio de nacimiento
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				}else{
 					idDepTxt = "pac_dehtxtDepRes";
 					idDepid  = "pac_dehhidDepRes";
@@ -594,10 +591,7 @@ $(document).ready(function() {
 					idBarTxt = "pac_bartxtBarRes";
 					idBarid  = "pac_barhidBarRes";
 					buscabarrio = true;
-<<<<<<< HEAD
-=======
 					$("#pac_dehtxtDepRes, #pac_muhtxtMunRes, pac_bartxtBarRes").val(""); // Si se cambia el país, se pone en vacio departamento, municipio y barrio de residencia
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				}
 
 				if( datos[0].valor.cod != $("#cod_colombia").val() ){
@@ -724,15 +718,12 @@ $(document).ready(function() {
 				// //convierto el string en formato json
 				eval( "var datos = "+item );
 
-<<<<<<< HEAD
-=======
 				if( $(this).attr("id") == "pac_deptxtDepNac" ){
 					$("#pac_ciutxtMunNac").val(""); // Si se cambia el departamento, se pone vacio el municipio de nacimiento
 				}else{
 					$("#pac_muhtxtMunRes, #pac_bartxtBarRes").val(""); // Si se cambia el departamento, se pone vacio el municipio de nacimiento
 				}
 
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				//Guardo el ultimo valor que selecciona el usuario
 				//Esto en una propiedad inventada
 				this.value = datos[0].valor.des;
@@ -807,13 +798,10 @@ $(document).ready(function() {
 				// //convierto el string en formato json
 				eval( "var datos = "+item );
 
-<<<<<<< HEAD
-=======
 				if( $(this).attr("id") == "pac_muhtxtMunRes" ){
 					$("#pac_bartxtBarRes").val(""); // Si se cambia el municipio, se pone vacio el barrio de residencia
 				}
 
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				//Guardo el ultimo valor que selecciona el usuario
 				//Esto en una propiedad inventada
 				this.value = datos[0].valor.des;

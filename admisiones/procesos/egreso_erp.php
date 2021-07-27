@@ -200,7 +200,6 @@ if (isset($accion)) {
             foreach ($diagnosticos as $keDiass => &$valueDiass) {
                 unset($datosEnc); //se borra el array
                 $datosEnc = crearArrayDatos($wbasedato, "dia", "dia_", 3, $valueDiass);
-<<<<<<< HEAD
 
                 /** Si es el diagnostico principal**/
                 if ($datosEnc['diatip'] == "P") {
@@ -271,7 +270,6 @@ if (isset($accion)) {
 
                 }
             }
-<<<<<<< HEAD
 
 
             //FIN DE CARGAR LOS DATOS QUE SE DEBEN ENVIAR A UNIX Y ALGUNOS QUE SE TRAEN DEL INGRESO
@@ -298,204 +296,6 @@ if (isset($accion)) {
                 $ping_unix = ping_unix();
 
 
-//                if ($saveUnix == 'on') {
-//                    if ($hay_unix && $tieneConexionUnix == 'on' && $ping_unix) //se descomento
-//                    {
-//                        $a = new egreso_erp();
-//                        if ($a->conex_u) {
-//                            $a->realizarEgreso($historia, $ingreso);
-//                            //echo json_encode( $a->data );
-//                            if ($a->data['error'] == 1) //si hay errores guardando en unix
-//                            {
-//                                $data['mensaje'] = "Error al grabar en UNIX " . $data['mensaje'];
-//                                echo json_encode($a->data);
-//                                exit;
-//                                return;
-//                            }
-//                            if ($a->data['error'] == 2) //si hay errores guardando en unix
-//                            {
-//                                $data['mensaje'] = " El paciente esta siendo modificado en unix, por lo tanto no se puede realizar el egreso en este momento ";
-//                                echo json_encode($a->data);
-//                                exit;
-//                                return;
-//                            }
-//                            $guardoEgresoUnix = true;
-//                        }
-//                    }
-//                }
-
-                //Consulto si existe el registo
-                $sql = "select Egrhis,Egring,id,Egract
-                            from " . $wbasedato . "_000108
-                            where Egrhis = '" . utf8_decode($historia) . "'
-                            and Egring = '" . utf8_decode($ingreso) . "'";
-
-                $res = mysql_query($sql, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error consultando la tabla de egresos - " . mysql_error()));
-
-                if ($res) {
-                    $num = mysql_num_rows($res);
-
-                    //Si no se encontraron los datos, significa que es un registro nuevo
-                    if ($num == 0) //hace el insert
-                    {
-                        //insert en la tabla 108
-                        $datosEnc = crearArrayDatos($wbasedato, "egr", "egr_", 3);
-                        $datosEnc["Egract"] = 'on';
-                        $datosEnc["Egrunx"] = 'off';
-
-                        if ($guardoEgresoUnix == true)
-                            $datosEnc["Egrunx"] = 'on';
-
-                        $sqlInsert = crearStringInsert($wbasedato . "_000108", $datosEnc);
-
-                        $resEnc = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de egresos - " . mysql_error()));
-
-                        //si inserto la 108
-                        if ($resEnc) {
-                            /**Diagnosticos**/
-                            if ($data['error'] == 0) {
-                                //para pasar de diagnostico en diagnostico
-                                foreach ($diagnosticos as $keDia => $valueDia) {
-                                    unset($datosEnc); //se borra el array
-
-                                    //se guardan todos los diagnosticos
-                                    $datosEnc = crearArrayDatos($wbasedato, "dia", "dia_", 3, $valueDia);
-                                    $datosEnc["diahis"] = $historia; //histiria
-                                    $datosEnc["diaing"] = $ingreso; //ingreso
-                                    //El diagnostico de egreso es el principal
-                                    if ($datosEnc["diatip"] == "P") {
-                                        $datosEnc["diaegr"] = "on";
-                                    } else {
-                                        $datosEnc["diaegr"] = "off";
-                                    }
-                                    $sqlInsert = crearStringInsert($wbasedato . "_000109", $datosEnc);
-
-=======
-
-
-            //FIN DE CARGAR LOS DATOS QUE SE DEBEN ENVIAR A UNIX Y ALGUNOS QUE SE TRAEN DEL INGRESO
-            /* se verifica si ya està grabado en unix*/
-            if ($saveUnix == 'on' && $grabadoUnix == "off") {
-                $data['error'] = 1;
-                $data['mensaje'] = " Error en unix - tabla inpac, El egreso no puede ser realizado, intentelo en unos minutos o comuniquese con informatica ";
-                echo json_encode($data);
-                break;
-=======
-
-                /** Si es el diagnostico principal**/
-                if ($datosEnc['diatip'] == "P") {
-
-                    /** Si es el diagnostico principal verificamos si el código es válido**/
-                    if (!validarCodigoDiagnosticoPrincipal($datosEnc['diacod'])) {
-                        $data['error'] = 1;
-                        $data['mensaje'] = 'Codigo no valido para el diagnostico principal';
-                        echo json_encode($data);
-                        return;
-                    }
-
-                    /** Asignamos el valor de la especialidad del médico del diagnostico principal **/
-                    $codEspMedDiagPrincipal = $datosEnc['diaesm'];
-
-                    if ($datosEnc['dianue'] == "S" || $datosEnc['dianue'] == "on") {
-                        $_POST['egr_tdp'] = "2";
-                    } else {
-                        $_POST['egr_tdp'] = "3";
-                    }
-                    if ($datosEnc['diacom'] == "S" || $datosEnc['diacom'] == "on") {
-                        $_POST['egr_com'] = "on";
-                    } else {
-                        $_POST['egr_com'] = "off";
-                    }
-                }
-            }
-
-            /** Verificamos si la especialidad del médico que da el diagnóstico principal es la misma del médico tratante **/
-            if ($codEspMedDiagPrincipal != $codEspMedTratante) {
-                $data['error'] = 1;
-                $data['mensaje'] = 'Debe seleccionar un medico tratante con la misma especialidad del médico del diagnóstico principal';
-                echo json_encode($data);
-                return;
-            }
-
-            /** Validar campos de los procedimientos **/
-            $respuestaValidarProc = validarProcedimientosFormulario($_POST['procedimientos']);
-
-            if (!$respuestaValidarProc['respuesta']) {
-                $data['error'] = 1;
-                $data['mensaje'] = $respuestaValidarProc['mensaje'];
-
-                echo json_encode($data);
-                return;
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
-            }
-
-            /** Validar códigos cups activos en la***/
-
-<<<<<<< HEAD
-            //se consulta si existe esa aplicacion
-            $alias = "movhos";
-            $aplicacion = consultarAplicacion($conex, $wemp_pmla, $alias);
-
-            $alias1 = "hce";
-            $aplicacionHce = consultarAplicacion($conex, $wemp_pmla, $alias1);
-
-            /***se guardan o se actualizan los datos***/
-            if (!empty($historia) && !empty($ingreso)) {
-                $tieneConexionUnix = consultarAliasPorAplicacion($conex, $wemp_pmla, 'conexionUnix');
-                //$tieneConexionUnix  = "off";
-                $ping_unix = ping_unix();
-=======
-            //_ux_egrdin_ux_hosdxi, egr_dxitxtDiaIng -> DIAGNOSTICO DE INGRESO
-            //egr_cex, _ux_hoscex -> CAUSA DE INGRESO
-            $sql1 = "select Ingcai,Ingdig, Ingunx
-                                        from " . $wbasedato . "_000101
-                                        where  Inghis='" . $historia . "'
-                                          and Ingnin='" . $ingreso . "' ";
-
-
-            $res1 = mysql_query($sql1, $conex) or die(mysql_errno() . " - Error en el query $sql - " . mysql_error());
-            $num1 = mysql_num_rows($res1);
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
-
-            if ($num1 > 0) {
-                while ($rows = mysql_fetch_array($res1)) {
-                    $_POST['_ux_egrdin_ux_hosdxi'] = $rows['Ingdig'];
-                    $_POST['egr_dxi'] = $rows['Ingdig'];
-                    $_POST['_ux_hoscex'] = $rows['Ingcai'];
-                    //$_POST['egr_cex'] = $rows['Ingcai'];
-                    $grabadoUnix = $rows['Ingunx'];
-
-<<<<<<< HEAD
-=======
-                }
-            }
-
-
-            //FIN DE CARGAR LOS DATOS QUE SE DEBEN ENVIAR A UNIX Y ALGUNOS QUE SE TRAEN DEL INGRESO
-            /* se verifica si ya està grabado en unix*/
-            if ($saveUnix == 'on' && $grabadoUnix == "off") {
-                $data['error'] = 1;
-                $data['mensaje'] = " Error en unix - tabla inpac, El egreso no puede ser realizado, intentelo en unos minutos o comuniquese con informatica ";
-                echo json_encode($data);
-                break;
-            }
-
-
-            //se consulta si existe esa aplicacion
-            $alias = "movhos";
-            $aplicacion = consultarAplicacion($conex, $wemp_pmla, $alias);
-
-            $alias1 = "hce";
-            $aplicacionHce = consultarAplicacion($conex, $wemp_pmla, $alias1);
-
-            /***se guardan o se actualizan los datos***/
-            if (!empty($historia) && !empty($ingreso)) {
-                $tieneConexionUnix = consultarAliasPorAplicacion($conex, $wemp_pmla, 'conexionUnix');
-                //$tieneConexionUnix  = "off";
-                $ping_unix = ping_unix();
-
-
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
                 if ($saveUnix == 'on') {
                     if ($hay_unix && $tieneConexionUnix == 'on' && $ping_unix) //se descomento
                     {
@@ -509,7 +309,6 @@ if (isset($accion)) {
                                 echo json_encode($a->data);
                                 exit;
                                 return;
-<<<<<<< HEAD
                             }
                             if ($a->data['error'] == 2) //si hay errores guardando en unix
                             {
@@ -518,109 +317,10 @@ if (isset($accion)) {
                                 exit;
                                 return;
                             }
-=======
-                            }
-                            if ($a->data['error'] == 2) //si hay errores guardando en unix
-                            {
-                                $data['mensaje'] = " El paciente esta siendo modificado en unix, por lo tanto no se puede realizar el egreso en este momento ";
-                                echo json_encode($a->data);
-                                exit;
-                                return;
-                            }
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
                             $guardoEgresoUnix = true;
                         }
                     }
                 }
-<<<<<<< HEAD
-
-                //Consulto si existe el registo
-                $sql = "select Egrhis,Egring,id,Egract
-                            from " . $wbasedato . "_000108
-                            where Egrhis = '" . utf8_decode($historia) . "'
-                            and Egring = '" . utf8_decode($ingreso) . "'";
-
-                $res = mysql_query($sql, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error consultando la tabla de egresos - " . mysql_error()));
-
-                if ($res) {
-                    $num = mysql_num_rows($res);
-
-                    //Si no se encontraron los datos, significa que es un registro nuevo
-                    if ($num == 0) //hace el insert
-                    {
-                        //insert en la tabla 108
-                        $datosEnc = crearArrayDatos($wbasedato, "egr", "egr_", 3);
-                        $datosEnc["Egract"] = 'on';
-                        $datosEnc["Egrunx"] = 'off';
-
-                        if ($guardoEgresoUnix == true)
-                            $datosEnc["Egrunx"] = 'on';
-
-                        $sqlInsert = crearStringInsert($wbasedato . "_000108", $datosEnc);
-
-                        $resEnc = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de egresos - " . mysql_error()));
-
-                        //si inserto la 108
-                        if ($resEnc) {
-                            /**Diagnosticos**/
-                            if ($data['error'] == 0) {
-                                //para pasar de diagnostico en diagnostico
-                                foreach ($diagnosticos as $keDia => $valueDia) {
-                                    unset($datosEnc); //se borra el array
-
-                                    //se guardan todos los diagnosticos
-                                    $datosEnc = crearArrayDatos($wbasedato, "dia", "dia_", 3, $valueDia);
-                                    $datosEnc["diahis"] = $historia; //histiria
-                                    $datosEnc["diaing"] = $ingreso; //ingreso
-                                    //El diagnostico de egreso es el principal
-                                    if ($datosEnc["diatip"] == "P") {
-                                        $datosEnc["diaegr"] = "on";
-                                    } else {
-                                        $datosEnc["diaegr"] = "off";
-                                    }
-                                    $sqlInsert = crearStringInsert($wbasedato . "_000109", $datosEnc);
-
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-                                    $resEnc = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de diagnosticos - " . mysql_error()));
-
-                                    if (!$resEnc) {
-                                        $data['error'] = 1;
-                                    }
-                                    if (isset($servDianosticos[$keDia])) {
-<<<<<<< HEAD
-
-                                        foreach ($servDianosticos[$keDia] as $keSer => $valueSerDia) {
-                                            unset($datosEncSer); //se borra el array
-
-                                            //se guardan los Servicios por Diagnostico
-                                            $datosEncSer = crearArrayDatos($wbasedato, "sed", "sed_", 3, $valueSerDia);
-                                            $datosEncSer["Sedhis"] = $historia; //histiria
-                                            $datosEncSer["Seding"] = $ingreso; //ingreso
-                                            //El diagnostico de egreso es el principal
-                                            $datosEncSer["Seddia"] = $datosEnc['diacod'];
-                                            $datosEncSer["Sedest"] = "on";
-                                            $sqlInsert = crearStringInsert($wbasedato . "_000238", $datosEncSer);
-
-                                            $resEncSer = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de servicios por diagnostico - " . mysql_error()));
-
-=======
-
-                                        foreach ($servDianosticos[$keDia] as $keSer => $valueSerDia) {
-                                            unset($datosEncSer); //se borra el array
-
-                                            //se guardan los Servicios por Diagnostico
-                                            $datosEncSer = crearArrayDatos($wbasedato, "sed", "sed_", 3, $valueSerDia);
-                                            $datosEncSer["Sedhis"] = $historia; //histiria
-                                            $datosEncSer["Seding"] = $ingreso; //ingreso
-                                            //El diagnostico de egreso es el principal
-                                            $datosEncSer["Seddia"] = $datosEnc['diacod'];
-                                            $datosEncSer["Sedest"] = "on";
-                                            $sqlInsert = crearStringInsert($wbasedato . "_000238", $datosEncSer);
-
-                                            $resEncSer = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de servicios por diagnostico - " . mysql_error()));
-
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
 
                 //Consulto si existe el registo
                 $sql = "select Egrhis,Egring,id,Egract
@@ -689,7 +389,6 @@ if (isset($accion)) {
 
                                             $resEncSer = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de servicios por diagnostico - " . mysql_error()));
 
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
                                             if (!$resEncSer) {
                                                 $data['error'] = 1;
                                             }
@@ -861,7 +560,6 @@ if (isset($accion)) {
                         {
                             $data["error"] = 1;
                         }
-<<<<<<< HEAD
 
                         if ($data['error'] == 0) {
                             logEgreso('Egreso guardado', $historia, $ingreso, "");
@@ -962,178 +660,11 @@ if (isset($accion)) {
                                              where Prohis = '" . $historia . "'
                                              and Proing = '" . $ingreso . "'";
                             $resDel = mysql_query($sqlDel, $conex) or ($data['error'] = utf8_encode(mysql_errno() . " - Error en el query $sqlDel - " . mysql_error()));
-=======
-
-                        if ($data['error'] == 0) {
-                            logEgreso('Egreso guardado', $historia, $ingreso, "");
-                        }
-                    } //if num = 0 de la primera consulta fin insert
-                    else //hace la actualizacion
-                    {
-                        $data["error"] = 0;//2016-05-31 se agrega esta linea para que si borre los datos anteriores en las actualizaciones
-                        $rowsEnc = mysql_fetch_array($res);
-
-                        //Si se encontraron datos, significa que es una actualización
-                        $datosTabla = crearArrayDatos($wbasedato, "egr", "egr_", 3);
-
-                        $datosTabla['id'] = $rowsEnc['id'];
-                        $datosTabla['Egract'] = 'on';
-                        // $datosTabla[ "ingtar" ] = $tarifa; //tarifa
-                        // var_dump($datosTabla);
-                        $sqlUpdate = crearStringUpdate($wbasedato . "_000108", $datosTabla);
-
-                        $res1 = mysql_query($sqlUpdate, $conex) or ($data['error'] = utf8_encode(mysql_errno() . " - Error en el query $sqlUpdate - " . mysql_error()));
-
-                        if ($res1) {
-                            // if( mysql_affected_rows() > 0 ){
-                            // $data[ "mensaje" ] = utf8_encode( "Se actualizo correctamente" );
-                            // }
-                        } else {
-                            $data["error"] = 1;
-                            $data["mensaje"] = utf8_encode(mysql_errno() . " - Error en el query $sqlUpdate - " . mysql_error());
-                        }
-
-                        /*Se hace la actualizacion de diagnosticos, procedimientos, especialidades y servicios
-                                  para no recorrerlos se insertan nuevamente*/
-
-                        /**Diagnosticos**/
-                        if ($data['error'] == 0) {
-                            /*se borran los registros para volver a insertarlos*/
-                            $sqlDel = "delete from " . $wbasedato . "_000109
-                                             where Diahis = '" . $historia . "'
-                                             and Diaing = '" . $ingreso . "'";
-                            $resDel = mysql_query($sqlDel, $conex) or ($data['error'] = utf8_encode(mysql_errno() . " - Error en el query $sqlDel - " . mysql_error()));
-
-                            $sqlDelser = "delete from " . $wbasedato . "_000238
-                                             where Sedhis = '" . $historia . "'
-                                             and Seding = '" . $ingreso . "'";
-                            $resDelser = mysql_query($sqlDelser, $conex) or ($data['error'] = utf8_encode(mysql_errno() . " - Error en el query $sqlDelser - " . mysql_error()));
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
                             if (!$resDel) {
                                 $data['error'] = 1;
                             } else {
                                 /*fin borrado de registros*/
 
-<<<<<<< HEAD
-                                //para pasar de procedimiento en procedimiento
-                                foreach ($procedimientos as $keDia => $valueDia) {
-                                    unset($datosEnc); //se borra el array
-
-                                    //se guardan todos los procedimientos
-                                    $datosEnc = crearArrayDatos($wbasedato, "pro", "pro_", 3, $valueDia);
-                                    $datosEnc["prohis"] = $historia; //histiria
-                                    $datosEnc["proing"] = $ingreso; //ingreso
-
-                                    if ($datosEnc["procod"] != "") {
-
-                                        $sqlInsert = crearStringInsert($wbasedato . "_000110", $datosEnc);
-
-                                        $resEnc = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de procedimientos - " . mysql_error()));
-
-                                        if (!$resEnc) {
-                                            $data['error'] = 1;
-                                        }
-=======
-                                //para pasar de diagnostico en diagnostico
-                                foreach ($diagnosticos as $keDia => $valueDia) {
-                                    unset($datosEnc); //se borra el array
-
-                                    //se guardan todos los diagnosticos
-                                    $datosEnc = crearArrayDatos($wbasedato, "dia", "dia_", 3, $valueDia);
-                                    $datosEnc["diahis"] = $historia; //histiria
-                                    $datosEnc["diaing"] = $ingreso; //ingreso
-
-                                    $sqlInsert = crearStringInsert($wbasedato . "_000109", $datosEnc);
-
-                                    $resEnc = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de diagnosticos - " . mysql_error()));
-
-                                    if (!$resEnc) {
-                                        $data['error'] = 1;
-                                    }
-                                    if (isset($servDianosticos[$keDia])) {
-                                        foreach ($servDianosticos[$keDia] as $keSer => $valueSerDia) {
-                                            unset($datosEncSer); //se borra el array
-
-                                            //se guardan los Servicios por Diagnostico
-                                            $datosEncSer = crearArrayDatos($wbasedato, "sed", "sed_", 3, $valueSerDia);
-                                            $datosEncSer["Sedhis"] = $historia; //histiria
-                                            $datosEncSer["Seding"] = $ingreso; //ingreso
-                                            //El diagnostico de egreso es el principal
-                                            $datosEncSer["Seddia"] = $datosEnc['diacod'];
-                                            $datosEncSer["Sedest"] = "on";
-                                            $sqlInsert = crearStringInsert($wbasedato . "_000238", $datosEncSer);
-
-                                            $resEncSer = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de servicios por diagnostico - " . mysql_error()));
-
-                                            if (!$resEncSer) {
-                                                $data['error'] = 1;
-                                            }
-                                        }
-
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
-                                    }
-                                } //foreach
-                            }
-                        }
-<<<<<<< HEAD
-                        /**Fin Procedimientos**/
-
-
-                        /**Especialidades**/
-                        if ($data['error'] == 0) {
-                            /*se borran los registros para volver a insertarlos*/
-                            $sqlDel = "delete from " . $wbasedato . "_000111
-                                             where Esphis = '" . $historia . "'
-                                             and Esping = '" . $ingreso . "'";
-                            $resDel = mysql_query($sqlDel, $conex) or ($data['error'] = utf8_encode(mysql_errno() . " - Error en el query $sqlDel - " . mysql_error()));
-                            $sqlDel = "delete from " . $wbasedato . "_000239
-                                             where Seehis = '" . $historia . "'
-                                             and Seeing = '" . $ingreso . "'";
-=======
-                        /**Fin Diagnosticos**/
-
-                        /**Procedimientos**/
-                        if ($data['error'] == 0) {
-
-                            /*se borran los registros para volver a insertarlos*/
-                            $sqlDel = "delete from " . $wbasedato . "_000110
-                                             where Prohis = '" . $historia . "'
-                                             and Proing = '" . $ingreso . "'";
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
-                            $resDel = mysql_query($sqlDel, $conex) or ($data['error'] = utf8_encode(mysql_errno() . " - Error en el query $sqlDel - " . mysql_error()));
-                            if (!$resDel) {
-                                $data['error'] = 1;
-                            } else {
-                                /*fin borrado de registros*/
-
-<<<<<<< HEAD
-                                //para pasar de especialidad en especialidad
-                                foreach ($especialidades as $keDia => $valueDia) {
-                                    unset($datosEnc); //se borra el array
-
-                                    //se guardan todas las especialidades
-
-                                    $datosEnc = crearArrayDatos($wbasedato, "esp", "esp_", 3, $valueDia);
-<<<<<<< HEAD
-
-                                    $datosEnc["esphis"] = $historia; //histiria
-                                    $datosEnc["esping"] = $ingreso; //ingreso
-
-                                    $sqlInsert = crearStringInsert($wbasedato . "_000111", $datosEnc);
-
-                                    $resEnc = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de especialidades - " . mysql_error()));
-
-=======
-
-                                    $datosEnc["esphis"] = $historia; //histiria
-                                    $datosEnc["esping"] = $ingreso; //ingreso
-
-                                    $sqlInsert = crearStringInsert($wbasedato . "_000111", $datosEnc);
-
-                                    $resEnc = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de especialidades - " . mysql_error()));
-
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
                                 //para pasar de procedimiento en procedimiento
                                 foreach ($procedimientos as $keDia => $valueDia) {
                                     unset($datosEnc); //se borra el array
@@ -1190,7 +721,6 @@ if (isset($accion)) {
 
                                     $resEnc = mysql_query($sqlInsert, $conex) or ($data['mensaje'] = utf8_encode(mysql_errno() . " - Error grabando en la tabla de especialidades - " . mysql_error()));
 
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
                                     if (!$resEnc) {
                                         $data['error'] = 1;
                                     }
@@ -1503,25 +1033,6 @@ if (isset($accion)) {
                             //echo "DE 100: ".json_encode($rows);
                             //posicion de historia
                             $data['numPosicionHistorias'][$rows['Pachis']] = $j;
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-                            foreach ($rows as $key => $value) {
-                                //se guarda en data con el prefijo pac_ y empezando en la posicion 3 hasta el final
-                                $data['infopac']["pac_" . substr($key, 3)] = utf8_encode($value);
-                            }
-
-=======
-
-                            foreach ($rows as $key => $value) {
-                                //se guarda en data con el prefijo pac_ y empezando en la posicion 3 hasta el final
-                                $data['infopac']["pac_" . substr($key, 3)] = utf8_encode($value);
-                            }
-
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-                            /***busqueda del paciente en la tabla de ingreso 101***/
-
-=======
 
                             foreach ($rows as $key => $value) {
                                 //se guarda en data con el prefijo pac_ y empezando en la posicion 3 hasta el final
@@ -1530,7 +1041,6 @@ if (isset($accion)) {
 
                             /***busqueda del paciente en la tabla de ingreso 101***/
 
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
                             $sql1 = "select Inghis,Ingnin,Ingfei,Inghin,Ingcai,Ingusu,Ingdig,Ingcem,Ingmei, a.Fecha_data, Ingdig
                                         from " . $wbasedato . "_000101 a INNER JOIN " . $wbasedato . "_000100 ON (Pachis=Inghis)
                                         where ";
@@ -1731,21 +1241,12 @@ if (isset($accion)) {
                                                     }
                                                 }
 
-<<<<<<< HEAD
 
                                                 if ($egresoUrgencias) {
 
                                                     //--> seleccionar alta, por muerte y tiempo de estancia o alta simple
                                                     $data['infoing'][$i]['egr_caeselCauEgr'] = consultarCausaEgresoUrgencias($historia, $ingreso, $rows1['Ingfei'], $rows1['Inghin']);
 
-=======
-
-                                                if ($egresoUrgencias) {
-
-                                                    //--> seleccionar alta, por muerte y tiempo de estancia o alta simple
-                                                    $data['infoing'][$i]['egr_caeselCauEgr'] = consultarCausaEgresoUrgencias($historia, $ingreso, $rows1['Ingfei'], $rows1['Inghin']);
-
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
                                                     /*$datosMedicoFinal = consultarMedicoDiagnostico( $historia, $ingreso, consultarAliasPorAplicacion($conex, $wemp_pmla, 'formularioEvolucionUrgencias') );
 
                                                        if(  $datosMedicoFinal ){
@@ -1909,21 +1410,12 @@ if (isset($accion)) {
                                                                             $proce = quitarEtiquetasCadena($rowspro['movdat']);
                                                                         } else {
                                                                             $proce = $rowspro['movdat'];
-<<<<<<< HEAD
                                                                         }
                                                                         $medico = consultarMedicoEspecifico($rowspro['movusu'], $wbasedato, $aplicacion);
                                                                         if ($medico) {
                                                                             $proce .= " -Med: " . $rowspro['movusu'] . " " . $medico['valor']['des'];
                                                                             $proce .= " - Esp: " . $medico['valor']['codesp'] . " " . $medico['valor']['desesp'];
                                                                         }
-=======
-                                                                        }
-                                                                        $medico = consultarMedicoEspecifico($rowspro['movusu'], $wbasedato, $aplicacion);
-                                                                        if ($medico) {
-                                                                            $proce .= " -Med: " . $rowspro['movusu'] . " " . $medico['valor']['des'];
-                                                                            $proce .= " - Esp: " . $medico['valor']['codesp'] . " " . $medico['valor']['desesp'];
-                                                                        }
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
                                                                         $data['infoing'][$i]['procedimientos'][$n]['txtaObsPro'] = trim(utf8_encode($proce));
                                                                         // $var2.= $data[ 'infoing' ][$i]['procedimientos'][$n]['txtaObsPro'] = $rowspro['movdat'];
                                                                         $n++;
@@ -2538,21 +2030,12 @@ if (isset($accion)) {
                     $sql .= " and Pacno2 like '" . $segNom . "'  ";
                 }
                 $sql .= " order by  Egrhis  ";
-<<<<<<< HEAD
 
 
                 $res = mysql_query($sql, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $wbasedato . "_000108 con la " . $wbasedato . "_000100  " . mysql_errno() . " - Error en el query $sql - " . mysql_error()));
                 if ($res) {
                     $num = mysql_num_rows($res);
 
-=======
-
-
-                $res = mysql_query($sql, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $wbasedato . "_000108 con la " . $wbasedato . "_000100  " . mysql_errno() . " - Error en el query $sql - " . mysql_error()));
-                if ($res) {
-                    $num = mysql_num_rows($res);
-
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
                     if ($num == 0) {
 
                         $sql = "select Pacced as Pacdoc, Pactid as Pactdo, Pacap1, Pacap2, Pacno1, Pacno2, Orihis as Pachis, '' as Pacact, Egring, Pacsex, Pacnac as Pacfna
@@ -3160,18 +2643,10 @@ if (isset($accion)) {
                                             }
                                         }
                                         /**Fin busqueda personas que reclaman**/
-<<<<<<< HEAD
-=======
 
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 
                                     }//for 101
 
-<<<<<<< HEAD
-                                    }//for 101
-
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 
                                 }//$num1>0
                                 else {
@@ -5179,15 +4654,7 @@ echo "</div>"; //datos egreso
         </td></tr>";
     echo "</table>";
     echo "</td>";
-<<<<<<< HEAD
-<<<<<<< HEAD
-    echo " <td><input type='checkbox' name='dia_cbm_checkbox'id='dia_cbm_checkbox' class='checkbox-unico cbm_checkbox_class'  ux='_ux_diacbm' onclick='marcarUnicoCheckbox(this)'></td>"; // Causa basica de muerte (CBM)
-=======
     echo " <td><input type='checkbox' name='dia_cbm_checkbox'id='dia_cbm_checkbox' class='checkbox-unico cbm_checkbox_class'  onclick='marcarUnicoCheckbox(this)'></td>"; // Causa basica de muerte (CBM)
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
-    echo " <td><input type='checkbox' name='dia_cbm_checkbox'id='dia_cbm_checkbox' class='checkbox-unico cbm_checkbox_class'  onclick='marcarUnicoCheckbox(this)'></td>"; // Causa basica de muerte (CBM)
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 
 //PENDIENTE FRODO echo" <td><input type='checkbox' name='dia_egr_chDiaEgr' id='dia_egr_chDiaEgr' ux='_ux_dxegr' onClick='validacionDiagnosticoEgreso(this)'></td>";
     echo "</tr>";

@@ -1,10 +1,5 @@
 <?php 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 function validarExisteTabla100($conex, $wemp_pmla){
 	$wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 	$wbasedato = $wbasedato1->baseDeDatos;
@@ -18,10 +13,6 @@ function validarExisteTabla100($conex, $wemp_pmla){
 	return $result;
 }
 
-<<<<<<< HEAD
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 function notificarPacienteInternacional($conex, $wemp_pmla, $historia, $ingreso, $nombrePaciente, $servicioIng)
 {
 	$correoDestino = consultarAliasPorAplicacion( $conex, $wemp_pmla, "emailDestinoPacienteInternacional");

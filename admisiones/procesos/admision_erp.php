@@ -1045,14 +1045,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				if( $res1 )
 				{
 					$data[ "mensaje" ] = utf8_encode( "Se actualizo correctamente" );
-<<<<<<< HEAD
-<<<<<<< HEAD
-					if( mysql_affected_rows() > 0 ){
-					}
-=======
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				}
 				else
 				{
@@ -1074,14 +1066,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			$resdel = mysql_query( $sqldel, $conex );
 			if( $resdel ){
 				logAdmsiones( 'Registro borrado por documento duplicado', $historia, $tipodoc, $documento);
-<<<<<<< HEAD
-<<<<<<< HEAD
-				if( mysql_affected_rows() > 0 ){
-				}
-=======
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 			}
 
 			/**admision**/
@@ -1898,16 +1882,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$data['error']=1;
 				}
 			}
-<<<<<<< HEAD
-<<<<<<< HEAD
-			else
-			{
-
-			}
-=======
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 		}
 		/*******************Fin para guardar el tope de soat***************/
 
@@ -2074,14 +2048,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 					$data = $data1;
 				}
 				if($resCargos){
-<<<<<<< HEAD
-<<<<<<< HEAD
-					if( $cargosAregrabar > 0 ){
-					}
-=======
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 					guardarPendientesRegrabacion( $historia, $ingreso, $responsableAnterior, $valueNresponsable, "admision_erp.php");
 				}
 			}else{
@@ -2458,14 +2424,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			$rsup152    = mysql_query( $queryUp152,$conex );
 			$regAfectados152 = mysql_affected_rows();
 			if($rsup36 and $rsup152){
-<<<<<<< HEAD
-<<<<<<< HEAD
-				if( $regAfectados36*1 > 0 and $regAfectados152*1 > 0){
-				}
-=======
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 					$queryUp204 = "UPDATE  {$wbasedatoMov}_000204
 									   SET ahtahc = 'on',
 											  ahthis = '$historia',
@@ -7007,21 +6965,11 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 	
 	$where = str_replace("pactdo", "pactid", $where);
 	$where = str_replace("pacdoc", "Pacced", $where);
-<<<<<<< HEAD
-<<<<<<< HEAD
-			// Se consulta si hay datos demograficos en la table root_000036 y se reemplazan
-=======
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 	/* 
 		En mayo 2021, se cambió para que los datos demográficos del paciente estén en root_36 y de ahí se consulten.
 		Se añadieron los campos con valor por defecto vacio y a medida de que el paciente haga un nuevo ingreso se irán 
 		cargando de la tabla 100 de la última empresa que visitó.
 	*/
-<<<<<<< HEAD
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 	$sql = "select a.Pactid as pactdo,a.Pacced as pacdoc,a.pacfed,a.Pacap1,a.Pacap2,a.Pacno1,a.Pacno2,a.Pacnac as pacfna,
 				a.Pacsex,a.Pacest,a.Pacdir,a.Pactel,a.Paciu,a.Pacbar,a.Pacdep,a.Paczon,a.Pactus,a.Pacofi,a.Paccor,a.Pacpan,a.Pacpet,
 				a.Pacded,a.Pactrh,a.Pacpah,a.Pacdeh,a.Pacmuh,a.Pacmov,a.Pacned,a.Pacemp,a.Pactem,a.Paceem,a.Pactaf,a.Pacrem,a.Pacire,
@@ -7031,32 +6979,6 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 	$sql .= $where;
 	$sql .=" Order by  a.Pacced  ";
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-	$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-	$res1 = $res;
-	if ($res)
-	{
-		$traerDeEmpresa = false;
-		$num=mysql_num_rows($res1);
-
-		$rows1=mysql_fetch_assoc($res1);
-		// Valida si en la tabla root_36 estan los datos incompletos, si es así los datos se traerán de la empresa donde estuvo mas recientemente.
-		if($rows1['Pacpan'] == '' && $rows1['Paciu'] == '' && $rows1['Pacest'] == '' && $rows1['Pacpah'] == ''){
-			$traerDeEmpresa = true;
-		}
-		/*En ocasiones, el tipo y numero de documento de cliame 100 no coincide con root 36,
-		Esto debido a que hacen cambio de documento en UNIX y no en MATRIX, y el kron de pacientes refleja ese cambio en root 36 y no en cliame 100
-		El objetivo es, que si no existe en cliame 100 que se busque en root 36 con ese tipo y numero de documento, si existe, coger ese numero de historia
-		y actualizar en cliame 100 el documento del registro que tenga ese mismo # de historia
-		*/
-		if( $num == 0 || $traerDeEmpresa == true ){
-			/** Se busca documento y tipo de documentos en la root_00037 */
-			$sql5 = "SELECT Oriori FROM root_000037
-					  WHERE Oritid='".utf8_decode($datosEnc['pactdo'])."'
-					  AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' 
-					  ORDER BY Fecha_data DESC LIMIT 1";
-=======
 	$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla root_36 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
 
 	if ($res)
@@ -7072,24 +6994,6 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 		if($rows['Pacpan'] == '' && $rows['Paciu'] == '' && $rows['Pacest'] == '' && $rows['Pacpah'] == ''){
 			$traerDeEmpresa = true;
 		}
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
-	$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla root_36 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-
-	if ($res)
-	{
-		$traerDeEmpresa = false;
-		$num=mysql_num_rows($res);
-
-		$rows=mysql_fetch_assoc($res);
-		/*
-			Valida si en la tabla root_36 estan los datos incompletos, 
-			si es así, se pone una bandera para buscar los datos en la última empresa que visitó.
-		*/
-		if($rows['Pacpan'] == '' && $rows['Paciu'] == '' && $rows['Pacest'] == '' && $rows['Pacpah'] == ''){
-			$traerDeEmpresa = true;
-		}
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 
 		if( $num == 0 || $traerDeEmpresa ){
 			/* Se busca documento y tipo de documentos en la root_00037, 
@@ -7105,50 +7009,6 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 				/** Si se encuentra alguna información con el documento  */
 				if ($num5 > 0)
 				{
-<<<<<<< HEAD
-<<<<<<< HEAD
-					  $rowsee = mysqli_fetch_array($res5);
-
-					  /** Se guarda la wemp_pmla actual */
-					  $wemp_pmla_anterior = $wemp_pmla;
-
-					  /** Se actualiza la $wemp_pmla  con la primera encontra en el root_000037 */
-					  $wemp_pmla = $rowsee['Oriori'];
-
-                      /** Se guarda la empresa actual del programa */
-					  $wbasedato_anterior = $wbasedato;
-
-					  /** Se busca la empresa a la que pertenece al informacion encontrada en la root_00037 */
-					  $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion" );
-
-					  /** Se reestablece $wemp_pmla con la empresa actual del programa */
-
-					  $wemp_pmla = $wemp_pmla_anterior;
-
-					  /** Se genera query para traer la información del paciente para el autocomplete de admisiones */
-					$where = str_replace("pactid", "pactdo", $where);
-					$where = str_replace("Pacced", "pacdoc", $where);
-					$sql = "select Pactdo,Pacdoc,pacfed,Pactat,Pacap1,Pacap2,Pacno1,Pacno2,Pacfna,Pacsex,Pacest,Pacdir,Pactel,Paciu,Pacbar,
-						Pacdep,Paczon,Pactus,Pacofi,Paccea,Pacnoa,Pactea,Pacdia,Pacpaa,Pacact,Paccru,Pacnru,Pactru,Pacdru,Pacpru,Paccor,
-						Pactam,Pacpan,Pacpet,Pacded,Pactrh,Pacpah,Pacdeh,Pacmuh,Pacmov,Pacned,Pacemp,Pactem,Paceem,
-						Pactaf,Pacrem,Pacire,Paccac,Pactda,Pacddr,Pacdre,Pacmre,Pacmor,Paccre,a.Fecha_data, Pacdle, Pactle, Pacaud, Paczog 
-						from ".$wbasedato."_000100 a
-						where Pachis !='0'";
-					  $sql .= $where;
-					  $sql .=" Group by  Pachis  ";
-					  $sql .=" Order by  Pacdoc  ";
-
-					$res = mysql_query($sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-					if($res){
-						$num = mysql_num_rows($res);
-					}
-
-					  /** Se reestable la empresa inicial del programa */
-					$wbasedato =  $wbasedato_anterior;
-
-=======
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 					/** Se guarda la wemp_pmla actual */
 					$wemp_pmla_anterior = $wemp_pmla;
 
@@ -7191,10 +7051,6 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 					}
 					/** Se reestablece $wemp_pmla con la empresa actual del programa */
 					$wemp_pmla = $wemp_pmla_anterior;
-<<<<<<< HEAD
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				}
 			}
 		}
@@ -7202,29 +7058,11 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 		$data['numRegistrosPac'] = $num;
 		if ($num>0)
 		{	
-<<<<<<< HEAD
-<<<<<<< HEAD
-			/*se inicializa la i en el for de la consulta de la 100 pero se incrementa en el for de la
-			consulta de la 101
-			*/
-			$res = mysql_query( $sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-			$rows=mysql_fetch_assoc($res);
-			if($traerDeEmpresa == false){
-				$sql5 = "SELECT Oriori FROM root_000037 WHERE Oritid='".utf8_decode($datosEnc['pactdo'])."'
-						AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' ORDER BY Fecha_data DESC LIMIT 1";
-
-=======
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 			if( !$traerDeEmpresa ){
 
 				$sql5 = "SELECT Oriori FROM root_000037
 					  	WHERE Oritid='".utf8_decode($datosEnc['pactdo'])."' AND Oriced='".utf8_decode($datosEnc['pacdoc'])."' 
 					  	ORDER BY Fecha_data DESC";
-<<<<<<< HEAD
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 				$res5 = mysql_query( $sql5, $conex );
 				if ($res5)
 				{
@@ -7232,44 +7070,6 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 					/** Si se encuentra alguna información con el documento  */
 					if ($num5 > 0)
 					{
-<<<<<<< HEAD
-<<<<<<< HEAD
-					  	$rowsee = mysqli_fetch_array($res5);
-						/** Se guarda la wemp_pmla actual */
-						$wemp_pmla_anterior = $wemp_pmla;
-						/** Se actualiza la $wemp_pmla  con la primera encontra en el root_000037 */
-						$wemp_pmla = $rowsee['Oriori'];
-						/** Se guarda la empresa actual del programa */
-						$wbasedato_anterior = $wbasedato;
-						/** Se busca la empresa a la que pertenece al informacion encontrada en la root_00037 */
-						$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "facturacion" );
-						/** Se reestablece $wemp_pmla con la empresa actual del programa */
-						$wemp_pmla = $wemp_pmla_anterior;
-						/** Se genera query para traer la información del paciente para el autocomplete de admisiones */
-						$where = str_replace("pactid", "pactdo", $where);
-						$where = str_replace("Pacced", "pacdoc", $where);
-						$sql = "select Pactat,Paccea,Pacnoa,Pactea,Pacdia,Pacpaa,Pacact,Paccru,Pacnru,Pactru,Pacdru,Pacpru,
-							Pactam,Pactda,Pacddr,Pacdre,Pacmre,Pacmor,Paccre
-							from ".$wbasedato."_000100 a
-							where Pachis !='0'";
-						$sql .= $where;
-						$sql .=" Group by  Pachis  ";
-						$sql .=" Order by  Pacdoc  ";
-
-						$res2 = mysql_query($sql, $conex ) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla ".$wbasedato."000100 ".mysql_errno()." - Error en el query $sql - ".mysql_error() ) );
-						if($res2){
-							$num = mysql_num_rows($res2);
-							$rows2=mysql_fetch_assoc($res2);
-							$result = array_merge($rows, $rows2);
-							$rows = $result;
-						}
-
-						/** Se reestable la empresa inicial del programa */
-						$wbasedato =  $wbasedato_anterior;
-
-=======
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 						/** Se guarda la wemp_pmla actual */
 						$wemp_pmla_anterior = $wemp_pmla;
 
@@ -7310,10 +7110,6 @@ if (isset($accion) and $accion == 'mostrarDatosDemograficos')
 						}
 						/** Se reestablece $wemp_pmla con la empresa actual del programa */
 						$wemp_pmla = $wemp_pmla_anterior;
-<<<<<<< HEAD
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 					}
 				}
 			}
@@ -9327,58 +9123,6 @@ if(isset($accion) and $accion == 'solicitarCambioDocumento'){
 			color:orange;
 			font-weight:bold;
 		}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
-
-	.div_especiales {
-		background:#FFFFCC;
-		font-size:16px;
-		height:40px;
-		width:480px;
-		margin:0 auto 0 auto;
-		text-align: center;
-		border: 1px orange solid;
-		background-color:lightyellow;
-		color:red;
-		font-weight: bold;
-		/*para Firefox*/
-		-moz-border-radius: 15px 15px 15px 15px;
-	/*para Safari y Chrome*/
-	-webkit-border-radius: 15px 15px 15px 15px;
-	/* para Opera */
-	border-radius: 15px 15px 15px 15px;
-	}
-	.corchete {
-		background-image: url("../../images/medical/root/corchete.png");
-		background-position: right top;
-		background-repeat: no-repeat;
-		background-size: 23px 98%;
-		margin: 0 auto;
-	}
-	.corchetei{
-		background-image: url("../../images/medical/root/corchete.png");
-		background-position: right top;
-		background-repeat: no-repeat;
-		background-size: 23px 98%;
-		margin: 0 auto;
-		-webkit-transform:scaleX(-1);
-		-moz-transform:scaleX(-1);
-		-ms-transform:scaleX(-1);
-		-o-transform:scaleX(-1);
-		transform:scaleX(-1);
-	}
-<<<<<<< HEAD
-
-	.ac_results {
-		max-height: 400px;
-		overflow-y: auto;
-		/* prevent horizontal scrollbar */
-		overflow-x: hidden;
-	}
-
-=======
 
 	.div_especiales {
 		background:#FFFFCC;
@@ -9425,7 +9169,6 @@ if(isset($accion) and $accion == 'solicitarCambioDocumento'){
 		overflow-x: hidden;
 	}
 
->>>>>>> 723f0db725c5893097b5d27e2fe79714e6f42a44
 	.boton_preanestesia{
 		padding: 10px 24px;
 		border-radius: 8px;
@@ -9439,29 +9182,6 @@ if(isset($accion) and $accion == 'solicitarCambioDocumento'){
 
 </style>
 
-=======
-
-	.ac_results {
-		max-height: 400px;
-		overflow-y: auto;
-		/* prevent horizontal scrollbar */
-		overflow-x: hidden;
-	}
-
-	.boton_preanestesia{
-		padding: 10px 24px;
-		border-radius: 8px;
-		font-weight:bold;
-	}
-
-	.boton_preanestesia:hover {
-		background-color: #004A91; /* Green */
-		color: white;
-	}
-
-</style>
-
->>>>>>> 0840189279a5f847425926d74b8d4787ebc6284b
 </head>
 <body>
 <?php
