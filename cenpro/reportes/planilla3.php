@@ -34,6 +34,13 @@ table.sample td {
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b>planilla3.php Ver. 1.00</b></font></tr></td></table></br>
 </center> 
 <?php
+/********************************************************************************************************************************
+ * 
+ * Actualización: 	2021-07-08 - sebastian.nevado: Se reemplaza el "C-cenpro" del campo Seguridad las inserciones en base de datos 
+ * 						para que indique el usuario que realiza la acción.
+ * 
+ ********************************************************************************************************************************/
+
 include_once("conex.php");
 include_once("root/comun.php");
 // se convierte en la variable empresa ya que $empresa=cenpro
@@ -186,10 +193,6 @@ if(!isset($_SESSION['user']))
 echo "error";
 else
 {
-	//$test = centroCostosCM();echo $test;
-
-	
-
 	echo "<form name='planilla' action='planilla3.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
 	//echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
@@ -440,13 +443,13 @@ else
 				if($num2>0)
 				{
 					$q= " INSERT INTO ".$empresa."_000006 (   Medico       ,   Fecha_data,                  Hora_data,              Menano,              Menmes ,     Mendoc   ,   Mencon  ,             Menfec,           Mencco ,   Menccd    ,  Mendan,  Menusu,    Menfac,  Menest, Seguridad) "
-					."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$exp[0]."', '".$exp[1]."','".$consecutivo."', '".$codigo."' , '".$fec2."', $cco , $cco ,       '', 'cenpro',      '' , 'on', 'C-cenpro') ";
+					."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$exp[0]."', '".$exp[1]."','".$consecutivo."', '".$codigo."' , '".$fec2."', $cco , $cco ,       '', 'cenpro',      '' , 'on', 'C-".$usera."') ";
 
 
 					$errf = mysql_query($q,$conex) or die (mysql_errno()." -NO SE HA PODIDO GRABAR EL ENCABEZADO DEL MOVIIENTO DE SALIDA DE INSUMOS ".mysql_error());
 
 					$q= " INSERT INTO ".$empresa."_000007 (   Medico       ,   Fecha_data,                  Hora_data,              Mdecon,              Mdedoc ,     Mdeart   ,    Mdecan , Mdefve,   Mdenlo,          Mdepre, Mdeest,  Seguridad) "
-					."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$codigo."', '".$consecutivo."','".$row[7]."', '".($dif*$row[6])."' ,      '',     '',  '".$row[0]."' , 'on', 'C-cenpro') ";
+					."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$codigo."', '".$consecutivo."','".$row[7]."', '".($dif*$row[6])."' ,      '',     '',  '".$row[0]."-".$row[1]."' , 'on', 'C-".$usera."') ";
 
 
 					$errf = mysql_query($q,$conex) or die (mysql_errno()." -NO SE HA PODIDO GRABAR EL DETALLE DE SALIDA DE UN ARTICULO ".mysql_error());
@@ -633,7 +636,7 @@ else
 						$exp=explode('-',$fec2);
 						
 						$q= " INSERT INTO ".$empresa."_000006 (   Medico       ,   Fecha_data,                  Hora_data,              Menano,              Menmes ,     Mendoc   ,   Mencon  ,             Menfec,           Mencco ,   Menccd    ,  Mendan,  Menusu,    Menfac,  Menest, Seguridad) "
-						."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$exp[0]."', '".$exp[1]."','".$consecutivo."', '".$codigo."' , '".$fec2."', $cco , $cco ,       '', 'cenpro',      '' , 'on', 'C-cenpro') ";
+						."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$exp[0]."', '".$exp[1]."','".$consecutivo."', '".$codigo."' , '".$fec2."', $cco , $cco ,       '', 'cenpro',      '' , 'on', 'C-".$usera."') ";
 
 
 						$errf = mysql_query($q,$conex) or die (mysql_errno()." -NO SE HA PODIDO GRABAR EL ENCABEZADO DEL MOVIIENTO DE SALIDA DE INSUMOS ".mysql_error());
@@ -690,7 +693,7 @@ else
 							}
 
 							$q= " INSERT INTO ".$empresa."_000007 (   Medico       ,   Fecha_data,                  Hora_data,              Mdecon,              Mdedoc ,     Mdeart   ,    Mdecan , Mdefve,   Mdenlo,          Mdepre, Mdeest,  Seguridad) "
-							."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$codigo."', '".$consecutivo."','".$row[0]."', '".$des."' ,      '',     '".$row2[0]."-".$row[0]."',  '' , 'on', 'C-cenpro') ";
+							."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$codigo."', '".$consecutivo."','".$row[0]."-".$row[1]."', '".$des."' ,      '',     '".$row2[0]."-".$row[0]."',  '' , 'on', 'C-".$usera."') ";
 
 
 							$errf = mysql_query($q,$conex) or die (mysql_errno()." -NO SE HA PODIDO GRABAR EL DETALLE DE SALIDA DE UN ARTICULO ".mysql_error());
@@ -755,7 +758,7 @@ else
 						$exp=explode('-',$fec2);
 
 						$q= " INSERT INTO ".$empresa."_000006 (   Medico       ,   Fecha_data,                  Hora_data,              Menano,              Menmes ,     Mendoc   ,   Mencon  ,             Menfec,           Mencco ,   Menccd    ,  Mendan,  Menusu,    Menfac,  Menest, Seguridad) "
-						."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$exp[0]."', '".$exp[1]."','".$consecutivo."', '".$codigo."' , '".$fec2."', $cco , $cco ,       '', 'cenpro',      '' , 'on', 'C-cenpro') ";
+						."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$exp[0]."', '".$exp[1]."','".$consecutivo."', '".$codigo."' , '".$fec2."', $cco , $cco ,       '', 'cenpro',      '' , 'on', 'C-".$usera."') ";
 
 
 						$errf = mysql_query($q,$conex) or die (mysql_errno()." -NO SE HA PODIDO GRABAR EL ENCABEZADO DEL MOVIIENTO DE SALIDA DE INSUMOS ".mysql_error());
@@ -812,7 +815,7 @@ else
 							}
 
 							$q= " INSERT INTO ".$empresa."_000007 (   Medico       ,   Fecha_data,                  Hora_data,              Mdecon,              Mdedoc ,     Mdeart   ,    Mdecan , Mdefve,   Mdenlo,          Mdepre, Mdeest,  Seguridad) "
-							."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$codigo."', '".$consecutivo."','".$row[0]."', '".$des."' ,      '',     '".$row2[0]."-".$row[0]."',  '' , 'on', 'C-cenpro') ";
+							."                               VALUES ('".$empresa."',  '".$fec2."', '".(string)date("H:i:s")."', '".$codigo."', '".$consecutivo."','".$row[0]."-".$row[1]."', '".$des."' ,      '',     '".$row2[0]."-".$row[0]."',  '' , 'on', 'C-".$usera."') ";
 
 
 							$errf = mysql_query($q,$conex) or die (mysql_errno()." -NO SE HA PODIDO GRABAR EL DETALLE DE SALIDA DE UN ARTICULO ".mysql_error());
