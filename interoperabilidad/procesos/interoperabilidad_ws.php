@@ -201,7 +201,7 @@ function relacionOrdenesMatrixDinamica( $conex, $wmovhos, $ordenes ){
 	}
 }
 
-function cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, $estado, $fecha, $hora, $justificacion, $historia, $ingreso ){
+function cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, $estado, $fecha, $hora, $justificacion, $historia, $ingreso, $detUrl = "", $detUrp = "" ){
     
     $respuesta = array('message'=>'', 'result'=>array(), 'status'=>'' );
     
@@ -260,34 +260,38 @@ function cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, 
                 
                 //Actuzando el estado de la orden
                 $sql = "UPDATE ".$wmovhos."_000159
-                        SET Detesi = '".$estadoOrden."',
-                            Deteex = '".$estado."',
-                            Detjoc = '".mysql_escape_string( $justificacion )."',
-                            Detfme = '".date( "Y-m-d" )."',
-                            Dethme = '".date( "H:i:s" )."',
-                            Detcor = '".$row['Esteco']."',
-                            Detplc = '".$pendienteLecuraCancelado."'
-                            $whereFecha
-                        WHERE Dettor = '".$tipoOrden."'
-                        AND Detnro = '".$nroOrden."'
-                        AND Detite = '".$item."'";
+						   SET Detesi = '".$estadoOrden."',
+							   Deteex = '".$estado."',
+                               Detjoc = '".mysql_escape_string( $justificacion )."',
+                               Detfme = '".date( "Y-m-d" )."',
+                               Dethme = '".date( "H:i:s" )."',
+                               Detcor = '".$row['Esteco']."',
+                               Detplc = '".$pendienteLecuraCancelado."',
+							   Deturl = '".$detUrl."',
+							   Deturp = '".$detUrp."'
+                               $whereFecha
+                         WHERE Dettor = '".$tipoOrden."'
+                           AND Detnro = '".$nroOrden."'
+                           AND Detite = '".$item."'";
                 
                 $res = mysql_query( $sql, $conex );
                 
                 
                 //Actuzando el estado de la orden
                 $sql = "UPDATE ".$whce."_000028
-                        SET Detesi = '".$estadoOrden."',
-                            Deteex = '".$estado."',
-                            Detjoc = '".mysql_escape_string( $justificacion )."',
-                            Detfme = '".date( "Y-m-d" )."',
-                            Dethme = '".date( "H:i:s" )."',
-                            Detcor = '".$row['Esteco']."',
-                            Detplc = '".$pendienteLecuraCancelado."'
-                            $whereFecha
-                        WHERE Dettor = '".$tipoOrden."'
-                        AND Detnro = '".$nroOrden."'
-                        AND Detite = '".$item."'";
+                           SET Detesi = '".$estadoOrden."',
+                               Deteex = '".$estado."',
+                               Detjoc = '".mysql_escape_string( $justificacion )."',
+                               Detfme = '".date( "Y-m-d" )."',
+                               Dethme = '".date( "H:i:s" )."',
+                               Detcor = '".$row['Esteco']."',
+                               Detplc = '".$pendienteLecuraCancelado."',
+							   Deturl = '".$detUrl."',
+							   Deturp = '".$detUrp."'
+                               $whereFecha
+                         WHERE Dettor = '".$tipoOrden."'
+                           AND Detnro = '".$nroOrden."'
+                           AND Detite = '".$item."'";
                 
                 $res = mysql_query( $sql, $conex );
                 
