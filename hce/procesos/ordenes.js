@@ -25245,7 +25245,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 									.attr({disabled:true})
 									.off( "click" )
 									.click(function() {
-										$( "#wjusparaautorizar"+tipoProtocoloAux+idx ).val( $('#taJusParaArtsSinTarifas').val() );
+										$( "#wjusparaautorizar"+tipoProtocoloAux+idx ).val( $('#taJusParaArtsSinTarifas', modalTarifa).val() );
 										
 										$.unblockUI()
 										
