@@ -14,7 +14,7 @@ $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, $institucion->baseDeD
     <meta charset="Windows-1252">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Reporte de Servicios</title>
+    <title>Formulario de Ingresos</title>
     <link href="../../assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="../../assets/vendor/sweetalert/css/sweetalert2.min.css" rel="stylesheet">
     <link rel="stylesheet" href="reporteServicios/assets/css/style.css">
@@ -22,7 +22,7 @@ $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, $institucion->baseDeD
 
 <body class="container">
     <div>
-        <?php encabezado("Reporte de Servicios", "Mayo 07 de 2021", "Logo_idc"); ?>
+        <?php encabezado("Formulario de Ingresos", "Junio 24 de 2021", "Logo_idc"); ?>
     </div>
     <br>
     <div id='vueapp' class="">

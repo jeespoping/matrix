@@ -7992,7 +7992,7 @@ else{
 									}
 									else
 									{
-										$warning = "EL PACIENTE CON HISTORIA:".$pac['his']." FUE DADO DE ALTA DE LA INSTITUCIÓN!!!";
+										$warning = "EL PACIENTE CON HISTORIA:".$pac['his']." FUE DADO DE ALTA DE LA INSTITUCIÓN!!! N13";
 										$error['codInt']='0009';
 										$error['codSis']=".";
 										$error['descSis']=".";

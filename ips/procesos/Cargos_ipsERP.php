@@ -3334,9 +3334,12 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 									}).html("<b>Inactivo</b>").attr("estado", "off");
 
 								// Implementacion validacion del estado del ingreso, para permitir grabar cargos si el estado esta activo. Edier
-								console.log(`Validar estado ingreso: ${data.grabarCargos}`);
 								$('#grabarCargos').val(data.grabarCargos);
 								validarEstadoIngreso();
+
+								console.log(`Validar grabacion medicamentos: ${data.validarGrabacionMedicamentos}`);
+								$('#validarGrabacionMedicamentos').val(data.validarGrabacionMedicamentos);
+
 
 								// --> Datos del alta definitiva, si tiene alta definitiva muestro el enlace para egresar
 								if ($.trim(data.altaDefinitiva) == "on" && $.trim(data.enUrgencias) == "on" && $.trim(data.tieneEgreso) != "on") {
@@ -3562,7 +3565,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 						$("#botonGrabar").html('GRABAR TRAUMA');
 					}
 				}
-				
+
 				// Implementacion validacion del estado del ingreso, para permitir grabar cargos si el estado esta activo. Edier
 				console.log(`Validar estado ingreso..`);
 				validarEstadoIngreso();
@@ -3711,7 +3714,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 					// --> 	2019-10-03: Jerson Trujillo. Para cargos de medicamentos y materiales, no se permitir� grabarle a un ingreso menor al ultimo.
 					//		Esto se hace porque se present� un caso donde una secretaria por error grab� un medicamento a un ingreso menor al actual
 					//		Y el integrador se bloqueo porque este tenia una fecha menor al mes actual. requerimiento (01)1710 5061
-					if (data.wconinv == 'on' && $("#msjIngPost").attr("hayIngresoPosterior") == "on") {
+					if (data.wconinv == 'on' && $("#msjIngPost").attr("hayIngresoPosterior") == "on" && $('#validarGrabacionMedicamentos').val() == 'on') {
 						jAlert("<span style='color:#2a5db0;font-size:10pt'>Solo se pueden grabar cargos de " + $("#busc_concepto_1").attr('nombre') + "<br>en el ultimo ingreso del paciente.</span>", "Mensaje");
 
 						$("#busc_concepto_1").val('');
@@ -5239,7 +5242,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 						$("#botonGrabar").html('GRABAR').removeAttr("disabled");
 						$("#botonGrabar").tooltip("destroy");
 					}
-					
+
 					validarEstadoIngreso();
 
 				}, 'json');
@@ -5780,7 +5783,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 					if ($("#ingresoActivoUnix").attr("estado") == "off") {
 						$("#botonGrabar").attr('disabled', 'disabled');
 					} else if ($("#ingresoActivoUnix").attr("estado") == "on") {
-						$("#botonGrabar").removeAttribute('disabled');
+						$("#botonGrabar").removeAttr('disabled');
 					}
 				}
 			}
@@ -5937,6 +5940,7 @@ if (!isset($_SESSION['user']) || !array_key_exists('user', $_SESSION)) {
 	<input type='hidden' id='nitEmpresa'>
 	<input type='hidden' id='empPermiteDescuento'>
 	<input type='hidden' id='grabarCargos'>
+	<input type='hidden' id='#validarGrabacionMedicamentos'>
 	";
 			cargar_hiddens_para_autocomplete();
 
