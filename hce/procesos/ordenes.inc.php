@@ -1258,6 +1258,9 @@ function enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $u
 	
 	$val = '';
 	
+	$interoperabilidadLis = consultarAliasPorAplicacion( $conex, $wemp_pmla, "interoperabilidadLis" );
+	$interoperabilidadRis = consultarAliasPorAplicacion( $conex, $wemp_pmla, "interoperabilidadRis" );
+	
 	//Consulto los tipo de orden para Hiruko
 	$sql = "SELECT Sedtor
 			  FROM ".$wmovhos."_000264 a
@@ -1293,13 +1296,21 @@ function enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $u
 	
 	while( $rows = mysql_fetch_array( $res ) ){
 		
-		if( in_array( $rows['Dettor'], $tipoOrdenHiruko ) ){
+		if( $interoperabilidadRis == 'SABBAG' ){
+			enviarOrdenesSabbag( $conex, $whce, $wemp_pmla, $rows['habhis'], $rows['habing'] );
+		}
+		
+		if( in_array( $rows['Dettor'], $tipoOrdenHiruko ) )
+		{
 			//Esta función se encarga de enviar las ordenes al sistema Hiruko, validando por tipo de orden en la tabla de sedes de Hiruko
 			enviarOrdenesAAgendar( $conex, $whce, $wmovhos, $rows['habhis'], $rows['habing'] );
 		}
 		else{
 			//Esta función envía las ordenes a laboratorio
-			crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $rows['habhis'], $rows['habing'], $usuario );
+			if( $interoperabilidadLis != 'Dinamica' )
+				crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $rows['habhis'], $rows['habing'], $usuario );
+			else
+				insertarOrdenWs( $conex, $wemp_pmla, $rows['habhis'], $rows['habing'] );
 		}
 	}
 	
