@@ -16113,9 +16113,11 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 	
 	$gruposNoVisibles = array();
 	if( !$paciente->enUrgencias ){
-		$gruposNoVisibles = consultarAliasPorAplicacion( $conex, "01", "gruposNoVisiblesPerfil" );
+		$gruposNoVisibles = consultarAliasPorAplicacion( $conex, $wemp_pmla, "gruposNoVisiblesPerfil" );
 		$gruposNoVisibles = explode( ',', $gruposNoVisibles );
 	}
+	
+	$validarTarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripcionConTarifa' ) == 'on';
 	
 	/********************************************************************************************************************************
 	 * Creo dos arryas,uno para la familia y otro para los articulos. Estos arryas solo indican si una familia o articulo se ve en 
@@ -16654,7 +16656,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			}
 
 			$classAutRequerido = '';
-			if( !$articulo->autorizadoPorDirector ){
+			if( $validarTarifa && !$articulo->autorizadoPorDirector ){
 				$classAutRequerido = " style='background : brown;' ";
 			}
 
