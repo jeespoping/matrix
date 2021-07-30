@@ -43,7 +43,7 @@ class PacientesModel
   function getSql()
   {
     $sql = "SELECT c100.pachis as numeroHistoria, c100.Pactdo as tipoDocumento,
-                       c100.pacdoc as documento, c100.Pacnoa as nombre
+                       c100.pacdoc as documento, concat(c100.Pacno1, ' ', c100.Pacno2, ' ', c100.Pacap1, ' ', c100.Pacap2) as nombre
                   FROM matrix.{$this->baseDatos}_000100 AS c100
             INNER JOIN {$this->baseDatos}_000101 AS c101 ON c100.Pachis = c101.Inghis
                  WHERE (c100.pachis = ? OR c100.pacdoc = ?)

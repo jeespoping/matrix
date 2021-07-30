@@ -19,7 +19,7 @@ var app = new Vue({
         abrirFactuacion: function (ingreso, servicio, wemp_pmla) {
             Swal.fire({
                 title: `Usar el ingreso ${ingreso} del servicio ${servicio}`,
-                text: 'Si la informaci&oacute;n es correcta por favor continue.',
+                text: 'Si la información es correcta por favor continue.',
                 icon: 'question',
                 showCancelButton: true,
                 // confirmButtonColor: '#3085d6',
@@ -38,7 +38,7 @@ var app = new Vue({
                 Swal.fire({
                     icon: 'error',
                     title: 'Algo salio mal!',
-                    text: 'Debes ingresar el n&oacute;mero de Historia o Documento',
+                    text: 'Debes ingresar el número de Historia o Documento',
                     footer: 'Los campos Fecha inicial y Fecha final son opcionales.'
                 });
                 return;
@@ -126,7 +126,7 @@ const getServicios = (formData) => {
             app.servicios = null;
             Swal.fire({
                 title: 'No se encuentran datos del paciente!',
-                text: 'Verifique la informaciï¿½n e intente nuevamente!',
+                text: 'Verifique la información e intente nuevamente!',
                 icon: 'error',
                 didOpen: () => { app.resetForm() }
             });
