@@ -185,7 +185,12 @@
 <BODY TEXT="#000066">
 
 <?php
+$consultaAjax = '';
 include_once("conex.php");
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 /**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : TableroAmb.php
@@ -401,7 +406,8 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='TableroAmb' action='TableroAmb.php' method=post>";
+	echo "<form name='TableroAmb' action='TableroAmb.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	
 
 	
@@ -437,9 +443,9 @@ else
 	$Suni=array();
 	$numuni=0;
 	$Wexiste=0;
-	
+	global $whce;
 	$IPOK=0;
-	$query = "select ctanip, ctausu from hce_000039 ";
+	$query = "select ctanip, ctausu from ".$whce."_000039 ";
 	$query .= " where ctaest = 'on'";
 	$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 	$num = mysql_num_rows($err);
@@ -471,7 +477,7 @@ else
 		}
 		
 		//                 0       1      2     3
-		$query = "select usurol,Rolatr,Rolemp,Usuuni from hce_000020,hce_000019 ";
+		$query = "select usurol,Rolatr,Rolemp,Usuuni from ".$whce."_000020,".$whce."_000019 ";
 		$query .= " where usucod = '".$key."' ";
 		$query .= "   and usurol = rolcod ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
@@ -506,7 +512,7 @@ else
 		}
 		if($Semp != "NO APLICA" and $Semp != "*")
 		{
-			$query = "select Empemp from hce_000025 ";
+			$query = "select Empemp from ".$whce."_000025 ";
 			$query .= " where Empcod = '".$Semp."' ";
 			$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 			$num = mysql_num_rows($err);
@@ -547,7 +553,7 @@ else
 					
 						for($i=0; $i<$countTablas; $i++){
 							
-							$query .= "SELECT Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', movhos_000016.fecha_data, Ccoseu  
+							$query .= "SELECT Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', ".$wmovhos."_000016.fecha_data, Ccoseu  
 								FROM ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016, ".$arrInfoTabla["prefijo"] . "_" . $arrInfoTabla["nombreTabla"][$i]." c
 								WHERE ubiald = 'off' 
 								$filtroCco;
@@ -574,7 +580,7 @@ else
 							
 					}else{
 						//                 0       1       2       3       4       5       6       7       8       9      10     11      12      13      14      15         16                 17
-						$query = "SELECT Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', movhos_000016.fecha_data, Ccoseu 
+						$query = "SELECT Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', ".$wmovhos."_000016.fecha_data, Ccoseu 
 							FROM ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016, ".$arrInfoTabla["prefijo"] . "_" . $arrInfoTabla["nombreTabla"][0]." c
 							WHERE ubiald = 'off' 
 							$filtroCco;
@@ -599,7 +605,7 @@ else
 		else{
 				//Query por defecto es decir si no viene el parámetro para buscar asociado con la tabla de citas está es la consulta
 			    //                 0       1       2       3       4       5       6       7       8       9      10     11      12      13      14      15         16                 17
-				$query = "select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', movhos_000016.fecha_data, Ccoseu  ";
+				$query = "select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'AMBULATORIO', ".$wmovhos."_000016.fecha_data, Ccoseu  ";
 				$query .= " from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016 ";
 				$query .= " where ubiald = 'off'  ";
 				$query .= $filtroCco;
@@ -699,8 +705,8 @@ else
 					
 					$wmed="";
 					$wesp="";
-					$query = "select Medno1, Medno2, Medap1, Medap2, Mtretr, Espnom, max(hce_000022.Fecha_data) ";
-					$query .= " from hce_000022,movhos_000048,movhos_000044 ";
+					$query = "select Medno1, Medno2, Medap1, Medap2, Mtretr, Espnom, max(".$whce."_000022.Fecha_data) ";
+					$query .= " from ".$whce."_000022,".$wmovhos."_000048, ".$wmovhos."_000044 ";
 					$query .= "  where Mtrhis = '".$row[0]."' "; 
 					$query .= "    and Mtring = '".$row[1]."' ";
 					$query .= "    and Mtrest = 'on' ";

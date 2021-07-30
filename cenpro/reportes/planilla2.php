@@ -26,6 +26,12 @@ table.sample td {
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b>planilla2.php Ver. 1.00</b></font></tr></td></table></br>
 </center> 
 <?php
+/********************************************************************************************************************************
+ * 
+ * Actualización: 	2021-07-08 - sebastian.nevado: se agrega en las validaciones S/N que se permitan las letras en minúscula.
+ * 
+ ********************************************************************************************************************************/
+
 include_once("conex.php");
 include_once("root/comun.php");
 // se convierte en la variable empresa ya que $empresa=cenpro
@@ -101,7 +107,7 @@ else
 		$num = mysql_num_rows($err);
 
 		echo "</table></br><table align=center class='sample' cellspacing=0>";
-		if ($pintar=='S')
+		if ($pintar=='S' || $pintar=='s')
 		{
 			$colspan='9';
 		}
@@ -112,7 +118,7 @@ else
 		echo "<tr><td align=center bgcolor=#999999 colspan='".$colspan."'><font face='tahoma' size=2><b>INSUMOS</b></font></td>";
 		echo "<tr><td align=center bgcolor=#999999><font face='tahoma' size=1><b>ARTICULO</b></font></td>";
 		echo "<td align=center bgcolor=#999999><font face='tahoma' size=1><b>UNIDAD</b></font></td>";
-		if ($pintar=='S')
+		if ($pintar=='S' || $pintar=='s')
 		{
 			echo "<td align=center bgcolor=#999999><font face='tahoma' size=1><b>CANTIDAD</b></font></td>";
 		}
@@ -143,7 +149,7 @@ else
 			echo "<tr>";
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>".$row[0]."-".$row[1]."</font></td>";
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>".$row[3]."-".$row[4]."</font></td>";
-			if ($pintar=='S')
+			if ($pintar=='S' || $pintar=='s')
 			{
 				echo "<td bgcolor=".$color." align='right'><font face='tahoma' size=2>".number_format($row[2],2,'.',',')."</font></td>";
 			}
@@ -152,15 +158,15 @@ else
 
 			echo "<input type='hidden' name='insumo[".$i."][cod]' value='".$row[0]."'></font></td>";
 
-			if ($almacenar=='S' and $row[5]==0)
+			if (($almacenar=='S' || $almacenar=='s') and $row[5]==0)
 			{
 				echo "<td bgcolor=".$color."><font face='tahoma' size=2><input type='TEXT' name='insumo[".$i."][can]' size=10 onkeypress='if ((event.keyCode < 46 || event.keyCode > 57) & event.keyCode != 13) event.returnValue = false'></font></td>";
 			}
-			else if ($almacenar=='S' and $reemplazar=='S')
+			else if (($almacenar=='S' || $almacenar=='s') and ($reemplazar=='S' || $reemplazar=='s'))
 			{
 				echo "<td bgcolor=".$color."><font face='tahoma' size=2><input type='TEXT' name='insumo[".$i."][can]' value='".$row[5]."' size=10 onkeypress='if ((event.keyCode < 46 || event.keyCode > 57) & event.keyCode != 13) event.returnValue = false'></font></td>";
 			}
-			else if (($almacenar=='S' and $reemplazar!='S') or $almacenar!='S')
+			else if ((($almacenar=='S' || $almacenar=='s') and ($reemplazar!='S' && $reemplazar!='s' )) or ($almacenar!='S' && $almacenar!='s'))
 			{
 				echo "<td bgcolor=".$color."><font face='tahoma' size=2>".number_format($row[5],2,'.',',')."</font></td>";
 			}
@@ -214,7 +220,7 @@ else
 		echo "<tr><td align=center bgcolor=#999999 colspan='".$colspan."'><font face='tahoma' size=2><b>PRODUCTOS</b></font></td>";
 		echo "<tr><td align=center bgcolor=#999999><font face='tahoma' size=1><b>ARTICULO</b></font></td>";
 		echo "<td align=center bgcolor=#999999><font face='tahoma' size=1><b>UNIDAD</b></font></td>";
-		if ($pintar=='S')
+		if ($pintar=='S' || $pintar=='s')
 		{
 			echo "<td align=center bgcolor=#999999><font face='tahoma' size=1><b>CANTIDAD</b></font></td>";
 		}
@@ -246,7 +252,7 @@ else
 			echo "<tr>";
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>".$row[0]."-".$row[1]."</font></td>";
 			echo "<td bgcolor=".$color."><font face='tahoma' size=2>".$row[3]."-".$row[4]."</font></td>";
-			if ($pintar=='S')
+			if ($pintar=='S' || $pintar=='s')
 			{
 				echo "<td bgcolor=".$color." align='right'><font face='tahoma' size=2>".number_format($row[2],2,'.',',')."</font></td>";
 			}
@@ -255,15 +261,15 @@ else
 
 			echo "<input type='hidden' name='producto[".$i."][cod]' value='".$row[0]."'></font></td>";
 
-			if ($almacenar=='S' and $row[5]==0)
+			if (($almacenar=='S' || $almacenar=='s') and $row[5]==0)
 			{
 				echo "<td bgcolor=".$color."><font face='tahoma' size=2><input type='TEXT' name='producto[".$i."][can]' size=10 onkeypress='if ((event.keyCode < 46 || event.keyCode > 57) & event.keyCode != 13) event.returnValue = false'></font></td>";
 			}
-			else if ($almacenar=='S' and $reemplazar=='S')
+			else if (($almacenar=='S' || $almacenar=='s') and ($reemplazar=='S' || $reemplazar=='s'))
 			{
 				echo "<td bgcolor=".$color."><font face='tahoma' size=2><input type='TEXT' name='producto[".$i."][can]' value='".$row[5]."' size=10 onkeypress='if ((event.keyCode < 46 || event.keyCode > 57) & event.keyCode != 13) event.returnValue = false'></font></td>";
 			}
-			else if (($almacenar=='S' and $reemplazar!='S') or $almacenar!='S')
+			else if ((($almacenar=='S' || $almacenar=='s') and ($reemplazar!='S' && $reemplazar!='s')) or ($almacenar!='S' && $almacenar!='s'))
 			{
 				echo "<td bgcolor=".$color."><font face='tahoma' size=2>".number_format($row[5],2,'.',',')."</font></td>";
 			}
@@ -299,7 +305,7 @@ else
 
 					$erri = mysql_query($query,$conex);
 					$rowi = mysql_fetch_array($erri);
-					$row[6]=$row[6]+($rowi[0]*$rowp[1]/$rowi[1]);
+					$row[6] = (isset($rowi[1])) ? $row[6]+($rowi[0]*$rowp[1]/$rowi[1]) : null;
 				}
 			}
 
@@ -333,7 +339,7 @@ else
 		echo "<td  bgcolor=#999999 align='right' ><font face='tahoma' size=1><b>".number_format($fal,2,'.',',')."</b></font></td>";
 		echo "<td  bgcolor=#999999 align='right' ><font face='tahoma' size=1><b>".number_format($sob,2,'.',',')."</b></font></td></tr>";
 
-		if($almacenar=='S' and  $sum==0)
+		if(($almacenar=='S' || $almacenar=='s') and  $sum==0)
 		{
 			echo "<input type='hidden' name='grabar' value='1'></font></td>";
 			echo "<input type='hidden' name='fec' value='".$fec."'></font></td>";
@@ -342,7 +348,7 @@ else
 			echo "<input type='hidden' name='reemplazar' value='S'></font></td>";
 			echo "<tr><td bgcolor=#cccccc  colspan='".$colspan."' align=center><input type='submit' value='Grabar'></td></tr></table>";
 		}
-		else if ($almacenar=='S' and $reemplazar=='S')
+		else if (($almacenar=='S' || $almacenar=='s') and ($reemplazar=='S' || $reemplazar=='s'))
 		{
 			echo "<input type='hidden' name='grabar' value='1'></font></td>";
 			echo "<input type='hidden' name='grabar' value='1'></font></td>";

@@ -3,15 +3,25 @@ include_once("conex.php");
 include_once("root/comun.php");
 /***************************************************
  * PROGRAMA                   : index.php
- * AUTOR                      : Juan David Rodriguez y Johan Córdoba
- * FECHA CREACION             : 19/02/2021
+ * AUTOR                      : Juan David Rodriguez, Johan Córdoba y Julian Mejia
+ * FECHA CREACION             : 25/05/2021
  *
  * DESCRIPCION:
  * Muestra los pacientes que ingresan o egresan para un servicio seleccionado o todos.
  */
-$wactualiz = "2017-05-10";
+$wactualiz = "2021-05-05";
 $titulo = "Procesos servicio domiciliario autom&aacute;tico";
 $wemp_pmla = $_GET['wemp_pmla'];
+
+if(!isset($_SESSION['user']))
+{
+    ?>
+    <div align="center">
+        <label>Usuario no autenticado en el sistema.<br />Recargue la pagina principal de Matrix o inicie sesion nuevamente.</label>
+    </div>
+    <?php
+    return;
+}
 
 include_once('egrFunctions.php');
 ?>

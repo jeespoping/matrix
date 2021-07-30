@@ -24,6 +24,7 @@
 <?php
     include_once("conex.php");
     include_once("root/comun.php");
+	$wemp_pmla=$_REQUEST['wemp_pmla'];
     if(!isset($_SESSION['user']))
     {
 		 ?>
@@ -64,7 +65,7 @@
     </script>
 </head>
 <body width="1200" height="47">
-	<form action="consulta_glosas.php" method="post">  
+	<form action="consulta_glosas.php?wemp_pmla=<?php echo($wemp_pmla) ?>" method="post">  
 		<table width="1200" border="1" align="center">
 			<tr>
 				<td width="50%" align="" style="border: groove; width: 0%">
@@ -133,9 +134,10 @@
 				//echo "Por favor ingresar las fechas";
 			}
 			else{
+				$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 				// Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
 				$select_glosa = mysql_query("SELECT count(*) cant
-											From cliame_000273 AS A LEFT JOIN cliame_000024 ON (Gloent = Empcod), cliame_000274,cliame_000275 
+											From ".$wcliame."_000273 AS A LEFT JOIN ".$wcliame."_000024 ON (Gloent = Empcod), ".$wcliame."_000274,".$wcliame."_000275 
 											where gloest='on'
 											and Glofhg BETWEEN '$buscar' and '$buscar1'
 											and glonrg=gdeidg
@@ -164,7 +166,7 @@
 	</table>
 	<table align="center" style="padding-top: auto">
 		<tr>
-			<td width="198"><div align="center" class="Estilo3"><a href="export_glosa.php?&fecha=<?php echo $buscar ?>&fecha1=<?php echo $buscar1 ?>">DESCARGAR </a></div></td>
+			<td width="198"><div align="center" class="Estilo3"><a href="export_glosa.php?wemp_pmla=<?=$wemp_pmla?>&fecha=<?php echo $buscar ?>&fecha1=<?php echo $buscar1 ?>">DESCARGAR </a></div></td>
 		</tr>	
 	</table>
 			

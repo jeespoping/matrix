@@ -1587,6 +1587,7 @@ function devolverAltaPaciente($conex,$ingresoPaciente){
 	global $wbasedato;
 	$date=date("Y-m-d");
 	$hora=date("H:i:s");
+	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 
 	$q = "	SELECT Ubiald
 			  FROM ".$wbasedato."_000018
@@ -1605,14 +1606,14 @@ function devolverAltaPaciente($conex,$ingresoPaciente){
 	}
 
 	$qmtr = " SELECT Mtrcon
-				FROM hce_000022
+				FROM ".$whce."_000022
 			   WHERE Mtrhis = '".$ingresoPaciente->historiaClinica."'
 				 AND Mtring = '".$ingresoPaciente->ingresoHistoriaClinica."' ";
 	$resmtr = mysql_query($qmtr, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qmtr . " - " . mysql_error());
 	$rowmtr = mysql_fetch_array($resmtr);
 
 	$qcon = " SELECT Concod
-				FROM hce_000035
+				FROM ".$whce."_000035
 			   WHERE Conalt = 'on'
 				 OR Conmue = 'on' ";
 	$rescon = mysql_query($qcon, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qcon . " - " . mysql_error());
@@ -1626,7 +1627,7 @@ function devolverAltaPaciente($conex,$ingresoPaciente){
 
 	if($upd_con==1)
 	{
-		$q = "UPDATE hce_000022
+		$q = "UPDATE ".$whce."_000022
 				 SET Mtrcon = ''
 			   WHERE Mtrhis = '".$ingresoPaciente->historiaClinica."'
 				 AND Mtring = '".$ingresoPaciente->ingresoHistoriaClinica."' ";

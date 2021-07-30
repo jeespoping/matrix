@@ -24,12 +24,43 @@
 </center>
 <?php
 //2020-08-02, DIDIER OROZCO MODIFICA: SE AGREGAN LOS NUEVOS CAMPOS QUE SE CREARON EN LA TABLA Usuarios CON EL FIN DE RECUPERAR LA CONTRASEÑA.
+//2021-06-30, JULIAN MEJIA MODIFICA: SE AGREGA VALIDACION DE USUARIO PERMITIDO PARA ACCEDER A ESTE SCRIPT Y SE DESHABILITA EL CAMPO 'ACTIVO'.
 include_once("conex.php");
 @session_start();
 if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
+
+	include_once("root/comun.php");
+	$usuarioPermitidoAux = 'root';
+	$permitirAcceso = false;
+	$usuarioPermitido = consultarAliasPorAplicacion($conex,'*', 'maestroUsuarios');
+	$usuarioPermitido = ($usuarioPermitido == '') ? $usuarioPermitidoAux : $usuarioPermitido;
+	if ($usuarioPermitido != ''){
+		$pos = strpos('*', $usuarioPermitido);
+		if ($pos !== false) $permitirAcceso = true;
+		else
+		{
+			$codigosP = explode(',',$usuarioPermitido);
+			if (is_array($codigosP)){
+				$user_session = explode('-', $_SESSION['user']);
+				$wuse = $user_session[1];
+				if (in_array($wuse,$codigosP)) $permitirAcceso = true;
+			}
+		}
+	}
+	
+    if(!$permitirAcceso){
+        ?>
+        <div align="center">
+            <label>USUARIO NO AUTORIZADO PARA CONSULTAR<br/>
+            Ingrese de nuevo a Matrix con un usuario v&aacutelido</label>
+        </div>
+        <?php
+        return;
+    }
+	
 	$superglobals = array($_SESSION,$_REQUEST);
 	foreach ($superglobals as $keySuperglobals => $valueSuperglobals)
 	{
@@ -65,7 +96,10 @@ else
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				break;
 				case 2:
-				$query = "insert usuarios values ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
+				$query = "INSERT INTO
+							 usuarios (Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo,Empresa,Ccostos,Activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp)
+							 VALUES ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
+				// $query = "insert usuarios values ('".strtolower($Codigo)."',SHA1('".$Password."'),'".$Passdel."','".$Feccap."','".$Tablas."','".$Descripcion."',".$Prioridad.",'".$Grupo."','".substr($Empresa,0,strpos($Empresa,"-"))."','".substr($Ccostos,0,strpos($Ccostos,"-"))."','".substr($Activo,0,1)."','".$Documento."','".$Email."',SHA1('".$PasswordTemporal."'),'".$FechaPasswordTemp."','".$HoraPasswordTemp."')";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				break;
 			}

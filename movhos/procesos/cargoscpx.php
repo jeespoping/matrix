@@ -7180,7 +7180,50 @@ function consultarCcoUrgencias(){
 	}
 	return $cco;
 }
-
+function centroCostosCM()
+	{
+		global $conex;
+		global $bd;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$bd."_000011
+				WHERE
+					ccofac LIKE 'on'
+					AND ccotra LIKE 'on'
+					AND ccoima !='off'
+					AND ccodom !='on'
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			return $rows[ 'Ccocod' ];
+		}
+	}
+	function centroCostosSF()
+	{
+		global $conex;
+		global $bd;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$bd."_000011 
+					WHERE 	ccofac 		LIKE 'on' 
+					AND 	ccotra 		LIKE 'on' 
+					AND 	ccoima 		!='on' 
+					AND 	ccodom 		!='on'
+				
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			return $rows[ 'Ccocod' ];
+		}
+	}
 include_once("movhos/validacion_hist.php");
 include_once("movhos/fxValidacionArticulo.php");
 include_once("movhos/registro_tablas.php");
@@ -7199,9 +7242,11 @@ if( !$existeFacturacionERP )
 if( !isset($facturacionErp) ){
 encabezado($wtitulo, $wactualiz, 'clinica');
 
-$serviciofarmaceutico = '1050';
-$centraldemezclas = '1051';
-
+//$serviciofarmaceutico = '1050';
+//$centraldemezclas = '1051';
+$serviciofarmaceutico 	= centroCostosSF();
+$centraldemezclas 		= centroCostosCM();
+//echo $serviciofarmaceutico; echo $centraldemezclas;
 $tempRonda = "";
 $huboReemplazo = false;
 
@@ -7249,7 +7294,6 @@ if (isset($user) and !isset($usuario)){
 
 $wcenpro = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
 $wcliame = consultarAliasPorAplicacion( $conex, $emp, "cliame" );
-
 //encabezao del kardex
 //Se pone aca porque la variable usuario es seteado por el kardex automaticamente
 $aux = @$usuario;

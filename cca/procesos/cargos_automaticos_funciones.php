@@ -58,14 +58,15 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 							, Detnpa
 							, (CASE WHEN ccadat = 'on' THEN '".$wformulario."' ELSE NULL END) as wformulario
 							, movdat
+							, COALESCE(ccatcco,'H,D,A,U,Cx') ccatcco
 					FROM ".$wbasedato_facturacion."_000341 as cca 
 					LEFT JOIN ".$wbasedato_hce."_000002 as hce ON (cca.ccafhce = hce.Detpro AND cca.ccachce = hce.Detcon) 
 					LEFT JOIN ".$wbasedato_movhos."_000026 ON Artcod = ccaart 
 					LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
 					LEFT JOIN root_000012 ON Codigo = ccacup
 					LEFT JOIN ".$wbasedato_hce."_".$wformulario." as fhce ON ( cca.ccachce = movcon AND Dettip = movtip AND ccadat = 'on' AND movusu = '".$mov_usu."' AND fhce.Fecha_data = '".$fecha."' AND fhce.id = (SELECT MAX(id) FROM ".$wbasedato_hce."_".$wformulario." WHERE movusu = '".$mov_usu."' AND Fecha_data = '".$fecha."' AND movhis = '".$movhis."' AND moving = '".$moving."' AND cca.ccachce = movcon AND Dettip = movtip) )
-					WHERE ccafhce = '".$wformulario."'";
-					
+					WHERE ccafhce = '".$wformulario."'";	
+	
 	$exec_query = mysql_query( $query_cca, $conex) or die( mysql_errno()." - Error en el query - ".mysql_error() );
 	
 	$data = array();
@@ -96,6 +97,7 @@ function obtenerDatosCCAxOrden($conex, $origen, $wprocedimiento, $mov_usu, $movh
 							, ccaeve 
 							, ccadat
 							, ccaord
+							, COALESCE(ccatcco,'H,D,A,U,Cx') ccatcco
 					FROM ".$wbasedato_facturacion."_000341 as cca 
 					LEFT JOIN ".$wbasedato_movhos."_000026 ON Artcod = ccaart 
 					LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 

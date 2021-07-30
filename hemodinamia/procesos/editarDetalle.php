@@ -8,6 +8,8 @@
 <?php
     include_once("conex.php");
     include_once("root/comun.php");
+	$wemp_pmla=$_REQUEST['wemp_pmla'];
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 	$conex = obtenerConexionBD("matrix");
     $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
     if(!isset($_SESSION['user']))
@@ -47,12 +49,14 @@
 	</style>
 		<script>
 		function mensaje(CodPro) {
+			let params 	= new URLSearchParams(location.search);
+			var wemp_pmla 	= params.get('wemp_pmla');
 			var validacion = null;
 			ancho = 300;    alto = 120;
             var winl = (screen.width - ancho) / 2;
             var wint = 250;
 			settings2 = 'height=' + alto + ',width=' + ancho + ',top=' + wint + ',left=' + winl + ', scrollbars=yes, toolbar=no';
-			validacion = window.open ("validarCodigo.php?CodPro="+CodPro,"miwin",settings2);
+			validacion = window.open ("validarCodigo.php?wemp_pmla="+wemp_pmla+"&CodPro="+CodPro,"miwin",settings2);
 			validacion.focus();
 		}
 	</script>
@@ -70,7 +74,8 @@
         
 		}
 	</script>
-	<?php 
+	<?php
+	global $wcliame; 
 		$activa=$_POST['plantilla_activa'];
 		$activa_procexam=$_POST['activa_exam_proce'];
 		$Cod_pla=$_POST['Cod_pla'];
@@ -82,7 +87,7 @@
 		
 		$id=$_GET['actualizar'];
 		$idDos=$_GET['actualizarDos'];
-		$select_cliame_330 = mysql_query ("select * from cliame_000330 where Codpla = '$id' and Codpro = '$idDos'");
+		$select_cliame_330 = mysql_query ("select * from ".$wcliame."_000330 where Codpla = '$id' and Codpro = '$idDos'");
 		$resultado=mysql_fetch_array($select_cliame_330);
 		$Codpla = $resultado[3];   
 		$CodPro = $resultado[4];
@@ -93,10 +98,10 @@
 		$accion = isset($_POST['accion']) ? $_POST['accion'] : "";
 		if($accion == 'guardar')
 		{
-			mysql_query("update cliame_000330 set Cantidad='$Can',Concepto='$Conc',Estado='$Est' where Codpla='$Cod_pla' and Codpro= '$Cod_pro'");
+			mysql_query("update ".$wcliame."_000330 set Cantidad='$Can',Concepto='$Conc',Estado='$Est' where Codpla='$Cod_pla' and Codpro= '$Cod_pro'");
 			?>
 				<div style="margin-top: 10px;  text-align: center">
-				<form method="post" action="Menuplantilla.php">
+				<form method="post" action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>">
 				<label style="color: #080808"><strong>DATOS ACTUALIZADOS CORRECTAMENTE</strong> </label>
 				<br><br>
 				<input type="submit" class="text-success" value="ACEPTAR"/>
@@ -107,7 +112,7 @@
    }else{
 ?>
 <body width="1200" height="60">
-<form action="editarDetalle.php" method="post">
+<form action="editarDetalle.php?wemp_pmla=<?=$wemp_pmla?>" method="post">
 	 <table width="1000" border="1" align="center">
 		<tr>
 			<td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong> MODIFICAR MAESTRO DE PLANTILLA </strong></p> </td>
@@ -171,7 +176,7 @@
 			  <p>
 			  	<input name="accion" type="hidden" value='guardar' />
 				<input name="guardar" type="submit" class="btn-primary" value="Guardar" />
-				<a href="Menuplantilla.php" >RETORNAR</a></label>
+				<a href="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" >RETORNAR</a></label>
 			</p>
 			</div>
 			</td>

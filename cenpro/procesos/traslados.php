@@ -2016,6 +2016,32 @@ function pintarFormulario($estado, $origenes, $destinos, $numtra, $fecha, $wemp_
 	echo "</table></br>";
 }
 
+function centroCostosCM()
+	{
+		global $conex;
+		global $bd;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$bd."_000011
+				WHERE
+					ccofac LIKE 'on' 
+					AND ccotra LIKE 'on' 
+					AND ccoima !='off' 
+					AND ccodom !='on'
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if ( mysql_num_rows($res) > 1 )
+	{
+		return "Hay más de 1 centro de costos con los mismos parámetros";
+	}
+	$rows = mysql_fetch_array( $res );
+	return $rows[ 'Ccocod' ];
+	}
+
 /**
 * Se pinta el formulario que permite buscar los articulos a trasladar, seccionar lotes o presentaciones
 * ingresar la cantidad y desplegar la lista de articulos ingresados
@@ -2205,7 +2231,7 @@ else
 	$bd  = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
 	connectOdbc($conex_o, 'inventarios');
-
+	//$test = centroCostosCM();echo $test;
 	if ($conex_o != 0)
 	{
 		// consulto los datos del usuario de la sesion
@@ -2242,7 +2268,8 @@ else
 		if (isset($ccoOri) and $ccoOri != '' and isset($ccoDes) and $ccoDes != '')
 		{
 			$exc=explode('-',$ccoOri);
-			if ($exc[0] == '1051')
+			$cco = centroCostosCM();
+			if ($exc[0] == $cco)
 			{
 				echo "<font size=12 color=#FFFFFF><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#009999 LOOP=-1>TRASLADOS DESDE CENTRAL DE MEZCLAS</MARQUEE></FONT></br></br>";
 			}

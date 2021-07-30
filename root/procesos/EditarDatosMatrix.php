@@ -9,6 +9,14 @@ include_once("conex.php");
  *********************************************************************************************************
 
  Actualizaciones:
+ *  2021-01-14	: Leandro Meneses
+ *				  Se crea la funcion obtener_tooltip_relacion_ne para generar un tool tip con la descripción sobre los datos de una relacion ne
+ *				  Se modifica la funcion permisostabla para que genere el tooltip en los campos de tipo relacion ne
+ *  2021-01-13	: Luis F Meneses
+ *				  Se congela el encabezado de la tabla principal al efectuar scroll vertical en la ventana.
+ *  2021-01-12	: Leandro Meneses
+ *				  Se modifica el formato que visualiza y valida los campos tipo hora para que permita mas de 24 horas
+ *				  Se elimina la validacion que no permite ingreso de horas entre 25 y 29 horas
  *  2020-09-22	: Se adiciona ORDER BY ORDINAL_POSITION al query que obtiene los campos de las tablas 
  *				  para evitar que no se muestren los campos en desorden en mysql 8
  *  2020-05-26   : Freddy Saenz
@@ -22,6 +30,7 @@ include_once("conex.php");
  **********************************************************************************************************/
 
 $wactualiz = "2020-09-22";
+$wactualiz = "2021-01-21";
 
 if(!isset($_SESSION['user'])){
 	echo "error";
@@ -43,6 +52,7 @@ if( isset($consultaAjax) == false ){
 	<link type="text/css" href="../../../include/root/smartpaginator.css" rel="stylesheet" /> <!-- Autocomplete -->
 
 	<script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
+    <link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
 	<script type='text/javascript' src='../../../include/root/jquery.tooltip.js'></script>
 	<script type='text/javascript' src='../../../include/root/jquery.quicksearch.js'></script>
 	<script src="../../../include/root/jquery.maskedinput.js" type="text/javascript"></script>
@@ -88,7 +98,7 @@ if( isset($consultaAjax) == false ){
 			font-size: 	8pt;
 		}
 
-		// --> Estylo para los placeholder
+		// --> Estilo para los placeholder
 		/*Chrome*/
 		[tipo=obligatorio]::-webkit-input-placeholder {color:gray; background:lightyellow;font-size:8pt}
 		/*Firefox*/
@@ -97,9 +107,15 @@ if( isset($consultaAjax) == false ){
 		[tipo=obligatorio]:-ms-input-placeholder {color:gray; background:lightyellow;font-size:8pt}
 		[tipo=obligatorio]:-moz-placeholder {color:gray; background:lightyellow;font-size:8pt}
 
-
-
-
+        // Estilos para congelar encabezado de tabla en laparte superior al hacer scroll en la ventana.
+        th, td {
+            padding: 0.25rem;
+        }        
+        th {
+            position: sticky !important;
+            top: 0 !important; /* requerido para stickiness */
+            background-color: #2a3ab0;
+        }
 	</style>
 	<script>
 
@@ -114,10 +130,27 @@ if( isset($consultaAjax) == false ){
 				collapsible: true,
 				heightStyle: "content"
 			});
+		$(".msg_ne").tooltip({track: true, delay: 0, showURL: false, opacity: 0.95, left: 0 });
+
 
 	});
+	
 
+	/****************************************************************************************
+	 * Esta funcion muestra un tooltip para las leyendas
+	 ****************************************************************************************/
+	function mostrarTooltip( celda ){
 
+		if( !celda.tieneTooltip ){
+			$( "*", celda ).tooltip();
+			celda.tieneTooltip = 1;
+		}
+	}
+
+function userDetails(){
+	console.log('prueba2');
+  return 'prueba2';
+}
 	//Funcionalidad para cuando se llama la opción desde una ventana de modal Mavila 23-10-2020 :)
 	function abrir_tabla_modal(wemp_pmla, wtabla, wusuariotabla, wnombreopc, wid, widregistro, wcampo, woperacion){
 
@@ -176,20 +209,25 @@ if( isset($consultaAjax) == false ){
 					//* formatea hora para un campo
 					//****************************************************************/
 					//Masked input
-					$.mask.definitions['H']='[012]';
+					
+					//Se cambia la mascara para que permita mas de 24 Horas 12-01-2021
+					//$.mask.definitions['H']='[012]';
+					$.mask.definitions['H']='[0123456789]';
 					$.mask.definitions['N']='[012345]';
 					$.mask.definitions['n']='[0123456789]';
 
-					$(".hora1").mask("Hn:Nn:Nn");
+					$(".hora1").mask("HHn:Nn:Nn");
 
-					$(".hora1").keyup(function(){
 
-						if ( $(this).val().substring(0,1) == "2" && $(this).val().substring(0,2)*1 > 23 )
-						{
-							$(this).val( "2_:__:__" );
-							$(this).caret(1);
-						}
-					});
+					//Se elimina la validaciocion que solo permite 24 horas 12-01-2021
+					// $(".hora1").keyup(function(){
+
+						// if ( $(this).val().substring(0,1) == "2" && $(this).val().substring(0,2)*1 > 23 )
+						// {
+							// $(this).val( "2_:__:__" );
+							// $(this).caret(1);
+						// }
+					// });
 					//---------------------------------------
 					//---------------------------------------
 
@@ -316,20 +354,26 @@ if( isset($consultaAjax) == false ){
 				//* formatea hora para un campo
 				//****************************************************************/
 				//Masked input
-				$.mask.definitions['H']='[012]';
+
+				//Se cambia la mascara para que permita mas de 24 Horas 12-01-2021 
+				//$.mask.definitions['H']='[012]';
+				$.mask.definitions['H']='[0123456789]';
 				$.mask.definitions['N']='[012345]';
 				$.mask.definitions['n']='[0123456789]';
+				$(".msg_ne").tooltip({track: true, delay: 0, showURL: false, opacity: 0.95, left: 0 });
 
-				$(".hora1").mask("Hn:Nn:Nn");
 
-				$(".hora1").keyup(function(){
+				$(".hora1").mask("HHn:Nn:Nn");
 
-					if ( $(this).val().substring(0,1) == "2" && $(this).val().substring(0,2)*1 > 23 )
-					{
-						$(this).val( "2_:__:__" );
-						$(this).caret(1);
-					}
-				});
+				//Se elimina la validaciocion que solo permite 24 horas 12-01-2021
+				// $(".hora1").keyup(function(){
+
+					// if ( $(this).val().substring(0,1) == "2" && $(this).val().substring(0,2)*1 > 23 )
+					// {
+						// $(this).val( "2_:__:__" );
+						// $(this).caret(1);
+					// }
+				// });
 				//---------------------------------------
 				//---------------------------------------
 
@@ -471,6 +515,51 @@ if( isset($consultaAjax) == false ){
 	
 	
 	function crear_autocomplete(campo,HiddenArray,codIni,nomIni,consulta,where)
+	{
+
+		//----
+		// llenar el campo autocompletar
+		
+		$.post("EditarDatosMatrix.php",
+		{
+			consultaAjax:     '',
+			wemp_pmla:        $('#wemp_pmla').val(),
+			accion:           'llenarcampoAutocompletar',
+			consulta:		  consulta,
+			where:		 	  where,
+			term:			  codIni
+
+		},function(data) {
+
+			$("#"+campo).val(data);
+			$("#"+campo).attr("valor",codIni);
+			$("#"+campo).attr("nombre",data);
+
+
+		});
+		//--------------------------------------------
+		
+			
+			$( "#"+campo ).autocomplete({
+				minLength: 	2,
+				source: 	"EditarDatosMatrix.php?consultaAjax=''&wemp_pmla="+$('#wemp_pmla').val()+"&accion=consulta_buscador&consulta="+consulta+"&where="+where+"",
+				select: 	function( event, ui ){
+					//alert(JSON.stringify(ui));
+					$( "#"+campo ).val(ui.item.label);
+					//alert("label :"+ui.item.label+"valor :"+ui.item.cod+"nombre :"+ui.item.name);
+					$( "#"+campo ).attr('valor', ui.item.cod);
+					$( "#"+campo ).attr('nombre', ui.item.name);
+					
+					return false;
+				}
+			});
+			
+
+
+	}
+	
+	
+		function crear_autocomplete(campo,HiddenArray,codIni,nomIni,consulta,where)
 	{
 
 		//----
@@ -771,20 +860,24 @@ if( isset($consultaAjax) == false ){
 		//* formatea hora para un campo
 		//****************************************************************/
 		//Masked input
-		$.mask.definitions['H']='[012]';
+		
+		//Se cambia la mascara para que permita mas de 24 Horas 12-01-2021 
+		//$.mask.definitions['H']='[012]';
+		$.mask.definitions['H']='[0123456789]';	
 		$.mask.definitions['N']='[012345]';
 		$.mask.definitions['n']='[0123456789]';
 
-		$(".hora").mask("Hn:Nn:Nn");
+		$(".hora").mask("HHn:Nn:Nn");
 
-		$(".hora").keyup(function(){
+		//Se elimina la validaciocion que solo permite 24 horas 12-01-2021
+		// $(".hora").keyup(function(){
 
-			if ( $(this).val().substring(0,1) == "2" && $(this).val().substring(0,2)*1 > 23 )
-			{
-				$(this).val( "2_:__:__" );
-				$(this).caret(1);
-			}
-		});
+			// if ( $(this).val().substring(0,1) == "2" && $(this).val().substring(0,2)*1 > 23 )
+			// {
+				// $(this).val( "2_:__:__" );
+				// $(this).caret(1);
+			// }
+		// });
 
 
 
@@ -2195,6 +2288,127 @@ function traer_hidden_tipo9($comentario,$tabla,$valor,$wid,$wnombrecampo)
 
 }
 
+
+// Obtiene la descripción del dato en la tabla relacionada asociado a una relación ne  Leandro Meneses 2021-01-14
+function obtener_tooltip_relacion_ne($comentario,$tabla,$valor)
+{
+	
+	// $comentario contienes la información necesaria para traer los datos de la taba relacionada
+	
+	global $conex;
+	global $wempla;
+
+
+	$datos_ne  = array();
+	// el parámetro comnetario para las relaciones ne tiene la sisguinete estructura N-PREFIjO TABLA RELACIONADA-CONSECUTIVO TABLA RELACIONADA-CAMPO CODIGO-CAMPO DESCRIPCION1-CAMPODESCRIPCION2...
+	// donde:
+	//		N es el numero de campos relacionados incluyendo el código
+	//		Si no tiene prefijo quiere decir que se trabaja con el médico activo
+	//		Los  campos relacionados corresponden al codigo nobre en la tabal det_formulario
+	// ej : 2-000045-001-002
+	//		5-movhos-000045-001-002-003-004-005
+	$datos_ne  = explode("-", $comentario);
+	$num_datos = count($datos_ne);
+
+
+	// construyo where suponienndo que $comentario no contiene el prefijo de la tabla
+	for($j=1 ; $j< $num_datos ; $j ++)
+	{
+		$campos .= $datos_ne[$j].",";
+
+	}
+	$campos = substr ($campos, 0, strlen($campos) - 1);
+
+	// construyo where suponienndo que $comentario contiene el prefijo de la tabla
+	for($j=2 ; $j< $num_datos ; $j ++)
+	{
+		$campos_dos .= $datos_ne[$j].",";
+
+	}
+	$campos_dos = substr ($campos_dos, 0, strlen($campos_dos) - 1);
+
+
+	$donde = "AND campo IN ( ".$campos.") ";
+	$donde_dos = "AND campo IN ( ".$campos_dos.") ";
+
+	// del mismo grupo de tablas, $comentario no contiene el prefijo de la tabla
+	// el total de datos que llegan en $comentario es igual al numero de campos relacionados + 2 (numero de campos + tabla)
+	if((($num_datos*1) - ($datos_ne[0]*1)) == 2)
+	{
+		$select_campos_tabla = "SELECT campo,descripcion
+								  FROM det_formulario
+								 WHERE medico = '".$tabla."'
+								   AND codigo = '".$datos_ne[1]."'
+								   ".$donde."" ;
+
+		$res = 	mysql_query($select_campos_tabla,$conex) or die ("Error 3.12: ".mysql_errno()." - en el query: ".$select_campos_tabla." - ".mysql_error());
+		$r=0;
+		while($row = mysql_fetch_array($res))
+		{
+			$campos_select .= $row['descripcion'].",'-',";
+			if($r==0)
+				$ppal = $row['descripcion'];
+
+			$r++;
+		}
+		$campos_select = substr ($campos_select, 0, strlen($campos_select) - 5);
+
+		// query para hacer el select
+		$query = "SELECT ".$ppal." as ppal , Concat(".$campos_select.") as seleccionado
+					FROM ".$tabla."_".$datos_ne[1]." where ".$ppal."= '".$valor."' ";
+
+
+		$res = 	mysql_query($query,$conex) or die ("Error 3.13: ".mysql_errno()." - en el query: ".$query." - ".mysql_error());
+
+
+
+		while($row = mysql_fetch_array($res))
+		{
+			return $row['seleccionado'];
+		}
+
+	}
+	// diferente grupo de tablas, $comentario contiene el prefijo de la tabla
+	// el total de datos que llegan en $comentario es igual al numero de campos relacionados + 3 (numero de campos + prefijo + tabla)
+	if(($num_datos*1) - ($datos_ne[0]*1) == 3)
+	{
+		$select_campos_tabla = "SELECT campo,descripcion
+								  FROM det_formulario
+								 WHERE medico = '".$datos_ne[1]."'
+								   AND codigo = '".$datos_ne[2]."'
+								   ".$donde_dos."" ;
+
+		$res = 	mysql_query($select_campos_tabla,$conex) or die ("Error 3.14: ".mysql_errno()." - en el query: ".$select_campos_tabla." - ".mysql_error());
+		$r=0;
+		while($row = mysql_fetch_array($res))
+		{
+			$campos_select .= $row['descripcion'].",'-',";
+			if($r==0)
+				$ppal = $row['descripcion'];
+
+			$r++;
+		}
+
+		$campos_select = substr ($campos_select, 0, strlen($campos_select) - 5);
+
+		// query para hacer el select
+		$query = "SELECT ".$ppal." as ppal , Concat(".$campos_select.") as seleccionado
+					FROM ".$datos_ne[1]."_".$datos_ne[2]." where ".$ppal."= '".$valor."' ";
+
+
+		$res = 	mysql_query($query,$conex) or die ("Error 3.15: ".mysql_errno()." - en el query: ".$query." - ".mysql_error());
+
+
+		while($row = mysql_fetch_array($res))
+		{
+			return $row['seleccionado'];
+		}
+		return "NA";
+
+	}
+
+}
+
 function traer_relacion_ne($comentario,$tabla,$valor,$wid,$wnombrecampo)
 {
 	global $conex;
@@ -2488,7 +2702,7 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 					//------------
 
 
-					$td_encabezado 	.= "<td>".$nombre_diccionario."<br><br>(".$row['COLUMN_NAME'].")</td>";
+					$td_encabezado 	.= "<th>".$nombre_diccionario."<br><br>(".$row['COLUMN_NAME'].")</th>";
 					$campos_tabla  	.= $row['COLUMN_NAME'].",";
 					$vector_campos[$i]	 			= $row['COLUMN_NAME'];
 					$vector_tipo_campos[$i] 		= $tipo_campo;
@@ -2793,7 +3007,7 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 															</td>";
 					$html.="</td>
 								</select>
-										<td id='td_parametro_buscar' ><input size='40' numero='1' type='text' class='parametro' id='parametro_buscar' value='".$parametro."'></td>
+										<td id='td_parametro_buscar' ><input size='40' numero='1' type='text' class='parametro msg_ne' onMouseover='mostrarTooltip( this );' title='parametro' id='parametro_buscar' value='".$parametro."'></td>
 										<td>&nbsp;&nbsp;</td>
 										</tr>
 										<tr class='fila1' >
@@ -2812,7 +3026,8 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 				
 				
 			}
-
+		
+		
 			$html .= "<br><div id='paginador' style='margin: auto;'></div>";
 			//$html .= "<div id='datos' style='overflow-x:scroll;overflow-y:hidden;width:90%;height:90%'>";
 			$html .= "<div id='datos' >";
@@ -2829,13 +3044,15 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 			//-- Aqui se encuentra el numero de filas y la funcion editar y guardar
 			$cambioinicioyfin="off";
 			$html .="
-						<br><div style='overflow-x:scroll;overflow-y:hidden;width:1600px'><table align='center'>
+						<br><div style='/*overflow-x:scroll;overflow-y:hidden;width:1600px*/'>
+                                <table align='center' style='position: relative; border-collapse: collapse;'>
 								<tr align='center' class='encabezadoTabla'><td colspan='".(($numero_de_campos*1)+3)."'>".$wnombreopc."</td></tr>
+                                <thead>
 								<tr class='encabezadoTabla' align='center'>
-								<td>#</td>
-								<td></td>
+								<th>#</th>
+								<th></th>
 									".$td_encabezado."
-							   <td></td></tr>";
+							   <th></th></tr></thead>";
 			//totalizo los datos de la tabla
 
 
@@ -2944,8 +3161,9 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 
 					if($vector_tipo_campos[$j]=='18')
 					{
-						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row["id"]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' >".substr($row["".$vector_campos[$j].""],0,30)."</td>";
-
+						// se adiciona el atributo title a donde se lleva la descripcion del registro de la tabla relacionada para que se muestre como tooltip. Leandro Meneses 2021-01-14
+						$html .="<td nowrap='nowrap' id='td_".$vector_campos[$j]."_".$row["id"]."' ".$atributo."  nombrecampo='".$vector_campos[$j]."' tipo ='".$vector_tipo_campos[$j]."' comentario='".$vector_comentario[$j]."' tablappal='".$nom_tabla."' valor='".$row["".$vector_campos[$j].""]."' posicion='".$vector_campos[$j]."' nombre='".$vector[$vector_campos[$j]][$row["".$vector_campos[$j].""]]."' class='msg_ne' onMouseover='mostrarTooltip( this );' title='".obtener_tooltip_relacion_ne($vector_comentario[$j],$nom_tabla, $row["".$vector_campos[$j].""])."'  >".substr($row["".$vector_campos[$j].""],0,30)." </td>";
+						
 					}
 					elseif($vector_tipo_campos[$j]=='9')
 					{
@@ -3280,5 +3498,5 @@ function PermisosTabla($wtabla, $wusuario,$parametro, $campobuscar,$wprincipio, 
 				<?php } ?>
 				
 			<?php } ?> 
-    </body>
+ </body>
 </html>

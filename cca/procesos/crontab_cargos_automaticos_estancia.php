@@ -1,5 +1,4 @@
 <?php
-
 include_once("conex.php");
 include_once('ajax_cargos_automaticos.php');
 
@@ -18,21 +17,30 @@ if( isset($_GET['wemp_pmla']) && $wemp_pmla != '' ) {
 				ON Ccocod = Ubisac 
 			  JOIN ".$wbasedato_movhos."_000020  
 				ON Habhis = Ubihis
-				AND Habing = Ubiing
+			   AND Habing = Ubiing
 			 WHERE Ubiald = 'off' 
 			   AND Ubialp = 'off' 
-			   AND ccohos = 'on'";
+			   AND ccohos = 'on'
+		  ORDER BY Ubihis ASC";
 	
 	$res = mysql_query($sql,$conex) or die("Error: " . mysql_errno() . " - en el query (Consultar Pacientes Estancia): ".$sql." - ".mysql_error());
 	$arr = array();
 	
+	echo "El crontab se inició - ".date("Y-m-d H:i:s");
 	while($row = mysql_fetch_array($res))
 	{
 		$whis = $row['Ubihis'];
-		$wing = $row['Ubiing'];
+		$wing = $row['Ubiing'];	
 		
-		guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $wbasedato_cliame, $whis, $wing);
+		try {	
+			guardarCargoAutomaticoEstancia($conex, $wemp_pmla, $wbasedato_movhos, $wbasedato_cliame, $whis, $wing);			
+		} catch(Throwable $e) {
+			$msg = 'Historia: '.$whis.'-'.$wing.'  | '.$e->getMessage().' | en la linea: '.$e->getLine();
+			$sql = "INSERT INTO ".$wbasedato_cliame."_000351 (Medico, Fecha_data, Hora_data, Descripcion, Proceso, Seguridad) VALUES('Cliame', '".date("Y-m-d")."', '".date("H:i:s")."', '".$msg."', 'Cargo automatico estancia','C-root')";
+			mysql_query($sql,$conex);			
+		}		
 	}
+	echo "El crontab finalizó - ".date("Y-m-d H:i:s");
 }
 
 ?>

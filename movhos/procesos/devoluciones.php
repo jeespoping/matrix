@@ -447,7 +447,7 @@ function procesoDevMatrix($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $
 
 			if(Numeracion($pac, $fuente, 'D', $aprov, $cco, $date, $cns, $dronum, $drolin, $pac['dxv'], $usuario, $error ))
 			{	
-				CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+				CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 				
 				$wcenpro = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
 				
@@ -2279,7 +2279,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 					/****************************************************************************/
 					$artValido =registrarItdro($dronum, $drolin, $fuente, $date, $cco, $pac, $art, $error);
 					//Octubre 13 de 2015. Cargos ERp
-					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 
 					/************************************************************************************
 					 * Febrero 27 de 2014
@@ -2321,8 +2321,7 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntradaDevolucion" ) );
 					}
 					ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
-					
-					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+					CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin ); //Ya estaba
 					
 					$artValido = true;
 				}
@@ -2344,11 +2343,9 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 							$resAut = consultarArticulosACargarAutomaticamente( $art['cod'] );
 
 							if( $resAut ){
-
 								$numResAut = mysql_num_rows( $resAut );
 
 								if( $numResAut > 0 ){
-
 									while( $rowsResAut = mysql_fetch_array( $resAut ) ){
 
 										$art2['cod'] = $rowsResAut[ 'Artcod' ];
@@ -2425,6 +2422,50 @@ function procesoDev($devCons, $pac, $art, $jusD, $faltante, $jusF, $cco, $tipTra
 	}
 }
 
+function centroCostosCM()
+	{
+		global $conex;
+		global $wmovhos;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$wmovhos."_000011
+				WHERE
+					ccofac LIKE 'on'
+					AND ccotra LIKE 'on'
+					AND ccoima !='off'
+					AND ccodom !='on'
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			return $rows[ 'Ccocod' ];
+		}
+	}
+	function centroCostosSF()
+	{
+		global $conex;
+		global $wmovhos;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$wmovhos."_000011 
+					WHERE 	ccofac 		LIKE 'on' 
+					AND 	ccotra 		LIKE 'on' 
+					and 	ccoima 		!='on' 
+					AND 	ccodom 		!='on'
+				
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			return $rows[ 'Ccocod' ];
+		}
+	}
 
 /**
  * PROGRAMA DE DEVOLUCIÓN DE ARTÍCULOS DE UN PACIENTE
@@ -2519,12 +2560,13 @@ include_once("movhos/cargosSF.inc.php");
 include_once("ips/funciones_facturacionERP.php");
 
 
-$wcenpro  = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
-$bdCencam = consultarAliasPorAplicacion( $conex, $emp, "camilleros" );
+$wcenpro  	= consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
+$bdCencam 	= consultarAliasPorAplicacion( $conex, $emp, "camilleros" );
+$wmovhos 	= consultarAliasPorAplicacion( $conex, $emp, "movhos" );
 
-$serviciofarmaceutico = '1050';
-$centraldemezclas = '1051';
-
+$serviciofarmaceutico = centroCostosSF();
+$centraldemezclas	  = centroCostosCM();
+//echo $serviciofarmaceutico; echo $centraldemezclas;
 
 if(!isset($_SESSION['user']))
 echo "error";
@@ -2550,11 +2592,10 @@ else
 		echo "<tr>";*/
 		if($conex_o != 0)
 		{
-
+			
 			/****************************************************************************************
 			 * Con conexion con Unix
 			 ****************************************************************************************/
-
 			if(!isset($historia))
 			{
 				echo "<center><table border='0' width='300' align='center'>";
@@ -2634,7 +2675,6 @@ else
 
 				if($ok)
 				{
-
 					if($cco['sel'])
 					{
 						echo "<tr><td class='titulo1'>USUARIO: ".$usuario;
@@ -2986,7 +3026,8 @@ else
 														$wbasdat="cenpro";
 														$dronum="";
 														$drolin="";
-														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
+														
+														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin, true);
 
 														if( $ok ){
 
@@ -3188,7 +3229,7 @@ else
 														$wbasdat="cenpro";
 														$dronum="";
 														$drolin="";
-														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
+														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin, true);
 
 														if( $ok ){															
 															devolucionesKE( $array[$i]['art'], $pac, $cco[$codCco], $idRegistro, false );
@@ -3960,7 +4001,7 @@ else
 														$wbasdat="cenpro";
 														$dronum="";
 														$drolin="";
-														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
+														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin, true);
 
 														if( $ok ){
 															// echo "11111111111CM.......<pre>"; var_dump( $pac ); echo "</pre>";
@@ -3992,6 +4033,7 @@ else
 															}
 															else{
 																$articulosDevueltos++;
+																
 																if( !$solicitudCamillero ){
 																	if( esTraslado( $cco[$codCco]['cod'] ) && true ){
 //																		peticionCamillero( 'on', '', '', $usuario, substr($ccoCod,3), $cco[$codCco]['cod'], '',$pac['his'], $pac['ing']  );
@@ -4164,7 +4206,7 @@ else
 														$wbasdat="cenpro";
 														$dronum="";
 														$drolin="";
-														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin);
+														$ok=devolucionCM($cco[$codCco],$array[$i]['art'],$pac,$error,$dronum,$drolin, true);
 
 														if( $ok ){
 															// echo "2222222CM.......<pre>"; var_dump( $pac ); echo "</pre>";

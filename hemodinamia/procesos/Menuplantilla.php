@@ -29,6 +29,9 @@
     include_once("root/comun.php");
 	$conex = obtenerConexionBD("matrix");
     $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
+	
+	$wemp_pmla=$_REQUEST['wemp_pmla'];
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -176,21 +179,25 @@
     </script>
 	<script>
 		function mensaje(CodPro) {
+			let params 	= new URLSearchParams(location.search);
+			var wemp_pmla 	= params.get('wemp_pmla');
 			var validacion = null;
 			ancho = 300;    alto = 120;
             var winl = (screen.width - ancho) / 2;
             var wint = 250;
 			settings2 = 'height=' + alto + ',width=' + ancho + ',top=' + wint + ',left=' + winl + ', scrollbars=yes, toolbar=no';
-			validacion = window.open ("validarCodigo.php?CodPro="+CodPro,"miwin",settings2);
+			validacion = window.open ("validarCodigo.php?wemp_pmla="+wemp_pmla+"&CodPro="+CodPro,"miwin",settings2);
 			validacion.focus();
 		}
 		function buscarPaciente(Identificacion,TidR) {
+			let params 	= new URLSearchParams(location.search);
+			var wemp_pmla 	= params.get('wemp_pmla');
 			var validacion2 = null;
 			ancho = 300;    alto = 120;
             var winl = (screen.width - ancho) / 2;
             var wint = 250;
 			settings2 = 'height=' + alto + ',width=' + ancho + ',top=' + wint + ',left=' + winl + ', scrollbars=yes, toolbar=no';
-			validacion2 = window.open ("validarCodigo.php?Identificacion="+Identificacion+'&TidR='+TidR.value,"miwin",settings2);
+			validacion2 = window.open ("validarCodigo.php?wemp_pmla="+wemp_pmla+"&Identificacion="+Identificacion+'&TidR='+TidR.value,"miwin",settings2);
 			validacion2.focus();
 		
 		}//llamar o esconder campo mipres segun seleccion
@@ -337,18 +344,19 @@
 </div>
 <!-- SE REALIZA EL LLENADO DEL MAESTRO DE LAS PLANTILLAS ACTIVA = 1 -->
 			<?php
+			global $wcliame;
 					$accion = isset($_POST['accion']) ? $_POST['accion'] : "";
 					if($accion == 'guardar')
 					{
 						?>
 						<div id="xAlmacenoPlantilla" class="xAlmacenoPlantilla" align="center" style="display: block">
 						<?php
-						$existe_plantilla = mysql_query("select * from cliame_000329 where Codpla = '$Codpla'");
+						$existe_plantilla = mysql_query("select * from ".$wcliame."_000329 where Codpla = '$Codpla'");
 						$resultado = mysql_fetch_array($existe_plantilla);
 						if ($resultado > 0){
 						?>
     						<div style="text-align: center" class="row">
-        					<form method="post" action="Menuplantilla.php">
+        					<form method="post" action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>">
             				<label style="color: #080808"><strong>EL DATO YA EXISTE</strong> </label>
             				<strong>POR FAVOR DIGITAR EL CODIGO EN LA CONSULTA </strong>
             				<br>
@@ -358,17 +366,17 @@
 							</div>
 						</div>	
    					<?php
-	
+					global $wcliame;
 					}else{
 					/////MATRIX/////
 					
-					mysql_query("INSERT INTO cliame_000329(medico,Fecha_data,Hora_data,Codpla,Nompla,Estado,Seguridad,id)values
+					mysql_query("INSERT INTO ".$wcliame."_000329(medico,Fecha_data,Hora_data,Codpla,Nompla,Estado,Seguridad,id)values
 					('cliame','$Fecha_data','$Hora_data','$Codpla','$Nompla','$Estado','$wuse','')");
  					
 					?>
 						<div class="divxAlmacenoPlantilla" align="center">
 								<div style="margin-top: 10px;  text-align: center" class="row">
-								<form method="post" action="Menuplantilla.php">
+								<form method="post" action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>">
 								<label style="color: #080808"><strong>DATOS ALMACENADOS CORRECTAMENTE</strong> </label>
 								<br><br>
 								<input type="submit" class="text-success" value="ACEPTAR"/>
@@ -400,7 +408,7 @@
 				<!-- FUNCION PARA INSERTAR EN LA TABLA DE CLIAME_000329 DEL MAESTRO DE PLANTILLAS -->
 					
 				<!-- INICIO DE FORMULARIO -->		
-					<form action="Menuplantilla.php" method="post">
+					<form action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" method="post">
   					<div align="center"><strong>Buscar codigo de plantilla:</strong> 
     				<input name="palabra">
     				<input type="submit" name="buscador" value="Buscar">
@@ -409,13 +417,14 @@
 					<input type="hidden" value="1" name="plantilla_activa"/>
 					</form>
 					<?php
+					global $wcliame;
 							if($_POST['buscador'])
 								{
 									$buscar = $_POST['palabra'];
 									// Si est&aacute; vac&iacute;o, lo informamos, sino realizamos la búsqueda
 									if(empty($buscar))
 									{
-										$select_plantilla = mysql_query("SELECT * from cliame_000329");
+										$select_plantilla = mysql_query("SELECT * from ".$wcliame."_000329");
 										?>
 										<table width="1000" height="44" border="1">
 										  <tr>
@@ -435,7 +444,7 @@
 										  <td width="100" height="18"><?php echo $Codpla ?> <div align="center"></div></td>
 											<td width="200"><?php echo $Nompla ?></td>
 											<td width="50"><?php echo $Estado ?></td>
-											<td width="50"><a href="editarPlantilla.php?actualizar=<?php echo $Codpla ?>">EDITAR </a></td>
+											<td width="50"><a href="editarPlantilla.php?wemp_pmla=<?=$wemp_pmla?>&actualizar=<?php echo $Codpla ?>">EDITAR </a></td>
 										  </tr>
 										
 										<?php
@@ -444,9 +453,9 @@
 										</table>
 									<?php								
 									}else
-									{
+									{global $wcliame;
 								// Conexión a la base de datos y seleccion de registros
-									$select_plantilla = mysql_query("SELECT * from cliame_000329 WHERE Codpla = '$buscar'");
+									$select_plantilla = mysql_query("SELECT * from ".$wcliame."_000329 WHERE Codpla = '$buscar'");
 									while($resultado=mysql_fetch_array($select_plantilla))
     								{
 										$Codpla = $resultado[3];   
@@ -464,7 +473,7 @@
 										  <td width="100" height="18"><?php echo $Codpla ?> <div align="center"></div></td>
 											<td width="200"><?php echo $Nompla ?></td>
 											<td width="50"><?php echo $Estado ?></td>
-											<td width="50"><a href="editarPlantilla.php?actualizar=<?php echo $Codpla ?>">EDITAR </a></td>
+											<td width="50"><a href="editarPlantilla.php?wemp_pmla=<?=$wemp_pmla?>&actualizar=<?php echo $Codpla ?>">EDITAR </a></td>
 										  </tr>
 										</table>
 										<?php
@@ -478,7 +487,7 @@
 				</div> <!-- FIN DEL CONTENIDO DE LA CONSULTA DE LA PLANTILLA -->
 				<!-- SE TRAE EL FORMULARIO DEL MAESTRO DE LAS PLANTILLAS -->				
 				<div id="xNuevaPlantilla" class="divxNuevaPlantilla" align="center" style="display: none">	
-					<form action="Menuplantilla.php" method="post">
+					<form action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" method="post">
 					  <table width="1000" border="1" align="center">
 						<tr>
 						<td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong> MAESTRO DE PLANTILLA </strong></p> </td>
@@ -537,12 +546,13 @@
 						?>
 						<div id="xAlmacenoDetalle" class="xAlmacenoDetalle" align="center" style="display: block">
 						<?php
-						$existe_detalle = mysql_query("select * from cliame_000330 where Codpla = '$Codpla' and Codpro = '$CodPro'");
+						global $wcliame;
+						$existe_detalle = mysql_query("select * from ".$wcliame."_000330 where Codpla = '$Codpla' and Codpro = '$CodPro'");
 						$resultado = mysql_fetch_array($existe_detalle);
 						if ($resultado > 0){
 						?>
     						<div style="text-align: center" class="row">
-        					<form method="post" action="Menuplantilla.php">
+        					<form method="post" action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>">
             				<label style="color: #080808"><strong>EL DATO YA EXISTE</strong> </label>
             				<strong>POR FAVOR DIGITAR EL CODIGO EN LA CONSULTA </strong>
             				<br>
@@ -555,8 +565,8 @@
 	
 					}else{
 					/////MATRIX/////
-					
-					mysql_query("INSERT INTO cliame_000330(medico,Fecha_data,Hora_data,Codpla,CodPro,Cantidad,Concepto,Estado,Seguridad,id)values
+					global $wcliame;
+					mysql_query("INSERT INTO ".$wcliame."_000330(medico,Fecha_data,Hora_data,Codpla,CodPro,Cantidad,Concepto,Estado,Seguridad,id)values
 					('cliame','$Fecha_data','$Hora_data','$Codpla','$CodPro','$Cantidad','$Concepto','$Estado','$wuse','')");
  					
 					?>
@@ -565,7 +575,7 @@
 							<tr>
 							    <td>	
 								<div style="margin-top: 10px;  text-align: center" class="row">
-									<form method="post" action="Menuplantilla.php">
+									<form method="post" action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>">
 									<label style="color: #080808"><strong>DATOS ALMACENADOS CORRECTAMENTE</strong> </label>
 									<br><br>
 									<input type="submit" class="text-success" value="ACEPTAR"/>
@@ -597,7 +607,7 @@
 			?>
                 <div id="divContenido1" class="divContenido1">
 				<td width="6">&ensp;</td>		
-					<form action="Menuplantilla.php" method="post">
+					<form action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" method="post">
   					<div align="center"><strong>Buscar Codigo de Plantilla:</strong> 
     				<input name="palabra_examen">
     				<input type="submit" name="buscador" value="Buscar">
@@ -606,6 +616,7 @@
 					<input type="hidden" value="2" name="activa_exam_proce"/>
 					</form>			
 					<?php
+					global $wcliame;
 							if($_POST['buscador'])
 								{
 									$buscar = $_POST['palabra_examen'];
@@ -618,8 +629,8 @@
 									{
 									// Conexión a la base de datos y seleccion de registros
 									// Querys para mostrar en la tabla
-										$select_detalle = mysql_query("SELECT * from cliame_000330 where Codpla='$buscar' ORDER BY id");
-										$select_nomPlan = mysql_query("SELECT * from cliame_000329 where Codpla='$buscar' ORDER BY id");
+										$select_detalle = mysql_query("SELECT * from ".$wcliame."_000330 where Codpla='$buscar' ORDER BY id");
+										$select_nomPlan = mysql_query("SELECT * from ".$wcliame."_000329 where Codpla='$buscar' ORDER BY id");
 										$resultado_nomPlan=mysql_fetch_array($select_nomPlan);
 										$Placod = $resultado_nomPlan[3];
 										$Nompla = $resultado_nomPlan[4];
@@ -694,7 +705,7 @@
 											<td width="50"><?php echo $Cantidad ?></td>
 											<td width="50"><?php echo $Concepto ?></td>
 											<td width="50"><?php echo $Estado ?></td>
-											<td width="50"><a href="editarDetalle.php?actualizar=<?php echo $Placod ?>&actualizarDos=<?php echo $CodPro ?>">EDITAR </a></td>
+											<td width="50"><a href="editarDetalle.php?wemp_pmla=<?=$wemp_pmla?>&actualizar=<?php echo $Placod ?>&actualizarDos=<?php echo $CodPro ?>">EDITAR </a></td>
 										  </tr>
 										
 										<?php
@@ -711,7 +722,7 @@
 				<!-- SE TRAE EL FORMULARIO DEL MAESTRO DE LOS PROCEDIMIENTOS -->
 				<div id="xNuevoProceExam"  class="divxNuevoProceExam" align="center" style="display: none">	
 				<td width="6">&ensp;</td>	
-					<form action="Menuplantilla.php" method="post" id="detallePlantilla" name="detallePlantilla">
+					<form action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" method="post" id="detallePlantilla" name="detallePlantilla">
 					  <table width="1000" border="0" align="center">
 						<tr>
 						<td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong> DETALLE DE PLANTILLA </strong></p> </td>
@@ -722,7 +733,8 @@
 							<td>							
 									<select id="Codpla" name="Codpla">
 										<?php
-										$queryDetalle = "select Codpla,Nompla from cliame_000329 WHERE Estado = 'on' ORDER BY Codpla ASC";
+										global $wcliame;
+										$queryDetalle = "select Codpla,Nompla from ".$wcliame."_000329 WHERE Estado = 'on' ORDER BY Codpla ASC";
 										$resutlDetalle = mysql_query($queryDetalle, $conex) or die (mysql_errno()." - en el query: ".$queryDetalle." - ".mysql_error());
 											while($datoplantilla = mysql_fetch_assoc($resutlDetalle))
 											{
@@ -816,12 +828,13 @@
 					?>
 						<div id="xAlmacenoCotizacion"  class="xAlmacenoCotizacion" align="center" style="display: block">
 						<?php
-						$existe_cotizacion = mysql_query("select * from cliame_000337 where CodplaR = '$CodplaRe' and TidR = '$TidRe' and Identificacion='$Identificacion' and Fecha='$Fecha' and EmpcodR='$EmpcodRe'");
+						global $wcliame;
+						$existe_cotizacion = mysql_query("select * from ".$wcliame."_000337 where CodplaR = '$CodplaRe' and TidR = '$TidRe' and Identificacion='$Identificacion' and Fecha='$Fecha' and EmpcodR='$EmpcodRe'");
 						$resultado_cotizacion = mysql_fetch_array($existe_cotizacion);
 						if ($resultado_cotizacion > 0){
 						?>
     						<div style="text-align: center" class="row" border="1">
-								<form method="post" action="Menuplantilla.php">
+								<form method="post" action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>">
 								<label style="color: #080808"><strong>EL DATO YA EXISTE</strong> </label>
 								<strong>POR FAVOR DIGITAR EL CODIGO EN CONSULTAR COTIZACIONES </strong>
 								<br>
@@ -831,6 +844,7 @@
 								</div>
 							</div>
 						<?php
+						global $wcliame;
 						}else{
 						while(true) {
 							 
@@ -855,7 +869,7 @@
 							$valores='('.$descri.',"'.$cod.'","'.$can.'","'.$contab.'","'.$uniR.'","'.$totR.'"),';
 							//////// YA QUE TERMINA CON COMA CADA FILA, SE RESTA CON LA FUNCIÓN SUBSTR EN LA ULTIMA FILA /////////////////////
 							$valoresQ= substr($valores, 0, -1);
-							mysql_query("INSERT INTO cliame_000337(Medico,Fecha_data,Hora_data,Identificacion,TidR,Nompac,Historia,Ingreso,Fecha,Nmedico,CodplaR,EmpcodR,Tprocedimiento,Mipres,NumMipres,Descritab,Codtab,Canttab,Concetab,Unitab,Tottab,Total_cantidad,Seguridad)
+							mysql_query("INSERT INTO ".$wcliame."_000337(Medico,Fecha_data,Hora_data,Identificacion,TidR,Nompac,Historia,Ingreso,Fecha,Nmedico,CodplaR,EmpcodR,Tprocedimiento,Mipres,NumMipres,Descritab,Codtab,Canttab,Concetab,Unitab,Tottab,Total_cantidad,Seguridad)
 										values('Cliame','$Fecha_data','$Hora_data','$Identificacion','$TidRe','$Nompac','$Historia','$Ingreso','$Fecha','$Medico','$CodplaRe','$EmpcodRe','$Tprocedimiento','$Mipres','$NumMipres','$descri','$cod','$can','$contab','$uniR','$totR','$total_cantidadR','$wuse')");
 							//$sqlRes=$conexion->query($sql) or mysql_error();
  
@@ -879,7 +893,7 @@
 							<tr>
 							    <td>
 								<div style="margin-top: 10px;  text-align: center" class="row">
-									<form method="post" action="Menuplantilla.php">
+									<form method="post" action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>">
 									<label style="color: #080808"><strong>DATOS ALMACENADOS CORRECTAMENTE</strong> </label>
 									<br><br>
 									<input type="submit" class="text-success" value="ACEPTAR"/>
@@ -914,7 +928,7 @@
 				
             <div id="xCotizacion" class="divxCotizacion" align="center" style="display: block">
 				<td width="6">&ensp;</td>	
-					<form action="Menuplantilla.php" method="post" id="presupuesto" name="presupuesto">
+					<form action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" method="post" id="presupuesto" name="presupuesto">
 					  <table width="900" border="1" align="center">
 							<tr>
 								<td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong>PROMOTORA MEDICA LAS AMERICAS NIT 800067065-9</strong></p> </td>
@@ -991,7 +1005,8 @@
 								<td>							
 									<select id="CodplaR" name="CodplaR" style="width:500px" required>
 										<?php
-											$queryDetalle = "select Codpla,Nompla from cliame_000329 WHERE Estado = 'on' ORDER BY Codpla ASC";
+										global $wcliame;
+											$queryDetalle = "select Codpla,Nompla from ".$wcliame."_000329 WHERE Estado = 'on' ORDER BY Codpla ASC";
 											$resutlDetalle = mysql_query($queryDetalle, $conex) or die (mysql_errno()." - en el query: ".$queryDetalle." - ".mysql_error());
 												while($datoplantilla = mysql_fetch_assoc($resutlDetalle))
 												{	
@@ -1007,7 +1022,8 @@
 								<td>							
 									<select id="EmpcodR" name="EmpcodR" select style="width:500px" required>
 										<?php
-										$queryEntidad = "select Empcod,Empnom,Emptar from cliame_000024 WHERE Empest = 'on' and Emptem NOT IN ('02','64','14') ORDER BY Emptar,Empnom ASC";
+										global $wcliame;
+										$queryEntidad = "select Empcod,Empnom,Emptar from ".$wcliame."_000024 WHERE Empest = 'on' and Emptem NOT IN ('02','64','14') ORDER BY Emptar,Empnom ASC";
 										$resutlEntidad = mysql_query($queryEntidad, $conex) or die (mysql_errno()." - en el query: ".$queryEntidad." - ".mysql_error());
 											while($datoEntidad = mysql_fetch_assoc($resutlEntidad))
 											{
@@ -1051,7 +1067,7 @@
 								<p>
 									<input name="calcular_plantilla" type="hidden" value='3' />
 									<input id="calcular" name="calcular" type="button" onclick="this.form.submit()" value="CALCULAR" class="btn-primary"/>	
-									<a href="Menuplantilla.php" onclick="opPaneles('xProceExa')">CANCELAR</a></label>
+									<a href="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" onclick="opPaneles('xProceExa')">CANCELAR</a></label>
 								</p>
 								</div>
 								</td>
@@ -1071,6 +1087,7 @@
 										
 										</script>
 									<?php
+									global $wcliame;
 									$buscar_plantilla = $_POST['CodplaR'];
 									$buscar_responsable = $_POST['EmpcodR'];
 									// Si est&aacute; vac&iacute;o, lo informamos, sino realizamos la búsqueda
@@ -1083,20 +1100,20 @@
 										// Conexión a la base de datos y seleccion de registros
 									// Querys para mostrar en la tabla
 									    //Query para obtener el detalle y llenar toda la tabla cuando concepto no se ha 0
-										$select_detalle = mysql_query("SELECT * from cliame_000330 where Codpla='$buscar_plantilla' and Estado='on' and Concepto != '0' order by id");
+										$select_detalle = mysql_query("SELECT * from ".$wcliame."_000330 where Codpla='$buscar_plantilla' and Estado='on' and Concepto != '0' order by id");
 										// formar el en cabezado de la tabla con codigo plantilla y descripcion
-										$select_nomPlan = mysql_query("SELECT * from cliame_000329 where Codpla='$buscar_plantilla'");
+										$select_nomPlan = mysql_query("SELECT * from ".$wcliame."_000329 where Codpla='$buscar_plantilla'");
 										$resultado_nomPlan=mysql_fetch_array($select_nomPlan);
 										$Placod = $resultado_nomPlan[3];
 										$Nompla = $resultado_nomPlan[4];
 										// query para obtener la tarifa
-										$select_tarifa = mysql_query("SELECT Empcod,Empnom,Emptar from cliame_000024 where Empcod='$buscar_responsable'");
+										$select_tarifa = mysql_query("SELECT Empcod,Empnom,Emptar from ".$wcliame."_000024 where Empcod='$buscar_responsable'");
 										$resultado_tarifa=mysql_fetch_array($select_tarifa);
 										$EmpcodR = $resultado_tarifa[0];
 										$EmpnomR = $resultado_tarifa[1];
 										$EmptarR = $resultado_tarifa[2];
 										//QUERY PARA LLENAR LA TABLA CON CONCEPTO 0 Y OBTENER EL LOS NOMBRES DEL CONCEPTO
-										$select_detalle_concep = mysql_query("SELECT * from cliame_000330 where Codpla='$buscar_plantilla' and Estado='on' and Concepto=0 order by id");
+										$select_detalle_concep = mysql_query("SELECT * from ".$wcliame."_000330 where Codpla='$buscar_plantilla' and Estado='on' and Concepto=0 order by id");
 										$IdRowIn = 0;		
 										?>
 										<!-- TABLA PROVICIONAL PARA QUE PUEDAN COPIAR LOS DATOS-->
@@ -1506,7 +1523,7 @@
 														<input name="calcular_plantilla" type="hidden" value='4' />
 														<input name="accion" type="hidden" value='guardarCotizacion'/>
 														<input name="guardar" type="submit" class="btn-primary" value="GUARDAR" />
-														<a href="Menuplantilla.php" onclick="opPaneles('xProceExa')">RETORNAR</a></label>											
+														<a href="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" onclick="opPaneles('xProceExa')">RETORNAR</a></label>											
 													</p>
 													</div>
 												</td>
@@ -1547,7 +1564,7 @@
 				<!-- INICIO DE FORMULARIO PARA CONSULTAR LAS COTIZACIONES -->
 				
 				<table border='1'>
-					<form action="Menuplantilla.php" method="post">
+					<form action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" method="post">
 					  <table width="1000" border="1" align="center">
 							<tr>
 								<td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong> CONSULTAR COTIZACIONES </strong></p> </td>
@@ -1611,6 +1628,7 @@
 					</form>
 				</table>	
 					<?php
+					global $wcliame;
 							if($_POST['cons_cotizacion'])
 								{
 									$Bus_plantilla = $_POST['bus_plantilla'];
@@ -1623,11 +1641,11 @@
 									{
 										if ($Bus_fecha == null or $Bus_fecha == ""){
 											$select_cotizacion = mysql_query("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
-																		from cliame_000337 
+																		from ".$wcliame."_000337 
 																		where CodplaR='$Bus_plantilla' or Identificacion='$Bus_identificacion' or EmpcodR='$Bus_responsable'");
 										}else{
 											$select_cotizacion = mysql_query("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
-																		from cliame_000337 
+																		from ".$wcliame."_000337 
 																		where CodplaR='$Bus_plantilla' or Identificacion='$Bus_identificacion' or EmpcodR='$Bus_responsable' or Fecha='$Bus_fecha'");
 										}
 										
@@ -1663,7 +1681,7 @@
 												<td width="50"><?php echo $BempcodR ?></td>
 												<td width="50"><?php echo $Btotal_cantidad ?></td>
 												<td width="50" align="center">
-													<a href="consulta_cotizacion.php?bcodplaR=<?php echo $BcodplaR ?>&btidr=<?php echo $Btidr ?>&bidentificacion=<?php echo $Bidentificacion ?>&bfecha=<?php echo $Bfecha ?>&bempcodR=<?php echo $BempcodR ?>"><span class="glyphicon glyphicon-search"></span></a>
+													<a href="consulta_cotizacion.php?wemp_pmla=<?=$wemp_pmla?>&bcodplaR=<?php echo $BcodplaR ?>&btidr=<?php echo $Btidr ?>&bidentificacion=<?php echo $Bidentificacion ?>&bfecha=<?php echo $Bfecha ?>&bempcodR=<?php echo $BempcodR ?>"><span class="glyphicon glyphicon-search"></span></a>
 												</td>
 											</tr>
 										
@@ -1674,9 +1692,10 @@
 									<?php								
 									}else
 									{
+										global $wcliame;
 								// Conexión a la base de datos y seleccion de registros
 									$select_cotizacion = mysql_query("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
-																		from cliame_000337
+																		from ".$wcliame."_000337
 																		where CodplaR='$Bus_plantilla' and Identificacion='$Bus_identificacion' and EmpcodR='$Bus_responsable'");
 									?>
 										<table width="1000" height="44" border="1">
@@ -1712,7 +1731,7 @@
 												<td width="50"><?php echo $BempcodR ?></td>
 												<td width="50"><?php echo $Btotal_cantidad ?></td>
 												<td width="50" align="center">
-													<a href="consulta_cotizacion.php?bcodplaR=<?php echo $BcodplaR ?>&btidr=<?php echo $Btidr ?>&bidentificacion=<?php echo $Bidentificacion ?>&bfecha=<?php echo $Bfecha ?>&bempcodR=<?php echo $BempcodR ?>"><span class="glyphicon glyphicon-search" target="_blank"></span></a>
+													<a href="consulta_cotizacion.php?wemp_pmla=<?=$wemp_pmla?>&bcodplaR=<?php echo $BcodplaR ?>&btidr=<?php echo $Btidr ?>&bidentificacion=<?php echo $Bidentificacion ?>&bfecha=<?php echo $Bfecha ?>&bempcodR=<?php echo $BempcodR ?>"><span class="glyphicon glyphicon-search" target="_blank"></span></a>
 												</td>
 											</tr>
 										

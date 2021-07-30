@@ -8,6 +8,8 @@
 <?php
     include_once("conex.php");
     include_once("root/comun.php");
+	$wemp_pmla=$_REQUEST['wemp_pmla'];
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 	$conex = obtenerConexionBD("matrix");
     $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
     if(!isset($_SESSION['user']))
@@ -52,7 +54,7 @@
             var winl = (screen.width - ancho) / 2;
             var wint = 250;
 			settings2 = 'height=' + alto + ',width=' + ancho + ',top=' + wint + ',left=' + winl + ', scrollbars=yes, toolbar=no';
-			validacion = window.open ("validarCodigo.php?CodPro="+CodPro,"miwin",settings2);
+			validacion = window.open ("validarCodigo.php?wemp_pmla="+wemp_pmla.value+"&CodPro="+CodPro,"miwin",settings2);
 			validacion.focus();
 		}
 	</script>
@@ -74,18 +76,19 @@
 <body>
 	<?php	
 		// RECIBIR PARAMETROS DE MENUPLANTILLA PARA REALIZAR EL QUERY EL CLIAME_000337
+		global $wcliame;
 		$BcodplaR=$_GET['bcodplaR'];
 		$Btidr=$_GET['btidr'];
 		$Bidentificacion=$_GET['bidentificacion'];
 		$Bfecha=$_GET['bfecha'];
 		$BempcodR=$_GET['bempcodR'];
 		//Obtener descripciones
-		$select_nomPlan = mysql_query("SELECT * from cliame_000329 where Codpla='$BcodplaR'");
+		$select_nomPlan = mysql_query("SELECT * from ".$wcliame."_000329 where Codpla='$BcodplaR'");
 		$resultado_nomPlan=mysql_fetch_array($select_nomPlan);
 		//$Placod = $resultado_nomPlan[3];
 		$Nompla = $resultado_nomPlan[4];
 		// query para obtener la tarifa
-		$select_tarifa = mysql_query("SELECT Empcod,Empnom,Emptar from cliame_000024 where Empcod='$BempcodR'");
+		$select_tarifa = mysql_query("SELECT Empcod,Empnom,Emptar from ".$wcliame."_000024 where Empcod='$BempcodR'");
 		$resultado_tarifa=mysql_fetch_array($select_tarifa);
 		//$EmpcodR = $resultado_tarifa[0];
 		$EmpnomR = $resultado_tarifa[1];
@@ -94,8 +97,8 @@
 		//Obtener tarifas y descripciones
 		
 		//Obtener los datos de las cotizaciones
-		$select_cliame_337 = mysql_query ("select * from cliame_000337 where CodplaR = '$BcodplaR' and TidR = '$Btidr' and Identificacion='$Bidentificacion' and Fecha='$Bfecha' and EmpcodR='$BempcodR'");
-		$select_cliame_337_D = mysql_query ("select * from cliame_000337 where CodplaR = '$BcodplaR' and TidR = '$Btidr' and Identificacion='$Bidentificacion' and Fecha='$Bfecha' and EmpcodR='$BempcodR'");
+		$select_cliame_337 = mysql_query ("select * from ".$wcliame."_000337 where CodplaR = '$BcodplaR' and TidR = '$Btidr' and Identificacion='$Bidentificacion' and Fecha='$Bfecha' and EmpcodR='$BempcodR'");
+		$select_cliame_337_D = mysql_query ("select * from ".$wcliame."_000337 where CodplaR = '$BcodplaR' and TidR = '$Btidr' and Identificacion='$Bidentificacion' and Fecha='$Bfecha' and EmpcodR='$BempcodR'");
 		//echo $select_cliame_337;
 		$resultado=mysql_fetch_array($select_cliame_337);
 		$Identificacion = $resultado[3];
@@ -308,10 +311,10 @@
 			<tr>
 				<td height="35" colspan="7">
 					<div align="center">
-						<a href="export_excel_plantilla.php?bcodplaR=<?php echo $BcodplaR ?>&btidr=<?php echo $Btidr ?>&bidentificacion=<?php echo $Bidentificacion ?>&bfecha=<?php echo $Bfecha ?>&bempcodR=<?php echo $BempcodR ?>"><span class="glyphicon glyphicon-cloud-download"></span>EXPORTAR</a>
+						<a href="export_excel_plantilla.php?wemp_pmla=<?=$wemp_pmla?>&bcodplaR=<?php echo $BcodplaR ?>&btidr=<?php echo $Btidr ?>&bidentificacion=<?php echo $Bidentificacion ?>&bfecha=<?php echo $Bfecha ?>&bempcodR=<?php echo $BempcodR ?>"><span class="glyphicon glyphicon-cloud-download"></span>EXPORTAR</a>
 					</div>
 					<div align="center">
-						<a href="Menuplantilla.php" onclick="opPaneles('xProceExa')">VOLVER</a></label>
+						<a href="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>" onclick="opPaneles('xProceExa')">VOLVER</a></label>
 					</div>
 				</td>
 			</tr>

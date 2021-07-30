@@ -1,17 +1,18 @@
 <?php
-
+$consultaAjax = '';
 include_once("conex.php");
-/**********************************************************************************************************************
+include_once("root/comun.php");
+/**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : F1.php
 	   Fecha de Liberacion : 2004-04-20
 	   Autor : Pedro Ortiz Tamayo
 	   Version Inicial : 2004-04-20
 	   Version actual  : 2020-08-31
-
+	   
 	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface grafica que permite registrar los datos
 	   Administrativos, Financieros y Clinicos
-
+	   
 	   REGISTRO DE MODIFICACIONES :
 	   .2020-08-31
 			Se corrige variable para que muestre el esquema por usuarios
@@ -22,23 +23,23 @@ include_once("conex.php");
 	   .2014-06-24
 			Se agrega Session_Destroy cuando el login es incorrecto.
 	   .2014-05-12
-			Nueva Imagen.
+			Nueva Imagen.	
 	   .2004-04-20
 	   		Release de Version Beta.
 
-[*DOC]
+[*DOC]   		
 ***********************************************************************************************************************/
 function GetIP()
 {
 	$IP_REAL = " ";
 	$IP_PROXY = " ";
-	if (@getenv("HTTP_X_FORWARDED_FOR") != "")
-	{
-		$IP_REAL = getenv("HTTP_X_FORWARDED_FOR");
-		$IP_PROXY = getenv("REMOTE_ADDR");
-	}
-	else
-	{
+	if (@getenv("HTTP_X_FORWARDED_FOR") != "") 
+	{ 
+		$IP_REAL = getenv("HTTP_X_FORWARDED_FOR"); 
+		$IP_PROXY = getenv("REMOTE_ADDR"); 
+	} 
+	else 
+	{ 
 		$IP_REAL = getenv("REMOTE_ADDR");
 	}
 	$IPS=$IP_REAL."|".$IP_PROXY;
@@ -49,7 +50,7 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 {
 	$codigo = mysqli_real_escape_string( $conex, $codigo );
 	$usera 	= mysqli_real_escape_string( $conex, $usera );
-
+	
 	switch($grupo)
 	{
 		case 'AMERICAS':
@@ -1238,6 +1239,37 @@ else
 							}
 							else
 							{
+								$token 	  = '';
+								$datosJWT = array_pop( explode( "/", parse_url( $DATA[$i][2] )['path'] ) );
+								$JWT 	  = explode( "-", $datosJWT );
+								if( $JWT[0] == "JWT" )
+								{
+									if( $_SESSION && $_SESSION['codigo'] )
+									{
+										$encabezado	= [
+														'alg' => 'HS256', 
+														'typ' => 'JWT' 
+													];
+													
+										$datos 		= [
+														'usuario' 	=> $_SESSION['codigo'], 
+														'password' 	=> $_SESSION['password'], 
+														'wemp_pmla'	=> $JWT[1], 
+														'iat'		=> time(), 
+														'exp'		=> time()+24*3600, 
+													];
+													
+										$secret_key = consultarAliasPorAplicacion( $conex, $JWT[1], "jwtLaravelToyota" );
+										$cifrado 	= 'sha256';
+										
+										$token = crearTokenJwt( $encabezado, $datos, $secret_key, $cifrado );
+										
+										$dt = explode( "/", $DATA[$i][2] );
+										$dt[ count($dt)-1 ] = "token/".$token.( parse_url( $DATA[$i][2] )['query'] ? "?".parse_url( $DATA[$i][2] )['query'] : '' );
+										$DATA[$i][2] = implode( "/", $dt );
+									}
+								}
+								
 								if(strtoupper(substr($DATA[$i][3],0,3)) == "JSP")
 								{
 									$path=substr($DATA[$i][3],3).$DATA[$i][2];

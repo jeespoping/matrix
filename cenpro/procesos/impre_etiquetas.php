@@ -30,6 +30,8 @@
 	$conex = obtenerConexionBD("matrix");
     $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	//$test = centroCostosCM();echo $test;
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -48,7 +50,32 @@
         $conex = obtenerConexionBD("matrix");
     }
 
- 
+	function centroCostosCM()
+	{
+	
+		global $conex;
+		global $wmovhos;
+		
+		$sql = "SELECT
+					Ccocod
+				FROM
+					".$wmovhos."_000011
+				WHERE
+					ccofac LIKE 'on' 
+					AND ccotra LIKE 'on' 
+					AND ccoima !='off' 
+					AND ccodom !='on'
+				";
+		
+		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		if ( mysql_num_rows($res) > 1 )
+	{
+		return "Hay más de 1 centro de costos con los mismos parámetros";
+	}
+	$rows = mysql_fetch_array( $res );
+	return $rows[ 'Ccocod' ];
+		
+	} 
 
 //---------------------------->>> CODIGO PARA SACAR FECHA Y LA HORA ACTUAL <<<----------------------------------------
 $fecha_actual = date('d-m-Y');
@@ -150,8 +177,9 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 							<td bgcolor=#cccccc>						
 									<select id="wip" name="wip">
 										<?php
+										$cco = centroCostosCM();
 										$queryIp = "SELECT Impcod,Impnip from root_000053 
-															where Impcco = '1051'
+															where Impcco = ".$cco."
 															and Impest = 'on'";
 															
 										$resutlIp = mysql_query($queryIp, $conex) or die (mysql_errno()." - en el query: ".$queryIp." - ".mysql_error());

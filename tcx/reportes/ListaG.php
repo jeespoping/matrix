@@ -130,6 +130,9 @@
 </script>
 <?php
 include_once("conex.php");
+$consultaAjax = '';
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 /**********************************************************************************************************************  
 	   PROGRAMA : ListaG.php
 	   Fecha de Liberación : 2008-01-11
@@ -188,7 +191,7 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='ListaG' action='ListaG.php' method=post>";
+	echo "<form name='ListaG' action='ListaG.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	
 
 	
@@ -320,7 +323,7 @@ else
 			break;
 		}
 		echo "<tr><td align=left id=tipo20>Ver. 2015-03-03</td></tr><tr><td align='center'><input type=button value='Cerrar ventana' onclick='javascript:window.close();'></td></tr></table>";
-		echo "<A HREF='/MATRIX/tcx/reportes/ListaG.php?ok=9&empresa=".$empresa."&TIP=".$TIP."'><IMG SRC='/matrix/images/medical/tcx/Otrafecha.png'  alt='Otra Fecha'></A>";
+		echo "<A HREF='/MATRIX/tcx/reportes/ListaG.php?wemp_pmla=".$wemp_pmla."&ok=9&empresa=".$empresa."&TIP=".$TIP."'><IMG SRC='/matrix/images/medical/tcx/Otrafecha.png'  alt='Otra Fecha'></A>";
 		echo "<table border=0 align=center id=tipo00>";
 		if($TIP == 0)
 			echo "<tr>";
@@ -432,7 +435,12 @@ else
 					$wimpre[$i][16] = $days;
 				    $wimpre[$i][17] = "D";
 				}
-			$query = "SELECT Empnom FROM cliame_000024  ";
+			
+			
+			
+			$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+			
+			$query = "SELECT Empnom FROM ".$wcliame."_000024  ";
 			$query .= " where Empcod = '".$row[16]."'";
 			$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 			$num1 = mysql_num_rows($err1);

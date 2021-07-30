@@ -1,5 +1,6 @@
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
-  <title>CONSULTA DE SERVICIOS</title>
+	<title>CONSULTA DE SERVICIOS</title>
 </head>
 <body BGCOLOR="">
 <BODY TEXT="#000000">
@@ -37,7 +38,7 @@ else
   
     include_once("root/magenta.php");
     include_once("root/comun.php");
-  
+	$wemp_pmla=$_REQUEST['wemp_pmla'];
     $conex = obtenerConexionBD("matrix");
 	
     
@@ -63,10 +64,12 @@ else
           
     //====================================================================================================================================
     //COMIENZA LA FORMA      
-    echo "<form action='consulta_de_servicios.php' method=post>";
+    echo "<form action='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."' method=post>";
     
     $wfecha=date("Y-m-d"); 
     $hora = (string)date("H:i:s");
+	
+	$wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
     
     $wcolor="dddddd";
     $wcolorfor="666666";
@@ -91,7 +94,7 @@ else
         echo "</tr>";
         
         $q =  " SELECT nombre "
-			 ."   FROM cencam_000004 "
+			 ."   FROM ".$wcencam."_000004 "
 			 ."  ORDER BY 1 ";
 			 	 
 	    $res = mysql_query($q,$conex);
@@ -107,7 +110,7 @@ else
 		echo "</select></td></tr>";
 		
 		$q =  " SELECT codcen, nomcen"
-			 ."   FROM cencam_000006 ";
+			 ."   FROM ".$wcencam."_000006 ";
 		$res = mysql_query($q,$conex);
 	    $num = mysql_num_rows($res);
 	    
@@ -141,7 +144,7 @@ else
 	      if (isset($wid))
 	         {
 		      $q=  "  SELECT * "
-		          ."    FROM cencam_000003 "
+		          ."    FROM ".$wcencam."_000003 "
 		          ."   WHERE Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		          ."     AND id         = ".$wid
 		          ."     AND Central    like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
@@ -152,7 +155,7 @@ else
 			    if (isset($wmotivo))
 			       {
 			        $q=  "  SELECT * "
-			            ."    FROM cencam_000003 "
+			            ."    FROM ".$wcencam."_000003 "
 			            ."   WHERE Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 			            ."     AND Motivo         like '".$wmotivo."'"
 			            ."     AND Hora_respuesta != '00:00:00' "
@@ -165,7 +168,7 @@ else
 			         if (isset($wcamillero))
 			            {
 				         $q="  SELECT Motivo, COUNT(*) "
-			               ."    FROM cencam_000003 "
+			               ."    FROM ".$wcencam."_000003 "
 				           ."   WHERE Anulada = 'No' " 
 				           ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 				           ."     AND Hora_respuesta != '00:00:00' "
@@ -178,7 +181,7 @@ else
 			           else
 			              {     
 				           $q= "  SELECT * "
-				              ."    FROM cencam_000003 "
+				              ."    FROM ".$wcencam."_000003 "
 				              ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 				              ."     AND Origen         like '".$wser."'"
 				              ."     AND Hora_respuesta != '00:00:00' "
@@ -228,7 +231,7 @@ else
 		    //===================================================================================================================================================
 		    if (isset($wid))   //Si esta setiado el id busco por este, si no por el servicio u origen
 		       $q=   "  SELECT * "
-			        ."    FROM cencam_000003 "
+			        ."    FROM ".$wcencam."_000003 "
 			        ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 			        ."     AND id              = ".$wid  
 			        ."     AND Hora_respuesta != '00:00:00' "
@@ -244,7 +247,7 @@ else
 			            $q=   "  SELECT *, (HOUR(TIMEDIFF(hora_llegada,hora_data))*60        + "
 					         ."                  MINUTE(TIMEDIFF(hora_llegada,hora_data))    + "
 					         ."                (SECOND(TIMEDIFF(hora_llegada,hora_data)))/60)  "
-					         ."    FROM cencam_000003 "
+					         ."    FROM ".$wcencam."_000003 "
 					         ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 					         ."     AND Origen         like '".$wser."'"  
 					         ."     AND Hora_respuesta != '00:00:00' "
@@ -258,7 +261,7 @@ else
 					     if (isset($wcamillero))
 				            {
 					         $q="  SELECT Motivo, COUNT(*) AS cantidad "
-					           ."    FROM cencam_000003 "
+					           ."    FROM ".$wcencam."_000003 "
 					           ."   WHERE Anulada        = 'No' " 
 					           ."     AND Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 					           ."     AND Hora_respuesta != '00:00:00' "
@@ -271,7 +274,7 @@ else
 				           else
 				              {      
 				               $q= "  SELECT *  "
-						          ."    FROM cencam_000003 "
+						          ."    FROM ".$wcencam."_000003 "
 						          ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 						          ."     AND Origen         like '".$wser."'" 
 						          ."     AND Hora_respuesta != '00:00:00' "
@@ -287,7 +290,7 @@ else
 				          $q=   "  SELECT *, (HOUR(TIMEDIFF(hora_llegada,hora_data))*60        + "
 						       ."                  MINUTE(TIMEDIFF(hora_llegada,hora_data))    + "
 						       ."                (SECOND(TIMEDIFF(hora_llegada,hora_data)))/60)  "
-						       ."    FROM cencam_000003 "
+						       ."    FROM ".$wcencam."_000003 "
 						       ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 						       ."     AND Motivo         like '".$wmotivo."'" 
 						       ."     AND Hora_respuesta != '00:00:00' "
@@ -297,7 +300,7 @@ else
 						       ."   ORDER BY 19 desc ";
 						 else     
 				            $q= "  SELECT *  "
-						       ."    FROM cencam_000003 "
+						       ."    FROM ".$wcencam."_000003 "
 						       ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 						       ."     AND Motivo         like '".$wmotivo."'" 
 						       ."     AND Hora_respuesta != '00:00:00' "

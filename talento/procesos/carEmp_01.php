@@ -145,7 +145,7 @@
     <?php
     include("conex.php");
     include("root/comun.php");
-
+	$wemp_pmla=$_REQUEST['wemp_pmla'];
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -241,6 +241,7 @@
             ?>
             <!-- DATOS MINIMOS PREVIOS -->
             <form>
+				<input type='hidden' name='wemp_pmla' value='<?=$wemp_pmla ?>' >
                 <h4 style="text-align: center">DATOS MINIMOS PREVIOS</h4>
                 <div id="idGeneral" class="input-group">
                     <table align="center" border="0" style="width: 100%">
@@ -295,6 +296,7 @@
         {
             ?>
                 <form>
+					<input type='hidden' name='wemp_pmla' value='<?=$wemp_pmla ?>' >
                     <h4 style="text-align: center">I. IDENTIFICACION GENERAL</h4>
                     <div id="idGeneral" class="input-group">
                         <table align="center" border="0" style="width: 100%">

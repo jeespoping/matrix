@@ -13,7 +13,7 @@
     
 <?php
 include_once("conex.php");
-
+$wemp_pmla=$_REQUEST['wemp_pmla'];
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -26,7 +26,7 @@ if(!isset($_SESSION['user']))
 
 	
 
- echo "<form name='pacreingpiso' action='rep_transcardio.php' method=post>";  
+ echo "<form name='pacreingpiso' action='rep_transcardio.php?wemp_pmla=".$wemp_pmla."' method=post>";  
  
  if (!isset($wfec1) or $wfec1=='')
  {
@@ -69,6 +69,11 @@ if(!isset($_SESSION['user']))
  }	
  else      // Cuando ya estan todos los datos escogidos
  {
+	include_once("root/comun.php");
+	
+	$wayucni = consultarAliasPorAplicacion($conex, $wemp_pmla, "ayudas_diag");
+	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+	 
 	echo "<center><table border=0>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTES CARDIOLOGIA NO INVASIVA TRANSCRIPCION</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
@@ -82,14 +87,14 @@ if(!isset($_SESSION['user']))
 		$querytmp = "CREATE TEMPORARY TABLE IF NOT EXISTS temptranscardio
 					(INDEX idx(Esphis,Ingcem))
 					select Esphis,Ingcem,Empnom
-					from ayucni_000006 a left join cliame_000101 b on ( a.Esphis = b.Inghis and a.Esping = b.Ingnin) left join cliame_000024 c on (b.Ingcem = c.Empcod)
+					from ".$wayucni."_000006 a left join ".$wcliame."_000101 b on ( a.Esphis = b.Inghis and a.Esping = b.Ingnin) left join ".$wcliame."_000024 c on (b.Ingcem = c.Empcod)
 					where   a.Fecha_data between '".$wfec1."' and '".$wfec2."'  
 					group by Esphis
 					order by a.Espcod,a.Fecha_data ";
 		$rs = mysql_query( $querytmp, $conex ) or die( mysql_error() );
 	
 	 $query="Select a.Fecha_data,MONTH(a.Fecha_data),DAY(a.Fecha_data),Espcod,a.Esphis,Esping,Esptdo,Espdoc,CONCAT(Pacno1,' ',Pacno2,' ',Pacap1,' ',Pacap2 ),Pacfna,TIMESTAMPDIFF(YEAR,Pacfna,a.Fecha_data),Pacsex,Pacdir,Pactel,Ingtpa,c.Ingcem,e.Empnom,Espenf,Enfdes,Espfmo,Esphmo,Espusm,Espfce,Esphce,Espuce,Esplog,Espudg,Espequ,Espest 
-			 from   ayucni_000006 a left join cliame_000101 c on ( a.Esphis = c.Inghis and a.Esping = c.Ingnin) left join cliame_000100 d on (c.Inghis = d.Pachis ) left join temptranscardio e on (d.Pachis = e.Esphis),ayucni_000001 b 
+			 from   ".$wayucni."_000006 a left join ".$wcliame."_000101 c on ( a.Esphis = c.Inghis and a.Esping = c.Ingnin) left join ".$wcliame."_000100 d on (c.Inghis = d.Pachis ) left join temptranscardio e on (d.Pachis = e.Esphis),".$wayucni."_000001 b 
 			 where   a.Fecha_data between '".$wfec1."' and '".$wfec2."' 
 			  and  a.Espenf = b.Enfcod  
 	 order by a.Espcod,a.Fecha_data";
@@ -163,72 +168,72 @@ if(!isset($_SESSION['user']))
 		  if ($row1[17]== 'ECODOPV2')
 			{
 				$query2 ="select Opcdes,Exadi1,Exatec,Exapos,Exanr3,Exausm,a.seguridad,Exaiex,Descripcion,Exanr2 "
-					  ."from ayucni_000016 a left join root_000011 on (Exaiex = Codigo),ayucni_000005 b " 
+					  ."from ".$wayucni."_000016 a left join root_000011 on (Exaiex = Codigo),".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exatx5 = Opccod  and  Opctbl = 'CARDIOLOGOS' ";
 				
 				$query3 ="select Exarem,Opcdes "
-					  ."from ayucni_000016 ,ayucni_000005 b " 
+					  ."from ".$wayucni."_000016 ,".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exarem = Opccod  and  Opctbl = 'MEDREMV2' ";
 			}
 		  if ($row1[17]== 'ECOESTRV2')
 			{
 				$query2 ="select Opcdes,Exadi1,Exatec,Exapos,Exanr3,Exausm,a.seguridad,Exaiex,Descripcion,Exanr2 "
-					  ."from ayucni_000017 a left join root_000011 on (Exaiex = Codigo),ayucni_000005 b " 
+					  ."from ".$wayucni."_000017 a left join root_000011 on (Exaiex = Codigo),".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exatx5 = Opccod  and  Opctbl = 'CARDIOLOGOS' ";
 					  
 				$query3 ="select Exarem,Opcdes "
-					  ."from ayucni_000017 ,ayucni_000005 b " 
+					  ."from ".$wayucni."_000017 ,".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exarem = Opccod  and  Opctbl = 'MEDREMV2' ";
 			}
 		  if ($row1[17]== 'ECOPEDV2')
 			{
 				$query2 ="select Opcdes,Exadi1,Exatec,Exapos,Exanr3,Exausm,a.seguridad,Exaiex,Descripcion,Exanr2 "
-					  ."from ayucni_000018 a left join root_000011 on (Exaiex = Codigo),ayucni_000005 b " 
+					  ."from ".$wayucni."_000018 a left join root_000011 on (Exaiex = Codigo),".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exatx5 = Opccod and  Opctbl = 'CARDIOLOGOS'  ";
 					  
 				$query3 ="select Exarem,Opcdes "
-					  ."from ayucni_000018 ,ayucni_000005 b " 
+					  ."from ".$wayucni."_000018 ,".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exarem = Opccod  and  Opctbl = 'MEDREMV2' ";
 			}
 		  if ($row1[17]== 'ECOTRANSV2')
 			{
 				$query2 ="select Opcdes,Exadi1,Exatec,Exapos,Exanr3,Exausm,a.seguridad,Exaiex,Descripcion,Exanr2 "
-					  ."from ayucni_000019 a left join root_000011 on (Exaiex = Codigo),ayucni_000005 b " 
+					  ."from ".$wayucni."_000019 a left join root_000011 on (Exaiex = Codigo),".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exatx5 = Opccod and  Opctbl = 'CARDIOLOGOS' ";
 					  
 				$query3 ="select Exarem,Opcdes "
-					  ."from ayucni_000019 ,ayucni_000005 b " 
+					  ."from ".$wayucni."_000019 ,".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exarem = Opccod  and  Opctbl = 'MEDREMV2' ";
 			}
 		  if ($row1[17]== 'ECODIPIV2')
 			{
 				$query2 ="select Opcdes,Exadi1,Exatec,Exapos,Exanr3,Exausm,a.seguridad,Exaiex,Descripcion,Exanr2 "
-					  ."from ayucni_000020 a left join root_000011 on (Exaiex = Codigo),ayucni_000005 b " 
+					  ."from ".$wayucni."_000020 a left join root_000011 on (Exaiex = Codigo),".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exatx5 = Opccod and  Opctbl = 'CARDIOLOGOS' ";
 					  
 				$query3 ="select Exarem,Opcdes "
-					  ."from ayucni_000020 ,ayucni_000005 b " 
+					  ."from ".$wayucni."_000020 ,".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exarem = Opccod  and  Opctbl = 'MEDREMV2' ";
 			}
 		  if ($row1[17]== 'ECOEJERV2')
 			{
 				$query2 ="select Opcdes,Exadi1,Exatec,Exapos,Exanr3,Exausm,a.seguridad,Exaiex,Descripcion,Exanr2 "
-					  ."from ayucni_000021 a left join root_000011 on (Exaiex = Codigo),ayucni_000005 b " 
+					  ."from ".$wayucni."_000021 a left join root_000011 on (Exaiex = Codigo),".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exatx5 = Opccod and  Opctbl = 'CARDIOLOGOS' ";
 					  
 				$query3 ="select Exarem,Opcdes "
-					  ."from ayucni_000021 ,ayucni_000005 b " 
+					  ."from ".$wayucni."_000021 ,".$wayucni."_000005 b " 
 					  ."where Exacon =  ".$row1[3]." "
 					  ." and  Exarem = Opccod  and  Opctbl = 'MEDREMV2' ";
 			}

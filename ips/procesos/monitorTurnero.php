@@ -459,6 +459,8 @@ else
 
 	if($tema != '')
 	{
+		// cliame__000305
+		// $tema=01 PAP, 02 Fisiatria, 03 Radiologia, 04 Centro Medico Las Americas, 05 Consulta Institucional
 		$sqlTema = "
 		SELECT Codnom,Codlog,Codaso
 		  FROM ".$wbasedato."_000305

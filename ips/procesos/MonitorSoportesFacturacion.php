@@ -226,6 +226,7 @@ function ConsultarcentrosCostos()
 
 function consultarPacientesActivos()
 {
+	global $wcliame;
 	global $wbasedato, $wfachos, $nivelUsuario, $nivelMaximo, $nivelMinimo, $pacientes, $conex, $whis, $wcco, $usuario, $caracteres, $caracteres2, $esAdmin, $puedeCerrar, $responsables;
 	global $wempresaseleccionada;
 	$consultar2 = false;
@@ -256,7 +257,7 @@ function consultarPacientesActivos()
 					   INNER JOIN
 							 {$wbasedato}_000011 on ( b.Ubisac = ccocod AND ({$centrosCostosPertinentes}) )
 					   INNER JOIN
-							 cliame_000101 as pac on (ubihis = Inghis AND ubiing = Ingnin AND  Ingtpa ='E' ".(($wempresaseleccionada !='') ?  " AND Ingcem ='".$wempresaseleccionada."'" : "" )." )
+							 ".$wcliame."_000101 as pac on (ubihis = Inghis AND ubiing = Ingnin AND  Ingtpa ='E' ".(($wempresaseleccionada !='') ?  " AND Ingcem ='".$wempresaseleccionada."'" : "" )." )
 
 					   WHERE ( pf.lenrac = '{$nivelUsuario}' or pf.lenrac is null )
 
@@ -321,7 +322,7 @@ function consultarPacientesActivos()
 							   INNER JOIN
 								     {$wbasedato}_000011 on ( ubi.Ubisac = ccocod AND ({$centrosCostosPertinentes}) )
 							  INNER JOIN
-									 cliame_000101 on (ubihis = Inghis AND ubiing = Ingnin ".(($wempresaseleccionada !='') ?  " AND Ingcem ='".$wempresaseleccionada."'" : "" )." )
+									 ".$wcliame."_000101 on (ubihis = Inghis AND ubiing = Ingnin ".(($wempresaseleccionada !='') ?  " AND Ingcem ='".$wempresaseleccionada."'" : "" )." )
 							  GROUP BY  historia, ingreso, Pacno1, Pacno2, Pacap1, Pacap2, Pacced, Pactid, ccoActual, habitacionActual, origen, fechaIngreso
 							  ORDER BY tiempoAtencion asc";
 			}
@@ -349,9 +350,9 @@ function consultarPacientesActivos()
 				$query = "SELECT Ubihis historia, Ubiing ingreso, Pacno1, Pacno2, Pacap1, Pacap2, Pacdoc as Pacced, Pactdo as Pactid, Ubisac ccoActual, Ubihac habitacionActual, pf.id origen, b.fecha_data fechaIngreso, 'n' verFoto, pf.lenfeu fechaRecibo, pf.lenhou horaRecibo, b.ubialp altaProceso, pf.lencer estado, pf.lenrac nivelActual
 						    FROM {$wbasedato}_000018 b
 						    INNER JOIN
-						    cliame_000101 as pac on (ubihis = Inghis AND ubiing = Ingnin AND Ingtpa ='E' AND Inghis ='{$whis}' )
+						    ".$wcliame."_000101 as pac on (ubihis = Inghis AND ubiing = Ingnin AND Ingtpa ='E' AND Inghis ='{$whis}' )
 							INNER JOIN
-							cliame_000100 on ( Pachis =  Inghis	)
+							".$wcliame."_000100 on ( Pachis =  Inghis	)
 							LEFT JOIN
 								 {$wfachos}_000011 as pf on (b.Ubihis = pf.lenhis AND  b.Ubiing = pf.lening )
 						    INNER JOIN
@@ -384,7 +385,7 @@ function consultarPacientesActivos()
 
 
 			$qusuario =  "SELECT Seguridad
-						FROM cliame_000101
+						FROM ".$wcliame."_000101
 					   WHERE Inghis = '{$row['historia']}'
 					     AND Ingnin = '{$row['ingreso']}'";
 
@@ -4777,6 +4778,7 @@ if( $peticionAjax == "cambiarProcesoListado" )
 			   async: false,
 				data: {
 					   peticionAjax: "SacardeLista",
+					   wemp_pmla : $('#wemp_pmla').val(),
 						  wfachos: wfachos,
 						  whis: historia,
 						  wing:	ingreso

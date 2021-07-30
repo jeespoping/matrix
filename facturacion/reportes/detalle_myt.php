@@ -27,6 +27,7 @@
         $wuse = $user_session[1];
 
         include_once("root/comun.php");
+		$wemp_pmla=$_REQUEST['wemp_pmla'];
         mysql_select_db("matrix");
 
         $conex = obtenerConexionBD("matrix");
@@ -452,6 +453,10 @@ else
                 </tr>
                 </thead>
                 <?php
+include_once("conex.php");
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+				$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
                 while (odbc_fetch_row($err_o3))
                 {
                     $Num_Filas++;
@@ -533,7 +538,7 @@ else
                     }
                     //$valcumo = odbc_result($err_o3, 35);//Valor cuota moderadora o copago
 
-                    $query = mysql_query("SELECT a.Pacfna FROM cliame_000100 a WHERE a.Pacdoc = '$cep'");
+                    $query = mysql_query("SELECT a.Pacfna FROM ".$wcliame."_000100 a WHERE a.Pacdoc = '$cep'");
                     while($dato = mysql_fetch_array($query))
                     {
                         $fechaN = $dato[0];
