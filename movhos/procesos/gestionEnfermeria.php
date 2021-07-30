@@ -6,6 +6,35 @@ include_once( "movhos/movhos.inc.php" );
 include_once( "movhos/movhos.inc.php" );
 include_once("./../../interoperabilidad/procesos/funcionesGeneralesEnvioHL7.php");
 
+
+function estaAutorizadoArticulo( $conex, $wmovhos, $codigo, $his, $ing ){
+	
+	$val = false;
+	
+	//Consultando el nombre del estudio
+	$sql = "SELECT Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau
+			  FROM ".$wmovhos."_000208 a
+			 WHERE a.Ekxaut  = 'on'
+			   AND a.Ekxhis  = '".$his."'
+			   AND a.Ekxing  = '".$ing."'
+			   AND a.Ekxart  = '".$codigo."'
+			 UNION
+			SELECT Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau
+			  FROM ".$wmovhos."_000209 a
+			 WHERE a.Ekxaut  = 'on'
+			   AND a.Ekxhis  = '".$his."'
+			   AND a.Ekxing  = '".$ing."'
+			   AND a.Ekxart  = '".$codigo."'";
+
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
+	
+	if( $rows = mysql_fetch_array ($res) ){
+		$val = true;
+	}
+	
+	return $val;
+}
+
 /************************************************************
  * Se asignar habitaciones a los pacientes
  ************************************************************/
@@ -11846,15 +11875,22 @@ function pendientes_ordenes($conex, $wbasedato, $programa, $historia, $ingreso, 
 			$mostarArticulo = mostrarMensajeAlertaDmax( $conex, $wbasedato, $historia, $ingreso, $row_med['Kadart'], $row_med['Kadido'], $articulos[$row_med['Kadart']]['nombreComercial'] );
 
 			if( $mostarArticulo ){
+				
+				$estaAutorizado = estaAutorizadoArticulo( $conex, $wbasedato, $row_med['Kadart'], $historia, $ingreso );
+				
+				$no_autorizado = "A - ";
+				if( !$estaAutorizado )
+					$no_autorizado = "NA - ";
 
 				if(!array_key_exists($row_med['Kadlog'], $med_paciente)){
 
 
-					$med_paciente[$row_med['Kadlog']][] = $articulos[$row_med['Kadart']]['nombreComercial'];
+					$med_paciente[$row_med['Kadlog']][] = $no_autorizado.$articulos[$row_med['Kadart']]['nombreComercial'];
 
-				}else{
+				}
+				else{
 
-					$med_paciente[$row_med['Kadlog']][] = $articulos[$row_med['Kadart']]['nombreComercial'];
+					$med_paciente[$row_med['Kadlog']][] = $no_autorizado.$articulos[$row_med['Kadart']]['nombreComercial'];
 
 				}
 			}

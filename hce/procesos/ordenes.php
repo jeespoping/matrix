@@ -6697,6 +6697,16 @@ if (!$usuarioValidado){
 			}
 			/****************************************************************************************************************/
 			
+			$textoParaJustificacionPorTarifa = consultarAliasPorAplicacion( $conex, $wemp_pmla, "textoJusParaArtsSinTarifa" );
+	
+			echo "<div id='question' style='display:none; cursor: default'>
+					<h1 style='margin: 0 auto 20;background: #2A5DB0;'>ARTICULO SIN CONVENIO</h1>
+					$textoParaJustificacionPorTarifa
+					<textarea id='taJusParaArtsSinTarifas' style='width: 100%;margin: 20 0 20;'></textarea>
+					<input type='button' id='btnAceptarAST' value='Aceptar' style='width: 200;height: 40;background: #218838;border: none;font-weight: bold;' />
+					<input type='button' id='btnCerrarAST' value='Cerrar' style='width: 60px;height: 40px;background: #c82333;border: none;font-weight: bold;color: white;' />
+				</div>";
+			
 		break;
 		case 'c':		//Actualización del kardex
 			$mensaje = "";
