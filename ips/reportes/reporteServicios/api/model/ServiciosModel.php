@@ -14,6 +14,7 @@ class ServiciosModel
   private $numeroHistoria;
   private $numeroIngreso;
   private $estado;
+  private $error;
   private $baseDatos;
   private $db;
 
@@ -60,8 +61,9 @@ class ServiciosModel
     try {
       $query = $this->db->query($this->getSQL(), $this->numeroHistoria, $this->numeroIngreso);
       return $query->fetchAll();
-    } catch (\Throwable $th) {
-      throw $th;
+    } catch (\Exception $e) {
+      // echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+      $this->db->error('No se pudo consultar el servicio: ',  $e->getMessage(), "\n");
     }
   }
 
@@ -120,8 +122,12 @@ class ServiciosModel
   function getEstadoPaciente()
   {
     $estado =  "off";
+    set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+      throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
+    });
     try {
-      if ($conexUnix = odbc_connect('facturacion', 'informix', 'sco')) {
+      $conexUnix = odbc_connect('facturacion', 'informix', 'sco');
+      if ($conexUnix) {
         // --> Consultar si el ingreso está activo en unix.
         $sqlIngAct = "SELECT pacnum FROM INPAC WHERE pachis = '{$this->numeroHistoria}' AND pacnum = {$this->numeroIngreso}";
         $resIngAct = odbc_exec($conexUnix, $sqlIngAct);
@@ -132,7 +138,8 @@ class ServiciosModel
         }
       }
     } catch (\Exception $e) {
-      echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+      // echo 'Excepción capturada: ',  $e->getMessage(), "\n";
+      $this->error = "No se pudo consultar el estado:" . $e->getMessage() . "\n";
     }
 
     return $estado;
