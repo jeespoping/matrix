@@ -11267,6 +11267,8 @@ function eleccionMedicamento(porProtocolo)
 								var conMedicamento2 = item[41];
 								
 								var familiaATC = item[42];
+								
+								var conTarifa = item[38];
 
 								// if(dosis!=cantidadDosisFija)
 								// {
@@ -11340,6 +11342,7 @@ function eleccionMedicamento(porProtocolo)
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	conMedicamento2;
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	medicamentoPorProtocolo;
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	familiaATC;
+								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	conTarifa;
 
 								//Agrego la fecha y hora de inicio del medicamento calculada para el H.E
 								multiplesMedicamentos[idxMulArt].fechaInicioFija = 	fechaInicioFija;
