@@ -152,6 +152,8 @@ $accion_iq = '';
 //					ya sea de quimioterapia, dosis adaptada o nutriciones
 //actualizacion: 2010-07-30 Se deja cargar al carro cualquier medicamento que no necesita estar en el kardex
 //actualizacion: 2007-11-06 se crea la opcion del carro
+//Actualización (sebastian.nevado): 2021-06-11 se realiza llamado de factura inteligente para insumos.
+//Actualización (sebastian.nevado): 2021-07-22 reduzco el inventario para los insumos. NOTA: no se valida que tenga existencias para hacer movimiento debido a que no había sido reportado, por lo que el inventario puede quedar negativo.
 
 
 function consultarHabitacion($historia,$ingreso)

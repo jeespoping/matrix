@@ -48,6 +48,10 @@ include_once("root/comun.php");
  * Autor:		Edwin Molina Grisales.
  * Descripcion:	Se agrega función para registrar en el KE.  Si un paciente tiene KE
  * 				y se le devulve un articulo debe descontar en uno la cantidad dispensada.
+ * 
+ * Actualización (sebastian.nevado): 2021-06-11 se realiza llamado de factura inteligente para insumos.
+ * Modificación (sebastian.nevado): 2021-07-19 sebastian.nevado: se quita el lote del where de la segunda consulta para traer los insumos. Se agrega el lote como resultado de la segunda consulta para poder identificar insumos. Además, se modifican el where de las consultas de presentación y conversión para que aplique a los insumos.
+ * Actualización  (sebastian.nevado): 2021-07-22 aumento el inventario para los insumos. NOTA: no se valida que tenga existencias para hacer movimiento debido a que no había sido reportado, por lo que el inventario puede quedar negativo.
  */
 
 
