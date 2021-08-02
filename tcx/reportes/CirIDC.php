@@ -33,6 +33,7 @@
 </center>
 <?php
 include_once("conex.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
  @session_start();
  if(!isset($_SESSION['user']))
  echo "error";
@@ -43,7 +44,7 @@ include_once("conex.php");
 
 	
 
-	echo "<form action='CirIDC.php' method=post>";
+	echo "<form action='CirIDC.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	if(!isset($wfecha1) or !isset($wfecha2) or $wfecha1 > $wfecha2)
 	{
@@ -154,8 +155,14 @@ include_once("conex.php");
 							$data[$k][9]="LOCAL ASISTIDA";
 						break;
 					}
+					
+					$consultaAjax = '';
+					include_once("root/comun.php");
+					
+					$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+					
 					$data[$k][10]=$row[10];
-					$query = "SELECT Empnom FROM cliame_000024  ";
+					$query = "SELECT Empnom FROM ".$wcliame."_000024  ";
 					$query .= " where Empcod = '".$row[10]."'";
 					$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 					$num1 = mysql_num_rows($err1);

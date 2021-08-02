@@ -10,7 +10,10 @@
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b> Totxemp.php Ver 2015-02-09</b></font></tr></td></table>
 </center>
 <?php
+$consultaAjax = '';
 include_once("conex.php");
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
  @session_start();
  if(!isset($_SESSION['user']))
  echo "error";
@@ -21,7 +24,7 @@ include_once("conex.php");
 
 	
 
-	echo "<form action='Totxemp.php' method=post>";
+	echo "<form action='Totxemp.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	if(!isset($v0) or !isset($v1))
 	{
 		echo  "<center><table border=0>";
@@ -36,26 +39,30 @@ include_once("conex.php");
 	}
 	else
 	{
-		$query = "select Empcod, Empnom, count(*) as k  from tcx_000008,tcx_000011,cliame_000024  ";
-		$query .= " where tcx_000008.Mcifec between  '".$v0."' and  '".$v1."' ";
+		
+		$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
+		$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+		
+		$query = "select Empcod, Empnom, count(*) as k  from ".$wtcx."_000008,".$wtcx."_000011,".$wcliame."_000024  ";
+		$query .= " where ".$wtcx."_000008.Mcifec between  '".$v0."' and  '".$v1."' ";
 		if ($x == 0)
 			$query .= " and CONV(Mciqui,10,10) between  1 and  10 ";
 		elseif ($x == 1)
 				$query .= " and CONV(Mciqui,10,10) > 10 ";
-		$query .= "   and tcx_000008.Mcitur = tcx_000011.Turtur ";
-		$query .= "   and tcx_000011.Tureps = cliame_000024.Empcod  ";
-		$query .= "   and tcx_000011.Fecha_data >= '2015-02-24' ";
+		$query .= "   and ".$wtcx."_000008.Mcitur = ".$wtcx."_000011.Turtur ";
+		$query .= "   and ".$wtcx."_000011.Tureps = ".$wcliame."_000024.Empcod  ";
+		$query .= "   and ".$wtcx."_000011.Fecha_data >= '2015-02-24' ";
 		$query .= "  Group by Empcod, Empnom  ";
 		$query .= " UNION ALL  ";
-		$query .= " select Entcod, Entdes, count(*) as k  from tcx_000008,tcx_000011,tcx_000003  ";
-		$query .= " where tcx_000008.Mcifec between  '".$v0."' and  '".$v1."' ";
+		$query .= " select Entcod, Entdes, count(*) as k  from ".$wtcx."_000008,".$wtcx."_000011,".$wtcx."_000003  ";
+		$query .= " where ".$wtcx."_000008.Mcifec between  '".$v0."' and  '".$v1."' ";
 		if ($x == 0)
 			$query .= " and CONV(Mciqui,10,10) between  1 and  10 ";
 		elseif ($x == 1)
 				$query .= " and CONV(Mciqui,10,10) > 10 ";
-		$query .= "   and tcx_000008.Mcitur = tcx_000011.Turtur ";
-		$query .= "   and tcx_000011.Tureps = tcx_000003.Entcod  ";
-		$query .= "   and tcx_000011.Fecha_data < '2015-02-24' ";
+		$query .= "   and ".$wtcx."_000008.Mcitur = ".$wtcx."_000011.Turtur ";
+		$query .= "   and ".$wtcx."_000011.Tureps = ".$wtcx."_000003.Entcod  ";
+		$query .= "   and ".$wtcx."_000011.Fecha_data < '2015-02-24' ";
 		$query .= "  Group by Entcod, Entdes  ";
 		$query .= "  Order by k desc";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());

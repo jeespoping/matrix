@@ -6,7 +6,9 @@
 <BODY TEXT="#000066">
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wcominf = consultarAliasPorAplicacion($conex, $wemp_pmla, "invecla");
 /********************************************************
  *     REPORTE DE CENSO DIARIO DE PACIENTES		        *
  *														*
@@ -40,9 +42,6 @@ else
 	// COMPROBAR QUE LOS PARAMETROS ESTEN puestos(unidad, fecha inicial y fecha final)
 	echo "<form action='' method=post>";
 
-	if(!isset($wemp_pmla)){
-		$wemp_pmla = '01';
-	}
 
 	$apMovhos = consultarAliasPorAplicacion($conex,$wemp_pmla,"movhos");
 	$apTabcco = consultarAliasPorAplicacion($conex,$wemp_pmla,"tabcco");
@@ -85,7 +84,7 @@ else
 		
 		//2010-04-12 se modifa este query para traer un cc hibrido
 		$query = "select Ccocod, Cconom 
-					from movhos_000011 
+					from ".$apMovhos."_000011 
 					where Ccourg='off' 
 					and Ccohos='on' 
 					and Ccoayu='off'"; 
@@ -199,7 +198,7 @@ else
 		$ingTotales = $ingU+$ingA+$ingC;
 			
 		// QUEDA PENDIENTE LO DE LA FUGA
-		$query = "SELECT * FROM cominf_000033  WHERE (Fecha_egre_serv between '$fecha1' and '$fecha2')
+		$query = "SELECT * FROM ".$wcominf."_000033  WHERE (Fecha_egre_serv between '$fecha1' and '$fecha2')
 		and Tipo_egre_serv ='06-Voluntaria o fuga' ".$variable."";
 		$err = mysql_query($query,$conex);
 		//echo mysql_errno() ."=". mysql_error();

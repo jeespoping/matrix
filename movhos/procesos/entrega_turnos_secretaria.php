@@ -3881,7 +3881,7 @@ function traer_observaciones_anteriores_exam($whis, $wing, $wexam, $wfechadataex
                 echo "<div id='msjEspere' style='display:none;'><img src='../../images/medical/ajax-loader5.gif'/>Por favor espere un momento...</div><center><table>";
 
 				$path_disp_espec = "/matrix/movhos/procesos/Consul_disponibilidad_especialidad.php?wemp_pmla=01";
-				$path_cirugia = "/matrix/tcx/reportes/ListaG.php?empresa=tcx&TIP=0";
+				$path_cirugia = "/matrix/tcx/reportes/ListaG.php?wemp_pmla=".$wemp_pmla."&empresa=tcx&TIP=0";
 
 			    echo "<tr class='fila1'>";
 				echo "<td colspan=3 style='cursor: pointer' onclick='ejecutar(".chr(34).$path_cirugia.chr(34).")'><font size=2>Consultar Turnos de Cirugia</td>";

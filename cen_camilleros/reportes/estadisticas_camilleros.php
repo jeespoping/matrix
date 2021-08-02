@@ -439,7 +439,7 @@ else
 					//$wsegundos=60*(($row[1]-(integer)$row[1])/100);
 					$wsegundos=makeTimeFromSeconds($row[1]);
 					echo "<td colspan=2 align=center>".$wsegundos."</td>";
-					echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wid=".$row[0]."&wcentral=".$wcentral."' TARGET='_blank'> Detallar</A></font></td>";
+					echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wid=".$row[0]."&wcentral=".$wcentral."' TARGET='_blank'> Detallar</A></font></td>";
 					echo "</tr>";
 				   }   
 				   
@@ -470,7 +470,7 @@ else
 					//$wsegundos=60*(($row[1]-(integer)$row[1])/100);
 					$wsegundos=makeTimeFromSeconds($row[1]);
 					echo "<td colspan=2 align=center>".$wsegundos."</td>";
-					echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wid=".$row[0]."&wcentral=".$wcentral."' TARGET='_blank'> Detallar</A></font></td>";
+					echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wid=".$row[0]."&wcentral=".$wcentral."' TARGET='_blank'> Detallar</A></font></td>";
 					echo "</tr>";
 				   }   
 					  
@@ -741,7 +741,7 @@ else
 						 echo "<td colspan=1 align=RIGHT>".number_format(($row[1]/$wtotser)*100,2,'.','')." %</td>";
 						 $minutos=makeTimeFromSeconds($row[2]/$row[1]);
 						 echo "<td colspan=1 align=center>".$minutos."</td>";
-						 echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wcamillero=".$row[0]."&wcentral=".$wcentral."' TARGET='_blank'> Detallar</A></font></td>"; 
+						 echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wcamillero=".$row[0]."&wcentral=".$wcentral."' TARGET='_blank'> Detallar</A></font></td>"; 
 						 $wtotal=$wtotal+$row[1];	   
 						}
 					 echo "<tr class=encabezadoTabla>";
@@ -797,7 +797,7 @@ else
 						echo "<td colspan=1 align=RIGHT>".number_format(($row[1]/$wtotser)*100,2,'.','')." %</td>";
 						$minutos=makeTimeFromSeconds($row[2]/$row[1]);
 						echo "<td colspan=1 align=center>".$minutos."</td>";         //Tiempo promedio por solicitud, por servicio
-						echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wser=".$row[0]."&word=S"."&wcentral=".$wcentral."' TARGET='_blank'> Detallar</A></font></td>";
+						echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wser=".$row[0]."&word=S"."&wcentral=".$wcentral."' TARGET='_blank'> Detallar</A></font></td>";
 						$wtotal=$wtotal+$row[1];   
 					   }
 					echo "<tr class=encabezadoTabla>";
@@ -848,7 +848,7 @@ else
 						echo "<td colspan=2>".$row[0]."</td>";
 						echo "<td colspan=1 align=RIGHT>".number_format($row[1],0,'.',',')."</td>";
 						echo "<td colspan=1 align=RIGHT>".number_format(($row[1]/$wtotser)*100,2,'.','')." %</td>";
-						echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wmotivo=".$row[0]."&word=S"."&wcentral=".$wcentral."&wser='' ' TARGET='_blank'> Detallar</A></font></td>";
+						echo "<td align=center><font size=3><A href='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&wmotivo=".$row[0]."&word=S"."&wcentral=".$wcentral."&wser='' ' TARGET='_blank'> Detallar</A></font></td>";
 						$wtotal=$wtotal+$row[1];   
 					   }
 					echo "<tr class=encabezadoTabla>";

@@ -204,20 +204,22 @@ if(!isset($_SESSION['user']))
 else
 {
 	include_once("root/comun.php");
+	$wemp_pmla=$_REQUEST['wemp_pmla'];
 	$key = substr($user,2,strlen($user));
-	echo "<form name='CamasCX' action='CamasCX.php' method=post>";
+	echo "<form name='CamasCX' action='CamasCX.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	
 
 	
 
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	
-	$wcentral_camas = consultarAliasPorAplicacion($conex, '01', 'CentralCamas');
-	$wcencam = consultarAliasPorAplicacion($conex, '01', 'camilleros');
+	$wcentral_camas = consultarAliasPorAplicacion($conex, $wemp_pmla, 'CentralCamas');
+	$wcencam 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
+	$wcliame 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
 	
 	if(isset($ok) and isset($num) and $num > 0)
 	{
-		$query = "SELECT count(*)  from cencam_000004 where Nombre='CAMAS CX' ";
+		$query = "SELECT count(*)  from ".$wcencam."_000004 where Nombre='CAMAS CX' ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$row = mysql_fetch_array($err);
 		if($row[0] > 0)
@@ -227,7 +229,7 @@ else
 			$row = mysql_fetch_array($err);
 			if($row[0] == 0)
 			{
-				$query = "lock table ".$empresa."_000021  LOW_PRIORITY WRITE, cencam_000003 LOW_PRIORITY WRITE ";
+				$query = "lock table ".$empresa."_000021  LOW_PRIORITY WRITE, ".$wcencam."_000003 LOW_PRIORITY WRITE ";
 				$err1 = mysql_query($query,$conex) or die("ERROR BLOQUEANDO ARCHIVOS  : ".mysql_errno().":".mysql_error());
 				$fecha = date("Y-m-d");
 				$hora = (string)date("H:i:s");
@@ -262,7 +264,7 @@ else
 							$wobser="<b>Fecha CX : <font face=arial size=5.2 color=#000066>".$wimpre[$i][11]."</font></b><br><b>Hora Inicio CX : </b>".$wimpre[$i][7]."<br><b>Hora Final CX : </b>".$wimpre[$i][8]."<br><b>Paciente : </b>".$wimpre[$i][4]."<br>"."<b>Historia : </b>".$wimpre[$i][2]."<br>"."<b>Cirugia : </b>".$wimpre[$i][6]."<br>"."<b>Responsable : </b>".$wimpre[$i][5]."<br><b>Telefono : </b>".$wimpre[$i][9];
 							$fecha = date("Y-m-d");
 							$hora = (string)date("H:i:s");
-							$query = "insert cencam_000003 (medico, fecha_data, hora_data, Origen, Motivo, Habitacion, Observacion, Historia, Destino, Solicito, Ccosto, Camillero, Hora_respuesta, Hora_llegada, Hora_cumplimiento, Anulada, Observ_central, Central, Usu_central, Seguridad) values ('";
+							$query = "insert ".$wcencam."_000003 (medico, fecha_data, hora_data, Origen, Motivo, Habitacion, Observacion, Historia, Destino, Solicito, Ccosto, Camillero, Hora_respuesta, Hora_llegada, Hora_cumplimiento, Anulada, Observ_central, Central, Usu_central, Seguridad) values ('";
 							$query .=  "cencam','";
 							$query .=  $fecha."','";
 							$query .=  $hora."','";
@@ -346,7 +348,7 @@ else
 	{
 		$TC=array();
 		//                  0       1       2    
-		$query = "SELECT Tipcod, Tipdes, Tipdef  FROM cencam_000007 ";
+		$query = "SELECT Tipcod, Tipdes, Tipdef  FROM ".$wcencam."_000007 ";
 		$query .= " where Tipest = 'on' ";
 		$query .= "  ORDER BY 3 DESC,1 ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
@@ -366,7 +368,7 @@ else
 		$query .= "   and Turtcx = 'H' ";
 		$query .= "   and Tureps = Entcod ";
 		$query .= "   UNION ALL";
-		$query .= " SELECT Turtur, Turdoc, Turhis, Turnin, Turnom, Tureps, Turcir, Empnom, Turhin, Turhfi, Turtel, Turuci, Turfec FROM ".$empresa."_000011,cliame_000024 ";
+		$query .= " SELECT Turtur, Turdoc, Turhis, Turnin, Turnom, Tureps, Turcir, Empnom, Turhin, Turhfi, Turtel, Turuci, Turfec FROM ".$empresa."_000011,".$wcliame."_000024 ";
 		$query .= " where turfec = '".$wfecha."' ";
 		$query .= "   and turest = 'on' ";
 		$query .= "   and Turtcx = 'H' ";

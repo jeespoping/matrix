@@ -31,10 +31,12 @@ include_once("conex.php");
 
     include_once("root/comun.php");
     include_once("citas/funcionesAgendaCitas.php");
+    $wemp_pmla=$_REQUEST['wemp_pmla'];
     
     $wbasedato      = isset($solucionCitas) ? $solucionCitas : "citasen";
     $wfecha         = date("Y-m-d");
     $whora          = date("H:i:s");
+	$wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
 	
 
 //=============================================================================================
@@ -128,6 +130,7 @@ include_once("conex.php");
         global $arrayUbicaciones;
         global $numRegistrosPorPagina;
         global $wfecha;
+        global $wcencam;
 
         $respuesta = array('html' => '', 'totalPaginas' => '', 'numPagina' => '');
 		$newPrefix = getPrefixTables($wbasedato);
@@ -173,7 +176,7 @@ include_once("conex.php");
 				$mostrarEnListado = true;
 				
 				if(isset($row["idSolcam"]) && $row["idSolcam"] != 0){
-					$sqlCam = "SELECT fecha_llegada, hora_llegada FROM cencam_000003 WHERE id = ".$row["idSolcam"];
+					$sqlCam = "SELECT fecha_llegada, hora_llegada FROM ".$wcencam."_000003 WHERE id = ".$row["idSolcam"];
 					$resCam = executeQuery($sqlCam);
 					$rowCam = mysql_fetch_assoc($resCam);
 

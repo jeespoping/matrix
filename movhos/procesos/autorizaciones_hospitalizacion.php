@@ -1996,7 +1996,7 @@ function traer_observaciones_examen($whis, $wing, $wexam, $wfechadataexamen, $wh
                 echo "<div id='msjEspere' style='display:none;'><img src='../../images/medical/ajax-loader5.gif'/>Por favor espere un momento...</div><center><table>";
 
 				$path_disp_espec = "http://mx.lasamericas.com.co/matrix/movhos/procesos/Consul_disponibilidad_especialidad.php?wemp_pmla=01";
-				$path_cirugia = "http://mx.lasamericas.com.co/matrix/tcx/reportes/ListaG.php?empresa=tcx&TIP=0";
+				$path_cirugia = "http://mx.lasamericas.com.co/matrix/tcx/reportes/ListaG.php?wemp_pmla=".$wemp_pmla."&empresa=tcx&TIP=0";
 			    echo "<tr>";
 				echo "<td></td>";
 				echo "<td style='cursor: pointer;' class='fila1' onclick='ejecutar(".chr(34).$path_cirugia.chr(34).")'><font size=2>Consultar Turnos <br> de Cirugia</td>";

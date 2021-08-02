@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
   <title>MATRIX</title>
 </head>
@@ -11,7 +12,9 @@
 </center>
 <?php
 include_once("conex.php");
-	$empresa = "hceidc";
+include_once("root/comun.php");
+	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+	$empresa = $whce;
 	$k = 0;
 	$conexidc = mysqli_connect('192.168.0.2:3306','pmla','pmla800067065',"pacidc") or die("No se realizo Conexion con el IDC");
 	//$conexidc = mysql_connect('190.248.93.238:3306','pmla','pmla800067065') or die("No se realizo Conexion con el IDC");
@@ -19,10 +22,10 @@ include_once("conex.php");
 	echo "CONEXION IDC OK<br>";
 	
 
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	
-
 	
-	$fecharips = date("Y-m-d");
+	$fecharips = '2021-01-26'; //date("Y-m-d");
 	//$fecharips = "2016-04-20";
 	$query  = "select count(*) from Ripidc ";
 	$err = mysql_query($query,$conexidc) or die("ERROR CONSULTANDO TABLA Ripidc ".mysql_errno().":".mysql_error());
@@ -32,19 +35,19 @@ include_once("conex.php");
 	$query  = "delete from Ripidc where RipFec='".$fecharips."'";
 	$err = mysql_query($query,$conexidc) or die("ERROR BORRANDO TABLA Ripidc ".mysql_errno().":".mysql_error());
 	//                                   0                       1                      2                      3                    4                    5                  6                  7                    8                    9
-	$query  = "select hceidc_000036.Fecha_data,hceidc_000036.Hora_data,mhosidc_000047.Methis,mhosidc_000047.Meting,mhosidc_000048.Meduma,hceidc_000036.firpro,root_000037.oritid,root_000037.oriced,hceidc_000036.firrol,hceidc_000036.firusu ";
-	$query .= " from mhosidc_000047,mhosidc_000048,hceidc_000036,root_000037 ";
-	$query .= " where mhosidc_000047.metest='on' ";
-	$query .= "   and mhosidc_000047.mettdo = mhosidc_000048.medtdo "; 
-	$query .= "   and mhosidc_000047.metdoc = mhosidc_000048.meddoc "; 
-	$query .= "   and mhosidc_000047.Methis = hceidc_000036.firhis ";
-	$query .= "   and mhosidc_000047.Meting = hceidc_000036.firing ";
-	$query .= "   and mhosidc_000048.Meduma = hceidc_000036.firusu ";
-	$query .= "   and mhosidc_000047.Methis = root_000037.orihis ";
-	$query .= "   and mhosidc_000047.Meting = root_000037.oriing ";
+	$query  = "select ".$whce."_000036.Fecha_data,".$whce."_000036.Hora_data,".$wmovhos."_000047.Methis,".$wmovhos."_000047.Meting,".$wmovhos."_000048.Meduma,".$whce."_000036.firpro,root_000037.oritid,root_000037.oriced,".$whce."_000036.firrol,".$whce."_000036.firusu ";
+	$query .= " from ".$wmovhos."_000047,".$wmovhos."_000048,".$whce."_000036,root_000037 ";
+	$query .= " where ".$wmovhos."_000047.metest='on' ";
+	$query .= "   and ".$wmovhos."_000047.mettdo = ".$wmovhos."_000048.medtdo "; 
+	$query .= "   and ".$wmovhos."_000047.metdoc = ".$wmovhos."_000048.meddoc "; 
+	$query .= "   and ".$wmovhos."_000047.Methis = ".$whce."_000036.firhis ";
+	$query .= "   and ".$wmovhos."_000047.Meting = ".$whce."_000036.firing ";
+	$query .= "   and ".$wmovhos."_000048.Meduma = ".$whce."_000036.firusu ";
+	$query .= "   and ".$wmovhos."_000047.Methis = root_000037.orihis ";
+	$query .= "   and ".$wmovhos."_000047.Meting = root_000037.oriing ";
 	$query .= "   and root_000037.oriori = '10' ";
-	$query .= "   and hceidc_000036.Fecha_data = '".$fecharips."' ";
-	$query .= "   and hceidc_000036.firpro in ('000051','000052','000063') ";
+	$query .= "   and ".$whce."_000036.Fecha_data = '".$fecharips."' ";
+	$query .= "   and ".$whce."_000036.firpro in ('000051','000052','000063') ";
 	$query .= " group by 1,3,4,5,6,7,8,9,10 ";
 	$query .= " order by 3,4,6 ";
 	$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
@@ -78,7 +81,7 @@ include_once("conex.php");
 					$query .= "   and ".$empresa."_".$ripidc[0].".movhis='".$row[2]."' ";
 					$query .= "   and ".$empresa."_".$ripidc[0].".moving='".$row[3]."' ";
 					$query .= "   and ".$empresa."_".$ripidc[0].".movcon in (2,78,182,189,266,11,261) ";
-					$query .= " Order by 1 ";
+					$query .= " Order by 1 ";					
 					$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 					$num1 = mysql_num_rows($err1);
 					if($num1 > 0)
@@ -230,7 +233,7 @@ include_once("conex.php");
 			$query .=  $ripidc[10]."','";
 			$query .=  $ripidc[11]."','";
 			$query .=  $ripidc[12]."')";
-			echo $query."<br>";
+			//echo $query."<br>";
 			$err2 = mysql_query($query,$conexidc) or die("ERROR GRABANDO RIPS IDC : ".mysql_errno().":".mysql_error());
 			$k++;
 			echo "REGISTRO : ".$k." GRABADO <br>";

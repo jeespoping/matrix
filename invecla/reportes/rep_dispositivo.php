@@ -1,4 +1,5 @@
 <HTML>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <HEAD>
 <TITLE>REPORTE DIAS DISPOSITIVOS INVECLA</TITLE>
 </HEAD>
@@ -22,8 +23,10 @@ if(!isset($_SESSION['user']))
         
  $key = substr($user,2,strlen($user));
 	include_once("conex.php"); 
+	include_once("root/comun.php");
+	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 	mysql_select_db("matrix");
- echo "<form name='repdispositivo' action='rep_dispositivo.php' method=post>";  
+ echo "<form name='repdispositivo' action='rep_dispositivo.php?wemp_pmla=".$wemp_pmla."' method=post>";  
  
  if (!isset($wfec1) or $wfec1=='')
  {
@@ -79,10 +82,10 @@ if(!isset($_SESSION['user']))
 		//Query cateteres			
 		$querytmp = "select c.movhis,c.Moving,c.Movdat,c.id 
 					  from (select  a.movhis, a.moving, max( id ) id 
-							from hce_000422 a
+							from ".$whce."_000422 a
 							where a.Fecha_data between '".$wfec1."' and '".$wfec2."' 
 							and a.movcon = 12 
-                            group by 1, 2 ) a, hce_000422 c
+                            group by 1, 2 ) a, ".$whce."_000422 c
 					  where c.id = a.id";
 					
 		$rs = mysql_query( $querytmp, $conex ) or die( mysql_error() );
@@ -91,10 +94,10 @@ if(!isset($_SESSION['user']))
 	//Query sondas			
 		$querytmp1 = "select c.movhis,c.Moving,c.Movdat,c.id 
 					  from (select  a.movhis, a.moving, max( id ) id 
-							from hce_000422 a
+							from ".$whce."_000422 a
 							where a.Fecha_data between '".$wfec1."' and '".$wfec2."' 
 							and a.movcon = 7 
-                            group by 1, 2 ) a, hce_000422 c
+                            group by 1, 2 ) a, ".$whce."_000422 c
 					  where c.id = a.id";
 					
 		$rs1 = mysql_query( $querytmp1, $conex ) or die( mysql_error() );
@@ -280,7 +283,7 @@ if(!isset($_SESSION['user']))
 						if ($dato1[8] == 'Seleccione' )
 							$fecmaxcco = $wfec2; //Esto es cuando la variable de fecha de retiro viene en blanco
 						$querytmp2 = "select Fecha_data,movhis,moving,movdat
-								 from hce_000422 
+								 from ".$whce."_000422 
 								 where movhis = '".$row[0]."' 
 								   and moving = '".$row[1]."'						 
 								   and Fecha_data between '".$fecmincco."' and '".$fecmaxcco."' 
@@ -553,7 +556,7 @@ if(!isset($_SESSION['user']))
 								$fecmaxcco = $wfec2; //Esto es cuando la variable de fecha de retiro viene en blanco
 						
 							$querytmp2 = "select Fecha_data,movhis,moving,movdat
-									 from hce_000422 
+									 from ".$whce."_000422 
 									 where movhis = '".$row[0]."' 
 									   and moving = '".$row[1]."'						 
 									   and Fecha_data between '".$fecmincco."' and '".$fecmaxcco."' 
@@ -825,7 +828,7 @@ if(!isset($_SESSION['user']))
 								$fecmaxcco = $wfec2; //Esto es cuando la variable de fecha de retiro viene en blanco
 							
 							$querytmp2 = "select Fecha_data,movhis,moving,movdat
-									 from hce_000422 
+									 from ".$whce."_000422 
 									 where movhis = '".$row[0]."' 
 									   and moving = '".$row[1]."'						 
 									   and Fecha_data between '".$fecmincco."' and '".$fecmaxcco."' 

@@ -1,4 +1,5 @@
 <html>
+<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 <title>MATRIX - [REPORTE INDICADOR ATENCION FISIATRIA]</title>
 
@@ -40,6 +41,8 @@ include_once("root/comun.php");
 $conex = obtenerConexionBD("matrix");
 
 $wactualiz="1.0 28-Septiembre-2015";
+
+$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 
 $usuarioValidado = true;
 
@@ -136,7 +139,7 @@ else
   	
 
    $query = " SELECT Mtrhis,Mtring,a.Fecha_data,a.Hora_data,b.Movdat, TIMEDIFF(b.Movdat,a.Hora_data) as tiempo,((UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',b.Movdat)))-(UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',a.hora_data)))) " 
-           ."   FROM hce_000022 a,hce_000172 b "
+           ."   FROM ".$whce."_000022 a,".$whce."_000172 b "
            ."  WHERE a.fecha_data between '".$fec1."' and '".$fec2."'"
 		   ."    AND Mtrcci = '1075' "
            ."    AND Mtrhis = b.movhis "
@@ -145,7 +148,7 @@ else
 		   ."    AND a.fecha_data = b.fecha_data " 
            ."    Union  " 
 		   ." SELECT Mtrhis,Mtring,a.Fecha_data,a.Hora_data,b.Movdat, TIMEDIFF(b.Movdat,a.Hora_data) as tiempo,((UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',b.Movdat)))-(UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',a.hora_data)))) "
-           ."   FROM hce_000022 a,hce_000175 b "
+           ."   FROM ".$whce."_000022 a,".$whce."_000175 b "
            ."  WHERE a.fecha_data between '".$fec1."' and '".$fec2."'"
            ."    AND Mtrcci = '1075' "
 		   ."    AND Mtrhis = b.movhis "
@@ -154,7 +157,7 @@ else
 		   ."    AND a.fecha_data = b.fecha_data " 
            ."    Union  " 
 		   ." SELECT Mtrhis,Mtring,a.Fecha_data,a.Hora_data,b.Movdat,TIMEDIFF(b.Movdat,a.Hora_data) as tiempo,((UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',b.Movdat)))-(UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',a.hora_data)))) "
-           ."   FROM hce_000022 a,hce_000261 b "
+           ."   FROM ".$whce."_000022 a,".$whce."_000261 b "
            ."  WHERE a.fecha_data between '".$fec1."' and '".$fec2."'"
            ."    AND Mtrcci = '1075' "
 		   ."    AND Mtrhis = b.movhis "
@@ -163,7 +166,7 @@ else
 		   ."    AND a.fecha_data = b.fecha_data " 
            ."    Union  " 
 		   ." SELECT Mtrhis,Mtring,a.Fecha_data,a.Hora_data,b.Movdat,TIMEDIFF(b.Movdat,a.Hora_data) as tiempo,((UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',b.Movdat)))-(UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',a.hora_data))))"
-           ."   FROM hce_000022 a,hce_000277 b "
+           ."   FROM ".$whce."_000022 a,".$whce."_000277 b "
            ."  WHERE a.fecha_data between '".$fec1."' and '".$fec2."'"
 		   ."    AND Mtrcci = '1075' "
 		   ."    AND Mtrhis = b.movhis "
@@ -172,7 +175,7 @@ else
 		   ."    AND a.fecha_data = b.fecha_data " 
            ."    Union  " 
 		   ." SELECT Mtrhis,Mtring,a.Fecha_data,a.Hora_data,b.Movdat, TIMEDIFF(b.Movdat,a.Hora_data) as tiempo,((UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',b.Movdat)))-(UNIX_TIMESTAMP(CONCAT(a.fecha_data,' ',a.hora_data))))"
-           ."   FROM hce_000022 a,hce_000137 b "
+           ."   FROM ".$whce."_000022 a,".$whce."_000137 b "
            ."  WHERE a.fecha_data between '".$fec1."' and '".$fec2."'"
            ."    AND Mtrcci = '1075' "
 		   ."    AND Mtrhis = b.movhis "

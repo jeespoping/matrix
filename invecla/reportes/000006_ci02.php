@@ -4,7 +4,9 @@
 <BODY TEXT="#000066">
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
+$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wcominf = consultarAliasPorAplicacion($conex, $wemp_pmla, "invecla");
   /***************************************************
 	*  REPORTE DEL APACHE ENTRE DOS FECHAS 	V.1.00 	 *
 	*					CONEX, FREE =>	OK			 *
@@ -22,7 +24,7 @@ else
 	// COMPROBAR QUE LOS PARAMETROS ESTEN puestos(paciente medico y fecha)
 	if(!isset($year1)  or !isset($year2))
 	{
-		echo "<form action='000006_ci02.php' method=post>";
+		echo "<form action='000006_ci02.php?wemp_pmla=".$wemp_pmla."' method=post>";
 		echo "<center><table border=0 width=300>";
 		echo "<tr><td align=center colspan=3><b>CLÍNICA MEDICA LAS AMERICAS </b></td></tr>";
 		echo "<tr><td align=center colspan=3>APACHE II</td></tr>";
@@ -178,7 +180,7 @@ else
 		if($circ=="ambos")
 		{*/
 			//$query = "select Count(Glasgow),AVG(Glasgow),AVG(Apache),AVG(Rata_muerte),AVG(Rata_muerte_ajustada) from cominf_000006 ";//where ((Fecha > '".$fecha1."' and Fecha < '".$fecha2."') or Fecha = '".$fecha2."' or Fecha = '".$fecha1."') and Circunstancia_apache='01-INGRESO'";
-			$query = "select Count(*),AVG(Glasgow),AVG(Apache),AVG(Rata_muerte),AVG(Rata_muerte_ajustada) from cominf_000006 where ((Fecha > '".$fecha1."' and Fecha < '".$fecha2."') or Fecha = '".$fecha2."' or Fecha = '".$fecha1."')";
+			$query = "select Count(*),AVG(Glasgow),AVG(Apache),AVG(Rata_muerte),AVG(Rata_muerte_ajustada) from ".$wcominf."_000006 where ((Fecha > '".$fecha1."' and Fecha < '".$fecha2."') or Fecha = '".$fecha2."' or Fecha = '".$fecha1."')";
 			$err = mysql_query($query,$conex);
 			$num = mysql_num_rows($err);
 			if($num>0)
