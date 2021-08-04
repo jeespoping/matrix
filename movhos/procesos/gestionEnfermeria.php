@@ -1059,7 +1059,7 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 
 		//=======================================================================================================================================================
 		//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
-		/*$q = " UPDATE ".$tablaHabitaciones." "
+		$q = " UPDATE ".$tablaHabitaciones." "
 			."    SET Habali = 'on', "
 			."        Habdis = 'off', "
 			."        Habhis = '', "
@@ -1070,7 +1070,7 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 			."  WHERE Habcod = '".$whab_actual."'"
 			."    AND Habhis = '".$whis."'"
 			."    AND Habing = '".$wing."'";
-		$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());*/
+		$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 		//=======================================================================================================================================================
 
 

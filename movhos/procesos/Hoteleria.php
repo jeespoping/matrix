@@ -901,7 +901,7 @@ function obtenerRegistrosFila($qlog)
 								$whora = (string)date("H:i:s");
 								//=======================================================================================================================================================
 								//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
-								/*$q = " UPDATE ".$wbasedato."_000020 "
+								$q = " UPDATE ".$wbasedato."_000020 "
 									."    SET Habali = 'on', "
 									."        Habdis = 'off', "
 									."        Habhis = '', "
@@ -912,7 +912,7 @@ function obtenerRegistrosFila($qlog)
 									."  WHERE Habcod = '".$row[0]."'"
 									."    AND Habhis = '".$row[1]."'"
 									."    AND Habing = '".$row[2]."'";
-								$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());*/
+								$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 								//=======================================================================================================================================================
 
 								//=======================================================================================================================================================
