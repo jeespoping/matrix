@@ -1569,7 +1569,7 @@ function obtenerDatosPacienteAlta( $wid, $wcencam, $wemp_pmla )
 	$sql = "
 		SELECT	{$wcencam}_000003.Historia,
 					{$wcencam}_000003.Motivo,
-					IF({$wbasedato}_000020.Habcod = '' or NULL, 'Sin Habitacion', {$wbasedato}_000020.Habcod) AS Habitacion
+					IF({$wbasedato}_000020.Habcod = '' or NULL, 'null', {$wbasedato}_000020.Habcod) AS Habitacion
 			FROM	{$wcencam}_000003, {$wbasedato}_000020
 			WHERE	{$wcencam}_000003.id = {$wid}
 			AND	{$wbasedato}_000020.Habhis = {$wcencam}_000003.Historia
