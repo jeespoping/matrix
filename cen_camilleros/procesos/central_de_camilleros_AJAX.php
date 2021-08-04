@@ -2016,7 +2016,7 @@ function actualizar_operador($wcentral, $wcodope, $whorope)
                 }
                 break;
             case 'llegada':
-                echo marcarLlegada($wid, $ifecha, $ihora);
+                echo marcarLlegada($wid, $ifecha, $ihora, $wemp_pmla);
                 break;
             case 'cumplimiento':
                 {
