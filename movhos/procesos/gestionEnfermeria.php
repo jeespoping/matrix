@@ -1059,7 +1059,7 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 
 		//=======================================================================================================================================================
 		//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
-		$q = " UPDATE ".$tablaHabitaciones." "
+		/*$q = " UPDATE ".$tablaHabitaciones." "
 			."    SET Habali = 'on', "
 			."        Habdis = 'off', "
 			."        Habhis = '', "
@@ -1070,7 +1070,7 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 			."  WHERE Habcod = '".$whab_actual."'"
 			."    AND Habhis = '".$whis."'"
 			."    AND Habing = '".$wing."'";
-		$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());*/
 		//=======================================================================================================================================================
 
 
@@ -6300,6 +6300,8 @@ $actualiz="2020-05-15";
 /**********************************************************************************************************************************************************
 
  * Modificaciones:
+ * 2021-07-13: Joel Payares Hdz		- Se comenta lineas de código que colocan en modo limpieza la habitación que estaba habitada por el paciente,
+ * 										este cambio esta ubicado en las lineas 1060 a 1074
  * 2020-11-19: Edwin MG				- Se modifica para que se validen las claves de acuerdo a la nueva encriptación
  * 2020-08-12: Edwin MG				- Se hacen cambios varios para poder trasladar pacientes a otros servicio (ejemplo, urgencias) y se parametriza para por
  *									  cco si el cco de costo al cual va a ser traladado el paciente debe tener saldo 0 (movhos 11 campo ccosst = on)
