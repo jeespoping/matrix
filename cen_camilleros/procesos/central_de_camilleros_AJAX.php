@@ -1489,29 +1489,29 @@ function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramite
   }
 
 
-/*function marcarLlegada($wid, $fecha, $hora)
-  {
+function marcarLlegada($wid, $fecha, $hora)
+{
 
-   global $conex;
-   global $wcencam;
-   global $wfecha;
-   global $whora_actual;
+	global $conex;
+	global $wcencam;
+	global $wfecha;
+	global $whora_actual;
 
-   //Esta validacion inactiva la llegada.
-   if ($fecha == '0000-00-00' and $hora == '00:00:00')
-   {
-       $wfecha = '0000-00-00';
-       $whora_actual = '00:00:00';
-   }
+	//Esta validacion inactiva la llegada.
+	if ($fecha == '0000-00-00' and $hora == '00:00:00')
+	{
+		$wfecha = '0000-00-00';
+		$whora_actual = '00:00:00';
+	}
 
-   $q = "   UPDATE ".$wcencam."_000003 "
-	   ."      SET Hora_llegada   = '".$whora_actual."',"
-	   ."	   	   Fecha_llegada  = '".$wfecha."'"
-	   ."    WHERE Id = ".$wid;
-   $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
-  }*/
+	$q = "   UPDATE ".$wcencam."_000003 "
+		."      SET Hora_llegada   = '".$whora_actual."',"
+		."	   	   Fecha_llegada  = '".$wfecha."'"
+		."    WHERE Id = ".$wid;
+	$rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
+}
 
-function marcarLlegada($wid, $fecha, $hora, $wemp_pmla)
+function marcarLlegada__($wid, $fecha, $hora, $wemp_pmla)
 {
 	global $conex;
 	global $wcencam;
@@ -2016,7 +2016,8 @@ function actualizar_operador($wcentral, $wcodope, $whorope)
                 }
                 break;
             case 'llegada':
-                echo marcarLlegada($wid, $ifecha, $ihora, $wemp_pmla);
+                echo marcarLlegada($wid, $ifecha, $ihora);
+                // echo marcarLlegada($wid, $ifecha, $ihora, $wemp_pmla);
                 break;
             case 'cumplimiento':
                 {
