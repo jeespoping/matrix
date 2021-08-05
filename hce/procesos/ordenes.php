@@ -1235,6 +1235,12 @@ if (!$usuarioValidado){
 	$validarBrowser = consultarAliasPorAplicacion( $conex, $wemp_pmla, "validarBrowserOrdenes" );
 	
 	$wipimpresoraga = consultarImpresoraGA( $conex, $wbasedato, $paciente->servicioActual );
+
+	/*Modificación: Se agrega para validar parámetro de tarifas
+	Autor: sebastian.nevado
+	Fecha: 04/08/2021
+	*/
+	$validarPrescripcionConTarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripcionConTarifa' );
 	// 2012-06-27
 	// Se adicionó accept-charset='utf-8' para que el formulario pueda codificar todos los caracteres correctamente
 	// y no arroje algunas veces datos corrompidos que bloqueaban la grabación de ordenes
@@ -1274,6 +1280,12 @@ if (!$usuarioValidado){
 	echo "<input type='hidden' name='tiempoMinimoMarcarDANE' id='tiempoMinimoMarcarDANE' value='".$tiempoMinimoMarcarDANE."'/>";
 	echo "<input type='hidden' name='pacienteDeAyudaDx' id='pacienteDeAyudaDx' value='".( $paciente->esDeAyudaDx ? 'on': 'off' )."'/>";
 	echo "<input type='hidden' name='wipimpresoraga' id='wipimpresoraga' value='".$wipimpresoraga."'/>";
+
+	/*Modificación: Se agrega para validar parámetro de tarifas
+	Autor: sebastian.nevado
+	Fecha: 04/08/2021
+	*/
+	echo "<input type='hidden' name='validarPrescripcionConTarifa' id='validarPrescripcionConTarifa' value='".$validarPrescripcionConTarifa."'/>";
 	
 	
 	pintarModalLEVS( $conex, $wbasedato, $wcenmez, $wbasedatohce, "LQ", $paciente->enUrgencias );
