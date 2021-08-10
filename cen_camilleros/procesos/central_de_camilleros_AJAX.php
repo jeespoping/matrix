@@ -1490,26 +1490,116 @@ function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramite
 
 
 function marcarLlegada($wid, $fecha, $hora)
-  {
+{
 
-   global $conex;
-   global $wcencam;
-   global $wfecha;
-   global $whora_actual;
+	global $conex;
+	global $wcencam;
+	global $wfecha;
+	global $whora_actual;
 
-   //Esta validacion inactiva la llegada.
-   if ($fecha == '0000-00-00' and $hora == '00:00:00')
-   {
-       $wfecha = '0000-00-00';
-       $whora_actual = '00:00:00';
-   }
+	//Esta validacion inactiva la llegada.
+	if ($fecha == '0000-00-00' and $hora == '00:00:00')
+	{
+		$wfecha = '0000-00-00';
+		$whora_actual = '00:00:00';
+	}
 
-   $q = "   UPDATE ".$wcencam."_000003 "
-	   ."      SET Hora_llegada   = '".$whora_actual."',"
-	   ."	   	   Fecha_llegada  = '".$wfecha."'"
-	   ."    WHERE Id = ".$wid;
-   $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
-  }
+	$q = "   UPDATE ".$wcencam."_000003 "
+		."      SET Hora_llegada   = '".$whora_actual."',"
+		."	   	   Fecha_llegada  = '".$wfecha."'"
+		."    WHERE Id = ".$wid;
+	$rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
+}
+
+function marcarLlegada__($wid, $fecha, $hora, $wemp_pmla)
+{
+	global $conex;
+	global $wcencam;
+	global $wemp_pmla;
+	global $wfecha;
+	global $whora_actual;
+
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, 'movhos', $wcco );
+
+	//Esta validacion inactiva la llegada.
+	if ($fecha == '0000-00-00' && $hora == '00:00:00')
+	{
+		$wfecha = '0000-00-00';
+		$whora_actual = '00:00:00';
+	}
+
+	$q = "   UPDATE ".$wcencam."_000003 "
+		."      SET Hora_llegada   = '".$whora_actual."',"
+		."	   	   Fecha_llegada  = '".$wfecha."'"
+		."    WHERE Id = ".$wid;
+
+	mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
+
+	$datosPacienteAlta = obtenerDatosPacienteAlta( $wid, $wcencam, $wemp_pmla );
+
+	if( $datosPacienteAlta['Motivo'] == 'PACIENTE DE ALTA' &&
+			( $datosPacienteAlta['Habitacion'] != 'null' || $datosPacienteAlta['Habitacion'] != null ) )
+	{
+		/**
+		 * * Se hace solicitud de limpieza de habitación, teniendo en cuenta que el
+		 * * motivo se paciente de alta y que este en una habitación
+		 */
+		$q = "
+		UPDATE	{$tablaHabitaciones}
+			SET	Habali = 'on',
+					Habdis = 'off',
+					Habhis = '',
+					Habing = '',
+					Habfal = '{$datosPacienteAlta['FechaEgreso']}',
+					Habhal = '{$datosPacienteAlta['HoraEgreso']}',
+					Habprg = ''
+			WHERE	Habcod = '{$datosPacienteAlta['Habitacion']}'
+			AND	Habhis = '{$datosPacienteAlta['Historia']}'
+			AND	Habing = '{$datosPacienteAlta['Ingreso']}'
+		";
+
+		$err = mysql_query($q, $conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+	}
+}
+
+function obtenerDatosPacienteAlta( $wid, $wcencam, $wemp_pmla )
+{
+	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+
+	$sql = "
+		SELECT	{$wcencam}_000003.Historia,
+					{$wcencam}_000003.Motivo,
+					IF({$wbasedato}_000020.Habcod = '' or NULL, 'null', {$wbasedato}_000020.Habcod) AS Habitacion
+			FROM	{$wcencam}_000003, {$wbasedato}_000020
+			WHERE	{$wcencam}_000003.id = {$wid}
+			AND	{$wbasedato}_000020.Habhis = {$wcencam}_000003.Historia
+		";
+
+	$resultQuery = mysql_query($sql, $conex) or die (mysql_errno() . " - " . mysql_error());
+
+	$cantidad_registros = mysql_num_rows( $resultQuery );
+	$respuesta = mysql_fetch_array( $resultQuery );
+
+	if( $cantidad_registros > 0 )
+	{
+		$q="
+		SELECT	Fecha_egre_serv as FechaEgreso,
+					Hora_egr_serv as HoraEgreso,
+					Num_ingreso as Ingreso,
+					Historia_clinica as Historia
+			FROM	{$wbasedato}_000033
+			WHERE	Historia_clinica = '{$respuesta[0]}'
+		ORDER BY	Fecha_data Desc
+			LIMIT	1";
+
+		$err = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
+		$rowdia = mysql_fetch_array($err);
+		$rowdia['Motivo'] = $respuesta[1];
+		$rowdia['Habitacion'] = $respuesta[2];
+	}
+
+	return $rowdia;
+}
 
 function marcarCumplimiento($wid, $fecha, $hora)
   {
@@ -1607,6 +1697,10 @@ function grabarObservacion($wid, $wtexto)
 //========================================================================================================================================\\
 //ACTUALIZACIONES
 /*
+//========================================================================================================================================\\
+Julio 13 de 2021 - Joel Payares Hernández
+	Se modifica el metodo marcarLlegada, para obtener información del paciente como lo es: historia, ingreso, habitación habitada. Estos datos
+	para poder actualizar los registos en la tabla de habitación, y colocar en estado limpieza.
 //========================================================================================================================================\\
 Enero 13 de 2020 Juan Carlos Hernández
 	Se modifican los querys de consulta a la tabla movhos_000020, para se tenga en cuenta en habitaciones disponibles tambiém el estado = 'on'
@@ -1923,6 +2017,7 @@ function actualizar_operador($wcentral, $wcodope, $whorope)
                 break;
             case 'llegada':
                 echo marcarLlegada($wid, $ifecha, $ihora);
+                // echo marcarLlegada($wid, $ifecha, $ihora, $wemp_pmla);
                 break;
             case 'cumplimiento':
                 {

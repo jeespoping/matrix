@@ -526,8 +526,15 @@ class detalleKardexDTO {
 			$this->conInsumoCalculado2 	= $datos['Ekxin2'];	//concentracion insumo 2
 			$this->esAntibioticoCompuesto=$datos['Defcmp'] == 'on' ? true: false;	//concentracion insumo 2
 			$this->porProtocolo			= $datos['Ekxayu'] != '' ? true: false;	//concentracion insumo 2
+
+			/*Modificación: Se agrega para validar parámetro de tarifas
+			Autor: sebastian.nevado
+			Fecha: 04/08/2021
+			*/
+			$validarTarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripcionConTarifa' );
+			$this->validarTarifa = $validarTarifa;
 			
-			$this->autorizadoPorDirector= $datos['Ekxaut'] == 'on' ? true: false;	//Articulo con tarifa
+			$this->autorizadoPorDirector= (($datos['Ekxaut'] == 'on') && ($validarTarifa == 'on'))? true: false;	//Articulo con tarifa
 			$this->jusParaAutorizar		= $datos['Ekxjus'];	//Justificación parar odenar el medicamento sin tarifa
 			$this->fechaAutorizado		= $datos['Ekxfau'];	//Fecha de aprobación del articulo por director Médico
 			$this->horaAutorizado		= $datos['Ekxhau'];	//Hora de aprobacion del articulo por director médico
@@ -37927,8 +37934,12 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 					$boolAtc = true;
 				}
 				
+				/*Modificación: Se agrega para validar parámetro de tarifas
+				Autor: sebastian.nevado
+				Fecha: 04/08/2021
+				*/
 				//Por defecto tiene tarifa
-				$con_tarifa = 'on';
+				$con_tarifa = ($validarTarifa) ? 'on' : 'off';
 				if( !$articuloGenerico ){
 					if( $validarTarifa ){
 						
@@ -38557,9 +38568,12 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 					
 					$boolAtc = true;
 				}
-				
+				/*Modificación: Se agrega para validar parámetro de tarifas
+				Autor: sebastian.nevado
+				Fecha: 04/08/2021
+				*/
 				//Por defecto tiene tarifa
-				$con_tarifa = 'on';
+				$con_tarifa = ($validarTarifa) ? 'on' : 'off';
 				if( !$articuloGenerico ){
 					if( $validarTarifa ){
 						

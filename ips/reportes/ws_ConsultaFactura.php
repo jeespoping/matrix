@@ -6,7 +6,7 @@
 	 * * REPORTE					:	REPORTE DE ESTADOS DE FACTURAS DE PACEINTE
 	 * * AUTOR						:	Ing. Joel David Payares Hernández.
 	 * * FECHA CREACIÓN				:	2021-03-11
-	 * * FECHA ULTIMA ACTUALIZACIÓN	:	2021-03-11
+	 * * FECHA ULTIMA ACTUALIZACIÓN	:	2021-07-08
 	 * * DESCRIPCIÓN				:	Obtiene el listado de facturas con los siguientes datos:
 	 * * 									- Prefijo.
 	 * * 									- Número de factura.
@@ -28,6 +28,10 @@
 	 * . 							la acción por cualquiera de los metodos [GET - POST], al igual
 	 * . 							que se agregó un metodo para convertir los keys a camelCase de
 	 * . 							un array.
+	 * . @update [2021-07-08]	-	Se agregan metodos para obtener los estados de facturas y su
+	 * . 							respectiva información, enviando como parametro un array de
+	 * . 							de responsables o un array con datos adicionales como lo son
+	 * . 							fecha de inicio y fecha de corte.
 	*/
 
 	/** Se inicializa el bufer de salida de php **/
@@ -63,11 +67,9 @@
 	{
 		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
-		
-		$resultado_asociativo = array();
+
 		$respuesta = array();
-		$indices_asociativos = ["prefijo", "numeroFactura", "estadoCartera", "codigoResponsable", "valorFactura"];
-		
+
 		if( !isset($conex) )
 		{
 			return [
@@ -115,7 +117,8 @@
 					AND root_000037.Oritid = '" . $tipo_documento . "'
 					AND root_000037.Oriori = " . $wemp_pmla;
 					
-					$resultado_query = mysqli_query($conex, $query_historia_ingreso) or die(mysqli_error($conex));
+			$resultado_query = mysqli_query($conex, $query_historia_ingreso) or die(mysqli_error($conex));
+
 			if( !$resultado_query || mysqli_num_rows($resultado_query) > 0 ) {
 				
 				while($fila = mysqli_fetch_array($resultado_query)) {
@@ -259,18 +262,19 @@
 	{
 		$result = array();
 		$sql = "
-			SELECT carfca as prefijo,
-				   carfac as numero_factura,
-				   encest as estado_cartera,
-				   carced as codigo_responsable,
-				   carval as valor_factura
-			  FROM cacar, caenc, famov
-			 WHERE movhis = ".$historia."
-			   AND movnum = ".$ingreso."
-			   AND carfue = encfue
-			   AND cardoc = encdoc
-			   AND carfue = movfue
-			   AND cardoc = movdoc";
+			  SELECT
+						carfca as prefijo,
+						carfac as numero_factura,
+						encest as estado_cartera,
+						carced as codigo_responsable,
+						carval as valor_factura
+			  	FROM	cacar, caenc, famov
+			   WHERE	movhis = {$historia}
+			   	 AND	movnum = {$ingreso}
+			     AND	carfue = encfue
+			     AND	cardoc = encdoc
+			     AND	carfue = movfue
+			     AND	cardoc = movdoc";
 
 		if( isset($codigo_responsable) )
 		{
@@ -282,6 +286,9 @@
 		if( $respuesta )
 		{
 			while ($fila = odbc_fetch_array($respuesta)) {
+				
+				$fila['cuenta_cobro'] = consultarCuentaCobro($conex_unix, $fila['prefijo'], $fila['numero_factura']);
+
 				array_push($result, convertKeysToCamelCase( $fila ));
 			}
 		}
@@ -294,6 +301,188 @@
 	}
 
 	/**
+	 * Este metodo permite obtener las cuentas de cobros asociadas
+	 * a una factura pasada por parametros.
+	 *
+	 * @param conex_unix[object]		[Conexión a unix]
+	 * @param prefijo[String]			[Número de prefijo]
+	 * @param numero_factura[String]	[Número de factura]
+	 * @param codigo_responsable[int]	[Código de responsable]
+	 *
+	 * @return [array] Respuesta de base de datos
+	*/
+	function consultarCuentaCobro($conex_unix, $prefijo, $numero_factura)
+	{
+		$sql = "
+			SELECT envdetdoc as cuenta_cobro
+			  FROM caenvdet, caenvenc
+			 WHERE envdetfan = '{$prefijo}'
+			   AND envdetdan = {$numero_factura}
+			   AND envencfue = envdetfue
+			   AND envencdoc = envdetdoc";
+
+		$respuesta = odbc_exec($conex_unix, $sql);
+		
+		if( $respuesta )
+		{
+			while ($fila = odbc_fetch_array($respuesta)) {
+				if( isset( $fila['cuenta_cobro'] ) )
+				{
+					$response = $fila['cuenta_cobro'];
+				}
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Este metodo permite obtener las facturas asociadas a partir de una
+	 * cuenta de cobro pasada como parametro.
+	 *
+	 * @param conex_unix[object]		[Conexión a unix]
+	 * @param wemp_pmla[String]			[Número de empresa]
+	 * @param cuentasCobro[Array]		[Array con cuentas de cobro
+	 * 									a consultar]
+	 *
+	 * @return [array] Respuesta de base de datos
+	*/
+	function consultaFacturasCuentasCobroArray($conex, $wemp_pmla, $cuentas_cobro)
+	{
+		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
+		$facturas = [];
+		$response = [];
+
+		if( isset( $cuentas_cobro ) && is_array( $cuentas_cobro ) )
+		{
+			foreach( $cuentas_cobro as $key => $cuenta )
+			{
+				$response[ $key ]['cuentaCobro'] = $cuenta;
+
+				$sql .= "
+				  SELECT	DISTINCT envdetdan as factura,
+							movhis as historia,
+							movnum as ingreso,
+							envdetnit as responsable
+					FROM 	caenvdet, caenvenc, famov
+				   WHERE	envdetdoc = {$cuenta}
+					 AND    envdetfue = '80'
+					 AND	envdetdoc = envencden
+					 AND	envdetfue = envencfen
+					 AND	movfue = envdetfan
+					 AND	movdoc = envdetdan
+				";
+
+				$respuesta = odbc_exec($conex_unix, $sql);
+
+				$response[ $key ]['responsable'] = odbc_fetch_array($respuesta)['responsable'];
+
+				if( $respuesta )
+				{
+					while ($fila = odbc_fetch_array($respuesta)) {
+						unset( $fila['responsable'] );
+						$facturas[] = $fila;
+					}
+				}
+
+				$response[ $key ][] = $facturas;
+			}
+		}
+		else
+		{
+			$response = "El parametro enviado, no es un array.";
+		}
+		return $response;
+	}
+
+	/**
+	 * Este metodo permite obtener las facturas asociadas a partir de un
+	 * número de identificación de responsable.
+	 *
+	 * @param conex_unix[object]		[Conexión a unix]
+	 * @param wemp_pmla[String]			[Número de empresa]
+	 * @param cuentas[Array]		[Array con nit de responsables,
+	 * 									fecha de inicio y fecha de corte]
+	 *
+	 * @return [array] Respuesta de base de datos
+	*/
+	function consultaFacturasResponsablesArray($conex, $wemp_pmla, $cuentas)
+	{
+		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
+
+		$factura = [];
+		$response = [];
+		$fechaInicio = $cuentas['fechaInicio'];
+		$fechaCorte = $cuentas['fechaCorte'];
+
+		if( isset( $cuentas['responsable'] ) && is_array( $cuentas['responsable'] ) )
+		{
+			$responsables = [];
+
+			foreach( $cuentas['responsable'] as $key => $responsable )
+			{
+				$cuentaCobro = [];
+
+				$sql = "
+					  SELECT 	envdetdoc as cuenta_cobro,
+								envdetfan as prefijo,
+								envdetdan as factura,
+								envdetval as valor_total,
+								movhis as historia,
+								movnum as ingreso
+						FROM    caenvdet, caenvenc, famov
+					   WHERE   envdetfue = '80'
+						 AND    envdetnit = '{$responsable}'
+						 AND    envdetdoc = envencden
+						 AND    envdetfue = envencfen
+						 AND    movfue = envdetfan
+						 AND    movdoc = envdetdan
+						 AND    envdetrfe >= '{$fechaInicio}'
+						 AND    envdetrfe <= '{$fechaCorte}'
+				    GROUP BY	envdetdoc, envdetfan, envdetdan, movhis, movnum, envdetval
+				";
+
+				$respuesta = odbc_exec($conex_unix, $sql);
+
+				if( $respuesta )
+				{
+					$cuentaCobroAux = 0;
+
+					while ($fila = odbc_fetch_array($respuesta)) {
+
+						$factura = (object) [
+							'historia'		=>		$fila['historia'],
+							'ingreso'		=>		$fila['ingreso'],
+							'factura'		=>		$fila['factura'],
+							'valor_total'	=>		$fila['valor_total']
+						];
+						
+						if( $cuentaCobroAux != $fila['cuenta_cobro'] )
+						{
+							$cuentaCobro[$fila['cuenta_cobro']] = [];
+						}
+
+						array_push( $cuentaCobro[$fila['cuenta_cobro']], $factura );
+						
+						$cuentaCobroAux = $fila['cuenta_cobro'];
+					}
+
+					$responsables[$responsable] = $cuentaCobro;
+				}
+			}
+			$response = ( object ) ['cuentasResponsables' =>  $responsables];
+		}
+		else
+		{
+			$response = "El parametro enviado, no es un array.";
+		}
+
+		return $response;
+	}
+				
+	/**
 	 * Este metodo permite cambiar el formato de las keys que contienen guión
 	 * bajo (underscore) un array a formato camel case (esEjemplo), y devuelve
 	 * el mismo array con sus respectivas keys en camelCase.
@@ -305,8 +494,10 @@
 	function convertKeysToCamelCase( $ResponseArray )
 	{
 		$keys = array_map(function ($i) use (&$ResponseArray) {
-			if (is_array($ResponseArray[$i]))
+			if ( is_array($ResponseArray[$i]) )
+			{
 				$ResponseArray[$i] = $this->convertKeysToCamelCase($ResponseArray[$i]);
+			}
 	
 			$parts = explode('_', $i);
 			return array_shift($parts) . implode('', array_map('ucfirst', $parts));
@@ -326,26 +517,75 @@
 				switch( $_SERVER['REQUEST_METHOD'] )
 				{
 					case 'POST':
-						if( isset( $pacientes ) && is_array( $pacientes ) && ( count( $pacientes ) > 0 ) )
+						if( isset( $_POST['pacientes'] ) && is_array( $_POST['pacientes'] ) && ( count( $_POST['pacientes'] ) > 0 ) )
 						{
 							$arrayRespuesta = Consulta_Estado_Factura_Array($conex, $_POST['wemp_pmla'], $_POST['pacientes']);
 						}
 						else
 						{
-							return [
+							$arrayRespuesta = [
 								'state'			=>	404,
-								'description'	=>	'Array de datos sin contenido o nulo, válide por favor es obligatorio.'
+								'description'	=>	'Array de datos sin contenido o nulo, v&aacute;lide por favor es obligatorio.'
 							];
 						}
 						break;
 					case 'GET':
 						$arrayRespuesta = Consulta_Estado_Factura($conex, $_GET['wemp_pmla'], $_GET['documento'], $_GET['tipoDocumento'], $_GET['historia'], $_GET['ingreso'], $_GET['responsable']);
 						break;
+					default:
+						$arrayRespuesta = 'M&eacute;todo no identificado';
+						break;
 				}
 
 				break;
+			case 'facturasCuentaCobro':
+
+				$arrayRespuesta = consultaFacturasCuentasCobroArray($conex, $_POST['wemp_pmla'], $_POST['cuentasCobro']);
+
+				break;
+			case 'facturasResponsables':
+				if( !empty( $_POST['cuentas']['responsable'] ) &&
+						is_array( $_POST['cuentas']['responsable'] ) &&
+							( count( $_POST['cuentas']['responsable'] ) > 0 ) )
+				{
+					if ( ( isset( $_POST['cuentas']['fechaInicio'] ) && !empty( $_POST['cuentas']['fechaInicio'] ) ) &&
+							( isset( $_POST['cuentas']['fechaCorte'] ) && !empty( $_POST['cuentas']['fechaCorte'] ) ) &&
+								( strtotime($_POST['cuentas']['fechaCorte']) >= strtotime($_POST['cuentas']['fechaInicio']) ) )
+					{
+						$arrayRespuesta = consultaFacturasResponsablesArray($conex, $_POST['wemp_pmla'], $_POST['cuentas']);
+					}
+					else
+					{
+						$arrayRespuesta = [
+							'state'			=>	401,
+							'description'	=>	'Fechas vacias o fecha inicio mayor a fecha corte.'
+						];
+					}
+				}
+				else
+				{
+					$arrayRespuesta = [
+						'state'			=>	401,
+						'description'	=>	'Falta de datos de responsables.'
+					];
+				}
+
+				break;
+			default:
+				$arrayRespuesta = [
+					'state'			=>	401,
+					'description'	=>	'Acción no identificada.'
+				];
+				break;
 		}
 	}
-	
+	else
+	{
+		$arrayRespuesta = [
+			'state'			=>	400,
+			'description'	=>	'Acción no identificada.'
+		];
+	}
+
 	// Respuesta codificada en Json
 	echo json_encode( $arrayRespuesta );

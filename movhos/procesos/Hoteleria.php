@@ -137,6 +137,10 @@ else
 													   //=========================================================================================================================================\\
 //ACTUALIZACIONES
 //=========================================================================================================================================
+// - DESCRIPCION Julio 13 de 2021 Joel Payares Hernández
+//	* Se comenta lineas de código que colocan en modo limpieza la habitación que estaba habitada por el paciente.
+//	* Estos cambios están en las lineas 902 a 915
+//=========================================================================================================================================
 //DESCRIPCION Agosto 11 de 2020 Edwin MG
 //Se cambia el calculo de dias de estancia desde la fecha y hora de ingreso al servicio hasta la fecha y hora actual, antes el calculo se
 //se realizaba desde la fecha de ingreso al servicio a media noche hasta la fecha y hora de egreso del servicio
