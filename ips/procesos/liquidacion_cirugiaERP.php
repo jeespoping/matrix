@@ -17,6 +17,9 @@ if(!isset($accion))
  El valor del parámetro $ccotema es determinado en el programa gestor_aplicaciones.php
  */ $wactualiza = "(2020-04-28)"; /* VERSIÓN NO_POS, AUDITORÍA
  ACTUALIZACIONES:
+ Julio 28 2021 - Juan David Rodriguez.
+    - Se corrige numero de vías, cuando se agrega procedimientos para liquidar y si por algún morivo hay que cambiar algo, se pierde la vía, se corrigó para que no se pierda.
+    - Se corrige porcentajes de liquidación, cuando es diferente vía y diferente especialidad no respera el manual de configuracion, se realiza cambio para que respete el manual.
  2020-04-28, Jerson: Nuevas funcionalidades: - Permitir editar valor de la tarifa cuando el procedimiento tenga
 	configuracion en la tabla cliame_242. - Cuando un procedimiento se deba cobrar por tiempo qx, validar segun como este
 	configurado en la plantilla, si se debe cobrar con base al tiempo total de la cx o con el tiempo del procedimiento.
@@ -3071,7 +3074,7 @@ function html_cirugiasPendientes($arr_pendientes_liquidar)
         switch ($arr_pendiente['estado_monitor'])
         {
             case 'PR':
-                $estado_monitor = 'Pendiente revisión';
+                $estado_monitor = 'Pendiente revisi&oacute;n';
                 $fondo_bk = 'background-color: orange;';
                 break;
 
@@ -3111,7 +3114,7 @@ function html_cirugiasPendientes($arr_pendientes_liquidar)
                     <td>Consecutivo pendiente</td>
                     <td>Historia</td>
                     <td>Ingreso</td>
-                    <td>Estado revisión</td>
+                    <td>Estado revisi&oacute;n</td>
                 </tr>
                 '.$html.'
             </table>';
@@ -3950,6 +3953,9 @@ function validarSaldosYUnixLiquidacionCx($conex, $conexUnxAnular, $wemp_pmla, $w
                                                          '0', '0', '0', 'C-{$wbasedato}')";
                                 if($resInSal = mysql_query($sqlInSal,$conex))
                                 {
+                                }else{
+                                    $arr_validaciones["insumos_saldo"]       = false;
+                                    $arr_validaciones["query_sin_saldo_err"] .= "|".$sqlInSal;
                                 }
                             }
                         }
@@ -4190,6 +4196,7 @@ function validarTarifaUnix($conex_fn, $wbasedato_fn, $wemp_pmla_fn, $conexUnix, 
 
     // --> Si el cargo es por paquete no se hace homologacion, ni verificacion de tarifa en unix
     // if($variablesUnix['esPaquete'] != 'on')
+    if( $conexUnix != '' )
     {
         // --> Antes de grabar a unix primero debo realizar el proceso de homologacion
         //     para conocer con que concepto-procedimiento debo grabar en unix.
@@ -4270,6 +4277,12 @@ function validarTarifaUnix($conex_fn, $wbasedato_fn, $wemp_pmla_fn, $conexUnix, 
             }
             $respuesta['Accion']['queryTarifa'] = str_replace("'", "", $infoTarifa['queryTarifa'].$sql_unx_ter);
         }
+    }
+    else{
+        $respuesta['error']          = 1;
+        $respuesta['mensaje_err']    = "No fue posible realizar conexion con Unix en este momento, \npuede intentar más tarde.";
+        $respuesta['mensaje']        = "No fue posible realizar conexion con Unix en este momento, \npuede intentar más tarde.";
+        return $respuesta;
     }
 
     return $respuesta;
@@ -8123,47 +8136,54 @@ function validarCargoFacturadoUnix($conex, $wbasedato, $wemp_pmla, $id_cargo, $c
                     if($row2 = mysql_fetch_array($res2))
                     {
                         $fuente = $row2['Fenfue'];
-
-                        $sqlu = "   SELECT  drodocdoc
-                                    FROM    ITDRODOC
-                                    WHERE   drodocnum  = '{$Tcardoi}'
-                                            AND drodocfue  = '{$fuente}'";
-                        if($resu = odbc_do( $conexUnix, $sqlu ))
+                        if( $conexUnix != '' )
                         {
-                            $drodocdoc = odbc_result($resu,"drodocdoc");
-                            $selectfacar = "    SELECT  cardetvfa, cardetfac
-                                                FROM    FACARDET
-                                                WHERE   cardetfue = '{$fuente}'
-                                                        AND cardetdoc = '{$drodocdoc}'
-                                                        AND cardetlin = '{$Tcarlin}'";
-
-                            if($resfacar = odbc_do( $conexUnix, $selectfacar ))
+                            $sqlu = "   SELECT  drodocdoc
+                                        FROM    ITDRODOC
+                                        WHERE   drodocnum  = '{$Tcardoi}'
+                                                AND drodocfue  = '{$fuente}'";
+                            if($resu = odbc_do( $conexUnix, $sqlu ))
                             {
-                                $cardetfacturado = odbc_result($resfacar,"cardetvfa");
-                                $cardetfacturable = odbc_result($resfacar,"cardetfac");
-                                $data["cardetfacturable"] = $cardetfacturable;
-
-                                // if(($cardetfacturado*1) > 0 || (($cardetfacturado*1) == 0 && $cardetfacturable == 'N')) // Lo cargos No facturables no generan factura, pero para el correcto funcionamiento de esta función se asume como facturado.
-                                if(($cardetfacturado*1) > 0)
+                                $drodocdoc = odbc_result($resu,"drodocdoc");
+                                $selectfacar = "    SELECT  cardetvfa, cardetfac
+                                                    FROM    FACARDET
+                                                    WHERE   cardetfue = '{$fuente}'
+                                                            AND cardetdoc = '{$drodocdoc}'
+                                                            AND cardetlin = '{$Tcarlin}'";
+    
+                                if($resfacar = odbc_do( $conexUnix, $selectfacar ))
                                 {
-                                    $data["cargoFacturadoUnx"] = true; // Ya ha sido facturado
-                                    $data["vlr_fact"] = "[$id_cargo:$cardetfacturado, FACARDET=>cardetfac:$cardetfacturable, cardetfue:$fuente, cardetdoc:$drodocdoc, cardetlin:$Tcarlin]";
+                                    $cardetfacturado = odbc_result($resfacar,"cardetvfa");
+                                    $cardetfacturable = odbc_result($resfacar,"cardetfac");
+                                    $data["cardetfacturable"] = $cardetfacturable;
+    
+                                    // if(($cardetfacturado*1) > 0 || (($cardetfacturado*1) == 0 && $cardetfacturable == 'N')) // Lo cargos No facturables no generan factura, pero para el correcto funcionamiento de esta función se asume como facturado.
+                                    if(($cardetfacturado*1) > 0)
+                                    {
+                                        $data["cargoFacturadoUnx"] = true; // Ya ha sido facturado
+                                        $data["vlr_fact"] = "[$id_cargo:$cardetfacturado, FACARDET=>cardetfac:$cardetfacturable, cardetfue:$fuente, cardetdoc:$drodocdoc, cardetlin:$Tcarlin]";
+                                    }
+                                    else
+                                    {
+                                        $data["vlr_fact"] = "[$id_cargo=> cardetfac:$cardetfacturable]";
+                                    }
                                 }
                                 else
                                 {
-                                    $data["vlr_fact"] = "[$id_cargo=> cardetfac:$cardetfacturable]";
+                                    $data["error"] = 1;
+                                    $data["sql_err"] = $selectfacar;
                                 }
                             }
                             else
                             {
                                 $data["error"] = 1;
-                                $data["sql_err"] = $selectfacar;
+                                $data["sql_err"] = $sqlu;
                             }
                         }
                         else
                         {
                             $data["error"] = 1;
-                            $data["sql_err"] = $sqlu;
+                            $data['mensaje']   = "No fue posible realizar conexion con Unix en este momento, \npuede intentar más tarde.";
                         }
                     }
                     else
@@ -8184,31 +8204,39 @@ function validarCargoFacturadoUnix($conex, $wbasedato, $wemp_pmla, $id_cargo, $c
                 // Buscar con número de registro directamente
                 if($registroUnix != '')
                 {
-                    $selectfacar = "SELECT cardetvfa, cardetfac
-                                    FROM   FACARDET
-                                    WHERE  cardetreg = '{$registroUnix}'";
-
-                    if($resfacar = odbc_do( $conexUnix, $selectfacar ))
+                    if( $conexUnix != '' )
                     {
-                        $cardetfacturado = odbc_result($resfacar,"cardetvfa");
-                        $cardetfacturable = odbc_result($resfacar,"cardetfac");
-                        $data["cardetfacturable"] = $cardetfacturable;
-
-                        // if(($cardetfacturado*1) > 0 || (($cardetfacturado*1) == 0 && $cardetfacturable == 'N')) // Lo cargos No facturables no generan factura, pero para el correcto funcionamiento de esta función se asume como facturado.
-                        if(($cardetfacturado*1) > 0)
+                        $selectfacar = "SELECT cardetvfa, cardetfac
+                                        FROM   FACARDET
+                                        WHERE  cardetreg = '{$registroUnix}'";
+    
+                        if($resfacar = odbc_do( $conexUnix, $selectfacar ))
                         {
-                            $data["cargoFacturadoUnx"] = true; // Ya ha sido facturado
-                            $data["vlr_fact"] = "[$id_cargo:$cardetfacturado, cardetfacturable:$cardetfacturable, cardetreg:$registroUnix]";
+                            $cardetfacturado = odbc_result($resfacar,"cardetvfa");
+                            $cardetfacturable = odbc_result($resfacar,"cardetfac");
+                            $data["cardetfacturable"] = $cardetfacturable;
+    
+                            // if(($cardetfacturado*1) > 0 || (($cardetfacturado*1) == 0 && $cardetfacturable == 'N')) // Lo cargos No facturables no generan factura, pero para el correcto funcionamiento de esta función se asume como facturado.
+                            if(($cardetfacturado*1) > 0)
+                            {
+                                $data["cargoFacturadoUnx"] = true; // Ya ha sido facturado
+                                $data["vlr_fact"] = "[$id_cargo:$cardetfacturado, cardetfacturable:$cardetfacturable, cardetreg:$registroUnix]";
+                            }
+                            else
+                            {
+                                $data["vlr_fact"] = "[id_cargo:$id_cargo, cardetreg:$registroUnix, cardetfac:$cardetfacturable]";
+                            }
                         }
                         else
                         {
-                            $data["vlr_fact"] = "[id_cargo:$id_cargo, cardetreg:$registroUnix, cardetfac:$cardetfacturable]";
+                            $data["error"] = 1;
+                            $data["sql_err"] = $selectfacar;
                         }
                     }
                     else
                     {
                         $data["error"] = 1;
-                        $data["sql_err"] = $selectfacar;
+                        $data['mensaje']   = "No fue posible realizar conexion con Unix en este momento, \npuede intentar más tarde.";
                     }
                 }
                 else
@@ -9195,7 +9223,7 @@ function datosDescripcionOperatoria($conex, $wemp_pmla, $wbasedato, $wbasedato_H
     // Consultar información de la descripción operatoria.
     // Encabezado descripción operatoria
     $sqlEnDO = "SELECT  Fecha_data, Hora_data, Firpro, Firhis, Firing
-                FROM    hce_000036
+                FROM    {$wbasedato_HCE}_000036
                 WHERE   Firhis = '{$whistoria}'
                         AND Firing = '{$wing}'
                         AND Firpro = '000077'";
@@ -10689,6 +10717,7 @@ if(isset($accion) && isset($form))
                         $concepto_medicamentos_mueven_inv   = consultarAliasPorAplicacion($conex, $wemp_pmla, 'concepto_medicamentos_mueven_inv');
                         $concepto_materiales_mueven_inv     = consultarAliasPorAplicacion($conex, $wemp_pmla, 'concepto_materiales_mueven_inv');
                         $permitir_historia_ingreso_inactivo = consultarAliasPorAplicacion($conex, $wemp_pmla, "erp_permitir_historia_ingreso_inactivo");
+                        $wmovhos                   = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
                         // if(file_exists("seguimiento.txt"))
                         // {
@@ -10722,7 +10751,7 @@ if(isset($accion) && isset($form))
                         $sql = "SELECT  'on' AS Pacact, m18.Ubifad, m18.Ubihad, c100.Pactdo
                                 FROM    {$wbasedato}_000100 AS c100
                                         INNER JOIN
-                                        movhos_000018 AS m18 ON (m18.Ubihis = c100.Pachis AND m18.Ubiing = {$wingreso})
+                                        {$wmovhos}_000018 AS m18 ON (m18.Ubihis = c100.Pachis AND m18.Ubiing = {$wingreso})
                                 WHERE   c100.Pachis = '{$whistoria}'
                                         AND c100.Pacdoc = '{$wdocumento}'";
 
@@ -10809,50 +10838,58 @@ if(isset($accion) && isset($form))
                                             // porque esta última realiza un commit work a todas las operaciones de devolución y se genera un error al intentar usar esa misma conexión
                                             // para consultar inpac.
                                             $conexUnixInactiv = odbc_connect('facturacion','informix','sco');
-                                            $sqlunx = " SELECT  pachis, pacnum, pacced, pactid, pacfec
-                                                        FROM    inpac
-                                                        WHERE   pachis = '{$whistoria}'
-                                                                {$filtros}";
-
-                                            if($result_unx = odbc_exec($conexUnixInactiv, $sqlunx))
+                                            if( $conexUnixInactiv != '' )
                                             {
-                                                // 1 >> Debe existir un ingreso activo en unix para que el integrador no genere error ni detenga su correcta ejecusión.
-                                                // 2 >> Si el ingreso activo en unix es diferente al ingreso que se está grabando en el cargo entonces se deben marcar esos
-                                                //      cargos (Solo de insumos) para que despues de grabados se les cambie el número de ingreso en unix, porque cuando el integrador
-                                                //      pase a unix los insumos, estos pasarán con el número de ingreso que esté activo en unix.
-                                                $documento_unx = "";
-                                                $tipodoc_unx   = "";
-                                                $wingreso_activo_unx = "";
-                                                while(odbc_fetch_row($result_unx))
+                                                $sqlunx = " SELECT  pachis, pacnum, pacced, pactid, pacfec
+                                                            FROM    inpac
+                                                            WHERE   pachis = '{$whistoria}'
+                                                                    {$filtros}";
+    
+                                                if($result_unx = odbc_exec($conexUnixInactiv, $sqlunx))
                                                 {
-                                                    $wingreso_activo_unx = trim(odbc_result($result_unx,'pacnum'));
-                                                    $documento_unx       = trim(odbc_result($result_unx,'pacced'));
-                                                    $tipodoc_unx         = trim(odbc_result($result_unx,'pactid'));
-                                                    $fec_ingreso_unx     = trim(odbc_result($result_unx,'pacfec'));
-                                                    $arr_parametosGenerales['wingreso_activo_unx'] = $wingreso_activo_unx;
-                                                    if($wingreso_activo_unx != $wingreso)
+                                                    // 1 >> Debe existir un ingreso activo en unix para que el integrador no genere error ni detenga su correcta ejecusión.
+                                                    // 2 >> Si el ingreso activo en unix es diferente al ingreso que se está grabando en el cargo entonces se deben marcar esos
+                                                    //      cargos (Solo de insumos) para que despues de grabados se les cambie el número de ingreso en unix, porque cuando el integrador
+                                                    //      pase a unix los insumos, estos pasarán con el número de ingreso que esté activo en unix.
+                                                    $documento_unx = "";
+                                                    $tipodoc_unx   = "";
+                                                    $wingreso_activo_unx = "";
+                                                    while(odbc_fetch_row($result_unx))
                                                     {
-                                                        $arr_parametosGenerales["winsumos_cambiar_ingreso"]   = 'on';
-                                                        $arr_parametosGenerales["wingreso_reemplazable_unix"] = $wingreso_activo_unx;
-                                                        $arr_parametosGenerales["fecha_reemplazable_unix"]    = $fec_ingreso_unx;
+                                                        $wingreso_activo_unx = trim(odbc_result($result_unx,'pacnum'));
+                                                        $documento_unx       = trim(odbc_result($result_unx,'pacced'));
+                                                        $tipodoc_unx         = trim(odbc_result($result_unx,'pactid'));
+                                                        $fec_ingreso_unx     = trim(odbc_result($result_unx,'pacfec'));
+                                                        $arr_parametosGenerales['wingreso_activo_unx'] = $wingreso_activo_unx;
+                                                        if($wingreso_activo_unx != $wingreso)
+                                                        {
+                                                            $arr_parametosGenerales["winsumos_cambiar_ingreso"]   = 'on';
+                                                            $arr_parametosGenerales["wingreso_reemplazable_unix"] = $wingreso_activo_unx;
+                                                            $arr_parametosGenerales["fecha_reemplazable_unix"]    = $fec_ingreso_unx;
+                                                        }
+                                                    }
+    
+                                                    if($wingreso_activo_unx != '')
+                                                    {
+                                                        $paciente_activo_unx = true;
                                                     }
                                                 }
-
-                                                if($wingreso_activo_unx != '')
+                                                else
                                                 {
-                                                    $paciente_activo_unx = true;
+                                                        $data["sql_unix"]    = $sqlunx." > ".mysql_error();
+                                                        $data["error"]       = 1;
+                                                        $data["mensaje"]     = utf8_encode("No se pudo verificar si el paciente esta activo en unix.\nNo se ha podido anular la cirugía");
+                                                        // $data["mensaje_unx"] = $arr_params["mensaje"];
                                                 }
+    
+                                                odbc_close($conexUnixInactiv);
+                                                // odbc_close_all();
                                             }
                                             else
                                             {
-                                                    $data["sql_unix"]    = $sqlunx." > ".mysql_error();
-                                                    $data["error"]       = 1;
-                                                    $data["mensaje"]     = utf8_encode("No se pudo verificar si el paciente esta activo en unix.\nNo se ha podido anular la cirugía");
-                                                    // $data["mensaje_unx"] = $arr_params["mensaje"];
+                                                $data["error"]       = 1;
+                                                $data["mensaje"]     = "No fue posible realizar conexion con Unix en este momento, \npuede intentar más tarde.";
                                             }
-
-                                            odbc_close($conexUnixInactiv);
-                                            // odbc_close_all();
                                         }
 
                                         if($conexUnix = @odbc_connect('facturacion','informix','sco'))
@@ -10871,6 +10908,11 @@ if(isset($accion) && isset($form))
                                         $data["registros_unix"]      = $arr_params['registros_unix'];
                                         $data["sql_unx"]             = $arr_params['sql_unx'];
 
+                                    }
+                                    else
+                                    {
+                                        $data["error"]       = 1;
+                                        $data["mensaje"]     = utf8_encode("No se pudo encontrar el archivo erp_unix.php en Include.\nNo se ha podido liquidar la cirugía. \nComunicase con TI.");
                                     }
 
                                     // $arr_parametosGenerales["bloqueo_global_fuentes"] = $bloqueo_global_fuentes;
@@ -11009,325 +11051,334 @@ if(isset($accion) && isset($form))
                                                         $arr_validaciones["error_facturable_insumo"] = true;
                                                     }
 
-                                                    if($arr_validaciones["insumos_saldo"] && $arr_validaciones["insumos_tarifa"] && $arr_validaciones["insumos_valores_unx_mtx"] && !$arr_validaciones["error_facturable_insumo"])
+                                                    if($arr_validaciones["unix_activo"])
                                                     {
-                                                        // $guardar = "arr_InfoCargo106: ".print_r($arr_InfoCargo106,true).PHP_EOL;
-                                                        // seguimiento($guardar);
-                                                        // $expl_cargos = array();
-
-                                                        foreach ($expl_cargos as $key => $id_cargo_106_198)
+                                                        if($arr_validaciones["insumos_saldo"] && $arr_validaciones["insumos_tarifa"] && $arr_validaciones["insumos_valores_unx_mtx"] && !$arr_validaciones["error_facturable_insumo"])
                                                         {
-                                                            $xplIds = explode(":", $id_cargo_106_198);
-                                                            $id_198 = $xplIds[0];
-                                                            $id_cargo = $xplIds[1];
-                                                            if($id_cargo != '' && ($id_cargo*1) > 0)// Hay cargos que se grabaron en el log de cirugía que tienen ID=0 porque no se grabaron en cliame_106 debído a que realmente no tienen tarifa (nunca se cobran, es algo normal en este caso)
+                                                            // $guardar = "arr_InfoCargo106: ".print_r($arr_InfoCargo106,true).PHP_EOL;
+                                                            // seguimiento($guardar);
+                                                            // $expl_cargos = array();
+    
+                                                            foreach ($expl_cargos as $key => $id_cargo_106_198)
                                                             {
-                                                                $idGuardadoBD    = 0;
-                                                                $mueveInventario = 'off';
-                                                                $mueveInventario = (array_key_exists($id_cargo, $arr_InfoCargo106)) ? $arr_InfoCargo106[$id_cargo]['mueve_inventario'] : 'off';
-
-                                                                if($mueveInventario == 'on')
+                                                                $xplIds = explode(":", $id_cargo_106_198);
+                                                                $id_198 = $xplIds[0];
+                                                                $id_cargo = $xplIds[1];
+                                                                if($id_cargo != '' && ($id_cargo*1) > 0)// Hay cargos que se grabaron en el log de cirugía que tienen ID=0 porque no se grabaron en cliame_106 debído a que realmente no tienen tarifa (nunca se cobran, es algo normal en este caso)
                                                                 {
-                                                                    if(array_key_exists($id_cargo, $arr_CARGOS_PARA_DEVOLVER[0][0]))
+                                                                    $idGuardadoBD    = 0;
+                                                                    $mueveInventario = 'off';
+                                                                    $mueveInventario = (array_key_exists($id_cargo, $arr_InfoCargo106)) ? $arr_InfoCargo106[$id_cargo]['mueve_inventario'] : 'off';
+    
+                                                                    if($mueveInventario == 'on')
                                                                     {
-                                                                        $arr_InfoCargoDevolucion = $arr_CARGOS_PARA_DEVOLVER[0][0][$id_cargo];
-                                                                        $data_anular = devolverCargoInventario($conex, $conexUnix, $wemp_pmla, $wbasedato, $id_cargo, $arr_InfoCargoDevolucion, $arr_parametosGenerales, $idGuardadoBD);
-                                                                        $data["data_respuesta" ][] = $data_anular;
-                                                                        foreach ($arr_parametosGenerales as $key => $value)
+                                                                        if(array_key_exists($id_cargo, $arr_CARGOS_PARA_DEVOLVER[0][0]))
                                                                         {
-                                                                            $$key = $value;
-                                                                        }
-
-                                                                        // Si se generó un idGuardadoBD es porque realmente se generó una devolución sin errores.
-                                                                        if($idGuardadoBD != '' && ($idGuardadoBD*1) > 0)
-                                                                        {
-                                                                            // Fue anulado correctamente
-                                                                            if(!array_key_exists($id_198, $arr_idCargo_anulados))
+                                                                            $arr_InfoCargoDevolucion = $arr_CARGOS_PARA_DEVOLVER[0][0][$id_cargo];
+                                                                            $data_anular = devolverCargoInventario($conex, $conexUnix, $wemp_pmla, $wbasedato, $id_cargo, $arr_InfoCargoDevolucion, $arr_parametosGenerales, $idGuardadoBD);
+                                                                            $data["data_respuesta" ][] = $data_anular;
+                                                                            foreach ($arr_parametosGenerales as $key => $value)
                                                                             {
-                                                                                $arr_idCargo_anulados[$id_198] = $id_cargo;
-
-                                                                                // Este array es para permitir actualizar en cliame_198 el campo de nuevo ID de la devolución
-                                                                                // que aplica para insumos.
-                                                                                $arr_idDevoluciones[$id_198] = $idGuardadoBD;
+                                                                                $$key = $value;
+                                                                            }
+    
+                                                                            // Si se generó un idGuardadoBD es porque realmente se generó una devolución sin errores.
+                                                                            if($idGuardadoBD != '' && ($idGuardadoBD*1) > 0)
+                                                                            {
+                                                                                // Fue anulado correctamente
+                                                                                if(!array_key_exists($id_198, $arr_idCargo_anulados))
+                                                                                {
+                                                                                    $arr_idCargo_anulados[$id_198] = $id_cargo;
+    
+                                                                                    // Este array es para permitir actualizar en cliame_198 el campo de nuevo ID de la devolución
+                                                                                    // que aplica para insumos.
+                                                                                    $arr_idDevoluciones[$id_198] = $idGuardadoBD;
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $data["contCargosSinAnular"] = $data["contCargosSinAnular"]+1;
+                                                                                if(!array_key_exists($id_198, $arr_idCargo_error_anular))
+                                                                                {
+                                                                                    $arr_idCargo_error_anular[$id_198] = $id_cargo;
+                                                                                    $arr_idErroresAnular[$id_198] = $data_anular;
+                                                                                }
                                                                             }
                                                                         }
                                                                         else
                                                                         {
-                                                                            $data["contCargosSinAnular"] = $data["contCargosSinAnular"]+1;
+                                                                            $data["data_respuesta" ][] = array("mensaje"=>"ID no está en array de cargos a devolver", "cod_cargo"=>$id_cargo, "error"=>1);;
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        $data_anular = anular($id_cargo);
+                                                                        $data["data_respuesta" ][] = $data_anular;
+                                                                        if(array_key_exists("Error", $data_anular) && $data_anular["Error"] == true)
+                                                                        {
+                                                                            $error     = ($data_anular["Error"]) ? 1: 0;
+                                                                            // $error_msj = $data_anular["Mensaje"];
                                                                             if(!array_key_exists($id_198, $arr_idCargo_error_anular))
                                                                             {
                                                                                 $arr_idCargo_error_anular[$id_198] = $id_cargo;
                                                                                 $arr_idErroresAnular[$id_198] = $data_anular;
                                                                             }
                                                                         }
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        $data["data_respuesta" ][] = array("mensaje"=>"ID no está en array de cargos a devolver", "cod_cargo"=>$id_cargo, "error"=>1);;
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    $data_anular = anular($id_cargo);
-                                                                    $data["data_respuesta" ][] = $data_anular;
-                                                                    if(array_key_exists("Error", $data_anular) && $data_anular["Error"] == true)
-                                                                    {
-                                                                        $error     = ($data_anular["Error"]) ? 1: 0;
-                                                                        // $error_msj = $data_anular["Mensaje"];
-                                                                        if(!array_key_exists($id_198, $arr_idCargo_error_anular))
+    
+                                                                        // Validar que efectivamente anuló, se hace de nuevo la validación porque la función de anular
+                                                                        // no devuelve error en todos los casos aún cuando realmente si se haya generado algún problema al anular
+                                                                        // debído a que muchos errores se interfieren con "OR DIE"
+                                                                        $sqlOff = " SELECT  t106.id
+                                                                                    FROM    {$wbasedato}_000106 AS t106
+                                                                                    WHERE   t106.id = '{$id_cargo}'
+                                                                                            AND t106.Tcarest = 'off'";
+    
+                                                                        if($resultOff = mysql_query($sqlOff,$conex))
                                                                         {
-                                                                            $arr_idCargo_error_anular[$id_198] = $id_cargo;
-                                                                            $arr_idErroresAnular[$id_198] = $data_anular;
-                                                                        }
-                                                                    }
-
-                                                                    // Validar que efectivamente anuló, se hace de nuevo la validación porque la función de anular
-                                                                    // no devuelve error en todos los casos aún cuando realmente si se haya generado algún problema al anular
-                                                                    // debído a que muchos errores se interfieren con "OR DIE"
-                                                                    $sqlOff = " SELECT  t106.id
-                                                                                FROM    {$wbasedato}_000106 AS t106
-                                                                                WHERE   t106.id = '{$id_cargo}'
-                                                                                        AND t106.Tcarest = 'off'";
-
-                                                                    if($resultOff = mysql_query($sqlOff,$conex))
-                                                                    {
-                                                                        if(mysql_num_rows($resultOff) > 0)
-                                                                        {
-                                                                            // Fue anulado correctamente
-                                                                            if(!array_key_exists($id_198, $arr_idCargo_anulados))
+                                                                            if(mysql_num_rows($resultOff) > 0)
                                                                             {
-                                                                                $arr_idCargo_anulados[$id_198] = $id_cargo;
+                                                                                // Fue anulado correctamente
+                                                                                if(!array_key_exists($id_198, $arr_idCargo_anulados))
+                                                                                {
+                                                                                    $arr_idCargo_anulados[$id_198] = $id_cargo;
+                                                                                }
                                                                             }
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            $data["contCargosSinAnular"] = $data["contCargosSinAnular"]+1;
-                                                                            if(!array_key_exists($id_198, $arr_idCargo_error_anular))
+                                                                            else
                                                                             {
-                                                                                $arr_idCargo_error_anular[$id_198] = $id_cargo;
-                                                                                if(!isset($arr_idErroresAnular[$id_198])) { $arr_idErroresAnular[$id_198] = "NO ANULADO EN CARGOS - 000106"; }
+                                                                                $data["contCargosSinAnular"] = $data["contCargosSinAnular"]+1;
+                                                                                if(!array_key_exists($id_198, $arr_idCargo_error_anular))
+                                                                                {
+                                                                                    $arr_idCargo_error_anular[$id_198] = $id_cargo;
+                                                                                    if(!isset($arr_idErroresAnular[$id_198])) { $arr_idErroresAnular[$id_198] = "NO ANULADO EN CARGOS - 000106"; }
+                                                                                }
                                                                             }
                                                                         }
                                                                     }
                                                                 }
-                                                            }
-                                                            elseif($id_cargo == '')
-                                                            {
-                                                                $data["cont_Vacios"] = $data["cont_Vacios"]+1;
-                                                                if(!array_key_exists($id_198, $arr_idCargo_error_anular))
+                                                                elseif($id_cargo == '')
                                                                 {
-                                                                    $arr_idCargo_error_anular[$id_198] = $id_cargo;
-                                                                    $arr_idErroresAnular[$id_198] = "El ID del cargo que corresponde a 000106 esta vacío, ID198:[{$id_198}] ";
+                                                                    $data["cont_Vacios"] = $data["cont_Vacios"]+1;
+                                                                    if(!array_key_exists($id_198, $arr_idCargo_error_anular))
+                                                                    {
+                                                                        $arr_idCargo_error_anular[$id_198] = $id_cargo;
+                                                                        $arr_idErroresAnular[$id_198] = "El ID del cargo que corresponde a 000106 esta vacío, ID198:[{$id_198}] ";
+                                                                    }
+                                                                }
+                                                                elseif($id_cargo == 0)
+                                                                {
+                                                                    if(!array_key_exists($id_198, $arr_idCargo_anulados))
+                                                                    {
+                                                                        $arr_idCargo_anulados[$id_198] = $id_cargo;
+                                                                    }
                                                                 }
                                                             }
-                                                            elseif($id_cargo == 0)
+    
+                                                            $data['error']   = $error;
+                                                            $data['mensaje'] = $error_msj;
+    
+                                                            // Consultar los insumos y cambiarles el estado en la tabla de mercado
+                                                            $sql = "SELECT  t198.Liqdll AS codigo_insumo, t198.Liqhis AS historia, t198.Liqing AS ingreso, t199.Enlpro AS procedimiento, t199.Enltur AS codigo_turno,
+                                                                            t198.Liqidc AS id_cargo_mx
+                                                                    FROM    {$wbasedato}_000199 AS t199
+                                                                            INNER JOIN
+                                                                            {$wbasedato}_000198 AS t198 ON (t198.Liqhis = t199.Enlhis AND t198.Liqing = t199.Enling AND t198.Liqdoc = t199.Enldoc AND t198.liqcaq = t199.Enlcaq)
+                                                                    WHERE   t199.Enlcaq = '{$dif_acto}'
+                                                                            AND (t198.Liqcon = '{$concepto_medicamentos_mueven_inv}' OR t198.Liqcon = '{$concepto_materiales_mueven_inv}')
+                                                                            AND t198.Liqest = 'on'";
+                                                            $data["sql"] .= $sql.PHP_EOL;
+                                                            $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
+                                                            $arr_insumos = array();
+                                                            while ($row = mysql_fetch_array($result))
                                                             {
-                                                                if(!array_key_exists($id_198, $arr_idCargo_anulados))
+                                                                // Solo los insumos que no generaron un error en la devolución pueden ser agregados a este array de insumos
+                                                                // para que puedan ser modificados en el mercado de la cirugía.
+                                                                if(!in_array($row['id_cargo_mx'], $arr_idCargo_error_anular))
                                                                 {
-                                                                    $arr_idCargo_anulados[$id_198] = $id_cargo;
+                                                                    if(!array_key_exists($row['codigo_turno'], $arr_insumos))
+                                                                    {
+                                                                        $arr_insumos[$row['codigo_turno']] = array();
+                                                                    }
+    
+                                                                    $index = $row['historia'].'_'.$row['ingreso'];
+                                                                    if(!array_key_exists($index, $arr_insumos[$row['codigo_turno']]))
+                                                                    {
+                                                                        $arr_insumos[$row['codigo_turno']][$index] = array();
+                                                                    }
+                                                                    $arr_insumos[$row['codigo_turno']][$index][] = $row['codigo_insumo'];
                                                                 }
                                                             }
-                                                        }
-
-                                                        $data['error']   = $error;
-                                                        $data['mensaje'] = $error_msj;
-
-                                                        // Consultar los insumos y cambiarles el estado en la tabla de mercado
-                                                        $sql = "SELECT  t198.Liqdll AS codigo_insumo, t198.Liqhis AS historia, t198.Liqing AS ingreso, t199.Enlpro AS procedimiento, t199.Enltur AS codigo_turno,
-                                                                        t198.Liqidc AS id_cargo_mx
-                                                                FROM    {$wbasedato}_000199 AS t199
-                                                                        INNER JOIN
-                                                                        {$wbasedato}_000198 AS t198 ON (t198.Liqhis = t199.Enlhis AND t198.Liqing = t199.Enling AND t198.Liqdoc = t199.Enldoc AND t198.liqcaq = t199.Enlcaq)
-                                                                WHERE   t199.Enlcaq = '{$dif_acto}'
-                                                                        AND (t198.Liqcon = '{$concepto_medicamentos_mueven_inv}' OR t198.Liqcon = '{$concepto_materiales_mueven_inv}')
-                                                                        AND t198.Liqest = 'on'";
-                                                        $data["sql"] .= $sql.PHP_EOL;
-                                                        $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
-                                                        $arr_insumos = array();
-                                                        while ($row = mysql_fetch_array($result))
-                                                        {
-                                                            // Solo los insumos que no generaron un error en la devolución pueden ser agregados a este array de insumos
-                                                            // para que puedan ser modificados en el mercado de la cirugía.
-                                                            if(!in_array($row['id_cargo_mx'], $arr_idCargo_error_anular))
+    
+                                                            if(count($arr_insumos) > 0)
                                                             {
-                                                                if(!array_key_exists($row['codigo_turno'], $arr_insumos))
+                                                                foreach ($arr_insumos as $codigo_turno => $lista_historia_ingreso)
                                                                 {
-                                                                    $arr_insumos[$row['codigo_turno']] = array();
+                                                                    foreach ($lista_historia_ingreso as $his_ing => $lista_insumos)
+                                                                    {
+                                                                        $codigos_insumo = implode("','", $lista_insumos);
+                                                                        $expl_HI        = explode("_", $his_ing);
+                                                                        $historia_in    = $expl_HI[0];
+                                                                        $ingreso_in     = $expl_HI[1];
+                                                                        $sql = "UPDATE {$wbasedato}_000207
+                                                                                SET     Mpaliq = 'off',
+                                                                                        Mpalux = 'off'
+                                                                                WHERE   Mpatur = '{$codigo_turno}'
+                                                                                        AND Mpaest = 'on'
+                                                                                        AND Mpacom IN ('{$codigos_insumo}')";
+                                                                        $data["sql"] .= $sql.PHP_EOL;
+                                                                        $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
+                                                                    }
                                                                 }
-
-                                                                $index = $row['historia'].'_'.$row['ingreso'];
-                                                                if(!array_key_exists($index, $arr_insumos[$row['codigo_turno']]))
-                                                                {
-                                                                    $arr_insumos[$row['codigo_turno']][$index] = array();
-                                                                }
-                                                                $arr_insumos[$row['codigo_turno']][$index][] = $row['codigo_insumo'];
                                                             }
-                                                        }
-
-                                                        if(count($arr_insumos) > 0)
-                                                        {
-                                                            foreach ($arr_insumos as $codigo_turno => $lista_historia_ingreso)
+    
+                                                            // Si hay cargo sin anular pero se alcanzaron a anular algunos entonces cambiar estado a los que se alcanzaron a anular
+                                                            if(count($arr_idCargo_anulados) > 0)
                                                             {
-                                                                foreach ($lista_historia_ingreso as $his_ing => $lista_insumos)
+                                                                $ids_SI_anulados198 = array_keys($arr_idCargo_anulados);
+                                                                $ids_SI_anulados    = implode("','", $ids_SI_anulados198);
+    
+                                                                $sql = "UPDATE {$wbasedato}_000198 SET Liqest = 'off', Liqfan = '{$fecha_actual}', Liqhan = '{$hora_actual}', Liquan = '{$user_session}'
+                                                                        WHERE   Liqcaq = '{$dif_acto}' AND id IN ('{$ids_SI_anulados}')";
+                                                                $data["sql"] .= $sql.PHP_EOL;
+                                                                $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
+    
+                                                                // Actualiza los cargos en el detalle de la cirugía con el ID que corresponde a la devolución del insumo en 000106
+                                                                foreach ($arr_idDevoluciones as $id_ct198 => $nuevoIdDevol)
                                                                 {
-                                                                    $codigos_insumo = implode("','", $lista_insumos);
-                                                                    $expl_HI        = explode("_", $his_ing);
-                                                                    $historia_in    = $expl_HI[0];
-                                                                    $ingreso_in     = $expl_HI[1];
-                                                                    $sql = "UPDATE {$wbasedato}_000207
-                                                                            SET     Mpaliq = 'off',
-                                                                                    Mpalux = 'off'
-                                                                            WHERE   Mpatur = '{$codigo_turno}'
-                                                                                    AND Mpaest = 'on'
-                                                                                    AND Mpacom IN ('{$codigos_insumo}')";
+                                                                    $sql = "UPDATE {$wbasedato}_000198 SET Liqidd = '{$nuevoIdDevol}'
+                                                                            WHERE   id = '{$id_ct198}'";
                                                                     $data["sql"] .= $sql.PHP_EOL;
                                                                     $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
                                                                 }
                                                             }
-                                                        }
-
-                                                        // Si hay cargo sin anular pero se alcanzaron a anular algunos entonces cambiar estado a los que se alcanzaron a anular
-                                                        if(count($arr_idCargo_anulados) > 0)
-                                                        {
-                                                            $ids_SI_anulados198 = array_keys($arr_idCargo_anulados);
-                                                            $ids_SI_anulados    = implode("','", $ids_SI_anulados198);
-
-                                                            $sql = "UPDATE {$wbasedato}_000198 SET Liqest = 'off', Liqfan = '{$fecha_actual}', Liqhan = '{$hora_actual}', Liquan = '{$user_session}'
-                                                                    WHERE   Liqcaq = '{$dif_acto}' AND id IN ('{$ids_SI_anulados}')";
-                                                            $data["sql"] .= $sql.PHP_EOL;
-                                                            $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
-
-                                                            // Actualiza los cargos en el detalle de la cirugía con el ID que corresponde a la devolución del insumo en 000106
-                                                            foreach ($arr_idDevoluciones as $id_ct198 => $nuevoIdDevol)
+    
+                                                            // Si hay errores, guardar un log del error en el detalle de cargos de cirugía
+                                                            if(count($arr_idErroresAnular))
                                                             {
-                                                                $sql = "UPDATE {$wbasedato}_000198 SET Liqidd = '{$nuevoIdDevol}'
-                                                                        WHERE   id = '{$id_ct198}'";
+                                                                foreach ($arr_idErroresAnular as $id_ct198 => $mensaje)
+                                                                {
+                                                                    $mensaje .= PHP_EOL;
+                                                                    $sql = "UPDATE {$wbasedato}_000198 SET Liqerd = CONCAT(Liqerd,'{$mensaje}')
+                                                                            WHERE   id = '{$id_ct198}'";
+                                                                    $data["sql"] .= $sql.PHP_EOL;
+                                                                    $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
+                                                                }
+                                                            }
+    
+                                                            if(count($arr_idCargo_error_anular) == 0 && $data["contCargosSinAnular"] == 0 && $data["cont_Vacios"] == 0 && $data["contCargosFacturados"] == 0)
+                                                            {
+                                                                $sql = "UPDATE {$wbasedato}_000199 SET Enlest = 'off', Enlfan = '{$fecha_actual}', Enlhan = '{$hora_actual}', Enluan = '{$user_session}'
+                                                                        WHERE   Enlcaq = '{$dif_acto}'";
                                                                 $data["sql"] .= $sql.PHP_EOL;
                                                                 $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
+    
+                                                                // En el encabezado de auditoria cambiar el estado de liquidado a no liquidado.
+                                                                if($proceso_auditoria_activo_sfi == 'on' && existeTabla($conex, $wemp_pmla, $wbasedato, ENC_AUDITORIA_252))
+                                                                {
+                                                                    $ENC_AUDITORIA_252 = ENC_AUDITORIA_252;
+                                                                    $sql = "UPDATE {$wbasedato}_{$ENC_AUDITORIA_252} SET Aueliq = 'off'
+                                                                            WHERE  Auetur = '{$codigo_turno_cx}'";
+                                                                    $data["sql"] .= $sql.PHP_EOL;
+                                                                    $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
+                                                                }
+    
+                                                                $data["mensaje"] = "Cargos anulados correctamente!";
                                                             }
-                                                        }
-
-                                                        // Si hay errores, guardar un log del error en el detalle de cargos de cirugía
-                                                        if(count($arr_idErroresAnular))
-                                                        {
-                                                            foreach ($arr_idErroresAnular as $id_ct198 => $mensaje)
+                                                            else
                                                             {
-                                                                $mensaje .= PHP_EOL;
-                                                                $sql = "UPDATE {$wbasedato}_000198 SET Liqerd = CONCAT(Liqerd,'{$mensaje}')
-                                                                        WHERE   id = '{$id_ct198}'";
-                                                                $data["sql"] .= $sql.PHP_EOL;
-                                                                $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
+                                                                $data["error"] = 1;
+                                                                $data["mensaje"] .= " << Algunos cargos no se pudieron anular en UNIX >>";
                                                             }
-                                                        }
-
-                                                        if(count($arr_idCargo_error_anular) == 0 && $data["contCargosSinAnular"] == 0 && $data["cont_Vacios"] == 0 && $data["contCargosFacturados"] == 0)
-                                                        {
-                                                            $sql = "UPDATE {$wbasedato}_000199 SET Enlest = 'off', Enlfan = '{$fecha_actual}', Enlhan = '{$hora_actual}', Enluan = '{$user_session}'
-                                                                    WHERE   Enlcaq = '{$dif_acto}'";
-                                                            $data["sql"] .= $sql.PHP_EOL;
-                                                            $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
-
-                                                            // En el encabezado de auditoria cambiar el estado de liquidado a no liquidado.
-                                                            if($proceso_auditoria_activo_sfi == 'on' && existeTabla($conex, $wemp_pmla, $wbasedato, ENC_AUDITORIA_252))
-                                                            {
-                                                                $ENC_AUDITORIA_252 = ENC_AUDITORIA_252;
-                                                                $sql = "UPDATE {$wbasedato}_{$ENC_AUDITORIA_252} SET Aueliq = 'off'
-                                                                        WHERE  Auetur = '{$codigo_turno_cx}'";
-                                                                $data["sql"] .= $sql.PHP_EOL;
-                                                                $result = mysql_query($sql,$conex) or die(mysql_errno().' - '.mysql_error().' SQL:'.$sql);
-                                                            }
-
-                                                            $data["mensaje"] = "Cargos anulados correctamente!";
                                                         }
                                                         else
                                                         {
-                                                            $data["error"] = 1;
-                                                            $data["mensaje"] .= " << Algunos cargos no se pudieron anular en UNIX >>";
+                                                            $data["error_tipo"]     = "anulacion_simulado";
+                                                            $html_err               = "";
+                                                            $data["evidenciaError"] = "";
+    
+                                                            // ERRORES DE CAMPO FACTURABLE VACÍO EN EL CARGO ANTES DE GRABAR
+                                                            if($arr_validaciones["error_facturable_insumo"])
+                                                            {
+                                                                $html_err .= '<br><div class="fila2" style="width:100%">No pudo anular la cirugía porque hay algunos cargos de insumos que el valor de facturable o no facturable esta vacío. Por favor revisar los cargos de insumos.</div>';
+                                                            }
+    
+                                                            // ERRORES DE SALDO DE INSUMO EN UNIX
+                                                            if(!$arr_validaciones["insumos_saldo"])
+                                                            {
+                                                                $html_err .= '<br><div class="fila2" style="width:100%">No pudo anular la cirugía porque no hay registro de saldo para algunos insumos. No se pudo crear saldo automáticamente en Unix</div>';
+                                                            }
+    
+                                                            // ERRORES DE TARIFA DE INSUMO EN UNIX
+                                                            if(!$arr_validaciones["insumos_tarifa"])
+                                                            {
+                                                                $err_html = "";
+                                                                $cont_err = 0;
+                                                                $sql_sintarifa = "";
+                                                                foreach ($arr_validaciones['arr_sin_tarifas'] as $cod_insu => $arr_infoInsu) {
+                                                                    $err_html .= '<li><span style="font-weight:bold;">'.$cod_insu.'</span>-'.utf8_encode($arr_infoInsu['nombre_insumo']).' | <span style="font-weight:bold;">Tarifa Emp.:</span> '.$arr_infoInsu['wtar'].'</li>';
+                                                                    $sql_sintarifa .= $arr_infoInsu['sql_sintarifa'];
+                                                                    $cont_err++;
+                                                                }
+    
+                                                                $openDiv = '<div align="center" style="background-color: #fff9cf;font-size:8pt;text-align:justify;">';
+                                                                if($cont_err > 10)
+                                                                { $openDiv = '<div align="center" style="background-color: #fff9cf;font-size:8pt;text-align:justify; height: 125px; overflow:auto;">'; }
+    
+                                                                $html_err .= '  <br><fieldset>
+                                                                                    <legend align="left"><span style="font-weight:bold;font-size:9pt;" >Insumos sin tarífa en Unix</span></legend>
+                                                                                    '.$openDiv.'
+                                                                                        <ul style="list-style-type: disc;padding-left: 20px;display: block;">
+                                                                                            '.$err_html.'
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                                <div style="display:none;">'.$sql_sintarifa.'</div>';
+                                                                $data["evidenciaError"] .= PHP_EOL."SIN_TARIFA".PHP_EOL.$sql_sintarifa;
+                                                            }
+    
+                                                            // ERRORES DE VALOR DIFERENTE DEL CARGO DE INSUMOS EN UNIX-MATRIX POR LA FECHA DE CAMBIO DE TARIFA.
+                                                            // En unix siempre al liquidar escoge el valor actual para el cargo de insumos (por fecha actual), pero en matrix si se tiene en cuenta el valor anterior y actual con la fecha de cirugía
+                                                            // Este problema pasa cuando la fecha en unix en mayor a la fecha de la cirugía.
+                                                            if(!$arr_validaciones["insumos_valores_unx_mtx"])
+                                                            {
+                                                                $err_html = "";
+                                                                $cont_err = 0;
+                                                                $sql_dif_valor = "";
+                                                                foreach ($arr_validaciones['arr_diferente_valor'] as $cod_insu => $arr_infoInsu) {
+                                                                    $err_html .= '<li><span style="font-weight:bold;">'.$cod_insu.'</span>-'.utf8_encode($arr_infoInsu['nombre_insumo']).' | <span style="font-weight:bold;">Tarifa Emp.:</span> '.$arr_infoInsu['wtar'].' [Unix: $'.$arr_infoInsu['valor_unix'].' | Matrix: $'.$arr_infoInsu['valor_matrix'].'] '.utf8_encode($arr_infoInsu['tipo_error_msj']).'</li>';
+                                                                    $sql_dif_valor .= $arr_infoInsu['sql_dif_valor'];
+                                                                    $cont_err++;
+                                                                }
+    
+                                                                $openDiv = '<div align="center" style="background-color: #fff9cf;font-size:8pt;text-align:justify;">';
+                                                                if($cont_err > 10)
+                                                                { $openDiv = '<div align="center" style="background-color: #fff9cf;font-size:8pt;text-align:justify; height: 125px; overflow:auto;">'; }
+    
+                                                                $html_err .= '  <br><fieldset>
+                                                                                    <legend align="left"><span style="font-weight:bold;font-size:9pt;" >Fecha de tarífa de insumo en Unix es mayor a la fecha de la cirugía, valores diferentes o insumo inactivo.</span></legend>
+                                                                                    <div align="center" style="font-size:8pt;text-align:justify;font-weight:bold;">El valor del cargo en Unix sería diferente al valor liquidado en Matrix, la fecha de actualización de la tarifa en Unix debe ser anterior o igual a la fecha de cirugía, verificar que los valores en Matrix y Unix son iguales o que el código esta activo en los dos sistemas.</div>
+                                                                                    '.$openDiv.'
+                                                                                        <ul style="list-style-type: disc;padding-left: 20px;display: block;">
+                                                                                            '.$err_html.'
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                </fieldset>
+                                                                                <div style="display:none;">'.$sql_dif_valor.'</div>';
+                                                                $data["evidenciaError"] .= PHP_EOL."SIN_FECHA_CX_MENOR_A_UNIX".PHP_EOL.$sql_dif_valor;
+                                                            }
+    
+                                                            $html_err = '<div class="" style="width:100%;text-align:center;color:red;background-color:#fff9af;">NO SE ANULÓ LA CIRUGÍA</div>'.$html_err;
+    
+                                                            $data["html"]    = $html_err;
+                                                            $data["error"]   = 1;
+                                                            // $data["mensaje"] = utf8_encode("No pudo liquidar la cirugía porque no hay registro de saldo para algunos insumos.\nNo se pudo crear saldo automáticamente");
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        $data["error_tipo"]     = "anulacion_simulado";
-                                                        $html_err               = "";
-                                                        $data["evidenciaError"] = "";
-
-                                                        // ERRORES DE CAMPO FACTURABLE VACÍO EN EL CARGO ANTES DE GRABAR
-                                                        if($arr_validaciones["error_facturable_insumo"])
-                                                        {
-                                                            $html_err .= '<br><div class="fila2" style="width:100%">No pudo anular la cirugía porque hay algunos cargos de insumos que el valor de facturable o no facturable esta vacío. Por favor revisar los cargos de insumos.</div>';
-                                                        }
-
-                                                        // ERRORES DE SALDO DE INSUMO EN UNIX
-                                                        if(!$arr_validaciones["insumos_saldo"])
-                                                        {
-                                                            $html_err .= '<br><div class="fila2" style="width:100%">No pudo anular la cirugía porque no hay registro de saldo para algunos insumos. No se pudo crear saldo automáticamente en Unix</div>';
-                                                        }
-
-                                                        // ERRORES DE TARIFA DE INSUMO EN UNIX
-                                                        if(!$arr_validaciones["insumos_tarifa"])
-                                                        {
-                                                            $err_html = "";
-                                                            $cont_err = 0;
-                                                            $sql_sintarifa = "";
-                                                            foreach ($arr_validaciones['arr_sin_tarifas'] as $cod_insu => $arr_infoInsu) {
-                                                                $err_html .= '<li><span style="font-weight:bold;">'.$cod_insu.'</span>-'.utf8_encode($arr_infoInsu['nombre_insumo']).' | <span style="font-weight:bold;">Tarifa Emp.:</span> '.$arr_infoInsu['wtar'].'</li>';
-                                                                $sql_sintarifa .= $arr_infoInsu['sql_sintarifa'];
-                                                                $cont_err++;
-                                                            }
-
-                                                            $openDiv = '<div align="center" style="background-color: #fff9cf;font-size:8pt;text-align:justify;">';
-                                                            if($cont_err > 10)
-                                                            { $openDiv = '<div align="center" style="background-color: #fff9cf;font-size:8pt;text-align:justify; height: 125px; overflow:auto;">'; }
-
-                                                            $html_err .= '  <br><fieldset>
-                                                                                <legend align="left"><span style="font-weight:bold;font-size:9pt;" >Insumos sin tarífa en Unix</span></legend>
-                                                                                '.$openDiv.'
-                                                                                    <ul style="list-style-type: disc;padding-left: 20px;display: block;">
-                                                                                        '.$err_html.'
-                                                                                    </ul>
-                                                                                </div>
-                                                                            </fieldset>
-                                                                            <div style="display:none;">'.$sql_sintarifa.'</div>';
-                                                            $data["evidenciaError"] .= PHP_EOL."SIN_TARIFA".PHP_EOL.$sql_sintarifa;
-                                                        }
-
-                                                        // ERRORES DE VALOR DIFERENTE DEL CARGO DE INSUMOS EN UNIX-MATRIX POR LA FECHA DE CAMBIO DE TARIFA.
-                                                        // En unix siempre al liquidar escoge el valor actual para el cargo de insumos (por fecha actual), pero en matrix si se tiene en cuenta el valor anterior y actual con la fecha de cirugía
-                                                        // Este problema pasa cuando la fecha en unix en mayor a la fecha de la cirugía.
-                                                        if(!$arr_validaciones["insumos_valores_unx_mtx"])
-                                                        {
-                                                            $err_html = "";
-                                                            $cont_err = 0;
-                                                            $sql_dif_valor = "";
-                                                            foreach ($arr_validaciones['arr_diferente_valor'] as $cod_insu => $arr_infoInsu) {
-                                                                $err_html .= '<li><span style="font-weight:bold;">'.$cod_insu.'</span>-'.utf8_encode($arr_infoInsu['nombre_insumo']).' | <span style="font-weight:bold;">Tarifa Emp.:</span> '.$arr_infoInsu['wtar'].' [Unix: $'.$arr_infoInsu['valor_unix'].' | Matrix: $'.$arr_infoInsu['valor_matrix'].'] '.utf8_encode($arr_infoInsu['tipo_error_msj']).'</li>';
-                                                                $sql_dif_valor .= $arr_infoInsu['sql_dif_valor'];
-                                                                $cont_err++;
-                                                            }
-
-                                                            $openDiv = '<div align="center" style="background-color: #fff9cf;font-size:8pt;text-align:justify;">';
-                                                            if($cont_err > 10)
-                                                            { $openDiv = '<div align="center" style="background-color: #fff9cf;font-size:8pt;text-align:justify; height: 125px; overflow:auto;">'; }
-
-                                                            $html_err .= '  <br><fieldset>
-                                                                                <legend align="left"><span style="font-weight:bold;font-size:9pt;" >Fecha de tarífa de insumo en Unix es mayor a la fecha de la cirugía, valores diferentes o insumo inactivo.</span></legend>
-                                                                                <div align="center" style="font-size:8pt;text-align:justify;font-weight:bold;">El valor del cargo en Unix sería diferente al valor liquidado en Matrix, la fecha de actualización de la tarifa en Unix debe ser anterior o igual a la fecha de cirugía, verificar que los valores en Matrix y Unix son iguales o que el código esta activo en los dos sistemas.</div>
-                                                                                '.$openDiv.'
-                                                                                    <ul style="list-style-type: disc;padding-left: 20px;display: block;">
-                                                                                        '.$err_html.'
-                                                                                    </ul>
-                                                                                </div>
-                                                                            </fieldset>
-                                                                            <div style="display:none;">'.$sql_dif_valor.'</div>';
-                                                            $data["evidenciaError"] .= PHP_EOL."SIN_FECHA_CX_MENOR_A_UNIX".PHP_EOL.$sql_dif_valor;
-                                                        }
-
-                                                        $html_err = '<div class="" style="width:100%;text-align:center;color:red;background-color:#fff9af;">NO SE ANULÓ LA CIRUGÍA</div>'.$html_err;
-
-                                                        $data["html"]    = $html_err;
                                                         $data["error"]   = 1;
-                                                        // $data["mensaje"] = utf8_encode("No pudo liquidar la cirugía porque no hay registro de saldo para algunos insumos.\nNo se pudo crear saldo automáticamente");
+                                                        $data["mensaje"] = utf8_encode("No pudo liquidar la cirugía porque no hay conexión con UNIX en este momento");
                                                     }
+                                                    
                                                 }
                                                 else
                                                 {
@@ -11615,50 +11666,59 @@ if(isset($accion) && isset($form))
                                 $filtros .= " AND pactid = '{$wtip_doc}'";
 
                                 $conexUnix = odbc_connect('facturacion','informix','sco');
-                                $sqlunx = " SELECT  pachis, pacnum, pacced, pactid, pacfec
-                                            FROM    inpac
-                                            WHERE   pachis = '{$whistoria}'
-                                                    {$filtros}";
 
-                                if($result_unx = odbc_exec($conexUnix, $sqlunx))
+                                if( $conexUnix != '' )
                                 {
-                                    // 1 >> Debe existir un ingreso activo en unix para que el integrador no genere error ni detenga su correcta ejecusión.
-                                    // 2 >> Si el ingreso activo en unix es diferente al ingreso que se está grabando en el cargo entonces se deben marcar esos
-                                    //      cargos (Solo de insumos) para que despues de grabados se les cambie el número de ingreso en unix, porque cuando el integrador
-                                    //      pase a unix los insumos, estos pasarán con el número de ingreso que esté activo en unix.
-                                    $documento_unx = "";
-                                    $tipodoc_unx   = "";
-                                    $wingreso_activo_unx = "";
-                                    while(odbc_fetch_row($result_unx))
+                                    $sqlunx = " SELECT  pachis, pacnum, pacced, pactid, pacfec
+                                                FROM    inpac
+                                                WHERE   pachis = '{$whistoria}'
+                                                        {$filtros}";
+    
+                                    if($result_unx = odbc_exec($conexUnix, $sqlunx))
                                     {
-                                        $wingreso_activo_unx = trim(odbc_result($result_unx,'pacnum'));
-                                        $documento_unx       = trim(odbc_result($result_unx,'pacced'));
-                                        $tipodoc_unx         = trim(odbc_result($result_unx,'pactid'));
-                                        $fec_ingreso_unx     = trim(odbc_result($result_unx,'pacfec'));
-                                        $data['wingreso_activo_unx'] = $wingreso_activo_unx;
-                                        if($wingreso_activo_unx != $wing)
+                                        // 1 >> Debe existir un ingreso activo en unix para que el integrador no genere error ni detenga su correcta ejecusión.
+                                        // 2 >> Si el ingreso activo en unix es diferente al ingreso que se está grabando en el cargo entonces se deben marcar esos
+                                        //      cargos (Solo de insumos) para que despues de grabados se les cambie el número de ingreso en unix, porque cuando el integrador
+                                        //      pase a unix los insumos, estos pasarán con el número de ingreso que esté activo en unix.
+                                        $documento_unx = "";
+                                        $tipodoc_unx   = "";
+                                        $wingreso_activo_unx = "";
+                                        while(odbc_fetch_row($result_unx))
                                         {
-                                            $data["winsumos_cambiar_ingreso"]   = 'on';
-                                            $data["wingreso_reemplazable_unix"] = $wingreso_activo_unx;
-                                            $data["fecha_reemplazable_unix"]    = $fec_ingreso_unx;
+                                            $wingreso_activo_unx = trim(odbc_result($result_unx,'pacnum'));
+                                            $documento_unx       = trim(odbc_result($result_unx,'pacced'));
+                                            $tipodoc_unx         = trim(odbc_result($result_unx,'pactid'));
+                                            $fec_ingreso_unx     = trim(odbc_result($result_unx,'pacfec'));
+                                            $data['wingreso_activo_unx'] = $wingreso_activo_unx;
+                                            if($wingreso_activo_unx != $wing)
+                                            {
+                                                $data["winsumos_cambiar_ingreso"]   = 'on';
+                                                $data["wingreso_reemplazable_unix"] = $wingreso_activo_unx;
+                                                $data["fecha_reemplazable_unix"]    = $fec_ingreso_unx;
+                                            }
+                                        }
+    
+                                        if($wingreso_activo_unx != '')
+                                        {
+                                            $paciente_activo_unx = true;
                                         }
                                     }
-
-                                    if($wingreso_activo_unx != '')
+                                    else
                                     {
-                                        $paciente_activo_unx = true;
+                                            $data["sql_unix"]    = $sqlunx." > ".mysql_error();
+                                            $data["error"]       = 1;
+                                            $data["mensaje"]     = utf8_encode("No se pudo verificar si el paciente esta activo en unix.\nNo se ha podido liquidar la cirugía");
+                                            $data["mensaje_unx"] = $arr_params["mensaje"];
                                     }
+    
+                                    odbc_close($conexUnix);
+                                    odbc_close_all();
                                 }
-                                else
-                                {
-                                        $data["sql_unix"]    = $sqlunx." > ".mysql_error();
-                                        $data["error"]       = 1;
-                                        $data["mensaje"]     = utf8_encode("No se pudo verificar si el paciente esta activo en unix.\nNo se ha podido liquidar la cirugía");
-                                        $data["mensaje_unx"] = $arr_params["mensaje"];
+                                else{
+                                    $data["error"]       = 1;
+                                    $data["mensaje"]     = utf8_encode("No fue posible realizar conexion con Unix en este momento, \npuede intentar más tarde.");
+                                    $data["mensaje_unx"] = $arr_params["mensaje"];
                                 }
-
-                                odbc_close($conexUnix);
-                                odbc_close_all();
                             }
 
                             $data["paciente_activo_unx"] = ($paciente_activo_unx) ? 'on': 'off';//Debe existir por lo menos un ingreso activo en unix para que el integrador pase los insumos a unix.
@@ -11667,7 +11727,14 @@ if(isset($accion) && isset($form))
                         }
                         else
                         {
-                            $data["paciente_activo_unx"] = 'on';
+                            /*  Se comenta linea, ya que si la variable $hay_unix esta en false, 
+                                no se logró verificar si el paciente esta activo en unix.
+                                Se declara error y se agrega mensaje. para identificar la falla.
+                            */
+                            // $data["paciente_activo_unx"] = 'on';
+                            $data["error"]       = 1;
+                            $data["mensaje"]     = utf8_encode("No se pudo encontrar el archivo erp_unix.php en Include.\nNo se ha podido liquidar la cirugía. \nComunicase con TI.");
+                            $data["mensaje_unx"] = $arr_params["mensaje"];
                         }
                     break;
 
@@ -12884,6 +12951,7 @@ if(isset($accion) && isset($form))
                                     }
 
                                     $tipo_porcentaje = ($es_paquete) ? 'pqte': 'actividad';
+                                    // Obtiene array multiple con todas los porcentajes configurados del manual correspondiente
                                     $arr_porcentajes_multiples = crearArrayPorcentajesMultiples($conex, $wbasedato, $tipo_porcentaje, $tipoEmpresa_Manual, $wcod_empresa_Manual, $wpolitraumatizado, $CX_numero_vias, $CX_numero_especialidades, $TIP_POS, $arr_parametros_extra, $procedimiento_manual);
                                     $arr_baseLiquidacion = $arr_parametros_extra;
 
@@ -12995,7 +13063,9 @@ if(isset($accion) && isset($form))
                                 $cx_queSISeCobran = array();
 
                                 $numero_cirugia                 = 0;
-                                $esMultipleEspecialidadDifVia   = ((count($arr_procedimientos_orden[$TIP_POS]) > 1) && ($arr_datos_liquidar["wnumero_vias"] > 1)) ? true: false;
+                                // $esMultipleEspecialidadDifVia   = ((count($arr_procedimientos_orden[$TIP_POS]) > 1) && ($arr_datos_liquidar["wnumero_vias"] > 1)) ? true: false;
+
+                                $esMultipleEspecialidadDifVia   = ((count($arr_procedimientos_orden[$TIP_POS]) > 1)) ? true: false;
 
                                 // $porcentajeRepetible            = "";
                                 // $arrRepetiblePorEspecialidad    = array();
@@ -15548,6 +15618,9 @@ if(isset($accion) && isset($form))
                                 $wposicion_organo_nom = $wprocedimiento_dif;
                             }
 
+                            $wvia2 = $arr_datos_liquidar['arr_para_liquidar'][$dif_tr]['wvia'];
+                            $wbilateral2 = $arr_datos_liquidar['arr_para_liquidar'][$dif_tr]['wbilateral'];
+
                             $arr_datos_liquidar['arr_para_liquidar'][$dif_tr] =
                                     array(  "wprocedimiento_dif"         => $wprocedimiento_dif,
                                             "wprocedimiento"             => $wprocedimiento,
@@ -15616,7 +15689,7 @@ if(isset($accion) && isset($form))
                                                         <td>'.$wtiempo_uso_minutos.'</td>
                                                         <td>'.$wtiempo_minutos_cx.'</td> -->
                                                         <td id="td_delete_cx_'.$dif_tr.'">
-                                                            <img class="img_del1 img_del1CX deleteCx_'.$dif_tr.'" border="0" src="../../images/medical/eliminar1.png" title="Quitar de lista" onclick="eliminarFilaDatosLiq(\'tr_liqAdd_cxs_'.$dif_tr.'\', \'tr_liqAdd_cxs_\', \''.$dif_tr.'\', \''.$wprocedimiento_dif.'\');">
+                                                            <img class="img_del1 img_del1CX deleteCx_'.$dif_tr.'" border="0" src="../../images/medical/eliminar1.png" title="Quitar de lista" onclick="eliminarFilaDatosLiq(\'tr_liqAdd_cxs_'.$dif_tr.'\', \'tr_liqAdd_cxs_\', \''.$dif_tr.'\', \''.$wprocedimiento_dif.'\', \''.$wvia.'\', \''.$wbilateral.'\')">
                                                         </td>
                                                     </tr>';
                             }
@@ -16391,7 +16464,7 @@ $actOpOtrosProced = ($actOpOtrosProced == 'on') ? '': 'disabled="disabled"';
 ?>
 <html lang="es-ES">
 <head>
-    <title>Liquidación Cirugía</title>
+    <title>Liquidaci&oacute;n Cirug&iacute;a</title>
     <meta charset="utf-8">
 
     <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
@@ -17022,7 +17095,7 @@ $actOpOtrosProced = ($actOpOtrosProced == 'on') ? '': 'disabled="disabled"';
                 welemento               : elemento
 
             },function(data){
-
+                console.log(data);
                 // --> data.prueba valida si la historia existe
                 var alerta = 'La historia no existe';
                 if(data.prueba == 'no')
@@ -17586,7 +17659,7 @@ $actOpOtrosProced = ($actOpOtrosProced == 'on') ? '': 'disabled="disabled"';
             }
             else
             {
-                var alerta = "Debe escribir un número de historia correcto";
+                var alerta = "Debe escribir un n&uacute;mero de historia correcto";
                 jAlert(alerta, "Mensaje");
             }
         }
@@ -17874,7 +17947,7 @@ $actOpOtrosProced = ($actOpOtrosProced == 'on') ? '': 'disabled="disabled"';
             }
         }
 
-        function eliminarFilaDatosLiq(id_fila, prefijoFila, dif_key, wprocedimiento) //tipo_cobro ,id_fila, identifica_concepto, prefijoFila, dif_rango
+        function eliminarFilaDatosLiq(id_fila, prefijoFila, dif_key, wprocedimiento, wvia, wbilateral) //tipo_cobro ,id_fila, identifica_concepto, prefijoFila, dif_rango
         {
             $(".img_del1CX").hide(); // oculta las otras opciones de borrar de la lista, en caso de estar lento el sistema, y no permitir borrar otra cirugía de forma asincrona y dañar los datos de la liquidación
             $("#td_delete_cx_"+dif_key).append('<img class="delete_cx_loading" border="0" src="../../images/medical/ajax-loader2.gif" title="Cargando.." >'); // Adiciona el gif de carga a la fila que se le dió borrar
@@ -17894,6 +17967,11 @@ $actOpOtrosProced = ($actOpOtrosProced == 'on') ? '': 'disabled="disabled"';
                                     {
                                         if(!$("#tabla_procedimientos_auditados").find(".trproAud_"+idx_auditado).is(":visible"))
                                         {
+                                            // Se reestablece datos que el medico auditor había indicado para la vía y si es bitaleral
+                                            if( wbilateral == 'on' ){
+                                                $("#wbilateral_"+idx_auditado).prop('checked', true); 
+                                            }
+                                            $("#wvia_"+idx_auditado).val(wvia); 
                                             $("#tabla_procedimientos_auditados").find(".trproAud_"+idx_auditado).show(1000);
                                         }
                                     }
