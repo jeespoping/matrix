@@ -48,6 +48,10 @@ include_once("root/comun.php");
  * Autor:		Edwin Molina Grisales.
  * Descripcion:	Se agrega función para registrar en el KE.  Si un paciente tiene KE
  * 				y se le devulve un articulo debe descontar en uno la cantidad dispensada.
+ * 
+ * Actualización (sebastian.nevado): 2021-06-11 se realiza llamado de factura inteligente para insumos.
+ * Modificación (sebastian.nevado): 2021-07-19 sebastian.nevado: se quita el lote del where de la segunda consulta para traer los insumos. Se agrega el lote como resultado de la segunda consulta para poder identificar insumos. Además, se modifican el where de las consultas de presentación y conversión para que aplique a los insumos.
+ * Actualización  (sebastian.nevado): 2021-07-22 aumento el inventario para los insumos. NOTA: no se valida que tenga existencias para hacer movimiento debido a que no había sido reportado, por lo que el inventario puede quedar negativo.
  */
 
 
@@ -355,6 +359,7 @@ function pintarBoton()
 
 /**
 * De cada isnumo de consulta que presentacion se cargo y si fue cargada o por ajuste de presentacion
+* Modificación 2021-07-19 sebastian.nevado: se quita el lote del where de la segunda consulta para traer los insumos. Se agrega el lote como resultado de la segunda consulta para poder identificar insumos. Además, se modifican el where de las consultas de presentación y conversión para que aplique a los insumos.
 * 
 * @param vector $inslis lista de insumos del producto cargado
 * @param caracter $cco centro de costos que cargo
@@ -392,14 +397,13 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
     $res1 = mysql_query($q, $conex);
     $row1 = mysql_fetch_array($res1);
 
-    $q = " SELECT Mdeart, Mdepre, Mdecan, Mdepaj, Mdecaj, Mdecto "
+    $q = " SELECT Mdeart, Mdepre, Mdecan, Mdepaj, Mdecaj, Mdecto, Mdenlo "
      . "        FROM " . $wbasedato . "_000006, " . $wbasedato . "_000007, " . $wbasedato . "_000008 "
      . "      WHERE Mencon= Concod "
      . "            and Mencco = mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
      . "            and Mendan='" . $row1[0] . "-" . $row1[1] . "' "
      . "            and Mdecon = Mencon "
      . "            and Mdedoc = Mendoc "
-     . "            and Mdenlo = '" . $lote . "-" . $codigo . "' "
      . "            and Mdeest = 'on' "
      . "            and Menest = 'on' "
      . "        ORDER BY " . $wbasedato . "_000006.id desc";
@@ -426,12 +430,15 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
             $inslis[$i]['nom'] = $row2[0];
             $inslis[$i]['pre'] = $row2[1];
             $inslis[$i]['tot'] = $row1[5];
+			$inslis[$i]['lote'] = $row1[6];
 
             if ($row1[1] != '')
             {
+				$sWhereArtCod = (strpos($row1[1], "-") !== false) ? "mid('" . $row1[1] . "',1,instr('" . $row1[1] . "','-')-1) " : "'".$row1[1]."'";
+
                 $q = " SELECT Artcom "
                  . "        FROM  ".$bd."_000026 "
-                 . "      WHERE Artcod = mid('" . $row1[1] . "',1,instr('" . $row1[1] . "','-')-1) "
+				 . "      WHERE Artcod = ".$sWhereArtCod
                  . "            and Artest='on' ";
 
                 $res2 = mysql_query($q, $conex);
@@ -444,7 +451,7 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
 
                 $q = " SELECT Appcnv"
                  . "        FROM " . $wbasedato . "_000009 "
-                 . "      WHERE Apppre = mid('" . $row1[1] . "',1,instr('" . $row1[1] . "','-')-1) "
+				 . "      WHERE Apppre = ".$sWhereArtCod
                  . "            and Appest='on' ";
 
                 $res2 = mysql_query($q, $conex);
@@ -1133,6 +1140,17 @@ else
 											}
 											// FIN MODIFICACION
 
+											/*
+											 *Fecha: 2021-07-22
+											 *Descripción: Si no tiene lote, es un insumo, aumento el inventario
+											 *Autor: sebastian.nevado
+											*/
+											if(empty($inslis[$i]['lote']))
+											{
+												sumarArticuloMatrix($inslis[$i]['cod'], $cco, '', $art['cod']);
+											}
+											// FIN MODIFICACION
+
 											$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, $error);
 											if (!$res)
 											{
@@ -1500,6 +1518,17 @@ else
 												echo $aResultadoFactInteligente->mensaje;
 											}
 											// FIN MODIFICACION
+
+											/*
+											 *Fecha: 2021-07-22
+											 *Descripción: Si no tiene lote, es un insumo, aumento el inventario
+											 *Autor: sebastian.nevado
+											*/
+											if(empty($inslis[$i]['lote']))
+											{
+												sumarArticuloMatrix($inslis[$i]['cod'], $cco, '', $art['cod']);
+											}
+											// FIN MODIFICACION
 											
 
 											// $res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
@@ -1606,7 +1635,8 @@ else
 										*Descripción: se realiza llamado de factura inteligente.
 										*Autor: sebastian.nevado
 									*/
-									$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $inslis[$i]['prese']['nom'], $art['can'], $tipTrans, $dronum, $drolin);
+									$sNombreArticulo = substr($var, strlen($exp[0]."-"), strlen($var)-1);
+									$aResultadoFactInteligente = llamarFacturacionInteligente($pac, $centro['cod'], $art['cod'], $sNombreArticulo, $art['can'], $tipTrans, $dronum, $drolin);
 									if(!$aResultadoFactInteligente->exito)
 									{
 										echo $aResultadoFactInteligente->mensaje;
