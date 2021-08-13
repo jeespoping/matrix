@@ -1511,7 +1511,7 @@ function marcarLlegada($wid, $fecha, $hora)
 	$rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 }
 
-function marcarLlegada__($wid, $fecha, $hora, $wemp_pmla)
+function marcarLlegada_($wid, $fecha, $hora, $wemp_pmla)
 {
 	global $conex;
 	global $wcencam;
@@ -1567,12 +1567,16 @@ function obtenerDatosPacienteAlta( $wid, $wcencam, $wemp_pmla )
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
 	$sql = "
-		SELECT	{$wcencam}_000003.Historia,
-					{$wcencam}_000003.Motivo,
-					IF({$wbasedato}_000020.Habcod = '' or NULL, 'null', {$wbasedato}_000020.Habcod) AS Habitacion
-			FROM	{$wcencam}_000003, {$wbasedato}_000020
-			WHERE	{$wcencam}_000003.id = {$wid}
-			AND	{$wbasedato}_000020.Habhis = {$wcencam}_000003.Historia
+	  SELECT	{$wcencam}_000003.Historia,
+				{$wcencam}_000003.Motivo,
+				IF(
+					{$wbasedato}_000020.Habcod = '' or NULL,
+					'null',
+					{$wbasedato}_000020.Habcod
+				) AS Habitacion
+		FROM	{$wcencam}_000003, {$wbasedato}_000020
+	   WHERE	{$wcencam}_000003.id = {$wid}
+		 AND	{$wbasedato}_000020.Habhis = {$wcencam}_000003.Historia
 		";
 
 	$resultQuery = mysql_query($sql, $conex) or die (mysql_errno() . " - " . mysql_error());
