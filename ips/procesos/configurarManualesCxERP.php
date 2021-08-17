@@ -29,6 +29,8 @@ if(!isset($accion))
 	
 	
  ACTUALIZACIONES:
+ * Julio 28 2021 Juan David Rodriguez:
+    - Se agrega tabla de log para el manual de configuración.
  * Enero 04 2016 Edwar Jaramillo:
     - Para los manuales de urgencias se inactivan las opciones de bilateral y repetir porcentaje para algunos conceptos, se ocultan esas opciones para urgencias.
  * Noviembre 11 2015 Edwar Jaramillo:
@@ -1508,6 +1510,20 @@ if(isset($accion) && isset($form))
                     {
                         if(empty($porcentaje)) { $porcentaje = 0; }
 
+                        $sql = "SELECT t186.Medico, t186.Blqclq, t187.Cxxtaq, t187.Cxxcod, '{$wconcepto}', '{$posicion}'
+                                FROM    {$wbasedato}_{$TB_BASE_LIQUIDACION} AS t186
+                                        INNER JOIN
+                                        {$wbasedato}_{$TB_BASE_LIQ_ACTOSQX} AS t187 ON (t186.Blqclq = t187.Cxxblq)
+                                WHERE   t186.id = '{$id_manual}'
+                                        AND t187.id = '{$id_acto_qx}'";
+                        $result       = mysql_query($sql,$conex) or die (mysql_errno().'-'.mysql_error().'- SQL: '.$sql);
+                        $row = mysql_fetch_array($result);
+
+                        $Medico = $row["Medico"];
+                        $Blqclq = $row["Blqclq"];
+                        $Cxxtaq = $row["Cxxtaq"];
+                        $Cxxcod = $row["Cxxcod"];
+
                         if(!empty($id_registro))
                         {
                             $sql = "UPDATE {$wbasedato}_{$TB_BASE_LIQPORCENTA}
@@ -1516,29 +1532,21 @@ if(isset($accion) && isset($form))
                                                    Seguridad = 'C-{$user_session}'
                                     WHERE   id = '{$id_registro}'";
                             $result = mysql_query($sql,$conex) or die(mysql_errno().'-'.mysql_error().'- SQL: '.$sql);
+
+                            $query = "INSERT INTO {$wbasedato}_000353 (Medico, Fecha_data, Hora_data, Liqclq, Liqcxx, Liqcon, Liqtaq, Liqncx, Liqpor, User)
+                                        VALUES('{$Medico}', '{$fecha_data}', '{$hora_data}', '{$Blqclq}', '{$Cxxcod}', '{$wconcepto}', '{$Cxxtaq}', '{$posicion}', '{$valor_actualiza}', 'C-{$user_session}')";
+                            $res = mysql_query($query,$conex);
                         }
                         else
                         {
-                            $sql = "SELECT t186.Medico, t186.Blqclq, t187.Cxxtaq, t187.Cxxcod, '{$wconcepto}', '{$posicion}'
-                                    FROM    cliame_{$TB_BASE_LIQUIDACION} AS t186
-                                            INNER JOIN
-                                            cliame_{$TB_BASE_LIQ_ACTOSQX} AS t187 ON (t186.Blqclq = t187.Cxxblq)
-                                    WHERE   t186.id = '{$id_manual}'
-                                            AND t187.id = '{$id_acto_qx}'";
-                            $result       = mysql_query($sql,$conex) or die (mysql_errno().'-'.mysql_error().'- SQL: '.$sql);
-                            $row = mysql_fetch_array($result);
-
-                            $Medico = $row["Medico"];
-                            $Blqclq = $row["Blqclq"];
-                            $Cxxtaq = $row["Cxxtaq"];
-                            $Cxxcod = $row["Cxxcod"];
-
-                            $sql = "INSERT INTO {$wbasedato}_{$TB_BASE_LIQPORCENTA}
-                                            (Medico, Fecha_data, Hora_data, Liqclq, Liqtaq, Liqcxx,
-                                            Liqcon, Liqncx, Liqpor, Liqest, Seguridad)
+                            $sql = "INSERT INTO {$wbasedato}_{$TB_BASE_LIQPORCENTA} (Medico, Fecha_data, Hora_data, Liqclq, Liqtaq, Liqcxx, Liqcon, Liqncx, Liqpor, Liqest, Seguridad)
                                     VALUES ('{$Medico}', '{$fecha_data}', '{$hora_data}', '{$Blqclq}', '{$Cxxtaq}', '{$Cxxcod}', '{$wconcepto}', '{$posicion}', '{$valor_actualiza}', 'on', 'C-{$user_session}')";
                             $result = mysql_query($sql,$conex) or die (mysql_errno().'-'.mysql_error().'- SQL: '.$sql);
                             $data["id_registro_nuevo"] = mysql_insert_id();
+
+                            $query = "INSERT INTO {$wbasedato}_000353 (Medico, Fecha_data, Hora_data, Liqclq, Liqcxx, Liqcon, Liqtaq, Liqncx, Liqpor, User)
+                                        VALUES('{$Medico}', '{$fecha_data}', '{$hora_data}', '{$Blqclq}', '{$Cxxcod}', '{$wconcepto}', '{$Cxxtaq}', '{$posicion}', '{$valor_actualiza}', 'C-{$user_session}')";
+                            $res = mysql_query($query,$conex);
                         }
                     }
                     elseif($actualiza == 'desc_acto')
@@ -1605,7 +1613,7 @@ if(isset($accion) && isset($form))
                         if($result = mysql_query($sql,$conex))
                         {
                             $sql = "SELECT Cxxblq, Cxxcod
-                                    FROM    cliame_{$TB_BASE_LIQ_ACTOSQX} AS t187
+                                    FROM    {$wbasedato}_{$TB_BASE_LIQ_ACTOSQX} AS t187
                                     WHERE   t187.id = '{$id_registro}'";
                             $result       = mysql_query($sql,$conex) or die (mysql_errno().'-'.mysql_error().'- SQL: '.$sql);
                             $row = mysql_fetch_array($result);
@@ -3043,6 +3051,7 @@ $resultManuales = mysql_query($sql,$conex) or die("Error: ".mysql_errno()." ".$s
 
             var error = 0;
             var posicion = $(elem).parent().parent().attr("cx_posicion");
+            console.log(posicion);
             var valor_actualiza = $(elem).val();
 
             if($(elem).attr("type") == "checkbox")

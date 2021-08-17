@@ -30,7 +30,6 @@ else
 	$key = substr($user,2,strlen($user));
 	echo "<form  name='sticker_HC100' action='sticker_HC100.php' method=post>";
 	
-
 	
 
 	if(!isset($wimp) or !isset($wces) or !isset($whis) or !isset($wtip))
@@ -172,7 +171,7 @@ else
 								$wedad=(string)(integer)$meses." M";
 							else
 								$wedad=(string)(integer)$dias1." D";
-						$paquete="";
+						/*$paquete="";
 						$paquete=$paquete."CT~~CD,~CC^~CT~".chr(13).chr(10);
 						$paquete=$paquete."^XA~TA000~JSN^LT0^MNM^MTD^PON^PMN^LH0,0^JMA^PR2,2~SD21^JUS^LRN^CI0^XZ".chr(13).chr(10);
 						$paquete=$paquete."~DG000.GRF,10240,032,".chr(13).chr(10);
@@ -194,7 +193,7 @@ else
 						$paquete=$paquete."^LS0".chr(13).chr(10);
 						$paquete=$paquete."^XA".chr(13).chr(10);
 						$paquete=$paquete."^CF0,30".chr(13).chr(10);
-						$paquete=$paquete."^FO180,1400^A@R^FDCLINICA LAS AMERICAS^FS".chr(13).chr(10);
+						$paquete=$paquete."^FO180,1400^A@R^FDCLINICA PORTO AZUL^FS".chr(13).chr(10);
 						$paquete=$paquete."^CF0,20".chr(13).chr(10);
 						$paquete=$paquete."^FO155,1400^A@R^FD".$wtdo."^FS".chr(13).chr(10);
 						$paquete=$paquete."^FO155,1470^A@R^FD".$wdoc."^FS".chr(13).chr(10);
@@ -209,9 +208,46 @@ else
 						$paquete=$paquete."^FD".$whis."^FS".chr(13).chr(10);
 						$paquete=$paquete."^FT16,1380^XG000.GRF,1,1^FS".chr(13).chr(10);
 						$paquete=$paquete."^PQ1,0,1,Y^XZ".chr(13).chr(10);
-						$paquete=$paquete."^XA^ID000.GRF^FS^XZ".chr(13).chr(10);
-
+						$paquete=$paquete."^XA^ID000.GRF^FS^XZ".chr(13).chr(10);*/
+						$paquete = "CT~~CD,~CC^~CT~
+							^XA
+							~TA000
+							~JSN
+							^LT0
+							^MNW
+							^MTT
+							^PON
+							^PMN
+							^LH0,0
+							^JMA
+							^PR6,6
+							~SD15
+							^JUS
+							^LRN
+							^CI27
+							^PA0,1,1,0
+							^XZ
+							^XA
+							^MMT
+							^PW300
+							^LL3300
+							^LS0
+							^FO21,745^GFA,3153,14688,36,:Z64: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:8F76
+							^FT239,1204^A0R,33,33^FH\^CI28^FDCLINICA LAS AMERICAS AUNA^FS^CI27
+							^FT198,1204^A0R,33,33^FH\^CI28^FD".$wtdo." : ".$wdoc."^FS^CI27
+							^FT157,1204^A0R,33,33^FH\^CI28^FDSEXO :".$wsex."^FS^CI27
+							^FT116,1204^A0R,33,33^FH\^CI28^FDHISTORIA:".$whis."^FS^CI27
+							^FT75,1204^A0R,33,33^FH\^CI28^FD".$wpac."^FS^CI27
+							^FT239,1737^A0R,33,33^FH\^CI28^FD*** ".$wces." ***^FS^CI27
+							^FT198,1737^A0R,33,33^FH\^CI28^FDEDAD :".$wedad."^FS^CI27
+							^FT157,1737^A0R,33,33^FH\^CI28^FDINGRESO: ".$wing."^FS^CI27
+							^BY3,3,219^FT62,2174^BCR,,Y,N
+							^FH\^FD>;".$whis."^FS
+							^PQ1,,,Y
+							^XZ
+						";
 						//echo $paquete."<br>";
+						//break;
 						$addr=$wip;
 						$fp = fsockopen( $addr,9100, $errno, $errstr, 30);
 						if(!$fp) 
@@ -272,7 +308,7 @@ else
 								$wedad=(string)(integer)$meses." M";
 							else
 								$wedad=(string)(integer)$dias1." D";
-						$paquete="";
+						/*$paquete="";
 						$paquete=$paquete."CT~~CD,~CC^~CT~".chr(13).chr(10);
 						$paquete=$paquete."^XA~TA000~JSN^LT0^MNM^MTD^PON^PMN^LH0,0^JMA^PR2,2~SD21^JUS^LRN^CI0^XZ".chr(13).chr(10);
 						$paquete=$paquete."~DG000.GRF,10240,032,".chr(13).chr(10);
@@ -294,7 +330,7 @@ else
 						$paquete=$paquete."^LS0".chr(13).chr(10);
 						$paquete=$paquete."^XA".chr(13).chr(10);
 						$paquete=$paquete."^CF0,60".chr(13).chr(10);
-						$paquete=$paquete."^FO220,390^A@R^FDCLINICA LAS AMERICAS^FS".chr(13).chr(10);
+						$paquete=$paquete."^FO220,390^A@R^FDCLINICA PORTO AZUL^FS".chr(13).chr(10);
 						$paquete=$paquete."^CF0,30".chr(13).chr(10);
 						$paquete=$paquete."^FO180,400^A@R^FD".$wtdo."^FS".chr(13).chr(10);
 						$paquete=$paquete."^FO180,470^A@R^FD".$wdoc."^FS".chr(13).chr(10);
@@ -309,11 +345,48 @@ else
 						$paquete=$paquete."^FD".$whis."^FS".chr(13).chr(10);
 						$paquete=$paquete."^FT42,380^XG000.GRF,1,1^FS".chr(13).chr(10);
 						$paquete=$paquete."^PQ1,0,1,Y^XZ".chr(13).chr(10);
-						$paquete=$paquete."^XA^ID000.GRF^FS^XZ".chr(13).chr(10);
+						$paquete=$paquete."^XA^ID000.GRF^FS^XZ".chr(13).chr(10);*/
+						$paquete = "CT~~CD,~CC^~CT~
+							~TA000
+							~JSN
+							^LT0
+							^MNW
+							^MTT
+							^PON
+							^PMN
+							^LH0,0
+							^JMA
+							^PR2,2
+							~SD15
+							^JUS
+							^LRN
+							^CI27
+							^PA0,1,1,0
+							^XZ
+							^XA
+							^MMT
+							^PW300
+							^LL2100
+							^LS0
+							^BY2,3,174^FT77,1386^BCR,,Y,N
+							^FH\^FD>;".$whis."^FS
+							^FT246,641^A0R,33,33^FH\^CI28^FDCLINICA LAS AMERICAS AUNA^FS^CI27
+							^FT205,641^A0R,33,33^FH\^CI28^FD".$wtdo." : ".$wdoc."^FS^CI27
+							^FT164,641^A0R,33,33^FH\^CI28^FDSEXO :".$wsex."^FS^CI27
+							^FT123,641^A0R,33,33^FH\^CI28^FDHISTORIA : ".$whis."^FS^CI27
+							^FT82,641^A0R,33,33^FH\^CI28^FD".$wpac."^FS^CI27
+							^FO51,280^GFA,2241,9324,28,:Z64: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:0417
+							^FT210,1113^A0R,33,33^FH\^CI28^FD*** ".$wces." ***^FS^CI27
+							^FT169,1113^A0R,33,33^FH\^CI28^FDEDAD : ".$wedad."^FS^CI27
+							^FT128,1113^A0R,33,33^FH\^CI28^FDINGRESO : ".$wing."^FS^CI27
+							^PQ1,,,Y
+							^XZ
 
+							";
 						//echo $paquete."<br>";
+						//break;
 						$addr=$wip;
-						$fp = fsockopen( $addr,9100, $errno, $errstr, 30);
+						$fp = fsockopen( $addr,9100	, $errno, $errstr, 30);
 						if(!$fp) 
 						echo "ERROR : "."$errstr ($errno)<br>\n";
 						else 
@@ -388,7 +461,7 @@ else
 						$paquete=$paquete."^LS0".chr(13).chr(10);
 						$paquete=$paquete."^XA".chr(13).chr(10);
 						$paquete=$paquete."^CF0,30".chr(13).chr(10);
-						$paquete=$paquete."^FO230,1480^A@R^FDCLINICA LAS AMERICAS^FS".chr(13).chr(10);
+						$paquete=$paquete."^FO230,1480^A@R^FDCLINICA PORTO AZUL^FS".chr(13).chr(10);
 						$paquete=$paquete."^CF0,25".chr(13).chr(10);
 						$paquete=$paquete."^FO200,1480^A@R^FD".$wtdo."^FS".chr(13).chr(10);
 						$paquete=$paquete."^FO200,1530^A@R^FD".$wdoc."^FS".chr(13).chr(10);
@@ -407,6 +480,7 @@ else
 						$paquete=$paquete."^XA^ID000.GRF^FS^XZ".chr(13).chr(10);
 
 						//echo $paquete."<br>";
+						//break;
 						$addr=$wip;
 						$fp = fsockopen( $addr,9100, $errno, $errstr, 30);
 						if(!$fp) 

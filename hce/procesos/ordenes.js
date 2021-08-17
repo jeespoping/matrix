@@ -17829,8 +17829,6 @@ function grabarKardex(wimprimir){
 					// );
 				// }
 			// );
-					debugger;
-					console.log(wemp_pmla);
 					
 						$.ajax({
 							url: "/matrix/interoperabilidad/procesos/funcionesGeneralesEnvioHL7.php",
@@ -25225,7 +25223,12 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 						
 						if(x)
 						{
-							if( conTarifa != 'on' )
+							/*Modificación: Se agrega para validar parámetro de tarifas
+							Autor: sebastian.nevado
+							Fecha: 04/08/2021
+							*/
+							var validarPrescripcionConTarifa = document.getElementById("validarPrescripcionConTarifa").value;
+							if( conTarifa != 'on' && validarPrescripcionConTarifa == 'on' )
 							{
 								var modalTarifa = $('#question').clone();
 								
