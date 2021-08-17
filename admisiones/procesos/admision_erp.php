@@ -171,6 +171,11 @@ define('MYSQL_ASSOC',MYSQLI_ASSOC);
 include_once("root/comun.php");
 include_once("root/magenta.php");  //para saber si el paciente es afin
 include_once("ips/funciones_facturacionERP.php");
+include_once("root/comun_isap.php"); //Funciones nuevas por el proyecto SAP
+
+$InactivarCodigo = consultarIntegracionSAP($conex,'03');
+//Se llama la variable para validar si la integracion a SAP este activo
+
 
 // Se encuentran todas las funciones de php, para mejor comprensión del codigo y hacer un mejor debug
 include_once("funciones_admisiones_erp.php");
@@ -180,6 +185,10 @@ if( isset($user) ){
 	$user2 = explode("-",$user);
 	( isset($user2[1]) )? $key = $user2[1] : $key = $user2[0];
 }
+
+$esAmbulatoria = "SELECT * FROM root_000051 WHERE Detemp = '".$wemp_pmla."' AND Detapl = 'admisionAmbulatoria' AND Detval = 'on'";
+				$esAmbulatoria = mysql_query($esAmbulatoria, $conex) or ( $data[ 'mensaje' ] = utf8_encode( "Error consultando la tabla root_000051 ".mysql_errno()." - Error en el query $esAmbulatoria - ".mysql_error() ) );
+				$numAmbulatoria = mysql_num_rows($esAmbulatoria);
 
 define("NOMBRE_BORRAR",'Eliminar');
 define("NOMBRE_ADICIONAR",'Adicionar');
@@ -194,6 +203,7 @@ if( isset($accion) ){
 
 
 }
+
 if( isset($debug) ){
 	$data = array();
 	$data[ "error" ] = 1;
@@ -206,6 +216,7 @@ if( isset($debug) ){
 	//echo "hola";
 }
 
+   							   
 if (isset($accion) and $accion == 'validarFacturacionUnix'){
 
 	$data = array('error'=>0,'mensaje'=>'','html'=>'', 'respuesta'=>false );
@@ -521,12 +532,27 @@ if (isset($accion) and $accion == 'guardarDatos'){
 	$_POST['pac_noatxtNomAco'] = str_replace( $caracteres, $caracteres2, utf8_decode($_POST['pac_noatxtNomAco']) );
 	$_POST['pac_nrutxtNomRes'] = str_replace( $caracteres, $caracteres2, utf8_decode($_POST['pac_nrutxtNomRes']) );
 	//para unix
-	$_POST['_ux_pacap2_ux_midap2'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pacap2_ux_midap2'] );
-	$_POST['_ux_pacap1_ux_midap1'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pacap1_ux_midap1'] );
-	$_POST['_ux_pnom1_ux_midno1'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pnom1_ux_midno1'] );
-	$_POST['_ux_pnom2_ux_midno2'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pnom2_ux_midno2'] );
+	/* 
+		iSap_retiro_odbc_admision_erp_04
+		1. Se agrega condicion para validar si la integracion este encendido.
+		2. Los campos que se guardan en servinte no se tendran en cuenta.
+		Autor: Didier Orozco Carmona.
+		Fecha: 2021-05-03
+	*/
+	if($InactivarCodigo == 0){
+		$_POST['_ux_pacap2_ux_midap2'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pacap2_ux_midap2'] );
+		$_POST['_ux_pacap1_ux_midap1'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pacap1_ux_midap1'] );
+		$_POST['_ux_pnom1_ux_midno1'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pnom1_ux_midno1'] );
+		$_POST['_ux_pnom2_ux_midno2'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pnom2_ux_midno2'] );
+		
+	}else{
+		/*$_POST['_ux_pacap2_ux_midap2'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pacap2_ux_midap2'] );
+		$_POST['_ux_pacap1_ux_midap1'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pacap1_ux_midap1'] );
+		$_POST['_ux_pnom1_ux_midno1'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pnom1_ux_midno1'] );
+		$_POST['_ux_pnom2_ux_midno2'] = str_replace( $caracteres, $caracteres2, $_POST['_ux_pnom2_ux_midno2'] );
+		$_POST['omitirCambioReponsable'] = false; */
+	}
 	$_POST['omitirCambioReponsable'] = false;
-
 	if( $datosEnc['pac_pahtxtPaiRes'] != CODIGO_COLOMBIA ){
 		$datosEnc['pac_trhselTipRes'] = "E";
 	}else{
@@ -547,8 +573,20 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 	$alias1="hce";
 	$aplicacionHce=consultarAplicacion2($conex,$wemp_pmla,$alias1);
-	$intentosIngreso=consultarAplicacion2($conex,$wemp_pmla,"intentosPermitidos");//--> intentos permitidos para grabar un ingreso en unix
-	$tieneConexionUnix = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'conexionUnix' );
+	/* 
+		iSap_retiro_odbc_admision_erp_05
+		1. Se agrega condicion para validar si la integracion este encendido.
+		2. La consulta de intentos si paso el paciente a servinte no se ejecuta se pone variable en cero y conexion servinte en false
+		Autor: Didier Orozco Carmona.
+		Fecha: 2021-05-26
+	*/
+	if($InactivarCodigo == 0){
+		$intentosIngreso=consultarAplicacion2($conex,$wemp_pmla,"intentosPermitidos");//--> intentos permitidos para grabar un ingreso en unix
+		$tieneConexionUnix = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'conexionUnix' );
+	}else{
+		$intentosIngreso = 0;
+		$tieneConexionUnix = 'off';
+	}
 	//Consultar la historia e ingreso nuevo
 	//1. Consultar por documento
 	//	- Si el documento no se encuentra en la BD, significa que la historia no existe para el paciente
@@ -608,13 +646,23 @@ if (isset($accion) and $accion == 'guardarDatos'){
 	{
 			//
 			//SE COMPRUEBA EL ESTADO DEL PACIENTE EN UNIX ANTES DE ADMITIR
-			//
-			$estadoPaciente = false;//Inactivo
-			if( $tieneConexionUnix != "on" ){
-				$historiaUx = $_POST[ 'ing_histxtNumHis' ];
-				$ingresoUx  = $_POST[ 'ing_nintxtNumIng' ];
+			/* 
+				iSap_retiro_odbc_admision_erp_06
+				1. Se agrega condicion para validar si la integracion este encendido.
+				2. La consulta de validar el estado de paciente no se tomara mas de servinte.
+				Autor: Didier Orozco Carmona.
+				Fecha: 2021-05-05
+			*/
+			if($InactivarCodigo == 0){
+				$estadoPaciente = false;//Inactivo
+			}else{
+				$estadoPaciente = true;//activo
 			}
-
+			if( $tieneConexionUnix != "on" ){
+					$historiaUx = $_POST[ 'ing_histxtNumHis' ];
+					$ingresoUx  = $_POST[ 'ing_nintxtNumIng' ];
+				}
+			
 			//--> consultar si está llegando el último ingreso
 			if( $modoConsulta == "true" ){//-->2016-12-27 -> para mantener la siguiente consulta solo para el último ingreso
 
@@ -720,7 +768,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 			}
 			else//no tiene registros con ese documento
 			{
-
+				//preguntar arleyda
 				//--> si no lo encontró en la 100, pero aún así tiene historia en unix;
 				if( isset( $historiaUx ) and $historiaUx != "" ){//-->2017-05-23
 					$historia         = $historiaUx;
@@ -816,10 +864,12 @@ if (isset($accion) and $accion == 'guardarDatos'){
 		$rsAD    = mysql_query( $queryAD, $conex ) or die( mysql_error()."  -->  ".$queryAD);
 		$row     = mysql_fetch_array($rsAD);
 		if($row[0] == "off"){//--> el ingreso anterior no tiene alta definitiva
-			$data['mensaje'] = "El paciente no tiene ALTA DEFINITIVA en su ingreso anterior historia:{$historia} - ingreso:{$ingresoAnterior}";
-			$data['error'] = 1;
-			echo json_encode($data);
-			return;
+			if(!$numAmbulatoria){
+				$data['mensaje'] = "El paciente no tiene ALTA DEFINITIVA en su ingreso anterior historia:{$historia} - ingreso:{$ingresoAnterior}";
+				$data['error'] = 1;
+				echo json_encode($data);
+				return;
+			}
 		}
 	}
 
@@ -927,6 +977,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 				//2014-03-10 El campo ingunx indica si el ingreso se guardó en unix
 				//El campo consecutivoHistoriaDeUnix es true cuando la admision ya se guardo en unix
 				$datosEnc[ "ingunx" ] = "off";
+				
 				if( $consecutivoHistoriaDeUnix == true )
 					$datosEnc[ "ingunx" ] = "on";
 
@@ -2758,9 +2809,16 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 	// ACA DEBE DE IR EL RESPONSABLE REAL
 	//insercion a unix
-	$tieneConexionUnix = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'conexionUnix' );
+	
 	//$tieneConexionUnix='off';
-	$ping_unix = ping_unix();
+	if($InactivarCodigo == 0){
+		$ping_unix = false;
+		$tieneConexionUnix='off';
+	}else{
+		$ping_unix = ping_unix();
+		//$tieneConexionUnix='on';
+		$tieneConexionUnix = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'conexionUnix' );
+	}
 	if($hay_unix && $tieneConexionUnix == 'on' && $ping_unix == true )
 	{
 
@@ -8119,16 +8177,21 @@ if (isset($accion) and $accion == 'consultaClientes')
 
 if (isset($accion) and $accion == 'consultarSiActivo')
 {
+	
 	global $wbasedato;
 	global $conex;
 	global $hay_unix;
-
     $aplicacion=consultarAplicacion2($conex,$wemp_pmla,"movhos");
 
 	$data = array('error'=>0,'mensaje'=>'','html'=>'','estado'=>"","his"=>"","ing"=>"");
-
-	$tieneConexionUnix = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'conexionUnix' );
-	$ping_unix = ping_unix();
+	if($InactivarCodigo == 0){
+		$tieneConexionUnix = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'conexionUnix' );
+		$ping_unix = ping_unix();
+	}else{
+		$tieneConexionUnix = 'off';
+		$ping_unix = 'false';	
+	}
+	
 	if($hay_unix && $tieneConexionUnix == 'on' && $ping_unix == true )
 	{
 		$cedula = trim ($cedula);
@@ -8173,7 +8236,7 @@ if (isset($accion) and $accion == 'consultarSiActivo')
 			}
 			$data['estado'] = $estado;
 
-			if( $estado == 'on' ){
+			if(( $estado == 'on' ) && (!$numAmbulatoria)){
 				$data['error'] = 1;
 				$data['mensaje']= "El paciente se encuentra ACTIVO en estos momentos en MATRIX,\nNo se puede crear uno nuevo sin darle de ALTA.";
 				$data['his'] = $rows['his'];

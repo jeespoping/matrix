@@ -50,17 +50,19 @@ node_modules
 assets/uploads/
 
 # netbeans
-nbproject/private/
 build/
-nbbuild/
 dist/
-nbdist/
+nb-configuration.xml
 nbactions.xml
-nb-configuration.xml
+nbbuild/
+nbdist/
+nbproject/private/
 nbproject/private/private.xml
-nb-configuration.xml
-nb-configuration.xml
-nbproject/private/private.xml
+
+# Visual Studio Code
+.vscode/*
+.vscode/launch.json
+/.vscode/
 
 
 #documentos de matrix
@@ -203,3 +205,9 @@ votaciones/reportes/copia/
 webservices/procesos/copia/
 zpcal/
 zpgrid/
+
+# Configuracion de Matrix
+conex.php
+db_config.php
+/conex.php
+/db_config.php
