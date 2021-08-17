@@ -96,7 +96,29 @@ if($hay_unix)
 
 		switch($tiempoEjec)
 		{
+			
+			case 'TARIFASTODAS':
+			{
+				
+				$log = "  > maestroTarifas(cliame_000025): Inicio:".date("Y-m-d-H:i:s");
+				$ejCron->maestroTarifas();					// --> cliame_000025
+				guardarLog($log, "maestroTarifas");
+				
+				$log = "  > maestro_medicamentos_empresas(cliame_000214): Inicio:".date("Y-m-d-H:i:s");
+				$ejCron->maestro_medicamentos_empresas();	// --> cliame_000214
+				guardarLog($log, "maestro_medicamentos_empresas");
+
+				$log = "  > tarifasmedicamentos(cliame_000026): Inicio:".date("Y-m-d-H:i:s");
+				$ejCron->tarifasmedicamentos(false);		// --> cliame_000026
+				guardarLog($log, "tarifasmedicamentos");
+
+				break;
+			}			
+			
+			
 			// --> Aqui van todas las ejecuciones que se realizaran cada 24 horas
+			
+			
 			case '24':
 			{
 				if( isset($migrarSoloEmpresas ) && $migrarSoloEmpresas == "on" ){
