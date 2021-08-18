@@ -107,7 +107,7 @@
                                                WHERE Eaucod = '".$datosSubtipo['nue']."' 
                                                  AND Eauest = 'on' ";
 
-                                $resEstado = mysqli_query($conex, $sqlEstado) or die("<b>ERROR EN QUERY MATRIX(".$sqlEstado."):</b><br>".mysqli_error());
+                                $resEstado = mysqli_query($conex, $sqlEstado) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
                                 if( $rowges = mysqli_fetch_assoc($resEstado) )
                                      $strcampo = $rowges['Eaudes'];
@@ -142,7 +142,7 @@
                                   AND Eaucau != '' 
                                   AND Eaucod = '".$datosTipo['Estautnue']."' ";
 
-                $resEstadoaut = mysqli_query($conex, $sqlEstadoaut) or die("<b>ERROR EN QUERY MATRIX(".$sqlEstadoaut."):</b><br>".mysqli_error());
+                $resEstadoaut = mysqli_query($conex, $sqlEstadoaut) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
                 $estadoAct = '';
                 if( $rowAut = mysqli_fetch_assoc($resEstadoaut) ){
@@ -161,7 +161,7 @@
                                    AND cli333.Gesite = '".$datosTipo['Nroite']."' 
                                    AND cli333.Gestor = '".$datosTipo['Tipord']."' ";
             
-                $respon = mysqli_query($conex,$sqlgestion) or die("ERROR EN QUERY MATRIX(".$sqlgestion.")<br>".mysqli_error());  
+                $respon = mysqli_query($conex,$sqlgestion) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());  
 
               
                 if( $respon && $respon->num_rows > 0){
@@ -183,7 +183,7 @@
                                           Gesate = '".$watencion."'
                                   WHERE Id = ".$idactual;
 
-                            $resEjecact = mysqli_query($conex, $sql) or die("ERROR EN QUERY MATRIX(".$sql.")<br>".mysqli_error());
+                            $resEjecact = mysqli_query($conex, $sql) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
                         }
                             
                     }
@@ -200,7 +200,7 @@
                             VALUES
                             ('".$wbasecliame."','".date("Y-m-d") ."','".date("H:i:s")."','".$whistoria."','".$wingreso."','".$datosTipo['Orden']."','".$datosTipo['Nroite']."','".$datosTipo['Tipord']."','".$datosTipo['Procedi']."','".$datosTipo['Telresnue']."','".$datosTipo['Mairesnue']."','".$datosTipo['Estautnue']."','".$datosTipo['Fecrecnue']."','".$datosTipo['Estespnue']."','".$datosTipo['Gesmotnue']."','".$datosTipo['Gesobsnue']."','".$user."','".$datosTipo['Gescoanue']."','".$watencion."','on','C-".$wbasecliame."')";
 
-                    $resEjec = mysqli_query($conex, $sqlges) or die("ERROR EN QUERY MATRIX(".$sqlges.")<br>".mysqli_error());
+                    $resEjec = mysqli_query($conex, $sqlges) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
                    
                 }
 
@@ -217,7 +217,7 @@
                                      AND Detnro = '".$datosTipo['Orden']."'
                                      AND Detite = '".$datosTipo['Nroite']."' ";
 
-                        $resAct = mysqli_query($conex, $sqlAct) or die("ERROR EN QUERY MATRIX(".$sqlAct.")<br>".mysqli_error());
+                        $resAct = mysqli_query($conex, $sqlAct) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
                     }
 
@@ -229,7 +229,7 @@
                                 VALUES
                                 ('".$wbasecliame."','".date("Y-m-d") ."','".date("H:i:s")."','".$whistoria."','".$wingreso."','".$datosTipo['Orden']."','".$datosTipo['Nroite']."','".$datosTipo['Tipord']."','".$datosTipo['Procedi']."','".$user."','".$strcambios."','on','C-".$wbasecliame."')";
 
-                        $resEjecbit = mysqli_query($conex, $sqlbit) or die("ERROR EN QUERY MATRIX(".$sqlbit.")<br>".mysqli_error());
+                        $resEjecbit = mysqli_query($conex, $sqlbit) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
                     }
                 }
@@ -243,7 +243,7 @@
                           WHERE Eauest = 'on' 
                             AND Eauter = 'on' ";
 
-          $resEstado = mysqli_query($conex, $sqlEstado) or die("<b>ERROR EN QUERY MATRIX(".$sqlEstado."):</b><br>".mysqli_error());
+          $resEstado = mysqli_query($conex, $sqlEstado) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
           $codCierre = '';
           if( $rowAut = mysqli_fetch_assoc($resEstado) ){
@@ -263,7 +263,7 @@
                              AND cli333.Gesing = '".$wingreso."' 
                              AND cli333.Gesesp != '".$codCierre."' ";
       
-          $resEstado = mysqli_query($conex,$sqlGestion) or die("ERROR EN QUERY MATRIX(".$sqlGestion.")<br>".mysqli_error());  
+          $resEstado = mysqli_query($conex,$sqlGestion) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());  
 
           if( $resEstado && $resEstado->num_rows == 0){
 
@@ -278,7 +278,7 @@
                                 AND Carest = 'on' ";
 
 
-              $resInsumos = mysqli_query($conex,$qInsumos) or die("ERROR EN QUERY MATRIX(".$qInsumos.")<br>".mysqli_error());
+              $resInsumos = mysqli_query($conex,$qInsumos) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
               if( $resInsumos && $resInsumos->num_rows > 0)
               {
@@ -295,7 +295,7 @@
                               AND spaing  = '". $wingreso ."'
                               AND ROUND((spauen-spausa),3) > 0 ";
 
-              $resMedicamento = mysqli_query($conex,$qMedicam) or die("ERROR EN QUERY MATRIX(".$qMedicam.")<br>".mysqli_error());
+              $resMedicamento = mysqli_query($conex,$qMedicam) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
               if( $resMedicamento && $resMedicamento->num_rows > 0)
               {           
@@ -321,7 +321,7 @@
                                   AND Ubiing = '".$wingreso."' ";
 
 
-                  $resAlta = mysqli_query($conex,$sqlAlta) or die("ERROR EN QUERY MATRIX(".$sqlAlta.")<br>".mysqli_error());  
+                  $resAlta = mysqli_query($conex,$sqlAlta) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());  
               }
           }
 
@@ -343,7 +343,7 @@
                             FROM ".$wbasecliame."_000335
                            WHERE Eauest = 'on'";
 
-            $resEstado = mysqli_query($conex, $sqlEstados) or die("<b>ERROR EN QUERY MATRIX(".$sqlEstados."):</b><br>".mysqli_error());
+            $resEstado = mysqli_query($conex, $sqlEstados) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
             $arEstados = array();
 
@@ -365,7 +365,7 @@
                               FROM ".$wbasemovhos."_000011                        
                              ORDER BY Cconom ";
 
-            $res_cen  =  mysqli_query($conex,$q_centrocos) or die ("Error: en el query: ".$q_centrocos." - ".mysqli_error());
+            $res_cen  =  mysqli_query($conex,$q_centrocos) or die ("Error: en el query:  - ".mysqli_error());
             
             $resultado['centros']= "<option value='%'></option>";   
 
@@ -385,7 +385,7 @@
                                   Emptel, Empmai, Emprec, Emppla, Empcon 
                            FROM ".$wbasecliame."_000024 cli24
                            WHERE cli24.Empcod = '".$wingres."'";
-            $respon = mysqli_query($conex,$sqlRespon) or die("ERROR EN QUERY MATRIX(".$sqlRespon.")<br>".mysqli_error());
+            $respon = mysqli_query($conex,$sqlRespon) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
             
             $Telres = '';
             $Maires = '';
@@ -438,7 +438,7 @@
                            AND h28.Detest = 'on'
                        ORDER BY h28.Detfec DESC";
               
-            $ordenes = mysqli_query($conex,$query) or die(mysqli_errno()." - Error en el query $query - ".mysqli_error());
+            $ordenes = mysqli_query($conex,$query) or die(mysqli_errno()." - Error en el query  - ".mysqli_error());
 
             if( $ordenes && $ordenes->num_rows>0){
 
@@ -458,7 +458,7 @@
                                        AND cli333.Gesite = '".$row['Detite']."'                                        
                                        AND cli333.Gestor = '".$row['Dettor']."' ";
                       
-                      $resgest = mysqli_query($conex,$sqlRespon) or die("ERROR EN QUERY MATRIX(".$sqlRespon.")<br>".mysqli_error());
+                      $resgest = mysqli_query($conex,$sqlRespon) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
                       $Gesesa = '00';
                       $Gesmot = '';
@@ -542,7 +542,7 @@
                                        AND cli334.Bitite = '".$row['Detite']."'
                                        AND cli334.Bittor = '".$row['Dettor']."' ";
                       
-                      $resbit = mysqli_query($conex,$sqlbit) or die("ERROR EN QUERY MATRIX(".$sqlbit.")<br>".mysqli_error());
+                      $resbit = mysqli_query($conex,$sqlbit) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
                       if( $resbit && $resbit->num_rows>0){
 
@@ -565,7 +565,7 @@
                                        WHERE Codigo = '".$row['Detcod']."'
                                          AND Servicio = Ccocod) as t ";
                       
-                      $resCups = mysqli_query($conex,$sqlCups) or die("ERROR EN QUERY MATRIX(".$sqlCups.")<br>".mysqli_error());
+                      $resCups = mysqli_query($conex,$sqlCups) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
                       
                       $uniCups    = '';
                       $servicio   = '';

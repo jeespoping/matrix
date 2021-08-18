@@ -417,7 +417,7 @@ function consultarInformacionturno($conex,$cedula,$wtipoide,$wfechacon,$wcliame,
 				   ".$filtro."
 		      ORDER BY Fecha_data Desc ";
 
-		$resTurno = mysqli_query($conex, $sqlTurno) or die("<b>ERROR EN QUERY MATRIX(".$sqlTurno."):</b><br>".mysqli_error());
+		$resTurno = mysqli_query($conex, $sqlTurno) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
 		if( $resTurno && $resTurno->num_rows>0){
 
@@ -448,7 +448,7 @@ function consultarInformacioncitas($conex,$cedula,$wfechacon,$wcliame,$wmovhos,$
                           AND    Serest  = 'on' 
                         GROUP BY Sercdc";
 
-          $resPrefijo = mysqli_query($conex, $sqlPrefijo) or die("<b>ERROR EN QUERY MATRIX(".$sqlPrefijo."):</b><br>".mysqli_error());
+          $resPrefijo = mysqli_query($conex, $sqlPrefijo) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
           while( $rowPre = mysqli_fetch_assoc($resPrefijo) )
           {
@@ -458,7 +458,7 @@ function consultarInformacioncitas($conex,$cedula,$wfechacon,$wcliame,$wmovhos,$
                                   WHERE Ccocod = '".$rowPre['Sercdc']."'
                                     AND Ccocip !='' ";
 
-                $resCentro  =  mysqli_query($conex,$sqlCentrocos) or die ("Error: en el query: ".$sqlCentrocos." - ".mysqli_error());
+                $resCentro  =  mysqli_query($conex,$sqlCentrocos) or die ("Error: en el query:  - ".mysqli_error());
 
                 if( $resCentro && $resCentro->num_rows>0)
                 {
@@ -496,7 +496,7 @@ function consultarInformacioncitas($conex,$cedula,$wfechacon,$wcliame,$wmovhos,$
 
 			                //echo ' con '.$sqlCitas;
 
-		                    $resCitas  =  mysqli_query($conex,$sqlCitas) or die ("Error: en el query: ".$sqlCitas." - ".mysqli_error());
+		                    $resCitas  =  mysqli_query($conex,$sqlCitas) or die ("Error: en el query:  - ".mysqli_error());
 
 		                    if( $resCitas && $resCitas->num_rows>0)
 		                    {
@@ -906,7 +906,7 @@ function consultarAdmision($conex,$wemp_pmla,$cedula,$wtid,$wfechaact,$wcliame,$
                      WHERE cli100.Pacdoc = '".$cedula."' 
                        AND cli100.Pacact = 'on' ";
 
-      $resHistoria = mysqli_query($conex,$conHistoria) or die(mysqli_errno()." - Error en el query $conHistoria - ".mysqli_error());
+      $resHistoria = mysqli_query($conex,$conHistoria) or die(mysqli_errno()." - Error en el query  - ".mysqli_error());
 
       if( $resHistoria && $resHistoria->num_rows>0 )
       {
@@ -935,7 +935,7 @@ function consultarAdmision($conex,$wemp_pmla,$cedula,$wtid,$wfechaact,$wcliame,$
 					  //."    AND m18.ubiald != 'on' " 	
 					  ."  ORDER BY fecha_data desc LIMIT 1";
 
-	  $resAdmision = mysqli_query($conex,$conAdmision) or die(mysqli_errno()." - Error en el query $conAdmision - ".mysqli_error());
+	  $resAdmision = mysqli_query($conex,$conAdmision) or die(mysqli_errno()." - Error en el query  - ".mysqli_error());
 
       if( $resAdmision && $resAdmision->num_rows>0 ){
           $row = mysqli_fetch_assoc($resAdmision);
