@@ -84,7 +84,7 @@ if($hay_unix)
 	$archivo		= fopen("logMigrarMaestrosUnix.txt", $tipoEscritura) or die("Problemas en la creacion del archivo logMigrarMaestrosUnix");
 
 	echo date("Y-m-d-H:i:s");
-	echo "<br>$tiempoEjec";
+
 	// --> la variable $tiempoEjec, viene inicializada en la ruta definida por el cron programado en el servidor
 	if(isset($tiempoEjec))
 	{
@@ -295,53 +295,37 @@ if($hay_unix)
 			// -->	Nueva acción "cronFacElectronica" para ejecutar las funciones de facturación electrónica a
 			//		través del cron, cada 5 minutos.
 			case 'cronFacElectronica':
-			case 'cronFEValidarEstado':  // PUESTO EN PRUEBAS PARA EJECUTAR SÓLO LA VALIDACIÓN
 			{
 				// --> Estas son las empresas que tienen facturacion electronica hasta el momento 2019-05-16
-				$arrEmpresas = array('01', '11', '07','02');  // promotora(01), clinica del sur(02), soe(07)
-				// PARA PROCESAR UNA EMPRESA EN PRUEBAS
-				$arrEmpresas = array('01'); 
-				$arrEmpresas = array('01', '07');  // promotora(01), soe(07)
+				$arrEmpresas = array('01', '11', '07','02');
 				foreach($arrEmpresas as $codEmp){
 
-					include_once("ips/funcionesE-fac.php");
-					
-					// AQUÍ VALIDAR SI ES PORTOAZUL PARA PROCESAR SOLO LA EMPRESA 01
-					//$portoazul = esPortoazul();
-					//echo "<br>portoazul " . ($portoazul===false ? "NO": "SI");
-					//if ($portoazul && $codEmp != "01" )
-					//	continue;
-						
 					$ejecutarCronWS	= consultarAliasPorAplicacion($conex, $codEmp, 'ejecutarCronFacturacionElec');
-					echo "<br>ejecutarCronWS $ejecutarCronWS";
-					if($ejecutarCronWS == "on"){
-						echo "<br>...";
-						//include_once("ips/funcionesE-fac.php");
-						echo '<br>-->EMPRESA:'.$codEmp;
-						
-						if ($tiempoEjec == 'cronFacElectronica')
-						{
-							// --> Registrar documentos ya facturados
-							echo "<br>insertarDocumentos:";
-							insertarDocumentos(array($codEmp));
 
-							// --> De los documentos registrados, generarles el archivo XML
-							generarDocumentosXml(array($codEmp));
-							
-							// EN COMENTARIOS PARA NO EFECTUAR ENVÍOS 
-							// EN LA FASE DE DESARROLLO.
-							// --> Enviar documentos al cen financiero via WS
-							enviarDocumentosCenFinanciero(array($codEmp));
-						}
+					if($ejecutarCronWS == "on"){
+					
+						include_once("ips/funcionesE-fac.php");
+						echo '<br>-->EMPRESA:'.$codEmp;
+						// --> Registrar documentos ya facturados
+						echo "<br>Documentos Insertados:";
+						insertarDocumentos(array($codEmp));
+
+						// --> De los documentos registrados, generrales el archivo XML
+						echo "<br>Documentos generados XML:";
+						generarDocumentosXml(array($codEmp));
+
+						// --> Enviar documentos al cen financiero via WS
+						echo "<br>Documentos enviados CEN:";
+						enviarDocumentosCenFinanciero(array($codEmp));
+						
 						// --> Validar estado aceptado
-						echo "<br>Validar estado facturas enviada:";
+						echo "<br>Validar estado aceptado:";
 						cronValidarEstadoAceptado($codEmp);
 						
 						// --> Descargar y obtener el cufe/cude
 						echo "<br>Descargar y obtener CUFE/CUDE:";
 						cronDescargarCufe($codEmp);
 						
-						// ESTO YA VENÍA EN COMENTARIOS.
 						/*if($codEmp == "11"){
 							include_once("ips/funcionesE-facV1.php");
 							echo '<br>-->EMPRESA:'.$codEmp;
@@ -367,9 +351,7 @@ if($hay_unix)
 			}
 		}
 		$log.= PHP_EOL."Fin:".date("Y-m-d-H:i:s");
-		
-	}  //  if(isset($tiempoEjec))
-	
+	}
 	// --> 	Esta variable viene por url y contiene el nombre de una funcion a ejecutar, esto es para cuando
 	//		se tenga la necesidad de ejecutar alguna rutina manualmente.
 	if(isset($funcion))
