@@ -112,7 +112,7 @@ function consultarCcoPaciente($conex, $wdbmhos, $historia, $ingreso)
 						WHERE Ubihis='".$historia."' 
 						  AND Ubiing='".$ingreso."';";
 	
-	$resUbicacion = mysqli_query($conex,$queryUbicacion) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $queryUbicacion . " - " . mysqli_error($conex));
+	$resUbicacion = mysqli_query($conex,$queryUbicacion) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 	$numUbicacion = mysql_num_rows($resUbicacion);
 	
 	$ccoPaciente = "";
@@ -133,7 +133,7 @@ function consultarCcoRestriccion($conex, $wdbmhos, $ccoPaciente)
 			     AND Craest='on' 
 			   LIMIT 1;";
 		
-	$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $query . " - " . mysqli_error($conex));
+	$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 	$num = mysql_num_rows($res);
 	
 	$ccoConRestriccion = false;
@@ -153,7 +153,7 @@ function consultarUsuarioPermitido($conex, $wdbmhos, $ccoPaciente, $usuario)
 			     AND Crausu='".$usuario."' 
 			     AND Craest='on';";
 		
-	$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $query . " - " . mysqli_error($conex));
+	$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 	$num = mysql_num_rows($res);
 	
 	$usuarioHabilitado = false;
@@ -183,7 +183,7 @@ function consultarUsuarioHabilitado($conex, $origen, $wdbmhos, $usuario, $wcedul
 							 AND Oritid='".$wtipodoc."' 
 							 AND Oriori='".$origen."';";
 		
-		$resPaciente = mysqli_query($conex,$queryPaciente) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $queryPaciente . " - " . mysqli_error($conex));
+		$resPaciente = mysqli_query($conex,$queryPaciente) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$numPaciente = mysql_num_rows($resPaciente);
 		
 		if($numPaciente>0)

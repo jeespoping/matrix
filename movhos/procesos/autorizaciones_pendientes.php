@@ -703,7 +703,7 @@ include_once("conex.php");
                           WHERE Eauest = 'on' 
                             AND Eauter = 'on' ";
 
-          $resEstado = mysqli_query($conex, $sqlEstado) or die("<b>ERROR EN QUERY MATRIX(".$sqlEstado."):</b><br>".mysqli_error());
+          $resEstado = mysqli_query($conex, $sqlEstado) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
           $codCierre = '';
           if( $rowAut = mysqli_fetch_assoc($resEstado) ){
@@ -729,7 +729,7 @@ include_once("conex.php");
                            AND h28.Detest = 'on'
                        ORDER BY h28.Detfec DESC";
               
-            $ordenes = mysqli_query($conex,$query) or die(mysqli_errno()." - Error en el query $query - ".mysqli_error());
+            $ordenes = mysqli_query($conex,$query) or die(mysqli_errno()." - Error en el query - ".mysqli_error());
 
             if( $ordenes && $ordenes->num_rows>0){
 
@@ -748,7 +748,7 @@ include_once("conex.php");
                                        AND cli333.Gesite = '".$row['Detite']."' 
                                        AND cli333.Gestor = '".$row['Dettor']."' ";
                       
-                      $resgest = mysqli_query($conex,$sqlRespon) or die("ERROR EN QUERY MATRIX(".$sqlRespon.")<br>".mysqli_error());
+                      $resgest = mysqli_query($conex,$sqlRespon) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
                       $wordenges = '';
                       $wcerrado  = 0;
@@ -780,7 +780,7 @@ include_once("conex.php");
                                        WHERE Codigo = '".$row['Detcod']."'
                                          AND Servicio = Ccocod) as t ";
                       
-                      $resCups = mysqli_query($conex,$sqlCups) or die("ERROR EN QUERY MATRIX(".$sqlCups.")<br>".mysqli_error());
+                      $resCups = mysqli_query($conex,$sqlCups) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
                       
                       $uniCups    = '';
                       $servicio   = '';
@@ -835,7 +835,7 @@ include_once("conex.php");
                           AND    Serest  = 'on' 
                         GROUP BY Sercdc";
 
-          $resPrefijo = mysqli_query($conex, $sqlPrefijo) or die("<b>ERROR EN QUERY MATRIX(".$sqlPrefijo."):</b><br>".mysqli_error());
+          $resPrefijo = mysqli_query($conex, $sqlPrefijo) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
           while( $rowPre = mysqli_fetch_assoc($resPrefijo) )
           {
@@ -845,7 +845,7 @@ include_once("conex.php");
                                   WHERE Ccocod = '".$rowPre['Sercdc']."'
                                     AND Ccocip !='' ";
 
-                $resCentro  =  mysqli_query($conex,$sqlCentrocos) or die ("Error: en el query: ".$sqlCentrocos." - ".mysqli_error());
+                $resCentro  =  mysqli_query($conex,$sqlCentrocos) or die ("Error: en el query:  - ".mysqli_error());
               
                 if( $rowCentro = mysqli_fetch_assoc($resCentro) )
                 {
@@ -869,7 +869,7 @@ include_once("conex.php");
                                             AND P9.Fecha  ='".$wfechacon."'
                                           GROUP BY P9.Fecha,P9.Hi  ";
 
-                        $resCitas  =  mysqli_query($conex,$sqlCitas) or die ("Error: en el query: ".$sqlCitas." - ".mysqli_error());
+                        $resCitas  =  mysqli_query($conex,$sqlCitas) or die ("Error: en el query:  - ".mysqli_error());
 
                         if( $resCitas && $resCitas->num_rows>0)
                         {
@@ -928,7 +928,7 @@ include_once("conex.php");
                             AND Carest = 'on' ";
 
 
-          $resInsumos = mysqli_query($conex,$qInsumos) or die("ERROR EN QUERY MATRIX(".$qInsumos.")<br>".mysqli_error());
+          $resInsumos = mysqli_query($conex,$qInsumos) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
           if( $resInsumos && $resInsumos->num_rows > 0)
           {
@@ -945,7 +945,7 @@ include_once("conex.php");
                           AND spaing  = '". $wingreso ."'
                           AND ROUND((spauen-spausa),3) > 0 ";
 
-          $resMedicamento = mysqli_query($conex,$qMedicam) or die("ERROR EN QUERY MATRIX(".$qMedicam.")<br>".mysqli_error());
+          $resMedicamento = mysqli_query($conex,$qMedicam) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
           if( $resMedicamento && $resMedicamento->num_rows > 0)
           {           
@@ -969,7 +969,7 @@ include_once("conex.php");
                             WHERE Ubihis = '".$whistoria."'
                               AND Ubiing = '".$wingreso."' ";
 
-              $resAlta = mysqli_query($conex,$sqlAlta) or die("ERROR EN QUERY MATRIX(".$sqlAlta.")<br>".mysqli_error()); 
+              $resAlta = mysqli_query($conex,$sqlAlta) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error()); 
 
               $wsaldo = '1'; 
 
@@ -1928,7 +1928,7 @@ include_once("conex.php");
                                  WHERE Geshis = '".$whis."'
                                    AND Gesing = '".$wing."'";
             
-                $respon = mysqli_query($conex,$sqlgestion) or die("ERROR EN QUERY MATRIX(".$sqlgestion.")<br>".mysqli_error()); 
+                $respon = mysqli_query($conex,$sqlgestion) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error()); 
 
                 if( $respon && $respon->num_rows > 0)
                 {
@@ -2722,7 +2722,7 @@ include_once("conex.php");
                             WHERE Eauest = 'on' 
                               AND Eauter = 'on' ";
 
-            $resEstado = mysqli_query($conex, $sqlEstado) or die("<b>ERROR EN QUERY MATRIX(".$sqlEstado."):</b><br>".mysqli_error());
+            $resEstado = mysqli_query($conex, $sqlEstado) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
             $codCierre = '';
             if( $rowAut = mysqli_fetch_assoc($resEstado) ){
@@ -3704,7 +3704,7 @@ include_once("conex.php");
                       ORDER BY Fecha_data Desc ";
 
 
-        $resTurno = mysqli_query($conex, $sqlTurno) or die("<b>ERROR EN QUERY MATRIX(".$sqlTurno."):</b><br>".mysqli_error());
+        $resTurno = mysqli_query($conex, $sqlTurno) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
         if( $resTurno && $resTurno->num_rows>0){
 
@@ -3763,7 +3763,7 @@ include_once("conex.php");
                           AND Ubiing = '".$wingreso."'
                           AND Ubiald = 'on' ";
 
-          $resAlta = mysqli_query($conex,$sqlAlta) or die("ERROR EN QUERY MATRIX(".$sqlAlta.")<br>".mysqli_error());
+          $resAlta = mysqli_query($conex,$sqlAlta) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
           if( $resAlta && $resAlta->num_rows>0)
           {                 
@@ -3826,7 +3826,7 @@ include_once("conex.php");
                          WHERE cli333.Geshis = '".$whis."'
                            AND cli333.Gesing = '".$wing."'";
 
-          $resExiste = mysqli_query($conex,$sqlExiste) or die("ERROR EN QUERY MATRIX(".$sqlExiste.")<br>".mysqli_error());
+          $resExiste = mysqli_query($conex,$sqlExiste) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
           if( $resExiste && $resExiste->num_rows > 0)
           {
@@ -3837,7 +3837,7 @@ include_once("conex.php");
                                AND cli333.Gesing = '".$wing."'
                                AND cli333.Gesesp != '".$codCierre."' ";
               
-              $resExiste2 = mysqli_query($conex,$sqlRespon) or die("ERROR EN QUERY MATRIX(".$sqlRespon.")<br>".mysqli_error());
+              $resExiste2 = mysqli_query($conex,$sqlRespon) or die("ERROR EN QUERY MATRIX()<br>".mysqli_error());
 
               if( $resExiste2 && $resExiste2->num_rows > 0)
               {

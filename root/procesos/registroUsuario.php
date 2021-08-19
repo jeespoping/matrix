@@ -63,7 +63,7 @@ else
 					     AND Activo='A';";
 		}
 		
-		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $query . " - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		$arrayUsuario = array('codigo'=>'','nombre'=>'','documento'=>'','email'=>'');
@@ -87,7 +87,7 @@ else
 						   Email='".$email."' 
 					 WHERE Codigo='".$codigo."';";
 	
-		$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $update . " - " . mysqli_error($conex));
+		$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		
 		$registroCorrecto = false;
 		if( mysqli_affected_rows($conex) > 0 )
@@ -109,7 +109,7 @@ else
 						   HoraPasswordTemp='".date("H:i:s")."'
 					 WHERE Codigo='".$codigo."';";
 	
-		$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $update . " - " . mysqli_error($conex));
+		$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		
 		if( mysqli_affected_rows($conex) == 0 )
 		{
@@ -242,7 +242,7 @@ else
 						   Usufve='".date("Y-m-d",strtotime(date("Y-m-d")."- 1 days"))."'
 					 WHERE Usucod='".$codigo."';";
 	
-		$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $update . " - " . mysqli_error($conex));
+		$resultadoUpdate = mysqli_query($conex,$update) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		
 		$firmaActualizada = false;
 		if( mysqli_affected_rows($conex) > 0 )

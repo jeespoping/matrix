@@ -429,7 +429,7 @@ function consultarCcoInteroperabilidad($conex,$wdbmhos,$whis,$wing)
 			   WHERE Ubihis='".$whis."' 
 				 AND Ubiing='".$wing."';";
 				 
-	$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno() . " - en el query: " . $query . " - " . mysqli_error());
+	$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno() . " - en el query:  - " . mysqli_error());
 	$num = mysql_num_rows($res);
 	
 	$ccoInteroperabilidad = false;

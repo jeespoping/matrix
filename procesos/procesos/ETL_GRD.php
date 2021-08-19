@@ -17,7 +17,7 @@
 	 WHERE Detemp = '01'
 	   AND Detapl = 'ejecucionCronETL_GRD'				 
 	";
-	$resS = mysqli_query($conex, $sqlS) or die("ERROR EN QUERY (sqlS):".$sqlS."/n MENSAJE:".mysqli_error($conex));
+	$resS = mysqli_query($conex, $sqlS) or die("ERROR EN QUERY (sqlS):/n MENSAJE:".mysqli_error($conex));
 	if($rowS = mysqli_fetch_array($resS))
 		$rJson = json_decode($rowS['Detval'], true);
 	else
@@ -207,7 +207,7 @@
 				 WHERE Detemp = '01'
 				   AND Detapl = 'ejecucionCronETL_GRD'				 
 				";
-				mysqli_query($conex, $sqlG) or die("ERROR EN QUERY (sqlG):".$sqlG."/n MENSAJE:".mysqli_error($conex));
+				mysqli_query($conex, $sqlG) or die("ERROR EN QUERY (sqlG):/n MENSAJE:".mysqli_error($conex));
 				
 				echo "Cambios guardados";
 				
@@ -269,7 +269,7 @@
 				  FROM costosyp_000061 AS A INNER JOIN costosyp_000045 AS B ON(Empseg = Segcod)
 				 WHERE Empemp = '01' 
 				";
-				$resMaeEmpresas = mysqli_query($conexCo, $sqlMaeEmpresas) or die("ERROR EN QUERY (sqlMaeEmpresas):".$sqlMaeEmpresas."/n MENSAJE:".mysqli_error($conex));
+				$resMaeEmpresas = mysqli_query($conexCo, $sqlMaeEmpresas) or die("ERROR EN QUERY (sqlMaeEmpresas):/n MENSAJE:".mysqli_error($conex));
 				while($rowMaeEmpresas = mysqli_fetch_array($resMaeEmpresas, MYSQLI_ASSOC)){
 					$arrMaeEmpresas[trim($rowMaeEmpresas['Epmcod'])] = trim($rowMaeEmpresas['Segcod']); 
 				}
@@ -292,7 +292,7 @@
 				 WHERE A.Egrfee BETWEEN '".$fechaIn."' AND '".$fechaFi."'
 				";
 				//AND	A.Egrhis = '708448' 
-				$res1 = mysqli_query($conex, $sql1) or die("ERROR EN QUERY (sql1):".$sql1."/n MENSAJE:".mysqli_error($conex));
+				$res1 = mysqli_query($conex, $sql1) or die("ERROR EN QUERY (sql1):/n MENSAJE:".mysqli_error($conex));
 				while($rowSql1 = mysqli_fetch_array($res1, MYSQLI_ASSOC)){
 					$datos[] = $rowSql1;
 				}
@@ -327,7 +327,7 @@
 						   AND movdat != ''
 						 ORDER BY Fecha_data
 						";
-						$resPeso = mysqli_query($conex, $sqlPeso) or die("ERROR EN QUERY (sqlPeso):".$sqlPeso."/n MENSAJE:".mysqli_error($conex));
+						$resPeso = mysqli_query($conex, $sqlPeso) or die("ERROR EN QUERY (sqlPeso):/n MENSAJE:".mysqli_error($conex));
 						if($rowPeso = mysqli_fetch_array($resPeso)){
 							// --> Ejm de como viene el dato: 1*2020-03-18|10:27:00|002-Masculino|3667|50|||
 							$arrDatosPes = explode('|', $rowPeso['movdat']);
@@ -351,7 +351,7 @@
 					 GROUP BY Diacod
 					 ORDER BY Diatip
 					";
-					$resDiag = mysqli_query($conex, $sqlDiag) or die("ERROR EN QUERY (sqlDiag):".$sqlDiag."/n MENSAJE:".mysqli_error($conex));
+					$resDiag = mysqli_query($conex, $sqlDiag) or die("ERROR EN QUERY (sqlDiag):/n MENSAJE:".mysqli_error($conex));
 					while($rowDiag = mysqli_fetch_array($resDiag, MYSQLI_ASSOC)){
 						
 						if($d > 30)
@@ -391,7 +391,7 @@
 					 WHERE Prohis = '".$valDat['HC']."'
 					   AND Proing = '".$valDat['Ing']."'
 					";
-					$resPro = mysqli_query($conex, $sqlPro) or die("ERROR EN QUERY (sqlPro):".$sqlPro."/n MENSAJE:".mysqli_error($conex));
+					$resPro = mysqli_query($conex, $sqlPro) or die("ERROR EN QUERY (sqlPro):/n MENSAJE:".mysqli_error($conex));
 					while($rowPro = mysqli_fetch_array($resPro, MYSQLI_ASSOC)){
 						if($p > 23)
 							break;
@@ -429,7 +429,7 @@
 					   AND movdat LIKE '01-%'
 					";
 					//GROUP BY Fecha_data
-					$resVen  = mysqli_query($conex, $sqlVen) or die("ERROR EN QUERY (sqlVen):".$sqlVen."/n MENSAJE:".mysqli_error($conex));
+					$resVen  = mysqli_query($conex, $sqlVen) or die("ERROR EN QUERY (sqlVen):/n MENSAJE:".mysqli_error($conex));
 					$numDias = mysqli_num_rows($resVen);
 					if($numDias > 0 && $numDias < 4)
 						$datos[$keyDat]['CIE9-VM'] = '9671';
@@ -445,7 +445,7 @@
 					   AND Infing = '".$valDat['Ing']."'
 					 LIMIT 3
 					";
-					$resInf = mysqli_query($conex, $sqlInf) or die("ERROR EN QUERY (sqlInf):".$sqlInf."/n MENSAJE:".mysqli_error($conex));
+					$resInf = mysqli_query($conex, $sqlInf) or die("ERROR EN QUERY (sqlInf):/n MENSAJE:".mysqli_error($conex));
 					while($rowInf = mysqli_fetch_array($resInf, MYSQLI_ASSOC)){
 						$datos[$keyDat]['Fiaas'.$i] 	= trim($rowInf['Inffec']); 
 						$datos[$keyDat]['Tiaas'.$i] 	= trim($rowInf['Inftip']); 
@@ -469,7 +469,7 @@
 					 WHERE Historia_clinica = '".$valDat['HC']."' 
 					   AND Num_ingreso 		= '".$valDat['Ing']."'
 					";
-					$resDiasUci = mysqli_query($conex, $sqlDiasUci) or die("ERROR EN QUERY (sqlDiasUci):".$sqlDiasUci."/n MENSAJE:".mysqli_error($conex));
+					$resDiasUci = mysqli_query($conex, $sqlDiasUci) or die("ERROR EN QUERY (sqlDiasUci):/n MENSAJE:".mysqli_error($conex));
 					if($rowDiasUci = mysqli_fetch_array($resDiasUci, MYSQLI_ASSOC))
 						$datos[$keyDat]['EstanciaUCI'] = $rowDiasUci['EstanciaUCI'];
 					else
@@ -482,7 +482,7 @@
 					 WHERE Historia_clinica = '".$valDat['HC']."' 
 					   AND Num_ingreso 		= '".$valDat['Ing']."'
 					";
-					$resDiasUce = mysqli_query($conex, $sqlDiasUce) or die("ERROR EN QUERY (sqlDiasUce):".$sqlDiasUce."/n MENSAJE:".mysqli_error($conex));
+					$resDiasUce = mysqli_query($conex, $sqlDiasUce) or die("ERROR EN QUERY (sqlDiasUce):/n MENSAJE:".mysqli_error($conex));
 					if($rowDiasUce = mysqli_fetch_array($resDiasUce, MYSQLI_ASSOC))
 						$datos[$keyDat]['EstanciaUCE'] = $rowDiasUce['EstanciaUCE'];
 					else
@@ -495,7 +495,7 @@
 					 WHERE Historia_clinica = '".$valDat['HC']."' 
 					   AND Num_ingreso 		= '".$valDat['Ing']."'
 					";
-					$resDiasUrg = mysqli_query($conex, $sqlDiasUrg) or die("ERROR EN QUERY (sqlDiasUrg):".$sqlDiasUrg."/n MENSAJE:".mysqli_error($conex));
+					$resDiasUrg = mysqli_query($conex, $sqlDiasUrg) or die("ERROR EN QUERY (sqlDiasUrg):/n MENSAJE:".mysqli_error($conex));
 					if($rowDiasUrg = mysqli_fetch_array($resDiasUrg, MYSQLI_ASSOC))
 						$datos[$keyDat]['EstanciaUrg'] = $rowDiasUrg['EstanciaUrg'];
 					else
@@ -508,7 +508,7 @@
 					 WHERE Historia_clinica = '".$valDat['HC']."' 
 					   AND Num_ingreso 		= '".$valDat['Ing']."'
 					";
-					$resDiasHos = mysqli_query($conex, $sqlDiasHos) or die("ERROR EN QUERY (sqlDiasHos):".$sqlDiasHos."/n MENSAJE:".mysqli_error($conex));
+					$resDiasHos = mysqli_query($conex, $sqlDiasHos) or die("ERROR EN QUERY (sqlDiasHos):/n MENSAJE:".mysqli_error($conex));
 					if($rowDiasHos = mysqli_fetch_array($resDiasHos, MYSQLI_ASSOC))
 						$datos[$keyDat]['EstanciaHosp'] = $rowDiasHos['EstanciaHosp'];
 					else
@@ -522,7 +522,7 @@
 					 WHERE Egrhis = '".$valDat['HC']."' 
 					   AND Egring = '".$valDat['Ing']."'
 					";
-					$resDiasTot = mysqli_query($conex, $sqlDiasTot) or die("ERROR EN QUERY (sqlDiasTot):".$sqlDiasTot."/n MENSAJE:".mysqli_error($conex));
+					$resDiasTot = mysqli_query($conex, $sqlDiasTot) or die("ERROR EN QUERY (sqlDiasTot):/n MENSAJE:".mysqli_error($conex));
 					if($rowDiasTot = mysqli_fetch_array($resDiasTot, MYSQLI_ASSOC))
 						$datos[$keyDat]['TotalEstancia'] = $rowDiasTot['Egrest'];
 					else
@@ -616,7 +616,7 @@
 					   AND ingreso 			= '".$valDat['Ing']."'
 					   AND (fecha_Cx != '' OR fecha_Hemod != '' OR fecha_Electrof 	!= '')
 					";
-					$resPaf = mysqli_query($conex, $sqlPaf) or die("ERROR EN QUERY (sqlPaf):".$sqlPaf."/n MENSAJE:".mysqli_error($conex));
+					$resPaf = mysqli_query($conex, $sqlPaf) or die("ERROR EN QUERY (sqlPaf):/n MENSAJE:".mysqli_error($conex));
 					while($rowPaf = @mysqli_fetch_array($resPaf, MYSQLI_ASSOC)){
 						$resPaf = trim($rowPaf['responsable']);
 						// --> Busco el nombre en la cadena, ya que en la tabla no se guarda el codigo
@@ -652,7 +652,7 @@
 					   AND Tcarconcod = '0076'
 					   AND Tcarest = 'on' 
 					";
-					$resPafCar = mysqli_query($conex, $sqlPafCar) or die("ERROR EN QUERY (sqlPafCar):".$sqlPafCar."/n MENSAJE:".mysqli_error($conex));
+					$resPafCar = mysqli_query($conex, $sqlPafCar) or die("ERROR EN QUERY (sqlPafCar):/n MENSAJE:".mysqli_error($conex));
 					while($rowPafCar = mysqli_fetch_array($resPafCar, MYSQLI_ASSOC)){
 						
 						if($datos[$keyDat]['Pcar'] == '9'){
@@ -775,7 +775,7 @@
 				 WHERE Detemp = '01'
 				   AND Detapl = 'ejecucionCronETL_GRD'				 
 				";
-				mysqli_query($conex, $sqlG) or die("ERROR EN QUERY (sqlG):".$sqlG."/n MENSAJE:".mysqli_error($conex));
+				mysqli_query($conex, $sqlG) or die("ERROR EN QUERY (sqlG):/n MENSAJE:".mysqli_error($conex));
 				
 				
 				odbc_close($conexUnix);
