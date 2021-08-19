@@ -12,6 +12,7 @@ include_once("funcionesIngresos.php");
 $conex = obtenerConexionBD("matrix");
 $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
 $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 $wemp_pmla = $_REQUEST['wemp_pmla'];
  // Obtener las historias que le hicieron egreso automático
  $historias = HC_e_ingresos_de_Egresos_automaticos();

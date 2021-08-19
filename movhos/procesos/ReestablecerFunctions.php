@@ -10,6 +10,8 @@ $wemp_pmla = $_REQUEST['wemp_pmla'];
 
 $conex = obtenerConexionBD("matrix");
 $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 ob_end_clean();
 
 function HC_e_ingresos_de_Egresos_automaticos(){
@@ -29,9 +31,7 @@ function obtener_datos($historia, $ingreso, $tabla, $chistoria, $cingreso){
     global $conex;
     $historias = array();
 
-    $ing = $ingreso - 1;
-
-    $query = "SELECT * FROM {$tabla} WHERE {$chistoria} = '{$historia}' AND {$cingreso} = '{$ing}' AND Tipo_egre_serv = 'ALTA'";
+    $query = "SELECT * FROM {$tabla} WHERE {$chistoria} = '{$historia}' AND {$cingreso} = '{$ingreso}'";
     $res = mysql_query($query, $conex);
     $num = mysql_num_rows($res);
     if ($num > 0){
@@ -43,13 +43,23 @@ function obtener_datos($historia, $ingreso, $tabla, $chistoria, $cingreso){
     return $historias;
 }
 
-function ingresoMasAltoMovhos33($historia, $tabla, $chistoria){
+function ingresoMasAltoMovhos18( $historia ){
     global $conex;
-    $historias = array();
 
-    $ing = $ingreso - 1;
+    $query = "SELECT MAX(Ubiing*1) as ingreso FROM movhos_000018 WHERE Ubihis = '{$historia}'";
+    $res = mysql_query($query, $conex);
+    $num = mysql_num_rows($res);
+    if ($num > 0){
+        $row = mysql_fetch_assoc($res);
+    }
 
-    $query = "SELECT MAX(Num_ingreso) as ingreso FROM {$tabla} WHERE {$chistoria} = '{$historia}' AND Tipo_egre_serv = 'ALTA'";
+    return $row['ingreso'];
+}
+
+function ingresoMasAltoHce22( $historia ){
+    global $conex;
+
+    $query = "SELECT MAX(Mtring*1) as ingreso FROM hce_000022 WHERE Mtrhis = '{$historia}'";
     $res = mysql_query($query, $conex);
     $num = mysql_num_rows($res);
     if ($num > 0){
@@ -74,38 +84,6 @@ function consultarColumnasTabla($tabla, $c_tabla){
     return $arrayColumnas;
 }
 
-function ping_unix(){
-    global $conex;
-    global $wemp_pmla;
-
-    $ret = false;
-
-    $direccion_ipunix = consultarAliasPorAplicacion($conex, $wemp_pmla, "ipdbunix");
-    if ($direccion_ipunix != "") {
-        $cmd_result = shell_exec("ping -c 1 -w 1 " . $direccion_ipunix);
-        $result = explode(",", $cmd_result);
-        $recibidos = explode('=', $result[1]); // para windows
-        if (preg_match('/(1 received)/', $result[1]) or $recibidos[1] > 1) {
-            $ret = true;
-        }
-    }
-    return $ret;
-}
-
-function verificarConexionUnix(){
-    global $conex;
-    global $wemp_pmla;
-    $tieneConexionUnix = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'conexionUnix' );
-    $ping_unix = ping_unix();
-    $res = false;
-
-    if($tieneConexionUnix == 'on' && $ping_unix ){
-        $res = true;
-    }
-    
-    return $res;
-}
-
 function obtenerFechaMovhos18($historia, $ingreso){
     global $conex;
     global $wcliame;
@@ -123,104 +101,10 @@ function obtenerFechaMovhos18($historia, $ingreso){
     return $data;
 }
 
-function obtenerDatosDeMatrix($historia, $ingreso){
-    global $conex;
-    global $wcliame;
-    $fechaIngreso = '';
-
-    $query = "SELECT Ingfei FROM {$wcliame}_000101 WHERE Inghis = '{$historia}' AND Ingnin = '{$ingreso}'";
-    $res = mysql_query($query, $conex);
-    $num = mysql_num_rows($res);
-    if ($num > 0){
-        while ($row = mysql_fetch_assoc($res)) {
-            $fechaIngreso = $row['Ingfei'];
-        }
-    }
-
-    return $fechaIngreso;
-}
-
-function obtenerDatosInpac( $historia, $ingreso ){
-
-    $data = array();
-
-    $conexionUnix = verificarConexionUnix();
-    if ($conexionUnix == true) {
-
-        $a = new admisiones_erp('traerDatosInpaci', $historia);
-        $dataU = $a->data;
-
-        if(!count($dataU['data'])){
-
-            $a = new admisiones_erp('traerDatosInpac', $historia);
-            $dataU = $a->data;
-    
-            $data = $dataU['data'];
-    
-            $fechaIngreso = obtenerDatosDeMatrix( $historia, $ingreso );
-        
-            array_push( $data, $fechaIngreso );
-        
-            $result['pachis'] = trim($data[0]);
-            $result['pacced'] = trim($data[1]);
-            $result['pactid'] = trim($data[2]);
-            $result['pacnui'] = trim($data[3]);
-            $result['pacap1'] = trim($data[4]);
-            $result['pacap2'] = trim($data[5]);
-            $result['pacnom'] = trim($data[6]);
-            $result['pacsex'] = trim($data[7]);
-            $result['pacnac'] = trim($data[8]);
-            $result['pacnac'] = str_replace("-", "/", $result['pacnac']);
-            $result['paclug'] = trim($data[9]);
-            $result['pacest'] = trim($data[10]);
-            $result['pacdir'] = trim($data[11]);
-            $result['pactel'] = trim($data[12]);
-            $result['paczon'] = trim($data[13]);
-            $result['pacmun'] = trim($data[14]);
-            $result['pactra'] = trim($data[15]);
-            $result['pacniv'] = trim($data[16]);
-            $result['pacpad'] = trim($data[17]);
-            $result['pacing'] = trim($data[19]);
-            $result['pacing'] = str_replace("-", "/", $result['pacing']);
-            $result['pacnum'] = trim($data[18] - 1);
-        
-            $_POST['datosInpaci'] = $result;
-            $a = new admisiones_erp('insertarEnInpaci');
-            $dataU = $a->data;
-            
-            if ($dataU['data'] == true) {
-                $IngresoInpaci = trim($data[18] - 1);
-                autoIncremento_movhos_000033( $historia, $ingreso, $IngresoInpaci );
-                $respuesta['error'] = 'no error';
-                $respuesta['data'] = "$historia - $ingreso - $IngresoInpaci";
-                $respuesta['mensaje'] = 'Insersion en inpaci ok';
-                return $respuesta;
-            }else{
-                $respuesta['error'] = 'error';
-                $respuesta['data'] = "$historia - $ingreso";
-                $respuesta['mensaje'] = 'Error al insertar en inpaci';
-                return $respuesta;
-            }
-        }else{
-            $data = $dataU['data'];
-            $IngresoInpaci = trim($data[19]);
-            autoIncremento_movhos_000033( $historia, $ingreso, $IngresoInpaci );
-            $respuesta['error'] = 'error';
-            $respuesta['data'] = "$historia - $ingreso - $IngresoInpaci";
-            $respuesta['mensaje'] = 'Historia ya existe en inpaci.';
-            return $respuesta;
-        }
-    }else{
-        $respuesta['error'] = 'error';
-        $respuesta['data'] = "$historia - $ingreso";
-        $respuesta['mensaje'] = 'No hay conexión a unix, intentar luego.';
-        return $respuesta;
-    }
-}
-
-function autoIncremento_movhos_000033( $historia, $ingreso, $IngresoInpaci ){
+function autoIncremento_hce_000022( $historia ){
     global $conex;
     global $wmovhos;
+    global $whce;
     global $wcliame;
     global $wemp_pmla;
 
@@ -228,34 +112,36 @@ function autoIncremento_movhos_000033( $historia, $ingreso, $IngresoInpaci ){
     $usuario = explode("-", $user);
 
     $error = array();
-    $consulta = consultarColumnasTabla('movhos', '_000033');
+    $consulta = consultarColumnasTabla('hce', '_000022');
     array_pop($consulta);
     $columnasTabla = implode(', ', $consulta);
 
     
-    $ingresoAltoMovhos33 = ingresoMasAltoMovhos33($historia, 'movhos_000033', 'Historia_clinica');
+    $ingresoAltoMovhos18 = ingresoMasAltoMovhos18( $historia );
+    $ingresoAltoHce22 = ingresoMasAltoHce22( $historia );
 
-    if( $IngresoInpaci > $ingresoAltoMovhos33 ){
-        while ( $ingresoAltoMovhos33 < $IngresoInpaci ) {
-            $datos = obtener_datos($historia, $ingresoAltoMovhos33, 'movhos_000033', 'Historia_clinica', 'Num_ingreso');
+    if( $ingresoAltoMovhos18 > $ingresoAltoHce22 ){
+        while ( $ingresoAltoMovhos18 > $ingresoAltoHce22 ) {
+            $datos = obtener_datos($historia, $ingresoAltoHce22, 'hce_000022', 'Mtrhis', 'Mtring');
             
-            $ingresoAltoMovhos33++;
-            $dataMovhos18 = obtenerFechaMovhos18( $historia, $ingresoAltoMovhos33 );
-            $wbasedatoMovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos" );
+            $ingresoAltoHce22++;
+            $dataMovhos18 = obtenerFechaMovhos18( $historia, $ingresoAltoHce22 );
             
             if(count($datos) > 0){
-                $query = "INSERT INTO movhos_000033 ({$columnasTabla})
-                        VALUES ('{$datos[0]['Medico']}', '{$dataMovhos18[0][0]}', 
-                        '{$dataMovhos18[0][1]}', '{$datos[0]['Historia_clinica']}', '{$ingresoAltoMovhos33}', 
-                        '{$dataMovhos18[0][2]}', '{$datos[0]['Num_ing_serv']}', '{$dataMovhos18[0][0]}', 
-                        '{$dataMovhos18[0][1]}', '{$datos[0]['Tipo_egre_serv']}', '{$datos[0]['Dias_estan_serv']}', 
-                        'C-{$usuario[1]}')";
+                $query = "INSERT INTO {$whce}_000022 ({$columnasTabla})
+                    VALUES ('{$datos[0]['Medico']}', '{$dataMovhos18[0][0]}', '{$dataMovhos18[0][1]}', '{$datos[0]['Mtrhis']}', '{$ingresoAltoHce22}', '{$datos[0]['Mtrmed']}',
+                    '{$datos[0]['Mtrest']}', '{$datos[0]['Mtrtra']}', '{$datos[0]['Mtreme']}', '{$datos[0]['Mtretr']}', '{$datos[0]['Mtrcon']}', '{$datos[0]['Mtrcur']}', '0000-00-00', 
+                    '00:00:00', '0000-00-00', '00:00:00', '0000-00-00', '00:00:00', '{$datos[0]['Mtrtri']}', '{$dataMovhos18[0][2]}', 
+                    '0000-00-00', '00:00:00', '{$datos[0]['Mtrcua']}', '{$datos[0]['Mtrsal']}', '{$datos[0]['Mtrccu']}', '0000-00-00', '00:00:00', 
+                    '{$datos[0]['Mtrtur']}', '{$datos[0]['Mtrgme']}', '0000-00-00', '00:00:00', '{$dataMovhos18[0][0]}', '{$dataMovhos18[0][1]}', '{$datos[0]['Mtraut']}', 
+                    '0000-00-00', '00:00:00', '{$datos[0]['Mtruau']}', 'C-{$usuario[1]}')";
                 $res = mysql_query($query,$conex)  or ($descripcion = utf8_encode("Error: " . mysql_error()));
             }else{
-                $query = "INSERT INTO movhos_000033 ({$columnasTabla})
-                        VALUES ('{$wbasedatoMovhos}', '{$dataMovhos18[0][0]}', 
-                        '{$dataMovhos18[0][1]}', '{$historia}', '1', '{$dataMovhos18[0][2]}', '1', '{$dataMovhos18[0][0]}', 
-                        '{$dataMovhos18[0][1]}', 'ALTA', '0', 'C-{$usuario[1]}')";
+                $query = "INSERT INTO {$whce}_000022 ({$columnasTabla})
+                    VALUES ('{$datos[0]['Medico']}', '{$fecha}', '{$hora}', '{$historia}', '1', '',
+                    'on', 'off', '', '', '', 'off', '0000-00-00', '00:00:00', '0000-00-00', '00:00:00', '0000-00-00', '00:00:00', '', '{$dataMovhos18[0][2]}', 
+                    '0000-00-00', '00:00:00', '', '', '', '0000-00-00', '00:00:00', '', '', '0000-00-00', '00:00:00', '{$fecha}', '{$hora}', '', 
+                    '0000-00-00', '00:00:00', '', 'C-{$usuario[1]}')";
                 $res = mysql_query($query,$conex)  or ($descripcion = utf8_encode("Error: " . mysql_error()));
             }
         }
@@ -266,8 +152,8 @@ $historias = HC_e_ingresos_de_Egresos_automaticos();
 
 $result = array();
 foreach ($historias as $historiaIngreso) {
-    $res = obtenerDatosInpac( $historiaIngreso[0], $historiaIngreso[1] );
-    // $res = obtenerDatosInpac( '836440', '4' );
+    $res = autoIncremento_hce_000022( $historiaIngreso[0] );
+    // $res = autoIncremento_hce_000022( '103654' );
     array_push( $result, $res);
 }
 

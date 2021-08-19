@@ -4,6 +4,7 @@
     function HC_e_ingresos_de_Egresos_automaticos(){
         global $conex;
         global $wcliame;
+		global $wmovhos;
 		$fecha = date('Y-m-d');
         $historias_ingresos = array();
 		$historia = $_POST['whisconsultada'];
@@ -14,7 +15,19 @@
 		}
         $res = mysql_query($query, $conex);
         while ($row = mysql_fetch_assoc($res)) {
-            array_push($historias_ingresos, array($row['historia'], $row['ingreso']));
+			$ingreso = $row['ingreso'] + 1;
+			$query1 = "SELECT Ubihis FROM {$wmovhos}_000018 WHERE Ubihis = '{$row['historia']}' AND Ubiing = '{$ingreso}'";
+			$res1 = mysql_query($query1, $conex);
+			$num = mysql_num_rows($res1);
+			if( $num == 0 )
+			{
+				array_push($historias_ingresos, array($row['historia'], $row['ingreso']));
+			}
+			// else
+			// {
+			// 	$query = "UPDATE {$wcliame}_000343 SET ingresado = 1 WHERE historia = {$row['historia']} and ingreso = {$row['ingreso']}";
+			// 	$res = mysql_query($query,$conex);
+			// }
         }
         return $historias_ingresos;
     }
@@ -39,7 +52,7 @@
         global $wcliame;
 
         $query = "SELECT tipo_documento, documento_paciente, paciente 
-				FROM {$wcliame}_000343 WHERE historia = {$historia} AND ingreso = {$ingreso}";
+				FROM {$wcliame}_000343 WHERE historia = '{$historia}' AND ingreso = '{$ingreso}'";
         $res = mysql_query($query, $conex);
         $row = mysql_fetch_assoc($res);
 
@@ -532,6 +545,7 @@
         global $conex;
         global $wcliame;
 		global $wmovhos;
+		global $whce;
 		$wemp_pmla = $_REQUEST['wemp_pmla'];
         $error = array();
         $fecha = date('Y-m-d');
@@ -542,6 +556,51 @@
             $query = "UPDATE root_000037 SET Fecha_data = '{$fecha}', Hora_data = '{$hora}', Oriing = '{$ingresoAumentado}', Oriori = '{$wemp_pmla}'
                     WHERE Orihis = '{$datos[0]['Orihis']}' AND Oriing = '{$datos[0]['Oriing']}' AND Oriori = '{$wemp_pmla}'";
 			$res = mysql_query($query,$conex)  or ($descripcion = utf8_encode("Error: " . mysql_error()));
+            if (!$res) {
+                $datosPaciente = obtenerDatosPaciente($historiaIngreso[0], $historiaIngreso[1]);
+                array_push($error, array('historia' => $historiaIngreso[0], 'ingreso' => $historiaIngreso[1], 'tipo_documento' => $datosPaciente['tipo_documento'], 'documento' => $datosPaciente['documento_paciente'], 'paciente' => $datosPaciente['paciente'], 'descripcion' => $descripcion));
+                $result['finalizados'] = 0;
+                $result['fallidos'] = $error[0];
+                rollbackIngreso($historiaIngreso);
+                return $result;
+            }else{
+				$datos = obtener_datos($historiaIngreso, $whce, '_000022', 'Mtrhis', 'Mtring');
+				$hce_000022 = autoIncremento_hce_000022($datos, $historiaIngreso);
+                return $hce_000022;
+            }
+        }else{
+			$datos = obtener_datos($historiaIngreso, $whce, '_000022', 'Mtrhis', 'Mtring');
+			$hce_000022 = autoIncremento_hce_000022($datos, $historiaIngreso);
+			return $result;
+        }
+    }
+
+	function autoIncremento_hce_000022($datos, $historiaIngreso){
+        global $conex;
+		global $whce;
+		$wemp_pmla = $_REQUEST['wemp_pmla'];
+        $error = array();
+        $fecha = date('Y-m-d');
+        $hora = date('H:i:s');
+
+		$consulta = consultarColumnasTabla($whce, '_000022');
+        array_pop($consulta);
+        $columnasTabla = implode(', ', $consulta);
+
+		$user = $_SESSION['user'];
+    	$usuario = explode("-", $user);
+
+		$realizada = array();
+        if(count($datos) > 0){
+            $ingresoAumentado = $datos[0]['Mtring'] + 1;
+            $query = "INSERT INTO {$whce}_000022 ({$columnasTabla})
+                    VALUES ('{$datos[0]['Medico']}', '{$fecha}', '{$hora}', '{$datos[0]['Mtrhis']}', '{$ingresoAumentado}', '{$datos[0]['Mtrmed']}',
+                    '{$datos[0]['Mtrest']}', '{$datos[0]['Mtrtra']}', '{$datos[0]['Mtreme']}', '{$datos[0]['Mtretr']}', '{$datos[0]['Mtrcon']}', '{$datos[0]['Mtrcur']}', '0000-00-00', 
+					'00:00:00', '0000-00-00', '00:00:00', '0000-00-00', '00:00:00', '{$datos[0]['Mtrtri']}', '{$datos[0]['Mtrcci']}', 
+					'0000-00-00', '00:00:00', '{$datos[0]['Mtrcua']}', '{$datos[0]['Mtrsal']}', '{$datos[0]['Mtrccu']}', '0000-00-00', '00:00:00', 
+					'{$datos[0]['Mtrtur']}', '{$datos[0]['Mtrgme']}', '0000-00-00', '00:00:00', '{$fecha}', '{$hora}', '{$datos[0]['Mtraut']}', 
+					'0000-00-00', '00:00:00', '{$datos[0]['Mtruau']}', 'C-{$usuario[1]}')";
+            $res = mysql_query($query,$conex)  or ($descripcion = utf8_encode("Error: " . mysql_error()));
             if (!$res) {
                 $datosPaciente = obtenerDatosPaciente($historiaIngreso[0], $historiaIngreso[1]);
                 array_push($error, array('historia' => $historiaIngreso[0], 'ingreso' => $historiaIngreso[1], 'tipo_documento' => $datosPaciente['tipo_documento'], 'documento' => $datosPaciente['documento_paciente'], 'paciente' => $datosPaciente['paciente'], 'descripcion' => $descripcion));
@@ -612,6 +671,9 @@
         $res7 = mysql_query($query, $conex);
 		$query = "UPDATE {$wcliame}_000100 SET `Pacact` = 'off' WHERE `Pachis` = '{$historia}'";
         $res8 = mysql_query($query, $conex);
+
+		$rollback = new admisiones_erp('rollback', $historiaIngreso[0], $ingreso);
+
 		return $res8;
     }
 
