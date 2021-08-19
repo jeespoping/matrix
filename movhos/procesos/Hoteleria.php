@@ -891,7 +891,11 @@ function obtenerRegistrosFila($qlog)
 								$numhab = mysql_num_rows($reshab);
 
 								if ($numhab > 0)
-								$whabpac="<b>".$whabpac."</b><br>Pac: ".$rowhab[0]." ".$rowhab[1]." ".$rowhab[2]." ".$rowhab[3];
+								{
+									$habitacion_json = json_encode( [($whabpac == null ? $whab_actual : $whabpac), "Pac: ".$rowhab[0]." ".$rowhab[1]." ".$rowhab[2]." ".$rowhab[3]] );
+
+									// $whabpac="<b>".$whabpac."</b><br>Pac: ".$rowhab[0]." ".$rowhab[1]." ".$rowhab[2]." ".$rowhab[3];
+								}
 							}
 							//==========================================================================================
 
@@ -901,8 +905,8 @@ function obtenerRegistrosFila($qlog)
 							//=======================================================================================================================================================
 							//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
 							$q = " UPDATE ".$wbasedato."_000020 "
-								."    SET Habali = 'on', "
-								."        Habdis = 'off', "
+								// ."    SET Habali = 'on', "	// Se comenta linea que actualiza campo habitación en estado listo para limpieza
+								."    SET Habdis = 'off', "
 								."        Habhis = '', "
 								."        Habing = '', "
 								."        Habfal = '".$wfecha."', "
@@ -1007,16 +1011,16 @@ function obtenerRegistrosFila($qlog)
 							//=======================================================================================================================================================
 
 							if ($rowmue[0]!="on")  //No pide el camillero si el paciente Murio, porque se pidio cuando marco la muerte
-								{
+							{
 								//=======================================================================================================================================================
 								//Grabo el registro solicitud del camillero
-								$q = " INSERT INTO ".$wcencam."_000003 (   Medico     ,   Fecha_data,   Hora_data,   Origen     , Motivo           ,   Habitacion  , Observacion                                                                                                            , Destino ,    Solicito    ,    Ccosto  , Camillero, Hora_respuesta, Hora_llegada, Hora_Cumplimiento, Anulada, Observ_central,    Central     , Seguridad        ) "
-									."                  VALUES ('".$wcencam."','".$wfecha."','".$whora."','".$worigen."','PACIENTE DE ALTA','".$whabpac."' , 'Se dio alta definitiva desde el sistema de altas (Hotelería) a la Historia: ".$row[1]."-".$row[2]." a las ".$whora."' , 'ALTA'  , '".$wusuario."', '".$wcco."', ''       , ''            , ''          , ''               , 'No'   , ''            , '".$wcentral."', 'C-".$wusuario."')";
+								$q = " INSERT INTO ".$wcencam."_000003 (   Medico     ,   Fecha_data,   Hora_data,   Origen     , Motivo           ,   Habitacion  , Observacion                                                                                                            , Destino ,    Solicito    ,    Ccosto  , Camillero, Hora_respuesta, Hora_llegada, Hora_Cumplimiento, Anulada, Observ_central,   Historia  ,    Central     , Seguridad        ) "
+									."                  VALUES ('".$wcencam."','".$wfecha."','".$whora."','".$worigen."','PACIENTE DE ALTA','".$habitacion_json."' , 'Se dio alta definitiva desde el sistema de altas (Hotelería) a la Historia: ".$row[1]."-".$row[2]." a las ".$whora."' , 'ALTA'  , '".$wusuario."', '".$wcco."', ''       , ''            , ''          , ''               , 'No'   , ''            , '".$whis."' , '".$wcentral."', 'C-".$wusuario."')";
 								$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 								//=======================================================================================================================================================
-								}
-
 							}
+
+						}
 			        }
 			       else
 			          {

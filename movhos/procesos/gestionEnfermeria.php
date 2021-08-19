@@ -961,7 +961,11 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 	$numhab = mysql_num_rows($reshab);
 
 	if ($numhab > 0)
-		$whabpac="<b>".$whabpac."</b><br>Pac: ".$rowhab[0]." ".$rowhab[1]." ".$rowhab[2]." ".$rowhab[3];
+	{
+		$habitacion_json = json_encode( [($whabpac == null ? $whab_actual : $whabpac), "Pac: ".$rowhab[0]." ".$rowhab[1]." ".$rowhab[2]." ".$rowhab[3]] );
+
+		// $whabpac="<b>".$whabpac."</b><br>Pac: ".$rowhab[0]." ".$rowhab[1]." ".$rowhab[2]." ".$rowhab[3];
+	}
 
 	$wreqjust = false;
 	$wreqjust = requiere_justificacion($wid18);
@@ -1061,8 +1065,8 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 		//=======================================================================================================================================================
 		//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
 		$q = " UPDATE ".$tablaHabitaciones." "
-			."    SET Habali = 'on', "
-			."        Habdis = 'off', "
+			// ."    SET Habali = 'on', "	// Se comenta linea que actualiza campo habitación en estado listo para limpieza
+			."    SET Habdis = 'off', "
 			."        Habhis = '', "
 			."        Habing = '', "
 			."        Habfal = '".$wfecha."', "
@@ -1169,7 +1173,7 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 			//=======================================================================================================================================================
 			//Grabo el registro solicitud del camillero
 			$q = " INSERT INTO ".$wcencam."_000003 (     Medico     ,   Fecha_data,   Hora_data,   Origen     , Motivo           ,        Habitacion                        ,                       Observacion                                                                        , Destino ,    Solicito    ,    Ccosto  , Camillero, Hora_respuesta, Hora_llegada, Hora_Cumplimiento, Anulada, Observ_central,   Historia  ,    Central     , Seguridad        ) "
-						."                  VALUES ('".$wcencam."','".$wfecha."'  ,'".$whora."','".$worigen."','PACIENTE DE ALTA','<b>".$whab_actual."</b><br>".$whabpac."' , 'Se dio alta definitiva desde gestion de enfermeria a la Historia: ".$whis."-".$wing." a las ".$whora."' , 'ALTA'  , '".$wusuario."', '".$wcco."', ''       , '00:00:00'    , '00:00:00'  , '00:00:00'       , 'No'   , ''            , '".$whis."' ,'".$wcentral."', 'C-".$wusuario."')";
+						."                  VALUES ('".$wcencam."','".$wfecha."'  ,'".$whora."','".$worigen."','PACIENTE DE ALTA','".$habitacion_json."' 					, 'Se dio alta definitiva desde gestion de enfermeria a la Historia: ".$whis."-".$wing." a las ".$whora."' , 'ALTA'  , '".$wusuario."', '".$wcco."', ''       , '00:00:00'    , '00:00:00'  , '00:00:00'       , 'No'   , ''            , '".$whis."' ,'".$wcentral."', 'C-".$wusuario."')";
 			$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 			//=======================================================================================================================================================
 		}
