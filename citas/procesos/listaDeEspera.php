@@ -2,7 +2,13 @@
 /****************************************************************************************
  * Modificaciones:
  *
+ * Actualizado: 18-Ene-2021 (Fernando Meneses): Creación de log en Guardar, descartar, guardar valor, verificar pago y admitir.
+ * Actualizado: 21-Ene-2021 (Fernando Meneses): Se inhabilita Aseguradora al inicio de la carga para evitar error de carga en Plan.
  * Enero 15 de 2021 		Edwin MG:	- Se valida que el usuario este logueado.
+ * Mayo 18 de 2021          Luis Motato - se agregan los campos y las funcionalidades para capturar
+ *                                         la información del responsable del paciente.
+ * Mayo 2021                Juan David Rodriguez -Modificacion en el boton admitir, se desabilita hasta terminar el 
+ *                                                proceso de admitir.
  ****************************************************************************************/
 
 
@@ -81,16 +87,17 @@
 
 
     //Consulta de listado de registros de la lista de espera :)
-    $sql = "SELECT c32.id,c32.Fecha_data,c32.Hora_data,
-    c32.drvtid, c32.drvidp, c32.drvnom, c32.drvap1, c32.drvap2,
-    c32.drvbdy, c32.drvsex, c32.drvtel, c32.drvmov, c32.drvdir, c32.drvbar, c32.drvema,
-    c32.drvenv, c32.drvase, c32.drvpol, c32.drvcpl,
-    c32.drvser, c32.drvexa, c32.drvfsi, c32.drvsin,
-    c32.drvcla, c32.drvaut, c32.drvvcr, c32.drvlnk,
-    c32.drvpcf, c32.drvfec, c32.drvhor, c32.drvsag,
-    c32.drvord, c32.drvest, c33.drvanm, c35.drvser
-    FROM ".$wbasedato."_000032 c32, ".$wbasedato."_000035 c35 , ".$wbasedato."_000033 c33
-    WHERE drvord='' and c32.drvest='on'  AND c32.drvser=c35.drvcse AND c32.drvase=c33.drvnlb order by c32.Fecha_data DESC, c32.Hora_data DESC;";
+        $sql = "SELECT c32.id,c32.Fecha_data,c32.Hora_data,
+        c32.drvtid, c32.drvidp, c32.drvnom, c32.drvap1, c32.drvap2,
+        c32.drvbdy, c32.drvsex, c32.drvtel, c32.drvmov, c32.drvdir, c32.drvbar, c32.drvema,
+        c32.drvenv, c32.drvase, c32.drvpol, c32.drvcpl,
+        c32.drvser, c32.drvexa, c32.drvfsi, c32.drvsin,
+        c32.drvcla, c32.drvaut, c32.drvvcr, c32.drvlnk,
+        c32.drvpcf, c32.drvfec, c32.drvhor, c32.drvsag,
+        c32.drvord, c32.drvest,c32.drvrtid,c32.drvridp,c32.drvrnom,c32.drvrap,
+        c32.drvrtel,c32.drvrpar,c32.drvrpai,c32.drvrciu,c32.drvrdir, c33.drvanm, c35.drvser
+        FROM ".$wbasedato."_000032 c32, ".$wbasedato."_000035 c35 , ".$wbasedato."_000033 c33
+        WHERE drvord='' and c32.drvest='on'  AND c32.drvser=c35.drvcse AND c32.drvase=c33.drvnlb order by c32.Fecha_data DESC, c32.Hora_data DESC;";
     $result = mysqli_query($conex, $sql);
     $registros = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
@@ -99,9 +106,39 @@
     $result = mysqli_query($conex, $sql);
     $servicios = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
+
+    /**
+     * @author Luis Motato
+     * consultas para completar la informacion del responsable del paciente 
+     */
+    //piases
+    $sql = "SELECT paicod,painom FROM root_000077 WHERE paiest='on' ORDER BY painom;";
+    $result = mysqli_query($conex, $sql);
+    $paises = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    //parentescos
+    $sql = "SELECT parcod, pardes FROM root_000067 WHERE parest='on' ORDER BY pardes;";
+    $result = mysqli_query($conex, $sql);
+    $parentescos = mysqli_fetch_all($result, MYSQLI_ASSOC);
+   //ciudades
+    $sql = "SELECT codigo,nombre FROM root_000006 ORDER BY nombre;";
+    $result = mysqli_query($conex, $sql);
+    $ciudades = mysqli_fetch_all($result, MYSQLI_ASSOC);
+
+
+
 //CONSULTAS  Y DATOS :)
 
 //FUNCIONES Y METODOS :)
+//**************************ENCARGADO DE RECIBIR LOS LLAMADOS CON AJAX********************************************//
+    if(isset($accion)){
+        switch($accion){
+            case 'escribirLog':
+            	escribirLog($proceso, $idreg, $data);
+            break;
+        }
+		exit;
+    }
+    
     //Funcionalidad para consultar los examenes asociados aún servidicio :)
     if (isset($_POST['servicioSeleccionado']) && $_POST['servicioSeleccionado'] == 'DM') {
 
@@ -254,7 +291,7 @@
 
         $sql = "SELECT id, drvcup,
         drvnex,
-        drvaut, drvpos " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
+        drvaut, drvpos,medico " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
 
         $result = mysqli_query($conex, $sql);
         $examenesParaOT = mysqli_fetch_all($result, MYSQLI_ASSOC);
@@ -311,7 +348,7 @@
     }
 
     //Funcionalidad para recibir pago  :)
-    if (isset($_POST['confirmarPago'])) :
+    if (isset($_POST['confirmarPago'])) {
         // write query
         $id = $_POST['confirmarPago'];
 
@@ -323,10 +360,10 @@
 
         print_r($pagoConfirmado);
         exit;
-    endif;
+    }
 
     //Se adiciona funcionalidad para descartar pagos Mavila 23-10-2020 :)
-    if (isset($_POST['descartarPaciente'])) :
+    if (isset($_POST['descartarPaciente'])) {
         // write query
         $id = $_POST['descartarPaciente'];
         $date = date('Y-m-d H:i:s');
@@ -336,8 +373,8 @@
         $pacienteDescartado = mysqli_fetch_all($result, MYSQLI_ASSOC);
         print_r($pacienteDescartado);
         exit;
-    endif;
-
+    }
+    
     if (isset($_POST['obtenerExamenes'])) {
         # code...
         // write query
@@ -510,7 +547,7 @@
         $id = $_POST['examenesParaComentarios'];
         $sql = "SELECT drvcup,
             drvnex,
-            drvaut " . "FROM citaslc_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
+            drvaut " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
 
         $result = mysqli_query($conex, $sql);
         $html = "";
@@ -567,10 +604,24 @@
             $drvcla = mysqli_real_escape_string($conex, $data['clasificacionCasoPost']);
             $fecha_data = date("Y-m-d");
             $hora_data = date("H:i:s");
+            
+            // luis motato:  Se agregan los valores con la información del responsable.
+            $drvrnom = mysqli_real_escape_string($conex, $data['NombresResponsable']);
+            $drvrap = mysqli_real_escape_string($conex, $data['ApellidosResponsable']);
+            $drvrtid = mysqli_real_escape_string($conex, $data['TipoDocResponsable']);
+            $drvridp = mysqli_real_escape_string($conex, $data['NumDocResponsable']);
+            $drvrtel = mysqli_real_escape_string($conex, $data['TelefonoResponsable']);
+            $drvrpar = mysqli_real_escape_string($conex, $data['Parentesco']);
+            $drvrdir = mysqli_real_escape_string($conex, $data['DireccionResponsable']);
+            $drvrpai = mysqli_real_escape_string($conex, $data['PaisResponsable']); 
+            $drvrciu = mysqli_real_escape_string($conex, $data['MunicipioResponsable']);
+
+
+
             //Nueva validacion de datos sencibles :)        
             if (!empty($drvidp)) {
                 // Create sql
-                $sql = "INSERT INTO ".$wbasedato."_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla, drvvcr, drvest, Seguridad) VALUES('drvtru', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla', 0,'on','$wuse' )";
+                $sql = "INSERT INTO ".$wbasedato."_000032(Medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2,drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase,drvpol, drvcpl, drvser, drvexa, drvfsi, drvsin, drvcla, drvvcr,drvest, Seguridad, drvrtid, drvridp, drvrnom, drvrap, drvrtel, drvrpar, drvrpai,drvrciu, drvrdir) VALUES ('".$wbasedato."', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2','$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol','$drvcpl', '$drvser', '$drvexa', '$drvfsi', '$drvsin', '$drvcla', 0,'on','$wuse','$drvrtid', '$drvridp', '$drvrnom', '$drvrap', '$drvrtel', '$drvrpar', '$drvrpai', '$drvrciu', '$drvrdir' );";
                 //Validamos el insertar si se guarda la información :)
                 if (mysqli_query($conex, $sql)) {
                     //Se procede a insertar los datos de los examenes :)
@@ -584,7 +635,7 @@
                         $drvnex = mysqli_real_escape_string($conex, $data['examName-' . $i]);
                         $drvpos = $i + 1;
                         //Se construye la consula de los examenes :)
-                        $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
+                        $inserts = $inserts . "('".$wbasedato."','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
                         // Se agrega coma hasta el pen&uacute;ltimo elemento :)
                         if ($i !== $drvexa - 1) {
                             $inserts = $inserts . ",";
@@ -596,25 +647,30 @@
                     if (mysqli_query($conex, $sqlExamenes)) {
                         $response['code'] = '200';
                         $response['content'] = 'Se registran los datos correctamente.';
+                        escribirLog ('Cita creada','-1',$data);
                         echo json_encode($response);
                     } else {
                         $response['code'] = '404';
                         $response['content'] = 'query error' . mysqli_error($conex);
+                        escribirLog ('Error creando cita: '. mysqli_error($conex),'-1',$data);
                         echo json_encode($response);
-                    }                
+                    }                          
                 } else {
                     $response['code'] = '404';
                     $response['content'] = 'query error' . mysqli_error($conex);
+                    escribirLog ('Error creando cita: '. mysqli_error($conex),'-1',$data);
                     echo json_encode($response);
                 }
             }else{
                 $response['code'] = '404';
                 $response['content'] = 'No hay datos para procesar el registro.';
+                escribirLog ('Error creando cita: No hay datos para procesar el registro.','-1',$data);
                 echo json_encode($response);
             }            
         } else {
             $response['code'] = '400';
             $response['content'] = 'No hay datos para procesar el registro.';
+            escribirLog ('Error creando cita: No hay datos para procesar el registro.','-1',$data);
             echo json_encode($response);
         } 
         return;
@@ -622,7 +678,6 @@
 
     //Funcionalidad para cuando se guarda la información :)
     if (isset($_POST['submit'])) {
-
 
         // Validaci&oacute;n
 
@@ -737,6 +792,120 @@
             # code...
             $errors['exams'] = "Debe elegir al menos un examen.";
         }
+        
+        /**
+         * @author luis motato
+         * Validacion de nuevos campos 
+         */
+        
+        if (empty($_POST['NombresResponsable'])) {
+            $NombresResponsable= '';
+            $errors['NombresResponsable'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $NombresResponsable = $_POST['NombresResponsable'];
+            if (!preg_match('/^[a-zA-Z\s]{2,}$/', $NombresResponsable)) {
+                $errors['NombresResponsable'] = 'Los nombres solo pueden estar compuestos por letras y espacios. Longitud m&iacute;nima 2 caracteres.';
+            }
+        }
+
+        if (empty($_POST['ApellidosResponsable'])) {
+            $ApellidosResponsable= '';
+            $errors['ApellidosResponsable'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $ApellidosResponsable= $_POST['ApellidosResponsable'];
+            if (!preg_match('/^[a-zA-Z\s]{2,}$/', $ApellidosResponsable)) {
+                $errors['ApellidosResponsable'] = 'Los apellidos solo pueden estar compuestos por letras y espacios. Longitud m&iacute;nima 2 caracteres.';
+            }
+        }
+
+        if (empty($_POST['TipoDocResponsable'])) {
+            $TipoDocResponsable= '';
+            $errors['TipoDocResponsable'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $TipoDocResponsable= $_POST['TipoDocResponsable'];
+        }
+        
+        if (empty($_POST['NumDocResponsable'])) {
+            $NumDocResponsable= '';
+            $errors['NumDocResponsable'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $NumDocResponsable = $_POST['NumDocResponsable'];
+            if (!preg_match('/^([a-zA-Z0-9]){5,}$/', $NumDocResponsable)) {
+                $errors['NumDocResponsable'] = 'El documento debe ser alfanumerico. Sin espacios ni caracteres especiales. Longitud m&iacute;nima 5 caracteres.';
+            }
+        }
+        
+        if (empty($_POST['TelefonoResponsable'])) {
+            $TelefonoResponsable= '';
+            $errors['TelefonoResponsable'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $TelefonoResponsable= $_POST['TelefonoResponsable'];
+            if ($_POST['TelefonoResponsable']) {
+                # code...
+                $TelefonoResponsable = $_POST['TelefonoResponsable'];
+                if (!preg_match('/^[0-9]{7,10}$/', $TelefonoResponsable)) {
+                    $errors['TelefonoResponsable'] = 'El n&uacute;mero de tel&eacute;fono solo debe estar compuesto por n&uacute;meros. Longitud m&iacute;nima 7 caracteres.';
+                }
+            } 
+        }
+        
+        if (empty($_POST['Parentesco'])) {
+            $Parentesco= '';
+            $errors['Parentesco'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $Parentesco= $_POST['Parentesco'];
+        }
+        
+        if (empty($_POST['DireccionResponsable'])) {
+            $DireccionResponsable= '';
+            $errors['DireccionResponsable'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $DireccionResponsable= $_POST['DireccionResponsable'];
+        }
+       
+        if (empty($_POST['PaisResponsable'])) {
+            $PaisResponsable= '';
+            $errors['PaisResponsable'] = "Este campo es obligatorio.";
+        } else {
+            // Otra validaci&oacute;n
+            $PaisResponsable= $_POST['PaisResponsable'];
+        }
+       
+        if (empty($_POST['DepResponsable'])) {
+            $DepResponsable= '';
+            if($_POST['paisResponsable']=='169'){
+                $errors['DepResponsable'] = "Este campo es obligatorio.";
+            }else{
+                $DepResponsable='';
+            }
+        } else {
+            // Otra validaci&oacute;n
+            $DepResponsable= $_POST['DepResponsable'];
+        }
+       
+        if (empty($_POST['MunicipioResponsable'])) {
+            $MunicipioResponsable= '';
+            if(!empty($_POST['DepResponsable'])){
+                $errors['MunicipioResponsable'] = "Este campo es obligatorio.";
+            }else{
+                $MunicipioResponsable='';
+            }
+        } else {
+            // Otra validaci&oacute;n
+            $MunicipioResponsable= $_POST['MunicipioResponsable'];
+        }
+
+        
+
+
+
 
         // if (empty($_POST['plan']) && $_POST['eps'] != 'PARTICULAR') {
         //     $errors['eps'] = "Este campo es obligatorio si no es PARTICULAR.";
@@ -795,9 +964,21 @@
             $fecha_data = date("Y-m-d");
             $hora_data = date("H:i:s");
 
-            // Create sql
-            $sql = "INSERT INTO ".$wbasedato."_000032 (medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2, drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase, drvpol, drvser, drvcpl, drvexa,  drvfsi, drvsin, drvcla,drvest, Seguridad) VALUES('drvtru', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2', '$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol', '$drvser', '$drvcpl', '$drvexa', '$drvfsi', '$drvsin', '$drvcla','on','$wuse' )";
+            // luis motato:  Se agregan los valores con la información del responsable.
+            $drvrnom = mysqli_real_escape_string($conex, $data['NombresResponsable']);
+            $drvrap = mysqli_real_escape_string($conex, $data['ApellidosResponsable']);
+            $drvrtid = mysqli_real_escape_string($conex, $data['TipoDocResponsable']);
+            $drvridp = mysqli_real_escape_string($conex, $data['NumDocResponsable']);
+            $drvrtel = mysqli_real_escape_string($conex, $data['TelefonoResponsable']);
+            $drvrpar = mysqli_real_escape_string($conex, $data['Parentesco']);
+            $drvrdir = mysqli_real_escape_string($conex, $data['DireccionResponsable']);
+            $drvrpai = mysqli_real_escape_string($conex, $data['PaisResponsable']);
+            $drvrciu = mysqli_real_escape_string($conex, $data['MunicipioResponsable']);
+   
 
+            // Create sql
+            $sql = "INSERT INTO ".$wbasedato."_000032(Medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2,drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase,drvpol, drvcpl, drvser, drvexa, drvfsi, drvsin, drvcla, drvvcr,drvest, Seguridad, drvrtid, drvridp, drvrnom, drvrap, drvrtel, drvrpar, drvrpai,drvrciu, drvrdir) VALUES ('".$wbasedato."', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2','$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol','$drvcpl', '$drvser', '$drvexa', '$drvfsi', '$drvsin', '$drvcla', 0,'on','$wuse','$drvrtid', '$drvridp', '$drvrnom', '$drvrap', '$drvrtel', '$drvrpar', '$drvrpai','$drvrciu', '$drvrdir' );";
+          
             if (mysqli_query($conex, $sql)) {
                 // Sucess
                 // The connection will be closed when the index php is loaded
@@ -813,7 +994,7 @@
                     $drvcup = mysqli_real_escape_string($conex, $_POST['exam-' . $i]);
                     $drvnex = mysqli_real_escape_string($conex, $_POST['examName-' . $i]);
                     $drvpos = $i + 1;
-                    $inserts = $inserts . "('drvtru','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
+                    $inserts = $inserts . "('".$wbasedato."','$fecha_data','$hora_data','$drvcit','$drvcup','$drvnex','$drvpos','$wuse')";
                     // Se agrega coma hasta el pen&uacute;ltimo elemento
                     if ($i !== $drvexa - 1) {
                         # code...
@@ -821,8 +1002,8 @@
                     }
                 }
 
-                $sql = "INSERT INTO citaslc_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
-
+                //$sql = "INSERT INTO citaslc_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
+                $sql = "INSERT INTO ".$wbasedato."_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
 
                 if (mysqli_query($conex, $sql)) {
                     header('Location: ' . $url);
@@ -830,12 +1011,73 @@
                     # code...
                     echo 'query error' . mysqli_error($conex);
                 }
+                
+                //
             } else {
                 echo 'query error' . mysqli_error($conex);
             }
         }
     }
 
+    // Escribir log específico para la Lista de espera Citas.
+    function escribirLog ($proceso, $idreg='-1', $data='') {
+
+        global $conex, $wusuario_logueado, $wuse, $wbasedato, $registros; //, $drvidp, $drvnom,$drvap1,$drvap2;
+        $fecha_data = date("Y-m-d");
+        $hora_data = date("H:i:s");        
+        
+        if (is_array($data))
+        {
+            // escribir el mensaje con los campos de edición (crear cita), o precargados como en descartarPaciente
+            $drvidp = $data['doc'];
+			$drvtid = $data['docType'];
+            $sql ="insert into ".$wbasedato."_000039 (Medico ,Fecha_data,  Hora_data, logprc , logtid, logidp , Seguridad)
+                            values ('".$wbasedato."', '$fecha_data','$hora_data', '$proceso','$drvtid','$drvidp', '$wuse')";
+            mysql_query($sql,$conex) or die ("Error 4: ".mysql_errno()." - en el query: ".$update_log." - ".mysql_error());
+        }
+        else {
+            // buscar en el arreglo de registros.
+            $fila = array();
+			$ok = false;
+            foreach ($registros as $fila) 
+            {
+                if($fila['id']==$idreg){
+                    $drvidp = $fila['drvidp'];
+                    $drvtid = $fila['drvtid'];
+                    $sql ="insert into ".$wbasedato."_000039 (Medico ,Fecha_data,  Hora_data, logprc , logtid, logidp , Seguridad)
+                            values ('".$wbasedato."', '$fecha_data','$hora_data', '$proceso','$drvtid','$drvidp', '$wuse')";
+                    mysql_query($sql,$conex) or die ("Error 4: ".mysql_errno()." - en el query: ".$update_log." - ".mysql_error());
+					$ok = true;
+                    break;
+                }
+            }
+        }
+        return;
+        // citaslc_000032
+        /*
+        $drvtid = mysqli_real_escape_string($conex, $_POST['docType']);
+        $drvidp = mysqli_real_escape_string($conex, $_POST['doc']);
+            $drvnom = mysqli_real_escape_string($conex, $_POST['names']);
+            $drvap1 = mysqli_real_escape_string($conex, $_POST['lastname1']);
+            $drvap2 = mysqli_real_escape_string($conex, $_POST['lastname2']);
+            $drvbdy = mysqli_real_escape_string($conex, $_POST['birthday']);
+            $drvsex = mysqli_real_escape_string($conex, $_POST['sex']);
+            $drvtel = mysqli_real_escape_string($conex, $_POST['phone']);
+            $drvmov = mysqli_real_escape_string($conex, $_POST['cellphone']);
+            $drvdir = mysqli_real_escape_string($conex, $_POST['addr']);
+            $drvbar = mysqli_real_escape_string($conex, $_POST['barrio']);
+            $drvema = mysqli_real_escape_string($conex, $_POST['email']);
+            $drvase = mysqli_real_escape_string($conex, $_POST['eps']);
+            $drvpol = mysqli_real_escape_string($conex, $_POST['epsNumber']);
+            $drvser = mysqli_real_escape_string($conex, $_POST['service']);
+            $drvcpl = mysqli_real_escape_string($conex, $_POST['plan']);
+            $drvexa = mysqli_real_escape_string($conex, $_POST['numeroExamenes']);
+            $drvfsi = mysqli_real_escape_string($conex, $_POST['fechaSintomas']);
+            $drvsin = mysqli_real_escape_string($conex, $_POST['sintomasPost']);
+            $drvcla = mysqli_real_escape_string($conex, $_POST['clasificacionCasoPost']);
+            */
+                
+    }
 
     //Change4: Funcion para el estilo de los campos según estados Mavila :)
     function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){ 
@@ -858,10 +1100,10 @@
         return  $class_campoValor;
     }
 //FUNCIONES Y METODOS :)
-
 // mysqli_close($conex);
-
+//if( isset($consultaAjax) == false ){    
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -1113,8 +1355,10 @@
     <link type="text/css" rel="stylesheet" href="../../../include/root/matrix.css" />
     <!-- <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css"> -->
     <!-- Se relaciona libreria para mensajes de alerta Mavila 23-10-2020 -->
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> 
+    
 </head>
+<?php // }  ?>
 
 <body>
     <?php // --> Se muestra encabezado Mavila :)  ?>
@@ -1278,9 +1522,9 @@
                             </td>
                             <td> <label for="service">Tipo de servicio</label></td>
                             <td>
-                                <select name="service" class="input-select" id="service">
+                                <select name="service" class="input-select" id="service" >
                                     <option value="">Elija un servicio</option>
-                                    <?php //Se adiciona validacion del barrio seleccionado :) ?>
+                                    <?php //Se adiciona validacion del servicio seleccionado :) ?>
                                     <?php if( ($service_seleccionado) != ''): ?>
                                         <?php foreach ($servicios as $servicio) : ?>
                                             <option <?php echo htmlspecialchars($servicio['drvcse']) == $service_seleccionado ? 'selected':'';?> value=<?php echo htmlspecialchars($servicio['drvcse']); ?>>
@@ -1302,9 +1546,9 @@
                         <tr>
                             <td> <label for="eps">Aseguradora</label></td>
                             <td>
-                                <select name="eps" class="input-select" id="eps">
+                                <select name="eps" class="input-select" id="eps" disabled>
                                     <option value="" selected><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>                                
-                                    <?php //Se adiciona validacion del barrio seleccionado :) ?>
+                                    <?php //Se adiciona validacion de eps seleccionada :) ?>
                                     <?php if( ($eps_seleccionada) != ''): ?>
                                         <?php foreach ($eps as $ep) : ?>
                                             <option <?php echo htmlspecialchars($ep['drvnlb']) == $eps_seleccionada ? 'selected':'';?> value=<?php echo htmlspecialchars($ep['drvnlb']); ?>>
@@ -1328,7 +1572,7 @@
 
                             <td> <label for="plan">Plan</label></td>
                             <td>
-                                <select name="plan" class="input-select" id="plan"></select>
+                                <select name="plan" class="input-select" id="plan" disabled></select>
                                 <b id="msn_plan" class="red-text"><?php echo $errors['plan']; ?></b>
                             </td>
 
@@ -1378,6 +1622,126 @@
                             <input type="hidden" name="numeroExamenes" id="numeroExamenes">
                         </tr>
 
+                        <tr>
+                            <td colspan="6">
+                                <!--motato: inicio de codigo -->
+                                <div class="row fila2 m-0">
+                                    <div class="offset-2 col-8">
+                                        <table class="border border-secondary rounded">
+                                            <tr>
+                                                <td colspan="2">
+                                                    <h3>Informaci&oacute;n Responsble</h3>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-secondary"  onclick="pacienteResponsable()">
+                                                        Paciente es responsable
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td> 
+                                                    <label for="NombresResponsable"><span style="color:red;">* </span> Nombres </label>
+                                                    <br>
+                                                    <input  id="NombresResponsable" type="text" class="input-control text-uppercase" name="NombresResponsable"  value="" minlength="3" maxlength="35" />
+                                                    <b id="msn_numeroExamenes" class="red-text"><?php echo $errors['NombresResponsable']; ?></b>
+                                                </td>
+                                                <td> 
+                                                    <label for="ApellidosResponsable"><span style="color:red;">* </span> Apellidos </label>
+                                                    <br>
+                                                    <input  id="ApellidosResponsable" type="text" class="input-control text-uppercase" name="ApellidosResponsable"  value="" minlength="3" maxlength="40" />
+                                                    <b id="msn_numeroExamenes" class="red-text"><?php echo $errors['ApellidosResponsable']; ?></b>
+                                                </td>
+                                                <td> 
+                                                    <label for="TipoDocResponsable"><span style="color:red;">* </span> Tipo de Documento </label>
+                                                    <br>
+                                                    <select name="TipoDocResponsable" class="input-select" id="TipoDocResponsable">
+                                                        <option value="" selected>Elige una opci&oacute;n</option>
+                                                        <?php foreach ($tipoDocumento as $tiposDoc) : ?>
+                                                            <option value=<?php echo htmlspecialchars($tiposDoc['Codigo']); ?>>
+                                                                <?php
+                                                                echo htmlspecialchars($tiposDoc['Codigo'] . " - " . $tiposDoc['Descripcion']);
+                                                                ?>
+                                                            </option>
+                                                        <?php endforeach ?>
+                                                    </select>
+                                                    <b class="red-text"><?php echo $errors['TipoDocResponsable']; ?>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td> 
+                                                    <label for="NumDocResponsable"><span style="color:red;">* </span> Nro. de Documento </label>
+                                                    <br>
+                                                    <input  id="NumDocResponsable" type="text" class="input-control" name="NumDocResponsable"  value="" minlength="5" maxlength="15" pattern="[0-9]*"/>
+                                                    <b id="msn_numeroExamenes" class="red-text"><?php echo $errors['NumDocResponsable']; ?></b>
+                                                </td>
+                                                <td> 
+                                                    <label for="TelefonoResponsable"><span style="color:red;">* </span> Telefono </label>
+                                                    <br>
+                                                    <input  id="TelefonoResponsable" type="text" class="input-control" name="TelefonoResponsable"  value="">
+                                                    <b id="msn_numeroExamenes" class="red-text"><?php echo $errors['TelefonoResponsable']; ?></b>        
+                                                </td>
+                                                <td> 
+                                                    <label for="Parentesco"><span style="color:red;">* </span> Parentesco </label>
+                                                    <br>
+                                                    <select name="Parentesco" class="input-select" id="Parentesco">
+                                                        <option value="" selected>Elige una opci&oacute;n</option>
+                                                        <?php foreach ($parentescos as $parentesco) : ?>
+                                                            <option value=<?php echo htmlspecialchars($parentesco['pardes']); ?>>
+                                                                <?php
+                                                                echo htmlspecialchars($parentesco['pardes']);
+                                                                ?>
+                                                            </option>
+                                                        <?php endforeach ?>
+                                                    </select>        
+
+                                                    <b id="msn_numeroExamenes" class="red-text"><?php echo $errors['Parentesco']; ?></b>        
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td> 
+                                                    <label for="DireccionResponsable"><span style="color:red;">* </span> Direcci&oacute;n </label>
+                                                    <br>
+                                                    <input  id="DireccionResponsable" type="text" class="input-control" name="DireccionResponsable"  value="" minlength="5" maxlength="40">
+                                                    <b id="msn_numeroExamenes" class="red-text"><?php echo $errors['DireccionResponsable']; ?></b>        
+                                                </td>
+                                                <td> 
+                                                    <label for="PaisResponsable"><span style="color:red;">* </span> Pa&iacute;s </label>
+                                                    <br>
+                                                    <select name="PaisResponsable" class="input-select" id="PaisResponsable">
+                                                        <option value="" selected>Elige una opci&oacute;n</option>
+                                                        <?php foreach ($paises as $pais) : ?>
+                                                            <option value=<?php echo htmlspecialchars($pais['paicod']); ?>>
+                                                                <?php
+                                                                echo htmlspecialchars($pais['painom']);
+                                                                ?>
+                                                            </option>
+                                                        <?php endforeach ?>
+                                                    </select>
+                                                    <b id="msn_numeroExamenes" class="red-text"><?php echo $errors['PaisResponsable']; ?></b>        
+                                                </td>
+                                                <td colspan="3"> 
+                                                    <label for="MunicipioResponsable" id="MunicipioResponsableLabel"><span style="color:red;">* </span> Municipio </label>
+                                                    <br>
+                                                    <select name="MunicipioResponsable" class="input-select" id="MunicipioResponsable">
+                                                        <option value="" selected>Elige una opci&oacute;n</option>
+                                                        <?php foreach ($ciudades as $ciudad) : ?>
+                                                            <option value=<?php echo htmlspecialchars($ciudad['codigo']); ?>>
+                                                                <?php
+                                                                echo htmlspecialchars($ciudad['nombre']);
+                                                                ?>
+                                                            </option>
+                                                        <?php endforeach ?>
+                                                    </select>
+                                                    <b id="msn_numeroExamenes" class="red-text"><?php echo $errors['MunicipioResponsable']; ?></b>        
+                                                </td>
+                                            </tr>
+                                            
+                                        </table>
+                                    </div>
+                                </div>
+                                <!-- fin codigo -->                       
+                            </td>
+                        </tr>
                         <tr>
                             <td colspan="6" style="text-align: center;">
                                 <input class="button" type="submit" value="Guardar" name="submit" id="submitFormulario">
@@ -1527,7 +1891,7 @@
                                     Editar datos
                                 </button>
                                 <button class="btn btn-info btn-sm mt-1" type="button" 
-                                    onclick="descartarPaciente('<?php echo htmlspecialchars($registro['id']); ?>', '<?php echo htmlspecialchars($registro['drvidp']); ?>')" >
+                                    onclick="descartarPaciente('<?php echo htmlspecialchars($registro['id']); ?>', '<?php echo htmlspecialchars($registro['drvidp']); ?>', '<?php echo htmlspecialchars($registro['drvtid']); ?>')" >
                                     Descartar
                                 </button>
                             </td>
@@ -1558,7 +1922,7 @@
                                 
                                 <input class="form-control form-control-sm money input_small mt-2" type="text" 
                                 name=<?php echo "total" . $key; ?> 
-                                id=<?php echo "total" . $key; ?> 
+                                 id=<?php echo "total" . $key; ?> 
                                 value='<?php echo htmlspecialchars($registro['drvvcr']); ?>'> 
                                 <button  class="btn btn-info btn-sm mt-2" type="button" 
                                     onclick="guardarTotal(<?php echo $key; ?>, <?php echo $registro['id']; ?>)">Guardar</button>
@@ -1674,27 +2038,38 @@
                             <?php //Se adiciona para dar estilo del campo teniendo encuenta el valor :) ?>
                             <td class=<?php echo $class_campoAgenda ?> id=<?php echo "admitirTD" . $key; ?>>
                                 <button  class="btn btn-info btn-sm mt-2" type="button" 
-                                    name="admitir" id="admitir"
+                                    name="admitir" id=<?php echo "admitir" . $key; ?>
                                     onclick="admitir(<?php echo $key; ?>,
-                                        '<?php echo htmlspecialchars($registro['id']); ?>',
-                                        '<?php echo htmlspecialchars($registro['drvidp']); ?>',
-                                        '<?php echo htmlspecialchars($registro['drvtid']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvap1']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvap2']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvnom']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvbdy']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvsex']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvdir']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvmov']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvema']); ?>',
-                                        '<?php echo htmlspecialchars($registro['drvtel']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvase']); ?>', 
-                                        '<?php echo htmlspecialchars($registro['drvcpl']); ?>',
-                                        '<?php echo htmlspecialchars($registro['drvpol']); ?>',
-                                        '<?php echo htmlspecialchars($registro['drvvcr']); ?>',
-                                        '<?php echo htmlspecialchars($registro['drvfsi']); ?>',
-                                        '<?php echo htmlspecialchars($registro['drvsin']); ?>',
-                                        '<?php echo htmlspecialchars($registro['drvcla']); ?>')" 
+                                    '<?php echo htmlspecialchars($registro['id']); ?>',
+                                    '<?php echo htmlspecialchars($registro['drvidp']); ?>',
+                                    '<?php echo htmlspecialchars($registro['drvtid']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvap1']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvap2']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvnom']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvbdy']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvsex']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvdir']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvmov']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvema']); ?>',
+                                    '<?php echo htmlspecialchars($registro['drvtel']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvase']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvcpl']); ?>',
+                                    '<?php echo htmlspecialchars($registro['drvpol']); ?>',
+                                    '<?php echo htmlspecialchars($registro['drvvcr']); ?>',
+                                    '<?php echo htmlspecialchars($registro['drvfsi']); ?>',
+                                    '<?php echo htmlspecialchars($registro['drvsin']); ?>',
+                                    '<?php echo htmlspecialchars($registro['drvcla']); ?>',
+
+                                    '<?php echo htmlspecialchars($registro['drvrtid']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvridp']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvrnom']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvrap']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvrtel']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvrpar']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvrpai']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvrciu']); ?>', 
+                                    '<?php echo htmlspecialchars($registro['drvrdir']); ?>')" 
+
                                     <?php if (htmlspecialchars($registro['drvfec']) == "0000-00-00") {
                                         echo "disabled";
                                     };
@@ -1774,11 +2149,15 @@
 </body>
 
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->  <!-- REVISAR -->
+    <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="../../../include/root/jquery_1_7_2/js/jquery.validate.js"></script>
+    <script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js"></script>
+    <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->  <!-- REVISAR -->
 
     <!-- Change11: Se relaciona para mascara de valor Mavila 05-10-2020 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.min.js"></script>
+    <script src="../../../include/root/jquery.maskedinput.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.13.4/jquery.mask.min.js"></script> 
         
     <!-- JS -->
     <!-- <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script> -->
@@ -2262,7 +2641,22 @@
 
         }
 
-
+		function EscribirLog (id, strproc='',datos) {
+			if (strproc != '') {
+				var str_id  = '' + id.toString();
+				//alert('*' + str_id);
+				//alert('*' + datos['docType']);
+				$.post(urlMatrix,
+                {
+                    consultaAjax: '',
+                    accion: 'escribirLog',
+                    idreg: str_id,
+                    proceso: strproc,
+					data: datos
+                });  
+			}
+		}
+		
         function verificarPago(id) {
             //alert(id);
             let ref = id;
@@ -2304,22 +2698,25 @@
                                 setTimeout(function(){
                                     $(`#resultado_pago${ref}`).html('Confirmado');
                                     //location.reload()
-                                }, 4000);                                
+                                }, 4000);  
+								EscribirLog (id, 'Verificar pago. (Confirmado)');								
                             },
                             error: function() {                                
                                 $(`#resultado_pago${ref}`).html('Cargando...'); 
                                 setTimeout(function(){
                                     $(`#resultado_pago${ref}`).html('Pendiente');
                                 }, 4000);
-                                
+								EscribirLog (id, 'Verificar pago. (Pendiente)');								                                
                             }
                             
                         });
+                        
                     }else{
                         $(`#resultado_pago${ref}`).html('Cargando.'); 
                         setTimeout(function(){
                             $(`#resultado_pago${ref}`).html('Pendiente');
                         }, 4000);
+						EscribirLog (id, 'Verificar pago. (Pendiente)');								                                
                     }  
                 },
                 failure: function (data) {
@@ -2329,6 +2726,7 @@
                     setTimeout(function(){
                         $(`#resultado_pago${ref}`).html('Pendiente');
                     }, 4000);
+					EscribirLog (id, 'Verificar pago. (Pendiente)');								                                
                 },
                 error: function (data) {
                     //$(`#resultado_pago${ref}`).html('Pendiente');
@@ -2336,14 +2734,15 @@
                     setTimeout(function(){
                         $(`#resultado_pago${ref}`).html('Pendiente');
                     }, 4000);
+					EscribirLog (id, 'Verificar pago. (Pendiente)');								                                
                 }
             }); 
 
         }
 
         //Se adiciona funcionaliad para descartar al paciente de la lista Mavila 23-10-2020 :)
-        function descartarPaciente(id, paciente) {
-            
+        function descartarPaciente(id, paciente, tipoDoc) {
+
             swal({
                 title: "Descartar paciente.",
                 text: "Desea descartar el paciente.",
@@ -2359,6 +2758,7 @@
                     data: {
                         "descartarPaciente": id,
                         "paciente": paciente
+					
                     },
                     beforeSend: function() {},
                     success: function(response) {
@@ -2370,16 +2770,19 @@
                             location.reload();
                         });
                         //alert("Paciente descartado.");
+						var datos={'doc':paciente, 'docType':tipoDoc};
+						EscribirLog (id, 'Paciente descartado',datos);								                                
                         
                     },
                     error: function() {
                         //Se envia mensaje de confirmación con la nueva libreria Mavila 23-10-2020 :)
                         swal("Error al descartar paciente");
                         //alert("Error al descartar paciente.")
+						EscribirLog (id, 'Error al descartar paciente.');								                                
                     }
                 })    
 
-                
+             
             } 
             });
                         
@@ -2428,10 +2831,11 @@
                     comentarios = respuesta.replace(/\s/g, "_")
                     let edad = getAge(fechaNacimiento)
                     window.open(`/matrix/citas/procesos/calendar.php?empresa=citaslc&wemp_pmla=01&caso=2&wsw=&fest=off&consultaAjax=&id=${id}&cedula=${cedula}&paciente=${paciente}&telefono=${telefono}&email=${email}&url=${url}&edad=${edad}&comentarios=${comentarios}&aseguradora=${aseguradora}`, "_blank")
-
+					//EscribirLog (id, 'Abrir agenda');		
                 },
                 error: function() {
-                    alert("error")
+                    alert("error");
+					//EscribirLog (id, 'Error al abrir agenda');		
                 }
             })
 
@@ -2510,28 +2914,35 @@
 
         }
 
+        /**
+        *@author Luis Motato
+        *Se agregan los parametros con la informacion del responsble para incluir en el hl7
+         */
 
-        function admitir(index, id, identificacion, tipodedocumento, apellido1, apellido2, nombres, fechaDeNacimiento, sexo, direccion, celular, email, fijo, aseguradora, plan, poliza, valorACancelar, fechaSintomas, sintomas, clasificacion) {
+        function admitir(index, id, identificacion, tipodedocumento, apellido1, apellido2, nombres, fechaDeNacimiento, sexo, direccion, celular, email, fijo, aseguradora, plan, poliza, valorACancelar, fechaSintomas, sintomas, clasificacion,tipoDocResp,numDocResp,nomResp,apeResp,telResp,parResp,paisResp,ciuResp,dirResp) {
+
+			EscribirLog (id, 'Admitir paciente.');								                                
+
             // console.log(plan);
-            let usuario = '<?php echo $wuse; ?>'
-            let date = new Date()
-            let year = date.getFullYear()
-            let month = date.getMonth()
-            month = month < "10" ? `0${month+1}` : month
-            let day = date.getDate()
-            day = day < "10" ? `0${day}` : day
+            let usuario = '<?php echo $wuse; ?>';
+            let date = new Date();
+            let year = date.getFullYear();
+            let month = date.getMonth();
+            month = month < "10" ? `0${month+1}` : month;     
+            let day = date.getDate();
+            day = day < "10" ? `0${day}` : day;				
 
-            let hour = date.getHours()
-            hour = hour < "10" ? `0${hour}` : hour
-            let minutes = date.getMinutes()
-            minutes = minutes < "10" ? `0${minutes}` : minutes
-            let seconds = date.getSeconds()
-            seconds = seconds < "10" ? `0${seconds}` : seconds
+            let hour = date.getHours();
+            hour = hour < "10" ? `0${hour}` : hour;
+            let minutes = date.getMinutes();
+            minutes = minutes < "10" ? `0${minutes}` : minutes;
+            let seconds = date.getSeconds();
+            seconds = seconds < "10" ? `0${seconds}` : seconds    	//>
 
-            let aaaammddhhmmss = year + month + day + hour + minutes + seconds
+            let aaaammddhhmmss = year + month + day + hour + minutes + seconds;
 
 
-            let aaaammdd = fechaDeNacimiento.replaceAll("-", "")
+            let aaaammdd = fechaDeNacimiento.replaceAll("-", "");
 
 
             $.ajax({
@@ -2553,13 +2964,14 @@
                         },
                         beforeSend: function() {},
                         success: function(response) {
-
+                            let phpJSON = JSON.parse(response);
                             console.log(response, "response");
 
                             let msh = `MSH|^~&|MATRIX|PMLA|LIS4D|LMLA|${aaaammddhhmmss}||OML^O21|DRIVE-${id}|P|2.5|`
                             let pid = `PID||${identificacion}^${tipodedocumento}|||${apellido1}&${apellido2}^${nombres}||${aaaammdd}|${sexo}|||${direccion}^^MEDELLIN^ANTIOQUIA^^COLOMBIA||${celular}^^^${email}^^^${fijo}|`
                             let in1 = `IN1||${codEmpresaLab}||||||||||||||`
                             let orc = `ORC|NW|0|DRIVE-${id}^||IP||^^^${aaaammddhhmmss}^^R|||^^^^^^^|`
+                            let resp = `RESP|${tipoDocResp}|${numDocResp}|${nomResp}|${apeResp}|${telResp}|${parResp}|${paisResp}|''|${ciuResp}|${dirResp}|${phpJSON[0].medico}`
 
                             // Donde va la autorización?
                             // hora de la cita?
@@ -2567,7 +2979,6 @@
                             let fechaCita = "" // fechadelacita aaaammdd
 
                             // Creación de los registros OBR 
-                            let phpJSON = JSON.parse(response);
                             let obrs = []
                             let autorizacionesArray = [];
                             for (let index = 0; index < phpJSON.length; index++) {
@@ -2594,9 +3005,10 @@
                             let nte9 = `NTE|9|P|${poliza}|POLIZA`
 
                             // console.log(obrs);
-                            let mensaje = msh + "<br>" + pid + "<br>" + in1 + "<br>" + orc + "<br>" + nte1 + "<br>" + nte2 + "<br>" + nte3 + "<br>" + nte4 + "<br>" + nte5 + "<br>" + nte6 + "<br>" + nte7 + "<br>" + nte8 + "<br>" + nte9 + "<br>" + joinedObrs
-                            $('#admitir')
-                                .prop('disabled', true)
+                            let mensaje = msh + "<br>" + pid + "<br>" + in1 + "<br>" + orc + "<br>" + nte1 + "<br>" + nte2 + "<br>" + nte3 + "<br>" + nte4 + "<br>" + nte5 + "<br>" + nte6 + "<br>" + nte7 + "<br>" + nte8 + "<br>" + nte9 + "<br>"+"<br>"+resp +"<br>" + joinedObrs
+                            $(`#admitir${index}`)
+                                .attr('disabled', 'disabled');
+
                             $(`#orden${index}`).html('Creando orden...');
                             $(`#orden${index}`).addClass('showOrderCreatedSuccess');
                             $.ajax({
@@ -2609,13 +3021,14 @@
                                     "Authorization": "fab383b9-9e42-4758-a91d-10ebbf6ed68f",
                                     "Content-Type": "application/json"
                                 },
+                                //cambiar segun el ambiente en la tabla citaslc_000034
                                 url: urlAPI,
                                 type: 'post',
                                 beforeSend: function() {},
                                 success: function(response) {
                                     if (response.orden !== "") {
-                                        $('#admitir')
-                                            .prop('disabled', true)
+                                        $(`#admitir${index}`)
+                                            .attr('disabled', 'disabled');
                                         $(`#orden${index}`).html(`Orden creada ${response.orden}`);
                                         $(`#orden${index}`).addClass('showOrderCreatedSuccess');
 
@@ -2640,8 +3053,8 @@
                                             }
                                         })
                                     } else {
-                                        $('#admitir')
-                                            .prop('disabled', false)
+                                        $(`#admitir${index}`)
+                                            .attr('disabled', false);
                                         $(`#orden${index}`).html(`La orden no se pudo crear.`);
                                         $(`#orden${index}`).addClass('showOrderCreatedSuccess');
                                     }
@@ -2829,6 +3242,56 @@
             });
         })
 
+        /**
+        * @author luis motato
+        * validar país  
+        */
+
+        $("#PaisResponsable").change(function() {
+            let pais= $('#PaisResponsable').val();
+            if(pais!="169"){
+                $("#MunicipioResponsable").val("");
+                $("#MunicipioResponsable").hide(); 
+                $("#MunicipioResponsableLabel").hide();
+            }else{
+                $("#MunicipioResponsable").show(); 
+                $("#MunicipioResponsableLabel").show();
+            }
+        })
+
+
+
+        function pacienteResponsable(){
+            let edad= getEdad($("#birthday").val());
+            if(edad>17){
+                $("#TipoDocResponsable").val($("#docType").val());
+                $("#NumDocResponsable").val($("#doc").val());
+                $("#NombresResponsable").val($("#names").val());
+                $("#ApellidosResponsable").val($("#lastname1").val()+" "+$("#lastname2").val());
+                $("#TelefonoResponsable").val($("#cellphone").val());
+                $("#DireccionResponsable").val($("#addr").val());
+                $("#Parentesco").val("Paciente");
+                $("#PaisResponsable").val('169');
+                $("#MunicipioResponsable").val('05001');
+            }else{
+                swal("El paciente debe ser mayor de edad.");
+            }
+           
+        }
+        
+        function getEdad(dateString) {
+            let hoy = new Date()
+            let fechaNacimiento = new Date(dateString)
+            let edad = hoy.getFullYear() - fechaNacimiento.getFullYear()
+            let diferenciaMeses = hoy.getMonth() - fechaNacimiento.getMonth()
+            if (
+                diferenciaMeses < 0 ||
+                (diferenciaMeses === 0 && hoy.getDate() < fechaNacimiento.getDate())
+            ) {
+                edad--
+            }
+            return edad
+        }
 
         function showExamsAndAuths(index, id) {
 
@@ -2893,6 +3356,16 @@
                     alert("error")
                 }
             })
+                // Crear LOG
+                var str_id  = '' + id.toString();
+                $.post(urlMatrix,
+                {
+                    consultaAjax: '',
+                    accion: 'escribirLog',
+                    idreg: str_id,
+                    proceso: 'Guardar valor total (' + valor.toString() + ')'
+                });                
+            
         }
 
         function guardarLink(index, id) {
