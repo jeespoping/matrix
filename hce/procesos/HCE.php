@@ -2235,6 +2235,18 @@ else
 										$hora = (string)date("H:i:s");
 									}
 									
+									/*
+									* Incluimos las funciones necesarias para cargos automaticos
+									* Equipo Iniciativa Cargos Automaticos
+									* Sami Arevalo - Cristhian Barros - Manuel Garcia
+									*/
+
+									include_once("../../cca/procesos/cargos_automaticos_funciones.php");
+									// Validamos si el formulario tiene configuracion de cargo automatico
+									$tieneCCA = validarTieneCca($conex, $origen, $wformulario,"hce");
+									$str_consecutivos_formulario = '';
+									$str_consecutivos_formulario_todos = '';
+									
 									for ($i=0;$i<$num;$i++)
 									{	
 										if($DATA[$i][1] != "Titulo" and $DATA[$i][1] != "Subtitulo" and $DATA[$i][1] != "Busqueda"  and ($DATA[$i][5] == "A"  or ($DATA[$i][5] != "A" and $DATA[$i][5] == $wsex)) and vedad($wedad,$DATA[$i][8],$Reta) == 1 and $DATA[$i][13] == 1)
@@ -2303,7 +2315,23 @@ else
 													$query .=  $key."',";
 													$query .=  "'C-".$empresa."')";
 													$err1 = mysql_query($query,$conex) or die("ERROR GRABANDO DATOS DE HISTORIA CLINICA : ".mysql_errno().":".mysql_error());
+													
+													if($tieneCCA && ($DATA[$i][1] == 'Numero' || $DATA[$i][1] == 'Formula') && trim($registro[$i][0]) != '') {
+														$str_consecutivos_formulario .= '|'.$DATA[$i][0];
+													}
 												}
+												
+												/*
+													INICIATIVA CARGOS AUTOMATICOS - CIDENET SAS
+													JUNIO 2021
+													
+													se crea un arreglo($str_consecutivos_formulario_todos) que contendrá todos los campos cargados en el formulario procesado,
+													a diferencia del arreglo ($str_consecutivos_formulario), el cual contendra unicamente los campos que hayan sido diligenciados y no sean null o vacio
+												*/
+												if($tieneCCA && ($DATA[$i][1] == 'Numero' || $DATA[$i][1] == 'Formula')) {
+													$str_consecutivos_formulario_todos .= '|'.$DATA[$i][0];
+												}
+												
 											}
 											else
 											{
@@ -2318,6 +2346,38 @@ else
 											unset($wsa);
 										}
 									}
+									
+									/*
+										Si existe alguna configuracion de cargo automatico para el formulario, se envia la informacion
+										al proceso de registro de cargos
+									*/
+
+									if ($tieneCCA) {
+										$ch = curl_init();
+										$data = array( 
+												'consultaAjax'					=> '',
+												'accion'						=> 'guardar_config_cargo_automatico_hce',
+												'movusu'						=> $key,
+												'whis' 							=> $whis,
+												'wing' 							=> $wing,
+												'wemp_pmla'						=> $origen,
+												'wformulario'					=> $wformulario,
+												'str_consecutivos_formulario'	=> $str_consecutivos_formulario,
+												'str_consecutivos_formulario_todos'	=> $str_consecutivos_formulario_todos
+											);
+										
+										$options = array(
+													CURLOPT_URL 			=> "localhost/matrix/cca/procesos/ajax_cargos_automaticos.php",
+													CURLOPT_HEADER 			=> false,
+													CURLOPT_POSTFIELDS 		=> $data,
+													CURLOPT_CUSTOMREQUEST 	=> 'POST',
+												);
+
+										$opts = curl_setopt_array($ch, $options);
+										$exec = curl_exec($ch);
+										curl_close($ch);
+									}
+									
 									// GRABACION EN FORMULARIO NRO 36 DE FORMULARIOS FIRMADOS
 									$query = "select count(*) FROM ".$empresa."_000036 where Firpro='".$wformulario."' and fecha_data='".$fecha."' and hora_data='".$hora."' and Firhis='".$whis."' and Firing='".$wing."' and Firusu='".$key."' ";
 									$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
