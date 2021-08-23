@@ -874,17 +874,48 @@ if(isset($operacion) && $operacion == 'marcarmuerte_hospitalizacion'){
 
 	 //Grabo el egreso en el servicio
 	 //=======================================================================================================================================================
+	 // Consulta que permite obtener el número de ingreso al servicio
+	 $sql_num_ing_serv = "
+		  SELECT	Num_ing_Serv
+		   FROM	{$wbasedato}_000032
+		  WHERE	Historia_clinica = '{$whis}'
+			AND	Num_ingreso      = '{$wing}'
+			AND	Servicio         = '{$wcco}'
+	   ORDER BY	Num_ing_serv DESC
+		  LIMIT	1;
+		";
+		$err = mysql_query( $sql_num_ing_serv, $conex ) or die (mysql_errno().$q." - ".mysql_error());	
+		$row_num_ing_serv = mysql_fetch_array( $err );
+		$wnum_ing_serv = $row_num_ing_serv[0];
+
+		//==================================================
+		// Consulta que permite obtener la fecha y hora de ingreso al servicio del cual egresa por ALTA
+		$q=  "
+			SELECT	CONCAT( Fecha_ing,' ', Hora_ing ) as Fecha_hora, Num_ing_Serv
+			FROM	{$wbasedato}_000032
+			WHERE	Historia_clinica	=	'{$whis}'
+				AND	Num_ingreso			=	'{$wing}'
+				AND	Servicio			=	'{$wcco}'
+				AND	Num_ing_Serv		=	'{$wnum_ing_serv}'
+		GROUP BY	2
+		";
+		$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
+		$rowdia = mysql_fetch_array($err);
+
+		$wdiastan = dias_estancia_servicio( $rowdia[0], date("Y-m-d H:i:s") );
+		$wnuming = $rowdia[1];
+	 
 	 //Calculo los días de estancia en el servicio actual
-	 $q=" SELECT ROUND(TIMESTAMPDIFF(MINUTE,CONCAT( Fecha_ing,' ', Hora_ing ),now())/(24*60),2), Num_ing_Serv "
-	   ."   FROM ".$wbasedato."_000032 "
-	   ."  WHERE Historia_clinica = '".$whis."'"
-	   ."    AND Num_ingreso      = '".$wing."'"
-	   ."    AND Servicio         = '".$wcco."'"
-	   ."  GROUP BY 2 ";
-	 $err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
-	 $rowdia = mysql_fetch_array($err);
-	 $wdiastan=$rowdia[0];
-	 $wnuming=$rowdia[1];
+	//  $q=" SELECT ROUND(TIMESTAMPDIFF(MINUTE,CONCAT( Fecha_ing,' ', Hora_ing ),now())/(24*60),2), Num_ing_Serv "
+	//    ."   FROM ".$wbasedato."_000032 "
+	//    ."  WHERE Historia_clinica = '".$whis."'"
+	//    ."    AND Num_ingreso      = '".$wing."'"
+	//    ."    AND Servicio         = '".$wcco."'"
+	//    ."  GROUP BY 2 ";
+	//  $err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
+	//  $rowdia = mysql_fetch_array($err);
+	//  $wdiastan=$rowdia[0];
+	//  $wnuming=$rowdia[1];
 
 	 if ($wdiastan=="" or $wdiastan==0)
 		$wdiastan=0;
@@ -1045,7 +1076,6 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 
 			 }
 
-
 	//Si se genero una actualizacion realiza estas acciones
 	if($update > 0)
 	{
@@ -1073,19 +1103,37 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 		$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 		//=======================================================================================================================================================
 
-
 		//=======================================================================================================================================================
-		//Calculo los días de estancia en el servicio actual
-		$q=  " SELECT ROUND(TIMESTAMPDIFF(MINUTE,CONCAT( Fecha_ing,' ', Hora_ing ),now())/(24*60),2), Num_ing_Serv "
-			."   FROM ".$wbasedato."_000032 "
-			."  WHERE Historia_clinica = '".$whis."'"
-			."    AND Num_ingreso      = '".$wing."'"
-			."    AND Servicio         = '".$wcco."'"
-			."  GROUP BY 2 ";
+		// Consulta que permite obtener el número de ingreso al servicio
+		$sql_num_ing_serv = "
+			  SELECT	Num_ing_Serv
+				FROM	{$wbasedato}_000032
+			   WHERE	Historia_clinica = '{$whis}'
+				 AND	Num_ingreso      = '{$wing}'
+				 AND	Servicio         = '{$wcco}'
+			ORDER BY	Num_ing_serv DESC
+			   LIMIT	1;
+		";
+		$err = mysql_query( $sql_num_ing_serv, $conex ) or die (mysql_errno().$q." - ".mysql_error());	
+		$row_num_ing_serv = mysql_fetch_array( $err );
+		$wnum_ing_serv = $row_num_ing_serv[0];
+
+		//==================================================
+		// Consulta que permite obtener la fecha y hora de ingreso al servicio del cual egresa por ALTA
+		$q=  "
+			  SELECT	CONCAT( Fecha_ing,' ', Hora_ing ) as Fecha_hora, Num_ing_Serv
+				FROM	{$wbasedato}_000032
+			   WHERE	Historia_clinica	=	'{$whis}'
+				 AND	Num_ingreso			=	'{$wing}'
+				 AND	Servicio			=	'{$wcco}'
+				 AND	Num_ing_Serv		=	'{$wnum_ing_serv}'
+			GROUP BY	2
+		";
 		$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 		$rowdia = mysql_fetch_array($err);
-		$wdiastan=$rowdia[0];
-		$wnuming=$rowdia[1];
+
+		$wdiastan = dias_estancia_servicio( $rowdia[0], date("Y-m-d H:i:s") );
+		$wnuming = $rowdia[1];
 
 		if ($wdiastan=="" or $wdiastan==0)
 			$wdiastan=0;
@@ -1115,7 +1163,6 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 
 		}
 		//=======================================================================================================================================================
-
 
 		//=======================================================================================================================================================
 		//Pido el servicio de Camillero
@@ -7141,6 +7188,27 @@ class movimientoHospitalarioDTO {
 //----------------------------------------------------------
 //			        FUNCIONES TRASLADO DE PACIENTES
 //----------------------------------------------------------
+
+/**
+ * Función que permite calcular los días de estancia de un servicio
+ * basado en dos (2) fechas, fecha ingreso y egreso de servicio
+ * 
+ * @param	String	fecha_ingreso_servicio	[Fecha de ingreso al servicio
+ * 											 del cual egresa]
+ * @param	String	fecha_egreso_servicio	[Fecha de egreso del servicio]
+ * 
+ * @return	Float	dias_estancia			[Cantidad de días de estancia]
+ * 
+ * @author Joel Payares Hernández <joel.payares@lasamericas.com.co>
+ */
+function dias_estancia_servicio( $fecha_ingreso_servicio, $fecha_egreso_servicio )
+{
+	$dias_estancia = ( strtotime($fecha_ingreso_servicio) - strtotime($fecha_egreso_servicio) ) / 86400;
+	$dias_estancia = abs( $dias_estancia );
+	$dias_estancia = round( $dias_estancia, 2 );
+
+	return $dias_estancia;
+}
 
  /************************************************************************
   * Consulta los roles que pueden leer las ordenes pendientes
