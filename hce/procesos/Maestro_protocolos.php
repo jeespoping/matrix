@@ -193,6 +193,7 @@ optgroup {color: gray;}
 			function(data) {
 				$.unblockUI();
 				data = $.trim( data );
+				console.log( data );
 				if( data == 'OK' || data == 'OKOK' ){
 					alert("Guardado");
 					limpiarEncabezado();
@@ -453,6 +454,7 @@ $wusuario = substr($user,$pos+1,strlen($user));
 if( isset($_REQUEST['action'] )){
 	$action = $_REQUEST['action'];
 	if(  $action == 'consultarUltimoCodigoyOrdenimpresion' ){
+		limpiarIndices();
 		$ultimo_codigo = consultarUltimoConsecutivo();
 		$ultimo_orden_impresion = consultarUltimoOrdenImpresion();
 		echo $ultimo_codigo."|||".$ultimo_orden_impresion;
@@ -577,7 +579,7 @@ function grabar_solo_HCE(){
 	//Inserto un registro en la tabla HCE_000001 como encabezado   
 	$q= " INSERT INTO ".$wbasedato."_000001 (   Medico       ,   Fecha_data ,   Hora_data,   encpro         ,   encdes      ,   enctus      ,   enctfo     ,   enctim     ,   encale     ,  enccol    ,   encnfi   ,  encnco    ,   encest     ,   encvis     ,   encmax     ,   encfir     ,   enctra     ,   encenl     ,  enchol    ,   encrhi     ,   encsca     ,  encoim    ,  encoco    ,  encien    , Seguridad        ) "
 	   ."                            VALUES ('".$wbasedato."','".$wfecha."' ,'".$whora."','".$wformulario."','".$wnompro."' ,'".$wtipuso."' ,'".$wtipfor."','".$wtipimp."','".$walerta."',".$wenccol.",".$wencnfi.",".$wencnco.",'".$westado."','".$wencvis."','".$wencmax."','".$wencfir."','".$wenctra."','".$wencenl."',".$wenchol.",'".$wencrhi."','".$wencsca."',".$wencoim.",".$wencoco.",'".$wencien."', 'C-".$wusuario."') ";
-	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error() . " tabla 000001");
 
 	if ($wencmod=="")
 	   $wencmod="off";
@@ -587,7 +589,7 @@ function grabar_solo_HCE(){
 	//Inserto el formulario en la opciones del menu
 	$q= " INSERT INTO ".$wbasedato."_000009 (   Medico       ,   Fecha_data ,   Hora_data,   precod     ,   predes     , prenod ,     preurl         , preest,    premod     , seguridad        ) "
 	   ."                            VALUES ('".$wbasedato."','".$wfecha."' ,'".$whora."','".$windmen."','".$wnompro."', 'off'  ,'F=".$wformulario."','on'   , '".$wencmod."', 'C-".$wusuario."') ";
-	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error() . " tabla 000009-1");
 	
 	//2013-05-07
 	/*//Inserto el formulario en la tabla de Formularios por Servicio
@@ -597,7 +599,7 @@ function grabar_solo_HCE(){
 	
 	$q= " INSERT INTO formulario (              Medico        ,   codigo         ,   nombre     , tipo, activo ) "
 	   ."                 VALUES ('".strtolower($wbasedato)."','".$wformulario."','".$wnompro."', 'C' , 'A'    )";
-	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error() . " tabla formulario");
 	
 	echo "OK";
 }
@@ -672,7 +674,7 @@ function crear_tabla_modificada(){
 		."                         ('root' ,'".$wfecha."' ,'".$whora."','".strtolower($wbasedato)."','".$wformulario."', '0005'    , 'Tipo de Dato'     , 'tipo de dato'     , '".$wbasedato."'     ), "
 		."                         ('root' ,'".$wfecha."' ,'".$whora."','".strtolower($wbasedato)."','".$wformulario."', '0006'    , 'Dato'             , 'dato'             , '".$wbasedato."'     ), "
 		."                         ('root' ,'".$wfecha."' ,'".$whora."','".strtolower($wbasedato)."','".$wformulario."', '0007'    , 'Usuario'          , 'usuario'          , '".$wbasedato."'     )  ";
-		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error() . " tabla root_30");
 	}
 }  
     
@@ -729,7 +731,7 @@ function guardarNuevoFormulario( $wdatos ){
 				array_push( $arr_servicios, $valor['valor'] );			
 		}
 	}
-	
+
 	ordenar_indices();
 	
 	//No se va a crear un formulario, sino un NODO
@@ -737,7 +739,7 @@ function guardarNuevoFormulario( $wdatos ){
 		//Inserto el formulario en la opciones del menu
 		$q= " INSERT INTO ".$wbasedato."_000009 (   Medico       ,   Fecha_data ,   Hora_data,   precod     ,   predes     , prenod ,     preurl         , preest,    premod     , seguridad        ) "
 		   ."                            VALUES ('".$wbasedato."','".$wfecha."' ,'".$whora."','".$windmen."','".$wnompro."', 'on'  ,'on','on'   , '".$wencmod."', 'C-".$wusuario."') ";
-		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error() . " tabla 000009-2");
 			
 		//2013-05-07
 		/*//Inserto el formulario en la tabla de Formularios por Servicio
@@ -760,16 +762,22 @@ function guardarNuevoFormulario( $wdatos ){
 	grabar_solo_HCE();
 	//OJO - Aca comienza a grabar en las tablas MATRIX, por eso se separo en dos grabaciones, porque al modificar solo se modifica la definicion en HCE no en MATRIX.
 
-	//Inserto los registros de la tabla de movimientos de cada formulario en la tabla 'det_formulario' de Matrix   
-	$q= " INSERT INTO det_formulario (              Medico        ,   codigo     , campo   , descripcion, tipo, posicion, comentarios, activo ) "
-	."                     VALUES ('".strtolower($wbasedato)."','".$wformulario."', '0001'  , 'movpro'   ,  0  , 1       , ''         , 'A' ),   "
-	."                            ('".strtolower($wbasedato)."','".$wformulario."', '0002'  , 'movcon'   ,  1  , 2       , ''         , 'A' ),   "
-	."                            ('".strtolower($wbasedato)."','".$wformulario."', '0003'  , 'movhis'   ,  0  , 3       , ''         , 'A' ),   "
-	."                            ('".strtolower($wbasedato)."','".$wformulario."', '0004'  , 'moving'   ,  0  , 4       , ''         , 'A' ),   "
-	."                            ('".strtolower($wbasedato)."','".$wformulario."', '0005'  , 'movtip'   ,  0  , 5       , ''         , 'A' ),   "
-	."                            ('".strtolower($wbasedato)."','".$wformulario."', '0006'  , 'movdat'   ,  0  , 6       , ''         , 'A' ),   "
-	."                            ('".strtolower($wbasedato)."','".$wformulario."', '0007'  , 'movusu'   ,  0  , 7       , ''         , 'A' )    ";
-	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+	$query = "SELECT count(*) FROM det_formulario WHERE medico = '".strtolower($wbasedato)."' and codigo = '".$wformulario."'";
+	$res = mysql_query($query,$conex);
+	$num = mysql_num_rows($res);
+	if( $num == 0 ){
+		//Inserto los registros de la tabla de movimientos de cada formulario en la tabla 'det_formulario' de Matrix   
+		$q= " INSERT INTO det_formulario (              Medico        ,   codigo     , campo   , descripcion, tipo, posicion, comentarios, activo ) "
+		."                     VALUES ('".strtolower($wbasedato)."','".$wformulario."', '0001'  , 'movpro'   ,  0  , 1       , ''         , 'A' ),   "
+		."                            ('".strtolower($wbasedato)."','".$wformulario."', '0002'  , 'movcon'   ,  1  , 2       , ''         , 'A' ),   "
+		."                            ('".strtolower($wbasedato)."','".$wformulario."', '0003'  , 'movhis'   ,  0  , 3       , ''         , 'A' ),   "
+		."                            ('".strtolower($wbasedato)."','".$wformulario."', '0004'  , 'moving'   ,  0  , 4       , ''         , 'A' ),   "
+		."                            ('".strtolower($wbasedato)."','".$wformulario."', '0005'  , 'movtip'   ,  0  , 5       , ''         , 'A' ),   "
+		."                            ('".strtolower($wbasedato)."','".$wformulario."', '0006'  , 'movdat'   ,  0  , 6       , ''         , 'A' ),   "
+		."                            ('".strtolower($wbasedato)."','".$wformulario."', '0007'  , 'movusu'   ,  0  , 7       , ''         , 'A' )    ";
+		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error() . " tabla det_formulario");
+	}
+
 
 	//Esta tabla se crea con solo definir el encabezado de un formulario
 	$q= " CREATE TABLE IF NOT EXISTS ".$wbasedato."_".$wformulario." ( Medico     varchar(8)     NOT NULL, "
@@ -842,6 +850,47 @@ function guardarNuevoFormulario( $wdatos ){
 	."                         ('root' ,'".$wfecha."' ,'".$whora."','".strtolower($wbasedato)."','".$wformulario."', '0007'    , 'Usuario'          , 'usuario'          , '".$wbasedato."'     )  ";
 	$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	*/
+}
+
+/***
+ * Funcion dedicada a borrar consecutivos de tablas que se crearon y que por error no se creó la opción de formulario
+ * */
+function limpiarIndices(){
+	global $conex;
+	global $wbasedato;
+
+	$result = array();
+
+	$query = "SELECT h.Encpro FROM {$wbasedato}_000001 h LEFT OUTER JOIN {$wbasedato}_000009 h2 ON concat('F=',h.Encpro) = h2.Preurl WHERE h2.Preurl is NULL";
+	$res = mysql_query($query,$conex);
+	$num = mysql_num_rows($res);
+
+	if ( $num > 0) 
+	{
+		while( $row = mysql_fetch_assoc( $res, MYSQL_ASSOC ) )
+		{
+			$q1 = "DELETE FROM {$wbasedato}_000001 WHERE Encpro = '{$row['Encpro']}'";
+			$rq1 = mysql_query($q1,$conex);
+
+			$q2 = "SHOW  INDEX  from {$wbasedato}_{$row['Encpro']}";
+			$rq2 = mysql_query($q2,$conex);
+			$num = mysql_num_rows($rq2);
+			if ( $num > 0) 
+			{
+				$q3 = "DROP TABLE IF EXISTS {$wbasedato}_{$row['Encpro']}";
+				$rq3 = mysql_query($q3,$conex);
+			}
+
+			$q4 = "DELETE FROM root_000030 WHERE Dic_Usuario = '{$wbasedato}' AND Dic_Formulario = '{$row['Encpro']}'";
+			$rq4 = mysql_query($q4,$conex);
+
+			$q5 = "DELETE FROM formulario WHERE medico = '{$wbasedato}' AND codigo = '{$row['Encpro']}'";
+			$rq5 = mysql_query($q5,$conex);
+
+			$q6 = "DELETE FROM det_formulario WHERE medico = '{$wbasedato}' AND codigo = '{$row['Encpro']}'";
+			$rq6 = mysql_query($q6,$conex);
+		}
+	}
 }
 
     
