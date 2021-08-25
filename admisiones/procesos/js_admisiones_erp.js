@@ -2245,9 +2245,9 @@ $(document).ready(function() {
 																					winSticker = window.open( "../../ips/reportes/r001-admision.php?wpachi="+data.historia+"&wingni="+data.ingreso+"&empresa="+wbasedatoImp );
 
 																				}
-
+																				wemp_pmla = $('#wemp_pmla').val();
 																				if( $("#imprimirSticker").val() == "on" ){
-																					winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
+																					winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla="+wemp_pmla+"&wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 																					winSticker.onload = function()
 																					{
 																						$( "input:radio[value="+wtip+"]", winSticker.document ).attr( "checked", true );
@@ -2335,9 +2335,9 @@ $(document).ready(function() {
 																					winSticker = window.open( "../../ips/reportes/r001-admision.php?wpachi="+data.historia+"&wingni="+data.ingreso+"&empresa="+wbasedatoImp );
 
 																				}
-
+																				wemp_pmla = $('#wemp_pmla').val();
 																				if( $("#imprimirSticker").val() == "on" ){
-																					winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
+																					winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla="+wemp_pmla+"&wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 																					winSticker.onload = function()
 																					{
 																						$( "input:radio[value="+wtip+"]", winSticker.document ).attr( "checked", true );
@@ -2434,7 +2434,8 @@ $(document).ready(function() {
 														//Abro el programa de sticker
 														//crearListaAutomatica(data.historia , data.ingreso);
 														//winSticker = window.open( "../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia );
-														winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
+														wemp_pmla = $('#wemp_pmla').val();
+														winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla="+wemp_pmla+"&wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 
 														//Checkeo el radio button correspondiente de la ventana emergente
 														winSticker.onload = function(){
@@ -2885,7 +2886,8 @@ $(document).ready(function() {
 						}
 
 						if( $("#imprimirSticker").val() == "on" ){
-							winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
+							wemp_pmla = $('#wemp_pmla').val();
+							winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla="+wemp_pmla+"&wtip="+wtip+"&whis="+historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 							winSticker.onload = function()
 							{
 								$( "input:radio[value="+wtip+"]", winSticker.document ).attr( "checked", true );
@@ -4879,7 +4881,8 @@ $(document).ready(function() {
 																								//Abro el programa de sticker
 																								//crearListaAutomatica(data.historia , data.ingreso);
 																								//winSticker = window.open( "../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia );
-																								winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
+																								wemp_pmla = $('#wemp_pmla').val();
+																								winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla="+wemp_pmla+"&wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 
 																								//Checkeo el radio button correspondiente de la ventana emergente
 																								winSticker.onload = function(){
@@ -4964,7 +4967,8 @@ $(document).ready(function() {
 																									//Abro el programa de sticker
 																									//crearListaAutomatica(data.historia , data.ingreso);
 																									//winSticker = window.open( "../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia );
-																									winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
+																									wemp_pmla = $('#wemp_pmla').val();
+																									winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla="+wemp_pmla+"&wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 
 																									//Checkeo el radio button correspondiente de la ventana emergente
 																									winSticker.onload = function(){
@@ -5057,7 +5061,8 @@ $(document).ready(function() {
 																			//Abro el programa de sticker
 																			//crearListaAutomatica(data.historia , data.ingreso);
 																			//winSticker = window.open( "../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia );
-																			winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
+																			wemp_pmla = $('#wemp_pmla').val();
+																			winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla="+wemp_pmla+"&wtip="+wtip+"&whis="+data.historia ,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 
 																			//Checkeo el radio button correspondiente de la ventana emergente
 																			winSticker.onload = function(){
