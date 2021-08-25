@@ -9,6 +9,7 @@
  *                                         la información del responsable del paciente.
  * Mayo 2021                Juan David Rodriguez -Modificacion en el boton admitir, se desabilita hasta terminar el 
  *                                                proceso de admitir.
+ * 12 Agosto 2021           Juan David Rodriguez - Se agrega  opción para inactivar un registro, esto afecta la tabla citaslc_000032 el campo drvest
  ****************************************************************************************/
 
 
@@ -23,14 +24,24 @@
 	if(!isset($_SESSION['user']))
 		exit( "<b>Usuario no registrado" );
 
-    $wactualiz = '2020-10-29';
+    $wactualiz = '2021-08-11';
     date_default_timezone_set("America/Bogota");
     // include('./config/db_connect.php');
     include_once("conex.php");
     include_once("root/comun.php");
 
+    if( !isset($wemp_pmla) ){
+        die("Falta parametro wemp_pmla...");
+    }
+    $wemp_pmla = $_GET['wemp_pmla'];
+
+    $host = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hostLaboratorio');
+    $user = consultarAliasPorAplicacion($conex, $wemp_pmla, 'usuarioLaboratorio');
+    $pass = consultarAliasPorAplicacion($conex, $wemp_pmla, 'passwordLaboratorio');
+    $bd = consultarAliasPorAplicacion($conex, $wemp_pmla, 'bdLaboratorio');
+
     // // Conexi&oacute;n a Laboratorio
-    $connLab = mysqli_connect('131.1.18.106', '4duser', 'LavAmerikx09', '4dlab');
+    $connLab = mysqli_connect($host, $user, $pass, $bd);
     if (!$connLab) {
         echo 'Connection error' . mysqli_connect_error(); # code...
     }
@@ -43,15 +54,16 @@
     $wusuario_logueado = (count($wusuario_logueado) > 1)? $wusuario_logueado[1] : $wusuario_logueado[0];
     //Se obtiene el ID del usuario :)
 
-    $url = "/matrix/citas/procesos/listaDeEspera.php?wemp_pmla=05";
+    // $url = "/matrix/citas/procesos/listaDeEspera.php?wemp_pmla=05";
+    $url= $_SERVER["REQUEST_URI"];
     //sendToMail en common
 
     //Validacion de la empresa enviada :)
-    if (!isset($_GET['wemp_pmla'])) {    
-        $wemp_pmla = "01";
-    }else{
-        $wemp_pmla = $_GET['wemp_pmla'];    
-    }
+    // if (!isset($_GET['wemp_pmla'])) {    
+    //     $wemp_pmla = "01";
+    // }else{
+    //     $wemp_pmla = $_GET['wemp_pmla'];    
+    // }
     $conex = obtenerConexionBD("matrix");
     //Validación de la tabla para la empresa :)
     $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'servicioListaEspera');
@@ -134,6 +146,10 @@
         switch($accion){
             case 'escribirLog':
             	escribirLog($proceso, $idreg, $data);
+            break;
+            case 'InactivarRegistro':
+                $result = InactivarRegistro( $idreg, $check );
+                echo json_encode($result);
             break;
         }
 		exit;
@@ -1079,6 +1095,40 @@
                 
     }
 
+    function InactivarRegistro( $id, $check )
+    {
+        global $conex, $wbasedato;
+        if( $check == 'on' )
+        {
+            $sql ="UPDATE {$wbasedato}_000032 SET drvest = 'off' WHERE id = '{$id}'";
+            $res = mysql_query($sql,$conex) or ($descripcionError = utf8_encode("Error: " . mysql_error()));
+            if( $res )
+            {
+                $data['error'] = 0;
+                $data['mensaje'] = 'Registro inactivado.';
+            }
+            else{
+                $data['error'] = 1;
+                $data['mensaje'] = $descripcionError;
+            }
+        }
+        else
+        {
+            $sql ="UPDATE {$wbasedato}_000032 SET drvest = 'on' WHERE id = '{$id}'";
+            $res = mysql_query($sql,$conex) or ($descripcionError = utf8_encode("Error: " . mysql_error()));
+            if( $res )
+            {
+                $data['error'] = 0;
+                $data['mensaje'] = 'Registro activado.';
+            }
+            else{
+                $data['error'] = 1;
+                $data['mensaje'] = $descripcionError;
+            }
+        }
+        return $data;
+    }
+
     //Change4: Funcion para el estilo de los campos según estados Mavila :)
     function verificarClassCampo( $key, $campo_verificar, $valor_verificado ){ 
         $class_campoValor = '';
@@ -1762,7 +1812,7 @@
             <table id="listaDeRegistros" class="table table-bordered table-sm">
                 <thead>
                     <tr class="encabezadoTabla">
-                        <th colspan="10" style="text-align: center;">Lista de espera</th>
+                        <th colspan="11" style="text-align: center;">Lista de espera</th>
                     </tr>
                     <tr class="encabezadoTabla">
                         <th scope="col">ID</th>
@@ -1793,6 +1843,7 @@
                         <th scope="col">Agendar</th>
 
                         <th scope="col">Admisi&oacute;n en laboratorio</th>
+                        <th scope="col">Inactivar</th>
                         <!-- <th>Cancelar</th> -->
                     </tr>
                 </thead>
@@ -2104,6 +2155,14 @@
                                     ?>>-->
                                 <div><label id=<?php echo "orden" . $key; ?>></label></div>
                             </td>
+                            <td>
+                                <?php
+                                    if (htmlspecialchars($registro['drvpcf']) === "off") {
+                                        ?>
+                                            <input class="form-control form-control-sm" type="checkbox" id=<?php echo "invalidar" . $registro['id']; ?> onclick="InactivarRegistro(<?php echo $registro['id']; ?>)"></td>
+                                        <?php
+                                    }
+                                ?>
 
                             <!-- <td class="textoCentrado"><button type='button' onclick="cancelarRegistro(<?php echo $registro['id']; ?>)">X</button></td> -->
                         </tr>
@@ -2163,7 +2222,8 @@
     <!-- <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script> -->
     <script>
         let tempExams = [];
-        const urlMatrix = '/matrix/citas/procesos/listaDeEspera.php?wemp_pmla=05'
+        // const urlMatrix = '/matrix/citas/procesos/listaDeEspera.php?wemp_pmla=05'
+        const urlMatrix = '<?php echo $url; ?>';
         const urlAPI = '<?php echo $urlAPI; ?>';
         const wompiKey = '<?php echo $wompiKey; ?>';
         const urlAPIevents = '<?php echo $urlAPIevents; ?>';
@@ -2656,6 +2716,34 @@
                 });  
 			}
 		}
+
+        function InactivarRegistro ( id ) {
+            check = $(`#invalidar${id}`).is(':checked')?'on':'off';
+
+            $.ajax({
+                url: urlMatrix,
+                type: 'POST',
+                data: {
+                    "consultaAjax": '',
+                    "accion": 'InactivarRegistro',
+                    "idreg": id,
+                    "check": check
+                },
+                success: function(res) {
+                    resp = JSON.parse(res);
+                    if ( resp.error == 1){
+                        EscribirLog (id, 'Error al inactivar registro.');
+                        alert('Error al inactivar registro, favor actualizar y volver a realizar procedimiento.');
+                    }else {
+                        alert(resp.mensaje);
+                    }
+                },
+                error: function() {
+                    alert('Error al ejecutar la acción.');
+                    EscribirLog (id, 'Error al inactivar registro.');
+                }
+            });
+        }
 		
         function verificarPago(id) {
             //alert(id);
