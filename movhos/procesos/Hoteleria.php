@@ -942,60 +942,30 @@ function obtenerRegistrosFila($qlog)
 							 * @author Joel Payares Hernández <joel.payares@lasamericas.com.co>
 							 */
 							$sql_num_ing_serv = "
-									SELECT	Num_ing_Serv
+								  SELECT	Num_ing_Serv
 									FROM	{$wbasedato}_000032
-									WHERE	Historia_clinica = '{$whis}'
-										AND	Num_ingreso      = '{$wing}'
-										AND	Servicio         = '{$wcco}'
+								   WHERE	Historia_clinica = '{$row[1]}'
+									 AND	Num_ingreso      = '{$row[2]}'
+									 AND	Servicio         = '{$row[5]}'
 								ORDER BY	Num_ing_serv DESC
-									LIMIT	1;
+								   LIMIT	1;
 							";
 							$err = mysql_query( $sql_num_ing_serv, $conex ) or die (mysql_errno().$q." - ".mysql_error());	
 							$row_num_ing_serv = mysql_fetch_array( $err );
 							$wnum_ing_serv = $row_num_ing_serv[0];
 
-							//==================================================
-							/**
-							 * * Consulta que permite obtener la fecha y hora de ingreso al servicio del cual egresa por ALTA
-							 * * Segmento de código agregado 20/08/2021
-							 * @author Joel Payares Hernández <joel.payares@lasamericas.com.co>
-							 */
-							// $q=  "
-							// 		SELECT	CONCAT( Fecha_ing,' ', Hora_ing ) as Fecha_hora, Num_ing_Serv
-							// 		FROM	{$wbasedato}_000032
-							// 		WHERE	Historia_clinica	=	'{$whis}'
-							// 			AND	Num_ingreso			=	'{$wing}'
-							// 			AND	Servicio			=	'{$wcco}'
-							// 			AND	Num_ing_Serv		=	'{$wnum_ing_serv}'
-							// 	GROUP BY	2
-							// ";
-							// $err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
-							// $rowdia = mysql_fetch_array($err);
-
-							// $wdiastan = dias_estancia_servicio( (string) $rowdia[0], (string) date("Y-m-d H:i:s") );
-
-							// $wnuming = $rowdia[1];
-
-							$q = "
-								  SELECT	ROUND(
-									  			TIMESTAMPDIFF(
-													MINUTE,
-													CONCAT( Fecha_ing,' ', Hora_ing ),
-													now()
-												)/(24*60), 2
-											),
-											Num_ing_Serv
-									FROM	{$wbasedato}_000032
-								   WHERE	Historia_clinica	=	'{$whis}'
-									 AND	Num_ingreso			=	'{$wing}'
-									 AND	Servicio			=	'{$wcco}'
-									 AND	Num_ing_Serv		=	'{$wnum_ing_serv}'
-								GROUP BY	2
-							";
+							//Calculo los días de estancia en el servicio actual
+							$q=" SELECT ROUND(TIMESTAMPDIFF(MINUTE,CONCAT( Fecha_ing, ' ',Hora_ing ),now())/(24*60),2), Num_ing_Serv "
+								."   FROM ".$wbasedato."_000032 "
+								."  WHERE Historia_clinica = '".$row[1]."'"
+								."    AND Num_ingreso      = '".$row[2]."'"
+								."    AND Servicio         = '".$row[5]."'"    //Centro de costo
+								."    AND Num_ing_Serv     = '".$wnum_ing_serv."'"    // Numero ingreso servicio
+								."  GROUP BY 2 ";
 							$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 							$rowdia = mysql_fetch_array($err);
-							$wdiastan = $rowdia[0];
-							$wnuming = $rowdia[1];
+							$wdiastan=$rowdia[0];
+							$wnuming=$rowdia[1];
 
 							if ($wdiastan=="" or $wdiastan==0)
 								$wdiastan=0;
