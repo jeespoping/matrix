@@ -10,7 +10,7 @@ if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
-	echo "<frameset rows=100,* frameborder=0 framespacing=0>";                                                                                               //Encabezado antes de las pestañas
+	echo "<frameset rows=120,* frameborder=0 framespacing=0>";                                                                                               //Encabezado antes de las pestañas
 	    echo "<frame src='configuracion.php?accion=T&ok=0&wemp_pmla=".$wemp_pmla."' name='titulos' marginwidth=0 scrolling='yes' marginheiht=0>";
 	    echo "<frameset cols=15%,85%  frameborder=0 framespacing=2>";                                                                                        //20% para el arbol, 80% para las pestañas
 			echo "<frameset rows=15%,85% frameborder=0 framespacing=0 marginwidth=0>";                                                                       //15% para el Usuario, 85% para las pestañas al lado derecho
