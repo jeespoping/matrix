@@ -1489,7 +1489,7 @@ function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramite
   }
 
 
-function marcarLlegada($wid, $fecha, $hora)
+function marcarLlegada__($wid, $fecha, $hora)
 {
 
 	global $conex;
@@ -1511,7 +1511,7 @@ function marcarLlegada($wid, $fecha, $hora)
 	$rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 }
 
-function marcarLlegada__($wid, $fecha, $hora, $wemp_pmla)
+function marcarLlegada($wid, $fecha, $hora, $wemp_pmla)
 {
 	global $conex;
 	global $wcencam;
@@ -1545,17 +1545,9 @@ function marcarLlegada__($wid, $fecha, $hora, $wemp_pmla)
 		 * * motivo se paciente de alta y que este en una habitación
 		 */
 		$q = "
-		UPDATE	{$tablaHabitaciones}
-			SET	Habali = 'on',
-					Habdis = 'off',
-					Habhis = '',
-					Habing = '',
-					Habfal = '{$datosPacienteAlta['FechaEgreso']}',
-					Habhal = '{$datosPacienteAlta['HoraEgreso']}',
-					Habprg = ''
-			WHERE	Habcod = '{$datosPacienteAlta['Habitacion']}'
-			AND	Habhis = '{$datosPacienteAlta['Historia']}'
-			AND	Habing = '{$datosPacienteAlta['Ingreso']}'
+		  UPDATE	{$tablaHabitaciones}
+			 SET	Habali = 'on'
+		   WHERE	Habcod = '{$datosPacienteAlta['Habitacion']}'
 		";
 
 		$err = mysql_query($q, $conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -1567,12 +1559,11 @@ function obtenerDatosPacienteAlta( $wid, $wcencam, $wemp_pmla )
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
 	$sql = "
-		SELECT	{$wcencam}_000003.Historia,
+		  SELECT	{$wcencam}_000003.Historia,
 					{$wcencam}_000003.Motivo,
-					IF({$wbasedato}_000020.Habcod = '' or NULL, 'null', {$wbasedato}_000020.Habcod) AS Habitacion
-			FROM	{$wcencam}_000003, {$wbasedato}_000020
-			WHERE	{$wcencam}_000003.id = {$wid}
-			AND	{$wbasedato}_000020.Habhis = {$wcencam}_000003.Historia
+					{$wcencam}_000003.Habitacion
+			FROM	{$wcencam}_000003
+		   WHERE	{$wcencam}_000003.id = {$wid}
 		";
 
 	$resultQuery = mysql_query($sql, $conex) or die (mysql_errno() . " - " . mysql_error());
@@ -1583,19 +1574,19 @@ function obtenerDatosPacienteAlta( $wid, $wcencam, $wemp_pmla )
 	if( $cantidad_registros > 0 )
 	{
 		$q="
-		SELECT	Fecha_egre_serv as FechaEgreso,
-					Hora_egr_serv as HoraEgreso,
-					Num_ingreso as Ingreso,
-					Historia_clinica as Historia
-			FROM	{$wbasedato}_000033
-			WHERE	Historia_clinica = '{$respuesta[0]}'
-		ORDER BY	Fecha_data Desc
-			LIMIT	1";
+			  SELECT	Fecha_egre_serv as FechaEgreso,
+						Hora_egr_serv as HoraEgreso,
+						Num_ingreso as Ingreso,
+						Historia_clinica as Historia
+				FROM	{$wbasedato}_000033
+			   WHERE	Historia_clinica = '{$respuesta[0]}'
+			ORDER BY	Fecha_data Desc
+			   LIMIT	1";
 
 		$err = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 		$rowdia = mysql_fetch_array($err);
 		$rowdia['Motivo'] = $respuesta[1];
-		$rowdia['Habitacion'] = $respuesta[2];
+		$rowdia['Habitacion'] = json_decode( $respuesta[2] )[0];
 	}
 
 	return $rowdia;
@@ -2016,8 +2007,8 @@ function actualizar_operador($wcentral, $wcodope, $whorope)
                 }
                 break;
             case 'llegada':
-                echo marcarLlegada($wid, $ifecha, $ihora);
-                // echo marcarLlegada($wid, $ifecha, $ihora, $wemp_pmla);
+                // echo marcarLlegada($wid, $ifecha, $ihora);
+                echo marcarLlegada($wid, $ifecha, $ihora, $wemp_pmla);
                 break;
             case 'cumplimiento':
                 {
