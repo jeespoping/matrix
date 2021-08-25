@@ -297,6 +297,26 @@ else
   // F U N C I O N E S
   //=====================================================================================================================================================================
 
+	/**
+	 * * Función que permite calcular los días de estancia de un servicio basado en dos (2) fechas,
+	 * * fecha ingreso y egreso de servicio
+	 * 
+	 * @param	String	fecha_ingreso_servicio	[Fecha de ingreso al servicio del cual egresa]
+	 * @param	String	fecha_egreso_servicio	[Fecha de egreso del servicio]
+	 * 
+	 * @return	Float	dias_estancia			[Cantidad de días de estancia]
+	 * 
+	 * @author Joel Payares Hernández <joel.payares@lasamericas.com.co>
+	 */
+	function dias_estancia_servicio( $fecha_ingreso_servicio, $fecha_egreso_servicio )
+	{
+		$dias_estancia = ( strtotime($fecha_ingreso_servicio) - strtotime($fecha_egreso_servicio) ) / 86400;
+		$dias_estancia = abs( $dias_estancia );
+		$dias_estancia = round( $dias_estancia, 2 );
+
+		return $dias_estancia;
+	}
+
     // Consultar si el paciento es POS
     function consultartipopos($whistoria, $wingreso)
      {
@@ -918,6 +938,24 @@ function obtenerRegistrosFila($qlog)
 							$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 							//=======================================================================================================================================================
 
+							/**
+							 * * Consulta que permite obtener el número de ingreso al servicio
+							 * * Segmento de código agregado 20/08/2021
+							 * @author Joel Payares Hernández <joel.payares@lasamericas.com.co>
+							 */
+							$sql_num_ing_serv = "
+								  SELECT	Num_ing_Serv
+									FROM	{$wbasedato}_000032
+								   WHERE	Historia_clinica = '{$row[1]}'
+									 AND	Num_ingreso      = '{$row[2]}'
+									 AND	Servicio         = '{$row[5]}'
+								ORDER BY	Num_ing_serv DESC
+								   LIMIT	1;
+							";
+							$err = mysql_query( $sql_num_ing_serv, $conex ) or die (mysql_errno().$q." - ".mysql_error());	
+							$row_num_ing_serv = mysql_fetch_array( $err );
+							$wnum_ing_serv = $row_num_ing_serv[0];
+
 							//=======================================================================================================================================================
 							//Calculo los días de estancia en el servicio actual
 							$q=" SELECT ROUND(TIMESTAMPDIFF(MINUTE,CONCAT( Fecha_ing, ' ',Hora_ing ),now())/(24*60),2), Num_ing_Serv "
@@ -925,6 +963,7 @@ function obtenerRegistrosFila($qlog)
 								."  WHERE Historia_clinica = '".$row[1]."'"
 								."    AND Num_ingreso      = '".$row[2]."'"
 								."    AND Servicio         = '".$row[5]."'"    //Centro de costo
+								."    AND Num_ing_Serv     = '".$wnum_ing_serv."'"    // Numero ingreso servicio
 								."  GROUP BY 2 ";
 							$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 							$rowdia = mysql_fetch_array($err);
