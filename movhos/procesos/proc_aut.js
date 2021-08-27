@@ -231,6 +231,8 @@ function ejecutarIngresoConteo(parametros) {
         url: 'IngHistorias.php',
         data: parametros,
         success: function (data) {
+            console.log("DATA INGRESOS: ");
+            console.log(data);
             data = JSON.parse(data);
 
             let mensaje = "<li>Total historias: " + data + "</li>";

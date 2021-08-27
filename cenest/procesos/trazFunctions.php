@@ -817,7 +817,7 @@ function buildResumeTable($fecIniReporte, $fecFinReporte, $filtroCco, $filtroDis
 function findReusosXCod($Coddispo,$Codcco){
     global $bdCenest;
     global $conex;
-    $query22 = "select * from {$bdCenest}_000012 WHERE Coddispo = '$Coddispo' AND Codcco = '$Codcco'";
+    $query22 = "SELECT * FROM {$bdCenest}_000012 WHERE Coddispo = '$Coddispo' AND Codcco = '$Codcco'";
     $commitQuery22 = mysql_query($query22, $conex) or die (mysql_errno()." - en el query: ".$query22." - ".mysql_error());
     while($datoReuso = mysql_fetch_array($commitQuery22))
     {
@@ -825,6 +825,26 @@ function findReusosXCod($Coddispo,$Codcco){
         $usos = $datoReuso['Numuso'];     $limiteUsos = $datoReuso['limite'];
             echo "<option value='".$codReuso.'_'.$idReuso."'>".$codReuso."</option>";
     }
+}
+
+function codigosMostrarTraz($codIt,$ccoUnidad){
+    global $bdCenest;
+    global $conex;
+    $arrCodigosMostrar = [];
+    $query22 = "SELECT Codreuso,Numuso,limite,id 
+                FROM {$bdCenest}_000012
+                WHERE Coddispo = '$codIt' AND Estado = 'on' AND Codcco = '$ccoUnidad'";
+    $commitQuery22 = mysql_query($query22, $conex) or die (mysql_errno().mysql_error());
+    while($datoReuso = mysql_fetch_array($commitQuery22))
+    {
+        $codReuso = $datoReuso['Codreuso']; $idReuso = $datoReuso['id'];
+        $usos = $datoReuso['Numuso'];     $limiteUsos = $datoReuso['limite'];
+        if($usos < $limiteUsos && esDispoMaloOfinfec($idReuso,$ccoUnidad) == 0)
+        {
+            $arrCodigosMostrar[$idReuso] = $codReuso;
+        }
+    }
+    return $arrCodigosMostrar;
 }
 
 ?>

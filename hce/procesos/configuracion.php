@@ -59,7 +59,7 @@ include_once("conex.php"); header("Content-Type: text/html;charset=ISO-8859-1");
 			zoom:1;
 		}
 
-    	//body{background:white url(portal.gif) transparent center no-repeat scroll;}
+    	body{background:white url(portal.gif) transparent center no-repeat scroll;}
     	#tipo1{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;}
     	#tipo2{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;}
     	.tipo3{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:left;}
@@ -178,21 +178,6 @@ include_once("conex.php"); header("Content-Type: text/html;charset=ISO-8859-1");
 		     $("#divbusqueda").show();
 		    } 
 		}
-		
-		function mueveReloj()
-		{ 
-			momentoActual = new Date() 
-			hora = momentoActual.getHours() 
-			minuto = momentoActual.getMinutes() 
-			segundo = momentoActual.getSeconds() 
-
-			horaImprimible = hora + " : " + minuto + " : " + segundo 
-
-			document.configuracion.reloj.value = horaImprimible 
-
-			setTimeout("mueveReloj()",1000) 
-		} 
-<!--
 	
 	function calendario(idx)
 	{
@@ -295,12 +280,13 @@ include_once("conex.php"); header("Content-Type: text/html;charset=ISO-8859-1");
 		if ((event.keyCode < 48 || event.keyCode > 57 ) & event.keyCode != 13) event.returnValue = false;
 	}
 
-//-->
+
 </script>
 
 </head>
 
-<BODY TEXT="#000066" onload='mueveReloj()' FACE="ARIAL">
+<!-- <BODY TEXT="#000066" onload='mueveReloj()' FACE="ARIAL"> -->
+<BODY TEXT="#000066" FACE="ARIAL">
 
 <?php
 
@@ -445,22 +431,14 @@ else
 	$key = substr($user,2,strlen($user));
 	switch($accion)
 	{
-		case "T": 
-		    echo "<body>";
-			echo "<div align='center'>";
-			  echo "<table width='59%' border='0'>";
-			    echo "<tr>"; 
-			      echo "<td width='26%' height='100'><div align='left'><img src='/matrix/images/medical/root/FMATRIX.JPG' width='157' height='80'></div></td>";
-			      echo "<td width='74%'><p align='center'><strong><font color='#003399' size='+2'>Historia Cl&iacute;nica Electronica </font></strong></p>";
-			        echo "<p align='center'><font color='#003399'><strong><font size='5' face='Verdana, Arial, Helvetica, sans-serif'>CONFIGURACION</font></strong></font></p>";
-			    echo "</tr>";
-			  echo "</table>";
-			  echo "<p align='center'><strong></strong></p>";
-			  echo "<p><font color='#003399'><strong></strong></font></p>";
-			echo "</div>";
-			echo "</body>";
+		case "T": // Pinta encabezado
+			echo "<body style='height: 120px; margin-top:0;'>";
+			$wactualiz = '2021-08-02'; // Ultima actualización
+			$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+			$wbasedato1 = strtolower( $institucion->baseDeDatos );
+			encabezado("Historia Cl&iacute;nica Electronica - CONFIGURACION",$wactualiz, $wbasedato1);
 		break;
-		case "U": 
+		case "U": // Pinta nombre de usuario que hizo login en matrix
 		    $key = substr($user,2,strlen($user));
 			$query = "select descripcion from usuarios where codigo = '".$key."'";
 			$err = mysql_query($query,$conex);

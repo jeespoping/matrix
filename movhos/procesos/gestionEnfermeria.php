@@ -935,43 +935,47 @@ if(isset($operacion) && $operacion == 'marcarmuerte_hospitalizacion'){
 
 if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 
-	 $datamensaje = array('mensaje'=>'', 'error'=>0 , 'formulario'=>'', 'justificacion'=>'', 'htmljusti'=>'');
-	 
-	 $tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
+	$datamensaje = array('mensaje'=>'', 'error'=>0 , 'formulario'=>'', 'justificacion'=>'', 'htmljusti'=>'');
+	
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
 
-	 $wfecha = date("Y-m-d");
-	 $whora  = date("H:i:s");
+	$wfecha = date("Y-m-d");
+	$whora  = date("H:i:s");
 
-	 $wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
-	 $continuar = false; //esta variable me va a controlar el proceso de cancelado de almimentación, limpieza de habitación etc...
+	$wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
+	$continuar = false; //esta variable me va a controlar el proceso de cancelado de almimentación, limpieza de habitación etc...
 
-	 $q = " SELECT Pacno1, Pacno2, Pacap1, Pacap2 "
-			."   FROM root_000036, root_000037, ".$tablaHabitaciones." "
-			."  WHERE Habhis = '".$whis."'"
-			."    AND Habing = '".$wing."' "
-			."    AND Habhis = Orihis "
-			."    AND Habing = Oriing "
-			."    AND Oriori = '".$wemp_pmla."'"
-			."    AND Oriced = Pacced "
-			."    AND Oritid = Pactid ";
+	$q = " SELECT Pacno1, Pacno2, Pacap1, Pacap2 "
+		."   FROM root_000036, root_000037, ".$tablaHabitaciones." "
+		."  WHERE Habhis = '".$whis."'"
+		."    AND Habing = '".$wing."' "
+		."    AND Habhis = Orihis "
+		."    AND Habing = Oriing "
+		."    AND Oriori = '".$wemp_pmla."'"
+		."    AND Oriced = Pacced "
+		."    AND Oritid = Pactid ";
+
 	$reshab = mysql_query($q,$conex);
 	$rowhab = mysql_fetch_array($reshab);
 
 	$numhab = mysql_num_rows($reshab);
 
 	if ($numhab > 0)
-	$whabpac="<b>".$whabpac."</b><br>Pac: ".$rowhab[0]." ".$rowhab[1]." ".$rowhab[2]." ".$rowhab[3];
+	{
+		$habitacion_json = json_encode( [($whabpac == null ? $whab_actual : $whabpac), "Pac: ".$rowhab[0]." ".$rowhab[1]." ".$rowhab[2]." ".$rowhab[3]] );
 
+		// $whabpac="<b>".$whabpac."</b><br>Pac: ".$rowhab[0]." ".$rowhab[1]." ".$rowhab[2]." ".$rowhab[3];
+	}
 
-	 $wreqjust = false;
-	 $wreqjust = requiere_justificacion($wid18);
+	$wreqjust = false;
+	$wreqjust = requiere_justificacion($wid18);
 
-	 //Si no tiene justificacion valida que la necesite.
-	 if($wjust == ''){
-
+	//Si no tiene justificacion valida que la necesite.
+	if($wjust == '')
+	{
 		//Si la requiere lleva el arreglo de htmljustificion para pintarlo con el listado de justificaciones.
-		if($wreqjust){
-
+		if($wreqjust)
+		{
 			$datamensaje['error'] =  1;
 
 			$query = "SELECT Juscod, Jusdes
@@ -987,81 +991,82 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 			$datamensaje['htmljusti'] .= "<select id='mjust'>";
 			$datamensaje['htmljusti'] .="<option value = '--' selected>--</option>";
 			$num = mysql_num_rows($rs);
-			 for($i = 0; $i <$num; $i++)
-				{
+			
+			for($i = 0; $i <$num; $i++)
+			{
 				$row = mysql_fetch_array($rs);
 				$datamensaje['htmljusti'] .= "<option value ='".$row['Juscod']."'>".$row['Juscod']." - ".utf8_encode($row['Jusdes'])."</option>";
-				}
+			}
+
 			$datamensaje['htmljusti'] .= "</select></td></tr>";
 			$datamensaje['htmljusti'] .= "</table>";
 
 			$datamensaje['htmljusti'] .= "<br><center><input type=button value='Justificar/Marcar alta definitiva' onclick='marcaraltadef_hospitalizacion(\"$whis\",\"$wing\", \"$wtraslado\", \"$westado_altaEnProceso\", \"$nombre\", \"$wbasedato\", \"$whce\", \"$wusuario\", \"$wid18\", \"$whab_actual\", \"on\", \"$wcco\");'><br><br></center>";
 
 			$datamensaje['justificacion'] = $wreqjust;
+			
 			echo json_encode($datamensaje);
 			return;
-
 		}
-
-	 }else{
-		 $wreqjust = true;
-	 }
-
+	}
+	else
+	{
+		$wreqjust = true;
+	}
 
 	if($wreqjust == false)//sino requiere justificación ejecuta el query sin la justificación
+	{
+		$q = " UPDATE ".$wbasedato."_000018 "
+			."    SET Ubiald  = 'on', "
+			."        Ubifad  = '".$wfecha."',"
+			."        Ubihad  = '".$whora."', "
+			."        Ubiuad  = '".$wusuario."' "
+			."  WHERE Ubihis  = '".$whis."'"
+			."    AND Ubiing  = '".$wing."'"
+			."    AND Ubialp  = 'on' "
+			."    AND Ubiald != 'on' "
+			."    AND Ubiptr != 'on' ";
+	
+		$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		$update = mysql_affected_rows();
+		$continuar = true;
+	}
+	else
+	{
+		if(isset($wjust))
 		{
 			$q = " UPDATE ".$wbasedato."_000018 "
 				."    SET Ubiald  = 'on', "
 				."        Ubifad  = '".$wfecha."',"
 				."        Ubihad  = '".$whora."', "
-				."        Ubiuad  = '".$wusuario."' "
+				."        Ubiuad  = '".$wusuario."', "
+				."		  Ubijus  = '".$wjust."'"
 				."  WHERE Ubihis  = '".$whis."'"
 				."    AND Ubiing  = '".$wing."'"
 				."    AND Ubialp  = 'on' "
 				."    AND Ubiald != 'on' "
 				."    AND Ubiptr != 'on' ";
+		
 			$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 			$update = mysql_affected_rows();
 			$continuar = true;
-
-		}else{
-				if(isset($wjust))
-				{
-					$q = " UPDATE ".$wbasedato."_000018 "
-						."    SET Ubiald  = 'on', "
-						."        Ubifad  = '".$wfecha."',"
-						."        Ubihad  = '".$whora."', "
-						."        Ubiuad  = '".$wusuario."', "
-						."		  Ubijus  = '".$wjust."'"
-						."  WHERE Ubihis  = '".$whis."'"
-						."    AND Ubiing  = '".$wing."'"
-						."    AND Ubialp  = 'on' "
-						."    AND Ubiald != 'on' "
-						."    AND Ubiptr != 'on' ";
-					$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-					$update = mysql_affected_rows();
-					$continuar = true;
-				}
-
-			 }
-
+		}
+	}
 
 	//Si se genero una actualizacion realiza estas acciones
 	if($update > 0)
 	{
 		cancelar_pedido_alimentacion($whis, $wing, $wcco, "Cancelar", $wusuario);          //Febrero 10 2010
-
 		cancelarPedidoInsumos($conex, $wbasedato, $whis, $wing); //Noviembre 1 de 2017 Jonatan
 
 		$wfecha = date("Y-m-d");
 		$whora = (string)date("H:i:s");
 
-
 		//=======================================================================================================================================================
 		//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
 		$q = " UPDATE ".$tablaHabitaciones." "
-			."    SET Habali = 'on', "
-			."        Habdis = 'off', "
+			// ."    SET Habali = 'on', "	// Se comenta linea que actualiza campo habitación en estado listo para limpieza
+			."    SET Habdis = 'off', "
 			."        Habhis = '', "
 			."        Habing = '', "
 			."        Habfal = '".$wfecha."', "
@@ -1072,7 +1077,6 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 			."    AND Habing = '".$wing."'";
 		$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 		//=======================================================================================================================================================
-
 
 		//=======================================================================================================================================================
 		//Calculo los días de estancia en el servicio actual
@@ -1093,7 +1097,6 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 		if ($wnuming=="" or $wnuming==0)
 			$wnuming=1;
 
-
 		//BUSCO SI EL ALTA ES POR MUERTE O NO
 		$q = " SELECT Ubimue "
 			."   FROM ".$wbasedato."_000018 "
@@ -1102,8 +1105,8 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 		$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 		$rowmue = mysql_fetch_array($err);
 
-		if ($rowmue[0]!="on"){
-
+		if ($rowmue[0]!="on")
+		{
 			BorrarAltasMuertesAntesDeAgregarNueva($conex, $wbasedato, $whis, $wing, 'Nueva alta');
 
 			$wmotivo="ALTA";
@@ -1111,11 +1114,8 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 			$q = " INSERT INTO ".$wbasedato."_000033 (   Medico       ,   Fecha_data,   Hora_data,   Historia_clinica,   Num_ingreso,   Servicio ,  Num_ing_Serv,   Fecha_Egre_Serv ,   Hora_egr_Serv ,    Tipo_Egre_Serv,  Dias_estan_Serv, Seguridad        ) "
 						."                    VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whis."'      ,'".$wing."' ,'".$wcco."' ,".$wnuming."  ,'".$wfecha."'      ,'".$whora."'     , '".$wmotivo."'   ,".$wdiastan."    , 'C-".$wusuario."')";
 			$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
-
-
 		}
 		//=======================================================================================================================================================
-
 
 		//=======================================================================================================================================================
 		//Pido el servicio de Camillero
@@ -1151,8 +1151,7 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 		$wcentral=$rowcen[0];
 
 		if ($wcentral == FALSE)
-			{
-
+		{
 			$q = " SELECT Rcccen "
 				."   FROM ".$wcencam."_000009 "
 				."  WHERE Rcccco = '*'"
@@ -1160,24 +1159,24 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 			$rescen = mysql_query($q,$conex);
 			$rowcen = mysql_fetch_array($rescen);
 			$wcentral=$rowcen[0];
-			}
+		}
 		else
-			{
+		{
 			$wcentral=$wcentral;
-			}
+		}
 
-	//$wcentral="CAMILLEROS";
+		//$wcentral="CAMILLEROS";
 		//=======================================================================================================================================================
 
 		if ($rowmue[0]!="on")  //No pide el camillero si el paciente Murio, porque se pidio cuando marco la muerte
-			{
+		{
 			//=======================================================================================================================================================
 			//Grabo el registro solicitud del camillero
 			$q = " INSERT INTO ".$wcencam."_000003 (     Medico     ,   Fecha_data,   Hora_data,   Origen     , Motivo           ,        Habitacion                        ,                       Observacion                                                                        , Destino ,    Solicito    ,    Ccosto  , Camillero, Hora_respuesta, Hora_llegada, Hora_Cumplimiento, Anulada, Observ_central,   Historia  ,    Central     , Seguridad        ) "
-						."                  VALUES ('".$wcencam."','".$wfecha."'  ,'".$whora."','".$worigen."','PACIENTE DE ALTA','<b>".$whab_actual."</b><br>".$whabpac."' , 'Se dio alta definitiva desde gestion de enfermeria a la Historia: ".$whis."-".$wing." a las ".$whora."' , 'ALTA'  , '".$wusuario."', '".$wcco."', ''       , '00:00:00'    , '00:00:00'  , '00:00:00'       , 'No'   , ''            , '".$whis."' ,'".$wcentral."', 'C-".$wusuario."')";
+						."                  VALUES ('".$wcencam."','".$wfecha."'  ,'".$whora."','".$worigen."','PACIENTE DE ALTA','".$habitacion_json."' 					, 'Se dio alta definitiva desde gestion de enfermeria a la Historia: ".$whis."-".$wing." a las ".$whora."' , 'ALTA'  , '".$wusuario."', '".$wcco."', ''       , '00:00:00'    , '00:00:00'  , '00:00:00'       , 'No'   , ''            , '".$whis."' ,'".$wcentral."', 'C-".$wusuario."')";
 			$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 			//=======================================================================================================================================================
-			}
+		}
 	}
 
 	//Si se actualizo el alta definitva para el paciente se muestra el mensaje.
@@ -16878,7 +16877,7 @@ else{
 
 				break;
 		}
-		//echo $sql;
+		// echo $sql;
 		$resHabitaciones = mysql_query( $sql, $conex ) or die( mysql_error()." - Error en el query $sql -".mysql_error() );
 		$numHabitaciones = mysql_num_rows( $resHabitaciones );
 

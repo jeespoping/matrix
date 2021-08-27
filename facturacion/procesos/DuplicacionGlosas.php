@@ -46,8 +46,11 @@
         }
     </style>
     <?php
-    //DESCOMENTAR PARA PUBLICACION EN MATRIX:
-    ///*
+
+//==============================================================================================================================
+	//Mayo 28 de 2021 Leandro Meneses
+	//Al campo godetcla (clasificada) se lleva l valor 'N' para que permita clasificar la glosa
+	//==============================================================================================================================
     include("conex.php");
     include("root/comun.php");
 
@@ -240,13 +243,14 @@ encabezado( "DUPLICACION GLOSAS SERVINTE", $actualiz ,"clinica" );
 			$glodetfue = $row['glodetfue'];
 			$glodetcco = $row['glodetcco'];
 			$glodetdoc = $gloencdoc;
-			$glodetfec = date('Y-m-d');	
+			$glodetfec = date('Y-m-d');		
 			$glodetsec = $row['glodetsec'];
 			$glodetfca = $row['glodetfca'];
 			$glodetfac = $row['glodetfac'];
 			$glodetenv = $row['glodetenv'];
 			$glodetefe = $row['glodetefe'];
-			$glodetgfe = $row['glodetgfe'];
+			//$glodetgfe = $row['glodetgfe'];
+			$glodetgfe = date('Y-m-d');
 			$glodetcon = $row['glodetcon'];
 			$glodetval = $row['glodetval'];
 			$glodetcau = $row['glodetcau'];
@@ -254,7 +258,9 @@ encabezado( "DUPLICACION GLOSAS SERVINTE", $actualiz ,"clinica" );
 			$glodetest = 'GL';
 			$glodetrad = $row['glodetrad'];
 			$glodetnit = $row['glodetnit'];
-			$glodetcla = $row['glodetcla'];
+		//Modificación Mayo 28 de 2021 Leandro Meneses
+		//Al campo godetcla (clasificada) se lleva l valor 'N' para que permita clasificar la glosa			
+			$glodetcla = 'N';
 			$glodetsed = $row['glodetsed'];
 			$glodeteso = $row['glodeteso'];
 			

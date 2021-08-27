@@ -50,6 +50,14 @@ $respuesta = array();
 $ccoAdd = $_REQUEST['ccoAdd'];
 $codCco = $_REQUEST['codCco'];
 $bdCenest = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenest');
+// CONSULTAR PACIENTE
+$docUsuario = $_REQUEST['docUsuario'];
+// CONSULTAR REUSO FILTRO TRAZABILIDAD
+$criterioReu = $_REQUEST['criterio'];
+$codItCriterio = $_REQUEST['codItCriterio'];
+$ccoUnidadCriterio = $_REQUEST['ccoUnidadCriterio'];
+$jsonCriterio = $_REQUEST['jsonCodes'];
+
 
 // Si la accion es adicionar un usuario
 if($accion == 'accionadd'){
@@ -424,10 +432,13 @@ if($accion == 'modalInsertarReuso'){
             }
             elseif($codLastReu == null)
             {
-                $queryNewReu = "SELECT Codreuso FROM {$bdCenest}_000012 WHERE Coddispo = '$idRegistro' AND Codcco = '$codCcoDisp' ORDER BY Codreuso DESC LIMIT 1";
+                $arrayReuFix = [];
+                // $queryNewReu = "SELECT Codreuso FROM {$bdCenest}_000012 WHERE Coddispo = '$idRegistro' AND Codcco = '$codCcoDisp' ORDER BY Codreuso DESC LIMIT 1";
+                $queryNewReu = "SELECT Codreuso FROM {$bdCenest}_000012 WHERE Coddispo = '$idRegistro' AND Codcco = '$codCcoDisp'";//ORDER BY Codreuso DESC
                 $commNewReu = mysql_query($queryNewReu, $conex) or die (mysql_errno()." - en el query: ".$queryNewReu." - ".mysql_error());
-                $datosNewReu = mysql_fetch_array($commNewReu);
-                $codLastReu = $datosNewReu[0];
+                while ($datosNewReu = mysql_fetch_array($commNewReu)) array_push($arrayReuFix,$datosNewReu['Codreuso']);
+                $codLastReu = ordenarReusos($arrayReuFix);
+                //$codLastReu = $datosNewReu[0];
                 if ($codLastReu!= null){
                     if (strpos($codLastReu,'.')){
                         $delimiter = '.';
@@ -479,11 +490,10 @@ if($accion == 'modalInsertarReuso'){
                     <tr>
                         <td align="left">
                             <div class="input-group selectDispo" style="margin-left: 10px">
-                                
+                            <span class="input-group-addon input-sm"><input  type="checkbox" id="cboxEdit'.$idReuso.'" onChange="habilitarCod('.$idReuso.')" value=""></span>
                                 <span class="input-group-addon input-sm"><label for="codReusoIns">CODIGO REUSO:</label></span>
                                 <input type="text" id="codReusoIns'.$idReuso.'" name="codReusoIns" class="form-control form-sm" style="width: 230px"
                                        value="'.$lastReu.'" '.$blockSelect.'>
-
                                 <span class="input-group-addon input-sm"><label for="codCcoDispo">SERVICIO:</label></span>
                                 <input type="text" id="codCcoDispo'.$idReuso.'" name="codCcoDispo" class="form-control form-sm" style="width: 195px" value="'.$codCcoDispo.'" readonly>
                             </div>
@@ -826,4 +836,67 @@ if ($accion == 'modalModificarDispoMaestro'){
         </div>';
 
     echo $htmlreturn;
+}
+
+if ($accion == 'findCodReuCriterio'){
+    $response = array();
+    $arrCods = $jsonCriterio;
+    $q = "SELECT Codreuso,Numuso,limite,id
+                FROM {$bdCenest}_000012
+                WHERE Coddispo = '$codItCriterio' 
+                AND Estado = 'on' 
+                AND Codcco = '$ccoUnidadCriterio'
+                AND Codreuso like '%$criterioReu%'
+                AND Numuso < limite";
+    $res = mysql_query($q, $conex) or die (mysql_errno().mysql_error());
+    if (mysql_num_rows($res) > 0){
+        while ($datoReuso = mysql_fetch_array($res)){
+            $codReuso = $datoReuso['Codreuso']; 
+            $idReuso = $datoReuso['id']; 
+            if (in_array(strtoupper($codReuso),$arrCods)){
+                echo "<option value='".$codReuso.'_'.$idReuso."'>".$codReuso."</option>";
+            }
+        }
+    }
+}
+
+
+if ($accion == 'findUserName'){
+    $bdCliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+    $response['usuario'] = '';
+    $q = "SELECT CONCAT(Pacno1,' ', Pacno2,' ', Pacap1,' ', Pacap2) as nombre
+                FROM  {$bdCliame}_000100 
+                WHERE Pachis = '{$docUsuario}'
+                OR Pacdoc = '{$docUsuario}'
+                LIMIT 1";
+    $res = mysql_query($q, $conex) or die (mysql_errno().mysql_error());
+    $datoUsuario = mysql_fetch_array($res);
+    if (mysql_num_rows($res) > 0){
+        $response['usuario'] = strtoupper($datoUsuario['nombre']);
+    }
+    echo json_encode(validateHtmlEntities($response),JSON_UNESCAPED_UNICODE);
+}
+
+function ordenarReusos($arrayReuFix){
+    $arrDispo = [];
+    foreach($arrayReuFix as $codLastReu){
+        if ($codLastReu!= null){
+            if (strpos($codLastReu,'.')){
+                $delimiter = '.';
+            }else if (strpos($codLastReu,'-')){
+                $delimiter = '-';
+            }
+            if ($delimiter != ''){
+                list($parte1,$parte2,$parte3) = explode($delimiter, $codLastReu); //DIVIDO LA CADENA POR LOS PUNTOS
+                list($num,$letras) = preg_split('/(?<=[0-9])(?=[a-z]+)/i', $parte3);
+                array_push($arrDispo,$num);
+            }
+        }
+    }
+    arsort($arrDispo);
+    foreach($arrDispo as $keyFinal => $valorFinal){
+        $lastCod = $arrayReuFix[$keyFinal];
+        break;
+    }
+    return $lastCod;
 }

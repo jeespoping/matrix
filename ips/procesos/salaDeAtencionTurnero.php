@@ -581,7 +581,7 @@ else
                           AND    Serest  = 'on' 
                         GROUP BY Sercdc";
 
-          $resPrefijo = mysqli_query($conex, $sqlPrefijo) or die("<b>ERROR EN QUERY MATRIX(".$sqlPrefijo."):</b><br>".mysqli_error());
+          $resPrefijo = mysqli_query($conex, $sqlPrefijo) or die("<b>ERROR EN QUERY MATRIX():</b><br>".mysqli_error());
 
           while( $rowPre = mysqli_fetch_assoc($resPrefijo) )
           {
@@ -591,7 +591,7 @@ else
                                   WHERE Ccocod = '".$rowPre['Sercdc']."'
                                     AND Ccocip !='' ";
 
-                $resCentro  =  mysqli_query($conex,$sqlCentrocos) or die ("Error: en el query: ".$sqlCentrocos." - ".mysqli_error());
+                $resCentro  =  mysqli_query($conex,$sqlCentrocos) or die ("Error: en el query:  - ".mysqli_error());
               
                 if( $rowCentro = mysqli_fetch_assoc($resCentro) )
                 {
@@ -616,7 +616,7 @@ else
 	                                        AND P9.Fecha  ='".$wfechacon."'
 	                                      GROUP BY P9.Fecha,P9.Hi  ";
 
-	                    $resCitas  =  mysqli_query($conex,$sqlCitas) or die ("Error: en el query: ".$sqlCitas." - ".mysqli_error());
+	                    $resCitas  =  mysqli_query($conex,$sqlCitas) or die ("Error: en el query:  - ".mysqli_error());
 
 	                    if( $resCitas && $resCitas->num_rows>0)
 	                    {

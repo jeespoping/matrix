@@ -155,8 +155,8 @@ function validarTiempoRestablecer($conex, $codigo, $fechaPasswordTemp, $horaPass
 					FROM root_000051 
 				   WHERE Detemp='01'
 					 AND Detapl='tiempoRestablecerPassword';";
-		
-		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $query . " - " . mysqli_error($conex));
+
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		if($num>0)

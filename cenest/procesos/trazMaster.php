@@ -71,6 +71,74 @@
             });
         });
 
+function habilitarCod(id) {
+    //cboxEdit
+    let checkBox = document.getElementById("cboxEdit" + id);
+    let element = document.getElementById("codReusoIns" + id);
+    if (checkBox.checked){
+        element.readOnly = false; 
+    }else{
+        element.readOnly = true; 
+    }
+}
+
+function traerUsuario(){
+    //numCcUsuario
+    wemp_pmla = document.getElementById('wemp_pmla').value;
+    docUsuario = document.getElementById('numCcUsuario').value;
+    accion = 'findUserName';
+    let jsonParameters = {
+        wemp_pmla,
+        docUsuario,
+        accion  
+    };
+    $.ajax({
+        type: 'POST',
+        url: 'trazProcess.php',
+        data: jsonParameters,
+            success: function(respuesta) {
+                data = JSON.parse(respuesta);
+                if (data.usuario != ''){
+                    let text = $('#nomUsuario').html(data.usuario).text();
+                    $("#nomUsuario").val(text);
+                }
+            },
+            error: function() {
+                alert("Error al traer datos de usuario");
+            }
+        });
+}
+
+function llenarSelectReu(jsonCodes, codItCriterio,ccoUnidadCriterio){
+    wemp_pmla = document.getElementById('wemp_pmla').value;
+    criterio = document.getElementById('filtroReuTraz').value;
+    accion = 'findCodReuCriterio';
+    let jsonParameters = {
+        wemp_pmla,
+        criterio,
+        codItCriterio,
+        ccoUnidadCriterio,
+        jsonCodes,
+        accion  
+    };
+    $.ajax({
+        type: 'POST',
+        url: 'trazProcess.php',
+        data: jsonParameters,
+            success: function(respuesta) {
+                console.log(respuesta);
+                $("#reusoSel").html(respuesta);
+                $("#reusoSel").append("<option selected disabled>Seleccione...</option>");
+                $("#reusoSel").css("border-color","#c23616");
+                $("#reusoSel").css("backgroundColor","#f5f6fa");
+            },
+            error: function() {
+                alert("Error al traer datos de usuario");
+            }
+        });
+}
+
+
     </script> 
        <!-- CSS para los switches -->
        <style type="text/css" media="screen">
@@ -641,6 +709,7 @@
                     $commitExisteItem = mysql_query($qryExisteItem,$conex) or die (mysql_errno()." - en el query: ".$qryExisteItem." - ".mysql_error());
                     $datoExisteItem = mysql_fetch_array($commitExisteItem);
                     $conteoItem = $datoExisteItem[0];
+                    $arrCodigosMostrar = [];
                     // conteo para saber si hay dispositivos con codigo de reuso creado
                     if($conteoItem > 0)
                     {
@@ -651,20 +720,16 @@
                                 <span class="input-group-addon input-sm"><label for="reusoSel">CODIGO DE DISPOSITIVO MEDICO</label></span>
                                 <select id="reusoSel" name="reusoSel" class="form-control form-sm" onchange="this.form.submit()">
                                     <?php
-                                    $query22 = "SELECT * FROM {$bdCenest}_000012 WHERE Coddispo = '$codIt' AND Estado = 'on' AND Codcco = '$ccoUnidad'";
-                                    $commitQuery22 = mysql_query($query22, $conex) or die (mysql_errno()." - en el query: ".$query22." - ".mysql_error());
-                                    while($datoReuso = mysql_fetch_array($commitQuery22))
-                                    {
-                                        $codReuso = $datoReuso['Codreuso']; $idReuso = $datoReuso['id'];
-                                        $usos = $datoReuso['Numuso'];     $limiteUsos = $datoReuso['limite'];
-                                        if($usos < $limiteUsos && esDispoMaloOfinfec($idReuso,$ccoUnidad) == 0)
-                                        {
-                                            echo "<option value='".$codReuso.'_'.$idReuso."'>".$codReuso."</option>";
-                                        }
+                                    $arrCodigosMostrar = codigosMostrarTraz($codIt,$ccoUnidad);
+                                    foreach($arrCodigosMostrar as $idReuso => $codReuso){
+                                        echo "<option value='".$codReuso.'_'.$idReuso."'>".$codReuso."</option>";
                                     }
                                     ?>
                                     <option selected disabled>Seleccione...</option>
                                 </select>
+                                <span class="input-group-addon input-sm"><label for="filtroReuTraz">BUSCAR:</label></span>
+                                <input type='text' id='filtroReuTraz' class="form-control form-sm" style="min-width:150px" onblur='llenarSelectReu(<?=json_encode($arrCodigosMostrar,JSON_UNESCAPED_SLASHES)?>,"<?=$codIt?>","<?=$ccoUnidad?>")'>
+
                             </div>
                             <input type="hidden" name="unidad" value="<?php echo $ccoUnidad ?>">
                             <input type="hidden" name="dispoGest" value="<?php echo $dispoGest ?>">
@@ -784,7 +849,7 @@
                                             <input type="text" id="nomUsuario" name="nomUsuario" class="form-control form-sm" style="width: 350px" required>
 
                                             <span class="input-group-addon input-sm"><label for="numCcUsuario">&ensp;NUMERO DE IDENTIFICACION:</label></span>
-                                            <input type="text" id="numCcUsuario" name="numCcUsuario" class="form-control form-sm" style="width: 200px" required>
+                                            <input type="text" id="numCcUsuario" name="numCcUsuario" class="form-control form-sm" style="width: 200px" onblur="traerUsuario()" required>
                                         </div>
                                         <div class="input-group selectDispo" style="margin-left: 10px; margin-top: 5px" align="left">
                                             <span class="input-group-addon input-sm"><label for="datepicker1">FECHA DE UTILIZACION:</label></span>
@@ -811,6 +876,8 @@
                                                     echo $selectUsers
                                                 ?>
                                                 <!-- <option selected disabled>Seleccione...</option> -->
+                                                <option value="CASA COMERCIAL">CASA COMERCIAL</option>;
+                                                <option value="NO APLICA">NO APLICA</option>;
                                             </select>
                                         </div>
 
@@ -822,7 +889,7 @@
                                             <span class="input-group-addon input-sm" style="background-color: transparent; border: none; width: 20px"></span>
 
                                             <span class="input-group-addon input-sm"><label for="eqEsteril">&ensp;EQUIPO  ESTERILIZADOR:&ensp;&ensp;&ensp;</label></span>
-                                            <input type="number" min="1" id="eqEsteril" name="eqEsteril" class="form-control form-sm" style="width: 100px" required>
+                                            <input type="number" min="0" id="eqEsteril" name="eqEsteril" class="form-control form-sm" style="width: 100px" required>
 
                                             <span class="input-group-addon input-sm" style="background-color: transparent; border: none; width: 82px"></span>
                                         </div>
@@ -834,13 +901,15 @@
                                                 <option>OXIDO ETILENO</option>
                                                 <option>PEROXIDO</option>
                                                 <option>VAPOR</option>
+                                                <option>DESINFECCION</option>
+                                                <option>CASA COMERCIAL</option>
                                                 <!-- <option selected disabled>Seleccione...</option> -->
                                             </select>
 
                                             <span class="input-group-addon input-sm" style="background-color: transparent; border: none; width: 20px"></span>
 
                                             <span class="input-group-addon input-sm"><label for="cicEsteril">&ensp;CICLO DE ESTERILIZACION:&ensp;</label></span>
-                                            <input type="number" min="1" id="cicEsteril" name="cicEsteril" class="form-control form-sm" style="width: 100px" required>
+                                            <input type="number" min="0" id="cicEsteril" name="cicEsteril" class="form-control form-sm" style="width: 100px" required>
 
                                             <span class="input-group-addon input-sm" style="background-color: transparent; border: none; width: 82px"></span>
                                         </div>
@@ -848,6 +917,7 @@
                                             <span class="input-group-addon input-sm"><label for="respEsteril">RESPONSABLE ESTERILIZACION:</label></span>
                                             <select id="respEsteril" name="respEsteril" class="form-control form-sm" style="width: 800px" required>
                                                 <?=$selectUsers?>
+                                                <option value="CASA COMERCIAL">CASA COMERCIAL</option>;
                                                 <!-- <option selected disabled>Seleccione...</option> -->
                                             </select>
                                         </div>
@@ -857,7 +927,8 @@
                                             </span>
                                             <select id="novDispo" name="novDispo" class="form-control form-sm" style="width: 800px" required>
                                                 <option value="">Seleccione...</option>
-                                                <option>NINGUNA</option>;
+                                                <option>NINGUNA</option>
+                                                <option>NUEVO</option>
                                                 <option style="background-color: #BFBFBF;font-weight: bold;">MALO</option>
                                                 <option style="background-color: #fdcb6e;font-weight: bold;">PACIENTE INFECTADO</option>
                                                 <?php 
