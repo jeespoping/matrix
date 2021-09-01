@@ -1214,7 +1214,7 @@ function pintarTitulo($pintar)
 
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-	echo "<tr><td class='titulo1'>DESCARTE DE INSUMOS FRACCIONABLES</td></tr>";
+	//echo "<tr><td class='titulo1'>DESCARTE DE INSUMOS FRACCIONABLES</td></tr>";
 	echo "<tr><td class='titulo2'>Fecha: ".date('Y-m-d')."&nbsp Hora: ".(string)date("H:i:s")."</td></tr></table></br>";
 
 	/*echo "<table ALIGN=CENTER width='90%' >";
@@ -1541,7 +1541,9 @@ else
 	
 	include_once( "conex.php" );
     include_once("root/comun.php");
-	
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	$wactualiz = "2007-07-06";
+	encabezado( "DESCARTE DE INSUMOS FRACCIONABLES", $wactualiz, $institucion->baseDeDatos );
 	
 //	$conex = mysql_connect('localhost','root','')
 //	or die("No se ralizo Conexion");

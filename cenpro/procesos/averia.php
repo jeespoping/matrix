@@ -1407,9 +1407,13 @@ function eliminarInsumo($lista, $index)
  */
 function pintarTitulo()
 {
+	global $wemp_pmla;
+	$wactualiz ="2007-07-06";
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	encabezado( "AVERIAS CENTRAL DE MEZCLAS", $wactualiz, $institucion->baseDeDatos );
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-	echo "<tr><td class='titulo1'>AVERIAS CENTRAL DE MEZCLAS</td></tr>";
+	//echo "<tr><td class='titulo1'>AVERIAS CENTRAL DE MEZCLAS</td></tr>";
 	echo "<tr><td class='titulo2'>Fecha: ".date('Y-m-d')."&nbsp Hora: ".(string)date("H:i:s")."</td></tr></table></br>";
 }
 

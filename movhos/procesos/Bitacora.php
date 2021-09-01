@@ -395,7 +395,7 @@ else
 
 	if($ok == 99)
 	{
-
+		$wemp_pmla = $codemp;
 		encabezado("BITACORA DE PACIENTES", $wactualiz, "clinica");
 
 		echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";

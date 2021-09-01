@@ -45,6 +45,9 @@
     }
     else
     {
+        $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+        $wactualiz ="2020-05-14";
+        encabezado( "GENERAR ARCHIVO DE PACIENTES CON DIAGNOSTICO", $wactualiz, $institucion->baseDeDatos );
         $user_session = explode('-', $_SESSION['user']);
         $wuse = $user_session[1];
         
@@ -74,14 +77,7 @@
 
 <body width="1200" height="47">
 <form action="consulta_pac_diagnostico.php?wemp_pmla=<?php echo($wemp_pmla) ?>" method="post">
-  
-  <table width="1200" border="1" align="center">
-  	<tr>
-  	  <td width="50%" align="" style="border: groove; width: 0%">
-       <input type="image" id="btnVer" src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80">
-    <td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong>GENERAR ARCHIVO DE PACIENTES CON DIAGNOSTICO </strong></p> </td>
-   </tr>
-   </table>		
+  	
     <p>&nbsp;</p>
 	<div align="center">
     <table width="258" border="1">
@@ -127,12 +123,11 @@
 		}else{
 			
 			include_once("root/comun.php");
-			
 			$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 			$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 			
 // Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
-			$select_diagnostico = mysql_query("SELECT count(*) cant
+			$query = "SELECT count(*) cant
     									from ".$wmovhos."_000243 m
 										left join
 										 root_000011 r11 on ( m.Diacod = r11.Codigo),
@@ -141,8 +136,8 @@
 											m.Diafhc between '$buscar' and '$buscar1' 
 											and m.Diahis = c100.Pachis
 											and m.Diahis = c101.Inghis
-											and m.Diaing = c101.Ingnin");   	
- 
+											and m.Diaing = c101.Ingnin";   	
+      $select_diagnostico = mysql_query($query,$conex);
 //SI HAY REGISTROS EN LA TABLA, TRAER ESOS REGISTROS:
 	?>
 <table width="248" height="44" border="0" align="center">

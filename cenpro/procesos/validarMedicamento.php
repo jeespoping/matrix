@@ -36,16 +36,18 @@
 		$wbasedatomovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 		$wcod = $_GET['wcod'];
 		if ($wcod !== null) {
-			$select_medicamento = mysql_query("SELECT Artcom, Artgen, Artreg
+			$select_medicamento = "SELECT Artcom, Artgen, Artreg
 											from ".$wbasedatomovhos."_000026
-											where Artcod='$wcod'");								
-			$resultado_medicamento=mysql_fetch_array($select_medicamento);
-			$select_lote = mysql_query("SELECT Plocod,Plopro 	
+											where Artcod='$wcod'";
+			$res=mysql_query($select_medicamento, $conex);
+			$resultado_medicamento = mysql_fetch_array($res);
+			$select_lote = "SELECT Plocod,Plopro 	
 										from ".$wbasedatocenpro."_000004
 										where plopro = '$wcod'
 										order by Plocod DESC
-										limit 1;");
-			$resultado_lote=mysql_fetch_array($select_lote);							
+										limit 1;";
+			$res=mysql_query($select_lote, $conex);
+			$resultado_lote=mysql_fetch_array($res);							
 			if ($resultado_medicamento == null) {
 				$Artcom = 'ARTICULO NO EXISTE';
 				$Artgen = 'ARTICULO NO EXISTE';
