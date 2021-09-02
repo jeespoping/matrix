@@ -19,10 +19,13 @@ include_once("conex.php");  header("Content-Type: text/html;charset=ISO-8859-1")
 <link type='text/css' href="../../../include/root/jquery.ui.timepicker.css"  rel="stylesheet" />
 
 
+
+
 <link type='text/css' href='HCE.css' rel='stylesheet'>		<!-- HCE -->
 <script type='text/javascript' src='HCE.js' ></script>		<!-- HCE -->
 
 <script type="text/javascript" src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="../../../include/root/jquery-ui.min.js"></script>
 <script type="text/javascript" src="../../../include/root/ui.core.min.js"></script>
 <script type="text/javascript" src="../../../include/root/ui.accordion.js"></script>	<!-- Acordeon -->
 <script type="text/javascript" src="../../../include/root/ui.tabs.min.js"></script>
@@ -61,6 +64,69 @@ include_once("conex.php");  header("Content-Type: text/html;charset=ISO-8859-1")
 <script type="text/javascript" src="ordenes.js?v=<?=md5_file('ordenes.js');?>"></script>
 
 <style>
+
+
+.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
+.ui-dialog .ui-dialog-titlebar { padding: .5em 1em .3em; position: relative;  }
+.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .2em 0; } 
+.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
+.ui-dialog .ui-dialog-titlebar-close span { display: block; margin: 1px; }
+.ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0; }
+.ui-dialog .ui-dialog-content { position: relative; border: 0; padding: .5em 1em; background: none; overflow: auto; zoom: 1; }
+.ui-dialog .ui-dialog-buttonpane { text-align: right; border-width: 1px 0 0 0; background-image: none; margin: .5em 0 0 0; padding: .3em 1em .5em .4em; }
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }
+.ui-dialog .ui-dialog-buttonpane button { margin: 0 5px; cursor: pointer; }
+.ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-draggable .ui-dialog-titlebar { cursor: move; }
+
+.ui-dialog-titlebar{
+	background: #C3D9FF none repeat scroll 0% 0%;
+}
+
+.ui-dialog{
+	background: #E8EEF7;
+}
+
+.ui-dialog-buttonpane{
+	text-align: right;
+	background: transparent;
+}
+
+
+.ui-dialog-buttonpane button{
+	padding: 10px;
+	margin: 0 5px;
+	font-weight: bold;
+	color: black;
+	background: #C3D9FF;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* STyle para jAlert Actualizar navegador */
 #popup_container.actualizar {
@@ -3686,6 +3752,7 @@ if (!$usuarioValidado){
 				echo "<td align='center'><b>Procedimiento</b></td>";
 				echo "<td align='center'><b>Justificación</b></td>";				
 				echo "<td align='center'><b>Estado</b></td>";
+				echo "<td align='center'><b>Realizar en Servicio?</b></td>";
 				echo "<td align='center'><b>Muestra<br>tomada por</b></td>";
 				echo "<td align='center' nowrap><b>Bitacora de Gestiones</b></td>";
 				echo "</tr>";
@@ -4416,6 +4483,20 @@ if (!$usuarioValidado){
 						
 						
 						/*********************************************************************************************************************
+						 * REALIZAR EN SERVICIO
+						 *********************************************************************************************************************/
+						echo "<td>";
+						
+						if( $examen->wpreguntarRealizaEnservicio || $examen->wrealizadoEnPiso )
+						{	
+							// echo "<input type='checkbox' value='' onclick='realizarEnServicio(".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";
+							crearCampo("5","wrealizarEnServicio$contExamenes",@$accionesPestana[$indicePestana.".17"],array("class"=>"campo2","onChange"=>"marcarCambioRealizarEnServicio( this, ".( $examen->wrealizarEnServicio ? 'true' : 'false' ).",".( $examen->wrealizarExterno ? 'true' : 'false' ).",'$indicePestana','$contExamenes');"),"");
+						}
+						
+						echo "</td>";
+						/*********************************************************************************************************************/
+						
+						 /*********************************************************************************************************************
 						 * TOMA DE MUESTRAS
 						 *********************************************************************************************************************/
 						echo "<td>"; 
