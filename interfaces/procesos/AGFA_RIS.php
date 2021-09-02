@@ -702,6 +702,7 @@ function GRABAR($key,$conex,$wtdo,$wdoc,$wnom,$wap1,$wap2,$wfna,$wsex,$west,$wdi
 	//$key = substr($user,2,strlen($user));
 	$key = "agfa";
 	echo "<form name='AGFA_RIS' action='AGFA_RIS.php' method=post>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	
 
 	
@@ -1068,8 +1069,13 @@ function GRABAR($key,$conex,$wtdo,$wdoc,$wnom,$wap1,$wap2,$wfna,$wsex,$west,$wdi
 	$color2="#E8EEF7";
 	$color3="#CC99FF";
 	$color4="#99CCFF";
+
+	include_once("root/comun.php");
 	
-	echo "<table border=0 id=tipoT00>";
+	$wactualiz = "Agosto 13 de 2021";
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	encabezado( "ACTUALIZACION DE PACIENTES DEL RIS", $wactualiz, $institucion->baseDeDatos );
+	// echo "<table border=0 id=tipoT00>";
 	if(strlen($wdoc) > 0 and strlen($wnom) == 0)
 	{
 		?>
@@ -1078,10 +1084,11 @@ function GRABAR($key,$conex,$wtdo,$wdoc,$wnom,$wap1,$wap2,$wfna,$wsex,$west,$wdi
 			</script>
 		<?php
 	}
-	echo "<tr><td align=center id=tipoT01 rowspan=2><IMG SRC='/matrix/images/medical/root/clinica.png'></td>";
-	echo "<td id=tipoT02>CLINICA LAS AMERICAS<BR>ACTUALIZACION DE PACIENTES DEL RIS </td></tr>";
-	echo "<tr><td id=tipoT03><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../INTERFACES/procesos/AGFA_RIS.php' target='_blank'>Version 2014-12-30</A></td></tr>";
-	echo "</table><br><br>";
+
+	// echo "<tr><td align=center id=tipoT01 rowspan=2><IMG SRC='/matrix/images/medical/root/cliame.png'></td>";
+	// echo "<td id=tipoT02>CLINICA LAS AMERICAS<BR>ACTUALIZACION DE PACIENTES DEL RIS </td></tr>";
+	// echo "<tr><td id=tipoT03><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../INTERFACES/procesos/AGFA_RIS.php' target='_blank'>Version 2014-12-30</A></td></tr>";
+	// echo "</table><br><br>";
 	if(isset($werr) and isset($e) and $e > -1)
 	{
 		echo "<br><br><center><table border=0 aling=center id=tipo2>";

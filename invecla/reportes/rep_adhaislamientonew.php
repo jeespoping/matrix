@@ -15,7 +15,7 @@
 
   function inicio()
 	{ 
-	 document.location.href='rep_adhaislamientonew.php'; 
+	 document.location.href='rep_adhaislamientonew.php?wemp_pmla=<?=$wemp_pmla?>'; 
 	}
 	
   function enter()
@@ -50,7 +50,7 @@ include_once("conex.php");
 include_once("root/comun.php");
 $conex = obtenerConexionBD("matrix");
 
-$wactualiz="3.0 12-Febrero - 2018";
+$wactualiz="2021-08-13";
 
 $usuarioValidado = true;
 
@@ -66,7 +66,8 @@ if(empty($wuser) || $wuser == ""){
 
 session_start();
 //Encabezado
-encabezado("Formulario de Adherencia Aislamiento",$wactualiz,"Clinica");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado("Formulario de Adherencia Aislamiento",$wactualiz,$institucion->baseDeDatos);
 
 if (!$usuarioValidado)
 {
@@ -78,10 +79,12 @@ if (!$usuarioValidado)
 }
 else
 {
- $empre1='cominf';
+  $empre1 = consultarAliasPorAplicacion($conex,$wemp_pmla,"invecla");
+//  $empre1='cominf';
  
  //Forma
  echo "<form name='forma' action='rep_adhaislamientonew.php' method='post'>";
+ echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
  
  $hoy=date("Y-m-d");	

@@ -8,10 +8,10 @@
 <!-- Loading Theme file(s) -->
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
-<!-- Loading Calendar JavaScript files -->
+<!-- Loading Calendar JavaScript files 
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
-    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script> -->
     <!-- Loading language definition file -->
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
     <style type="text/css">
@@ -124,6 +124,10 @@
 </script>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2014-11-24";
+encabezado( "CUADRO DE TURNOS EN CIRUGIA", $wactualiz, $institucion->baseDeDatos );
 /**********************************************************************************************************************
 	   PROGRAMA : VisorT.php
 	   Fecha de Liberacion : 2007-12-07
@@ -174,6 +178,7 @@ else
 {
 	$key = substr($user,2,strlen($user));
 	echo "<form name='VisorT' action='VisorT.php' method=post>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 
 
 
@@ -188,9 +193,9 @@ else
 			function ira(){document.VisorT.wfecha.focus();}
 		</script>
 		<?php
-		echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=center colspan=4 id=tipo19> Ver. 2014-11-24</td></tr>";
-		echo "<tr><td align=center colspan=4 id=tipo14>CUADRO DE TURNOS EN CIRUGIA </td></tr>";
+		//echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=center colspan=4 id=tipo19> Ver. 2014-11-24</td></tr>";
+		//echo "<tr><td align=center colspan=4 id=tipo14>CUADRO DE TURNOS EN CIRUGIA </td></tr>";
 		if (!isset($wfecha))
 			$wfecha=date("Y-m-d");
 		$year = (integer)substr($wfecha,0,4);
@@ -379,11 +384,11 @@ else
 		}
 		$lin=0;
 		$wquia=0;
-		echo "<table border=0 align=center>";
-		echo "<tr><td align=center><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=center id=tipo20>CLINICA LAS AMERICAS</td></tr>";
-		echo "<tr><td align=center id=tipo20>CUADRO DE TURNOS EN CIRUGIA DE : ".$wfecha."</td></tr>";
-		echo "<tr><td align=left id=tipo20>Ver. 2014-11-24</td></tr></table>";
+		// echo "<table border=0 align=center>";
+		//echo "<tr><td align=center><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=center id=tipo20>CLINICA LAS AMERICAS</td></tr>";
+		// echo "<tr><td align=center id=tipo20>CUADRO DE TURNOS EN CIRUGIA DE : ".$wfecha."</td></tr>";
+		//echo "<tr><td align=left id=tipo20>Ver. 2014-11-24</td></tr></table>";
 		echo "<table border=0 align=center id=tipo00>";
 		echo "<tr><td id=tipoT01>HORA</td><td id=tipoT02>Q</td><td id=tipoT02>O</td><td id=tipoT03>I</td><td id=tipoT04>DOCUMENTO</td><td id=tipoT04>PACIENTE</td><td id=tipoT05>TEL/HAB</td><td id=tipoT06>H</td><td id=tipoT07>ED</td><td id=tipoT08>RESPONSABLE</td><td id=tipoT09>CIRUGIA</td><td id=tipoT10>CIRUJANO</td><td id=tipoT11>A</td><td id=tipoT12>U</td><td id=tipoT13>B</td><td id=tipoT14>I</td><td id=tipoT15>ANESTESIOLOGO</td><td id=tipoT16>EQUIPOS</td></tr>";
 		for ($j=1;$j<=$nroqui;$j++)

@@ -6,24 +6,23 @@
 	<!-- Loading Theme file(s) -->
 		<link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
-	<!-- Loading Calendar JavaScript files -->
+	<!-- Loading Calendar JavaScript files
 		<script type="text/javascript" src="../../zpcal/src/utils.js"></script>
 		<script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
 		<script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
-		<!-- Loading language definition file -->
+		 Loading language definition file -->
 		<script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
 
 </head>
 <body BGCOLOR="">
 <BODY TEXT="#000066">
-<center>
-<table border=0 align=center>
-<tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size=5>CIRUGIAS PROGRAMADAS X FECHA X TIPO DE ENTIDAD</font></a></td></tr>
-<tr><td align=center bgcolor="#cccccc"><font size=2> <b> Repcirxent.php Ver. 2015-07-17</b></font></td></tr></table>
-</center>
+
 <?php
 include_once("conex.php");
-$wemp_pmla=$_REQUEST['wemp_pmla'];
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2015-07-17";
+encabezado( "CIRUGIAS PROGRAMADAS X FECHA X TIPO DE ENTIDAD", $wactualiz, $institucion->baseDeDatos );
  function buscar($item,$data)
  {
 	 for ($i=0;$i<8;$i++)
@@ -42,14 +41,15 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
 
 	
 
-	echo "<form action='Repcirxent.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<form action='Repcirxent.php' method=post>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	if(!isset($v0) or !isset($v1))
 	{
 		if(!isset($v0))
 			$v0 = date("Y-m-d");
 		echo  "<center><table border=0>";
-		echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-		echo "<tr><td colspan=2 align=center><b>CIRUGIAS PROGRAMADAS X FECHA X TIPO DE ENTIDAD</b></td></tr>";
+		//echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+		//echo "<tr><td colspan=2 align=center><b>CIRUGIAS PROGRAMADAS X FECHA X TIPO DE ENTIDAD</b></td></tr>";
 		echo  "<tr><td bgcolor=#cccccc align=center>Fecha</td>";
 		echo  "<td bgcolor=#cccccc align=center><input type='TEXT' name='v0' id='v0' readonly='readonly' value=".$v0." size=10 maxlength=10>&nbsp;<IMG SRC='/matrix/images/medical/TCX/calendario.jpg' id='trigger1'></td></tr>";
 		?>
@@ -63,12 +63,9 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
 	}
 	else
 	{
-		$consultaAjax = '';
-		include_once("root/comun.php");
-		
 		$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
 		$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
-		
+
 		$TE = array();
 		$TE[0][0] = "EPS";
 		$TE[0][1] = "09";
@@ -110,9 +107,9 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
 		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		echo "<table border=1>";
-		echo "<tr><td colspan=12 align=center><b>PROMOTORA MEDICA LAS AMERICAS S.A.</b></td></tr>";
+		//echo "<tr><td colspan=12 align=center><b>PROMOTORA MEDICA LAS AMERICAS S.A.</b></td></tr>";
 		echo "<tr><td colspan=12 align=center><b>DIRECCION DE INFORMATICA</b></td></tr>";
-		echo "<tr><td colspan=12 align=center><b>CIRUGIAS PROGRAMADAS X FECHA X TIPO DE ENTIDAD</b></td></tr>";
+		//echo "<tr><td colspan=12 align=center><b>CIRUGIAS PROGRAMADAS X FECHA X TIPO DE ENTIDAD</b></td></tr>";
 		echo "<tr><td colspan=12 align=center><b>X FECHA : ".$v0."</b></td></tr>";
 		echo "<tr><td colspan=12 align=center><b>SELECCION : ".$v1."</b></td></tr>";
 		echo "<tr>";

@@ -1,6 +1,6 @@
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -45,9 +45,12 @@ function add_ceros($numero,$ceros)
 $conexD = odbc_connect("queryx7","","") or die(odbc_errormsg());  //Promotora
 $wactualiz="1.0 15-Febrero-2018 ";
 
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado( "PERSONAL RETIRADO EN EL AÑO ".date("Y"), $wactualiz, $institucion->baseDeDatos );
+
 echo "<center><table border=0>";
-echo "<tr><td align=center bgcolor=#DDDDDD colspan=2><b><font text color=#003366 size=4> <i>PERSONAL RETIRADO EN EL AÑO ".date("Y")."</font></b><br>";
-echo "<tr><td align=center bgcolor=#DDDDDD colspan=2><b><font text color=#003366 size=2> <i>PROGRAMA: rnomina02.php Ver.".$wactualiz."<br>AUTOR: JairS</font></b><br>";
+//echo "<tr><td align=center bgcolor=#DDDDDD colspan=2><b><font text color=#003366 size=4> <i>PERSONAL RETIRADO EN EL AÑO ".date("Y")."</font></b><br>";
+//echo "<tr><td align=center bgcolor=#DDDDDD colspan=2><b><font text color=#003366 size=2> <i>PROGRAMA: rnomina02.php Ver.".$wactualiz."<br>AUTOR: JairS</font></b><br>";
 echo "</table>";
         
 echo "<br>";

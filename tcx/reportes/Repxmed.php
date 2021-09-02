@@ -4,22 +4,26 @@
 <!-- Loading Theme file(s) -->
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
-<!-- Loading Calendar JavaScript files -->
+<!-- Loading Calendar JavaScript files --
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
-    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script> -->
     <!-- Loading language definition file -->
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
 </head>
 <body BGCOLOR="">
 <BODY TEXT="#000066">
-<center>
+<!--<center>
 <table border=0 align=center>
 <tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size=5>CIRUGIAS PROGRAMADAS X MEDICO</font></a></td></tr>
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b> Repxmed.php Ver. 2011-02-23</b></font></td></tr></table>
-</center>
+</center>-->
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2011-02-23";
+encabezado( "CIRUGIAS PROGRAMADAS X MEDICO", $wactualiz, $institucion->baseDeDatos );
  @session_start();
  if(!isset($_SESSION['user']))
 	echo "error";
@@ -31,6 +35,7 @@ include_once("conex.php");
 	
 
 	echo "<form action='Repxmed.php' method=post>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	if(!isset($v0) or !isset($v1) or !isset($v2))
 	{
 		if (!isset($v0))
@@ -38,8 +43,8 @@ include_once("conex.php");
 		if (!isset($v1))
 			$v1=date("Y-m-d");
 		echo  "<center><table border=0>";
-		echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-		echo "<tr><td colspan=2 align=center><b>CIRUGIAS PROGRAMADAS X MEDICO</b></td></tr>";
+		//echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+		//echo "<tr><td colspan=2 align=center><b>CIRUGIAS PROGRAMADAS X MEDICO</b></td></tr>";
 		echo  "<tr><td bgcolor=#cccccc align=center>Fecha Inicial Inicial</td>";
 		echo  "<td bgcolor=#cccccc align=center><input type='TEXT' name='v0' size=10 maxlength=10 id='v0' readonly='readonly' value=".$v0.">&nbsp;<IMG SRC='/matrix/images/medical/TCX/calendario.jpg' id='trigger1'></td></tr>";
 		?>
@@ -69,9 +74,9 @@ include_once("conex.php");
 		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		echo "<table border=1>";
-		echo "<tr><td colspan=11 align=center><b>PROMOTORA MEDICA LAS AMERICAS S.A.</b></td></tr>";
-		echo "<tr><td colspan=11 align=center><b>DIRECCION DE INFORMATICA</b></td></tr>";
-		echo "<tr><td colspan=11 align=center><b>CIRUGIAS PROGRAMADAS X MEDICO</b></td></tr>";
+		//echo "<tr><td colspan=11 align=center><b>PROMOTORA MEDICA LAS AMERICAS S.A.</b></td></tr>";
+		//echo "<tr><td colspan=11 align=center><b>DIRECCION DE INFORMATICA</b></td></tr>";
+		//echo "<tr><td colspan=11 align=center><b>CIRUGIAS PROGRAMADAS X MEDICO</b></td></tr>";
 		echo "<tr><td colspan=11 align=center><b>ENTRE FECHAS ".$v0." - ".$v1."</b></td></tr>";
 		echo "<tr><td colspan=11 align=center><b>MEDICO ".$v2."</b></td></tr>";
 		echo "<tr>";

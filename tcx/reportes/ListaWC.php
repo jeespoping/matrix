@@ -8,10 +8,10 @@
 <!-- Loading Theme file(s) -->
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
-<!-- Loading Calendar JavaScript files -->
+<!-- Loading Calendar JavaScript files --
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
-    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>-->
     <!-- Loading language definition file -->
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
     <style type="text/css">
@@ -152,6 +152,11 @@
 </script>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$wactualiz = "2015-02-04";
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+
+encabezado( "Lista de Turnos de Cirugia y Actualizacion de Estados", $wactualiz, $institucion->baseDeDatos );
 /**********************************************************************************************************************  
 	   PROGRAMA : ListaWC.php
 	   Fecha de Liberacion : 2010-03-03
@@ -215,6 +220,7 @@ else
 {
 	$key = substr($user,2,strlen($user));
 	echo "<form name='ListaWC' action='ListaWC.php' method=post>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	//echo "<meta http-equiv='refresh' content='60;url=/matrix/TCX/reportes/ListaWC.php?empresa=".$empresa."'>";
 	
 
@@ -320,10 +326,10 @@ else
 	if(!isset($wfecha))
 		$wfecha = date("Y-m-d");
 	echo "<table border=0 align=center>";
-	echo "<tr><td align=center><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
-	echo "<tr><td align=center id=tipo20>CLINICA LAS AMERICAS</td></tr>";
+	//echo "<tr><td align=center><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+	//echo "<tr><td align=center id=tipo20>CLINICA LAS AMERICAS</td></tr>";
 	echo "<tr><td align=center id=tipo20>PROGRAMA DE CIRUGIA</td></tr>";
-	echo "<tr><td align=center id=tipo21>INFORMACION GENERAL Y ACTUALIZACION DE ESTADO Ver. 2015-02-04</td></tr>";
+	//echo "<tr><td align=center id=tipo21>INFORMACION GENERAL Y ACTUALIZACION DE ESTADO Ver. 2015-02-04</td></tr>";
 	echo "<tr><td align=left id=tipo21>FECHA : <input type='TEXT' name='wfecha' size=10 maxlength=10 id='wfecha' readonly='readonly' value=".$wfecha." class=tipo6>&nbsp;&nbsp;<IMG SRC='/matrix/images/medical/TCX/calendario.jpg' id='trigger1' style='vertical-align:middle;'></td></tr>";
 	?>
 		<script type="text/javascript">//<![CDATA[

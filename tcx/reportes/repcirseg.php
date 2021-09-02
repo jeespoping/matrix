@@ -4,16 +4,20 @@
 </HEAD>
 <BODY>
 
-  <!-- Estas 5 lineas es para que funcione el Calendar al capturar fechas -->
+  <!-- Estas 5 lineas es para que funcione el Calendar al capturar fechas --
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
-    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>    
+    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>  -->
     
 <?php
 include_once("conex.php");
-$wemp_pmla=$_REQUEST['wemp_pmla'];
+include_once("root/comun.php");
+
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2021-08-13";
+encabezado( "SEGUIMIENTO POSTQUIRURGICO PACIENTES CIRUGIA", $wactualiz, $institucion->baseDeDatos );
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -33,9 +37,6 @@ if(!isset($_SESSION['user']))
 
 	//Cuerpo de la pagina
  	echo "<table align='center' border=0>";
-    echo "<tr>";
-	echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>SEGUIMIENTO POSTQUIRURGICO PACIENTES CIRUGIA<br></font></b>";
-	echo "</tr>";
 
 	
   if (!isset($wfec1))   // Si no esta seteada entonces la inicializo con la fecha actual
@@ -69,19 +70,17 @@ if(!isset($_SESSION['user']))
  }	
  else      // Cuando ya estan todos los datos escogidos
  {
-	include_once("root/comun.php");
-	
 	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 	$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, "tcx");
-	
+
 	echo "<center><table border=1>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>SEGUIMIENTO PACIENTES DE CIRUGIA</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>SEGUIMIENTO PACIENTES DE CIRUGIA</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: repcirseg.php Ver. 2018/05/16<br>AUTOR: Angela Ocampo V.</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: repcirseg.php Ver. 2018/05/16<br>AUTOR: Angela Ocampo V.</font></b><br>";
     echo "</table>";
 
-	
+
 
 	echo "<br>";
 
@@ -176,4 +175,4 @@ if(!isset($_SESSION['user']))
 echo "</BODY>";
 echo "</HTML>";	
 
-?>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+?>
