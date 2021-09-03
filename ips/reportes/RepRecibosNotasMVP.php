@@ -63,7 +63,9 @@ $wautor="Carolina Castano P.";
 //=================================================================================================================================
 
 include_once("root/comun.php");
-
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = 1;
+encabezado( "REPORTE DE RECIBOS", $wactualiz, $institucion->baseDeDatos );
 session_start();
 if(!isset($_SESSION['user']))
 echo "error";
@@ -83,6 +85,7 @@ else
 	$wentidad = $institucion->nombre;
 
 	echo "<form action='RepRecibosNotasMVP.php' method=post name='forma'>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 
 	$wfecha=date("Y-m-d");
 
@@ -92,8 +95,8 @@ else
 	{
 
 		echo "<center><table border=0>";
-		echo "<tr><td align=center rowspan=2><img src='/matrix/images/medical/pos/logo_".$wbasedato.".png' WIDTH=500 HEIGHT=100></td></tr>";
-		echo "<tr><td class='titulo1'>REPORTE DE RECIBOS</td></tr>";
+		//echo "<tr><td align=center rowspan=2><img src='/matrix/images/medical/pos/logo_".$wbasedato.".png' WIDTH=500 HEIGHT=100></td></tr>";
+		//echo "<tr><td class='titulo1'>REPORTE DE RECIBOS</td></tr>";
 
 		//INGRESO DE VARIABLES PARA EL REPORTE//
 		if (!isset ($bandera))
@@ -193,7 +196,7 @@ else
 {
 	echo "<table  align=center width='60%'>";
 	echo "<tr><td>&nbsp;</td></tr>";
-	echo "<tr><td align=CENTER><img src='/matrix/images/medical/pos/logo_".$wbasedato.".png' WIDTH=340 HEIGHT=100></td></tr>";
+	//echo "<tr><td align=CENTER><img src='/matrix/images/medical/pos/logo_".$wbasedato.".png' WIDTH=340 HEIGHT=100></td></tr>";
 	echo "<tr><td>&nbsp;</td></tr>";
 	echo "<tr><td><B>Fecha: ".date('Y-m-d')."</B></td></tr>";
 	echo "<tr><td><B>REPORTE DE: ".$wfue."</B></td></tr>";

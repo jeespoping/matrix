@@ -4,16 +4,21 @@
 </HEAD>
 <BODY>
 
-  <!-- Estas 5 lineas es para que funcione el Calendar al capturar fechas -->
+  <!-- Estas 5 lineas es para que funcione el Calendar al capturar fechas --
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
-    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>    
+    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>-->    
     
 <?php
 include_once("conex.php");
-$wemp_pmla=$_REQUEST['wemp_pmla'];
+include_once("root/comun.php");
+
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2017/07/17";
+encabezado( "PACIENTES CARDIOLOGIA NO INVASIVA TRANSCRIPCION", $wactualiz, $institucion->baseDeDatos );
+
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -26,7 +31,8 @@ if(!isset($_SESSION['user']))
 
 	
 
- echo "<form name='pacreingpiso' action='rep_transcardio.php?wemp_pmla=".$wemp_pmla."' method=post>";  
+ echo "<form name='pacreingpiso' action='rep_transcardio.php?wemp_pmla=".$wemp_pmla."' method=post>"; 
+ echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>"; 
  
  if (!isset($wfec1) or $wfec1=='')
  {
@@ -34,7 +40,7 @@ if(!isset($_SESSION['user']))
 	//Cuerpo de la pagina
  	echo "<table align='center' border=0>";
     echo "<tr>";
-	echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>PACIENTES CARDIOLOGIA NO INVASIVA TRANSCRIPCION<br></font></b>";   
+	//echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>PACIENTES CARDIOLOGIA NO INVASIVA TRANSCRIPCION<br></font></b>";   
 	echo "</tr>";
 
 	
@@ -69,13 +75,12 @@ if(!isset($_SESSION['user']))
  }	
  else      // Cuando ya estan todos los datos escogidos
  {
-	include_once("root/comun.php");
-	
+
 	$wayucni = consultarAliasPorAplicacion($conex, $wemp_pmla, "ayudas_diag");
 	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
-	 
+
 	echo "<center><table border=0>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTES CARDIOLOGIA NO INVASIVA TRANSCRIPCION</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTES CARDIOLOGIA NO INVASIVA TRANSCRIPCION</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: rep_transcardio.php Ver. 2017/07/17<br>AUTOR: Gabriel Agudelo</font></b><br>";
     echo "</table>";

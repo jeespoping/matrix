@@ -14,13 +14,16 @@ if(!isset($_SESSION['user']))
         " hacerlo por la pagina <FONT COLOR='RED'>" .
         " index.php</FONT></H1>\n</CENTER>");
  include_once("root/comun.php"); 
- 
+ $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+ $wactualiz = 1;
+ encabezado( "AGENDA PACIENTES ORTOPEDIA URGENCIAS", $wactualiz, $institucion->baseDeDatos );
 
 	
 
  
  //Forma
  echo "<form name='rep_citaortp' action='rep_citaortp.php' method=post>";  
+ echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
  
  if (!isset($wfec1) or $wfec1=='')
  {
@@ -28,7 +31,7 @@ if(!isset($_SESSION['user']))
 	//Cuerpo de la pagina
  	echo "<table align='center' border=0>";
     echo "<tr>";
-	echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>AGENDA PACIENTES ORTOPEDIA URGENCIAS<br></font></b>";   
+	//echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>AGENDA PACIENTES ORTOPEDIA URGENCIAS<br></font></b>";   
 	echo "</tr>";
 
 	
@@ -72,7 +75,7 @@ if(!isset($_SESSION['user']))
 		   		$num = mysql_num_rows($err);
 
 	echo "<center><table border=0>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>AGENDA PACIENTES ORTOPEDIA URGENCIAS</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>AGENDA PACIENTES ORTOPEDIA URGENCIAS</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font><br>";
     echo "</table>";
 

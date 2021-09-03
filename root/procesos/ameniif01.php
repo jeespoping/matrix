@@ -1,5 +1,6 @@
 <?php
-include_once("conex.php");                                                    
+include_once("conex.php"); 
+include_once("root/comun.php");                                                   
 session_start();
 if (!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -83,7 +84,10 @@ if (!isset($_SESSION['user']))
 //AUTOR				          :Jair Saldarriaga Orozco.                                                                        
 //FECHA CREACION			  :Enero 22 de 2016
                                                                        
-$wactualiz="PROGRAMA: ameniif01.php Ver. Enero 22 de 2016  JairS";
+$wactualiz="Enero 22 de 2016  JairS";
+
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado( "HOMOLOGACION DE CUENTAS A NIIF", $wactualiz, $institucion->baseDeDatos );
 
 Function validar_datos($cac,$dac,$cni,$dni) 
 
@@ -149,11 +153,11 @@ Function validar_datos($cac,$dac,$cni,$dni)
   }
 
 echo "<form name='ameniif01' action='ameniif01.php' method=post>";  
-
+echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
     echo "<center><table border=1>";
 
 	echo "<td align=center bgcolor=#6699CC colspan=6><b><font text color='#000000' size=2>HOMOLOGACION DE CUENTAS A NIIF<br></td>";
-    echo "<li><A HREF='ameniif01.php?wemp=".$wemp."&windicador=PrimeraVez&wproceso=Nuevo'><font color=#000000'>Adicionar registro</A></td>"; 
+    echo "<li><A HREF='ameniif01.php?wemp_pmla=".$wemp_pmla."&wemp=".$wemp."&windicador=PrimeraVez&wproceso=Nuevo'><font color=#000000'>Adicionar registro</A></td>"; 
 
 
    //*************************Para que lo haga solo una vez la Primera vez*******************************************
@@ -335,9 +339,9 @@ else
    echo "<td colspan=1 align=Left bgcolor=".$wcf."><font text color=#003366 size=2>".$dato[3]."</td>";
    // LLAMADOS CON PARAMETROS
    echo "<td colspan=1 align=center color=#FFFFFF bgcolor=".$wcf.">";
-   echo "<A HREF='ameniif01.php?wemp=".$wemp."&wcac=".trim($dato[0])."&windicador=PrimeraVez&wproceso=Modificar'>Editar</A></td>";     
+   echo "<A HREF='ameniif01.php?wemp_pmla=".$wemp_pmla."&wemp=".$wemp."&wcac=".trim($dato[0])."&windicador=PrimeraVez&wproceso=Modificar'>Editar</A></td>";     
    echo "<td colspan=1 align=center color=#FFFFFF bgcolor=".$wcf.">";
-   echo "<A HREF='ameniif01.php?wemp=".$wemp."&wcac=".$wcac."&wcuenta=".trim($dato[0])."&windicador=PrimeraVez&wproceso=Borrar'>Borrar</A></td>";     
+   echo "<A HREF='ameniif01.php?wemp_pmla=".$wemp_pmla."&wemp=".$wemp."&wcac=".$wcac."&wcuenta=".trim($dato[0])."&windicador=PrimeraVez&wproceso=Borrar'>Borrar</A></td>";     
  
  
    $i++; 

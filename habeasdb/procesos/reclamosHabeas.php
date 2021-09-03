@@ -22,9 +22,10 @@ include_once("conex.php");
         $user_session = explode('-', $_SESSION['user']);
         $wuse = $user_session[1];
         
-
         include_once("root/comun.php");
-        
+        $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+        $wactualiz = 1;
+        encabezado( "Registro de Reclamos - Habeas Data", $wactualiz, $institucion->baseDeDatos );
 
 
         $conex = obtenerConexionBD("matrix");
@@ -39,7 +40,6 @@ include_once("conex.php");
     <div id="loginbox" style="margin-top:50px;" class="">
         <div class="panel panel-info" >
             <div class="panel-heading">
-                <div class="panel-title">Registro de Reclamos - Habeas Data</div>
             </div>
 
             <div style="padding-top:30px" class="panel-body" >

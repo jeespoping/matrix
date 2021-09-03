@@ -22,7 +22,10 @@ if(!isset($_SESSION['user']))
         " hacerlo por la pagina <FONT COLOR='RED'>" .
         " index.php</FONT></H1>\n</CENTER>");
         
- 
+		include_once("root/comun.php");
+		$wactualiz ="2020/02/12";
+		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+		encabezado( "PACIENTES ATENDIDOS POR ADMISIONES", $wactualiz, $institucion->baseDeDatos );
 
  mysql_select_db("matrix") or die("No se selecciono la base de datos");    
  
@@ -41,7 +44,7 @@ if(!isset($_SESSION['user']))
  	echo "<table align='center' border=0>";
 	echo "<input type='HIDDEN' name=wcco value='".$wcco."'>";
     echo "<tr>";
-	echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>PACIENTES ATENDIDOS EN EL SERVICIO<br></font></b>";   
+	//echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>PACIENTES ATENDIDOS EN EL SERVICIO<br></font></b>";   
 	echo "</tr>";
 
 	
@@ -76,13 +79,12 @@ if(!isset($_SESSION['user']))
  }	
  else      // Cuando ya estan todos los datos escogidos
  {
-	include_once("root/comun.php");
 	$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	 
 	echo "<center><table border=0>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTES ATENDIDOS POR ADMISIONES</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTES ATENDIDOS POR ADMISIONES</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: pacatendxfac.php Ver. 2020/02/12<br>AUTOR: Gabriel Agudelo</font></b><br>";
     echo "</table>";

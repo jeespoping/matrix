@@ -1114,7 +1114,7 @@ if (!$usuarioValidado){
 		echo '<span class="encabezadotabla"><br><br>';
 		echo '<font size=3>La firma electrónica se encuentra vencida.</font>';
 		echo "</span><br><br>";
-		echo '<span style="font-weight:bold;">Por favor actualícela en: <a href="/matrix/hce/procesos/PassHCE.php?empresa=hce">Actualizar Firma</a></span>';
+		echo '<span style="font-weight:bold;">Por favor actualícela en: <a href="/matrix/hce/procesos/PassHCE.php?wemp_pmla='.$wemp_pmla.'&empresa=hce">Actualizar Firma</a></span>';
 		echo "</td>";
 		echo "</tr>";
 		echo "</table>";
@@ -1280,7 +1280,7 @@ if (!$usuarioValidado){
 	echo "<input type='hidden' name='tiempoMinimoMarcarDANE' id='tiempoMinimoMarcarDANE' value='".$tiempoMinimoMarcarDANE."'/>";
 	echo "<input type='hidden' name='pacienteDeAyudaDx' id='pacienteDeAyudaDx' value='".( $paciente->esDeAyudaDx ? 'on': 'off' )."'/>";
 	echo "<input type='hidden' name='wipimpresoraga' id='wipimpresoraga' value='".$wipimpresoraga."'/>";
-
+	
 	/*Modificación: Se agrega para validar parámetro de tarifas
 	Autor: sebastian.nevado
 	Fecha: 04/08/2021

@@ -22,6 +22,9 @@
 <?php
 	include("conex.php");
     include("root/comun.php");
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	$wactualiz = 1;
+	encabezado( "GENERAR REPORTE DE FACTURACION CLINICA DEL SUR DE NOTAS FUENTE 27-28 Y FACTURAS", $wactualiz, $institucion->baseDeDatos );
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -73,15 +76,9 @@
 
 
 <body width="1200" height="47">
-<form action="report_facturacion_clisur.php" method="post">
+<form action="report_facturacion_clisur.php?wemp_pmla=<?=$wemp_pmla?>" method="post">
   
-  <table width="1200" border="1" align="center">
-  	<tr>
-  	  <td width="50%" align="" style="border: groove; width: 0%">
-       <input type="image" id="btnVer" src="../../../matrix/images/medical/paf/logo.png" width="140" height="80">
-    <td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong>GENERAR REPORTE DE FACTURACION CLINICA DEL SUR DE NOTAS FUENTE 27-28 Y FACTURAS </strong></p> </td>
-   </tr>
-   </table>		
+	
     	<p>&nbsp;</p>
   <div align="center">
     <table width="384" border="2">

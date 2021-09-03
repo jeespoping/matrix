@@ -7,16 +7,19 @@
 </HEAD>
 <BODY>
 
- <!-- Loading Calendar JavaScript files -->  <!-- Loading Theme file(s) -->
+ <!-- Loading Calendar JavaScript files -->  <!-- Loading Theme file(s) --
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
-    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>    
+    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>    --> 
   
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2015-12-01";
+encabezado( "Reporte General de Facturas", $wactualiz, $institucion->baseDeDatos );
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -53,7 +56,8 @@ function UltimoDia($anho,$mes)
 mysql_select_db("matrix") or die("No se selecciono la base de datos");    
 
 //Forma
-echo "<form name='rep_facmensual' action='rep_facmensual.php' method=post>";  
+echo "<form name='rep_facmensual' action='rep_facmensual.php' method=post>"; 
+echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>"; 
  
  if (!isset($wfec1) or !isset($wfec2))
  {
@@ -126,9 +130,9 @@ echo "<form name='rep_facmensual' action='rep_facmensual.php' method=post>";
 
 	$tpp=explode('-',$pp);
 	echo "<center><table border=0>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>Reporte General de Facturas</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>Reporte General de Facturas</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>Periodo: ".$wfec1." Al ".$wfec2."</font></b><br>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: rep_facmensual.php Ver. 2015/12/01<br>AUTOR: Gabriel Agudelo</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: rep_facmensual.php Ver. 2015/12/01<br>AUTOR: Gabriel Agudelo</font></b><br>";
     echo "</table>";
 
     echo "<br>";

@@ -1,5 +1,6 @@
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 if(!isset($_SESSION['user']))
 {
     echo '  <div style="color: #676767;font-family: verdana;background-color: #E4E4E4;" >
@@ -9,6 +10,8 @@ if(!isset($_SESSION['user']))
 }
 else
 {
+    $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+    encabezado( "BUSQUEDA USUARIOS Y CONTRASEÑAS", $wactualiz, $institucion->baseDeDatos );
 ?>
 <!DOCTYPE html>
 <html lang="esp" xmlns="http://www.w3.org/1999/html">
@@ -24,11 +27,11 @@ else
         <div id="loginbox" style="margin-top:50px; width: 580px">
             <div class="panel panel-info" >
                 <div class="panel-heading">
-                    <div class="panel-title">BUSQUEDA USUARIOS Y CONTRASEÑAS</div>
+                    <!--<div class="panel-title">BUSQUEDA USUARIOS Y CONTRASEÑAS</div>-->
                 </div>
                 <div style="padding-top:30px" class="panel-body" >
                     
-					<FORM CLASS="borde" ACTION="rep_sop01form.php" METHOD="POST">
+					<FORM CLASS="borde" ACTION="rep_sop01form.php?wemp_pmla=<?=$wemp_pmla?>" METHOD="POST">
 					<P><LABEL>Codigo Usuario:</LABEL>
 					<INPUT TYPE="TEXT" SIZE="10" NAME="usuario"></P>
 					<P><LABEL>Nombre:</LABEL>

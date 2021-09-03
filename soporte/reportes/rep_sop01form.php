@@ -8,6 +8,14 @@
 </HEAD>
 
 <BODY>
+<?php 
+include_once("root/comun.php");
+include_once("conex.php");
+
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado( "BUSQUEDA USUARIOS Y CONTRASEÑAS", $wactualiz, $institucion->baseDeDatos );
+?>
+
 <div class="container" style="margin-top: -30px; margin-left: 10px">
         <div id="loginbox" style="margin-top:50px; width: 1500px">
             <div class="panel panel-info" >
@@ -19,7 +27,7 @@
 <P>Estos son los datos introducidos:</P>
 
 <?php
-include_once("conex.php");
+
  session_start();
 
 if (!isset($user))
@@ -29,12 +37,9 @@ if (!isset($user))
 if(!isset($_SESSION['user']))
 	echo "error";
 else
-{	            
+{
  	
-  
-  
   include_once("root/magenta.php");
-  include_once("root/comun.php");
   include_once("movhos/movhos.inc.php");
   
   $conex = obtenerConexionBD("matrix");
@@ -69,7 +74,7 @@ else
 }
 ?>
 
-[ <A HREF='rep_sop01.php'>Pagina Principal</A> ]
+[ <A HREF='rep_sop01.php?wemp_pmla=<?=$wemp_pmla?>'>Pagina Principal</A> ]
 			  </div>
 		</div>
 	</div>

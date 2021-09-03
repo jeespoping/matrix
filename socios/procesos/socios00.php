@@ -3,7 +3,12 @@
 <head> 
 <title>Sistema de Informacion de Socios de PMLA</title> 
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> 
-<meta http-equiv="Pragma" content="no-cache" /> 
+<meta http-equiv="Pragma" content="no-cache" />
+<?php include_once("conex.php"); 
+include_once("root/comun.php");
+$wactualiz="2011-09-22";
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado( "Sistema de Informacion Socios", $wactualiz, $institucion->baseDeDatos ); ?>
 <style type="text/css"> 
 <!-- 
 a.p:link { 
@@ -48,14 +53,12 @@ function muestra(queCosa)
     alert(queCosa); 
 } 
 </script> 
-<div align="center"><strong><font color="#000000" size="2" face="Verdana, Arial, Helvetica, sans-serif">Sistema de Informacion
-Socios<br><td colspan=1 align=center></td><br><A HREF='socios01.php?windicador=PrimeraVez&wproceso=Nuevo' TARGET='_blank' >Adicionar nuevo socio</A> </font></strong> </div> 
+<div align="center"><br><A HREF='socios01.php?windicador=PrimeraVez&wproceso=Nuevo' TARGET='_blank' >Adicionar nuevo socio</A> </font></strong> </div> 
 
 	     
 
 <hr noshade style="color:CC6666;height:1px"> 
 <?php
-include_once("conex.php"); 
 /*****************************************************************
    Modificacion 04-04-2012  
      Se introdujo $_GET porque $HTTP_GET_VARS    quedó obsoleto  
@@ -73,7 +76,7 @@ function pintarVersion()
 	echo "<td><font color=\"#D02090\" size='2'>Autor: ".$wautor."</font></td>";
 	echo "</tr>" ;
 	//echo "<tr>" ;
-	echo "<td><font color=\"#D02090\" size='2'>Version: ".$wversion."</font></td>" ;
+	//echo "<td><font color=\"#D02090\" size='2'>Version: ".$wversion."</font></td>" ;
 	//echo "</tr>" ;
 	echo "</table></br></br></br>" ;
 }
@@ -266,8 +269,8 @@ if (isset($pagina))
   </table> 
 
 <hr noshade style="color:CC6666;height:1px"> 
-<div align="center"><font face="verdana" size="-2"><a class="p" href="socios00.php">::Inicio::</a></font></div> 
-<form action="socios00.php" method="get"> 
+<div align="center"><font face="verdana" size="-2"><a class="p" href="socios00.php?wemp_pmla=<?=$wemp_pmla?>">::Inicio::</a></font></div> 
+<form action="socios00.php?wemp_pmla=<?=$wemp_pmla?>" method="get"> 
 
 <table border="0" cellspacing="0" cellpadding="0" align="center">         
 Criterio de búsqueda: 

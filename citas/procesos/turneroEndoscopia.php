@@ -737,6 +737,8 @@ else
         $arrTipDoc[$rowTipDoc['Codigo']] = $rowTipDoc['Descripcion'];
 
     // --> Pintar pantalla para asignar el turno
+
+    $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
     echo "
     <input type='hidden' id='wemp_pmla'         value='".$wemp_pmla."'>
     <input type='hidden' id='wbasedato'         value='".$solucionCitas."'>
@@ -748,11 +750,11 @@ else
 	
     <div id='accordionPrincipal' align='center' style='margin: auto auto;'>
         <h1 style='font-size: 3rem;background:#75C3EB' align='center'>
-            <img width='125' heigth='61' src='../../images/medical/root/logoClinicaGrande.png'>
+            <img width='125' heigth='61' src='../../images/medical/root/".$institucion->baseDeDatos.".png'>
             &nbsp;
             Es un placer servirle.
             &nbsp;
-            <img width='120' heigth='100' src='../../images/medical/root/Logo_MatrixAzulClaro.png'>
+            <img width='120' heigth='100' src='../../images/medical/root/".$institucion->baseDeDatos.".png'>
         </h1>
         <div style='color:#333333;font-family: verdana;font-weight: normal;font-size: 3rem;' align='center'>
             <table style='font-size: 1.3rem;margin-top:4px;margin-bottom:2px;' id='radio'>

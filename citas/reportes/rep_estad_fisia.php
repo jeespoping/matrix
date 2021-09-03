@@ -17,12 +17,15 @@ function enter()
 
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
 //==================================================================================================================================
 //PROGRAMA						:Reporte para la estadistica de la unidad de medicina fisica y rehabilitacion
 //AUTOR							:Juan David Londoño
 //FECHA CREACION				:2007-07-10
 //FECHA ULTIMA ACTUALIZACION 	:2007-07-10
 $wactualiz="2007-07-10";
+encabezado( "REPORTE PARA LA ESTADISTICA DE LOS PACIENTES", $wactualiz, $institucion->baseDeDatos );
 //==================================================================================================================================
 //ACTUALIZACIONES
 //==================================================================================================================================
@@ -53,9 +56,9 @@ else
 	   	
     	echo "<br><br><br>";
 		echo "<center><table border=0>";
-		echo "<tr><td align=center colspan=3><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
+		//echo "<tr><td align=center colspan=3><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
 		echo "<tr><td><br></td></tr>";
-		echo "<tr><td align=center colspan=3><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
+		//echo "<tr><td align=center colspan=3><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
 		echo "</table>";
 		echo "<br>";
 		echo "<center><table border=0>";
@@ -86,9 +89,9 @@ else
 				//echo mysql_errno() ."=". mysql_error();
 				
 				echo "<center><table border=0>";// este es el encabezado del resultado
-			 	echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
+			 	//echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
 			    echo "<tr><td><br></td></tr>";
-			    echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
+			    //echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
 			    echo "<tr><td align=center colspan=7>Desde: <b>".$fecha1."</b> hasta <b>".$fecha2."</b></td></tr>";
 			    echo "<tr><td>&nbsp</td></tr>";
 			    echo "<tr><td align=center colspan=7><font size=3>REPORTE DE LOS DIAGNOSTICOS Y SI SON NUEVOS O NO</font></td></tr>";
@@ -161,9 +164,9 @@ else
 				//echo mysql_errno() ."=". mysql_error();
 				
 				echo "<center><table border=0>";// este es el encabezado del resultado
-			 	echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
+			 	//echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
 			    echo "<tr><td><br></td></tr>";
-			    echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
+			    //echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
 			    echo "<tr><td align=center colspan=7>Desde: <b>".$fecha1."</b> hasta <b>".$fecha2."</b></td></tr>";
 			    echo "<tr><td>&nbsp</td></tr>";
 			    echo "<tr><td align=center colspan=7><font size=3>REPORTE DE LOS DIAGNOSTICOS, SI SON MASCULINOS O FEMENINOS Y CON SU EDAD</font></td></tr>";
@@ -246,9 +249,9 @@ else
 			{
 				
 				echo "<center><table border=0>";// este es el encabezado del resultado
-			 	echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
+			 	//echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
 			    echo "<tr><td><br></td></tr>";
-			    echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
+			    //echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
 			    echo "<tr><td align=center colspan=7>Desde: <b>".$fecha1."</b> hasta <b>".$fecha2."</b></td></tr>";
 			    echo "<tr><td>&nbsp</td></tr>";
 			    echo "<tr><td align=center colspan=7><font size=3>REPORTE DE LOS DIAGNOSTICOS POR ENTIDAD</font></td></tr>";
@@ -327,9 +330,9 @@ else
 			{
 				
 				echo "<center><table border=0>";// este es el encabezado del resultado
-			 	echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
+			 	//echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
 			    echo "<tr><td><br></td></tr>";
-			    echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
+			    //echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
 			    echo "<tr><td align=center colspan=7>Desde: <b>".$fecha1."</b> hasta <b>".$fecha2."</b></td></tr>";
 			    echo "<tr><td>&nbsp</td></tr>";
 			    echo "<tr><td align=center colspan=7><font size=3>REPORTE DE LOS DIAGNOSTICOS POR TIPO DE ATENCION</font></td></tr>";
@@ -415,9 +418,9 @@ else
 				$num = mysql_num_rows($err);
 				
 				echo "<center><table border=0>";// este es el encabezado del resultado
-			 	echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
+			 	//echo "<tr><td align=center colspan=7><font size=5><img src='/matrix/images/medical/root/clinica.jpg' WIDTH=150 HEIGHT=100></font></td></tr>";
 			    echo "<tr><td><br></td></tr>";
-			    echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
+			    //echo "<tr><td align=center colspan=7><font size=5>REPORTE PARA LA ESTADISTICA DE LOS PACIENTES</font></td></tr>";
 			    echo "<tr><td align=center colspan=7>Desde: <b>".$fecha1."</b> hasta <b>".$fecha2."</b></td></tr>";
 			    echo "<tr><td>&nbsp</td></tr>";
 			    echo "<tr><td align=center colspan=7><font size=3>REPORTE DE TERAPEUTA POR SESIONES ASISTIDA</font></td></tr>";

@@ -41,6 +41,7 @@
 <BODY TEXT="#000066">
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 /*
 *********************************************************************************************************************
 [DOC]
@@ -67,8 +68,9 @@ else
 
 
 
-	echo "<form action='rep_cotizacion.php?empresa=.".$empresa."' method=post>";
+	echo "<form action='rep_cotizacion.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	if(!isset($pac))
 	{
 		echo "</select></tr><tr><td bgcolor=#cccccc colspan=1><font color=#000066>PACIENTE: </font></td>";
@@ -116,6 +118,10 @@ else
                        Honorarios_anestesia,Honorarios2,Honorarios3,Instrumentadora,Derecho_sala,Tiempo,Suministros,Det_suministros,Uso_equipos,Det_equipos,Ayudas_dx,Det_ayudas,Recuperacion,Otros_gastos,Det_otros,Total,Seguridad,Valoriva
 					   from ".$empresa."_000001 where Fecha = '".$paciente[0]."' and Documento='".$paciente[1]."' and Nro_cotizacion='".$paciente[3]."' ";
 		//echo $query."<br>";
+		$wactualiz = "2015-05-22";
+		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+		encabezado( "PRESUPUESTO DE SERVICIOS", $wactualiz, $institucion->baseDeDatos );
+		$wlogemp = $institucion->baseDeDatos;
 		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		if($num>0)
@@ -128,7 +134,8 @@ else
 				echo "<tr><td id='tipo01'>PROMOTORA MEDICA LAS AMERICAS NIT 800067065-9</td></tr>";
 				echo "<tr><td id='tipo01'>PRESUPUESTO DE SERVICIOS</td></tr>";
 			echo "</center></table>";
-		echo "<td align=center><img SRC='/MATRIX/images/medical/mercadeo/logoclinica.JPG' width='127' height='65'></td>";
+		//echo "<td align=center><img SRC='/MATRIX/images/medical/mercadeo/logoclinica.JPG' width='127' height='65'></td>";
+		echo "<td align=center> <img src='../../images/medical/root/".$wlogemp.".jpg' width=120 heigth=76> </td>";
 		$line1 = "FECHA:&nbsp".$row[1];
 		$tipdoc = explode("-",$row[2]);
 		$line2 = "DOCUMENTO:&nbsp".$tipdoc[0]."-".$row[3];

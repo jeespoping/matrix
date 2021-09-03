@@ -145,7 +145,9 @@
     <?php
     include("conex.php");
     include("root/comun.php");
-	$wemp_pmla=$_REQUEST['wemp_pmla'];
+    $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+    $wactualiz = "1";
+    encabezado( "GESTION DE TALENTO HUMANO", $wactualiz, $institucion->baseDeDatos );
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -218,9 +220,7 @@
 
 <div class="container main">
     <div class="panel panel-info contenido">
-        <div class="panel-heading encabezado">
-            <div class="panel-title titulo1">GESTION DE TALENTO HUMANO</div>
-        </div>
+        
     </div>
     <div class="panel panel-info contenido">
         <div align="center" class="panel panel-info" style="margin-bottom: 10px; background-color: #305496">
@@ -241,7 +241,7 @@
             ?>
             <!-- DATOS MINIMOS PREVIOS -->
             <form>
-				<input type='hidden' name='wemp_pmla' value='<?=$wemp_pmla ?>' >
+            <input type='hidden' name='wemp_pmla' value='<?=$wemp_pmla ?>' >
                 <h4 style="text-align: center">DATOS MINIMOS PREVIOS</h4>
                 <div id="idGeneral" class="input-group">
                     <table align="center" border="0" style="width: 100%">
@@ -296,7 +296,7 @@
         {
             ?>
                 <form>
-					<input type='hidden' name='wemp_pmla' value='<?=$wemp_pmla ?>' >
+                    <input type='hidden' name='wemp_pmla' value='<?=$wemp_pmla ?>' >
                     <h4 style="text-align: center">I. IDENTIFICACION GENERAL</h4>
                     <div id="idGeneral" class="input-group">
                         <table align="center" border="0" style="width: 100%">

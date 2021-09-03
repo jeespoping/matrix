@@ -150,6 +150,10 @@
     include("root/comun.php");
     include('carEmp_Functions.php'); //publicacion local
 
+    $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+    $wactualiz = "1";
+    encabezado( "REPORTES CARACTERIZACION EMPLEADOS", $wactualiz, $institucion->baseDeDatos );
+
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -194,7 +198,7 @@
             else{ ?><div id="collapse0" class="panel-collapse collapse"> <?php }
             ?>
 
-                <form method="post" action="RepTalhuma_01.php">
+                <form method="post" action="RepTalhuma_01.php?wemp_pmla=<?=$wemp_pmla?>">
                     <table align="center" border="0" style="width: 34%; margin-bottom: 10px; margin-top: 10px">
                         <tr align="center">
                             <td style="background-color: #2461B2; color: white"><label for="buscameCod">Codigo</label></td>
@@ -311,7 +315,7 @@
         </div>
 
         <!-- PARAMETROS: -->
-        <form method="post" action="RepTalhuma_01.php">
+        <form method="post" action="RepTalhuma_01.php?wemp_pmla=<?=$wemp_pmla?>">
             <div class="panel-group" id="accordion">
                 <!------------------------ IDENTIFICACION GENERAL: ------------------------->
                 <div class="panel panel-default">

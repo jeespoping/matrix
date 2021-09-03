@@ -25,6 +25,7 @@ include_once("conex.php");
   
 
   echo "<form action='Ventas_por_tercero.php' method=post>";
+  echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 
   $wcf="DDDDDD";   //COLOR DEL FONDO    -- Gris claro
   $wcf2="006699";  //COLOR DEL FONDO 2  -- Azul claro

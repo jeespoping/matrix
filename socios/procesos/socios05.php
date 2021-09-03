@@ -7,7 +7,10 @@
     
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2011/12/09";
+encabezado( "Reporte de Socios que cumplen años en un periodo", $wactualiz, $institucion->baseDeDatos );
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -21,7 +24,8 @@ if(!isset($_SESSION['user']))
 mysql_select_db("matrix") or die("No se selecciono la base de datos");    
 
  //Forma
- echo "<form name='socios05' action='socios05.php' method=post>";  
+ echo "<form name='socios05' action='socios05.php?wemp_pmla=".$wemp_pmla."' method=post>"; 
+ echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
  
  if (!isset($wmes) or $wmes=='')
  {
@@ -85,7 +89,7 @@ mysql_select_db("matrix") or die("No se selecciono la base de datos");
  {
 	$mes=explode('-',$wmes); 
     echo "<center><table border=0>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Reporte de Socios que cumplen años en un periodo</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Reporte de Socios que cumplen años en un periodo</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>Periodo: ".$wmes."</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: socios05.php Ver. 2011/12/09<br>AUTOR: JairS</font></b><br>";
     echo "</table>";

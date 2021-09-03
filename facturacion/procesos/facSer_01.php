@@ -139,6 +139,10 @@
     ///*
     include("conex.php");
     include("root/comun.php");
+    
+    $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+
+    encabezado( "Matrix - FACTURACION MANUAL SERVINTE", $wactualiz, $institucion->baseDeDatos );
 
     if(!isset($_SESSION['user']))
     {
@@ -197,8 +201,7 @@
 
 <body>
 <div class="panel panel-info contenido" style="width: 95%">
-    <div class="panel-heading encabezado">
-        <div class="panel-title titulo1">Matrix - FACTURACION MANUAL SERVINTE</div>
+    
     </div>
 
     <div align="center" class="panel panel-info divGeneral">
@@ -378,7 +381,7 @@
 					if ($ok){
 						echo '<div class="card bg-light divContHome" style="border: none">
 						<div class="navigation" style="margin-top: 80px">
-							<form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
+							<form id="formHome" name="formHome" method="post" action="facSer_01.php?wemp_pmla='.$wemp_pmla.'" style="margin-top: 50px">
 								<h3>FACTURA GRABADA</h3>
 								<h4>' . $nuevaFactura . '</h4>
 								<input type="text" id="cCostos" name="cCostos" class="form-control form-sm" value="' . $cCostos . '" style="display:none;" readonly>
@@ -398,7 +401,7 @@
 						// conservar los datos entre reintentos.
 						echo '<div class="card bg-light divContHome" style="border: none">
 						<div class="navigation" style="margin-top: 80px">
-							<form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
+							<form id="formHome" name="formHome" method="post" action="facSer_01.php?wemp_pmla='.$wemp_pmla.'" style="margin-top: 50px">
 								<h3>INTENTE DE NUEVO EN UN MINUTO<br><br></h3>
 								<input type="text" id="numFactu" name="numFactu" class="form-control form-sm" value="' . $numFactu . '" style="display:none;" readonly>
 								<input type="text" id="cCostos" name="cCostos" class="form-control form-sm" value="' . $cCostos . '" style="display:none;" readonly>
@@ -839,7 +842,7 @@
                         ?>
                         <div class="card bg-light divContHome" style="border: none">
                             <div class="navigation" style="margin-top: 80px">
-                                <form id="formHome" name="formHome" method="post" action="facSer_01.php" style="margin-top: 50px">
+                                <form id="formHome" name="formHome" method="post" action="facSer_01.php?wemp_pmla=<?=$wemp_pmla?>" style="margin-top: 50px">
                                     <h3>GRABACION DE FACTURAS</h3>
                                     <input type="hidden" name="subaccion" value="crearFac">
                                     <input type="hidden" id="cCostos" name="cCostos" value="<?php echo $cCostos ?>">
