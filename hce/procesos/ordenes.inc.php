@@ -8097,11 +8097,35 @@ function registrarLiquidosEndovenosos( $conex, $wbasedato, $his, $ing, $codlev, 
  * Pinta un formulario oculto para hacer los lev, este se usa para ordenar un medicamento INF o modificar
  * un medicamento INF
  ************************************************************************************************************/
-function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $ccoPaciente ){
+function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $ccoPaciente, $historia, $ingreso ){
+	
+	/*
+	* Modificación: se agrega validación de parámetro para mostrar solo insumos con tarifa
+	* autor: sebastian.nevado
+	* fecha: 2021-08-31
+	*/
+	global $wemp_pmla;
+	$bMostrarSoloConTarifa = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mostrarSoloConTarfia' ) == 'on';
+	$sTablaTarifas = "";
+	$sWhereTarifas = "";
+	
+	if($bMostrarSoloConTarifa)
+	{
+		$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso);
+		$wcliame  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+		
+		$sTablaTarifas = ", {$wcliame}_000026 ca ";
+		$sWhereTarifas = " AND artcod = mtaart
+							AND mtatar = '{$pac['tarifa']}' ";
+	}
+	
+	/*
+	* FIN MODIFICACIÓN
+	*/
 
 	//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
 	$qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Carnal as Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
-				FROM {$wbasedato}_000098, {$wbasedato}_000026, {$wbasedato}_000059 
+				FROM {$wbasedato}_000098, {$wbasedato}_000026, {$wbasedato}_000059 {$sTablaTarifas}
 			   WHERE Cartip = '{$tipoGenerico}' 
 				 AND Carcod = artcod
 				 AND Artest = 'on'
@@ -8109,9 +8133,10 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 				 AND Artcod = Defart
 				 AND Defcco = Carcco
 				 AND Defest = 'on'
+				 {$sWhereTarifas}
 			   UNION
 			  SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Carnal as Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
-				FROM {$wbasedato}_000098, {$wcenmez}_000002, {$wcenmez}_000001, {$wbasedato}_000059 
+				FROM {$wbasedato}_000098, {$wcenmez}_000002, {$wcenmez}_000001, {$wbasedato}_000059 {$sTablaTarifas}
 			   WHERE Cartip = '{$tipoGenerico}' 
 				 AND Carcod = artcod
 				 AND Artest = 'on'
@@ -8121,6 +8146,7 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 				 AND Artcod = Defart
 				 AND Defcco = Carcco
 				 AND Defest = 'on'
+				 {$sWhereTarifas}
 			ORDER BY artgen
 			";
 				 
@@ -8156,6 +8182,15 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 	}
 	
 	$num = max( $k, $j );
+	
+	if($num == 0 && $bMostrarSoloConTarifa)
+	{
+		//mensajeEmergente("No hay artículos configurados con tarifas para los LEVS");
+		echo "<div style='display:none;' id='listaComponentesLEV'>";
+		echo "<br>No hay artículos configurados con tarifas para los LEVS<br>";
+		echo "</div>";
+	}
+	
 	for( $i = 0, $j = 3000; $i < $num; $i++ )
 	{
 		if( $i == 0 ){
@@ -8414,11 +8449,35 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
  * Pinta un formulario oculto para hacer los lev, este se usa para ordenar un medicamento LEV o modificar
  * un medicamento LEV
  ************************************************************************************************************/
-function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $pacEnUrgencias ){
+function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $pacEnUrgencias, $historia, $ingreso ){
+	
+	/*
+	* Modificación: se agrega validación de parámetro para mostrar solo insumos con tarifa
+	* autor: sebastian.nevado
+	* fecha: 2021-08-31
+	*/
+	global $wemp_pmla;
+	$bMostrarSoloConTarifa = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mostrarSoloConTarfia' ) == 'on';
+	$sTablaTarifas = "";
+	$sWhereTarifas = "";
+	
+	if($bMostrarSoloConTarifa)
+	{
+		$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso);
+		$wcliame  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+		
+		$sTablaTarifas = ", {$wcliame}_000026 ca ";
+		$sWhereTarifas = " AND artcod = mtaart
+							AND mtatar = '{$pac['tarifa']}' ";
+	}
+	
+	/*
+	* FIN MODIFICACIÓN
+	*/
 
 	//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
 	$qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Carnal as Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
-				FROM {$wbasedato}_000098, {$wbasedato}_000026, {$wbasedato}_000059 
+				FROM {$wbasedato}_000098, {$wbasedato}_000026, {$wbasedato}_000059 {$sTablaTarifas}
 			   WHERE Cartip = '{$tipoGenerico}' 
 				 AND Carcod = artcod
 				 AND Artest = 'on'
@@ -8426,9 +8485,10 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 				 AND Artcod = Defart
 				 AND Defcco = Carcco
 				 AND Defest = 'on'
+				 {$sWhereTarifas}
 			   UNION
 			  SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
-				FROM {$wbasedato}_000098, {$wcenmez}_000002, {$wcenmez}_000001, {$wbasedato}_000059 
+				FROM {$wbasedato}_000098, {$wcenmez}_000002, {$wcenmez}_000001, {$wbasedato}_000059 {$sTablaTarifas}
 			   WHERE Cartip = '{$tipoGenerico}' 
 				 AND Carcod = artcod
 				 AND Artest = 'on'
@@ -8438,6 +8498,7 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 				 AND Artcod = Defart
 				 AND Defcco = Carcco
 				 AND Defest = 'on'
+				 {$sWhereTarifas}
 			ORDER BY artgen
 			";
 				 
@@ -8474,6 +8535,14 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 	}
 	
 	$num = max( $k, $j );
+	if($num == 0 && $bMostrarSoloConTarifa)
+	{
+		//mensajeEmergente("No hay artículos configurados con tarifas para los LEVS");
+		echo "<div style='display:none;' id='listaComponentesLEV'>";
+		echo "<br>No hay artículos configurados con tarifas para los LEVS<br>";
+		echo "</div>";
+	}
+	
 	for( $i = 0, $j = 1000; $i < $num; $i++ )
 	{
 		if( $i == 0 ){
@@ -11951,7 +12020,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 				AND ( artgen LIKE '%$familia%' OR artcom LIKE '%$familia%' OR artcod LIKE '%$familia%' )
 				AND artest = 'on'
 				AND relfam NOT IN( $strInFamCod )
-				and Mtatar = 91
+				and Mtatar = '{$pac['tarifa']}'
 			GROUP BY 1";
 		
 	}
@@ -37658,6 +37727,14 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				$sWhereTarifas = " AND artcod = mtaart
 									AND mtatar = '{$pac['tarifa']}' ";
 			}
+
+			//Armo array con nombres de familias LEV e IC
+			$aFamiliasLevIc = array();
+			$aFamiliasLevIc = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "famLEVIC" ));
+			
+			//Convierto todo a minúscula
+			$aFamiliasLevIc = array_map('strtolower', $aFamiliasLevIc);
+			$bEsLevIc = in_array($familia, $aFamiliasLevIc);
 			
 			/*
 			* FIN MODIFICACIÓN
@@ -37690,7 +37767,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				// var_dump($qComp);
 				$resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
 				
-				if( (mysql_num_rows( $resComp ) == 0) && ($bMostrarSoloConTarifa) )
+				if( (mysql_num_rows( $resComp ) == 0) && ($bMostrarSoloConTarifa) && $bEsLevIc)
 				{
 					return "SinArticulosConTarifas";
 				}

@@ -1288,8 +1288,8 @@ if (!$usuarioValidado){
 	echo "<input type='hidden' name='validarPrescripcionConTarifa' id='validarPrescripcionConTarifa' value='".$validarPrescripcionConTarifa."'/>";
 	
 	
-	pintarModalLEVS( $conex, $wbasedato, $wcenmez, $wbasedatohce, "LQ", $paciente->enUrgencias );
-	pintarModalIC( $conex, $wbasedato, $wcenmez, $wbasedatohce, "IC", $paciente->enUrgencias );
+	pintarModalLEVS( $conex, $wbasedato, $wcenmez, $wbasedatohce, "LQ", $paciente->enUrgencias, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
+	pintarModalIC( $conex, $wbasedato, $wcenmez, $wbasedatohce, "IC", $paciente->enUrgencias, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
 	
 	if( !$paciente->enUrgencias )
 		cambiarEstadoDeDispensacionParaLEVIC( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
