@@ -2093,7 +2093,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
     //Funcion princpal que evalua cada seleccion.
 	function combina(wemp_pmla, f, c, patron, adi_ser, historia, ingreso, patron_combinable, centro_costos, servicio, fecha, habitacion, nom_pac, tipo_doc, doc_pac, proc_trasl, muerte, edad, alta_proc, tipo_empresa, dias_estancia, usuario, controlseranterior, media_porcion, este, posqx, wrol_usuario, wpatron_nutricion, wrolnutricion) //f=fila, c=columna, cod_dieta=patron, adi_ser=servicio adicional (on o off), tipo_dieta=(unica seleccionable=on, seleccion multiple=off)
 	   {
-
+alert( "Hola Mundo" );
         var cont1    = 1;
 
         id = "cajon"+f+"-"+c;
