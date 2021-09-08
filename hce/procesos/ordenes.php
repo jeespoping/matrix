@@ -4248,10 +4248,10 @@ if (!$usuarioValidado){
 						//Justificacion
 						echo "<td>";
 						if($examen->requiereJustificacion != 'on' ){
-							crearCampo("2","wtxtjustexamen$contExamenes",@$accionesPestana[$indicePestana.".6"],array("cols"=>"35","rows"=>"2","onChange"=>"marcarCambio('$indicePestana','$contExamenes');"),"$examen->justificacion");
+							crearCampo("2","wtxtjustexamen$contExamenes",@$accionesPestana[$indicePestana.".6"],array("cols"=>"35","rows"=>"2","onChange"=>"marcarCambio('$indicePestana','$contExamenes');","readonly"=>"readonly"),"$examen->justificacion");
 						}
 						else{
-							crearCampo("2","wtxtjustexamen$contExamenes",@$accionesPestana[$indicePestana.".6"],array("cols"=>"35","rows"=>"2","onChange"=>"marcarCambio('$indicePestana','$contExamenes');", "class"=>"fondoAmarillo"),"$examen->justificacion");
+							crearCampo("2","wtxtjustexamen$contExamenes",@$accionesPestana[$indicePestana.".6"],array("cols"=>"35","rows"=>"2","onChange"=>"marcarCambio('$indicePestana','$contExamenes');", "class"=>"fondoAmarillo","readonly"=>"readonly"),"$examen->justificacion");
 						}
 							echo "</td>";
 						echo "</td>";

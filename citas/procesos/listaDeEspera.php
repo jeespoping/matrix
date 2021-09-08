@@ -10,6 +10,8 @@
  * Mayo 2021                Juan David Rodriguez -Modificacion en el boton admitir, se desabilita hasta terminar el 
  *                                                proceso de admitir.
  * 12 Agosto 2021           Juan David Rodriguez - Se agrega  opción para inactivar un registro, esto afecta la tabla citaslc_000032 el campo drvest
+ * 02 Septiembre 2021       Juan David Rodriguez -- Se modifica consulta para que las aseguradoras traigan todos los examenes asociados, 
+ *                                                      esta información viene del laboratorio.
  ****************************************************************************************/
 
 
@@ -396,30 +398,33 @@
         // write query
         $id = $_POST['obtenerExamenes'];
 
-        $sql = "SELECT CodigoTarifa FROM Empresas  WHERE Nit = '" . $id . "';";
-        $result = mysqli_query($connLab, $sql);
-        $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
-        $codigoTarifa = $tarifaLab[0]['CodigoTarifa'];
+        // $sql = "SELECT CodigoTarifa FROM Empresas  WHERE Nit = '" . $id . "';";
+        // $result = mysqli_query($connLab, $sql);
+        // $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        // $codigoTarifa = $tarifaLab[0]['CodigoTarifa'];
 
-        $sql = "SELECT CodigoExamen FROM ValorExamenes WHERE  ValorActual>=0 AND CodigoTarifa ='" . $codigoTarifa . "' AND CodigoExamen IN (SELECT Codigo FROM Examenes WHERE TipoPrueba<>'')";
+        // $sql = "SELECT CodigoExamen FROM ValorExamenes WHERE  ValorActual>=0 AND CodigoTarifa ='" . $codigoTarifa . "' AND CodigoExamen IN (SELECT Codigo FROM Examenes WHERE TipoPrueba<>'')";
 
 
-        $result = mysqli_query($connLab, $sql);
-        $examenesConvenio = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        // $result = mysqli_query($connLab, $sql);
+        // $examenesConvenio = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-        $listaExamenes = array();
+        // $listaExamenes = array();
 
-        foreach ($examenesConvenio as $key => $examen) {
-            # code...
-            array_push($listaExamenes, "'" . $examen['CodigoExamen'] . "'");
-        }
+        // foreach ($examenesConvenio as $key => $examen) {
+        //     # code...
+        //     array_push($listaExamenes, "'" . $examen['CodigoExamen'] . "'");
+        // }
 
-        $examenesAConsultar = implode(",", $listaExamenes);
+        // $examenesAConsultar = implode(",", $listaExamenes);
         // print_r($row);
         // echo $examenesAConsultar;
 
-        $sql = "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE  Codigo IN (" . $examenesAConsultar . ") order by Codigo ASC";
-        echo $sql;
+        // $sql = "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE  Codigo IN (" . $examenesAConsultar . ") order by Codigo ASC";
+        $sql = "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE  Codigo IN (SELECT CodigoExamen 
+                    FROM ValorExamenes WHERE  ValorActual>=0 
+                    AND CodigoTarifa IN (SELECT CodigoTarifa FROM Empresas WHERE Nit = '".$id."') AND CodigoExamen IN (SELECT Codigo FROM Examenes WHERE TipoPrueba<>'')) order by Codigo ASC";
+        // echo $sql;
         $result = mysqli_query($connLab, $sql);
         // $exams = mysqli_fetch_all($result, MYSQLI_ASSOC);
         // print_r($exams);
