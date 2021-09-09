@@ -325,7 +325,11 @@ return;
     //===================================================================================================================================================
 
     /**  **///---> se omiten los cubiculos habcub
-    $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
+    // $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
+    /**
+     * Se cambia en la consulta fecha y hora de alta por fecha data y hora data para obtener el tiempo de llegada
+     */
+    $q = "  SELECT Habcod habitacion, '', '' observacion, Fecha_data fechaLlegada, Hora_data horaLlegada, Habprg, '' id, '' horaAsignado "
         ."    FROM ".$wbasedato."_000020 "
         ."   WHERE habali = 'on' "
         ."     AND habest = 'on' "
@@ -427,7 +431,7 @@ return;
                     }
                     $ressge = mysql_query($q,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
                     $numsge = mysql_num_rows($ressge);
-                    $wempleado = "<select name='wempleado[".$i."]' actualizar='empleado' onchange='actualizarMovimiento( this, \"".$row['habitacion']."\", \"".$row['fechaAltaDef']."\", \"".$row['horaAltaDef']."\" )' ".$whabi.">";
+                    $wempleado = "<select name='wempleado[".$i."]' actualizar='empleado' onchange='actualizarMovimiento( this, \"".$row['habitacion']."\", \"".$row['fechaLlegada']."\", \"".$row['horaLlegada']."\" )' ".$whabi.">";
                         //Por aca entra cuando se acaba de abrir la ventana del programa y ya habian empleados asiganados a habitaciones.
                         if ( trim($row[1]) != "" ){  //Traigo el nombre del empleado
                             $q1= " SELECT sgecod, sgenom "
@@ -455,25 +459,26 @@ return;
 
                         <td><input type='text' id='registro_<?php echo trim($row['habitacion']) ?>' value='<?php echo $row['id'] ?>' readonly='readonly' size='8' disabled='disabled'></td>
                         <td align='center'><b><?php echo $waviso ?></b></td></td>
-                        <td align='center'><?php echo $row['fechaAltaDef'] ?> <br><?php echo $row['horaAltaDef'] ?></td>
+                        <!-- Se cambia los indices, teniendo en cuenta el cambio realizado en la consulta -->
+                        <td align='center'><?php echo $row['fechaLlegada'] ?> <br><?php echo $row['horaLlegada'] ?></td>
                         <td align='center'><?php echo $row['habitacion'] ?></td>
                         <td><?php echo $wempleado ?></td>
                         <td align='center' id='hora_asignado_<?php echo trim($row['habitacion']) ?>'><b><?php echo $row['horaAsignado'] ?></b></td>
                         <td bgcolor='<?php echo $wcolor?>' >
                             <?php
                             if (trim($row[6])!="" and trim($row[1])!="-" and trim($row[1])!="")   //Indica que solo ingreso si tiene id y empleado asignado
-                               echo "<textarea id='wobservacion_".trim($row['habitacion'])."' rows='2' cols='40' ".$whabi."  actualizar='observacion' onkeypress='actualizarMovimiento( this, \"".trim($row['habitacion'])."\", \"".$row['fechaAltaDef']."\", \"".$row['horaAltaDef']."\" )'>".utf8_decode($row['observacion'])." </textarea>";
+                               echo "<textarea id='wobservacion_".trim($row['habitacion'])."' rows='2' cols='40' ".$whabi."  actualizar='observacion' onkeypress='actualizarMovimiento( this, \"".trim($row['habitacion'])."\", \"".$row['fechaLlegada']."\", \"".$row['horaLlegada']."\" )'>".utf8_decode($row['observacion'])." </textarea>";
                               else
-                                 echo "<textarea id='wobservacion_".trim($row['habitacion'])."' rows='2' cols='40' actualizar='observacion' disabled onkeypress='actualizarMovimiento( this, \"".trim($row['habitacion'])."\", \"".$row['fechaAltaDef']."\", \"".$row['horaAltaDef']."\" )'>".utf8_decode($row['observacion'])." </textarea>";
+                                 echo "<textarea id='wobservacion_".trim($row['habitacion'])."' rows='2' cols='40' actualizar='observacion' disabled onkeypress='actualizarMovimiento( this, \"".trim($row['habitacion'])."\", \"".$row['fechaLlegada']."\", \"".$row['horaLlegada']."\" )'>".utf8_decode($row['observacion'])." </textarea>";
                             ?>
                         </td>
                         <td align='center'  bgcolor='<?php echo $wcolor?>' >
                             <?php
                                 if (trim($row[6])!="" and trim($row[1])!="-" and trim($row[1])!=""){   //Indica que solo ingreso si tiene id y empleado asignado
-                                   echo "<INPUT TYPE='checkbox' id='disponible_".trim($row['habitacion'])."' actualizar='disponibilidad' onclick='actualizarMovimiento( this, \"".trim($row['habitacion'])."\", \"".$row['fechaAltaDef']."\", \"".$row['horaAltaDef']."\" )' ".$whabi."></td>";
+                                   echo "<INPUT TYPE='checkbox' id='disponible_".trim($row['habitacion'])."' actualizar='disponibilidad' onclick='actualizarMovimiento( this, \"".trim($row['habitacion'])."\", \"".$row['fechaLlegada']."\", \"".$row['horaLlegada']."\" )' ".$whabi."></td>";
                                    echo "<input type='hidden' id='id_registro_".trim($row['habitacion'])."' value='{$row['id']}'>";
                                   }else{
-                                     echo "<INPUT TYPE='checkbox' id='disponible_".trim($row['habitacion'])."' actualizar='disponibilidad' disabled onclick='actualizarMovimiento( this, \"".trim($row['habitacion'])."\", \"".$row['fechaAltaDef']."\", \"".$row['horaAltaDef']."\" )'>";
+                                     echo "<INPUT TYPE='checkbox' id='disponible_".trim($row['habitacion'])."' actualizar='disponibilidad' disabled onclick='actualizarMovimiento( this, \"".trim($row['habitacion'])."\", \"".$row['fechaLlegada']."\", \"".$row['horaLlegada']."\" )'>";
                                      echo "<input type='hidden' id='id_registro_".trim($row['habitacion'])."' value='{$row['id']}'>";
                                   }
                              ?>

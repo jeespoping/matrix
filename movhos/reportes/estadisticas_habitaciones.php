@@ -268,8 +268,7 @@ else
 					 ."     AND habcco       = Ccocod "
 					 ."     AND A.movemp  not in (SELECT Sgecod FROM ".$wbasedato."_000024 WHERE Sgeman = 'on') "
 					 ."     AND A.movemp     = Sgecod ";
-			}	 
-			
+			}
 			$res = mysql_query($q,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 			$num = mysql_num_rows($res);
 
