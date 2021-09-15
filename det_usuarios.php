@@ -291,16 +291,27 @@ else
 	echo "</td></tr>";
 	echo "<tr>";
 	echo "<td bgcolor=#cccccc>Activo</td>";
-	echo "<td bgcolor=#cccccc>";			
-	echo "<select name='Activo' id=tipo1>";
-	if ($Activo == substr("A-Activo", 0, 1))
-		echo "<option selected>A-Activo</option>";
-	else
-		echo "<option>A-Activo</option>";
-	if ($Activo == substr("I-Inactivo", 0, 1))
-		echo "<option selected>I-Inactivo</option>";
-	else
-		echo "<option>I-Inactivo</option>";	
+	echo "<td bgcolor=#cccccc>";
+	if ($pos === "0"){
+		echo "<select name='Activo' id='tipo1'>";
+		if ($Activo == substr("A-Activo", 0, 1))
+			echo "<option selected>A-Activo</option>";
+		else
+			echo "<option>A-Activo</option>";
+		if ($Activo == substr("I-Inactivo", 0, 1))
+			echo "<option selected>I-Inactivo</option>";
+		else
+			echo "<option>I-Inactivo</option>";	
+	}else{
+		if (isset($Activo)){ 
+			if ($Activo == substr("A-Activo", 0, 1))$valueText = 'A-Activo';
+			elseif ($Activo == substr("I-Inactivo", 0, 1))$valueText = 'I-Inactivo';
+			else $valueText = $Activo;
+		}else $valueText = '';
+		echo "<span class='tipo1'><label for='valueActivo' title='Solo se puede activar o inactivar desde Maestros Matrix'>".$valueText."</label></span>";
+		echo "<input type='HIDDEN' name='Activo' value='".$valueText."'>";
+	}
+	
 	echo "</td>";	
 	echo "</tr>";
 	

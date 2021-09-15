@@ -14,6 +14,8 @@ include_once("root/comun.php");
 	   Administrativos, Financieros y Clinicos
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   .2021-07-07 
+	   		Se agrega la validacion de numero de intentos maximo por usuario.
 	   .2020-08-31
 			Se corrige variable para que muestre el esquema por usuarios
 		.2020-08-31
@@ -134,7 +136,7 @@ function eliminarPasswordTemporal($conex, $codigo)
 				   SET PasswordTemporal='',
 					   FechaPasswordTemp='0000-00-00',
 					   HoraPasswordTemp='00:00:00'
-				 WHERE Codigo='".$codigo."';";
+				 WHERE Codigo=?;";
 	
 	$stUpdate = mysqli_prepare( $conex, $update );
 
@@ -155,7 +157,7 @@ function validarTiempoRestablecer($conex, $codigo, $fechaPasswordTemp, $horaPass
 					FROM root_000051 
 				   WHERE Detemp='01'
 					 AND Detapl='tiempoRestablecerPassword';";
-
+		
 		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
@@ -177,6 +179,90 @@ function validarTiempoRestablecer($conex, $codigo, $fechaPasswordTemp, $horaPass
 	}
 	
 	return $restablecerValido;
+}
+
+function procesarIntentos($codigo,$conex, $intentos, $fechaLimIntentos, $horaLimIntentos, $minutos, $limiteIntentos)
+{
+    if (strtotime(date('Y-m-d H:i:s')) >= strtotime($fechaLimIntentos." ".$horaLimIntentos)){
+        inicializarIntentos($codigo, $minutos, $conex);
+        $intentos = 0;
+    }
+    $intentos++;
+    setNroIntentos($codigo, $intentos, $conex);
+    if ($intentos == ($limiteIntentos - 1)) mensajeAlerta($limiteIntentos - 1); 
+
+    if ($intentos >= $limiteIntentos){
+        return false;
+    }
+    return true;
+}
+
+function inicializarIntentos($codigo,$minutos, $conex){
+    $fechaCompleta = calcularFechaParam($minutos);
+    $fechaLim = date('Y-m-d',strtotime($fechaCompleta));
+    $horaLim = date('H:i:s',strtotime($fechaCompleta));
+    $update = " UPDATE usuarios 
+                    SET Intentos = 0, FechaLimIntentos = '{$fechaLim}', HoraLimIntentos = '{$horaLim}'
+                    WHERE Codigo=?;";
+    $stUpdate = mysqli_prepare( $conex, $update );
+
+    mysqli_stmt_bind_param( $stUpdate, "s", $codigo );
+
+    /* Ejecutar la sentencia */
+    $num = mysqli_stmt_execute( $stUpdate );
+    
+    mysqli_stmt_close( $stUpdate );
+   
+    // return $num;
+}
+
+function calcularFechaParam($minutos){
+    $fechaNueva = date("Y-m-d H:i:s",strtotime(date("Y-m-d H:i:s")."+ $minutos minutes"));
+    return $fechaNueva;
+}
+
+function setNroIntentos($codigo, $intentos, $conex){
+    
+    $update = " UPDATE usuarios 
+                    SET Intentos = {$intentos}
+                    WHERE Codigo=?;";
+    
+    $stUpdate = mysqli_prepare( $conex, $update );
+
+    mysqli_stmt_bind_param( $stUpdate, "s", $codigo );
+
+    /* Ejecutar la sentencia */
+    $num = mysqli_stmt_execute( $stUpdate );
+    
+    mysqli_stmt_close( $stUpdate );
+   
+    // return $num;
+}
+
+function mensajeAlerta($intentos){ //TODO
+	$intentosFin = $intentos + 1;
+	echo "<script>";
+	echo "alert('Llevas " . $intentos . " intentos fallidos para el ingreso de tu clave, ten en cuenta que al intento n\xfamero ".$intentosFin." tu cuenta ser\xe1 bloqueada');";
+	echo "</script>";
+}
+
+function resetIntentos($codigo,$conex){
+    $fechaLim = date("Y-m-d",strtotime(date("Y-m-d")."- 1 days"));
+    $horaLim = date('H:i:s');
+    $update = " UPDATE usuarios 
+                    SET Intentos = 0, FechaLimIntentos = '{$fechaLim}', HoraLimIntentos = '{$horaLim}'
+                    WHERE Codigo=?;";
+
+    $stUpdate = mysqli_prepare( $conex, $update );
+
+    mysqli_stmt_bind_param( $stUpdate, "s", $codigo );
+
+    /* Ejecutar la sentencia */
+    $num = mysqli_stmt_execute( $stUpdate );
+    
+    mysqli_stmt_close( $stUpdate );
+   
+    // return $num;
 }
 
 $includeLibrerias = "	<script src='../../../include/root/jquery.min.js'></script>
@@ -493,8 +579,8 @@ if(!isset($accion))
 	echo "		<table border=0 style='width : 100%'>";	
 	echo "			<tr><td align=center id=tipo5 colspan=2><IMG SRC='/matrix/images/medical/root/boton-9.png'></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
-	echo "			<tr><td align=center id=tipo4>C&oacute;digo</td><td align=center><input class='input-login' type='text' name='codigo' size=10 maxlength=8></td></tr>";
-	echo "			<tr><td align=center id=tipo4>Clave</td><td align=center><input class='input-login'  type='password' name='password' size=10 maxlength=8></td></tr>";
+	echo "			<tr><td align=center id=tipo4>C&oacute;digo</td><td align=center><input class='input-login' type='text' name='codigo' size=18 maxlength=8></td></tr>";
+	echo "			<tr><td align=center id=tipo4>Clave</td><td align=center><input class='input-login'  type='password' name='password' size=18 maxlength=30></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
 	echo "			<tr><td align=center colspan=2><button onClick='enter()' class='tipoHIDE'><IMG SRC='/matrix/images/medical/root/boton-10.png'></button></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' id='restablecerPassword' colspan=2 >
@@ -592,7 +678,7 @@ else
 			
 			mysql_select_db("matrix") or die ("ERROR AL CONECTARSE A MATRIX");
 			
-			$query = "SELECT codigo,prioridad,grupo,password,activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp 
+			$query = "SELECT codigo,prioridad,grupo,password,activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp,Intentos,FechaLimIntentos,HoraLimIntentos 
 						FROM usuarios 
 					   WHERE codigo=?";
 			
@@ -613,13 +699,17 @@ else
 			if( $num )
 			{				
 				/* ligar variables de resultado */
-				mysqli_stmt_bind_result( $stmt, $codigo, $prioridad, $grupo, $pwd, $activo, $documento, $email, $passwordTemporal, $fechaPasswordTemp, $horaPasswordTemp );
+				mysqli_stmt_bind_result( $stmt, $codigo, $prioridad, $grupo, $pwd, $activo, $documento, $email, $passwordTemporal, $fechaPasswordTemp, $horaPasswordTemp, $intentos, $fechaLimIntentos, $horaLimIntentos );
 				
 				/* obtener valor */
 				mysqli_stmt_fetch($stmt);
 				
 				/* cerrar sentencia */
 				mysqli_stmt_close($stmt);
+
+				$minutos =  consultarAliasPorAplicacion($conex, '*', 'tiempoBloqueoIntentos');
+				$limiteIntentos =  consultarAliasPorAplicacion($conex, '*', 'numeroIntentosPassword');
+				$msgIntentos = false;
 				
 				if($activo=="A")
 				{
@@ -627,6 +717,10 @@ else
 					{
 						$login = true;
 						$mensajeLogin = "";
+						if (strtotime(date('Y-m-d H:i:s')) < strtotime($fechaLimIntentos." ".$horaLimIntentos) && $intentos >= $limiteIntentos )
+							$msgIntentos = true;
+						else if ($intentos > 0)
+							resetIntentos($codigo,$conex);
 					}
 					else
 					{
@@ -635,6 +729,8 @@ else
 							$login = false;
 							//Se modifica mensaje de respuesta Mavila 29-10-2020 :)
 							//$mensajeLogin = "CONTRASE&Ntilde;A INCORRECTA";	
+							if (!procesarIntentos($codigo,$conex, $intentos, $fechaLimIntentos, $horaLimIntentos,$minutos,$limiteIntentos)) $msgIntentos = true;
+							
 							$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";	
 						}
 						else
@@ -659,6 +755,7 @@ else
 									
 									$login = true;
 									$mensajeLogin = "";
+									if ($intentos > 0)resetIntentos($codigo,$conex);
 								}
 								else
 								{
@@ -679,7 +776,24 @@ else
 					$login = false;
 					//Se modifica mensaje de respuesta Mavila 30-10-2020 :)
 					//$mensajeLogin = "EL USUARIO ESTA INACTIVO";	
+					if (!procesarIntentos($codigo,$conex, $intentos, $fechaLimIntentos, $horaLimIntentos,$minutos,$limiteIntentos)) $msgIntentos = true;		
+					
 					$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";					
+				}
+
+				if ($msgIntentos){
+					// $fechaLimCompleta = $fechaLimIntentos . " " . $horaLimIntentos;
+					$fechaLimCompleta = $horaLimIntentos;
+					// $mensajeLoginIntentos = 'NUMERO DE INTENTOS EXCEDIDO, DEBE ESPERAR HASTA: ' . $fechaLimCompleta . ' PARA VOLVER A INGRESAR';
+					$mensajeLoginIntentos = 'N&Uacute;MERO DE INTENTOS EXCEDIDO, PARA VOLVER A INGRESAR DEBE HACER LA GESTI&Oacute;N DE RESTABLECER CONTRASE&Ntilde;A';
+					echo "<body bgcolor=#FFFFFF class='fondo'>";
+					echo "<BODY TEXT='#000066'>";
+					echo "<table  border=0 align=center>";
+					echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
+					echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
+					@session_destroy();
+					echo "<td id=tipo1><A HREF='F1.php?END=on'>".$mensajeLoginIntentos."</a></td></tr></table></body>";
+					return;
 				}
 				
 				// mysql_free_result($err);
