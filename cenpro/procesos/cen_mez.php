@@ -3973,7 +3973,8 @@ function pintarInsumosNPT($insumos, $inslis, $compu, $nutri, $peso, $purga, $est
 								 AND Dnuest='on'
 								 AND Dnuest='on' 
 								 AND Inscod = Dnucod
-								 AND Insreq = Reqcod;";
+								 AND Insreq = Reqcod 
+								 AND Insest = 'on';";
 		
 		$resInsumosOrdenados = mysql_query($qInsumosOrdenados, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qInsumosOrdenados . " - " . mysql_error());
 		$numInsumosOrdenados = mysql_num_rows($resInsumosOrdenados);
@@ -4117,7 +4118,8 @@ function pintarInsumosNPT($insumos, $inslis, $compu, $nutri, $peso, $purga, $est
 									     AND Facest = 'on' 
 										 AND Facreq = Reqcod 
 										 AND Inscod=Facart 
-										 AND Insreq=Facreq;";
+										 AND Insreq=Facreq 
+										 AND Insest = 'on';";
 
 										 
 								$resFactor = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());

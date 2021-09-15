@@ -391,7 +391,8 @@ else
 				 AND Artcod=Dnucod
 				 AND Artest='on'
 				 AND Tarcce=Dnucod
-				 AND Tarest='on'
+				 AND Tarest='on' 
+				 AND Insest = 'on'
 			ORDER BY Artord";
 			
 		$res = mysql_query($q,$conex);
