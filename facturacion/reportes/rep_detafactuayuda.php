@@ -72,7 +72,7 @@ session_start();
 //Encabezado
 encabezado("CARGOS DE LA FACTURA",$wactualiz,"clinica");
 
-if (!$usuariovalidado)
+if (!$usuariovalidado && !isset($_GET['automatizacion_pdfs']))
 {
 	echo '<span class="subtituloPagina2" align="center">';
 	echo 'Error: Usuario no autenticado';
@@ -1927,7 +1927,14 @@ if (!isset($fte) or $fte=='' or !isset($fac) or $fac == '' or !isset($com) or $c
    echo "<td align=CENTER bgcolor=#FFFFFF><font size='2' text color='#003366'><b>&nbsp;</font></td>";
    echo "<td align=CENTER bgcolor=#FFFFFF><font size='2' text color='#003366'>&nbsp;</font></td>"; 
    echo "<td align=RIGHT  bgcolor=#FFFFFF><font size='2' text color='#003366'><b>".number_format($tottal)."</b></font></td>";
-   echo "<td align=RIGHT  bgcolor=#FFFFFF><font size='2' text color='#003366'><b>".number_format($totvrec)."</b></font></td>";
+   if(isset($_GET['automatizacion_pdfs'])){
+     if($totvrec === 0){
+      echo 'no tiene factura';
+     }
+   }
+   else{
+    echo "<td align=RIGHT  bgcolor=#FFFFFF><font size='2' text color='#003366'><b>".number_format($totvrec)."</b></font></td>";
+   }
    echo "</tr>";	
   
  }

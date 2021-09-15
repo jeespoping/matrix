@@ -22,8 +22,8 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------                                        
 // 	EJECUCION DEL SCRIPT
 //--------------------------------------------------------------------------------------------------------------------------------------------
-
-if(!isset($_SESSION['user']))
+//modificacion jaime mejia
+if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs']))
 {
     if(isset($accion))
 	{
@@ -60,6 +60,17 @@ else
 	// --> 
 	//---------------------------------------------------------
 
+	function txtLog($txt, $append=true)
+    {
+        try {
+                $l = date('H:i:s', time()) . ' ' . $txt . "\n";
+				if ($append)
+					file_put_contents('log_la.txt', $l,FILE_APPEND);
+				else
+					file_put_contents('log_la.txt', $l);
+        } catch (Exception $e) {
+        }
+    } 
 
 //=======================================================================================================================================================	
 //		F I N	 F U N C I O N E S	 P H P
@@ -647,8 +658,10 @@ else
 				// html = '<a title="Abrir"><span onClick="verRepGrafica(\''+respuesta.ruta+'\')" class="btn-sm glyphicon text-primary glyphicon-folder-open" aria-hidden="true" style="cursor:pointer"></span></a>';
 				// $(elemento).parent().html(html);
 			}
-		}, 'json');
-	}
+		}, 'json').fail(function(response) {
+			//alert('Error: ' + response.responseText);
+			alert('Error descargando pdf.');
+			$("#modalCosultando").modal('hide');
 	
 	//--------------------------------------------------------
 	//	--> Abrir representacion grafica

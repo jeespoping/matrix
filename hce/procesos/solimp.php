@@ -46,7 +46,7 @@ include_once("conex.php");
 	2013-12-01: Frederick Aguirre, Al cerrar el pdf, se cambia para que no cierre todo el documento y permita generar otra solicitud.
 
  **********************************************************************************************************/
-if( !isset($_SESSION['user']) && isset($peticionAjax) )//session muerta en una petición ajax
+if( !isset($_SESSION['user']) && isset($peticionAjax) && !isset($_GET['automatizacion_pdfs']) )//session muerta en una petición ajax
 {
   if( $tipoPeticion == "json" ){
     $data = array( 'error'=>"error" );
@@ -59,7 +59,7 @@ if( !isset($_SESSION['user']) && isset($peticionAjax) )//session muerta en una p
 
 $wactualiz = "2019-10-09";
 
-if(!isset($_SESSION['user'])){
+if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs'])){
 	echo "error";
 	return;
 }
@@ -72,7 +72,7 @@ $pos                   = strpos($user,"-");
 $wuser                 = substr($user,$pos+1,strlen($user));
 $LIMITE_DE_FORMULARIOS_A_IMPRIMIR = 150;
 
-if(! isset($_REQUEST['action'] )){
+if(! isset($_REQUEST['action']) || isset($_GET['automatizacion_pdfs'])){
 	echo "<html>";
 	echo "<head>";
 	echo "<title>Solicitud impresion</title>";
@@ -417,6 +417,7 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 		global $wservicio;
 		global $wmovhos;
 		global $cadenaProgramasAnexos;
+		global $usuarioAutomatizacion;
 		
 		$wtipodoc="";
 		$wcedula="";
@@ -439,7 +440,8 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 
 
 		//$wservicio         ='*';
-		$key               = $wuser;
+		$key = isset($_GET['automatizacion_pdfs']) ? $usuarioAutomatizacion : $wuser;
+
 		$htmlArbolCompleto = "";
 
 		$htmlArbolCompleto .= "<div id='div_arbol_impresion'>";
@@ -665,7 +667,12 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 									$progAnex = "progAnex='".$data[$exp][0]."'";
 								}
 								
-								$htmlArbolCompleto .= "<td id=".$color."><span style='float:left;'><input class='formulario_arbol_impresion' {$checkFormulario} type='checkbox' value='".$valueCheckbox."' name='imp[".$exp."]' ".$progAnex."></span>";
+								if(isset($_GET['automatizacion_pdfs'])) {
+									$htmlArbolCompleto .= "<td id=".$color."><span style='float:left;'><input class='formulario_arbol_impresion' {$checkFormulario} type='checkbox' checked value='".$valueCheckbox."' name='imp[".$exp."]' ".$progAnex."></span>";
+								}
+								else{
+									$htmlArbolCompleto .= "<td id=".$color."><span style='float:left;'><input class='formulario_arbol_impresion' {$checkFormulario} type='checkbox' value='".$valueCheckbox."' name='imp[".$exp."]' ".$progAnex."></span>";
+								}
 								$htmlArbolCompleto .= "".$data[$exp][1]."</td>";
 							}
 							else
@@ -1268,7 +1275,7 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 		}
 
 		$menu = "";
-		if( count( $pacientes ) > 0 ){
+		if( count( $pacientes ) > 0 || isset($_GET['automatizacion_pdfs'])){
 			$formulariosHce = todoslosFormularios();
 			$menu .= htmllistadoPacientes( $pacientes, $wfact, $clasificacion, $wmodal,$formulariosHce );
 		}
@@ -1636,7 +1643,7 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 		}
 
 		$listado = "";
-		if( count($pacientes) > 0 ){
+		if( count($pacientes) > 0 || isset($_GET['automatizacion_pdfs'])){
 			$formulariosHce = todoslosFormularios();
 			$listado .= htmllistadoPacientes( $pacientes, $wfact, $clasificacion, $wmodal, $formulariosHce );
 		}
@@ -2647,7 +2654,7 @@ if( isset($_REQUEST['action'] )){
 		$contenedorFormularios = "<input type='hidden' este='sii' class='contenedor_formularios' historia='{$whis}'  ingreso='{$wing}' ".$formulariosDiligenciados." formulariosElegidos='' cadAnexos='".$cadProgramasAnexos."'>";
 
 		// if( existePaciente( $whis, $wing ) AND $tieneFormulariosImprimir ){
-		if( (existePaciente( $whis, $wing ) AND $tieneFormulariosImprimir) || (existePaciente( $whis, $wing ) AND $cadenaProgramasAnexos!="")  ){
+		if( (existePaciente( $whis, $wing ) AND $tieneFormulariosImprimir) || (existePaciente( $whis, $wing ) AND $cadenaProgramasAnexos!="")  || isset($_GET['automatizacion_pdfs'])){
 
 			( trim( $wcco ) == "" )   ? $wcco   = '%' : $wcco   = $wcco;
 			( trim( $wgrupo ) == "" ) ? $wgrupo = '%' : $wgrupo = $wgrupo;
@@ -2656,7 +2663,7 @@ if( isset($_REQUEST['action'] )){
 
 			echo $datosPaciente['encabezadoPaciente']."<br><br>";
 			echo mostrarPaquetes( $wmodal, $wcco, $wgrupo );
-			if( $wfact == "off"){
+			if( $wfact == "off" || isset($_GET['automatizacion_pdfs'])){
 				echo "<br>";
 				echo mostrarArbolImpresion($_REQUEST['whis'], $_REQUEST['wing'] );
 			}else{
@@ -2904,6 +2911,11 @@ $wbasedato           = $wmovhos;
 $wcliame             = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliameCenimp");
 $wcorreopmla         = consultarAliasPorAplicacion( $conex, $wemp_pmla, "emailpmla");
 $buscaXcedulaActivos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cedulaPacientesActivos");
+$usuarioAutomatizacion = consultarAliasPorAplicacion( $conex, $wemp_pmla, "usuarioAutomatizacion");
+
+/* REVISAR CON EDWIN PARA EL TEMA DEL USUARIO AUTOMATIZACION - JAIME */
+//$wuser = isset($_GET['automatizacion_pdfs']) ? 'autsop' : $wuser;
+$wuser = isset($_GET['automatizacion_pdfs']) ? $usuarioAutomatizacion : $wuser;
 
 $wauxrol    = consultarRol();
 $wrol       = $wauxrol['rol'];
@@ -3309,6 +3321,17 @@ $cadenaProgramasAnexos = "";
 		$(".formulario_arbol_impresion").attr("checked", obj.is(":checked") );
 	}
 
+	//modificado por jaime mejia
+	//Funcion para hacer click en "generar solicitud" en el metodo automatico para rescatar el soporte	
+	function readyFn() {
+		var clickGenerarSolicitud = '<?php echo (isset($_GET['automatizacion_pdfs'])); ?>';
+		if(clickGenerarSolicitud == 1){
+			$("input[name=btn_guardar]").click();
+		}
+	}
+
+	$( document ).ready( readyFn );
+
 	function solicitudEnMasa(){
 		var huboError           = 0;
 		var historiaBuscada     = "";
@@ -3491,43 +3514,50 @@ $cadenaProgramasAnexos = "";
 		var aleatorio      = Math.floor(Math.random()*(rango_superior-(rango_inferior-1))) + rango_inferior;
 
 		//Realiza el llamado ajax con los parametros de busqueda
+
+		<?php
+			$URL = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'];
+		?>
+		var _URL_AJAX = "<?php echo $URL; ?>/matrix/hce/procesos/solimp.php";
+		
 		$.ajax({
-				  url:'solimp.php',
-				  type: "POST",
-				 data: {
-				 	 	wemp_pmla: wemp_pmla,
-				 	 	  fecha_i: fecha_i,
-				 	 	  fecha_f: fecha_f,
-				 	   fecIngreso: fechaIni_def,
-				 	    fecEgreso: fechaFin_def,
-				 	 	  monitor: monitor,
-				 	 	    datos: datosJson,
-				 	 	 historia: historia,
-				 	 	  ingreso: ingreso,
-				 	 	     wcco: centroCostos,
-				  wSolicitaCenimp: wSolicitaCenimp,
-				      wenviaEmail: wenviaEmail,
+			//url:'solimp.php',
+			url: _URL_AJAX,
+			type: "POST",
+			data: {
+				wemp_pmla: wemp_pmla,
+				fecha_i: fecha_i,
+				fecha_f: fecha_f,
+				fecIngreso: fechaIni_def,
+				fecEgreso: fechaFin_def,
+				monitor: monitor,
+				datos: datosJson,
+				historia: historia,
+				ingreso: ingreso,
+				wcco: centroCostos,
+				wSolicitaCenimp: wSolicitaCenimp,
+				wenviaEmail: wenviaEmail,
 				wimpresionDirecta: wimpresionDirecta,
-				 	 	   action: "guardarSolicitud",
-				 	 consultaAjax: aleatorio,
-				 	 	  wcenimp: wcenimp,
-				 	 	  wmovhos: wmovhos,
-				 	 whcebasedato: whcebasedato,
-				 	   wmodalidad: wmodalidad,
-				 	        wlogo: wincluyeLogo,
-				 	        wtapa: wincluyeTapa,
-				 	 	  weditar: weditar,
-						  widenti: widenti,
-						wespecial: wespecial,
-                     tipoPeticion: "normal",
-              htmlProgramasAnexos: htmlProgramasAnexos,
-              formulariosElegidos: formulariosElegidos} ,
+				action: "guardarSolicitud",
+				consultaAjax: aleatorio,
+				wcenimp: wcenimp,
+				wmovhos: wmovhos,
+				whcebasedato: whcebasedato,
+				wmodalidad: wmodalidad,
+				wlogo: wincluyeLogo,
+				wtapa: wincluyeTapa,
+				weditar: weditar,
+				widenti: widenti,
+				wespecial: wespecial,
+                tipoPeticion: "normal",
+				htmlProgramasAnexos: htmlProgramasAnexos,
+				formulariosElegidos: formulariosElegidos} ,
 				success: function(data) {
-						if( data == "error" ){
-							if( bloquear == "no" )
-		                   		return("error");
-		                   	else
-		                   		validarExistenciaParametros( "la sesion ha caducado, por favor reingrese al programa " );
+					if( data == "error" ){
+						if( bloquear == "no" )
+		                   	return("error");
+		                else
+		                   	validarExistenciaParametros( "la sesion ha caducado, por favor reingrese al programa " );
 		                }
 							control         = data.split("|");
 							paginas         = control[0];
@@ -3577,10 +3607,15 @@ $cadenaProgramasAnexos = "";
 								}
 							}
 						}else{
-								error = 1;
-								if( bloquear == "si" ){
-								alerta('Error al realizar la solicitud, no existen formularios que apliquen en la solicitud.');
-								$("#resultados_error").html( respuesta );
+							error = 1;
+							if( bloquear == "si" ){
+								var clickGenerarSolicitud = '<?php echo (isset($_GET['automatizacion_pdfs'])); ?>';
+								if(clickGenerarSolicitud == 1){
+								}									
+								else{
+										alerta('Error al realizar la solicitud, no existen formularios que apliquen en la solicitud.');
+										$("#resultados_error").html( respuesta );
+								}									
 							}
 						}
 					}
@@ -3927,8 +3962,14 @@ $cadenaProgramasAnexos = "";
 		var wfechac     = $("#fecha_consulta").val();
 		var wdoc        = $("#documento_consulta").val();
 
+		<?php
+			$URL = $_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'];
+		?>
+		var _URL_AJAX = "<?php echo $URL; ?>/matrix/hce/procesos/solimp.php";
+
 		$.ajax({
-				  url:'solimp.php',
+				  //url:'solimp.php',
+				  url: _URL_AJAX,
 				 data: {
 							action          : "consultarSolicitudes",
 							wemp_pmla       : wemp_pmla,
@@ -4334,7 +4375,7 @@ $cadenaProgramasAnexos = "";
 				/**++++++++++++++++++++++++++++++++++++++++++++++ FORMULARIOS HOSPITALARIOS+++++++++++++++++++++++++++++++++++++++++++**/
 				/** ACCESO DIRECTO DESDE HCE
 					MUESTRA EN PANTALLA LOS QUE SE PUEDE IMPRIMIR DE UN PACIENTE ACTIVO **/
-					if( $wfacturacion == "off" and isset( $whis ) and isset( $wing ) AND $wsoloPacientesActivos == "on" ){
+					if( ($wfacturacion == "off" and isset( $whis ) and isset( $wing ) AND $wsoloPacientesActivos == "on") || isset($_GET['automatizacion_pdfs'])){
 						echo "<input type='hidden' name ='wgrupo'       id ='wgrupo' 	   value='%'/>";
 						echo "<input type='hidden' name ='whis' id='whis'  value='{$whis}'>";
 						echo "<input type='hidden' name ='wing' id='wing'  value='{$wing}'>";
@@ -4343,7 +4384,7 @@ $cadenaProgramasAnexos = "";
 
 						$paciente       = array();
 						$paciente       = datosPaciente( $whis, $wing, "altaDefinitiva", "off" );
-						if( $paciente['altaDefinitiva'] == "off" or  ( $paciente['altaDefinitiva'] == "on" and $paciente['horasDesdeAlta']*1 <= 6) ){//-->2016-06-21
+						if(($paciente['altaDefinitiva'] == "off" or  ( $paciente['altaDefinitiva'] == "on" and $paciente['horasDesdeAlta']*1 <= 6)) || isset($_GET['automatizacion_pdfs'])){//-->2016-06-21
 
 							$tieneSolicitud = tieneSolicitudPendiente( $whis, $wing, $wmodalidad );
 							$tieneSolicitud = $tieneSolicitud['existe'];
@@ -4358,7 +4399,7 @@ $cadenaProgramasAnexos = "";
 							$progAnexos = consultarScripts($conex,$whcebasedato,$whis,$wing);
 							
 							// if( $tieneFormulariosImprimir ){
-							if( $tieneFormulariosImprimir || (count($progAnexos)>0)){
+							if(($tieneFormulariosImprimir || (count($progAnexos)>0)) || isset($_GET['automatizacion_pdfs'])){
 								echo '<center><div id="div_resultados" align="center" style="width:90%;">';
 								$datosPaciente = mostrarEncabezadoPaciente( $whis, $wing, $empresa );
 								echo $datosPaciente['encabezadoPaciente'];
@@ -4408,7 +4449,7 @@ $cadenaProgramasAnexos = "";
 					echo '<center><div id="div_resultados" align="center" style="width:90%; display:none;"></div></center>';
 				//echo "<center><input type='button' name='btn_guardar' value='Generar Solicitud' {$mostrarBoton} bloquear='si' /></center><br>";
 
-				( $wfacturacion == "off" and isset( $whis ) and isset( $wing ) AND $wsoloPacientesActivos == "on" and !$errorEnBusqueda) ? $mostrarBoton = "" : $mostrarBoton = "style='display:none;'";
+				(($wfacturacion == "off" and isset( $whis ) and isset( $wing ) AND $wsoloPacientesActivos == "on" and !$errorEnBusqueda) || isset($_GET['automatizacion_pdfs']) ) ? $mostrarBoton = "" : $mostrarBoton = "style='display:none;'";
 				echo "<center><input type='button' name='btn_guardar' value='Generar Solicitud' {$mostrarBoton} bloquear='si' /></center><br><br>";
 				echo "<div id='div_contenedor_pdf' align='center'></div>";
 				echo "<center><input type='button' id='btn_retornar2' onclick='retornar()' value='Retornar' bloquear='no' style='display:none' /></center>";

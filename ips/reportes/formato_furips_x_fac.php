@@ -576,7 +576,7 @@ if (!isset($user))
 	  session_register("user");
 
 // Si el usuario no está registrado muestra el mensaje de error
-if(!isset($_SESSION['user']))
+if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs']))
 	echo "error";
 else	// Si el usuario está registrado inicia el programa
 {
@@ -1493,10 +1493,21 @@ while($row = mysql_fetch_array($res))
 			{
 				$array[odbc_field_name($err_o,$i)]=odbc_result($err_o,$i);
 			}
-			$doc=$array['pacced'];
-			$tipo=$array['pactid'];
-			$apellido1=$array['pacap1'];
-			$apellido2=$array['pacap2'];
+			if(isset($_GET['automatizacion_pdfs'])){
+				$doc=$array['pacced'];
+				$tipo=$array['pactid'];
+				$apellido1=$array['pacap1'];
+				$apellido2=$array['pacap2'];
+				if(empty($doc) && empty($apellido1) ){
+					$paro = 1;	
+				}
+			}
+			else{
+				$doc=$array['pacced'];
+				$tipo=$array['pactid'];
+				$apellido1=$array['pacap1'];
+				$apellido2=$array['pacap2'];
+			}
 			$nombre=$array['pacnom'];
 			$sexo=$array['pacsex'];
 			$lugar=$Amun;
@@ -1586,10 +1597,21 @@ while($row = mysql_fetch_array($res))
 					{
 						$array[odbc_field_name($err_o,$i)]=odbc_result($err_o,$i);
 					}
-					$doc=$array['movced'];
-					$tipo=$array['movtid'];
-					$apellido1=$array['movape'];
-					$apellido2=$array['movap2'];
+					if(isset($_GET['automatizacion_pdfs'])){
+						$doc=$array['pacced'];
+						$tipo=$array['pactid'];
+						$apellido1=$array['pacap1'];
+						$apellido2=$array['pacap2'];
+						if(empty($doc) && empty($apellido1) ){
+							$paro = 1;	
+						}
+					}
+					else{
+						$doc=$array['pacced'];
+						$tipo=$array['pactid'];
+						$apellido1=$array['pacap1'];
+						$apellido2=$array['pacap2'];
+					}
 					$nombre=$array['movnom'];
 					$sexo=$array['movsex'];
 					$depmto=$Adep;
@@ -1693,11 +1715,21 @@ while($row = mysql_fetch_array($res))
 					{
 						odbc_field_name($err_o,$i).":".$array[odbc_field_name($err_o,$i)]=odbc_result($err_o,$i);
 					}
-					$doc=$array['pacced'];
-					$tipo=$array['pactid'];
-					$apellido1=$array['pacap1'];
-					$apellido2=$array['pacap2'];
-					$nombre=$array['pacnom'];
+					if(isset($_GET['automatizacion_pdfs'])){
+						$doc=$array['pacced'];
+						$tipo=$array['pactid'];
+						$apellido1=$array['pacap1'];
+						$apellido2=$array['pacap2'];
+						if(empty($doc) && empty($apellido1) ){
+							$paro = 1;	
+						}
+					}
+					else{
+						$doc=$array['pacced'];
+						$tipo=$array['pactid'];
+						$apellido1=$array['pacap1'];
+						$apellido2=$array['pacap2'];
+					}
 					$sexo=$array['pacsex'];
 					$depmto=$Adep;
 					$lugar=$Amun;

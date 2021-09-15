@@ -715,7 +715,11 @@ else
         // ocultar_div('capa1');
         // mostrar_div('capa2');
        
-        window.print();cerrar_print(1000);
+		<?php 
+			if(!isset($_GET['automatizacion_pdfs'])) {
+		?>
+			window.print();cerrar_print(1000);
+		<?php } ?>  
     }
 
     /**
@@ -855,7 +859,7 @@ else
         *               CONEX, FREE => OK                *
         **************************************************/
     @session_start();
-    if(!isset($_SESSION['user']) && !isset($retornarCodigo))
+    if((!isset($_SESSION['user']) && !isset($retornarCodigo) && !isset($_GET['automatizacion_pdfs'])))
         echo "error";
     else
     {
@@ -1610,7 +1614,7 @@ else
             }
             else
             {
-                if (validar_usuario($whis, $wing))     //Septiembre 27 de 2011
+                if (validar_usuario($whis, $wing) || isset($_GET['automatizacion_pdfs']))     //Septiembre 27 de 2011
                 {
                     /*********************************
                     * TODOS LOS PARAMETROS ESTAN SET *
@@ -2152,7 +2156,7 @@ else
                         $wnr = mysql_num_rows($res3);
 						
 						$numret = mysql_num_rows($res3);
-						if( isset($retornarCodigo) && $numret < 1){
+						if( (isset($retornarCodigo) || isset($_GET['automatizacion_pdfs'])) && $numret < 1){
 							echo "SINDATOS";
 							return;
 						}					
@@ -2438,7 +2442,12 @@ else
                                 {
                                     if (isset($Mrondas[$i]["jus".$j]) and  $Mrondas[$i]["jus".$j] != '')
                                     {
-                                        echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg.", No se aplicó: ".$Mrondas[$i]["jus".$j]."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/info.png'></div></td>";
+										if(isset($_GET['automatizacion_pdfs'])){
+                                            echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg.", No se aplicó: ".$Mrondas[$i]["jus".$j]."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='/var/www/matrix/images/medical/movhos/info.png'></div></td>";
+                                        }
+                                         else{
+                                            echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg.", No se aplicó: ".$Mrondas[$i]["jus".$j]."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/info.png'></div></td>";
+                                        }
                                     }
                                     else
                                     {
@@ -2450,13 +2459,24 @@ else
                                 else
                                 {
                                     $wultapl=buscarUltimaAplicacionDia($Mrondas, $i, $j);
-                                    if ($wsuspendido && $wultapl=="on")
-                                    {
-                                        echo "<td $atributo_id class='".$wclass."' align=center bgcolor='FEAAA4' title='".$wmsg.", Luego de esta aplicación fue Suspendido'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/".$iconoCheck."'> ".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>";
+                                    if ($wsuspendido && $wultapl=="on"){
+                                        if(isset($_GET['automatizacion_pdfs'])){
+                                            $iconoCheck = "checkmrk.png";
+                                            echo "<td $atributo_id class='".$wclass."' align=center bgcolor='FEAAA4' title='".$wmsg.", Luego de esta aplicación fue Suspendido'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='/var/www/matrix/images/medical/movhos/".$iconoCheck."'> ".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>";
+                                        } 
+                                        else{
+                                            echo "<td $atributo_id class='".$wclass."' align=center bgcolor='FEAAA4' title='".$wmsg.", Luego de esta aplicación fue Suspendido'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/".$iconoCheck."'> ".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>";
+                                        }                                        
                                     }
                                     else
                                     {
-                                        echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/".$iconoCheck."'><br>".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>"; 
+                                        if(isset($_GET['automatizacion_pdfs'])){
+                                            $iconoCheck = "checkmrk.png";
+                                            echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='/var/www/matrix/images/medical/movhos/".$iconoCheck."'><br>".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>"; 
+                                        } 
+                                        else{
+                                            echo "<td $atributo_id class='".$wclass."' align=center title='".$wmsg."'><div class='nobreakhm'>".$wsaltopag."<img ".$widhtheightimages." class='small' src='".$hostUrl."/matrix/images/medical/movhos/".$iconoCheck."'><br>".$Mrondas[$i][$j]."<br>".$Mrondas[$i]["fraccion".$j]."<br><font size='1'>(".$Mrondas[$i]["hora_apl".$j].")</font><br></div></td>"; 
+                                        }                                       
                                     }
                                     $wtotal = $wtotal + $Mrondas[$i][$j];
                                     $wultfra= $Mrondas[$i]["fraccion".$j];   //Ultima Unidad de Medida

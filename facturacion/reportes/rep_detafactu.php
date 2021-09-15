@@ -69,7 +69,7 @@ session_start();
 //Encabezado
 encabezado("DETALLE DE MATERIALES Y MEDICAMENTOS DE UNA FACTURA",$wactualiz,"clinica");
 
-if (!$usuarioValidado)
+if (!$usuariovalidado && !isset($_GET['automatizacion_pdfs']))
 {
 	echo '<span class="subtituloPagina2" align="center">';
 	echo 'Error: Usuario no autenticado';
@@ -83,7 +83,13 @@ else
 
 
  //Forma
- echo "<form name='forma' action='rep_detafactu.php' method='post'>";
+ if (isset($_GET['automatizacion_pdfs'])){
+	echo "<form name='forma' action='rep_detafactu.php?automatizacion_pdfs=' method='post'>";
+
+ }
+ else{
+	echo "<form name='forma' action='rep_detafactu.php' method='post'>";
+ }
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
  
 if (!isset($fte) or $fte=='' or !isset($fac) or $fac == '' or !isset($com) or $com=='' or !isset($atc) or $atc=='')
@@ -1424,7 +1430,14 @@ if (!isset($fte) or $fte=='' or !isset($fac) or $fac == '' or !isset($com) or $c
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
-   echo "<td align=RIGHT bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".number_format($tottal)."</b></font></td>"; 
+	if(isset($_GET['automatizacion_pdfs'])){
+		if($tottal === 0){
+			echo 'no tiene detalle de materiales';
+		}
+	}
+	else{
+		echo "<td align=RIGHT bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".number_format($tottal)."</b></font></td>"; 
+	} 
    echo "</tr>";
    }
    ELSE
@@ -1450,8 +1463,15 @@ if (!isset($fte) or $fte=='' or !isset($fac) or $fac == '' or !isset($com) or $c
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
-   echo "<td align=RIGHT bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".number_format($tottal)."</b></font></td>"; 
-   echo "</tr>";	
+	if(isset($_GET['automatizacion_pdfs'])){
+		if($tottal === 0){
+			echo 'no tiene detalle de materiales';
+		}
+	}
+	else{
+		echo "<td align=RIGHT bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".number_format($tottal)."</b></font></td>"; 
+	}      
+	echo "</tr>";
    }
   }
   ELSE
@@ -1477,8 +1497,15 @@ if (!isset($fte) or $fte=='' or !isset($fac) or $fac == '' or !isset($com) or $c
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
-   echo "<td align=RIGHT bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".number_format($tottal)."</b></font></td>"; 
-   echo "</tr>";
+	if(isset($_GET['automatizacion_pdfs'])){
+		if($tottal === 0){
+			echo 'no tiene detalle de materiales';
+		}
+	}
+	else{
+		echo "<td align=RIGHT bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".number_format($tottal)."</b></font></td>"; 
+	}      
+	echo "</tr>";
    }
    ELSE
    {
@@ -1499,8 +1526,15 @@ if (!isset($fte) or $fte=='' or !isset($fac) or $fac == '' or !isset($com) or $c
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
    echo "<td align=CENTER bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>&nbsp;</font></td>";
-   echo "<td align=RIGHT bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".number_format($tottal)."</b></font></td>"; 
-   echo "</tr>";	
+	if(isset($_GET['automatizacion_pdfs'])){
+		if($tottal === 0){
+			echo 'no tiene detalle de materiales';
+		}
+	}
+	else{
+		echo "<td align=RIGHT bgcolor=#FFFFFF ><font size='2' text color='#003366'><b>".number_format($tottal)."</b></font></td>"; 
+	}        
+	echo "</tr>";	
    }
   } 
   

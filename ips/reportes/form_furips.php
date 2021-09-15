@@ -71,13 +71,21 @@ include_once("conex.php"); header("Content-Type: text/html;charset=ISO-8859-1");
 	 
 session_start();
 
+//carga de jquery al momento de iniciar sesion por la automatizacion
+if (isset($_GET['automatizacion_pdfs'])){
+	echo '<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>';
+	echo '<script src="../../../include/root/jquery.blockUI.min.js" type="text/javascript"></script>';
+	echo ' <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />';
+	echo '<script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>';
+	echo '<script src="../../../include/root/jquery.tooltip.js" type="text/javascript"></script>';
+}
 // Inicia la sessión del usuario
-if (!isset($user))
+if (!isset($user) && !isset($_GET['automatizacion_pdfs']))
 	if(!isset($_SESSION['user']))
 	  session_register("user");
 	
 // Si el usuario no está registrado muestra el mensaje de error
-if(!isset($_SESSION['user']))
+if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs']))
 	echo "error";
 else	// Si el usuario está registrado inicia el programa
 {	            
@@ -126,13 +134,31 @@ else	// Si el usuario está registrado inicia el programa
 				." ORDER BY cconom ";
 	$result = mysql_query($query,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $query . " - " . mysql_error());
 	$num1 = mysql_num_rows($result);
+	//Se modifica para que reciba la automatizacion jaime mejia
+	if(isset($_GET['automatizacion_pdfs'])){
+		echo "<form name='ingreso' action='formato_furips_x_fac.php?automatizacion_pdfs=' target='_blank' method='POST'>";
+	}
+	else{
+		echo "<form name='ingreso' action='formato_furips_x_fac.php' target='_blank' method='POST'>";
+	}
+	//fin modificacion para que reciba la automatizacion jaime mejia														 
 
 	echo "<form name='ingreso' action='formato_furips_x_fac.php' target='_blank' method='POST'>";
 	echo "<table border=0 align=center width=310>";
 	echo "<tr><td colspan=2 align=left height=31 class=fila2> &nbsp;&nbsp; <b>Ingrese los datos a consultar</b> &nbsp;&nbsp;</td>";
 	echo "</tr>";
 	echo "<tr height=37><td align=center class=fila2>Número de factura:&nbsp</td>";
-	echo "<td align=center class=fila2><input type='text' name='wnumero' value=''></td></tr>";
+	if(isset($_GET['automatizacion_pdfs'])){
+		$NAME = $_GET['numerofactura'];
+				
+		echo "<td align=center class=fila2><input type='text' id ='datoautomatizado' name='wnumero' value=''></td></tr>";
+		echo '<script type="text/javascript">' . 
+		'document.getElementById("datoautomatizado").value ='. $NAME . ';' .
+		'</script>';		
+	}
+	else{
+		echo "<td align=center class=fila2><input type='text' name='wnumero' value=''></td></tr>";
+	}
 	echo "<tr style='display:none'>";
 	echo "<td align=center class=fila2 colspan=2><input type='radio' name='wgrupo' value='0' checked> Factura";
 	echo "&nbsp;<input type='radio' name='wgrupo' value='1'> Identificación<br></td></tr>";
@@ -146,4 +172,18 @@ else	// Si el usuario está registrado inicia el programa
 ?>
 
 </body>
+<script>
+
+//************cuando la pagina este lista...**********//
+//modificado por jaime mejia
+	//Funcion para hacer click en "generar solicitud" en el metodo automatico para rescatar el soporte
+	function readyFn() {
+		var clickGenerarSolicitud = '<?php echo (isset($_GET['automatizacion_pdfs'])); ?>';
+		if(clickGenerarSolicitud == 1){
+			$("input[name=aceptar]").click();
+		}
+	}
+	
+	$( document ).ready( readyFn );
+</script>		 
 </html>

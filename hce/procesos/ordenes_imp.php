@@ -2637,9 +2637,10 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 session_start();
 
 
-// Si el usuario no está registrado muestra el mensaje de error
-if(!isset($_SESSION['user']))
+// Si el usuario no está registrado muestra el mensaje de error, modificacion hecha por Jaime Mejia
+if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs'])){
 	echo "<br /> La sessión de usuario ha caducado. Vuelva a entrar a Matrix";
+}
 else	// Si el usuario está registrado inicia el programa
 {
 	include_once("root/comun.php");	
@@ -2648,7 +2649,10 @@ else	// Si el usuario está registrado inicia el programa
 	$html .= estilo();
 	borrarOrdenesImpresas(); //Funcion que borra todos los archivos en un lapso de tiempo.
 	
-	echo "<p align=center><input type='button' onclick='cerrarVentana();' value='Cerrar Ventana'></p>";
+	//Modificacion Jaime Mejia para no sacar la ventana
+	if(!isset($_GET['automatizacion_pdfs'])){
+		echo "<p align=center><input type='button' onclick='cerrarVentana();' value='Cerrar Ventana'></p>";
+	}
 	if($boton_imp == '' and $ctcNoPos == '' and $wtodos_ordenes == ''){
 	echo "<p align=center><input type='button' class='printer' value='Imprimir'></p>";
 	}
@@ -2765,7 +2769,7 @@ else	// Si el usuario está registrado inicia el programa
 	// Arreglo que me guardará la lista de medicamentos No Pos ordenados
 	$medicamentosNoPos = array();
 
-	// Arreglo que me gusradará la lista de procedimientos No Pos ordenados
+	// Arreglo que me guardará la lista de procedimientos No Pos ordenados
 	$examenesNoPos = array();
 	
 	$wcenmez = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
@@ -3223,6 +3227,10 @@ else	// Si el usuario está registrado inicia el programa
 					if(in_array("medtos", $arrOrdenes)) {	
 						$res = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 						$num = mysql_num_rows($res);
+						//modificacion Jaime Mejia
+						if(isset($_GET['automatizacion_pdfs'])){
+							$numeroMedtos = mysql_num_rows($res);							
+						}
 					}else{
 						$num = 0;
 					}
@@ -3300,8 +3308,15 @@ else	// Si el usuario está registrado inicia el programa
 				
 			}
 		
-		}		
-		
+		}
+		else{
+			if(isset($_GET['automatizacion_pdfs'])){
+				if(strlen($arrOrden) <= 0 && $numeroMedtos == 0){
+				$html .= "sin medicamentos";
+				echo "sin medicamentos";
+				}	
+			}
+		}
 		// echo "<pre>";
 		// print_r($array_medicamentos);
 		// echo "</pre>";		
@@ -6026,6 +6041,32 @@ if($origen != ''){
 
 	  $respuesta = shell_exec( "./generarPdf_ordenes.sh ".$wnombrePDF );
 	
+	if(isset($_GET['automatizacion_pdfs'])){
+		//prueba para capturar PDF en carpeta de soportes JAIME MEJIA
+		$sinMedicamentos = 'sin medicamentos';
+
+		$posicion_sin_medicamento = strpos($html,$sinMedicamentos);
+		if($posicion_sin_medicamento === false){
+			$dir = 'impresion_ordenes';
+			$soporte = $_GET['soporte'];
+			$wnombrePDF2 = $whistoria . '-' . $wingreso . '-' . $soporte;
+			if(is_dir($dir)){ }
+			else { mkdir($dir,0777); }
+			$archivo_dir = $dir."/".$wnombrePDF2.".html";
+			 echo "<div style='display:none;'>".$archivo_dir."</div>";
+			if(file_exists($archivo_dir)){
+			  unlink($archivo_dir);
+			}
+			$f = fopen( $archivo_dir, "w+" );
+			fwrite( $f, $html);
+			fclose( $f );
+	  
+			$respuesta = shell_exec( "./generarPdf_ordenes.sh ".$wnombrePDF2 );
+		}
+		else{
+			$respuesta = shell_exec( "./generarPdf_ordenes.sh ".$wnombrePDF );
+		}
+	}
 	$botonEnviarPdf = "";
 	if($enviarCorreo=="on")
 	{
@@ -6043,6 +6084,7 @@ if($origen != ''){
 							</div>";
 	}
 
+	if(!isset($_GET['automatizacion_pdfs'])){
 	  $htmlFactura = $botonEnviarPdf
 					  ."<br><br>"
 					  ."<object type='application/pdf' data='".$dir."/".$wnombrePDF.".pdf' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 width='900' height='700'>"
@@ -6059,7 +6101,7 @@ if($origen != ''){
 	  echo "<br>";
 	  echo $htmlFactura;  
 	  echo "</div>";	
-				
+	}
 	  
 	}else{
 	  
@@ -6071,8 +6113,8 @@ if($origen != ''){
 
 
 
-if($boton_imp == '' and $ctcNoPos == '' and $wtodos_ordenes == ''){
-echo "<p align=center><input type='button' class='printer' value='Imprimir'></p><p align=center><input type='button' onclick='cerrarVentana();' value='Cerrar Ventana'></p>";
+if($boton_imp == '' and $ctcNoPos == '' and $wtodos_ordenes == '' and !isset($_GET['automatizacion_pdfs'])){
+	echo "<p align=center><input type='button' class='printer' value='Imprimir'></p><p align=center><input type='button' onclick='cerrarVentana();' value='Cerrar Ventana'></p>";
 }
 echo '<script> if(document.getElementById("ordenAnexa")) { document.getElementById("ordenAnexa").innerHTML = document.getElementById("anx'.$ordenAnexa.'").innerHTML; } </script>';
 
