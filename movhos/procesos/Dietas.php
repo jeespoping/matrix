@@ -10316,7 +10316,6 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
                       $wpatron_combinable = valida_combinable($wpatron); // Verifica si el patron es combinable (SI, DSN, TMO)
                       $wvalidahorario = validahorariopatron($wpatron); // Esta funcion valida si el patron no valida horario, se aplica especialmente al patron DSN.
 
-
                           //Si no hay ningun patron seleccionado ingresa a la ventana modal del patron (SI, DSN, TMO)
 	                      if (trim($wchequeados) == '')
 	                      {
