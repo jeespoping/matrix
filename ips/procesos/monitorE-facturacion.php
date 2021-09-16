@@ -662,7 +662,8 @@ else
 			//alert('Error: ' + response.responseText);
 			alert('Error descargando pdf.');
 			$("#modalCosultando").modal('hide');
-	
+		});
+	}
 	//--------------------------------------------------------
 	//	--> Abrir representacion grafica
 	//--------------------------------------------------------
