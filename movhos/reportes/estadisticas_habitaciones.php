@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title>ESTADISTICAS CENTRAL DE HABITACIONES</title>
+	<title>ESTADISTICAS CENTRAL DE HABITACIONES</title>
 
 	<link type='text/css' href='../../../include/root/jquery.tooltip.css' rel='stylesheet' />
 
@@ -12,38 +12,42 @@
 
 	<script type='text/javascript'>
 
-	$.datepicker.regional['esp'] = {
-        closeText: 'Cerrar',
-        prevText: 'Antes',
-        nextText: 'Despues',
-        monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-        'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
-        monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun',
-        'Jul','Ago','Sep','Oct','Nov','Dic'],
-        dayNames: ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'],
-        dayNamesShort: ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'],
-        dayNamesMin: ['D','L','M','M','J','V','S'],
-        weekHeader: 'Sem.',
-        dateFormat: 'yy-mm-dd',
-        changeYear: true,
-        changeMonth: true,
-        yearRange: '-10:+10'
-        };
-$.datepicker.setDefaults($.datepicker.regional['esp']);
+		$.datepicker.regional['esp'] = {
+			closeText: 'Cerrar',
+			prevText: 'Antes',
+			nextText: 'Despues',
+			monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+			'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+			monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun',
+			'Jul','Ago','Sep','Oct','Nov','Dic'],
+			dayNames: ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'],
+			dayNamesShort: ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'],
+			dayNamesMin: ['D','L','M','M','J','V','S'],
+			weekHeader: 'Sem.',
+			dateFormat: 'yy-mm-dd',
+			changeYear: true,
+			changeMonth: true,
+			yearRange: '-10:+10'
+		};
+
+		$.datepicker.setDefaults($.datepicker.regional['esp']);
 
 		function cargaToolTip()
 		{
 			var cont1 = 1;
+
 			while(document.getElementById('wssu'+cont1))
 			{
-				 $('#wssu'+cont1).tooltip({track: true, delay: 0, showURL: false, showBody: ' - ', opacity: 0.95, left: -50 });
-				 cont1++;
+				$('#wssu'+cont1).tooltip({track: true, delay: 0, showURL: false, showBody: ' - ', opacity: 0.95, left: -50 });
+				cont1++;
 			}
+
 			cont1 = 1;
+
 			while(document.getElementById('wse'+cont1))
 			{
-				 $('#wse'+cont1).tooltip({track: true, delay: 0, showURL: false, showBody: ' - ', opacity: 0.95, left: -50 });
-				 cont1++;
+				$('#wse'+cont1).tooltip({track: true, delay: 0, showURL: false, showBody: ' - ', opacity: 0.95, left: -50 });
+				cont1++;
 			}
 		}
 
@@ -54,29 +58,31 @@ $.datepicker.setDefaults($.datepicker.regional['esp']);
 		}
 
 		function cerrarVentana()
-		 {
-		  window.close()
-		 }
+		{
+			window.close()
+		}
 
-		 window.onload = function() { cargaToolTip(); }
+		window.onload = function()
+		{
+			cargaToolTip();
+		}
 
-		 $(document).ready(function() {
-
+		$(document).ready(function()
+		{
 			$("#wfecha_i").datepicker({
-			  showOn: "button",
-			  buttonImage: "../../images/medical/root/calendar.gif",
-			  buttonImageOnly: true,
-			  maxDate:"+2Y"
+				showOn: "button",
+				buttonImage: "../../images/medical/root/calendar.gif",
+				buttonImageOnly: true,
+				maxDate:"+2Y"
 			});
 
 			$("#wfecha_f").datepicker({
-			  showOn: "button",
-			  buttonImage: "../../images/medical/root/calendar.gif",
-			  buttonImageOnly: true,
-			  maxDate:"+2Y"
+				showOn: "button",
+				buttonImage: "../../images/medical/root/calendar.gif",
+				buttonImageOnly: true,
+				maxDate:"+2Y"
 			});
-
-			});
+		});
 
 	</script>
 </head>
@@ -91,6 +97,10 @@ include_once("conex.php");
 
 /***************************************************************************************************************************************
  * Ultima actualizacion:
+ //======================================================================================================================================\\ 
+ * 2021-09-09 (Joel Payares Hdz) : Se modifican consultas para obtener cantidad de habitaciones a medir tiempos, cambiando los campos
+								   Movfal y Movhal por Fecha_data y Hora_data de la tabla movhos 25, permitiendo así medir los tiempos
+								   acorde a la salida del camillero de la habitación con el paciente.
  //======================================================================================================================================\\ 
  * 2017-09-06 (Jonatan Lopez) : Se omite en la estadistica las habitaciones marcadas como mantenimiento, campo Sgeman activo en 
 								la tabla movhos_000024 y codigo de empleado 052.
@@ -115,45 +125,54 @@ include_once("conex.php");
  ***************************************************************************************************/
 
 // Función que retorna los segundos recibidos en formato hh:mm:ss
-function segundosTiempo($segundos){
+function segundosTiempo($segundos)
+{
 	$minutos=$segundos/60;
 	$horas=floor($minutos/60);
 	$minutos2=$minutos%60;
 	$segundos_2=$segundos%60%60%60;
-	if($minutos2<10)$minutos2='0'.$minutos2;
-	if($segundos_2<10)$segundos_2='0'.$segundos_2;
 
-	if($segundos<60){ /* segundos */
-	$resultado= round($segundos);
-	}elseif($segundos>60 && $segundos<3600){/* minutos */
-	$resultado= $minutos2.':'.$segundos_2;
-	}else{/* horas */
-	$resultado= $horas.':'.$minutos2.':'.$segundos_2;
+	if($minutos2<10) $minutos2='0'.$minutos2;
+
+	if($segundos_2<10) $segundos_2='0'.$segundos_2;
+
+	if($segundos<60)
+	{
+		/* segundos */
+		$resultado= round($segundos);
 	}
+	elseif($segundos>60 && $segundos<3600)
+	{
+		/* minutos */
+		$resultado= $minutos2.':'.$segundos_2;
+	}
+	else
+	{
+		/* horas */
+		$resultado= $horas.':'.$minutos2.':'.$segundos_2;
+	}
+
 	return $resultado;
 }
 session_start();
+
 if(!isset($_SESSION['user']))
-echo "error";
+	echo "error";
 else
 {
-	
-
-    
-
     include_once("root/comun.php");
 
 	$key = substr($user,2,strlen($user));
-	if (strpos($user,"-") > 0)
-	$wusuario = substr($user,(strpos($user,"-")+1),strlen($user));
 
+	if (strpos($user,"-") > 0)
+		$wusuario = substr($user,(strpos($user,"-")+1),strlen($user));
 
 	// INICIO DEL FORMULARIO
 	echo "<form action='estadisticas_habitaciones.php' method=post>";
 
 	$wfecha=date("Y-m-d");
 	$whora = (string)date("H:i:s");
-	$wactualiz='2017-09-06';
+	$wactualiz='2021-09-09';
 
 	encabezado("ESTADISTICAS CENTRAL DE HABITACIONES",$wactualiz, "clinica");
 
@@ -240,36 +259,43 @@ else
 			//
 			// QUERY: CANTIDAD DE SERVICIOS EN ** EL PERIODO **
 			
-			if ($wtabcco == 'costosyp_000005'){
-				
+			if ($wtabcco == 'costosyp_000005')
+			{
+				/**
+				 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+				 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+				 */
 				$q=   "   SELECT count(*) "
 					 ."   FROM ".$wbasedato."_000025 A, ".$wbasedato."_000067 B, ".$wtabcco.", ".$wbasedato."_000024 "
-					 ."   WHERE A.Movfal     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."     AND movhal       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."   WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+					 ."     AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."     AND movhdi      != '00:00:00' "
 					 ."     AND movhem      != '00:00:00' "
 					 ."     AND movhab       = Habcod "
-					 ."     AND B.fecha_data = A.movfal "
+					 ."     AND B.fecha_data = A.Fecha_data "
 					 ."     AND habcco       = Ccocod "
 					 ."     AND A.movemp     = Sgecod "
 					 ."     AND A.movemp  not in (SELECT Sgecod FROM ".$wbasedato."_000024 WHERE Sgeman = 'on') "
 					 ."     AND Ccoemp       = '".$wemp_pmla."' ";
 			}
-			else{
-				
+			else
+			{
+				/**
+				 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+				 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+				 */
 				$q=   "   SELECT count(*) "
 					 ."   FROM ".$wbasedato."_000025 A, ".$wbasedato."_000067 B, ".$wtabcco.", ".$wbasedato."_000024 "
-					 ."   WHERE A.Movfal     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."     AND movhal       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."   WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+					 ."     AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."     AND movhdi      != '00:00:00' "
 					 ."     AND movhem      != '00:00:00' "
 					 ."     AND movhab       = Habcod "
-					 ."     AND B.fecha_data = A.movfal "
+					 ."     AND B.fecha_data = A.Fecha_data "
 					 ."     AND habcco       = Ccocod "
 					 ."     AND A.movemp  not in (SELECT Sgecod FROM ".$wbasedato."_000024 WHERE Sgeman = 'on') "
 					 ."     AND A.movemp     = Sgecod ";
-			}	 
-			
+			}
 			$res = mysql_query($q,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 			$num = mysql_num_rows($res);
 
@@ -283,13 +309,16 @@ else
 				echo "<td align=center><A href='consulta_de_servicios_movhos.php?wfecha_i=".$wfecha_i."&wfecha_f=".$wfecha_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&whora_i=".$whora_i."&whora_f=".$whora_f."&wemp_pmla=".$wemp_pmla."&wser=* - Todos' TARGET='_blank'> Detallar</A></td>";
 				echo "</tr>";
 			}
-
 			
 			//
 			// QUERY: PROMEDIO DE LLEGADA A LOS SERVICIOS
 			//
-			$q = "   SELECT SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Movfal,' ',A.Movhal),CONCAT(A.Movfdi,' ',A.movhdi))), "
-				."          SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Movfal,' ',A.Movhal),CONCAT(A.Movfec,' ',A.movhem))), "
+			/**
+			 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+			 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+			 */
+			$q = "   SELECT SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',A.movhdi))), "
+				."          SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfec,' ',A.movhem))), "
 				."          SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Movfec,' ',A.Movhem),CONCAT(A.Movfdi,' ',A.movhdi))) "
 				."   FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024 B "
 				."   WHERE A.Movfal  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
@@ -298,6 +327,7 @@ else
 				."     AND A.movhdi != '00:00:00' "
 				."     AND A.movemp  = Sgecod "
 				."     AND A.movemp  not in (SELECT Sgecod FROM ".$wbasedato."_000024 WHERE Sgeman = 'on') ";
+
 			$res = mysql_query($q,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 			$num = mysql_num_rows($res);
 
@@ -344,10 +374,14 @@ else
 			//
 			// QUERY: SERVICIO QUE MAS TARDO
 			//
-			$q = "   SELECT A.Id, MAX(TIMESTAMPDIFF(SECOND,CONCAT(A.Movfal,' ',A.Movhal),CONCAT(A.Movfdi,' ',A.movhdi))) "
+			/**
+			 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+			 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+			 */
+			$q = "   SELECT A.Id, MAX(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',A.movhdi))) "
 				."   FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024 B "
-				."   WHERE A.Movfal  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-				."     AND A.movhal  BETWEEN '".$whora_i."' AND '".$whora_f."'"
+				."   WHERE A.Fecha_data  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+				."     AND A.Hora_data  BETWEEN '".$whora_i."' AND '".$whora_f."'"
 				."     AND A.movhem != '00:00:00' "
 				."     AND A.movhdi != '00:00:00' "
 				."     AND A.movemp  = B.Sgecod "
@@ -373,10 +407,14 @@ else
 			//
 			// QUERY: SERVICIO QUE MENOS TARDO
 			//
-			$q=  "  SELECT A.id, MIN(TIMESTAMPDIFF(SECOND,CONCAT(A.Movfal,' ',A.Movhal),CONCAT(A.Movfdi,' ',A.movhdi))) "
+			/**
+			 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+			 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+			 */
+			$q=  "  SELECT A.id, MIN(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',A.movhdi))) "
 				."    FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024 B "
-				."   WHERE A.Movfal  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-				."     AND A.movhal  BETWEEN '".$whora_i."' AND '".$whora_f."'"
+				."   WHERE A.Fecha_data  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+				."     AND A.Hora_data  BETWEEN '".$whora_i."' AND '".$whora_f."'"
 				."     AND A.movhem != '00:00:00' "
 				."     AND A.movhdi != '00:00:00' "
 				."     AND A.movemp  = B.Sgecod "
@@ -402,10 +440,14 @@ else
 			//
 			// QUERY: CANTIDAD DE SERVICIOS ASIGNADOS PERO NO ATENDIDOS ** EN EL PERIODO **
 			//
+			/**
+			 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+			 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+			 */
 			$q=  "   SELECT count(*) "
 				."   FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024 B "
-				."   WHERE A.Movfal  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-				."     AND A.movhal  BETWEEN '".$whora_i."' AND '".$whora_f."'"
+				."   WHERE A.Fecha_data  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+				."     AND A.Hora_data  BETWEEN '".$whora_i."' AND '".$whora_f."'"
 				."     AND A.movhem != '00:00:00' "
 				."     AND A.movhdi  = '00:00:00' "
 				."     AND A.movemp  = B.Sgecod "
@@ -428,11 +470,15 @@ else
 			//
 			// QUERY: CANTIDAD DE SERVICIOS EN ** MENOS O IGUAL AL PROMEDIO **
 			//
+			/**
+			 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+			 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+			 */
 			$q=   "   SELECT count(*) "
 				 ."   FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024 B "
-				 ."   WHERE (TIMESTAMPDIFF(SECOND,CONCAT(A.Movfal,' ',A.Movhal),CONCAT(A.Movfdi,' ',A.movhdi))) <= ".$wproseg
-				 ."     AND A.Movfal  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-				 ."     AND A.movhal  BETWEEN '".$whora_i."' AND '".$whora_f."'"
+				 ."   WHERE (TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',A.movhdi))) <= ".$wproseg
+				 ."     AND A.Fecha_data  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+				 ."     AND A.Hora_data  BETWEEN '".$whora_i."' AND '".$whora_f."'"
 				 ."     AND A.movhem != '00:00:00' "
 			  	 ."     AND A.movhdi != '00:00:00' "
 				 ."     AND A.movemp  = B.Sgecod "
@@ -454,11 +500,15 @@ else
 			//
 			// QUERY: CANTIDAD DE SERVICIOS EN ** MAS DEL PROMEDIO **
 			//
+			/**
+			 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+			 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+			 */
 			$q=   "   SELECT count(*) "
 				 ."   FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024 B "
-				 ."   WHERE (TIMESTAMPDIFF(SECOND,CONCAT(A.Movfal,' ',A.Movhal),CONCAT(A.Movfdi,' ',A.movhdi))) > ".$wproseg
-				 ."     AND A.Movfal  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-				 ."     AND A.movhal  BETWEEN '".$whora_i."' AND '".$whora_f."'"
+				 ."   WHERE (TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',A.movhdi))) > ".$wproseg
+				 ."     AND A.Fecha_data  BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+				 ."     AND A.Hora_data  BETWEEN '".$whora_i."' AND '".$whora_f."'"
 				 ."     AND A.movhem != '00:00:00' "
 				 ."     AND A.movhdi != '00:00:00' "
 				 ."     AND A.movemp  = B.Sgecod "
@@ -482,16 +532,20 @@ else
 			// QUERY: CANTIDAD DE SERVICIOS ** POR HABITACION ** EN EL PERIODO
 			//
 
-            if ($wtabcco == 'costosyp_000005'){
-
+            if ($wtabcco == 'costosyp_000005')
+			{
+				/**
+				 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+				 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+				 */
 				$q=   "  SELECT Movemp, COUNT(*), "
-					 ."			SUM(TIMESTAMPDIFF(SECOND,CONCAT(Movfal,' ',Movhal),CONCAT(A.Movfdi,' ',movhdi))), Sgenom  "
+					 ."			SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',movhdi))), Sgenom  "
 					 ."    FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024, ".$wbasedato."_000067 B, ".$wtabcco." "
-					 ."   WHERE A.Movfal     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."     AND movhal       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."   WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+					 ."     AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."     AND movhem      != '00:00:00' "
 					 ."     AND movhdi      != '00:00:00' "
-					 ."     AND B.fecha_data = A.movfal "
+					 ."     AND B.fecha_data = A.Fecha_data "
 					 ."     AND movemp       = Sgecod  "
 					 ."     AND movhab       = Habcod  "
 					 ."     AND habcco       = Ccocod  "
@@ -499,25 +553,27 @@ else
 					 ."     AND A.movemp  not in (SELECT Sgecod FROM ".$wbasedato."_000024 WHERE Sgeman = 'on') "
 					 ."   GROUP BY 1 "
 					 ."   ORDER BY 2 desc ";
-
             }
-            else{
-
+            else
+			{
+				/**
+				 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+				 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+				 */
 				$q=   "  SELECT Movemp, COUNT(*), "
-					 ."			SUM(TIMESTAMPDIFF(SECOND,CONCAT(Movfal,' ',Movhal),CONCAT(A.Movfdi,' ',movhdi))), Sgenom  "
+					 ."			SUM(TIMESTAMPDIFF(SECOND,CONCAT(Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',movhdi))), Sgenom  "
 					 ."    FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024, ".$wbasedato."_000067 B, ".$wtabcco." "
-					 ."   WHERE A.Movfal     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."     AND movhal       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."   WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+					 ."     AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."     AND movhem      != '00:00:00' "
 					 ."     AND movhdi      != '00:00:00' "
-					 ."     AND B.fecha_data = A.movfal "
+					 ."     AND B.fecha_data = A.Fecha_data "
 					 ."     AND movemp       = Sgecod  "
 					 ."     AND movhab       = Habcod  "
 					 ."     AND habcco       = Ccocod  "
 					 ."     AND A.movemp  not in (SELECT Sgecod FROM ".$wbasedato."_000024 WHERE Sgeman = 'on') "
 					 ."   GROUP BY 1 "
 					 ."   ORDER BY 2 desc ";
-
 			}	 
 			$res = mysql_query($q,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 			$num = mysql_num_rows($res);
@@ -589,17 +645,21 @@ else
 			//
 			// QUERY: CANTIDAD DE SOLICITUDES ** POR SERVICIO ** EN EL PERIODO
 			
-            if ($wtabcco == 'costosyp_000005'){
-
+            if ($wtabcco == 'costosyp_000005')
+			{
+				/**
+				 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+				 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+				 */
 				$q=   "   SELECT movhab, COUNT(*), "
-					 ."			 SUM(TIMESTAMPDIFF(SECOND,CONCAT(Movfal,' ',Movhal),CONCAT(A.Movfdi,' ',movhdi))), "
+					 ."			 SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',movhdi))), "
 					 ."			 habcco, Cconom "
 					 ."     FROM ".$wbasedato."_000025 A, ".$wbasedato."_000067 B, ".$wtabcco.", ".$wbasedato."_000024 "
-					 ."    WHERE A.Movfal     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."      AND movhal       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."    WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+					 ."      AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."      AND movhem      != '00:00:00' "
 					 ."      AND movhdi      != '00:00:00' "
-					 ."      AND B.fecha_data = A.movfal "
+					 ."      AND B.fecha_data = A.Fecha_data "
 					 ."      AND movhab       = Habcod  "
 					 ."      AND habcco       = Ccocod  "
 					 ."      AND movemp       = Sgecod  "
@@ -607,26 +667,28 @@ else
 					 ."     AND A.movemp  not in (SELECT Sgecod FROM ".$wbasedato."_000024 WHERE Sgeman = 'on') "
 					 ."    GROUP BY 4 "
 					 ."    ORDER BY 2 desc ";
-
 			}	
-			else{
-
+			else
+			{
+				/**
+				 * Se edita la consulta, cambiando los campos Movfal - Movhal por Fecha_data - Hora_data
+				 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+				 */
 				$q=   "   SELECT movhab, COUNT(*), "
-					 ."			 SUM(TIMESTAMPDIFF(SECOND,CONCAT(Movfal,' ',Movhal),CONCAT(A.Movfdi,' ',movhdi))), "
+					 ."			 SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',movhdi))), "
 					 ."			 habcco, Cconom "
 					 ."     FROM ".$wbasedato."_000025 A, ".$wbasedato."_000067 B, ".$wtabcco.", ".$wbasedato."_000024 "
-					 ."    WHERE A.Movfal     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."      AND movhal       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."    WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
+					 ."      AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."      AND movhem      != '00:00:00' "
 					 ."      AND movhdi      != '00:00:00' "
-					 ."      AND B.fecha_data = A.movfal "
+					 ."      AND B.fecha_data = A.Fecha_data "
 					 ."      AND movhab       = Habcod  "
 					 ."      AND habcco       = Ccocod  "
 					 ."      AND movemp       = Sgecod"
 					 ."      AND A.movemp  not in (SELECT Sgecod FROM ".$wbasedato."_000024 WHERE Sgeman = 'on') "
 					 ."    GROUP BY 4 "
 					 ."    ORDER BY 2 desc ";
-
 			}
 
 			$res = mysql_query($q,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());

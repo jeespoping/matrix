@@ -1511,6 +1511,22 @@ function marcarLlegada__($wid, $fecha, $hora)
 	$rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 }
 
+/**
+ * Metodo que permite marcar la llegada del camillero a la habitación,
+ * tambien nos permite tener en cuenta si el motivo de la solicitud es
+ * por alta definitiva y está en una habitación, se realiza el proceso
+ * de alistar habitación para su limpieza, esto con el fin de medir los
+ * tiempos de servicio de Sodexo.  
+ *
+ * @param [Identificador de solicitud] $wid
+ * @param [Fecha de llegada] $fecha
+ * @param [Hora de llegada] $hora
+ * @param [Identificador de empresa] $wemp_pmla
+ * @return void
+ * 
+ * @author Joel David Payares Hernández
+ * @since Julio 13 de 2021
+ */
 function marcarLlegada($wid, $fecha, $hora, $wemp_pmla)
 {
 	global $conex;
@@ -1518,8 +1534,10 @@ function marcarLlegada($wid, $fecha, $hora, $wemp_pmla)
 	global $wemp_pmla;
 	global $wfecha;
 	global $whora_actual;
+	global $wusuario;
 
 	$tablaHabitaciones = consultarTablaHabitaciones( $conex, 'movhos', $wcco );
+	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
 	//Esta validacion inactiva la llegada.
 	if ($fecha == '0000-00-00' && $hora == '00:00:00')
@@ -1530,7 +1548,7 @@ function marcarLlegada($wid, $fecha, $hora, $wemp_pmla)
 
 	$q = "   UPDATE ".$wcencam."_000003 "
 		."      SET Hora_llegada   = '".$whora_actual."',"
-		."	   	   Fecha_llegada  = '".$wfecha."'"
+		."	   	    Fecha_llegada  = '".$wfecha."'"
 		."    WHERE Id = ".$wid;
 
 	mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
@@ -1541,19 +1559,44 @@ function marcarLlegada($wid, $fecha, $hora, $wemp_pmla)
 			( $datosPacienteAlta['Habitacion'] != 'null' || $datosPacienteAlta['Habitacion'] != null ) )
 	{
 		/**
-		 * * Se hace solicitud de limpieza de habitación, teniendo en cuenta que el
-		 * * motivo se paciente de alta y que este en una habitación
+		 * Se hace solicitud de limpieza de habitación, teniendo en cuenta que el
+		 * motivo se paciente de alta y que este en una habitación.
+		 * 
+		 * Tambien se actualiza la fecha y hora de llegada en la tabla habitación
+		 * para así poder medir el tiempo de Sodexo desde que se libera la habitación. 
 		 */
 		$q = "
-		  UPDATE	{$tablaHabitaciones}
-			 SET	Habali = 'on'
-		   WHERE	Habcod = '{$datosPacienteAlta['Habitacion']}'
+			  UPDATE	{$tablaHabitaciones}
+				 SET	Habali = 'on'
+			   WHERE	Habcod = '{$datosPacienteAlta['Habitacion']}'
 		";
 
 		$err = mysql_query($q, $conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+
+		/**
+		 * Se adiciona segmento de código que inserta un registro en central de habitación con la información de la habitación
+		 * en la movhos 25.
+		 * @author Joel David Payares Hernández
+		 * @since Julio 13 de 2021
+		 */
+		$q1 = " INSERT INTO ".$wbasedato."_000025 (		Medico     ,    Fecha_data     ,  Hora_data  ,				movhab					,  movemp ,		 movfec		  ,  movhem  ,  movhdi  , movobs ,					movfal				 ,					movhal				 ,   movfdi	  ,	   Seguridad	) "
+		     ."                            VALUES ('".$wbasedato."','".$wfecha."','".$whora_actual."','".$datosPacienteAlta['Habitacion']."',	''	  ,'".$whora_actual."','00:00:00','00:00:00',	''	 ,'".$datosPacienteAlta['FechaEgreso']."','".$datosPacienteAlta['HoraEgreso']."','0000-00-00','C-".$wusuario."')";
+		$err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	}
 }
 
+/**
+ * Metodo que permite obtener la información del paciente de la solicitud
+ * realizada, y así poder validar el motivo y si está en habitación.
+ *
+ * @param [Identificador de solicitud] $wid
+ * @param [Tabla camilleros] $wcencam
+ * @param [Identificador de empresa] $wemp_pmla
+ * @return [Array] Datos de respuesta del paciente.
+ * 
+ * @author Joel David Payares Hernández
+ * @since Julio 13 de 2021
+ */
 function obtenerDatosPacienteAlta( $wid, $wcencam, $wemp_pmla )
 {
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
@@ -1584,12 +1627,12 @@ function obtenerDatosPacienteAlta( $wid, $wcencam, $wemp_pmla )
 			   LIMIT	1";
 
 		$err = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
-		$rowdia = mysql_fetch_array($err);
-		$rowdia['Motivo'] = $respuesta[1];
-		$rowdia['Habitacion'] = json_decode( $respuesta[2] )[0];
+		$rowPaciente = mysql_fetch_array($err);
+		$rowPaciente['Motivo'] = $respuesta[1];
+		$rowPaciente['Habitacion'] = json_decode( $respuesta[2] )[0];
 	}
 
-	return $rowdia;
+	return $rowPaciente;
 }
 
 function marcarCumplimiento($wid, $fecha, $hora)
@@ -1683,11 +1726,15 @@ function grabarObservacion($wid, $wtexto)
   $wautor="Juan C. Hernandez M.";
 //FECHA CREACION             :
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="Ene 13 de 2020";
+  $wactualiz="Sep 09 de 2021";
 //========================================================================================================================================\\
 //========================================================================================================================================\\
 //ACTUALIZACIONES
 /*
+//========================================================================================================================================\\
+Septiembre 09 de 2021 - Joel Payares Hernández
+	Se modifica el metodo marcarLlegada, adicionando el segmento sql que permita insertar el registro de la habitación en la central de
+	de habitación en la tabla movhos 25.
 //========================================================================================================================================\\
 Julio 13 de 2021 - Joel Payares Hernández
 	Se modifica el metodo marcarLlegada, para obtener información del paciente como lo es: historia, ingreso, habitación habitada. Estos datos
