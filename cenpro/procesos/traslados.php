@@ -1837,7 +1837,7 @@ function pintarTitulo()
 {
 	echo "<table ALIGN=CENTER width='50%'>";
 	// echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-	echo "<tr><td class='titulo1'>TRASLADOS DE CENTRAL DE MEZCLAS</td></tr>";
+	//echo "<tr><td class='titulo1'>TRASLADOS DE CENTRAL DE MEZCLAS</td></tr>";
 	echo "<tr><td class='titulo2'>Fecha: " . date('Y-m-d') . "&nbsp Hora: " . (string)date("H:i:s") . "</td></tr></table></br>";
 
 	/**
@@ -2041,7 +2041,7 @@ function centroCostosCM()
 	$rows = mysql_fetch_array( $res );
 	return $rows[ 'Ccocod' ];
 	}
-
+	
 /**
 * Se pinta el formulario que permite buscar los articulos a trasladar, seccionar lotes o presentaciones
 * ingresar la cantidad y desplegar la lista de articulos ingresados
@@ -2214,7 +2214,7 @@ else
 //	or die("No se ralizo Conexion");
 	
 	// pintarVersion(); //Escribe en el programa el autor y la version del Script.
-	pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
+	//pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
 
 	//$bd = 'movhos';
 	// invoco la funcion connectOdbc del inlcude de ana, para saber si unix responde, en caso contrario,
@@ -2227,11 +2227,14 @@ else
 	include_once("root/barcod.php");
 
 	include_once("root/comun.php");
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	$wactualiz = "2017-02-06";
+	encabezado( "TRASLADOS DE CENTRAL DE MEZCLAS", $wactualiz, $institucion->baseDeDatos );
 	$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cenmez' );
 	$bd  = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
-
+	pintarTitulo();
 	connectOdbc($conex_o, 'inventarios');
-	//$test = centroCostosCM();echo $test;
+
 	if ($conex_o != 0)
 	{
 		// consulto los datos del usuario de la sesion

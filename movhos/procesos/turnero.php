@@ -52,11 +52,14 @@ else
 	//------------------------------------------------------------------------------------
 	function htmlTurno($turno, $tipDocumento, $numDocumento, $nombrePaciente, $reimpresion)
 	{
+		global $wemp_pmla;
+		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+		$wlogemp = $institucion->baseDeDatos;
 		$html = "
 		<table style='font-family: verdana;font-size:1rem;'>
 			<tr>
 				<td colspan='2' align='center'>
-					<img width='118' heigth='58' src='../../images/medical/root/logoClinicaGrande.png'>
+				<img src='../../images/medical/root/".$wlogemp.".jpg' width=125 heigth=76>
 				</td>
 			</tr>
 			<tr>
@@ -971,6 +974,8 @@ else
 		$codigoTurnero = '*';
 	
 	// --> Pintar pantalla para asignar el turno
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	$wlogemp = $institucion->baseDeDatos;
 	echo "
 	<input type='hidden' id='wemp_pmla' 		value='".$wemp_pmla."'>
 	<input type='hidden' id='codigoTurnero' 	value='".trim($codigoTurnero)."'>
@@ -978,11 +983,11 @@ else
 
 	<div id='accordionPrincipal' align='center' style='margin: auto auto;'>
 		<h1 style='font-size: 3rem;background:#75C3EB' align='center'>
-			<img width='125' heigth='61' src='../../images/medical/root/logoClinicaGrande.png' >
+		<img src='../../images/medical/root/".$wlogemp.".jpg' width=120 heigth=76>
 			&nbsp;
 			Es un placer servirle.
 			&nbsp;
-			<img width='120' heigth='100' src='../../images/medical/root/Logo_MatrixAzulClaro.png'>
+			<img width='125' heigth='100' src='../../images/medical/root/".$wlogemp.".jpg'>
 		</h1>
 		<div style='color:#000000;font-family: verdana;font-weight: normal;font-size: 2rem;' align='center'>
 			<table style='width:80%;margin-top:0px;margin-bottom:2px;font-family: verdana;font-weight: normal;font-size: 2rem;'>

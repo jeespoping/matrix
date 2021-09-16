@@ -1,4 +1,4 @@
-<html><input type='HIDDEN' NAME= 'wemp_pmla' value='<?php echo($wemp_pmla)?>'>
+<html>
 <head>
   <title>MATRIX</title>
 </head>
@@ -230,6 +230,8 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 $soloconsulta=true;
 
 include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado( "GENERACION DE STIKERS DE CODIGOS DE BARRAS", $wactualiz, $institucion->baseDeDatos );
 include_once(get_include_path()."/../matrix/cenpro/procesos/monitorProduccionDA.php");
 
 
@@ -267,7 +269,7 @@ else
 			echo "<center><table border=0>";
 			echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 			echo "<tr><td align=center colspan=2>CENTRAL DE MEZCLAS</td></tr>";
-			echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
+			//echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Codigo del Producto</td>";
 			echo "<td bgcolor=#cccccc><input type='TEXT' name='wcod' size=10 maxlength=10></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Nro. de Lote</td>";
@@ -287,7 +289,7 @@ else
 			echo "<center><table border=0>";
 			echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 			echo "<tr><td align=center colspan=2>SERVICIO FARMACEUTICO</td></tr>";
-			echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
+			//echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Codigo del Producto</td>";
 			echo "<td bgcolor=#cccccc><input type='TEXT' name='wcod' size=10 maxlength=10></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Nro. de Lote</td>";
@@ -323,7 +325,7 @@ else
 			echo "<center><table border=0>";
 			echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 			echo "<tr><td align=center colspan=2>CENTRAL DE MEZCLAS</td></tr>";
-			echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
+			//echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
 			echo "<tr><td align=center colspan=2>Confirmacion De Nombre</td></tr>";
 			
 			if($whistoria!="" && $wingreso!="" && $wido!="")

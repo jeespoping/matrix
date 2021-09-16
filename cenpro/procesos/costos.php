@@ -19,13 +19,17 @@
 <BODY>
 
 <?php
+//$consultaAjax = '';
 include_once("conex.php");
+include_once("root/comun.php");
 session_start();
 if(!isset($_SESSION['user']))
 echo "error";
 else
 {
-
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	$wactualiz = '2021-08-13';
+	encabezado( "PROCESO DE CARGA DE COSTOS PROMEDIO", $wactualiz, $institucion->baseDeDatos );
 	$key = substr($user,2,strlen($user));
 
 	//area de inculdes
@@ -36,7 +40,7 @@ else
 	echo "<form name='forma' action='' method=post>";
 	echo "<input type='HIDDEN' name= 'wbasedato' value='".$wbasedato."'>";
 	echo "<center><table border=0>";
-	echo "<tr><td align=center colspan=2 class='texto5'><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+	//echo "<tr><td align=center colspan=2 class='texto5'><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 	echo "<tr><td align=center colspan=2 class='titulo1'>CARGA DE COSTOS PORMEDIO PARA INSUMOS DE LA CENTRAL DE MEZCLAS</td></tr>";
 
 	if(!isset($enviado))

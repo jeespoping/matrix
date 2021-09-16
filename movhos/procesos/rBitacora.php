@@ -171,7 +171,7 @@ else
 			function ira(){document.rBitacora.whis.focus();}
 		</script>
 		<?php
-
+		$wemp_pmla = $codemp;
 		encabezado("CONSULTA A LA BITACORA DE PACIENTES", $wactualiz, "clinica");
 
 		echo "</table>";

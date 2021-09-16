@@ -20,7 +20,10 @@
 <BODY>
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2021-08-13";
+encabezado( "REPORTE DE PRODUCTOS VENCIDOS", $wactualiz, $institucion->baseDeDatos );
 session_start();
 if (!isset($_SESSION['user']))
     echo "error";
@@ -28,6 +31,7 @@ else
 {
     $key = substr($user, 2, strlen($user));
     echo "<form name='Mov2' action='Mov2.php' method=post>";
+    echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
     
 
     
@@ -44,7 +48,7 @@ else
     $num = mysql_num_rows($err);
 
     echo "<table border=0 align=center>";
-    echo "<tr><td class='titulo1'><b>REPORTE DE PRODUCTOS VENCIDOS</font> Ver 1.0</b></font></td></tr>";
+    //echo "<tr><td class='titulo1'><b>REPORTE DE PRODUCTOS VENCIDOS</font> Ver 1.0</b></font></td></tr>";
     echo "</tr></table><br><br>";
 
     echo "<table border=0 align=center>";

@@ -47,6 +47,9 @@
 	}
 	else
 	{
+		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+		$wactualiz ="2020-01-25";
+		encabezado( "GESTION DE TARIFAS SERVINTE", $wactualiz, $institucion->baseDeDatos );
 		$user_session = explode('-', $_SESSION['user']);
 		$wuse = $user_session[1];   
 		mysql_select_db("matrix");
@@ -100,19 +103,19 @@
 
 
 <body width="1200" height="47">
-	<form action="TarifasMedicamentoUnix.php" method="post">  
-		<table width="1200" border="1" align="center">
+	<form action="TarifasMedicamentoUnix.php?wemp_pmla=<?=$wemp_pmla?>" method="post">  
+		<!--<table width="1200" border="1" align="center">
 			<tr>
 				<td width="50%" align="" style="border: groove; width: 0%">
-					<input type="image" src="../../images/medical/root/clinica.jpg" width="140" height="80">
+				<input type="image" src="../../images/medical/root/clinica.jpg" width="140" height="80">
 				<td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong>GESTION DE TARIFAS SERVINTE</strong></p> </td>
 			</tr>
-		</table>		
+		</table>-->		
 		<p>&nbsp;</p>
 		<table width="700" border="0" align="center">
 			<tr align="right">
 				<td>
-					<div align="right" class="Estilo3"><a href="AgregarTarifaUnix.php">AGREGAR TARIFA </a></div>
+					<div align="right" class="Estilo3"><a href="AgregarTarifaUnix.php?wemp_pmla=<?=$wemp_pmla?>">AGREGAR TARIFA </a></div>
 				</td>
 			</tr>
 		</table>		

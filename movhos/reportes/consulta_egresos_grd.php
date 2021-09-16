@@ -23,8 +23,11 @@
 <?php
     include_once("conex.php");
     include_once("root/comun.php");
-	$wbasedatoMov 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
-	$wcliame 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+    $wactualiz = "2019-03-19";
+    $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+    encabezado( "GENERAR ARCHIVO DE PACIENTES EGRESADOS", $wactualiz, $institucion->baseDeDatos );
+	  $wbasedatoMov 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	  $wcliame 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -80,10 +83,7 @@
   
   <table width="1200" border="1" align="center">
   	<tr>
-  	  <td width="50%" align="" style="border: groove; width: 0%">
-       <input type="image" id="btnVer" src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80">
 	   <input type='hidden' id='wemp_pmla' value='".$wemp_pmla."'>
-    <td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong>GENERAR ARCHIVO DE PACIENTES EGRESADOS </strong></p> </td>
    </tr>
    </table>		
     <p>&nbsp;</p>
@@ -131,7 +131,7 @@
 		}else{
 			
 // Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
-			$select_grd = mysql_query("SELECT count(*) cant
+			$query = "SELECT count(*) cant
      									FROM ".$wcliame."_000108 a, ".$wcliame."_000112 b, ".$wcliame."_000101 d, ".$wbasedatoMov."_000011
     									WHERE Egrfee BETWEEN '$buscar' AND '$buscar1'
                							AND Egrhis = Serhis
@@ -140,8 +140,8 @@
 										AND Sercod = ccocod
 										AND Inghis = Egrhis
 										AND Ingnin = Egring
-										AND ccohos = 'on'");
-
+										AND ccohos = 'on'";
+      $select_grd = mysql_query($query,$conex);
 //SI HAY REGISTROS EN LA TABLA, TRAER ESOS REGISTROS:
 	?>
 <table width="248" height="44" border="0" align="center">

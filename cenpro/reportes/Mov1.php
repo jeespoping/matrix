@@ -1,4 +1,4 @@
-<html><input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
+<html>
 <head>
   	<title>MATRIX  Comprobante de Inventarios</title>
   	
@@ -91,6 +91,8 @@ if(!isset($_SESSION['user']))
 echo "error";
 else
 {
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	encabezado( "REPORTE DE MOVIMIENTOS DE UN INSUMO", $wactualiz, $institucion->baseDeDatos );
 	$key = substr($user,2,strlen($user));
 	echo "<form name='Mov1' action='Mov1.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	$conex = obtenerConexionBD("matrix");
@@ -103,8 +105,8 @@ else
 	if(!isset($wfeci) or !isset($wfecf) or !isset($wins))
 	{
 		echo "<center><table border=0>";
-		echo "<tr><td class='texto5' colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-		echo "<tr><td class='titulo1' colspan=2>REPORTE DE MOVIMIENTOS DE UN INSUMO</td></tr>";
+		//echo "<tr><td class='texto5' colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+		//echo "<tr><td class='titulo1' colspan=2>REPORTE DE MOVIMIENTOS DE UN INSUMO</td></tr>";
 		echo "<tr><td class='texto4'>Codigo de Articulo</td>";
 		echo "<td class='texto4'><input type='TEXT' name='wins' size=10 maxlength=10></td></tr>";
 		echo "<tr><td class='texto4'>Fecha Inicial</td>";
@@ -137,7 +139,7 @@ else
 
 		$wfac=$row2[0];
 		echo "<table border=0 align=center>";
-		echo "<tr><td class='titulo1'><b>REPORTE DE MOVIMIENTOS DE UN INSUMO</font> Ver 1.0</b></font></td></tr>";
+		//echo "<tr><td class='titulo1'><b>REPORTE DE MOVIMIENTOS DE UN INSUMO</font> Ver 1.0</b></font></td></tr>";
 		echo "<tr><td class='texto4'><font face='tahoma'><b>Insumo: </b>".$wins."-".$row[0]."</td></tr>";
 		echo "<tr><td class='texto4'><font face='tahoma'><b>Fecha Inicial : </b>".$wfeci."</td></tr>";
 		echo "<tr><td class='texto4'><font face='tahoma'><b>Fecha Final : </b>".$wfecf."</td></tr>";

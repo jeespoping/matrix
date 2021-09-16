@@ -28,6 +28,9 @@
 //Validar conex y el comun
     include_once("conex.php");
     include_once("root/comun.php");
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	$wactualiz = "2020-01-25";
+	encabezado( "INSERTAR TARIFAS EN SERVINTE", $wactualiz, $institucion->baseDeDatos );
 	$conex_o = odbc_connect('informix','','')  or die("No se realizo conexion con la BD de Facturacion");
     if(!isset($_SESSION['user']))
     {
@@ -144,7 +147,7 @@ $accion = isset($_POST['accion']) ? $_POST['accion'] : "";
 			if ($respuesta == 'C'){
 				?>
 					<div style="text-align: center" class="row">
-						<form method="post" action="AgregarTarifaUnix.php">
+						<form method="post" action="AgregarTarifaUnix.php?wemp_pmla=<?=$wemp_pmla?>">
 							<label style="color: #080808"><strong>EL DATO YA EXISTE</strong> </label>
 							<br>
 							<br>
@@ -161,7 +164,7 @@ $accion = isset($_POST['accion']) ? $_POST['accion'] : "";
 			//arttarcod,arttartip,arttartar,arttartse,arttarvaa,arttarfec,arttarval,arttaruad,arttarfad,arttarumo,arttarfmo
 			?>
 				<div style="margin-top: 10px;  text-align: center">
-				<form method="post" action="AgregarTarifaUnix.php">
+				<form method="post" action="AgregarTarifaUnix.php?wemp_pmla=<?=$wemp_pmla?>">
 				<label style="color: #080808"><strong>DATOS INCERTADOS CORRECTAMENTE</strong> </label>
 				<br><br>
 				<input type="submit" class="text-success" value="ACEPTAR"/>
@@ -174,13 +177,13 @@ $accion = isset($_POST['accion']) ? $_POST['accion'] : "";
 		}else{
 			?>
 <body width="1200" height="60">
-<form action="AgregarTarifaUnix.php" method="post" id="tarifas" name="tarifas">
+<form action="AgregarTarifaUnix.php?wemp_pmla=<?=$wemp_pmla?>" method="post" id="tarifas" name="tarifas">
 	<table width="1200" border="1" align="center">
 			<tr>
-				<td width="50%" align="" style="border: groove; width: 0%">
+				<!--<td width="50%" align="" style="border: groove; width: 0%">
 					<input type="image" src="../../images/medical/root/clinica.jpg" width="140" height="80">
 				<td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong>INSERTAR TARIFAS EN SERVINTE</strong></p> </td>
-			</tr>
+			</tr>-->
 	</table>		
 	<p>&nbsp;</p>
 	<table width="1000" border="1" align="center">
@@ -244,7 +247,7 @@ $accion = isset($_POST['accion']) ? $_POST['accion'] : "";
 				<div align="center">
 					<input name="accion" type="hidden" value='Guardar' />
 					<input name="Guardar" type="submit" class="btn-primary" value="Guardar" />
-					<a href="TarifasMedicamentoUnix.php">RETORNAR</a></label>
+					<a href="TarifasMedicamentoUnix.php?wemp_pmla=<?=$wemp_pmla?>">RETORNAR</a></label>
 				</div>
 			</td>
 		</tr>

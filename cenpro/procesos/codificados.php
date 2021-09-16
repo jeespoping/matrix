@@ -20,6 +20,7 @@
 
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 function calcularValorProducto($cantidad, $lote, &$val)
 {
 	global $conex;
@@ -88,12 +89,15 @@ else
 	
 
 	include_once("movhos/otros.php");
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	$wactualiz = "2021-08-13";
+	encabezado( "CARGA DE COSTOS PORMEDIO PARA PRODUCTOS CODIFICADOS", $wactualiz, $institucion->baseDeDatos );
 
 	echo "<form name='forma' action='' method=post>";
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<center><table border=0 >";
-	echo "<tr><td align=center colspan=3 class='texto5'><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-	echo "<tr><td align=center colspan=3 class='titulo1'>CARGA DE COSTOS PORMEDIO PARA PRODUCTOS CODIFICADOS DE LA CENTRAL DE MEZCLAS</td></tr>";
+	//echo "<tr><td align=center colspan=3 class='texto5'><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+	//echo "<tr><td align=center colspan=3 class='titulo1'>CARGA DE COSTOS PORMEDIO PARA PRODUCTOS CODIFICADOS DE LA CENTRAL DE MEZCLAS</td></tr>";
 
 	if(!isset($enviado))
 	{

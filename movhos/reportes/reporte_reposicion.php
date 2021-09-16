@@ -183,6 +183,7 @@ else
 		echo "<form action='' method=post>";
 		
 		$wactualiz='Noviembre 7 de 2013';
+		$wemp_pmla = $emp;
 		encabezado("REPOSICION DE MEDICAMENTOS Y MATERIAL",$wactualiz, "clinica");
 		
 		echo "<center><table>";
