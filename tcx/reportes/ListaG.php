@@ -8,10 +8,10 @@
 <!-- Loading Theme file(s) -->
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
-<!-- Loading Calendar JavaScript files -->
+<!-- Loading Calendar JavaScript files --
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
-    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script> -->
     <!-- Loading language definition file -->
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
     <style type="text/css">
@@ -130,9 +130,11 @@
 </script>
 <?php
 include_once("conex.php");
-$consultaAjax = '';
 include_once("root/comun.php");
-$wemp_pmla=$_REQUEST['wemp_pmla'];
+$wactualiz = "2015-03-03";
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+
+encabezado( "CUADRO DE TURNOS EN CIRUGIA", $wactualiz, $institucion->baseDeDatos );
 /**********************************************************************************************************************  
 	   PROGRAMA : ListaG.php
 	   Fecha de Liberación : 2008-01-11
@@ -191,10 +193,7 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='ListaG' action='ListaG.php?wemp_pmla=".$wemp_pmla."' method=post>";
-	
-
-	
+	echo "<form name='ListaG' action='ListaG.php?wemp_pmla=".$wemp_pmla."' method=post>";	
 
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<center><input type='HIDDEN' name= 'TIP' value='".$TIP."'>";
@@ -207,9 +206,9 @@ else
 			function ira(){document.Lista.wfecha.focus();}
 		</script>
 		<?php
-		echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=center colspan=4 id=tipo19> Ver. 2015-03-03<td></tr>";
-		echo "<tr><td align=center colspan=4 id=tipo14>CUADRO DE TURNOS EN CIRUGIA </td></tr>";
+		//echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=center colspan=4 id=tipo19> Ver. 2015-03-03<td></tr>";
+		//echo "<tr><td align=center colspan=4 id=tipo14>CUADRO DE TURNOS EN CIRUGIA </td></tr>";
 		if (!isset($wfecha))
 			$wfecha=date("Y-m-d");
 		$year = (integer)substr($wfecha,0,4);
@@ -301,7 +300,7 @@ else
 		$nroqui=$num;
 		$wimpre=array();
 		echo "<table border=0 align=center>";
-		echo "<tr><td align=center><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=center><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
 		echo "<tr><td align=center id=tipo20>CLINICA LAS AMERICAS</td></tr>";
 		echo "<tr><td align=center id=tipo20>CUADRO DE TURNOS EN CIRUGIA DE : ".$wfecha."</td></tr>";
 		switch ($TIP)
@@ -435,11 +434,9 @@ else
 					$wimpre[$i][16] = $days;
 				    $wimpre[$i][17] = "D";
 				}
-			
-			
-			
+
 			$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
-			
+
 			$query = "SELECT Empnom FROM ".$wcliame."_000024  ";
 			$query .= " where Empcod = '".$row[16]."'";
 			$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());

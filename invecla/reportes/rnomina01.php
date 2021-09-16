@@ -1,5 +1,6 @@
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 //Nueva conexion con la Nomina Contratada modificada por Gabriel Agudelo 2018-01-31
 
 
@@ -7,6 +8,8 @@ $conexD = odbc_connect("queryx7","","") or die(odbc_errormsg());  //Promotora
 $wactualiz="1.0 15-Febrero-2018 ";
 
 $usuarioValidado = true;
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado( "INFORME GENERAL DE PERSONAL ACTIVO", $wactualiz, $institucion->baseDeDatos );
 
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false;
@@ -68,8 +71,8 @@ else
 	
 
 	echo "<center><table border=0>";
-	echo "<tr><td align=center bgcolor=#DDDDDD colspan=2><b><font text color=#003366 size=4> <i>INFORME GENERAL DE PERSONAL ACTIVO</font></b><br>";
-	echo "<tr><td align=center bgcolor=#DDDDDD colspan=2><b><font text color=#003366 size=2> <i>PROGRAMA: rnomina01.php Ver. 2018/01/31<br>AUTOR: JairS</font></b><br>";
+	//echo "<tr><td align=center bgcolor=#DDDDDD colspan=2><b><font text color=#003366 size=4> <i>INFORME GENERAL DE PERSONAL ACTIVO</font></b><br>";
+	//echo "<tr><td align=center bgcolor=#DDDDDD colspan=2><b><font text color=#003366 size=2> <i>PROGRAMA: rnomina01.php Ver. 2018/01/31<br>AUTOR: JairS</font></b><br>";
 	echo "</table>";
 		   
 	echo "<br>";

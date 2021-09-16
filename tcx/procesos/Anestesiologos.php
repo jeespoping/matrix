@@ -8,10 +8,10 @@
 <!-- Loading Theme file(s) -->
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
-<!-- Loading Calendar JavaScript files -->
+<!-- Loading Calendar JavaScript files
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
-    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script> -->
     <!-- Loading language definition file -->
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
     <style type="text/css">
@@ -68,6 +68,10 @@
 </script>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2008-01-03";
+encabezado( "ASIGNACION DE ANESTESIOLOGOS", $wactualiz, $institucion->baseDeDatos );
 /**********************************************************************************************************************
 	   PROGRAMA : Anestesiologos.php
 	   Fecha de Liberación : 2007-12-10
@@ -144,6 +148,7 @@ else
 {
 	$key = substr($user,2,strlen($user));
 	echo "<form name='Anestesiologos' action='Anestesiologos.php' method=post>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 
 
 
@@ -162,9 +167,9 @@ else
 			function ira(){document.Anestesiologos.wfecha.focus();}
 		</script>
 		<?php
-		echo "<tr><td align=center colspan=2><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=right colspan=2 id=tipo19> Ver. 2008-01-03</td></tr>";
-		echo "<tr><td align=center colspan=2 id=tipo14>ASIGNACION DE ANESTESIOLOGOS</td></tr>";
+		//echo "<tr><td align=center colspan=2><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=right colspan=2 id=tipo19> Ver. 2008-01-03</td></tr>";
+		//echo "<tr><td align=center colspan=2 id=tipo14>ASIGNACION DE ANESTESIOLOGOS</td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Anestesiologo</td><td bgcolor=#cccccc align=center>";
 		$query = "SELECT Medcod, Mednom FROM ".$empresa."_000006 ";
 		$query .= " where Medane = 'on' ";
@@ -204,9 +209,9 @@ else
 	{
 		$lin=-1;
 		echo "<table border=0 align=center>";
-		echo "<tr><td align=center colspan=7><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=right colspan=7 id=tipo19> Ver. 2008-01-03</td></tr>";
-		echo "<tr><td colspan=7 id=tipo14>ASIGNACION DE ANESTESIOLOGOS</td></tr>";
+		//echo "<tr><td align=center colspan=7><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=right colspan=7 id=tipo19> Ver. 2008-01-03</td></tr>";
+		//echo "<tr><td colspan=7 id=tipo14>ASIGNACION DE ANESTESIOLOGOS</td></tr>";
 		echo "<tr><td id=tipo11>Nro Turno</td><td id=tipo11>Quirofano</td><td id=tipo11>Hora Inicial</td><td id=tipo11>Hora Final</td><td id=tipo11>Fecha</td><td id=tipo11>Cirugia</td><td id=tipo11>Observacion</td></tr>";
 		$query = "SELECT Turtur, Turqui, Turhin, Turhfi, Turfec, Turcir, Turest FROM ".$empresa."_000011 ";
 		$query .= " where turqui = ".$wqui;

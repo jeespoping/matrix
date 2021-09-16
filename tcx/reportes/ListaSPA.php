@@ -8,10 +8,10 @@
 <!-- Loading Theme file(s) -->
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
-<!-- Loading Calendar JavaScript files -->
+<!-- Loading Calendar JavaScript files --
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
-    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script> -->
     <!-- Loading language definition file -->
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
     <style type="text/css">
@@ -153,7 +153,11 @@
 </script>
 <?php
 include_once("conex.php");
-$wemp_pmla=$_REQUEST['wemp_pmla'];
+include_once("root/comun.php");
+$wactualiz = "2015-03-03";
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+
+encabezado( "Seguimiento de Pacientes Ambulatorios", $wactualiz, $institucion->baseDeDatos );
 /**********************************************************************************************************************
 	   PROGRAMA : ListaSPA.php
 	   Fecha de Liberacion : 2011-10-04
@@ -210,9 +214,6 @@ else
 	$key = substr($user,2,strlen($user));
 	echo "<form name='ListaSPA' action='ListaSPA.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
-
-
-
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	if(!isset($wfecha1) or !isset($wfecha2))
 	{
@@ -223,9 +224,9 @@ else
 			function ira(){document.Lista.wfecha.focus();}
 		</script>
 		<?php
-		echo "<tr><td align=center colspan=3><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=center colspan=3 id=tipo19> Ver. 2015-03-03</td></tr>";
-		echo "<tr><td align=center colspan=3 id=tipo14>SEGUIMIENTO A PACIENTES AMBULATORIOS</td></tr>";
+		//echo "<tr><td align=center colspan=3><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=center colspan=3 id=tipo19> Ver. 2015-03-03</td></tr>";
+		//echo "<tr><td align=center colspan=3 id=tipo14>SEGUIMIENTO A PACIENTES AMBULATORIOS</td></tr>";
 		if (!isset($wfecha1) or !isset($wfecha2))
 		{
 			$wfecha1=date("Y-m-d");
@@ -272,11 +273,11 @@ else
 		$nroqui=$num;
 		$wimpre=array();
 		echo "<table border=0 align=center>";
-		echo "<tr><td align=center><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=center id=tipo20>CLINICA LAS AMERICAS</td></tr>";
+		//echo "<tr><td align=center><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=center id=tipo20>CLINICA LAS AMERICAS</td></tr>";
 		echo "<tr><td align=center id=tipo20>CUADRO DE TURNOS EN CIRUGIA DESDE : ".$wfecha1." HASTA ".$wfecha2."</td></tr>";
-		echo "<tr><td align=center id=tipo21>SEGUIMIENTO A PACIENTES AMBULATORIOS</td></tr>";
-		echo "<tr><td align=left id=tipo20>Ver. 2015-03-03</td></tr></table>";
+		//echo "<tr><td align=center id=tipo21>SEGUIMIENTO A PACIENTES AMBULATORIOS</td></tr>";
+		//echo "<tr><td align=left id=tipo20>Ver. 2015-03-03</td></tr></table>";
 		echo "<table border=0 align=center id=tipo00>";
 		echo "<tr><td id=tipoTCK>ESTADO</td>";
 		echo "<td id=tipoT01>TURNO</td><td id=tipoT01>HORA</td><td id=tipoT02>Q</td><td id=tipoT00>ESTADO</td><td id=tipoT02>O</td><td id=tipoT03>I</td><td id=tipoT03>T</td><td id=tipoT05>FECHA</td><td id=tipoT04>PACIENTE</td><td id=tipoT05>TEL/HAB</td><td id=tipoT06>H</td><td id=tipoT07>ED</td><td id=tipoT08>RESPONSABLE</td><td id=tipoT09>CIRUGIA</td><td id=tipoT10>CIRUJANO</td><td id=tipoT11>A</td><td id=tipoT12>U</td><td id=tipoT13>B</td><td id=tipoT14>I</td><td id=tipoT15>ANESTESIOLOGO</td><td id=tipoT16>EQUIPOS</td><td id=tipoT17>COMENTARIOS</td></tr>";
@@ -350,9 +351,7 @@ else
 					$wimpre[$i][16] = $days;
 				    $wimpre[$i][17] = "D";
 				}
-				
-			include_once("root/comun.php");
-			
+
 			$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 			
 			$query = "SELECT Empnom FROM ".$wcliame."_000024  ";

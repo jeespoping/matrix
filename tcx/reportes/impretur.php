@@ -8,10 +8,10 @@
 <!-- Loading Theme file(s) -->
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
-<!-- Loading Calendar JavaScript files -->
+<!-- Loading Calendar JavaScript files --
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
-    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script> -->
     <!-- Loading language definition file -->
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
     <style type="text/css">
@@ -124,6 +124,10 @@
 </script>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2008-01-14";
+encabezado( "CUADRO DE TURNOS EN CIRUGIA", $wactualiz, $institucion->baseDeDatos );
 /**********************************************************************************************************************
 	   PROGRAMA : impretur.php
 	   Fecha de Liberación : 2007-12-04
@@ -162,10 +166,10 @@ function titulos(&$lin,$wfecha,&$wpag)
 			echo "</div>";
 		$wpag++;
 		echo "<div style='page-break-before: always'>";
-		echo "<table border=0 align=center>";
-		echo "<tr><td align=center id=tipo20 colspan=2>CLINICA LAS AMERICAS</td></tr>";
-		echo "<tr><td align=center id=tipo20 colspan=2>CUADRO DE TURNOS EN CIRUGIA DE : ".$wfecha."</td></tr>";
-		echo "<tr><td align=left id=tipo20>Ver. 2008-01-14</td><td align=right id=tipo20> Pag. ".$wpag." </td></tr></table>";
+		// echo "<table border=0 align=center>";
+		//echo "<tr><td align=center id=tipo20 colspan=2>CLINICA LAS AMERICAS</td></tr>";
+		// echo "<tr><td align=center id=tipo20 colspan=2>CUADRO DE TURNOS EN CIRUGIA DE : ".$wfecha."</td></tr>";
+		// echo "<tr><td align=left id=tipo20>Ver. 2008-01-14</td><td align=right id=tipo20> Pag. ".$wpag." </td></tr></table>";
 		echo "<table border=0 align=center id=tipo00>";
 		echo "<tr><td id=tipoT01>HORA</td><td id=tipoT02>Q</td><td id=tipoT02>O</td><td id=tipoT03>I</td><td id=tipoT04>PACIENTE</td><td id=tipoT05>TEL/HAB</td><td id=tipoT06>H</td><td id=tipoT07>ED</td><td id=tipoT08>RESPONSABLE</td><td id=tipoT09>CIRUGIA</td><td id=tipoT10>CIRUJANO</td><td id=tipoT11>A</td><td id=tipoT12>U</td><td id=tipoT13>B</td><td id=tipoT14>I</td><td id=tipoT15>ANESTESIOLOGO</td><td id=tipoT16>EQUIPOS</td></tr>";
 		$lin=0;
@@ -198,6 +202,7 @@ else
 {
 	$key = substr($user,2,strlen($user));
 	echo "<form name='impretur' action='impretur.php' method=post>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 
 
 
@@ -212,9 +217,9 @@ else
 			function ira(){document.impretur.wfecha.focus();}
 		</script>
 		<?php
-		echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=center colspan=4 id=tipo19> Ver. 2008-01-14</td></tr>";
-		echo "<tr><td align=center colspan=4 id=tipo14>CUADRO DE TURNOS EN CIRUGIA </td></tr>";
+		//echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/TCX/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=center colspan=4 id=tipo19> Ver. 2008-01-14</td></tr>";
+		//echo "<tr><td align=center colspan=4 id=tipo14>CUADRO DE TURNOS EN CIRUGIA </td></tr>";
 		if (!isset($wfecha))
 			$wfecha=date("Y-m-d");
 		$year = (integer)substr($wfecha,0,4);
@@ -444,10 +449,10 @@ else
 			}
 		}
 		$wpag=1;
-		echo "<table border=0 align=center>";
-		echo "<tr><td align=center id=tipo20 colspan=2>CLINICA LAS AMERICAS</td></tr>";
-		echo "<tr><td align=center id=tipo20 colspan=2>CUADRO DE TURNOS EN CIRUGIA DE : ".$wfecha."</td></tr>";
-		echo "<tr><td align=left id=tipo20>Ver. 2008-01-14</td><td align=right id=tipo20> Pag. ".$wpag." </td></tr></table>";
+		// echo "<table border=0 align=center>";
+		//echo "<tr><td align=center id=tipo20 colspan=2>CLINICA LAS AMERICAS</td></tr>";
+		// echo "<tr><td align=center id=tipo20 colspan=2>CUADRO DE TURNOS EN CIRUGIA DE : ".$wfecha."</td></tr>";
+		// echo "<tr><td align=left id=tipo20>Ver. 2008-01-14</td><td align=right id=tipo20> Pag. ".$wpag." </td></tr></table>";
 		echo "<table border=0 align=center id=tipo00>";
 		echo "<tr><td id=tipoT01>HORA</td><td id=tipoT02>Q</td><td id=tipoT02>O</td><td id=tipoT03>I</td><td id=tipoT04>PACIENTE</td><td id=tipoT05>TEL/HAB</td><td id=tipoT06>H</td><td id=tipoT07>ED</td><td id=tipoT08>RESPONSABLE</td><td id=tipoT09>CIRUGIA</td><td id=tipoT10>CIRUJANO</td><td id=tipoT11>A</td><td id=tipoT12>U</td><td id=tipoT13>B</td><td id=tipoT14>I</td><td id=tipoT15>ANESTESIOLOGO</td><td id=tipoT16>EQUIPOS</td></tr>";
 		$lin=0;

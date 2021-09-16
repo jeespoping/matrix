@@ -7,6 +7,9 @@
 <?php
 include_once("conex.php");
 include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2016/04/12";
+encabezado( "DETALLE CICLOS DE ANTIBIOTICOS", $wactualiz, $institucion->baseDeDatos );
 session_start();
 if(!isset($_SESSION['user']))
     die ("<br>\n<br>\n".
@@ -43,7 +46,7 @@ function calcularDiferenciaDias($fecha_inicio, $fecha_fin)
  echo "<form name='detcicantibio' action='detcicantibio.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
 	echo "<center><table border=0>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>DETALLE CICLOS DE ANTIBIOTICOS</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>DETALLE CICLOS DE ANTIBIOTICOS</font></b><br>";
 	echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTE:".$whis."-".$wnum." ".$wnom." </font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: detcicantibio.? Ver. 2016/04/12<br>AUTOR: JairS</font></b><br>";
     echo "</table>";

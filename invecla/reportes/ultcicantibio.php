@@ -7,7 +7,9 @@
 <?php
 include_once("conex.php");
 include_once("root/comun.php");
-
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "2021/08/13";
+encabezado( "PACIENTES CON ANTIBIOTICOS", $wactualiz, $institucion->baseDeDatos );
 $wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 session_start();
@@ -39,7 +41,7 @@ if(!isset($_SESSION['user']))
    echo "<center><h4>MUESTRA EL ULTIMO CICLO DE ANTIBIOTICOS POR PACIENTES POR CENTRO DE COSTO</h4></center>";
    echo "<table align='center' border=0>";
    echo "<tr>";
-   echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>PACIENTES CON ANTIBIOTICOS<br></font></b>";   
+   //echo "<tr><td align=CENTER colspan=4 bgcolor=#DDDDDD><b><font text color=#003366 size=2>PACIENTES CON ANTIBIOTICOS<br></font></b>";   
    
    echo "<tr><td align=center bgcolor=#C0C0C0 colspan=1><b><font text color=#003366 size=2>Centro de costos:</font></b><br>"; 
    $query = "SELECT ccocod,cconom FROM costosyp_000005 WHERE ccoclas = 'PR' AND ccoest = 'on' ORDER BY cconom";   
@@ -68,7 +70,7 @@ if(!isset($_SESSION['user']))
  else      // Cuando ya esta seleccionado el CCosto
  {
 	echo "<center><table border=0>";
-    echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTES CON ANTIBIOTICOS</font></b><br>";
+    //echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i>PACIENTES CON ANTIBIOTICOS</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=4><i> ".$wcco."</font></b><br>";
     echo "<tr><td align=center bgcolor=#DDDDDD colspan=><b><font text color=#003366 size=2><i>PROGRAMA: ultcicantibio.php Ver. 2016/04/12<br>AUTOR: JairS</font></b><br>";
     echo "</table>";

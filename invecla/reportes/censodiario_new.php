@@ -47,11 +47,14 @@ else
 	$apTabcco = consultarAliasPorAplicacion($conex,$wemp_pmla,"tabcco");
 
 	// ENCABEZADO
+	$wactualiz = "Agosto 13 de 2021";
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	encabezado( "CENSO DIARIO", $wactualiz, $institucion->baseDeDatos );
 	if(!isset($unidad)  or !isset($fecha1) or !isset($fecha2))
 	{
 		echo "<center><table border=0 width=400>";
-		echo "<tr><td align=center colspan=3><b>CLÍNICA MEDICA LAS AMERICAS </b></td></tr>";
-		echo "<tr><td align=center colspan=3>CENSO DIARIO (NUEVO)</td></tr>";
+		//echo "<tr><td align=center colspan=3><b>CLÍNICA MEDICA LAS AMERICAS </b></td></tr>";
+		//echo "<tr><td align=center colspan=3>CENSO DIARIO (NUEVO)</td></tr>";
 
 		
 		/*$query = "select cominf_000038.Historia_clinica, Num_ingreso, cominf_000039.Num_evento, Unidad, Fecha_evento, Hora_evento, Evento, Reporta, Descripcion, Enf_base, Personal_invol, Especialidad, Alto_riesgo, Edoconc, Urgente, Ap_similar, Creencia, No_adher, No_instru, Contardia, Cta_vol, Retraso_intercon, Retraso_dx, Retraso_tto, Barrera_cla, Barrera_eapb, Lejania, Retrazo_transp, Remision_tardia, Dx_ni, Tto_ni, Tto_omitido, Tto_cambio, Procmq_ni, Procmq_omitido, Procenf_omitido, Procenf_ni, Otro_ni, Otro_omitido, Alimento_ni, Identidad, Riesgo_noeval, Prev_noim, No_protocolo, Incumple_proto, Registro_insuf, Registro_confuso, Falla_plan, Orden_incum, Instrucc_insuf, Medicam_prepa, Medicam_uso, Curac_disp, Despla_na, Infraes_na, No_dispon, Malfunc, Maluso, No_especifica, Competencia, Supervision, Fatiga, Externa, Frec_md, Frec_enfer, Frec_otros, Novedad, Entrega_turno, Inter_servicios, Inter_ips, Remision_inadec, Clasificacion, Evitabilidad, Observa, Directa_muer, Basica_muer, Asociada_muer, Gestionado, Accion_mejora, Analisis_por  
