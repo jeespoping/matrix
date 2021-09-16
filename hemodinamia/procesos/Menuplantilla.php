@@ -27,6 +27,9 @@
 <?php
     include_once("conex.php");
     include_once("root/comun.php");
+    $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	$wactualiz = "2019-09-30";
+	encabezado( "MENU DE COTIZACION", $wactualiz, $institucion->baseDeDatos );
 	$conex = obtenerConexionBD("matrix");
     $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
 	

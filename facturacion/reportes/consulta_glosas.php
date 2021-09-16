@@ -24,7 +24,9 @@
 <?php
     include_once("conex.php");
     include_once("root/comun.php");
-	$wemp_pmla=$_REQUEST['wemp_pmla'];
+	$wactualiz ="2020-01-22";
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	encabezado( "GENERAR ARCHIVO DE GLOSAS - FACTURACION", $wactualiz, $institucion->baseDeDatos );
     if(!isset($_SESSION['user']))
     {
 		 ?>
@@ -65,14 +67,8 @@
     </script>
 </head>
 <body width="1200" height="47">
-	<form action="consulta_glosas.php?wemp_pmla=<?php echo($wemp_pmla) ?>" method="post">  
-		<table width="1200" border="1" align="center">
-			<tr>
-				<td width="50%" align="" style="border: groove; width: 0%">
-					<input type="image" id="btnVer" src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80">
-				<td width="350%" bgcolor="#C3D9FF"> <p align="center"><strong>GENERAR ARCHIVO DE GLOSAS - FACTURACION </strong></p> </td>
-			</tr>
-		</table>		
+	<form action="consulta_glosas.php?wemp_pmla=<?=$wemp_pmla?>" method="post">
+				
 		<p>&nbsp;</p>
 		<div align="center">
 		<table width="258" border="1">

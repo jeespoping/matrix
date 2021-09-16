@@ -410,6 +410,7 @@ else
 		echo "<fieldset style='border:solid;border-color:#00008B; width=800' align=center></br>";
 
 		echo "<form NAME='ingreso' ACTION='coordinador.php' METHOD='POST'>";
+		echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 		echo "<table align='center'>";
 		echo "<tr>";
 

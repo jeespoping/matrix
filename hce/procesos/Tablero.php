@@ -551,21 +551,28 @@ else
 {
 	if(!isset($_SESSION["HCEON"]))
 		$_SESSION["HCEON"] = 0;
+		
+	$wemp_pmla = $codemp;
+
+	include_once("root/comun.php");
+	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+	$wactualiz = "2021/08/13";
+	encabezado( "TABLERO DE PACIENTES HCE", $wactualiz, $institucion->baseDeDatos );
+
 	echo "<form name='Tablero' action='Tablero.php' method=post>";
 	
 
 	$key = substr($user,2,strlen($user));
 	//
-	$wemp_pmla = $codemp;
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
 	echo "<input type='HIDDEN' name= 'wdbhce' value='".$wdbhce."'>";
 	
-	echo "<table border=0 CELLSPACING=0>";
-	echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$codemp.".jpg'></td>";
-	echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;TABLERO DE PACIENTES HCE&nbsp;&nbsp;<A HREF='/matrix/root/reportes/DOC.php?files=/var/www/matrix/hce/procesos/Tablero.php' target='_blank'>Version 2018-07-23</A></td></tr>";
-	echo "<tr><td id=tipoT03 colspan=2></td></tr>";
-	echo "</table><br><br>";
+	// echo "<table border=0 CELLSPACING=0>";
+	// echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$codemp.".jpg'></td>";
+	// echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;TABLERO DE PACIENTES HCE&nbsp;&nbsp;<A HREF='/matrix/root/reportes/DOC.php?files=/var/www/matrix/hce/procesos/Tablero.php' target='_blank'>Version 2018-07-23</A></td></tr>";
+	// echo "<tr><td id=tipoT03 colspan=2></td></tr>";
+	// echo "</table><br><br>";
 	echo "<center><IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'></IMG></center><br>";
 	
 	$dateA=date("Y-m-d");
@@ -1367,7 +1374,7 @@ else
 		else
 		{
 			echo "<table border=0 align=center id=tipo5>";
-			echo "<tr><td id=tipoT02 colspan=8><IMG SRC='/matrix/images/medical/root/interes.gif' style='vertical-align:middle;'>&nbsp;SU FIRMA ELECTRONICA HA VENCIDO, POR FAVOR ACTUALICELA EN : <A HREF='/matrix/hce/procesos/PassHCE.php?empresa=".$wdbhce."'>Actualizar Firma</A></td></tr>";
+			echo "<tr><td id=tipoT02 colspan=8><IMG SRC='/matrix/images/medical/root/interes.gif' style='vertical-align:middle;'>&nbsp;SU FIRMA ELECTRONICA HA VENCIDO, POR FAVOR ACTUALICELA EN : <A HREF='/matrix/hce/procesos/PassHCE.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."'>Actualizar Firma</A></td></tr>";
 			echo "</table></center>";
 		}
 	}

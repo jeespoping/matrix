@@ -6,6 +6,10 @@
 <BODY TEXT="#000066">
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wactualiz = "1";
+encabezado( "USUARIOS DEL GRUPO AMERICAS (MATRIX) NO PRESENTES EN NOMINA", $wactualiz, $institucion->baseDeDatos );
 function ldif($f,$c,$p,$d)
 {
 	$ant = "";
@@ -124,7 +128,8 @@ else
 
 		$conex_O = odbc_connect('nomina','','')
 			or die("No se ralizo Conexion");
-		echo "<form action='Usuarios.php' method=post>";
+		echo "<form action='Usuarios.php?wemp_pmla=".$wemp_pmla."' method=post>";
+		echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 		$query  = "Select percod,perap1,perap2,perno1,perno2,percco,perced,perofi,peretr From noper ";
 		//$query .= "  Where peretr ='A'";
 		$query .= "  Order By percod";
@@ -139,8 +144,8 @@ else
 				$data[$k][$i-1]=odbc_result($err,$i);
 		}
 		echo "<table border=1>";				
-		echo "<tr><td colspan=4 align=center><font size=4>PROMOTORA MEDICA LAS AMERICAS S.A.</font></td></tr>";
-		echo "<tr><td colspan=4  align=center><font size=4>USUARIOS DEL GRUPO AMERICAS (MATRIX) NO PRESENTES EN NOMINA</font><td></tr>";
+		//echo "<tr><td colspan=4 align=center><font size=4>PROMOTORA MEDICA LAS AMERICAS S.A.</font></td></tr>";
+		//echo "<tr><td colspan=4  align=center><font size=4>USUARIOS DEL GRUPO AMERICAS (MATRIX) NO PRESENTES EN NOMINA</font><td></tr>";
 		echo "<tr><td><b>Codigo</b></td><td><b>Nombre</b></td><td><b>Centro de <br>Costos</b></td><td><b>Empresa-Estado</b></td></tr>";
 		//                 0         1         2       3       4
 		$query = "select codigo,descripcion,ccostos,empresa,password from usuarios ";

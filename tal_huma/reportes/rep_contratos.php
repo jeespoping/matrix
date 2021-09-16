@@ -4,16 +4,17 @@
 </head>
 <body BGCOLOR="">
 <BODY TEXT="#000066" onload=ira()>
-<!-- Estas 5 lineas es para que funcione el Calendar al capturar fechas -->
+<!-- Estas 5 lineas es para que funcione el Calendar al capturar fechas --
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
-    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>    
+    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>    -->
     
 <center>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 /************************************
 *    REPORTE CONTRATOS PROXIMOS A   * 
 *    VENCER ENTRE LA FECHA ACTUAL Y *
@@ -24,9 +25,10 @@ include_once("conex.php");
 $wautor="Gabriel Agudelo Zapata";
 //FECHA CREACION :Julio 23 2012
 //FECHA ULTIMA ACTUALIZACION 	:
-$wactualiz="(Versión 2012-07-23)";
+$wactualiz="2012-07-23";
 /*DESCRIPCION	:Trae el reporte de los contratos proximos a vencer entre la fecha actual y los proximos 3 meses */
-                 
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado( "Contratos proximos a vencer", $wactualiz, $institucion->baseDeDatos );                
 
  session_start();
  if (!isset($_SESSION['user']))
@@ -41,6 +43,7 @@ $wactualiz="(Versión 2012-07-23)";
 		$wfecha1=date("Y-m-d");
 		$wfecha2=date("Y-m-d", strtotime("$fecha_inicio + 3 month"));
 		echo "<form action='rep_contratos.php' name=rep_contratos method=post>";
+		echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 		
 			{
                 $query = "   SELECT Concon, Connum, Contip, Conpa1, Conpa2, Connit, Conobj, Convac, Confin, Conffi, Confpr, Conres, Conpro, Conter   "
@@ -51,8 +54,8 @@ $wactualiz="(Versión 2012-07-23)";
 		   		$num = mysql_num_rows($err);
 		   	
 				echo "<table border=1 align=center>";
-				echo "<tr><td colspan=14 align=center bgcolor=#DBDFF8><b>PROMOTORA MEDICA LAS AMERICAS S.A.</b></td></tr>";
-				echo "<tr><td colspan=14 align=center bgcolor=#DBDFF8><b>DIRECCION DE INFORMATICA</b></td></tr>";
+				//echo "<tr><td colspan=14 align=center bgcolor=#DBDFF8><b>PROMOTORA MEDICA LAS AMERICAS S.A.</b></td></tr>";
+				//echo "<tr><td colspan=14 align=center bgcolor=#DBDFF8><b>DIRECCION DE INFORMATICA</b></td></tr>";
 				echo "<tr>";
 				echo "<td colspan=15 align=center bgcolor=#DBDFF8><b>Contratos proximos a vencer entre las Fechas </b>".$wfecha1." <b> y </b> ".$wfecha2."</td>";
 				echo "</tr>"; 	

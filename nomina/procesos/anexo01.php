@@ -58,7 +58,7 @@
 
 <?php
 include_once("conex.php");
-
+include_once("root/comun.php");
 //==========================================================================================================================================
 //PROGRAMA				      :Actualizacion de datos para retencion en la fuente ANEXO 1                                                                 
 //AUTOR				          :Jair  Saldarriaga Orozco.                                                                        
@@ -67,7 +67,9 @@ include_once("conex.php");
 //FECHA DE ACTUALIZACION      :Abril 9 de 2018 - se modificaron las preguntas por Angela Ocampo
 //FECHA DE ACTUALIZACION      :Feb 25 2020 - se modifican las conexiones de acuerdo al parametro, tambien se adicionan y quitan algunas preguntas
 
-$wactualiz="PROGRAMA: anexo01.php Ver. Febrero 24 de 2020 ";
+$wactualiz="Febrero 24 de 2020 ";
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado( "Actualizacion de datos para retencion en la fuente", $wactualiz, $institucion->baseDeDatos );
 
 session_start();
 

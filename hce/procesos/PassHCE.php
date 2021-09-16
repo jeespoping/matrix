@@ -189,8 +189,9 @@
 //										- Se agregan reglas definidas por TI para establecer una firma electrónica segura.
 //
 //--------------------------------------------------------------------------------------------------------------------------------------------
-
+$consultaAjax = '';
 include_once("conex.php");
+include_once("root/comun.php");
 function bisiesto($year)
 {
 	return(($year % 4 == 0 and $year % 100 != 0) or $year % 400 == 0);
@@ -200,21 +201,20 @@ if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
+		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+		encabezado( "ADMINISTRACION DE FIRMAS ELECTRONICA", $wactualiz, $institucion->baseDeDatos );
 		$key = substr($user,2,strlen($user));
 		
-
-		
-		echo "<div>";
-		
-		echo "<form name='PassHCE' action='PassHCE.php' method=post>";
+		echo "<div>";	
+		echo "<form name='PassHCE' action='PassHCE.php?wemp_pmla=".$wemp_pmla."' method=post>";
+		echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 		echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 		if(!isset($wpass) or !isset($wpassr) or !isset($wpassa))
 		{
 			echo "<center><table border=0>";
-			echo "<tr><td align=center colspan=2><b>AUNA - PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+			//echo "<tr><td align=center colspan=2><b>AUNA - PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 			echo "<tr><td align=center colspan=2><b>HISTORIA CLINICA ELECTRONICA HCE<b></td></tr>";
-			echo "<tr><td align=center colspan=2>ADMINISTRACION DE FIRMAS ELECTRONICA</td></tr>";
-			
+			//echo "<tr><td align=center colspan=2>ADMINISTRACION DE FIRMAS ELECTRONICA</td></tr>";			
 			echo "<tr><td align=center colspan=2><p>&nbsp;</p></td></tr>";
 			echo "<tr><td align=center colspan=2>POR FAVOR TENER PRESENTE AL ACTUALIZAR LA FIRMA:</td></tr>";
 			echo "<tr><td align=center colspan=2>POLITICA DE INFORMATICA.</td></tr>";

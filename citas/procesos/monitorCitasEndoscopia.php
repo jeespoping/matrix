@@ -478,6 +478,8 @@ else
     $numRegistrosPorPagina = isset($rowSala["cantidadFilas"]) ? $rowSala["cantidadFilas"] : 8;
 
     // --> Pintar pantalla para asignar el turno
+
+    $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
     echo "
     <input type='hidden' id='wemp_pmla'                 value='".$wemp_pmla."'>
     <input type='hidden' id='monitorSala'               value='".((isset($monitorSala)) ? $monitorSala : '*')."'>
@@ -491,7 +493,7 @@ else
             <table width='100%' style='font-size: 4rem;color:#ffffff;font-family: verdana;font-weight:bold;'>
                 <tr>
                     <td align='left'    width='15%'>
-                        <img width='125' heigth='61' src='../../images/medical/root/logoClinicaGrande.png'>
+                        <img width='125' heigth='61' src='../../images/medical/root/".$institucion->baseDeDatos.".png'>
                     </td>
                     <td align='center'  width='70%'>
 						ATENCIÓN ".utf8_encode($infoCc["descripcion"])."
@@ -499,7 +501,7 @@ else
                     <td id='msjPagina' width='10%' style='font-weight:normal;font-size:2.2rem;color:#000000' align='right'>
                     </td>
                     <td width='5%'>
-                        <img width='120' heigth='100' src='../../images/medical/root/Logo_MatrixAzulClaro.png'>
+                        <img width='120' heigth='100' src='../../images/medical/root/".$institucion->baseDeDatos.".png'>
                     </td>
                 </tr>
             </table>

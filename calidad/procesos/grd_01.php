@@ -44,6 +44,10 @@
     ///*
     include("conex.php");
     include("root/comun.php");
+    
+    $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+    $wactualiz = "1";
+    encabezado( "Matrix - Predicción del Alta - GRD", $wactualiz, $institucion->baseDeDatos );
 
     if(!isset($_SESSION['user']))
     {
@@ -82,8 +86,8 @@
 <body>
 <div class="container">
     <div class="panel panel-info contenido">
-        <div class="panel-heading encabezado">
-            <div class="panel-title titulo1">Matrix - Predicci&oacute;n del Alta - GRD</div>
+        
+            
         </div>
 
         <form method="post">
