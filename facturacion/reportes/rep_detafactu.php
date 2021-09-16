@@ -69,7 +69,7 @@ session_start();
 //Encabezado
 encabezado("DETALLE DE MATERIALES Y MEDICAMENTOS DE UNA FACTURA",$wactualiz,"clinica");
 
-if (!$usuariovalidado && !isset($_GET['automatizacion_pdfs']))
+if (!$usuarioValidado && !isset($_GET['automatizacion_pdfs']))
 {
 	echo '<span class="subtituloPagina2" align="center">';
 	echo 'Error: Usuario no autenticado';
