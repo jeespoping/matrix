@@ -12,6 +12,11 @@ include_once("conex.php");
 //FECHA DE CREACION: 	2017-06-30
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
+// Septiembre 2 de 2021		Joel PH		- Se modifica programa para mostrar los pacientes del botiquin de Hemodinamia, centro de costo 2503,
+//										  este centro de costos no tiene tabla de citas, por lo cual se realiza una modificación en el código
+//										  para que obtenga los pacientes del piso o servicio y los liste en el programa. Se debe tener en cuenta
+//										  que se debe marcar el campo CComsa = on en la tabla movhos 11 para que el centro de costo sea listado
+//										  en los centros de costos a dispensar.
 // Diciembre 30 de 2019 Edwin MG 		- Se modifica función consultarPacientesCco para que se muestre los pacientes de ayudas diagnosticas de acuerdo
 //										  a la tabla de turnero (configuración en parametro ccotct de movhos_000011 ) y no a la tabla 000023
 //										  de citas. Esto debido a que en arkadia la tabla de turnero es la cliame_0000304 y no tiene la misma estructura
@@ -56,7 +61,7 @@ include_once("conex.php");
 // Julio 5 de 2017.			Edwin MG.	SE muestra los insumos que tengan saldo o permitan negativos.
 //										Al momento de dar clic sobre el boton de realizar pedido, se bloquea para no dar clic dos veces sobre el.
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2019-12-30';
+			$wactualiz='2021-09-02';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //                
 //
@@ -280,7 +285,7 @@ else
 		
 		$ccoHabilitados = explode(",",$ccoHabilitados);
 		
-		$queryCCo = " SELECT Ccocod,Cconom,Ccoayu 
+		$queryCCo = " SELECT Ccocod,Cconom,Ccoayu,Ccomsa
 						FROM ".$wbasedato."_000011 
 					   WHERE (Ccohos='on' OR Ccourg='on' OR Ccoayu='on') 
 					     AND Ccoest='on' 
@@ -295,7 +300,7 @@ else
 			while($rowCCo = mysql_fetch_array($resCCo))
 			{
 				$mostrarCco = true;
-				if($rowCCo['Ccoayu']=="on")
+				if($rowCCo['Ccoayu']=="on" && $rowCCo['Ccomsa'] != "on")
 				{
 					$mostrarCco = consultarConfiguracionAyudaDiagnostica($conex,$wbasedato,$rowCCo['Ccocod']);
 				}
@@ -470,6 +475,14 @@ else
 		return $html;
 	}
 	
+	/**
+	 * Metodo que permite obtener el listado de pacientes de la tabla de citas
+	 * si esta existe o de lo contrario trae los pacientes del servicio o centro de costo. 
+	 * 
+	 * 
+	 * 
+	 * @author Joel Payares Hernández
+	 */
 	function consultarPacientesCco($codigoCco,$zona)
 	{
 		global $conex;
@@ -478,12 +491,13 @@ else
 		global $wbasedatoCliame;
 		global $wemp_pmla;
 		
+		$tablaHabitaciones = "";
 		$condicionesExtrasTurnero = "";
 		
 		$ccoTipo = consultarTipoCco($conex,$wbasedato,$codigoCco);
-		
+
 		$esAyudaDiagnostica = true;
-		
+
 		// si es urgencias y sin ubicacion
 		if($ccoTipo=="urgencias" && $zona=="0")
 		{
@@ -502,12 +516,12 @@ else
 		}
 		elseif($ccoTipo=="ayudaDiagnostica")
 		{
-			
+			$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $codigoCco );
 			
 			$tablaAyudasDiagnosticas = consultarTablaPacientesAyudasDiagnosticas($conex,$wbasedato,$codigoCco,true);
-			
+
 			$prefijoCampos = getPrefixTables($prefijoTablaAyudasDiagnosticas);
-			
+
 			// $queryHabitaciones =  "SELECT ".$prefijoCampos."tip,".$prefijoCampos."doc,".$prefijoCampos."his,".$prefijoCampos."ing,CONCAT_WS(' ',Pacno1,Pacno2,Pacap1,Pacap2) AS nombre,Ubihis,Ubiing
 									 // FROM ".$tablaAyudasDiagnosticas." a,".$prefijoTablaAyudasDiagnosticas."_000023 b,".$wbasedatoCliame."_000100,".$wbasedatoCliame."_000101,".$wbasedato."_000018
 									// WHERE Fecha='".date("Y-m-d")."' 
@@ -528,12 +542,12 @@ else
 			$sql = "SELECT Ccotct 
 					  FROM ".$wbasedato."_000011 
 					 WHERE ccocod = '".$codigoCco."'";
-					 
+
 			$resTablasCitas = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());		   
 			$resNum 		= mysql_num_rows($resTablasCitas);
-									  
-			$rowsTablasCitas = mysql_fetch_array( $resTablasCitas );
 			
+			$rowsTablasCitas = mysql_fetch_array( $resTablasCitas );								  
+
 			list( $tablaTurnero, $tipoDocumento, $numeroDocumento, $datosCondicionesExtras ) = explode( ",", $rowsTablasCitas['Ccotct'] );
 			
 			if( !empty($datosCondicionesExtras) ){
@@ -541,22 +555,85 @@ else
 				
 				$condicionesExtrasTurnero = " AND ".implode( " AND ", $arrayCondicionesExtras );
 			}
-									  
-			$queryHabitaciones =  "SELECT ".$tipoDocumento.",".$numeroDocumento.",CONCAT_WS(' ',Pacno1,Pacno2,Pacap1,Pacap2) AS nombre,Ubihis,Ubiing
-									 FROM ".$tablaAyudasDiagnosticas." a,".$tablaTurnero." b,".$wbasedatoCliame."_000100,".$wbasedatoCliame."_000101,".$wbasedato."_000018
-									WHERE Fecha='".date("Y-m-d")."' 
-									  AND Activo='A' 
-									  AND Causa='' 
-									  AND b.".$numeroDocumento."=Cedula
-									  AND Pactdo=b.".$tipoDocumento."
-									  AND Pacdoc=b.".$numeroDocumento."
-									  AND b.Fecha_data=Fecha
-									  ".$condicionesExtrasTurnero."
-									  AND inghis=Pachis
-									  AND Ubihis=Inghis 
-									  AND Ubiing=Ingnin
-									  AND Ubiald!='on';";
-		
+
+			/**
+			 * Se valida si el campo tct => Tabla campos citas, es diferente de vacio
+			 * para así ir a consultar los pacientes que estan en habitaciones del
+			 * servicio a consultar.
+			 */
+			if( $rowsTablasCitas['Ccotct'] == '' )
+			{
+				$queryHabitaciones = "SELECT * FROM
+						(SELECT Ubisac as Habcco, Habcod, Habhis, Habing,
+									CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
+									Ubialp, Ubifap, Ubihap, pacced, pactid, '1' as ordenes, Habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '2' as orden
+						   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016, ".$tablaHabitaciones."
+						  WHERE ubiald = 'off'
+							AND Ccocir != 'on'
+							AND ubisac = Ccocod
+							AND oriori = '".$wemp_pmla."'
+							AND ubihis = orihis
+							AND ubiing = oriing
+							AND oriced = pacced
+							AND oritid = pactid
+							AND orihis = inghis
+							AND oriing = inging
+							AND habhis = inghis
+							AND habing = inging
+							AND ubimue != 'on'
+							AND Ubiste in ('".trim($codigoCco)."')
+							UNION
+						SELECT Ubisac as Habcco, (SELECT Cconom FROM ".$wbasedato."_000011 WHERE Ccocod = Ubisac) as Habcod, ubihis as Habhis, ubiing as Habing,
+									CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
+									Ubialp, Ubifap, Ubihap, pacced, pactid, '1' as ordenes,'2000' as habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '1' as orden
+						   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016
+						  WHERE ubiald = 'off'
+							AND ubisac = Ccocod
+							AND oriori = '".$wemp_pmla."'
+							AND ubihis = orihis
+							AND ubiing = oriing
+							AND oriced = pacced
+							AND oritid = pactid
+							AND orihis = inghis
+							AND oriing = inging
+							AND ubimue != 'on'
+							AND Ubisac in ('".trim($codigoCco)."')) as t
+					   GROUP BY habhis, habing
+					   ORDER BY orden DESC, Habord*1, Habcod";
+			}
+			else
+			{
+				/**
+				 * Se valida si campo pci => Prefijo citas, es vacío y así mostrar el
+				 * mensaje pertinente para corregir el dato en la tabla de centros de costo.
+				 */
+				if ( explode("_", trim( $tablaAyudasDiagnosticas ) )[0] == "" ) {
+					return "El campo prefijo de citas no existe &oacute; est&aacute; vac&iacute;o, en la tabla servicios o centros de costos!";
+				}
+
+				/**
+				 * Se valida si campo ntc => Numero tabla citas, es vacío y así mostrar el
+				 * mensaje pertinente para corregir el dato en la tabla de centros de costo.
+				 */
+				if ( explode("_", trim( $tablaAyudasDiagnosticas ) )[1] == "" ) {
+					return "El campo número tabla citas no existe &oacute; est&aacute; vac&iacute;o, en la tabla servicios o centros de costos!";
+				}
+
+				$queryHabitaciones =  "SELECT ".$tipoDocumento.",".$numeroDocumento.",CONCAT_WS(' ',Pacno1,Pacno2,Pacap1,Pacap2) AS nombre,Ubihis,Ubiing
+										FROM ".$tablaAyudasDiagnosticas." a,".$tablaTurnero." b,".$wbasedatoCliame."_000100,".$wbasedatoCliame."_000101,".$wbasedato."_000018
+										WHERE Fecha='".date("Y-m-d")."' 
+										AND Activo='A' 
+										AND Causa='' 
+										AND b.".$numeroDocumento."=Cedula
+										AND Pactdo=b.".$tipoDocumento."
+										AND Pacdoc=b.".$numeroDocumento."
+										AND b.Fecha_data=Fecha
+										".$condicionesExtrasTurnero."
+										AND inghis=Pachis
+										AND Ubihis=Inghis 
+										AND Ubiing=Ingnin
+										AND Ubiald!='on';";
+			}
 		}
 		else
 		{
@@ -593,11 +670,9 @@ else
 								  ORDER BY Habcpa;";
 		}
 		
-		// echo $queryHabitaciones;
-		
 		$resHabitaciones = mysql_query($queryHabitaciones, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $queryHabitaciones . " - " . mysql_error());		   
 		$numHabitaciones = mysql_num_rows($resHabitaciones);
-		
+
 		$pacientes = array();
 		if($numHabitaciones>0)
 		{
@@ -605,15 +680,14 @@ else
 			{
 				if($ccoTipo=="ayudaDiagnostica")
 				{
-					$historia = $rowHabitaciones[$prefijoCampos.'his'];
-					$ingreso = $rowHabitaciones[$prefijoCampos.'ing'];
+					$historia = $rowHabitaciones[2];
+					$ingreso = $rowHabitaciones[3];
 					
 					// si no tiene historia e ingreso es porque es de chequeo ejecutivo
-					if($rowHabitaciones[$prefijoCampos.'his']=="" && $rowHabitaciones[$prefijoCampos.'ing']=="")
+					if( $rowHabitaciones[2]=="" && $rowHabitaciones[3]=="" )
 					{
 						$historia = $rowHabitaciones['Ubihis'];
 						$ingreso = $rowHabitaciones['Ubiing'];
-						
 					}
 					
 					if($historia!="" && $ingreso!="")
@@ -624,9 +698,9 @@ else
 						$pacientes[$habitacion]['ingreso'] = $ingreso;
 						$pacientes[$habitacion]['habitacion'] = $habitacion;
 						$pacientes[$habitacion]['descHabitacion'] = $habitacion;
-						$pacientes[$habitacion]['tipoDocumento'] = $rowHabitaciones[$tipoDocumento];
-						$pacientes[$habitacion]['documento'] = $rowHabitaciones[$numeroDocumento];
-						$pacientes[$habitacion]['nombre'] = $rowHabitaciones['nombre'];
+						$pacientes[$habitacion]['tipoDocumento'] = $rowHabitaciones[11];
+						$pacientes[$habitacion]['documento'] = $rowHabitaciones[10];
+						$pacientes[$habitacion]['nombre'] = $rowHabitaciones['Nombre'];
 						$pacientes[$habitacion]['consultaUrgencias'] = "";
 					}
 				}
@@ -647,13 +721,10 @@ else
 					$pacientes[$habitacion]['documento'] = $rowHabitaciones['Pacced'];
 					$pacientes[$habitacion]['nombre'] = $rowHabitaciones['Pacno1']." ".$rowHabitaciones['Pacno2']." ".$rowHabitaciones['Pacap1']." ".$rowHabitaciones['Pacap2'];
 					$pacientes[$habitacion]['consultaUrgencias'] = $rowHabitaciones['Mtrcur'];
-				}
-				
-				
+				}				
 			}
 		}
-		
-		// var_dump($pacientes);
+
 		return $pacientes;
 	}
 	
@@ -794,20 +865,18 @@ else
 			
 			return $data;
 		}
-		
+
 		// validar saldos de la auxiliar
-		
 		$validarSaldo = consultarAliasPorAplicacion($conex, $wemp_pmla, 'validarSaldoAuxiliar');
-		
+
 		$saldoPendiente = 0;
 		
 		if($validarSaldo=="on")
 		{
 			$saldoPendiente = consultarSaldoAuxiliar( $conex, $wbasedato, time()-24*3600, $wuse, $codBotiquin );
 		}
-		
 		$permitePedidosPorPaciente = consultarCcoPedidoPorPaciente($codigoCco);
-		// var_dump($permitePedidosPorPaciente);
+
 		$saldoActualAuxiliar = 0;
 		$tienePedidos = "";
 		$tienePedidosCco = "";
@@ -821,11 +890,8 @@ else
 				$tienePedidosCco = explode("-",$tienePedidos);
 				$tienePedidosCco = $tienePedidosCco[0];
 			}
-			
-			
 		}
-		// var_dump($tienePedidos);
-		// var_dump($tienePedidosCco);
+
 		if(isset($saldoPendiente) && $saldoPendiente!= 0)
 		{
 			$html = "<p align='center' class='fondoamarillo'>
@@ -872,12 +938,18 @@ else
 			// funcion en botiquin.inc.php
 			$insumos = consultarInsumo( $conex, $wbasedato, "%", $codBotiquin, false );
 			$insumosBotiquin = $insumos['data'];
-			
-			$ccoTipo = consultarTipoCco($conex,$wbasedato,$codigoCco);
-			
+			$cantPacientes = 0;
+
+			$ccoTipo = consultarTipoCco($conex,$wbasedato,$codigoCco); // ayudaDiagnostica
+
 			$pacientes= consultarPacientesCco($codigoCco,$zona);
 			
-			$cantPacientes = count($pacientes);
+			if ( is_array( $pacientes ) )
+			{
+				$cantPacientes = count($pacientes);
+			}
+
+			// $cantPacientes = count($pacientes);
 			
 			if($cantPacientes>0)
 			{
@@ -1138,6 +1210,7 @@ else
 			{
 				// si tiene un pedido pendiente y es de ayudas diagnosticas anulpedido
 				$codPedido = consultarPedidoPendiente($codBotiquin,$codigoCco,$wuse);
+
 				if($codPedido!="" && $ccoTipo=="ayudaDiagnostica")
 				{
 					$html = "<p align='center'>
@@ -1145,6 +1218,12 @@ else
 								<b style='font-size:12pt'>No hay habitaciones ocupadas para este centro de costos y tiene un pedido pendiente.</b>
 								<br>
 								<span id='anularpedido' onclick='anularpedido();' style='font-family: verdana;font-weight:bold;font-size: 10pt;color: #0033FF;text-decoration: underline;cursor:pointer;'><b>Anular pedido anterior</b></span>
+							</p>";
+				}
+				elseif( $cantPacientes == 0)
+				{
+					$html = "<p align='center'>
+								<b style='font-size:12pt'>{$pacientes}</b>
 							</p>";
 				}
 				else
@@ -1593,17 +1672,13 @@ else
 								$arrayResultado[$keyInsumoEliminado]['mensaje']="El insumo no se registró3";
 							}
 						}
-						
 					}
 					// else
 					// {
 						// $arrayResultado[$keyInsumoEliminado]['error']=0;
 						// $arrayResultado[$keyInsumoEliminado]['mensaje']="Insumo registrado correctamente";
 					// }
-					
-					
-					
-					
+
 				}
 				
 				$data['error']=0;
@@ -2133,7 +2208,7 @@ if(isset($accion))
 			return;
 		}
 		case 'registrarPedidoInsumos':
-		{	
+		{
 			$data = registrarPedidoInsumosBotiquin($codBotiquin,$codigoCco,$wemp_pmla,$codPedido,$zona,$insumosPedido);
 			echo json_encode($data);
 			break;
