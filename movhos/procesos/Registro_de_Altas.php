@@ -281,7 +281,7 @@ function validarUsuarioCancelarAlta( $conex, $wemp_pmla, $usuario, $clave ){
 					FROM usuarios
 					WHERE
 						codigo = '$usuario'
-						AND Password = '$clave'
+						AND Password = SHA1('$clave')
 						AND activo = 'A'
 					";
 					
