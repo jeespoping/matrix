@@ -30,6 +30,7 @@
 	$conex = obtenerConexionBD("matrix");
     $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
     if(!isset($_SESSION['user']))
     {
         ?>
