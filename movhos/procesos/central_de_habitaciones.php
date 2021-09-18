@@ -406,11 +406,11 @@ return;
     //===================================================================================================================================================
 
     /**  **///---> se omiten los cubiculos habcub
-    // $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
+    // $q = "  SELECT Habcod habitacion, '', '' observacion, Fecha_data fechaLlegada, Hora_data horaLlegada, Habprg, '' id, '' horaAsignado "
     /**
      * Se cambia en la consulta fecha y hora de alta por fecha data y hora data para obtener el tiempo de llegada
      */
-    $q = "  SELECT Habcod habitacion, '', '' observacion, Fecha_data fechaLlegada, Hora_data horaLlegada, Habprg, '' id, '' horaAsignado "
+    $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
         ."    FROM ".$wbasedato."_000020 "
         ."   WHERE habali = 'on' "
         ."     AND habest = 'on' "
