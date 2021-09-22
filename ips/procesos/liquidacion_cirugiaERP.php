@@ -17,6 +17,9 @@ if(!isset($accion))
  El valor del parámetro $ccotema es determinado en el programa gestor_aplicaciones.php
  */ $wactualiza = "(2020-04-28)"; /* VERSIÓN NO_POS, AUDITORÍA
  ACTUALIZACIONES:
+ Agosto 31 2021 - Juan David Rodriguez.
+    - Se corrige Script para que cuando se realice una liquidación que tenga varios procedimiento, pero sean iguales, así mismo los intervenga el mismo especialista, 
+        por la misma posición del organo, pero por diferente vía, la liquidación sea correcta.
  Julio 28 2021 - Juan David Rodriguez.
     - Se corrige numero de vías, cuando se agrega procedimientos para liquidar y si por algún morivo hay que cambiar algo, se pierde la vía, se corrigó para que no se pierda.
     - Se corrige porcentajes de liquidación, cuando es diferente vía y diferente especialidad no respera el manual de configuracion, se realiza cambio para que respete el manual.
@@ -15582,6 +15585,7 @@ if(isset($accion) && isset($form))
                     // }
                     // else
                     {
+                        $k = uniqid(); // Se genera llave unica para diferenciar los procedimientos
                         // $guardar = "arr_datos_liquidar: ".print_r($arr_datos_liquidar,true).PHP_EOL;
                         // seguimiento($guardar);
                         $wprocedimiento_dif = $wprocedimiento;
@@ -15591,7 +15595,8 @@ if(isset($accion) && isset($form))
                         if(!empty($wposicion_organo))
                         {
                             $arr_control_proBilateral                        = array();
-                            $wprocedimiento_dif = $wprocedimiento."_".$wposicion_organo;
+                            // $wprocedimiento_dif = $wprocedimiento."_".$wposicion_organo;
+                            $wprocedimiento_dif = $wprocedimiento."_".$wposicion_organo."_".$k;
                             $arr_control_proBilateral[$wprocedimiento_dif] = $wprocedimiento_dif;
                             $add_msj_posicion                               = ' ('.$wposicion_organo_nom.')';
                         }
@@ -15607,7 +15612,8 @@ if(isset($accion) && isset($form))
                         $primer_elemento = "";
                         foreach ($arr_control_proBilateral as $wprocedimiento_dif => $value)
                         {
-                            $dif_tr = $wprocedimiento_dif."_".$wespecialistas."_".$wespecialidad;
+                            $dif_tr = $wprocedimiento_dif."_".$wespecialistas."_".$wespecialidad."_".$k;
+                            // $dif_tr = $wprocedimiento_dif."_".$wespecialistas."_".$wespecialidad;
                             if(!array_key_exists($dif_tr, $arr_datos_liquidar['arr_para_liquidar']))
                             {
                                 $arr_datos_liquidar['arr_para_liquidar'][$dif_tr] = array();
@@ -17095,7 +17101,7 @@ $actOpOtrosProced = ($actOpOtrosProced == 'on') ? '': 'disabled="disabled"';
                 welemento               : elemento
 
             },function(data){
-                console.log(data);
+                // console.log(data);
                 // --> data.prueba valida si la historia existe
                 var alerta = 'La historia no existe';
                 if(data.prueba == 'no')
@@ -17667,9 +17673,8 @@ $actOpOtrosProced = ($actOpOtrosProced == 'on') ? '': 'disabled="disabled"';
         // 3.1. Function called by the loop to create a Deferred object (data is numeric)
         function processItem(i, parametros_procedimiento) {
             // 3.1.1. Create the Deferred object and output some debug
-            console.log('called processItem');
+            console.log('called processItem: ' + i);
             // var dfd           = $.Deferred();
-            console.log(i);
             if(i < parametros_procedimiento.length)
             {
                 // var parametros_ProAuditado = parametros_procedimiento[i];
