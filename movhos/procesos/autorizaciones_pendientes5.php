@@ -662,20 +662,20 @@ function registrarAuditoriaKardex($conex,$wbasedato, $auditoria){
 
 	//Funcion que cambia el estado del examen por parte de la secretaria.
 	function cambiar_estado_examen($wemp_pmla, $wmovhos, $wfec, $wexam, $wing, $wfechadataexamen, $whoradataexamen, $wfechagk, $whis, $wordennro, $wordite, $westado, $wid, $wcco, $whce, $wcontrol_ordenes, $wtexto_examen, $westado_registro)
-       {
+	{
 
-          global $conex;
-          global $key;
+		global $conex;
+		global $key;
 
-		  $wir_a_ordenes = ir_a_ordenes($wemp_pmla, $wcco, 'ir_a_ordenes');
+		$wir_a_ordenes = ir_a_ordenes($wemp_pmla, $wcco, 'ir_a_ordenes');
 
-          $whora = (string) date("H:i:s");
-		  $wtexto = utf8_decode($wtexto);
-		  $nombreExamen = $wexam;
-		  $audNuevo = "N:".$wexam.",".$wordennro.",".$wordite.",".str_replace( "_", " ", trim($wtexto_examen) ).",".$westado.",,".$wfechadataexamen;
-		  $audAnterior = "A:".$wexam.",".$wordennro.",".$wordite.",".str_replace( "_", " ", trim($wtexto_examen) ).",".$westado_registro.",,".$wfechadataexamen;
-		  //Verifica si debe actualizar registros de ordenes o de kardex.
-		  if($wcontrol_ordenes != 'on'){
+		$whora = (string) date("H:i:s");
+		$wtexto = utf8_decode($wtexto);
+		$nombreExamen = $wexam;
+		$audNuevo = "N:".$wexam.",".$wordennro.",".$wordite.",".str_replace( "_", " ", trim($wtexto_examen) ).",".$westado.",,".$wfechadataexamen;
+		$audAnterior = "A:".$wexam.",".$wordennro.",".$wordite.",".str_replace( "_", " ", trim($wtexto_examen) ).",".$westado_registro.",,".$wfechadataexamen;
+		//Verifica si debe actualizar registros de ordenes o de kardex.
+		if($wcontrol_ordenes != 'on'){
 
 		  //Modifica la tabla ppal.
           $query =   "UPDATE ".$wmovhos."_000050
@@ -696,49 +696,90 @@ function registrarAuditoriaKardex($conex,$wbasedato, $auditoria){
           $res = mysql_query($query, $conex) or die(mysql_error()." - Error en el query: $query - ".mysql_error());
 
 
-		  }else{
+		}
+		else{
 
-		  $query1 ="  	UPDATE ".$whce."_000027 A, ".$whce."_000028 B
+			$query1 ="  UPDATE ".$whce."_000027 A, ".$whce."_000028 B
 						   SET Detesi = '".$westado."'
-                         WHERE Ordtor = Dettor
-                           AND Ordnro = Detnro
-                           AND A.Ordhis = '".$whis."'
-                           AND A.Ording = '".$wing."'
-                           AND B.Detnro = '".$wordennro."'
-                           AND B.Detite = '".$wordite."'
-                           AND B.Detest = 'on'";
-          $res1 = mysql_query($query1, $conex) or die(mysql_errno()." - Error en el query $sql - ".mysql_error());
+						 WHERE Ordtor = Dettor
+						   AND Ordnro = Detnro
+						   AND A.Ordhis = '".$whis."'
+						   AND A.Ording = '".$wing."'
+						   AND B.Dettor = '".$wexam."'
+						   AND B.Detnro = '".$wordennro."'
+						   AND B.Detite = '".$wordite."'
+						   AND B.Detest = 'on'";
+			$res1 = mysql_query($query1, $conex) or die(mysql_errno()." - Error en el query $sql - ".mysql_error());
 
-		  $query1 ="  	UPDATE ".$whce."_000027 A, ".$wmovhos."_000159 B
+			$query1 ="  UPDATE ".$whce."_000027 A, ".$wmovhos."_000159 B
 						   SET Detesi = '".$westado."'
-                         WHERE Ordtor = Dettor
-                           AND Ordnro = Detnro
-                           AND A.Ordhis = '".$whis."'
-                           AND A.Ording = '".$wing."'
-                           AND B.Detnro = '".$wordennro."'
-                           AND B.Detite = '".$wordite."'
-                           AND B.Detest = 'on'";
-          $res1 = mysql_query($query1, $conex) or die(mysql_errno()." - Error en el query $sql - ".mysql_error());
+						 WHERE Ordtor = Dettor
+						   AND Ordnro = Detnro
+						   AND A.Ordhis = '".$whis."'
+						   AND A.Ording = '".$wing."'
+						   AND B.Dettor = '".$wexam."'
+						   AND B.Detnro = '".$wordennro."'
+						   AND B.Detite = '".$wordite."'
+						   AND B.Detest = 'on'";
+			$res1 = mysql_query($query1, $conex) or die(mysql_errno()." - Error en el query $sql - ".mysql_error());
+		  
+			// Crea un nuevo recurso cURL
+			$ch = curl_init();
+			
+			$data = array( 
+					'consultaAjax'		=> '',
+					'consultaAjaxKardex'=> 'cambioEstadoAutorizadoAutomatico', 
+					'wemp_pmla'			=> $wemp_pmla, 
+					'historia'			=> $whis,
+					'ingreso'			=> $wing, 
+					'tipoOrden'			=> $wexam, 
+					'nroOrden'			=> $wordennro, 
+					'item'				=> $wordite, 
+					'westado'			=> $westado, 
+					'wuser'				=> $key, 
+				);
+			
+			
+			// curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
+			// set URL and other appropriate options
+			$options = array(
+						CURLOPT_URL 			=> 'localhost/matrix/hce/procesos/ordenes.inc.php',
+						CURLOPT_HEADER 			=> false,
+						CURLOPT_POSTFIELDS 		=> $data,
+						CURLOPT_CUSTOMREQUEST 	=> 'POST',
+					);
 
-		  }
+			$opts = curl_setopt_array($ch, $options);
+			
+			if( $opts === false )
+				echo "Opciones mal configuradas...";
 
-			$mensajeAuditoria = obtenerMensaje('MSJ_EXAMEN_ACTUALIZADO');
+			// grab URL and pass it to the browser
+			$exec = curl_exec($ch);
+			
+			if( $exec === false ){
+				echo "No hizo nada....";
+			}
 
-		    //Registro de auditoria
-			$auditoria = new AuditoriaDTO();
+			// close cURL resource, and free up system resources
+			curl_close($ch);
+		}
 
-			$auditoria->historia = $whis;
-			$auditoria->ingreso = $wing;
-			$auditoria->descripcion = "$audAnterior $audNuevo";
-			$auditoria->fechaKardex = $wfec;
-			$auditoria->mensaje = $mensajeAuditoria;
-			$auditoria->seguridad = $key;
+		$mensajeAuditoria = obtenerMensaje('MSJ_EXAMEN_ACTUALIZADO');
 
-			registrarAuditoriaKardex($conex,$wmovhos,$auditoria);
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
 
+		$auditoria->historia = $whis;
+		$auditoria->ingreso = $wing;
+		$auditoria->descripcion = "$audAnterior $audNuevo";
+		$auditoria->fechaKardex = $wfec;
+		$auditoria->mensaje = $mensajeAuditoria;
+		$auditoria->seguridad = $key;
 
-        }
+		registrarAuditoriaKardex($conex,$wmovhos,$auditoria);
+    }
 
         // FUNCION QUE PERMITE LA GRABACION DE OBSERVACIONES GENERALES TRAIDAS DEL AJAX
      function grabarObservaciongnral($wmovhos, $wfec, $wing, $whis, $wemp_pmla, $wtexto)
