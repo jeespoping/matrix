@@ -15191,7 +15191,6 @@ function pintarDatosFila( $datos ){
 						
 						$wpreguntarRealizaEnservicio = false;
 						if( !$wrequiereAutorizacion && ( $wrealizarEnServicio || $wrealizarExterno ) ){
-						// if( $wrealizarEnServicio || $wrealizarExterno ){
 							$wpreguntarRealizaEnservicio = true;
 						}
 
