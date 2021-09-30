@@ -10691,7 +10691,7 @@ function eleccionMedicamento(porProtocolo)
 				ajax.send(parametros);
 
 				if( $.trim( ajax.responseText ) != '' ){
-					if($.trim( ajax.responseText ) != "No se encontraron coincidencias"){
+					if($.trim( ajax.responseText ) != "No se encontraron coincidencias" && $.trim( ajax.responseText ) != "SinArticulosConTarifas"){
 
 						var item = $.trim( $.trim( ajax.responseText ) ).split( "|" );
 
@@ -10820,6 +10820,10 @@ function eleccionMedicamento(porProtocolo)
 						this.value = "Generico: "+nombreGenerico+" Comercial:"+nombreComercial;
 						
 						funcInternaLimpiarBuscador();
+					}
+					else if($.trim( ajax.responseText ) == "SinArticulosConTarifas"){
+						funcInternaLimpiarBuscador();
+						jAlert("No se encuentran artículos con tarifas", "ALERTA");
 					}
 				}
 
