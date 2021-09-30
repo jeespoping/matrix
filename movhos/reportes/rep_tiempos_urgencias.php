@@ -2386,7 +2386,7 @@ if(!isset($accion))
             objson['form']     = 'cargar_selects_usuarios_especialidades';
             objson['proceso']  = proceso;
             objson['promedio'] = promedio;
-            $.post("rep_tiempos_urgencias.php?wemp_pmla=".$wemp_pmla."",
+            $.post("rep_tiempos_urgencias.php?wemp_pmla=<?php echo $wemp_pmla; ?>",
                     objson,
                 function(data){
                     if(data.error == 1)
@@ -2473,7 +2473,7 @@ if(!isset($accion))
             $("#btn_filtrar_fechas").html("Consultando... <img style='cursor:pointer;' width='20' height='20' src='../../images/medical/ajax-loader11.gif'>");
             $("#resConsulta").html("<h3><b>Espere un momento por favor... </b></h3><center><img style='cursor:pointer;' src='../../images/medical/ajax-loader11.gif'></center>");
 
-            $.post("rep_tiempos_urgencias.php?wemp_pmla=".$wemp_pmla."",
+            $.post("rep_tiempos_urgencias.php?wemp_pmla=<?php echo $wemp_pmla; ?>",
             objson,
             function(data){
                 if(data.error == 1)
