@@ -2768,7 +2768,10 @@ else
 	
 	function agregar_habitacion_politica_modificar()
 	{
-		$("#consecutivo").val($("#consecutivo").val()*1 + 1);
+		ultimo = (document.getElementById('tablaPoliticaModificarCargosEstancia').getElementsByTagName('input').length)*1 - 1;
+		consecutivo = (document.getElementById('tablaPoliticaModificarCargosEstancia').getElementsByTagName('input')[ultimo].attributes['consecutivo'].value)*1;
+		consecutivo++;
+		$("#consecutivo").val(consecutivo);
 		$.post("<?=$URL_AUTOLLAMADO?>?"+url_add_params,
 		{
 			consultaAjax:   		'',
