@@ -12,7 +12,7 @@
         .tipo3VTurno:hover {color: #000066; background: #999999;}
         .tipoTA{color:#000066;background:#FFFFCC;font-size:10pt;font-family:Arial;font-weight:bold;text-align:left;}
         .tipoMx{color:#000066;background:#FFFFCC;font-size:10pt;font-family:Arial;font-weight:bold;text-align:center;}
-        <!--.tipoTA:hover {color: #000066; background: #999999;} -->
+        .tipoTA:hover {color: #000066; background: #999999;}
     	
   </style>
   
@@ -177,7 +177,7 @@ function go_saveas(wcco, raiz_url, wemp_pmla, wfecha, whora, wminutos, wsegundos
 //$wautor="Juan C. Hernandez M. ";
 //FECHA CREACION             : Agosto 30 de 2010
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="2019-01-08"; 
+  $wactualiz="2021-09-10"; 
 //DESCRIPCION 
 //========================================================================================================================================\\
 //========================================================================================================================================\\
@@ -192,6 +192,9 @@ function go_saveas(wcco, raiz_url, wemp_pmla, wfecha, whora, wminutos, wsegundos
 //         * En esta tabla se graba c/u de los pacientes con la "foto" de lo que tenia el kardex en el momento de la entrega.             \\        
 //========================================================================================================================================\\
 //========================================================================================================================================\\
+// Septiembre 10 del 2021	Juan David Rodriguez:	- Se corrigue función traer_examenes_ordenes para el retiro de lenguaje americas
+//											la aplicación debe tener en cuenta el tipo de orden inactivo y los nombres de procedimientos 
+// 											de la tabla hce_000017 tambien inactivos
 // Abril 8 del 2019 Arleyda Insignares:    -Se adiciona el nombre del grupo de formularios, a la función consultarhce() para mostrarlo como
 // 											título y agruparlos según la fecha y el grupo al que corresponda en movhos_000253. 
 // Febrero 13 2019  Arleyda Insignares:    -Se actualiza la función consultarhce() para que muestre la información del formulario registrado 
@@ -581,8 +584,7 @@ else
 				
 				$query =    " SELECT Codigo, Descripcion "
 						   ."   FROM ".$whce."_000017"
-						   ."  WHERE Codigo = '".$wcodexam."'"
-						   ."    AND Estado = 'on'";
+						   ."  WHERE Codigo = '".$wcodexam."'";
 				$res = mysql_query($query, $conex) or die("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 				
 				$row = mysql_fetch_array($res);
@@ -665,8 +667,7 @@ else
 			//Consulta el tipo de orden.
 			$sql_tip_ord = "SELECT Codigo, Descripcion
 							  FROM ".$whce."_000015
-							 WHERE estado = 'on'
-							   AND Codigo = '".$roword['Dettor']."'";	
+							 WHERE Codigo = '".$roword['Dettor']."'";	
 			$res_tip_ord = mysql_query( $sql_tip_ord, $conex ) or die( mysql_errno()." - Error en el query $sql_tip_ord - ".mysql_error() );	
 			$row_tip_ord = mysql_fetch_array( $res_tip_ord );
 			
@@ -798,8 +799,11 @@ else
 	  $varcon = "";
 
 	  foreach($arrFormulario as $clave => $valor){	  	
+		  	$q = "SHOW TABLES LIKE '".$wbasedatohce."_".$clave."'";
+			$resq = mysql_query($q,$conex);
+			$num = mysql_num_rows($resq);
 
-	  	      if(mysql_num_rows(mysql_query("SHOW TABLES LIKE '".$wbasedatohce."_".$clave."'"))==1){
+	  	      if( $num == 1 ){
 
 	  	          $formulario = explode("|",$valor);	
 

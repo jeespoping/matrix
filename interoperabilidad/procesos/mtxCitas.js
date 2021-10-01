@@ -8,6 +8,7 @@
 		var fnAccpt		= options.accept || null;
 		
 		var paciente 	= null;
+		var sede 		= null;
 		
 		var __self = this;
 		
@@ -35,12 +36,14 @@
 					
 					if( mostrar ){
 						
-						datos.modalidad = data.modalidades;
-						datos.prioridad = data.prioridades;
-						datos.sala 		= data.salas;
-						datos.defaults	= data.defaults;
-						datos.cita		= data.datosCita;
-						paciente 		= data.paciente;
+						datos.modalidad 	= data.modalidades;
+						datos.prioridad 	= data.prioridades;
+						datos.sala 			= data.salas;
+						datos.defaults		= data.defaults;
+						datos.cita			= data.datosCita;
+						datos.indicaciones	= data.indicaciones;
+						paciente 			= data.paciente;
+						sede 				= data.sede;
 						
 						modal += "<div class='mtx-ct' title='RECEPCION HIRUKO'>";
 						modal += "<div class='mtx-ct-title' style='display:none;'>AGENDA</div>";
@@ -62,6 +65,8 @@
 						modal += "<div><div class='mtx-col-4 mtx-label'><label>Modalidad</label></div><div  class='mtx-col-8'><select data-tipo='modalidad'></select></div></div>";
 						modal += "<div><div class='mtx-col-4 mtx-label'><label>Sala</label></div><div class='mtx-col-8'><select data-tipo='sala'></select></div></div>";
 						modal += "<div><div class='mtx-col-4 mtx-label'><label>Prioridad</label></div><div class='mtx-col-8'><select data-tipo='prioridad'></select></div></div>";
+						modal += "<div class='mtx-medico-remitente'><div class='mtx-col-4 mtx-label'><label>M&eacute;dico remitente</label></div><div class='mtx-col-8'><INPUT type='text' data-tipo='medico-remitente' data-idmedico=''></div></div>";
+						modal += "<div class='mtx-indicacion'><div class='mtx-col-4 mtx-label'><label>Indicaci&oacute;n</label></div><div class='mtx-col-8'><select data-tipo='indicador'></select></div></div>";
 						modal += "</div>";
 						modal += "<div class='mtx-ct-actions'>";
 						modal += "<span class='mtx-btn mtx-btn-accpet'><a href='#null'>ACEPTAR</a></span>";
@@ -92,10 +97,12 @@
 			
 			var objModal = $( modal );
 			
-			var slModalidad = $( "select[data-tipo='modalidad']", objModal );
-			var slSala 		= $( "select[data-tipo='sala']", objModal );
-			var slPrioridad = $( "select[data-tipo='prioridad']", objModal );
-			var btnAccept 	= $( ".mtx-btn-accpet > a", objModal );
+			var slModalidad 		= $( "select[data-tipo='modalidad']", objModal );
+			var slSala 				= $( "select[data-tipo='sala']", objModal );
+			var slPrioridad 		= $( "select[data-tipo='prioridad']", objModal );
+			var inMedicoRemitente 	= $( "input[data-tipo='medico-remitente']", objModal );
+			var slIndicaciones 		= $( "select[data-tipo='indicador']", objModal );
+			var btnAccept 			= $( ".mtx-btn-accpet > a", objModal );
 			
 			$( objModal ).dialog({
 					width:"600px",
@@ -108,7 +115,7 @@
 				
 				tieneDatosValidos = true;
 				
-				$( "select", objModal ).each(function(){
+				$( "select:visible,input:visible", objModal ).each(function(){
 					
 					if(  !$( this ).val() ||  $( this ).val() == "" ){
 						tieneDatosValidos = false;
@@ -153,6 +160,14 @@
 				habilitarBotonAceptar()
 			});
 			
+			$( slIndicaciones ).on( 'change', function(){
+				habilitarBotonAceptar()
+			});
+			
+			$( inMedicoRemitente ).on( 'change', function(){
+				habilitarBotonAceptar()
+			});
+			
 			$( btnAccept ).on( 'click', function(){
 				
 				if( tieneDatosValidos ){
@@ -170,6 +185,8 @@
 						sala				: slSala.val(),
 						prioridad			: slPrioridad.val(),
 						cco_sede			: __self.cco_sede,
+						medico				: $( inMedicoRemitente ).data( "idmedico" ),
+						indicacion			: $( slIndicaciones ).val(),
 						idCita				: datos && datos.cita && datos.cita.id ? datos.cita.id : '',
 					}, 
 					function(data){
@@ -198,27 +215,86 @@
 				$( slPrioridad ).append( "<option value='"+datos.prioridad[x].codigo+"'>"+datos.prioridad[x].descripcion+"</option>" );
 			}
 			
+			if( datos.indicaciones.length > 0 ){
+				$( slIndicaciones ).append( "<option value=''>Seleccione...</option>" );
+				for( var x in datos.indicaciones ){
+					$( slIndicaciones ).append( "<option value='"+datos.indicaciones[x].descripcion+"'>"+datos.indicaciones[x].descripcion+"</option>" );
+				}
+			}
+			else{
+				$( ".mtx-indicacion" ).css({ display:"none" });
+			}
+			
 			slModalidad[0].selectedIndex = -1;
 			slSala[0].selectedIndex = -1;
 			slPrioridad[0].selectedIndex = -1;
 			console.log(datos.defaults.prioridad)
 			if( datos.defaults ){
 				
-				if( datos.defaults.prioridad )
+				if( datos.defaults.prioridad ){
 					$( slPrioridad ).val( datos.defaults.prioridad );
+					
+					//Deshabilitito todas las opciones menos la que tenga por defecto
+					$( "option", slPrioridad )
+						.not( $("option:selected", slPrioridad ) )
+						.attr({disabled:true})
+						.prop({disabled:true})
+						.css({display:"none"});
+				}
 				
 				if( datos.defaults.modalidad ){
 					$( slModalidad ).val( datos.defaults.modalidad );
 					$( slModalidad ).change();
+					
+					//Deshabilitito todas las opciones menos la que tenga por defecto
+					$( "option", slModalidad )
+						.not( $("option:selected", slModalidad ) )
+						.attr({disabled:true})
+						.prop({disabled:true})
+						.css({display:"none"});
 				}	
 				
 				if( datos.defaults.sala ){
 					$( slSala ).val( datos.defaults.sala );
 					$( slSala ).change();
+					
+					// //Deshabilitito todas las opciones menos la que tenga por defecto
+					// $( "option", slSala )
+						// .not( $("option:selected", slSala ) )
+						// .attr({disabled:true})
+						// .prop({disabled:true})
+						// .css({display:"none"});
+				}	
+				
+				if( datos.defaults.indicaciones ){
+					$( slIndicaciones ).val( datos.defaults.indicaciones );
+					$( slIndicaciones ).change();
+					
+					//Deshabilitito todas las opciones menos la que tenga por defecto
+					$( "option", slIndicaciones )
+						.not( $("option:selected", slIndicaciones ) )
+						.attr({disabled:true})
+						.prop({disabled:true})
+						.css({display:"none"});
 				}	
 			}
 			
 			habilitarBotonAceptar();
+			
+			//Si es una orden (tiene tipo de orden, numero de orden e item ) no se muestra el medico remitente
+			if( datos.cita && datos.cita.Mvctor != '' && datos.cita.Mvcnro > 0 && datos.cita.Mvcite > 0 ){
+				$( ".mtx-medico-remitente" ).css({ display:"none" });
+			}
+			
+			//Autocompletar para el medico remitente
+			$( inMedicoRemitente ).autocomplete({
+				minLength: 	3,
+				source: 	"../../interoperabilidad/procesos/IoImagenologia.php?consultaAjax=&accion=consultarMedicosRemitentes&tipoOrden="+sede.tipoOrden+"&wemp_pmla="+__self.wemp_pmla,
+				select: 	function( event, ui ){
+					
+					$( inMedicoRemitente ).data( 'idmedico', ui.item );
+				},
+			});
 		}
 		
 		// var validar = true;
