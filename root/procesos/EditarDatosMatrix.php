@@ -216,7 +216,7 @@ function userDetails(){
 					$.mask.definitions['N']='[012345]';
 					$.mask.definitions['n']='[0123456789]';
 
-					$(".hora1").mask("HHn:Nn:Nn");
+					$(".hora1").mask("HH:Nn:Nn");
 
 
 					//Se elimina la validaciocion que solo permite 24 horas 12-01-2021
@@ -363,7 +363,7 @@ function userDetails(){
 				$(".msg_ne").tooltip({track: true, delay: 0, showURL: false, opacity: 0.95, left: 0 });
 
 
-				$(".hora1").mask("HHn:Nn:Nn");
+				$(".hora1").mask("HH:Nn:Nn");
 
 				//Se elimina la validaciocion que solo permite 24 horas 12-01-2021
 				// $(".hora1").keyup(function(){
@@ -867,7 +867,7 @@ function userDetails(){
 		$.mask.definitions['N']='[012345]';
 		$.mask.definitions['n']='[0123456789]';
 
-		$(".hora").mask("HHn:Nn:Nn");
+		$(".hora").mask("HH:Nn:Nn");
 
 		//Se elimina la validaciocion que solo permite 24 horas 12-01-2021
 		// $(".hora").keyup(function(){
