@@ -165,7 +165,7 @@ else
   //=====================================================================================================================================================================     
   // F U N C I O N E S
   //=====================================================================================================================================================================
-  
+
    //funcion
 	function consultarConcentracionArticuloSF( $conex, $wmovhos, $artcod )
 	{
@@ -2069,7 +2069,8 @@ else
 		          //."   AND kadare         = 'on' "; 
 		      $res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 		      $wnum = mysql_num_rows($res1);
-		      
+		    //   print_r(mysql_fetch_array($res1));
+			//   die();
 		      while ($wcan = mysql_fetch_array($res1)) 
 		        {
 				  $regleta_str = explode(",",$wcan['kadcpx']);
@@ -2942,7 +2943,7 @@ else
 					  ."	AND ccourg  != 'off'"
 					  ."  GROUP BY 1,2,3,4,5,6,7,8,9 ";
 					$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-					 // echo "<pre>".print_r($q,true)."</pre>";
+					//    echo "<pre>".print_r($q,true)."</pre>";
 					$q = " SELECT ubihac, ubihis, ubiing, id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac "
 						."   FROM tempo_ART "
 						."  GROUP BY 1, 2, 5, 6, 7, 8, 9, 10 ";
@@ -2951,9 +2952,10 @@ else
 			   break;
 		 	}	
 	 	}	  
-	       
 	  $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	  $num = mysql_num_rows($res);  
+	//   print_r(mysql_fetch_array($res));
+	//   die();     
 	           	
 	  if ($num > 0)
 	    {
@@ -2967,18 +2969,20 @@ else
 		      $j=1;  //Indica cuantas historias tienen estado == "on" y son las unicas llevadas a la matriz   
 			  for($i=1;$i<=$num;$i++)
 				{
-				  $row = mysql_fetch_array($res);  	  
+				  $row = mysql_fetch_array($res); 
+				//   print_r($row);
+				//   die(); 	  
 					  
 				  $whab = $row[0];   //habitación actual
-				  $whis = $row[1];   
-				  $wing = $row[2];  
+				  $whis = $row[1];   //Historia
+				  $wing = $row[2];   //Ingreso
 				  $wreg = $row[3];   //Id
 			      $whap = $row[5];   //Hora Alta en Proceso
 			      $wmue = $row[6];   //Indicador de Muerte
 			      $whan = $row[7];   //Habitación Anterior
 				  $walp = $row[8];   //Alta en proceso
 				  $wptr = $row[9];   //En proceso de traslado
-				  $wsac = $row[10];   //Centro de costo actual
+				  $wsac = $row[10];  //Centro de costo actual
 			      
 			      
 		               
@@ -2995,7 +2999,7 @@ else
 				  $wpac = $rowpac[0]." ".$rowpac[1]." ".$rowpac[2]." ".$rowpac[3];    //Nombre
 				  $wdpa = $rowpac[4];                                                 //Documento del Paciente
 			      $wtid = $rowpac[5];                                                 //Tipo de Documento o Identificacion
-
+				  
 			      estado_del_kardex($whis, $wing, $westado, $wmue, $wcolor, $wactual, $wsac, $esOrdenes );     
 			      
 				  if ($wmue=="on")
@@ -3121,6 +3125,20 @@ else
 							 
 							 break;
 					       }  
+
+						   case "5": //KARDEX CON ARTICULOS DEL LACTARIO
+							{
+								echo "<tr class='encabezadoTabla'>";
+								echo "<th>Habitacion</th>";
+								echo "<th>Historia</th>";
+								echo "<th>Paciente</th>";
+								echo "<th>Estado</th>";
+								echo "<th colspan='2' width='101'>Acción</th>";
+								echo "</tr>";
+
+								break;
+							}
+						   
 						 default:
 				            {   
 							   echo "<tr class='encabezadoTabla'>";
@@ -3168,6 +3186,21 @@ else
 							
 							 break;
 					       }
+
+						   case "5": //KARDEX CON ARTICULOS DEL LACTARIO
+
+							{
+								echo "<tr class='encabezadoTabla'>";
+								echo "<th>Habitacion</th>";
+								echo "<th>Historia</th>";
+								echo "<th>Paciente</th>";
+								echo "<th>Estado</th>";
+								echo "<th colspan='2' width='101'>Acción</th>";
+								echo "</tr>";
+
+								break;
+							}
+
 						
 						 default:         //Pacientes SIN Kardex y Resto
 						   {   
@@ -3182,8 +3215,8 @@ else
 						    break;
 					       } 
 				        }
-			          }  
-				 
+			          } 
+
 				 $wsw=0; 
 				
 			     for($i=1;$i<=$j-1;$i++)
@@ -3350,7 +3383,7 @@ else
 							 
 							 if ($i <= ($j-1))
 								{
-								 echo "<td class='".$walta_tras." ".$blink_sin_leer."' title='".$texto_sin_leer."' align=center>&nbsp;".$wmat_estado[$i][0]."</td>";                            //Habitacion 
+								 echo "<td class='".$walta_tras." ".$blink_sin_leer."' title='".$texto_sin_leer."' align=center>&nbsp;".$wmat_estado[$i][0]."</td>";//Habitacion 
 								 echo "<td class=".$walta_tras." align=center>".$wmat_estado[$i][1]." - ".$wmat_estado[$i][2]."</td>";  //Historia-Ingreso
 								 echo "<td class=".$walta_tras." align=left  >".$wmat_estado[$i][3]."</td>";                            //Paciente
 								 if ($wopcion=="3" or $wopcion=="8" or $wopcion=="12")  //Esta es la opcion de historias que no tienen kardex actualizado
@@ -3470,11 +3503,20 @@ else
 							
 						   if ($wptr=="on")
 						      $walta_tras="colorAzul4";
-			                    
-				           echo "<tr class=".$wclass.">";
-					       echo "<td class='".$walta_tras." ".$blink_sin_leer."' title='".$texto_sin_leer."' align=center>&nbsp;".$wmat_estado[$i][0]."</td>";
-					       echo "<td class=".$walta_tras." align=center>".$wmat_estado[$i][1]." - ".$wmat_estado[$i][2]."</td>";
-					       echo "<td class=".$walta_tras." align=left  >".$wmat_estado[$i][3]."</td>";
+			                
+							if ($wopcion == 5)//Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
+							{
+								echo "<tr class=".$wclass.">";
+								echo "<td class='".$walta_tras." ".$blink_sin_leer."' title='".$texto_sin_leer."' align=center>&nbsp;".$wmat_estado[$i][0]."</td>"; //N Habitación
+								echo "<td class=".$walta_tras." align=center>".$wmat_estado[$i][1]." - ".$wmat_estado[$i][2]."</td>"; //Historia - ingreso
+								echo "<td class=".$walta_tras." align=left  >".$wmat_estado[$i][3]."</td>"; //Nombre de paciente
+								echo "<td class=".$walta_tras." align=left  >1</td>"; //Estado
+							}else{
+								echo "<tr class=".$wclass.">";
+								echo "<td class='".$walta_tras." ".$blink_sin_leer."' title='".$texto_sin_leer."' align=center>&nbsp;".$wmat_estado[$i][0]."</td>"; //N Habitación
+								echo "<td class=".$walta_tras." align=center>".$wmat_estado[$i][1]." - ".$wmat_estado[$i][2]."</td>"; //Historia - ingreso
+								echo "<td class=".$walta_tras." align=left  >".$wmat_estado[$i][3]."</td>"; //Nombre de paciente
+							}
 						   
 						   if ($wopcion != "12")
 						      {
@@ -3596,6 +3638,198 @@ else
 	  echo "<tr><td align=center colspan=9><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
 	  echo "<input type='hidden' id='tooltipDetalle' value='".$cadenaTooltipDetalle."'>";
 	  echo "</table>";
+
+	  //Desde aca comienza el detalle del kardex que tiene cada paciente
+	  if($wopcion == 5) //se hace condición para que solo muestre la tabla de pacientes con la informacion de medicamento
+	  {
+		
+		//Aca trae todos los pacientes que esten hospitalizados en la clinica y luego busco como es el estado en cuanto a Kardex de cada uno
+		$q = " CREATE TEMPORARY TABLE IF NOT EXISTS tempo_ART "
+			." SELECT ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac  "
+			."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011, ".$wbasedato."_000020, ".$wbasedato."_000017 "
+			."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+			//."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
+			."    AND ubisac  = ccocod "
+			."    AND ccohos  = 'on' "             //Que el CC sea hospitalario
+			."    AND ccourg != 'on' "             //Que no se de Urgencias
+			."    AND ccocir != 'on' "             //Que no se de Cirugia
+			."    AND ubihis  = habhis "
+			."    AND ubiing  = habing "
+			."    AND ubihis != '' "
+			."    AND ubihis  = eyrhis "            //Estas cuatro linea que siguen son temporales
+			."    AND ubiing  = eyring "             
+			."    AND eyrsde  = ccocod "
+			."    AND eyrtip  = 'Recibo' "
+			."    AND eyrest  = 'on' "
+			//."    AND ccocpx != 'on' "              //CICLOS de Producción 'OFF'
+			."  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
+			."  UNION ALL "
+			//Solo traigo los pacientes que esten en un servicio que sea con el MODELO DE CICLOS DE PRODUCCION Y DISPENSACION FRECUENTE
+			." SELECT ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac  "
+			."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011, ".$wbasedato."_000020, ".$wbasedato."_000017, ".$wbasedato."_000054, "
+			."        ".$wbasedato."_000043, ".$wbasedato."_000099 "
+			."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+			//."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
+			."    AND ubisac  = ccocod "
+			."    AND ccohos  = 'on' "             //Que el CC sea hospitalario
+			."    AND ccourg != 'on' "             //Que no se de Urgencias
+			."    AND ccocir != 'on' "             //Que no se de Cirugia
+			."    AND ubihis  = habhis "
+			."    AND ubiing  = habing "
+			."    AND ubihis != '' "
+			."    AND ubihis  = eyrhis "            //Estas cuatro linea que siguen son temporales
+			."    AND ubiing  = eyring "             
+			."    AND eyrsde  = ccocod "
+			."    AND eyrtip  = 'Recibo' "
+			."    AND eyrest  = 'on' "
+			//."    AND ccocpx  = 'on' "              //CICLOS de Producción 'ON'
+			."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_par_actual',':00:00')),perequ) = 0 "   //Resto la fecha actual de la fecha de inicio y el resultado que da en horas las divido por la periodicidad (perequ), si hay decimales es porque el medicamento no es de esa hora, pero si es cero es porque si
+			."    AND ubihis  = kadhis "
+			."    AND ubiing  = kading "
+			."    AND kadare  = 'on' "
+			."    AND kadfec  = '".$wfecha."'"
+			."    AND kadpro  = tarcod "
+			."    AND tarpdx  = 'off' "            //Tipo de Articulo no se produce en ciclos osea, que son de dispensacion
+			."    AND kadart  NOT IN ( SELECT artcod FROM ".$wcenmez."_000002 WHERE artcod = kadart) "
+			."    AND kadper  = percod "
+			."  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
+			
+			."  UNION "
+			
+			." SELECT CONCAT(habzon,' - ',habcpa) as ubihac, ubihis, ubiing, ".$wbasedato."_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac "
+			."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000054, ".$wbasedato."_000026, ".$wbasedato."_000011 "
+			."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+			."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
+			."    AND ubihis  = habhis "
+			."    AND ubiing  = habing "
+			."    AND ubihis != '' "		    
+			."    AND ubihis  = kadhis "
+			."    AND ubiing  = kading "
+			."    AND kadfec  = '".$wfecha."'"      //Hoy
+			."    AND kadart  = artcod "
+			."	AND ubisac  = ccocod "
+			."	AND ccourg  != 'off'"
+			."  GROUP BY 1,2,3,4,5,6,7,8,9 ";
+		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		//    echo "<pre>".print_r($q,true)."</pre>";
+		$q = " SELECT ubihac, ubihis, ubiing, id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac "
+			."   FROM tempo_ART "
+			."  GROUP BY 1, 2, 5, 6, 7, 8, 9, 10 ";
+		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		$num_pacientes = mysql_num_rows($res);
+		
+		for($i=1;$i<=$num;$i++)
+		{
+			$row = mysql_fetch_array($res);  	  
+			$whab = $row[0];   //habitación actual
+			$whis = $row[1];   
+			$wing = $row[2];  
+			$wreg = $row[3];   //Id
+			$whap = $row[5];   //Hora Alta en Proceso
+			$wmue = $row[6];   //Indicador de Muerte
+			$whan = $row[7];   //Habitación Anterior
+			$walp = $row[8];   //Alta en proceso
+			$wptr = $row[9];   //En proceso de traslado
+			$wsac = $row[10];
+
+		     
+		//Traigo los datos demograficos del paciente
+		$q = " SELECT pacno1, pacno2, pacap1, pacap2, pacced, pactid "
+			."   FROM root_000036, root_000037 "
+			."  WHERE orihis = '".$whis."'"
+			."    AND oriing = '".$wing."'"
+			."    AND oriori = '".$wemp_pmla."'"  //Empresa Origen de la historia, 
+			."    AND oriced = pacced "; 
+		$respac = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		$rowpac = mysql_fetch_array($respac); 
+			
+		$wpac = $rowpac[0]." ".$rowpac[1]." ".$rowpac[2]." ".$rowpac[3];    //Nombre
+		$wdpa = $rowpac[4];                                                 //Documento del Paciente
+		$wtid = $rowpac[5];                                                 //Tipo de Documento o Identificacion
+		
+		//Consulta para traer los datos del detalle del kardex. 
+		$q = "SELECT kadcpx, kadpro, kadart, CONCAT_WS( ' ', Percan, Peruni ) as Frecuencia, kadori, Kadfin, Kadhin, Viades, Kadobs"
+		." FROM ".$wbasedato."_000054, ".$wbasedato."_000040, ".$wbasedato."_000043"
+		." WHERE Kadhis  = '".$whis."'"
+		." AND   Kading  = '".$wing."'"
+		." AND   Kadvia  =   Viacod "
+		." AND   Kadfec  =   Kadfec "
+		." AND   Percod  =   Kadper ";
+
+		$result = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		$kar = mysql_num_rows($result);   
+		
+		if ($wmue=="on")
+		{
+			$whab=$whan;
+		} 
+		
+		//Llevo los registros con estado=="on" a una matrix, para luego imprimirla por el orden (worden)
+		if ($westado=="on")
+		{
+			$wmat_estado[$j][0]=$whab;
+			$wmat_estado[$j][1]=$whis;
+			$wmat_estado[$j][2]=$wing;
+			$wmat_estado[$j][3]=$wpac;
+			$wmat_estado[$j][4]=$westado;
+			$wmat_estado[$j][5]=$wcolor;
+			$wmat_estado[$j][6]=$walp;
+			$wmat_estado[$j][7]=$wptr;
+			$wmat_estado[$j][8]=$esOrdenes;
+			$wmat_estado[$j][9]=$wdpa;
+			$wmat_estado[$j][10]=$wtid;
+
+			$j++;
+		} 
+	}	
+
+
+		//Encabezado de tabla
+		echo "<table>";
+		echo "<hr style='height:3px;border-width:0;color:#cc0000;background-color:#cc0000'>";
+		echo "<tr class='encabezadoTabla'>";
+		echo "<th>Habitacion</th>";
+		echo "<th>Historia</th>";
+		echo "<th>Paciente</th>";
+		echo "<th>Estado</th>";
+		echo "<th>Artículo</th>";
+		echo "<th>Dosis</th>";
+		echo "<th>Via de administración</th>";
+		echo "<th>Frecuencia</th>";
+		echo "<th>Fecha y hora de inicio</th>";
+		echo "<th>Observación</th>";
+		echo "<th colspan='2' width='101'>Acción</th>";
+		echo "</tr>";
+
+		//Condicional while para pintar los datos que vienen desde la consulta
+		while ($kar = mysql_fetch_row($result)){   
+
+				//Condicional para que se intercale el color de las filas en cada registro
+				if($wsw==0)
+				{
+					$wclass="fila1";
+					$wsw=1;
+				}else{
+					$wclass="fila2";
+					$wsw=0;
+				}
+			
+				//Pintamos los datos 
+				echo "<tr align='center' class=".$wclass.">";
+				echo "<td align='center' class=".$walta_tras."></td>"; //Habitación pac
+				echo "<td align='center' class=".$walta_tras."></td>"; //Historia pac
+				echo "<td align='center' class=".$walta_tras."></td>"; //Name pac
+				echo "<td align='center' class=".$walta_tras."></td>"; //Estado
+				echo "<td align='center' class=".$walta_tras.">".$kar[1]." ".$kar[2]."  ".$kar[4]."</td>"; //Articulo, Producto
+				echo "<td align='center' class=".$walta_tras."></td>"; //Dosis
+				echo "<td align='center' class=".$walta_tras.">".$kar[7]."</td>"; //Via de administración
+				echo "<td align='center' class=".$walta_tras.">".$kar[3]."</td>";//Frecuencia
+				echo "<td align='center' class=".$walta_tras.">".$kar[5]." <br>a las</br> ".$kar[6]."</td>";//Fecha y hora de inicio 
+				echo "<td align='center' class=".$walta_tras.">".$kar[8]."</td>";//Obervación
+				echo "<td align='center' class=".$walta_tras."></td>"; //Acción
+		} 
+		echo "</table>";
+	  	}
     }
 }
 	
