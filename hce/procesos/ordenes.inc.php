@@ -36806,7 +36806,7 @@ function prepararDivisor( $numero )
 /*
  * AJAX::ConsultarArticulosPorNombre
  */
-function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPaciente, $presentacion, $medida, $dosis, $administracion, $eps, $bsq, $his, $ing ){
+function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPaciente, $presentacion, $medida, $dosis, $administracion, $eps, $bsq, $his, $ing, $nummipres = null ){
 
 	global $conex;
 	global $wemp_pmla;
@@ -38129,6 +38129,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				"|".$rs['Defcsa'].
 				"|".$famAtc.
 				"|".$con_tarifa.
+				"|".$nummipres.
 				"\n";
 			}
 			
@@ -39300,7 +39301,7 @@ if(isset($consultaAjaxKardex)){
 				}
 			}
 
-			echo consultarArticulosFamilia($basedatos,$cenmez, utf8_decode( $q ), $ccoPaciente, $pre, $med, $dos, $adm, $eps, $bsq, $his, $ing );
+			echo consultarArticulosFamilia($basedatos,$cenmez, utf8_decode( $q ), $ccoPaciente, $pre, $med, $dos, $adm, $eps, $bsq, $his, $ing, $nummipres );
 			break;
 			
 		case 36:

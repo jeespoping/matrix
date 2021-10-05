@@ -67,6 +67,7 @@
  * Mayo 5 de 2011	Al agregar un examen o procedimiento, todos los examenes son colapsados
  */
 
+
 var preguntarPorVisaulizarMedControl = false;
  
 var cadenaCTCcontributivo = "" ;
@@ -10310,7 +10311,7 @@ strPendientesModal = "";
 // Determina si la adición de medicamentos es múltiple (por ejemplo: Importar protocolo o Insumos Liquidos Endovenosos)
 var adicionMultiple = false;
 
-function eleccionMedicamento(porProtocolo)
+function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 {
 	adicionMultiple = false;
 
@@ -10330,6 +10331,9 @@ function eleccionMedicamento(porProtocolo)
 
 	if(!isset(porProtocolo))
 		porProtocolo = 0;
+	
+	if(!isset(mipresEnListaMedicamentos))
+		mipresEnListaMedicamentos = 0;
 
 	// Se reviza si hay algun detalle de familia desplegado y se oculta
 	ocultarDetalleFliaAnterior();
@@ -10370,6 +10374,22 @@ function eleccionMedicamento(porProtocolo)
 		var presentaciones = document.getElementById( "wpresentacion" );			// Presentaciones o formas farmacéuticas
 		var unidades = document.getElementById( "wunidad" );						// Unidades de medida
 		var dosis = document.getElementById( "wdosisfamilia" ).value;				// Dosis a aplicar
+
+		/*
+		* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo
+		* Autor: sebastian.nevado
+		* Fecha: 2021-10-04
+		*/
+		if(mipresEnListaMedicamentos!=0)
+		{
+			var numPrescripcionMipres = document.getElementById( "wnumprescripcionmipres" ).value;				// Número de prescripción de mipres
+		}
+		else
+		{
+			var numPrescripcionMipres = "";											// Número de prescripción de mipres
+		}
+		//FIN MODIFICACION
+
 		var frecuencias = document.getElementById( "wfrecuencia" );					// Frecuencias
 		var viasAdministracion = document.getElementById( "wadministracion" );		// Vías de administración
 		var fechaInicio = document.getElementById( "wfinicioaplicacion" ).value;	// Fecha y hora de inicio de aplicación
@@ -10442,6 +10462,19 @@ function eleccionMedicamento(porProtocolo)
 			document.getElementById( "wnombrefamilia" ).focus();
 			return;
 		}
+		
+		/*
+		* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo
+		* Autor: sebastian.nevado
+		* Fecha: 2021-10-04
+		*/
+		if(mipresEnListaMedicamentos == 2 && numPrescripcionMipres != '' && numPrescripcionMipres != ' ')
+		{
+			jAlert("Debe ingresar el nombre del artículo","ALERTA");
+			document.getElementById( "numPrescripcionMipres" ).focus();
+			return;
+		}
+		//FIN MODIFICACIÓN
 
 		// Validación presentación o forma farmacéutica
 		if(selPresentacion>-1)
@@ -10680,7 +10713,8 @@ function eleccionMedicamento(porProtocolo)
 						 +"&eps="+$( "#pacEPS" ).val()
 						 +"&bsq="+bsqFamilia
 						 +"&his="+document.forms.forma.whistoria.value
-						 +"&ing="+document.forms.forma.wingreso.value;
+						 +"&ing="+document.forms.forma.wingreso.value
+						 +"&nummipres="+numPrescripcionMipres;
 
 			try{
 
@@ -10739,6 +10773,8 @@ function eleccionMedicamento(porProtocolo)
 						 * 36:Descricion principio activo
 						 * 37:esAntibiotico
 						 * 38:InformacionNutriciones
+						 * 43:ConTarifa
+						 * 44:ConNumMipres
 						 */
 
 						var codigoArticulo = item[1];
@@ -10790,6 +10826,8 @@ function eleccionMedicamento(porProtocolo)
 						var familiaATC 		= item[42];
 						
 						var conTarifa 		= item[43];
+
+						var numPresMipres 	= item[44];
 						
 						
 						// if(dosis!=cantidadDosisFija)
@@ -10813,7 +10851,7 @@ function eleccionMedicamento(porProtocolo)
 
 						agregarArticulo( "detKardexAdd" + tipoProtocolo );
 
-						seleccionarArticulo(codigoArticulo,reemplazarTodo(nombreComercial," ","_"),reemplazarTodo(nombreGenerico," ","_"),origen,grupoMedicamento,formaFarmaceutica,unidadMedida,pos,unidadFraccion,cantidadFraccion,vencimiento,diasEstabilidad,dispensable,duplicable,diasMaximosSugeridos,dosisMaximasSugeridas,viaAdministracion,tipoProtocolo,tipoMedicamentoLiquido,esGenerico,abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija,condicionSuministroFija,confirmadaPreparacionFija,diasMaximosFija,dosisMaximasFija,observacionesFija,componentesTipo,noEnviar,'off',codPrincipioActivo,desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,medicamentoPorProtocolo,familiaATC,conTarifa);
+						seleccionarArticulo(codigoArticulo,reemplazarTodo(nombreComercial," ","_"),reemplazarTodo(nombreGenerico," ","_"),origen,grupoMedicamento,formaFarmaceutica,unidadMedida,pos,unidadFraccion,cantidadFraccion,vencimiento,diasEstabilidad,dispensable,duplicable,diasMaximosSugeridos,dosisMaximasSugeridas,viaAdministracion,tipoProtocolo,tipoMedicamentoLiquido,esGenerico,abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija,condicionSuministroFija,confirmadaPreparacionFija,diasMaximosFija,dosisMaximasFija,observacionesFija,componentesTipo,noEnviar,'off',codPrincipioActivo,desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,medicamentoPorProtocolo,familiaATC,conTarifa, numPresMipres);
 
 						document.getElementById("btnCerrarVentana").style.display = 'none';
 
@@ -10874,7 +10912,8 @@ function eleccionMedicamento(porProtocolo)
 								 +"&eps="+$( "#pacEPS" ).val()
 								 +"&bsq="+bsqFamilia
 								 +"&his="+document.forms.forma.whistoria.value
-								 +"&ing="+document.forms.forma.wingreso.value;
+								 +"&ing="+document.forms.forma.wingreso.value
+								 +"&nummipres="+numPrescripcionMipres;
 
 					try{
 
@@ -10928,6 +10967,8 @@ function eleccionMedicamento(porProtocolo)
 								 * 31:Observaciones adicionales
 								 * 32:Componentes del tipo
 								 * 33:Nombre personalizado del articulo
+								 * 43:ConTarifa
+								 * 44:Número Prescrición Mipres
 								 */
 
 								var codigoArticulo = item[1];
@@ -10977,6 +11018,8 @@ function eleccionMedicamento(porProtocolo)
 								var familiaATC 		= item[42];
 								
 								var conTarifa 		= item[43];
+
+								var numMipres 		= item[44];
 
 								var array_dosis = new Array();
 								var i = 0;
@@ -11068,6 +11111,7 @@ function eleccionMedicamento(porProtocolo)
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	medicamentoPorProtocolo;
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	familiaATC;
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	conTarifa;
+								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	numMipres;
 
 								
 								//Agrego la fecha y hora de inicio del medicamento calculada para el H.E
@@ -11461,7 +11505,12 @@ function eleccionMedicamento(porProtocolo)
 		document.getElementById('wtxtobservasiones').value = '';
 
 		document.getElementById('wprotocolo').value = '';
-
+		
+		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		{
+			document.getElementById('wnumprescripcionmipres').value = '';
+		}
+		
 		//Quito los valores de la regleta de grabacion
 		document.getElementById('dosisRonda2').value = '';
 		document.getElementById('dosisRonda4').value = '';
@@ -18533,6 +18582,11 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 	
 	var wdrautorizado	= 'wdrautorizado' + tipoProtocoloAux + posicionActual;
 	var wjusparaautorizar	= 'wjusparaautorizar' + tipoProtocoloAux + posicionActual;
+
+	if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+	{
+		var idNumMipres	= 'wnummipres' + tipoProtocoloAux + posicionActual;
+	}
 	
 
 	if(!elementoAnteriorDetalle || elementoAnteriorDetalle.value != '' || posicionActual == 0){
@@ -18605,6 +18659,12 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		var columna15 = document.createElement("td");		//Nombre protocolo
 		var colFiltroAntibioticos = document.createElement("td");		//Nombre protocolo
 
+		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		{
+			var colNumMipres = document.createElement("td");		//Número de prescripción MIPRES
+		}
+		
+
 		//Centradas
 		columna1.setAttribute('align','center');
 		columna10.setAttribute('align','center');
@@ -18661,6 +18721,22 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		atr['onKeyPress'] = "return validarEntradaDecimal(event);";
 
 		var dosis = crearCampo("1",idCampoDosis,tipoProtocolo+".5",atr,"");
+
+		//Número mipres
+		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		{
+			var numeroMipres = document.createElement("input");
+			numeroMipres.setAttribute('type','text');
+			numeroMipres.setAttribute('name',idNumMipres);
+			numeroMipres.setAttribute('id',idNumMipres);
+			numeroMipres.setAttribute('readOnly','readOnly');
+			numeroMipres.className = 'campo2';
+			if(!esIE){
+				numeroMipres.setAttribute('style','border:0px');
+			}else{
+				numeroMipres.style.setAttribute('border','0px');
+			}
+		}
 
 		//Unidad de manejo
 		var unidadManejo = document.createElement("input");
@@ -19080,6 +19156,12 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		$( colFiltroAntibioticos ).append( "<label>Tratamiento</label>" );
 		colFiltroAntibioticos.appendChild( ckPediatrico );
 		$( colFiltroAntibioticos ).append( "<label style='display:none'>Pediatrico</label>" );
+		
+		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		{
+			colNumMipres.appendChild(numeroMipres);
+		}
+		
 
 		/*******************************************************************************
 		ANEXAR LAS COLUMNAS NUEVAS A LA FILA NUEVA
@@ -19087,6 +19169,12 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 
 		fila.appendChild(columna1);
 		fila.appendChild(columna2);
+		
+		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		{
+			fila.appendChild(colNumMipres);
+		}
+		
 		fila.appendChild(columna15);
 		fila.appendChild(columna14);
 		fila.appendChild(columna3);
@@ -24475,7 +24563,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 		vencimiento, diasVencimiento, dispensable, duplicable, diasMaximos, dosisMaximas, via, tipoProtocolo, tipoMedLiquido, esGenerico,
 		abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija, condicionSuministroFija,
 		confirmadaPreparacionFija,diasMaximosFija,dosisMaximasFija,observacionesFija,componentesTipo,noEnviar,deAlta,codPrincipioActivo,
-		desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,porProtocolo,familiaATC,conTarifa){
+		desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,porProtocolo,familiaATC,conTarifa, numPresMipres){
 			
 	porProtocolo = porProtocolo ? porProtocolo: false;
 	
@@ -25496,6 +25584,11 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 									else{
 										if(document.getElementById("wchkconf"+tipoProtocoloAux+idx))
 											document.getElementById("wchkconf"+tipoProtocoloAux+idx).disabled = false;
+									}
+
+									//Número Mipres
+									if((document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2') && document.getElementById("wnummipres"+tipoProtocoloAux+idx)){
+										document.getElementById("wnummipres"+tipoProtocoloAux+idx).value = numPresMipres;
 									}
 
 									//Unidad dosis
