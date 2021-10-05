@@ -6,6 +6,10 @@ include_once("conex.php");
     **************************************************/
 
 //MODIFICACIONES
+//========================================================================================================================================\\
+//2021-09-09 (Joel Payares Hdz) : Se modifica programa en el momento donde insertaba el registro en la movhos 25, para que realice una
+// actualización del registro existente para la habitación indicada. Evitando así duplicar registros para la misma habitación.
+//========================================================================================================================================\\
 //2019-01-30(Arleyda Insignares): Migración 2019
 //========================================================================================================================================\\
 //2017-09-06(Jonatan Lopez) : Se registra el la tabla movhos_000239 las habitaciones que sean marcadas como mantenimiento, ademas si estas
@@ -107,11 +111,43 @@ if( isset( $peticionAjax ) ){
                 }else
                     $wobservacion[$i]="";
 
-                $q1 = " INSERT INTO ".$wbasedato."_000025 (   Medico       ,   Fecha_data,   Hora_data,   movhab    ,   movemp       ,   movfec    ,   movhem    ,  movhdi   ,   movobs                    ,   movfal    ,   movhal    , movfdi     , Seguridad        ) "
-                     ."                            VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."','".$nuevoValor."','".$wfecha."','".$whora."' , '00:00:00','','".$fechaAltaDef."','".$horaAltaDef."','0000-00-00', 'C-".$wusuario."')";
-                $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
-                echo mysql_insert_id()."-".$whora;
-				$id = mysql_insert_id(); 				
+                // $q1 = " INSERT INTO ".$wbasedato."_000025 (   Medico       ,   Fecha_data,   Hora_data,   movhab    ,   movemp       ,   movfec    ,   movhem    ,  movhdi   ,   movobs                    ,   movfal    ,   movhal    , movfdi     , Seguridad        ) "
+                //      ."                            VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."','".$nuevoValor."','".$wfecha."','".$whora."' , '00:00:00','','".$fechaAltaDef."','".$horaAltaDef."','0000-00-00', 'C-".$wusuario."')";
+                // $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                // echo mysql_insert_id()."-".$whora;
+				// $id = mysql_insert_id();
+				
+                /**
+                 * Actualizo el registro en la base de datos para la habitación correspondiente
+                 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+                 * @since 2021-09-09
+                 */
+                $q1 = "
+                      UPDATE    {$wbasedato}_000025
+                         SET    movemp = '{$nuevoValor}',
+                                movfec = '{$wfecha}',
+                                movhem = '{$whora}'
+                       WHERE    movhab = '{$whabi}'
+                         AND    Movhdi = '00:00:00'
+                         AND    Movfdi = '0000-00-00'
+                    ";
+                $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
+                
+                /**
+                 * Obtengo el id del ultimo registro actualizado
+                 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+                 * @since 2021-09-09
+                 */
+                $query_id = "
+                      SELECT    id
+                        FROM    {$wbasedato}_000025
+                       WHERE    movhab = '{$whabi}'
+                    ORDER BY    movfec DESC
+                       LIMIT    1;
+                    ";
+                $err = mysql_query($query_id, $conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
+                $id = mysql_fetch_assoc($err)['id'];
+                echo $id."-".$whora; 				
 				
 				if($sgeman == 'on'){
 		
@@ -122,6 +158,10 @@ if( isset( $peticionAjax ) ){
 				}
 
             }else{
+                    /**
+                     * Consulta para contar los registros de la habitación como parametro,
+                     * hora disponible = 00:00:00 y empleado != ''
+                     */
                     $q1 = " SELECT COUNT(*) "
                          ."   FROM ".$wbasedato."_000025 "
                          ."  WHERE movhab  = '".$whabi."'"
@@ -166,14 +206,47 @@ if( isset( $peticionAjax ) ){
 							
 							}
 
-                    }else{       //No Existe movimiento con o sin empleado en la tabla 000025, Inserto el nuevo registro
-                              $q1 = " INSERT INTO ".$wbasedato."_000025      (   Medico       ,   Fecha_data,   Hora_data,   movhab   ,       movemp    ,    movfec    ,   movhem    ,  movhdi   ,   movobs                    ,   movfal    ,   movhal    , movfdi      , Seguridad        ) "
-                                       ."                             VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."','".$nuevoValor."','".$wfecha."' ,'".$whora."' , '00:00:00','','".$fechaAltaDef."','".$horaAltaDef."', '0000-00-00', 'C-".$wusuario."')";
-                              $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
-                              echo mysql_insert_id()."-".$whora;
-							  $id = mysql_insert_id();
+                    }else{
+                            //No Existe movimiento con o sin empleado en la tabla 000025, Inserto el nuevo registro
+                            // $q1 = " INSERT INTO ".$wbasedato."_000025      (   Medico       ,   Fecha_data,   Hora_data,   movhab   ,       movemp    ,    movfec    ,   movhem    ,  movhdi   ,   movobs                    ,   movfal    ,   movhal    , movfdi      , Seguridad        ) "
+                            //         ."                             VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."','".$nuevoValor."','".$wfecha."' ,'".$whora."' , '00:00:00','','".$fechaAltaDef."','".$horaAltaDef."', '0000-00-00', 'C-".$wusuario."')";
+                            // $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
+                            // echo mysql_insert_id()."-".$whora;
+                            // $id = mysql_insert_id();
+
+                            /**
+                             * Actualizo el registro en la base de datos para la habitación correspondiente
+                             * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+                             * @since 2021-09-09
+                             */
+                            $q1 = "
+                                  UPDATE    {$wbasedato}_000025
+                                     SET    movemp = '{$nuevoValor}',
+                                            movfec = '{$wfecha}',
+                                            movhem = '{$whora}'
+                                   WHERE    movhab = '{$whabi}'
+                                     AND    Movhdi = '00:00:00'
+                                     AND    Movfdi = '0000-00-00'
+                                ";
+                            $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
+
+                            /**
+                             * Obtengo el id del ultimo registro actualizado
+                             * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+                             * @since 2021-09-09
+                             */
+                            $query_id = "
+                                    SELECT    id
+                                    FROM    {$wbasedato}_000025
+                                    WHERE    movhab = '{$whabi}'
+                                ORDER BY    movfec DESC
+                                    LIMIT    1;
+                                ";
+                            $err = mysql_query($query_id, $conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
+                            $id = mysql_fetch_assoc($err)['id'];
+                            echo $id."-".$whora;
 							  
-							  if($sgeman == 'on'){
+                            if($sgeman == 'on'){
 		
 								$q2 = " INSERT INTO ".$wbasedato."_000239 (   Medico       ,   Fecha_data,   Hora_data,   loghab    ,   Logfman    ,   Loghma     ,   logids   , logest, Seguridad        ) "
 												 ."                VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."', '".$wfecha."' , '".$whora."' ,  '".$id."' , 'on'  ,'C-".$wusuario."')";
@@ -325,6 +398,9 @@ return;
     //===================================================================================================================================================
 
     /**  **///---> se omiten los cubiculos habcub
+    /**
+     * Se cambia en la consulta fecha y hora de alta por fecha data y hora data para obtener el tiempo de llegada
+     */
     $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
         ."    FROM ".$wbasedato."_000020 "
         ."   WHERE habali = 'on' "
@@ -334,7 +410,7 @@ return;
         ."                          WHERE movhdi = '00:00:00' ) "
         ."     AND habcub != 'on' "
         ."   UNION "
-        ."  SELECT movhab habitacion, movemp, movobs observacion, movfal fechaAltaDef, movhal horaAltaDef, '', id, movhem horaAsignado "
+        ."  SELECT movhab habitacion, movemp, movobs observacion, Fecha_data fechaAltaDef, Hora_data horaAltaDef, '', id, movhem horaAsignado "
         ."    FROM ".$wbasedato."_000025 "
         ."   WHERE movhdi = '00:00:00' "
         ."   ORDER BY 4, 5, 1 ";
