@@ -68,6 +68,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 			$wactualiz='2020-03-02';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//  2021-10-01  Joel Payares Hdz		- Se crea parametro departamento en base de datos para obtener el valor dinamicamente.
 // 	2020-11-13	Edwin MG				- Se cambia función mysqli_connect, que se conectaba a la BD de producción y se cambia por función nueva
 //										  auna_connectdb agregada en el conex.php
 // 	2020-03-02	Jessica Madrid Mejía	- Se agrega el parámetro default_socket_timeout con el tiempo configurado en minutos en 
@@ -4847,6 +4848,7 @@ else
 		// }
 		
 		$municipio   = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'municipioMipres' );
+		$departamento   = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'departamentoMipres' );
 		$nombrePrestador   = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'nombrePrestadorMipres' );
 		
 		$CodVer   = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'codigoVersionMipres' );
