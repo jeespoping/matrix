@@ -29,11 +29,13 @@ $wactualiz = "(Febrero 23 de 2021)";
     <meta http-equiv="Content-type" content="text/html;charset=ISO-8859-1" />
     <meta http-equiv='cache-control' content='no-cache'>
     <meta http-equiv='expires' content='0'>
-    <meta http-equiv='pragma' content='no-cache'>
-
-    <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <meta http-equiv='pragma' content='no-cache'>    
+		
+	<script src="../../../include/root/jquery-1.8.3/js/jquery-1.8.3.min.js" type="text/javascript"></script>
+	<script src="../../../include/root/Tagify/magicsuggest-min.js" type="text/javascript"></script>		
 	<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
 	<script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="../../../include/root/Tagify/magicsuggest-min.css" />	
     <script type="text/javascript" src="../../../include/root/jqueryalert.js?v=<?=md5_file('../../../include/root/jqueryalert.js');?>"></script>
     <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
 	<!-- <script src="../../../include/root/jquery_1_7_2/js/jquery.dataTables.min.js" type="text/javascript"></script> -->
@@ -99,6 +101,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 				$("#busc_concepto_1").attr('valor', ui.item.valor);
 				$("#busc_concepto_1").attr("nombre", ui.item.nombre);
 				$("#busc_procedimiento_1" ).val('');
+				elProcExc.clear(true);
+				elProcOrden.clear(true);
 				ValidarTipoConcepto(ui.item.valor);
 				change_edit('concepto');
 				return false;
@@ -111,7 +115,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 	//	Controlar que el input no quede con basura, sino solo con un valor seleccionado
 	//----------------------------------------------------------------------------------
 	function limpiaAutocomplete(idInput)
-	{	
+	{			
 		$( "#"+idInput ).val().replace(/ /gi, "");
 		$( "#"+idInput ).val("");
 		$( "#"+idInput ).attr("valor","");
@@ -144,9 +148,14 @@ $wactualiz = "(Febrero 23 de 2021)";
 			jAlert('En el tipo cargo "'+str_tipo_cargo+'", no se permite seleccionar un concepto con movimiento de inventario', 'Mensaje');
 			$( "#busc_concepto_1" ).val('');
 			$( "#busc_concepto_1" ).attr('valor', '');
-			$( "#busc_concepto_1" ).attr('nombre', '');
+			$( "#busc_concepto_1" ).attr('nombre', '');	
 		}
-
+		
+		
+		
+		//document.getElementById("enc_exc_proc").style.display = (str_tipo_cargo == 'orden' && $("#tipo_orden").val() != "" && grupInv != 'on') ? 'table-row' : 'none';
+		//document.getElementById("row_exc_proc").style.display = (str_tipo_cargo == 'orden' && $("#tipo_orden").val() != "" && grupInv != 'on') ? 'table-row' : 'none';
+		
 		if(str_tipo_cargo == 'evento' || str_tipo_cargo == 'dato' || str_tipo_cargo == 'aplicacion') {
 			
 			document.getElementById("input_pro").disabled = false;
@@ -168,6 +177,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 	
 	function ValidarTipoConcepto(CodigoConcepto, ccoSelected = null)
 	{
+		document.getElementById('camp_tercero').value = '';
+								
 		$.post(_URL_AJAX,
 		{
 			consultaAjax:     '',
@@ -183,7 +194,9 @@ $wactualiz = "(Febrero 23 de 2021)";
 				
 				if(data.Inv) {
 					// Validamos cuando el concepto mueve inventario data.Inv = 'on' o cuando no mueve inventario data.Inv = 'off'
-					validarCheckBoxProcOArt(data.Inv);
+					document.getElementById('busc_concepto_1').setAttribute('tipo', data.Tipo);
+					document.getElementById('camp_tercero').disabled = (data.Tipo == 'C' ? false : true);
+					validarCheckBoxProcOArt(data.Inv);					
 				}
 			}
 			else
@@ -212,6 +225,22 @@ $wactualiz = "(Febrero 23 de 2021)";
 			
 		},'json');
 	}
+	
+	
+	
+	function cargar_tipo_orden(codTipoOrden)
+	{	
+		$.post(_URL_AJAX,
+		{
+			consultaAjax:     	'',
+			wemp_pmla:        	$('#wemp_pmla').val(),
+			cod_tipo_orden:		codTipoOrden,
+			accion:           	'obtener_array_tipo_orden'
+			
+		}, function (data){
+			$("#tipo_orden").html(data);
+		},'json');
+	}	
 
 	function cargar_procedimiento(ArrayValores)
 	{
@@ -302,7 +331,6 @@ $wactualiz = "(Febrero 23 de 2021)";
  
  	function cargar_insumos(ArrayValores, el)
 	{
-		
 		var fhce 	= new Array();
 		var index		  	= -1;
 		for (var cod_ins in ArrayValores)
@@ -391,9 +419,11 @@ $wactualiz = "(Febrero 23 de 2021)";
 									<th>Cen. Costos</th>\
 									<th>Medicamento/Insumo</th>\
 									<th>Procedimiento/Examen</th>\
+									<th>Proc. Excluidos</th>\
 									<th>Articulo</th>\
 									<th>Formulario HCE</th>\
 									<th>Campo HCE</th>\
+									<th>Tercero</th>\
 									<th>Tipo de Cargo</th>\
 									<th>Tipo Cen. Costos</th>\
 									<th>Eliminar</th>\
@@ -411,7 +441,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 					}else if(data[id]['evento']=="on"){
 						tipo = "evento";
 					}else if(data[id]['orden']=="on"){
-						tipo = "orden";
+						tipo = "orden"+(data[id]['ccator'] != '' ? ': ('+data[id]['ccator']+'-'+data[id]['tipo_orden']+')' : '');
 					}else{
 						tipo = "aplicacion";
 					}
@@ -422,14 +452,16 @@ $wactualiz = "(Febrero 23 de 2021)";
 						  + "<td>"+data[id]['concepto']+"</td>"
 						  + "<td>"+data[id]['c_costos']+"</td>"
 						  + "<td>"+data[id]['articuloapl']+"</td>"
-						  + "<td>"+data[id]['procedimiento']+"</td>"
+						  + "<td>"+data[id]['procedimiento'].replace(',','<br>')+"</td>"
+						  + "<td>"+data[id]['ccapex'].replace(',','<br>')+"</td>"
 						  + "<td>"+data[id]['articulo']+"</td>"
 						  + "<td>"+data[id]['hce']+"</td>"
 						  + "<td>"+data[id]['consecutivo']+"</td>"
+						  + "<td>"+data[id]['tercero']+"</td>"
 						  + "<td>"+tipo+"</td>"
 						  + "<td>"+data[id]['cad_tipo_cco']+"</td>"
 						  + "<td style='text-align: center'><button  onclick='eliminar(\""+id+"\")'><img src='http://132.1.18.12/matrix/images/medical/root/borrar.png' alt=''></button></td>"
-						  + "<td style='text-align: center'><button  onclick='editar(\""+id+"\",\""+data[id]['concepto']+"\",\""+data[id]['c_costos']+"\",\""+data[id]['procedimiento']+"\",\""+data[id]['articulo']+"\",\""+data[id]['hce']+"\",\""+data[id]['consecutivo']+"\",\""+tipo+"\",\""+data[id]['tipo_cco']+"\",\""+data[id]['articuloapl']+"\")'><img src='http://132.1.18.11/matrix/images/medical/root/grabar.png' alt=''></button></td>"
+						  + "<td style='text-align: center'><button  onclick='editar(\""+id+"\",\""+data[id]['concepto']+"\",\""+data[id]['c_costos']+"\",\""+data[id]['procedimiento']+"\",\""+data[id]['articulo']+"\",\""+data[id]['hce']+"\",\""+data[id]['consecutivo']+"\",\""+tipo+"\",\""+data[id]['tipo_cco']+"\",\""+data[id]['articuloapl']+"\",\""+data[id]['tipo_concepto']+"\",\""+data[id]['ccator']+"\",\""+data[id]['ccapex']+"\",\""+data[id]['tercero']+"\")'><img src='http://132.1.18.11/matrix/images/medical/root/grabar.png' alt=''></button></td>"
 					+   "</tr>";
 				}
 				
@@ -480,13 +512,18 @@ $wactualiz = "(Febrero 23 de 2021)";
 		hce : '',
 		consecutivo: '',
 		tipo: '',
+		tipo_orden: '',
 		tipo_cco: [],
-		articuloapl: ''
+		articuloapl: '',		
+		tercero: '',
+		procedimientoExc: []
 	};
+
 	
-	function editar(id,concepto,c_costos,procedimiento,articulo,hce,consecutivo,tipo,tipo_cco, articuloapl) {
+	function editar(id,concepto,c_costos,procedimiento,articulo,hce,consecutivo,tipo,tipo_cco, articuloapl, tipo_concepto, tipo_orden, proc_exc, tercero) {
 		jConfirm('Seguro quieres editar esta configuracion?', 'Mensaje', function(e) { 
 			if(e){				
+				tipo = tipo.split(':')[0];
 				obj_cargo.concepto = concepto;
 				obj_cargo.c_costos = c_costos;
 				obj_cargo.procedimiento = procedimiento;
@@ -495,7 +532,10 @@ $wactualiz = "(Febrero 23 de 2021)";
 				obj_cargo.consecutivo = consecutivo;
 				obj_cargo.tipo = tipo;
 				obj_cargo.tipo_cco = tipo_cco.split(",");	
-				obj_cargo.articuloapl = articuloapl;			
+				obj_cargo.articuloapl = articuloapl;
+				obj_cargo.tipo_orden = tipo_orden;
+				obj_cargo.procedimientoExc = proc_exc.length > 0 ? proc_exc.split(',').sort() : [];
+				obj_cargo.tercero = tercero;
 				
 				this.cargo_editado = id;
 				
@@ -508,6 +548,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 				var inputArticuloApl = $("#busc_articulo_1");
 				var inputProcedimientoOInsumo = $("#busc_procedimiento_1");
 				var inputFormularioHCE = $("#busc_formulario_hce_1");
+				var inputTercero = $("#camp_tercero");
 				
 				var splitConcepto = '';
 				var codigoConcepto = '';
@@ -556,9 +597,11 @@ $wactualiz = "(Febrero 23 de 2021)";
 				codigoConcepto = splitConcepto[0];
 				nombreConcepto = splitConcepto[1];
 			
+				
 				inputConcepto.val(concepto);
 				inputConcepto.attr('valor', codigoConcepto);
 				inputConcepto.attr('nombre', nombreConcepto);
+				inputConcepto.attr('tipo', tipo_concepto);
 				
 				splitArticuloApll = articuloapl.split('-');
 				codigoArticuloApl = splitArticuloApll[0];
@@ -573,17 +616,38 @@ $wactualiz = "(Febrero 23 de 2021)";
 				
 				ValidarTipoConcepto(codigoConcepto, codigoCco);
 				
+				document.getElementById("col_label_proex").style.display = tipo_orden != '' ? 'table-cell' : 'none';
+				document.getElementById("col_camp_proex").style.display = tipo_orden != '' ? 'table-cell' : 'none';
+				document.getElementById("divChkTodosProc").style.display = tipo_orden != '' ? 'inline' : 'none';
 				if(procedimiento != '') {
-					$("#input_pro").prop("checked", true);
+					if(tipo=="orden"){
+						document.getElementById('camp_tercero').value = tercero;
+						document.getElementById('camp_tercero').value = tercero;
+						document.getElementById('camp_tercero').setAttribute('valor', tercero.split('-')[0]);
+						document.getElementById('camp_tercero').setAttribute('nombre', tercero.split('-')[1]);
+						cargar_tipo_orden(tipo_orden);						
+						if(procedimiento == '*'){							
+							document.getElementById('chkTodosProc').checked = true;
+							document.getElementById('filterExcludeProcOrden').focus();
+							elProcOrden.disable();
+							elProcExc.enable();						
+							elProcExc.setValue(proc_exc.length > 0 ? proc_exc.split(','): []);
+						}
+						else{
+							elProcOrden.setValue(procedimiento.split(','));
+							elProcOrden.enable();
+							elProcExc.disable();
+						}
+					}else{
+						$("#input_pro").prop("checked", true);					
+						splitProcedimiento = procedimiento.split('-');
+						codigoProcedimiento = splitProcedimiento[0];
+						nombreProcedimiento = splitProcedimiento[1];
 					
-					splitProcedimiento = procedimiento.split('-');
-					codigoProcedimiento = splitProcedimiento[0];
-					nombreProcedimiento = splitProcedimiento[1];
-				
-					inputProcedimientoOInsumo.val(procedimiento);
-					inputProcedimientoOInsumo.attr('valor', codigoProcedimiento);
-					inputProcedimientoOInsumo.attr('nombre', nombreProcedimiento);
-					
+						inputProcedimientoOInsumo.val(procedimiento);
+						inputProcedimientoOInsumo.attr('valor', codigoProcedimiento);
+						inputProcedimientoOInsumo.attr('nombre', nombreProcedimiento);
+					}
 				} else if(articulo != '') {
 					$("#input_insu").prop("checked", true);
 					
@@ -611,16 +675,19 @@ $wactualiz = "(Febrero 23 de 2021)";
 					datos_desde_fhce(codigoFormularioHCE, codigoConsecFormularioHCE);
 					
 				}
+				origenGeneral = 1;
 			}
 	   });
 	}
 
 	function guardar_cca() {
-		
 		var concepto = document.getElementById('busc_concepto_1').getAttribute('valor');
+		var conceptoText = document.getElementById('busc_concepto_1').value;
 		var centro_costos = document.getElementById('wccogra_1').value;
 		var procedimiento_insumo = document.getElementById('busc_procedimiento_1').getAttribute('valor');
+		var procedimiento_insumoText = document.getElementById('busc_procedimiento_1').value;
 		var formulario_hce = document.getElementById('busc_formulario_hce_1').getAttribute('valor');
+		var formulario_hceText = document.getElementById('busc_formulario_hce_1').value;
 		var consecutivo_hce = document.getElementById('wconfhce_1').value;
 		var wuse = document.getElementById('wuse').value;
 		var articulo = document.getElementById('busc_articulo_1').value;
@@ -629,13 +696,17 @@ $wactualiz = "(Febrero 23 de 2021)";
 		var radiosProcOIns = document.getElementsByName('radio_p');
 		/* NUEVO */
 		var checksTipoCco = document.getElementsByName('check_tcc');
-				
+		var tipoConcepto = 	document.getElementById('busc_concepto_1').getAttribute('tipo');	
 		
 		var msjErrores = '';
 		var tipo_cargo = '';
 		var procOInsu = '';
 		/* NUEVO */
 		var tipo_cco = '';
+		var arrayProcExc = [];
+		var procExc = [];
+		var tipoOrden = '';
+		var tercero = '';
 
 		if(centro_costos=="0") {
 			centro_costos='';
@@ -664,9 +735,24 @@ $wactualiz = "(Febrero 23 de 2021)";
 		if(tipo_cco == '') {
 			msjErrores += 'Debe seleccionar al menos un tipo de centro de costo. \n';
 		}
-		
 				
-		if(concepto == '') {
+		if(tipo_cargo == 'orden') {
+			tipoOrden = document.getElementById('tipo_orden').value;			
+			if(tipoOrden != '') {
+				arrayProcExc = elProcExc.getValue();
+				for(let i = 0; i < arrayProcExc.length; i++){
+					procExc.push(arrayProcExc[i].split('-')[0]);
+				}
+				procExc = procExc.join();				
+			}
+			if(tipoConcepto == 'C'){				
+				tercero = document.getElementById('camp_tercero').getAttribute('valor');
+				terceroTexto = document.getElementById('camp_tercero').value;
+				msjErrores +=  (tercero == '' || terceroTexto.length == '') ? 'El campo "Tercero" es requerido.\n' : '';
+			}
+		}
+		
+		if(concepto == '' || conceptoText == '') {
 			msjErrores += 'El campo "Concepto" es requerido. \n';
 		}
 		
@@ -675,10 +761,25 @@ $wactualiz = "(Febrero 23 de 2021)";
 				procOInsu = el.value;
 			}
 		});		
-		if(procOInsu == '' || procedimiento_insumo == '') {
+		
+		if(tipo_cargo == 'orden'){
+			procedimiento_insumo = '';
+			if(document.getElementById('chkTodosProc').checked == false){
+				let listaproc = elProcOrden.getValue();
+				for(let i = 0; i < listaproc.length; i++){
+					listaproc[i] = (listaproc[i].split('-'))[0];
+				}
+				procedimiento_insumo = listaproc.join();
+			}else
+				procedimiento_insumo = '*';
+			procedimiento_insumoText = '*';
+		}	
+		
+		if(procOInsu == '' || procedimiento_insumo == '' || procedimiento_insumoText == '') {
 			msjErrores += 'El campo "Procedimiento o Articulo" es requerido. \n';
 		}		
-		if((tipo_cargo == 'dato') && (formulario_hce == '' || consecutivo_hce == '')) {
+		
+		if((tipo_cargo == 'dato') && (formulario_hce == '' || consecutivo_hce == '' || formulario_hceText == '')) {
 			msjErrores += formulario_hce == ''  ? 'El campo "Formulario HCE" es requerido.\n' : '';
 			msjErrores += consecutivo_hce == ''  ? 'El campo "Campo HCE" es requerido.\n' : '';
 		}
@@ -740,7 +841,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 		} else {
 			guardar_interno()
 		}
-		
+				
 		function guardar_interno(){
 					
 			if(cargo_editado != 0) { 
@@ -761,6 +862,9 @@ $wactualiz = "(Febrero 23 de 2021)";
 					/* NUEVO */
 					tcco: tipo_cco,
 					articulo: articuloVal,
+					tipo_orden: tipoOrden,
+					tercero: tercero,
+					proc_exc: procExc,
 					id: cargo_editado
 					
 				}, function (data){
@@ -787,7 +891,10 @@ $wactualiz = "(Febrero 23 de 2021)";
 					/* NUEVO */
 					tcco: tipo_cco,
 					articulo: articuloVal,
-					poi: procOInsu
+					poi: procOInsu,
+					tipo_orden: tipoOrden,
+					tercero: tercero,
+					proc_exc: procExc
 					
 				}, function (data){
 					if(data.code) {
@@ -803,172 +910,77 @@ $wactualiz = "(Febrero 23 de 2021)";
 	function change_edit(section, origen = 0){	
 		if(origen != 'editar'){	
 			if(this.cargo_editado > 0) {
-				var obj_cargo_editado;			
-				if(origen == 1){
+				var obj_cargo_editado;
+				if(origen == 1){					
 					var tipo_cargo = $('input[name="radio"]:checked').val();
 					var tipo_cco = "";
 					var proins = $('input[name="radio_p"]:checked').val();			
 					var checksTipoCco = document.getElementsByName('check_tcc');
+					var procedimiento = '';
+					var procExc = [];
 					checksTipoCco.forEach(function (el) {
 						if(el.checked) {
 							tipo_cco += el.value+',';
 						}
-					});			
+					});	
 					tipo_cco = tipo_cco.replace(/(^[,\s]+)|([,\s]+$)/g, '');
+					if(tipo_cargo!='orden')
+						procedimiento = proins == 'procedimiento' ? document.getElementById('busc_procedimiento_1').value : '';
+					else{
+						procExc = elProcExc.getValue()
+						procedimiento =  document.getElementById('chkTodosProc').checked ? '*' : elProcOrden.getValue().sort().join();
+					}
 					obj_cargo_editado = {
 												concepto: document.getElementById('busc_concepto_1').value,
 												c_costos: document.getElementById('wccogra_1').value == "0" ? "" : $("#wccogra_1 option:selected").text(),
-												procedimiento: proins == 'procedimiento' ? document.getElementById('busc_procedimiento_1').value : '',
+												procedimiento: procedimiento,
 												articulo: proins == 'insumo' ? document.getElementById('busc_procedimiento_1').value : '',
 												hce : document.getElementById('busc_formulario_hce_1').value,
 												consecutivo: $("#wconfhce_1 option:selected").text() == 'Seleccione..' ? '' : $("#wconfhce_1 option:selected").text(),
 												tipo: tipo_cargo,
+												tipo_orden: document.getElementById('tipo_orden').value,
 												tipo_cco: tipo_cco.split(','),
 												articuloapl : document.getElementById('busc_articulo_1').value,
+												tercero: document.getElementById('camp_tercero').value,
+												procedimientoExc: procExc
 											};
 				}else{
 					obj_cargo_editado = Object.assign({}, this.obj_cargo);
 				}
-				
-				//console.log(obj_cargo_editado);						
-				//console.log(this.obj_cargo);	
-										
+														
 				var pro='procedimiento';			
 				if(this.obj_cargo.procedimiento==''){
 				   pro='insumo';
 				}
 				var btn_editar_cca = document.getElementById('button_guardar');
-			
 				if(section == 'tipo_origen')
 					limpiarFormulario(false);
-				
-				/*switch(section) {
-					case 'tipo_origen':					
-						if(document.querySelector('input[name="radio"]:checked').value != this.obj_cargo.tipo) {						
-							btn_editar_cca.removeAttribute('disabled');
-							limpiarFormulario(false);
-							this.obj_cargo = {
-												concepto: '',
-												c_costos: '',
-												procedimiento: '',
-												articulo: '',
-												hce : '',
-												consecutivo: '',
-												tipo: '',
-												tipo_cco: ''
-											};
-						} else {
-							btn_editar_cca.setAttribute('disabled', true);
-						}
-					break;
-					case 'concepto':
-						if(this.obj_cargo.concepto!=document.getElementById('busc_concepto_1').value){
-						btn_editar_cca.removeAttribute('disabled');
-						} else {
-							btn_editar_cca.setAttribute('disabled', true);
-						}
-						
-					break;
-					case 'procedimiento':
-						if(this.obj_cargo.procedimiento!=''){
-							if(document.getElementById('busc_procedimiento_1').value!=this.obj_cargo.procedimiento){
-							btn_editar_cca.removeAttribute('disabled');
-							} else {
-								btn_editar_cca.setAttribute('disabled', true);
-							}
-						}else{
-							if(document.getElementById('busc_procedimiento_1').value!=this.obj_cargo.articulo){
-							btn_editar_cca.removeAttribute('disabled');
-							} else {
-								btn_editar_cca.setAttribute('disabled', true);
-							}
-						}
-						
-					break;
-					case 'centro_costo':
-						
-						var combo = document.getElementById("wccogra_1");
-						var selected = combo.options[combo.selectedIndex].text;
-						
-						if(this.obj_cargo.c_costos!=selected){
-						btn_editar_cca.removeAttribute('disabled');
-						} else {
-							btn_editar_cca.setAttribute('disabled', true);
-						}
-					
-					break;
-					case 'proc_o_insu':
-						if(document.querySelector('input[name="radio_p"]:checked').value != pro){
-						btn_editar_cca.removeAttribute('disabled');
-						document.getElementById('busc_procedimiento_1').value="";
-						} else {
-							if(this.obj_cargo.procedimiento!=''){
-								document.getElementById('busc_procedimiento_1').value=this.obj_cargo.procedimiento;
-							}else{
-								document.getElementById('busc_procedimiento_1').value=this.obj_cargo.articulo;
-							}
-							btn_editar_cca.setAttribute('disabled', true);
-						}
-					break;
-					case 'formulario_hce':
-						if(this.obj_cargo.hce!=document.getElementById('busc_formulario_hce_1').value){
-						btn_editar_cca.removeAttribute('disabled');
-						} else {
-							btn_editar_cca.setAttribute('disabled', true);
-						}
-					
-					break;
-					case 'consecutivo_hce': 
-						var combo = this.obj_cargo.consecutivo.split("-");;
-						if(combo[0]!=document.getElementById("wconfhce_1").value){
-						btn_editar_cca.removeAttribute('disabled');
-						} else {
-							btn_editar_cca.setAttribute('disabled', true);
-						}
-					break;
-					case 'tipo_cco':
-						let array_tcc = [];
-						var checksTipoCco = document.getElementsByName('check_tcc');
-						checksTipoCco.forEach(function (el) {
-							if(el.checked) {
-								array_tcc.push(el.value);
-							}
-						});
-						if(array_tcc.join()!==this.obj_cargo.tipo_cco.join()) {	
-							btn_editar_cca.removeAttribute('disabled');												
-						} else {					
-							btn_editar_cca.setAttribute('disabled', true);
-						}
-					break;
-					case 'articulo':					
-						var artapl = this.obj_cargo.articuloapl.split("-");
-						if(artapl[0]!=document.getElementById('busc_articulo_1').getAttribute('valor')){					
-							btn_editar_cca.removeAttribute('disabled');
-						} else {
-							btn_editar_cca.setAttribute('disabled', true);
-						}
-					break;
-					
-				}*/
-				if(JSON.stringify(obj_cargo_editado) === JSON.stringify(this.obj_cargo)){
+				if(JSON.stringify(obj_cargo_editado).split('').sort().join('') === JSON.stringify(this.obj_cargo).split('').sort().join('')){
 					btn_editar_cca.setAttribute('disabled', true);
 				}else{
 					btn_editar_cca.removeAttribute('disabled');
-				}
+				}				
 			} else {
 				if(section == 'tipo_origen') {
 					limpiarFormulario(false);
 				}
 			}
-		}
+		}		
 	}
 	
-	function limpiarFormulario(todo = true) {
+	function limpiarFormulario(todo = true) {		
 		if(todo) {
 			document.getElementById('form_cca').reset();
 			document.getElementById("busc_formulario_hce_1").removeAttribute('disabled');
 			document.getElementById("wconfhce_1").removeAttribute('disabled');
 		}
+		document.getElementById('camp_tercero').value = '';
+		document.getElementById('camp_tercero').setAttribute('valor', '');
+		document.getElementById('camp_tercero').disabled = true;
+		
+		document.getElementById("tipo_orden").innerHTML = '';
+		document.getElementById("enc_label_procord").style.display = 'none';
+		document.getElementById("row_camp_procord").style.display = 'none';
 		
 		document.getElementById("wconfhce_1").innerHTML = '';
 		document.getElementById("wccogra_1").innerHTML = '';
@@ -979,19 +991,13 @@ $wactualiz = "(Febrero 23 de 2021)";
 		
 		limpiaAutocomplete('busc_concepto_1');
 		limpiaAutocomplete('busc_procedimiento_1');
-		limpiaAutocomplete('busc_formulario_hce_1');	
+		limpiaAutocomplete('busc_formulario_hce_1');
 
 		var checksTipoCco = document.getElementsByName('check_tcc');	
 		checksTipoCco.forEach(function (el) {
 			el.checked = false;
 		});
-	}
-	
-    $(document).ready(function(){
-		$('[data-toggle="tooltip"]').tooltip();
-		traer_conceptos('%');
-		inicializarDatepickerFecha();
-    });
+	}    
 
     function cerrarVentanaPpal()
     {
@@ -1020,7 +1026,7 @@ $wactualiz = "(Febrero 23 de 2021)";
     }
 	
     function openTab(evt, cityName, mostrar_msj_editar = false) {
-      
+		origenGeneral = 0;
 		if(cityName == 'listadoA') {
 			document.getElementById("input_pro").disabled = false; 
 			document.getElementById("input_insu").disabled = false;
@@ -1102,8 +1108,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 			
 			if(str_tipo=="insumo"){
 				traer_insumos('busc_procedimiento_1');
-			} else {
-				traer_procedimientos();
+			} else {				
+				traer_procedimientos();				
 			}
 		} else  {
 			jAlert('El campo "Tipo Concepto" es requerido.', 'Mensaje');
@@ -1113,19 +1119,35 @@ $wactualiz = "(Febrero 23 de 2021)";
 	function desactivar(origen = '') {
 		var elSelected = $("input[type='radio'][name='radio']:checked").val();
 		document.getElementById("busc_formulario_hce_1").setAttribute('disabled', true);
-		document.getElementById("wconfhce_1").setAttribute('disabled', true);
-		
+		document.getElementById("wconfhce_1").setAttribute('disabled', true);		
 		document.getElementById("busc_formulario_hce_1").value = '';
 		document.getElementById("busc_formulario_hce_1").setAttribute('valor', '');
 		document.getElementById("busc_formulario_hce_1").setAttribute('nombre', '');
-		document.getElementById("wconfhce_1").innerHTML = '';
+		document.getElementById("wconfhce_1").innerHTML = '';		
 		var paramOrigen = origen == 'editar' ? origen : 1;
 		change_edit('tipo_origen', paramOrigen);
 		document.getElementById("input_pro").disabled = false; 
 		document.getElementById("input_insu").disabled = false;
 		document.getElementById("filaArticulo").style.display = (elSelected == 'aplicacion') ? "table-row" : "none";
+		document.getElementById("filaTipoOrden").style.display = (elSelected == 'orden') ? "table-row" : "none";
 		document.getElementById("busc_articulo_1").value = "";
 		var radio_checked = '';
+		document.getElementById("col_label_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";		
+		document.getElementById("col_camp_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";	
+		document.getElementById("col_camp_fhce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_camp_chce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_label_fhce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_label_chce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_label_proart").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_camp_proart").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_label_cencos").style.width = (elSelected != 'orden') ? "20%" : "40%";
+		document.getElementById("enc_label_procord").style.display = (elSelected == 'orden') ? "table-row" : "none";
+		document.getElementById("row_camp_procord").style.display = (elSelected == 'orden') ? "table-row" : "none";
+		document.getElementById("col_label_proex").style.display = 'none';
+		document.getElementById("col_camp_proex").style.display = 'none';
+		document.getElementById("divChkTodosProc").style.display = 'none';
+		document.getElementById("chkTodosProc").checked = false;
+		camposEstadoProc();
 		if(document.querySelector('input[name="radio"]:checked')) {
 			radio_checked = document.querySelector('input[name="radio"]:checked').value;
 			if(radio_checked=="prescripcion"){
@@ -1133,28 +1155,44 @@ $wactualiz = "(Febrero 23 de 2021)";
 			document.getElementById("input_pro").disabled = true;  
 			}else if(radio_checked=="orden"){
 				document.getElementById("input_pro").checked = true;
-				document.getElementById("input_insu").disabled = true; 
+				document.getElementById("input_insu").disabled = true;
+				if(origen != 'editar')
+					cargar_tipo_orden('');
 			}
-		}		
-		
+		}				
 		document.getElementById("busc_procedimiento_1").value = '';
 		document.getElementById("busc_procedimiento_1").setAttribute('valor', '');
 		 
 	}
 
 	//--------------------------------------------------------------
-	function activar(origen = '') {		
+	function activar(origen = '') {
+		var elSelected = $("input[type='radio'][name='radio']:checked").val();
 		document.getElementById("busc_formulario_hce_1").removeAttribute('disabled');
 		document.getElementById("wconfhce_1").removeAttribute('disabled');
 		document.getElementById("input_pro").disabled = false;
 		document.getElementById("input_insu").disabled = false;
 		document.getElementById("input_insu").checked = false; 
 		document.getElementById("input_pro").checked = false; 
-		document.getElementById("wconfhce_1").disabled = false; 
+		document.getElementById("wconfhce_1").disabled = false;
+		document.getElementById("col_label_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";
+		document.getElementById("col_camp_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";	
+		document.getElementById("col_camp_fhce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_camp_chce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_label_fhce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_label_chce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_label_proart").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_camp_proart").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_label_cencos").style.width = (elSelected != 'orden') ? "20%" : "40%";
+		document.getElementById("enc_label_procord").style.display = (elSelected == 'orden') ? "table-row" : "none";
+		document.getElementById("row_camp_procord").style.display = (elSelected == 'orden') ? "table-row" : "none";		
+		document.getElementById("chkTodosProc").checked = false;
+		camposEstadoProc();
 		var paramOrigen = origen == 'editar' ? origen : 1;
 		change_edit('tipo_origen', paramOrigen);
 		document.getElementById("busc_procedimiento_1").value = '';	
 		document.getElementById("filaArticulo").style.display = "none";
+		document.getElementById("filaTipoOrden").style.display = "none";
 		document.getElementById("busc_articulo_1").value = "";
 		var radio_checked = '';
 		if(document.querySelector('input[name="radio"]:checked')) {
@@ -1293,9 +1331,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 			whis: whis.value,
 			wing: wing.value,
 			
-		}, function (data) {
+		}, function (data) {			
 			
-			console.log(data);
 			if(data.code) {
 				whis.value = '';
 				wing.value = '';
@@ -1328,6 +1365,185 @@ $wactualiz = "(Febrero 23 de 2021)";
 			$('#table_logs').removeClass('dataTable');
 		});		
 	}
+	
+	function traer_terceros(input)
+	{
+		parametro = input.value;
+		if(parametro.length > 2) {
+			$.post(_URL_AJAX,
+			{
+				consultaAjax:     '',
+				wemp_pmla:        $('#wemp_pmla').val(),
+				parametro: parametro,
+				accion:           'traer_terceros'
+			}, function (data) {
+				ArrayInfoTerceros  = eval('(' + data + ')');
+				cargar_terceros(ArrayInfoTerceros);
+			});
+		}
+	}
+	
+	function cargar_terceros(ArrayValores)
+	{
+		var index			= -1;
+		var arrayTerceros	= new Array();
+		for (var cod_ter in ArrayValores)
+		{
+			index++;
+			arrayTerceros[index] = {};
+			arrayTerceros[index].value  	= cod_ter;
+			arrayTerceros[index].label  	= cod_ter+'-'+ArrayValores[cod_ter]['nombre'];
+			arrayTerceros[index].name  	= ArrayValores[cod_ter]['nombre'];
+			arrayTerceros[index].especialidades  = ArrayValores[cod_ter]['especialidad'];
+		}
+		
+		$("#camp_tercero").autocomplete({
+			minLength: 	0,
+			source: 	arrayTerceros,
+			select: 	function( event, ui ){
+				$("#camp_tercero").val(ui.item.label);
+				$("#camp_tercero").attr('valor', ui.item.value);
+				$("#camp_tercero").attr('nombre', ui.item.name);
+				change_edit('tercero', 1);
+				//cargarSelectEspecialidades(ui.item.especialidades);
+
+				//datos_desde_tercero('on');
+				//verificarDisponibilidad();
+
+				return false;
+			}
+		});
+		//limpiaAutocomplete('busc_terceros_'+n);
+	}
+
+	/*function cargarSelectEspecialidades( cadena,)
+	{
+		var especialidades = cadena.split(",");
+		var html_options = "";
+		for( var i in especialidades ){
+			var especialidad = especialidades[i].split("-");
+			html_options+="<option value='"+especialidad[0]+"'>"+especialidad[1]+"</option>";
+		}
+		$("#camp_especialidad").html( html_options );
+	}*/
+	
+	function crearEtiquetasOrdenes(el){
+		let nameProcEx = document.getElementById("filterExcludeProc").value;
+		let nameProcOrden = document.getElementById("filterExcludeProcOrden").value;
+		if((el == 'pe' && nameProcEx.length>2) || (el == 'po' && nameProcOrden.length>2)) {
+			
+			$.post(_URL_AJAX,
+			{
+				consultaAjax:     '',
+				accion:           'traer_procedimientos',
+				name_proc:  el == 'pe' ? nameProcEx : nameProcOrden,
+			}, function (data) {
+				var arrayProc 	= new Array();
+				var index		= -1;
+				for (var cod_ins in data)
+				{
+					index++;										
+					arrayProc[index] = cod_ins+'-'+data[cod_ins]['nombre'];					
+				}
+				//var ms1 = $('#autocompleteProc').magicSuggest({});
+				
+				if(el == 'pe')
+					elProcExc.setData(arrayProc);
+				else
+					elProcOrden.setData(arrayProc);
+			}, 'json');
+			
+		}
+	}
+	
+	// elProcExc/elProcOrden: esta variable se usara en cada lugar donde se 
+	// requiera acceder al elemento inicializado con los tags
+	var elProcExc;
+	var elProcOrden;
+	var origenGeneral;//variable que indica si el llamado a change_edit es desde la carga del formulario o desde el cambio de los campos
+	$(document).ready(function(){
+		$('[data-toggle="tooltip"]').tooltip();
+		traer_conceptos('%');
+		inicializarDatepickerFecha();
+		elProcExc = $('#autocompleteProc').magicSuggest({          
+		  data: [],
+		  inputCfg: {
+						'id' : 'filterExcludeProc',
+						'oninput': 'crearEtiquetasOrdenes("pe")'
+					},
+			allowFreeEntries: false,
+			maxDropHeight: 145,
+			hideTrigger: true			
+        });
+		elProcExc.disable();
+		elProcOrden = $('#autocompleteProcOrden').magicSuggest({          
+		  data: [],
+		  inputCfg: {
+						'id' : 'filterExcludeProcOrden',
+						'oninput': 'crearEtiquetasOrdenes("po")'
+					},
+			allowFreeEntries: false,
+			maxDropHeight: 145,
+			hideTrigger: true
+        });
+		$("#tipo_orden").change(function() {			
+			elProcOrden.clear(true);
+			elProcExc.clear(true);
+			document.getElementById('chkTodosProc').checked = false;
+			let state = document.getElementById('chkTodosProc').checked;	
+			//document.getElementById("enc_exc_proc").style.display = ($("#tipo_orden").val() != "" && $("#busc_concepto_1").val() != "") ? 'table-row' : 'none';
+			//document.getElementById("row_exc_proc").style.display = ($("#tipo_orden").val() != "" && $("#busc_concepto_1").val() != "") ? 'table-row' : 'none';	
+			//document.getElementById("busc_procedimiento_1").value =  $("#tipo_orden").val() != "" ? '*-TODOS' : '';
+			//document.getElementById('busc_procedimiento_1').setAttribute('valor', $("#tipo_orden").val() != "" ? '*' : '');
+			//document.getElementById("busc_procedimiento_1").disabled = $("#tipo_orden").val() != "" ? true : false;
+			document.getElementById("col_label_proex").style.display = ($("#tipo_orden").val() != "") ? 'table-cell' : 'none';
+			document.getElementById("col_camp_proex").style.display = ($("#tipo_orden").val() != "") ? 'table-cell' : 'none';
+			document.getElementById("divChkTodosProc").style.display = ($("#tipo_orden").val() != "") ? 'inline' : 'none';
+			document.getElementById('autocompleteProcOrden').focus();
+			document.getElementById('filterExcludeProcOrden').focus();
+			document.getElementById('filterExcludeProc').focus();	
+			document.getElementById('tipo_orden').focus();
+			elProcExc.disable();
+			elProcOrden.enable();
+			change_edit('tipo_orden', 1);
+		});
+		$( "#chkTodosProc" ).change(function() {		  
+		  camposEstadoProc();
+		  change_edit('todos_proc', 1);
+		});
+		$(elProcOrden).on('selectionchange', function(e,m){
+		  change_edit('procedimiento', origenGeneral);
+		});
+		$(elProcExc).on('selectionchange', function(e,m){
+		  change_edit('procedimientoExc', origenGeneral);
+		});
+    });
+	
+	function camposEstadoProc(){
+		let state = document.getElementById('chkTodosProc').checked;
+		if(state){
+			elProcOrden.clear(true);
+			elProcExc.enable();
+			elProcOrden.disable(); 
+		}
+		else{
+			elProcExc.clear(true);
+			elProcOrden.clear(true);
+			elProcExc.disable();
+			elProcOrden.enable(); 
+		}
+	}
+
+	/*$(function() {
+        var ms1 = $('#autocompleteProc').magicSuggest({          
+		  data: [],
+		  inputCfg: {
+						'id' : 'filterExcludeProc',
+						'oninput': 'crearEtiquetasOrdenesExcluidas()'
+					},
+			allowFreeEntries: false
+        });
+      });*/
 
 </script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet"/>
@@ -1564,7 +1780,7 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 <div class="tab ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks " role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-2" aria-selected="false" onclick="openTab(event,'listadoA')" >LISTADO</button>
   	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks active" role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'configurar',true)" >CONFIGURACI&Oacute;N</button>
-	<!-- <button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks" role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'estancia')" >ESTANCIA</button>-->
+	<!--<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks" role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'estancia')" >ESTANCIA</button>-->
 	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks " role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'log')" >LOG</button>
 </div>
 <div id="listadoA" class="prueba ui-tabs-panel ui-widget-content ui-corner-bottom"  style="display: none;">
@@ -1604,8 +1820,8 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 							<td class="fila2 cargo_cargo" colspan="5" align="left" >
 								Evento <input name="radio" value="evento" id="evento" type="radio" onclick="activar();"/>
 								Dato <input name="radio" value="dato" id="dato" type="radio" onclick="activar();" />
-								<!--Orden <input name="radio" value="orden" id="orden" type="radio" onclick="desactivar();" />
-								Aplicaci&oacute;n <input name="radio" value="aplicacion" id="aplicacion" type="radio" onclick="desactivar();" />-->
+								Orden <input name="radio" value="orden" id="orden" type="radio" onclick="desactivar();" />
+								Aplicaci&oacute;n <input name="radio" value="aplicacion" id="aplicacion" type="radio" onclick="desactivar();" />
 							</td>
 						</tr>
 						<tr class='encabezadoTabla'  align="center" style = "display:none" id="filaArticulo">
@@ -1613,7 +1829,16 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 								Medicamento/Insumo
 							</td>							
 							<td class="fila2 cargo_cargo" colspan="5" align="left" >
-								<input type='text' name="procoins" id='busc_articulo_1' valor='' nombre='' onchange="change_edit('articulo', 1)" oninput="traer_insumos('busc_articulo_1')"  size='60'  style="width: 97%;text-transform:uppercase;"/>
+								<input type='text' name = 'articulo' id='busc_articulo_1' valor='' nombre='' onchange="change_edit('articulo', 1)" oninput="traer_insumos('busc_articulo_1')" size='60'  style="width: 97%;text-transform:uppercase;"/>
+							</td>
+						</tr>
+						<tr class='encabezadoTabla'  align="center" style = "display:none" id="filaTipoOrden">
+							<td>
+								Tipo Orden
+							</td>							
+							<td class="fila2 cargo_cargo" colspan="5" align="left" >
+								<select name="tipoorden" id='tipo_orden' style='width: 100%;'>									
+								</select>
 							</td>
 						</tr>
 						<!-- NUEVO -->
@@ -1629,35 +1854,69 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 								Cirug&iacute;a <input name="check_tcc" value="Cx" id="cirugia" type="checkbox" onclick="change_edit('tipo_cco', 1);" />
 							</td>
 						</tr>
+						</tr>
 						<!-- FIN NUEVO -->
 						<tr id='tr_enc_det_concepto' class='encabezadoTabla'  align='center' style="width:100%">
 							<td style="width:20%"> Concepto </td>
-							<td style="width:20%"> Cen.Costos que realiza</td>
-							<td style="width:30%">
+							<td style="width:20%" id = "col_label_cencos"> Cen.Costos que realiza</td>
+							<td style="width:30%" id="col_label_proart">
 								Procedimiento/Examen <input name="radio_p" value='procedimiento' id="input_pro" onclick="change_edit('proc_o_insu', 1);" type="radio" /> 
-								Articulo <input name="radio_p" value='insumo' onclick="change_edit('proc_o_insu', 1);" id="input_insu" type="radio" />
-							</td>
-							<td style="width:20%"> Formulario HCE </td>
-							<td style="width:10%"> Campo HCE </td>
+								Articulo <input name="radio_p" value='insumo' onclick="change_edit('proc_o_insu', 1);" id="input_insu" type="radio" />								
+							</td>							
+							<td style="width:20%" id="col_label_fhce"> Formulario HCE </td>
+							<td style="width:10%" id="col_label_chce"> Campo HCE </td>
+							<td style="width:40%;display:none" id="col_label_terc"> Tercero </td>
+							<!-- <td style="width:15%;display:none" id="col_label_espz|"> Especialidad </td>-->
 						</tr>
 						<tr class='fila2 cargo_cargo'>
 							<td align='left' >
-								<input type='text' name="con" id='busc_concepto_1' value='' valor='' onchange="change_edit('concepto', 1)" nombre='' size='21' style="text-transform:uppercase; width: 97%;" >
+								<input type='text' name="con" id='busc_concepto_1' value='' valor='' onchange="change_edit('concepto', 1);" nombre='' size='21' style="text-transform:uppercase; width: 97%;" >
 							</td>
 							<td align='left'>
 								<select name="cco" id='wccogra_1' style='width: 100%;' onchange="change_edit('centro_costo', 1)"></select>
 							</td>
-							<td align='left'>
+							<td align='left' id="col_camp_proart">
 								<input type='text' name="procoins" id='busc_procedimiento_1' value='' valor='' nombre='' oninput="validar()"  size='30'  style="width: 97%;text-transform:uppercase;"/>
 							</td>
-						
-							<td align='left'>
+							<td align='left' id="col_camp_fhce">
 								<input type='text' name="fhce" id='busc_formulario_hce_1' value='' valor='' nombre='' oninput="traer_fhce()" size='30' style="width: 97%;" />
 							</td>
-							<td align='left'>
+							<td align='left' id="col_camp_chce">
 								<select name='confhce' id='wconfhce_1' oninput="traer_fhce();" onchange="change_edit('consecutivo_hce', 1);" style='width:100%;text-transform:uppercase;'></select>
 							</td>
+							<td align='left' id="col_camp_terc" style='display:none;'>
+								<input type='text' name="colter" id='camp_tercero' value='' valor='' nombre='' oninput="traer_terceros(this)" size='30' style="width: 97%;" disabled/>
+							</td>
+							<!--<td align='left' id="col_camp_esp" style='display:none'>								
+								<select name="colesp" id='camp_especialidad' value='' valor='' nombre='' oninput="" style="width: 97%;" />
+									<option value="">Seleccione</option>
+								</select>
+							</td>-->
+						</tr>						
+						<tr id = "enc_label_procord" style = "display:none;">							
+							<td colspan="8">
+								<table style="width:100%">
+									<tr class="encabezadoTabla">
+										<td align=center style="width:50%">Procedimiento <div id = "divChkTodosProc" style = "display:none">(<label>Todos<input id = "chkTodosProc" type="checkbox"/></label>)</div></td>
+										<td id = "col_label_proex" align=center style="width:50%; display:none">Procedimientos Excluidos</td>
+									</tr>
+								</table>	
+							</td>
 						</tr>
+						<tr class='fila2 cargo_cargo' id = "row_camp_procord" style = "display:none;">							
+							<td colspan="8">
+								<table style="width:100%">
+									<tr>
+										<td style="width:50%;vertical-align:top;">
+											<div id="autocompleteProcOrden"></div>
+										</td>
+										<td id = "col_camp_proex" style="width:50%; vertical-align:top; display:none">
+											<div id="autocompleteProc"></div>
+										</td>	
+									</tr>
+								</table>
+							</td>
+						</tr>			
 					</table>
 				</td>
 			</tr>
@@ -1689,8 +1948,8 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 			  <option value="cca">Configuraci&oacute;n Cargo Autom&aacute;tico</option>
 			  <option value="ccadat">Cargo Autom&aacute;tico (Dato)</option>
 			  <option value="ccaeve">Cargo Autom&aacute;tico (Evento)</option>
-			  <!--<option value="ccaord">Cargo Autom&aacute;tico (Orden)</option>
-			  <option value="ccapre">Cargo Autom&aacute;tico (Aplicaci&oacute;n)</option>-->
+			  <option value="ccaord">Cargo Autom&aacute;tico (Orden)</option>
+			  <option value="ccapre">Cargo Autom&aacute;tico (Aplicaci&oacute;n)</option>
 			  <option value="estancia">Cargo Autom&aacute;tico (Estancia)</option>
 			</select>
 			<input type="text" name="fecha" value="" size="21" id="fecha" placeholder="Fecha"   />
@@ -1764,10 +2023,6 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 				<input type='button' value='Cerrar Ventana' onclick='cerrarVentanaPpal();'>
 			</td>
 		</tr>
-	</table>
-	<script type="text/javascript">
+	</table>	
 
-
-</script>
-</body>
 </html>				

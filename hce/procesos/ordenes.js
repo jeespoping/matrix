@@ -18114,26 +18114,65 @@ function grabarKardex(wimprimir){
  * Tipo de cambio en la pestaña y seccion
  ******************************************************************************************************************************/
 function marcarCambio(tipo,indice, campo ){
-	var bandera = document.getElementById("wmodificado"+tipo+indice);
-
-	if(bandera && bandera.value){
-		bandera.value = "S";
+	/*se remueve el div en el cambio de div que contiene los radios*/
+	let divCco = document.getElementById('divCcacco-'+indice);
+	if(divCco)
+		divCco.remove();
+	let inputCodCups = document.getElementById('hexcod'+indice);
+	let codCups = '';
+	if(inputCodCups)
+		codCups = inputCodCups.value;
+	let estGeneraCca = $('option:selected',"#westadoexamen"+indice).attr('generacca');
+	if(estGeneraCca != 'on'){
+		marcarInt();
+	}else{
+		$.post("ordenes.inc.php",
+			{			
+				consultaAjax 		: '',
+				consultaAjaxKardex	: 'ccoPorTipoOrden',
+				wemp_pmla			: $("#wemp_pmla").val(),
+				tipo_orden			: $("#hexcco"+indice).val(),
+				indice				: indice,
+				codcups				: codCups
+			}, function (data) {
+				/*se crea el nuevo div*/
+				if(data.html && data.html != ''){
+					let newDiv = document.createElement('div');
+					newDiv.setAttribute('id', 'divCcacco-'+indice);
+					newDiv.innerHTML = data.html;
+					document.getElementById('row-est-'+indice).appendChild(newDiv);
+				}
+				marcarInt();
+			},"json"
+		);
 	}
+	
+	function marcarInt(){
+		//alert($("#hexcco"+indice).val());
+		
+		var bandera = document.getElementById("wmodificado"+tipo+indice);
 
-	var bandera_alta = document.getElementById("wmodificadoimp"+tipo+indice);
+		if(bandera && bandera.value){
+			bandera.value = "S";
+		}
 
-	if(bandera_alta && bandera_alta.value){
-		bandera_alta.value = "S";
-	}
+		var bandera_alta = document.getElementById("wmodificadoimp"+tipo+indice);
+						   
+  
 
-	/********************************************************************************
-	 * Junio 13 de 2012
-	 *
-	 * Si una condicicon de suministro tiene dosis maxima por defecto se llena
-	 * la dosis maxima
-	 ********************************************************************************/
-	agregarDosisMaxPorCondicion( tipo, indice, campo );
+		if(bandera_alta && bandera_alta.value){
+			bandera_alta.value = "S";
+		}
+
+		/********************************************************************************
+		 * Junio 13 de 2012
+		 *
+		 * Si una condicicon de suministro tiene dosis maxima por defecto se llena
+		 * la dosis maxima
+		 ********************************************************************************/
+		agregarDosisMaxPorCondicion( tipo, indice, campo );
 	/********************************************************************************/
+	}
 }
 
 /*****************************************************************************************************************************
@@ -23961,12 +24000,15 @@ function suspenderArticulo(idxElemento,tipoProtocolo,confirmar){
 function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idElemento, nroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra,horaDeSolicitado){
 	var parametros = "";
 	var mensaje = "";
-
+	var ccoSeleccionado = '';
+	if(document.getElementsByName('cenCosTipOrd'+idElemento).length > 0){
+		ccoSeleccionado = $('input[name="cenCosTipOrd'+idElemento+'"]:checked').val();
+	}
 	parametros = "consultaAjaxKardex=7&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&historia="+historia+"&ingreso="+ingreso
 		+"&fecha="+fecha+"&codigoExamen="+codExamen+"&observaciones="+observaciones+"&estado="+estadoExamen+"&codUsuario="+usuario+"&nombreExamen="+nomExamen
 		+"&fechaDeSolicitado="+fechaDeSolicitado+"&consecutivoOrden="+consecutivoOrden+"&firma="+firma+"&observacionesOrden="+observacionesOrden+"&consecutivoExamen="+cod_procedi
 		+"&justificacion="+justificacion+"&numeroItem="+nroItem+"&impExamen="+impExamen+"&altExamen="+altExamen+"&firmHCE="+firmHCE+"&datosAdicionales="+datosAdicionales
-		+"&ordenAnexa="+datoOrdenAnexa+"&esOfertado="+esOfertado+"&usuarioTomaMuestra="+usuarioTomaMuestra+"&cco="+$("#wservicio").val();
+		+"&ordenAnexa="+datoOrdenAnexa+"&esOfertado="+esOfertado+"&usuarioTomaMuestra="+usuarioTomaMuestra+"&cco="+$("#wservicio").val()+"&ccoTipoOrd="+ccoSeleccionado;
 
 	try{
 

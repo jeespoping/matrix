@@ -4360,7 +4360,7 @@ if (!$usuarioValidado){
 								
 								if($estadoExamen->codigo!=$estadoActual){
 									
-										$opcionesSeleccion .= "<option value='$estadoExamen->codigo' $estado_opcion>$estadoExamen->descripcion</option>";
+										$opcionesSeleccion .= "<option value='$estadoExamen->codigo' $estado_opcion generacca='$estadoExamen->genCca'>$estadoExamen->descripcion</option>";
 											
 								}
 								else{
@@ -4372,13 +4372,13 @@ if (!$usuarioValidado){
 										$classCeldaEstado = "fondoRojo";
 									}
 										
-									$opcionesSeleccion .= "<option value='$estadoExamen->codigo' selected $estado_opcion>$estadoExamen->descripcion</option>";
+									$opcionesSeleccion .= "<option value='$estadoExamen->codigo' selected $estado_opcion generacca='$estadoExamen->genCca'>$estadoExamen->descripcion</option>";
 										
 								}
 							
 							}
 							
-							echo "<td class=$classCeldaEstado>";
+							echo "<td id='row-est-$contExamenes' class=$classCeldaEstado>";
 							
 							crearCampo("6","westadoexamen$contExamenes",@$accionesPestana[$indicePestana.".9"],array("class"=>"campo2","onChange"=>"marcarCambio('$indicePestana','$contExamenes');"),"$opcionesSeleccion");
 							

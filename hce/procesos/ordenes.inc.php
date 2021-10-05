@@ -722,6 +722,7 @@ class RegistroGenericoDTO{
 	var $accion_med_proc_agrup = "";	//Abril 2015. Accion a tomar para medicamentos de procedimientos agrupados
 	var $est_cancelada = "";	//Abril 2015. Estados cancelados para medicamentos de procedimientos agrupados
 	var $est_realizado = "";	//Abril 2015. Estados realizados para medicamentos de procedimientos agrupados
+	var $genCca = "";			  				   
 }
 
 //Clase que maneja las condiciones de suministro
@@ -19657,7 +19658,7 @@ function consultarEstadosAyudasDx(){
 
 	$coleccion = array();
 	
-	$q = "SELECT Eexcod,Eexdes,Eexcpe,Eexcan,Eexrea,Eexpen
+	$q = "SELECT Eexcod,Eexdes,Eexcpe,Eexcan,Eexrea,Eexpen,Eexcca
 		    FROM ".$wbasedato."_000045
 		   WHERE Eexord = 'on'
 		     AND Eexest = 'on'";
@@ -19677,6 +19678,7 @@ function consultarEstadosAyudasDx(){
 		$reg->esCancelado = strtolower( $info['Eexcan'] ) == 'on';
 		$reg->esRealizado = strtolower( $info['Eexrea'] ) == 'on';
 		$reg->esPendiente = strtolower( $info['Eexpen'] ) == 'on';
+		$reg->genCca = $info['Eexcca'];
 
 		$cont1++;
 
@@ -34055,6 +34057,77 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 				
 			$res = mysql_query($q, $conexion) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 			
+			/* NUEVO */
+			//Primero valido si el estado es realizado con la movhos_45 en Eexcca=on y es facturable con la hce_15
+			$query_valid = "SELECT * 
+							  FROM  ".$wbasedato."_000159 
+							  JOIN ".$wbasedato."_000045 C ON C.Eexcod=Detesi 
+							  JOIN ".$whce."_000015 ON Dettor=Codigo 
+							 WHERE Eexcca='on' 
+							   AND Detnro = '$consecutivoOrden' 
+							   AND Detcod = '$consecutivoExamen' 
+							   AND Detite = '$numeroItem' 
+							   AND Tiptnf!='on' 
+							   AND Dettor = '$codigoExamen'";
+							   
+			$res2 = mysql_query($query_valid, $conexion) or die(mysql_errno()." - Error en el query $query2 - ".mysql_error());
+			$num_valid = mysql_num_rows( $res2 );
+			$datos = mysql_fetch_array($res2);
+					
+			if( $num_valid > 0 ) {
+				$query_cup = "SELECT A.Codigo,B.Codcups AS Codigo_dos 
+								FROM root_000012 A 
+								JOIN ".$whce."_000047 B ON A.Codigo = B.Codcups
+							   WHERE B.Estado = 'on' AND B.Codigo = '".$datos['Detcod']."'
+							   UNION
+							  SELECT A.Codigo,B.Codcups AS Codigo_dos 
+								FROM root_000012 A 
+								JOIN ".$whce."_000017 B ON A.Codigo = B.Codcups 
+							   WHERE B.nuevo = 'on' AND B.Codigo = '".$datos['Detcod']."';";
+				
+				$res_cup = mysql_query($query_cup, $conexion) or die(mysql_errno()." - Error en el query $query3 - ".mysql_error());
+				$cup = mysql_fetch_array($res_cup);
+				
+				//validaciones de cargos en la tabla maestro de cargos automaticos
+				include_once("../../cca/procesos/cargos_automaticos_funciones.php");				
+				
+				$tieneCCA = validarTieneCca($conexion, $wemp_pmla, $cup['Codigo_dos'], "orden", $datos['Dettor']);
+				
+				if($tieneCCA) {
+					
+					$ch = curl_init();
+					$data = array( 
+						'consultaAjax'			=> '',
+						'accion'				=> 'guardar_cargo_automatico_orden',
+						'movusu'				=> $usuario,
+						'whis' 					=> $historia,
+						'wing' 					=> $ingreso,
+						'wemp_pmla'				=> $wemp_pmla,
+						'wprocedimiento'		=> $cup['Codigo_dos'],
+						'worden'	        	=> $datos['Detnro'],
+						'wdetcod'	    		=> $datos['Detcod'],
+						'wite'	        		=> $datos['Detite'],
+						'wdettor'	       	 	=> $datos['Dettor'],
+						'worigen'	        	=> "Ordenes",
+						'wcen_cos'				=> $_POST['ccoTipoOrd'],
+						'wanulacion_cca'		=> 'off',
+						'wdeticg'				=> ''
+					);
+											
+					$options = array(
+						CURLOPT_URL 			=> "localhost/matrix/cca/procesos/ajax_cargos_automaticos.php",
+						CURLOPT_HEADER 			=> false,
+						CURLOPT_POSTFIELDS 		=> $data,
+						CURLOPT_CUSTOMREQUEST 	=> 'POST',
+					);
+
+					$opts = curl_setopt_array($ch, $options);
+					$exec = curl_exec($ch);
+					curl_close($ch);
+				}	
+				
+			}//hasta aca llega Ordenes cargos automaticos
+
 			if( mysql_affected_rows() > 0 ){
 			
 				@$clUser = consultarUsuarioOrdenes($usuario);
@@ -39120,6 +39193,53 @@ function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 	}
 	
 }
+
+function CcoPorTipoOrden($conex, $wemp_pmla, $tipo_orden, $indice, $codcups){
+	$wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wbasedato_hce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+	$data = array('html'=>'', 'error'=>0);	
+	$html = '';	
+	$valIni = '';
+	$query_cup = "SELECT A.Codigo,B.Codcups AS Codigo_dos 
+								FROM root_000012 A 
+								JOIN ".$wbasedato_hce."_000047 B ON A.Codigo = B.Codcups
+							   WHERE B.Estado = 'on' AND B.Codigo = '".$codcups."'
+				  UNION
+				  SELECT A.Codigo,B.Codcups AS Codigo_dos 
+					FROM root_000012 A 
+					JOIN ".$wbasedato_hce."_000017 B ON A.Codigo = B.Codcups 
+				   WHERE B.nuevo = 'on' AND B.Codigo = '".$codcups."';";
+				
+	$res_cup = mysql_query($query_cup, $conex) or die(mysql_errno()." - Error en el query $query_cup - ".mysql_error());
+	$cup = mysql_fetch_array($res_cup);
+	
+	//validaciones de cargos en la tabla maestro de cargos automaticos
+	include_once("../../cca/procesos/cargos_automaticos_funciones.php");				
+	
+	$tieneCCA = validarTieneCca($conex, $wemp_pmla, $cup['Codigo_dos'], "orden", $tipo_orden);
+	
+	if($tieneCCA){	
+		$sql = 'SELECT m11.Ccocod Codigo, m11.Cconom Nombre
+				FROM '.$wbasedato_movhos.'_000011 m11
+				LEFT JOIN '.$wbasedato_hce.'_000015 h15 ON FIND_IN_SET(m11.Ccocod, h15.Ccacen)
+				WHERE h15.Codigo = "'.$tipo_orden.'";';
+		$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+		
+		
+		
+		$selected = true;
+		
+		while( $rows = mysql_fetch_array($res) ){		
+			$html .= "<div style='white-space: nowrap;'><input type='radio' id='divCcacco-".$rows["Codigo"]."-".$indice."' name='cenCosTipOrd".$indice."' value='".$rows["Codigo"]."' ".($selected ? "checked" : "")."/><label for='divCcacco-".$rows["Codigo"]."-".$indice."'>".$rows["Codigo"]."-".$rows["Nombre"]."</label></div></div>";
+			$valIni = $selected ? $rows["Codigo"] : $valIni;
+			$selected = false;
+		}
+	}
+	$data['html'] = $html;
+	$data['valini'] = $valIni;
+	
+	return json_encode($data);
+}
 /*********************************************************************************************************************************
  * 						SECCION PARA INCLUIR EL USO DE CONSULTAR MEDIANTE AJAX
  * ****MODO DE USO
@@ -39676,6 +39796,14 @@ if(isset($consultaAjaxKardex)){
 			$ingreso=$_GET['ingreso'];
 			print_r(enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso));
 		break;	
+		case 'ccoPorTipoOrden':
+			$wemp_pmla = $_POST['wemp_pmla'];
+			$tipo_orden=$_POST['tipo_orden'];
+			$indice=$_POST['indice'];
+			$codcups=$_POST['codcups'];
+			$val = CcoPorTipoOrden($conex, $wemp_pmla, $tipo_orden, $indice, $codcups);
+			echo $val;
+		break;
 		default :
 			break;
 	}

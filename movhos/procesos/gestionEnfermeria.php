@@ -2608,6 +2608,57 @@ if(isset($operacion) && $operacion == 'marcar_prioritario'){
 		return;
 }
 
+if(isset($operacion) && $operacion == 'ccoPorTipoOrden'){
+	$html = '';
+	$valIni = '';
+	$selected = true;
+	
+	$wcodcups = $_POST['wcodcups'];
+	
+	$wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$wbasedato_hce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+	
+	$data = array('html'=>'', 'error'=>0);
+	
+	$query_cup = "SELECT A.Codigo,B.Codcups AS Codigo_dos 
+								FROM root_000012 A 
+								JOIN ".$wbasedato_hce."_000047 B ON A.Codigo = B.Codcups
+							   WHERE B.Estado = 'on' AND B.Codigo = '".$wcodcups."'
+				  UNION
+				  SELECT A.Codigo,B.Codcups AS Codigo_dos 
+					FROM root_000012 A 
+					JOIN ".$wbasedato_hce."_000017 B ON A.Codigo = B.Codcups 
+				   WHERE B.nuevo = 'on' AND B.Codigo = '".$codcups."';";
+				
+	$res_cup = mysql_query($query_cup, $conex) or die(mysql_errno()." - Error en el query $query_cup - ".mysql_error());
+	$cup = mysql_fetch_array($res_cup);
+	
+	//validaciones de cargos en la tabla maestro de cargos automaticos
+	include_once("../../cca/procesos/cargos_automaticos_funciones.php");				
+	
+	$tieneCCA = validarTieneCca($conex, $wemp_pmla, $cup['Codigo_dos'], "orden", $wexam);
+	
+	if($tieneCCA){	
+	
+		$sql = 'SELECT m11.Ccocod Codigo, m11.Cconom Nombre
+				FROM '.$wbasedato_movhos.'_000011 m11
+				LEFT JOIN '.$wbasedato_hce.'_000015 h15 ON FIND_IN_SET(m11.Ccocod, h15.Ccacen)
+				WHERE h15.Codigo = "'.$wexam.'";';
+		$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+			
+		
+		while( $rows = mysql_fetch_array($res) ){		
+			$html .= "<br><input type='radio' id='cco-".$rows["Codigo"]."' name='cenCosTipOrd' onClick='centroCostoTipoOrden=".$rows["Codigo"].";' value='".$rows["Codigo"]."' ".($selected ? "checked" : "")."/><label for='cco-".$rows["Codigo"]."'>".$rows["Codigo"]."-".$rows["Nombre"]."</label>";
+			$valIni = $selected ? $rows["Codigo"] : $valIni;
+			$selected = false;
+		}
+	}
+	$data['html'] = $html;
+	$data['valini'] = $valIni;
+	
+	echo json_encode($data);
+	return;
+}
 
 if(isset($operacion) && $operacion == 'cambiar_estado_examen'){
 
@@ -2664,6 +2715,88 @@ if(isset($operacion) && $operacion == 'cambiar_estado_examen'){
           $res1 = mysql_query($query1, $conex) or die(mysql_errno()." - Error en el query $query1 - ".mysql_error());
 
 		$mensaje = "";
+		//Primero valido si el estado es realizado con la movhos_45 en Eexcca=on y es facturable con la hce_15
+		$estGeneraCca = $_POST['estGeneraCca'];
+		$anulacion_cca = 'off';		
+				
+		
+		$query_valid = "SELECT Detcod, Detnro, B.id wordenid, Detite, Dettor, C.Eexcca Eexcca, Tiptnf, Deticg  FROM ".$whce."_000027 A 
+								 JOIN ".$whce."_000028 B ON Ordtor = Dettor 
+								 JOIN ".$wbasedato."_000045 C ON C.Eexcod=Detesi 
+								 JOIN ".$whce."_000015 ON Dettor=Codigo 
+								WHERE Ordnro = Detnro 
+								  AND A.Ordhis = '".$whis."' 
+								  AND A.Ording = '".$wing."' 
+								  AND B.Detnro = '".$wordennro."' 
+								  AND B.Detite = '".$wordite."' 
+								  AND B.Detest = 'on'";								  
+		
+		$res2 = mysql_query($query_valid, $conex) or die(mysql_errno()." - Error en el query $query2 - ".mysql_error());
+		$num_valid = mysql_num_rows( $res2 );
+		$datos = mysql_fetch_array($res2);
+		$eexcca = $datos['Eexcca'];
+		$tiptnf = $datos['Tiptnf'];
+		
+		if($estGeneraCca == 'off' && !empty($datos['Deticg'])) {
+			$anulacion_cca = 'on';
+		}
+		
+		if(($eexcca=='on' && $tiptnf<>'on') || $anulacion_cca == 'on') {
+			
+			$query_cup = "SELECT A.Codigo,B.Codcups AS Codigo_dos 
+							FROM root_000012 A 
+							JOIN ".$whce."_000047 B ON A.Codigo = B.Codcups
+						   WHERE B.Estado = 'on' AND B.Codigo = '".$datos['Detcod']."'
+						   UNION
+						  SELECT A.Codigo,B.Codcups AS Codigo_dos 
+							FROM root_000012 A 
+							JOIN ".$whce."_000017 B ON A.Codigo = B.Codcups 
+						   WHERE B.nuevo = 'on' AND B.Codigo = '".$datos['Detcod']."';";
+			
+			$res_cup = mysql_query($query_cup, $conex) or die(mysql_errno()." - Error en el query $query3 - ".mysql_error());
+			$cup = mysql_fetch_array($res_cup);
+			
+			//validaciones de cargos en la tabla maestro de cargos automaticos
+			include_once("../../cca/procesos/cargos_automaticos_funciones.php");			
+			$tieneCCA = validarTieneCca($conex, $wemp_pmla, $cup['Codigo_dos'], "orden", $datos['Dettor']);
+			if($tieneCCA || $anulacion_cca == 'on') {				
+				//se toman los datos necesarios para hacer el cargo automatico 
+				$wuser_datos = explode("-",$_SESSION['user']);
+				
+				$ch = curl_init();
+				$data = array( 
+					'consultaAjax'			=> '',
+					'accion'				=> 'guardar_cargo_automatico_orden',
+					'movusu'				=> $wuser_datos[1],
+					'whis' 					=> $whis,
+					'wing' 					=> $wing,
+					'wemp_pmla'				=> $wemp_pmla,
+					'wprocedimiento'		=> $cup['Codigo_dos'],
+					'worden'	        	=> $datos['Detnro'],
+					'wdetcod'	    		=> $datos['Detcod'],
+					'wite'	        		=> $datos['Detite'],
+					'wdettor'	       		=> $datos['Dettor'],
+					'worigen'	        	=> "Historia Clinica Electronica",
+					'wcen_cos'				=> $_POST['centroCostosCca'],
+					'wanulacion_cca'		=> $anulacion_cca,
+					'wdeticg'				=> $datos['Deticg']
+				);
+										
+				$options = array(
+					CURLOPT_URL 			=> "localhost/matrix/cca/procesos/ajax_cargos_automaticos.php",
+					CURLOPT_HEADER 			=> false,
+					CURLOPT_POSTFIELDS 		=> $data,
+					CURLOPT_CUSTOMREQUEST 	=> 'POST',
+				);
+
+				$opts = curl_setopt_array($ch, $options);
+				$exec = curl_exec($ch);
+				curl_close($ch);
+										
+			}	
+			
+		}
+		
 		//Suspender medicamentos asociados al procedimiento
 		// if($accionMed == "SUSPENDER")
 		if($accionMed == "SUSPENDER" && $tieneMedicamentos=="on")
@@ -5364,296 +5497,355 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 
 	}
 
-
-	function cambiar_estado_examen(wemp_pmla, wfec,wexam,wing,whis,wordennro,wordite,campo, wid,whce,wtexto_examen,westado_registro,wbasedato, wfechadataexamen,anterior,tieneMedicamentos)
+	//variable gral para el centro de costos de ordenes
+	var centroCostoTipoOrden = '';
+	function cambiar_estado_examen(wemp_pmla, wfec,wexam,wing,whis,wordennro,wordite,campo, wid,whce, wcodcups,wtexto_examen,westado_registro,wbasedato, wfechadataexamen,anterior,tieneMedicamentos)
     {
-
-        var westado = $("#westadoexamen_"+wid).val();
-		var accionMed = $('option:selected',"#westadoexamen_"+wid).attr('accmed');
-		var medAsociado = $("#westadoexamen_"+wid).attr('medAsociado');
-
-		// if(medAsociado!="" && tieneMedicamentos=="on")
-		if(medAsociado!="")
-		{
-			$("#westadoexamen_"+wid).val(anterior);
-			jAlert("No puede modificar el estado ya que el procedimiento tiene medicamentos asociados y  Ordenes esta abierto por "+medAsociado+" intente de nuevo en un momento.","ALERTA" );
-		}
-		else
-		{
-			var estRealizado = $('option:selected',"#westadoexamen_"+wid).attr('estrealizado');
-
-			if(estRealizado=="on")
-			{
-				var cadenaSinAplicar = "";
-				var cadenaSinDispensar = "";
-				$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=accMedPro_').each(function(){
-
-					if($(this).val() == "Sin aplicar")
+		$.post("gestionEnfermeria.php",
+		{			
+			operacion: 'ccoPorTipoOrden',
+			wemp_pmla: wemp_pmla,
+			wexam: wexam,
+			wcodcups: wcodcups,
+			consultaAjax : 			''
+			
+		}, function (data) {
+			var estGeneraCca = $('option:selected',"#westadoexamen_"+wid).attr('estgeneracca');
+			centroCostoTipoOrden = estGeneraCca=='on' ? data.valini: '';
+			jConfirm('¿Realmente desea cambiar el estado de la Orden ?'+(estGeneraCca=='on' ? data.html : ''), 'Mensaje', function(e) {  
+				if(e) {
+					var westado = $("#westadoexamen_"+wid).val();
+	
+					var accionMed = $('option:selected',"#westadoexamen_"+wid).attr('accmed');
+					var medAsociado = $("#westadoexamen_"+wid).attr('medAsociado');
+	
+					// if(medAsociado!="" && tieneMedicamentos=="on")
+					if(medAsociado!="")
 					{
-						id = $(this).attr('id');
-						id = id.split("_");
-
-
-						med = $.trim($("#MedAgrupado_"+id[1]+"_"+id[2]+"_"+id[3]+"_"+id[4]+"_"+id[5]).html());
-						cadenaSinAplicar += med+",";
-
-
-						// aplic = "off";
-						// $('input[id^=checkMed_'+id[4]+'_'+id[5]).each(function(){
-
-							// if($(this).attr('medaplicado')=="on")
-							// {
-								// aplic = "on";
-							// }
-						// });
-
-						// if(aplic == "off")
-						// {console.log("hey1")
-							// med = $.trim($("#MedAgrupado_"+id[1]+"_"+id[2]+"_"+id[3]+"_"+id[4]+"_"+id[5]).html());
-							// cadenaSinAplicar += med+",";
-						// }
-					}
-
-					if($(this).val() == "Sin dispensar")
-					{
-
-						id = $(this).attr('id');
-						id = id.split("_");
-
-
-						med = $.trim($("#MedAgrupado_"+id[1]+"_"+id[2]+"_"+id[3]+"_"+id[4]+"_"+id[5]).html());
-						cadenaSinDispensar += med+",";
-
+						$("#westadoexamen_"+wid).val(anterior);
+						jAlert("No puede modificar el estado ya que el procedimiento tiene medicamentos asociados y  Ordenes esta abierto por "+medAsociado+" intente de nuevo en un momento.","ALERTA" );
 
 					}
-				});
-
-				// if(cadenaSinAplicar=="")
-				if(cadenaSinAplicar=="" && cadenaSinDispensar=="")
-				{
-					//Si cambia el estado
-					$.post("gestionEnfermeria.php",
+					else
+										 
+					{
+						var estRealizado = $('option:selected',"#westadoexamen_"+wid).attr('estrealizado');
+						if(estRealizado=="on")
 						{
-							operacion:   		'cambiar_estado_examen',
-							consultaAjax : 		'',
-							wemp_pmla:			wemp_pmla,
-							wexam:           	wexam,
-							wfec:           	wfec,
-							wing:    			wing,
-							whis:         		whis,
-							wordennro : 		wordennro,
-							wordite : 			wordite,
-							westado : 			westado,
-							wid : 				wid,
-							whce :				whce,
-							wbasedato :			wbasedato,
-							wtexto_examen:		wtexto_examen,
-							wfechadataexamen:	wfechadataexamen,
-							accionMed:			accionMed,
-							tieneMedicamentos:	tieneMedicamentos
-
-						}
-						,function(data) {
-
-							// console.log(data);
-
-							if(data.error == 0)
-							{
-								// if(data.length > 2)
-								if(data.mensaje != "")
+							var cadenaSinAplicar = "";
+							var cadenaSinDispensar = "";
+							$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=accMedPro_').each(function(){
+								if($(this).val() == "Sin aplicar")
 								{
-									// jAlert(data, "ALERTA" );
-									jAlert(data.mensaje, "ALERTA" );
+									id = $(this).attr('id');
+									id = id.split("_");
 
-									$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=checkMed').each(function(){
-										$(this).prop("disabled", true);
-									});
+									med = $.trim($("#MedAgrupado_"+id[1]+"_"+id[2]+"_"+id[3]+"_"+id[4]+"_"+id[5]).html());
+									cadenaSinAplicar += med+",";
 
-									$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=accMedPro_').each(function(){
+									// aplic = "off";
+									// $('input[id^=checkMed_'+id[4]+'_'+id[5]).each(function(){
 
-										id = $(this).attr("id");
-										id = id.split("_");
+										// if($(this).attr('medaplicado')=="on")
+										// {
+											// aplic = "on";
+										// }
+									// });
 
-										$("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").prop("disabled", true);
-										$("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").attr("deshabilitadoPorRealizado", "on");
-
-									});
-
-									// $("#chkAnularMed_"+codMed+"_"+ido+"_"+horaRonda)
+									// if(aplic == "off")
+									// {console.log("hey1")
+										// med = $.trim($("#MedAgrupado_"+id[1]+"_"+id[2]+"_"+id[3]+"_"+id[4]+"_"+id[5]).html());
+										// cadenaSinAplicar += med+",";
+									// }
 								}
+
+								if($(this).val() == "Sin dispensar")
+								{
+
+									id = $(this).attr('id');
+									id = id.split("_");
+	 
+									med = $.trim($("#MedAgrupado_"+id[1]+"_"+id[2]+"_"+id[3]+"_"+id[4]+"_"+id[5]).html());
+									cadenaSinDispensar += med+",";
+
+								}
+							});
+
+							// if(cadenaSinAplicar=="")
+							if(cadenaSinAplicar=="" && cadenaSinDispensar=="")
+							{
+								/* NUEVO */
+							  
+								/*
+								if(estGeneraCca == 'on') {
+									document.getElementById('westadoexamen_'+wid).setAttribute("disabled", "");
+								}
+								*/
+								//Si cambia el estado
+								$.post("gestionEnfermeria.php",
+									{
+										operacion:   		'cambiar_estado_examen',
+										consultaAjax : 		'',
+										wemp_pmla:			wemp_pmla,
+										wexam:           	wexam,
+										wfec:           	wfec,
+										wing:    			wing,
+										whis:         		whis,
+										wordennro : 		wordennro,
+										wordite : 			wordite,
+										westado : 			westado,
+										wid : 				wid,
+										whce :				whce,
+										wbasedato :			wbasedato,
+										wtexto_examen:		wtexto_examen,
+										wfechadataexamen:	wfechadataexamen,
+										accionMed:			accionMed,
+										tieneMedicamentos:	tieneMedicamentos,
+										centroCostosCca:	centroCostoTipoOrden,
+										estGeneraCca: 		estGeneraCca
+
+									}
+									,function(data) {
+			
+
+										// console.log(data);
+					  
+										if(data.error == 0)
+																	 
+										{
+											/* NUEVO */
+											document.getElementById("westadoexamen_"+wid).setAttribute('onchange','cambiar_estado_examen("'+wemp_pmla+'", "'+wfec+'","'+wexam+'","'+wing+'","'+whis+'","'+wordennro+'","'+wordite+'",this, "'+wid+'", "'+whce+'","'+wcodcups+'","'+wtexto_examen+'","'+westado_registro+'","'+wbasedato+'", "'+wfechadataexamen+'","'+westado+'","'+tieneMedicamentos+'")');
+											// if(data.length > 2)
+											if(data.mensaje != "")
+											{
+												// jAlert(data, "ALERTA" );
+												jAlert(data.mensaje, "ALERTA" );
+
+												$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=checkMed').each(function(){
+													$(this).prop("disabled", true);
+												});
+
+												$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=accMedPro_').each(function(){
+													id = $(this).attr("id");
+													id = id.split("_");
+
+													$("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").prop("disabled", true);
+													$("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").attr("deshabilitadoPorRealizado", "on");
+
+												});
+
+												// $("#chkAnularMed_"+codMed+"_"+ido+"_"+horaRonda)
+											}
+										}
+										else
+										{
+											/* NUEVO */
+											/*
+											if(estGeneraCca == 'on') {
+												document.getElementById('westadoexamen_'+wid).removeAttribute("disabled");
+											}
+											*/
+											$("#westadoexamen_"+wid).val(anterior);
+											jAlert("No puede modificar el estado ya que el procedimiento tiene medicamentos asociados y  Ordenes esta abierto por "+data.medico+" intente de nuevo en un momento.","ALERTA" );
+										}
+								
+
+										//Primero se envia los mensajes de interoperabilidad con HIRUKO - IMEXHS
+																						 
+										$.ajax({
+											url	: "../../hce/procesos/ordenes.inc.php",
+											type: "POST",
+											data:{
+												historia			: whis,
+												ingreso				: wing,
+												consultaAjaxKardex	: 'imagenologiaHiruko',
+												consultaAjax		: '' ,
+												wemp_pmla			: wemp_pmla,
+											   
+								
+								
+											},
+											async: false,
+											success: function(data){
+												//Una vez terminado los proceso de envio de datos de HIRUKO - IMEX se hace los de laboratorio
+												//Esto es para crear el msgHL para realizar la orden de trabajo para laboratorio
+												$.ajax({
+														url: "../../hce/procesos/ordenes.inc.php",
+														type: "POST",
+														data:{
+										  
+										  
+															consultaAjaxKardex	: 'ordenTrabajoLaboratorio',
+											
+															wemp_pmla			: wemp_pmla,
+															wusuario		  	: $('#usuario').val(),
+															historia		  	: whis,
+															ingreso			  	: wing,
+														},
+														async: false,
+														success:function(data_json) {
+
+														}
+													}
+												);
+											}
+										});
+
+									},"json"
+									);
 							}
 							else
 							{
+								var mensAlert = "";
+								var mensAlertSinAplicar = "";
+								var mensAlertSinDispensar = "";
+
+								//Si no cambia el estado, vuelve al estado anterior y muestra alert mensaje
 								$("#westadoexamen_"+wid).val(anterior);
-								jAlert("No puede modificar el estado ya que el procedimiento tiene medicamentos asociados y  Ordenes esta abierto por "+data.medico+" intente de nuevo en un momento.","ALERTA" );
-							}
 
-
-							//Primero se envia los mensajes de interoperabilidad con HIRUKO - IMEXHS
-							$.ajax({
-								url	: "../../hce/procesos/ordenes.inc.php",
-								type: "POST",
-								data:{
-									historia			: whis,
-									ingreso				: wing,
-									consultaAjaxKardex	: 'imagenologiaHiruko',
-									consultaAjax		: '' ,
-									wemp_pmla			: wemp_pmla,
-								},
-								async: false,
-								success: function(data){
-
-									//Una vez terminado los proceso de envio de datos de HIRUKO - IMEX se hace los de laboratorio
-									//Esto es para crear el msgHL para realizar la orden de trabajo para laboratorio
-									$.ajax({
-											url: "../../hce/procesos/ordenes.inc.php",
-											type: "POST",
-											data:{
-												consultaAjaxKardex	: 'ordenTrabajoLaboratorio',
-												wemp_pmla			: wemp_pmla,
-												wusuario		  	: $('#usuario').val(),
-												historia		  	: whis,
-												ingreso			  	: wing,
-											},
-											async: false,
-											success:function(data_json) {
-
-											}
-										}
-									);
+								if(cadenaSinAplicar != "")
+								{
+									mensAlertSinAplicar = "- Los medicamentos "+cadenaSinAplicar.substr(0,cadenaSinAplicar.length-1)+" dispensados (entregados) están sin aplicar.\n";
 								}
-							});
-
-
-						},"json"
-						);
-				}
-				else
-				{
-					var mensAlert = "";
-					var mensAlertSinAplicar = "";
-					var mensAlertSinDispensar = "";
-
-					//Si no cambia el estado, vuelve al estado anterior y muestra alert mensaje
-					$("#westadoexamen_"+wid).val(anterior);
-
-					if(cadenaSinAplicar != "")
-					{
-						mensAlertSinAplicar = "- Los medicamentos "+cadenaSinAplicar.substr(0,cadenaSinAplicar.length-1)+" dispensados (entregados) están sin aplicar.\n";
-					}
-					if(cadenaSinDispensar != "")
-					{
-						mensAlertSinDispensar = "- Los medicamentos "+cadenaSinDispensar.substr(0,cadenaSinDispensar.length-1)+" no han sido dispensados (entregados) y debe aplicarlos para cambiar el estado del procedimiento.\n";
-					}
-
-					mensAlert = mensAlertSinAplicar + mensAlertSinDispensar;
-					if(mensAlert != "")
-					{
-						jAlert(mensAlert,"ALERTA" );
-					}
-				}
-			}
-			else
-			{
-				$.post("gestionEnfermeria.php",
-					{
-						operacion:   		'cambiar_estado_examen',
-						consultaAjax : 		'',
-						wemp_pmla:			wemp_pmla,
-						wexam:           	wexam,
-						wfec:           	wfec,
-						wing:    			wing,
-						whis:         		whis,
-						wordennro : 		wordennro,
-						wordite : 			wordite,
-						westado : 			westado,
-						wid : 				wid,
-						whce :				whce,
-						wbasedato :			wbasedato,
-						wtexto_examen:		wtexto_examen,
-						wfechadataexamen:	wfechadataexamen,
-						accionMed:			accionMed,
-						tieneMedicamentos:	tieneMedicamentos
-
-					}
-					,function(data) {
-						// console.log(data);
-						if(data.error == 0)
-						{
-							// if(data.length > 2)
-							if(data.mensaje != "")
-							{
-								jAlert(data.mensaje, "ALERTA" );
-
-								$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=checkMed').each(function(){
-									$(this).prop("disabled", true);
-								});
-
-								$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=accMedPro_').each(function(){
-
-									id = $(this).attr("id");
-									id = id.split("_");
-
-									if($("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").attr("deshabilitadoPorRealizado")=="on")
-									{
-										$("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").prop("disabled", false);
-										$("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").removeAttr("deshabilitadoPorRealizado");
-
-									}
-
-								});
-							}
-
-
-							//Primero se envia los mensajes de interoperabilidad con HIRUKO - IMEXHS
-							$.ajax({
-								url	: "../../hce/procesos/ordenes.inc.php",
-								type: "POST",
-								data:{
-									historia			: whis,
-									ingreso				: wing,
-									consultaAjaxKardex	: 'imagenologiaHiruko',
-									consultaAjax		: '' ,
-									wemp_pmla			: wemp_pmla,
-								},
-								async: false,
-								success: function(data){
-
-									//Una vez terminado los proceso de envio de datos de HIRUKO - IMEX se hace los de laboratorio
-									//Esto es para crear el msgHL para realizar la orden de trabajo para laboratorio
-									$.ajax({
-											url: "../../hce/procesos/ordenes.inc.php",
-											type: "POST",
-											data:{
-												consultaAjaxKardex	: 'ordenTrabajoLaboratorio',
-												wemp_pmla			: wemp_pmla,
-												wusuario		  	: $('#usuario').val(),
-												historia		  	: whis,
-												ingreso			  	: wing,
-											},
-											async: false,
-											success:function(data_json) {
-
-											}
-										}
-									);
+								if(cadenaSinDispensar != "")
+								{
+									mensAlertSinDispensar = "- Los medicamentos "+cadenaSinDispensar.substr(0,cadenaSinDispensar.length-1)+" no han sido dispensados (entregados) y debe aplicarlos para cambiar el estado del procedimiento.\n";
 								}
-							});
 
+								mensAlert = mensAlertSinAplicar + mensAlertSinDispensar;
+								if(mensAlert != "")
+								{
+									jAlert(mensAlert,"ALERTA" );
+								}
+							}
 						}
 						else
 						{
-							$("#westadoexamen_"+wid).val(anterior);
-							jAlert("No puede modificar el estado ya que el procedimiento tiene medicamentos asociados y  Ordenes esta abierto por "+data.medico+" intente de nuevo en un momento.","ALERTA" );
+							/* NUEVO */
+							/*
+							if(estGeneraCca == 'on') {
+								document.getElementById('westadoexamen_'+wid).setAttribute("disabled", "");
+							}
+							*/
+							$.post("gestionEnfermeria.php",
+								{
+									operacion:   		'cambiar_estado_examen',
+									consultaAjax : 		'',
+									wemp_pmla:			wemp_pmla,
+									wexam:           	wexam,
+									wfec:           	wfec,
+									wing:    			wing,
+									whis:         		whis,
+									wordennro : 		wordennro,
+									wordite : 			wordite,
+									westado : 			westado,
+									wid : 				wid,
+									whce :				whce,
+									wbasedato :			wbasedato,
+									wtexto_examen:		wtexto_examen,
+									wfechadataexamen:	wfechadataexamen,
+									accionMed:			accionMed,
+									tieneMedicamentos:	tieneMedicamentos,
+									centroCostosCca:	centroCostoTipoOrden,
+									estGeneraCca: 		estGeneraCca
+
+								}
+								,function(data) {
+									// console.log(data);
+									if(data.error == 0)
+									{
+										// if(data.length > 2)
+										/* NUEVO */
+										document.getElementById("westadoexamen_"+wid).setAttribute('onchange','cambiar_estado_examen("'+wemp_pmla+'", "'+wfec+'","'+wexam+'","'+wing+'","'+whis+'","'+wordennro+'","'+wordite+'",this, "'+wid+'", "'+whce+'","'+wcodcups+'","'+wtexto_examen+'","'+westado_registro+'","'+wbasedato+'", "'+wfechadataexamen+'","'+westado+'","'+tieneMedicamentos+'")');																																																																																				
+										if(data.mensaje != "")
+										{
+											jAlert(data.mensaje, "ALERTA" );
+
+											$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=checkMed').each(function(){
+												$(this).prop("disabled", true);
+											});
+
+											$('table[id=medPorProc_'+wexam+'_'+wordennro+'_'+wordite+'] input[id^=accMedPro_').each(function(){
+													   
+						  
+
+												id = $(this).attr("id");
+												id = id.split("_");
+																					
+																									
+
+												if($("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").attr("deshabilitadoPorRealizado")=="on")
+												{
+													$("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").prop("disabled", false);
+													$("input[id^='chkAnularMed_"+id[4]+"_"+id[5]+"_").removeAttr("deshabilitadoPorRealizado");
+												}
+											});
+										}
+
+										//Primero se envia los mensajes de interoperabilidad con HIRUKO - IMEXHS
+																						 
+										$.ajax({
+											url	: "../../hce/procesos/ordenes.inc.php",
+											type: "POST",
+											data:{
+												historia			: whis,
+												ingreso				: wing,
+												consultaAjaxKardex	: 'imagenologiaHiruko',
+												consultaAjax		: '' ,
+												wemp_pmla			: wemp_pmla,
+											   
+								
+								
+											},
+											async: false,
+											success: function(data){
+
+												//Una vez terminado los proceso de envio de datos de HIRUKO - IMEX se hace los de laboratorio
+												//Esto es para crear el msgHL para realizar la orden de trabajo para laboratorio
+												$.ajax({
+														url: "../../hce/procesos/ordenes.inc.php",
+														type: "POST",
+														data:{
+										  
+										  
+															consultaAjaxKardex	: 'ordenTrabajoLaboratorio',
+											
+															wemp_pmla			: wemp_pmla,
+															wusuario		  	: $('#usuario').val(),
+															historia		  	: whis,
+															ingreso			  	: wing,
+														},
+														async: false,
+														success:function(data_json) {
+						  
+														}
+													}
+												);
+											}
+										});
+
+									}
+									else
+									{
+								 		/* NUEVO */
+										/*
+										if(estGeneraCca == 'on') {
+											document.getElementById('westadoexamen_'+wid).removeAttribute("disabled");
+										}
+										*/
+										$("#westadoexamen_"+wid).val(anterior);
+										jAlert("No puede modificar el estado ya que el procedimiento tiene medicamentos asociados y  Ordenes esta abierto por "+data.medico+" intente de nuevo en un momento.","ALERTA" );
+									}
+								},"json"
+							);
 						}
-
-
-
-
-					},"json"
-				);
-			}
-		}
+					}
+				} else {
+					$("#westadoexamen_"+wid).val(anterior);
+				}
+			});
+		},"json"
+		);	
 	}
 
 	function fnMostrarProcedimientos( historia, ingreso ){
@@ -11484,7 +11676,7 @@ function consultarEstadosExamenesRol(){
 
 	$coleccion = array();
 
-	$q = "SELECT Eexcod,Eexdes,Eexapa,Eexcan,Eexrea,Eexpen,Eexaut,Eexenf,Eexere,Eexepe,Eexhor,Eexrno,Eexrpe,Eexeau
+	$q = "SELECT Eexcod,Eexdes,Eexapa,Eexcan,Eexrea,Eexpen,Eexaut,Eexenf,Eexere,Eexepe,Eexhor,Eexrno,Eexrpe,Eexeau,Eexcca
 		    FROM ".$wbasedato."_000045
 		   WHERE Eexord = 'on'
 		     AND Eexest = 'on'";
@@ -11512,6 +11704,7 @@ function consultarEstadosExamenesRol(){
 		$reg->enfermeria = $info['Eexenf'];
 		$reg->resultado_pendiente = $info['Eexrpe'];
 		$reg->estado_autorizado = $info['Eexeau'];
+		$reg->est_genera_cca = $info['Eexcca'];
 
 		$cont1++;
 
@@ -15492,10 +15685,10 @@ function pintarDatosFila( $datos ){
 
 
 							if($estadoExamen->codigo!=$valueProcedimientos[ 'Detesi' ]){
-								$opcionesSeleccion .= "<option value='$estadoExamen->codigo' accMed='$estadoExamen->accion_med_proc_agrup' estCancelado='$estadoExamen->est_cancelada' estRealizado='$estadoExamen->est_realizado' $disabled>$estadoExamen->descripcion</option>";
+								$opcionesSeleccion .= "<option value='$estadoExamen->codigo' accMed='$estadoExamen->accion_med_proc_agrup' estCancelado='$estadoExamen->est_cancelada' estRealizado='$estadoExamen->est_realizado' estGeneraCca='$estadoExamen->est_genera_cca' $disabled>$estadoExamen->descripcion</option>";
 							}
 							else{
-								$opcionesSeleccion .= "<option value='$estadoExamen->codigo' accMed='$estadoExamen->accion_med_proc_agrup' estCancelado='$estadoExamen->est_cancelada' estRealizado='$estadoExamen->est_realizado' selected $disabled>$estadoExamen->descripcion</option>";
+								$opcionesSeleccion .= "<option value='$estadoExamen->codigo' accMed='$estadoExamen->accion_med_proc_agrup' estCancelado='$estadoExamen->est_cancelada' estRealizado='$estadoExamen->est_realizado' estGeneraCca='$estadoExamen->est_genera_cca' selected $disabled>$estadoExamen->descripcion</option>";
 								$anterior = $estadoExamen->codigo;
 
 							}
@@ -15513,12 +15706,12 @@ function pintarDatosFila( $datos ){
 						$wnombre_examen  = ($wnombre_examen != "") ? $wnombre_examen : $valueProcedimientos[ 'Descripcion' ];
 						$westado_registro = $valueProcedimientos[ 'Detesi' ];
 
-
+						$codcups = $valueProcedimientos['Detcod'];
 						$medAsociado=consultarTablaMedAsociado($wbasedato,$valueProcedimientos[ 'Ordhis' ],$valueProcedimientos[ 'Ording' ],$wexam,$wordennro,$wordite);
 
 
 						//Campo select que se crea de igual forma que en las ordenes, esto para controlar los permisos desde hce_000029 por rol.
-						crearCampo("6","westadoexamen_$wordid_detalle",@$accionesPestana[$indicePestana.".9"],array("class"=>"campo2 select_ordenes","medAsociado"=>$medAsociado,"onChange"=>"cambiar_estado_examen('$wemp_pmla','$wfecha1','$wexam','".$valueProcedimientos[ 'Ording' ]."','".$valueProcedimientos[ 'Ordhis' ]."', '$wordennro', '$wordite',this  , '$wordid_detalle', '$whce','$wnombre_examen','$westado_registro','$wbasedato','$wfechadataexamen','$anterior','$tieneMedicamentos');"),"$opcionesSeleccion");
+						crearCampo("6","westadoexamen_$wordid_detalle",@$accionesPestana[$indicePestana.".9"],array("class"=>"campo2 select_ordenes","medAsociado"=>$medAsociado,"onChange"=>"cambiar_estado_examen('$wemp_pmla','$wfecha1','$wexam','".$valueProcedimientos[ 'Ording' ]."','".$valueProcedimientos[ 'Ordhis' ]."', '$wordennro', '$wordite',this  , '$wordid_detalle', '$whce','$codcups','$wnombre_examen','$westado_registro','$wbasedato','$wfechadataexamen','$anterior','$tieneMedicamentos');"),"$opcionesSeleccion");
 						echo $noOfertado;
 						echo $descripcionPantallaEStadoExterno;
 						
