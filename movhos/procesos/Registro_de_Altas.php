@@ -239,6 +239,51 @@ else
 //el 'alta definitiva'.                                                                                                                   \\
 //========================================================================================================================================\\
 */
+// Eliminar pacientes con egreso 
+function eliminarPacientesEgreso($wbasedatocliame,$array_pacientes){
+	global $conex;
+	foreach($array_pacientes as $key => $row){
+				
+	$q_108 = " SELECT * "
+					."   FROM ".$wbasedatocliame."_000108 "
+					."  WHERE Egrhis = '".$row['Ubihis']."'"
+					."    AND Egring = '".$row['Ubiing']."'";
+		$res_108 = mysql_query($q_108,$conex) or die (mysql_errno()." - ".mysql_error());
+		$num_108 = mysql_num_rows($res_108);
+			
+		//Valida si el paciente ya tiene un egreso registrado para la historia e ingreso, si no es asi muestra el paciente para darle de alta definitiva.
+		if($num_108 > 0){
+			
+			unset($array_pacientes[$row['Ubihis']."-".$row['Ubiing']]);
+			
+		}  
+		
+	}
+	return $array_pacientes;
+}
+
+function eliminarPacientesEgreso2($wbasedatocliame,$row){
+	global $conex;
+	// foreach($array_pacientes as $key => $row){
+				
+	$q_108 = " SELECT * "
+					."   FROM ".$wbasedatocliame."_000108 "
+					."  WHERE Egrhis = '".$row['Ubihis']."'"
+					."    AND Egring = '".$row['Ubiing']."'";
+		$res_108 = mysql_query($q_108,$conex) or die (mysql_errno()." - ".mysql_error());
+		$num_108 = mysql_num_rows($res_108);
+			
+		//Valida si el paciente ya tiene un egreso registrado para la historia e ingreso, si no es asi muestra el paciente para darle de alta definitiva.
+		if($num_108 > 0){
+			
+			return false;
+			
+		}  
+		
+	// }
+	return $row;
+}
+
 //Consulta la fecha y hora de muerte de un paciente.
 function consultar_datos_muerte($conex, $wbasedato, $whis, $wing)
 	{
@@ -1521,7 +1566,7 @@ function cancelarAltaDefinitiva( $conex, $wbasedato, $wemp_pmla, $historia, $ing
 		      
 		      
 		      
-		      $q = " SELECT Ubihac, Ubihis, Ubiing, Pacno1, Pacno2, Pacap1, Pacap2, Ubialp, Ubisan, ".$wbasedato."_000018.id, Ubiprg "
+		      $q = " SELECT Ubihac, Ubihis, Ubiing, Pacno1, Pacno2, Pacap1, Pacap2, Ubialp, Ubisan, ".$wbasedato."_000018.id, Ubimue, Pactid, Pacced, ".$wbasedato."_000018.id, Ubiprg "
 			      ."   FROM root_000036, root_000037, ".$wbasedato."_000018 "
 			      ."  WHERE Ubisac  = '".$wcco."'"       //Servicio Actual
 			      ."    AND Ubihis  = Orihis "
@@ -1531,17 +1576,21 @@ function cancelarAltaDefinitiva( $conex, $wbasedato, $wemp_pmla, $historia, $ing
 			      ."    AND Oritid  = Pactid "
 			      ."    AND Ubiptr != 'on' "             //Solo los pacientes que no esten siendo trasladados
 			      ."    AND Ubiald != 'on' "             //Que no este en Alta Definitiva
-			      ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 ";
+			      ."  GROUP BY 1,2,3,4,5,6,7,8,9,10,11,12,13,14 ";
 			  $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 			  $num = mysql_num_rows($res);   
-			     
+			    $i = 0;
 			  if ($num >= 1)
 			     {
-				  for ($i=1;$i<=$num;$i++)
+				  for ($j=1;$j<=$num;$j++)
 			         {
 				      $row = mysql_fetch_array($res);   
-				      
-				      if ((isset($whabprg[$i]) and $wid[$i] == $row[9] and trim($whabprg[$i])!="" and strlen(trim($whabprg[$i]))>0) or (isset($whabprg[$i]) and $row[10]!="" and trim($whabprg[$i])!=""))           
+				      $wbasedatocliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'facturacion');
+			  		  $row = eliminarPacientesEgreso2($wbasedatocliame,$row);
+					if($row)
+					  {
+						$i++;
+				      if ((isset($whabprg[$i]) and $wid[$i] == $row[9] and trim($whabprg[$i])!="" and strlen(trim($whabprg[$i]))>0) or (isset($whabprg[$i]) and $row[14]!="" and trim($whabprg[$i])!=""))           
 			            {
 				         //=======================================================================================================   
 				         //Si seleccionaron una habitacion o una posible alta   
@@ -1959,7 +2008,7 @@ function cancelarAltaDefinitiva( $conex, $wbasedato, $wemp_pmla, $historia, $ing
 										."        Habing = '', "
 										."        Habfal = '".$wfecha."', "
 										."        Habhal = '".$whora."', "
-										."        Habprg = '".$row[10]."'"    //Aca va la misma habitacion, si fue programada
+										."        Habprg = '".$row[14]."'"    //Aca va la misma habitacion, si fue programada
 										."  WHERE Habcod = '".$row[0]."'"
 										."    AND Habhis = '".$row[1]."'"
 										."    AND Habing = '".$row[2]."'";
@@ -2273,7 +2322,8 @@ function cancelarAltaDefinitiva( $conex, $wbasedato, $wemp_pmla, $historia, $ing
 				        
 				      //==========================================================================================================================================================    
 				      //==========================================================================================================================================================      
-			         }
+					  }
+					 }
 	            }            
 			     
 			     
@@ -2347,25 +2397,8 @@ function cancelarAltaDefinitiva( $conex, $wbasedato, $wemp_pmla, $historia, $ing
 			  echo "</tr>";
 			   
 			  $wbasedatocliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'facturacion');
-			  
 			  //Elimino del arreglo de pacientes el que ya tiene egreso (cliame_000108). 
-			  foreach($array_pacientes as $key => $row){
-				  
-				  $q_108 = " SELECT * "
-								."   FROM ".$wbasedatocliame."_000108 "
-								."  WHERE Egrhis = '".$row['Ubihis']."'"
-								."    AND Egring = '".$row['Ubiing']."'";
-					  $res_108 = mysql_query($q_108,$conex) or die (mysql_errno().$q_108." - ".mysql_error());
-					  $num_108 = mysql_num_rows($res_108);
-					   
-					  //Valida si el paciente ya tiene un egreso registrado para la historia e ingreso, si no es asi muestra el paciente para darle de alta definitiva.
-					  if($num_108 > 0){
-						  
-						  unset($array_pacientes[$row['Ubihis']."-".$row['Ubiing']]);
-						  
-					  }  
-				  
-			  }
+		          $array_pacientes = eliminarPacientesEgreso($wbasedatocliame,$array_pacientes);			  
 			  
 			  $i = 1;
 			  
