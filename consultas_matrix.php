@@ -1,7 +1,13 @@
 <html>
 <head>
   <title>MATRIX</title>
-  
+  <!-- 
+	  Se incluye script para encriptar en JS
+		@date: 2021/09/15
+		@by:	sebastian.nevado
+				marlon.osorio
+				daniel.corredor
+  -->
   <script type="text/javascript" src="../../../include/root/cifrado/crypto-js.min.js"></script>
 </head>
 <body BGCOLOR="FFFFFF">
@@ -13,6 +19,13 @@
 </center>
 <?php
 include_once("conex.php");
+/**
+ * Se incluyen los scripts de encripcion y desencripcion 
+ * @date: 2021/09/15
+ * @by: sebastian.nevado
+ * 		marlon.osorio
+ * 		daniel.corredor
+ */
 include_once("root/cifrado/cifrado.php");
 include_once("root/cifrado/cifradoJS.php");
 function buscar($data,$w,$it)
@@ -291,6 +304,13 @@ else
 		echo "</td></tr>";	
 		echo "<tr><td bgcolor=#cccccc>GRABAR CONSULTA</td><td bgcolor=#cccccc><input type='RADIO' name=radio value=Radio6></td><td bgcolor=#cccccc>&nbspCodigo&nbsp<input type='TEXT' name='Codigo' size=6 maxlength=6>&nbspDescripcion&nbsp<input type='TEXT' name='Descripcion' size=20 maxlength=20></td></tr>";
 		echo "<tr><td bgcolor=#cccccc>CONSULTA COMPLETA</td><td bgcolor=#cccccc><input type='RADIO' name=radio value=Radio7></td><td bgcolor=#cccccc> Crear Tabla Temporal <input type='checkbox' name=new>&nbspNombre : <input type='TEXT' name='Nombre' size=30 maxlength=30></td></tr>";
+		/**
+		 * Se agrega funcion encriponclick para encriptar la consulta antes de enviarla
+		 * @date: 2021/09/15 
+		 * @by: sebastian.nevado
+		 * 		marlon.osorio
+		 * 		daniel.corredor
+		 *  */ 
 		echo "<tr><td bgcolor='#cccccc' align=center colspan=3><input type='submit' onclick='encriponclick(\"consulta\")' onlvalue='IR'></td></tr></table>";
 		
 		echo "<table border=0 align=center cellpadding=3>";
@@ -329,6 +349,13 @@ else
 	}
 	else
 	{
+		/**
+		 * Se agrega funcion MyDecrypt para desencriptar la consulta y poderla ejecutar
+		 * @date: 2021/09/15 
+		 * @by: sebastian.nevado
+		 * 		marlon.osorio
+		 * 		daniel.corredor
+		 *  */ 
 		$consulta = Cifrado::myDecrypt($consulta );
 		
 		if(isset($new))
@@ -403,6 +430,13 @@ else
 		echo "<td bgcolor=#cccccc>CONSULTA</td></tr>";
 		echo "<tr><td bgcolor=#cccccc> "; 
 		echo "<textarea name='consulta' id='consulta' cols=60 rows=5>".$consulta."</textarea></td></tr>";
+		/**
+		 * Se agrega funcion encriponclick para encriptar la consulta antes de enviarla
+		 * @date: 2021/09/15 
+		 * @by: sebastian.nevado
+		 * 		marlon.osorio
+		 * 		daniel.corredor
+		 *  */ 
 		echo "<tr><td bgcolor='#cccccc' align=center><input type='submit' onclick='encriponclick(\"consulta\")' value='IR'>";
 		if(isset($back))
 			echo "<input type='checkbox' name=back checked>Back</td></tr>";
