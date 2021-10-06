@@ -111,42 +111,57 @@ if( isset( $peticionAjax ) ){
                 }else
                     $wobservacion[$i]="";
 
-                // $q1 = " INSERT INTO ".$wbasedato."_000025 (   Medico       ,   Fecha_data,   Hora_data,   movhab    ,   movemp       ,   movfec    ,   movhem    ,  movhdi   ,   movobs                    ,   movfal    ,   movhal    , movfdi     , Seguridad        ) "
-                //      ."                            VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."','".$nuevoValor."','".$wfecha."','".$whora."' , '00:00:00','','".$fechaAltaDef."','".$horaAltaDef."','0000-00-00', 'C-".$wusuario."')";
-                // $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
-                // echo mysql_insert_id()."-".$whora;
-				// $id = mysql_insert_id();
-				
-                /**
-                 * Actualizo el registro en la base de datos para la habitación correspondiente
-                 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
-                 * @since 2021-09-09
-                 */
-                $q1 = "
-                      UPDATE    {$wbasedato}_000025
-                         SET    movemp = '{$nuevoValor}',
-                                movfec = '{$wfecha}',
-                                movhem = '{$whora}'
-                       WHERE    movhab = '{$whabi}'
-                         AND    Movhdi = '00:00:00'
-                         AND    Movfdi = '0000-00-00'
+                $select = "
+                          SELECT    count(*)
+                            FROM    {$wbasedato}_000025
+                           WHERE    movhab = '{$whabi}'
+                             AND    Movfal = '{$wfecha}'
+                             AND    Movhdi = '00:00:00'
+                             AND    Movfdi = '0000-00-00'
                     ";
-                $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
+                $rest_select = mysql_query( $select, $conex ) or die (mysql_errno()." - en el query: ".mysql_error());
+
+                if( mysql_fetch_array( $rest_select )[0] = 1 )
+                {
+                    /**
+                     * Actualizo el registro en la base de datos para la habitación correspondiente
+                     * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+                     * @since 2021-09-09
+                     */
+                    $q1 = "
+                          UPDATE    {$wbasedato}_000025
+                             SET    movemp = '{$nuevoValor}',
+                                    movfec = '{$wfecha}',
+                                    movhem = '{$whora}'
+                           WHERE    movhab = '{$whabi}'
+                             AND    Movhdi = '00:00:00'
+                             AND    Movfdi = '0000-00-00'
+                    ";
+                    $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
+
+                    /**
+                     * Obtengo el id del ultimo registro actualizado
+                     * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
+                     * @since 2021-09-09
+                     */
+                    $query_id = "
+                          SELECT    id
+                            FROM    {$wbasedato}_000025
+                           WHERE    movhab = '{$whabi}'
+                        ORDER BY    movfec DESC
+                           LIMIT    1;
+                    ";
+                    $err = mysql_query($query_id, $conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
+                    $id = mysql_fetch_assoc($err)['id'];
+                }
+                else
+                {
+                    $q1 = " INSERT INTO ".$wbasedato."_000025 (   Medico       ,   Fecha_data,   Hora_data,   movhab    ,   movemp       ,   movfec    ,   movhem    ,  movhdi   ,   movobs                    ,   movfal    ,   movhal    , movfdi     , Seguridad        ) "
+                        ."                            VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."','".$nuevoValor."','".$wfecha."','".$whora."' , '00:00:00','','".$fechaAltaDef."','".$horaAltaDef."','0000-00-00', 'C-".$wusuario."')";
+                    $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                    $id = mysql_insert_id();
+                }
                 
-                /**
-                 * Obtengo el id del ultimo registro actualizado
-                 * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
-                 * @since 2021-09-09
-                 */
-                $query_id = "
-                      SELECT    id
-                        FROM    {$wbasedato}_000025
-                       WHERE    movhab = '{$whabi}'
-                    ORDER BY    movfec DESC
-                       LIMIT    1;
-                    ";
-                $err = mysql_query($query_id, $conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
-                $id = mysql_fetch_assoc($err)['id'];
                 echo $id."-".$whora; 				
 				
 				if($sgeman == 'on'){
@@ -207,27 +222,32 @@ if( isset( $peticionAjax ) ){
 							}
 
                     }else{
-                            //No Existe movimiento con o sin empleado en la tabla 000025, Inserto el nuevo registro
-                            // $q1 = " INSERT INTO ".$wbasedato."_000025      (   Medico       ,   Fecha_data,   Hora_data,   movhab   ,       movemp    ,    movfec    ,   movhem    ,  movhdi   ,   movobs                    ,   movfal    ,   movhal    , movfdi      , Seguridad        ) "
-                            //         ."                             VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."','".$nuevoValor."','".$wfecha."' ,'".$whora."' , '00:00:00','','".$fechaAltaDef."','".$horaAltaDef."', '0000-00-00', 'C-".$wusuario."')";
-                            // $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
-                            // echo mysql_insert_id()."-".$whora;
-                            // $id = mysql_insert_id();
+                        $select = "
+                            SELECT    count(*)
+                              FROM    {$wbasedato}_000025
+                             WHERE    movhab = '{$whabi}'
+                               AND    Movfal = '{$wfecha}'
+                               AND    Movhdi = '00:00:00'
+                               AND    Movfdi = '0000-00-00'
+                            ";
+                        $rest_select = mysql_query( $select, $conex ) or die (mysql_errno()." - en el query: ".mysql_error());
 
+                        if( mysql_fetch_array( $rest_select )[0] = 1 )
+                        {
                             /**
                              * Actualizo el registro en la base de datos para la habitación correspondiente
                              * @author Joel David Payares Hernández <joel.payares@lasamericas.com.co>
                              * @since 2021-09-09
                              */
                             $q1 = "
-                                  UPDATE    {$wbasedato}_000025
-                                     SET    movemp = '{$nuevoValor}',
+                                    UPDATE    {$wbasedato}_000025
+                                    SET    movemp = '{$nuevoValor}',
                                             movfec = '{$wfecha}',
                                             movhem = '{$whora}'
-                                   WHERE    movhab = '{$whabi}'
-                                     AND    Movhdi = '00:00:00'
-                                     AND    Movfdi = '0000-00-00'
-                                ";
+                                    WHERE    movhab = '{$whabi}'
+                                    AND    Movhdi = '00:00:00'
+                                    AND    Movfdi = '0000-00-00'
+                            ";
                             $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
 
                             /**
@@ -241,20 +261,28 @@ if( isset( $peticionAjax ) ){
                                     WHERE    movhab = '{$whabi}'
                                 ORDER BY    movfec DESC
                                     LIMIT    1;
-                                ";
+                            ";
                             $err = mysql_query($query_id, $conex) or die (mysql_errno()." - en el query: ".$q1." - ".mysql_error());
                             $id = mysql_fetch_assoc($err)['id'];
-                            echo $id."-".$whora;
-							  
-                            if($sgeman == 'on'){
-		
-								$q2 = " INSERT INTO ".$wbasedato."_000239 (   Medico       ,   Fecha_data,   Hora_data,   loghab    ,   Logfman    ,   Loghma     ,   logids   , logest, Seguridad        ) "
-												 ."                VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."', '".$wfecha."' , '".$whora."' ,  '".$id."' , 'on'  ,'C-".$wusuario."')";
-								$err2 = mysql_query($q2,$conex) or die (mysql_errno()." - en el query: ".$q2." - ".mysql_error());
-							
-							}
-							  
                         }
+                        else
+                        {
+                            $q1 = " INSERT INTO ".$wbasedato."_000025 (   Medico       ,   Fecha_data,   Hora_data,   movhab    ,   movemp       ,   movfec    ,   movhem    ,  movhdi   ,   movobs                    ,   movfal    ,   movhal    , movfdi     , Seguridad        ) "
+                                ."                            VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."','".$nuevoValor."','".$wfecha."','".$whora."' , '00:00:00','','".$fechaAltaDef."','".$horaAltaDef."','0000-00-00', 'C-".$wusuario."')";
+                            $err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                            $id = mysql_insert_id();
+                        }
+                        echo $id."-".$whora;
+                            
+                        if($sgeman == 'on'){
+    
+                            $q2 = " INSERT INTO ".$wbasedato."_000239 (   Medico       ,   Fecha_data,   Hora_data,   loghab    ,   Logfman    ,   Loghma     ,   logids   , logest, Seguridad        ) "
+                                                ."                VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."', '".$wfecha."' , '".$whora."' ,  '".$id."' , 'on'  ,'C-".$wusuario."')";
+                            $err2 = mysql_query($q2,$conex) or die (mysql_errno()." - en el query: ".$q2." - ".mysql_error());
+                        
+                        }
+
+                    }
             }
         }
     }
