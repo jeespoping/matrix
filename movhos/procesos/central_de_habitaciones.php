@@ -115,6 +115,7 @@ if( isset( $peticionAjax ) ){
                           SELECT    count(*)
                             FROM    {$wbasedato}_000025
                            WHERE    movhab = '{$whabi}'
+                             AND    Movfal = '{$wfecha}'
                              AND    Movhdi = '00:00:00'
                              AND    Movfdi = '0000-00-00'
                     ";
@@ -225,6 +226,7 @@ if( isset( $peticionAjax ) ){
                             SELECT    count(*)
                               FROM    {$wbasedato}_000025
                              WHERE    movhab = '{$whabi}'
+                               AND    Movfal = '{$wfecha}'
                                AND    Movhdi = '00:00:00'
                                AND    Movfdi = '0000-00-00'
                             ";

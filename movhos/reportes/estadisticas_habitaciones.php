@@ -252,7 +252,7 @@ else
 				$q=   "   SELECT count(*) "
 					 ."   FROM ".$wbasedato."_000025 A, ".$wbasedato."_000067 B, ".$wtabcco.", ".$wbasedato."_000024 "
 					 ."   WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."     AND Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."     AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."     AND movhdi      != '00:00:00' "
 					 ."     AND movhem      != '00:00:00' "
 					 ."     AND movhab       = Habcod "
@@ -267,7 +267,7 @@ else
 				$q=   "   SELECT count(*) "
 					 ."   FROM ".$wbasedato."_000025 A, ".$wbasedato."_000067 B, ".$wtabcco.", ".$wbasedato."_000024 "
 					 ."   WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."     AND Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."     AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."     AND movhdi      != '00:00:00' "
 					 ."     AND movhem      != '00:00:00' "
 					 ."     AND movhab       = Habcod "
@@ -491,10 +491,10 @@ else
             if ($wtabcco == 'costosyp_000005'){
 
 				$q=   "  SELECT Movemp, COUNT(*), "
-					 ."			SUM(TIMESTAMPDIFF(SECOND,CONCAT(Fecha_data,' ',Hora_data),CONCAT(A.Movfdi,' ',movhdi))), Sgenom  "
+					 ."			SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',movhdi))), Sgenom  "
 					 ."    FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024, ".$wbasedato."_000067 B, ".$wtabcco." "
 					 ."   WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."     AND Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."     AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."     AND movhem      != '00:00:00' "
 					 ."     AND movhdi      != '00:00:00' "
 					 ."     AND B.fecha_data = A.Fecha_data "
@@ -510,10 +510,10 @@ else
             else{
 
 				$q=   "  SELECT Movemp, COUNT(*), "
-					 ."			SUM(TIMESTAMPDIFF(SECOND,CONCAT(Fecha_data,' ',Hora_data),CONCAT(A.Movfdi,' ',movhdi))), Sgenom  "
+					 ."			SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',movhdi))), Sgenom  "
 					 ."    FROM ".$wbasedato."_000025 A, ".$wbasedato."_000024, ".$wbasedato."_000067 B, ".$wtabcco." "
 					 ."   WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."     AND Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."     AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."     AND movhem      != '00:00:00' "
 					 ."     AND movhdi      != '00:00:00' "
 					 ."     AND B.fecha_data = A.Fecha_data "
@@ -598,11 +598,11 @@ else
             if ($wtabcco == 'costosyp_000005'){
 
 				$q=   "   SELECT movhab, COUNT(*), "
-					 ."			 SUM(TIMESTAMPDIFF(SECOND,CONCAT(Fecha_data,' ',Hora_data),CONCAT(A.Movfdi,' ',movhdi))), "
+					 ."			 SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',movhdi))), "
 					 ."			 habcco, Cconom "
 					 ."     FROM ".$wbasedato."_000025 A, ".$wbasedato."_000067 B, ".$wtabcco.", ".$wbasedato."_000024 "
 					 ."    WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."      AND Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."      AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."      AND movhem      != '00:00:00' "
 					 ."      AND movhdi      != '00:00:00' "
 					 ."      AND B.fecha_data = A.Fecha_data "
@@ -618,11 +618,11 @@ else
 			else{
 
 				$q=   "   SELECT movhab, COUNT(*), "
-					 ."			 SUM(TIMESTAMPDIFF(SECOND,CONCAT(Fecha_data,' ',Hora_data),CONCAT(A.Movfdi,' ',movhdi))), "
+					 ."			 SUM(TIMESTAMPDIFF(SECOND,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT(A.Movfdi,' ',movhdi))), "
 					 ."			 habcco, Cconom "
 					 ."     FROM ".$wbasedato."_000025 A, ".$wbasedato."_000067 B, ".$wtabcco.", ".$wbasedato."_000024 "
 					 ."    WHERE A.Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					 ."      AND Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
+					 ."      AND A.Hora_data       BETWEEN '".$whora_i."' AND '".$whora_f."'"
 					 ."      AND movhem      != '00:00:00' "
 					 ."      AND movhdi      != '00:00:00' "
 					 ."      AND B.fecha_data = A.Fecha_data "
