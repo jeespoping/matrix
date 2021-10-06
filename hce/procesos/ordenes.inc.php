@@ -25674,9 +25674,9 @@ function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tip
 	
 	//Carga los articulos del la extensión del detalle del kardex a la temporal
 	$sql = "INSERT INTO ".$wbasedato."_000209
-					(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Seguridad  )
+					(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, Seguridad  )
 				SELECT
-					 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, a.Seguridad
+					 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, a.Seguridad
 				FROM
 					".$wbasedato."_000208 a, ".$wbasedato."_000060 b
 				WHERE
@@ -26820,9 +26820,9 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				
 				//Carga los articulos del la extensión del detalle del kardex a la temporal
 				$sqlExt = "INSERT INTO ".$wbasedato."_000209
-							(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing,   Ekxfec    , Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Seguridad  )
+							(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing,   Ekxfec    , Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, Seguridad  )
 						SELECT
-							 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, '".$fecha."', Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, a.Seguridad
+							 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, '".$fecha."', Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, a.Seguridad
 						FROM
 							".$wbasedato."_000208 a, ".$wbasedato."_000060 b
 						WHERE
@@ -27741,9 +27741,9 @@ function cargarArticulosADefinitivo( $historia, $ingreso, $fecha, $esPrimerKarde
 	
 	//Carga los articulos del la extensión del detalle del kardex a la temporal
 	$sql = "INSERT INTO ".$wbasedato."_000208
-				(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Seguridad  )
+				(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, Seguridad  )
 			SELECT
-				 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, a.Seguridad
+				 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, a.Seguridad
 			FROM
 				".$wbasedato."_000209 a, ".$wbasedato."_000054 b
 			WHERE
@@ -31146,7 +31146,7 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
  * @param unknown_type $usuario
  * @return unknown
  ************************************************************************************************************************************************/
-function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosisMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fInicioAnt,$hInicioAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$cantidadAlta,$impresion,$deAlta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$id_original,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo, $wdrautorizado, $wjusparaautorizar ){
+function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosisMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fInicioAnt,$hInicioAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$cantidadAlta,$impresion,$deAlta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$id_original,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo, $wdrautorizado, $wjusparaautorizar, $numMipres ){
 	
 	global $horaCorteDispensacion;	
 	global $whce;	
@@ -31708,9 +31708,9 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 						//Se crea query para insertar los datos en la extensión de la tabla temporal
 						//a este query le falta el filtro de kadido que se agrega más adelante
 						$sql_ext = "INSERT INTO ".$wbasedato."_000209
-										( Medico , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest,    Ekxpro    ,    Ekxtra     ,     Ekxped     ,   Ekxin1     ,   Ekxin2     ,    Ekxayu     ,     Ekxaut     ,        Ekxjus       , Seguridad   )
+										( Medico , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest,    Ekxpro    ,    Ekxtra     ,     Ekxped     ,   Ekxin1     ,   Ekxin2     ,    Ekxayu     ,     Ekxaut     ,        Ekxjus	,	Ekxmip       , Seguridad   )
 									SELECT
-										 b.Medico, b.Fecha_data, b.Hora_data, Kadhis, Kading, Kadfec, Kadart, Kadido, Kadest, '$profilaxis', '$tratamiento', '$esPediatrico', '$conInsumo1', '$conInsumo2', '$ccoAyudaDx', '$wdrautorizado', '$wjusparaautorizar', b.Seguridad
+										 b.Medico, b.Fecha_data, b.Hora_data, Kadhis, Kading, Kadfec, Kadart, Kadido, Kadest, '$profilaxis', '$tratamiento', '$esPediatrico', '$conInsumo1', '$conInsumo2', '$ccoAyudaDx', '$wdrautorizado', '$wjusparaautorizar', '$numMipres', b.Seguridad
 									FROM
 										".$wbasedato."_000060 b
 									WHERE
@@ -39147,7 +39147,7 @@ if(isset($consultaAjaxKardex)){
 
 	switch($consultaAjaxKardex){
 		case 1:
-			echo grabarArticuloDetalle($basedatos,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fIniAnt,$hIniAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$wcantidadAlta,$wimpresion,$walta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$idoriginal,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo,$wdrautorizado,$wjusparaautorizar);
+			echo grabarArticuloDetalle($basedatos,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fIniAnt,$hIniAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$wcantidadAlta,$wimpresion,$walta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$idoriginal,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo,$wdrautorizado,$wjusparaautorizar,$numMipres);
 			break;
 		case 2:
 			if(!isset($tipoProtocolo)){

@@ -21679,6 +21679,8 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 
 	var wdrautorizado = document.getElementById('wdrautorizado'+tipoProtocolo+idxElemento).value;
 	var wjusparaautorizar = $( document.getElementById('wjusparaautorizar'+tipoProtocolo+idxElemento) ).val();
+
+	var numMipres = document.getElementById('wnummipres'+tipoProtocolo+idxElemento).value;
 	
 	
 	artdosisAdaptada = false;
@@ -22091,7 +22093,7 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 	GRABACION DEL ARTICULO
 	***/
 	if(valido){		
-		grabarArticuloElemento(historia,ingreso,fechaKardex,codigoArticulo,cantDosis.value,unidadDosis.value,periodicidad.value,formaFtica.value,fechaInicio,horaInicio,via.value,artConfirmado,diasTto.value,obsmerge,origenArticulo,usuario,condicion.value,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,equivHorasFrecuencia,fechaInicioAnterior,horaInicioAnterior,artNoDispensar,artProtocolo,centroCostosGrabacion,prioridad,idxElemento,nombreArticulo,cantidadAlta,impresion,deAlta, firma, artdosisAdaptada,idoriginal,artnoEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar);
+		grabarArticuloElemento(historia,ingreso,fechaKardex,codigoArticulo,cantDosis.value,unidadDosis.value,periodicidad.value,formaFtica.value,fechaInicio,horaInicio,via.value,artConfirmado,diasTto.value,obsmerge,origenArticulo,usuario,condicion.value,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,equivHorasFrecuencia,fechaInicioAnterior,horaInicioAnterior,artNoDispensar,artProtocolo,centroCostosGrabacion,prioridad,idxElemento,nombreArticulo,cantidadAlta,impresion,deAlta, firma, artdosisAdaptada,idoriginal,artnoEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar, numMipres);
 	}
 	return valido;
 }
@@ -23549,7 +23551,7 @@ function cambiarDisplay(id) {
 /*****************************************************************************************************************************
  * Llamada ajax para la inserción o modificación de un articulo
  ******************************************************************************************************************************/
-function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDosis,per,fftica,fini,hini,via,conf,dtto,obs,origenArticulo,usuario,condicion,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,horasFrecuencia,fechaInicioAnt,horaInicioAnt,noDispensar,tipoProtocolo,centroCostosGrabacion,prioridad,idElemento,nombreArticulo,cantidadAlta,impresion,deAlta,firma,artdosisAdaptada,idoriginal,noEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar){
+function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDosis,per,fftica,fini,hini,via,conf,dtto,obs,origenArticulo,usuario,condicion,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,horasFrecuencia,fechaInicioAnt,horaInicioAnt,noDispensar,tipoProtocolo,centroCostosGrabacion,prioridad,idElemento,nombreArticulo,cantidadAlta,impresion,deAlta,firma,artdosisAdaptada,idoriginal,noEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar, numMipres){
 	var parametros = "";
 	var mensaje = "";
 		// alert( "familiasAgregadasIdx["+tipoProtocolo+idElemento+"]:" + familiasAgregadasIdx[ tipoProtocolo+idElemento ] );
@@ -23561,7 +23563,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 		+"&nombreArticulo="+nombreArticulo+"&wcantidadAlta="+cantidadAlta+"&wimpresion="+impresion+"&walta="+deAlta+"&familia="+familiasAgregadasIdx[ tipoProtocolo+idElemento ]+"&firma="+firma+"&tipoDocumento="+$( "#wtipodoc" ).val()+"&wcedula="+$( "#wcedula" ).val()+"&artdosisAdaptada="+artdosisAdaptada+"&artnoEsteril="+noEsteril
 		+"&idoriginal="+idoriginal+"&profilaxis="+profilaxis+"&tratamiento="+tratamiento
 		+"&esPediatrico="+esPediatrico+"&conInsumo1="+conInsumo1+"&conInsumo2="+conInsumo2+"&porProtocolo="+porProtocolo
-		+"&wdrautorizado="+wdrautorizado+"&wjusparaautorizar="+wjusparaautorizar;
+		+"&wdrautorizado="+wdrautorizado+"&wjusparaautorizar="+wjusparaautorizar+"&numMipres="+numMipres;
 
 	try{
 //		$.blockUI({ message: $('#msjEspere') });
@@ -25588,7 +25590,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 
 									//Número Mipres
 									if((document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2') && document.getElementById("wnummipres"+tipoProtocoloAux+idx)){
-										document.getElementById("wnummipres"+tipoProtocoloAux+idx).value = numPresMipres;
+										document.getElementById("wnummipres"+tipoProtocoloAux+idx).value = (numPresMipres) ? numPresMipres : '';
 									}
 
 									//Unidad dosis
