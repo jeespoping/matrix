@@ -2829,15 +2829,15 @@ if (!$usuarioValidado){
 							echo "<td width='250'>Medicamento(*)</td>";
 
 							/*
-							* Modificación: se agrega columna "#Mipres" en caso de tener parámetro activo
+							* Modificación: se agrega columna "#Mipres" en caso de tener parámetro activo y es médico
 							* Autor: sebastian.nevado
 							* Fecha: 2021-10-04
 							*/
-							if($sMipresEnListaMedicamentosOrdenes == '2')
+							if($sMipresEnListaMedicamentosOrdenes == '2' && $usuario->esMedicoRolHCE)
 							{
 								echo "<td># Prescripci&oacute;n Mipres(*)</td>";
 							}
-							elseif($sMipresEnListaMedicamentosOrdenes == '1')
+							elseif($sMipresEnListaMedicamentosOrdenes == '1' && $usuario->esMedicoRolHCE)
 							{
 								echo "<td># Prescripci&oacute;n Mipres</td>";
 							}
@@ -2887,15 +2887,15 @@ if (!$usuarioValidado){
 							echo "</td>";
 
 							/*
-							* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo
+							* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo y ser médico
 							* Autor: sebastian.nevado
 							* Fecha: 2021-10-04
 							*/
-							if($sMipresEnListaMedicamentosOrdenes == '1' || $sMipresEnListaMedicamentosOrdenes == '2')
+							if($usuario->esMedicoRolHCE && ($sMipresEnListaMedicamentosOrdenes == '1' || $sMipresEnListaMedicamentosOrdenes == '2'))
 							{
 								// # Prescripción Mipres
 								echo "<td>";
-								crearCampo("1","wnumprescripcionmipres",@$accionesPestana[$indicePestana.".1"],array("class"=>"textoNormal"),"");
+									crearCampo("1","wnumprescripcionmipres",@$accionesPestana[$indicePestana.".1"],array("class"=>"textoNormal"),"");
 								echo "</td>";
 							}
 							//FIN MODIFICACIÓN
@@ -3122,11 +3122,11 @@ if (!$usuarioValidado){
 					* Autor: sebastian.nevado
 					* Fecha: 2021-10-04
 					*/
-					if($sMipresEnListaMedicamentosOrdenes == '2')
+					if($usuario->esMedicoRolHCE && $sMipresEnListaMedicamentosOrdenes == '2')
 					{
 						echo "<td># Prescripci&oacute;n Mipres class='obligatorio'>(*)</span></td>";
 					}
-					elseif($sMipresEnListaMedicamentosOrdenes == '1')
+					elseif($usuario->esMedicoRolHCE && $sMipresEnListaMedicamentosOrdenes == '1')
 					{
 						echo "<td># Prescripci&oacute;n Mipres</td>";
 					}

@@ -10382,7 +10382,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		*/
 		if(mipresEnListaMedicamentos!=0)
 		{
-			var numPrescripcionMipres = document.getElementById( "wnumprescripcionmipres" ).value;				// Número de prescripción de mipres
+			var numPrescripcionMipres = (document.getElementById( "wnumprescripcionmipres" )) ? document.getElementById( "wnumprescripcionmipres" ).value : '';				// Número de prescripción de mipres
 		}
 		else
 		{
@@ -19170,7 +19170,7 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		fila.appendChild(columna1);
 		fila.appendChild(columna2);
 		
-		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		if(($( "#esMedico" ).val() == 'on') && (document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2'))
 		{
 			fila.appendChild(colNumMipres);
 		}
@@ -21680,7 +21680,7 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 	var wdrautorizado = document.getElementById('wdrautorizado'+tipoProtocolo+idxElemento).value;
 	var wjusparaautorizar = $( document.getElementById('wjusparaautorizar'+tipoProtocolo+idxElemento) ).val();
 
-	var numMipres = document.getElementById('wnummipres'+tipoProtocolo+idxElemento).value;
+	var numMipres = (document.getElementById('wnummipres'+tipoProtocolo+idxElemento)) ? document.getElementById('wnummipres'+tipoProtocolo+idxElemento).value : '';
 	
 	
 	artdosisAdaptada = false;
