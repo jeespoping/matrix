@@ -2826,7 +2826,7 @@ if (!$usuarioValidado){
 							echo "<table id='nuevoBuscador'>";
 							echo "<tr class='encabezadotabla' align='center'>";
 							echo "<td width='100'>Grabar</td>";
-							echo "<td width='250'>Medicamento(*)2802</td>"; //##BORRAR_NUMERO_SEBASTIAN_NEVADO
+							echo "<td width='250'>Medicamento(*)</td>";
 
 							/*
 							* Modificación: se agrega columna "#Mipres" en caso de tener parámetro activo
@@ -5844,6 +5844,8 @@ if (!$usuarioValidado){
 
 
 			$indicePestana = "11";
+			print_r('<br> $vecPestanaGrabacion <br>'); //SEBASTIAN_NEVADO
+			print_r($vecPestanaGrabacion); //SEBASTIAN_NEVADO
 			if(isset($vecPestanaGrabacion[$indicePestana])){
 				echo "<div id='fragment-11'>";
 
@@ -5903,7 +5905,7 @@ if (!$usuarioValidado){
 					echo "<table id='nuevoBuscadorImp'>";
 					echo "<tr class='encabezadotabla' align='center'>";
 					echo "<td width='100'>Grabar</td>";
-					echo "<td width='250'>Medicamento(*)5833</td>"; //##BORRAR_NUMERO_SEBASTIAN_NEVADO
+					echo "<td width='250'>Medicamento(*)</td>";
 					echo "<td>Presentaci&oacute;n(*)</td>";
 					echo "<td width='100'>Dosis(*)</td>";
 					echo "<td>Unidad de medida(*)</td>";					

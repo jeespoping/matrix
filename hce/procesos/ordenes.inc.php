@@ -540,6 +540,7 @@ class detalleKardexDTO {
 			$this->horaAutorizado		= $datos['Ekxhau'];	//Hora de aprobacion del articulo por director médico
 			$this->directorMedico		= $datos['Ekxmau'];	//Director médico que autoriza el medicamento
 			$this->justificacionDM		= $datos['Ekxjau'];	//Justificación del director médico
+			$this->noPrescripcionMipres	= $datos['Ekxmip'];	//Número prescripción MiPres
 		}
 	}
 	
@@ -16213,6 +16214,8 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 	}
 	
 	$validarTarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripcionConTarifa' ) == 'on';
+
+	$sMipresEnListaMedicamentosOrdenes = consultarAliasPorAplicacion( $conex, $wemp_pmla, "mipresEnListaMedicamentosOrdenes" );
 	
 	/********************************************************************************************************************************
 	 * Creo dos arryas,uno para la familia y otro para los articulos. Estos arryas solo indican si una familia o articulo se ve en 
@@ -16495,6 +16498,22 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 				echo "</td>";
 				echo "<td>Imprimir</span></td>";
 				echo "<td>Medicamento<span class='obligatorio'>(*)</span></td>";
+				
+				/*
+				* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+				* Autor: sebastian.nevado
+				* Fecha: 2021-10-04
+				*/
+				if($sMipresEnListaMedicamentosOrdenes == '2')
+				{
+					echo "<td># Prescripci&oacute;n Mipres(*)</td>";
+				}
+				elseif($sMipresEnListaMedicamentosOrdenes == '1')
+				{
+					echo "<td># Prescripci&oacute;n Mipres</td>";
+				}
+				//FIN MODIFICACIÓN
+
 				echo "<td style='display:none'>Protocolo</td>";
 				echo "<td>";
 				echo "No enviar";
@@ -16559,6 +16578,17 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			} else {
 				echo "<td>Acciones</td>";
 				echo "<td width='100px'>Articulo</td>";
+				/*
+				* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+				* Autor: sebastian.nevado
+				* Fecha: 2021-10-04
+				*/
+				if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+				{
+					echo "<td onMouseOver='quitarTooltip( this )' onMouseOut='reestablecerTooltip( this );'># Prescripci&oacute;n Mipres</td>";
+				}
+				//FIN MODIFICACIÓN
+
 				echo "<td style='display:none'>Protocolo</td>";
 				echo "<td>No enviar</td>";
 				echo "<td>Dosis a aplicar</td>";
@@ -16828,6 +16858,14 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 				echo $articulo->codigoArticulo;
 			}
 			echo "</td>";
+
+			//Número Prescripción Mipres
+			if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+			{
+				echo "<td onMouseOver='quitarTooltip( this )' onMouseOut='reestablecerTooltip( this );'>";
+				echo "<div id='wnummipres$articulo->tipoProtocolo$contArticulos'>$articulo->noPrescripcionMipres</div>";
+				echo "</td>";
+			}
 			
 
 			//Nombre del protocolo
@@ -18283,6 +18321,9 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 	
 	global $conex;
 	global $wcenmez;
+	global $wemp_pmla;
+
+	$sMipresEnListaMedicamentosOrdenes = consultarAliasPorAplicacion( $conex, $wemp_pmla, "mipresEnListaMedicamentosOrdenes" );
 	
 	
 	// //Muestra el detalle de medicamentos del kardex consultado
@@ -18448,6 +18489,18 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 				
 				//Encabezado detalle kardex
 				echo "<td nowrap> $auxEspacios $auxEspacios $auxEspacios Articulo $auxEspacios $auxEspacios $auxEspacios </td>";
+				
+				/*
+				* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+				* Autor: sebastian.nevado
+				* Fecha: 2021-10-04
+				*/
+				if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+				{
+					echo "<td># Prescripci&oacute;n Mipres</td>";
+				}
+				//FIN MODIFICACIÓN
+
 				echo "<td style='display:none'>Protocolo</td>";
 				echo "<td>Dosis</td>";
 				echo "<td>Frecuencia</td>";
@@ -18506,6 +18559,18 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 			} else {
 				echo "<td ".$funcionOnclickAbrirNPT.">".utf8_encode( $articulo->codigoArticulo )."</td>";
 			}
+
+			//# Prescripción Mipres
+			/*
+			* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+			* Autor: sebastian.nevado
+			* Fecha: 2021-10-04
+			*/
+			if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+			{
+				echo "<td>".$articulo->noPrescripcionMipres."</td>";
+			}
+			//FIN MODIFICACIÓN
 			
 			//Nombre protocolo
 			echo "<td style='display:none'>".utf8_encode( $articulo->nombreProtocolo )."</td>";
