@@ -23,6 +23,7 @@ include_once("conex.php");
 
 /************************************************************************************************************************
  * Modificaciones
+ * Octubre 8 de 2021	Sebastián Nevado	-  Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
  * Agosto 13 de 2020	Edwin 		- Se permite ordenar cups buscando por codigo CUP
  * Agosto 05 de 2020	Edwin 		- Si un paciente está con traslado temporal en hemodinamia, en el mensaje HL7 enviado a laboratorio se manda la habitación dónde se encuentra
  *									- Se cambia el nombre del archivo que se crea en el ftp para los mensajes hl7 con la interoperabilidad de laboratorio, agregando a la fecha, 
@@ -12513,7 +12514,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			
 	 // Se consultan los medicamentos asociados a la familia seleccionada
 	 $sql = "( SELECT
-				Relfam,Famnom,Famcod,Reluni,b.Unicod,b.Unides,Relart,Relcon*1 as Relcon, '' Famund,Relpre,Artpco as Ffacod,Pcodes as Ffanom,Defvia, Defart 
+				Relfam,Famnom,Famcod,Reluni,b.Unicod,b.Unides,Relart,Relcon*1 as Relcon, '' Famund,Relpre,Artpco as Ffacod,Pcodes as Ffanom,Defvia, Defart, Artpos 
 			FROM
 				{$wbasedato}_000114 a, 
 				{$wbasedato}_000115 c,
@@ -12540,7 +12541,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			)
 			UNION
 			( SELECT
-				Relfam,Famnom,Famcod,Reluni,b.Unicod,b.Unides,Relart,Relcon*1 as Relcon, '' Famund,Relpre,Relpre as Ffacod,g.unides as Ffanom,Defvia , Defart
+				Relfam,Famnom,Famcod,Reluni,b.Unicod,b.Unides,Relart,Relcon*1 as Relcon, '' Famund,Relpre,Relpre as Ffacod,g.unides as Ffanom,Defvia , Defart, '' Artpos
 			FROM
 				{$wbasedato}_000114 a, 
 				{$wbasedato}_000115 c,
@@ -12687,6 +12688,14 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			$pos5 = strpos($val, $textfind5);
 			if($pos5 === false)
 				$val .= "|$".$rows[ 'Relcon' ];
+			///////////////////////////////////////////////////////
+
+
+			/////////////// ES POS /////////////////
+			$textfind5 = "|¬".$rows[ 'Artpos' ]."|";
+			$pos5 = strpos($val, $textfind5);
+			if($pos5 === false)
+				$val .= "|¬".$rows[ 'Artpos' ];
 			///////////////////////////////////////////////////////
 
 			

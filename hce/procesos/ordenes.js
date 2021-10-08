@@ -2,6 +2,7 @@
  *
  * MODIFICACIONES
  *
+ * Octubre 8 de 2021	Sebastián Nevado	Se agrega funcionalidad de mipres obligatorio basado en parámetro mipresEnListaMedicamentosOrdenes. Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
  * Mayo 4 de 2020		Edwin		Se hacen cambios varios para la interoperabilidad con laboratorio por centro de costos y POCT
  *									En la modal de al seleccionar el tipo de muestra(Sitio anatomico y tipo de muestra) se muestra la opcion Seleccione
  *									y debe haber por lo menos un sitio anatómico y tipo de muestra seleccionados
@@ -10380,13 +10381,12 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		* Autor: sebastian.nevado
 		* Fecha: 2021-10-04
 		*/
+		var numPrescripcionMipres = "";
+		var tipoNumPrescripcionMipres = "";
 		if(mipresEnListaMedicamentos!=0)
 		{
-			var numPrescripcionMipres = (document.getElementById( "wnumprescripcionmipres" )) ? document.getElementById( "wnumprescripcionmipres" ).value : '';				// Número de prescripción de mipres
-		}
-		else
-		{
-			var numPrescripcionMipres = "";											// Número de prescripción de mipres
+			numPrescripcionMipres = (document.getElementById( "wnumprescripcionmipres" )) ? document.getElementById( "wnumprescripcionmipres" ).value : '';				// Número de prescripción de mipres
+			tipoNumPrescripcionMipres = (document.getElementById( "wnumprescripcionmipres").type) ? document.getElementById( "wnumprescripcionmipres" ).type : '';				// Tipo de campo
 		}
 		//FIN MODIFICACION
 
@@ -10464,15 +10464,26 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		}
 		
 		/*
-		* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo
+		* Modificación: alerta en caso de que el número de prescripción de mipres sea obligatorio, es paciente de EPS, y contributivo, y medicamento no pos
 		* Autor: sebastian.nevado
 		* Fecha: 2021-10-04
 		*/
-		if(mipresEnListaMedicamentos == 2 && numPrescripcionMipres != '' && numPrescripcionMipres != ' ')
+		if(mipresEnListaMedicamentos == 2 && tipoNumPrescripcionMipres != 'P' && numPrescripcionMipres == '' && tipoNumPrescripcionMipres != '' && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
 		{
-			jAlert("Debe ingresar el nombre del artículo","ALERTA");
-			document.getElementById( "numPrescripcionMipres" ).focus();
+			jAlert("Debe ingresar el Número de Prescripción Mipres","ALERTA");
+			document.getElementById( "wnumprescripcionmipres" ).focus();
 			return;
+		}
+
+		if((mipresEnListaMedicamentos == 2 || mipresEnListaMedicamentos == 1) && tipoNumPrescripcionMipres != '' && tipoNumPrescripcionMipres != 'P' && numPrescripcionMipres != '' && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
+		{
+			var respuestaValidacion = validarNumeroMipres(numPrescripcionMipres);
+			if(!respuestaValidacion['exito'])
+			{
+				jAlert("El número de prescripción de Mipres no existe.","ALERTA");
+				document.getElementById( "wnumprescripcionmipres" ).focus();
+				return;
+			}
 		}
 		//FIN MODIFICACIÓN
 
@@ -11509,6 +11520,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
 		{
 			document.getElementById('wnumprescripcionmipres').value = '';
+			document.getElementById('wtipopos').value = '';
 		}
 		
 		//Quito los valores de la regleta de grabacion
@@ -13337,6 +13349,30 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 				arDosis[ arDosis.length ] = valorDosis;
 				q++;
 				r = 0;
+			}
+
+			// Si viene precedido de ¬ es pos y se define si se habilita el campo
+			if( item[i].substr(0,1) == "¬" ){
+				valorPos = trim(item[i].substr(1));
+				var numPrescripcionMipres = document.getElementById( "wnumprescripcionmipres"+posnombre );
+				var tipoPos = document.getElementById( "wtipopos"+posnombre );
+				//Si es no pos, es contributivo, es un médico, y el paciente es de EPS, debe registrar Mipres
+				if(valorPos != 'P' && numPrescripcionMipres && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
+				{
+					//Habilito campo
+					numPrescripcionMipres.value = '';
+					tipoPos.value = valorPos;
+					numPrescripcionMipres.disabled = false;
+					numPrescripcionMipres.type = "text";
+				}
+				else
+				{
+					//Deshabilito campo
+					numPrescripcionMipres.value = '';
+					tipoPos.value = valorPos;
+					numPrescripcionMipres.disabled = true;
+					numPrescripcionMipres.type = "hidden";
+				}
 			}
 
 			// Si viene precedido de - es artículo, comienza la asignación de los arreglos de relación y del arreglo arArticulos
@@ -27363,6 +27399,52 @@ function borrarDosisMaximaPorFrecuencia( cmp ){
 	catch(e){
 		console.log(e);
 	}
+}
+
+/**
+ * Función para búsqueda de prescripción de mipres por número, vía webservice
+ * @by: sebastian.nevado
+ * @date: 2021/10/08
+ */
+function validarNumeroMipres(nroPrescripcionMipres)
+{
+	var aRespuesta = {'exito': false, 'mensaje':''};
+	
+	//$.blockUI({ message: $('#msjEspere') });
+	$.ajax({
+		url: "CTCmipres.php",
+		type: "POST",
+		dataType: "json",
+		data:{
+				consultaAjax 	: '',
+				accion			: 'consultarPrescripcionMipres',
+				wemp_pmla		: $('#wemp_pmla').val(),
+				nroPrescripcion	: nroPrescripcionMipres
+		},
+		async: false,
+		success:function(respuesta) {
+
+			//Si el tamaño es menor a 1 es porque no encontró resultado
+			if(respuesta.mensaje)
+			{
+				aRespuesta['exito'] = false;
+				aRespuesta['mensaje'] = respuesta.mensaje;
+			}
+			else if(respuesta.length < 1)
+			{
+				aRespuesta['exito'] = false;
+				aRespuesta['mensaje'] = 'El número de prescripción Mipres ingresado no existe.';
+			}
+			else
+			{
+				aRespuesta['exito'] = true;
+				aRespuesta['mensaje'] = 'El número de prescripción Mipres ingresado existe.';
+			}
+			//$.unblockUI();
+		}
+	});
+
+	return aRespuesta;
 }
 
 

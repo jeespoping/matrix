@@ -728,6 +728,7 @@ div.growlUI h1, div.growlUI h2 {
 	*************************************************
 	*
 	* Modificaciones:
+	* Octubre 8 2021		Sebastián Nevado	-Se agrega funcionalidad de mipres obligatorio basado en parámetro mipresEnListaMedicamentosOrdenes. Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
 	* Junio 30 de 2020 		Edwin	- Se muestra la fecha y hora de toma de muestra
 	* Junio 23 de 2020 		Edwin	- Se muestra la justificación de cancelado en laboratorio bajo ele estado de la orden
 	* Mayo 19 de 2020 		Edwin	- Se llama a la función cambioEstadoInteroperabilidad para que se haga el cambio de estados por interoperabilidad automáticamente. 
@@ -834,7 +835,7 @@ if( !empty($hce) ){
 }
 
 $usuarioValidado = true;
-$wactualiz = "Marzo 6 de 2018";
+$wactualiz = "Octubre 8 de 2021";
 
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false; 	
@@ -2896,6 +2897,7 @@ if (!$usuarioValidado){
 								// # Prescripción Mipres
 								echo "<td>";
 									crearCampo("1","wnumprescripcionmipres",@$accionesPestana[$indicePestana.".1"],array("class"=>"textoNormal"),"");
+									echo "<input type='hidden' name='wtipopos' id='wtipopos' value=''>";
 								echo "</td>";
 							}
 							//FIN MODIFICACIÓN
@@ -3124,7 +3126,7 @@ if (!$usuarioValidado){
 					*/
 					if($usuario->esMedicoRolHCE && $sMipresEnListaMedicamentosOrdenes == '2')
 					{
-						echo "<td># Prescripci&oacute;n Mipres class='obligatorio'>(*)</span></td>";
+						echo "<td># Prescripci&oacute;n Mipres <span class='obligatorio'>(*)</span></td>";
 					}
 					elseif($usuario->esMedicoRolHCE && $sMipresEnListaMedicamentosOrdenes == '1')
 					{
