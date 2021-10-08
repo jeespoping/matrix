@@ -278,14 +278,14 @@
 						.css({display:"none"});
 				}	
 			}
-			
-			habilitarBotonAceptar();
-			
+
 			//Si es una orden (tiene tipo de orden, numero de orden e item ) no se muestra el medico remitente
 			if( datos.cita && datos.cita.Mvctor != '' && datos.cita.Mvcnro > 0 && datos.cita.Mvcite > 0 ){
 				$( ".mtx-medico-remitente" ).css({ display:"none" });
 			}
-			
+
+            habilitarBotonAceptar();
+
 			//Autocompletar para el medico remitente
 			$( inMedicoRemitente ).autocomplete({
 				minLength: 	3,
