@@ -16507,22 +16507,6 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 				echo "</td>";
 				echo "<td>Imprimir</span></td>";
 				echo "<td>Medicamento<span class='obligatorio'>(*)</span></td>";
-				
-				/*
-				* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
-				* Autor: sebastian.nevado
-				* Fecha: 2021-10-04
-				*/
-				if($sMipresEnListaMedicamentosOrdenes == '2')
-				{
-					echo "<td># Prescripci&oacute;n Mipres(*)</td>";
-				}
-				elseif($sMipresEnListaMedicamentosOrdenes == '1')
-				{
-					echo "<td># Prescripci&oacute;n Mipres</td>";
-				}
-				//FIN MODIFICACIÓN
-
 				echo "<td style='display:none'>Protocolo</td>";
 				echo "<td>";
 				echo "No enviar";
@@ -16587,17 +16571,6 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			} else {
 				echo "<td>Acciones</td>";
 				echo "<td width='100px'>Articulo</td>";
-				/*
-				* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
-				* Autor: sebastian.nevado
-				* Fecha: 2021-10-04
-				*/
-				if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
-				{
-					echo "<td onMouseOver='quitarTooltip( this )' onMouseOut='reestablecerTooltip( this );'># Prescripci&oacute;n Mipres</td>";
-				}
-				//FIN MODIFICACIÓN
-
 				echo "<td style='display:none'>Protocolo</td>";
 				echo "<td>No enviar</td>";
 				echo "<td>Dosis a aplicar</td>";
@@ -16782,6 +16755,17 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			}
 			
 			$informacion .= " - Justificaci&oacute;n para actualizar: ".$articulo->jusParaAutorizar;
+
+			/*
+			* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+			* Autor: sebastian.nevado
+			* Fecha: 2021-10-04
+			*/
+			if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+			{
+				$informacion .= "<br> - N&uacute;mero prescripción Mipres: ".$articulo->noPrescripcionMipres;
+			}
+			//FIN MODIFICACIÓN
 			
 			echo "<tr id='trFil".$contArticulos."' idtr=trFil".$tipoProtocolo.$contArticulos." title=' - ".$informacion."' class='".$clase."'".$filaVisible." style='$mostrarFila'>";
 			
@@ -16866,15 +16850,12 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			} else {
 				echo $articulo->codigoArticulo;
 			}
-			echo "</td>";
-
 			//Número Prescripción Mipres
 			if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
 			{
-				echo "<td onMouseOver='quitarTooltip( this )' onMouseOut='reestablecerTooltip( this );'>";
-				echo "<div id='wnummipres$articulo->tipoProtocolo$contArticulos'>$articulo->noPrescripcionMipres</div>";
-				echo "</td>";
+				echo "<div id='wnummipres$articulo->tipoProtocolo$contArticulos' style='display: none' >$articulo->noPrescripcionMipres</div>";
 			}
+			echo "</td>";
 			
 
 			//Nombre del protocolo
@@ -18504,10 +18485,10 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 				* Autor: sebastian.nevado
 				* Fecha: 2021-10-04
 				*/
-				if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
-				{
-					echo "<td># Prescripci&oacute;n Mipres</td>";
-				}
+				// if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+				// {
+				// 	echo "<td># Prescripci&oacute;n Mipres</td>";
+				// }
 				//FIN MODIFICACIÓN
 
 				echo "<td style='display:none'>Protocolo</td>";
@@ -18569,17 +18550,17 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 				echo "<td ".$funcionOnclickAbrirNPT.">".utf8_encode( $articulo->codigoArticulo )."</td>";
 			}
 
-			//# Prescripción Mipres
-			/*
-			* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
-			* Autor: sebastian.nevado
-			* Fecha: 2021-10-04
-			*/
-			if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
-			{
-				echo "<td>".$articulo->noPrescripcionMipres."</td>";
-			}
-			//FIN MODIFICACIÓN
+			// //# Prescripción Mipres
+			// /*
+			// * Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+			// * Autor: sebastian.nevado
+			// * Fecha: 2021-10-04
+			// */
+			// if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+			// {
+			// 	echo "<td>".$articulo->noPrescripcionMipres."</td>";
+			// }
+			// //FIN MODIFICACIÓN
 			
 			//Nombre protocolo
 			echo "<td style='display:none'>".utf8_encode( $articulo->nombreProtocolo )."</td>";

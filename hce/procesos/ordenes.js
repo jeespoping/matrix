@@ -13364,6 +13364,8 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 					tipoPos.value = valorPos;
 					numPrescripcionMipres.disabled = false;
 					numPrescripcionMipres.type = "text";
+
+					alert("El medicamento \"" + item[0] + "\" es NO POS, debe llenar el MIPRES en la plataforma del Ministerio de Salud antes de grabar el medicamento (antes de pulsar el botón 'OK').");
 				}
 				else
 				{
