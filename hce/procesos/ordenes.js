@@ -10468,14 +10468,14 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		* Autor: sebastian.nevado
 		* Fecha: 2021-10-04
 		*/
-		if(mipresEnListaMedicamentos == 2 && tipoNumPrescripcionMipres != 'P' && numPrescripcionMipres == '' && tipoNumPrescripcionMipres != '' && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
+		if(mipresEnListaMedicamentos == 2 && tipoNumPrescripcionMipres != 'P' && numPrescripcionMipres == '' && tipoNumPrescripcionMipres != '' && tipoNumPrescripcionMipres != 'hidden' && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
 		{
 			jAlert("Debe ingresar el Número de Prescripción Mipres","ALERTA");
 			document.getElementById( "wnumprescripcionmipres" ).focus();
 			return;
 		}
 
-		if((mipresEnListaMedicamentos == 2 || mipresEnListaMedicamentos == 1) && tipoNumPrescripcionMipres != '' && tipoNumPrescripcionMipres != 'P' && numPrescripcionMipres != '' && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
+		if((mipresEnListaMedicamentos == 2 || mipresEnListaMedicamentos == 1) && tipoNumPrescripcionMipres != '' && tipoNumPrescripcionMipres != 'P' && tipoNumPrescripcionMipres != 'hidden' && numPrescripcionMipres != '' && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
 		{
 			var respuestaValidacion = validarNumeroMipres(numPrescripcionMipres);
 			if(!respuestaValidacion['exito'])

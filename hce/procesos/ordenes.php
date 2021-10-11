@@ -5846,8 +5846,6 @@ if (!$usuarioValidado){
 
 
 			$indicePestana = "11";
-			print_r('<br> $vecPestanaGrabacion <br>'); //SEBASTIAN_NEVADO
-			print_r($vecPestanaGrabacion); //SEBASTIAN_NEVADO
 			if(isset($vecPestanaGrabacion[$indicePestana])){
 				echo "<div id='fragment-11'>";
 
