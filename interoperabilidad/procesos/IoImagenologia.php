@@ -292,6 +292,7 @@ function consultarMedicosRemitentes( $conex, $whce, $tipoOrden, $parametro ){
 				   AND a.tblest = 'on'
 				   AND b.opctbl = a.tblcod 
 				   AND b.opcest = 'on'
+				   AND b.Opctdo != ''
 				   AND ( b.opccod LIKE '%".$parametro."%'
 				    OR b.opcdes LIKE '%".$parametro."%' )";
 		
@@ -1017,10 +1018,10 @@ function procesarMsgORM( $conex, $wemp_pmla, $HL7, $message )
 			list( $urlReporte ) = explode( "^",$HL7['OBX'][0][ OBX_URL_REPORTE ] );
 			
 			if( !empty( $url ) )
-				$url		= "http://".$url;
+				$url		= "https://".$url;
 			
 			if( !empty($urlReporte) )
-				$urlReporte = "http://".$urlReporte;
+				$urlReporte = "https://".$urlReporte;
 		}
 		
 		//El segmento AIS contiene la información de la cita, siempre se espera
