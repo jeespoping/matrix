@@ -3124,14 +3124,14 @@ if (!$usuarioValidado){
 					* Autor: sebastian.nevado
 					* Fecha: 2021-10-04
 					*/
-					if($usuario->esMedicoRolHCE && $sMipresEnListaMedicamentosOrdenes == '2')
+					/*/if($usuario->esMedicoRolHCE && $sMipresEnListaMedicamentosOrdenes == '2')
 					{
 						echo "<td># Prescripci&oacute;n Mipres <span class='obligatorio'>(*)</span></td>";
 					}
 					elseif($usuario->esMedicoRolHCE && $sMipresEnListaMedicamentosOrdenes == '1')
 					{
 						echo "<td># Prescripci&oacute;n Mipres</td>";
-					}
+					}*/
 					//FIN MODIFICACIÓN
 					
 					echo "<td style='display:none'>Protocolo</td>";

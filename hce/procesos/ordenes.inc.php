@@ -39176,6 +39176,44 @@ function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 	}
 	
 }
+
+/**
+ * Función para buscar el código mipres para el día de hoy en los medicamentos
+ * @by: sebastian.nevado
+ * @date: 2021/10/10
+ * @return: boolean
+ */
+function encuentraCodigoMipresMedicamentoDia($sCodigoMipres, $basedatos)
+{
+	global $conex;
+
+	$q = "SELECT dk.id
+			FROM ".$basedatos."_000054 dk
+			INNER JOIN ".$basedatos."_000208 edk ON (Kadhis = Ekxhis
+											AND Kading = Ekxing
+											AND Kadfec = Ekxfec
+											AND Kadart = Ekxart
+											AND Kadido = Ekxido)
+			WHERE Ekxmip = '".$sCodigoMipres."' AND Ekxfec = '".date("Y-m-d")."' AND Kadsus = 'off'
+			UNION
+			SELECT tdk.id
+			FROM ".$basedatos."_000060 tdk
+			INNER JOIN ".$basedatos."_000209 tedk ON (Kadhis = Ekxhis
+											AND Kading = Ekxing
+											AND Kadfec = Ekxfec
+											AND Kadart = Ekxart
+											AND Kadido = Ekxido)
+			WHERE Ekxmip = '".$sCodigoMipres."' AND Ekxfec = '".date("Y-m-d")."' AND Kadsus = 'off'";
+
+	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query - " . mysql_error());
+	$num = mysql_num_rows($res);
+
+	if($num > 0){
+		return true;
+	} else {
+		return false;
+	}
+}
 /*********************************************************************************************************************************
  * 						SECCION PARA INCLUIR EL USO DE CONSULTAR MEDIANTE AJAX
  * ****MODO DE USO
@@ -39731,7 +39769,11 @@ if(isset($consultaAjaxKardex)){
 			$historia=$_GET['historia'];
 			$ingreso=$_GET['ingreso'];
 			print_r(enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso));
-		break;	
+		break;
+		case 'encuentraCodigoMipresMedicamento':
+			$bEncuentraCodigo = encuentraCodigoMipresMedicamentoDia($nroPrescripcion, $basedatos);
+			echo $bEncuentraCodigo ? '1': '0';
+			break;
 		default :
 			break;
 	}
