@@ -223,34 +223,40 @@ function insertarNotaMedicaHCE( $conex, $whce,$wbasedato, $fechaCTC, $horaCTC, $
 	
 }
 
-function consultarDiagnostico( $conex, $whce, $his, $ing ){
+// function consultarDiagnostico( $conex, $whce, $his, $ing ){
+function consultarDiagnostico( $conex, $wmovhos, $his, $ing ){
 	
 	$val = "";
 
-	$sql = "SELECT ".$whce."_000051.movdat, ".$whce."_000051.Fecha_data, ".$whce."_000051.Hora_data
-			  FROM ".$whce."_000051
-			 WHERE ".$whce."_000051.movdat != ''
-			   AND ".$whce."_000051.movdat != ' '
-			   AND ".$whce."_000051.movcon = 182
-			   AND movhis='".$his."'
-			   AND moving='".$ing."'
-			UNION ALL
-			SELECT ".$whce."_000052.movdat, ".$whce."_000052.Fecha_data, ".$whce."_000052.Hora_data 
-			  FROM ".$whce."_000052
-			 WHERE ".$whce."_000052.movdat != ''
-			   AND ".$whce."_000052.movdat != ' '
-			   AND ".$whce."_000052.movcon = 141
-			   AND movhis='".$his."'
-			   AND moving='".$ing."'
-			UNION ALL
-			SELECT ".$whce."_000063.movdat, ".$whce."_000063.Fecha_data, ".$whce."_000063.Hora_data
-			  FROM ".$whce."_000063
-			 WHERE ".$whce."_000063.movdat != ''
-			   AND ".$whce."_000063.movdat != ' '
-			   AND ".$whce."_000063.movcon = 240
-			   AND movhis='".$his."' 
-			   AND moving='".$ing."'
-			ORDER BY Fecha_data DESC, Hora_data DESC";
+	// $sql = "SELECT ".$whce."_000051.movdat, ".$whce."_000051.Fecha_data, ".$whce."_000051.Hora_data
+	// 		  FROM ".$whce."_000051
+	// 		 WHERE ".$whce."_000051.movdat != ''
+	// 		   AND ".$whce."_000051.movdat != ' '
+	// 		   AND ".$whce."_000051.movcon = 182
+	// 		   AND movhis='".$his."'
+	// 		   AND moving='".$ing."'
+	// 		UNION ALL
+	// 		SELECT ".$whce."_000052.movdat, ".$whce."_000052.Fecha_data, ".$whce."_000052.Hora_data 
+	// 		  FROM ".$whce."_000052
+	// 		 WHERE ".$whce."_000052.movdat != ''
+	// 		   AND ".$whce."_000052.movdat != ' '
+	// 		   AND ".$whce."_000052.movcon = 141
+	// 		   AND movhis='".$his."'
+	// 		   AND moving='".$ing."'
+	// 		UNION ALL
+	// 		SELECT ".$whce."_000063.movdat, ".$whce."_000063.Fecha_data, ".$whce."_000063.Hora_data
+	// 		  FROM ".$whce."_000063
+	// 		 WHERE ".$whce."_000063.movdat != ''
+	// 		   AND ".$whce."_000063.movdat != ' '
+	// 		   AND ".$whce."_000063.movcon = 240
+	// 		   AND movhis='".$his."' 
+	// 		   AND moving='".$ing."'
+	// 		ORDER BY Fecha_data DESC, Hora_data DESC";
+
+	$sql = "SELECT r.Codigo  as diagnostico, m.Fecha_data , m.Hora_data 
+				FROM {$wmovhos}_000243 m
+					inner join root_000011 r on r.Codigo = m.Diacod 
+				where diahis = '{$his}' and diaing = '{$ing}'";
 			
 	$res = mysql_query($sql,$conex) or die (mysql_errno()." - ".mysql_error());
 	$nummed = mysql_num_rows($res);
@@ -818,7 +824,8 @@ else{	//si no hay ajax
 			
 			if( $i == 0 ){
 			
-				 $dxs = substr( strip_tags( consultarDiagnostico( $conex, $whce, $historia, $ingreso ) ), 0, 4 );
+				//  $dxs = substr( strip_tags( consultarDiagnostico( $conex, $whce, $historia, $ingreso ) ), 0, 4 );
+				$dxs = consultarDiagnostico( $conex, $wbasedato, $historia, $ingreso );
 				 
 				 $whereDxs = " AND Prodia = '*'";
 				 if( !empty( $dxs ) ){
