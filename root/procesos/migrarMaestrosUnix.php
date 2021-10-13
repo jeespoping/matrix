@@ -2,6 +2,8 @@
 include_once("conex.php");
 /******************************************************************************************************************************
  * Actualizaciones:
+ * 2021-10-11.				Julian M.   Se agrega el case 5minsTramos para desatrasar el cron de cargos de laboratorio y ejecutarlo
+ * 										por tramos.
  * Octubre 28 de 2020		Edwin MG. 	Se comenta cron copiaDeCxDelDia ya que se manda a hacer por aparte
  * 28-04-2020				Jerson T. 	Nuevo llamdo a la ejecucion de ETL_GRD.php (Ver) 
  * 27-04-2020 				Jerson T.	Nuevo llamado a la funcion copiaDeCxDelDia() para se ejecute cada 24 H
@@ -272,6 +274,18 @@ if($hay_unix)
 					$ejCron->pasar_examenes_lab();
 					include_once("ips/funciones_facturacionERP.php");
 					grabacionCargosLaboratorio();
+				}
+				break;
+			}
+			case '5minTramos': 
+			{
+				// Esta funcion se crea para desatrasar los cargos del laboratorio de acuerdo a las fechas de inicio y de fin en la root 51
+				$pasarCargosLaboratorio	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'pasarCargosLaboratorio');
+				if($pasarCargosLaboratorio == 'on')
+				{
+					$ejCron->pasar_examenes_labTramos();
+					include_once("ips/funciones_facturacionERP.php");
+					grabacionCargosLaboratorioTramos();
 				}
 				break;
 			}
