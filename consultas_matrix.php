@@ -15,7 +15,7 @@
 <center>
 <table border=0 align=center>
 <tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size=5>Consulta de Informacion x Query</font></a></tr></td>
-<tr><td align=center bgcolor="#cccccc"><font size=2> <b> consultas_matrix.php Ver. 2010-03-01</b></font></tr></td></table>
+<tr><td align=center bgcolor="#cccccc"><font size=2> <b> consultas_matrix.php Ver. 2021-10-07</b></font></tr></td></table>
 </center>
 <?php
 include_once("conex.php");
@@ -356,6 +356,7 @@ else
 		 * 		marlon.osorio
 		 * 		daniel.corredor
 		 *  */ 
+		if(!isset($Pagina)or $Pagina=="0")
 		$consulta = Cifrado::myDecrypt($consulta );
 		
 		if(isset($new))
