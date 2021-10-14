@@ -1234,6 +1234,8 @@ if (!$usuarioValidado){
 	
 	$versionMozilla = consultarAliasPorAplicacion( $conex, $wemp_pmla, "versionMozilla" );
 	$validarBrowser = consultarAliasPorAplicacion( $conex, $wemp_pmla, "validarBrowserOrdenes" );
+
+	$urlCTCministerio = consultarAliasPorAplicacion( $conex, $wemp_pmla, "urlCTCministerio" );
 	
 	$wipimpresoraga = consultarImpresoraGA( $conex, $wbasedato, $paciente->servicioActual );
 
@@ -1299,6 +1301,12 @@ if (!$usuarioValidado){
 	Fecha: 04/10/2021
 	*/
 	echo "<input type='hidden' name='mipresEnListaMedicamentosOrdenes' id='mipresEnListaMedicamentosOrdenes' value='".$mipresEnListaMedicamentosOrdenes."'/>";
+
+	/*Modificación: Se agrega para tener la URL de mipres
+	Autor: sebastian.nevado
+	Fecha: 04/10/2021
+	*/
+	echo "<input type='hidden' name='urlCTCministerio' id='urlCTCministerio' value='".$urlCTCministerio."'/>";
 	
 	
 	pintarModalLEVS( $conex, $wbasedato, $wcenmez, $wbasedatohce, "LQ", $paciente->enUrgencias, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
@@ -2836,11 +2844,11 @@ if (!$usuarioValidado){
 							*/
 							if($sMipresEnListaMedicamentosOrdenes == '2' && $usuario->esMedicoRolHCE)
 							{
-								echo "<td># Prescripci&oacute;n Mipres(*)</td>";
+								echo "<td># Prescripci&oacute;n Mipres(*)<br><p><a style='color:white; font-size:9pt;' href=\"$urlCTCministerio\" target=\"_blank\"><u>Clic aqu&iacute;</u> para abrir Mipres</a></p></td>";
 							}
 							elseif($sMipresEnListaMedicamentosOrdenes == '1' && $usuario->esMedicoRolHCE)
 							{
-								echo "<td># Prescripci&oacute;n Mipres</td>";
+								echo "<td># Prescripci&oacute;n Mipres<br><p><a style='color:white; font-size:9pt;' href=\"$urlCTCministerio\" target=\"_blank\"><u>Clic aqu&iacute;</u> para abrir Mipres</a></p></td>";
 							}
 							//FIN MODIFICACIÓN
 

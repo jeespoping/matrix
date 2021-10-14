@@ -13368,7 +13368,17 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 						numPrescripcionMipres.disabled = false;
 						numPrescripcionMipres.type = "text";
 
-						alert("El medicamento \"" + item[0] + "\" es NO POS, debe llenar el MIPRES en la plataforma del Ministerio de Salud antes de grabar el medicamento (antes de pulsar el botón 'OK').");
+						jAlert("El medicamento \"" + item[0] + "\" es NO POS, debe llenar el MIPRES en la plataforma del Ministerio de Salud antes de grabar el medicamento. A continuación, se abrirá una nueva ventana para realizar registro en MIPRES. Luego, usted deberá volver a esta ventana a continuar el registro.","ALERTA",function(){
+							var urlMipres = document.getElementById( "urlCTCministerio").value;
+							var win = window.open(urlMipres, '_blank');
+							if (win) {
+								//Browser has allowed it to be opened
+								win.focus();
+							} else {
+								//Browser has blocked it
+								alert('Por favor permita las ventanas emergentes en este sitio web');
+							}
+						});
 					}
 					else
 					{
