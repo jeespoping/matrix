@@ -2819,7 +2819,7 @@ if (!$usuarioValidado){
 							$sMipresEnListaMedicamentosOrdenes = consultarAliasPorAplicacion( $conex, $wemp_pmla, "mipresEnListaMedicamentosOrdenes" );
 							if($sMipresEnListaMedicamentosOrdenes == '1' || $sMipresEnListaMedicamentosOrdenes == '2')
 							{
-								echo "<div class='fondoAmarillo' style='border: 1px solid #333333; width:170% !important; width:110%; height:110px;$styleDivNuevoBuscador'>";
+								echo "<div class='fondoAmarillo' style='border: 1px solid #333333; width:170% !important; width:110%; height:150px;$styleDivNuevoBuscador'>";
 							}
 							else
 							{

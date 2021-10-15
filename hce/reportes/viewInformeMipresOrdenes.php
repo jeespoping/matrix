@@ -131,7 +131,7 @@
                     </table>
                     </br>
                     <input type="submit" name="buscar" id="buscar" value="Buscar">
-                    <a href="" onclick='cerrarVentana()'>Salir</a>
+                    <input type='submit' id='Salir' name='Salir' class='button' value='Salir' onclick='cerrarVentana()'>
                 </form>
             </center>
 
@@ -143,7 +143,7 @@
                     {
                         //Títulos de tabla
                         echo("
-                            <tr class='fila1'>
+                            <tr class='encabezadoTabla'>
                                 <th colspan='7'><h3>Resultados</h3></th>
                             </tr>
                             <tr class='encabezadoTabla'>
