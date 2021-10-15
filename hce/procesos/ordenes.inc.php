@@ -39214,6 +39214,74 @@ function encuentraCodigoMipresMedicamentoDia($sCodigoMipres, $basedatos)
 		return false;
 	}
 }
+
+/**
+ * Función para buscar medicamentos no POS con su código mipres ingresado
+ * @by: sebastian.nevado
+ * @date: 2021/10/14
+ * @return: array
+ */
+function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = null)
+{
+	global $conex;
+	global $wemp_pmla;
+	
+	//Variable de respuesta
+	$aArticulos = array();
+	
+	//Si el wemm_pmla llega vacío, uso el global
+	$sWemp_pmla = is_null($sWemp_pmla) ? $wemp_pmla : $sWemp_pmla;
+	//Si la fecha llega nula, pongo la fecha actual
+	$sFechaBusqueda = is_null($sFechaBusqueda) ? date("Y-m-d") : $sFechaBusqueda;
+
+	//Variables para las tablas
+	$sMovhos = consultarAliasPorAplicacion( $conex, $sWemp_pmla, "movhos" );
+	$sCliame = consultarAliasPorAplicacion( $conex, $sWemp_pmla, "cliame" );
+
+	//Busco los tipos de empresa que son EPS
+	$sTiposEmpresa = consultarAliasPorAplicacion( $conex, $sWemp_pmla, "tiposEmpresasEps" );
+	
+	//creo un IN para la consulta
+	$aListaEPS = explode( "-", $sTiposEmpresa );
+	
+	$sInEPS = '';
+	
+	foreach( $aListaEPS as $key => $value ){
+		$sInEPS .= ",'$value'";
+	}
+	
+	$sInEPS = "IN( ".substr( $sInEPS, 1 )." ) ";
+
+	$sQueryInforme = "SELECT dk.Fecha_data AS fechaordeniamiento,
+							dk.Kadhis AS historia, dk.Kading AS ingreso, pac.Pacap1 AS apellido1, pac.Pacap2 AS apellido2, pac.Pacno1 AS nombre1, pac.Pacno2 AS nombre2,
+							ing.Ingres AS nitentidad, ing.Ingnre AS nombreentidad,
+							dk.Kadart AS codigoarticulo, ma.Artcom AS nombrearticulo, ma.Artgen AS nombregenericoarticulo, dk.Kadcma AS cantidad, dk.Kadufr AS unidad, edk.Ekxmip AS codigomipres,
+							u.codigo AS codigomedico, u.Descripcion AS nombremedico
+			FROM {$sMovhos}_000208 edk
+			INNER JOIN {$sMovhos}_000054 dk ON (dk.Kadhis = edk.Ekxhis
+										AND dk.Kading = edk.Ekxing
+										AND dk.Kadfec = edk.Ekxfec
+										AND dk.Kadart = edk.Ekxart
+										AND dk.Kadido = edk.Ekxido)
+			INNER JOIN {$sMovhos}_000026 ma ON (dk.Kadart = ma.Artcod AND ma.Artest = 'on')
+			INNER JOIN {$sMovhos}_000016 ing ON (ing.Inghis = dk.Kadhis
+										AND ing.Inging = dk.Kading
+										AND Ingtip {$sInEPS}
+										)
+			INNER JOIN {$sCliame}_000024 emp ON (emp.Empcod = ing.Ingres AND emp.Empest = 'on')
+			INNER JOIN usuarios u ON (u.Codigo = SUBSTRING(dk.Seguridad, 3, LENGTH(dk.Seguridad)))
+			INNER JOIN {$sCliame}_000100 pac ON (pac.Pachis = dk.Kadhis)
+			WHERE dk.Kadsus = 'off'
+				AND ma.Artpos <> 'P'
+				AND dk.Fecha_data = '{$sFechaBusqueda}'
+			ORDER BY dk.Fecha_data DESC, dk.Hora_data DESC";
+
+	$aResultadoQuery = mysqli_query($conex, $sQueryInforme) or die ("Error: " . mysql_errno() . " - en el query - " . mysql_error());
+	$aArticulos = mysqli_fetch_all($aResultadoQuery, MYSQLI_ASSOC);
+
+	return $aArticulos;
+}
+
 /*********************************************************************************************************************************
  * 						SECCION PARA INCLUIR EL USO DE CONSULTAR MEDIANTE AJAX
  * ****MODO DE USO
