@@ -1730,6 +1730,7 @@ while($row = mysql_fetch_array($res))
 						$apellido1=$array['pacap1'];
 						$apellido2=$array['pacap2'];
 					}
+					$nombre=$array['pacnom'];
 					$sexo=$array['pacsex'];
 					$depmto=$Adep;
 					$lugar=$Amun;
