@@ -1943,7 +1943,7 @@ else {
 						. "   AND karhis         = kadhis "
 						. "   AND karing         = kading "
 						. "   AND kadfec         = '" . $wfecha . "'"       //Esto me valida que el Kardex sea del día
-						. "   AND kadsus        != 'on' "
+						//. "  # AND kadsus        != 'on' "
 						. "   AND Kadess        != 'on' "				 //Valida que no esté como no enviar
 						//		          ."   AND kadcdi-kaddis  > 0    "               //Esto me indica que ya falta por dispensar parcial o totalmente	// Se comenta porque ya no se mira lo dispensado hasta la hora de corte sino seg{un la frecuencia del centro de costo actual
 						. "   AND kadart         = artcod "
@@ -2474,10 +2474,61 @@ else {
 				background-color: #DEFFCF;
 			}
 
-			.suspendido{
+			.suspendido {
 
 				/* Aqui asiganamos de color rojo claro el estado SUSPENDIDO */
 				background-color: #FFD2D2;
+				animation-name: suspendido;
+				animation-duration: 1s;
+				animation-timing-function: linear;
+				animation-iteration-count: infinite;
+
+				-webkit-animation-name: suspendido;
+				-webkit-animation-duration: 1s;
+				-webkit-animation-timing-function: linear;
+				-webkit-animation-iteration-count: infinite;
+			}
+
+			@-moz-keyframes suspendido {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@-webkit-keyframes suspendido {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@keyframes suspendido {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
 			}
 
 			.tituloPagina {
@@ -3316,7 +3367,8 @@ else {
 
 							if ($wopcion == 5) //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
 							{
-								echo "<tr class=" . $wclass . ">";
+								//print_r($wmat_estado);
+								echo "<tr class=" . $wclass . " id='".$wmat_estado[$i][1]."'>";
 								echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
 								echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
 								echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
@@ -3565,7 +3617,7 @@ else {
 							AND	Kadvia = Viacod
 							AND	Percod = Kadper
 							AND	kadart = Artcod;
-						";
+							";
 
 						$result = mysql_query($q, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 						$num_art = mysql_num_rows($result);
@@ -3603,17 +3655,16 @@ else {
 							$wmat_estado[$j][17] = $fila[7];
 							$wmat_estado[$j][18] = $fila[8];
 							$wmat_estado[$j][19] = $fila[9];
-
 						}
 						$j++;
 					}
 				}
 
 				echo "<hr style='height:3px;border-width:0;color:#cc0000;background-color:#cc0000'>";
-				
+
 				echo "<td class='fila1' width='90%'>
-				<div class='titulopagina' align='center'>PACIENTES CON SOPORTE NUTRICIONAL</div>
-				</td>";
+						<div class='titulopagina' align='center'>PACIENTES CON SOPORTE NUTRICIONAL</div>
+					</td>";
 				//Encabezado de tabla
 				echo "<table>";
 				// echo "<hr style='height:3px;border-width:0;color:#cc0000;background-color:#cc0000'>";
@@ -3632,7 +3683,10 @@ else {
 				echo "</tr>";
 
 				//Condicional while para pintar los datos que vienen desde la consulta
-				// while ($kar = mysql_fetch_row($result)){   
+				// while ($kar = mysql_fetch_row($result)){  
+
+				$color_filas = 0; //Inicializamos variable en 0 para el color de las filas
+				$arrayActivos= array();			 // indica si hay un articulo activo
 				foreach ($wmat_estado as $index => $fila) {
 
 					//Estados: Nuevo, Modificado, Suspendido, Igual
@@ -3663,60 +3717,93 @@ else {
 					// 	$clase = 'nuevo';
 					// }
 
-					//Condicional para que se intercale el color de las filas en cada registro
-					if (($index % 2) != 0) {
-						$wclass = "fila1";
-					} else {
-						$wclass = "fila2";
-					}
-
+					$arrayActivos[$fila[1]]= array("activos" => 0);
 					if (count($fila[11]) > 1) {
 						for ($k = 0; $k < count($fila[11]); $k++) {
+							
+							//Condicional para que se intercale el color de las filas en cada registro
+							if (($k % 2) != 0) {
+								$wclass = "fila1";
+							} else {
+								$wclass = "fila2";
+							}
+
+
 							$pos_art = $fila[11][$k];
-							$estado = '';
-							$clase_estado = '';
-	
-							if ( $pos_art[8] == 'on' )
-							{
+
+
+							if ($pos_art[8] == 'on') {
 								$estado = 'SUSPENDIDO';
 								$clase_estado = 'suspendido';
+								
+									
+							}else{
+								$arrayActivos[$fila[1]]['activos'] = 1+$arrayActivos[$fila[1]]['activos'];
+								$estado = "";
+								$clase_estado = '';
 							}
 
 							//Pintamos los datos 
 							echo "<tr align='center' class=" . $wclass . ">";
-							echo "<td align='center' >" . $fila[0] . "</td>"; 								//Habitación pac
-							echo "<td align='center' >" . $fila[1] . "-" . $fila[2] . "</td>"; 								//Historia pac
-							echo "<td align='center' >" . $fila[3] . "</td>"; 								//Name pac
-							echo "<td align='center' class=" . $clase_estado . " >" . $estado . "</td>";		//Estado
-							echo "<td align='center' >" . $pos_art[1] . "</td>";		//Articulo, Producto
-							echo "<td align='center' >" . $pos_art[7] . "</td>"; 											//Dosis
-							echo "<td align='center' >" . $pos_art[5] . "</td>"; 								//Via de administración
-							echo "<td align='center' >" . $pos_art[2] . "</td>";								//Frecuencia
+							echo "<td align='center' >" . $fila[0] . "</td>"; //Habitación pac
+							echo "<td align='center' >" . $fila[1] . "-" . $fila[2] . "</td>"; //Historia pac
+							echo "<td align='center' >" . $fila[3] . "</td>"; //Name pac
+							echo "<td align='center' class=" . $clase_estado . " >" . $estado . "</td>"; //Estado
+							echo "<td align='center' >" . $pos_art[1] . "</td>"; //Articulo, Producto
+							echo "<td align='center' >" . $pos_art[7] . "</td>"; //Dosis
+							echo "<td align='center' >" . $pos_art[5] . "</td>"; //Via de administración
+							echo "<td align='center' >" . $pos_art[2] . "</td>"; //Frecuencia
 							echo "<td align='center' >" . $pos_art[3] . " <br>a las</br> " . $pos_art[4] . "</td>";	//Fecha y hora de inicio 
-							echo "<td align='center' >" . $pos_art[6] . "</td>";								//Obervación
+							echo "<td align='center' >" . $pos_art[6] . "</td>"; //Obervación
 							echo "</tr>";
 						}
 					} else {
-						if ( $fila[18] == 'on' )
-						{
+
+						// Condicional de la manera corta para asignar color a cada fila
+						$color_filas % 2 != 0 ? $wclass = 'fila1' : $wclass = 'fila2';
+
+						if ($fila[18] == 'on') {
 							$estado = 'SUSPENDIDO';
 							$clase_estado = 'suspendido';
+							
+						}else{
+							$arrayActivos[$fila[1]]['activos'] = 1+$arrayActivos[$fila[1]]['activos'];
+							$estado = "";
+							$clase_estado = '';
 						}
+
 						//Pintamos los datos 
 						echo "<tr align='center' class=" . $wclass . ">";
-						echo "<td align='center' >" . $fila[0] . "</td>"; 								//Habitación pac
-						echo "<td align='center' >" . $fila[1] . "-" . $fila[2] . "</td>"; 								//Historia pac
-						echo "<td align='center' >" . $fila[3] . "</td>"; 								//Name pac
-						echo "<td align='center' >" . $estado . "</td>"; 									//Estado
-						echo "<td align='center' >" . $fila[11] . "</td>";		//Articulo, Producto
-						echo "<td align='center' >" . $fila[17] . "</td>"; 											//Dosis
-						echo "<td align='center' >" . $fila[15] . "</td>"; 								//Via de administración
-						echo "<td align='center' >" . $fila[12] . "</td>";								//Frecuencia
+						echo "<td align='center' >" . $fila[0] . "</td>"; //Habitación pac
+						echo "<td align='center' >" . $fila[1] . "-" . $fila[2] . "</td>"; //Historia pac
+						echo "<td align='center' >" . $fila[3] . "</td>"; //Name pac
+						echo "<td align='center' class=" . $clase_estado . " >" . $estado . "</td>"; //Estado
+						echo "<td align='center' >" . $fila[11] . "</td>"; //Articulo, Producto
+						echo "<td align='center' >" . $fila[17] . "</td>"; //Dosis
+						echo "<td align='center' >" . $fila[15] . "</td>"; //Via de administración
+						echo "<td align='center' >" . $fila[12] . "</td>"; //Frecuencia
 						echo "<td align='center' >" . $fila[13] . " <br>a las</br> " . $fila[14] . "</td>";	//Fecha y hora de inicio 
-						echo "<td align='center' >" . $fila[16] . "</td>";								//Obervación
+						echo "<td align='center' >" . $fila[16] . "</td>"; //Obervación
 						echo "</tr>";
+
+						$color_filas++; //Vamos incrementando
 					}
 				}
+				print_r($arrayActivos);
+				echo '<script type="text/javascript">';
+				foreach ($arrayActivos as $key => $value) {
+				
+					if($value['activos'] == 0){
+						//echo "entro";
+						echo 'var node = document.getElementById("'.$key.'");';
+						echo 'node.parentNode.removeChild(node);';
+					}
+				}
+				echo '</script>';
+				/*if($activos > 0){
+				
+				}*/
+				
 			}
 		}
 	}
