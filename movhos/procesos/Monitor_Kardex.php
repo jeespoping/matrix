@@ -2458,6 +2458,11 @@ else {
 			/* Aqui asignamos de color gris claro el estado IGUAL*/
 				{
 				background-color: #F0F0F0;
+
+				-webkit-animation-name: igual;
+				-webkit-animation-duration: 1s;
+				-webkit-animation-timing-function: linear;
+				-webkit-animation-iteration-count: infinite;
 			}
 
 			.modificado
@@ -2465,6 +2470,11 @@ else {
 			/* Aqui asignamos de color amarillo claro el estado MODIFICADO*/
 				{
 				background-color: #FAF6E2;
+
+				-webkit-animation-name: modificado;
+				-webkit-animation-duration: 1s;
+				-webkit-animation-timing-function: linear;
+				-webkit-animation-iteration-count: infinite;
 			}
 
 			.nuevo
@@ -2472,6 +2482,11 @@ else {
 			/* Aqui asignamos de color verde claro el estado NUEVO*/
 				{
 				background-color: #DEFFCF;
+
+				-webkit-animation-name: nuevo;
+				-webkit-animation-duration: 1s;
+				-webkit-animation-timing-function: linear;
+				-webkit-animation-iteration-count: infinite;
 			}
 
 			.suspendido {
@@ -2489,6 +2504,7 @@ else {
 				-webkit-animation-iteration-count: infinite;
 			}
 
+			/*Desde aca comienza el estado suspendido */
 			@-moz-keyframes suspendido {
 				0% {
 					opacity: 1.0;
@@ -2530,6 +2546,137 @@ else {
 					opacity: 1.0;
 				}
 			}
+
+			/*Desde aca comienza el keyframes del estado nuevo */
+
+			@-moz-keyframes nuevo {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@-webkit-keyframes nuevo {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@keyframes nuevo {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}	
+			}
+
+			/* Desde aca comienza el keyframes del modificado */
+			@-moz-keyframes modificado {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@-webkit-keyframes modificado {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@keyframes modificado {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			/*Desde aca comienza el keyframes del estado igual */
+			@-moz-keyframes igual {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@-webkit-keyframes igual {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@keyframes igual {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+			
 
 			.tituloPagina {
 				font-family: verdana;
@@ -3372,7 +3519,7 @@ else {
 								echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
 								echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
 								echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
-								echo "<td class=" . $walta_tras . " align=left  >1</td>"; //Estado
+								echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
 							} else {
 								echo "<tr class=" . $wclass . ">";
 								echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
@@ -3609,8 +3756,8 @@ else {
 						// ." AND   Percod  =   Kadper ";
 
 						$q = "
-						SELECT	kadcpx, Artcom, CONCAT_WS( ' ', Percan, Peruni ) as Frecuencia, Kadfin, Kadhin, Viades, Kadobs, CONCAT_WS( ' ', Kadcfr, Kadufr ) as Dosis, Kadsus
-							FROM	movhos_000054, movhos_000040, movhos_000043, movhos_000026
+						SELECT	kadcpx, Artcom, CONCAT_WS( ' ', Percan, Peruni ) as Frecuencia, Kadfin, Kadhin, Viades, Kadobs, CONCAT_WS( ' ', Kadcfr, Kadufr ) as Dosis, Kadsus, K.Fecha_data, K.kadhle, K.Hora_data
+							FROM	movhos_000054 K, movhos_000040, movhos_000043, movhos_000026
 						WHERE	Kadhis = '" . $whis . "'
 							AND	Kading = '" . $wing . "'
 							AND	Kadfec = '" . $wfecha . "'
@@ -3687,37 +3834,18 @@ else {
 
 				$color_filas = 0; //Inicializamos variable en 0 para el color de las filas
 				$arrayActivos= array();			 // indica si hay un articulo activo
+				
 				foreach ($wmat_estado as $index => $fila) {
 
-					//Estados: Nuevo, Modificado, Suspendido, Igual
 					$estado = '';
 					$clase_estado = '';
-					// $fechaActual = date('d-m-Y');
-					// $FechaKardexOp5 = $kar[9];
-					// $FechaData = $kar[10];
-
-					// if($FechaKardexOp5 == $fechaActual)
-					// {
-					// 	$estado = 'NUEVO';
-					// }elseif ($FechaKardexOp5 != $FechaData) {
-					// 	$estado = 'MODIFICADO';
-					// }elseif ($FechaKardexOp5 == $FechaData) {
-					// 	$estado = 'IGUAL';
-					// }
-
-					//Condicion para indicarle que color asignar a cada estado
-					// if($estado == 'IGUAL')
-					// {
-					// 	$clase = 'igual';
-					// }elseif ($estado == 'MODIFICADO')
-					// {
-					// 	$clase = 'modificado';
-					// }elseif ($estado == 'NUEVO')
-					// {
-					// 	$clase = 'nuevo';
-					// }
-
-					$arrayActivos[$fila[1]]= array("activos" => 0);
+					
+					$arrayActivos[$fila[1]]= array(
+													"activos" => 0,
+													"nuevo" => 0,
+													"modificado" => 0
+												);
+					
 					if (count($fila[11]) > 1) {
 						for ($k = 0; $k < count($fila[11]); $k++) {
 							
@@ -3731,18 +3859,29 @@ else {
 
 							$pos_art = $fila[11][$k];
 
+							
 
+							//Aqui asignamos el estado suspendido si el articulo esta en on, quiere decir que no esta activo.
 							if ($pos_art[8] == 'on') {
 								$estado = 'SUSPENDIDO';
 								$clase_estado = 'suspendido';
-								
-									
+										
 							}else{
 								$arrayActivos[$fila[1]]['activos'] = 1+$arrayActivos[$fila[1]]['activos'];
 								$estado = "";
 								$clase_estado = '';
+								if($pos_art[9] == date('Y-m-d') && empty($pos_art[10])){
+									$estado = "NUEVO";
+									$clase_estado = 'nuevo';
+									$arrayActivos[$fila[1]]['nuevo'] = 1+$arrayActivos[$fila[1]]['nuevo'];
+								}if(!empty($pos_art[10])){
+									$estado = "MODIFICADO";
+									$clase_estado = 'modificado';
+									$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
+								}
 							}
-
+					
+							
 							//Pintamos los datos 
 							echo "<tr align='center' class=" . $wclass . ">";
 							echo "<td align='center' >" . $fila[0] . "</td>"; //Habitación pac
@@ -3762,14 +3901,24 @@ else {
 						// Condicional de la manera corta para asignar color a cada fila
 						$color_filas % 2 != 0 ? $wclass = 'fila1' : $wclass = 'fila2';
 
+						
 						if ($fila[18] == 'on') {
 							$estado = 'SUSPENDIDO';
 							$clase_estado = 'suspendido';
 							
 						}else{
 							$arrayActivos[$fila[1]]['activos'] = 1+$arrayActivos[$fila[1]]['activos'];
-							$estado = "";
-							$clase_estado = '';
+								$estado = "";
+								$clase_estado = '';
+								if($fila[19] == date('Y-m-d') && empty($fila[20])){
+									$estado = "NUEVO";
+									$clase_estado = 'nuevo';
+									$arrayActivos[$fila[1]]['nuevo'] = 1+$arrayActivos[$fila[1]]['nuevo'];
+								}if(!empty($fila[20])){
+									$estado = "MODIFICADO";
+									$clase_estado = 'modificado';
+									$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
+								}
 						}
 
 						//Pintamos los datos 
@@ -3789,21 +3938,26 @@ else {
 						$color_filas++; //Vamos incrementando
 					}
 				}
-				print_r($arrayActivos);
+				//  print_r($arrayActivos);
 				echo '<script type="text/javascript">';
-				foreach ($arrayActivos as $key => $value) {
 				
+				foreach ($arrayActivos as $key => $value) {
+					$estado = "estado_".$key;
+					//echo 'alert("'.$estado.'");';
+					if($value['nuevo'] != 0){
+						echo '$("#'.$estado.'").html("NUEVO");'	;
+						echo '$("#'.$estado.'").addClass("nuevo");';
+					}elseif($value['modificado'] != 0){
+
+						echo '$("#'.$estado.'").html("MODIFICADO");';
+						echo '$("#'.$estado.'").addClass("modificado");';
+					}
 					if($value['activos'] == 0){
-						//echo "entro";
 						echo 'var node = document.getElementById("'.$key.'");';
 						echo 'node.parentNode.removeChild(node);';
 					}
 				}
 				echo '</script>';
-				/*if($activos > 0){
-				
-				}*/
-				
 			}
 		}
 	}
