@@ -434,6 +434,9 @@ $wactualiz = "(Febrero 23 de 2021)";
 				var data = response.data;
 				var fila = "";
 				var tr = "";
+				let protocol = '<?php echo stripos($_SERVER["SERVER_PROTOCOL"],"https") === 0 ? "https://" : "http://"; ?>';
+				let server = protocol+'<?php echo $_SERVER["SERVER_NAME"]; ?>';
+				
 				for (var id in data) {
 					var tipo = "";
 					if(data[id]['dato']=="on"){
@@ -460,8 +463,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 						  + "<td>"+data[id]['tercero']+"</td>"
 						  + "<td>"+tipo+"</td>"
 						  + "<td>"+data[id]['cad_tipo_cco']+"</td>"
-						  + "<td style='text-align: center'><button  onclick='eliminar(\""+id+"\")'><img src='http://132.1.18.12/matrix/images/medical/root/borrar.png' alt=''></button></td>"
-						  + "<td style='text-align: center'><button  onclick='editar(\""+id+"\",\""+data[id]['concepto']+"\",\""+data[id]['c_costos']+"\",\""+data[id]['procedimiento']+"\",\""+data[id]['articulo']+"\",\""+data[id]['hce']+"\",\""+data[id]['consecutivo']+"\",\""+tipo+"\",\""+data[id]['tipo_cco']+"\",\""+data[id]['articuloapl']+"\",\""+data[id]['tipo_concepto']+"\",\""+data[id]['ccator']+"\",\""+data[id]['ccapex']+"\",\""+data[id]['tercero']+"\")'><img src='http://132.1.18.11/matrix/images/medical/root/grabar.png' alt=''></button></td>"
+						  + "<td style='text-align: center'><button  onclick='eliminar(\""+id+"\")'><img src='"+server+"/matrix/images/medical/root/borrar.png' alt=''></button></td>"
+						  + "<td style='text-align: center'><button  onclick='editar(\""+id+"\",\""+data[id]['concepto']+"\",\""+data[id]['c_costos']+"\",\""+data[id]['procedimiento']+"\",\""+data[id]['articulo']+"\",\""+data[id]['hce']+"\",\""+data[id]['consecutivo']+"\",\""+tipo+"\",\""+data[id]['tipo_cco']+"\",\""+data[id]['articuloapl']+"\",\""+data[id]['tipo_concepto']+"\",\""+data[id]['ccator']+"\",\""+data[id]['ccapex']+"\",\""+data[id]['tercero']+"\")'><img src='"+server+"/matrix/images/medical/root/grabar.png' alt=''></button></td>"
 					+   "</tr>";
 				}
 				
@@ -1473,7 +1476,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 					},
 			allowFreeEntries: false,
 			maxDropHeight: 145,
-			hideTrigger: true			
+			hideTrigger: true,
+			maxSelection: null
         });
 		elProcExc.disable();
 		elProcOrden = $('#autocompleteProcOrden').magicSuggest({          
@@ -1484,7 +1488,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 					},
 			allowFreeEntries: false,
 			maxDropHeight: 145,
-			hideTrigger: true
+			hideTrigger: true,
+			maxSelection: null
         });
 		$("#tipo_orden").change(function() {			
 			elProcOrden.clear(true);
@@ -1774,13 +1779,13 @@ $nombre_tema = 'CONFIGURACI&Oacute;N CARGOS AUTOM&Aacute;TICOS';
 encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlogoempresa);
 
 ?>
-<a href="../manuales/Cargos_Automaticos.pdf" onclick="window.open(this.href);return false" style="cursor : pointer;    float: right; padding-bottom: 5px;">Manual de Usuario</a>
+<a href="../manuales/manual_cargos_automaticos.pdf" onclick="window.open(this.href);return false" style="cursor : pointer;    float: right; padding-bottom: 5px;">Manual de Usuario</a>
 <div style="clear: both;"></div>
 
 <div class="tab ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks " role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-2" aria-selected="false" onclick="openTab(event,'listadoA')" >LISTADO</button>
   	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks active" role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'configurar',true)" >CONFIGURACI&Oacute;N</button>
-	<!--<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks" role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'estancia')" >ESTANCIA</button>-->
+	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks" role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'estancia')" >ESTANCIA</button>
 	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks " role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'log')" >LOG</button>
 </div>
 <div id="listadoA" class="prueba ui-tabs-panel ui-widget-content ui-corner-bottom"  style="display: none;">
