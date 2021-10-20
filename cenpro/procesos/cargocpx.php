@@ -154,6 +154,7 @@ $accion_iq = '';
 //actualizacion: 2007-11-06 se crea la opcion del carro
 //Actualización (sebastian.nevado): 2021-06-11 se realiza llamado de factura inteligente para insumos.
 //Actualización (sebastian.nevado): 2021-07-22 reduzco el inventario para los insumos. NOTA: no se valida que tenga existencias para hacer movimiento debido a que no había sido reportado, por lo que el inventario puede quedar negativo.
+//Actualización (sebastian.nevado): 2021-10-19 Se comenta el llamado a la función donde reduzco el inventario para los insumos por solicitud del usuario.
 
 
 function consultarHabitacion($historia,$ingreso)
@@ -3469,7 +3470,7 @@ else
 																				*Descripción: reduzco el inventario para los insumos
 																				*Autor: sebastian.nevado
 																				*/
-																				descontarArticuloMatrix($exp[3], $cco, '', $art['cod']);
+																				//descontarArticuloMatrix($exp[3], $cco, '', $art['cod']);
 																				// FIN MODIFICACION
 																				
 	//						                                                    echo $art['cod']."......".$exp[1];
@@ -4248,7 +4249,7 @@ else
 																				*Descripción: reduzco el inventario para los insumos
 																				*Autor: sebastian.nevado
 																				*/
-																				descontarArticuloMatrix($exp[3], $cco, '', $art['cod']);
+																				//descontarArticuloMatrix($exp[3], $cco, '', $art['cod']);
 																				// FIN MODIFICACION
 																				
 	//						                                                    echo $art['cod']."......".$exp[1];
