@@ -69,6 +69,7 @@ include_once("conex.php");
 			$wactualiz='2020-03-02';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //  2021-10-01  Joel Payares Hdz		- Se crea parametro departamento en base de datos para obtener el valor dinamicamente.
+//	2021-09-15  Jaime Mejia Quintero    - Se crea parametro para agregar mipres como soporte automatico
 // 	2020-11-13	Edwin MG				- Se cambia función mysqli_connect, que se conectaba a la BD de producción y se cambia por función nueva
 //										  auna_connectdb agregada en el conex.php
 // 	2020-03-02	Jessica Madrid Mejía	- Se agrega el parámetro default_socket_timeout con el tiempo configurado en minutos en 
@@ -131,8 +132,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
 // if(!isset($_SESSION['user']))
-if(!isset($_SESSION['user']) && $proceso!="actualizar")
-{
+if(!isset($_SESSION['user']) && $proceso != "actualizar" && !isset($_GET['automatizacion_pdfs'])){
     echo '  <div style="color: #676767;font-family: verdana;background-color: #E4E4E4;" >
                 [?] Usuario no autenticado en el sistema.<br />Recargue la p&aacute;gina principal de Matrix &oacute; Inicie sesi&oacute;n nuevamente.
             </div>';
@@ -464,7 +464,22 @@ else
 		
 		return $html;						
 	}
-	
+
+	function pintarGenerarPDF($wemp_pmla, $historia, $ingreso,$responsable, $fechaInicial, $fechaFinal, $tipDocPac, $docPac, $tipDocMed, $docMed, $codEps, $tipoPrescrip, $nroPrescripcion, $filtroMipres, $ambitoAtencion){
+		$arrayPrescripciones = consultarPrescripcionesMonitor($wemp_pmla, $fechaInicial, $fechaFinal, $tipDocPac, $docPac, $tipDocMed, $docMed, $codEps, $tipoPrescrip, $nroPrescripcion, $filtroMipres, $ambitoAtencion);
+		//colocar aca el tema de la automatizacion
+		$contadorPDF = 1;
+		if (count($arrayPrescripciones) > 0) {
+			foreach ($arrayPrescripciones as $key => $value) {
+				if(!empty($value['nroPrescripcion'])){
+					generarPDF($wemp_pmla,$value['nroPrescripcion'],'',$contadorPDF,$historia,$ingreso,$responsable);
+					$contadorPDF = $contadorPDF + 1;	
+				}
+			}
+		}	
+		return;		
+	}
+
 	function pintarTabPrescripciones($wemp_pmla,$fechaInicial,$fechaFinal,$tipDocPac,$docPac,$tipDocMed,$docMed,$codEps,$tipoPrescrip,$nroPrescripcion,$filtroMipres,$ambitoAtencion)
 	{
 		$arrayPrescripciones = consultarPrescripcionesMonitor($wemp_pmla,$fechaInicial,$fechaFinal,$tipDocPac,$docPac,$tipDocMed,$docMed,$codEps,$tipoPrescrip,$nroPrescripcion,$filtroMipres,$ambitoAtencion);
@@ -926,8 +941,10 @@ else
 		{
 			$filtroAmbitoAtencion = " AND Precaa='".$ambitoAtencion."'";
 		}
-		
-		
+
+		//cambio jaime mejia para obtener estados diferente de 4
+		$filtroEstado = " AND Preepr='" . '4'. "'";
+
 		$tablaFiltroTipoPresc = "";
 		$condicionFiltroTipoPresc = "";
 		if($tipoPrescrip=="M")
@@ -965,8 +982,25 @@ else
 		{
 			$filtroFecha = "Prefep BETWEEN '".$fechaInicialMonitorMipres."' AND '".date('Y-m-d')."'";
 		}
+
+		//Automatizacion de la consulta para sacar soporte Mipres automatico
+		if (isset($_GET['automatizacion_pdfs'])){
+			$queryMipres = "SELECT Prefep,Prehop,Pretip,Preidp,Prepnp,Presnp,Prepap,Presap,Prenop,Pretim,Preidm,Prepnm,Presnm,Prepam,Presam,Preeps,Epsdes,Precaa
+			FROM " . $wbasedatoMipres . "_000001,mipres_000033 " . $tablaFiltroTipoPresc . " 
+		   WHERE 	" . $filtroFecha . "
+				  " . $filtroPaciente . "
+				  " . $filtroMedico . "
+				  " . $filtroEps . "
+				  " . $filtroNroPrescripcion . "
+				  " . $filtroAmbitoAtencion . "
+				  " . $filtroEstado . "
+			 AND Preeps=Epscod
+				  " . $condicionFiltroTipoPresc . "
+		ORDER BY Prefep,Prehop,Prepnp,Presnp,Prepap,Presap;";
+		}
 		
-		$queryMipres = "SELECT Prefep,Prehop,Pretip,Preidp,Prepnp,Presnp,Prepap,Presap,Prenop,Pretim,Preidm,Prepnm,Presnm,Prepam,Presam,Preeps,Epsdes 
+		else{
+		$queryMipres = "SELECT Prefep,Prehop,Pretip,Preidp,Prepnp,Presnp,Prepap,Presap,Prenop,Pretim,Preidm,Prepnm,Presnm,Prepam,Presam,Preeps,Epsdes
 						  FROM ".$wbasedatoMipres."_000001,mipres_000033 ".$tablaFiltroTipoPresc." 
 						 WHERE 	".$filtroFecha."
 								".$filtroPaciente."
@@ -977,8 +1011,8 @@ else
 						   AND Preeps=Epscod
 								".$condicionFiltroTipoPresc."
 					  ORDER BY Prefep,Prehop,Prepnp,Presnp,Prepap,Presap;";
-					  
-					  
+		}			  
+  
 		$resMipres = mysql_query($queryMipres, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $queryMipres . " - " . mysql_error());		   
 		$numMipres = mysql_num_rows($resMipres);
 		
@@ -987,6 +1021,11 @@ else
 		{
 			while($rowsMipres = mysql_fetch_array($resMipres))
 			{
+				if (isset($_GET['automatizacion_pdfs'])){
+					while($rowsMipres['Precaa'] == '11' || $rowsMipres['Precaa'] == '12'){
+						exit();
+					}
+				}
 				if(!in_array($rowsMipres['Prenop'],$arrayPrescripciones))
 				{
 					$arrayMipres[$rowsMipres['Prenop']]['nroPrescripcion'] = $rowsMipres['Prenop'];
@@ -999,7 +1038,7 @@ else
 					$arrayMipres[$rowsMipres['Prenop']]['docMed'] = $rowsMipres['Preidm'];
 					$arrayMipres[$rowsMipres['Prenop']]['nombreMed'] = $rowsMipres['Prepnm']." ".$rowsMipres['Presnm']." ".$rowsMipres['Prepam']." ".$rowsMipres['Presam'];
 					$arrayMipres[$rowsMipres['Prenop']]['eps'] = $rowsMipres['Epsdes'];
-					
+
 				}
 			}
 		}
@@ -4826,7 +4865,7 @@ else
 		return $texto;
 	}
 		
-	function generarPDF($wemp_pmla,$nroPrescripcion,$tipoPrescripcion)
+	function generarPDF($wemp_pmla,$nroPrescripcion,$tipoPrescripcion,$contadorPDF=null,$historia=null,$ingreso=null,$responsable=null)
 	{
 		global $conex;
 		
@@ -5220,6 +5259,42 @@ else
 		if(file_exists($archivo_dir)){
 			unlink($archivo_dir);
 		}
+
+		//modificacion jaime mejia
+		if (isset($_GET['automatizacion_pdfs'])) {
+
+			//CARPETA PRINCIPAL
+			$carpetaPrincipal= consultarAliasPorAplicacion($conex, $wemp_pmla, 'documentosAutomatizacion');
+
+			if (!file_exists($carpetaPrincipal)) {
+				mkdir($carpetaPrincipall, 0777, true);
+			}
+
+			//CARPETA PARA GUARDAR POR EMPRESA
+			$carpetaEmpresa = $carpetaPrincipal . '/' . $wemp_pmla;
+			if (!file_exists($carpetaEmpresa)) {
+				mkdir($carpetaEmpresa, 0777, true);
+			}
+
+			//CREAR CARPETA PARA GUARDAR SOPORTES
+			$carpeta = $carpetaEmpresa . '/' . $historia . '-' . $ingreso;
+			if (!file_exists($carpeta)) {
+				mkdir($carpeta, 0777, true);
+			}
+
+			//CARPETA PARA GUARDAR POR RESPONSABLE
+			$carpetaResponsable = $carpeta  . '/' . $responsable;
+			if (!file_exists($carpetaResponsable)) {
+				mkdir($carpetaResponsable, 0777, true);
+			}
+
+			$carpetaHistoria = $historia.'-'.$ingreso;
+			$nombrePDFautomatizacion = $carpetaHistoria .'-'.$_GET['soporte'].'-'.$contadorPDF.'.pdf';
+			$archivo_destino = $carpetaResponsable .'/'. $nombrePDFautomatizacion;
+			copy($mipresPdf,$archivo_destino);
+			unlink($mipresPdf);
+			return ;
+		}
 		
 		$htmlPDF  ="<div id='modalPdfMipres' align='center'>
 						<br>
@@ -5545,10 +5620,15 @@ if(isset($accion))
 			return;
 		}
 		case 'pintarReportePrescripcionMipres':
-		{	
-			$data = pintarTabPrescripciones($wemp_pmla,$fechaInicial,$fechaFinal,$tipDocPac,$docPac,$tipDocMed,$docMed,$codEps,$tipoPrescrip,$nroPrescripcion,$filtroMipres,$ambitoAtencion);
-			$data = utf8_encode($data);
-			echo json_encode($data);
+		{
+			if (isset($_GET['automatizacion_pdfs'])) {
+				$data = pintarGenerarPDF($wemp_pmla, $historia, $ingreso,$responsable, $fechaInicial, $fechaFinal, $tipDocPac, $docPac, $tipDocMed, $docMed, $codEps, $tipoPrescrip, $nroPrescripcion, $filtroMipres, $ambitoAtencion);					
+			}
+			else{
+				$data = pintarTabPrescripciones($wemp_pmla, $fechaInicial, $fechaFinal, $tipDocPac, $docPac, $tipDocMed, $docMed, $codEps, $tipoPrescrip, $nroPrescripcion, $filtroMipres, $ambitoAtencion);
+				$data = utf8_encode($data);
+				echo json_encode($data);
+			}
 			break;
 			return;
 		}
@@ -6138,7 +6218,8 @@ else
 		
 		
 		
-		
+	//modificacion jaime mejia
+	if(!isset($_GET['automatizacion_pdfs'])){		
 		$resultadoWebService = consumirWebServicesMipres($wfecha,$wemp_pmla,"on","","","","","","");
 		if($resultadoWebService!=false)
 		{
@@ -6162,6 +6243,7 @@ else
 		{
 			echo "<script>jAlert('No se pudo consumir el Web Service del ministerio para la fecha actual','ALERTA')</script>";
 		}
+	}
 		
 		
 		$filtrosMonitor = pintarFiltros();
