@@ -39228,6 +39228,7 @@ function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = 
 	
 	//Variable de respuesta
 	$aArticulos = array();
+	$aArticulosDefinitivos = array();
 	
 	//Si el wemm_pmla llega vacío, uso el global
 	$sWemp_pmla = is_null($sWemp_pmla) ? $wemp_pmla : $sWemp_pmla;
@@ -39252,11 +39253,13 @@ function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = 
 	
 	$sInEPS = "IN( ".substr( $sInEPS, 1 )." ) ";
 
-	$sQueryInforme = "SELECT dk.Fecha_data AS fechaordeniamiento,
+	$sQueryInforme = "SELECT DISTINCT dk.Fecha_data AS fechaordeniamiento,
 							dk.Kadhis AS historia, dk.Kading AS ingreso, pac.Pacap1 AS apellido1, pac.Pacap2 AS apellido2, pac.Pacno1 AS nombre1, pac.Pacno2 AS nombre2,
 							ing.Ingres AS nitentidad, ing.Ingnre AS nombreentidad,
 							dk.Kadart AS codigoarticulo, ma.Artcom AS nombrearticulo, ma.Artgen AS nombregenericoarticulo, dk.Kadcma AS cantidad, dk.Kadufr AS unidad, edk.Ekxmip AS codigomipres,
-							u.codigo AS codigomedico, u.Descripcion AS nombremedico
+							u.codigo AS codigomedico, u.Descripcion AS nombremedico,
+							diag.Diacod AS codigodiagnostico, r.Descripcion AS diagnostico, '' AS diagnosticos,
+							cc.Ccocod AS codigocc, cc.Cconom AS nombrecc, Habcpa AS nombrehabitacion
 			FROM {$sMovhos}_000208 edk
 			INNER JOIN {$sMovhos}_000054 dk ON (dk.Kadhis = edk.Ekxhis
 										AND dk.Kading = edk.Ekxing
@@ -39271,6 +39274,11 @@ function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = 
 			INNER JOIN {$sCliame}_000024 emp ON (emp.Empcod = ing.Ingres AND emp.Empest = 'on')
 			INNER JOIN usuarios u ON (u.Codigo = SUBSTRING(dk.Seguridad, 3, LENGTH(dk.Seguridad)))
 			INNER JOIN {$sCliame}_000100 pac ON (pac.Pachis = dk.Kadhis)
+			LEFT JOIN {$sMovhos}_000243 diag ON (dk.Kadhis = diag.Diahis AND dk.Kading = diag.Diaing AND diag.Diaest = 'on')
+			LEFT JOIN root_000011 r ON (diag.Diacod = r.Codigo)
+			LEFT JOIN {$sMovhos}_000018 habp ON (habp.Ubihis = dk.Kadhis AND habp.Ubiing = dk.Kading)
+			LEFT JOIN {$sMovhos}_000011 cc ON (habp.Ubisac = cc.Ccocod)
+			LEFT JOIN {$sMovhos}_000020 hab ON (hab.Habhis = dk.Kadhis AND hab.Habing = dk.Kading)
 			WHERE dk.Kadsus = 'off'
 				AND ma.Artpos <> 'P'
 				AND dk.Fecha_data = '{$sFechaBusqueda}'
@@ -39278,8 +39286,31 @@ function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = 
 
 	$aResultadoQuery = mysqli_query($conex, $sQueryInforme) or die ("Error: " . mysql_errno() . " - en el query - " . mysql_error());
 	$aArticulos = mysqli_fetch_all($aResultadoQuery, MYSQLI_ASSOC);
+	
+	//Recorro el array de artículos, buscando los registros repetidos, pero con diagnóstico diferente. Hacer la concatenación desde BD demora 10s.
+	foreach ($aArticulos as $oArticulo)
+	{
+		$bEncontrado = false;
+		//Busco si el artículo actual está en los artículos definitivos
+		foreach ($aArticulosDefinitivos as &$oArticuloDefinitivo)
+		{
+			//Si lo encuentro, agrego la descripción del diagnóstico
+			if($oArticuloDefinitivo['historia'] == $oArticulo['historia'] && $oArticuloDefinitivo['ingreso'] == $oArticulo['ingreso'] && $oArticuloDefinitivo['codigoarticulo'] == $oArticulo['codigoarticulo'])
+			{
+				$oArticuloDefinitivo['diagnosticos'] .= $oArticulo['codigodiagnostico'] . ' - ' . $oArticulo['diagnostico'] . '; <br>';
+				$bEncontrado = true;
+			}
+		}
+		
+		//Si no lo encuentro, agrego el dianóstico por primera vez, y lo agrego al listado defintivo
+		if(!$bEncontrado)
+		{
+			$oArticulo['diagnosticos'] = $oArticulo['codigodiagnostico'] . ' - ' . $oArticulo['diagnostico'] . '; <br>';
+			$aArticulosDefinitivos[] = $oArticulo;
+		}
+	}
 
-	return $aArticulos;
+	return $aArticulosDefinitivos;
 }
 
 /*********************************************************************************************************************************

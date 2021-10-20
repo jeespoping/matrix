@@ -144,16 +144,18 @@
                         //Títulos de tabla
                         echo("
                             <tr class='encabezadoTabla'>
-                                <th colspan='7'><h3>Resultados</h3></th>
+                                <th colspan='9'><h3>Resultados</h3></th>
                             </tr>
                             <tr class='encabezadoTabla'>
                                 <th>M&eacute;dico</th>
                                 <th>Fecha ordenamiento</th>
                                 <th>Paciente</th>
+                                <th>Habitaci&oacute;n</th>
                                 <th>Entidad responsable</th>
                                 <th>Medicamento</th>
                                 <th>Cantidad</th>
                                 <th>C&oacute;digo MIPRES</th>
+                                <th>Diagn&oacute;sticos</th>
                             </tr>");
 
                         //Elementos de la tabla de Consultas
@@ -175,6 +177,9 @@
                                         ".$oMedicamento['historia']."-".$oMedicamento['ingreso']." | ".$oMedicamento['nombre1']." ".$oMedicamento['nombre2']." ".$oMedicamento['apellido1']." ".$oMedicamento['apellido2']."
                                     </td>
                                     <td>
+                                        ".$oMedicamento['codigocc']."-".$oMedicamento['nombrecc']." | Habitaci&oacute;n: ".$oMedicamento['nombrehabitacion']."
+                                    </td>
+                                    <td>
                                         ".$oMedicamento['nitentidad']." | ".$oMedicamento['nombreentidad']."
                                     </td>
                                     <td>
@@ -185,6 +190,9 @@
                                     </td>
                                     <td>
                                         ".$oMedicamento['codigomipres']."
+                                    </td>
+                                    <td>
+                                        ".$oMedicamento['diagnosticos']."
                                     </td>
                                 </tr>";
                         }
