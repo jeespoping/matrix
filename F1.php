@@ -265,6 +265,17 @@ function resetIntentos($codigo,$conex){
     // return $num;
 }
 
+// Autor: JESUS LOPEZ FlREZ - Analista en soluciones
+function evaluacionRecapchat($tokenCaptcha){
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $secret_key = '6LeX_54cAAAAAHB8XH4rovmT5jiN11Bmarv6EzdC';
+    $url = "https://www.google.com/recaptcha/api/siteverify?secret=$secret_key&response=$tokenCaptcha";
+    $fire = file_get_contents($url);
+    $data =json_decode($fire);
+
+    return $data->success;
+}
+
 $includeLibrerias = "	<script src='../../../include/root/jquery.min.js'></script>
 						<script src='../../../include/root/jquery-ui-1.12.1/jquery-ui.min.js' type='text/javascript'></script>
 						<link type='text/css' href='../../../include/root/jquery-ui-1.12.1/jquery-ui.min.css' rel='stylesheet'/>
@@ -330,6 +341,7 @@ if(!isset($accion))
 	echo "		document.entrada.codigo.focus();";
 	echo "	}";
 	echo "</script>";
+	echo "<script src='https://www.google.com/recaptcha/api.js' async defer></script>";
 	?>
 		<script type='text/javascript'>
 		function abrirRestablecerPassword()
@@ -582,6 +594,7 @@ if(!isset($accion))
 	echo "			<tr><td align=center id=tipo4>C&oacute;digo</td><td align=center><input class='input-login' type='text' name='codigo' size=18 maxlength=8></td></tr>";
 	echo "			<tr><td align=center id=tipo4>Clave</td><td align=center><input class='input-login'  type='password' name='password' size=18 maxlength=30></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
+    echo "			<tr><td align=center id=tipo5 colspan=2><div class='g-recaptcha' data-sitekey='6LeX_54cAAAAAO4Utru2JVgp4TISOhehiYzQDnM4'></div></td></tr>";
 	echo "			<tr><td align=center colspan=2><button onClick='enter()' class='tipoHIDE'><IMG SRC='/matrix/images/medical/root/boton-10.png'></button></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' id='restablecerPassword' colspan=2 >
 							<span onclick='abrirRestablecerPassword();'>&iquest;olvid&oacute; su usuario o contrase&ntilde;a?</span>
@@ -658,7 +671,7 @@ else
 		else
 		{
 			$password = sha1( $password );
-			
+
 			@session_start();
 			if (!isset($user))
 			{
@@ -673,6 +686,21 @@ else
 					$_SESSION['codigo'] = strtolower($codigo);
 					// $_SESSION['password'] = strtolower($password);
 					$_SESSION['password'] = $password;
+
+                    // se valida con recaptcha al momento de no estar logueado
+                    $tokenCaptcha = $_POST['g-recaptcha-response'] ;
+                    if ( evaluacionRecapchat($tokenCaptcha) == false){
+                        echo "<body bgcolor=#FFFFFF>";
+                        echo "<BODY TEXT='#000066'>";
+                        echo "<center>";
+                        echo "</center>";
+                        echo "<table  border=0 align=center>";
+                        echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
+                        echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
+                        @session_destroy();
+                        echo "<td id=tipo1><A HREF='F1.php' target='_top'>reCAPTCHA INVALIDO, vuelva a intentarlo!!</A></td></tr></table></body>";
+                        return;
+                    }
 				}
 			}
 			
