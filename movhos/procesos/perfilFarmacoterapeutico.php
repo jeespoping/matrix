@@ -376,6 +376,10 @@ include_once("conex.php");
  * Autor: Mauricio Sánchez Castaño.
  *
  * Modificaciones:
+ * 
+ * 21 de octubre de 2021    (Sebastian Alvarez B) -> Se descomentan las lineas 1673 a la 1677 debido a que se requiere registrar la fehca y hora de cuando se ve un perfil.
+ * 													 Esto con el fin de que cuando un paciente tenga un estado NUEVO en el kardex y una vez se vea el perfil debe de cambiar el estado por IGUAL.
+ * 
  * Agosto 1 de 2019	 		(Edwin MG) 	->	Los articulos de stock no se muestran
  * Junio 25 de 2019	 		(Edwin MG) 	->	Las funciones file_get_contents se cambian por llamados ajax
  * Abril 25 de 2019	 		(Edwin MG) 	->	Se muestra talla y peso del paciente
@@ -1664,11 +1668,19 @@ if (!$usuarioValidado){
 								 *
 								 * Antes de actualizar consulto cual fue la ultima fecha y hora en que fue abierto el perfil
 								 ******************************************************************************************/
-								// $fhPerfilVisto = consultarUltimaVistaPerfil( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
+
+								/******************************************************************************************
+								 * Octubre 21 de 2021 
+								 *
+								 * Se descomentan las lineas 1673 a la 1677 debido a que se requiere registrar la fehca y hora de cuando se ve un perfil.
+								 * Esto con el fin de que cuando un paciente tenga un estado NUEVO en el kardex y una vez se vea el perfil debe de cambiar el estado 
+								 * por IGUAL.
+								 ******************************************************************************************/
+								$fhPerfilVisto = consultarUltimaVistaPerfil( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
 								 
-								// if( $esFechaActual ){
-									// actualizarFechaHoraPerfilVisto( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica, $wfecha );
-								// }
+								if( $esFechaActual ){
+									actualizarFechaHoraPerfilVisto( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica, $wfecha );
+								}
 								/******************************************************************************************/
 							
 								//Muestra el detalle de medicamentos del kardex consultado
