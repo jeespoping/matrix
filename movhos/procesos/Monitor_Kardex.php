@@ -24,12 +24,8 @@ else {
 
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 	
-	$wactualiz = "Mayo 21 de 2018";               // Aca se coloca la ultima fecha de actualizacion de este programa //
+	$wactualiz = "Octubre 22 de 2021";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-
-	if ($wopcion == 5) { // Se hace condicional porque solo se hizo modificación en el caso 5 de este archivo. 
-		$wactualiz = "Octubre 22 de 2021";  
-	} 
 
 	//=========================================================================================================================================\\
 	//=========================================================================================================================================\\
@@ -46,7 +42,7 @@ else {
 	//ACTUALIZACIONES
 	//=========================================================================================================================================\\
 	//=========================================================================================================================================\\
-	// Octubre 21 de 2021 Sebastian Alvarez B
+	// Octubre 22 de 2021 Sebastian Alvarez B
 	// Se hicieron cambios al monitor Kardex con articulos de lactario (opcion 5). Esto con el fin de llevar un mejor control de los pacientes 
 	// que van apareciendo en el transcurso del dia. Se realizo un campo llamado "estado" tanto en la tabla de la parte superior y parte inferior, 
 	// esto con el fin de saber que pacientes llegan nuevos, modificados, suspendidos o estan iguales. La parte inferior se hizo más que todo debido 
@@ -3219,6 +3215,12 @@ else {
 									echo "<th>Paciente</th>";
 									echo "<th>Estado</th>";
 									echo "<th colspan='2' width='101'>Acción</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th>Estado</th>";
+									echo "<th colspan='3' width='101'>Acción</th>";
 									echo "</tr>";
 
 									break;
@@ -3277,6 +3279,12 @@ else {
 									echo "<th>Paciente</th>";
 									echo "<th>Estado</th>";
 									echo "<th colspan='2' width='101'>Acción</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th>Estado</th>";
+									echo "<th colspan='3' width='101'>Acción</th>";
 									echo "</tr>";
 
 									break;
@@ -3337,9 +3345,13 @@ else {
 								$walta_tras = "colorAzul4";
 
 							echo "<tr class=" . $wclass . ">";
-							echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>";
-							echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>";
-							echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>";
+							echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; // Habitación
+							echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; // Historia - Ingreso
+							echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; // Paciente
+							if ($wopcion == 5)
+							{
+								echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
+							}  
 
 							if ($wopcion != "12") {
 								if ($wopcion == "3" or $wopcion == "8")      //Esta es la opcion de historias que no tienen kardex actualizado
@@ -3446,7 +3458,12 @@ else {
 								if ($i <= ($j - 1)) {
 									echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //Habitacion 
 									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>";  //Historia-Ingreso
-									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>";                            //Paciente
+									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Paciente
+									echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
+									if ($wopcion == 5)
+									{
+										echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
+									}                      
 									if ($wopcion == "3" or $wopcion == "8" or $wopcion == "12")  //Esta es la opcion de historias que no tienen kardex actualizado
 										if ($wmat_estado[$i][8])
 											echo "<td class=" . $walta_tras . " align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=" . $wemp_pmla . "&wcedula=" . $wmat_estado[$i][9] . "&wtipodoc=" . $wmat_estado[$i][10] . "&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
