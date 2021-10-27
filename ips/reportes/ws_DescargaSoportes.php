@@ -327,7 +327,6 @@ function ConsultaEstadoWithGet(
     }
 
     if (array_search($soporte = '66', $arraySoportes) !== false) {
-        //$url = 'localhost/matrix/facturacion/reportes/rep_detafactu.php?';
         $url = 'http://matrix.lasamericas.com.co/matrix/facturacion/reportes/rep_detafactu.php?';
         $descripcion = 'Detalle de materiales';        
         $detalleDeMateriales = consultaDetalleDeMateriales($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,$factura,
@@ -337,7 +336,6 @@ function ConsultaEstadoWithGet(
     }
 
     if (array_search($soporte = '67', $arraySoportes) !== false) {
-        //$url = 'http://matrix-test.lasamericas.com.co/matrix/movhos/reportes/Hoja_medicamentos_enfermeria_IPODS.php?';
         $url = 'http://matrix.lasamericas.com.co/matrix/movhos/reportes/Hoja_medicamentos_enfermeria_IPODS.php?';
         $descripcion = 'Detalle de medicamentos';        
         $hojaDeMedicamentos = ConsultaHojaDeMedicamentos($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,$url,$descripcion);
@@ -499,7 +497,7 @@ function validarFactura($factura,$descripcion){
 function guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte, $respuesta, $codError, $descripcion){
 
     $codError = !empty($codError) ? 'ERR18' : ($respuesta['status']!= '200' ? 'ERR17' : null);
-		
+    $descripcion = !empty($descripcion) ? $descripcion : 'La auditoria tiene un error en el soporte '.$soporte;
 	// Crear un manejador cURL
     $ch = curl_init();
     if (!$ch) {
@@ -522,7 +520,7 @@ function guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$sop
     );
 
 	$urlAConsumir = consultarAliasPorAplicacion($conex,$wemp_pmla,'urlSoportesAutomaticos');
-		
+
 	$opciones = array(
         CURLOPT_URL                 => $urlAConsumir,
         CURLOPT_HEADER              => false,
@@ -533,9 +531,7 @@ function guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$sop
 
     curl_setopt_array($ch, $opciones);
     $respuesta = curl_exec($ch);
-    echo $respuesta;
 	curl_close($ch);
-
 }
 
 /**
@@ -848,9 +844,9 @@ function generarPDF($conex,$estructura, $wnombrePDF, $historia, $ingreso, $descr
 		fwrite($f, $html);
 		fclose($f);
 
-		shell_exec("./generarPdfSoportes.sh \"" . $wnombrePDF . '-' . $hoja . '"');
+		$salida = shell_exec("./generarPdfSoportes.sh \"" . $wnombrePDF . '-' . $hoja . '"');
 		$archivo_origen = $wnombrePDF . '-' . $hoja . '.pdf';
-        echo 'el nombre del pdf generado fue'.$archivo_origen;
+        echo "<pre>$salida el nombre del pdf generado fue $archivo_origen</pre>";
 
 		if ($hoja == null) {
 			$archivo_destino = $carpetaResponsable . '/' . $wnombrePDF . ".pdf";
@@ -927,7 +923,7 @@ function armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsa
         $pdf_generado['result'] = 'Ha ocurrido un error en el soporte:' . ' ' . $descripcion;
     }
 
-    guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte, $pdf_generado, $codError, $descripcion);
+    guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$pdf_generado,$codError,$descripcion);
     return $pdf_generado;
 }
 
@@ -1005,7 +1001,7 @@ function consultaOrdenMedica(
     $urlIngreso = "&wingreso=" . $ingreso;
     $adicionales = '&tipoimp=imp&alt=off&pacEps=off&wtodos_ordenes=on&orden=asc&origen=' . '&arrOrden=' . $separado . '&desdeImpOrden=on';
     $urlOrdenMedica = $url . $urlWemp_pmla . $urlHistoria . $urlIngreso  . $adicionales .  "&soporte=" . $soporte . '&automatizacion_pdfs=';
-    
+
     //inicializar url
     $ch = curl_init();
     if (!$ch) {
@@ -1061,10 +1057,6 @@ function consultaMiPresMedsNoPbs(
     $url,
     $descripcion
 ) {
-    
-    //$documentoDeIdentidad = '32555985';
-    //$tipoDeDocumento = 'CC';
-    //$fechadeAdmision = '2021-05-28'; //año-mes-dia
     
 	$codError = '';
 	try{
@@ -1145,6 +1137,7 @@ function consultaFurips(
         $validarFactura = validarFactura($factura,$descripcion);
         
         if($validarFactura['status'] != '400'){
+
             //se inicia el curl
             $ch = curl_init();
             $data = array(
@@ -1207,6 +1200,7 @@ function consultaFacturaPDF(
         $validarFactura = validarFactura($factura,$descripcion);
         
         if($validarFactura['status'] != '400'){
+
             // Crear un manejador cURL
             $ch = curl_init();
             if (!$ch) {
@@ -1258,7 +1252,7 @@ function consultaDetalleDeCargos(
     $soporte,
     $factura,
     $fuenteDeFactura,
-    $UrlDetalleDeCargos,
+    $urlDetalleDeCargos,
     $descripcion
 ) {
 	$codError = '';
@@ -1268,8 +1262,9 @@ function consultaDetalleDeCargos(
 
         //Se valida que venga la factura y no sea NULL
         $validarFactura = validarFactura($factura,$descripcion);
-        
+
         if($validarFactura['status'] != '400'){
+            
             //Se inicia curl
             $ch = curl_init();
 
@@ -1280,13 +1275,15 @@ function consultaDetalleDeCargos(
                 'com'                    => 'a',
             );
     
-            $opciones = cargarOpcionesPOST($UrlDetalleDeCargos,$data);    
+            $opciones = cargarOpcionesPOST($urlDetalleDeCargos,$data);
             curl_setopt_array($ch, $opciones);
             $response = curl_exec($ch);
             curl_close($ch);
     
             $facturaEnSaldoCero = 'no tiene factura';
-            $posicion_coincidencia = strpos($response, $facturaEnSaldoCero);              
+            $usuarioNoAutenticado = 'Usuario no autenticado';
+            $posicion_coincidencia = strpos($response,$facturaEnSaldoCero); 
+            $posicionUsuarioAutenticado = strpos($response,$usuarioNoAutenticado);            
         }
 
 	} catch (Exception $e) {
@@ -1294,7 +1291,7 @@ function consultaDetalleDeCargos(
 		$descError = $e->getMessage();
 	}
 
-	if ($posicion_coincidencia === false) {
+	if ($posicion_coincidencia === false && $posicionUsuarioAutenticado === false) {
         $nombrePDFDetalleDeCargos = $historia . '-' . $ingreso . '-' .  $soporte;
         return generarPDF(
             $conex,
@@ -1625,29 +1622,34 @@ function consultaDetalleDeMateriales(
     $soporte,
     $factura,
     $fuenteDeFactura,
-    $UrlDetalleDeMateriales,
+    $urlDetalleDeMateriales,
     $descripcion
 ) {
 	$codError = '';
 	try{
         //se valida credenciales
         validarIngreso($conex, $wemp_pmla);
-
+        $usuarioAutomatizacion = consultarAliasPorAplicacion($conex, $wemp_pmla, 'usuarioAutomatizacionDetalleDeCargos');
         //Se valida que venga la factura y no sea NULL
         $validarFactura = validarFactura($factura,$descripcion);
+
+        //traer resultado de nueva eps
+        $nitNuevaEps = consultarAliasPorAplicacion($conex, $wemp_pmla, 'nitNuevaEps');
         
+        $eps = $responsable != $nitNuevaEps ? 'N' : 'S';
+       
         if($validarFactura['status'] != '400'){
             $ch = curl_init();
             $data = array(
-                'usuario'                => '0104686',
+                'usuario'                => $usuarioAutomatizacion,
                 'fte'                    => $fuenteDeFactura,
                 'fac'                    =>  $factura,
                 'com'                    => '*',
                 'atc'                    => 'N',
-                'cneps'                  => 'N'
+                'cneps'                  => $eps
             );
-    
-            $opciones = cargarOpcionesPOST($UrlDetalleDeMateriales,$data);    
+
+            $opciones = cargarOpcionesPOST($urlDetalleDeMateriales,$data);
             curl_setopt_array($ch, $opciones);
             $response = curl_exec($ch);
             curl_close($ch);
@@ -1709,12 +1711,12 @@ function ConsultaHojaDeMedicamentos(
 
         validarIngreso($conex, $wemp_pmla);
         $query_rango = "SELECT  Ubihis, Ubiing, Ubialp as alta_pac,movhos18.Fecha_data AS fecha_ingreso,movhos18.Hora_data, Ubifad AS fecha_alta,Ubihad,Ccocod,Cconom
-                                FROM " . $wbasedato . "_000018 AS movhos18
+                        FROM " . $wbasedato . "_000018 AS movhos18
                         LEFT JOIN " . $wbasedato . "_000011 AS movhos11
                         ON Ccocod=Ubisac
                         WHERE   Ubihis = '" . $historia . "'
                         AND Ubiing = '" . $ingreso . "'
-                            ORDER BY    movhos18.fecha_data";
+                        ORDER BY    movhos18.fecha_data";
 
         $res_r = mysql_query($query_rango, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $query_rango . " - " . mysql_error());
         $numreg = mysql_num_rows($res_r);
@@ -1725,7 +1727,7 @@ function ConsultaHojaDeMedicamentos(
                 'wing'          => $row_r['Ubiing'],
                 'Ccocod'        => $row_r['Ccocod'],
                 'Cconom'        => $row_r['Cconom'],
-                'alta_pac'      => $row_r['alta_pac'],  // off: est  activo, on: esta de alta, ya sali 
+                'alta_pac'      => $row_r['alta_pac'],
                 'fecha_ingreso' => $row_r['fecha_ingreso'] . ' ' . $row_r['Hora_data'],
                 'fecha_alta'    => $row_r['fecha_alta'] . ' ' . $row_r['Ubihad'],
                 'dif_fechas'    => 0
@@ -1859,9 +1861,9 @@ function ConsultaLaboratorio($conex,
             $having = substr($having, 0, -5);
             $having .= ')'; 
         }
-        
+
         //Las historias deben de ser desde 2021-08-01
-        $sacarUrlPorSql = "SELECT DISTINCT Deturp,Detotr FROM(
+        $sacarUrlPorSql = "SELECT GROUP_CONCAT(Detotr) Detotr, GROUP_CONCAT(Deturp) Deturp, GROUP_CONCAT(estados) estados FROM (
             SELECT Detotr,GROUP_CONCAT(DISTINCT od.Deturp) Deturp, GROUP_CONCAT(od.Detesi) estados        
             FROM " . $whce . "_000027 o
             INNER JOIN " . $whce . "_000028 od ON o.Ordnro = od.Detnro
@@ -1870,11 +1872,12 @@ function ConsultaLaboratorio($conex,
             AND od.Detesi <> 'C'
             AND Deturp <> ''
             GROUP BY od.Detotr
-            $having) as subSql;";
-        
+            ) AS subSql
+            $having;";
+
         $resLaboratorio = mysql_query($sacarUrlPorSql, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $sacarUrlPorSql . " - " . mysql_error());
         $numLaboratorio = mysql_num_rows($resLaboratorio);
-        
+
         if ($numLaboratorio > 0) {
             $numeroDelPDF = 1;
             while ($rowsLaboratorio = mysql_fetch_array($resLaboratorio)) {
@@ -1887,8 +1890,9 @@ function ConsultaLaboratorio($conex,
                         $nombreLaboratorio = $historia . '-' . $ingreso . '-' . $soporte .'-'.  $numeroDelPDF;
                         $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
                         $archivoDestino = $carpetaResponsable . '/' . $nombreLaboratorio . ".pdf";
-                        copy($resultadoLaboratorio, $archivoDestino);
-                        $numeroDelPDF += 1;
+                        if (copy($resultadoLaboratorio, $archivoDestino)) {
+                            $numeroDelPDF += 1;
+                        }
                     }
                     else{
                         $urlAmazon = consultarAliasPorAplicacion($conex,$wemp_pmla,'urlActualizarLaboratorio');
@@ -1905,29 +1909,18 @@ function ConsultaLaboratorio($conex,
 
                         while ($fila = $resultado->fetch_assoc()) {
                             $url = $fila['NumeroEnLaWeb'];
-                            //$resultadoNumeroDeOrden = $fila['NumOT'];
                         }
                         
                         $resultadoUrlLaboratorio = $urlAmazon.$url.'.pdf';
                         mysqli_close($mysqli);
 
-                        if(!empty($resultadoUrlLaboratorio) && !empty($resultadoLaboratorio)){
-
-                            /*$likeResultadoLaboratorio = '%'.$resultadoLaboratorio.'%';
-
-                            $actualizarURLEnMatrix = "UPDATE " . $whce . "_000028
-                            SET Deturp = '$resultadoUrlLaboratorio'
-                            WHERE Deturp LIKE '$likeResultadoLaboratorio'
-                            AND Detotr = '$resultadoNumeroDeOrden';";    
-                            
-                            $ActualizarUrlQuery = mysql_query($actualizarURLEnMatrix,$conex) or die("Error: " . mysql_errno() . 
-                            " - en el query: " . $ActualizarUrlQuery . " - " . mysql_error()); */
-                            
+                        if(!empty($resultadoUrlLaboratorio) && !empty($resultadoLaboratorio)){                            
                             $nombreLaboratorio = $historia . '-' . $ingreso . '-' . $soporte .'-'.  $numeroDelPDF;
                             $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
                             $archivoDestino = $carpetaResponsable . '/' . $nombreLaboratorio . ".pdf";
-                            copy($resultadoUrlLaboratorio, $archivoDestino);
-                            $numeroDelPDF += 1;
+                            if (copy($resultadoUrlLaboratorio, $archivoDestino)) {
+                                $numeroDelPDF += 1;
+                            }
                         }
                     }                 
                 }
@@ -1991,27 +1984,26 @@ function consultaSoportesImex(
         //Query para sacar la Url de Imex para cada uno de los soportes asociados a los pacientes
         // la fecha de inicio imex es 2020-10-01
 
-        $concepto = '0506';
         $sacarUrlPorSql = "SELECT mvcurp
-        FROM " . $wbasedato . "_000268 a
-        JOIN " . $wcliame . "_000192
-        ON (Mvccup = Hompom
-        AND Homcos = $concepto
-        AND Homcom = $ayuda) 
-        WHERE Mvchis = $historia
-        AND Mvcing = $ingreso
-        AND a.Fecha_data > $fechaInicioImex 
-        GROUP BY 1;";
+            FROM " . $wbasedato . "_000268 a
+            JOIN " . $wcliame . "_000192
+            ON (Mvccup = Hompom
+            AND FIND_IN_SET(Homcos,'$concepto') 
+            AND Homcom = $ayuda) 
+            WHERE Mvchis = $historia
+            AND Mvcing = $ingreso
+            AND a.Fecha_data > $fechaInicioImex 
+            GROUP BY 1;";
 
         $resPrescripciones = mysql_query($sacarUrlPorSql, $conex) or die("Error: ".mysql_errno()."- en el query: " . $sacarUrlPorSql . " - " . mysql_error());
         $numPrescripciones = mysql_num_rows($resPrescripciones);
-
+    
         //Se valida si tiene algun registro para recorrerlo
         if ($numPrescripciones > 0){
 
             $numeroDelPDF = 1;
             while ($rowsPrescripciones = mysql_fetch_array($resPrescripciones)){
-
+    
                 //Se nombra el archivo, se extrae la url y se lleva al intercambiador.
                 $url = $rowsPrescripciones['mvcurp'];
                 if ($url !== null){
@@ -2029,7 +2021,11 @@ function consultaSoportesImex(
 
                     //Ejecutar cURL
                     $ret = curl_exec($ch);
-                    preg_match_all('#\bhttps?://rispmla[^,\s()<>]+(?:\([\w\d]+\)|([^,[:punct:]\s]|/))#', $ret, $match);
+                    if($ret == false){
+                        echo curl_error($ch);
+                    }
+                    $regexImex = consultarAliasPorAplicacion($conex,$wemp_pmla,'regexImex');
+                    preg_match_all($regexImex, $ret, $match);
                     if(count($match[0]) > 1 ){
                         $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
                         foreach($match[0] as $soporteUrl){
@@ -2119,7 +2115,6 @@ function consultaSoportesHCE(
 
         //Se carga el DOM para buscar en el documento el formulario correspondiente
         $substringHCE = consultarAliasPorAplicacion($conex,$wemp_pmla,'substringHCE');
-
         $formularioHCE = substr($formularioHCE,$substringHCE); //Nota : si se va a cargar el formula meds soat los datos son : ['10144', '000235', '000160']
         $dom = new DOMDocument();
         @$dom->loadHTML($ret);
