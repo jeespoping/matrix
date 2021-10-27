@@ -377,8 +377,9 @@ include_once("conex.php");
  *
  * Modificaciones:
  * 
- * 21 de octubre de 2021    (Sebastian Alvarez B) -> Se descomentan las lineas 1673 a la 1677 debido a que se requiere registrar la fehca y hora de cuando se ve un perfil.
+ * 27 de octubre de 2021    (Sebastian Alvarez B) -> Se descomentan las lineas 1673 a la 1677 debido a que se requiere registrar la fehca y hora de cuando se ve un perfil.
  * 													 Esto con el fin de que cuando un paciente tenga un estado NUEVO en el kardex y una vez se vea el perfil debe de cambiar el estado por IGUAL.
+ * 													Se crea la función actualizarFechaHoraPerfilVistoArticulo, para registrar la fecha y hora de cada articulo que tiene un paciente. 
  * 
  * Agosto 1 de 2019	 		(Edwin MG) 	->	Los articulos de stock no se muestran
  * Junio 25 de 2019	 		(Edwin MG) 	->	Las funciones file_get_contents se cambian por llamados ajax
@@ -1744,7 +1745,9 @@ if (!$usuarioValidado){
 								echo "<tbody id='detKardex'>";
 								
 								foreach ($colDetalleKardex as $articulo){
-								
+									list($art)  = explode('-', $articulo->codigoArticulo); 
+									// 27 de octubre del 2021 - Llamamos la función que nos registra la fecha y hora de cuando se ve un articulo de un paciente.
+									actualizarFechaHoraPerfilVistoArticulo( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica, $art, $wfecha);
 									//Si está cómo no dispensable y cómo no enviar no lo muestro
 									if( $articulo->estadoAdministracion == 'on' && $articulo->dispensable == 'off' ){
 										continue;

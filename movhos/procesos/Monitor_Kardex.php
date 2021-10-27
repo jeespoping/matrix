@@ -22,9 +22,9 @@ else {
 	$whora = (string)date("H:i:s");
 
 
+
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-	
-	$wactualiz = "Octubre 22 de 2021";               // Aca se coloca la ultima fecha de actualizacion de este programa //
+	$wactualiz = "Octubre 27 de 2021";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 	//=========================================================================================================================================\\
@@ -41,20 +41,9 @@ else {
 	//=========================================================================================================================================\\
 	//ACTUALIZACIONES
 	//=========================================================================================================================================\\
-	//=========================================================================================================================================\\
-	// Octubre 22 de 2021 Sebastian Alvarez B
-	// Se hicieron cambios al monitor Kardex con articulos de lactario (opcion 5). Esto con el fin de llevar un mejor control de los pacientes 
-	// que van apareciendo en el transcurso del dia. Se realizo un campo llamado "estado" tanto en la tabla de la parte superior y parte inferior, 
-	// esto con el fin de saber que pacientes llegan nuevos, modificados, suspendidos o estan iguales. La parte inferior se hizo más que todo debido 
-	// a que cuando en la parte superior se le daba cargar a algun paciente este se perdian de allí y el personal no tenia manera de verificar el paciente
-	// en algun otro momento. Para realizar esta modificación se realizo un segundo encabezado y y luego se creo un wopcion = 5 que es el que contiene
-	// todo lo que tiene que ver con esa parte inferior. Se realizo una consulta que se le asigno el nombre "detalle del kardex" esta consulta nos traera 
-	// toda la información de un articulo que tiene cada paciente. Luego se necesitaban hacer los estados para ello se opto por hacerlo por fechas, 
-	// estas fechas las traemos en la consulta "detalle del kardex". Luego existe una funcion llamada estado_del_kardex(), esta función es la que
-	// controla todo lo que tiene que ver si esta sin dispensar algun paciente en cada caso, etc. Luego esa funcón nos toco copiarla y pasarla 
-	// a la opción que creamos wopcion = 5, claramente le cambiamos el nombre por estado_del_kardex_lactario, debido a que solo necesitabamos el case 5 
-	// que tiene esa función para asi despues hacerle un cambio a un condicional para que no se nos perdieran los datos de los pacientes alli abajo cuando
-	// se le diera cargar al paciente.
+	// Octubre 27 de 2021 -	Sebastian Alvarez Barona
+	// Se añadio una tabla en la parte inferior de la pantalla en donde se hace saber los pacientes con soporte nutricional, 
+	// esto con el fin de que las encargadas de manejar el kardex sigan viendo los pacientes una vez se cargan. Solo se trabajo en base a la opción 5. 
 	//=========================================================================================================================================\\
 	// Mayo 21 de 2018	Jessica	
 	// En la función consultarSiDAexiste() se agrega a la consulta el filtro con cenpro_000002 para saber si la dosis adaptada esta activa
@@ -3215,12 +3204,6 @@ else {
 									echo "<th>Paciente</th>";
 									echo "<th>Estado</th>";
 									echo "<th colspan='2' width='101'>Acción</th>";
-									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
-									echo "<th>Habitacion</th>";
-									echo "<th>Historia</th>";
-									echo "<th>Paciente</th>";
-									echo "<th>Estado</th>";
-									echo "<th colspan='3' width='101'>Acción</th>";
 									echo "</tr>";
 
 									break;
@@ -3279,12 +3262,6 @@ else {
 									echo "<th>Paciente</th>";
 									echo "<th>Estado</th>";
 									echo "<th colspan='2' width='101'>Acción</th>";
-									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
-									echo "<th>Habitacion</th>";
-									echo "<th>Historia</th>";
-									echo "<th>Paciente</th>";
-									echo "<th>Estado</th>";
-									echo "<th colspan='3' width='101'>Acción</th>";
 									echo "</tr>";
 
 									break;
@@ -3345,13 +3322,9 @@ else {
 								$walta_tras = "colorAzul4";
 
 							echo "<tr class=" . $wclass . ">";
-							echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; // Habitación
-							echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; // Historia - Ingreso
-							echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; // Paciente
-							if ($wopcion == 5)
-							{
-								echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
-							}  
+							echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>";
+							echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>";
+							echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>";
 
 							if ($wopcion != "12") {
 								if ($wopcion == "3" or $wopcion == "8")      //Esta es la opcion de historias que no tienen kardex actualizado
@@ -3458,12 +3431,7 @@ else {
 								if ($i <= ($j - 1)) {
 									echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //Habitacion 
 									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>";  //Historia-Ingreso
-									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Paciente
-									echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
-									if ($wopcion == 5)
-									{
-										echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
-									}                      
+									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>";                            //Paciente
 									if ($wopcion == "3" or $wopcion == "8" or $wopcion == "12")  //Esta es la opcion de historias que no tienen kardex actualizado
 										if ($wmat_estado[$i][8])
 											echo "<td class=" . $walta_tras . " align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=" . $wemp_pmla . "&wcedula=" . $wmat_estado[$i][9] . "&wtipodoc=" . $wmat_estado[$i][10] . "&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
@@ -3687,7 +3655,6 @@ else {
 			if ($wopcion == 5) //se hace condición para que solo muestre la tabla de pacientes con la informacion de medicamento
 			{
 
-				// Se crea la función estado_del_kardex_lactario
 				function estado_del_Kardex_lactario($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac, &$esOrdenes)
 				{
 					global $wbasedato;
@@ -3741,7 +3708,7 @@ else {
 									$regleta_str = explode(",", $wcan['kadcpx']);
 
 									$sin_dispensar = estado_sin_dispensar($regleta_str, $disCco, $wcan['kadpro'], $wcan['kadori'], $wcan['kadart']);
-									if ($sin_dispensar >= 0) { // En esta linea solo se le añadio el = para que no se nos desaparezcan los datos de allí cuando se le de cargar a algun paciente.
+									if ($sin_dispensar >= 0) {
 										$westado = "on";        //Indica que la historia si esta sin Dispensar el Kardex pacial o totalmente, es decir en 'on'
 										$wactual = "Actualizado";        //Indica que esta actualizado a la fecha
 										
@@ -3867,20 +3834,19 @@ else {
 					//Llevo los registros con estado=="on" a una matrix, para luego imprimirla por el orden (worden)
 					if ($westado == "on") {
 
-						// Consulta detalle del kardex, es la que nos trae los arituclos de cada pacientes, tambien nos trae las fechas que necesitamos para los estados que son: Fecha_data, Kadhle, Hora_data, Karfpv(es la que me registra fecha y hora de cuando se vio un perfil).
+						// Consulta detalle del kardex, es la que nos trae los arituclos de cada pacientes
 						$q = "
-						SELECT	kadcpx, Artcom, CONCAT_WS( ' ', Percan, Peruni ) as Frecuencia, Kadfin, Kadhin, Viades, Kadobs, CONCAT_WS( ' ', Kadcfr, Kadufr ) as Dosis, Kadsus, K.Fecha_data, K.kadhle, K.Hora_data, karfpv, Karhpv
-							FROM movhos_000053,	movhos_000054 K, movhos_000040, movhos_000043, movhos_000026
+						SELECT	kadcpx, Artcom, CONCAT_WS( ' ', Percan, Peruni ) as Frecuencia, Kadfin, Kadhin, Viades, Kadobs, CONCAT_WS( ' ', Kadcfr, Kadufr ) as Dosis, Kadsus, K.Fecha_data, K.Hora_data, K.Kadfle, K.Kadhle, kadfpv, kadhpv
+							FROM movhos_000054 K
+							JOIN movhos_000040 ON Kadvia = Viacod
+							JOIN movhos_000043 ON Kadper = Percod 
+							JOIN movhos_000026 ON Kadart = Artcod
 						WHERE	Kadhis = '" . $whis . "'
 							AND	Kading = '" . $wing . "'
 							AND	Kadfec = '" . $wfecha . "'
 							AND	Kadvia = Viacod
 							AND	Percod = Kadper
-							AND	kadart = Artcod
-							AND Karhis = Kadhis
-							AND Karing = Kading
-							AND Karcco = Kadcco
-							AND movhos_000053.Fecha_data  = Kadfec
+							AND	kadart = Artcod							
 							";
 
 						$result = mysql_query($q, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
@@ -3889,10 +3855,10 @@ else {
 
 						$articulos = array();
 
-						$wmat_estado[$j][0] = $whab;  //Habitación
-						$wmat_estado[$j][1] = $whis; //Historia
-						$wmat_estado[$j][2] = $wing; // Ingreso
-						$wmat_estado[$j][3] = $wpac; // Nombre paciente
+						$wmat_estado[$j][0] = $whab;
+						$wmat_estado[$j][1] = $whis;
+						$wmat_estado[$j][2] = $wing;
+						$wmat_estado[$j][3] = $wpac;
 						$wmat_estado[$j][4] = $westado;
 						$wmat_estado[$j][5] = $wcolor;
 						$wmat_estado[$j][6] = $walp;
@@ -3904,12 +3870,11 @@ else {
 						if ($num_art > 1) {
 							while ($fila = mysql_fetch_array($result)) {
 								$articulos[] = $fila;
-							}
-
+							}							
 							$wmat_estado[$j][11] = $articulos;
 						} else {
 							$fila = mysql_fetch_array($result);
-
+							
 							$wmat_estado[$j][11] = $fila[1];
 							$wmat_estado[$j][12] = $fila[2];
 							$wmat_estado[$j][13] = $fila[3];
@@ -3920,20 +3885,23 @@ else {
 							$wmat_estado[$j][18] = $fila[8];
 							$wmat_estado[$j][19] = $fila[9];
 							$wmat_estado[$j][20] = $fila[10];
-							$wmat_estado[$j][21] = $fila[12];
-							$wmat_estado[$j][22] = $fila[13];
+							$wmat_estado[$j][21] = $fila[11];
+							$wmat_estado[$j][22] = $fila[12];
+							$wmat_estado[$j][23] = $fila[13];
+							$wmat_estado[$j][24] = $fila[14];
 						}
 						$j++;
 					}
 				}
-
+				
 				echo "<hr style='height:3px;border-width:0;color:#cc0000;background-color:#cc0000'>";
 
 				echo "<td class='fila1' width='90%'>
 						<div class='titulopagina' align='center'>PACIENTES CON SOPORTE NUTRICIONAL</div>
 					</td>";
 				//Encabezado de tabla
-				echo "<table id='Table'>";
+				echo "<table>";
+				// echo "<hr style='height:3px;border-width:0;color:#cc0000;background-color:#cc0000'>";
 				echo "<tr class='encabezadoTabla'>";
 				echo "<th>Habitacion</th>";
 				echo "<th>Historia</th>";
@@ -3956,8 +3924,8 @@ else {
 				
 				foreach ($wmat_estado as $index => $fila) {
 
-					$estado = ''; // Para colocar el nombre de cada estado
-					$clase_estado = ''; //Color de cada estado (nuevo, modificado, suspendido, igual)
+					$estado = '';
+					$clase_estado = '';
 					
 					$arrayActivos[$fila[1]]= array(
 													"activos" => 0,
@@ -3991,28 +3959,21 @@ else {
 								$estado = "";
 								$clase_estado = '';
 
-								//Aqui asignamos el estado NUEVO
-								if($pos_art[9] == date('Y-m-d') && empty($pos_art[10]) && $pos_art[12] == '0000-00-00'){	
+								if(($pos_art[9] >= $pos_art[13] && $pos_art[10] > $pos_art[14]) || ($pos_art[13] == '0000-00-00')){
+									
 									$estado = "NUEVO";
 									$clase_estado = 'nuevo';
 									$arrayActivos[$fila[1]]['nuevo'] = 1+$arrayActivos[$fila[1]]['nuevo'];
 								}
-								//Aqui asignamos el estado MODIFICADO
-								if(!empty($pos_art[10])){
-									// $dt_vp = new DateTime($pos_art[13]); // Hora vista perfil
-									// $dt_m = new DateTime($pos_art[10]); // Hora modificado
-
-									// var_dump ($dt_vp->format('H:i:s')); // Hora vista perfil
-									// var_dump ($dt_m->format('H:i:s')); // Hora modificado
-									if(($pos_art[12] != '0000-00-00') && ($pos_art[13] > $pos_art[10])){
-										$estado = "";
-										$clase_estado = '';
-										$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
-									}else{
-										$estado = "MODIFICADO";
-										$clase_estado = 'modificado';
-										$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
-									}
+								if(($pos_art[13] >= $pos_art[9] && $pos_art[14] > $pos_art[10]) && ($pos_art[13] >= $pos_art[11] && $pos_art[14] > $pos_art[12])){
+									//$estado = "IGUAL";
+									//$clase_estado = 'igual';
+									$arrayActivos[$fila[1]]['igual'] = 1+$arrayActivos[$fila[1]]['igual'];
+								}
+								if($pos_art[11] >= $pos_art[13] && $pos_art[12] > $pos_art[14]){
+									$estado = "MODIFICADO";
+									$clase_estado = 'modificado';
+									$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
 								}
 							}
 					
@@ -4036,7 +3997,7 @@ else {
 						// Condicional de la manera corta para asignar color a cada fila
 						$color_filas % 2 != 0 ? $wclass = 'fila1' : $wclass = 'fila2';
 
-						//Aqui asignamos el estado suspendido 
+						
 						if ($fila[18] == 'on') {
 							$estado = 'SUSPENDIDO';
 							$clase_estado = 'suspendido';
@@ -4045,23 +4006,21 @@ else {
 							$arrayActivos[$fila[1]]['activos'] = 1+$arrayActivos[$fila[1]]['activos'];
 								$estado = "";
 								$clase_estado = '';
-								//Aqui asignamos el estado NUEVO
-								if($fila[19] == date('Y-m-d') && empty($fila[20]) && $fila[21] == '0000-00-00'){
+								if(($fila[19] >= $fila[23] && $fila[20] > $fila[24]) || ($fila[23] == '0000-00-00')){
+									
 									$estado = "NUEVO";
 									$clase_estado = 'nuevo';
 									$arrayActivos[$fila[1]]['nuevo'] = 1+$arrayActivos[$fila[1]]['nuevo'];
 								}
-								//Aqui asignamos el estado modificado
-								if(!empty($fila[20])){
-									if(($fila[21] != '0000-00-00') && ($fila[22] > $fila[20])){
-										$estado = "";
-										$clase_estado = '';
-										$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
-									}else{
-										$estado = "MODIFICADO";
-										$clase_estado = 'modificado';
-										$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
-									}
+								if(($fila[23] >= $fila[19] && $fila[24] > $fila[20]) && ($fila[23] >= $fila[21] && $fila[24] > $fila[22])){
+									//$estado = "IGUAL";
+									//$clase_estado = 'igual';
+									$arrayActivos[$fila[1]]['igual'] = 1+$arrayActivos[$fila[1]]['igual'];
+								}
+								if($fila[21] >= $fila[23] && $fila[22] > $fila[24]){
+									$estado = "MODIFICADO";
+									$clase_estado = 'modificado';
+									$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
 								}
 						}
 
@@ -4082,28 +4041,23 @@ else {
 						$color_filas++; //Vamos incrementando
 					}
 				}
-
-				// print_r($arrayActivos);
+				 // print_r($arrayActivos);
 				echo '<script type="text/javascript">';
 				
 				foreach ($arrayActivos as $key => $value) {
 					$estado = "estado_".$key;
 					//echo 'alert("'.$estado.'");';
-					if($value['nuevo'] != 0 && $value['modificado'] == 0 && $value['igual'] == 0){
+					if($value['nuevo'] != 0 && ($value['modificado'] == 0 || $value['modificado'] != 0) && ($value['igual'] == 0 || ($value['modificado'] == 0 || $value['igual'] != 0))){
 						echo '$("#'.$estado.'").html("NUEVO");'	;
 						echo '$("#'.$estado.'").addClass("nuevo");';
 					}elseif($value['igual'] != 0 && $value['modificado'] == 0){
-						echo '$("#'.$estado.'").html("IGUAL");';
-						echo '$("#'.$estado.'").addClass("igual");';	
+						//echo '$("#'.$estado.'").html("IGUAL");';
+						//echo '$("#'.$estado.'").addClass("igual");';	
 					}
-					elseif($value['modificado'] != 0){
-						if(($fila[22] > $fila[20]) && ($pos_art[13] > $pos_art[10])){
-							echo '$("#'.$estado.'").html("");';
-							echo '$("#'.$estado.'").addClass("");';
-						}else{
-							echo '$("#'.$estado.'").html("MODIFICADO");';
-							echo '$("#'.$estado.'").addClass("modificado");';
-						}
+					elseif($value['modificado'] != 0 && value['nuevo'] == 0 ){
+
+						echo '$("#'.$estado.'").html("MODIFICADO");';
+						echo '$("#'.$estado.'").addClass("modificado");';
 					}
 					if($value['activos'] == 0){
 						echo 'var node = document.getElementById("'.$key.'");';
@@ -4111,7 +4065,6 @@ else {
 					}
 				}
 				echo '</script>';
-				
 			}
 		}
 	}
