@@ -1,21 +1,13 @@
 <?php
 include_once("conex.php");
 
-/**
- * Se incluyen los scripts de encripcion y desencripcion
- * @date: 2021/19/10
- * @by: Jesus.Lopez
- */
-include_once("root/cifrado/cifrado.php");
-include_once("root/cifrado/cifradoJS.php");
-
 if(isset($accionAjax)) 
 {
 	$respuesta 	= array("error" => false, "msj" => "");
 	
 	if(!isset($_SESSION['user'])){		
 		$respuesta['error'] = true;
-		$respuesta['msj'] 	= utf8_encode('Primero recargue la pï¿½gina principal de Matrix ï¿½ inicie sesiï¿½n nuevamente, para poder relizar esta acciï¿½n.');
+		$respuesta['msj'] 	= utf8_encode('Primero recargue la página principal de Matrix ó inicie sesión nuevamente, para poder relizar esta acción.');
 	}
 	else{
 		
@@ -143,13 +135,6 @@ if(isset($accionAjax))
   	<!-- UTF-8 is the recommended encoding for your pages -->
 
     <title>Zapatec DHTML Calendar</title>
-
-    <!--
-	  Se incluye script para encriptar en JS
-		@date: 2021/09/15
-		@by:	Jesus.Lopezf
-  -->
-    <script type="text/javascript" src="../../../include/root/cifrado/crypto-js.min.js"></script>
 
 <!-- Loading Theme file(s) -->
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
@@ -342,13 +327,13 @@ if(isset($accionAjax))
 		$("td[idTurno]").css({"color":"#000000", "font-family":"verdana", "border": "1px solid #000000"});			
 		$("td[esUrgente=on]").css({"color":"#FF0000;"});			
 		$("#tablaColores").after("<div id='divPedirCausa' style='display:none;font-family: verdana;font-size: 9pt;' align='center'>"
-								+"La cx ha <span id='textMsj'></span> mï¿½s tarde de lo programado.<br><br>"
+								+"La cx ha <span id='textMsj'></span> más tarde de lo programado.<br><br>"
 								+"Por favor seleccione la causa del retraso:<br><br><select id='causaDemora' style='border-radius: 4px;border:1px solid #AFAFAF;'><option value=''>Seleccione..</option></select></div>");
 		
 		$("#tablaColores").hide();
 		
 		c ='border:1px solid #999999;padding:2px';
-		convenciones = "<table style='font-size: 10pt;font-family: verdana;'><tr><td style='"+c+";background-color:#FEFFF6'>Sin programaciï¿½n</td><td style='"+c+";background-color:#FFFA95'>Fuera de uso</td><td style='"+c+";background-color:#7FAFFF'>Cx sin iniciar</td><td style='"+c+";background-color:#7ED18F'>Cx en proceso</td><td style='"+c+";background-color:#FF6262'>Cx terminada</td><td style='color:red'>Urgentes</td></tr></table>";
+		convenciones = "<table style='font-size: 10pt;font-family: verdana;'><tr><td style='"+c+";background-color:#FEFFF6'>Sin programación</td><td style='"+c+";background-color:#FFFA95'>Fuera de uso</td><td style='"+c+";background-color:#7FAFFF'>Cx sin iniciar</td><td style='"+c+";background-color:#7ED18F'>Cx en proceso</td><td style='"+c+";background-color:#FF6262'>Cx terminada</td><td style='color:red'>Urgentes</td></tr></table>";
 		$("[tablaPrincipal]").before(convenciones);
 		
 		$.unblockUI();
@@ -367,7 +352,7 @@ if(isset($accionAjax))
 		}
 		
 		if(primeraVez){
-			if(!confirm("Estï¿½ seguro en INICIAR la cirugï¿½a?"))
+			if(!confirm("Está seguro en INICIAR la cirugía?"))
 				return;
 		}
 		
@@ -422,7 +407,7 @@ if(isset($accionAjax))
 	function terminarCx(turno, primeraVez){
 		
 		if(primeraVez){
-			if(!confirm("Estï¿½ seguro en TERMINAR la cirugï¿½a?"))
+			if(!confirm("Está seguro en TERMINAR la cirugía?"))
 				return;
 		}
 		
@@ -475,13 +460,7 @@ if(isset($accionAjax))
 	
 	function enter()
 	{
-        /**
-         * Se agrega funcion encriponclick para encriptar la consulta antes de enviarla
-         * @date: 2021/09/15
-         * @by: Jesus.Lopez
-         *  */
-        encriponclick('querys')
-        document.forms.turnos.submit();
+		document.forms.turnos.submit();
 	}
 	function ejecutar(path,tipo)
 	{
@@ -522,11 +501,11 @@ if(isset($accionAjax))
 /**********************************************************************************************************************
 [DOC]
 	   PROGRAMA : turnos.php
-	   Fecha de Liberaciï¿½n : 2007-05-03
+	   Fecha de Liberación : 2007-05-03
 	   Autor : Ing. Pedro Ortiz Tamayo
 	   Version Actual : 2020-01-22
 
-	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface grï¿½fica que permite grabar los  de las
+	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface gráfica que permite grabar los  de las
 	   cirugias en los diversos quirofanos y en las horas especificadas por los cirujanos.
 	   El programa valida :
 	   						1. Que el quirofano este disponible para la cirugia.
@@ -601,7 +580,7 @@ if(isset($accionAjax))
 			para incluir los campos de paciente en preparacion (wpep), paciente en alta (wpea) y ubicacion del paciente en alta (wubi).
 			Lo anterior con el proposito de crear un programa que muestre en todo el ciclo quirurgico la ubicacion del paciente desde
 			su llegada a la sala hasta el alta.
-			Se modifico igualmente el programa para que diera la posibilidad a este manejo, igualmente la capa de presentaciï¿½n se
+			Se modifico igualmente el programa para que diera la posibilidad a este manejo, igualmente la capa de presentación se
 			modifico, ubicando en el pantalla en un area resaltada el ciclo quirurgico desde la llegada del paciente hasta el alta.
 			** Se implemento la grabacion automatica de comentarios en la Bitacora de movimiento hospitalario.
 
@@ -640,7 +619,7 @@ if(isset($accionAjax))
 	   		** Se modifica el procedimiento para poner el estado gris (modificado despues de orden) para que solo opere despues de que el estado este en
 	   		verde y no antes.
 	   		** Se incluye un hipervinculo en la version que abre una ventana con el registro de cambios y modificacion del programa.
-	   		** Se agrego la funcion Bisiesto (Evaluacion de aï¿½os Bisiestos) que no se encontraba en el codigo.
+	   		** Se agrego la funcion Bisiesto (Evaluacion de años Bisiestos) que no se encontraba en el codigo.
 
 	   .2008-02-13
 	   		**Se modifico el programa para validar tanto en el ingreso como en el cambio de turno y la modificacion de contenido si la hora inicial
@@ -710,7 +689,7 @@ if(isset($accionAjax))
 	   		Ultimo release Beta con inteligencia en equipos x cirugia.
 
 	   .2007-05-03
-	   		Release de Versiï¿½n Beta.
+	   		Release de Versión Beta.
 [*DOC]
 ***********************************************************************************************************************/
 function traerCausas($tipo){
@@ -853,7 +832,7 @@ function validar3($chain)
 function validar4($chain)
 {
 	// Funcion que permite validar la estructura de un dato alfanumerico
-	$regular="/^([=a-zA-Z0-9' 'ï¿½ï¿½@?\/*#-.:;_<>])+$/";
+	$regular="/^([=a-zA-Z0-9' 'ñÑ@?\/*#-.:;_<>])+$/";
 	return (preg_match($regular,$chain));
 }
 function validar5($chain)
@@ -1551,7 +1530,7 @@ function valcam($ok,$conex,$wnci,$wqui,$whin,$whfi,$wfec,$wquix,$whinx,$whfix,$w
 	if(trim($causaModificacion) == "" && $operativo == 'on')
 	{
 		$e=$e+1;
-		$werr[$e]="ERROR, DEBE SELECCIONAR UNA CAUSA DE MODIFICACIï¿½N";
+		$werr[$e]="ERROR, DEBE SELECCIONAR UNA CAUSA DE MODIFICACIÓN";
 	}
 	
 	
@@ -2464,7 +2443,7 @@ else
 			}
 			echo "<tr><td rowspan=1 bgcolor='#cccccc' align=center><b>FECHA :</b></td>";
 			echo "<td rowspan=1 bgcolor='#cccccc' align=center>Dia de la Semana<br><b>".$diasem."</b></td>";
-			echo "<td rowspan=1 bgcolor='#cccccc' align=center valign=center>Aï¿½o - Mes - Dia<br><input type='TEXT' name='wfecha' size=10 maxlength=10 id='wfecha' readonly='readonly' value=".$wfecha." class=tipo6></td><td bgcolor='#cccccc' align=center valign=center><IMG SRC='/matrix/images/medical/TCX/calendario.jpg' id='trigger1'></td>";
+			echo "<td rowspan=1 bgcolor='#cccccc' align=center valign=center>Año - Mes - Dia<br><input type='TEXT' name='wfecha' size=10 maxlength=10 id='wfecha' readonly='readonly' value=".$wfecha." class=tipo6></td><td bgcolor='#cccccc' align=center valign=center><IMG SRC='/matrix/images/medical/TCX/calendario.jpg' id='trigger1'></td>";
 			?>
 			<script type="text/javascript">//<![CDATA[
 				Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'wfecha',button:'trigger1',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});
@@ -2667,7 +2646,7 @@ else
 						$msjCausas.= "<tr><td class='subtitle'>Demora para finalizar:</td><td>".$arrCausas[$row['Turcdt']]."</td></tr>";
 					
 					if($row['Turcdr'] != "")
-						$msjCausas.= "<tr><td class='subtitle'>Reprogramaciï¿½n:</td><td>".$arrCausas[$row['Turcdr']]."</td></tr>";					
+						$msjCausas.= "<tr><td class='subtitle'>Reprogramación:</td><td>".$arrCausas[$row['Turcdr']]."</td></tr>";					
 					
 					if($msjCausas != ""){
 						$title .= "
@@ -3212,15 +3191,7 @@ else
 					$wtel = "";
 				if(isset($querys) and $querys != "")
 				{
-                    /**
-                     * Se agrega funcion MyDecrypt para desencriptar la consulta y poderla ejecutar
-                     * @date: 2021/09/15
-                     * @by: Jesus.Lopez
-                     *  */
-
-                    $querys = Cifrado::myDecrypt($querys);
-
-                    $querys=stripslashes($querys);
+					$querys=stripslashes($querys);
 					$qa=$querys;
 				}
 				else
@@ -3330,12 +3301,7 @@ else
 					$querys .=  " limit ".$wpos.",1";
 					$err = mysql_query($querys,$conex);
 					$querys=str_replace(chr(39),chr(34),$querys);
-                    /**
-                     * se agrego el paramaetro id='querys'
-                     * @date: 2021/19/10
-                     * @by: Jesus.Lopez
-                     */
-					echo "<input type='HIDDEN' id='querys' name= 'querys' value='".$querys."'>";
+					echo "<input type='HIDDEN' name= 'querys' value='".$querys."'>";
 					echo "<input type='HIDDEN' name= 'wpos' value='".$wpos."'>";
 					echo "<input type='HIDDEN' name= 'numero' value='".$numero."'>";
 					$row = mysql_fetch_array($err);
@@ -4360,7 +4326,7 @@ else
 							<table style='".(($operativo != 'on') ? "display:none;" : "")."'>
 								<tr>
 									<td align=center style='color:#000066;font-size: 7pt;font-family: Tahoma;font-weight: bold;'>
-										Causa de modificaciï¿½n: <br>
+										Causa de modificación: <br>
 										<select id='causaModificacion' name='causaModificacion' style='background-color:#FFFFA8;'>
 											<option value=''>Seleccione..</option>";
 											foreach($arrCausas as $codCau => $nomCau)
@@ -4761,7 +4727,7 @@ else
 		}
 		echo "<tr><td bgcolor='#cccccc' align=center><b>FECHA :</b></td>";
 		echo "<td bgcolor='#cccccc' align=center>Dia de la Semana<br><b>".$diasem."</b></td>";
-		echo "<td bgcolor='#cccccc' align=center valign=center>Aï¿½o - Mes - Dia<br><input type='TEXT' name='wfecha' size=10 maxlength=10 id='wfecha' readonly='readonly' value=".$wfecha." class=tipo6></td>";
+		echo "<td bgcolor='#cccccc' align=center valign=center>Año - Mes - Dia<br><input type='TEXT' name='wfecha' size=10 maxlength=10 id='wfecha' readonly='readonly' value=".$wfecha." class=tipo6></td>";
 		echo "<td bgcolor='#cccccc'><input type='submit' value='IR'></td></tr>";
 		echo "<tr><td align=center bgcolor=".$color4."><IMG SRC='/matrix/images/medical/root/Malo.png'>&nbsp&nbsp<font color=#000000 face='tahoma'></font></TD><TD bgcolor=".$color4." colspan=3><font color=#000000 face='tahoma'><b>USUARIO NO AUTORIZADO PARA UTILIZAR ESTE PROGRAMA. LLAME A INFORMATICA!!!</b></font></td></tr>";
 		echo "</table><br>";
