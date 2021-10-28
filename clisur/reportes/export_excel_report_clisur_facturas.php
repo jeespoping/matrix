@@ -44,7 +44,7 @@
 <p>
   <?php
 // Conexión a la tabla y seleccion de registros MATRIX
-			$select_facturas = mysql_query("SELECT fenfec,fenfac,fenval,Fennit,Empnom,Fdecco,Fdecon,Fdevco
+			$select_facturas = mysql_queryV("SELECT fenfec,fenfac,fenval,Fennit,Empnom,Fdecco,Fdecon,Fdevco
        									from  clisur_000018,clisur_000024,clisur_000065 
 											where Fenfec BETWEEN '$buscar' AND '$buscar1'        
  											and  Fenest = 'on'  

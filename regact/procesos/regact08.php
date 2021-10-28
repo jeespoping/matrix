@@ -25,7 +25,7 @@ else
     $conex = obtenerConexionBD("matrix");
 }
 
-$qry = mysql_query("SELECT * FROM regact_000002 WHERE id = '$id' ");
+$qry = mysql_queryV("SELECT * FROM regact_000002 WHERE id = '$id' ");
 $dato = mysql_fetch_array($qry);
 $documento = $dato['Nombre_archivo'];
 ?>

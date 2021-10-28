@@ -538,7 +538,7 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
                     }
                     //$valcumo = odbc_result($err_o3, 35);//Valor cuota moderadora o copago
 
-                    $query = mysql_query("SELECT a.Pacfna FROM ".$wcliame."_000100 a WHERE a.Pacdoc = '$cep'");
+                    $query = mysql_queryV("SELECT a.Pacfna FROM ".$wcliame."_000100 a WHERE a.Pacdoc = '$cep'");
                     while($dato = mysql_fetch_array($query))
                     {
                         $fechaN = $dato[0];

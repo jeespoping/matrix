@@ -44,7 +44,7 @@
 <p>
   <?php
 // Conexión a la tabla y seleccion de registros MATRIX
-			$select_notas = mysql_query("SELECT fenfec,Empnom,fenfac,fenval,fensal,fencod,rdevca,
+			$select_notas = mysql_queryV("SELECT fenfec,Empnom,fenfac,fenval,fensal,fencod,rdevca,
       								 	rdecon,renfue,rennum,renvca,renfec,renobs
        									FROM  clisur_000020,clisur_000021,clisur_000018,clisur_000024
        									WHERE renfue  in ('27','28') 

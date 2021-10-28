@@ -70,7 +70,7 @@ $wapro = $_POST['wapro'];
 $wvia = $_POST['wvia'];
 $wobs = $_POST['wobs'];
 //---------------------------->>> SACAR USUARIO ACTUAL NOMBRE Y FIRMA<<<----------------------------------------
-$select_usuario = mysql_query("SELECT descripcion,Firfir 
+$select_usuario = mysql_queryV("SELECT descripcion,Firfir 
 								from usuarios left join cenpro_000023 on codigo = fircod
 								where codigo='$wuse'");
 			$resultado_usuario=mysql_fetch_array($select_usuario);
@@ -172,7 +172,7 @@ $select_usuario = mysql_query("SELECT descripcion,Firfir
 			echo "</form>";
 			if 	($_POST['buscador']){			
 			/////////////////////////////--> REALIZAR CONSULTA DE LA FIRMA DE QUIEN APRUEBA <--////////////////////////////////////////
-			$select_aprobo = mysql_query("SELECT descripcion,Firfir 
+			$select_aprobo = mysql_queryV("SELECT descripcion,Firfir 
 								from usuarios left join cenpro_000023 on codigo = fircod
 								where codigo='$wapro'");					
 			$resultado_aprobo=mysql_fetch_array($select_aprobo);

@@ -146,7 +146,7 @@ refrescar();
 	  <?php
 	//echo "No se ha ingresado un valor a buscar";
 	//										  0      1     2       3      4      5      6      7     8       9     10     11    12     13        14           15
-	$select_paciente = mysql_query("select Ubihis,Ubiing,Ubisac,Ingfei,Inghin,Pactdo,Pacdoc,Pacap1,Pacap2,Pacno1,Pacno2,motivo,Ubialp,Ubiald,Fec_asigcama,Hora_asigcama,
+	$select_paciente = mysql_queryV("select Ubihis,Ubiing,Ubisac,Ingfei,Inghin,Pactdo,Pacdoc,Pacap1,Pacap2,Pacno1,Pacno2,motivo,Ubialp,Ubiald,Fec_asigcama,Hora_asigcama,
     TIMESTAMPDIFF(
         DAY,
         CONCAT ( Ingfei, ' ', Inghin ),

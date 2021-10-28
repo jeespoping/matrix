@@ -132,7 +132,7 @@
 			else{
 				$wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 				// Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
-				$select_glosa = mysql_query("SELECT count(*) cant
+				$select_glosa = mysql_queryV("SELECT count(*) cant
 											From ".$wcliame."_000273 AS A LEFT JOIN ".$wcliame."_000024 ON (Gloent = Empcod), ".$wcliame."_000274,".$wcliame."_000275 
 											where gloest='on'
 											and Glofhg BETWEEN '$buscar' and '$buscar1'

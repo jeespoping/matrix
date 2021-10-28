@@ -354,7 +354,7 @@
 						?>
 						<div id="xAlmacenoPlantilla" class="xAlmacenoPlantilla" align="center" style="display: block">
 						<?php
-						$existe_plantilla = mysql_query("select * from ".$wcliame."_000329 where Codpla = '$Codpla'");
+						$existe_plantilla = mysql_queryV("select * from ".$wcliame."_000329 where Codpla = '$Codpla'");
 						$resultado = mysql_fetch_array($existe_plantilla);
 						if ($resultado > 0){
 						?>
@@ -373,7 +373,7 @@
 					}else{
 					/////MATRIX/////
 					
-					mysql_query("INSERT INTO ".$wcliame."_000329(medico,Fecha_data,Hora_data,Codpla,Nompla,Estado,Seguridad,id)values
+					mysql_queryV("INSERT INTO ".$wcliame."_000329(medico,Fecha_data,Hora_data,Codpla,Nompla,Estado,Seguridad,id)values
 					('cliame','$Fecha_data','$Hora_data','$Codpla','$Nompla','$Estado','$wuse','')");
  					
 					?>
@@ -427,7 +427,7 @@
 									// Si est&aacute; vac&iacute;o, lo informamos, sino realizamos la búsqueda
 									if(empty($buscar))
 									{
-										$select_plantilla = mysql_query("SELECT * from ".$wcliame."_000329");
+										$select_plantilla = mysql_queryV("SELECT * from ".$wcliame."_000329");
 										?>
 										<table width="1000" height="44" border="1">
 										  <tr>
@@ -458,7 +458,7 @@
 									}else
 									{global $wcliame;
 								// Conexión a la base de datos y seleccion de registros
-									$select_plantilla = mysql_query("SELECT * from ".$wcliame."_000329 WHERE Codpla = '$buscar'");
+									$select_plantilla = mysql_queryV("SELECT * from ".$wcliame."_000329 WHERE Codpla = '$buscar'");
 									while($resultado=mysql_fetch_array($select_plantilla))
     								{
 										$Codpla = $resultado[3];   
@@ -550,7 +550,7 @@
 						<div id="xAlmacenoDetalle" class="xAlmacenoDetalle" align="center" style="display: block">
 						<?php
 						global $wcliame;
-						$existe_detalle = mysql_query("select * from ".$wcliame."_000330 where Codpla = '$Codpla' and Codpro = '$CodPro'");
+						$existe_detalle = mysql_queryV("select * from ".$wcliame."_000330 where Codpla = '$Codpla' and Codpro = '$CodPro'");
 						$resultado = mysql_fetch_array($existe_detalle);
 						if ($resultado > 0){
 						?>
@@ -569,7 +569,7 @@
 					}else{
 					/////MATRIX/////
 					global $wcliame;
-					mysql_query("INSERT INTO ".$wcliame."_000330(medico,Fecha_data,Hora_data,Codpla,CodPro,Cantidad,Concepto,Estado,Seguridad,id)values
+					mysql_queryV("INSERT INTO ".$wcliame."_000330(medico,Fecha_data,Hora_data,Codpla,CodPro,Cantidad,Concepto,Estado,Seguridad,id)values
 					('cliame','$Fecha_data','$Hora_data','$Codpla','$CodPro','$Cantidad','$Concepto','$Estado','$wuse','')");
  					
 					?>
@@ -632,8 +632,8 @@
 									{
 									// Conexión a la base de datos y seleccion de registros
 									// Querys para mostrar en la tabla
-										$select_detalle = mysql_query("SELECT * from ".$wcliame."_000330 where Codpla='$buscar' ORDER BY id");
-										$select_nomPlan = mysql_query("SELECT * from ".$wcliame."_000329 where Codpla='$buscar' ORDER BY id");
+										$select_detalle = mysql_queryV("SELECT * from ".$wcliame."_000330 where Codpla='$buscar' ORDER BY id");
+										$select_nomPlan = mysql_queryV("SELECT * from ".$wcliame."_000329 where Codpla='$buscar' ORDER BY id");
 										$resultado_nomPlan=mysql_fetch_array($select_nomPlan);
 										$Placod = $resultado_nomPlan[3];
 										$Nompla = $resultado_nomPlan[4];
@@ -832,7 +832,7 @@
 						<div id="xAlmacenoCotizacion"  class="xAlmacenoCotizacion" align="center" style="display: block">
 						<?php
 						global $wcliame;
-						$existe_cotizacion = mysql_query("select * from ".$wcliame."_000337 where CodplaR = '$CodplaRe' and TidR = '$TidRe' and Identificacion='$Identificacion' and Fecha='$Fecha' and EmpcodR='$EmpcodRe'");
+						$existe_cotizacion = mysql_queryV("select * from ".$wcliame."_000337 where CodplaR = '$CodplaRe' and TidR = '$TidRe' and Identificacion='$Identificacion' and Fecha='$Fecha' and EmpcodR='$EmpcodRe'");
 						$resultado_cotizacion = mysql_fetch_array($existe_cotizacion);
 						if ($resultado_cotizacion > 0){
 						?>
@@ -872,7 +872,7 @@
 							$valores='('.$descri.',"'.$cod.'","'.$can.'","'.$contab.'","'.$uniR.'","'.$totR.'"),';
 							//////// YA QUE TERMINA CON COMA CADA FILA, SE RESTA CON LA FUNCIÓN SUBSTR EN LA ULTIMA FILA /////////////////////
 							$valoresQ= substr($valores, 0, -1);
-							mysql_query("INSERT INTO ".$wcliame."_000337(Medico,Fecha_data,Hora_data,Identificacion,TidR,Nompac,Historia,Ingreso,Fecha,Nmedico,CodplaR,EmpcodR,Tprocedimiento,Mipres,NumMipres,Descritab,Codtab,Canttab,Concetab,Unitab,Tottab,Total_cantidad,Seguridad)
+							mysql_queryV("INSERT INTO ".$wcliame."_000337(Medico,Fecha_data,Hora_data,Identificacion,TidR,Nompac,Historia,Ingreso,Fecha,Nmedico,CodplaR,EmpcodR,Tprocedimiento,Mipres,NumMipres,Descritab,Codtab,Canttab,Concetab,Unitab,Tottab,Total_cantidad,Seguridad)
 										values('Cliame','$Fecha_data','$Hora_data','$Identificacion','$TidRe','$Nompac','$Historia','$Ingreso','$Fecha','$Medico','$CodplaRe','$EmpcodRe','$Tprocedimiento','$Mipres','$NumMipres','$descri','$cod','$can','$contab','$uniR','$totR','$total_cantidadR','$wuse')");
 							//$sqlRes=$conexion->query($sql) or mysql_error();
  
@@ -1103,20 +1103,20 @@
 										// Conexión a la base de datos y seleccion de registros
 									// Querys para mostrar en la tabla
 									    //Query para obtener el detalle y llenar toda la tabla cuando concepto no se ha 0
-										$select_detalle = mysql_query("SELECT * from ".$wcliame."_000330 where Codpla='$buscar_plantilla' and Estado='on' and Concepto != '0' order by id");
+										$select_detalle = mysql_queryV("SELECT * from ".$wcliame."_000330 where Codpla='$buscar_plantilla' and Estado='on' and Concepto != '0' order by id");
 										// formar el en cabezado de la tabla con codigo plantilla y descripcion
-										$select_nomPlan = mysql_query("SELECT * from ".$wcliame."_000329 where Codpla='$buscar_plantilla'");
+										$select_nomPlan = mysql_queryV("SELECT * from ".$wcliame."_000329 where Codpla='$buscar_plantilla'");
 										$resultado_nomPlan=mysql_fetch_array($select_nomPlan);
 										$Placod = $resultado_nomPlan[3];
 										$Nompla = $resultado_nomPlan[4];
 										// query para obtener la tarifa
-										$select_tarifa = mysql_query("SELECT Empcod,Empnom,Emptar from ".$wcliame."_000024 where Empcod='$buscar_responsable'");
+										$select_tarifa = mysql_queryV("SELECT Empcod,Empnom,Emptar from ".$wcliame."_000024 where Empcod='$buscar_responsable'");
 										$resultado_tarifa=mysql_fetch_array($select_tarifa);
 										$EmpcodR = $resultado_tarifa[0];
 										$EmpnomR = $resultado_tarifa[1];
 										$EmptarR = $resultado_tarifa[2];
 										//QUERY PARA LLENAR LA TABLA CON CONCEPTO 0 Y OBTENER EL LOS NOMBRES DEL CONCEPTO
-										$select_detalle_concep = mysql_query("SELECT * from ".$wcliame."_000330 where Codpla='$buscar_plantilla' and Estado='on' and Concepto=0 order by id");
+										$select_detalle_concep = mysql_queryV("SELECT * from ".$wcliame."_000330 where Codpla='$buscar_plantilla' and Estado='on' and Concepto=0 order by id");
 										$IdRowIn = 0;		
 										?>
 										<!-- TABLA PROVICIONAL PARA QUE PUEDAN COPIAR LOS DATOS-->
@@ -1643,11 +1643,11 @@
 									
 									{
 										if ($Bus_fecha == null or $Bus_fecha == ""){
-											$select_cotizacion = mysql_query("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
+											$select_cotizacion = mysql_queryV("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
 																		from ".$wcliame."_000337 
 																		where CodplaR='$Bus_plantilla' or Identificacion='$Bus_identificacion' or EmpcodR='$Bus_responsable'");
 										}else{
-											$select_cotizacion = mysql_query("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
+											$select_cotizacion = mysql_queryV("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
 																		from ".$wcliame."_000337 
 																		where CodplaR='$Bus_plantilla' or Identificacion='$Bus_identificacion' or EmpcodR='$Bus_responsable' or Fecha='$Bus_fecha'");
 										}
@@ -1697,7 +1697,7 @@
 									{
 										global $wcliame;
 								// Conexión a la base de datos y seleccion de registros
-									$select_cotizacion = mysql_query("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
+									$select_cotizacion = mysql_queryV("SELECT DISTINCT Tidr,Identificacion,Nompac,Fecha,CodplaR,EmpcodR,Total_cantidad 
 																		from ".$wcliame."_000337
 																		where CodplaR='$Bus_plantilla' and Identificacion='$Bus_identificacion' and EmpcodR='$Bus_responsable'");
 									?>

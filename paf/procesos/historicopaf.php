@@ -148,29 +148,29 @@ include_once("conex.php");
 
                         if($parametro == null)
                         {
-                            $query=mysql_query("select * from paf_000004 WHERE fecha_Ronda BETWEEN '$fechaanterior' AND '$fecha_actual' ORDER BY fecha_Ronda ASC");
+                            $query=mysql_queryV("select * from paf_000004 WHERE fecha_Ronda BETWEEN '$fechaanterior' AND '$fecha_actual' ORDER BY fecha_Ronda ASC");
                             $num_total_registros = mysql_num_rows($query);  //TOTAL DE REGISTROS EN PAF_000004 DESDE HACE 2 DIAS
                         }
 
                         if($parametro == '0')
                         {
-                            $query=mysql_query("select * from paf_000004 WHERE nombre_Pac LIKE '%$nombre%' ORDER BY fecha_Ronda ASC ");
+                            $query=mysql_queryV("select * from paf_000004 WHERE nombre_Pac LIKE '%$nombre%' ORDER BY fecha_Ronda ASC ");
                         }
                         if($parametro == '1')
                         {
                             if($historia != null and $ingreso != null)
                             {
-                                $query=mysql_query("select * from paf_000004 WHERE hc = '$historia' AND ingreso = '$ingreso' ORDER BY fecha_Ronda ASC");
+                                $query=mysql_queryV("select * from paf_000004 WHERE hc = '$historia' AND ingreso = '$ingreso' ORDER BY fecha_Ronda ASC");
                             }
                             elseif($historia != null and $ingreso == null)
                             {
-                                $query=mysql_query("select * from paf_000004 WHERE hc = '$historia' ORDER BY fecha_Ronda ASC");
+                                $query=mysql_queryV("select * from paf_000004 WHERE hc = '$historia' ORDER BY fecha_Ronda ASC");
                             }
                         }
                         if($parametro == '2') // PACIENTES SIN EGRESO, PERO CON AL MENOS UNA RONDA REGISTRADA EN PAF_000004
                         {
-                            $query=mysql_query("select * from paf_000004 WHERE fecha_Egreso = '' GROUP BY hc ORDER BY fecha_Ronda ASC");
-                            //$query=mysql_query("select * from paf_000004 WHERE hc NOT IN (SELECT hc FROM paf_000004 WHERE fecha_Egreso != '') GROUP BY hc ORDER BY fecha_Ronda ASC");
+                            $query=mysql_queryV("select * from paf_000004 WHERE fecha_Egreso = '' GROUP BY hc ORDER BY fecha_Ronda ASC");
+                            //$query=mysql_queryV("select * from paf_000004 WHERE hc NOT IN (SELECT hc FROM paf_000004 WHERE fecha_Egreso != '') GROUP BY hc ORDER BY fecha_Ronda ASC");
                         }
                         while($dato=mysql_fetch_array($query))
                         {
@@ -179,7 +179,7 @@ include_once("conex.php");
                                 <?php
                                 $hc = $dato['hc'];
                                 $ing = $dato['ingreso'];
-                                $query2=mysql_query("select * from movhos_000020 WHERE Habhis = '$hc' AND Habing = '$ing'");
+                                $query2=mysql_queryV("select * from movhos_000020 WHERE Habhis = '$hc' AND Habing = '$ing'");
                                 $dato2=mysql_fetch_array($query2);
                                 $hcFinded = $dato2['Habhis'];
                                 if($hcFinded != null)
@@ -236,7 +236,7 @@ include_once("conex.php");
             if($idR != null)
             {
                 ?><script>foco()</script><?php
-                $consultaRegistro=mysql_query("select * from paf_000004 WHERE id = '$idR'");
+                $consultaRegistro=mysql_queryV("select * from paf_000004 WHERE id = '$idR'");
                 $datoRegistro=mysql_fetch_array($consultaRegistro);
                 $habitacion = $datoRegistro['habitacion'];
                 $fecha_ronda = $datoRegistro['fecha_Ronda'];

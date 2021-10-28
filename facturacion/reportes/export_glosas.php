@@ -44,7 +44,7 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
   $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 	
 // Conexión a la tabla y seleccion de registros MATRIX
-			$select_glosa = mysql_query("Select Glonfa,Gloent,empnom,Glohis,Gloing,Glofhg,
+			$select_glosa = mysql_queryV("Select Glonfa,Gloent,empnom,Glohis,Gloing,Glofhg,
 										Gloecf,Gdecco,Gdevfa,Gdecgl,Gdevgl,Gdecau,Jusdes,Gdevac,Gdeobj 
 										From ".$wcliame."_000273 AS A LEFT JOIN ".$wcliame."_000024 ON (Gloent = Empcod), ".$wcliame."_000274,".$wcliame."_000275 
 										where gloest='on'

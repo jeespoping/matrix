@@ -92,7 +92,7 @@
 		if($accion == 'guardar')
 		{
 			echo 'LLego la variable con ID='.$Cod_pla;
-			mysql_query("update ".$wcliame."_000329 set Nompla='$Nom_pla',Estado='$Est' where Codpla='$Cod_pla'");
+			mysql_queryV("update ".$wcliame."_000329 set Nompla='$Nom_pla',Estado='$Est' where Codpla='$Cod_pla'");
 			?>
 				<div style="margin-top: 10px;  text-align: center">
 				<form method="post" action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>">

@@ -56,7 +56,7 @@
         case '02': $wbasedato = 'clisur';break;
     }
     $tablaFE = 'root';
-    $res = mysql_query("SELECT cjecco, cjecaj, cjetin, cjetem from".' '."$wbasedato"."_000030 WHERE cjeusu = '$wusuario' AND cjeest = 'on'");
+    $res = mysql_queryV("SELECT cjecco, cjecaj, cjetin, cjetem from".' '."$wbasedato"."_000030 WHERE cjeusu = '$wusuario' AND cjeest = 'on'");
     $num = mysql_num_rows($res);
 
     $accion = $_GET['accion'];
@@ -82,7 +82,7 @@ switch($accion)
             <?php
             if($accion2 == 'restar')
             {
-                $queryTotalCargos = mysql_query("select SUM(Tcarvto) from".' '."$wbasedato"."_000106
+                $queryTotalCargos = mysql_queryV("select SUM(Tcarvto) from".' '."$wbasedato"."_000106
                                                              where Tcarfec BETWEEN '$fechaInicial' AND '$fechaFinal'
                                                              AND Tcarres LIKE '$responsable%'
                                                              AND Tcarhis = '$historia'
@@ -108,7 +108,7 @@ switch($accion)
             }
             if($accion2 == 'sumar')
             {
-                $queryTotalCargos = mysql_query("select SUM(Tcarvto) from".' '."$wbasedato"."_000106
+                $queryTotalCargos = mysql_queryV("select SUM(Tcarvto) from".' '."$wbasedato"."_000106
                                                              where Tcarfec BETWEEN '$fechaInicial' AND '$fechaFinal'
                                                              AND Tcarres LIKE '$responsable%'
                                                              AND Tcarhis = '$historia'
@@ -162,7 +162,7 @@ switch($accion)
                 <?php
                 function obtenerNumFac($wbasedato,$wcco,$posicion)
                 {
-                    $queryNumFac = mysql_query("SELECT * from".' '."$wbasedato"."_000003 WHERE ccocod = '$wcco'");
+                    $queryNumFac = mysql_queryV("SELECT * from".' '."$wbasedato"."_000003 WHERE ccocod = '$wcco'");
                     $datoNumFac = mysql_fetch_array($queryNumFac);
 
                     $wprefac = $datoNumFac[0];             //Prefijo
@@ -181,7 +181,7 @@ switch($accion)
 
                 function obtenerDatosEmpresa($wbasedato,$responsable,$posicion)
                 {
-                    $queryDatosEmpresa = mysql_query("select * from".' '."$wbasedato"."_000024 WHERE Empcod LIKE '$responsable%'");
+                    $queryDatosEmpresa = mysql_queryV("select * from".' '."$wbasedato"."_000024 WHERE Empcod LIKE '$responsable%'");
                     $datosEmpresa = mysql_fetch_array($queryDatosEmpresa);
 
                     $empCod = $datosEmpresa[3];     $Empnit = $datosEmpresa[4];         $codEmpResCar = $datosEmpresa['Empres'];   $nomEmp = $datosEmpresa[6];
@@ -203,14 +203,14 @@ switch($accion)
 
                 function generarConsFac($wbasedato,$wcco,$posicion)
                 {
-                    $queryNumFac = mysql_query("SELECT ccofai from".' '."$wbasedato"."_000003 WHERE ccocod = '$wcco'");
+                    $queryNumFac = mysql_queryV("SELECT ccofai from".' '."$wbasedato"."_000003 WHERE ccocod = '$wcco'");
                     $datoNumFac = mysql_fetch_array($queryNumFac);
                     $wnrofac   =$datoNumFac[0];             //Consecutivo
                     $wnrofacNew = $wnrofac + 1;
 
-                    mysql_query("update".' '."$wbasedato"."_000003 set ccofai = '$wnrofacNew' WHERE ccocod = '$wcco'");
+                    mysql_queryV("update".' '."$wbasedato"."_000003 set ccofai = '$wnrofacNew' WHERE ccocod = '$wcco'");
 
-                    $queryNumFac2 = mysql_query("SELECT ccopfa, ccoffa, ccofai from".' '."$wbasedato"."_000003 WHERE ccocod = '$wcco'");
+                    $queryNumFac2 = mysql_queryV("SELECT ccopfa, ccoffa, ccofai from".' '."$wbasedato"."_000003 WHERE ccocod = '$wcco'");
                     $datoNumFac2 = mysql_fetch_array($queryNumFac2);
 
                     $numeroFac = $datoNumFac2[0].'-'.$datoNumFac2[2]; // PREFIJO DE EMPRESA Y CONSECUTIVO DE FACTURA
@@ -227,7 +227,7 @@ switch($accion)
 
                 function obtenerDatosPaciente($wbasedato,$historia,$ingreso,$posicion)
                 {
-                    $queryPaciente = mysql_query("SELECT pachis,pacno1,pacno2,pacap1,pacap2,pacdoc,ingcem,empnit,ingent,ingfei,ingsei,ingnin,empres,emptem,emptar,emppdt
+                    $queryPaciente = mysql_queryV("SELECT pachis,pacno1,pacno2,pacap1,pacap2,pacdoc,ingcem,empnit,ingent,ingfei,ingsei,ingnin,empres,emptem,emptar,emppdt
                                               from".' '."$wbasedato"."_000100, ".' '."$wbasedato"."_000101, ".' '."$wbasedato"."_000024
                                               WHERE pachis = '$historia'
                                               AND pachis = inghis
@@ -318,7 +318,7 @@ switch($accion)
 
                 //GRABAR LA FACTURA EN TABLA_000018:
                 ///*
-                mysql_query("insert into".' '."$wbasedato"."_000018(Medico,Fecha_data,Hora_data,fenano,fenmes,fenfec,fenffa,fenfac,fentip,fennit,fencod,
+                mysql_queryV("insert into".' '."$wbasedato"."_000018(Medico,Fecha_data,Hora_data,fenano,fenmes,fenfec,fenffa,fenfac,fentip,fennit,fencod,
                                                    fenres,fenval,fenviv,fencop,fencmo,fendes,fenabo,fenvnd,fenvnc,fensal,fenest,fencre,
                                                    fenpde,fenrec,fentop,fenhis,fening,fenesf,fenrln,fencco,fenrbo,fenimp,fendpa,fennpa,
                                                    fendev,fennac,fenobs,Seguridad)
@@ -336,7 +336,7 @@ switch($accion)
                     $his = $newArray[0];     $ing = $newArray[1];
 
                     //SABER CUANTOS CARGOS SE SELECCIONARON PARA GRABAR:
-                    $query1 = mysql_query("select id,Tcarvto,Tcarser,Tcarconcod,Tcartercod,Tcarterpor
+                    $query1 = mysql_queryV("select id,Tcarvto,Tcarser,Tcarconcod,Tcartercod,Tcarterpor
                                        from".' '."$wbasedato"."_000106
                                            where Tcarfec BETWEEN '$fechaInicial' AND '$fechaFinal'
                                            and Tcarres LIKE '$codResponsable%'
@@ -361,23 +361,23 @@ switch($accion)
                         //echo  ' ID CARGO = '.$numeroid.' VALOR TOTAL ESTE CARGO = '.$valTotEsteCargo.' <br>';
 
                         //GRABAR LA AUDITORIA EN TABLA_000107:
-                        $query107 = mysql_query("insert into".' '."$wbasedato"."_000107(Medico,Fecha_data,Hora_data,Audhis,Auding,Audreg,Audacc,Audusu,Seguridad)
+                        $query107 = mysql_queryV("insert into".' '."$wbasedato"."_000107(Medico,Fecha_data,Hora_data,Audhis,Auding,Audreg,Audacc,Audusu,Seguridad)
                                             values('$wbasedato','$fechaActual','$horaActual','$his','$ing','$numeroid','Grabo','$wusuario','$usuario')");
 
                         //ACTUALIZAR CADA CARGO EN TABLA_000106 PARA LOS VALORES GRABADOS EN EL QUERY ANTERIOR (ACTUALIZAR Tcarfre = VALOR DE CADA CARGO):
-                        $query106 = mysql_query("update ".' '."$wbasedato"."_000106 SET tcarfre = tcarfre + '$valTotEsteCargo' where id = '$numeroid'");
+                        $query106 = mysql_queryV("update ".' '."$wbasedato"."_000106 SET tcarfre = tcarfre + '$valTotEsteCargo' where id = '$numeroid'");
 
                         //GRABAR RELACION DE CARGOS CON FACTURAS, DE CADA PACIENTE, TABLA_000066
-                        $query66 = mysql_query("insert into".' '."$wbasedato"."_000066(Medico,Fecha_data,Hora_data,Rcfffa,Rcffac,Rcfreg,Rcfval,Rcfest,Rcftip,Seguridad)
+                        $query66 = mysql_queryV("insert into".' '."$wbasedato"."_000066(Medico,Fecha_data,Hora_data,Rcfffa,Rcffac,Rcfreg,Rcfval,Rcfest,Rcftip,Seguridad)
                                             values('$wbasedato','$fechaActual','$horaActual','$fueFact','$newCons','$numeroid','$valTotEsteCargo','on','R','$usuario')");
 
                         //GRABAR EN LA TABLA DE FACTURAS DETALLADAS (TABLA_000065), POR CONCEPTO, CCO Y TERCERO
-                        $query65 = mysql_query("insert into".' '."$wbasedato"."_000065(Medico,Fecha_data,Hora_data,Fdefue,Fdedoc,Fdecco,Fdecon,Fdevco,Fdeter,
+                        $query65 = mysql_queryV("insert into".' '."$wbasedato"."_000065(Medico,Fecha_data,Hora_data,Fdefue,Fdedoc,Fdecco,Fdecon,Fdevco,Fdeter,
                                             Fdepte,Fdevde,Fdesal,Fdeest,Fdeffa,Fdefac,fdeviv,Seguridad)
                                             values('$wbasedato','$fechaActual','$horaActual','$fueFact','$newCons','$ccosGrab','$codConcepto','$valTotEsteCargo','$codTerce',
                                             '$porcTerce','0','$valTotEsteCargo','on','$fueFact','$newCons','0','$usuario')");
 
-                        $query122 = mysql_query("insert into".' '."$tablaFE"."_000122(Medico,Fecha_data,Hora_data,Faeemp,Faefue,Faedoc,Faepre,Faetdo,Faeccf,Faeest,
+                        $query122 = mysql_queryV("insert into".' '."$tablaFE"."_000122(Medico,Fecha_data,Hora_data,Faeemp,Faefue,Faedoc,Faepre,Faetdo,Faeccf,Faeest,
                                               Faexml,Faexmf,Faedir,Faearc,Faexme,Faewen,Faewsf,Faewsr,Faewss,Faepdf,Faenid,Faefid,Seguridad)
                                               values('root','$fechaActual','$horaActual','$wemp','$fueFact','$newFact','$prefijo','FV','$wcco','on',
                                               '','','','','','','','','','','','','$usuario')");

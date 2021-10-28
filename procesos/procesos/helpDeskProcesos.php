@@ -59,7 +59,7 @@ include_once("conex.php");
 <?php
 if($accion == 'guardar')
 {
-    mysql_query("INSERT INTO equipos_000006 (Medico,Fecha_data,Hora_data,Nomusu,Ccousu,Carusu,Ccoreq,Tipreq,Nomreq,Desreq,Fecini,Horini,Fecfin,Horfin,Seguridad)
+    mysql_queryV("INSERT INTO equipos_000006 (Medico,Fecha_data,Hora_data,Nomusu,Ccousu,Carusu,Ccoreq,Tipreq,Nomreq,Desreq,Fecini,Horini,Fecfin,Horfin,Seguridad)
                                      VALUES ('Equipos','$fecIniReq','$horIniReq','$nomUsuario','$ccosUsuario','$carUsuario','$ccosReq','$tipoReq','$usuReq','$desReq','$fecIniReq',
                                             '$horIniReq','$fecFinReq','$horFinReq','$seguridad') ");
 
@@ -76,7 +76,7 @@ if($accion == 'guardar')
 
 if($accion == 'consultar')
 {
-    $queryReq = mysql_query("SELECT * from equipos_000006 WHERE Seguridad = '$usuarioReq' ORDER BY Fecini ASC");
+    $queryReq = mysql_queryV("SELECT * from equipos_000006 WHERE Seguridad = '$usuarioReq' ORDER BY Fecini ASC");
     ?>
     <div id="datosConsultar" class="datosConsultar" style="width: 628px">
         <table align="center" border="0">
@@ -85,7 +85,7 @@ if($accion == 'consultar')
             {
                 $fecha = $datoReq[1];   $solicitante = $datoReq[8]; $uni = $datoReq[6];
                 $tipo = $datoReq[7];    $descripcion = $datoReq[9];
-                $queryCco = mysql_query("select Cconom from costosyp_000005 WHERE Ccocod = '$uni'");
+                $queryCco = mysql_queryV("select Cconom from costosyp_000005 WHERE Ccocod = '$uni'");
                 $datoCco = mysql_fetch_array($queryCco);
                 $unidad = $datoCco[0];
 
@@ -121,13 +121,13 @@ function consultarDatosUsuario($codUsuario,$variable)
     $usua = str_replace("01","", $codUsuario);
     $usuario = $usua.'-01';
 
-    $queryDatosUsuario = mysql_query("SELECT Ideced,Ideno1, Ideno2, Ideap1, Ideap2, Idecco, Ideccg from talhuma_000013 WHERE Ideuse = '$usuario'");
+    $queryDatosUsuario = mysql_queryV("SELECT Ideced,Ideno1, Ideno2, Ideap1, Ideap2, Idecco, Ideccg from talhuma_000013 WHERE Ideuse = '$usuario'");
     $datoUsuario = mysql_fetch_array($queryDatosUsuario);
 
     if($datoUsuario == null)
     {
         $usuario = $codUsuario.'-01';
-        $queryDatosUsuario = mysql_query("SELECT Ideced,Ideno1, Ideno2, Ideap1, Ideap2, Idecco, Ideccg from talhuma_000013 WHERE Ideuse = '$usuario'");
+        $queryDatosUsuario = mysql_queryV("SELECT Ideced,Ideno1, Ideno2, Ideap1, Ideap2, Idecco, Ideccg from talhuma_000013 WHERE Ideuse = '$usuario'");
         $datoUsuario = mysql_fetch_array($queryDatosUsuario);
     }
     $documento = $datoUsuario[0];   $nombre1 = $datoUsuario[1];     $nombre2 = $datoUsuario[2];
@@ -135,7 +135,7 @@ function consultarDatosUsuario($codUsuario,$variable)
     $codCargo = $datoUsuario[6];
     $nombreCompleto = $nombre1.' '.$nombre2.' '.$apellido1.' '.$apellido2;
 
-    $queryCargoUsuario = mysql_query("SELECT Cardes from root_000079 WHERE Carcod = '$codCargo'");
+    $queryCargoUsuario = mysql_queryV("SELECT Cardes from root_000079 WHERE Carcod = '$codCargo'");
     $datoCargo = mysql_fetch_array($queryCargoUsuario);
     $descCargo = $datoCargo[0];
 

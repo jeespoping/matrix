@@ -177,13 +177,13 @@
 			}
 			else{
 				// Conexión a la tablas y seleccion de registros MATRIX
-			/*	$select_encabezado = mysql_query("Select *
+			/*	$select_encabezado = mysql_queryV("Select *
 											From movhos_000110
 											where Enllav='$Lavanderia'
 											and Enlfec >= '$buscar'
 											and Enlcon='$Conceptos'
 											and Enlron='$Rondas'");
-				$select_detalle = mysql_query("Select count(*)
+				$select_detalle = mysql_queryV("Select count(*)
 											From movhos_000111
 											where mollav='$Lavanderia'
 											and Fecha_data >= '$buscar'

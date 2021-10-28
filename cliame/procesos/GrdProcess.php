@@ -732,7 +732,7 @@ if($accion == 'maestros')
 else
 {
     /*
-    $sql = mysql_query("select * from calidad_000010
+    $sql = mysql_queryV("select * from calidad_000010
                         WHERE (calidad_000010.Descripcion LIKE '$keyword' AND Tipo = '$tipoAtencion')
                         OR (calidad_000010.Codigo LIKE '$keyword' AND Tipo = '$tipoAtencion')
                         ORDER BY Descripcion ASC LIMIT 0, 10");
@@ -740,7 +740,7 @@ else
 
     if($tipoAtencion == 'M')
     {
-        $sql = mysql_query("select * from root_000011
+        $sql = mysql_queryV("select * from root_000011
                             WHERE (root_000011.Descripcion LIKE '$keyword' AND Estado = 'on')
                             OR (root_000011.Codigo LIKE '$keyword' AND Estado = 'on')
                             ORDER BY Descripcion ASC LIMIT 0, 10");
@@ -753,7 +753,7 @@ else
     }
     elseif($tipoAtencion == 'Q')
     {
-        $sql = mysql_query("select * from root_000012
+        $sql = mysql_queryV("select * from root_000012
                             WHERE (root_000012.Nombre LIKE '$keyword' AND Estado = 'on')
                             OR (root_000012.Codigo LIKE '$keyword' AND Estado = 'on')
                             ORDER BY Nombre ASC LIMIT 0, 10");

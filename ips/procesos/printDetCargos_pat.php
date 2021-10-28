@@ -277,7 +277,7 @@ header('content-disposition: attachment;filename=Detalle_Estado_Cartera.xls');
                             <div align="left" style="background-color: #C3D9FF; height: 100px; margin-top: 20px">
                                 <section>
                                     <?php
-                                    $queryTotalCargos = mysql_query("select Fenval, Fenabo, Fendes from".' '."$wbasedato"."_000018
+                                    $queryTotalCargos = mysql_queryV("select Fenval, Fenabo, Fendes from".' '."$wbasedato"."_000018
                                                              where Fenfac = '$factura'
                                                              AND Fenest = 'on'");
                                     $datoTotalCargos = mysql_fetch_array($queryTotalCargos);

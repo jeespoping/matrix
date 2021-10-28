@@ -463,7 +463,7 @@ else
 					$REP.="{".chr(13);
 				}
 				$REP.=chr(36)."query = ".chr(34).$consulta1.chr(34).";".chr(13);
-				$REP.=chr(36)."err = mysql_query(".chr(36)."query,".chr(36)."conex);".chr(13);
+				$REP.=chr(36)."err = mysql_queryV(".chr(36)."query,".chr(36)."conex);".chr(13);
 				$REP.=chr(36)."num = mysql_num_rows(".chr(36)."err);".chr(13);
 				$REP.=" echo ".chr(34)."<table border=1>".chr(34).";".chr(13);
 				$fil=$k+1;

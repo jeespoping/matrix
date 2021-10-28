@@ -148,26 +148,26 @@ include_once("conex.php");
 
                         if($parametro == null)
                         {
-                            $query=mysql_query("select * from dircie_000012 ORDER BY Fecha_data ASC");
+                            $query=mysql_queryV("select * from dircie_000012 ORDER BY Fecha_data ASC");
                         }
                         if($parametro == '0')
                         {
-                            $query=mysql_query("select * from dircie_000012 WHERE Dcidpac = '$IdPaciente'");
+                            $query=mysql_queryV("select * from dircie_000012 WHERE Dcidpac = '$IdPaciente'");
                         }
                         if($parametro == '1')
                         {
                             if($fechai != null and $fechaf != null)
                             {
-                                $query=mysql_query("select * from dircie_000012 WHERE Dcfecnotpat BETWEEN '$fechai' AND '$fechaf'");
+                                $query=mysql_queryV("select * from dircie_000012 WHERE Dcfecnotpat BETWEEN '$fechai' AND '$fechaf'");
                             }
                             elseif($fechai != null and $fechaf == null)
                             {
-                                $query=mysql_query("select * from dircie_000012 WHERE Dcfecnotpat BETWEEN '$fechai' AND '$fechaActual'");
+                                $query=mysql_queryV("select * from dircie_000012 WHERE Dcfecnotpat BETWEEN '$fechai' AND '$fechaActual'");
                             }
                         }
                         if($parametro == '2')
                         {
-                            $query=mysql_query("select * from dircie_000012 WHERE Dccodpro = '$CodProtocolo'");
+                            $query=mysql_queryV("select * from dircie_000012 WHERE Dccodpro = '$CodProtocolo'");
                         }
                         while($dato=mysql_fetch_array($query))
                         {
@@ -204,7 +204,7 @@ include_once("conex.php");
             if($idR != null)
             {
             ?><script>foco()</script><?php
-            $consultaRegistro=mysql_query("select * from dircie_000012 WHERE id = '$idR'");
+            $consultaRegistro=mysql_queryV("select * from dircie_000012 WHERE id = '$idR'");
             $datoRegistro=mysql_fetch_array($consultaRegistro);
             $fechaEmision = date('Y-m-d');
             $fechaEmision = explode('-',$fechaEmision);

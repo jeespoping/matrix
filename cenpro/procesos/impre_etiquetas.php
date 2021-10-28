@@ -216,7 +216,7 @@ $respo_firma = $res['Firfir'];
 			$apro_nom = $res['descripcion'];
 			$apro_firma = $res['Firfir'];
 
-			// $select_aprobo = mysql_query("SELECT descripcion,Firfir 
+			// $select_aprobo = mysql_queryV("SELECT descripcion,Firfir 
 			// 					from usuarios left join ".$wbasedato."_000023 on codigo = fircod
 			// 					where codigo='$wapro'");					
 			// $resultado_aprobo=mysql_fetch_array($select_aprobo);

@@ -98,7 +98,7 @@
 		$accion = isset($_POST['accion']) ? $_POST['accion'] : "";
 		if($accion == 'guardar')
 		{
-			mysql_query("update ".$wcliame."_000330 set Cantidad='$Can',Concepto='$Conc',Estado='$Est' where Codpla='$Cod_pla' and Codpro= '$Cod_pro'");
+			mysql_queryV("update ".$wcliame."_000330 set Cantidad='$Can',Concepto='$Conc',Estado='$Est' where Codpla='$Cod_pla' and Codpro= '$Cod_pro'");
 			?>
 				<div style="margin-top: 10px;  text-align: center">
 				<form method="post" action="Menuplantilla.php?wemp_pmla=<?=$wemp_pmla?>">

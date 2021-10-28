@@ -658,7 +658,7 @@ else
 {
     if($tipoAtencion == 'M')
     {
-        $sql = mysql_query("select * from root_000011
+        $sql = mysql_queryV("select * from root_000011
                             WHERE (root_000011.Descripcion LIKE '$keyword' AND Estado = 'on')
                             OR (root_000011.Codigo LIKE '$keyword' AND Estado = 'on')
                             ORDER BY Descripcion ASC");
@@ -671,7 +671,7 @@ else
     }
     elseif($tipoAtencion == 'Q')
     {
-        $sql = mysql_query("select * from root_000012
+        $sql = mysql_queryV("select * from root_000012
                             WHERE (root_000012.Nombre LIKE '$keyword' AND Estado = 'on')
                             OR (root_000012.Codigo LIKE '$keyword' AND Estado = 'on')
                             ORDER BY Nombre ASC");

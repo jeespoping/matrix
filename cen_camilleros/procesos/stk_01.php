@@ -181,7 +181,7 @@ include_once("conex.php");
             <?php
             if($nRadicado != null)
             {
-                $queryRadicado = mysql_query("SELECT * from ameenv_000001 WHERE N_radicado = '$nRadicado'");
+                $queryRadicado = mysql_queryV("SELECT * from ameenv_000001 WHERE N_radicado = '$nRadicado'");
                 $num_results = mysql_num_rows($queryRadicado);
 
                 if($num_results > 0)
@@ -210,7 +210,7 @@ include_once("conex.php");
                                     $usua = str_replace("01","", $us);
                                     $usuario = $usua.'-01';
 
-                                    $queryUsuario = mysql_query("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
+                                    $queryUsuario = mysql_queryV("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
                                     $datoUsuario = mysql_fetch_array($queryUsuario);
                                     $usuRadica = $datoUsuario[0].' '.$datoUsuario[2].' '.$datoUsuario[3];
                                     ?>
@@ -263,7 +263,7 @@ include_once("conex.php");
                                     $usua = str_replace("01","", $us);
                                     $usuario = $usua.'-01';
 
-                                    $queryUsuario = mysql_query("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
+                                    $queryUsuario = mysql_queryV("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
                                     $datoUsuario = mysql_fetch_array($queryUsuario);
                                     $usuRadica = $datoUsuario[0].' '.$datoUsuario[2].' '.$datoUsuario[3];
                                     ?>
@@ -316,7 +316,7 @@ include_once("conex.php");
             <?php
             if($fRadicado != null)
             {
-                $queryRadicado = mysql_query("SELECT * from ameenv_000001 WHERE Fecha_data = '$fRadicado'");
+                $queryRadicado = mysql_queryV("SELECT * from ameenv_000001 WHERE Fecha_data = '$fRadicado'");
                 $num_results = mysql_num_rows($queryRadicado);
 
                 if($num_results > 0) {
@@ -381,7 +381,7 @@ include_once("conex.php");
         <div align="center" id="2" class="panel-body" style="padding-top: 1px">
             <form id="frmInforme" method="post" action="#">
                 <?php
-                $queryRadicado = mysql_query("SELECT * from ameenv_000001 WHERE id = '$idSticker'");
+                $queryRadicado = mysql_queryV("SELECT * from ameenv_000001 WHERE id = '$idSticker'");
                 $num_results = mysql_num_rows($queryRadicado);
 
                 if($num_results > 0)
@@ -409,7 +409,7 @@ include_once("conex.php");
                                     $usua = str_replace("01","", $us);
                                     $usuario = $usua.'-01';
 
-                                    $queryUsuario = mysql_query("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
+                                    $queryUsuario = mysql_queryV("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
                                     $datoUsuario = mysql_fetch_array($queryUsuario);
                                     $usuRadica = $datoUsuario[0].' '.$datoUsuario[2].' '.$datoUsuario[3];
                                     ?>
@@ -462,7 +462,7 @@ include_once("conex.php");
                                     $usua = str_replace("01","", $us);
                                     $usuario = $usua.'-01';
 
-                                    $queryUsuario = mysql_query("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
+                                    $queryUsuario = mysql_queryV("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
                                     $datoUsuario = mysql_fetch_array($queryUsuario);
                                     $usuRadica = $datoUsuario[0].' '.$datoUsuario[2].' '.$datoUsuario[3];
                                     ?>
@@ -521,7 +521,7 @@ include_once("conex.php");
 
     if(isset($_POST['btnNuevo']))
     {
-        $queryNumRadicado = mysql_query("SELECT N_radicado FROM ameenv_000001 ORDER BY id DESC");
+        $queryNumRadicado = mysql_queryV("SELECT N_radicado FROM ameenv_000001 ORDER BY id DESC");
         $datoNumRadicado = mysql_fetch_array($queryNumRadicado);
         $lastRadicado = $datoNumRadicado[0];
         //FUNCION PARA SUMAR 000001 AL NUMERO DE RADICADO ANTERIOR Y QUE EL RESULTADO SE MUESTRE CON TODOS LOS CEROS A LA IZQUIERDA:
@@ -600,13 +600,13 @@ include_once("conex.php");
         <script>ocultarPanel1()</script>
         <div align="center" id="divQuery">
             <?php
-            $queryExiste = mysql_query("SELECT id FROM ameenv_000001 WHERE N_radicado = '$numeroRadicado'");
+            $queryExiste = mysql_queryV("SELECT id FROM ameenv_000001 WHERE N_radicado = '$numeroRadicado'");
             $datoExiste = mysql_fetch_array($queryExiste);
             $existe = $datoExiste[0];
 
             if($existe == null)
             {
-                $queryGuardarStk = mysql_query("INSERT INTO ameenv_000001(Medico,Fecha_data,Hora_data,N_radicado,Seguridad,id)
+                $queryGuardarStk = mysql_queryV("INSERT INTO ameenv_000001(Medico,Fecha_data,Hora_data,N_radicado,Seguridad,id)
                                                                    VALUES('ameenv','$fechaRadicado','$horaRadicado','$numeroRadicado','$wuse','') ");
                 if($queryGuardarStk)
                 {

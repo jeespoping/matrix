@@ -90,7 +90,7 @@ $CodPro = $_GET['CodPro'];
 		$TidR = $_GET['TidR'];
 		echo 'la tipo id entro es ='.$Tid;
 		if ($Identificacion !== null) {
-			$select_paciente = mysql_query("SELECT Inghis,Ingnin,Pactdo,Pacdoc,Pacap1,Pacap2,Pacno1,Pacno2,Pacact 
+			$select_paciente = mysql_queryV("SELECT Inghis,Ingnin,Pactdo,Pacdoc,Pacap1,Pacap2,Pacno1,Pacno2,Pacact 
 											from ".$wcliame."_000100 left join ".$wcliame."_000101 on ".$wcliame."_000100.Pachis=".$wcliame."_000101.Inghis 
 											where Pacdoc='$Identificacion' and Pactdo='$TidR' order by ".$wcliame."_000101.id desc
 limit 1");

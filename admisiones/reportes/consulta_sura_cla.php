@@ -131,7 +131,7 @@
 			
 // Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
 global $wcliame;
-			$select_grd = mysql_query("SELECT count(*) cant
+			$select_grd = mysql_queryV("SELECT count(*) cant
      									FROM  ".$wcliame."_000101 a 
 										left join
 										".$wcliame."_000024 b on (a.Ingcem = b.Empcod), ".$wcliame."_000100 c 
