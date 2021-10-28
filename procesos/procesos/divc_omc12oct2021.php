@@ -68,7 +68,7 @@ else
 	
 	if($IPOK > 0)
 	{
-		echo "	<iframe src='http://calidad.intranetlasamericas.co/'></iframe>";
+		echo "	<iframe src='http://promotora.vps.arkix.com/'></iframe>";
 		echo "	 <style type='text/css'>";
 		echo "	 html, body, div, iframe { margin:0; padding:0; height:100%; }";
 		echo "	 iframe { display:block; width:100%; border:none; }";

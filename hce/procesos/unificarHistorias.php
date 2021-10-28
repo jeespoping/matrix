@@ -203,6 +203,7 @@ if(! isset($_REQUEST['action'] )){
 			unificarNroHistoriaNOERP( $_REQUEST['historia_ori'], $_REQUEST['historia_des'], @$_REQUEST['ing_simulacion'] );
 			unificarNroHistoriaERP( $_REQUEST['historia_ori'], $_REQUEST['historia_des'], @$_REQUEST['ing_simulacion']);
 			actualizarCedulaen130(true, $_REQUEST['historia_ori'], @$_REQUEST['historia_des']);
+			unificar_historias_toyota($_REQUEST['historia_ori'], $_REQUEST['historia_des'], @$_REQUEST['ing_simulacion']);
 		}elseif($action=="simular"){
 			simularUnificacion( $_REQUEST['historia_ori'], $_REQUEST['historia_des'], @$_REQUEST['ingresos_origen'], @$_REQUEST['trasladoParcial'], @$_REQUEST['trasladoCompleto'], @$_REQUEST['listoEnUnix'] );
 		}elseif($action=="unificarUltimoIngreso"){
@@ -2094,6 +2095,105 @@ if(! isset($_REQUEST['action'] )){
 			$menorIngreso++;
 		}
 		return $ingresosP;
+	}
+	function unificar_historias_toyota($whis_origen, $whis_destino, $wingresosSimulacion){
+		global $wemp_pmla;
+		global $conex;
+		$userSession = explode('-', $_SESSION['user'])[1];
+		$ipSession = $_SERVER['REMOTE_ADDR'];		
+		
+		$wingresosSimulacion = str_replace("\\", "", $wingresosSimulacion);
+		$wingresosSimulacion = json_decode( $wingresosSimulacion, true );
+		$wresultado_ingresos = array();
+		$dato="";
+		$dato=array();
+		$ingreso = 0;
+		
+		$database = consultarAliasPorAplicacion($conex, $wemp_pmla, 'facturacion');
+		
+		$sql = 'SELECT Pactdo, Pacdoc, CONCAT(Pacno1," ", Pacno2, " ", Pacap1, " ",Pacap2) nombre
+						FROM '.$database.'_000100
+						WHERE Pachis = "'.$whis_destino.'"
+						LIMIT 1';
+		
+		$exec = mysql_query($sql, $conex) or die("Error: " . mysql_errno() . " - en el query: $sql - ".mysql_error());
+		
+		$num_reg = mysql_num_rows($exec);
+		
+		$tipoDoc = '';
+		$numDoc = '';
+		$nombrePac = '';
+		
+		if($num_reg > 0){
+			$row = mysql_fetch_row($exec);	
+			$tipoDoc = $row[0];
+			$numDoc = $row[1];
+			$nombrePac = $row[2];
+		}
+		
+		foreach ($wingresosSimulacion as $val=>$ing){
+			$dato = null;
+			if($ingreso==0){
+				$ingreso = $ing['ingreso'];
+			}			
+			$dato['historia'] = $ing['historia'];
+			$dato['ingreso'] = $ing['ingreso'];
+			$dato['historia_destino'] = $whis_destino;
+			( isset($ing['ing_ajustado']) )? $dato['ing_ajustado'] = $ing['ing_ajustado'] : $dato['ing_ajustado'] = $ingreso;
+			if($ing['historia'] != $whis_destino){
+				$dato['tipoDoc'] = $tipoDoc;
+				$dato['numDoc'] = $numDoc;
+				$dato['nombrePac'] = $nombrePac;
+			}
+			$dato['userSession'] = $userSession;
+			$dato['ipSession'] = $ipSession;
+			if( isset( $ing['unix'] ) == false ){ //2013-07-02
+				array_push( $wresultado_ingresos, $dato );
+			}
+
+			$ingreso++;
+		}
+				
+		$info = json_decode(obtener_url_toyota($conex, $wemp_pmla));
+			
+		$url = 'http://'.$info->url.'/apis/storiesUnification/unify';
+		
+		$ch = curl_init();
+		
+		$request = array('data' => []);
+		
+		$request['data'] = $wresultado_ingresos;
+		
+		$options = array(
+			CURLOPT_URL                 	=> $url,
+			CURLOPT_HEADER                 	=> false,
+			CURLOPT_POSTFIELDS             	=> http_build_query($request),
+			CURLOPT_RETURNTRANSFER 			=> true,
+			CURLOPT_CUSTOMREQUEST         	=> 'POST',
+		);
+	
+		curl_setopt_array($ch, $options);
+		
+		$response = curl_exec($ch);		
+				
+		$audit = array();
+				
+		if( $response === false ){
+			$audit['historiaOrigen'] = $whis_origen;
+			$audit['historiaDestino'] = $whis_origen;
+			$audit['info'] = curl_error($ch);
+			
+		}
+		else{
+			$audit['info'] = $response;
+		}
+		
+		curl_close($ch);					
+		
+		$query_audit = 'INSERT INTO '.$database.'_000351 (Medico, Fecha_data, Hora_data, Descripcion, Proceso, Seguridad)
+							VALUES("'.$database.'", CURRENT_DATE(), CURRENT_TIME(), "'.mysql_real_escape_string(json_encode($audit)).'", "Unificacion de Historias", "C-'.$database.'")';
+		
+		$exec = mysql_query($query_audit, $conex);
 	}
 
 	//FUNCION QUE SE LLAMA CUANDO LA PAGINA CARGA Y MUESTRA LOS PARAMETROS DE CONSULTA

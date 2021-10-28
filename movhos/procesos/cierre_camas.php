@@ -44,8 +44,18 @@ function ejecutar()
 }
 </script>
 </head>
+<?php
+if (!isset($wfecha))
+{
+?>
 <body onLoad="Cerrar();setInterval('reloj()',1000);" bgcolor="#FFFFFF" text="#000066">
 <?php
+}else{
+?>
+<body  bgcolor="#FFFFFF" text="#000066">
+<?php
+}
+
 include_once("conex.php");
  /***************************************************************************
  *          ACTUALIZACIONES          										*
@@ -965,7 +975,8 @@ function pasaraltaenprocesoaaltadefinitiva($whistoria, $wingreso, $wcco, $whab)
 	$explo = explode(":", $hora_actual);
 	$diff = 50 - $explo[2];
 
-	if( $diff > 0 ){
+	if( $diff > 0 && !isset($wfecha))
+	{
 		// esperar $diff segundos
 		usleep( $diff * 1000000 );
 	}
@@ -976,6 +987,14 @@ function pasaraltaenprocesoaaltadefinitiva($whistoria, $wingreso, $wcco, $whab)
 	if(!isset($wfecha))
 	{
 		$wfecha = date("Y-m-d");
+	}else{
+		
+		$wfecha = strtoupper($wfecha);
+		if ($wfecha == "AYER")
+		{
+			$wfecha = date('Y-m-d',strtotime("-1 days"));
+		}
+		echo "<BR>Se procesará la fecha por parametro: ".$wfecha. "<br>";
 	}
 	$whora = (string)date("H:i:s");
     $wusuario = 'movhos';
@@ -987,7 +1006,7 @@ function pasaraltaenprocesoaaltadefinitiva($whistoria, $wingreso, $wcco, $whab)
 
     $debug = false;
 
-    if(($horaEjecucion == '23' && $minutosEjecucion == '59') || ($horaEjecucion == '00' && $minutosEjecucion == '59') || $debug)
+    if(($horaEjecucion == '23' && $minutosEjecucion == '59') || ($horaEjecucion == '00' && $minutosEjecucion == '59') || $debug || isset($wfecha))
 	{
 		//Temporal
 		if($horaEjecucion == '23' && $minutosEjecucion == '59'){
