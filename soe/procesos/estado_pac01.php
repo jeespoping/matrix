@@ -161,7 +161,7 @@ include_once("conex.php");
                                     {
                                         if($historia != null)
                                         {
-                                            $query=mysql_query("select * from cliame_000100 WHERE Pachis = '$historia'");
+                                            $query=mysql_queryV("select * from cliame_000100 WHERE Pachis = '$historia'");
 
                                             while($dato=mysql_fetch_array($query))
                                             {
@@ -237,11 +237,11 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query2 = mysql_query("select * from cliame_000101 WHERE Inghis = '$historia'");
+                                            $query2 = mysql_queryV("select * from cliame_000101 WHERE Inghis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query2 = mysql_query("select * from cliame_000101 WHERE Inghis = '$historia' AND Ingnin = '$ingreso'");
+                                            $query2 = mysql_queryV("select * from cliame_000101 WHERE Inghis = '$historia' AND Ingnin = '$ingreso'");
                                         }
 
                                         while($dato2=mysql_fetch_array($query2))
@@ -305,7 +305,7 @@ include_once("conex.php");
                                     {
                                         if($historia != null)
                                         {
-                                            $query3=mysql_query("select * from root_000036 WHERE Pacced = '$documentoPac'");
+                                            $query3=mysql_queryV("select * from root_000036 WHERE Pacced = '$documentoPac'");
 
                                             while($dato3=mysql_fetch_array($query3))
                                             {
@@ -367,11 +367,11 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query4 = mysql_query("select * from root_000037 WHERE Oriced = '$documentoPac'");
+                                            $query4 = mysql_queryV("select * from root_000037 WHERE Oriced = '$documentoPac'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query4 = mysql_query("select * from root_000037 WHERE Oriced = '$documentoPac' AND Oriing = $ingreso");
+                                            $query4 = mysql_queryV("select * from root_000037 WHERE Oriced = '$documentoPac' AND Oriing = $ingreso");
                                         }
 
                                         while($dato4=mysql_fetch_array($query4))
@@ -436,11 +436,11 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query9 = mysql_query("select * from hce_000022 WHERE Mtrhis = '$historia'");
+                                            $query9 = mysql_queryV("select * from hce_000022 WHERE Mtrhis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query9 = mysql_query("select * from hce_000022 WHERE Mtrhis = '$historia' AND Mtring = $ingreso");
+                                            $query9 = mysql_queryV("select * from hce_000022 WHERE Mtrhis = '$historia' AND Mtring = $ingreso");
                                         }
 
                                         while($dato9=mysql_fetch_array($query9))
@@ -508,7 +508,7 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso != null)
                                         {
-                                            $query10 = mysql_query("select * from hce_000036 WHERE Firhis = '$historia' AND Firing = $ingreso");
+                                            $query10 = mysql_queryV("select * from hce_000036 WHERE Firhis = '$historia' AND Firing = $ingreso");
 
                                             while($dato10=mysql_fetch_array($query10))
                                             {
@@ -580,11 +580,11 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query5 = mysql_query("select * from movhos_000016 WHERE Inghis = '$historia'");
+                                            $query5 = mysql_queryV("select * from movhos_000016 WHERE Inghis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query5 = mysql_query("select * from movhos_000016 WHERE Inghis = '$historia' AND Inging = '$ingreso'");
+                                            $query5 = mysql_queryV("select * from movhos_000016 WHERE Inghis = '$historia' AND Inging = '$ingreso'");
                                         }
 
                                         while($dato5=mysql_fetch_array($query5))
@@ -653,11 +653,11 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query6 = mysql_query("select * from movhos_000018 WHERE Ubihis = '$historia'");
+                                            $query6 = mysql_queryV("select * from movhos_000018 WHERE Ubihis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query6 = mysql_query("select * from movhos_000018 WHERE Ubihis = '$historia' AND Ubiing = '$ingreso'");
+                                            $query6 = mysql_queryV("select * from movhos_000018 WHERE Ubihis = '$historia' AND Ubiing = '$ingreso'");
                                         }
 
                                         while($dato6=mysql_fetch_array($query6))
@@ -730,11 +730,11 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso == null)
                                         {
-                                            $query7 = mysql_query("select * from movhos_000020 WHERE Habhis = '$historia'");
+                                            $query7 = mysql_queryV("select * from movhos_000020 WHERE Habhis = '$historia'");
                                         }
                                         elseif($historia != null and $ingreso != null)
                                         {
-                                            $query7 = mysql_query("select * from movhos_000020 WHERE Habhis = '$historia' AND Habing = '$ingreso'");
+                                            $query7 = mysql_queryV("select * from movhos_000020 WHERE Habhis = '$historia' AND Habing = '$ingreso'");
                                         }
 
                                         while($dato7=mysql_fetch_array($query7))
@@ -801,7 +801,7 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso != null)
                                         {
-                                            $query8 = mysql_query("select * from movhos_000004 WHERE Spahis = '$historia' AND Spaing = '$ingreso'");
+                                            $query8 = mysql_queryV("select * from movhos_000004 WHERE Spahis = '$historia' AND Spaing = '$ingreso'");
 
                                             while($dato8=mysql_fetch_array($query8))
                                             {
@@ -879,7 +879,7 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso != null)
                                         {
-                                            $query11 = mysql_query("select * from movhos_000015 WHERE Aplhis = '$historia' AND Apling = $ingreso");
+                                            $query11 = mysql_queryV("select * from movhos_000015 WHERE Aplhis = '$historia' AND Apling = $ingreso");
 
                                             while($dato11=mysql_fetch_array($query11))
                                             {
@@ -969,7 +969,7 @@ include_once("conex.php");
                                     {
                                         if($historia != null and $ingreso != null)
                                         {
-                                            $query12 = mysql_query("select * from movhos_000228 WHERE Movhis = '$historia' AND Moving = $ingreso");
+                                            $query12 = mysql_queryV("select * from movhos_000228 WHERE Movhis = '$historia' AND Moving = $ingreso");
 
                                             while($dato12=mysql_fetch_array($query12))
                                             {

@@ -46,7 +46,7 @@
 <p>
   <?php
 // Conexión a la tabla y seleccion de registros MATRIX
-			$select_grd = mysql_query("SELECT Egrhis, Egring, Egrfee, Ingfei, Sercod, Ingsei, Pactel
+			$select_grd = mysql_queryV("SELECT Egrhis, Egring, Egrfee, Ingfei, Sercod, Ingsei, Pactel
      									FROM cliame_000108 a, cliame_000112 b, cliame_000101 d inner join 
 										cliame_000100 c100 on (Inghis = Pachis) 
 										, movhos_000011

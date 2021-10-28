@@ -72,8 +72,8 @@ if(!isset($_SESSION['user']))
      echo "<td align=center bgcolor=#C0C0C0 colspan=1><b><font text color=#003366 size=2>Tablas: </font></b>";   
      echo "<select name='wtab' onchange='enter()'>"; 
 	 echo "<option></option>";     // Primera opcion en blanco
-     // $result = mysql_list_tables("matrix");           // Ejecuto el query tambien podria ser:  $result = mysql_query("SHOW TABLES") y $query1="SHOW COLUMNS FROM
-     $result = mysql_query("SHOW TABLES");           // Ejecuto el query tambien podria ser:  $result = mysql_query("SHOW TABLES") y $query1="SHOW COLUMNS FROM
+     // $result = mysql_list_tables("matrix");           // Ejecuto el query tambien podria ser:  $result = mysql_queryV("SHOW TABLES") y $query1="SHOW COLUMNS FROM
+     $result = mysql_queryV("SHOW TABLES");           // Ejecuto el query tambien podria ser:  $result = mysql_queryV("SHOW TABLES") y $query1="SHOW COLUMNS FROM
 	 
      $i = 1;
      While ($row = mysql_fetch_row($result)) 
@@ -95,7 +95,7 @@ if(!isset($_SESSION['user']))
      
     if ( strlen($wtab) > 0 ) 
     {                                                          	  
-      $result = mysql_query("SELECT * FROM ".$wtab."  LIMIT 0, ".$wnro);  // Este Limit es por si es una tabla grande no traiga registros pero asi capturo
+      $result = mysql_queryV("SELECT * FROM ".$wtab."  LIMIT 0, ".$wnro);  // Este Limit es por si es una tabla grande no traiga registros pero asi capturo
 	                                                                      // Los nombres de los campos de cada registro y ademas puedo tomar el nro de campos:
       $fields = mysql_num_fields($result);            //Nro de campos de cada registro en la tabla *
 	  

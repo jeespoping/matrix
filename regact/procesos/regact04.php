@@ -76,7 +76,7 @@ include_once("conex.php");
     endforeach;
     */
 
-    $queryx = mysql_query("select * from regact_000003 WHERE Codigo = '$wuse'");
+    $queryx = mysql_queryV("select * from regact_000003 WHERE Codigo = '$wuse'");
     $datox = mysql_fetch_array($queryx);
 
     $rol = $datox['Rol'];
@@ -186,7 +186,7 @@ include_once("conex.php");
                                                     <span class="input-group-addon" style="width: 100px"><label>Responsable de la actividad</label></span>
                                                     <select class="form-control" style="width: 150px" name="responsable" required>
                                                         <?php
-                                                        $consrol = mysql_query("select Codrol,Descripcion from regact_000004");
+                                                        $consrol = mysql_queryV("select Codrol,Descripcion from regact_000004");
                                                         while($datorol = mysql_fetch_array($consrol))
                                                         {
                                                             echo "<option value='".$datorol['Descripcion']."'>".$datorol['Descripcion']."</option>";

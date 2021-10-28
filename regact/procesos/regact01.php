@@ -249,7 +249,7 @@ include_once("conex.php");
                 <form id="loginform" name="buscar" class="form-horizontal" role="form" method="post" action="regact01.php">
                     <div style="margin-top:1px" class="form-group" align="center">
                         <?php
-                        $queryUser = mysql_query("select * from regact_000003 WHERE Codigo = '$wuse'");
+                        $queryUser = mysql_queryV("select * from regact_000003 WHERE Codigo = '$wuse'");
                         $datoUser = mysql_fetch_array($queryUser);
                         $descUser = $datoUser['Descripcion'];
                         $rolUser = $datoUser['Rol'];
@@ -364,7 +364,7 @@ include_once("conex.php");
                             <span class="input-group-addon" style="width: 123px"><label>Responsable</label></span>
                             <select id="historia" class="form-control" style="width: 200px" name="responsable">
                                 <?php
-                                $consrol = mysql_query("select Codrol,Descripcion from regact_000004");
+                                $consrol = mysql_queryV("select Codrol,Descripcion from regact_000004");
                                 while($datorol = mysql_fetch_array($consrol))
                                 {
                                     echo "<option value='".$datorol['Descripcion']."'>".$datorol['Descripcion']."</option>";
@@ -407,7 +407,7 @@ include_once("conex.php");
                         $responsable = $_POST['responsable']; //lo que manda el campo buscar (responsable)
                         if($responsable == ''){$responsable = $_GET['responsable'];}
 
-                        $consrol = mysql_query("select Codrol from regact_000004 WHERE Descripcion = '$responsable'");
+                        $consrol = mysql_queryV("select Codrol from regact_000004 WHERE Descripcion = '$responsable'");
                         $datorol = mysql_fetch_array($consrol);
                         $respon=$datorol['Codrol'];
 
@@ -445,7 +445,7 @@ include_once("conex.php");
                                     <?php
                                     if ($parametro == '0') //parametro seleccionado = 'por dia'
                                     {
-                                        $query3 = mysql_query("SELECT * FROM regact_000001 WHERE dia = '$dia' AND Estado = 'on' ORDER BY Titulo ASC ");
+                                        $query3 = mysql_queryV("SELECT * FROM regact_000001 WHERE dia = '$dia' AND Estado = 'on' ORDER BY Titulo ASC ");
 
                                         while ($dato3 = mysql_fetch_array($query3))
                                         {
@@ -472,7 +472,7 @@ include_once("conex.php");
                                     }
                                     elseif ($parametro == '1') //parametro seleccionado = 'por palabra clave'
                                     {
-                                        $query3 = mysql_query("SELECT * FROM regact_000001 WHERE Titulo LIKE '%$caso%' AND Estado = 'on' ORDER BY Titulo ASC ");
+                                        $query3 = mysql_queryV("SELECT * FROM regact_000001 WHERE Titulo LIKE '%$caso%' AND Estado = 'on' ORDER BY Titulo ASC ");
 
                                         while ($dato3 = mysql_fetch_array($query3))
                                         {
@@ -496,7 +496,7 @@ include_once("conex.php");
                                     }
                                     elseif ($parametro == '2') //parametro seleccionado = 'por responsable de actividad'
                                     {
-                                        $query3 = mysql_query("SELECT * FROM regact_000001 WHERE Rol = '$respon' AND Estado = 'on' ORDER BY Titulo ASC ");
+                                        $query3 = mysql_queryV("SELECT * FROM regact_000001 WHERE Rol = '$respon' AND Estado = 'on' ORDER BY Titulo ASC ");
 
                                         while ($dato3 = mysql_fetch_array($query3))
                                         {
@@ -563,7 +563,7 @@ include_once("conex.php");
                                         </thead>
                                         <tbody>
                                         <?php
-                                        $query2 = mysql_query("select * from regact_000001 WHERE id = '$idCaso'");
+                                        $query2 = mysql_queryV("select * from regact_000001 WHERE id = '$idCaso'");
                                         while($dato2 = mysql_fetch_array($query2))
                                         {
                                             $idCasoFinal = $dato2['id'];
@@ -572,7 +572,7 @@ include_once("conex.php");
                                             $diaFinal = $dato2['Dia'];
                                             $responsable = $dato2['Rol'];
 
-                                            $queryRol = mysql_query("select Codrol,Descripcion from regact_000004 WHERE Codrol = '$responsable'");
+                                            $queryRol = mysql_queryV("select Codrol,Descripcion from regact_000004 WHERE Codrol = '$responsable'");
                                             while($datoRol = mysql_fetch_array($queryRol))
                                             {
                                                 $codRol = $datoRol['Codrol'];
@@ -638,7 +638,7 @@ include_once("conex.php");
                                                         <span class="input-group-addon" style="width: 100px"><label>Responsable de la actividad</label></span>
                                                         <select class="form-control" style="width: 150px" id="responsable" name="responsable" onchange="copiaValor('responsable','responsableRol')">
                                                             <?php
-                                                            $consrol = mysql_query("select Codrol,Descripcion from regact_000004");
+                                                            $consrol = mysql_queryV("select Codrol,Descripcion from regact_000004");
                                                             while($datorol = mysql_fetch_array($consrol))
                                                             {
                                                                 echo "<option value='".$datorol['Descripcion']."'>".$datorol['Descripcion']."</option>";

@@ -71,7 +71,7 @@ $hora = date('H:i:s');
 $fecha_ronda = date('Y-m-d');
 $seguridad = $wuse;
 
-$query=mysql_query("select hc, ingreso from paf_000004 where hc = '$hc' AND ingreso = '$ingreso'");
+$query=mysql_queryV("select hc, ingreso from paf_000004 where hc = '$hc' AND ingreso = '$ingreso'");
 $dato=mysql_fetch_array($query);
 if($dato[0] != null)
 {

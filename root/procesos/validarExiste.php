@@ -42,7 +42,7 @@ $validacion = $_GET['dian5'];
 
 	///////funcion validar el dato///////////
 
-		$existe_root = mysql_query("select dian5 from root_000119 where dian5 = '$validacion'");
+		$existe_root = mysql_queryV("select dian5 from root_000119 where dian5 = '$validacion'");
 		$resultado = mysql_fetch_array($existe_root);
 		$dian5_resultado = $resultado[0];
 		

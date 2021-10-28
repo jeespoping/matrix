@@ -273,7 +273,7 @@ include_once("conex.php");
                                 <span class="input-group-addon" style="width: 120px"><label for="ccosReq">C. COSTOS:</label></span>
                                 <select id="ccosReq" name="ccosReq" class="form-control" style="width: 190px" required>
                                     <?php
-                                    $consespe2 = mysql_query("select Ccocod,Cconom from costosyp_000005 WHERE Ccoemp = '01' AND Ccocod NOT LIKE '5%' ORDER BY Cconom ASC");
+                                    $consespe2 = mysql_queryV("select Ccocod,Cconom from costosyp_000005 WHERE Ccoemp = '01' AND Ccocod NOT LIKE '5%' ORDER BY Cconom ASC");
                                     while($datoespe2 = mysql_fetch_array($consespe2))
                                     {
                                         echo "
@@ -411,7 +411,7 @@ include_once("conex.php");
                 <h4>COMPARATIVA POR USUARIO - <?php echo $fechaActual ?></h4>
                 <div id="divContenido1" class="divContenido1">
                     <?php
-                    $queryParticipante = mysql_query("select Seguridad from equipos_000006 where Fecini = '$fechaActual' GROUP BY Seguridad");
+                    $queryParticipante = mysql_queryV("select Seguridad from equipos_000006 where Fecini = '$fechaActual' GROUP BY Seguridad");
                     ?>
                     <table>
                         <thead>
@@ -428,7 +428,7 @@ include_once("conex.php");
                             $participante = $datoParticipante[0];
                             $usuario = str_replace("C-","",$participante);
 
-                            $querySuma = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
+                            $querySuma = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
                             $datoSuma = mysql_fetch_array($querySuma);
                             $suma = $datoSuma[0];
                             ?>

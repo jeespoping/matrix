@@ -43,7 +43,7 @@
 				
 				$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 				
-				$rs = mysql_query("SELECT MAX(id) AS id FROM ingenia_000001", $conex);
+				$rs = mysql_queryV("SELECT MAX(id) AS id FROM ingenia_000001", $conex);
 				if ($row = mysql_fetch_row($rs)) {			
 					$idea = $row[0];
 				}

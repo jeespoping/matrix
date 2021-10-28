@@ -451,7 +451,7 @@ else
                     //$valfire = odbc_result($err_o3, 36);//Valor final recobrado
                     //$valcumo = odbc_result($err_o3, 35);//Valor cuota moderadora o copago
 
-                    $query = mysql_query("SELECT a.Pacfna FROM cliame_000100 a WHERE a.Pacdoc = '$cep'");
+                    $query = mysql_queryV("SELECT a.Pacfna FROM cliame_000100 a WHERE a.Pacdoc = '$cep'");
                     while($dato = mysql_fetch_array($query))
                     {
                         $fechaN = $dato[0];

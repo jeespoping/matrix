@@ -59,7 +59,7 @@ include_once("conex.php");
                             <span class="input-group-addon"><label>Centro de Costos:</label></span>
                             <select id="centro_Costos" name="centro_Costos" class="form-control" style="width: 350px" required>
                                 <?php
-                                $consespe2 = mysql_query("select Ccocod,Cconom from ".$wbasedatomovhos."_000011");
+                                $consespe2 = mysql_queryV("select Ccocod,Cconom from ".$wbasedatomovhos."_000011");
                                 while($datoespe2 = mysql_fetch_array($consespe2))
                                 {
                                     echo "<option value='".$datoespe2['Ccocod']."'>".$datoespe2['Ccocod'].' '.$datoespe2['Cconom']."</option>";

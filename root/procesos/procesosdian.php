@@ -86,7 +86,7 @@
 		if($buscar=='')
 			{
 			//echo "No se ha ingresado un valor a buscar";
-			$select_root = mysql_query("SELECT * from root_000119");
+			$select_root = mysql_queryV("SELECT * from root_000119");
 			
 			?>
 			<table width="1500" height="44" border="1">
@@ -120,7 +120,7 @@
 	
 		}else{
 // Conexión a la base de datos y seleccion de registros MATRIX
-			$select_root = mysql_query("SELECT * from root_000119 WHERE dian5 = '$buscar'");
+			$select_root = mysql_queryV("SELECT * from root_000119 WHERE dian5 = '$buscar'");
         //$resultado1 = mysql_fetch_array($select_root);
 		/*$select_amedian = "select * from amedian where dian5 = '$buscar'";
 		//odbc_do($conex_o, $select_amedian);

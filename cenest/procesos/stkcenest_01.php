@@ -58,7 +58,7 @@ include_once("conex.php");
     }
     session_start();
     $usuario = $wuse;
-    $queryUsuario = mysql_query("SELECT Descripcion from usuarios WHERE Codigo LIKE '$usuario'");
+    $queryUsuario = mysql_queryV("SELECT Descripcion from usuarios WHERE Codigo LIKE '$usuario'");
     $datoUsuario = mysql_fetch_array($queryUsuario);
     $usuarioF = $datoUsuario[0];
     $fecha_actual=date("Y-m-d");    $hora_actual = date('H:i:s')

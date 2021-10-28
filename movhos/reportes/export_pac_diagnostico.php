@@ -42,7 +42,7 @@
 <p>
   <?php
 // Conexión a la tabla y seleccion de registros MATRIX
-			$select_diagnostico = mysql_query("Select m.Diahis,m.Diaing,m.Diacod,r11.Descripcion,m.Diacco,m.Diafhc,
+			$select_diagnostico = mysql_queryV("Select m.Diahis,m.Diaing,m.Diacod,r11.Descripcion,m.Diacco,m.Diafhc,
 												m.Diahhc,m.Diausu,m.Diaest,pacsex,c100.Pacfna,Ingfei,
 												TIMESTAMPDIFF(YEAR,c100.Pacfna,c101.Ingfei),c101.Ingcem,c101.Ingent,c100.Pactdo,c100.Pacdoc  	
 												from movhos_000243 m

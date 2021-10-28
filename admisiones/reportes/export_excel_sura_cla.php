@@ -42,7 +42,7 @@ include_once("root/comun.php");
 $wemp_pmla=$_REQUEST['wemp_pmla'];
 $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame"); 
 // Conexión a la tabla y seleccion de registros MATRIX
-			$select_grd = mysql_query("SELECT a.Inghis,a.Ingnin,a.Ingfei,a.Ingsei,a.Ingcem,b.Empnom,c.Pactdo,c.Pacdoc,c.Pacap1,Pacap2,Pacno1,Pacno2,Pacfna 
+			$select_grd = mysql_queryV("SELECT a.Inghis,a.Ingnin,a.Ingfei,a.Ingsei,a.Ingcem,b.Empnom,c.Pactdo,c.Pacdoc,c.Pacap1,Pacap2,Pacno1,Pacno2,Pacfna 
      									FROM  ".$wcliame."_000101 a 
 										left join
 										".$wcliame."_000024 b on (a.Ingcem = b.Empcod), ".$wcliame."_000100 c 

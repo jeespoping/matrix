@@ -198,7 +198,7 @@ include_once("conex.php");
                                 <span class="input-group-addon" style="width: 120px"><label for="ccosReq">C. COSTOS:</label></span>
                                 <select id="ccosReq" name="ccosReq" class="form-control" style="width: 190px" required>
                                     <?php
-                                    $consespe2 = mysql_query("select Ccocod,Cconom from costosyp_000005 WHERE Ccoemp = '01' ORDER BY Cconom ASC");
+                                    $consespe2 = mysql_queryV("select Ccocod,Cconom from costosyp_000005 WHERE Ccoemp = '01' ORDER BY Cconom ASC");
                                     while($datoespe2 = mysql_fetch_array($consespe2))
                                     {
                                         echo "

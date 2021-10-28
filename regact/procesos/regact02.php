@@ -2,7 +2,7 @@
 include_once("conex.php");
 function Consulta($wuse)
 {
-    $query = mysql_query("select * from regact_000003 WHERE Codigo = '$wuse'");
+    $query = mysql_queryV("select * from regact_000003 WHERE Codigo = '$wuse'");
     $dato = mysql_fetch_array($query);
     return $dato;
 }
@@ -14,7 +14,7 @@ function guardar($titulo,$caso,$responsable,$seguridad,$dia)
     $fecha = date('Y-m-d');
     $hora = date('H:i:s');
 
-    mysql_query("insert into regact_000001(Medico,Fecha_data,Hora_data,Titulo,Caso,Rol,Dia,Estado,Seguridad) VALUES ('regact','$fecha','$hora','$titulo','$caso','$responsable','$dia','on','$seguridad')");
+    mysql_queryV("insert into regact_000001(Medico,Fecha_data,Hora_data,Titulo,Caso,Rol,Dia,Estado,Seguridad) VALUES ('regact','$fecha','$hora','$titulo','$caso','$responsable','$dia','on','$seguridad')");
     ?>
     <div align="center">
         <form method="post" action="regact01.php">
@@ -31,11 +31,11 @@ function guardar($titulo,$caso,$responsable,$seguridad,$dia)
 <?php
 function actualizar($caso,$id_Registro,$cas,$idCaso,$dia,$titulo,$responsable,$parametro,$palabraclave)
 {
-    $queryRol = mysql_query("SELECT * FROM regact_000004 WHERE Descripcion LIKE '$responsable'");
+    $queryRol = mysql_queryV("SELECT * FROM regact_000004 WHERE Descripcion LIKE '$responsable'");
     $datoRol = mysql_fetch_array($queryRol);
     $responsableFin = $datoRol['Codrol'];
 
-    mysql_query("update regact_000001 set Caso = '$caso',Dia = '$dia',Titulo = '$titulo',Rol = '$responsableFin' WHERE id = '$id_Registro'");
+    mysql_queryV("update regact_000001 set Caso = '$caso',Dia = '$dia',Titulo = '$titulo',Rol = '$responsableFin' WHERE id = '$id_Registro'");
     ?>
     <div align="center">
         <form method="post" action="regact01.php">

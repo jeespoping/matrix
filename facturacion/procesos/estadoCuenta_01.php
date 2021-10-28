@@ -246,7 +246,7 @@ include_once("conex.php");
                     <span class="input-group-addon input-sm" style="width: 120px"><label for="cCostos">CENTRO DE COSTOS:</label></span>
                     <select id="cCostos" name="cCostos" class="form-control form-sm" style="width: 230px" required>
                         <?php
-                        $consespe2 = mysql_query("select Ccocod,Cconom from costosyp_000005 WHERE Ccoemp = '01' AND Ccocod NOT LIKE '5%' ORDER BY Cconom ASC");
+                        $consespe2 = mysql_queryV("select Ccocod,Cconom from costosyp_000005 WHERE Ccoemp = '01' AND Ccocod NOT LIKE '5%' ORDER BY Cconom ASC");
                         while($datoespe2 = mysql_fetch_array($consespe2))
                         {
                             echo "<option value='".$datoespe2['Ccocod']."'>

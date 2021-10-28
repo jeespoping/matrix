@@ -61,7 +61,7 @@ include_once("conex.php");
                             <span class="input-group-addon" style="width: 190px"><label>TIPO</label></span>
                             <select id="tipo" name="tipo" class="form-control" style="width: 750px" required>
                                 <?php
-                                $consespe2 = mysql_query("select Codigo,Nombre from habeasdb_000009 WHERE Tipo = 'P'");
+                                $consespe2 = mysql_queryV("select Codigo,Nombre from habeasdb_000009 WHERE Tipo = 'P'");
                                 while($datoespe2 = mysql_fetch_array($consespe2))
                                 {
                                     echo "<option value='".$datoespe2['Nombre']."'>".$datoespe2['Nombre']."</option>";

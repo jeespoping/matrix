@@ -277,7 +277,7 @@
                                 <span class="input-group-addon" style="width: 120px"><label for="ccosReq">C. COSTOS:</label></span>
                                 <select id="ccosReq" name="ccosReq" class="form-control" style="width: 190px" required>
                                     <?php
-                                    $consespe2 = mysql_query("select Ccocod,Cconom
+                                    $consespe2 = mysql_queryV("select Ccocod,Cconom
                                                               from costosyp_000005
                                                               WHERE Ccoemp = '01'
                                                               AND Ccocod NOT LIKE '5%'
@@ -352,10 +352,10 @@
                                     switch($wuse)
                                     {
                                         case ($wuse == '0100463')||($wuse == '00140')||($wuse == '0104935')||($wuse == '04843')||($wuse =='0205681')||($wuse =='00471'):
-                                            $consespe2 = mysql_query("select id_causa,descripcion from equipos_000007 WHERE grupo = '01' ORDER BY id_causa ASC");
+                                            $consespe2 = mysql_queryV("select id_causa,descripcion from equipos_000007 WHERE grupo = '01' ORDER BY id_causa ASC");
                                             break;
                                         case ($wuse == '0107491')||($wuse == '0101187')||($wuse == '0105351')||($wuse == '07726')||($wuse =='0101063'):
-                                            $consespe2 = mysql_query("select id_causa,descripcion from equipos_000007 WHERE grupo = '02' ORDER BY id_causa ASC");
+                                            $consespe2 = mysql_queryV("select id_causa,descripcion from equipos_000007 WHERE grupo = '02' ORDER BY id_causa ASC");
                                             break;
                                         default:
                                             echo 'Usuario no registrado';
@@ -468,7 +468,7 @@
                 <h4>COMPARATIVA POR USUARIO - <?php echo $fechaActual ?></h4>
                 <div id="divContenido1" class="divContenido1">
                     <?php
-                    $queryParticipante = mysql_query("select Seguridad from equipos_000006 where Fecini = '$fechaActual' GROUP BY Seguridad");
+                    $queryParticipante = mysql_queryV("select Seguridad from equipos_000006 where Fecini = '$fechaActual' GROUP BY Seguridad");
                     ?>
                     <table>
                         <thead>
@@ -486,7 +486,7 @@
                             $participante = $datoParticipante[0];
                             $usuario = str_replace("C-","",$participante);
 
-                            $querySuma = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
+                            $querySuma = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
                             $datoSuma = mysql_fetch_array($querySuma);
                             $suma = $datoSuma[0];
                             ?>
@@ -502,7 +502,7 @@
                     </table>
                     <br><br>
                     <?php
-                    $queryParticipante2 = mysql_query("select Reqpurs
+                    $queryParticipante2 = mysql_queryV("select Reqpurs
                                                        from root_000040
                                                        where Reqfen = '$fechaActual'
                                                        and Reqcco = '(01)1710'
@@ -519,7 +519,7 @@
                         {
                             $participante2 = $datoParticipante2[0];
                             $usuario2 = $participante2;
-                            $querySuma2 = mysql_query("SELECT COUNT(id) from root_000040 WHERE Reqpurs = '$participante2' AND Reqfen = '$fechaActual'");
+                            $querySuma2 = mysql_queryV("SELECT COUNT(id) from root_000040 WHERE Reqpurs = '$participante2' AND Reqfen = '$fechaActual'");
                             $datoSuma2 = mysql_fetch_array($querySuma2);
                             $suma2 = $datoSuma2[0];
                             ?>

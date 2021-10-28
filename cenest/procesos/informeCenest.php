@@ -85,7 +85,7 @@ include_once("conex.php");
                         </thead>
                         <tbody>
                         <?php
-                        $query=mysql_query("
+                        $query=mysql_queryV("
                                             select *
                                             from cenest_000004
                                             WHERE $parametro1 = '1' OR $parametro2 = '1'
@@ -95,11 +95,11 @@ include_once("conex.php");
                             $cencosto=$dato['cc'];
                             $usuario=$dato['Seguridad'];
 
-                            $query2=mysql_query("select Cconom from movhos_000011 where Ccocod = '$cencosto'");
+                            $query2=mysql_queryV("select Cconom from movhos_000011 where Ccocod = '$cencosto'");
                             $dato2=mysql_fetch_array($query2);
                             $centroCostos=$dato2['0'];
 
-                            $query3=mysql_query("select Descripcion from usuarios where Codigo = '$usuario'");
+                            $query3=mysql_queryV("select Descripcion from usuarios where Codigo = '$usuario'");
                             $dato3=mysql_fetch_array($query3);
                             $usuarioDiligencia=$dato3['0'];
                             ?>

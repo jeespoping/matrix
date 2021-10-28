@@ -67,7 +67,7 @@
 <?php
 if($accion == 'guardar')
 {
-    mysql_query("INSERT INTO equipos_000006 (Medico,Fecha_data,Hora_data,Nomusu,Ccousu,Carusu,Ccoreq,Tipreq,Nomreq,Tipousureq,Origenreq,Causareq,
+    mysql_queryV("INSERT INTO equipos_000006 (Medico,Fecha_data,Hora_data,Nomusu,Ccousu,Carusu,Ccoreq,Tipreq,Nomreq,Tipousureq,Origenreq,Causareq,
                           Desreq,Fecini,Horini,Fecfin,Horfin,Seguridad)
                  VALUES ('Equipos','$fecIniReq','$horIniReq','$nomUsuario','$ccosUsuario','$carUsuario','$ccosReq','$tipoReq','$usuReq','$tipoUsuReq',
                          '$origenReq','$causaReq','$desReq','$fecIniReq','$horIniReq','$fecFinReq','$horFinReq','$seguridad') ");
@@ -91,7 +91,7 @@ if($accion == 'consultar')
 {
     if($subaccion == 'modificar')
     {
-        $queryReq = mysql_query("SELECT * from equipos_000006 WHERE id = '$idReq'");
+        $queryReq = mysql_queryV("SELECT * from equipos_000006 WHERE id = '$idReq'");
         $datoReq = mysql_fetch_array($queryReq);
         $fecha = $datoReq['Fecha_data'];    $solicitante = $datoReq['Nomreq'];      $uni = $datoReq['Ccousu'];
         $tipo = $datoReq['Tipreq'];         $descripcion = $datoReq[12];            $idReq = $datoReq[18];
@@ -99,7 +99,7 @@ if($accion == 'consultar')
         $horaFin = $datoReq[16];            $tipoUsuario = $datoReq['Tipousureq'];  $origen = $datoReq['Origenreq'];
         $causa = $datoReq['Causareq'];
 
-        $queryCco = mysql_query("select Cconom from costosyp_000005 WHERE Ccocod = '$uni'");
+        $queryCco = mysql_queryV("select Cconom from costosyp_000005 WHERE Ccocod = '$uni'");
         $datoCco = mysql_fetch_array($queryCco);
         $unidad = $datoCco[0];
         ?>
@@ -111,7 +111,7 @@ if($accion == 'consultar')
                             <span class="input-group-addon" style="width: 120px"><label for="ccosReq">C. COSTOS:</label></span>
                             <select id="ccosReq" name="ccosReq" class="form-control" style="width: 190px" required>
                                 <?php
-                                $consespe2 = mysql_query("select Ccocod,Cconom from costosyp_000005 WHERE Ccoemp = '01' ORDER BY Cconom ASC");
+                                $consespe2 = mysql_queryV("select Ccocod,Cconom from costosyp_000005 WHERE Ccoemp = '01' ORDER BY Cconom ASC");
                                 while($datoespe2 = mysql_fetch_array($consespe2))
                                 {
                                     echo "
@@ -178,10 +178,10 @@ if($accion == 'consultar')
                                 switch($wuse)
                                 {
                                     case ($wuse == '0100463')||($wuse == '00140')||($wuse == '0104935')||($wuse == '04843')||($wuse =='0205681'):
-                                        $consespe2 = mysql_query("select id_causa,descripcion from equipos_000007 WHERE grupo = '01' ORDER BY id_causa ASC");
+                                        $consespe2 = mysql_queryV("select id_causa,descripcion from equipos_000007 WHERE grupo = '01' ORDER BY id_causa ASC");
                                         break;
                                     case ($wuse == '0107491')||($wuse == '0101187')||($wuse == '0105351')||($wuse == '07726')||($wuse =='0101063'):
-                                        $consespe2 = mysql_query("select id_causa,descripcion from equipos_000007 WHERE grupo = '02' ORDER BY id_causa ASC");
+                                        $consespe2 = mysql_queryV("select id_causa,descripcion from equipos_000007 WHERE grupo = '02' ORDER BY id_causa ASC");
                                         break;
                                     default:
                                         echo 'Usuario no registrado';
@@ -195,7 +195,7 @@ if($accion == 'consultar')
                                          </option>";
                                 }
 
-                                $qCausa = mysql_query("SELECT descripcion from equipos_000007 WHERE id_causa = '$causa'");
+                                $qCausa = mysql_queryV("SELECT descripcion from equipos_000007 WHERE id_causa = '$causa'");
                                 while($dCausa = mysql_fetch_array($qCausa))
                                 {
                                     $Causa = $dCausa[0];
@@ -255,7 +255,7 @@ if($accion == 'consultar')
     }
     else
     {
-        $queryReq = mysql_query("SELECT * from equipos_000006 WHERE Seguridad = '$usuarioReq' AND Fecini = '$fechaActual2' ORDER BY Fecini DESC");
+        $queryReq = mysql_queryV("SELECT * from equipos_000006 WHERE Seguridad = '$usuarioReq' AND Fecini = '$fechaActual2' ORDER BY Fecini DESC");
         ?>
         <div id="datosConsultar" class="datosConsultar" style="width: 628px">
             <table align="center" border="0" style="width: 640px">
@@ -275,7 +275,7 @@ if($accion == 'consultar')
                 {
                     $fecha = $datoReq[1];   $solicitante = $datoReq[8]; $uni = $datoReq[6];
                     $tipo = $datoReq[7];    $descripcion = $datoReq[12]; $idReq = $datoReq[18];
-                    $queryCco = mysql_query("select Cconom from costosyp_000005 WHERE Ccocod = '$uni'");
+                    $queryCco = mysql_queryV("select Cconom from costosyp_000005 WHERE Ccocod = '$uni'");
                     $datoCco = mysql_fetch_array($queryCco);
                     $unidad = $datoCco[0];
 
@@ -308,7 +308,7 @@ if($accion == 'consultar')
 if($accion == 'areas')
 {
     $fechaActual = date('Y-m-d');
-    $queryArea = mysql_query("SELECT Ccoreq from equipos_000006 WHERE Fecini = '$fechaActual' GROUP BY Ccoreq");
+    $queryArea = mysql_queryV("SELECT Ccoreq from equipos_000006 WHERE Fecini = '$fechaActual' GROUP BY Ccoreq");
     ?>
     <table>
         <tbody>
@@ -333,7 +333,7 @@ if($accion == 'areas')
 
 if($accion == 'actualizar')
 {
-    mysql_query("UPDATE equipos_000006 SET Ccoreq = '$ccosReq',Tipreq = '$tipoReq',Nomreq = '$usuReq',Tipousureq = '$tipoUsuReq',
+    mysql_queryV("UPDATE equipos_000006 SET Ccoreq = '$ccosReq',Tipreq = '$tipoReq',Nomreq = '$usuReq',Tipousureq = '$tipoUsuReq',
                                            Origenreq = '$origenReq',Causareq = '$causaReq',Desreq = '$desReq',Fecini = '$fecIniReq',
                                            Horini = '$horIniReq',Fecfin='$fecFinReq',Horfin='$horFinReq'
                  WHERE id = '$idReq'");
@@ -354,17 +354,17 @@ function consultarDatosUsuario($codUsuario,$variable)
     $usua = str_replace("01","", $codUsuario);
     $usuario = $usua.'-01';
 
-    $queryDatosUsuario = mysql_query("SELECT Ideced,Ideno1, Ideno2, Ideap1, Ideap2, Idecco, Ideccg from talhuma_000013 WHERE Ideuse = '$usuario'");
+    $queryDatosUsuario = mysql_queryV("SELECT Ideced,Ideno1, Ideno2, Ideap1, Ideap2, Idecco, Ideccg from talhuma_000013 WHERE Ideuse = '$usuario'");
     $datoUsuario = mysql_fetch_array($queryDatosUsuario);
 
     if($datoUsuario == null)
     {
         $usuario = $codUsuario.'-01';
-        $queryDatosUsuario = mysql_query("SELECT Ideced,Ideno1, Ideno2, Ideap1, Ideap2, Idecco, Ideccg from talhuma_000013 WHERE Ideuse = '$usuario'");
+        $queryDatosUsuario = mysql_queryV("SELECT Ideced,Ideno1, Ideno2, Ideap1, Ideap2, Idecco, Ideccg from talhuma_000013 WHERE Ideuse = '$usuario'");
         $datoUsuario = mysql_fetch_array($queryDatosUsuario);
     }
 
-    $queryNomUsuario = mysql_query("select Descripcion,Ccostos from usuarios WHERE Codigo = '$codUsuario'");
+    $queryNomUsuario = mysql_queryV("select Descripcion,Ccostos from usuarios WHERE Codigo = '$codUsuario'");
     $datoBomUsuario = mysql_fetch_array($queryNomUsuario);
 
 
@@ -375,7 +375,7 @@ function consultarDatosUsuario($codUsuario,$variable)
     //$nombreCompleto = $nombre1.' '.$nombre2.' '.$apellido1.' '.$apellido2;
     $nombreCompleto = $datoBomUsuario['Descripcion'];
 
-    $queryCargoUsuario = mysql_query("SELECT Cardes from root_000079 WHERE Carcod = '$codCargo'");
+    $queryCargoUsuario = mysql_queryV("SELECT Cardes from root_000079 WHERE Carcod = '$codCargo'");
     $datoCargo = mysql_fetch_array($queryCargoUsuario);
     $descCargo = $datoCargo[0];
 
@@ -392,20 +392,20 @@ function consultarDatosUsuario($codUsuario,$variable)
 
 function consultarDatosArea($codArea,$fechaActual,$variable)
 {
-    $queryDatosArea = mysql_query("SELECT Cconom from costosyp_000005 WHERE Ccocod = '$codArea'");
+    $queryDatosArea = mysql_queryV("SELECT Cconom from costosyp_000005 WHERE Ccocod = '$codArea'");
     $datoArea = mysql_fetch_array($queryDatosArea);
     $nombreArea = $datoArea[0]; //areas llamadas por dia
 
-    $queryTotalCasos = mysql_query("select COUNT(id) from equipos_000006 WHERE Fecini = '$fechaActual'");
+    $queryTotalCasos = mysql_queryV("select COUNT(id) from equipos_000006 WHERE Fecini = '$fechaActual'");
     $datoTotalCasos = mysql_fetch_array($queryTotalCasos);
     $totalCasos = $datoTotalCasos[0];  //total Casos por dia
 
-    $querySumaArea = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Ccoreq = '$codArea' and Fecini = '$fechaActual'");
+    $querySumaArea = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Ccoreq = '$codArea' and Fecini = '$fechaActual'");
     $datoSumaArea = mysql_fetch_array($querySumaArea);
     $totalSumaArea = $datoSumaArea[0]; //total llamadas por area por dia
 
-    //$queryMinutos = mysql_query("select sum(timediff(Horfin,Horini)) from equipos_000006 WHERE Ccoreq = '$codArea' and Fecini = '$fechaActual'");
-    $queryMinutos = mysql_query("select sum(Horini) from equipos_000006 WHERE Ccoreq = '$codArea' and Fecini = '$fechaActual'");
+    //$queryMinutos = mysql_queryV("select sum(timediff(Horfin,Horini)) from equipos_000006 WHERE Ccoreq = '$codArea' and Fecini = '$fechaActual'");
+    $queryMinutos = mysql_queryV("select sum(Horini) from equipos_000006 WHERE Ccoreq = '$codArea' and Fecini = '$fechaActual'");
     $datoMinutos = mysql_fetch_array($queryMinutos);
     $totalT = $datoMinutos[0];
     $totalTiempo = str_replace("00.000000","",$totalT);
@@ -432,14 +432,14 @@ function consultarDatosArea($codArea,$fechaActual,$variable)
 //Operaciones para casos generados por llamadas:
 function operaciones($participante,$fechaActual,$parametro)
 {
-    $consulta = mysql_query("select COUNT(Seguridad) from equipos_000006 WHERE Fecini = '$fechaActual' GROUP BY Seguridad");
+    $consulta = mysql_queryV("select COUNT(Seguridad) from equipos_000006 WHERE Fecini = '$fechaActual' GROUP BY Seguridad");
     $totalUsuarios = mysql_num_rows($consulta); //total Usuarios que han registrado casos por fecha
 
-    $queryTotalCasos = mysql_query("select COUNT(id) from equipos_000006 WHERE Fecini = '$fechaActual'");
+    $queryTotalCasos = mysql_queryV("select COUNT(id) from equipos_000006 WHERE Fecini = '$fechaActual'");
     $datoTotalCasos = mysql_fetch_array($queryTotalCasos);
     $totalCasos = $datoTotalCasos[0];  //total Casos por dia
 
-    $queryCasos = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
+    $queryCasos = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
     $datoCasos = mysql_fetch_array($queryCasos);
     $totalXusuario = $datoCasos[0];  //total casos por dia por usuario
 
@@ -451,7 +451,7 @@ function operaciones($participante,$fechaActual,$parametro)
             echo $porcentaje.' '.'%';
             break;
         case 2: //total minutos casos por usuario
-            $queryMinutos = mysql_query("select sum(Horini) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
+            $queryMinutos = mysql_queryV("select sum(Horini) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
             $datoMinutos = mysql_fetch_array($queryMinutos);
             $totalTiempo = $datoMinutos[0];
             echo $totalTiempo.' '.'minutos';
@@ -462,11 +462,11 @@ function operaciones($participante,$fechaActual,$parametro)
 //operaciones para requerimientos Matrix:
 function operaciones2($participante,$fechaActual,$parametro)
 {
-    $queryTotalCasos = mysql_query("select COUNT(id) from root_000040 where Reqfen = '$fechaActual' and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
+    $queryTotalCasos = mysql_queryV("select COUNT(id) from root_000040 where Reqfen = '$fechaActual' and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
     $datoTotalCasos = mysql_fetch_array($queryTotalCasos);
     $totalCasos = $datoTotalCasos[0];  //total Casos Matrix resueltos por dia
 
-    $queryCasos = mysql_query("SELECT COUNT(id) from root_000040 WHERE Reqpurs = '$participante' AND Reqfen = '$fechaActual' and Reqtip = '02' and Reqest = '05'");
+    $queryCasos = mysql_queryV("SELECT COUNT(id) from root_000040 WHERE Reqpurs = '$participante' AND Reqfen = '$fechaActual' and Reqtip = '02' and Reqest = '05'");
     $datoCasos = mysql_fetch_array($queryCasos);
     $totalXusuario = $datoCasos[0];  //total casos Matrix resueltos por dia por usuario
 
@@ -478,7 +478,7 @@ function operaciones2($participante,$fechaActual,$parametro)
             echo $porcentaje.' '.'%';
             break;
         case 2: //total minutos casos por usuario
-            $queryMinutos = mysql_query("select sum(Horini) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
+            $queryMinutos = mysql_queryV("select sum(Horini) from equipos_000006 WHERE Seguridad = '$participante' AND Fecini = '$fechaActual'");
             $datoMinutos = mysql_fetch_array($queryMinutos);
             $totalTiempo = $datoMinutos[0];
             echo $totalTiempo.' '.'minutos';
@@ -494,12 +494,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-01-01';
         $fechaFinal = $añoActual.'-01-31';
 
-        $queryCountXmes1 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes1 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes1 = mysql_fetch_array($queryCountXmes1);
         $casosEnero = $datoCountXmes1[0];
         if($casosEnero == ''){$casosEnero = '0';}
 
-        $queryCountXmes1Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes1Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes1Matrix = mysql_fetch_array($queryCountXmes1Matrix);
         $casosEneroMatrix = $datoCountXmes1Matrix[0];
@@ -516,12 +516,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-02-01';
         $fechaFinal = $añoActual.'-02-28';
 
-        $queryCountXmes2 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes2 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes2 = mysql_fetch_array($queryCountXmes2);
         $casosFebrero = $datoCountXmes2[0];
         if($casosFebrero == ''){$casosFebrero = '0';}
 
-        $queryCountXmes2Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes2Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes2Matrix = mysql_fetch_array($queryCountXmes2Matrix);
         $casosFebreroMatrix = $datoCountXmes2Matrix[0];
@@ -538,12 +538,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-03-01';
         $fechaFinal = $añoActual.'-03-31';
 
-        $queryCountXmes3 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes3 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes3 = mysql_fetch_array($queryCountXmes3);
         $casosMarzo = $datoCountXmes3[0];
         if($casosMarzo == ''){$casosMarzo = '0';}
 
-        $queryCountXmes3Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes3Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes3Matrix = mysql_fetch_array($queryCountXmes3Matrix);
         $casosMarzoMatrix = $datoCountXmes3Matrix[0];
@@ -560,12 +560,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-04-01';
         $fechaFinal = $añoActual.'-04-30';
 
-        $queryCountXmes4 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes4 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes4 = mysql_fetch_array($queryCountXmes4);
         $casosAbril = $datoCountXmes4[0];
         if($casosAbril == ''){$casosAbril = '0';}
 
-        $queryCountXmes4Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes4Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes4Matrix = mysql_fetch_array($queryCountXmes4Matrix);
         $casosAbrilMatrix = $datoCountXmes4Matrix[0];
@@ -582,12 +582,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-05-01';
         $fechaFinal = $añoActual.'-05-31';
 
-        $queryCountXmes5 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes5 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes5 = mysql_fetch_array($queryCountXmes5);
         $casosMayo = $datoCountXmes5[0];
         if($casosMayo == ''){$casosMayo = '0';}
 
-        $queryCountXmes5Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes5Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes5Matrix = mysql_fetch_array($queryCountXmes5Matrix);
         $casosMayoMatrix = $datoCountXmes5Matrix[0];
@@ -604,12 +604,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-06-01';
         $fechaFinal = $añoActual.'-06-30';
 
-        $queryCountXmes6 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes6 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes6 = mysql_fetch_array($queryCountXmes6);
         $casosJunio = $datoCountXmes6[0];
         if($casosJunio == ''){$casosJunio = '0';}
 
-        $queryCountXmes6Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes6Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes6Matrix = mysql_fetch_array($queryCountXmes6Matrix);
         $casosJunioMatrix = $datoCountXmes6Matrix[0];
@@ -626,12 +626,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-07-01';
         $fechaFinal = $añoActual.'-07-31';
 
-        $queryCountXmes7 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes7 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes7 = mysql_fetch_array($queryCountXmes7);
         $casosJulio = $datoCountXmes7[0];
         if($casosJulio == ''){$casosJulio = '0';}
 
-        $queryCountXmes7Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes7Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes7Matrix = mysql_fetch_array($queryCountXmes7Matrix);
         $casosJulioMatrix = $datoCountXmes7Matrix[0];
@@ -648,12 +648,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-08-01';
         $fechaFinal = $añoActual.'-08-31';
 
-        $queryCountXmes8 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes8 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes8 = mysql_fetch_array($queryCountXmes8);
         $casosAgosto = $datoCountXmes8[0];
         if($casosAgosto == ''){$casosAgosto = '0';}
 
-        $queryCountXmes8Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes8Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes8Matrix = mysql_fetch_array($queryCountXmes8Matrix);
         $casosAgostoMatrix = $datoCountXmes8Matrix[0];
@@ -670,12 +670,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-09-01';
         $fechaFinal = $añoActual.'-09-30';
 
-        $queryCountXmes9 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes9 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes9 = mysql_fetch_array($queryCountXmes9);
         $casosSeptiembre = $datoCountXmes9[0];
         if($casosSeptiembre == ''){$casosSeptiembre = '0';}
 
-        $queryCountXmes9Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes9Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes9Matrix = mysql_fetch_array($queryCountXmes9Matrix);
         $casosSeptiembreMatrix = $datoCountXmes9Matrix[0];
@@ -692,12 +692,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-10-01';
         $fechaFinal = $añoActual.'-10-31';
 
-        $queryCountXmes10 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes10 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes10 = mysql_fetch_array($queryCountXmes10);
         $casosOctubre = $datoCountXmes10[0];
         if($casosOctubre == ''){$casosOctubre = '0';}
 
-        $queryCountXmes10Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes10Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes10Matrix = mysql_fetch_array($queryCountXmes10Matrix);
         $casosOctubreMatrix = $datoCountXmes10Matrix[0];
@@ -714,12 +714,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-11-01';
         $fechaFinal = $añoActual.'-11-30';
 
-        $queryCountXmes11 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes11 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes11 = mysql_fetch_array($queryCountXmes11);
         $casosNoviembre = $datoCountXmes11[0];
         if($casosNoviembre == ''){$casosNoviembre = '0';}
 
-        $queryCountXmes11Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes11Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes11Matrix = mysql_fetch_array($queryCountXmes11Matrix);
         $casosNoviembreMatrix = $datoCountXmes11Matrix[0];
@@ -736,12 +736,12 @@ function consultarDatosPeriodo($mesActual,$añoActual)
         $fechaInicial = $añoActual.'-12-01';
         $fechaFinal = $añoActual.'-12-31';
 
-        $queryCountXmes12 = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+        $queryCountXmes12 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes12 = mysql_fetch_array($queryCountXmes12);
         $casosDiciembre = $datoCountXmes12[0];
         if($casosDiciembre == ''){$casosDiciembre = '0';}
 
-        $queryCountXmes12Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+        $queryCountXmes12Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
         $datoCountXmes12Matrix = mysql_fetch_array($queryCountXmes12Matrix);
         $casosDiciembreMatrix = $datoCountXmes12Matrix[0];
@@ -808,7 +808,7 @@ function consultarDatosCausas($mesActual,$añoActual)
     $añoInicial = $añoActual.'-01-01';
     $añoFinal = $añoActual.'-12-31';
 
-    $queryCountCausaxMes = mysql_query("SELECT Causareq, Count(Causareq)
+    $queryCountCausaxMes = mysql_queryV("SELECT Causareq, Count(Causareq)
                                         FROM equipos_000006
                                         WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'
                                         GROUP BY Causareq HAVING Count(Causareq)
@@ -818,11 +818,11 @@ function consultarDatosCausas($mesActual,$añoActual)
     {
         $descCausa1 = $datoCountCausaxMes[0];    $contCausaMes = $datoCountCausaxMes[1];
 
-        $queryDescCausa = mysql_query("SELECT descripcion FROM equipos_000007 WHERE id_causa = '$descCausa1'");
+        $queryDescCausa = mysql_queryV("SELECT descripcion FROM equipos_000007 WHERE id_causa = '$descCausa1'");
         $datoDescCausa = mysql_fetch_array($queryDescCausa);
         $descCausa = $datoDescCausa[0];
 
-        $queryTotalA = mysql_query("SELECT COUNT(id) FROM equipos_000006 WHERE Causareq = '$descCausa1' AND Fecini BETWEEN '$añoInicial' AND '$añoFinal'");
+        $queryTotalA = mysql_queryV("SELECT COUNT(id) FROM equipos_000006 WHERE Causareq = '$descCausa1' AND Fecini BETWEEN '$añoInicial' AND '$añoFinal'");
         $datoTotalA = mysql_fetch_array($queryTotalA);
         $contCausaAño = $datoTotalA[0];
         ?>
@@ -844,11 +844,11 @@ function consultarDatosAño($añoActual)
     $fechaInicial = $añoActual.'-01-01';
     $fechaFinal = $añoActual.'-12-31';
 
-    $queryAño = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+    $queryAño = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
     $datoAño = mysql_fetch_array($queryAño);
     $casosAño = $datoAño[0];
 
-    $queryCountXmes12Matrix = mysql_query("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
+    $queryCountXmes12Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
     $datoCountXmes12Matrix = mysql_fetch_array($queryCountXmes12Matrix);
     $casosDiciembreMatrix = $datoCountXmes12Matrix[0];
@@ -869,7 +869,7 @@ function consultarPromCausa($añoActual,$contCausaMes,$contCausaAño)
     $fechaInicial = $añoActual.'-01-01';
     $fechaFinal = $añoActual.'-12-31';
 
-    $queryAño = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+    $queryAño = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
     $datoAño = mysql_fetch_array($queryAño);
     $casosAño = $datoAño[0];
 
@@ -883,7 +883,7 @@ function consultarPromCausaAño($añoActual,$contCausaMes,$contCausaAño)
     $fechaInicial = $añoActual.'-01-01';
     $fechaFinal = $añoActual.'-12-31';
 
-    $queryAño = mysql_query("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+    $queryAño = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
     $datoAño = mysql_fetch_array($queryAño);
     $casosAño = $datoAño[0];
 
@@ -896,7 +896,7 @@ function consultarGrafico1($añoActual)
 {
     $fechaInicial = $añoActual.'-01-01';    $fechaFinal = $añoActual.'-12-31';
 
-    $queryAreas = mysql_query("SELECT Ccoreq,Count(id)
+    $queryAreas = mysql_queryV("SELECT Ccoreq,Count(id)
                                FROM equipos_000006
                                WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'
                                GROUP BY Ccoreq HAVING COUNT(id)
@@ -913,7 +913,7 @@ function consultarGrafico1($añoActual)
                 {
                     $IdArea = $datoArea[0];   $contArea = $datoArea[1];
 
-                    $queryCco = mysql_query("SELECT Cconom FROM costosyp_000005 WHERE Ccocod = '$IdArea'");
+                    $queryCco = mysql_queryV("SELECT Cconom FROM costosyp_000005 WHERE Ccocod = '$IdArea'");
                     $datoDescCco = mysql_fetch_array($queryCco);
                     $descCco = $datoDescCco[0];
 

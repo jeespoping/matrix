@@ -228,7 +228,7 @@
                 if($fechaInicial != null and $fechaFinal != null and $responsable != null)
                 {
                     //VERIFICAR SI EXISTEN DATOS EN TABLA_000106 QUE CUMPLAN LAS CONDICIONES INGRESADAS:
-                    $verificarNulos = mysql_query("select COUNT(id) from".' '."$wbasedato"."_000106
+                    $verificarNulos = mysql_queryV("select COUNT(id) from".' '."$wbasedato"."_000106
                                                 where Tcarfec BETWEEN '$fechaInicial' AND '$fechaFinal'
                                                 AND Tcarres like '$codResponsable2%'
                                                 AND tcarest = 'on'
@@ -243,7 +243,7 @@
 
                     if($totalDatos > 0)
                     {
-                        $queryCargos = mysql_query("select *, COUNT(Tcarprocod) contCargos, SUM(Tcarvto) sumCargos
+                        $queryCargos = mysql_queryV("select *, COUNT(Tcarprocod) contCargos, SUM(Tcarvto) sumCargos
                                                 from".' '."$wbasedato"."_000106
                                                 where Tcarfec BETWEEN '$fechaInicial' AND '$fechaFinal'
                                                 AND Tcarres LIKE '$codResponsable2%'
@@ -314,7 +314,7 @@
                                             //echo 'SUMA ='.$suma;
 
                                             //CONSULTAR SI TIENE ABONOS(Tcarconcod = 9001 (SE INCLUYE EL CONCEPTO 9003))
-                                            $queryAbonos = mysql_query("select SUM(Tcarvto) sumAbonos
+                                            $queryAbonos = mysql_queryV("select SUM(Tcarvto) sumAbonos
                                                 from".' '."$wbasedato"."_000106
                                                 where Tcarhis = '$hisPac'
                                                 AND Tcaring = '$ingPac'
@@ -384,7 +384,7 @@
                                                             </thead>
                                                             <tbody style="border: #2A5DB0 2px solid; border-right: none">
                                                             <?php
-                                                            $queryCargos2 = mysql_query("select * from".' '."$wbasedato"."_000106
+                                                            $queryCargos2 = mysql_queryV("select * from".' '."$wbasedato"."_000106
                                                                                 WHERE Tcarhis = '$hisPac' AND Tcaring = '$ingPac'
                                                                                 AND Tcarfec BETWEEN '$fechaInicial' AND '$fechaFinal'
                                                                                 AND Tcarres LIKE '$codResponsable%'
@@ -436,7 +436,7 @@
                             <div align="right" style="background-color: #C3D9FF; height: 40px">
                                 <section>
                                     <?php
-                                    $queryTotalCargos = mysql_query("select SUM(Tcarvto) from".' '."$wbasedato"."_000106
+                                    $queryTotalCargos = mysql_queryV("select SUM(Tcarvto) from".' '."$wbasedato"."_000106
                                                              where Tcarfec BETWEEN '$fechaInicial' AND '$fechaFinal'
                                                              AND Tcarres LIKE '$codResponsable%'
                                                              AND tcarest = 'on'
@@ -523,7 +523,7 @@ if (isset($_POST['codPlan'])) //TODAS LAS HISTORIAS EXCEPTO LAS DESMARCADAS
 
 function obtenerNitEmpresa($codResponsable,$wbasedato)
 {
-    $queryDatosEmpresa = mysql_query("select Empnit from".' '."$wbasedato"."_000024 WHERE Empcod like '$codResponsable%'");
+    $queryDatosEmpresa = mysql_queryV("select Empnit from".' '."$wbasedato"."_000024 WHERE Empcod like '$codResponsable%'");
     $datosEmpresa = mysql_fetch_array($queryDatosEmpresa);
     echo $datosEmpresa['Empnit'];
 }

@@ -126,7 +126,7 @@
 		}else{
 			
 // Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
-			$select_grd = mysql_query("SELECT count(*) cant
+			$select_grd = mysql_queryV("SELECT count(*) cant
      									FROM cliame_000108 a, cliame_000112 b, cliame_000101 d, movhos_000011
     									WHERE Egrfee BETWEEN '$buscar' AND '$buscar1'
                							AND Egrhis = Serhis

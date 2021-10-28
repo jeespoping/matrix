@@ -221,7 +221,7 @@
 
                     if($valorRadio == 0)
                     {
-                        $query = mysql_query("SELECT a.Inghis, a.Inging, a.Ingnre, a.Ingres, f.Ingfei, b.Habcod, c.Pacno1, c.Pacno2, c.Pacap1, c.Pacap2, c.Pacsex, c.Pacfna, d.Ubisac
+                        $query = mysql_queryV("SELECT a.Inghis, a.Inging, a.Ingnre, a.Ingres, f.Ingfei, b.Habcod, c.Pacno1, c.Pacno2, c.Pacap1, c.Pacap2, c.Pacsex, c.Pacfna, d.Ubisac
                                                 FROM movhos_000016 a
                                                              left join
                                                      movhos_000020 b on (a.Inghis=b.Habhis and a.Inging=b.Habing),cliame_000100 c,movhos_000018 d,root_000037 e,cliame_000101 f
@@ -241,7 +241,7 @@
                     }
                     if($valorRadio == 1) //HABITACION
                     {
-                        $query = mysql_query("SELECT a.Inghis, a.Inging, a.Ingnre, a.Ingres, a.Fecha_data, b.Habcod, c.Pacno1, c.Pacno2, c.Pacap1, c.Pacap2, c.Pacsex, c.Pacfna, d.Ubisac
+                        $query = mysql_queryV("SELECT a.Inghis, a.Inging, a.Ingnre, a.Ingres, a.Fecha_data, b.Habcod, c.Pacno1, c.Pacno2, c.Pacap1, c.Pacap2, c.Pacsex, c.Pacfna, d.Ubisac
                                                 FROM movhos_000020 b, movhos_000016 a, cliame_000100 c, movhos_000018 d
                                                 WHERE b.Habcod LIKE '$buscado%'
                                                 AND b.Habhis = a.Inghis
@@ -253,7 +253,7 @@
                     }
                     if($valorRadio == 2) //HISTORIA
                     {
-                        $query = mysql_query("SELECT Pachis, Ingnin, Ingfei, Pacno1, Pacno2, Pacap1, Pacap2, Ingsei, Ingent, Pacfna, Pacsex
+                        $query = mysql_queryV("SELECT Pachis, Ingnin, Ingfei, Pacno1, Pacno2, Pacap1, Pacap2, Ingsei, Ingent, Pacfna, Pacsex
                                                 FROM cliame_000100, cliame_000101
                                                 WHERE Pachis = '$buscado'
                                                 AND Pachis = Inghis
@@ -263,7 +263,7 @@
                     {
                         if($buscado != '')
                         {
-                            $query = mysql_query("SELECT a.Ubihis, a.Ubiing, e.Ingfei, b.Pacno1, b.Pacno2, b.Pacap1,b.Pacap2, a.Ubisac, c.sexo, d.Ingnre, b.Pacfna
+                            $query = mysql_queryV("SELECT a.Ubihis, a.Ubiing, e.Ingfei, b.Pacno1, b.Pacno2, b.Pacap1,b.Pacap2, a.Ubisac, c.sexo, d.Ingnre, b.Pacfna
                                                     FROM paf_000004 c, movhos_000018 a, movhos_000016 d, cliame_000100 b, cliame_000101 e
                                                     WHERE c.hc = '$buscado'
                                                     AND c.hc = a.Ubihis
@@ -325,8 +325,8 @@
                                     $sexo=$dato['Pacsex']; if($sexo == ''){$sexo=$dato['sexo'];}
                                     $fecha=$dato['Pacfna']; //FECHA DE NACIMIENTO
 
-                                    //$query2=mysql_query("select * from paf_000004 WHERE hc = '$historia' AND ingreso = '$ingreso' ORDER BY fecha_Ronda DESC LIMIT 1");
-                                    $query2=mysql_query("select * from paf_000004 WHERE hc = '$historia' AND ingreso = '$ingreso' ORDER BY fecha_Ronda DESC LIMIT 1");
+                                    //$query2=mysql_queryV("select * from paf_000004 WHERE hc = '$historia' AND ingreso = '$ingreso' ORDER BY fecha_Ronda DESC LIMIT 1");
+                                    $query2=mysql_queryV("select * from paf_000004 WHERE hc = '$historia' AND ingreso = '$ingreso' ORDER BY fecha_Ronda DESC LIMIT 1");
                                     $dato2=mysql_fetch_array($query2);
                                     $hc2=$dato2['hc'];          $ingreso2=$dato2['ingreso'];            $fecha_ronda=$dato2['fecha_Ronda'];
                                     $alerta=$dato2['alerta'];   $retiroPaf04 = $dato2['retiro_Paf'];    $reintegroPaf04 = $dato2['reintegro_Paf'];

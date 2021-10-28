@@ -62,14 +62,14 @@ include_once("conex.php");
     echo 'USUARIO= '.$_SESSION['user'];
     $usua = str_replace("01","", $wuse);
     $usuario = $usua.'-01';
-    $queryUsuario = mysql_query("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
+    $queryUsuario = mysql_queryV("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
     $datoUsuario = mysql_fetch_array($queryUsuario);
     $usuarioF = $datoUsuario[0].' '.$datoUsuario[2].' '.$datoUsuario[3];
 
     if($usuarioF == null)
     {
         $usuario = $_SESSION['user'];
-        $queryUsuario = mysql_query("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
+        $queryUsuario = mysql_queryV("SELECT Ideno1,Ideno2,Ideap1,Ideap2 from talhuma_000013 WHERE Ideuse LIKE '$usuario'");
         $datoUsuario = mysql_fetch_array($queryUsuario);
         $usuarioF = $datoUsuario[0].' '.$datoUsuario[2].' '.$datoUsuario[3];
     }

@@ -144,7 +144,7 @@
 			}else{
 				
 			// Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
-				$select_notas = mysql_query("SELECT count(*) cant
+				$select_notas = mysql_queryV("SELECT count(*) cant
 											 FROM  clisur_000020,clisur_000021,clisur_000018,clisur_000024
        										 WHERE renfue  in ('27','28') 
 											 AND renfec  BETWEEN '$buscar' AND '$buscar1'     
@@ -192,7 +192,7 @@
 			}else{
 				
 			// Conexión a la tablas y seleccion de registros MATRIX SOLO CON UN COUNT
-				$select_facturas = mysql_query("SELECT count(*) cant
+				$select_facturas = mysql_queryV("SELECT count(*) cant
 											from  clisur_000018,clisur_000024,clisur_000065 
 											where Fenfec BETWEEN '$buscar' AND '$buscar1'        
  											and  Fenest = 'on'  

@@ -433,19 +433,19 @@ if($accion == 'consolidados')
 
                                         if($Bfecha_ini != null and $Bfecha_fin != null)
                                         {
-                                            $query = mysql_query("SELECT * FROM paf_000004 WHERE fecha_Ing BETWEEN '$Bfecha_ini' AND '$Bfecha_fin' GROUP BY hc ORDER BY fecha_Ronda ASC");
+                                            $query = mysql_queryV("SELECT * FROM paf_000004 WHERE fecha_Ing BETWEEN '$Bfecha_ini' AND '$Bfecha_fin' GROUP BY hc ORDER BY fecha_Ronda ASC");
                                         }
                                         if($Bhistoria != null and $Bingreso != null)
                                         {
-                                            $query = mysql_query("SELECT * FROM paf_000004 WHERE hc = '$Bhistoria' AND ingreso = '$Bingreso' GROUP BY hc ORDER BY fecha_Ronda ASC");
+                                            $query = mysql_queryV("SELECT * FROM paf_000004 WHERE hc = '$Bhistoria' AND ingreso = '$Bingreso' GROUP BY hc ORDER BY fecha_Ronda ASC");
                                         }
                                         if($Bhistoria != null)
                                         {
-                                            $query = mysql_query("SELECT * FROM paf_000004 WHERE hc = '$Bhistoria' GROUP BY hc ORDER BY fecha_Ronda ASC");
+                                            $query = mysql_queryV("SELECT * FROM paf_000004 WHERE hc = '$Bhistoria' GROUP BY hc ORDER BY fecha_Ronda ASC");
                                         }
                                         else
                                         {
-                                            $query=mysql_query("select * from paf_000004 GROUP BY hc ORDER BY fecha_Ronda ASC LIMIT 20");
+                                            $query=mysql_queryV("select * from paf_000004 GROUP BY hc ORDER BY fecha_Ronda ASC LIMIT 20");
                                         }
 
                                         while($dato=mysql_fetch_array($query))

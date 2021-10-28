@@ -4,7 +4,7 @@ include_once("root/comun.php"); //publicacion en matrix
 $conex = obtenerConexionBD("matrix");
 $keyword = '%'.$_POST['keyword'].'%';
 
-$sql = mysql_query("select * from patol_000024 WHERE (Empnom LIKE '$keyword') OR (Empcod LIKE '$keyword') AND Empest = 'on' ORDER BY Empcod ASC LIMIT 0, 10");
+$sql = mysql_queryV("select * from patol_000024 WHERE (Empnom LIKE '$keyword') OR (Empcod LIKE '$keyword') AND Empest = 'on' ORDER BY Empcod ASC LIMIT 0, 10");
 while($rs = mysql_fetch_array($sql))
 {
     $country_name = str_replace($_POST['keyword'], '<b>'.$_POST['keyword'].'</b>', $rs['Empcod'].' - '.$rs['Empnom']);

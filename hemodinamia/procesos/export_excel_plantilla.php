@@ -53,12 +53,12 @@ $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 		$Bfecha=$_GET['bfecha'];
 		$BempcodR=$_GET['bempcodR'];
 		//Obtener descripciones
-		$select_nomPlan = mysql_query("SELECT * from ".$wcliame."_000329 where Codpla='$BcodplaR'");
+		$select_nomPlan = mysql_queryV("SELECT * from ".$wcliame."_000329 where Codpla='$BcodplaR'");
 		$resultado_nomPlan=mysql_fetch_array($select_nomPlan);
 		//$Placod = $resultado_nomPlan[3];
 		$Nompla = $resultado_nomPlan[4];
 		// query para obtener la tarifa
-		$select_tarifa = mysql_query("SELECT Empcod,Empnom,Emptar from ".$wcliame."_000024 where Empcod='$BempcodR'");
+		$select_tarifa = mysql_queryV("SELECT Empcod,Empnom,Emptar from ".$wcliame."_000024 where Empcod='$BempcodR'");
 		$resultado_tarifa=mysql_fetch_array($select_tarifa);
 		//$EmpcodR = $resultado_tarifa[0];
 		$EmpnomR = $resultado_tarifa[1];
