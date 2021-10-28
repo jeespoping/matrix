@@ -32,9 +32,16 @@
 
 <?php
 include_once("conex.php");
+/**
+ * Se incluyen los scripts de encripcion y desencripcion
+ * @date: 2021/19/10
+ * @by: Jesus.Lopez
+ */
+include_once("root/cifrado/cifrado.php");
+include_once("root/cifrado/cifradoJS.php");
 /**********************************************************************************************************************
      Programa :  registro.php
-     Fecha de Liberación : 2003-09-30
+     Fecha de Liberaciï¿½n : 2003-09-30
    	 Realizado por : Pedro Ortiz Tamayo
      Version Actual : 2014-02-10
 
@@ -51,7 +58,7 @@ include_once("conex.php");
 
    REGISTRO DE MODIFICACIONES :
    .2019-06-26
-		En el href a det_registro.php se cambia $row[$items+4] por $row['id'] para evitar que no se envíe el id y por tal motivo 
+		En el href a det_registro.php se cambia $row[$items+4] por $row['id'] para evitar que no se envï¿½e el id y por tal motivo 
 		no muestre los datos a editar si la tabla no tiene el diccionario completo
    .2014-02-10
 		Se modifica la consulta de registros ya que el calculo del numero de registros totales se estaba haciendo de forma muy ineficiente. Se cambia un
@@ -556,9 +563,17 @@ else
 		if(!isset($Ordenar))
 			$Ordenar="";
 		$query=$query.$Ordenar;
-		$string ="tabla=".$tab."&amp;consulta=".$query;
-		$string=str_replace(chr(39),chr(34),$string);
-		$string=str_replace("%","|",$string);
+        /**
+         * Se ecryptara query
+         * @date: 2021/21/10
+         * @by: Jesus.Lopez
+         *  */
+        $consulta = str_replace(chr(39),chr(34),$query);
+        $consulta = str_replace("%","|",$query);
+
+        $consulta = Cifrado::myCrypt($consulta);
+
+		$string ="tabla=".$tab."&amp;consulta=".$consulta;
 		$kc=$kc+4;
 		for ($z=0;$z<$kc;$z++)
 			$string = $string."&amp;cons[".$z."]=".$cons[$z];
@@ -649,5 +664,11 @@ else
 	include_once("free.php");
   }
 ?>
+<!--
+	  Se incluye script para encriptar en JS
+		@date: 2021/09/15
+		@by:	Jesus.Lopezf
+  -->
+<script type="text/javascript" src="../../../include/root/cifrado/crypto-js.min.js"></script>
 </body>
 </html>

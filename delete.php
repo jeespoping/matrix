@@ -11,6 +11,15 @@
 </center>
 <?php
 include_once("conex.php");
+/**
+ * Se incluyen los scripts de encripcion y desencripcion
+ * @date: 2021/09/15
+ * @by: sebastian.nevado
+ * 		marlon.osorio
+ * 		daniel.corredor
+ */
+include_once("root/cifrado/cifrado.php");
+include_once("root/cifrado/cifradoJS.php");
 session_start();
 if(!isset($_SESSION['user']))
 	echo "error";
@@ -18,9 +27,6 @@ else
 {
 	$key = substr($user,2,strlen($user));
 	echo "<form action='delete.php' method=post>";
-	
-
-	
 
 	if(!isset($wpassdel) or (!isset($ok) and isset($borrar) and $borrar != "N"))
 	{
@@ -81,7 +87,14 @@ else
 			}
 		}
 		echo "<input type='HIDDEN' name= 'tabla' value='".$tabla."'>";
-		$consulta=stripslashes($consulta);
+        /**
+         * Se agrega funcion MyDecrypt para desencriptar la consulta y poderla ejecutar
+         * @date: 22/10/2021
+         * @by: Jesus.Lopez
+         *  */
+        $consulta = Cifrado::myDecrypt($consulta );
+        $consulta=stripslashes($consulta);
+        $consulta = Cifrado::myCrypt($consulta);
 	 	echo "<input type='HIDDEN' name= 'consulta' value='".$consulta."'>";
 		echo "<input type='HIDDEN' name= 'kc' value=".$kc.">";
 		for ($w=0;$w<$kc;$w++)
@@ -98,7 +111,13 @@ else
 		$err = mysql_query($query,$conex);
 		$row = mysql_fetch_array($err);
 		if ($row[0] > 0)
-		{ 
+		{
+            /**
+             * Se agrega funcion MyDecrypt para desencriptar la consulta y poderla ejecutar
+             * @date: 22/10/2021
+             * @by: Jesus.Lopez
+             *  */
+            $consulta = Cifrado::myDecrypt($consulta );
 			$consulta=stripslashes($consulta);
 			$consulta=str_replace("|","%",$consulta);
 			$query =strtolower($consulta);
@@ -208,6 +227,12 @@ else
 			echo "<br><br>";
 			echo "<input type='HIDDEN' name= 'Totales' value='".$Totales."'>";
 			$consulta=stripslashes($consulta);
+            /**
+             * Se agrega funcion MyDecrypt para desencriptar la consulta y poderla ejecutar
+             * @date: 22/10/2021
+             * @by: Jesus.Lopez
+             *  */
+            $consulta = Cifrado::myCrypt($consulta );
 			echo "<input type='HIDDEN' name= 'consulta' value='".$consulta."'>";
 			$query = $query."  limit ".$Inicial.",30";
 			#$query = $query." order by id limit ".$Inicial.",30";
@@ -307,5 +332,11 @@ else
 	}
 }
 ?>
+<!--
+	  Se incluye script para encriptar en JS
+		@date: 2021/10/22
+		@by:	Jesus.Lopez
+  -->
+<script type="text/javascript" src="../../../include/root/cifrado/crypto-js.min.js"></script>
 </body>
 </html>
