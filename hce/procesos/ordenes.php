@@ -3022,7 +3022,7 @@ if (!$usuarioValidado){
 							echo "</td>";
 							
 							// Boton para el submit
-							echo "<td><input type='button' name='btnGrabar' value='OK' onClick='eleccionMedicamento()' /></td>";
+							echo "<td><input type='button' name='btnGrabar' value='OK' onClick='eleccionMedicamento(0, $sMipresEnListaMedicamentosOrdenes)' /></td>";
 							echo "</tr>";
 							echo "</table>";
 							
