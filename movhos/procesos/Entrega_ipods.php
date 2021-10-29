@@ -1,5 +1,5 @@
 <head>
-  <title>REGISTRO APLICACION MEDICAMENTOS - IPOD'S</title>
+  <title>REGISTRO ENTREGA NUTRICIONES - IPOD'S</title>
 
   <link type="text/css" href="../../../include/root/ui.core.css" rel="stylesheet"/>
   <link type="text/css" href="../../../include/root/ui.theme.css" rel="stylesheet"/>
@@ -239,7 +239,7 @@ include_once("conex.php");
    *********************************************************/
 
 //==================================================================================================================================
-//PROGRAMA                   : Aplicacion_ipods.php
+//PROGRAMA                   : Entrega_ipods.ph
 //AUTOR                      : Juan Carlos Hernández M.
 //FECHA CREACION             : Agosto 25 de 2010
 //FECHA ULTIMA ACTUALIZACION : Ene 25 de 2012 ";
@@ -312,7 +312,7 @@ include_once("conex.php");
 //									- Se agregan notas																						   \\
 //=============================================================================================================================================\\
 //Mayo 20 de 2016	Jessica Madrid  - Se comenta la función anular() y se agrega dicha función en movhos.inc.php para que pueda ser utilizada  \\
-//									desde aplicacion_ipods.php y gestionEnfermieria.php														   \\
+//									desde Entrega_ipods.ph y gestionEnfermieria.php														   \\
 //									- Se comenta parte del codigo de la aplicación de medicamentos y se incluye en la funcion  				   \\
 //									aplicarMedicamento() en movhos.inc.php para que tambien pueda ser utilizada desde gestión de enfermeria    \\ 
 //									para la aplicacion de medicamentos asociados a un procedimiento.										   \\
@@ -499,10 +499,117 @@ else
   $wusuario=trim($wuser1[1]);
 
      	                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Diciembre 26 de 2018";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="Octubre 27 de 2021";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
-  encabezado("APLICACION DE MEDICAMENTOS",$wactualiz, "clinica");
+  encabezado("ENTREGA DE NUTRICIONES",$wactualiz, "clinica");
+
+  $url = "http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+  function validar_usu($password, $username){
+	global $conex;
+	global $wbasedato;
+	global $wemp_pmla;
+	$password = sha1($password);
+	$sql = "SELECT 1
+				  FROM usuarios
+				 WHERE codigo  = '".$username."' 
+				   AND password = '".$password."'; ";
+	$res = mysql_query($sql,$conex) or die (" Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	$cant = mysql_num_rows($res);
+	return $cant;
+	}
+
+	function devolver($url, $wemp_pmla, $wfecha_actual,  $whora_par_actual, $whis, $wing, $wcco, $whab, $wpac, $wzona){
+		
+		$url_code = array(
+			'wemp_pmla' => $wemp_pmla,
+			'wfecha_actual' => $wfecha_actual,
+			'whora_par_actual' => $whora_par_actual,
+			'whis' => $whis,
+			'wing' => $wing,
+			'wcco' => $wcco,
+			'whab' => $whab,
+			'wpac' => $wpac,
+			'walp' => 'off',
+			'wzona' => $wzona
+		);
+		
+		$url = explode("?", $url);
+		$url_code = http_build_query($url_code, null, '&', PHP_QUERY_RFC3986);
+		$url = $url[0]."?".$url_code;
+		
+		return $url;
+	}
+	
+	if(isset($firma2) && $firma2 == "on"){
+		
+		if(isset($password) && isset($username)){
+			
+			$cant = validar_usu($password, $username);
+			
+			if($cant > 0){
+				
+				$url = explode('&firma2', $url);
+
+				$url = $url[0]."&autenticacion=true&wrecibe=".$username;
+				header("Location: ". $url );
+			}else{
+				
+				
+				
+				$url = explode('&firma2', $url);
+
+				$url = $url[0]."&firma2=on&autenticacion=0";
+				header("Location: ". $url );
+				
+				exit();
+				
+			}
+			
+		}else{
+		if(isset($autenticacion)&& $autenticacion == "0"){
+		
+			echo "<script>alert('Credenciales incorrectas')</script>";
+				
+		}	
+		echo "<form action='Entrega_ipods.php' method='get'>	";
+		echo "	<div class='tipoScreen02'>";
+		echo "		<table border=0 style='width : 100%'>";	
+		
+		foreach ($_GET as $key => $value) {
+			if(is_array($value)){
+				foreach ($value as $key2 => $value2) {
+					echo"<input name='{$key}[{$key2}]' value='{$value2}'style='height:35px !important; width: 40%; font-size:15px;' type='text' name='codigo' hidden size=18 maxlength=8></td>";
+				}
+			}else{
+				echo"<input name='{$key}' value='{$value}'style='height:35px !important; width: 40%; font-size:15px;' type='text' name='codigo' hidden size=18 maxlength=8></td>";
+			}
+			
+		}
+
+
+		echo "			<tr><td align=center id=tipo5 colspan=2><font size='6' style='padding-right:20%;'>Ingresa el usuario quien recibe la nutrición</font></td></tr>";
+		echo "          <tr><td align=center class='' colspan=2></td></tr>";
+		echo "			<tr><td class='encabezadoTabla'align=center id=tipo4><font  size='6'>C&oacute;digo</font></td><td align=left><input name='username' class='input-login' style='height:35px !important; width: 40%; font-size:15px;' type='text' name='codigo' size=18 maxlength=8></td></tr>";
+		echo "			<tr><td class='encabezadoTabla' align=center id=tipo4><font  size='6'>Clave</font></td><td align=left><input name='password' class='input-login' style='height:35px !important; width: 40%;  font-size:15px;' type='password' name='password' size=18 maxlength=30></td></tr>";
+		echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
+		echo "			<tr><td align=center colspan=2><input type='submit' value='Validar' style='font-size:30px; padding-top:1px; width: 30%;'></td></tr>";
+		echo "		</table>";
+		echo "	</div>";
+		echo "</form>";
+		
+		$url = devolver($url, $wemp_pmla, $wfecha_actual,  $whora_par_actual, $whis, $wing, $wcco, $whab, $wpac, $wzona);
+		
+		echo "<table style='width : 70%'>";
+		echo "<tr><td align=center colspan=2><A HREF='".$url."' class=tipo3V>Retornar</A></td></tr>";
+		echo "</table>";
+			   
+		}
+		
+		exit();
+		
+		
+	}
 
 
 function consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato, $esDomiciliario = false ){
@@ -1258,7 +1365,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 	  if( !isset($consultaPorHistoria) ){
 		  
 		  echo "<center><table>";
-		  echo "<tr class=encabezadoTabla><td align=center><font size=20>APLICACION DE MEDICAMENTOS</font></td></tr>";
+		  echo "<tr class=encabezadoTabla><td align=center><font size=20>ENTREGA DE NUTRICIONES</font></td></tr>";
 		  echo "</table>";
 
 		  echo "<br><br>";
@@ -1591,6 +1698,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 		  //."    AND ubihis        = '264521' "
 		  ."  GROUP BY 1,2,3,4,5,6,7 "
 	      ."  ORDER BY Habord, Habcod ";
+
 	  $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	  $num = mysql_num_rows($res);
 
@@ -1643,7 +1751,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 
 
 			   $hoyNoConfirmado = false;	//Hoy no confimado
-
+				//print_r(mysql_fetch_array($res1));
 			   //Valido si tiene medicamentos para la RONDA o A NECESIDAD
 			   query_articulos($whis, $wing, $wfecha_actual, $res1, $ccoQueryArts );
 			   $num1 = mysql_num_rows($res1);
@@ -1657,7 +1765,8 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 			    * Enero 29 de 2013
 				********************************************************************************/
 			   if( $num1 == 0 and $wreg[0] == 0 ){	//Hay kardex hoy pero no esta confirmado
-
+					
+					//exit();
 				    //Verifico si hay kardex hoy pero no esta confirmado
                    $q = " SELECT COUNT(*) "
 				       ."   FROM ".$wbasedato."_000053 "
@@ -1666,6 +1775,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 					   ."    AND fecha_data = '".$wfecha_actual."'"
 					   ."    AND karcon = 'off' "
 					   ."    AND karcco = '$ccoQueryArts' ";
+					   
 				   $res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	               $wreg = mysql_fetch_array($res1);
 
@@ -1703,6 +1813,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 					   ."    AND fecha_data = '".$wfecha_actual."'"
 					   // ."    AND karcon = 'on' "
 					   ."    AND karcco = '$ccoQueryArts' ";
+					  
 				   $res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 				   $wreg = mysql_fetch_array($res1);
 				  }
@@ -1745,6 +1856,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 
 			   if ($num1 > 0)
                   {
+					
 				   echo "<tr class=".$wclass.">";
 				   echo "<td align=center><font size=6><b>".$whab."</b></font></td>";
 				   echo "<td align=center><font size=6><b>".$whis."</b></font></td>";
@@ -1757,7 +1869,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 				   }
 
 				   if( true || !$hoyNoConfirmado )
-						echo "<td align=center><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whis=".$whis."&wing=".$wing."&wcco=".$wcco."&whab=".$whab."&wpac=".$wpac."&walp=".$walp."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Ver</A></td>";
+						echo "<td align=center><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whis=".$whis."&wing=".$wing."&wcco=".$wcco."&whab=".$whab."&wpac=".$wpac."&walp=".$walp."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Ver</A></td>";
 					else
 						echo "<td align='center' class='suspendido'><font size=6>Kardex No confirmado</font></td>";	//Enero 29 de 2013
 
@@ -1877,7 +1989,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 			       $wing = $row[2];
 			       $wpac = $row[3]." ".$row[4]." ".$row[5]." ".$row[6];
 
-			       echo "<td align=center><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&user=".$user."&whis=".$whis."&wing=".$wing."&wcco=".$wcco."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."' class=tipo3V>".$whab."</A></td>";
+			       echo "<td align=center><A HREF='Entrega_ipods.ph?wemp_pmla=".$wemp_pmla."&user=".$user."&whis=".$whis."&wing=".$wing."&wcco=".$wcco."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."' class=tipo3V>".$whab."</A></td>";
 			       $row = mysql_fetch_array($res);
 			       $j++;
 			       $i++;
@@ -2073,14 +2185,14 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 
 	 //===============================================================
 	 $q = " SELECT COUNT(*) "
-		     ."   FROM ".$wbasedato."_000015 "
-		     ."  WHERE aplhis = '".$whis."'"
-		     ."    AND apling = '".$wing."'"
-		     ."    AND aplfec = '".$wfecha_actual."'"
-	         ."    AND aplron like '".trim($whora_a_buscar)."'"
-		     ."    AND aplart = '".$wart."'"
-		     ."    AND aplest = 'on' "
-			 ."    AND aplido = ".$wido;
+		     ."   FROM ".$wbasedato."_000298 "
+		     ."  WHERE Enthis = '".$whis."'"
+		     ."    AND Enting = '".$wing."'"
+		     ."    AND Entfec = '".$wfecha_actual."'"
+	         ."    AND Entron like '".trim($whora_a_buscar)."'"
+		     ."    AND Entart = '".$wart."'"
+		     ."    AND Entest = 'on' "
+			 ."    AND Entido = ".$wido;
 	 $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	 $row = mysql_fetch_array($res);
 
@@ -2432,9 +2544,9 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 						else
 						   {
 							if ($wsalsre > 0)
-							   $wmensaje = "No hay SALDO suficiente para aplicar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
+							   $wmensaje = "No hay SALDO suficiente para Entregar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
 							  else
-								 $wmensaje = "No hay SALDO suficiente para aplicar";
+								 $wmensaje = "No hay SALDO suficiente para entregar";
 
 							return false;
 						   }
@@ -2442,11 +2554,11 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 					else
 					   {
 						if ($wsalsre > 0)
-						   $wmensaje = "No hay SALDO suficiente para aplicar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
+						   $wmensaje = "No hay SALDO suficiente para Entregar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
 						  else
 							 {
 							  if ($wsalart > 0)
-								 $wmensaje = "No hay DOSIS pendientes de aplicar<br>o es del Stock";
+								 $wmensaje = "No hay DOSIS pendientes de entregar<br>o es del Stock";
 							 }
 						return false;
 					   }
@@ -2463,7 +2575,7 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 					 }
 					else
 					  {
-					   $wmensaje = "No hay SALDO suficiente para aplicar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
+					   $wmensaje = "No hay SALDO suficiente para entregar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
 					   return false;
 					  }
 				 }
@@ -2489,7 +2601,7 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 	     {
 		  ?>
 		    <script>
-			  alert("1. Debe cerrar esta ventana, Actualizar la pantalla (simbolo de flecha circular)  y volver a ingresar a la opción ** Aplicacion Ipods **");
+			  alert("1. Debe cerrar esta ventana, Actualizar la pantalla (simbolo de flecha circular)  y volver a ingresar a la opción ** Entrega Ipods **");
 		    </script>
 		  <?php
 		 }
@@ -2504,14 +2616,14 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 	 global $conex;
 
 	 $q = " SELECT count(*) "
-	     ."   FROM ".$wbasedato."_000015 "
-	     ."  WHERE aplhis = '".$whis."'"
-	     ."    AND apling = '".$wing."'"
-	     ."    AND aplfec = '".$wfecha."'"
-	     ."    AND aplron = '".$whora_a_grabar."'"
-	     ."    AND aplart = '".$wart."'"
-	     ."    AND aplest = 'on' "
-		 ."    AND aplido = ".$wido;
+	     ."   FROM ".$wbasedato."_000298 "
+	     ."  WHERE Enthis = '".$whis."'"
+	     ."    AND Enting = '".$wing."'"
+	     ."    AND Entfec = '".$wfecha."'"
+	     ."    AND Entron = '".$whora_a_grabar."'"
+	     ."    AND Entart = '".$wart."'"
+	     ."    AND Entest = 'on' "
+		 ."    AND Entido = ".$wido;
 	 $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	 $row = mysql_fetch_array($res);
 
@@ -2907,7 +3019,7 @@ function validar_ipods($wcco)
 			echo " <script>
 				   alert ('$wmsj');
 
-				   window.location.href='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.( isset($consultaPorHistoria) ? '&consultaPorHistoria=on' : '' )."'
+				   window.location.href='Entrega_ipods.php?wemp_pmla=".$wemp_pmla.( isset($consultaPorHistoria) ? '&consultaPorHistoria=on' : '' )."'
 				   </script> ";
 
 		   }
@@ -2931,7 +3043,7 @@ function validar_ipods($wcco)
   $permisoUsoAplicacion = "1";
   
     
-  echo "<form name='apl_ipods' action='Aplicacion_ipods.php' method=post>";
+  echo "<form name='apl_ipods' action='Entrega_ipods.php' method=post>";
 
   if (!isset($wfecha)) $wfecha = date("Y-m-d");
   $whora  = (string)date("H:i:s");
@@ -3152,7 +3264,7 @@ function validar_ipods($wcco)
 
 				echo "<center><table>";
 				echo "<tr class=encabezadoTabla>";
-				echo "<th colspan=2><font size=5>Medicamento</font></th>";
+				echo "<th colspan=2><font size=5>Nutrición</font></th>";
 				echo "<th><font size=5>Dosis</font></th>";
 				echo "<th><font size=5>Vía</font></th>";
 				echo "<th><font size=5>Condición</font></th>";
@@ -3238,7 +3350,16 @@ function validar_ipods($wcco)
 					// if (isset($wanular[$i]) and $wanular[$i]=="on" and $row[1]==$wart[$i])
 					if( isset( $wanular ) && in_array( "on", $wanular ) and in_array( $row[1], $wart ) && in_array( $row[22], $wido ) )
 					{
-						anularAplicacionMovhos($whis, $wing, $wart[$i], $wcco, $wdosis[$i], $wcanfra[$i], $whora_par_actual, $wfecha_actual, $wnoenviar[$i], $wStock[$i], $wido[$i]);
+						
+						 anularEntregaMovhos($whis, $wing, $wart[$i], $wcco, $wdosis[$i], $wcanfra[$i], $whora_par_actual, $wfecha_actual, $wnoenviar[$i], $wStock[$i], $wido[$i]);
+						
+						$url = devolver($url, $wemp_pmla, $wfecha_actual,  $whora_par_actual, $whis, $wing, $wcco, $whab, $wpac, $wzona);
+						
+						header("Location: ". $url );
+
+						
+							
+						
 					}
 
 					if( $whora_par_actual == 24 ){
@@ -3297,7 +3418,8 @@ function validar_ipods($wcco)
 					$row1 = mysql_fetch_array($res1);
 
 					if ($row1[0] > 1)
-					   $wfrec="Cada ".$row1[0]."&nbsp;".$row1[1]."S";   //Descripcion de la FRECUENCIA
+					   $wfrec="Cada ".$row1[0]."&nbsp;".$row1[1];
+					   //."S";   //Descripcion de la FRECUENCIA
 					  else
 						 $wfrec="Cada ".$row1[0]."&nbsp;".$row1[1];     //Descripcion de la FRECUENCIA
 					 
@@ -3576,15 +3698,18 @@ function validar_ipods($wcco)
 
 									if ($wexiste == false)   //Esto se hace para controlar la duplicidad de registros
 									   {
+										   
 									    //Verifico que no este desconectada la SESSION
 										if (isset($wusuario) and trim($wusuario)!="")
 										   {											   
 											//Agosto 14 de 2012.	Siempre se deja pasar para que descuetne de los saldos de ser necesario.
 											if ( true || $wStock[$i]=="off" )     //Si entra aca es porque NO es del STOCK, puede que se envie o no pero si tiene saldo lo descuenta
 											  {
+													
 												  //Funcion en movhos.inc.php, utilizada tambien desde gestión de enfermeria para la aplicacion de medicamentos asociados a un procedimiento
-												  aplicarMedicamento($wbasedato,$whis,$wing,$row[1],$wcant_aplicar,$wdosis,$whora_a_grabar,$row[2],$wcco,$wcco1[0],$wusuario,$wfecha_actual,$wnoenviar[$i],$wufr,$row[22],$wcodvia);
-											    
+												  EntregarNutricion($wbasedato,$whis,$wing,$row[1],$wcant_aplicar,$wdosis,$whora_a_grabar,$row[2],$wcco,$wcco1[0],$wusuario, $wrecibe, $wfecha_actual,$wnoenviar[$i],$wufr,$row[22],$wcodvia);
+												  $url = devolver($url, $wemp_pmla, $wfecha_actual,  $whora_par_actual, $whis, $wing, $wcco, $whab, $wpac, $wzona);
+												  header("Location: ". $url );
 											  }
 										   }
 										else
@@ -3598,11 +3723,11 @@ function validar_ipods($wcco)
 									   }
 									   $waplicado="on";  //Esto se porque si wexiste==on es porque ya esta aplicado
 										
-									echo "<td align=center rowspan=4 bgcolor='00FF00'><font size=6>Aplicado</font></td>";
+									echo "<td align=center rowspan=4 bgcolor='00FF00'><font size=6>Entregado</font></td>";
 									$noPuedeAnular = consultarSiPuedeAnular( $whis, $wing, $row[1], $row[22]);
 									if(!$noPuedeAnular)
 									{
-										echo "<td align=center rowspan=4><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
+										echo "<td align=center rowspan=4><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
 									}
 									
 
@@ -3613,12 +3738,12 @@ function validar_ipods($wcco)
 									{
 									   if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
 									     {
-									       echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar</A></td>";
+									       echo "<td align=center rowspan=4 colspan=2><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Entregar</A></td>";
 										 }
 									   else
 										 {
 										    echo "<td align=center rowspan=4 colspan=2>555";
-											echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
+											echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Entrega_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
 											echo "<option></option>";
 
 											for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
@@ -3637,11 +3762,11 @@ function validar_ipods($wcco)
 									 {
 									  if ($wStock[$i]=="on")
 										if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
-										    echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar (Stock)</A></td>";
+										    echo "<td align=center rowspan=4 colspan=2><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Entregar (Stock)</A></td>";
 										 else
 										    {
 										      echo "<td align=center rowspan=4 colspan=2><font class=tipo4V>(Stock)<br></font>";
-											  echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
+											  echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Entrega_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
 											  echo "<option></option>";
 
 											  for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
@@ -3654,11 +3779,11 @@ function validar_ipods($wcco)
 											}
 										else
 										   if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
-										      echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar</A></td>";
+										      echo "<td align=center rowspan=4 colspan=2><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&firma2=on' class=tipo3V>Entregar</A></td>";
 										   else
 										    {
 										      echo "<td align=center rowspan=4 colspan=2>";
-											  echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' ).$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
+											  echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Entrega_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' ).$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
 											  echo "<option></option>";
 
 											  for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
@@ -3677,13 +3802,13 @@ function validar_ipods($wcco)
 										  }
 										 else
 										   {
-										    echo "<td align=center rowspan=4 bgcolor='00FF00'><font size=6>Aplicado</font></td>";
+										    echo "<td align=center rowspan=4 bgcolor='00FF00'><font size=6>Entregado</font></td>";
 											$noPuedeAnular = consultarSiPuedeAnular( $whis, $wing, $row[1], $row[22]);
 											if(!$noPuedeAnular)
 											{
-												echo "<td align=center rowspan=4><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
+												echo "<td align=center rowspan=4><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
 											}
-											// echo "<td align=center rowspan=4><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona."' class=tipo3V>Anular</A></td>";
+											// echo "<td align=center rowspan=4><A HREF='Entrega_ipods.ph?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona."' class=tipo3V>Anular</A></td>";
 										   }
 								 }
 
@@ -3704,9 +3829,9 @@ function validar_ipods($wcco)
 				echo "<br><br>";
 				echo "<table>";
 				if( empty($pac_historia) )
-					echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
+					echo "<tr><td><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
 				else
-					echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
+					echo "<tr><td><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
 				echo "</table>";
 			   }
 			  else
@@ -3728,9 +3853,9 @@ function validar_ipods($wcco)
 				  echo "<br><br>";
 				  echo "<table>";
 				  if(empty($pac_historia))
-					echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
+					echo "<tr><td><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
 				  else	
-					echo "<tr><td><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
+					echo "<tr><td><A HREF='Entrega_ipods.php?wemp_pmla=".$wemp_pmla.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
 				
 				  echo "</table>";
 				 }
