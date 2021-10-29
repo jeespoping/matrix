@@ -24,7 +24,7 @@ else {
 
 
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-	$wactualiz = "Octubre 27 de 2021";               // Aca se coloca la ultima fecha de actualizacion de este programa //
+	$wactualiz = "Octubre 22 de 2021";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 	//=========================================================================================================================================\\
@@ -40,10 +40,6 @@ else {
 	//=========================================================================================================================================\\
 	//=========================================================================================================================================\\
 	//ACTUALIZACIONES
-	//=========================================================================================================================================\\
-	// Octubre 27 de 2021 -	Sebastian Alvarez Barona
-	// Se añadio una tabla en la parte inferior de la pantalla en donde se hace saber los pacientes con soporte nutricional, 
-	// esto con el fin de que las encargadas de manejar el kardex sigan viendo los pacientes una vez se cargan. Solo se trabajo en base a la opción 5. 
 	//=========================================================================================================================================\\
 	// Mayo 21 de 2018	Jessica	
 	// En la función consultarSiDAexiste() se agrega a la consulta el filtro con cenpro_000002 para saber si la dosis adaptada esta activa
@@ -294,6 +290,81 @@ else {
 
 		return $data;
 	}
+	
+	function ImprimirSticker($dataPac, $wemp_pmla){
+		global $conex;
+		
+		$wcliame=consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
+		$wip=consultarAliasPorAplicacion( $conex, $wemp_pmla, "IPImpStrickLactarios" );
+		
+		for ($i = 0; $i < count($dataPac); $i++){
+			$sql = "SELECT Pacdoc 
+				FROM ".$wcliame."_000100 
+				WHERE Pachis = '".$dataPac[$i]["historia"]."' LIMIT 1";
+    
+			$res = mysql_query($sql, $conex);
+			
+			if($row = mysql_fetch_row($res))
+			{
+				$paciente = $row[0];
+			}
+			$impresionZPL ="^XA
+							^FX Codigo de barras
+							^FO12,10
+							^BCN,70,N,N^FD".$dataPac[$i]["historia"]."^FS
+
+							^FX Codigo ,lote y fecha de vencimiento
+							^CFR
+							^FO240,40^FD".$dataPac[$i]["historia"]."^FS
+							^CFP
+							^FO240,20^FDHISTORIA:^FS
+
+							^FX Nombre del producto
+							^CFR,1
+							^FO10,90^A0,34,21^FD".$dataPac[$i]["nombre"]."^FS
+							^CFP
+							^FO10,120^FDDOC NRO: ".$paciente."^FS
+
+							^FX Fecha de preparación
+							^CFP
+							^FO10,150^FDF. PREP: ".$dataPac[$i]["fecha"]."^FS
+
+							^FX Hora de preparación
+							^CFP
+							^FO10,171^FDH. PREP: ".$dataPac[$i]["hora"]."^FS
+
+							^FX Preparado por
+							^CFP
+							^FO10,190^FDPREPARADO POR :^FS
+							^FO145,190^FDAUX CME^FS
+
+							^FX Habitacion
+							^CFP
+							^FO10,209^FDHAB: ".$dataPac[$i]["habitacion"]."^FS
+
+							^FX Tiempo de consumo
+							^CFQ
+							^FO10,240^A0,22,20^FDTIEMPO CONSUMO: ".$dataPac[$i]["frecuencia"]."s^FS
+							^FO10,262^A0,22,20^FD".$dataPac[$i]["articulo"]."^FS
+							^FO10,284^A0,22,20^FD".$dataPac[$i]["dosis"]." - Via: ".$dataPac[$i]["via"]."^FS
+
+							^FX Cantidad de etiquetas a imprimir
+							^PQ1
+
+							^XZ";
+						
+			$fp = fsockopen($wip, 9100, $errno, $errstr, 30);
+			if(!$fp) 
+				echo "ERROR : "."$errstr ($errno)<br>\n";
+			else 
+			{
+				fputs($fp,$impresionZPL);
+				echo "PAQUETE ENVIADO <br>\n";
+				fclose($fp);
+			}
+			sleep(5);
+		}
+	}			
 
 	function consultarPurgaDA($cco)
 	{
@@ -2261,6 +2332,13 @@ else {
 					break;
 					return;
 				}
+			
+			case 'ImprimirSticker': {
+					ImprimirSticker($dataPac,$wemp_pmla);
+					echo json_encode("Exito!");
+					break;
+					return;
+				}
 
 			default:
 				break;
@@ -2401,6 +2479,27 @@ else {
 			function cerrarVentana() {
 				window.close();
 			}
+			
+			function imprimirSticker(){
+				var dataPacs = [];
+				$("#PacSoporteNuticional input[type=checkbox]:checked").each(function () {
+					var dataPac = $(this).data("info");
+					if(dataPac != ""){
+						dataPacs.push(dataPac);
+					}
+				});
+				if(dataPacs.length == 0){
+					alert("Debe seleccionar por lo menos un registro");
+				}
+				$.post("Monitor_Kardex.php", {
+					consultaAjax: '',
+					accion: 'ImprimirSticker',
+					dataPac: dataPacs,
+					wemp_pmla: $('#wemp_pmla').val(),
+				}, function(data) {
+					console.log(data);
+				}, 'json');
+			}
 
 			window.onload = function() {
 
@@ -2418,6 +2517,12 @@ else {
 					left: 0
 				});
 			}
+			
+			$(function () {
+				$("#checkAll").change(function(){
+					$('input:checkbox').not(this).prop('checked', this.checked);
+				});
+			});
 		</script>
 		<!--=====================================================================================================================================================================     
 	E S T I L O S 
@@ -3644,10 +3749,14 @@ else {
 
 
 			echo "</form>";
-
+			
 			echo "<br>";
 			echo "<table>";
-			echo "<tr><td align=center colspan=9><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
+			echo "<tr><td align=center colspan=9><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'>";
+			if($wopcion == "5"){
+				echo "&nbsp;<input type=button value='Imprimir sticker' onclick='imprimirSticker()'>";
+			}
+			echo "</td></tr>";
 			echo "<input type='hidden' id='tooltipDetalle' value='" . $cadenaTooltipDetalle . "'>";
 			echo "</table>";
 
@@ -3900,7 +4009,7 @@ else {
 						<div class='titulopagina' align='center'>PACIENTES CON SOPORTE NUTRICIONAL</div>
 					</td>";
 				//Encabezado de tabla
-				echo "<table>";
+				echo "<table id='PacSoporteNuticional'>";
 				// echo "<hr style='height:3px;border-width:0;color:#cc0000;background-color:#cc0000'>";
 				echo "<tr class='encabezadoTabla'>";
 				echo "<th>Habitacion</th>";
@@ -3913,6 +4022,7 @@ else {
 				echo "<th>Frecuencia</th>";
 				echo "<th>Fecha y hora de inicio</th>";
 				echo "<th>Observación</th>";
+				echo "<th><input type='checkbox' id='checkAll' data-info='' />&nbsp</th>";
 				// echo "<th colspan='2' width='101'>Acción</th>"; //Se comenta porque no es necesario la accion en la parte informativa
 				echo "</tr>";
 
@@ -3923,7 +4033,6 @@ else {
 				$arrayActivos= array();			 // indica si hay un articulo activo
 				
 				foreach ($wmat_estado as $index => $fila) {
-
 					$estado = '';
 					$clase_estado = '';
 					
@@ -3979,6 +4088,18 @@ else {
 					
 							
 							//Pintamos los datos 
+							$dataPac = array(
+								"historia" => $fila[1],
+								"ingreso" => $fila[2],
+								"nombre" => $fila[3],
+								"fecha" => $pos_art[3],
+								"hora" => $pos_art[4],
+								"habitacion" => $fila[0],
+								"frecuencia" => $pos_art[2],
+								"articulo" => $pos_art[1],
+								"dosis" => $pos_art[7],
+								"via" => $pos_art[5]
+							);
 							echo "<tr align='center' class=" . $wclass . ">";
 							echo "<td align='center' >" . $fila[0] . "</td>"; //Habitación pac
 							echo "<td align='center' >" . $fila[1] . "-" . $fila[2] . "</td>"; //Historia pac
@@ -3990,6 +4111,7 @@ else {
 							echo "<td align='center' >" . $pos_art[2] . "</td>"; //Frecuencia
 							echo "<td align='center' >" . $pos_art[3] . " <br>a las</br> " . $pos_art[4] . "</td>";	//Fecha y hora de inicio 
 							echo "<td align='center' >" . $pos_art[6] . "</td>"; //Obervación
+							echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp</td>"; //Imprimir
 							echo "</tr>";
 						}
 					} else {
@@ -4025,6 +4147,18 @@ else {
 						}
 
 						//Pintamos los datos 
+						$dataPac = array(
+							"historia" => $fila[1],
+							"ingreso" => $fila[2],
+							"nombre" => $fila[3],
+							"fecha" => $fila[13],
+							"hora" => $fila[14],
+							"habitacion" => $fila[0],
+							"frecuencia" => $fila[12],
+							"articulo" => $fila[11],
+							"dosis" => $fila[17],
+							"via" => $fila[15]
+						);
 						echo "<tr align='center' class=" . $wclass . ">";
 						echo "<td align='center' >" . $fila[0] . "</td>"; //Habitación pac
 						echo "<td align='center' >" . $fila[1] . "-" . $fila[2] . "</td>"; //Historia pac
@@ -4036,6 +4170,7 @@ else {
 						echo "<td align='center' >" . $fila[12] . "</td>"; //Frecuencia
 						echo "<td align='center' >" . $fila[13] . " <br>a las</br> " . $fila[14] . "</td>";	//Fecha y hora de inicio 
 						echo "<td align='center' >" . $fila[16] . "</td>"; //Obervación
+						echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp;</td>"; //Imprimir
 						echo "</tr>";
 
 						$color_filas++; //Vamos incrementando
@@ -4076,3 +4211,5 @@ else {
 	//=======================================================================================================================================================
 } // if de register
 ?>
+    
+</script>

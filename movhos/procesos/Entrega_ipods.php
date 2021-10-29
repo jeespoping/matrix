@@ -503,7 +503,7 @@ else
 	                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
   encabezado("ENTREGA DE NUTRICIONES",$wactualiz, "clinica");
-
+ob_start();
   $url = "http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
   function validar_usu($password, $username){
 	global $conex;
@@ -535,7 +535,8 @@ else
 		);
 		
 		$url = explode("?", $url);
-		$url_code = http_build_query($url_code, null, '&', PHP_QUERY_RFC3986);
+		
+		$url_code = http_build_query($url_code);
 		$url = $url[0]."?".$url_code;
 		
 		return $url;
@@ -552,15 +553,18 @@ else
 				$url = explode('&firma2', $url);
 
 				$url = $url[0]."&autenticacion=true&wrecibe=".$username;
-				header("Location: ". $url );
+			
+				echo "<script>window.location.replace('{$url}');</script>";
+                exit();
+				
 			}else{
 				
-				
+				error_reporting(E_ALL);
 				
 				$url = explode('&firma2', $url);
-
+                ob_end_flush();
 				$url = $url[0]."&firma2=on&autenticacion=0";
-				header("Location: ". $url );
+				echo "<script>window.location.replace('{$url}');</script>";
 				
 				exit();
 				
@@ -3355,9 +3359,9 @@ function validar_ipods($wcco)
 						
 						$url = devolver($url, $wemp_pmla, $wfecha_actual,  $whora_par_actual, $whis, $wing, $wcco, $whab, $wpac, $wzona);
 						
-						header("Location: ". $url );
+						echo "<script>window.location.replace('{$url}');</script>";
 
-						
+						die();
 							
 						
 					}
@@ -3709,7 +3713,8 @@ function validar_ipods($wcco)
 												  //Funcion en movhos.inc.php, utilizada tambien desde gestión de enfermeria para la aplicacion de medicamentos asociados a un procedimiento
 												  EntregarNutricion($wbasedato,$whis,$wing,$row[1],$wcant_aplicar,$wdosis,$whora_a_grabar,$row[2],$wcco,$wcco1[0],$wusuario, $wrecibe, $wfecha_actual,$wnoenviar[$i],$wufr,$row[22],$wcodvia);
 												  $url = devolver($url, $wemp_pmla, $wfecha_actual,  $whora_par_actual, $whis, $wing, $wcco, $whab, $wpac, $wzona);
-												  header("Location: ". $url );
+												 echo "<script>window.location.replace('{$url}');</script>";
+												  die();
 											  }
 										   }
 										else
