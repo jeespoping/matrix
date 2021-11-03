@@ -52,6 +52,7 @@ include_once("root/comun.php");
  * Actualización (sebastian.nevado): 2021-06-11 se realiza llamado de factura inteligente para insumos.
  * Modificación (sebastian.nevado): 2021-07-19 sebastian.nevado: se quita el lote del where de la segunda consulta para traer los insumos. Se agrega el lote como resultado de la segunda consulta para poder identificar insumos. Además, se modifican el where de las consultas de presentación y conversión para que aplique a los insumos.
  * Actualización  (sebastian.nevado): 2021-07-22 aumento el inventario para los insumos. NOTA: no se valida que tenga existencias para hacer movimiento debido a que no había sido reportado, por lo que el inventario puede quedar negativo.
+ * Actualización (sebastian.nevado): 2021-10-19 Se comenta el llamado a la función donde reduzco el inventario para los insumos por solicitud del usuario.
  */
 
 
@@ -1147,7 +1148,7 @@ else
 											*/
 											if(empty($inslis[$i]['lote']))
 											{
-												sumarArticuloMatrix($inslis[$i]['cod'], $cco, '', $art['cod']);
+												//sumarArticuloMatrix($inslis[$i]['cod'], $cco, '', $art['cod']);
 											}
 											// FIN MODIFICACION
 
@@ -1526,7 +1527,7 @@ else
 											*/
 											if(empty($inslis[$i]['lote']))
 											{
-												sumarArticuloMatrix($inslis[$i]['cod'], $cco, '', $art['cod']);
+												//sumarArticuloMatrix($inslis[$i]['cod'], $cco, '', $art['cod']);
 											}
 											// FIN MODIFICACION
 											
