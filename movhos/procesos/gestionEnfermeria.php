@@ -2614,6 +2614,7 @@ if(isset($operacion) && $operacion == 'ccoPorTipoOrden'){
 	$selected = true;
 	
 	$wcodcups = $_POST['wcodcups'];
+	$wtipoorden = $_POST['wexam'];
 	
 	$wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$wbasedato_hce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
@@ -2621,14 +2622,14 @@ if(isset($operacion) && $operacion == 'ccoPorTipoOrden'){
 	$data = array('html'=>'', 'error'=>0);
 	
 	$query_cup = "SELECT A.Codigo,B.Codcups AS Codigo_dos 
-								FROM root_000012 A 
-								JOIN ".$wbasedato_hce."_000047 B ON A.Codigo = B.Codcups
-							   WHERE B.Estado = 'on' AND B.Codigo = '".$wcodcups."'
-				  UNION
+					FROM root_000012 A 
+					JOIN ".$wbasedato_hce."_000047 B ON A.Codigo = B.Codcups
+				   WHERE B.Estado = 'on' AND B.Codigo = '".$wcodcups."'
+				   UNION
 				  SELECT A.Codigo,B.Codcups AS Codigo_dos 
 					FROM root_000012 A 
 					JOIN ".$wbasedato_hce."_000017 B ON A.Codigo = B.Codcups 
-				   WHERE B.nuevo = 'on' AND B.Codigo = '".$codcups."';";
+				   WHERE B.nuevo = 'on' AND B.Codigo = '".$wcodcups."';";
 				
 	$res_cup = mysql_query($query_cup, $conex) or die(mysql_errno()." - Error en el query $query_cup - ".mysql_error());
 	$cup = mysql_fetch_array($res_cup);
@@ -2636,14 +2637,14 @@ if(isset($operacion) && $operacion == 'ccoPorTipoOrden'){
 	//validaciones de cargos en la tabla maestro de cargos automaticos
 	include_once("../../cca/procesos/cargos_automaticos_funciones.php");				
 	
-	$tieneCCA = validarTieneCca($conex, $wemp_pmla, $cup['Codigo_dos'], "orden", $wexam);
+	$tieneCCA = validarTieneCca($conex, $wemp_pmla, $cup['Codigo_dos'], "orden", $wtipoorden);
 	
 	if($tieneCCA){	
 	
 		$sql = 'SELECT m11.Ccocod Codigo, m11.Cconom Nombre
 				FROM '.$wbasedato_movhos.'_000011 m11
-				LEFT JOIN '.$wbasedato_hce.'_000015 h15 ON FIND_IN_SET(m11.Ccocod, h15.Ccacen)
-				WHERE h15.Codigo = "'.$wexam.'";';
+				LEFT JOIN '.$wbasedato_hce.'_000015 h15 ON FIND_IN_SET(m11.Ccocod, h15.Tipcen)
+				WHERE h15.Codigo = "'.$wtipoorden.'";';
 		$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
 			
 		
@@ -2779,7 +2780,8 @@ if(isset($operacion) && $operacion == 'cambiar_estado_examen'){
 					'worigen'	        	=> "Historia Clinica Electronica",
 					'wcen_cos'				=> $_POST['centroCostosCca'],
 					'wanulacion_cca'		=> $anulacion_cca,
-					'wdeticg'				=> $datos['Deticg']
+					'wdeticg'				=> $datos['Deticg'],
+					'wEstadoExamen'			=> $_POST['wEstadoExamen']
 				);
 										
 				$options = array(
@@ -5515,7 +5517,7 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 			jConfirm('¿Realmente desea cambiar el estado de la Orden ?'+(estGeneraCca=='on' ? data.html : ''), 'Mensaje', function(e) {  
 				if(e) {
 					var westado = $("#westadoexamen_"+wid).val();
-	
+					var wEstadoExamen = $('option:selected',"#westadoexamen_"+wid).text();
 					var accionMed = $('option:selected',"#westadoexamen_"+wid).attr('accmed');
 					var medAsociado = $("#westadoexamen_"+wid).attr('medAsociado');
 	
@@ -5602,7 +5604,8 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 										accionMed:			accionMed,
 										tieneMedicamentos:	tieneMedicamentos,
 										centroCostosCca:	centroCostoTipoOrden,
-										estGeneraCca: 		estGeneraCca
+										estGeneraCca: 		estGeneraCca,
+										wEstadoExamen:		wEstadoExamen
 
 									}
 									,function(data) {
@@ -5747,8 +5750,8 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 									accionMed:			accionMed,
 									tieneMedicamentos:	tieneMedicamentos,
 									centroCostosCca:	centroCostoTipoOrden,
-									estGeneraCca: 		estGeneraCca
-
+									estGeneraCca: 		estGeneraCca,
+									wEstadoExamen:		wEstadoExamen
 								}
 								,function(data) {
 									// console.log(data);

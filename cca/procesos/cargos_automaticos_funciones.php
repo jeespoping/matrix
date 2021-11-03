@@ -68,12 +68,6 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 					LEFT JOIN ".$wbasedato_hce."_".$wformulario." as fhce ON ( cca.ccachce = movcon AND Dettip = movtip AND ccadat = 'on' AND movusu = '".$mov_usu."' AND fhce.Fecha_data = '".$fecha."' AND fhce.id = (SELECT MAX(id) FROM ".$wbasedato_hce."_".$wformulario." WHERE movusu = '".$mov_usu."' AND Fecha_data = '".$fecha."' AND movhis = '".$movhis."' AND moving = '".$moving."' AND cca.ccachce = movcon AND Dettip = movtip) )
 					WHERE ccafhce = '".$wformulario."'";	
 	
-	$query_audi = 
-				"INSERT INTO cliame_000351 (Descripcion) 
-					VALUES('".$query_cca."');";
-					
-				$exec = mysql_query($query_audi, $conex);
-	
 	$exec_query = mysql_query( $query_cca, $conex) or die( mysql_errno()." - Error en el query - ".mysql_error() );
 	
 	$data = array();
@@ -202,9 +196,9 @@ function obtenerDatosCCAxAplicacion($conex, $origen, $wmedicamento, $movhis, $mo
 function tipo_orden_comodin($conex, $wemp_pmla, $tipo_orden)
 {
 	$wbasedato_hce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
-	$sql = 'SELECT Ccacom
-						FROM '.$wbasedato_hce.'_000015
-					WHERE Codigo = "'.$tipo_orden.'";';
+	$sql = 'SELECT Tipcom
+			  FROM '.$wbasedato_hce.'_000015
+			 WHERE Codigo = "'.$tipo_orden.'";';
 	
 	$exec = mysql_query($sql, $conex) or die("Error: " . mysql_errno() . " - en el query (Tipo orden comodin): $sql - ".mysql_error());
 	$row = mysql_fetch_row($exec);	

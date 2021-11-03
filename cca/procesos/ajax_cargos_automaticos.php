@@ -85,7 +85,7 @@ function obtenerOpcionesTipoOrden($conex, $wbasedato_hce, $codTipoOrden)
 {
 	$sql = "SELECT Codigo, Descripcion
 						FROM ".$wbasedato_hce."_000015
-					WHERE Ccacom = 'on'
+					WHERE Tipcom = 'on'
 					ORDER BY Codigo";
 					
 	$character_utf8 = 'SET character_set_results=utf8';
@@ -165,7 +165,8 @@ function obtenerArrayInsumos($conex, $wemp_pmla, $wbasedato_movhos, $name, $codc
 	$explode_info_tabla_articulos = explode('|', $info_tabla_articulos);
 	$tabla_articulos = $explode_info_tabla_articulos[0];
 	$campo_nombre_articulo = $explode_info_tabla_articulos[1];
-
+	$condicion_es_medicamento = '';
+	
 	if($type == 1){
 		$condicion_es_medicamento = " AND Artesm = 'off' ";
 		if($codcon == $esmedicamento && $tabla_articulos == 'movhos_000026') {
@@ -560,10 +561,11 @@ function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbas
 	
 	$condicion_fhce = ($ccaeve == 'on' || $ccadat == 'on') ? " AND ccafhce = '".$ccafhce."' " : "";
 	$condicion_chce = ($ccadat == 'on') ? " AND ccachce = '".$ccachce."' " : "";
-	$condicion_articulo = $ccapre == 'on' ? " AND (ccamoi = '".$ccaarticulo."' ":'';
+	$condicion_articulo = $ccapre == 'on' ? " AND ccamoi = '".$ccaarticulo."' ":'';
 	$condicion_tcco = '';
 	$array_tcco = explode(",", $tipo_cco);
-	
+	/*
+	SE COMENTA ESTA VALIDACION PARA QUE NO TENGA EN CUENTA EL TIPO DE CENTRO DE COSTOS
 	if($ccapre == 'on') {
 		$condicion_tcco = ' OR (';
 		for($i = 0; $i < count($array_tcco); $i++){
@@ -574,6 +576,7 @@ function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbas
 		$condicion_tcco = str_replace(' OR )', ')', $condicion_tcco);
 		$condicion_tcco .= ')';
 	}
+	*/
 	
 	$condicion_ccater = $ccaord == 'on' && $ccater != '' ? " OR ( ccator = '' AND ccater  = '".$ccater."' )" : ''; 
 	$condicion_ccator = " AND ccator = '".$ccator."' ";
@@ -1182,7 +1185,8 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					
 					$datos['numCargoInv']			= '';
 					$datos['linCargoInv']			= '';
-					
+					$datos['wEstadoExamen']			= $datosAdic['wEstadoExamen'];
+					$datos['wite']			        = $datosAdic['wite'];
 					//Esto es nuevo
 					$datos['desde_CargosPDA']		= false;
 					$datos['norden']				= !empty($datosAdic['worden']) ? $datosAdic['worden'] : '';
@@ -1385,14 +1389,11 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 
 }
 
-
-
 //                                             movhos    01 425850 29     1183 R3BB04       0.008      0110734
 function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing, $cco, $medicamento, $cantidad, $usuario, $configCCA, $wdevol, $ido, $ronda, $fecha_aplicacion) {
 	
 	$wcliame = consultarAliasPorAplicacion($conex, $emp, 'facturacion');
 	$Ubisac = consultarUbicacionPacienteHCE($conex, $basedato, $his, $ing );
-	
 	
 	$sql = "SELECT Ccoerp, CASE
 							WHEN ccohos = 'on' AND ccodom <> 'on' THEN 'H'
@@ -1414,7 +1415,6 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 		$tcco = $rowsCco[ 'tcco' ];
 	}
 	
-	//Si el cco no maneja cargo ERP o no est� activo los cargos ERP no se ejecuta esta acci�n
 	$cargarEnErp = consultarAliasPorAplicacion( $conex, $emp, "cargosPDA_ERP" );
 	if( !$CcoErp || $cargarEnErp != 'on' ){
 		return;
@@ -1466,35 +1466,41 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 			
 			if( $rowsEmp = mysql_fetch_array( $resEmp ) ){
 		
-				//Informaci�n de empresa
 				$wcodemp 	  = $rowsEmp[ 'Empcod' ];
 				$wnomemp 	  = $rowsEmp[ 'Empnom' ];
 				$tipoEmpresa  = $rowsEmp[ 'Emptem' ];
 				$nitEmpresa   = $rowsEmp[ 'Empnit' ];
 				$wtar		  = $rowsEmp[ 'Emptar' ];
 			
-				//Informaci�n del paciente
 				$tipoPaciente = $rowsIng[ 'Ingcla' ];
 				$tipoIngreso  = $rowsIng[ 'Ingtin' ];
 				$wser		  = $rowsIng[ 'Ingsei' ];
 				$wfecing	  = $rowsIng[ 'Ingfei' ];
 				
-				//Consulta informaci�n de pacientes
 				$infoPacienteCargos = consultarNombresPaciente( $conex, $his, $emp );
 				
-				//Conceptos de grabaci�n
-				//$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_medicamentos_mueven_inv" );				
-				//$wnomcon = consultarNombreConceptos( $conex, $wcliame, $wcodcon );
 				$wcodcon = $configCCA['ccacon'];
 				$wnomcon = $configCCA['ccaconnom'];
 				
 				$wexidev = 0;
+				$sql_cantidad_condicion_apl = "SELECT COALESCE(Concan, '') concan
+											 FROM ".$basedato."_000054 
+											 LEFT JOIN ".$basedato."_000042 ON Kadcnd = Concod
+										    WHERE Kadhis = '".$his."' 
+										      AND Kading = '".$ing."' 
+											  AND Kadfec = '".$fecha_aplicacion."' 
+											  AND Kadart = '".$medicamento."'
+											  AND Kadido = '".$ido."';";
+											  
+				$qry_cantidad_condicion_apl = mysql_query($sql_cantidad_condicion_apl);
+				$row_cantidad_condicion_apl = mysql_fetch_array($qry_cantidad_condicion_apl);
+								
 				$wcantidad = !empty($configCCA['ccacup']) ? 1 : $cantidad;
+				$wcantidad =  $wcantidad * ($row_cantidad_condicion_apl['concan'] != '' ? $row_cantidad_condicion_apl['concan'] : 1);											 
 				
 				$wfecha=date("Y-m-d");		
 				$whora = date("H:i:s");
 				
-				//Reemplazo las variables necesarias para la funci�n validar_y_grabar_cargo
 				$auxWbasedato = $wbasedato;
 				$wbasedato = $wcliame;
 				$wuse = $usuario;
@@ -1663,7 +1669,6 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 					}
 				}
 				
-				//Llamo la funci�n de cargos de CARGOS DE ERP
 				if($wvaltar > 0) {
 					$respuesta = validar_y_grabar_cargo($datos, false);
 					$idCargo = $respuesta['Mensajes']['idCargo'];
@@ -2028,38 +2033,40 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 			} else if ($row['Logtip'] == 'ccaeve' || $row['Logtip'] == 'ccadat' || $row['Logtip'] == 'ccaord' || $row['Logtip'] == 'ccapre') {
 				
 				$detalle  = '<strong>Historia:</strong> '.$Logdes['whistoria'].'-'.$Logdes['wing'].'<br>';
-				$detalle .= !is_null($Logdes['wno1']) && 
-							!is_null($Logdes['wno2']) && 
-							!is_null($Logdes['wap1']) && 
-							!is_null($Logdes['wap2'])		  ? '<strong>Paciente:</strong> '.$Logdes['wno1'].' '.$Logdes['wno2'].' '.$Logdes['wap1'].' '.$Logdes['wap2'].'<br>'   : '';
-				$detalle .= !is_null($Logdes['wdoc'])  		  ? '<strong>Doc:</strong> '.$Logdes['wdoc'].'<br>'   : '';			
-				$detalle .= !is_null($Logdes['ccoActualPac']) ? '<strong>C. Costos Paciente:</strong> '.$Logdes['ccoActualPac'].'<br>'   : '';
+				$detalle .= !empty($Logdes['wno1']) && 
+							!empty($Logdes['wno2']) && 
+							!empty($Logdes['wap1']) && 
+							!empty($Logdes['wap2'])		  ? '<strong>Paciente:</strong> '.$Logdes['wno1'].' '.$Logdes['wno2'].' '.$Logdes['wap1'].' '.$Logdes['wap2'].'<br>'   : '';
+				$detalle .= !empty($Logdes['wdoc'])  		  ? '<strong>Doc:</strong> '.$Logdes['wdoc'].'<br>'   : '';			
+				$detalle .= !empty($Logdes['ccoActualPac']) ? '<strong>C. Costos Paciente:</strong> '.$Logdes['ccoActualPac'].'<br>'   : '';
 				$detalle .= '<br> <strong>M&aacute;s Detalles </strong>
 							<img name = "btn-det-cargo" class="no_facturado-imagen" onclick="mostrarDetalleCargo(this, \''.$contador.'\')" valign="middle" style=" display: inline-block; cursor : pointer" src="../../images/medical/hce/mas.PNG"><br><br>';
 				$detalle .= '<div name = "det_cargo" id = "det_cargo_'.$contador.'" style="display:none;">';
-				$detalle .= !is_null($Logdes['tipoPaciente']) ? '<strong>Tipo Paciente:</strong> '.$Logdes['tipoPaciente'].'<br>'   : '';			
-				$detalle .= !is_null($Logdes['tipoIngreso'])  ? '<strong>Tipo Ingreso:</strong> '.$Logdes['tipoIngreso'].'<br>'   : '';
-				$detalle .= !is_null($Logdes['wnomemp']) 	  ? '<strong>Responsable:</strong> '.$Logdes['wnomemp'].'<br>' : '';
-				$detalle .= !is_null($Logdes['wcodemp']) 	  ? '<strong>Cod Responsable:</strong> '.$Logdes['wcodemp'].'<br>' : '';
-				$detalle .= !is_null($Logdes['tipoEmpresa'])  ? '<strong>Tipo Responsable:</strong> '.$Logdes['tipoEmpresa'].'<br>' 	 : '';
+				$detalle .= !empty($Logdes['tipoPaciente']) ? '<strong>Tipo Paciente:</strong> '.$Logdes['tipoPaciente'].'<br>'   : '';			
+				$detalle .= !empty($Logdes['tipoIngreso'])  ? '<strong>Tipo Ingreso:</strong> '.$Logdes['tipoIngreso'].'<br>'   : '';
+				$detalle .= !empty($Logdes['wnomemp']) 	  ? '<strong>Responsable:</strong> '.$Logdes['wnomemp'].'<br>' : '';
+				$detalle .= !empty($Logdes['wcodemp']) 	  ? '<strong>Cod Responsable:</strong> '.$Logdes['wcodemp'].'<br>' : '';
+				$detalle .= !empty($Logdes['tipoEmpresa'])  ? '<strong>Tipo Responsable:</strong> '.$Logdes['tipoEmpresa'].'<br>' 	 : '';
 				$detalle .= !empty($Logdes['norden'])  		  ? '<strong>Num. Orden:</strong> '.$Logdes['norden'].'<br>' : '';
+				$detalle .= !empty($Logdes['wite']) ? '<strong>Num. Examen: </strong> '.$Logdes['wite'].'<br>' : '';
 				$detalle .= ($row['Logtip'] == 'ccapre' && !empty($Logdes['wmedinsucod'])) ? '<strong>Medicamento/Insumo: </strong> '.$Logdes['wmedinsucod'].'-'.$Logdes['wmedinsunom'].'<br>' : '';
-				$detalle .= !is_null($Logdes['wcodcon']) &&
-							!is_null($Logdes['wnomcon'])      ? '<strong>Concepto:</strong> '.$Logdes['wcodcon'].'-'.$Logdes['wnomcon'].'<br>' 	 : '';
-				$detalle .= !is_null($Logdes['wccogra']) 	  ? '<strong>Cen. Costos:</strong> '.$Logdes['wccogra'].'<br>' : '';
-				$detalle .= !is_null($Logdes['wprocod']) &&
-							!is_null($Logdes['wpronom'])      ? '<strong>Procedimiento o Articulo:</strong> '.$Logdes['wprocod'].'-'.$Logdes['wpronom'].'<br>' 	 : '';
+				$detalle .= !empty($Logdes['wcodcon']) &&
+							!empty($Logdes['wnomcon'])      ? '<strong>Concepto:</strong> '.$Logdes['wcodcon'].'-'.$Logdes['wnomcon'].'<br>' 	 : '';
+				$detalle .= !empty($Logdes['wccogra']) 	  ? '<strong>Cen. Costos:</strong> '.$Logdes['wccogra'].'<br>' : '';
+				$detalle .= !empty($Logdes['wprocod']) &&
+							!empty($Logdes['wpronom'])      ? '<strong>Procedimiento o Articulo:</strong> '.$Logdes['wprocod'].'-'.$Logdes['wpronom'].'<br>' 	 : '';
 				$detalle .= !empty($Logdes['wcodter']) 	      ? '<strong>Tercero:</strong> '.$Logdes['wcodter'].' '.$Logdes['wnomter'].' '.(!empty($Logdes['wporter']) ? ' - '.$Logdes['wporter'].'%' : '').'<br>'   : '';			
 				$detalle .= !empty($Logdes['formulario_hce']) ? '<strong>Formulario HCE:</strong> '.$Logdes['formulario_hce'].'<br>' : '';				
-				$detalle .= !is_null($Logdes['wcantidad']) 	  ? '<strong>Cantidad:</strong> '.$Logdes['wcantidad'].'<br>' : '';
-				$detalle .= !is_null($Logdes['wvaltar']) 	  ? '<strong>Valor. Uni:</strong> '.number_format($Logdes['wvaltar'], 0, ',', '.').'<br>' : '';
-				$detalle .= !is_null($Logdes['wvaltarReco'])  ? '<strong>Valor. Rec:</strong> '.number_format($Logdes['wvaltarReco'], 0, ',', '.').'<br>' : '';			
-				$detalle .= !is_null($Logdes['wcantidad']) && 
-							!is_null($Logdes['wvaltar']) && is_numeric($Logdes['wcantidad']) &&  is_numeric($Logdes['wvaltar']) ? '<strong>Valor. Tot:</strong> '.number_format($Logdes['wcantidad'] * $Logdes['wvaltar'], 0, ',', '.').'<br>' : '-';
-				$detalle .= !is_null($Logdes['wfeccar']) && 
-							!is_null($Logdes['whora_cargo'])  ? '<strong>Fecha/Hora:</strong> '.$Logdes['wfeccar'].'/'.$Logdes['whora_cargo'].'<br>' : '';
-				$detalle .= !empty($Logdes['wtipomov']) ? '<strong>Tipo: </strong> '.$Logdes['wtipomov'].'<br>' : '';																															
-				$detalle .= !is_null($Logdes['idCargo'])      ? '<strong>id Cargo</strong> '.$Logdes['idCargo'].'<br>' : '';
+				$detalle .= !empty($Logdes['wcantidad']) 	  ? '<strong>Cantidad:</strong> '.$Logdes['wcantidad'].'<br>' : '';
+				$detalle .= !empty($Logdes['wvaltar']) 	  ? '<strong>Valor. Uni:</strong> '.number_format($Logdes['wvaltar'], 0, ',', '.').'<br>' : '';
+				$detalle .= !empty($Logdes['wvaltarReco'])  ? '<strong>Valor. Rec:</strong> '.number_format($Logdes['wvaltarReco'], 0, ',', '.').'<br>' : '';			
+				$detalle .= !empty($Logdes['wcantidad']) && 
+							!empty($Logdes['wvaltar']) && is_numeric($Logdes['wcantidad']) &&  is_numeric($Logdes['wvaltar']) ? '<strong>Valor. Tot:</strong> '.number_format($Logdes['wcantidad'] * $Logdes['wvaltar'], 0, ',', '.').'<br>' : '-';
+				$detalle .= !empty($Logdes['wfeccar']) && 
+							!empty($Logdes['whora_cargo'])  ? '<strong>Fecha/Hora:</strong> '.$Logdes['wfeccar'].'/'.$Logdes['whora_cargo'].'<br>' : '';
+				$detalle .= !empty($Logdes['wtipomov']) ? '<strong>Tipo: </strong> '.$Logdes['wtipomov'].'<br>' : '';
+				$detalle .= !empty($Logdes['wEstadoExamen']) ? '<strong>Estado: </strong> '.$Logdes['wEstadoExamen'].'<br>' : '';
+				$detalle .= !empty($Logdes['idCargo'])      ? '<strong>id Cargo</strong> '.$Logdes['idCargo'].'<br>' : '';
 				$detalle .= '</div>';
 				
 				$detalle2 .= !empty($Logdes2['origen'])  ? '<strong>Origen: </strong> '.$Logdes2['origen'].'<br>'   : '';
@@ -2074,25 +2081,19 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 					$tipo_log = 'Cargo Autom&aacute;tico - Orden';
 				}
 				
-				$notas = !is_null($Logerr['error']) && $Logerr['error'] == 0  ? '<strong>Mensaje: </strong> '.$Logerr['mensaje'] : '<p style="color: red;"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p>';
+				$notas = !empty($Logerr['error']) && $Logerr['error'] == 0  ? '<strong>Mensaje: </strong> '.$Logerr['mensaje'] : '<p style="color: red;"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p>';
 				
 			} else if($row['Logtip'] == 'estancia') {
 				
-				//echo var_dump($Logdes);
-				//echo var_dump($Logerr);
+				$detalle  = !empty($Logdes['whistoria']) && 
+							!empty($Logdes['wing']) 		  ? '<strong>Historia:</strong> '.$Logdes['whistoria'].'-'.$Logdes['wing'].'<br>' : '';
+				$detalle .= !empty($Logdes['wno1']) && 
+							!empty($Logdes['wno2']) && 
+							!empty($Logdes['wap1']) && 
+							!empty($Logdes['wap2'])		  ? '<strong>Paciente:</strong> '.$Logdes['wno1'].' '.$Logdes['wno2'].' '.$Logdes['wap1'].' '.$Logdes['wap2'].'<br>'   : '';
+				$detalle .= !empty($Logdes['wdoc'])  		  ? '<strong>Doc:</strong> '.$Logdes['wdoc'].'<br>'   : '';
 				
-				$detalle  = !is_null($Logdes['whistoria']) && 
-							!is_null($Logdes['wing']) 		  ? '<strong>Historia:</strong> '.$Logdes['whistoria'].'-'.$Logdes['wing'].'<br>' : '';
-				$detalle .= !is_null($Logdes['wno1']) && 
-							!is_null($Logdes['wno2']) && 
-							!is_null($Logdes['wap1']) && 
-							!is_null($Logdes['wap2'])		  ? '<strong>Paciente:</strong> '.$Logdes['wno1'].' '.$Logdes['wno2'].' '.$Logdes['wap1'].' '.$Logdes['wap2'].'<br>'   : '';
-				$detalle .= !is_null($Logdes['wdoc'])  		  ? '<strong>Doc:</strong> '.$Logdes['wdoc'].'<br>'   : '';
-				$detalle .= !is_null($Logdes['ccoActualPac']) ? '<strong>C. Costos Paciente:</strong> '.$Logdes['ccoActualPac'].'<br>'   : '';
-				$detalle .= !is_null($Logdes['tipoPaciente']) ? '<strong>Tipo Paciente:</strong> '.$Logdes['tipoPaciente'].'<br>'   : '';
-				$detalle .= !is_null($Logdes['tipoIngreso'])  ? '<strong>Tipo Ingreso:</strong> '.$Logdes['tipoIngreso'].'<br>'   : '';
-			
-				if(!is_null($Logdes['detalle_estancias'])) {
+				if(!empty($Logdes['detalle_estancias'])) {
 					$detalle.= '<br> <strong>Detalle Estancias </strong>
 					<img name = "btn-det-cargo" class="no_facturado-imagen" onclick="mostrarDetalleCargo(this , \''.$contador.'\')" valign="middle" style=" display: inline-block; cursor : pointer" src="../../images/medical/hce/mas.PNG"><br><br>';
 					
@@ -2106,7 +2107,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 						$detalle .= '<strong>C. Costos: </strong> '.$data['cco'].'<br>';
 						$detalle .= '<strong>Valor: </strong> '.$data['valor'].'<br>';
 						$detalle .= '<strong>Tarifa: </strong> '.$data['tarifa'].'<br>';
-						$detalle .= !is_null($data['idcargo'])      ? '<strong>id Cargo</strong> '.$data['idcargo'].'<br>' : '<br>';
+						$detalle .= !empty($data['idcargo'])      ? '<strong>id Cargo</strong> '.$data['idcargo'].'<br>' : '<br>';
 						$detalle .= '<br>';
 					}
 					
@@ -2114,13 +2115,12 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 					//$detalle.= '<button onclick="alert(\''.$contador.'\');">Ver Html</button></div>';
 				}
 				
-				$numero_estancias = !is_null($Logdes['estancias']) ? (int) $Logdes['estancias'] : null;
+				$numero_estancias = !empty($Logdes['estancias']) ? (int) $Logdes['estancias'] : null;
 				for($i = 0; $i < $numero_estancias; $i++) {
-					$notas.= !is_null($Logerr['estancia'.$i]) && $Logerr['estancia'.$i]['idcargo'] != 0 ? '<strong>id Cargo</strong> '.$Logerr['estancia'.$i]['idcargo'].' - '.$Logerr['estancia'.$i]['respuesta'].'<br>' : '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['estancia'.$i]['respuesta'].'</p><br>';
+					$notas.= !empty($Logerr['estancia'.$i]) && $Logerr['estancia'.$i]['idcargo'] != 0 ? '<strong>id Cargo</strong> '.$Logerr['estancia'.$i]['idcargo'].' - '.$Logerr['estancia'.$i]['respuesta'].'<br>' : '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['estancia'.$i]['respuesta'].'</p><br>';
 				}
 				
-				$notas.= !is_null($Logerr['error'])  && $Logerr['error'] == 1 ? '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p><br>' : '';
-				
+				$notas.= !empty($Logerr['error'])  && $Logerr['error'] == 1 ? '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p><br>' : '';
 			}
 			
 			$tipo_transaccion = '';
@@ -2150,9 +2150,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 	
 	$html.="</table>";
 	
-	
 	return $html;
-	
 }
 
 function enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1,$detalle2, $html, $detApl = 'emailNotificacionEstancia') {
@@ -4442,13 +4440,11 @@ if(isset($_POST['accion'])) {
 		break;
 		case 'traer_detalle_del_concepto':
 			
-			
 			$ConceptoInventar = 'off';
 			$Array_proc	= Obtener_array_detalle_concepto($cod_concepto, $ConceptoInventar, $Tarifa);
 
 			if($ConceptoInventar != 'on')
 			{
-				// --> Agregarle al array los procedimientos de la 70
 				$Array_proc = obtener_array_procedimientosEmpresa2($conex, $wemp_pmla, $wbasedato, NULL, NULL, $Array_proc);
 			}
 
@@ -4482,8 +4478,7 @@ if(isset($_POST['accion'])) {
 			echo json_encode($data);
 		break;
 		case 'listado': 
-			$formulario = $_POST['formulario'];
-			//$data = obtenerArrayProcedimientos($conex, $name_proc);
+			$formulario = !empty($_POST['formulario']) ? $_POST['formulario'] : '';
 			$data = obtenerArrayListado($conex, $wbasedato, $wbasedato_movhos, $wbasedato_hce, $formulario);
 			echo json_encode($data);
 		break;
@@ -4637,7 +4632,7 @@ if(isset($_POST['accion'])) {
 			$datosAdic['wite'] = $_POST['wite'];
 			$datosAdic['wdettor'] = $_POST['wdettor'];
 			$datosAdic['worigen'] = $_POST['worigen'];
-			
+			$datosAdic['wEstadoExamen'] = $_POST['wEstadoExamen'];
 			$tipoOrdAdmComodin = tipo_orden_comodin($conex, $wemp_pmla, $_POST['wdettor']);
 			$anulacion_cca = $_POST['wanulacion_cca'];
 			$datosAdic['wanulacion_cca'] = $anulacion_cca;

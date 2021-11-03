@@ -748,6 +748,95 @@ function consultarTipoOrdenenviarPoringreso($conex,$whce,$historia,$ingreso){
 			}
 			return $val;
 }
+function interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tor, $estGeneraCca) {
+	
+	$anulacion_cca = 'off';
+	// Validamos si el estado en la movhos_45 es Eexcca=on y si el tipo de orden es facturable con la hce_15
+	
+	$sql_estado_orden = "SELECT Detcod, Detnro, B.id wordenid, Detite, Dettor, C.Eexcca Eexcca, C.Eexdes Eexdes, Tiptnf, Deticg, Ordhis, Ording
+						   FROM ".$whce."_000028 B
+						   JOIN ".$whce."_000027 A ON Ordtor = Dettor AND Ordnro = Detnro
+						   JOIN ".$wmovhos."_000045 C ON C.Eexcod = Detesi
+						   JOIN ".$whce."_000015 ON Dettor = Codigo
+						  WHERE B.Detnro = '".$nroOrden."'
+						    AND	B.Detite = '".$item."'
+						    AND B.Dettor = '".$tor."'
+						    AND B.Detest = 'on'";
+	
+	$res_estado_orden = mysql_query($sql_estado_orden, $conex);
+	//$num_valid = mysql_num_rows($res_estado_orden );
+	$datos = mysql_fetch_array($res_estado_orden);
+	
+	$eexcca = $datos['Eexcca'];
+	$tiptnf = $datos['Tiptnf'];
+	$wEstadoExamen = $datos['Eexdes'];
+	
+	//$sql_auditorio = "INSERT INTO cliame_000351 (Medico, Fecha_data, Hora_data, Descripcion, Proceso, Seguridad) VALUES ('cliame', CURRENT_DATE, CURRENT_TIME, 'interoperabilidadCargosAutomaticos $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tor, $estGeneraCca', 'interoperabilidad cca', 'C-root');";
+	//mysql_query($sql_auditorio, $conex);
+		
+	if($estGeneraCca == 'off' && !empty($datos['Deticg'])) {
+		$anulacion_cca = 'on';
+	}
+	
+	if(($eexcca=='on' && $tiptnf<>'on') || $anulacion_cca == 'on') {
+		
+		//$sql_auditorio = "INSERT INTO cliame_000351 (Medico, Fecha_data, Hora_data, Descripcion, Proceso, Seguridad) VALUES ('cliame', CURRENT_DATE, CURRENT_TIME, 'Ingreso para generar cargos eexcca: $eexcca, tiptnf: $tiptnf, anulacion_cca: $anulacion_cca', 'interoperabilidad cca', 'C-root');";
+		//mysql_query($sql_auditorio, $conex);
+		
+		$query_cup = "SELECT A.Codigo,B.Codcups AS Codigo_dos 
+						FROM root_000012 A 
+						JOIN ".$whce."_000047 B ON A.Codigo = B.Codcups
+					   WHERE B.Estado = 'on' AND B.Codigo = '".$datos['Detcod']."'
+					   UNION
+					  SELECT A.Codigo,B.Codcups AS Codigo_dos 
+						FROM root_000012 A 
+						JOIN ".$whce."_000017 B ON A.Codigo = B.Codcups 
+					   WHERE B.nuevo = 'on' AND B.Codigo = '".$datos['Detcod']."';";
+		
+		$res_cup = mysql_query($query_cup, $conex);
+		$cup = mysql_fetch_array($res_cup);
+		
+		//validaciones de cargos en la tabla maestro de cargos automaticos
+		include_once("../../cca/procesos/cargos_automaticos_funciones.php");			
+		$tieneCCA = validarTieneCca($conex, $wemp_pmla, $cup['Codigo_dos'], "orden", $datos['Dettor']);
+		
+		if($tieneCCA || $anulacion_cca == 'on')	{		
+			
+			$ch = curl_init();
+			$data = array( 
+				'consultaAjax'			=> '',
+				'accion'				=> 'guardar_cargo_automatico_orden',
+				'movusu'				=> '',
+				'whis' 					=> $datos['Ordhis'],
+				'wing' 					=> $datos['Ording'],
+				'wemp_pmla'				=> $wemp_pmla,
+				'wprocedimiento'		=> $cup['Codigo_dos'],
+				'worden'	        	=> $datos['Detnro'],
+				'wdetcod'	    		=> $datos['Detcod'],
+				'wite'	        		=> $datos['Detite'],
+				'wdettor'	       		=> $datos['Dettor'],
+				'worigen'	        	=> $worigen,
+				'wcen_cos'				=> '',
+				'wanulacion_cca'		=> $anulacion_cca,
+				'wdeticg'				=> $datos['Deticg'],
+				'wEstadoExamen'			=> $wEstadoExamen
+			);
+									
+			$options = array(
+				CURLOPT_URL 			=> "localhost/matrix/cca/procesos/ajax_cargos_automaticos.php",
+				CURLOPT_HEADER 			=> false,
+				CURLOPT_POSTFIELDS 		=> $data,
+				CURLOPT_CUSTOMREQUEST 	=> 'POST',
+			);
+
+			$opts = curl_setopt_array($ch, $options);
+			$exec = curl_exec($ch);
+			curl_close($ch);
+									
+		}	
+		
+	}//hasta aca llega Ordenes cargos automaticos
+}
  switch($_GET['accion']) {
     case 'consultarInteroperabilidades':
 		$wemp_pmla=$_GET['wemp_pmla'];

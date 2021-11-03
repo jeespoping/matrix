@@ -1602,6 +1602,59 @@ function pintarCargosQueMuevenInventario($datosBasicos, $resInfoCar, $numPagina,
 	return $respuesta;
 }
 
+//----------------------------------------------------------------------------------------------------------
+//	--> Funcion que permite identificar a que Orden se le hizo la grabacion.
+//----------------------------------------------------------------------------------------------------------
+/* NUEVO */
+function obtenerProcedimientoGrabadoPaciente($historia,$ingreso,$codCups,$fechaGrabado,$idCargo)
+{
+	global $conex;
+	global $wemp_pmla;
+
+	$wbasedatoHce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
+
+	$resp = "";
+	
+	$query = "
+	SELECT hce28.id as idOrden, hce28.Detfec as FechaRealizar,hce28.Detesi as EstadoProcedimiento, hce15.Descripcion as TipoOrden, IFNULL(hce47.Codcups,hce17.Codcups)as Codcups, IFNULL(hce47.Descripcion,hce17.Descripcion) as Procedimiento
+	  FROM ".$wbasedatoHce."_000027 AS hce27
+	  JOIN ".$wbasedatoHce."_000028 AS hce28 ON hce27.Ordnro=hce28.Detnro AND hce27.Ordtor=hce28.Dettor
+ LEFT JOIN ".$wbasedatoHce."_000047 AS hce47 ON hce47.Codigo=hce28.Detcod
+ LEFT JOIN ".$wbasedatoHce."_000017 AS hce17 ON hce17.Codigo=hce28.Detcod AND hce17.Nuevo='on'
+	  JOIN ".$wbasedatoHce."_000015 AS hce15 ON hce15.Codigo=hce17.Tipoestudio or hce15.Codigo=hce47.Tipoestudio
+	 WHERE hce27.Ordhis='".$historia."' 
+	   AND hce27.Ording='".$ingreso."' 
+	   AND hce28.Deticg IS NULL 
+	   AND hce28.Detfec <= '".$fechaGrabado."' 
+	   AND (hce47.Codcups = '".$codCups."' OR hce17.Codcups = '".$codCups."')
+	   ORDER by hce28.Detfec ASC ";
+
+	$resProcedimiento = mysql_query($query,$conex) or die("Error en el query: ".$query."<br>Tipo Error:".mysql_error());
+
+	if($row_get_procedimientos = mysql_fetch_array($resProcedimiento))
+	{
+		$idOrden = $row_get_procedimientos['idOrden'];
+		$resp = actualizarOrdenGrabado($idOrden,$idCargo,$wbasedatoHce);	
+	}
+	else
+	{
+		$resp = "No";
+	}
+	return $resp;
+}
+
+/* NUEVO */
+function actualizarOrdenGrabado($idOrden,$idCargo,$wbasedatoHce)
+{
+	global $conex;
+	
+	$actualizar = "UPDATE ".$wbasedatoHce."_000028
+		   		   SET Deticg = ".$idCargo."
+		 		   WHERE id = ".$idOrden."";
+	mysql_query($actualizar,$conex) or die("Error en el query: ".$actualizar."<br>Tipo Error:".mysql_error());
+
+	return "Ok";
+}
 //=======================================================================================================================================================
 //		F I N	 F U N C I O N E S	 P H P
 //=======================================================================================================================================================
@@ -1928,6 +1981,10 @@ if(isset($accion))
 			validar_cargo_ingreso_inactivo($conex, $wemp_pmla, $wbasedato, $datos);
 
 			$respuesta = validar_y_grabar_cargo($datos, false);
+			if($respuesta['Mensajes']['error'] == 0) {
+				$idCargoGrabado = $respuesta["Mensajes"]["idCargo"];
+				$response = obtenerProcedimientoGrabadoPaciente($whistoria,$wing,$wprocod,$wfecha,$idCargoGrabado);
+			}																						   
 
 			echo json_encode($respuesta);
 			break;

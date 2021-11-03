@@ -356,6 +356,12 @@ function cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, 
 				
 				$res = mysql_query( $sql, $conex );
 				
+				$estGeneraCca = $row['Eexcca'];
+				
+				/* FUNCION QUE REALIZA LA VALIDACION DE CARGOS AUTOMATICOS */
+				$worigen = 'Interoperabilidad - Laboratorio';
+				interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tipoOrden, $estGeneraCca);
+				
 				if( $res ){
 					
 					registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso, $tipoOrden, $nroOrden, $item, 'Cambio de estado externo', $estado."-".$row['Estdes']."-".$row['Estdpa'] );

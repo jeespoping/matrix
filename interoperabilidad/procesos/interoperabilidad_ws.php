@@ -218,9 +218,10 @@ function cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, 
     
     //Buscando los estado según el estandar HL7
     $sql = "SELECT *
-            FROM ".$wmovhos."_000257
-            WHERE Esthl7 = '".$estado."'
-            AND Estest = 'on'";
+			  FROM ".$wmovhos."_000257, ".$wmovhos."_000045
+			 WHERE Esthl7 = '".$estado."'
+			   AND Estest = 'on'
+			   AND Estepc = Eexcod";
     
     $resEstado = mysql_query($sql, $conex);
     
@@ -295,6 +296,11 @@ function cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, 
                 
                 $res = mysql_query( $sql, $conex );
                 
+				$estGeneraCca = $row['Eexcca'];
+				
+				/* FUNCION QUE REALIZA LA VALIDACION DE CARGOS AUTOMATICOS */
+				$worigen = 'Interoperabilidad - Sabbag';
+				interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tipoOrden, $estGeneraCca);																										   																																			
                 if( $res ){
                     
                     registrarDetalleLog( $conex, $wmovhos, $historia, $ingreso, $tipoOrden, $nroOrden, $item, 'Cambio de estado externo', $estado."-".$row['Estdes']."-".$row['Estdpa'] );
@@ -845,17 +851,17 @@ function conexionws($conex, $wemp_pmla, $estructura){
 }
 
 
-function consultaEstado($conex, $wmovhos, $estado){
-$script =" 
-            SELECT a.Estepc
-                FROM ".$wmovhos."_000257 a
-                WHERE
-                    Esthl7 = '".$estado."' AND
-                    Estest = 'on'
-    ";	
-    $res= mysql_query( $script, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+function consultaEstado($conex, $wmovhos, $estado)
+{
+	//Buscando los estado según el estandar HL7
+	$script = "SELECT Estepc, Eexcca
+			     FROM ".$wmovhos."_000257, ".$wmovhos."_000045
+			    WHERE Esthl7 = '".$estado."'
+			      AND Estest = 'on'
+			      AND Estepc = Eexcod";
+    $res = mysql_query($script, $conex) or die(mysql_errno() . " - Error en el query - " . mysql_error());
     $res = mysql_fetch_array($res, MYSQL_ASSOC);
-    return $res['Estepc'];
+    return $res;
 }
 
 
@@ -869,7 +875,11 @@ function cambiarEstadoExamenWs( $conex, $whce, $wmovhos, $tor, $nro, $tipoRespue
         $estado = 'FWS';
         
     }
-    $estadointerno = consultaEstado($conex, $wmovhos, $estado);
+    $consultaEstado = consultaEstado($conex, $wmovhos, $estado); 
+	
+	$estadointerno = $consultaEstado['Estepc'];
+	$estGeneraCca = $consultaEstado['Eexcca'];
+	
         $sql = "";
         $sql .= "UPDATE ".$whce."_000028 a
             SET
@@ -929,7 +939,9 @@ function cambiarEstadoExamenWs( $conex, $whce, $wmovhos, $tor, $nro, $tipoRespue
         $result = true;
     }
     
-    
+    $worigen = 'Interoperabilidad - Dinamica';
+	interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nro, $item, $tor, $estGeneraCca);
+	
     return $result;
 
 }

@@ -33792,7 +33792,7 @@ function consultarMedicosPorEspecialidad($basedatos,$especialidad){
  * @param $numeroItem
  * @return unknown_type
  */
-function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$nombreExamen,$observaciones,$estadoExamen,$fechaDeSolicitado,$usuario,$consecutivoOrden,$firma,$observacionesOrden,$justificacion,$consecutivoExamen,$numeroItem,$impExamen,$altExamen,$firmHCE, $datosAdicionales, $ordenAnexa, $esOfertado, $usuarioTomaMuestra, $cco = '' ){
+function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$nombreExamen,$observaciones,$estadoExamen,$fechaDeSolicitado,$usuario,$consecutivoOrden,$firma,$observacionesOrden,$justificacion,$consecutivoExamen,$numeroItem,$impExamen,$altExamen,$firmHCE, $datosAdicionales, $ordenAnexa, $esOfertado, $usuarioTomaMuestra, $cco = '', $wEstadoExamen = '' ){
 
 	global $whce;
 	global $wemp_pmla;
@@ -34166,7 +34166,8 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 						'worigen'	        	=> "Ordenes",
 						'wcen_cos'				=> $_POST['ccoTipoOrd'],
 						'wanulacion_cca'		=> 'off',
-						'wdeticg'				=> ''
+						'wdeticg'				=> '',
+						'wEstadoExamen'			=> $wEstadoExamen										 
 					);
 											
 					$options = array(
@@ -39277,7 +39278,7 @@ function CcoPorTipoOrden($conex, $wemp_pmla, $tipo_orden, $indice, $codcups){
 	if($tieneCCA){	
 		$sql = 'SELECT m11.Ccocod Codigo, m11.Cconom Nombre
 				FROM '.$wbasedato_movhos.'_000011 m11
-				LEFT JOIN '.$wbasedato_hce.'_000015 h15 ON FIND_IN_SET(m11.Ccocod, h15.Ccacen)
+				LEFT JOIN '.$wbasedato_hce.'_000015 h15 ON FIND_IN_SET(m11.Ccocod, h15.Tipcen)
 				WHERE h15.Codigo = "'.$tipo_orden.'";';
 		$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
 		
@@ -39484,7 +39485,7 @@ if(isset($consultaAjaxKardex)){
 			break;
 		case 7:
 			// echo json_decode( $datosAdicionales );
-			echo grabarExamenKardex($basedatos,$historia,$ingreso,$fecha,$codigoExamen,$nombreExamen,$observaciones,$estado,$fechaDeSolicitado,$codUsuario,$consecutivoOrden,$firma,$observacionesOrden,$justificacion,$consecutivoExamen,$numeroItem,$impExamen,$altExamen, $firmHCE, json_decode( $datosAdicionales ), $ordenAnexa, $esOfertado == 1 ? 'on' : 'off', $usuarioTomaMuestra, $cco );
+			echo grabarExamenKardex($basedatos,$historia,$ingreso,$fecha,$codigoExamen,$nombreExamen,$observaciones,$estado,$fechaDeSolicitado,$codUsuario,$consecutivoOrden,$firma,$observacionesOrden,$justificacion,$consecutivoExamen,$numeroItem,$impExamen,$altExamen, $firmHCE, json_decode( $datosAdicionales ), $ordenAnexa, $esOfertado == 1 ? 'on' : 'off', $usuarioTomaMuestra, $cco , $wEstadoExamen);
 			break;
 		case 8:
 			echo eliminarExamenKardex($basedatos,$historia,$ingreso,$fecha,$codExamen,$consecutivoOrden,$codUsuario,$numeroItem);

@@ -24147,14 +24147,16 @@ function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observa
 	var parametros = "";
 	var mensaje = "";
 	var ccoSeleccionado = '';
+	var wEstadoExamen = '';					
 	if(document.getElementsByName('cenCosTipOrd'+idElemento).length > 0){
 		ccoSeleccionado = $('input[name="cenCosTipOrd'+idElemento+'"]:checked').val();
 	}
+	wEstadoExamen = $('option:selected',"#westadoexamen"+idElemento).text();																	 
 	parametros = "consultaAjaxKardex=7&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&historia="+historia+"&ingreso="+ingreso
 		+"&fecha="+fecha+"&codigoExamen="+codExamen+"&observaciones="+observaciones+"&estado="+estadoExamen+"&codUsuario="+usuario+"&nombreExamen="+nomExamen
 		+"&fechaDeSolicitado="+fechaDeSolicitado+"&consecutivoOrden="+consecutivoOrden+"&firma="+firma+"&observacionesOrden="+observacionesOrden+"&consecutivoExamen="+cod_procedi
 		+"&justificacion="+justificacion+"&numeroItem="+nroItem+"&impExamen="+impExamen+"&altExamen="+altExamen+"&firmHCE="+firmHCE+"&datosAdicionales="+datosAdicionales
-		+"&ordenAnexa="+datoOrdenAnexa+"&esOfertado="+esOfertado+"&usuarioTomaMuestra="+usuarioTomaMuestra+"&cco="+$("#wservicio").val()+"&ccoTipoOrd="+ccoSeleccionado;
+		+"&ordenAnexa="+datoOrdenAnexa+"&esOfertado="+esOfertado+"&usuarioTomaMuestra="+usuarioTomaMuestra+"&cco="+$("#wservicio").val()+"&ccoTipoOrd="+ccoSeleccionado+"&wEstadoExamen="+wEstadoExamen;
 
 	try{
 

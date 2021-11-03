@@ -1325,6 +1325,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 			jAlert(msjErrores, "Alerta");
 			return;
 		}
+				
+		document.getElementById("btn_guardar_estancia").disabled = true;
 		
 		$.post(_URL_AJAX,
 		{
@@ -1339,6 +1341,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 			if(data.code) {
 				whis.value = '';
 				wing.value = '';
+				document.getElementById("btn_guardar_estancia").disabled = false;
 			}
 			
 			jAlert(data.msj, "Mensaje");
@@ -1785,7 +1788,7 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 <div class="tab ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks " role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-2" aria-selected="false" onclick="openTab(event,'listadoA')" >LISTADO</button>
   	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks active" role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'configurar',true)" >CONFIGURACI&Oacute;N</button>
-	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks" role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'estancia')" >ESTANCIA</button>
+	<!-- <button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks" role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'estancia')" >ESTANCIA</button> -->
 	<button class="ui-state-default ui-corner-top ui-tabs-anchor tablinks " role="tab" tabindex="-1" aria-controls="bcProtocolosAvanzado" aria-labelledby="ui-id-1" aria-selected="false "onclick="openTab(event,'log')" >LOG</button>
 </div>
 <div id="listadoA" class="prueba ui-tabs-panel ui-widget-content ui-corner-bottom"  style="display: none;">
@@ -1800,10 +1803,7 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
   </tr>
 <p></p> 
 </div>
-
 <!-- TAB CONFIGURACIÓN -->
-<!--<br>
-<br>-->
 <input type="hidden" value="<?php echo $wemp_pmla; ?>" id="wemp_pmla" />
 <div id="configurar" class="prueba ui-tabs-panel ui-widget-content ui-corner-bottom" style="display: block;">
 	<?php
@@ -1871,7 +1871,6 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 							<td style="width:20%" id="col_label_fhce"> Formulario HCE </td>
 							<td style="width:10%" id="col_label_chce"> Campo HCE </td>
 							<td style="width:40%;display:none" id="col_label_terc"> Tercero </td>
-							<!-- <td style="width:15%;display:none" id="col_label_espz|"> Especialidad </td>-->
 						</tr>
 						<tr class='fila2 cargo_cargo'>
 							<td align='left' >
@@ -1892,11 +1891,6 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 							<td align='left' id="col_camp_terc" style='display:none;'>
 								<input type='text' name="colter" id='camp_tercero' value='' valor='' nombre='' oninput="traer_terceros(this)" size='30' style="width: 97%;" disabled/>
 							</td>
-							<!--<td align='left' id="col_camp_esp" style='display:none'>								
-								<select name="colesp" id='camp_especialidad' value='' valor='' nombre='' oninput="" style="width: 97%;" />
-									<option value="">Seleccione</option>
-								</select>
-							</td>-->
 						</tr>						
 						<tr id = "enc_label_procord" style = "display:none;">							
 							<td colspan="8">
@@ -1942,10 +1936,6 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 	<br>
 	<br>
 	<div class="row" style="display:block;">
-		<!--
-			<i class="fa fa-search" aria-hidden="true"></i>
-			<input type="text"  id="search2"   placeholder="Buscar..."  title="Type in a name" style="border-radius: 12px;    width: 20%;">
-		-->
 		 <fieldset>
 			<legend>Par&aacute;metros de B&uacute;squeda</legend>
 			<select id="select_dos" class="form-control form-control-sm">
@@ -1963,26 +1953,6 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 	</div>
 	<br>
 	<br>
-	<!--
-	<tr align='center'>
-		<td align='center' style='98%'>
-			<table align='center'   id="mytable2"  style=" width: 80%;  ">
-				<thead>
-					<tr id='' class='encabezadoTabla' style='font-size: 10pt;' align='center'>
-						<th>Fecha</th>
-						<td>Hora</td>
-						<td>Usuario</td>
-						<td>Descripcion</td>
-						<td>Descripcion 2</td>
-						<td>Tipo</td>
-						<td>Observaciones</td>
-					</tr>
-				</thead>
-				<tbody id="listado_log"></tbody>
-			</table>
-		</td>
-	</tr>
-	-->
 	<div id="div_table_logs"></div>
 </div>
 <!-- TAB CONFIGURACIÓN -->
@@ -2015,13 +1985,12 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 	<table align='center'>
 		<tr>
 			<td align='center' colspan="4">
-				<button type='button' id="btn_guardar" onclick='guardar_estancia_test()' >Grabar Estancia</button>
+				<button type='button' id="btn_guardar_estancia" onclick='guardar_estancia_test()'>Grabar Estancia</button>
 			</td>
 		</tr>
 	</table>
 </div>
 <br>
-	
 	<table align='center'>
 		<tr>
 			<td align='center' colspan=9>
@@ -2029,5 +1998,4 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 			</td>
 		</tr>
 	</table>	
-
 </html>				
