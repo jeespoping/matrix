@@ -728,6 +728,7 @@ div.growlUI h1, div.growlUI h2 {
 	*************************************************
 	*
 	* Modificaciones:
+	* Octubre 8 2021		Sebastián Nevado	-Se agrega funcionalidad de mipres obligatorio basado en parámetro mipresEnListaMedicamentosOrdenes. Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
 	* Junio 30 de 2020 		Edwin	- Se muestra la fecha y hora de toma de muestra
 	* Junio 23 de 2020 		Edwin	- Se muestra la justificación de cancelado en laboratorio bajo ele estado de la orden
 	* Mayo 19 de 2020 		Edwin	- Se llama a la función cambioEstadoInteroperabilidad para que se haga el cambio de estados por interoperabilidad automáticamente. 
@@ -834,7 +835,7 @@ if( !empty($hce) ){
 }
 
 $usuarioValidado = true;
-$wactualiz = "Marzo 6 de 2018";
+$wactualiz = "Octubre 8 de 2021";
 
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false; 	
@@ -1233,6 +1234,8 @@ if (!$usuarioValidado){
 	
 	$versionMozilla = consultarAliasPorAplicacion( $conex, $wemp_pmla, "versionMozilla" );
 	$validarBrowser = consultarAliasPorAplicacion( $conex, $wemp_pmla, "validarBrowserOrdenes" );
+
+	$urlCTCministerio = consultarAliasPorAplicacion( $conex, $wemp_pmla, "urlCTCministerio" );
 	
 	$wipimpresoraga = consultarImpresoraGA( $conex, $wbasedato, $paciente->servicioActual );
 
@@ -1241,6 +1244,12 @@ if (!$usuarioValidado){
 	Fecha: 04/08/2021
 	*/
 	$validarPrescripcionConTarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripcionConTarifa' );
+
+	/*Modificación: Se agrega para validar código mipres
+	Autor: sebastian.nevado
+	Fecha: 04/10/2021
+	*/
+	$mipresEnListaMedicamentosOrdenes 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mipresEnListaMedicamentosOrdenes' );
 	// 2012-06-27
 	// Se adicionó accept-charset='utf-8' para que el formulario pueda codificar todos los caracteres correctamente
 	// y no arroje algunas veces datos corrompidos que bloqueaban la grabación de ordenes
@@ -1286,6 +1295,18 @@ if (!$usuarioValidado){
 	Fecha: 04/08/2021
 	*/
 	echo "<input type='hidden' name='validarPrescripcionConTarifa' id='validarPrescripcionConTarifa' value='".$validarPrescripcionConTarifa."'/>";
+
+	/*Modificación: Se agrega para validar código mipres
+	Autor: sebastian.nevado
+	Fecha: 04/10/2021
+	*/
+	echo "<input type='hidden' name='mipresEnListaMedicamentosOrdenes' id='mipresEnListaMedicamentosOrdenes' value='".$mipresEnListaMedicamentosOrdenes."'/>";
+
+	/*Modificación: Se agrega para tener la URL de mipres
+	Autor: sebastian.nevado
+	Fecha: 04/10/2021
+	*/
+	echo "<input type='hidden' name='urlCTCministerio' id='urlCTCministerio' value='".$urlCTCministerio."'/>";
 	
 	
 	pintarModalLEVS( $conex, $wbasedato, $wcenmez, $wbasedatohce, "LQ", $paciente->enUrgencias, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
@@ -2790,7 +2811,22 @@ if (!$usuarioValidado){
 								$eventosQuitarTooltip = " onMouseOver='quitarTooltip( this )' onMouseOut='reestablecerTooltip( this );'";	//Creo los eventos que quitan el tooltip si el kardex es editable
 							}
 
-							echo "<div class='fondoAmarillo' style='border: 1px solid #333333; width:150% !important; width:110%; height:110px;$styleDivNuevoBuscador'>";
+							/*
+							* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+							* Autor: sebastian.nevado
+							* Fecha: 2021-10-04
+							*/
+							$sMipresEnListaMedicamentosOrdenes = consultarAliasPorAplicacion( $conex, $wemp_pmla, "mipresEnListaMedicamentosOrdenes" );
+							if($sMipresEnListaMedicamentosOrdenes == '1' || $sMipresEnListaMedicamentosOrdenes == '2')
+							{
+								echo "<div class='fondoAmarillo' style='border: 1px solid #333333; width:170% !important; width:110%; height:150px;$styleDivNuevoBuscador'>";
+							}
+							else
+							{
+								echo "<div class='fondoAmarillo' style='border: 1px solid #333333; width:150% !important; width:110%; height:110px;$styleDivNuevoBuscador'>";
+							}
+							//FIN MODIFICACIÓN
+
 							echo "<table align='left' border='0' width='100%'>";
 							echo "<tr class='fondoAmarillo'>";
 							
@@ -2800,6 +2836,22 @@ if (!$usuarioValidado){
 							echo "<tr class='encabezadotabla' align='center'>";
 							echo "<td width='100'>Grabar</td>";
 							echo "<td width='250'>Medicamento(*)</td>";
+
+							/*
+							* Modificación: se agrega columna "#Mipres" en caso de tener parámetro activo y es médico
+							* Autor: sebastian.nevado
+							* Fecha: 2021-10-04
+							*/
+							if($sMipresEnListaMedicamentosOrdenes == '2' && $usuario->esMedicoRolHCE)
+							{
+								echo "<td># Prescripci&oacute;n Mipres(*)<br><p><a style='color:white; font-size:9pt;' href=\"$urlCTCministerio\" target=\"_blank\"><u>Clic aqu&iacute;</u> para abrir Mipres</a></p></td>";
+							}
+							elseif($sMipresEnListaMedicamentosOrdenes == '1' && $usuario->esMedicoRolHCE)
+							{
+								echo "<td># Prescripci&oacute;n Mipres<br><p><a style='color:white; font-size:9pt;' href=\"$urlCTCministerio\" target=\"_blank\"><u>Clic aqu&iacute;</u> para abrir Mipres</a></p></td>";
+							}
+							//FIN MODIFICACIÓN
+
 							echo "<td>Presentaci&oacute;n(*)</td>";
 							echo "<td width='100'>Dosis(*)</td>";
 							echo "<td>Unidad de medida(*)</td>";
@@ -2816,7 +2868,7 @@ if (!$usuarioValidado){
 							echo "<tr align='center'>";
 							
 							// Boton para el submit
-							echo "<td><input type='button' name='btnGrabar4' value='OK' onClick='eleccionMedicamento()' /></td>";
+							echo "<td><input type='button' name='btnGrabar4' value='OK' onClick='eleccionMedicamento(0, $sMipresEnListaMedicamentosOrdenes)' /></td>";
 
 							// Nombre
 							echo "<td>";
@@ -2842,6 +2894,21 @@ if (!$usuarioValidado){
 							
 							echo "</td>";
 							echo "</td>";
+
+							/*
+							* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo y ser médico
+							* Autor: sebastian.nevado
+							* Fecha: 2021-10-04
+							*/
+							if($usuario->esMedicoRolHCE && ($sMipresEnListaMedicamentosOrdenes == '1' || $sMipresEnListaMedicamentosOrdenes == '2'))
+							{
+								// # Prescripción Mipres
+								echo "<td>";
+									crearCampo("1","wnumprescripcionmipres",@$accionesPestana[$indicePestana.".1"],array("class"=>"textoNormal"),"");
+									echo "<input type='hidden' name='wtipopos' id='wtipopos' value=''>";
+								echo "</td>";
+							}
+							//FIN MODIFICACIÓN
 							
 							// Presentacion
 							echo "<td>";
@@ -2955,7 +3022,7 @@ if (!$usuarioValidado){
 							echo "</td>";
 							
 							// Boton para el submit
-							echo "<td><input type='button' name='btnGrabar' value='OK' onClick='eleccionMedicamento()' /></td>";
+							echo "<td><input type='button' name='btnGrabar' value='OK' onClick='eleccionMedicamento(0, $sMipresEnListaMedicamentosOrdenes)' /></td>";
 							echo "</tr>";
 							echo "</table>";
 							
@@ -3059,6 +3126,22 @@ if (!$usuarioValidado){
 					echo "<tr align='center' class='encabezadoTabla' id='trEncabezadoTbAdd' style='display:none;'>";
 					echo "<td>Acciones</td>";
 					echo "<td>Medicamento<span class='obligatorio'>(*)</span></td>";
+
+					/*
+					* Modificación: se agrega columna "#Mipres" en caso de tener parámetro activo
+					* Autor: sebastian.nevado
+					* Fecha: 2021-10-04
+					*/
+					/*/if($usuario->esMedicoRolHCE && $sMipresEnListaMedicamentosOrdenes == '2')
+					{
+						echo "<td># Prescripci&oacute;n Mipres <span class='obligatorio'>(*)</span></td>";
+					}
+					elseif($usuario->esMedicoRolHCE && $sMipresEnListaMedicamentosOrdenes == '1')
+					{
+						echo "<td># Prescripci&oacute;n Mipres</td>";
+					}*/
+					//FIN MODIFICACIÓN
+					
 					echo "<td style='display:none'>Protocolo</td>";
 					echo "<td>No enviar</td>";
 					echo "<td>Dosis a aplicar<span class='obligatorio'>(*)</span></td>";

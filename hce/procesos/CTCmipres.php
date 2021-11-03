@@ -68,6 +68,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 			$wactualiz='2020-03-02';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//	2021-10-08	Sebastián Nevado		- Se agrega acción consultarPrescripcionMipres para validar número de prescripción mipres por post.
 //  2021-10-01  Joel Payares Hdz		- Se crea parametro departamento en base de datos para obtener el valor dinamicamente.
 //	2021-09-15  Jaime Mejia Quintero    - Se crea parametro para agregar mipres como soporte automatico
 // 	2020-11-13	Edwin MG				- Se cambia función mysqli_connect, que se conectaba a la BD de producción y se cambia por función nueva
@@ -5676,6 +5677,13 @@ if(isset($accion))
 		{
 			$data = mostrarUltimaModificacionMaestros($wemp_pmla);
 			$data = utf8_encode($data);
+			echo json_encode($data);
+			break;
+			return;
+		}
+		case 'consultarPrescripcionMipres':
+		{
+			$data = consumirWebServicePrescripcion($nroPrescripcion,$wemp_pmla);
 			echo json_encode($data);
 			break;
 			return;

@@ -2,6 +2,7 @@
  *
  * MODIFICACIONES
  *
+ * Octubre 8 de 2021	Sebastián Nevado	Se agrega funcionalidad de mipres obligatorio basado en parámetro mipresEnListaMedicamentosOrdenes. Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
  * Mayo 4 de 2020		Edwin		Se hacen cambios varios para la interoperabilidad con laboratorio por centro de costos y POCT
  *									En la modal de al seleccionar el tipo de muestra(Sitio anatomico y tipo de muestra) se muestra la opcion Seleccione
  *									y debe haber por lo menos un sitio anatómico y tipo de muestra seleccionados
@@ -66,6 +67,7 @@
  * Marzo 25 de 2015	Se valida que no se permite poner 0 en días de tratamiento ni en dosis máxima
  * Mayo 5 de 2011	Al agregar un examen o procedimiento, todos los examenes son colapsados
  */
+
 
 var preguntarPorVisaulizarMedControl = false;
  
@@ -10310,7 +10312,7 @@ strPendientesModal = "";
 // Determina si la adición de medicamentos es múltiple (por ejemplo: Importar protocolo o Insumos Liquidos Endovenosos)
 var adicionMultiple = false;
 
-function eleccionMedicamento(porProtocolo)
+function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 {
 	adicionMultiple = false;
 
@@ -10330,6 +10332,9 @@ function eleccionMedicamento(porProtocolo)
 
 	if(!isset(porProtocolo))
 		porProtocolo = 0;
+	
+	if(!isset(mipresEnListaMedicamentos))
+		mipresEnListaMedicamentos = 0;
 
 	// Se reviza si hay algun detalle de familia desplegado y se oculta
 	ocultarDetalleFliaAnterior();
@@ -10370,6 +10375,21 @@ function eleccionMedicamento(porProtocolo)
 		var presentaciones = document.getElementById( "wpresentacion" );			// Presentaciones o formas farmacéuticas
 		var unidades = document.getElementById( "wunidad" );						// Unidades de medida
 		var dosis = document.getElementById( "wdosisfamilia" ).value;				// Dosis a aplicar
+
+		/*
+		* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo
+		* Autor: sebastian.nevado
+		* Fecha: 2021-10-04
+		*/
+		var numPrescripcionMipres = "";
+		var tipoNumPrescripcionMipres = "";
+		if(mipresEnListaMedicamentos!=0)
+		{
+			numPrescripcionMipres = (document.getElementById( "wnumprescripcionmipres" )) ? document.getElementById( "wnumprescripcionmipres" ).value : '';				// Número de prescripción de mipres
+			tipoNumPrescripcionMipres = (document.getElementById( "wnumprescripcionmipres")) ? document.getElementById( "wnumprescripcionmipres" ).type : '';				// Tipo de campo
+		}
+		//FIN MODIFICACION
+
 		var frecuencias = document.getElementById( "wfrecuencia" );					// Frecuencias
 		var viasAdministracion = document.getElementById( "wadministracion" );		// Vías de administración
 		var fechaInicio = document.getElementById( "wfinicioaplicacion" ).value;	// Fecha y hora de inicio de aplicación
@@ -10442,6 +10462,30 @@ function eleccionMedicamento(porProtocolo)
 			document.getElementById( "wnombrefamilia" ).focus();
 			return;
 		}
+		
+		/*
+		* Modificación: alerta en caso de que el número de prescripción de mipres sea obligatorio, es paciente de EPS, y contributivo, y medicamento no pos
+		* Autor: sebastian.nevado
+		* Fecha: 2021-10-04
+		*/
+		if(mipresEnListaMedicamentos == 2 && tipoNumPrescripcionMipres != 'P' && numPrescripcionMipres == '' && tipoNumPrescripcionMipres != '' && tipoNumPrescripcionMipres != 'hidden' && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
+		{
+			jAlert("Debe ingresar el Número de Prescripción Mipres","ALERTA");
+			document.getElementById( "wnumprescripcionmipres" ).focus();
+			return;
+		}
+
+		if((mipresEnListaMedicamentos == 2 || mipresEnListaMedicamentos == 1) && tipoNumPrescripcionMipres != '' && tipoNumPrescripcionMipres != 'P' && tipoNumPrescripcionMipres != 'hidden' && numPrescripcionMipres != '' && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
+		{
+			var respuestaValidacion = validarNumeroMipres(numPrescripcionMipres);
+			if(!respuestaValidacion['exito'])
+			{
+				jAlert(respuestaValidacion['mensaje'],"ALERTA");
+				document.getElementById( "wnumprescripcionmipres" ).focus();
+				return;
+			}
+		}
+		//FIN MODIFICACIÓN
 
 		// Validación presentación o forma farmacéutica
 		if(selPresentacion>-1)
@@ -10680,7 +10724,8 @@ function eleccionMedicamento(porProtocolo)
 						 +"&eps="+$( "#pacEPS" ).val()
 						 +"&bsq="+bsqFamilia
 						 +"&his="+document.forms.forma.whistoria.value
-						 +"&ing="+document.forms.forma.wingreso.value;
+						 +"&ing="+document.forms.forma.wingreso.value
+						 +"&nummipres="+numPrescripcionMipres;
 
 			try{
 
@@ -10739,6 +10784,8 @@ function eleccionMedicamento(porProtocolo)
 						 * 36:Descricion principio activo
 						 * 37:esAntibiotico
 						 * 38:InformacionNutriciones
+						 * 43:ConTarifa
+						 * 44:ConNumMipres
 						 */
 
 						var codigoArticulo = item[1];
@@ -10790,6 +10837,8 @@ function eleccionMedicamento(porProtocolo)
 						var familiaATC 		= item[42];
 						
 						var conTarifa 		= item[43];
+
+						var numPresMipres 	= item[44];
 						
 						
 						// if(dosis!=cantidadDosisFija)
@@ -10813,7 +10862,7 @@ function eleccionMedicamento(porProtocolo)
 
 						agregarArticulo( "detKardexAdd" + tipoProtocolo );
 
-						seleccionarArticulo(codigoArticulo,reemplazarTodo(nombreComercial," ","_"),reemplazarTodo(nombreGenerico," ","_"),origen,grupoMedicamento,formaFarmaceutica,unidadMedida,pos,unidadFraccion,cantidadFraccion,vencimiento,diasEstabilidad,dispensable,duplicable,diasMaximosSugeridos,dosisMaximasSugeridas,viaAdministracion,tipoProtocolo,tipoMedicamentoLiquido,esGenerico,abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija,condicionSuministroFija,confirmadaPreparacionFija,diasMaximosFija,dosisMaximasFija,observacionesFija,componentesTipo,noEnviar,'off',codPrincipioActivo,desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,medicamentoPorProtocolo,familiaATC,conTarifa);
+						seleccionarArticulo(codigoArticulo,reemplazarTodo(nombreComercial," ","_"),reemplazarTodo(nombreGenerico," ","_"),origen,grupoMedicamento,formaFarmaceutica,unidadMedida,pos,unidadFraccion,cantidadFraccion,vencimiento,diasEstabilidad,dispensable,duplicable,diasMaximosSugeridos,dosisMaximasSugeridas,viaAdministracion,tipoProtocolo,tipoMedicamentoLiquido,esGenerico,abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija,condicionSuministroFija,confirmadaPreparacionFija,diasMaximosFija,dosisMaximasFija,observacionesFija,componentesTipo,noEnviar,'off',codPrincipioActivo,desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,medicamentoPorProtocolo,familiaATC,conTarifa, numPresMipres);
 
 						document.getElementById("btnCerrarVentana").style.display = 'none';
 
@@ -10874,7 +10923,8 @@ function eleccionMedicamento(porProtocolo)
 								 +"&eps="+$( "#pacEPS" ).val()
 								 +"&bsq="+bsqFamilia
 								 +"&his="+document.forms.forma.whistoria.value
-								 +"&ing="+document.forms.forma.wingreso.value;
+								 +"&ing="+document.forms.forma.wingreso.value
+								 +"&nummipres="+numPrescripcionMipres;
 
 					try{
 
@@ -10928,6 +10978,8 @@ function eleccionMedicamento(porProtocolo)
 								 * 31:Observaciones adicionales
 								 * 32:Componentes del tipo
 								 * 33:Nombre personalizado del articulo
+								 * 43:ConTarifa
+								 * 44:Número Prescrición Mipres
 								 */
 
 								var codigoArticulo = item[1];
@@ -10977,6 +11029,8 @@ function eleccionMedicamento(porProtocolo)
 								var familiaATC 		= item[42];
 								
 								var conTarifa 		= item[43];
+
+								var numMipres 		= item[44];
 
 								var array_dosis = new Array();
 								var i = 0;
@@ -11068,6 +11122,7 @@ function eleccionMedicamento(porProtocolo)
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	medicamentoPorProtocolo;
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	familiaATC;
 								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	conTarifa;
+								multiplesMedicamentos[idxMulArt][idxMultArt2++] = 	numMipres;
 
 								
 								//Agrego la fecha y hora de inicio del medicamento calculada para el H.E
@@ -11461,7 +11516,13 @@ function eleccionMedicamento(porProtocolo)
 		document.getElementById('wtxtobservasiones').value = '';
 
 		document.getElementById('wprotocolo').value = '';
-
+		
+		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		{
+			document.getElementById('wnumprescripcionmipres').value = '';
+			document.getElementById('wtipopos').value = '';
+		}
+		
 		//Quito los valores de la regleta de grabacion
 		document.getElementById('dosisRonda2').value = '';
 		document.getElementById('dosisRonda4').value = '';
@@ -13288,6 +13349,46 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 				arDosis[ arDosis.length ] = valorDosis;
 				q++;
 				r = 0;
+			}
+
+			// Si viene precedido de ¬ es pos y se define si se habilita el campo
+			if( item[i].substr(0,1) == "¬" ){
+				valorPos = trim(item[i].substr(1));
+				var numPrescripcionMipres = document.getElementById( "wnumprescripcionmipres"+posnombre );
+				var mipresEnListaMedicamentosOrdenes = document.getElementById( "mipresEnListaMedicamentosOrdenes");
+				var tipoPos = document.getElementById( "wtipopos"+posnombre );
+				if(numPrescripcionMipres && mipresEnListaMedicamentosOrdenes && mipresEnListaMedicamentosOrdenes.value != 0)
+				{
+					//Si es no pos, es contributivo, es un médico, y el paciente es de EPS, debe registrar Mipres
+					if(valorPos != 'P' && numPrescripcionMipres && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
+					{
+						//Habilito campo
+						numPrescripcionMipres.value = '';
+						tipoPos.value = valorPos;
+						numPrescripcionMipres.disabled = false;
+						numPrescripcionMipres.type = "text";
+
+						jAlert("El medicamento \"" + item[0] + "\" es NO POS, debe llenar el MIPRES en la plataforma del Ministerio de Salud antes de grabar el medicamento. A continuación, se abrirá una nueva ventana para realizar registro en MIPRES. Luego, usted deberá volver a esta ventana a continuar el registro.","ALERTA",function(){
+							var urlMipres = document.getElementById( "urlCTCministerio").value;
+							var win = window.open(urlMipres, '_blank');
+							if (win) {
+								//Browser has allowed it to be opened
+								win.focus();
+							} else {
+								//Browser has blocked it
+								alert('Por favor permita las ventanas emergentes en este sitio web');
+							}
+						});
+					}
+					else
+					{
+						//Deshabilito campo
+						numPrescripcionMipres.value = '';
+						tipoPos.value = valorPos;
+						numPrescripcionMipres.disabled = true;
+						numPrescripcionMipres.type = "hidden";
+					}
+				}
 			}
 
 			// Si viene precedido de - es artículo, comienza la asignación de los arreglos de relación y del arreglo arArticulos
@@ -17699,10 +17800,14 @@ function grabarKardex(wimprimir){
 						cadenaCTCcontributivo = cadenaCTCcontributivo.replace(arrayEliminados[i]+"***","")
 					}
 				}
-				
-				if( cadenaCTCcontributivo != "" ){
+				var mipresEnListaMedicamentosOrdenes = $("#mipresEnListaMedicamentosOrdenes").val(); //Valor del parámetro.
+				//Si es enfermera, muestra el popup, si es médico, solo procede como si cerraran el popup
+				if( cadenaCTCcontributivo != "" && (mipresEnListaMedicamentosOrdenes == 0 || $( "#esMedico" ).val() != 'on')){
 				   mostrarCTCcontributivo();
 				   return;
+				} else if(cadenaCTCcontributivo != "" && mipresEnListaMedicamentosOrdenes != 0 && $( "#esMedico" ).val() == 'on' && $( "#pacEPS" ).val() == 'on' && $( "#esContributivo" ).val())
+				{
+					cerrarDivIframeCTCcontributivo(cadenaCTCcontributivo);
 				}
 				
 			/*********************************************************************************************************************/
@@ -18572,6 +18677,11 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 	
 	var wdrautorizado	= 'wdrautorizado' + tipoProtocoloAux + posicionActual;
 	var wjusparaautorizar	= 'wjusparaautorizar' + tipoProtocoloAux + posicionActual;
+
+	if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+	{
+		var idNumMipres	= 'wnummipres' + tipoProtocoloAux + posicionActual;
+	}
 	
 
 	if(!elementoAnteriorDetalle || elementoAnteriorDetalle.value != '' || posicionActual == 0){
@@ -18644,6 +18754,12 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		var columna15 = document.createElement("td");		//Nombre protocolo
 		var colFiltroAntibioticos = document.createElement("td");		//Nombre protocolo
 
+		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		{
+			var colNumMipres = document.createElement("td");		//Número de prescripción MIPRES
+		}
+		
+
 		//Centradas
 		columna1.setAttribute('align','center');
 		columna10.setAttribute('align','center');
@@ -18700,6 +18816,22 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		atr['onKeyPress'] = "return validarEntradaDecimal(event);";
 
 		var dosis = crearCampo("1",idCampoDosis,tipoProtocolo+".5",atr,"");
+
+		//Número mipres
+		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		{
+			var numeroMipres = document.createElement("input");
+			numeroMipres.setAttribute('type','hidden');
+			numeroMipres.setAttribute('name',idNumMipres);
+			numeroMipres.setAttribute('id',idNumMipres);
+			numeroMipres.setAttribute('readOnly','readOnly');
+			numeroMipres.className = 'campo2';
+			if(!esIE){
+				numeroMipres.setAttribute('style','border:0px');
+			}else{
+				numeroMipres.style.setAttribute('border','0px');
+			}
+		}
 
 		//Unidad de manejo
 		var unidadManejo = document.createElement("input");
@@ -19119,6 +19251,12 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		$( colFiltroAntibioticos ).append( "<label>Tratamiento</label>" );
 		colFiltroAntibioticos.appendChild( ckPediatrico );
 		$( colFiltroAntibioticos ).append( "<label style='display:none'>Pediatrico</label>" );
+		
+		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
+		{
+			columna2.appendChild(numeroMipres);
+		}
+		
 
 		/*******************************************************************************
 		ANEXAR LAS COLUMNAS NUEVAS A LA FILA NUEVA
@@ -19126,6 +19264,12 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 
 		fila.appendChild(columna1);
 		fila.appendChild(columna2);
+		
+		// if(($( "#esMedico" ).val() == 'on') && (document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2'))
+		// {
+		// 	fila.appendChild(colNumMipres);
+		// }
+		
 		fila.appendChild(columna15);
 		fila.appendChild(columna14);
 		fila.appendChild(columna3);
@@ -21630,6 +21774,8 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 
 	var wdrautorizado = document.getElementById('wdrautorizado'+tipoProtocolo+idxElemento).value;
 	var wjusparaautorizar = $( document.getElementById('wjusparaautorizar'+tipoProtocolo+idxElemento) ).val();
+
+	var numMipres = (document.getElementById('wnummipres'+tipoProtocolo+idxElemento)) ? document.getElementById('wnummipres'+tipoProtocolo+idxElemento).value : '';
 	
 	
 	artdosisAdaptada = false;
@@ -22042,7 +22188,7 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 	GRABACION DEL ARTICULO
 	***/
 	if(valido){		
-		grabarArticuloElemento(historia,ingreso,fechaKardex,codigoArticulo,cantDosis.value,unidadDosis.value,periodicidad.value,formaFtica.value,fechaInicio,horaInicio,via.value,artConfirmado,diasTto.value,obsmerge,origenArticulo,usuario,condicion.value,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,equivHorasFrecuencia,fechaInicioAnterior,horaInicioAnterior,artNoDispensar,artProtocolo,centroCostosGrabacion,prioridad,idxElemento,nombreArticulo,cantidadAlta,impresion,deAlta, firma, artdosisAdaptada,idoriginal,artnoEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar);
+		grabarArticuloElemento(historia,ingreso,fechaKardex,codigoArticulo,cantDosis.value,unidadDosis.value,periodicidad.value,formaFtica.value,fechaInicio,horaInicio,via.value,artConfirmado,diasTto.value,obsmerge,origenArticulo,usuario,condicion.value,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,equivHorasFrecuencia,fechaInicioAnterior,horaInicioAnterior,artNoDispensar,artProtocolo,centroCostosGrabacion,prioridad,idxElemento,nombreArticulo,cantidadAlta,impresion,deAlta, firma, artdosisAdaptada,idoriginal,artnoEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar, numMipres);
 	}
 	return valido;
 }
@@ -23500,7 +23646,7 @@ function cambiarDisplay(id) {
 /*****************************************************************************************************************************
  * Llamada ajax para la inserción o modificación de un articulo
  ******************************************************************************************************************************/
-function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDosis,per,fftica,fini,hini,via,conf,dtto,obs,origenArticulo,usuario,condicion,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,horasFrecuencia,fechaInicioAnt,horaInicioAnt,noDispensar,tipoProtocolo,centroCostosGrabacion,prioridad,idElemento,nombreArticulo,cantidadAlta,impresion,deAlta,firma,artdosisAdaptada,idoriginal,noEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar){
+function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDosis,per,fftica,fini,hini,via,conf,dtto,obs,origenArticulo,usuario,condicion,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,horasFrecuencia,fechaInicioAnt,horaInicioAnt,noDispensar,tipoProtocolo,centroCostosGrabacion,prioridad,idElemento,nombreArticulo,cantidadAlta,impresion,deAlta,firma,artdosisAdaptada,idoriginal,noEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar, numMipres){
 	var parametros = "";
 	var mensaje = "";
 		// alert( "familiasAgregadasIdx["+tipoProtocolo+idElemento+"]:" + familiasAgregadasIdx[ tipoProtocolo+idElemento ] );
@@ -23512,7 +23658,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 		+"&nombreArticulo="+nombreArticulo+"&wcantidadAlta="+cantidadAlta+"&wimpresion="+impresion+"&walta="+deAlta+"&familia="+familiasAgregadasIdx[ tipoProtocolo+idElemento ]+"&firma="+firma+"&tipoDocumento="+$( "#wtipodoc" ).val()+"&wcedula="+$( "#wcedula" ).val()+"&artdosisAdaptada="+artdosisAdaptada+"&artnoEsteril="+noEsteril
 		+"&idoriginal="+idoriginal+"&profilaxis="+profilaxis+"&tratamiento="+tratamiento
 		+"&esPediatrico="+esPediatrico+"&conInsumo1="+conInsumo1+"&conInsumo2="+conInsumo2+"&porProtocolo="+porProtocolo
-		+"&wdrautorizado="+wdrautorizado+"&wjusparaautorizar="+wjusparaautorizar;
+		+"&wdrautorizado="+wdrautorizado+"&wjusparaautorizar="+wjusparaautorizar+"&numMipres="+numMipres;
 
 	try{
 //		$.blockUI({ message: $('#msjEspere') });
@@ -24517,7 +24663,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 		vencimiento, diasVencimiento, dispensable, duplicable, diasMaximos, dosisMaximas, via, tipoProtocolo, tipoMedLiquido, esGenerico,
 		abreVentanaFija,cantidadDosisFija,unidadDosisFija,noEnviarFija,frecuenciaFija,viasAdministracionFija, condicionSuministroFija,
 		confirmadaPreparacionFija,diasMaximosFija,dosisMaximasFija,observacionesFija,componentesTipo,noEnviar,deAlta,codPrincipioActivo,
-		desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,porProtocolo,familiaATC,conTarifa){
+		desPrincipioActivo,esAntibiotico,infoNutriciones,esCompuesto,conMedicamento1,conMedicamento2,porProtocolo,familiaATC,conTarifa, numPresMipres){
 			
 	porProtocolo = porProtocolo ? porProtocolo: false;
 	
@@ -25355,6 +25501,10 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 
 								var informacion = " - <div style='font-family:verdana;font-size:10pt'><b>"+nombreComercial+"</b>";
 								informacion += "<br><br><b>Nombre Comercial:</b> " + nombreGenerico;
+								//Número Mipres
+								if((document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2') && document.getElementById('wnumprescripcionmipres')){
+									informacion += "<br><br><b>Número prescipción Mipres:</b> " + numPresMipres;
+								}
 								// informacion += "<br><br>"+ cantidadDosisFija +" "+ $( "[value="+unidadFraccion+"]", $( "#wmfftica" ) ).text() + " POR " + $( "[value="+unidad+"]", $( "#wmfftica" ) ).text();
 								informacion += "</div>";
 								informacion = informacion.replace( /_+/g, " " );
@@ -25538,6 +25688,11 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 									else{
 										if(document.getElementById("wchkconf"+tipoProtocoloAux+idx))
 											document.getElementById("wchkconf"+tipoProtocoloAux+idx).disabled = false;
+									}
+
+									//Número Mipres
+									if((document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2') && document.getElementById("wnummipres"+tipoProtocoloAux+idx)){
+										document.getElementById("wnummipres"+tipoProtocoloAux+idx).value = (numPresMipres) ? numPresMipres : '';
 									}
 
 									//Unidad dosis
@@ -26039,6 +26194,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 									 */
 									function fnInternaCTC(){
 										var conctc = false;
+										var mipresEnListaMedicamentosOrdenes = $("#mipresEnListaMedicamentosOrdenes").val(); //Valor del parámetro.
 										//Paciente No pos
 										if( $( "#pacEPS" ).val() == 'on' ){
 
@@ -26070,14 +26226,18 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 														}
 													}
 													else{
-														// alert("El medicamento " + nombreArticuloAlert + " es NO POS");
-														if($( "#esContributivo" ).val())
+														//Solo motrará mensaje si el parámetro está apagado.
+														if(mipresEnListaMedicamentosOrdenes == 0)
 														{
-															alert("El medicamento " + nombreArticuloAlert + " es NO POS, al firmar la orden debe llenar el MIPRES en la plataforma del Ministerio de Salud");
-														}
-														else
-														{
-															alert("El medicamento " + nombreArticuloAlert + " es NO POS");
+															// alert("El medicamento " + nombreArticuloAlert + " es NO POS");
+															if($( "#esContributivo" ).val())
+															{
+																alert("El medicamento " + nombreArticuloAlert + " es NO POS, al firmar la orden debe llenar el MIPRES en la plataforma del Ministerio de Salud");
+															}
+															else
+															{
+																alert("El medicamento " + nombreArticuloAlert + " es NO POS");
+															}
 														}
 													}
 												}
@@ -26099,8 +26259,8 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 													//Validacion CTC contributivo para que pida el CTC sino que se abra la pagina del ministerio parar llenarlo
 													if($( "#esContributivo" ).val())
 													{
-														// agregar medicamento a la cadena para mostrar el CTC al grabar y crear las notas medicas
-														cadenaCTCcontributivo += "medicamento|"+codigo+"|"+$.trim(nombreArticuloAlert)+"|"+tipoProtocoloAux+"|"+idx+"***";
+															// agregar medicamento a la cadena para mostrar el CTC al grabar y crear las notas medicas
+															cadenaCTCcontributivo += "medicamento|"+codigo+"|"+$.trim(nombreArticuloAlert)+"|"+tipoProtocoloAux+"|"+idx+"***";
 														
 													}
 													else
@@ -26115,8 +26275,8 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 													
 													if($( "#esContributivo" ).val())
 													{
-														// agregar medicamento a la cadena para mostrar el CTC al grabar y crear las notas medicas
-														cadenaCTCcontributivo += "medicamento|"+codigo+"|"+$.trim(nombreArticuloAlert)+"|"+tipoProtocoloAux+"|"+idx+"***";
+															// agregar medicamento a la cadena para mostrar el CTC al grabar y crear las notas medicas
+															cadenaCTCcontributivo += "medicamento|"+codigo+"|"+$.trim(nombreArticuloAlert)+"|"+tipoProtocoloAux+"|"+idx+"***";
 													}
 													else
 													{
@@ -27310,6 +27470,111 @@ function borrarDosisMaximaPorFrecuencia( cmp ){
 	catch(e){
 		console.log(e);
 	}
+}
+
+/**
+ * Función para búsqueda de prescripción de mipres por número, vía webservice
+ * @by: sebastian.nevado
+ * @date: 2021/10/08
+ */
+function validarNumeroMipres(nroPrescripcionMipres)
+{
+	var aRespuesta = {'exito': false, 'mensaje':''};
+	
+	//$.blockUI({ message: $('#msjEspere') });
+	aRespuesta = validarExistenciaNumeroMipres(nroPrescripcionMipres);
+
+	if(aRespuesta.exito)
+	{
+		aRespuesta = validarNumeroMipresUsado(nroPrescripcionMipres);
+	}
+
+	return aRespuesta;
+}
+
+/**
+ * Función para búsqueda de prescripción de mipres por número, vía webservice
+ * @by: sebastian.nevado
+ * @date: 2021/10/08
+ */
+ function validarExistenciaNumeroMipres(nroPrescripcionMipres)
+ {
+	 var aRespuesta = {'exito': false, 'mensaje':''};
+	 
+	 //$.blockUI({ message: $('#msjEspere') });
+	 $.ajax({
+		 url: "CTCmipres.php",
+		 type: "POST",
+		 dataType: "json",
+		 data:{
+				 consultaAjax 	: '',
+				 accion			: 'consultarPrescripcionMipres',
+				 wemp_pmla		: $('#wemp_pmla').val(),
+				 nroPrescripcion	: nroPrescripcionMipres
+		 },
+		 async: false,
+		 success:function(respuesta) {
+ 
+			 //Si el tamaño es menor a 1 es porque no encontró resultado
+			 if(respuesta.mensaje)
+			 {
+				 aRespuesta['exito'] = false;
+				 aRespuesta['mensaje'] = respuesta.mensaje;
+			 }
+			 else if(respuesta.length < 1)
+			 {
+				 aRespuesta['exito'] = false;
+				 aRespuesta['mensaje'] = 'El número de prescripción Mipres ingresado no existe.';
+			 }
+			 else
+			 {
+				 aRespuesta['exito'] = true;
+				 aRespuesta['mensaje'] = 'El número de prescripción Mipres ingresado existe.';
+			 }
+			 //$.unblockUI();
+		 }
+	 });
+ 
+	 return aRespuesta;
+ }
+
+ /**
+ * Función para búsqueda de prescripción de mipres por número en medicamentos del día
+ * @by: sebastian.nevado
+ * @date: 2021/10/08
+ */
+function validarNumeroMipresUsado(nroPrescripcionMipres)
+{
+	var aRespuesta = {'exito': false, 'mensaje':''};
+
+	$.ajax({
+		url: "ordenes.inc.php",
+		type: "POST",
+		dataType: "json",
+		data:{
+				consultaAjaxKardex	: 'encuentraCodigoMipresMedicamento',
+				wemp_pmla		: $('#wemp_pmla').val(),
+				nroPrescripcion	: nroPrescripcionMipres
+		},
+		async: false,
+		success:function(respuesta) {
+
+			//Si el tamaño es menor a 1 es porque no encontró resultado
+			if(respuesta == '1')
+			{
+				aRespuesta['exito'] = false;
+				aRespuesta['mensaje'] = 'El número de prescripción Mipres fue ingresado para otro medicamento..';
+			}
+			else
+			{
+				aRespuesta['exito'] = true;
+				aRespuesta['mensaje'] = 'El número de prescripción Mipres ingresado no ha sido registrado.';
+			}
+			//$.unblockUI();
+		}
+	});
+
+	return aRespuesta;
 }
 
 

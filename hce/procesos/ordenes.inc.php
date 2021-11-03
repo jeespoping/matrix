@@ -23,6 +23,7 @@ include_once("conex.php");
 
 /************************************************************************************************************************
  * Modificaciones
+ * Octubre 8 de 2021	Sebastián Nevado	-  Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
  * Agosto 13 de 2020	Edwin 		- Se permite ordenar cups buscando por codigo CUP
  * Agosto 05 de 2020	Edwin 		- Si un paciente está con traslado temporal en hemodinamia, en el mensaje HL7 enviado a laboratorio se manda la habitación dónde se encuentra
  *									- Se cambia el nombre del archivo que se crea en el ftp para los mensajes hl7 con la interoperabilidad de laboratorio, agregando a la fecha, 
@@ -540,6 +541,7 @@ class detalleKardexDTO {
 			$this->horaAutorizado		= $datos['Ekxhau'];	//Hora de aprobacion del articulo por director médico
 			$this->directorMedico		= $datos['Ekxmau'];	//Director médico que autoriza el medicamento
 			$this->justificacionDM		= $datos['Ekxjau'];	//Justificación del director médico
+			$this->noPrescripcionMipres	= $datos['Ekxmip'];	//Número prescripción MiPres
 		}
 	}
 	
@@ -12513,7 +12515,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			
 	 // Se consultan los medicamentos asociados a la familia seleccionada
 	 $sql = "( SELECT
-				Relfam,Famnom,Famcod,Reluni,b.Unicod,b.Unides,Relart,Relcon*1 as Relcon, '' Famund,Relpre,Artpco as Ffacod,Pcodes as Ffanom,Defvia, Defart 
+				Relfam,Famnom,Famcod,Reluni,b.Unicod,b.Unides,Relart,Relcon*1 as Relcon, '' Famund,Relpre,Artpco as Ffacod,Pcodes as Ffanom,Defvia, Defart, Artpos 
 			FROM
 				{$wbasedato}_000114 a, 
 				{$wbasedato}_000115 c,
@@ -12540,7 +12542,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			)
 			UNION
 			( SELECT
-				Relfam,Famnom,Famcod,Reluni,b.Unicod,b.Unides,Relart,Relcon*1 as Relcon, '' Famund,Relpre,Relpre as Ffacod,g.unides as Ffanom,Defvia , Defart
+				Relfam,Famnom,Famcod,Reluni,b.Unicod,b.Unides,Relart,Relcon*1 as Relcon, '' Famund,Relpre,Relpre as Ffacod,g.unides as Ffanom,Defvia , Defart, '' Artpos
 			FROM
 				{$wbasedato}_000114 a, 
 				{$wbasedato}_000115 c,
@@ -12687,6 +12689,14 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			$pos5 = strpos($val, $textfind5);
 			if($pos5 === false)
 				$val .= "|$".$rows[ 'Relcon' ];
+			///////////////////////////////////////////////////////
+
+
+			/////////////// ES POS /////////////////
+			$textfind5 = "|¬".$rows[ 'Artpos' ]."|";
+			$pos5 = strpos($val, $textfind5);
+			if($pos5 === false)
+				$val .= "|¬".$rows[ 'Artpos' ];
 			///////////////////////////////////////////////////////
 
 			
@@ -16214,6 +16224,8 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 	}
 	
 	$validarTarifa 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'validarPrescripcionConTarifa' ) == 'on';
+
+	$sMipresEnListaMedicamentosOrdenes = consultarAliasPorAplicacion( $conex, $wemp_pmla, "mipresEnListaMedicamentosOrdenes" );
 	
 	/********************************************************************************************************************************
 	 * Creo dos arryas,uno para la familia y otro para los articulos. Estos arryas solo indican si una familia o articulo se ve en 
@@ -16744,6 +16756,17 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			}
 			
 			$informacion .= " - Justificaci&oacute;n para actualizar: ".$articulo->jusParaAutorizar;
+
+			/*
+			* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+			* Autor: sebastian.nevado
+			* Fecha: 2021-10-04
+			*/
+			if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+			{
+				$informacion .= "<br> - N&uacute;mero prescripción Mipres: ".$articulo->noPrescripcionMipres;
+			}
+			//FIN MODIFICACIÓN
 			
 			echo "<tr id='trFil".$contArticulos."' idtr=trFil".$tipoProtocolo.$contArticulos." title=' - ".$informacion."' class='".$clase."'".$filaVisible." style='$mostrarFila'>";
 			
@@ -16827,6 +16850,11 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 				echo "<div id='wnmmed$articulo->tipoProtocolo$contArticulos'>$articulo->codigoArticulo</div>";
 			} else {
 				echo $articulo->codigoArticulo;
+			}
+			//Número Prescripción Mipres
+			if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+			{
+				echo "<div id='wnummipres$articulo->tipoProtocolo$contArticulos' style='display: none' >$articulo->noPrescripcionMipres</div>";
 			}
 			echo "</td>";
 			
@@ -18284,6 +18312,9 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 	
 	global $conex;
 	global $wcenmez;
+	global $wemp_pmla;
+
+	$sMipresEnListaMedicamentosOrdenes = consultarAliasPorAplicacion( $conex, $wemp_pmla, "mipresEnListaMedicamentosOrdenes" );
 	
 	
 	// //Muestra el detalle de medicamentos del kardex consultado
@@ -18449,6 +18480,18 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 				
 				//Encabezado detalle kardex
 				echo "<td nowrap> $auxEspacios $auxEspacios $auxEspacios Articulo $auxEspacios $auxEspacios $auxEspacios </td>";
+				
+				/*
+				* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+				* Autor: sebastian.nevado
+				* Fecha: 2021-10-04
+				*/
+				// if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+				// {
+				// 	echo "<td># Prescripci&oacute;n Mipres</td>";
+				// }
+				//FIN MODIFICACIÓN
+
 				echo "<td style='display:none'>Protocolo</td>";
 				echo "<td>Dosis</td>";
 				echo "<td>Frecuencia</td>";
@@ -18507,6 +18550,18 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 			} else {
 				echo "<td ".$funcionOnclickAbrirNPT.">".utf8_encode( $articulo->codigoArticulo )."</td>";
 			}
+
+			// //# Prescripción Mipres
+			// /*
+			// * Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+			// * Autor: sebastian.nevado
+			// * Fecha: 2021-10-04
+			// */
+			// if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
+			// {
+			// 	echo "<td>".$articulo->noPrescripcionMipres."</td>";
+			// }
+			// //FIN MODIFICACIÓN
 			
 			//Nombre protocolo
 			echo "<td style='display:none'>".utf8_encode( $articulo->nombreProtocolo )."</td>";
@@ -25676,9 +25731,9 @@ function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tip
 	
 	//Carga los articulos del la extensión del detalle del kardex a la temporal
 	$sql = "INSERT INTO ".$wbasedato."_000209
-					(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Seguridad  )
+					(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, Seguridad  )
 				SELECT
-					 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, a.Seguridad
+					 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, a.Seguridad
 				FROM
 					".$wbasedato."_000208 a, ".$wbasedato."_000060 b
 				WHERE
@@ -26822,9 +26877,9 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				
 				//Carga los articulos del la extensión del detalle del kardex a la temporal
 				$sqlExt = "INSERT INTO ".$wbasedato."_000209
-							(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing,   Ekxfec    , Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Seguridad  )
+							(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing,   Ekxfec    , Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, Seguridad  )
 						SELECT
-							 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, '".$fecha."', Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, a.Seguridad
+							 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, '".$fecha."', Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, a.Seguridad
 						FROM
 							".$wbasedato."_000208 a, ".$wbasedato."_000060 b
 						WHERE
@@ -27743,9 +27798,9 @@ function cargarArticulosADefinitivo( $historia, $ingreso, $fecha, $esPrimerKarde
 	
 	//Carga los articulos del la extensión del detalle del kardex a la temporal
 	$sql = "INSERT INTO ".$wbasedato."_000208
-				(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Seguridad  )
+				(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, Seguridad  )
 			SELECT
-				 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, a.Seguridad
+				 a.Medico, a.Fecha_data, a.Hora_data, Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, a.Seguridad
 			FROM
 				".$wbasedato."_000209 a, ".$wbasedato."_000054 b
 			WHERE
@@ -31148,7 +31203,7 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
  * @param unknown_type $usuario
  * @return unknown
  ************************************************************************************************************************************************/
-function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosisMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fInicioAnt,$hInicioAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$cantidadAlta,$impresion,$deAlta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$id_original,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo, $wdrautorizado, $wjusparaautorizar ){
+function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosisMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fInicioAnt,$hInicioAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$cantidadAlta,$impresion,$deAlta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$id_original,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo, $wdrautorizado, $wjusparaautorizar, $numMipres ){
 	
 	global $horaCorteDispensacion;	
 	global $whce;	
@@ -31710,9 +31765,9 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 						//Se crea query para insertar los datos en la extensión de la tabla temporal
 						//a este query le falta el filtro de kadido que se agrega más adelante
 						$sql_ext = "INSERT INTO ".$wbasedato."_000209
-										( Medico , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest,    Ekxpro    ,    Ekxtra     ,     Ekxped     ,   Ekxin1     ,   Ekxin2     ,    Ekxayu     ,     Ekxaut     ,        Ekxjus       , Seguridad   )
+										( Medico , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest,    Ekxpro    ,    Ekxtra     ,     Ekxped     ,   Ekxin1     ,   Ekxin2     ,    Ekxayu     ,     Ekxaut     ,        Ekxjus	,	Ekxmip       , Seguridad   )
 									SELECT
-										 b.Medico, b.Fecha_data, b.Hora_data, Kadhis, Kading, Kadfec, Kadart, Kadido, Kadest, '$profilaxis', '$tratamiento', '$esPediatrico', '$conInsumo1', '$conInsumo2', '$ccoAyudaDx', '$wdrautorizado', '$wjusparaautorizar', b.Seguridad
+										 b.Medico, b.Fecha_data, b.Hora_data, Kadhis, Kading, Kadfec, Kadart, Kadido, Kadest, '$profilaxis', '$tratamiento', '$esPediatrico', '$conInsumo1', '$conInsumo2', '$ccoAyudaDx', '$wdrautorizado', '$wjusparaautorizar', '$numMipres', b.Seguridad
 									FROM
 										".$wbasedato."_000060 b
 									WHERE
@@ -36879,7 +36934,7 @@ function prepararDivisor( $numero )
 /*
  * AJAX::ConsultarArticulosPorNombre
  */
-function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPaciente, $presentacion, $medida, $dosis, $administracion, $eps, $bsq, $his, $ing ){
+function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPaciente, $presentacion, $medida, $dosis, $administracion, $eps, $bsq, $his, $ing, $nummipres = null ){
 
 	global $conex;
 	global $wemp_pmla;
@@ -38202,6 +38257,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				"|".$rs['Defcsa'].
 				"|".$famAtc.
 				"|".$con_tarifa.
+				"|".$nummipres.
 				"\n";
 			}
 			
@@ -39240,6 +39296,142 @@ function CcoPorTipoOrden($conex, $wemp_pmla, $tipo_orden, $indice, $codcups){
 	
 	return json_encode($data);
 }
+/**
+ * Función para buscar el código mipres para el día de hoy en los medicamentos
+ * @by: sebastian.nevado
+ * @date: 2021/10/10
+ * @return: boolean
+ */
+function encuentraCodigoMipresMedicamentoDia($sCodigoMipres, $basedatos)
+{
+	global $conex;
+
+	$q = "SELECT dk.id
+			FROM ".$basedatos."_000054 dk
+			INNER JOIN ".$basedatos."_000208 edk ON (Kadhis = Ekxhis
+											AND Kading = Ekxing
+											AND Kadfec = Ekxfec
+											AND Kadart = Ekxart
+											AND Kadido = Ekxido)
+			WHERE Ekxmip = '".$sCodigoMipres."' AND Ekxfec = '".date("Y-m-d")."' AND Kadsus = 'off'
+			UNION
+			SELECT tdk.id
+			FROM ".$basedatos."_000060 tdk
+			INNER JOIN ".$basedatos."_000209 tedk ON (Kadhis = Ekxhis
+											AND Kading = Ekxing
+											AND Kadfec = Ekxfec
+											AND Kadart = Ekxart
+											AND Kadido = Ekxido)
+			WHERE Ekxmip = '".$sCodigoMipres."' AND Ekxfec = '".date("Y-m-d")."' AND Kadsus = 'off'";
+
+	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query - " . mysql_error());
+	$num = mysql_num_rows($res);
+
+	if($num > 0){
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Función para buscar medicamentos no POS con su código mipres ingresado
+ * @by: sebastian.nevado
+ * @date: 2021/10/14
+ * @return: array
+ */
+function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = null)
+{
+	global $conex;
+	global $wemp_pmla;
+	
+	//Variable de respuesta
+	$aArticulos = array();
+	$aArticulosDefinitivos = array();
+	
+	//Si el wemm_pmla llega vacío, uso el global
+	$sWemp_pmla = is_null($sWemp_pmla) ? $wemp_pmla : $sWemp_pmla;
+	//Si la fecha llega nula, pongo la fecha actual
+	$sFechaBusqueda = is_null($sFechaBusqueda) ? date("Y-m-d") : $sFechaBusqueda;
+
+	//Variables para las tablas
+	$sMovhos = consultarAliasPorAplicacion( $conex, $sWemp_pmla, "movhos" );
+	$sCliame = consultarAliasPorAplicacion( $conex, $sWemp_pmla, "cliame" );
+
+	//Busco los tipos de empresa que son EPS
+	$sTiposEmpresa = consultarAliasPorAplicacion( $conex, $sWemp_pmla, "tiposEmpresasEps" );
+	
+	//creo un IN para la consulta
+	$aListaEPS = explode( "-", $sTiposEmpresa );
+	
+	$sInEPS = '';
+	
+	foreach( $aListaEPS as $key => $value ){
+		$sInEPS .= ",'$value'";
+	}
+	
+	$sInEPS = "IN( ".substr( $sInEPS, 1 )." ) ";
+
+	$sQueryInforme = "SELECT DISTINCT dk.Fecha_data AS fechaordeniamiento,
+							dk.Kadhis AS historia, dk.Kading AS ingreso, pac.Pacap1 AS apellido1, pac.Pacap2 AS apellido2, pac.Pacno1 AS nombre1, pac.Pacno2 AS nombre2,
+							ing.Ingres AS nitentidad, ing.Ingnre AS nombreentidad,
+							dk.Kadart AS codigoarticulo, ma.Artcom AS nombrearticulo, ma.Artgen AS nombregenericoarticulo, dk.Kadcma AS cantidad, dk.Kadufr AS unidad, edk.Ekxmip AS codigomipres,
+							u.codigo AS codigomedico, u.Descripcion AS nombremedico,
+							diag.Diacod AS codigodiagnostico, r.Descripcion AS diagnostico, '' AS diagnosticos,
+							cc.Ccocod AS codigocc, cc.Cconom AS nombrecc, Habcpa AS nombrehabitacion
+			FROM {$sMovhos}_000208 edk
+			INNER JOIN {$sMovhos}_000054 dk ON (dk.Kadhis = edk.Ekxhis
+										AND dk.Kading = edk.Ekxing
+										AND dk.Kadfec = edk.Ekxfec
+										AND dk.Kadart = edk.Ekxart
+										AND dk.Kadido = edk.Ekxido)
+			INNER JOIN {$sMovhos}_000026 ma ON (dk.Kadart = ma.Artcod AND ma.Artest = 'on')
+			INNER JOIN {$sMovhos}_000016 ing ON (ing.Inghis = dk.Kadhis
+										AND ing.Inging = dk.Kading
+										AND Ingtip {$sInEPS}
+										)
+			INNER JOIN {$sCliame}_000024 emp ON (emp.Empcod = ing.Ingres AND emp.Empest = 'on')
+			INNER JOIN usuarios u ON (u.Codigo = SUBSTRING(dk.Seguridad, 3, LENGTH(dk.Seguridad)))
+			INNER JOIN {$sCliame}_000100 pac ON (pac.Pachis = dk.Kadhis)
+			LEFT JOIN {$sMovhos}_000243 diag ON (dk.Kadhis = diag.Diahis AND dk.Kading = diag.Diaing AND diag.Diaest = 'on')
+			LEFT JOIN root_000011 r ON (diag.Diacod = r.Codigo)
+			LEFT JOIN {$sMovhos}_000018 habp ON (habp.Ubihis = dk.Kadhis AND habp.Ubiing = dk.Kading)
+			LEFT JOIN {$sMovhos}_000011 cc ON (habp.Ubisac = cc.Ccocod)
+			LEFT JOIN {$sMovhos}_000020 hab ON (hab.Habhis = dk.Kadhis AND hab.Habing = dk.Kading)
+			WHERE dk.Kadsus = 'off'
+				AND ma.Artpos <> 'P'
+				AND dk.Fecha_data = '{$sFechaBusqueda}'
+			ORDER BY dk.Fecha_data DESC, dk.Hora_data DESC";
+
+	$aResultadoQuery = mysqli_query($conex, $sQueryInforme) or die ("Error: " . mysql_errno() . " - en el query - " . mysql_error());
+	$aArticulos = mysqli_fetch_all($aResultadoQuery, MYSQLI_ASSOC);
+	
+	//Recorro el array de artículos, buscando los registros repetidos, pero con diagnóstico diferente. Hacer la concatenación desde BD demora 10s.
+	foreach ($aArticulos as $oArticulo)
+	{
+		$bEncontrado = false;
+		//Busco si el artículo actual está en los artículos definitivos
+		foreach ($aArticulosDefinitivos as &$oArticuloDefinitivo)
+		{
+			//Si lo encuentro, agrego la descripción del diagnóstico
+			if($oArticuloDefinitivo['historia'] == $oArticulo['historia'] && $oArticuloDefinitivo['ingreso'] == $oArticulo['ingreso'] && $oArticuloDefinitivo['codigoarticulo'] == $oArticulo['codigoarticulo'])
+			{
+				$oArticuloDefinitivo['diagnosticos'] .= $oArticulo['codigodiagnostico'] . ' - ' . $oArticulo['diagnostico'] . '; <br>';
+				$bEncontrado = true;
+			}
+		}
+		
+		//Si no lo encuentro, agrego el dianóstico por primera vez, y lo agrego al listado defintivo
+		if(!$bEncontrado)
+		{
+			$oArticulo['diagnosticos'] = $oArticulo['codigodiagnostico'] . ' - ' . $oArticulo['diagnostico'] . '; <br>';
+			$aArticulosDefinitivos[] = $oArticulo;
+		}
+	}
+
+	return $aArticulosDefinitivos;
+}
+
 /*********************************************************************************************************************************
  * 						SECCION PARA INCLUIR EL USO DE CONSULTAR MEDIANTE AJAX
  * ****MODO DE USO
@@ -39266,7 +39458,7 @@ if(isset($consultaAjaxKardex)){
 
 	switch($consultaAjaxKardex){
 		case 1:
-			echo grabarArticuloDetalle($basedatos,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fIniAnt,$hIniAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$wcantidadAlta,$wimpresion,$walta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$idoriginal,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo,$wdrautorizado,$wjusparaautorizar);
+			echo grabarArticuloDetalle($basedatos,$historia,$ingreso,$fechaKardex,$codArticulo,$cantDosis,$unDosis,$per,$fmaFtica,$fini,$hini,$via,$conf,$dtto,$obs,$origenArticulo,$codUsuario,$condicion,$dosMax,$cantGrabar,$unidadManejo,$cantidadManejo,$primerKardex,$horasFrecuencia,$fIniAnt,$hIniAnt,$noDispensar,$tipoProtocolo,$centroCostosGrabacion,$prioridad,$wcantidadAlta,$wimpresion,$walta,$nombreArticulo,$familia,$firma,$artdosisAdaptada,$idoriginal,$artnoEsteril,$profilaxis,$tratamiento,$esPediatrico,$conInsumo1,$conInsumo2,$porProtocolo,$wdrautorizado,$wjusparaautorizar,$numMipres);
 			break;
 		case 2:
 			if(!isset($tipoProtocolo)){
@@ -39420,7 +39612,7 @@ if(isset($consultaAjaxKardex)){
 				}
 			}
 
-			echo consultarArticulosFamilia($basedatos,$cenmez, utf8_decode( $q ), $ccoPaciente, $pre, $med, $dos, $adm, $eps, $bsq, $his, $ing );
+			echo consultarArticulosFamilia($basedatos,$cenmez, utf8_decode( $q ), $ccoPaciente, $pre, $med, $dos, $adm, $eps, $bsq, $his, $ing, $nummipres );
 			break;
 			
 		case 36:
@@ -39804,6 +39996,10 @@ if(isset($consultaAjaxKardex)){
 			$val = CcoPorTipoOrden($conex, $wemp_pmla, $tipo_orden, $indice, $codcups);
 			echo $val;
 		break;
+		case 'encuentraCodigoMipresMedicamento':
+			$bEncuentraCodigo = encuentraCodigoMipresMedicamentoDia($nroPrescripcion, $basedatos);
+			echo $bEncuentraCodigo ? '1': '0';
+			break;
 		default :
 			break;
 	}
