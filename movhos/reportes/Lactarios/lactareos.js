@@ -1,9 +1,40 @@
 var startDate =  moment().format("YYYY-MM-DD");
 var endDate = moment().format("YYYY-MM-DD"); 
-
+$.datepicker.regional['esp'] = {
+	closeText: 'Cerrar',
+	prevText: 'Antes',
+	nextText: 'Despues',
+	monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+	'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+	monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun',
+	'Jul','Ago','Sep','Oct','Nov','Dic'],
+	dayNames: ['Domingo','Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'],
+	dayNamesShort: ['Dom','Lun','Mar','Mie','Jue','Vie','Sab'],
+	dayNamesMin: ['D','L','M','M','J','V','S'],
+	weekHeader: 'Sem.',
+	dateFormat: 'yy-mm-dd',
+	changeYear: true,
+	changeMonth: true,
+	yearRange: '-10:+10'
+	};
+$.datepicker.setDefaults($.datepicker.regional['esp']);
 
 $(document).ready(function() {
    
+	$("#wfecha_i").datepicker({
+		showOn: "button",
+		buttonImage: "../../images/medical/root/calendar.gif",
+		buttonImageOnly: true,
+		maxDate:"+2Y"
+	  });
+
+	  $("#wfecha_f").datepicker({
+		showOn: "button",
+		buttonImage: "../../images/medical/root/calendar.gif",
+		buttonImageOnly: true,
+		maxDate:"+2Y"
+	  });
+
    
     var start = moment().subtract(29, 'days');
 	var end = moment();
@@ -90,15 +121,17 @@ $(document).ready(function() {
         scrollX: true,
 		pageLength: 5,
         paging: true,
-        
+           
     	});
 
         $("#generar").click( function() {
-		
+		 $("#lactarios").DataTable().clear().draw();
+			fechaini = $("#wfecha_i").val();
+			fechafin = $("#wfecha_f").val();
             $.ajax({
                 url : "Lactarios/backReporte.php",
                 type: "POST",
-                data: {"fecha_ini":startDate, "fecha_fin":endDate, "accion": "consultar", "wemp_pmla": "01" },
+                data: {"fecha_ini":fechaini, "fecha_fin":fechafin, "accion": "consultar", "wemp_pmla": "01" },
                 dataType: "JSON",
                 success: function(respuesta)
                 {
@@ -116,7 +149,8 @@ $(document).ready(function() {
                                     value.Entusu,
                                     value.Enture,
                                     value.Entfec,
-                                    value.Enthor
+                                    value.Enthor,
+									value.Entest
                                 ]);
                         });
                     }

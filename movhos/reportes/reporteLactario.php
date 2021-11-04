@@ -5,7 +5,7 @@ include_once("conex.php");
 include_once("root/comun.php");
 
 
-$wactualiz = "2018-08-13";
+$wactualiz = "2018-11-02";
 
 if(!isset($_SESSION['user'])){
 	 echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>
@@ -14,11 +14,11 @@ if(!isset($_SESSION['user'])){
 	 return;
 } 
 
-
+$fecha = date('Y-m-d');
 
 $wactualiz="Octubre 27 de 2021";         
 
-  encabezado("REPORTE DE ENTREGA LACTARIOS",$wactualiz, "clinica");
+  encabezado("REPORTE DE ENTREGA LACTARIO",$wactualiz, "clinica");
 
 ?>
 <html>
@@ -48,11 +48,12 @@ $wactualiz="Octubre 27 de 2021";
 					<link href="Lactarios/bootstrap.min.css"
 						rel="stylesheet" type="text/css" />					
 					
-
+					
 
 
 					<script type="text/javascript" src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js"></script>
-
+					<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
+	<script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
 					<script type="text/javascript" src="../../../include/root/jquery.blockUI.min.js"></script>
 					<script type='text/javascript' src='../../../include/root/jquery.quicksearch.js'></script>
 				
@@ -97,20 +98,125 @@ $wactualiz="Octubre 27 de 2021";
 					
 					
 	</head>
-		<body>
-			<div class="row justify-content-center align-items-center">
+	<style>
+			table {
+			display: table;
+			border-collapse: separate;
+			box-sizing: border-box;
+			text-indent: initial;
+			white-space: normal;
+			line-height: normal;
+			font-weight: normal;
+			font-size: medium;
+			font-style: normal;
+			color: -internal-quirk-inherit;
+			text-align: start;
+			border-spacing: 2px;
+			border-color: grey;
+			font-variant: normal;
+		}
+		.fila1 {
+			background-color: #C3D9FF;
+			color: #000000;
+			font-size: 10pt;
+		}
+		.fila2 {
+			background-color: #E8EEF7;
+			color: #000000;
+			font-size: 10pt;
+		}
+		.tituloPagina {
+			font-family: verdana;
+			font-size: 18pt;
+			overflow: hidden;
+			text-transform: uppercase;
+			font-weight: bold;
+			height: 30px;
+			border-top-color: #2A5DB0;
+			border-top-width: 1px;
+			border-left-color: #2A5DB0;
+			border-left-width: 1px;
+			border-right-color: #2A5DB0;
+			border-bottom-color: #2A5DB0;
+			border-bottom-width: 1px;
+			margin: 2pt;
+		}
+		.encabezadoTabla {
+			background-color: #2A5DB0;
+			color: #FFFFFF;
+			font-size: 10pt;
+			font-weight: bold;
+		}
+
+
+		.seccion1 {
+			background-color: #C3D9FF;
+		}
+		.textoNormal {
+			background: #FFFFFF;
+			font-size: 12px;
+			font-family: Tahoma;
+			font-weight: normal;
+			text-align: left;
+			height: 20px;
+			border-top-width: 1px;
+			border-left-width: 1px;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			padding: 5px;
+			padding-top: 1px;
+			padding-bottom: 2px;
+			background-attachment: #FFFFFF;
+			background-color: #FFFFFF;
+			background-position: #FFFFFF;
+			background-repeat: #FFFFFF;
+		}
+		.entregado {
+			color: #1abc9c !important;
+		}
+		.cancelado {
+			color: #f1556c !important;
+		}
+	</style>	
+	
+		<body style="padding-left: 15px; !important">
+			<div class="row justify-content-center align-items-center" style="display: none; ">
 				<label class="control-label ">Rango de fecha:</label> 
 				<input class="col-xl-4 col-md-4 col-4 custom-select custom-select-sm " type="text"
 						name="daterange" id="filtro" readonly 
 						style="min-width: 177px; display: inline-block;">
 				<br>
 				<br>
-				<button type="button" class="btn btn-success waves-effect waves-light" id="generar">Generar</button>
+				<!-- <button type="button" class="btn btn-success waves-effect waves-light" id="generar">Generar</button> -->
 				<br>
 				<br>
 			</div>
-			<table id="lactarios" class=" table " style="width:100%">
-				<thead 	class="thead-light">
+			<table align="center" cellspacing="2" >
+				<tr class="seccion1">
+					<td align="center" height="61px" width="140px"><b>Fecha Inicial</b><br>
+						<?php 
+							echo '<INPUT TYPE="text" NAME="wfecha_i" id="wfecha_i" value="'.$fecha.'" size="11" readonly class="textoNormal">'
+						?>
+						
+					
+					</td>
+					<td align="center" height='61px' width='140px'><b>Fecha Final</b><br>
+						<?php 
+								echo '<INPUT TYPE="text" NAME="wfecha_f" id="wfecha_f" value="'.$fecha.'" size="11" readonly class="textoNormal">'
+						?>
+						
+					</td>
+			
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+					<button type="button" class="btn btn-info waves-effect waves-light" id="generar">Generar</button>
+					</td>
+				</tr>
+			</table>	
+			<div style="width:85%;">
+			<table id="lactarios" class="table-striped" style=" width:100%; height:20;">
+				<thead 	class="encabezadoTabla ">
 					<tr>
 						
 						<th>Historia</th>
@@ -122,13 +228,16 @@ $wactualiz="Octubre 27 de 2021";
 						<th>Recibio</th>
 						<th>Fecha de entrega</th>
 						<th>Hora de entrega</th>
+						<th>Estado</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="table-striped">
 					
 				
 				</tbody>
 			</table>
+			</div>
+			
 			
 	
 		</body>

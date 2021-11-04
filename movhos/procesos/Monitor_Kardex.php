@@ -2936,7 +2936,7 @@ else {
 			$resCcoDis = mysql_query($sql, $conex) or die(mysql_errno() . " - Error en el query $sql - " . mysql_error());
 
 			while ($rows = mysql_fetch_array($resCcoDis)) {
-				if ($rows['Ccoima'] == 'off') {
+				if ($rows['Ccoima'] == 'on') {
 					$ccoDisCM = $rows['Ccocod'];
 				} else {
 					$ccoDisSF = $rows['Ccocod'];
@@ -3308,6 +3308,14 @@ else {
 									echo "<th>Historia</th>";
 									echo "<th>Paciente</th>";
 									echo "<th>Estado</th>";
+									// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
+									echo "<th colspan='2' width='101'>Acción</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th>Estado</th>";
+									// echo "<th>Imprimir todos</th>";
 									echo "<th colspan='2' width='101'>Acción</th>";
 									echo "</tr>";
 
@@ -3366,7 +3374,16 @@ else {
 									echo "<th>Historia</th>";
 									echo "<th>Paciente</th>";
 									echo "<th>Estado</th>";
+									// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
 									echo "<th colspan='2' width='101'>Acción</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+									// echo "<th>Habitacion</th>";
+									// echo "<th>Historia</th>";
+									// echo "<th>Paciente</th>";
+									// echo "<th>Estado</th>";
+									// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
+									// echo "<th colspan='2' width='101'>Acción</th>";
+									
 									echo "</tr>";
 
 									break;
@@ -3426,10 +3443,21 @@ else {
 							if ($wptr == "on")
 								$walta_tras = "colorAzul4";
 
-							echo "<tr class=" . $wclass . ">";
-							echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>";
-							echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>";
-							echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>";
+								if ($wopcion == 5) //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
+								{
+									//print_r($wmat_estado);
+									echo "<tr class=" . $wclass . " id='".$wmat_estado[$i][1]."'>";
+									echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
+									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
+									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
+									echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
+									// echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir</td>"; //Imprimir
+								} else {
+									echo "<tr class=" . $wclass . ">";
+									echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
+									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
+									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
+								}
 
 							if ($wopcion != "12") {
 								if ($wopcion == "3" or $wopcion == "8")      //Esta es la opcion de historias que no tienen kardex actualizado
@@ -3534,9 +3562,17 @@ else {
 									$walta_tras = "colorAzul4";
 
 								if ($i <= ($j - 1)) {
+									
 									echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //Habitacion 
 									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>";  //Historia-Ingreso
 									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>";                            //Paciente
+
+									if ($wopcion == 5) //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
+									{
+										echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
+										// echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir</td>"; //Imprimir
+									}
+									
 									if ($wopcion == "3" or $wopcion == "8" or $wopcion == "12")  //Esta es la opcion de historias que no tienen kardex actualizado
 										if ($wmat_estado[$i][8])
 											echo "<td class=" . $walta_tras . " align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=" . $wemp_pmla . "&wcedula=" . $wmat_estado[$i][9] . "&wtipodoc=" . $wmat_estado[$i][10] . "&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
@@ -3645,6 +3681,7 @@ else {
 								echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
 								echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
 								echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
+								// echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir</td>"; //Imprimir
 							} else {
 								echo "<tr class=" . $wclass . ">";
 								echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
@@ -3753,9 +3790,9 @@ else {
 			echo "<br>";
 			echo "<table>";
 			echo "<tr><td align=center colspan=9><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'>";
-			if($wopcion == "5"){
-				echo "&nbsp;<input type=button value='Imprimir sticker' onclick='imprimirSticker()'>";
-			}
+			// if($wopcion == "5"){
+			// 	echo "&nbsp;<input type=button value='Imprimir sticker' onclick='imprimirSticker()'>";
+			// }
 			echo "</td></tr>";
 			echo "<input type='hidden' id='tooltipDetalle' value='" . $cadenaTooltipDetalle . "'>";
 			echo "</table>";
@@ -3763,7 +3800,6 @@ else {
 			//Desde aca comienza el detalle del kardex que tiene cada paciente
 			if ($wopcion == 5) //se hace condición para que solo muestre la tabla de pacientes con la informacion de medicamento
 			{
-
 				function estado_del_Kardex_lactario($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac, &$esOrdenes)
 				{
 					global $wbasedato;
@@ -4008,6 +4044,9 @@ else {
 				echo "<td class='fila1' width='90%'>
 						<div class='titulopagina' align='center'>PACIENTES CON SOPORTE NUTRICIONAL</div>
 					</td>";
+
+				echo "&nbsp;<input type=button value='Imprimir sticker' onclick='imprimirSticker()'>";
+
 				//Encabezado de tabla
 				echo "<table id='PacSoporteNuticional'>";
 				// echo "<hr style='height:3px;border-width:0;color:#cc0000;background-color:#cc0000'>";
@@ -4022,7 +4061,7 @@ else {
 				echo "<th>Frecuencia</th>";
 				echo "<th>Fecha y hora de inicio</th>";
 				echo "<th>Observación</th>";
-				echo "<th><input type='checkbox' id='checkAll' data-info='' />&nbsp</th>";
+				echo "<th>Sticker - Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
 				// echo "<th colspan='2' width='101'>Acción</th>"; //Se comenta porque no es necesario la accion en la parte informativa
 				echo "</tr>";
 
@@ -4111,7 +4150,7 @@ else {
 							echo "<td align='center' >" . $pos_art[2] . "</td>"; //Frecuencia
 							echo "<td align='center' >" . $pos_art[3] . " <br>a las</br> " . $pos_art[4] . "</td>";	//Fecha y hora de inicio 
 							echo "<td align='center' >" . $pos_art[6] . "</td>"; //Obervación
-							echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp</td>"; //Imprimir
+							echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir Sticker</td>"; //Imprimir
 							echo "</tr>";
 						}
 					} else {
@@ -4170,7 +4209,7 @@ else {
 						echo "<td align='center' >" . $fila[12] . "</td>"; //Frecuencia
 						echo "<td align='center' >" . $fila[13] . " <br>a las</br> " . $fila[14] . "</td>";	//Fecha y hora de inicio 
 						echo "<td align='center' >" . $fila[16] . "</td>"; //Obervación
-						echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp;</td>"; //Imprimir
+						echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir Sticker</td>"; //Imprimir
 						echo "</tr>";
 
 						$color_filas++; //Vamos incrementando
@@ -4203,7 +4242,6 @@ else {
 			}
 		}
 	}
-
 
 	include_once("free.php");
 	//=======================================================================================================================================================
