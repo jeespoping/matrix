@@ -13,7 +13,7 @@ include('Classes/dSendMail2/dSendMail2.inc.php');
  * 2020-02-01
  */
 // $conexunix = odbc_connect('queryx7', '', '') or die("No se realizó Conexion con Oracle");
-$conexunix = odbc_connect('queryx7', '', '') or die("No se realizó Conexion con Oracle");
+$conexunix = odbc_connect('queryx7IDC', '', '') or die("No se realizó Conexion con Oracle");
 
 /* Variables */
 $file_name = null;  // Nombre de Archivo 
@@ -42,15 +42,13 @@ $body2 = utf8_decode("Se generó y se envió la información correspondiente a l
 $m = new dSendMail2; // Correo para adjuntar información
 
 /* Enviar notificación con archivos adjuntos */
-array_push($mailTo, 'leandrom@taito.com.co'); // Contador -> Sergio Andres Salinas 
-// array_push($mailTo, 'sasalinas@idclasamericas.co'); // Contador -> Sergio Andres Salinas 
-// array_push($mailTo, 'laalzate@idclasamericas.co'); // Analista de Contabilidad -> Laura Alzate Serna 
-// array_push($mailTo, 'fmontes@idclasamericas.co'); // Analista de Contabilidad -> Laura Alzate Serna 
+array_push($mailTo, 'sasalinas@idclasamericas.co'); // Contador -> Sergio Andres Salinas 
+array_push($mailTo, 'laalzate@idclasamericas.co'); // Analista de Contabilidad -> Laura Alzate Serna 
+array_push($mailTo, 'fmontes@idclasamericas.co'); // Analista de Contabilidad -> Laura Alzate Serna 
 
 /* Enviar notificación de generación */
 // array_push($mailTo2, 'ofsistemas@idclasamericas.co'); // Oficina de Sistemas - Usado para verificación del proceso.
-//array_push($mailTo2, 'fmontes@idclasamericas.co'); // Fernando Montes Botero - Usado para verificación del proceso.
-array_push($mailTo2, 'leandrom@taito.com.co'); // Fernando Montes Botero - Usado para verificación del proceso.
+array_push($mailTo2, 'fmontes@idclasamericas.co'); // Fernando Montes Botero - Usado para verificación del proceso.
 
 /*
  * Funcion: ConsultarUtlimoComprobante
@@ -156,7 +154,6 @@ function ComprobanteContable($conexunix, $ano, $mes, $tipoComprobante, $document
                 0 AS CTCRVALFAC
                 FROM comov 
                 WHERE MOVFUE = '" . $tipoComprobante . "' AND 
-                MOVEMPRESA = '06' AND				
                 MOVANO = " . $ano . " AND
                 MOVMES = " . $mes . " AND 
                 MOVDOC  = '" . $documento . "' 
@@ -184,15 +181,11 @@ function ComprobanteContable($conexunix, $ano, $mes, $tipoComprobante, $document
 
 $RecordSet = ConsultarUtlimoComprobante($conexunix, $_GET['id']);
 while (odbc_fetch_row($RecordSet)) {
-
     $result = odbc_result_all($RecordSet, "border=1");
     $item_ano = odbc_result($RecordSet, "ano");
     $item_mes = odbc_result($RecordSet, "mes");
     $item_comprobante = odbc_result($RecordSet, "comprobante");
     $item_documento = odbc_result($RecordSet, "documento");
-	
-	// echo("2 ".$item_comprobante."<br>");
-	// exit();
     /* Consultar Comprobante */
 
     $file_name = "Comprobantes/ComprobanteContable_" . $item_comprobante . "_" . $item_documento . "_" . $item_ano . "_" . $item_mes . "_" . $date_log . ".csv";

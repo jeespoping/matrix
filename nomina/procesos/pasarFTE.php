@@ -1,9 +1,16 @@
+<?php
+	// 2021-11-05: Luis F Meneses. Adicionar a Laboratorio como empresa de la misma fuente
+	//				de Promotora y Fundación, filtrando en Sql7 por movempresa=3
+	// 2021-03-08: Luis F Meneses. Adicionar a Fundación como empresa de la misma fuente
+	//				de Promotora, filtrando en Sql7 por movempresa=1 (promotora), movempresa=7 (Fundación)
+?>
+
 <!DOCTYPE html>
 <html lang="es" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>GENERACION DE COMPROBANTES DE NOMINA - MATRIX</title>
+    <title>GENERACI&Oacute;N DE COMPROBANTES DE NOMINA - MATRIX</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> <!-- INDICADOR DE CARGA DE PAGINA-->
     <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="http://mtx.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk2.css" rel="stylesheet">
@@ -60,11 +67,11 @@
 <div class="container general" style="margin-left: 0">
     <div class="panel panel-info contenido">
         <div class="panel-heading encabezado">
-            <div class="panel-title">Matrix - Generar Comprobante de Nomina</div>
+            <div class="panel-title">Matrix - Generar Comprobante de N&oacute;mina</div>
         </div>
         <form method="post" action="pasarFTE.php" onsubmit="return confirm('Esta Seguro de General Comprobante con los Parametros Ingresados ?')">
             <div class="titulo">
-                <label>CONEXION:</label>
+                <label>CONEXI&Oacute;N:</label>
                 <br>
                 <?php
                 switch($conexion)
@@ -73,9 +80,9 @@
                         ?>
                         <label for="conexion">Promotora &nbsp;</label><input type="radio" id="conexion" name="conexion" value="1" checked> <!-- &ensp;&ensp; -->
                         <label for="conexion" style="display:none;">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled style="display:none;"><!-- &ensp;&ensp; -->
+                        <label for="conexion" style="display:none;">Patolog&iacute;a &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled style="display:none;"><!-- &ensp;&ensp; -->
                         <label for="conexion" style="display:none;">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
+                        <label for="conexion" style="display:none;">Fundaci&oacute;n &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
                         <?php
                         break;
                     case '2':
@@ -84,7 +91,7 @@
                         <label for="conexion">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" checked><!-- &ensp;&ensp; -->
                         <label for="conexion"style="display:none;">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled style="display:none;"><!-- &ensp;&ensp; -->
                         <label for="conexion"style="display:none;">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion"style="display:none;">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
+                        <label for="conexion"style="display:none;">Fundaci&oacute;n &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
                         <?php
                         break;
                     case '3':
@@ -93,7 +100,7 @@
                         <label for="conexion" style="display:none;">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled style="display:none;"><!-- &ensp;&ensp; -->
                         <label for="conexion">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" checked><!-- &ensp;&ensp; -->
                         <label for="conexion" style="display:none;">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
+                        <label for="conexion" style="display:none;">Fundaci&oacute;n &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
                         <?php
                         break;
                     case '4':
@@ -102,7 +109,7 @@
                         <label for="conexion" style="display:none;">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled style="display:none;"><!-- &ensp;&ensp; -->
                         <label for="conexion" style="display:none;">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled style="display:none;"><!-- &ensp;&ensp; -->
                         <label for="conexion">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" checked><!-- &ensp;&ensp; -->
-                        <label for="conexion" style="display:none;">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
+                        <label for="conexion" style="display:none;">Fundaci&oacute;n &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled style="display:none;">
                         <?php
                         break;
                     case '5':
@@ -111,7 +118,7 @@
                         <label for="conexion" style="display:none;">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled style="display:none;"><!-- &ensp;&ensp; -->
                         <label for="conexion" style="display:none;">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled style="display:none;"><!-- &ensp;&ensp; -->
                         <label for="conexion" style="display:none;">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled style="display:none;"><!-- &ensp;&ensp; -->
-                        <label for="conexion">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" checked>
+                        <label for="conexion">Fundaci&oacute;n &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" checked>
                         <?php
                         break;
                     default:
@@ -120,7 +127,7 @@
                         <label for="conexion">Laboratorio &nbsp;</label><input type="radio" id="conexion" name="conexion" value="2" disabled>&ensp;&ensp; 
                         <label for="conexion">Patologia &nbsp;</label><input type="radio" id="conexion" name="conexion" value="3" disabled >&ensp;&ensp; 
                         <label for="conexion">Clisur &nbsp;</label><input type="radio" id="conexion" name="conexion" value="4" disabled>
-                        <label for="conexion">Fundación &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled>
+                        <label for="conexion">Fundaci&oacute;n &nbsp;</label><input type="radio" id="conexion" name="conexion" value="5" disabled>
                         <?php
                         break;
                 }
@@ -207,7 +214,7 @@
             //Promotora:
             if ($conexion == 1)
             {
-				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA Y FUNDACIÓN
+				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA, FUNDACIÓN Y LABORATORIO
                 //$conexSql7 = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
 				echo 'SELECCIONO PROMOTORA...';
                 $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexión con la BD de Promotora");
@@ -216,8 +223,10 @@
             //Laboratorio:
             if ($conexion == 2)
             {
+				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA, FUNDACIÓN Y LABORATORIO
+                // $conexSql7 = odbc_connect('queryx7LMLA','','') or die("No se realizo conexión con la BD de Laboratorio");
                 echo 'SELECCIONO LABORATORIO...';				
-                $conexSql7 = odbc_connect('queryx7LMLA','','') or die("No se realizo conexión con la BD de Laboratorio");
+                $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexión con la BD de Promotora");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'laboratorio', $wuse);
             }
             //Patologia  
@@ -237,7 +246,7 @@
             //Fundación
             if ($conexion == 5)
             {
-				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA Y FUNDACIÓN
+				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA, FUNDACIÓN Y LABORATORIO
                 //$conexSql7 = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
 				echo 'SELECCIONO FUNDACION...';
                 $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexión con la BD de Fundación");
@@ -268,8 +277,7 @@ function modificarFte($conexionSql7, $fuente, $documento, $anoFuente, $mesFuente
 		case 'fundacion':$conexUnix = odbc_connect('cofunda','informix','sco') or die("No se realizo conexión con la BD de Promotora/Fundación"); break;
         case 'laboratorio': $conexUnix = odbc_connect('nomlab','informix','sco') or die("No se realizo conexión con la BD de Laboratorio"); break;
         case 'patologia': $conexUnix = odbc_connect('nompat','informix','sco') or die("No se realizo conexión con la BD de Patología"); break;
-        case 'clisur': $conexUnix = odbc_connect('nomsur','informix','sco') or die("No se realizo conexión con la BD de Clisur"); break;
-        
+        case 'clisur': $conexUnix = odbc_connect('nomsur','informix','sco') or die("No se realizo conexión con la BD de Clisur"); break;        
     }
 	
 	// ---- QUITAR COMENTARIO PARA EFECTOS DE PRUEBAS -----------
@@ -361,11 +369,14 @@ function modificarFte($conexionSql7, $fuente, $documento, $anoFuente, $mesFuente
 		{
 			$queryPromotora .= " and movempresa=7";
 		}
+		else if ($empresa=='laboratorio')
+		{
+			$queryPromotora .= " and movempresa=3";
+		}
 
         $queryPromotora = "select movfue, movdoc, movane, movano, movmes, rownum, movfec, movcue, movcco, movnit,
                            movdes, movind, movval, movcon, movbas, movfac, movuni, movcam, movbaj, movanu"
                         . $queryPromotora;
-
 
         $commitQueryPromotora = odbc_do($conexionSql7,$queryPromotora);
 		
@@ -375,7 +386,7 @@ function modificarFte($conexionSql7, $fuente, $documento, $anoFuente, $mesFuente
 		}
 				
         //ASIGNAR TODOS LOS REGISTROS DE COMOV DE SQL7:
-		echo "<br>ASIGNAR TODOS LOS REGISTROS DE COMOV DE SQL7: $queryPromotora";
+		// echo "<br>ASIGNAR TODOS LOS REGISTROS DE COMOV DE SQL7: $queryPromotora";
 		$cant = 0;
         while(odbc_fetch_row($commitQueryPromotora))
         {
@@ -412,7 +423,7 @@ function modificarFte($conexionSql7, $fuente, $documento, $anoFuente, $mesFuente
 			$commitQueryComov = odbc_do($conexUnix, $queryComov);				
 			
         }
-		echo "<br>$cant";
+		//echo "<br>$cant";
         //GRABAR EL ENCABEZADO EN COMOVENC:
         $queryEncabezado = "insert into comovenc(movencano, movencmes, movencfue, movencdoc, movencusu, movencanu)
                                     VALUES('$anoFuente','$mesFuente','$fuente','$documento','$usuario','0')";
