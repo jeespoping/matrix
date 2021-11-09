@@ -2923,26 +2923,51 @@ else {
 
 			$ccoDisCM = '';
 			$ccoDisSF = '';
+			if($wopcion == 5){ //Opcion 5 equivale al monitor para el lactario
+					//Busco los centros de costos a donde van a dispensar, es decir SF o CM
+					//Ccodla - > Dispensa al lactario (dla)
+					$sql = "SELECT Ccocod, Ccoima
+					FROM " . $wbasedato . "_000011
+					WHERE
+						Ccotra = 'on'
+						AND Ccofac = 'on'
+						AND Ccoest = 'on'
+						AND Ccodla = 'on'  
+					";
 
-			//Busco los centros de costos a donde van a dispensar, es decir SF o CM
-			$sql = "SELECT Ccocod, Ccoima
-				FROM " . $wbasedato . "_000011
-				WHERE
-					Ccotra = 'on'
-					AND Ccofac = 'on'
-					AND Ccoest = 'on'
-				";
 
-			$resCcoDis = mysql_query($sql, $conex) or die(mysql_errno() . " - Error en el query $sql - " . mysql_error());
+				$resCcoDis = mysql_query($sql, $conex) or die(mysql_errno() . " - Error en el query $sql - " . mysql_error());
 
-			while ($rows = mysql_fetch_array($resCcoDis)) {
-				if ($rows['Ccoima'] == 'on') {
-					$ccoDisCM = $rows['Ccocod'];
-				} else {
-					$ccoDisSF = $rows['Ccocod'];
+				while ($rows = mysql_fetch_array($resCcoDis)) {
+					if ($rows['Ccoima'] == 'on') {
+						$ccoDisCM = $rows['Ccocod'];
+					} else {
+						$ccoDisSF = $rows['Ccocod'];
+
+					}
+				}
+			}else{
+					//Busco los centros de costos a donde van a dispensar, es decir SF o CM
+					$sql = "SELECT Ccocod, Ccoima
+					FROM " . $wbasedato . "_000011
+					WHERE
+						Ccotra = 'on'
+						AND Ccofac = 'on'
+						AND Ccoest = 'on'
+					";
+
+				$resCcoDis = mysql_query($sql, $conex) or die(mysql_errno() . " - Error en el query $sql - " . mysql_error());
+
+				while ($rows = mysql_fetch_array($resCcoDis)) {
+					if ($rows['Ccoima'] == 'on') {
+						$ccoDisCM = $rows['Ccocod'];
+					} else {
+						$ccoDisSF = $rows['Ccocod'];
+
+					}
 				}
 			}
-
+			
 			//FORMA ================================================================
 			echo "<form name='monkardex' action='Monitor_Kardex.php?wemp_pmla=" . $wemp_pmla . "' method=post>";
 
