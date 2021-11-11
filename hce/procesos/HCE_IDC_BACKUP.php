@@ -21,6 +21,10 @@ include_once("root/comun.php");
 	//$conexidc = mysql_connect('190.248.93.238:3306','pmla','pmla800067065') or die("No se realizo Conexion con el IDC");
 	// mysql_select_db("pacidc"); 	
 	
+	$fecha = date("Y-m-d");
+	$hora = (string)date("H:i:s");
+	$empresa = "root";
+
 	echo "CONEXION IDC OK<br>";	
 	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
@@ -89,12 +93,28 @@ include_once("root/comun.php");
 	$query  = "delete from ctgidc ";
 	$err = mysql_query($query,$conexidc) or die("ERROR BORRANDO TABLA ctgidc ".mysql_errno().":".mysql_error());
 	
+	/**
+	 * Se registra el información básica del cron y el total de registros encontrados para enviar la contingencia
+	 * 
+	 * @author	Joel David Payares Hernández
+	 * @since	2021-11-11
+	 */
+	$descripcion = "> cron contingencia HCE IDC, Numero de Pacientes: $j, ";
+	
 	echo "<b>TOTAL REGISTROS : ".$j." SELECCIONADOS</b><br>";
 	$querytime_before = array_sum(explode(' ', microtime()));
 	$k = 0;
 	for ($i=0;$i<=$j;$i++)
 	//for ($i=0;$i<=2;$i++)
 	{
+		/**
+		 * Se registra el dato de la historia clínica en la posición actual del total de registros encontrados
+		 * 
+		 * @author	Joel David Payares Hernández
+		 * @since	2021-11-11
+		 */
+		$descripcion .= "historia: ".$data[$i][1].", ";
+
 		echo "REGISTRO : ".$data[$i][0]." ".$data[$i][1]." ".$data[$i][2]." ".$data[$i][3]."<br> ";
 		$query  = " Select ".$whce."_000051.Fecha_data, ".$whce."_000051.Hora_data, ".$whce."_000002.Detdes, ".$whce."_000051.movdat, ".$whce."_000051.movusu, '000051', ".$whce."_000051.movhis ";
 		$query .= " from ".$whce."_000051, ".$whce."_000002 ";
@@ -256,6 +276,18 @@ include_once("root/comun.php");
 	}
 	$querytime_after = array_sum(explode(' ', microtime(true)));
 	$DIFF=$querytime_after - $querytime_before;
+
+	/**
+	 * Se inserta la información de la ejecución del cron en la tabla de logs
+	 * 
+	 * @author	Joel David Payares Hernández
+	 * @since	2021-11-11
+	 */
+	$query_log = "
+		INSERT INTO root_000118 (Medico  ,  Fecha_data ,  Hora_data ,		 Logfun			, 	Logdes		,  Logfue , Loghue , Logema, Logest,   Seguridad )
+		VALUES(				   '$empresa', 	 '$fecha'  ,   '$hora'  , 'Contingencia HCE IDC $fecha $hora', '$descripcion', '$fecha', '$hora',  'on' ,  'on' , 'C-$empresa');
+	";
+	$result_log = mysql_query( $query_log, $conex ) or die("Error insertando los datos del log en la tabla root_000118 : ".mysql_errno().":".mysql_error());
 	echo "Tiempo : ".$DIFF." Segundo(s) <br>";
 
 ?>

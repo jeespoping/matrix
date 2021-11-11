@@ -50,6 +50,8 @@ include_once("conex.php");
 		$num = mysql_num_rows($err);
 		echo "<tr><td>CONEXION IDC OK</tr></td>";
 		echo "<tr><td>".date("Y-m-d H:i:s")." Numero de Pacientes :".$num."</tr></td>";
+
+		$descripcion = "> cron movimientos hospitalarios IDC, Numero de Pacientes: $num, ";
 		if($num > 0)
 		{
 			
@@ -59,6 +61,9 @@ include_once("conex.php");
 			for ($i=0;$i<$num;$i++)
 			{
 				$row = mysql_fetch_array($err);
+
+				$descripcion .= "historia: $row[8], ";
+
 				if($row[31] == "")
 					$row[31] = " ";
 				$query  = "select * ";
@@ -297,6 +302,12 @@ include_once("conex.php");
 			}
 			include_once("free.php");
 		}
+	
+		$query_log = "
+			INSERT INTO root_000118 (Medico,     Fecha_data     ,  		 Hora_data 			 ,													Logfun															, 		 Logdes		,	  	Logfue  	 ,    		Loghue  		  , Logema, Logest, Seguridad)
+			VALUES(				 	 'root', '".date("Y-m-d")."', '".(string)date("H:i:s")."', 'Movimiento Hospitalario IDC - Pacientes de IDC hacia tablero Matrix ".date("Y-m-d")." ".(string)date("H:i:s")."', '".$descripcion."', '".date("Y-m-d")."', '".(string)date("H:i:s")."',  'on' ,  'on' , 'C-root' );
+		";
+		$result_log = mysql_query( $query_log, $conex ) or die("Error insertando los datos del log en la tabla root_000118 : ".mysql_errno().":".mysql_error());
 		echo "<tr><td>********** TOTAL PACIENTES : ".$num." EN TABLERO ************</tr></td></table></center>";
 	}
 	else
