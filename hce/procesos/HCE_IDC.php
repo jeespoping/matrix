@@ -51,6 +51,12 @@ include_once("conex.php");
 		echo "<tr><td>CONEXION IDC OK</tr></td>";
 		echo "<tr><td>".date("Y-m-d H:i:s")." Numero de Pacientes :".$num."</tr></td>";
 
+		/**
+		 * Se registra el información básica del cron y el total de registros encontrados para enviar la contingencia
+		 * 
+		 * @author	Joel David Payares Hernández
+		 * @since	2021-11-11
+		 */
 		$descripcion = "> cron movimientos hospitalarios IDC, Numero de Pacientes: $num, ";
 		if($num > 0)
 		{
@@ -62,6 +68,12 @@ include_once("conex.php");
 			{
 				$row = mysql_fetch_array($err);
 
+				/**
+				 * Se registra el dato de la historia clínica en la posición actual del total de registros encontrados
+				 * 
+				 * @author	Joel David Payares Hernández
+				 * @since	2021-11-11
+				 */
 				$descripcion .= "historia: $row[8], ";
 
 				if($row[31] == "")
@@ -302,7 +314,13 @@ include_once("conex.php");
 			}
 			include_once("free.php");
 		}
-	
+		
+		/**
+		 * Se inserta la información de la ejecución del cron en la tabla de logs
+		 * 
+		 * @author	Joel David Payares Hernández
+		 * @since	2021-11-11
+		 */
 		$query_log = "
 			INSERT INTO root_000118 (Medico,     Fecha_data     ,  		 Hora_data 			 ,													Logfun															, 		 Logdes		,	  	Logfue  	 ,    		Loghue  		  , Logema, Logest, Seguridad)
 			VALUES(				 	 'root', '".date("Y-m-d")."', '".(string)date("H:i:s")."', 'Movimiento Hospitalario IDC - Pacientes de IDC hacia tablero Matrix ".date("Y-m-d")." ".(string)date("H:i:s")."', '".$descripcion."', '".date("Y-m-d")."', '".(string)date("H:i:s")."',  'on' ,  'on' , 'C-root' );
