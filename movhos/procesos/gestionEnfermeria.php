@@ -901,8 +901,7 @@ if(isset($operacion) && $operacion == 'marcarmuerte_hospitalizacion'){
 		";
 		$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 		$rowdia = mysql_fetch_array($err);
-
-		$wdiastan = dias_estancia_servicio( $rowdia[0], date("Y-m-d H:i:s") );
+		$wdiastan = $rowdia[0];
 		$wnuming = $rowdia[1];
 	 
 	 //Calculo los días de estancia en el servicio actual
@@ -918,7 +917,13 @@ if(isset($operacion) && $operacion == 'marcarmuerte_hospitalizacion'){
 	//  $wnuming=$rowdia[1];
 
 	 if ($wdiastan=="" or $wdiastan==0)
+	 {
 		$wdiastan=0;
+	 }
+	 else
+	 {
+		$wdiastan = dias_estancia_servicio( $rowdia[0], date("Y-m-d H:i:s") );
+	 }
 
 	 if ($wnuming=="" or $wnuming==0)
 		$wnuming=1;
@@ -1158,12 +1163,17 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 		";
 		$err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
 		$rowdia = mysql_fetch_array($err);
-
-		$wdiastan = dias_estancia_servicio( $rowdia[0], date("Y-m-d H:i:s") );
+		$wdiastan = $rowdia[0];
 		$wnuming = $rowdia[1];
 
 		if ($wdiastan=="" or $wdiastan==0)
+		{
 			$wdiastan=0;
+		}
+		else
+		{
+			$wdiastan = dias_estancia_servicio( $rowdia[0], date("Y-m-d H:i:s") );
+		}
 
 		if ($wnuming=="" or $wnuming==0)
 			$wnuming=1;
