@@ -12,7 +12,10 @@
 <?php
 include_once("conex.php");
 	
-
+	/**
+	 * Este archivo permite generar información de contingencia de historias clínicas de los pacientes para el IDC.
+	 * El motivo de estar quemados los nombres de las tablas es por ser exclusivo del IDC.
+	 */
 	
 
 	$conexidc = mysqli_connect('192.168.0.2:3306','pmla','pmla800067065',"pacidc") or die("No se realizo Conexion con el IDC");

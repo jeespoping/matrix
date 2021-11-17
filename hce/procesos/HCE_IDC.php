@@ -10,6 +10,12 @@
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b> HCE_IDC.php Ver. 2016-02-23</b></font></tr></td>
 <?php
 include_once("conex.php");
+
+	/**
+	 * Este archivo permite actualizar el movimiento hospitalario de los pacientes para el IDC.
+	 * El motivo de estar quemados los nombres de las tablas es por ser exclusivo del IDC.
+	 */
+
 	function encrypt($string, $key) 
 	{
 	   $result = '';
@@ -60,10 +66,6 @@ include_once("conex.php");
 		$descripcion = "> cron movimientos hospitalarios IDC, Numero de Pacientes: $num, ";
 		if($num > 0)
 		{
-			
-
-			
-
 			for ($i=0;$i<$num;$i++)
 			{
 				$row = mysql_fetch_array($err);
