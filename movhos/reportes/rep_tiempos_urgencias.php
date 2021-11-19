@@ -16,7 +16,7 @@ if(!isset($accion))
 
         Notas:
         --
-        */ $wactualiza = "(Diciembre 03 de 2015)"; /*
+        */ $wactualiza = "(Nomviembre 17 de 2021)"; /*
         ACTUALIZACIONES:
 
         *   Diciembre 03 de 2015
@@ -517,10 +517,10 @@ if(!isset($accion))
                         if($row2['FecIniTri'] == '0000-00-00' && $row2["FecIniCon"] != '0000-00-00')
                         {
                             // Asignaciones de valores para la espera de triages
-                            $row2["FecIniEspTri"] = $row2["FecFinAdm"];
-                            $row2["HorIniEspTri"] = $row2["HorFinAdm"];
-                            $row2["FecFinEspTri"] = $row2["FecIniCon"];
-                            $row2["HorFinEspTri"] = $row2["HorIniCon"];
+//                            $row2["FecIniEspTri"] = $row2["FecFinAdm"];
+//                            $row2["HorIniEspTri"] = $row2["HorFinAdm"];
+//                            $row2["FecFinEspTri"] = $row2["FecIniCon"];
+//                            $row2["HorFinEspTri"] = $row2["HorIniCon"];
 
                             // Asignaciones de valores para la espera de consultas
                             $row2["FecIniEspCon"] = '0000-00-00';
@@ -529,8 +529,8 @@ if(!isset($accion))
                             $row2["HorFinEspCon"] = '00:00:00';
 
                             // Asignaciones de valores para los triages
-                            $row2["FecIniTri"] = $row2["FecIniCon"];
-                            $row2["HorIniTri"] = $row2["HorIniCon"];
+//                            $row2["FecIniTri"] = $row2["FecIniCon"];
+//                            $row2["HorIniTri"] = $row2["HorIniCon"];
                         }
                         if($row2["FecFinCon"] == '0000-00-00')
                         {
@@ -546,8 +546,8 @@ if(!isset($accion))
                         {
                             $row2["FecIniTri"] = $row2["FecFinTri"];
                             $row2["HorIniTri"] = $row2["HorFinTri"];
-                            $row2["FecFinEspTri"] = $row2["FecIniTri"];
-                            $row2["HorFinEspTri"] = $row2["HorIniTri"];
+//                            $row2["FecFinEspTri"] = $row2["FecIniTri"];
+//                            $row2["HorFinEspTri"] = $row2["HorIniTri"];
                         }
 
                         $insertar = true;
@@ -1089,8 +1089,8 @@ if(!isset($accion))
                                                     WHERE mh178.atufll = '" . $fecha_final . "'";
                         }
 
-                        $sql_tiempos_espera_admisiones = "  SELECT              mh178.Fecha_data AS FecIniEspAdm,
-                                                                                mh178.Hora_data AS HorIniEspAdm,
+                        $sql_tiempos_espera_admisiones = "  SELECT              date(mh178.Atufat) AS FecIniEspAdm,
+                                                                                time(mh178.Atufat) AS HorIniEspAdm,
                                                                                 mh178.Atufll AS FecFinEspAdm,
                                                                                 mh178.Atuhll AS HorFinEspAdm,
                                                                                 mh178.Atutur AS Turno,
@@ -1128,7 +1128,6 @@ if(!isset($accion))
                         $reg_tiempos_espera_admisiones = mysql_query($sql_tiempos_espera_admisiones, $conex) or die($sql_tiempos_espera_admisiones.' - '.mysql_error());
                         recorrerProceso($reg_tiempos_espera_admisiones, $array_reporte, $proceso, $fecha_inicio, $fecha_final);
                         $num = mysql_num_rows($reg_tiempos_espera_admisiones);
-
 
                         $proceso = 'admisiones';
 
@@ -1202,16 +1201,16 @@ if(!isset($accion))
                                                                                 hce22.Mtrhia        AS  HorIniAdm,
                                                                                 hce22.Fecha_data    AS  FecFinAdm,
                                                                                 hce22.hora_data     AS  HorFinAdm,
-                                                                                hce22.Fecha_data    AS  FecIniEspTri,
-                                                                                hce22.Hora_data     AS  HorIniEspTri,
-                                                                                hce22.Mtrfit        AS  FecFinEspTri,
-                                                                                hce22.Mtrhit        AS  HorFinEspTri,
-                                                                                hce22.Mtrfit        AS  FecIniTri,
-                                                                                hce22.Mtrhit        AS  HorIniTri,
-                                                                                hce22.Mtrftr        AS  FecFinTri,
-                                                                                hce22.Mtrhtr        AS  HorFinTri,
-                                                                                hce22.Mtrftr        AS  FecIniEspCon,
-                                                                                hce22.Mtrhtr        AS  HorIniEspCon,
+                                                                                mh178.Fecha_data    AS  FecIniEspTri,
+                                                                                mh178.Hora_data     AS  HorIniEspTri,
+                                                                                date(mh178.Atufit)  AS  FecFinEspTri,
+                                                                                time(mh178.Atufit)  AS  HorFinEspTri,
+                                                                                date(mh178.Atufit)  AS  FecIniTri,
+                                                                                time(mh178.Atufit)  AS  HorIniTri,
+                                                                                date(mh178.Atufat)  AS  FecFinTri,
+                                                                                time(mh178.Atufat)  AS  HorFinTri,
+                                                                                hce22.Fecha_data    AS  FecIniEspCon,
+                                                                                hce22.hora_data     AS  HorIniEspCon,
                                                                                 hce22.Mtrfco        AS  FecFinEspCon,
                                                                                 hce22.Mtrhco        AS  HorFinEspCon,
                                                                                 hce22.Mtrfco        AS  FecIniCon,
@@ -1229,6 +1228,7 @@ if(!isset($accion))
 
                                                     FROM                        {$wbasedato_hce}_000022          AS  hce22
                                                                 LEFT JOIN      {$wbasedato_hce}_000035          AS  hce35   ON (hce22.Mtretr = hce35.Conesp)
+                                                                LEFT JOIN   {$wbasedato_movhos}_000178        AS  mh178   ON (mh178.Atutur = hce22.Mtrtur)
                                                                 -- INNER JOIN      {$wbasedato_movhos}_000011       AS  mh11    ON (mh11.Ccocod = hce22.Mtrcci AND mh11.Ccourg='on')
                                                                 left JOIN       usuarios            AS  u       ON (u.Codigo = hce22.Mtrmed)
                                                     {$filtros_clasificacion}
@@ -1257,11 +1257,11 @@ if(!isset($accion))
                                     <td align=center colspan=12 class=fila1><font size=4><b>Tiempo en HH:MM:SS</b></font></td>
                                 </tr>
 
-                                <tr>
-                                    <td align=center colspan=2 rowspan=1 class=fila2><font size=4><b>ESPERA DE ADMISIÓN</b></font></td>
-                                    <td align=center colspan=2 rowspan=1 class=fila1><font size=4><b>ADMISIÓN</b></font></td>
+                                <tr>                                  
                                     <td align=center colspan=2 rowspan=1 class=fila2><font size=4><b>ESPERA DE TRIAGE</b></font></td>
                                     <td align=center colspan=2 rowspan=1 class=fila1><font size=4><b>TRIAGE</b></font></td>
+                                    <td align=center colspan=2 rowspan=1 class=fila2><font size=4><b>ESPERA DE ADMISIÓN</b></font></td>
+                                    <td align=center colspan=2 rowspan=1 class=fila1><font size=4><b>ADMISIÓN</b></font></td>                                    
                                     <td align=center colspan=2 rowspan=1 class=fila2><font size=4><b>ESPERA DE CONSULTA</b></font></td>
                                     <td align=center colspan=2 rowspan=1 class=fila1><font size=4><b>CONSULTA</b></font></td>
                                 </tr>
@@ -1292,33 +1292,13 @@ if(!isset($accion))
                                 $html_dias = '';
                                 $cont_dias = 0;
 
-                                $array_tiempos_espera_admision_totales = array();
-                                $array_tiempos_admision_totales = array();
                                 $array_tiempos_espera_triage_totales = array();
                                 $array_tiempos_triage_totales = array();
+                                $array_tiempos_espera_admision_totales = array();
+                                $array_tiempos_admision_totales = array();
                                 $array_tiempos_espera_consulta_totales = array();
                                 $array_tiempos_consulta_totales = array();
                                 $array_tiempos_consulta_totalesEsp = array();
-
-                                $html_espera_admision_total = ' <table id="tab_espera_admision_total" align="center">
-                                                                <tr class="encabezadoTabla encabezadoTabla2">
-                                                                    <th>Turno</th>
-                                                                    <th>Historia Clínica</th>
-                                                                    <th hidden="true">Usuario Matrix</th>
-                                                                    <th>Hora Inicio</th>
-                                                                    <th>Hora Fin</th>
-                                                                    <th colspan="2">Tiempo total</th>
-                                                                </tr>';
-
-                                $html_admision_total = '<table id="tab_admision_total" align="center">
-                                                                <tr class="encabezadoTabla encabezadoTabla2">
-                                                                    <th>Turno</th>
-                                                                    <th>Historia Clínica</th>
-                                                                    <th>Usuario Matrix</th>
-                                                                    <th>Hora Inicio</th>
-                                                                    <th>Hora Fin</th>
-                                                                    <th>Tiempo total</th>
-                                                                </tr>';
 
                                 $html_espera_triage_total = ' <table id="tab_espera_triage_total" align="center">
                                                                 <tr class="encabezadoTabla encabezadoTabla2">
@@ -1331,6 +1311,26 @@ if(!isset($accion))
                                                                 </tr>';
 
                                 $html_triage_total = '<table id="tab_triage_total" align="center">
+                                                                <tr class="encabezadoTabla encabezadoTabla2">
+                                                                    <th>Turno</th>
+                                                                    <th>Historia Clínica</th>
+                                                                    <th>Usuario Matrix</th>
+                                                                    <th>Hora Inicio</th>
+                                                                    <th>Hora Fin</th>
+                                                                    <th>Tiempo total</th>
+                                                                </tr>';
+
+                                $html_espera_admision_total = ' <table id="tab_espera_admision_total" align="center">
+                                                                <tr class="encabezadoTabla encabezadoTabla2">
+                                                                    <th>Turno</th>
+                                                                    <th>Historia Clínica</th>
+                                                                    <th hidden="true">Usuario Matrix</th>
+                                                                    <th>Hora Inicio</th>
+                                                                    <th>Hora Fin</th>
+                                                                    <th colspan="2">Tiempo total</th>
+                                                                </tr>';
+
+                                $html_admision_total = '<table id="tab_admision_total" align="center">
                                                                 <tr class="encabezadoTabla encabezadoTabla2">
                                                                     <th>Turno</th>
                                                                     <th>Historia Clínica</th>
@@ -1369,50 +1369,127 @@ if(!isset($accion))
 
                                 $array_consultaEsp_total = array();
 
-                                $cont_esp_adm_tot = 0;
-                                $cont_adm_tot = 0;
                                 $cont_esp_tri_tot = 0;
                                 $cont_tri_tot = 0;
+                                $cont_esp_adm_tot = 0;
+                                $cont_adm_tot = 0;
                                 $cont_esp_con_tot = 0;
                                 $cont_con_tot = 0;
                                 $cont_conEsp_tot = 0;
 
-                                $css_esp_adm_tot = 0;
-                                $css_adm_tot = 0;
                                 $css_esp_tri_tot = 0;
                                 $css_tri_tot = 0;
+                                $css_esp_adm_tot = 0;
+                                $css_adm_tot = 0;
                                 $css_esp_con_tot = 0;
                                 $css_con_tot = 0;
                                 $css_conEsp_tot = 0;
 
                                 foreach($array_reporte as $fecha_proceso => $info_proceso)
                                 {
-                                    $html_admision = '';
                                     $html_triage = '';
+                                    $html_admision = '';
                                     $html_consulta = '';
                                     $html_consultaEsp = '';
 
-                                    $html_espera_admision = '';
                                     $html_espera_triage = '';
+                                    $html_espera_admision = '';
                                     $html_espera_consulta = '';
 
-                                    $cant_admision = 0;
-                                    $prom_admision = 0;
                                     $cant_triage = 0;
                                     $prom_triage = 0;
+                                    $cant_admision = 0;
+                                    $prom_admision = 0;
                                     $cant_consulta = 0;
                                     $prom_consulta = 0;
                                     $cant_consultaEsp = 0;
                                     $prom_consultaEsp = 0;
 
-                                    $cant_espera_admision = 0;
-                                    $prom_espera_admision = 0;
                                     $cant_espera_triage = 0;
                                     $prom_espera_triage = 0;
+                                    $cant_espera_admision = 0;
+                                    $prom_espera_admision = 0;
                                     $cant_espera_consulta = 0;
                                     $prom_espera_consulta = 0;
                                     $cant_espera_consultaEsp = 0;
                                     $prom_espera_consultaEsp = 0;
+
+                                    if(array_key_exists('triages', $info_proceso))
+                                    {
+                                        $array_tiempos_triage = array();
+                                        $cant_triage = count($info_proceso['triages']['detalles']);
+                                        $html_triage .= ' <table id="tab_triage_'. $fecha_proceso . '" align="center">
+                                                                <tr class="encabezadoTabla encabezadoTabla2">
+                                                                    <th>Turno</th>
+                                                                    <th>Historia Clínica</th>
+                                                                    <th>Usuario Matrix</th>
+                                                                    <th>Hora Inicio</th>
+                                                                    <th>Hora Fin</th>
+                                                                    <th>Tiempo total</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td align="center" colspan="6">
+                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'todos\', \'tab_triage_'. $fecha_proceso . '\')" value="todos" checked="checked"><b>Todos</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'con_turno\', \'tab_triage_'. $fecha_proceso . '\')" value="con_turno"><b>Con Turno</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'sin_turno\', \'tab_triage_'. $fecha_proceso . '\')" value="sin_turno"><b>Sin Turno</b>
+                                                                    </td>
+                                                                </tr>'
+                                        ;
+                                        $cont_tri = 0;
+                                        foreach ($info_proceso['triages']['detalles'] as $key => $info_detalle) {
+                                            array_push($array_tiempos_triage, $info_detalle['tiempo_total']);
+                                            array_push($array_tiempos_triage_totales, $info_detalle['tiempo_total']);
+                                            $hora_inicio = '';
+                                            $hora_fin = '';
+                                            $cont_tri++;
+                                            $cont_tri_tot++;
+                                            $css_tri = ($cont_tri % 2 == 0) ? 'fila1': 'fila2';
+                                            $css_tri_tot = ($cont_tri_tot % 2 == 0) ? 'fila1': 'fila2';
+                                            if($info_detalle['fecha_inicio'] != $info_detalle['fecha_fin'])
+                                            {
+                                                $hora_inicio = $info_detalle['fecha_inicio'] . " " . $info_detalle['hora_inicio'];
+                                                $hora_fin = $info_detalle['fecha_fin'] . " " . $info_detalle['hora_fin'];
+                                            } else
+                                            {
+                                                $hora_inicio = $info_detalle['hora_inicio'];
+                                                $hora_fin = $info_detalle['hora_fin'];
+                                            }
+
+                                            $html_triage .= '<tr class="' . $css_tri . ' find" turno="'.(($info_detalle['turno'] != '') ? 'si' : 'no').'">
+                                                                    <td align="center" ppal="'.$info_detalle['procesoPpal'].'">' . $info_detalle['turno'] . '</td>
+                                                                    <td align="center">' . $info_detalle['historia_clinica'] . '-' . $info_detalle['ingreso'] . '</td>
+                                                                    <td align="center">' . utf8_encode($info_detalle['usuario_matrix']) . '</td>
+                                                                    <td align="center">' . $hora_inicio . '</td>
+                                                                    <td align="center">' . $hora_fin . '</td>
+                                                                    <td align="center">' . $info_detalle['tiempo_total'] . '</td>
+                                                                </tr>';
+
+                                            $html_triage_total .= '<tr class="' . $css_tri_tot . ' find">
+                                                                    <td align="center">' . $info_detalle['turno'] . '</td>
+                                                                    <td align="center">' . $info_detalle['historia_clinica'] . '-' . $info_detalle['ingreso'] . '</td>
+                                                                    <td align="center">' . utf8_encode($info_detalle['usuario_matrix']) . '</td>
+                                                                    <td align="center">' . $hora_inicio . '</td>
+                                                                    <td align="center">' . $hora_fin . '</td>
+                                                                    <td align="center">' . $info_detalle['tiempo_total'] . '</td>
+                                                                </tr>';
+                                        }
+
+                                        $tiempo_maximo_triage = tiempoMaximo($array_tiempos_triage);
+                                        $tiempo_minimo_triage = tiempoMinimo($array_tiempos_triage);
+                                        $tiempo_promedio_triage = tiempoPromedio($array_tiempos_triage);
+                                        //Muestra la información de los tiempos máximo, mínimo y promedio
+                                        $html_triage .= '<tr class="encabezadoTabla encabezadoTabla2">
+                                                        <td style="text-align:center;">Tiempo Máximo</td>
+                                                        <td style="text-align:center;">' . $tiempo_maximo_triage . '</td>
+                                                        <td style="text-align:center;">Tiempo Mínimo</td>
+                                                        <td style="text-align:center;">' . $tiempo_minimo_triage . '</td>
+                                                        <td style="text-align:center;">Tiempo Promedio</td>
+                                                        <td style="text-align:center;">' . $tiempo_promedio_triage . '</td>
+                                                    </tr>';
+
+                                        $html_triage .= '</table>';
+                                        $prom_triage = tiempoPromedio($array_tiempos_triage);
+                                    }
 
                                     if(array_key_exists('admisiones', $info_proceso))
                                     {
@@ -1509,83 +1586,6 @@ if(!isset($accion))
 
                                         $html_admision .= '</table>';
                                         $prom_admision = tiempoPromedio($array_tiempos_admision);
-                                    }
-
-                                    if(array_key_exists('triages', $info_proceso))
-                                    {
-                                        $array_tiempos_triage = array();
-                                        $cant_triage = count($info_proceso['triages']['detalles']);
-                                        $html_triage .= ' <table id="tab_triage_'. $fecha_proceso . '" align="center">
-                                                                <tr class="encabezadoTabla encabezadoTabla2">
-                                                                    <th>Turno</th>
-                                                                    <th>Historia Clínica</th>
-                                                                    <th>Usuario Matrix</th>
-                                                                    <th>Hora Inicio</th>
-                                                                    <th>Hora Fin</th>
-                                                                    <th>Tiempo total</th>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td align="center" colspan="6">
-                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'todos\', \'tab_triage_'. $fecha_proceso . '\')" value="todos" checked="checked"><b>Todos</b>&nbsp;&nbsp;&nbsp;&nbsp;
-                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'con_turno\', \'tab_triage_'. $fecha_proceso . '\')" value="con_turno"><b>Con Turno</b>&nbsp;&nbsp;&nbsp;&nbsp;
-                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'sin_turno\', \'tab_triage_'. $fecha_proceso . '\')" value="sin_turno"><b>Sin Turno</b>
-                                                                    </td>
-                                                                </tr>'
-                                                            ;
-                                        $cont_tri = 0;
-                                        foreach ($info_proceso['triages']['detalles'] as $key => $info_detalle) {
-                                            array_push($array_tiempos_triage, $info_detalle['tiempo_total']);
-                                            array_push($array_tiempos_triage_totales, $info_detalle['tiempo_total']);
-                                            $hora_inicio = '';
-                                            $hora_fin = '';
-                                            $cont_tri++;
-                                            $cont_tri_tot++;
-                                            $css_tri = ($cont_tri % 2 == 0) ? 'fila1': 'fila2';
-                                            $css_tri_tot = ($cont_tri_tot % 2 == 0) ? 'fila1': 'fila2';
-                                            if($info_detalle['fecha_inicio'] != $info_detalle['fecha_fin'])
-                                            {
-                                                $hora_inicio = $info_detalle['fecha_inicio'] . " " . $info_detalle['hora_inicio'];
-                                                $hora_fin = $info_detalle['fecha_fin'] . " " . $info_detalle['hora_fin'];
-                                            } else
-                                            {
-                                                $hora_inicio = $info_detalle['hora_inicio'];
-                                                $hora_fin = $info_detalle['hora_fin'];
-                                            }
-
-                                            $html_triage .= '<tr class="' . $css_tri . ' find" turno="'.(($info_detalle['turno'] != '') ? 'si' : 'no').'">
-                                                                    <td align="center" ppal="'.$info_detalle['procesoPpal'].'">' . $info_detalle['turno'] . '</td>
-                                                                    <td align="center">' . $info_detalle['historia_clinica'] . '-' . $info_detalle['ingreso'] . '</td>
-                                                                    <td align="center">' . utf8_encode($info_detalle['usuario_matrix']) . '</td>
-                                                                    <td align="center">' . $hora_inicio . '</td>
-                                                                    <td align="center">' . $hora_fin . '</td>
-                                                                    <td align="center">' . $info_detalle['tiempo_total'] . '</td>
-                                                                </tr>';
-
-                                            $html_triage_total .= '<tr class="' . $css_tri_tot . ' find">
-                                                                    <td align="center">' . $info_detalle['turno'] . '</td>
-                                                                    <td align="center">' . $info_detalle['historia_clinica'] . '-' . $info_detalle['ingreso'] . '</td>
-                                                                    <td align="center">' . utf8_encode($info_detalle['usuario_matrix']) . '</td>
-                                                                    <td align="center">' . $hora_inicio . '</td>
-                                                                    <td align="center">' . $hora_fin . '</td>
-                                                                    <td align="center">' . $info_detalle['tiempo_total'] . '</td>
-                                                                </tr>';
-                                        }
-
-                                        $tiempo_maximo_triage = tiempoMaximo($array_tiempos_triage);
-                                        $tiempo_minimo_triage = tiempoMinimo($array_tiempos_triage);
-                                        $tiempo_promedio_triage = tiempoPromedio($array_tiempos_triage);
-                                        //Muestra la información de los tiempos máximo, mínimo y promedio
-                                        $html_triage .= '<tr class="encabezadoTabla encabezadoTabla2">
-                                                        <td style="text-align:center;">Tiempo Máximo</td>
-                                                        <td style="text-align:center;">' . $tiempo_maximo_triage . '</td>
-                                                        <td style="text-align:center;">Tiempo Mínimo</td>
-                                                        <td style="text-align:center;">' . $tiempo_minimo_triage . '</td>
-                                                        <td style="text-align:center;">Tiempo Promedio</td>
-                                                        <td style="text-align:center;">' . $tiempo_promedio_triage . '</td>
-                                                    </tr>';
-
-                                        $html_triage .= '</table>';
-                                        $prom_triage = tiempoPromedio($array_tiempos_triage);
                                     }
 
                                     if(array_key_exists('consultas', $info_proceso))
@@ -1743,6 +1743,81 @@ if(!isset($accion))
                                         // $prom_consultaEsp = tiempoPromedio($array_tiempos_consultaEsp);
                                     }
 
+                                    if(array_key_exists('espera_triages', $info_proceso))
+                                    {
+                                        $array_tiempos_espera_triage = array();
+                                        $cant_espera_triage = count($info_proceso['espera_triages']['detalles']);
+                                        $html_espera_triage .= ' <table id="tab_espera_triage_'. $fecha_proceso . '" align="center">
+                                                                <tr class="encabezadoTabla encabezadoTabla2">
+                                                                    <th>Turno</th>
+                                                                    <th>Historia Clínica</th>
+                                                                    <th hidden="true">Usuario Matrix</th>
+                                                                    <th>Hora Inicio</th>
+                                                                    <th>Hora Fin</th>
+                                                                    <th colspan="2">Tiempo total</th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td align="center" colspan="6">
+                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'todos\', \'tab_espera_triage_'. $fecha_proceso . '\')" value="todos" checked="checked"><b>Todos</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'con_turno\', \'tab_espera_triage_'. $fecha_proceso . '\')" value="con_turno"><b>Con Turno</b>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'sin_turno\', \'tab_espera_triage_'. $fecha_proceso . '\')" value="sin_turno"><b>Sin Turno</b>
+                                                                    </td>
+                                                                </tr>'
+                                        ;
+                                        $cont_esp_tri = 0;
+                                        foreach ($info_proceso['espera_triages']['detalles'] as $key => $info_detalle) {
+                                            array_push($array_tiempos_espera_triage, $info_detalle['tiempo_total']);
+                                            array_push($array_tiempos_espera_triage_totales, $info_detalle['tiempo_total']);
+                                            $hora_inicio = '';
+                                            $hora_fin = '';
+                                            $cont_esp_tri++;
+                                            $cont_esp_tri_tot++;
+                                            $css_esp_tri = ($cont_esp_tri % 2 == 0) ? 'fila1': 'fila2';
+                                            $css_esp_tri_tot = ($cont_esp_tri_tot % 2 == 0) ? 'fila1': 'fila2';
+                                            if($info_detalle['fecha_inicio'] != $info_detalle['fecha_fin'])
+                                            {
+                                                $hora_inicio = $info_detalle['fecha_inicio'] . " " . $info_detalle['hora_inicio'];
+                                                $hora_fin = $info_detalle['fecha_fin'] . " " . $info_detalle['hora_fin'];
+                                            } else
+                                            {
+                                                $hora_inicio = $info_detalle['hora_inicio'];
+                                                $hora_fin = $info_detalle['hora_fin'];
+                                            }
+                                            $html_espera_triage .= '<tr class="' . $css_esp_tri . ' find" turno="'.(($info_detalle['turno'] != '') ? 'si' : 'no').'">
+                                                                    <td align="center" ppal="'.$info_detalle['procesoPpal'].'">' . $info_detalle['turno'] . '</td>
+                                                                    <td align="center">' . $info_detalle['historia_clinica'] . '-' . $info_detalle['ingreso'] . '</td>
+                                                                    <td align="center" hidden="true">' . utf8_encode($info_detalle['usuario_matrix']) . '</td>
+                                                                    <td align="center">' . $hora_inicio . '</td>
+                                                                    <td align="center">' . $hora_fin . '</td>
+                                                                    <td align="center" colspan="2">' . $info_detalle['tiempo_total'] . '</td>
+                                                                </tr>';
+
+                                            $html_espera_triage_total .= '<tr class="' . $css_esp_tri_tot . ' find">
+                                                                    <td align="center">' . $info_detalle['turno'] . '</td>
+                                                                    <td align="center">' . $info_detalle['historia_clinica'] . '-' . $info_detalle['ingreso'] . '</td>
+                                                                    <td align="center" hidden="true">' . utf8_encode($info_detalle['usuario_matrix']) . '</td>
+                                                                    <td align="center">' . $hora_inicio . '</td>
+                                                                    <td align="center">' . $hora_fin . '</td>
+                                                                    <td align="center" colspan="2">' . $info_detalle['tiempo_total'] . '</td>
+                                                                </tr>';
+                                        }
+
+                                        $tiempo_maximo_espera_triage = tiempoMaximo($array_tiempos_espera_triage);
+                                        $tiempo_minimo_espera_triage = tiempoMinimo($array_tiempos_espera_triage);
+                                        $tiempo_promedio_espera_triage = tiempoPromedio($array_tiempos_espera_triage);
+                                        //Muestra la información de los tiempos máximo, mínimo y promedio
+                                        $html_espera_triage .= '<tr class="encabezadoTabla encabezadoTabla2">
+                                                        <td style="text-align:center;">Tiempo Máximo</td>
+                                                        <td style="text-align:center;">' . $tiempo_maximo_espera_triage . '</td>
+                                                        <td style="text-align:center;">Tiempo Mínimo</td>
+                                                        <td style="text-align:center;">' . $tiempo_minimo_espera_triage . '</td>
+                                                        <td style="text-align:center;">Tiempo Promedio</td>
+                                                        <td style="text-align:center;">' . $tiempo_promedio_espera_triage . '</td>
+                                                    </tr>';
+
+                                        $html_espera_triage .= '</table>';
+                                        $prom_espera_triage = tiempoPromedio($array_tiempos_espera_triage);
+                                    }
 
                                     if(array_key_exists('espera_admisiones', $info_proceso))
                                     {
@@ -1834,82 +1909,6 @@ if(!isset($accion))
                                         $prom_espera_admision = tiempoPromedio($array_tiempos_espera_admision);
                                     }
 
-                                    if(array_key_exists('espera_triages', $info_proceso))
-                                    {
-                                        $array_tiempos_espera_triage = array();
-                                        $cant_espera_triage = count($info_proceso['espera_triages']['detalles']);
-                                        $html_espera_triage .= ' <table id="tab_espera_triage_'. $fecha_proceso . '" align="center">
-                                                                <tr class="encabezadoTabla encabezadoTabla2">
-                                                                    <th>Turno</th>
-                                                                    <th>Historia Clínica</th>
-                                                                    <th hidden="true">Usuario Matrix</th>
-                                                                    <th>Hora Inicio</th>
-                                                                    <th>Hora Fin</th>
-                                                                    <th colspan="2">Tiempo total</th>
-                                                                </tr>
-                                                                <tr>
-                                                                    <td align="center" colspan="6">
-                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'todos\', \'tab_espera_triage_'. $fecha_proceso . '\')" value="todos" checked="checked"><b>Todos</b>&nbsp;&nbsp;&nbsp;&nbsp;
-                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'con_turno\', \'tab_espera_triage_'. $fecha_proceso . '\')" value="con_turno"><b>Con Turno</b>&nbsp;&nbsp;&nbsp;&nbsp;
-                                                                        <input type="radio" style="display: inline;" name="filtro_turnos" onClick="filtrarTurnos(\'sin_turno\', \'tab_espera_triage_'. $fecha_proceso . '\')" value="sin_turno"><b>Sin Turno</b>
-                                                                    </td>
-                                                                </tr>'
-                                                            ;
-                                        $cont_esp_tri = 0;
-                                        foreach ($info_proceso['espera_triages']['detalles'] as $key => $info_detalle) {
-                                            array_push($array_tiempos_espera_triage, $info_detalle['tiempo_total']);
-                                            array_push($array_tiempos_espera_triage_totales, $info_detalle['tiempo_total']);
-                                            $hora_inicio = '';
-                                            $hora_fin = '';
-                                            $cont_esp_tri++;
-                                            $cont_esp_tri_tot++;
-                                            $css_esp_tri = ($cont_esp_tri % 2 == 0) ? 'fila1': 'fila2';
-                                            $css_esp_tri_tot = ($cont_esp_tri_tot % 2 == 0) ? 'fila1': 'fila2';
-                                            if($info_detalle['fecha_inicio'] != $info_detalle['fecha_fin'])
-                                            {
-                                                $hora_inicio = $info_detalle['fecha_inicio'] . " " . $info_detalle['hora_inicio'];
-                                                $hora_fin = $info_detalle['fecha_fin'] . " " . $info_detalle['hora_fin'];
-                                            } else
-                                            {
-                                                $hora_inicio = $info_detalle['hora_inicio'];
-                                                $hora_fin = $info_detalle['hora_fin'];
-                                            }
-                                            $html_espera_triage .= '<tr class="' . $css_esp_tri . ' find" turno="'.(($info_detalle['turno'] != '') ? 'si' : 'no').'">
-                                                                    <td align="center" ppal="'.$info_detalle['procesoPpal'].'">' . $info_detalle['turno'] . '</td>
-                                                                    <td align="center">' . $info_detalle['historia_clinica'] . '-' . $info_detalle['ingreso'] . '</td>
-                                                                    <td align="center" hidden="true">' . utf8_encode($info_detalle['usuario_matrix']) . '</td>
-                                                                    <td align="center">' . $hora_inicio . '</td>
-                                                                    <td align="center">' . $hora_fin . '</td>
-                                                                    <td align="center" colspan="2">' . $info_detalle['tiempo_total'] . '</td>
-                                                                </tr>';
-
-                                            $html_espera_triage_total .= '<tr class="' . $css_esp_tri_tot . ' find">
-                                                                    <td align="center">' . $info_detalle['turno'] . '</td>
-                                                                    <td align="center">' . $info_detalle['historia_clinica'] . '-' . $info_detalle['ingreso'] . '</td>
-                                                                    <td align="center" hidden="true">' . utf8_encode($info_detalle['usuario_matrix']) . '</td>
-                                                                    <td align="center">' . $hora_inicio . '</td>
-                                                                    <td align="center">' . $hora_fin . '</td>
-                                                                    <td align="center" colspan="2">' . $info_detalle['tiempo_total'] . '</td>
-                                                                </tr>';
-                                        }
-
-                                        $tiempo_maximo_espera_triage = tiempoMaximo($array_tiempos_espera_triage);
-                                        $tiempo_minimo_espera_triage = tiempoMinimo($array_tiempos_espera_triage);
-                                        $tiempo_promedio_espera_triage = tiempoPromedio($array_tiempos_espera_triage);
-                                        //Muestra la información de los tiempos máximo, mínimo y promedio
-                                        $html_espera_triage .= '<tr class="encabezadoTabla encabezadoTabla2">
-                                                        <td style="text-align:center;">Tiempo Máximo</td>
-                                                        <td style="text-align:center;">' . $tiempo_maximo_espera_triage . '</td>
-                                                        <td style="text-align:center;">Tiempo Mínimo</td>
-                                                        <td style="text-align:center;">' . $tiempo_minimo_espera_triage . '</td>
-                                                        <td style="text-align:center;">Tiempo Promedio</td>
-                                                        <td style="text-align:center;">' . $tiempo_promedio_espera_triage . '</td>
-                                                    </tr>';
-
-                                        $html_espera_triage .= '</table>';
-                                        $prom_espera_triage = tiempoPromedio($array_tiempos_espera_triage);
-                                    }
-
                                     if(array_key_exists('espera_consultas', $info_proceso))
                                     {
                                         $array_tiempos_espera_consulta = array();
@@ -1991,14 +1990,15 @@ if(!isset($accion))
                                     $html_dias .= '
                                         <tr id="tr_dia_' . $fecha_proceso . '" class="' . $css_dias . ' find">
                                             <td>' . str_replace ('_' , '-' , $fecha_proceso) . '</td>
-                                            <td align="right" class="td_'.$fecha_proceso.'_espera_adminEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_espera_adminEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_espera_adminEnc\');" onclick="mostrarTablaDetalles(\'espera_admision\', \'' . $fecha_proceso . '\')">' . $cant_espera_admision . '</td>
-                                            <td align="center" class="td_'.$fecha_proceso.'_espera_adminEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_espera_adminEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_espera_adminEnc\');" onclick="mostrarTablaDetalles(\'espera_admision\', \'' . $fecha_proceso . '\')">' . $prom_espera_admision . '</td>
-                                            <td align="right" class="td_'.$fecha_proceso.'_adminEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_adminEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_adminEnc\');" onclick="mostrarTablaDetalles(\'admision\', \'' . $fecha_proceso . '\')">' . $cant_admision . '</td>
-                                            <td align="center" class="td_'.$fecha_proceso.'_adminEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_adminEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_adminEnc\');" onclick="mostrarTablaDetalles(\'admision\', \'' . $fecha_proceso . '\')">' . $prom_admision . '</td>
+                                            
                                             <td align="right" class="td_'.$fecha_proceso.'_espera_triaEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_espera_triaEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_espera_triaEnc\');" onclick="mostrarTablaDetalles(\'espera_triage\', \'' . $fecha_proceso . '\')">' . $cant_espera_triage . '</td>
                                             <td align="center" class="td_'.$fecha_proceso.'_espera_triaEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_espera_triaEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_espera_triaEnc\');" onclick="mostrarTablaDetalles(\'espera_triage\', \'' . $fecha_proceso . '\')">' . $prom_espera_triage . '</td>
                                             <td align="right" class="td_'.$fecha_proceso.'_triaEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_triaEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_triaEnc\');" onclick="mostrarTablaDetalles(\'triage\', \'' . $fecha_proceso . '\')">' . $cant_triage . '</td>
                                             <td align="center" class="td_'.$fecha_proceso.'_triaEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_triaEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_triaEnc\');" onclick="mostrarTablaDetalles(\'triage\', \'' . $fecha_proceso . '\')">' . $prom_triage . '</td>
+                                            <td align="right" class="td_'.$fecha_proceso.'_espera_adminEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_espera_adminEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_espera_adminEnc\');" onclick="mostrarTablaDetalles(\'espera_admision\', \'' . $fecha_proceso . '\')">' . $cant_espera_admision . '</td>
+                                            <td align="center" class="td_'.$fecha_proceso.'_espera_adminEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_espera_adminEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_espera_adminEnc\');" onclick="mostrarTablaDetalles(\'espera_admision\', \'' . $fecha_proceso . '\')">' . $prom_espera_admision . '</td>
+                                            <td align="right" class="td_'.$fecha_proceso.'_adminEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_adminEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_adminEnc\');" onclick="mostrarTablaDetalles(\'admision\', \'' . $fecha_proceso . '\')">' . $cant_admision . '</td>
+                                            <td align="center" class="td_'.$fecha_proceso.'_adminEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_adminEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_adminEnc\');" onclick="mostrarTablaDetalles(\'admision\', \'' . $fecha_proceso . '\')">' . $prom_admision . '</td>                                         
                                             <td align="right" class="td_'.$fecha_proceso.'_espera_consEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_espera_consEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_espera_consEnc\');" onclick="mostrarTablaDetalles(\'espera_consulta\', \'' . $fecha_proceso . '\')">' . $cant_espera_consulta . '</td>
                                             <td align="center" class="td_'.$fecha_proceso.'_espera_consEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_espera_consEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_espera_consEnc\');" onclick="mostrarTablaDetalles(\'espera_consulta\', \'' . $fecha_proceso . '\')">' . $prom_espera_consulta . '</td>
                                             <td align="right" class="td_'.$fecha_proceso.'_consEnc" onmouseover="trOver(\'.td_'.$fecha_proceso.'_consEnc\');" onmouseout="trOut(\'.td_'.$fecha_proceso.'_consEnc\');" onclick="mostrarTablaDetalles(\'consulta\', \'' . $fecha_proceso . '\')">' . $cant_consulta . '</td>
@@ -2006,62 +2006,42 @@ if(!isset($accion))
                                         </tr>
                                         <tr id="tr_detalle_' . $fecha_proceso . '" hidden="true" style="background-color:#f2f2f2;">
                                             <td></td>
-                                            <td id="td_espera_admision_' . $fecha_proceso . '" colspan="2" valign="top"><div hidden="true" id="div_' . $fecha_proceso . '_espera_admision">' . $html_espera_admision . '</div></td>
-                                            <td id="td_admision_' . $fecha_proceso . '" colspan="2" valign="top"><div hidden="true" id="div_' . $fecha_proceso . '_admision">' . $html_admision . '</div></td>
                                             <td id="td_espera_triage_' . $fecha_proceso . '" colspan="2" valign="top"><div hidden="true" id="div_' . $fecha_proceso . '_espera_triage">' . $html_espera_triage . '</div></td>
                                             <td id="td_triage_' . $fecha_proceso . '" colspan="2" valign="top"><div hidden="true" id="div_' . $fecha_proceso . '_triage">' . $html_triage . '</div></td>
+                                            <td id="td_espera_admision_' . $fecha_proceso . '" colspan="2" valign="top"><div hidden="true" id="div_' . $fecha_proceso . '_espera_admision">' . $html_espera_admision . '</div></td>
+                                            <td id="td_admision_' . $fecha_proceso . '" colspan="2" valign="top"><div hidden="true" id="div_' . $fecha_proceso . '_admision">' . $html_admision . '</div></td>                                            
                                             <td id="td_espera_consulta_' . $fecha_proceso . '" colspan="2" valign="top"><div hidden="true" id="div_' . $fecha_proceso . '_espera_consulta">' . $html_espera_consulta . '</div></td>
                                             <td id="td_consulta_' . $fecha_proceso . '" colspan="2" valign="top"><div hidden="true" id="div_' . $fecha_proceso . '_consulta">' . $html_consulta . $html_consultaEsp . '</div></td>
                                         </tr>
                                         ';
                                 }
 
-                                $cant_espera_admision_total = sizeof($array_tiempos_espera_admision_totales);
-                                $tiempo_promedio_espera_admision_total = tiempoPromedio($array_tiempos_espera_admision_totales);
-                                $cant_admision_total = sizeof($array_tiempos_admision_totales);
-                                $tiempo_promedio_admision_total = tiempoPromedio($array_tiempos_admision_totales);
                                 $cant_espera_triage_total = sizeof($array_tiempos_espera_triage_totales);
                                 $tiempo_promedio_espera_triage_total = tiempoPromedio($array_tiempos_espera_triage_totales);
                                 $cant_triage_total = sizeof($array_tiempos_triage_totales);
                                 $tiempo_promedio_triage_total = tiempoPromedio($array_tiempos_triage_totales);
+                                $cant_espera_admision_total = sizeof($array_tiempos_espera_admision_totales);
+                                $tiempo_promedio_espera_admision_total = tiempoPromedio($array_tiempos_espera_admision_totales);
+                                $cant_admision_total = sizeof($array_tiempos_admision_totales);
+                                $tiempo_promedio_admision_total = tiempoPromedio($array_tiempos_admision_totales);
                                 $cant_espera_consulta_total = sizeof($array_tiempos_espera_consulta_totales);
                                 $tiempo_promedio_espera_consulta_total = tiempoPromedio($array_tiempos_espera_consulta_totales);
                                 $cant_consulta_total = sizeof($array_tiempos_consulta_totales);
                                 $tiempo_promedio_consulta_total = tiempoPromedio($array_tiempos_consulta_totales);
 
-                                $tiempo_maximo_espera_admision_total = tiempoMaximo($array_tiempos_espera_admision_totales);
-                                $tiempo_maximo_admision_total = tiempoMaximo($array_tiempos_admision_totales);
                                 $tiempo_maximo_espera_triage_total = tiempoMaximo($array_tiempos_espera_triage_totales);
                                 $tiempo_maximo_triage_total = tiempoMaximo($array_tiempos_triage_totales);
+                                $tiempo_maximo_espera_admision_total = tiempoMaximo($array_tiempos_espera_admision_totales);
+                                $tiempo_maximo_admision_total = tiempoMaximo($array_tiempos_admision_totales);
                                 $tiempo_maximo_espera_consulta_total = tiempoMaximo($array_tiempos_espera_consulta_totales);
                                 $tiempo_maximo_consulta_total = tiempoMaximo($array_tiempos_consulta_totales);
 
-                                $tiempo_minimo_espera_admision_total = tiempoMinimo($array_tiempos_espera_admision_totales);
-                                $tiempo_minimo_admision_total = tiempoMinimo($array_tiempos_admision_totales);
                                 $tiempo_minimo_espera_triage_total = tiempoMinimo($array_tiempos_espera_triage_totales);
                                 $tiempo_minimo_triage_total = tiempoMinimo($array_tiempos_triage_totales);
+                                $tiempo_minimo_espera_admision_total = tiempoMinimo($array_tiempos_espera_admision_totales);
+                                $tiempo_minimo_admision_total = tiempoMinimo($array_tiempos_admision_totales);
                                 $tiempo_minimo_espera_consulta_total = tiempoMinimo($array_tiempos_espera_consulta_totales);
                                 $tiempo_minimo_consulta_total = tiempoMinimo($array_tiempos_consulta_totales);
-
-                                $html_espera_admision_total .= '<tr id="oe" class="encabezadoTabla encabezadoTabla2">
-                                                        <td style="text-align:center;">Tiempo Máximo</td>
-                                                        <td style="text-align:center;">' . $tiempo_maximo_espera_admision_total . '</td>
-                                                        <td style="text-align:center;">Tiempo Mínimo</td>
-                                                        <td style="text-align:center;">' . $tiempo_minimo_espera_admision_total . '</td>
-                                                        <td style="text-align:center;">Tiempo Promedio</td>
-                                                        <td style="text-align:center;">' . $tiempo_promedio_espera_admision_total . '</td>
-                                                    </tr>
-                                                </table>';
-
-                                $html_admision_total .= '<tr class="encabezadoTabla encabezadoTabla2">
-                                                        <td style="text-align:center;">Tiempo Máximo</td>
-                                                        <td style="text-align:center;">' . $tiempo_maximo_admision_total . '</td>
-                                                        <td style="text-align:center;">Tiempo Mínimo</td>
-                                                        <td style="text-align:center;">' . $tiempo_minimo_admision_total . '</td>
-                                                        <td style="text-align:center;">Tiempo Promedio</td>
-                                                        <td style="text-align:center;">' . $tiempo_promedio_admision_total . '</td>
-                                                    </tr>
-                                                </table>';
 
                                 $html_espera_triage_total .= '<tr class="encabezadoTabla encabezadoTabla2">
                                                         <td style="text-align:center;">Tiempo Máximo</td>
@@ -2080,6 +2060,26 @@ if(!isset($accion))
                                                         <td style="text-align:center;">' . $tiempo_minimo_triage_total . '</td>
                                                         <td style="text-align:center;">Tiempo Promedio</td>
                                                         <td style="text-align:center;">' . $tiempo_promedio_triage_total . '</td>
+                                                    </tr>
+                                                </table>';
+
+                                $html_espera_admision_total .= '<tr id="oe" class="encabezadoTabla encabezadoTabla2">
+                                                        <td style="text-align:center;">Tiempo Máximo</td>
+                                                        <td style="text-align:center;">' . $tiempo_maximo_espera_admision_total . '</td>
+                                                        <td style="text-align:center;">Tiempo Mínimo</td>
+                                                        <td style="text-align:center;">' . $tiempo_minimo_espera_admision_total . '</td>
+                                                        <td style="text-align:center;">Tiempo Promedio</td>
+                                                        <td style="text-align:center;">' . $tiempo_promedio_espera_admision_total . '</td>
+                                                    </tr>
+                                                </table>';
+
+                                $html_admision_total .= '<tr class="encabezadoTabla encabezadoTabla2">
+                                                        <td style="text-align:center;">Tiempo Máximo</td>
+                                                        <td style="text-align:center;">' . $tiempo_maximo_admision_total . '</td>
+                                                        <td style="text-align:center;">Tiempo Mínimo</td>
+                                                        <td style="text-align:center;">' . $tiempo_minimo_admision_total . '</td>
+                                                        <td style="text-align:center;">Tiempo Promedio</td>
+                                                        <td style="text-align:center;">' . $tiempo_promedio_admision_total . '</td>
                                                     </tr>
                                                 </table>';
 
@@ -2123,14 +2123,14 @@ if(!isset($accion))
 
                                 $html_totales = '   <tr class="encabezadoTabla encabezadoTabla2">
                                                         <td style="text-align:center;">TOTALES</td>
-                                                        <td class="td_detalles_espera_admision" style="text-align:center;" onmouseover="trOver(\'.td_detalles_espera_admision\');" onmouseout="trOut(\'.td_detalles_espera_admision\');" onclick="mostrarTablaDetalles(\'espera_admision\', \'todos\')">' . $cant_espera_admision_total .'</td>
-                                                        <td class="td_detalles_espera_admision" style="text-align:center;" onmouseover="trOver(\'.td_detalles_espera_admision\');" onmouseout="trOut(\'.td_detalles_espera_admision\');" onclick="mostrarTablaDetalles(\'espera_admision\', \'todos\')">' . $tiempo_promedio_espera_admision_total . '</td>
-                                                        <td class="td_detalles_admision" style="text-align:center;" onmouseover="trOver(\'.td_detalles_admision\');" onmouseout="trOut(\'.td_detalles_admision\');" onclick="mostrarTablaDetalles(\'admision\', \'todos\')">' . $cant_admision_total . '</td>
-                                                        <td class="td_detalles_admision" style="text-align:center;" onmouseover="trOver(\'.td_detalles_admision\');" onmouseout="trOut(\'.td_detalles_admision\');" onclick="mostrarTablaDetalles(\'admision\', \'todos\')">' . $tiempo_promedio_admision_total . '</td>
                                                         <td class="td_detalles_espera_triage" style="text-align:center;" onmouseover="trOver(\'.td_detalles_espera_triage\');" onmouseout="trOut(\'.td_detalles_espera_triage\');" onclick="mostrarTablaDetalles(\'espera_triage\', \'todos\')">' . $cant_espera_triage_total . '</td>
                                                         <td class="td_detalles_espera_triage" style="text-align:center;" onmouseover="trOver(\'.td_detalles_espera_triage\');" onmouseout="trOut(\'.td_detalles_espera_triage\');" onclick="mostrarTablaDetalles(\'espera_triage\', \'todos\')">' . $tiempo_promedio_espera_triage_total . '</td>
                                                         <td class="td_detalles_triage" style="text-align:center;" onmouseover="trOver(\'.td_detalles_triage\');" onmouseout="trOut(\'.td_detalles_triage\');" onclick="mostrarTablaDetalles(\'triage\', \'todos\')">' . $cant_triage_total . '</td>
                                                         <td class="td_detalles_triage" style="text-align:center;" onmouseover="trOver(\'.td_detalles_triage\');" onmouseout="trOut(\'.td_detalles_triage\');" onclick="mostrarTablaDetalles(\'triage\', \'todos\')">' . $tiempo_promedio_triage_total . '</td>
+                                                        <td class="td_detalles_espera_admision" style="text-align:center;" onmouseover="trOver(\'.td_detalles_espera_admision\');" onmouseout="trOut(\'.td_detalles_espera_admision\');" onclick="mostrarTablaDetalles(\'espera_admision\', \'todos\')">' . $cant_espera_admision_total .'</td>
+                                                        <td class="td_detalles_espera_admision" style="text-align:center;" onmouseover="trOver(\'.td_detalles_espera_admision\');" onmouseout="trOut(\'.td_detalles_espera_admision\');" onclick="mostrarTablaDetalles(\'espera_admision\', \'todos\')">' . $tiempo_promedio_espera_admision_total . '</td>
+                                                        <td class="td_detalles_admision" style="text-align:center;" onmouseover="trOver(\'.td_detalles_admision\');" onmouseout="trOut(\'.td_detalles_admision\');" onclick="mostrarTablaDetalles(\'admision\', \'todos\')">' . $cant_admision_total . '</td>
+                                                        <td class="td_detalles_admision" style="text-align:center;" onmouseover="trOver(\'.td_detalles_admision\');" onmouseout="trOut(\'.td_detalles_admision\');" onclick="mostrarTablaDetalles(\'admision\', \'todos\')">' . $tiempo_promedio_admision_total . '</td>                                                        
                                                         <td class="td_detalles_espera_consulta" style="text-align:center;" onmouseover="trOver(\'.td_detalles_espera_consulta\');" onmouseout="trOut(\'.td_detalles_espera_consulta\');" onclick="mostrarTablaDetalles(\'espera_consulta\', \'todos\')">' . $cant_espera_consulta_total . '</td>
                                                         <td class="td_detalles_espera_consulta" style="text-align:center;" onmouseover="trOver(\'.td_detalles_espera_consulta\');" onmouseout="trOut(\'.td_detalles_espera_consulta\');" onclick="mostrarTablaDetalles(\'espera_consulta\', \'todos\')">' . $tiempo_promedio_espera_consulta_total . '</td>
                                                         <td class="td_detalles_consulta" style="text-align:center;" onmouseover="trOver(\'.td_detalles_consulta\');" onmouseout="trOut(\'.td_detalles_consulta\');" onclick="mostrarTablaDetalles(\'consulta\', \'todos\')">' . $cant_consulta_total . '</td>
@@ -2138,10 +2138,10 @@ if(!isset($accion))
                                                     </tr>
                                                     <tr id="tr_detalle_todos" hidden="true" style="background-color:#f2f2f2;">
                                                         <td></td>
-                                                        <td id="td_espera_admision_todos" colspan="2" valign="top"><div hidden="true" id="div_todos_espera_admision">' . $html_espera_admision_total . '</div></td>
-                                                        <td id="td_admision_todos" colspan="2" valign="top"><div hidden="true" id="div_todos_admision">' . $html_admision_total . '</div></td>
                                                         <td id="td_espera_triage_todos" colspan="2" valign="top"><div hidden="true" id="div_todos_espera_triage">' . $html_espera_triage_total . '</div></td>
                                                         <td id="td_triage_todos" colspan="2" valign="top"><div hidden="true" id="div_todos_triage">' . $html_triage_total . '</div></td>
+                                                        <td id="td_espera_admision_todos" colspan="2" valign="top"><div hidden="true" id="div_todos_espera_admision">' . $html_espera_admision_total . '</div></td>
+                                                        <td id="td_admision_todos" colspan="2" valign="top"><div hidden="true" id="div_todos_admision">' . $html_admision_total . '</div></td>                                                        
                                                         <td id="td_espera_consulta_todos" colspan="2" valign="top"><div hidden="true" id="div_todos_espera_consulta">' . $html_espera_consulta_total . '</div></td>
                                                         <td id="td_consulta_todos" colspan="2" valign="top"><div hidden="true" id="div_todos_consulta">' . $html_consulta_total . '<br>' . $html_consultaEsp_total . '</div></td>
                                                     </tr>
