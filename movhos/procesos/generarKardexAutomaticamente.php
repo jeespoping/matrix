@@ -31,14 +31,22 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 				AND karing = '{$pac['ing']}'
 				AND fecha_data = '$ayer'
 			";
-	
-	$resCcos = mysql_query( $sql, $conex ) or die( mysql_error()." - Error en el query $sql - ".mysql_error() );
-	$numCcos = mysql_num_rows( $resCcos );
+    /**
+     * Se agrega la captura para excepciones en mysqli y el try catch
+     * @by: jesus.lopez
+     * @date: 04/11/2021
+     * @return: Boolean
+     */
+    $driver = new mysqli_driver();
+    $driver->report_mode = MYSQLI_REPORT_STRICT | MYSQLI_REPORT_ERROR;
+    try {
+        $resCcos = mysql_query( $sql, $conex ) or die( mysql_error()." - Error en el query $sql - ".mysql_error() );
+        $numCcos = mysql_num_rows( $resCcos );
 
-	if( $numCcos > 0 ){	//Indica que hubo kardex el día anterior y por tanto puede hacerse el kardex automatico
-	
-		//Consulto si se ha generado kardex el día de hoy, es decir si tiene encabezado
-		$sql = "SELECT * 
+        if( $numCcos > 0 ){	//Indica que hubo kardex el día anterior y por tanto puede hacerse el kardex automatico
+
+            //Consulto si se ha generado kardex el día de hoy, es decir si tiene encabezado
+            $sql = "SELECT * 
 				FROM
 					{$wbd}_000053
 				WHERE
@@ -46,15 +54,15 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 					AND karing = '{$pac['ing']}'
 					AND fecha_data = '$fecha'
 				";
-				
-		$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		$numrows = mysql_num_rows( $res );
-		
-		//Si no existe kardex
-		if( $numrows < $numCcos ){	//Si la cantidad de kardex generados hoy es menor a los del día anterior quiere decir que faltan kardex por generar
-		
-			//verifico que no halla articulos en la temporal
-			$sql = "SELECT * 
+
+            $res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+            $numrows = mysql_num_rows( $res );
+
+            //Si no existe kardex
+            if( $numrows < $numCcos ){	//Si la cantidad de kardex generados hoy es menor a los del día anterior quiere decir que faltan kardex por generar
+
+                //verifico que no halla articulos en la temporal
+                $sql = "SELECT * 
 					FROM
 						{$wbd}_000060
 					WHERE
@@ -62,13 +70,13 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 						AND kading = '{$pac['ing']}'
 						AND kadfec = '$fecha'
 					";
-					
-			$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-			$numrows = mysql_num_rows( $res );
-			
-			if( $numrows == 0 ){	//No se ha generado kardex ni esta abierto
-			
-				$sql = "SELECT * 
+
+                $res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+                $numrows = mysql_num_rows( $res );
+
+                if( $numrows == 0 ){	//No se ha generado kardex ni esta abierto
+
+                    $sql = "SELECT * 
 						FROM
 							{$wbd}_000053
 						WHERE
@@ -77,35 +85,35 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 							AND fecha_data = '$ayer'
 							AND kargra != 'on'
 						";
-					
-				$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-				$numrows = mysql_num_rows( $res );
-			
-				if( $numrows == 0 ){
-				
-					//Verifico que no se halla pasado la hora de corte kardex
-					$corteKardex = true; //consultarHoraCorteKardex( $conex );
-				
-					if( $corteKardex ){
-					
-						//if( true || time() < strtotime( "$fecha $corteKardex" ) ){
-						if( true ){
-						
-							//Si la hora actual es menor a la hora corte del kardex
-							
-							//Creo kardex nuevo para el día actual
-							$auxUsuario = $usuario;							//Se activa está línea. Junio 01 de 2015
-							// $usuario = consultarUsuarioKardex($auxUsuario);
-							// $usuario->esUsuarioLactario = false;
-							$usuario->gruposMedicamentos = false;			//Se activa está línea. Junio 01 de 2015
-							
-							/*********************************************************************************************************************
-							 * Junio 12 de 2012
-							 *********************************************************************************************************************/
-							for( ;$rowsCcos = mysql_fetch_array($resCcos); ){
-							
-								//Busco si el cco es de lactario
-								$sql = "SELECT
+
+                    $res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+                    $numrows = mysql_num_rows( $res );
+
+                    if( $numrows == 0 ){
+
+                        //Verifico que no se halla pasado la hora de corte kardex
+                        $corteKardex = true; //consultarHoraCorteKardex( $conex );
+
+                        if( $corteKardex ){
+
+                            //if( true || time() < strtotime( "$fecha $corteKardex" ) ){
+                            if( true ){
+
+                                //Si la hora actual es menor a la hora corte del kardex
+
+                                //Creo kardex nuevo para el día actual
+                                $auxUsuario = $usuario;							//Se activa está línea. Junio 01 de 2015
+                                // $usuario = consultarUsuarioKardex($auxUsuario);
+                                // $usuario->esUsuarioLactario = false;
+                                $usuario->gruposMedicamentos = false;			//Se activa está línea. Junio 01 de 2015
+
+                                /*********************************************************************************************************************
+                                 * Junio 12 de 2012
+                                 *********************************************************************************************************************/
+                                for( ;$rowsCcos = mysql_fetch_array($resCcos); ){
+
+                                    //Busco si el cco es de lactario
+                                    $sql = "SELECT
 											ccolac
 										FROM
 											{$wbd}_000011
@@ -113,22 +121,22 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 											ccocod = '".trim( $rowsCcos[ 'Karcco' ] )."'
 											AND ccolac = 'on'
 										";
-								
-								$resLac = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql -".msyql_error() );
-								$numLac = mysql_num_rows( $resLac );
-								
-								$ccos[ trim( $rowsCcos[ 'Karcco' ] ) ] = false;
-								
-								if( $numLac > 0 ){								
-									$ccos[ trim( $rowsCcos[ 'Karcco' ] ) ] = true;
-								}
-							}
-							/*********************************************************************************************************************/
-							
-							foreach( $ccos as $keyCcos => $valueCcos ){
-								
-								//Consulto si se ha generado kardex el día de hoy, es decir si tiene encabezado
-								$sql = "SELECT * 
+
+                                    $resLac = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql -".msyql_error() );
+                                    $numLac = mysql_num_rows( $resLac );
+
+                                    $ccos[ trim( $rowsCcos[ 'Karcco' ] ) ] = false;
+
+                                    if( $numLac > 0 ){
+                                        $ccos[ trim( $rowsCcos[ 'Karcco' ] ) ] = true;
+                                    }
+                                }
+                                /*********************************************************************************************************************/
+
+                                foreach( $ccos as $keyCcos => $valueCcos ){
+
+                                    //Consulto si se ha generado kardex el día de hoy, es decir si tiene encabezado
+                                    $sql = "SELECT * 
 										FROM
 											{$wbd}_000053
 										WHERE
@@ -137,54 +145,54 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 											AND fecha_data = '$fecha'
 											AND karcco = '$keyCcos'
 										";
-										
-								$resKardexHoy = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql -".mysql_error() );
-								$numKardexHoy = mysql_num_rows( $resKardexHoy );
-							
-								if( $numKardexHoy == 0 ){	//Esto se hace si no se ha generado kardex
-								
-									$usuario->centroCostosGrabacion = $keyCcos;
-									$usuario->esUsuarioLactario = $valueCcos;	//El valor del array dice si el cco es de lactario o no
-									
-									$paciente = consultarInfoPacienteKardex( $pac['his'], '' );
-									$kardexAc = consultarKardexPorFechaPaciente( $fecha, $paciente );
-									
-									cargarEsquemaDextrometer( $pac['his'], $pac['ing'], $ayer, $fecha );
-									
-									//Dejo los articulos del día anterior en la tabla definitiva por si se quedaron en la temporal
-									cargarArticulosADefinitivo( $pac['his'], $pac['ing'], $ayer, false, $keyCcos );
-									cargarExamenesADefinitivo($pac['his'], $pac['ing'], $ayer);
-									cargarInfusionesADefinitivo($pac['his'], $pac['ing'], $ayer);
-									cargarMedicoADefinitivo($pac['his'], $pac['ing'],$ayer);
-									cargarDietasADefinitivo($pac['his'], $pac['ing'],$ayer);
-									
-									//Cargos los datos del día anterior al actual
-									cargarArticulosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha, "N", $kardexAc->descontarDispensaciones, $kardexAc->horaDescuentoDispensaciones );
-									cargarArticulosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha, "Q", $kardexAc->descontarDispensaciones, $kardexAc->horaDescuentoDispensaciones );
-									cargarArticulosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha, "A", $kardexAc->descontarDispensaciones, $kardexAc->horaDescuentoDispensaciones );
-									cargarArticulosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha, "U", $kardexAc->descontarDispensaciones, $kardexAc->horaDescuentoDispensaciones );
-									
-									cargarArticulosADefinitivo( $pac['his'], $pac['ing'], $fecha, false, $keyCcos );
-									
-									/************************************************************************************************
-									 * Agosto 27 de 2011
-									 ************************************************************************************************/
-									if( $keyCcos == '*' ){	//Solo lo hace enfermería
-										cargarExamenesAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha );
-										cargarInfusionesAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha );
-										cargarMedicosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha );
-										cargarDietasAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha );
-										
-										
-										cargarExamenesADefinitivo( $pac['his'], $pac['ing'], $fecha );
-										cargarInfusionesADefinitivo( $pac['his'], $pac['ing'], $fecha );
-										cargarMedicoADefinitivo( $pac['his'], $pac['ing'], $fecha );
-										cargarDietasADefinitivo( $pac['his'], $pac['ing'], $fecha );
-									}
-									/************************************************************************************************/
-									
-									//Creo encabezado del kardex tal cual esta el día anterior
-									$sql = "INSERT INTO
+
+                                    $resKardexHoy = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql -".mysql_error() );
+                                    $numKardexHoy = mysql_num_rows( $resKardexHoy );
+
+                                    if( $numKardexHoy == 0 ){	//Esto se hace si no se ha generado kardex
+
+                                        $usuario->centroCostosGrabacion = $keyCcos;
+                                        $usuario->esUsuarioLactario = $valueCcos;	//El valor del array dice si el cco es de lactario o no
+
+                                        $paciente = consultarInfoPacienteKardex( $pac['his'], '' );
+                                        $kardexAc = consultarKardexPorFechaPaciente( $fecha, $paciente );
+
+                                        cargarEsquemaDextrometer( $pac['his'], $pac['ing'], $ayer, $fecha );
+
+                                        //Dejo los articulos del día anterior en la tabla definitiva por si se quedaron en la temporal
+                                        cargarArticulosADefinitivo( $pac['his'], $pac['ing'], $ayer, false, $keyCcos );
+                                        cargarExamenesADefinitivo($pac['his'], $pac['ing'], $ayer);
+                                        cargarInfusionesADefinitivo($pac['his'], $pac['ing'], $ayer);
+                                        cargarMedicoADefinitivo($pac['his'], $pac['ing'],$ayer);
+                                        cargarDietasADefinitivo($pac['his'], $pac['ing'],$ayer);
+
+                                        //Cargos los datos del día anterior al actual
+                                        cargarArticulosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha, "N", $kardexAc->descontarDispensaciones, $kardexAc->horaDescuentoDispensaciones );
+                                        cargarArticulosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha, "Q", $kardexAc->descontarDispensaciones, $kardexAc->horaDescuentoDispensaciones );
+                                        cargarArticulosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha, "A", $kardexAc->descontarDispensaciones, $kardexAc->horaDescuentoDispensaciones );
+                                        cargarArticulosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha, "U", $kardexAc->descontarDispensaciones, $kardexAc->horaDescuentoDispensaciones );
+
+                                        cargarArticulosADefinitivo( $pac['his'], $pac['ing'], $fecha, false, $keyCcos );
+
+                                        /************************************************************************************************
+                                         * Agosto 27 de 2011
+                                         ************************************************************************************************/
+                                        if( $keyCcos == '*' ){	//Solo lo hace enfermería
+                                            cargarExamenesAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha );
+                                            cargarInfusionesAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha );
+                                            cargarMedicosAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha );
+                                            cargarDietasAnteriorATemporal( $pac['his'], $pac['ing'], $fecha, $fecha );
+
+
+                                            cargarExamenesADefinitivo( $pac['his'], $pac['ing'], $fecha );
+                                            cargarInfusionesADefinitivo( $pac['his'], $pac['ing'], $fecha );
+                                            cargarMedicoADefinitivo( $pac['his'], $pac['ing'], $fecha );
+                                            cargarDietasADefinitivo( $pac['his'], $pac['ing'], $fecha );
+                                        }
+                                        /************************************************************************************************/
+
+                                        //Creo encabezado del kardex tal cual esta el día anterior
+                                        $sql = "INSERT INTO
 												{$wbd}_000053(Medico,Fecha_data,Hora_data,Karhis,Karing,Karobs,Karest,Kardia,Karrut,Kartal,Karpes,Karale,Karcui,Karter,Karcon,Karson,Karcur,Karint,Kardec,Karpal,Kardie,Karmez,Kardem,Karcip,Kartef,Karrec,Kargra,Karanp,Karais,Karare,Karcco,Karusu,Karfir,Karmeg,Karsuc,Karaut,Karord,Seguridad)
 											SELECT
 															  Medico,'".$fecha."','".date( "H:i:s" )."',Karhis,Karing,Karobs,Karest,Kardia,Karrut,Kartal,Karpes,Karale,Karcui,Karter,Karcon,Karson,Karcur,Karint,Kardec,Karpal,Kardie,Karmez,Kardem,Karcip,Kartef,Karrec,Kargra,Karanp,Karais,karare,Karcco,Karusu,Karfir,Karmeg,Karsuc,'on',Karord,Seguridad
@@ -196,13 +204,13 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 													AND fecha_data = '$ayer'
 													AND karcco = '$keyCcos'
 											";
-									
-									$res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ".mysql_error() );
-									
-									if( mysql_affected_rows() > 0 ){
-									
-										//Dejo todos los registros del kardex como estaban antes
-										$sql = "SELECT
+
+                                        $res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ".mysql_error() );
+
+                                        if( mysql_affected_rows() > 0 ){
+
+                                            //Dejo todos los registros del kardex como estaban antes
+                                            $sql = "SELECT
 													*
 												FROM
 													{$wbd}_000054
@@ -212,27 +220,27 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 													AND kadfec = '$fecha'
 													AND kadcco = '$keyCcos'
 												";
-										
-										$res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ".mysql_error() );
-										$numrows = mysql_num_rows( $res );
-										
-										if( $numrows > 0 ){
-										
-											for( $i = 0; $rows = mysql_fetch_array($res); $i++ ){
-											
-												$sqlAnt = "SELECT
+
+                                            $res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ".mysql_error() );
+                                            $numrows = mysql_num_rows( $res );
+
+                                            if( $numrows > 0 ){
+
+                                                for( $i = 0; $rows = mysql_fetch_array($res); $i++ ){
+
+                                                    $sqlAnt = "SELECT
 																*
 															FROM
 																{$wbd}_000054
 															WHERE
 																id = '{$rows['Kadreg']}'
 															";
-										
-												$resAnt = mysql_query( $sqlAnt, $conex ) or die( mysql_errno(). " - Error en el query $sql - ".mysql_error() );
-												
-												if( $rowsAnt = mysql_fetch_array($resAnt) ){
-											
-													$sqlAct = "UPDATE
+
+                                                    $resAnt = mysql_query( $sqlAnt, $conex ) or die( mysql_errno(). " - Error en el query $sql - ".mysql_error() );
+
+                                                    if( $rowsAnt = mysql_fetch_array($resAnt) ){
+
+                                                        $sqlAct = "UPDATE
 																	{$wbd}_000054
 																SET
 																	kadare = '{$rowsAnt['Kadare']}',
@@ -240,63 +248,92 @@ function crearKardexAutomaticamente( $conex, $wbd, $his, $ing, $fecha ){
 																WHERE
 																	id = '{$rows['id']}'
 																";
-											
-													$resAct = mysql_query( $sqlAct, $conex ) or die( mysql_errno(). " - Error en el query $sql - ".mysql_error() );							
-												}
-											}
-										}
-									}
-									
-								}
-							}
-							
-							$medicamentosControlAuto = consultarAliasPorAplicacion( $conex, $wemp_pmla, "MedicamentosControlAuto" );
-				
-							if( $medicamentosControlAuto == 'on' ){
-								
-								// $opciones = array(
-								  // 'http'=>array(
-									// 'method'=>"GET",
-									// 'header'=>"Accept-language: en\r\n",
-									// 'content'=>"user=".$user,
-								  // )
-								// );
-								// $contexto = stream_context_create($opciones);
-								// $url = 'http://'.$_SERVER['HTTP_HOST'];
- 								// $varGet = file_get_contents( $url."/matrix/movhos/procesos/impresionMedicamentosControl.php?wemp_pmla=".$wemp_pmla."&historia=".$pac['his']."&ingreso=".$pac['ing']."&fechaKardex=".$fecha."&consultaAjax=10", false, $contexto );
-								$url .= "/matrix/movhos/procesos/impresionMedicamentosControl.php?wemp_pmla=".$wemp_pmla."&historia=".$pac['his']."&ingreso=".$pac['ing']."&fechaKardex=".$fecha."&consultaAjax=10";
-								?>
-								<script>
-									try{
-										$.post("<?= $url ?>",function(data){})
-									}
-									catch(e){}
-								</script>
-								<?php
-							}
-							
-							$usuario = $auxUsuario;
-						}
-						else{
-							return false;
-						}
-					}
-					else{
-						return false;
-					}
-				}
-				else{
-					return false;
-				}
-			}
-			else{
-				return false;
-			}
-		}
-		else{
-			return false;
-		}
-	}
+
+                                                        $resAct = mysql_query( $sqlAct, $conex ) or die( mysql_errno(). " - Error en el query $sql - ".mysql_error() );
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
+
+                                $medicamentosControlAuto = consultarAliasPorAplicacion( $conex, $wemp_pmla, "MedicamentosControlAuto" );
+
+                                if( $medicamentosControlAuto == 'on' ){
+
+                                    // $opciones = array(
+                                    // 'http'=>array(
+                                    // 'method'=>"GET",
+                                    // 'header'=>"Accept-language: en\r\n",
+                                    // 'content'=>"user=".$user,
+                                    // )
+                                    // );
+                                    // $contexto = stream_context_create($opciones);
+                                    // $url = 'http://'.$_SERVER['HTTP_HOST'];
+                                    // $varGet = file_get_contents( $url."/matrix/movhos/procesos/impresionMedicamentosControl.php?wemp_pmla=".$wemp_pmla."&historia=".$pac['his']."&ingreso=".$pac['ing']."&fechaKardex=".$fecha."&consultaAjax=10", false, $contexto );
+                                    $url .= "/matrix/movhos/procesos/impresionMedicamentosControl.php?wemp_pmla=".$wemp_pmla."&historia=".$pac['his']."&ingreso=".$pac['ing']."&fechaKardex=".$fecha."&consultaAjax=10";
+                                    ?>
+                                    <script>
+                                        try{
+                                            $.post("<?= $url ?>",function(data){})
+                                        }
+                                        catch(e){}
+                                    </script>
+                                    <?php
+                                }
+
+                                $usuario = $auxUsuario;
+                            }
+                            else{
+                                return false;
+                            }
+                        }
+                        else{
+                            return false;
+                        }
+                    }
+                    else{
+                        return false;
+                    }
+                }
+                else{
+                    return false;
+                }
+            }
+            else{
+                return false;
+            }
+        }
+        guardarErrorLogs($wbd,$his,$ing, $fecha, 'EXITOSO');
+    }catch (Exception $e) {
+        guardarErrorLogs($wbd,$his,$ing, $fecha, $e->getMessage());
+    }
+
+}
+
+/**
+ * Función para almacenar las peticiones con código SQL en sus parámetros
+ * @by: jesus.lopez
+ * @date: 04/11/2021
+ * @return: Boolean
+ */
+function guardarErrorLogs($wbd, $his, $ing, $fecha_e, $mensaje_e)
+{
+    global $conex;
+
+    $sSeguridad = isset($_SESSION['usera']) ? "C-".$_SESSION['usera'] : null;
+
+    //Obtengo la carpeta de donde se llama
+    $aPartesURL = explode('/', $_SERVER['REQUEST_URI']);
+    $sMedico = isset($aPartesURL[2]) ? $aPartesURL[2] : $_SERVER['REQUEST_URI'];
+
+    //Creo encabezado del kardex tal cual esta el día anterior
+    $sql = "INSERT INTO root_000154 (Medico, Fecha_data, Hora_data, wbd, his, ing, fecha_e, mensaje_e, Seguridad)
+                    VALUES ('".$sMedico."', '".date("Y-m-d")."', '".date("H:i:s")."', '".$wbd."', '".$his."', '".$ing."', '".$fecha_e."', '".$mensaje_e."', '".$sSeguridad."')";
+
+    $res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ".mysql_error() );
+
 }
 
 function consultarPacientes( $conex, $wemp_pmla, $wbasedato, $all, $fecha = '' ){
