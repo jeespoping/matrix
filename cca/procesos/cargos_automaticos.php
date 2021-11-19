@@ -18,7 +18,6 @@ if(!isset($_SESSION['user']) && !isset($accion))
 }
 
 $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-
 $wlogoempresa = strtolower( $institucion->baseDeDatos );
 $wactualiz = "(Febrero 23 de 2021)";
 
@@ -43,7 +42,8 @@ $wactualiz = "(Febrero 23 de 2021)";
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
    <script type="text/javascript">
 	
-	var _URL_AJAX = "http://<?php echo $_SERVER['SERVER_NAME']; ?>/matrix/cca/procesos/ajax_cargos_automaticos.php?wemp_pmla=<?php echo $wemp_pmla; ?>";
+	var protocol = "<?php echo $_SERVER['REQUEST_SCHEME'].'://'; ?>";
+	var _URL_AJAX = protocol+"<?php echo $_SERVER['SERVER_NAME']; ?>/matrix/cca/procesos/ajax_cargos_automaticos.php?wemp_pmla=<?php echo $wemp_pmla; ?>";
 	
 	function inicializarDatepickerFecha() {
 		$.datepicker.regional['esp'] = {
@@ -434,7 +434,6 @@ $wactualiz = "(Febrero 23 de 2021)";
 				var data = response.data;
 				var fila = "";
 				var tr = "";
-				let protocol = '<?php echo stripos($_SERVER["SERVER_PROTOCOL"],"https") === 0 ? "https://" : "http://"; ?>';
 				let server = protocol+'<?php echo $_SERVER["SERVER_NAME"]; ?>';
 				
 				for (var id in data) {
@@ -623,11 +622,12 @@ $wactualiz = "(Febrero 23 de 2021)";
 				document.getElementById("col_camp_proex").style.display = tipo_orden != '' ? 'table-cell' : 'none';
 				document.getElementById("divChkTodosProc").style.display = tipo_orden != '' ? 'inline' : 'none';
 				if(procedimiento != '') {
+					document.getElementById('camp_tercero').value = tercero;
+					document.getElementById('camp_tercero').setAttribute('valor', tercero.split('-')[0]);
+					document.getElementById('camp_tercero').setAttribute('nombre', tercero.split('-')[1]);
+					
 					if(tipo=="orden"){
-						document.getElementById('camp_tercero').value = tercero;
-						document.getElementById('camp_tercero').value = tercero;
-						document.getElementById('camp_tercero').setAttribute('valor', tercero.split('-')[0]);
-						document.getElementById('camp_tercero').setAttribute('nombre', tercero.split('-')[1]);
+						
 						cargar_tipo_orden(tipo_orden);						
 						if(procedimiento == '*'){							
 							document.getElementById('chkTodosProc').checked = true;
@@ -748,11 +748,13 @@ $wactualiz = "(Febrero 23 de 2021)";
 				}
 				procExc = procExc.join();				
 			}
-			if(tipoConcepto == 'C'){				
-				tercero = document.getElementById('camp_tercero').getAttribute('valor');
-				terceroTexto = document.getElementById('camp_tercero').value;
-				msjErrores +=  (tercero == '' || terceroTexto.length == '') ? 'El campo "Tercero" es requerido.\n' : '';
-			}
+			
+		}
+		
+		if(tipoConcepto == 'C'){				
+			tercero = document.getElementById('camp_tercero').getAttribute('valor');
+			terceroTexto = document.getElementById('camp_tercero').value;
+			msjErrores +=  (tercero == '' || terceroTexto.length == '') ? 'El campo "Tercero" es requerido.\n' : '';
 		}
 		
 		if(concepto == '' || conceptoText == '') {
@@ -1115,7 +1117,7 @@ $wactualiz = "(Febrero 23 de 2021)";
 				traer_procedimientos();				
 			}
 		} else  {
-			jAlert('El campo "Tipo Concepto" es requerido.', 'Mensaje');
+			jAlert('El campo Concepto es requerido.', 'Mensaje');
 		}
 	}	
 	
@@ -1135,15 +1137,25 @@ $wactualiz = "(Febrero 23 de 2021)";
 		document.getElementById("filaTipoOrden").style.display = (elSelected == 'orden') ? "table-row" : "none";
 		document.getElementById("busc_articulo_1").value = "";
 		var radio_checked = '';
-		document.getElementById("col_label_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";		
-		document.getElementById("col_camp_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";	
-		document.getElementById("col_camp_fhce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
-		document.getElementById("col_camp_chce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
-		document.getElementById("col_label_fhce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
-		document.getElementById("col_label_chce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		//document.getElementById("col_label_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";		
+		//document.getElementById("col_camp_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";	
+		
+		
+		
+		document.getElementById("col_camp_fhce").style.display = (elSelected == 'orden') || (elSelected == 'aplicacion') ? "none" : "table-cell";
+		document.getElementById("col_camp_chce").style.display = (elSelected == 'orden') || (elSelected == 'aplicacion') ? "none" : "table-cell";
+		document.getElementById("col_label_fhce").style.display = (elSelected == 'orden') || (elSelected == 'aplicacion') ? "none" : "table-cell";
+		document.getElementById("col_label_chce").style.display = (elSelected == 'orden') || (elSelected == 'aplicacion') ? "none" : "table-cell";
+		document.getElementById("col_label_proart").style.width = (elSelected != 'aplicacion') ? "30%" : "";
+		
+		document.getElementById("col_label_proart").colSpan = "8";
+		document.getElementById("col_camp_proart").colSpan = "8";
+		
+		
 		document.getElementById("col_label_proart").style.display = (elSelected != 'orden') ? "table-cell" : "none";
 		document.getElementById("col_camp_proart").style.display = (elSelected != 'orden') ? "table-cell" : "none";
-		document.getElementById("col_label_cencos").style.width = (elSelected != 'orden') ? "20%" : "40%";
+		
+		//document.getElementById("col_label_cencos").style.width = (elSelected != 'orden') ? "20%" : "40%";
 		document.getElementById("enc_label_procord").style.display = (elSelected == 'orden') ? "table-row" : "none";
 		document.getElementById("row_camp_procord").style.display = (elSelected == 'orden') ? "table-row" : "none";
 		document.getElementById("col_label_proex").style.display = 'none';
@@ -1178,15 +1190,19 @@ $wactualiz = "(Febrero 23 de 2021)";
 		document.getElementById("input_insu").checked = false; 
 		document.getElementById("input_pro").checked = false; 
 		document.getElementById("wconfhce_1").disabled = false;
-		document.getElementById("col_label_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";
-		document.getElementById("col_camp_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";	
+		
+		//document.getElementById("col_label_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";
+		//document.getElementById("col_camp_terc").style.display = (elSelected == 'orden') ? "table-cell" : "none";	
+		
 		document.getElementById("col_camp_fhce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
 		document.getElementById("col_camp_chce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
 		document.getElementById("col_label_fhce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
 		document.getElementById("col_label_chce").style.display = (elSelected != 'orden') ? "table-cell" : "none";
+		document.getElementById("col_label_proart").colSpan = "";
+		document.getElementById("col_camp_proart").colSpan = "";
 		document.getElementById("col_label_proart").style.display = (elSelected != 'orden') ? "table-cell" : "none";
 		document.getElementById("col_camp_proart").style.display = (elSelected != 'orden') ? "table-cell" : "none";
-		document.getElementById("col_label_cencos").style.width = (elSelected != 'orden') ? "20%" : "40%";
+		//document.getElementById("col_label_cencos").style.width = (elSelected != 'orden') ? "20%" : "40%";
 		document.getElementById("enc_label_procord").style.display = (elSelected == 'orden') ? "table-row" : "none";
 		document.getElementById("row_camp_procord").style.display = (elSelected == 'orden') ? "table-row" : "none";		
 		document.getElementById("chkTodosProc").checked = false;
@@ -1861,26 +1877,33 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 						</tr>
 						</tr>
 						<!-- FIN NUEVO -->
-						<tr id='tr_enc_det_concepto' class='encabezadoTabla'  align='center' style="width:100%">
-							<td style="width:20%"> Concepto </td>
-							<td style="width:20%" id = "col_label_cencos"> Cen.Costos que realiza</td>
-							<td style="width:30%" id="col_label_proart">
-								Procedimiento/Examen <input name="radio_p" value='procedimiento' id="input_pro" onclick="change_edit('proc_o_insu', 1);" type="radio" /> 
-								Articulo <input name="radio_p" value='insumo' onclick="change_edit('proc_o_insu', 1);" id="input_insu" type="radio" />								
-							</td>							
-							<td style="width:20%" id="col_label_fhce"> Formulario HCE </td>
-							<td style="width:10%" id="col_label_chce"> Campo HCE </td>
-							<td style="width:40%;display:none" id="col_label_terc"> Tercero </td>
+						<tr id='tr_enc_det_concepto' class='encabezadoTabla fila-encabezado-1'  align='center' style="width:100%">
+							<td style="width:30%"> Concepto </td>
+							<td style="width:40%" id = "col_label_cencos"> Cen.Costos que realiza</td>
+							<td style="width:30%; display: table-cell" id="col_label_terc"> Tercero </td>
 						</tr>
-						<tr class='fila2 cargo_cargo'>
+						<tr class='fila2 cargo_cargo fila-detalle-1'>
 							<td align='left' >
 								<input type='text' name="con" id='busc_concepto_1' value='' valor='' onchange="change_edit('concepto', 1);" nombre='' size='21' style="text-transform:uppercase; width: 97%;" >
 							</td>
 							<td align='left'>
 								<select name="cco" id='wccogra_1' style='width: 100%;' onchange="change_edit('centro_costo', 1)"></select>
 							</td>
+							<td align='left' id="col_camp_terc" style='display: table-cell;'>
+								<input type='text' name="colter" id='camp_tercero' value='' valor='' nombre='' oninput="traer_terceros(this)" size='30' style="width: 97%;" disabled/>
+							</td>
+						</tr>
+						<tr class="encabezadoTabla fila-encabezado-2" align='center'>
+							<td style="width:30%" id="col_label_proart">
+								Procedimiento/Examen <input name="radio_p" value='procedimiento' id="input_pro" onclick="change_edit('proc_o_insu', 1);" type="radio" /> 
+								Articulo <input name="radio_p" value='insumo' onclick="change_edit('proc_o_insu', 1);" id="input_insu" type="radio" />								
+							</td>							
+							<td style="width:40%" id="col_label_fhce"> Formulario HCE </td>
+							<td style="width:30%" id="col_label_chce"> Campo HCE </td>
+						</tr>
+						<tr class="fila-detalle-2">
 							<td align='left' id="col_camp_proart">
-								<input type='text' name="procoins" id='busc_procedimiento_1' value='' valor='' nombre='' oninput="validar()"  size='30'  style="width: 97%;text-transform:uppercase;"/>
+								<input type='text' name="procoins" id='busc_procedimiento_1' value='' valor='' nombre='' oninput="validar()"  size='30'  style="width: 99%;text-transform:uppercase;"/>
 							</td>
 							<td align='left' id="col_camp_fhce">
 								<input type='text' name="fhce" id='busc_formulario_hce_1' value='' valor='' nombre='' oninput="traer_fhce()" size='30' style="width: 97%;" />
@@ -1888,10 +1911,7 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 							<td align='left' id="col_camp_chce">
 								<select name='confhce' id='wconfhce_1' oninput="traer_fhce();" onchange="change_edit('consecutivo_hce', 1);" style='width:100%;text-transform:uppercase;'></select>
 							</td>
-							<td align='left' id="col_camp_terc" style='display:none;'>
-								<input type='text' name="colter" id='camp_tercero' value='' valor='' nombre='' oninput="traer_terceros(this)" size='30' style="width: 97%;" disabled/>
-							</td>
-						</tr>						
+						</tr>
 						<tr id = "enc_label_procord" style = "display:none;">							
 							<td colspan="8">
 								<table style="width:100%">

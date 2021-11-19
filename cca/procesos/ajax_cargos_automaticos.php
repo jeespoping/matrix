@@ -997,7 +997,6 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 							$cco = $Ubisac;
 						}
 					}
-					
 									
 					$q =  " SELECT grucod, grudes, gruarc, gruser, grutip, grumva, gruinv, gruabo, grutab, grumca
 							  FROM ".$wbasedato_cliame."_000200
@@ -1037,7 +1036,8 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					$wterunix='';
 					$wnomter=''; 
 					$wporter=0;
-			
+					
+					/* SE COMENTA ESTE CODIGO DEBIDO A LA MEJORA DEL CAMPO TERCERO, ESTE CODIGO APLICA CON CONCEPTOS COMPARTIDOS
 					if(($configCCA['ccaeve'] == 'on' || $configCCA['ccadat'] == 'on') && $wcontip=="C") {
 						
 						$qMec =  "SELECT * FROM ".$wbasedato_movhos."_000048 WHERE `Meduma` = '".$wuse."'";
@@ -1090,8 +1090,9 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 							}
 						}
 					}
+					*/
 					
-					if($configCCA['ccaord'] == 'on' && $wcontip == 'C') {
+					if(!empty($configCCA['ccater']) && $wcontip == 'C') {
 						
 						$especialidad = $configCCA['tercero_esp'];
 						$wcodter = $configCCA['ccater'];
@@ -2081,7 +2082,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 					$tipo_log = 'Cargo Autom&aacute;tico - Orden';
 				}
 				
-				$notas = !empty($Logerr['error']) && $Logerr['error'] == 0  ? '<strong>Mensaje: </strong> '.$Logerr['mensaje'] : '<p style="color: red;"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p>';
+				$notas = !is_null($Logerr['error']) && $Logerr['error'] == 0  ? '<strong>Mensaje: </strong> '.$Logerr['mensaje'] : '<p style="color: red;"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p>';
 				
 			} else if($row['Logtip'] == 'estancia') {
 				
@@ -2120,7 +2121,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 					$notas.= !empty($Logerr['estancia'.$i]) && $Logerr['estancia'.$i]['idcargo'] != 0 ? '<strong>id Cargo</strong> '.$Logerr['estancia'.$i]['idcargo'].' - '.$Logerr['estancia'.$i]['respuesta'].'<br>' : '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['estancia'.$i]['respuesta'].'</p><br>';
 				}
 				
-				$notas.= !empty($Logerr['error'])  && $Logerr['error'] == 1 ? '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p><br>' : '';
+				$notas.= !is_null($Logerr['error'])  && $Logerr['error'] == 1 ? '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p><br>' : '';
 			}
 			
 			$tipo_transaccion = '';

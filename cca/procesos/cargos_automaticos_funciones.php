@@ -60,10 +60,14 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 							, (CASE WHEN ccadat = 'on' OR ccaeve = 'on' THEN '".$wformulario."' ELSE NULL END) as wformulario
 							, movdat
 							, COALESCE(ccatcco,'H,D,A,U,Cx') ccatcco
+							, ccater
+							, CASE WHEN ccater IS NOT NULL THEN TRIM(CONCAT(Medno1, ' ', Medno2, ' ' ,Medap1, ' ' ,Medap2)) ELSE '' END tercero
+							, Medesp tercero_esp
 					FROM ".$wbasedato_facturacion."_000341 as cca 
 					LEFT JOIN ".$wbasedato_hce."_000002 as hce ON (cca.ccafhce = hce.Detpro AND cca.ccachce = hce.Detcon) 
 					LEFT JOIN ".$wbasedato_movhos."_000026 ON Artcod = ccaart 
 					LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
+					LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> ''
 					LEFT JOIN root_000012 ON Codigo = ccacup
 					LEFT JOIN ".$wbasedato_hce."_".$wformulario." as fhce ON ( cca.ccachce = movcon AND Dettip = movtip AND ccadat = 'on' AND movusu = '".$mov_usu."' AND fhce.Fecha_data = '".$fecha."' AND fhce.id = (SELECT MAX(id) FROM ".$wbasedato_hce."_".$wformulario." WHERE movusu = '".$mov_usu."' AND Fecha_data = '".$fecha."' AND movhis = '".$movhis."' AND moving = '".$moving."' AND cca.ccachce = movcon AND Dettip = movtip) )
 					WHERE ccafhce = '".$wformulario."'";	
@@ -173,10 +177,14 @@ function obtenerDatosCCAxAplicacion($conex, $origen, $wmedicamento, $movhis, $mo
 							, ccadat
 							, ccaord
 							, COALESCE(ccatcco,'H,D,A,U,Cx') ccatcco
+							, ccater
+							, CASE WHEN ccater IS NOT NULL THEN TRIM(CONCAT(Medno1, ' ', Medno2, ' ' ,Medap1, ' ' ,Medap2)) ELSE '' END tercero
+							, Medesp tercero_esp
 					FROM ".$wbasedato_facturacion."_000341 as cca 
 					LEFT JOIN ".$wbasedato_movhos."_000026 a1 ON a1.Artcod = ccaart
 					LEFT JOIN ".$wbasedato_movhos."_000026 a2 ON a2.Artcod = ccamoi 
 					LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
+					LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> ''
 					LEFT JOIN root_000012 ON Codigo = ccacup
 					WHERE ccamoi = '".$wmedicamento."' 
 					AND ccapre='on' ".$condicion_tipo_cco;
