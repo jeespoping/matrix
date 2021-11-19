@@ -10,6 +10,12 @@
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b> HCE_IDC.php Ver. 2016-02-23</b></font></tr></td>
 <?php
 include_once("conex.php");
+
+	/**
+	 * Este archivo permite actualizar el movimiento hospitalario de los pacientes para el IDC.
+	 * El motivo de estar quemados los nombres de las tablas es por ser exclusivo del IDC.
+	 */
+
 	function encrypt($string, $key) 
 	{
 	   $result = '';
@@ -60,21 +66,9 @@ include_once("conex.php");
 		$descripcion = "> cron movimientos hospitalarios IDC, Numero de Pacientes: $num, ";
 		if($num > 0)
 		{
-			
-
-			
-
 			for ($i=0;$i<$num;$i++)
 			{
 				$row = mysql_fetch_array($err);
-
-				/**
-				 * Se registra el dato de la historia clínica en la posición actual del total de registros encontrados
-				 * 
-				 * @author	Joel David Payares Hernández
-				 * @since	2021-11-11
-				 */
-				$descripcion .= "historia: $row[8], ";
 
 				if($row[31] == "")
 					$row[31] = " ";
@@ -315,6 +309,8 @@ include_once("conex.php");
 			include_once("free.php");
 		}
 		
+		$descripcion .= "********** TOTAL PACIENTES : $num EN TABLERO ************";
+
 		/**
 		 * Se inserta la información de la ejecución del cron en la tabla de logs
 		 * 
@@ -322,8 +318,8 @@ include_once("conex.php");
 		 * @since	2021-11-11
 		 */
 		$query_log = "
-			INSERT INTO root_000118 (Medico,     Fecha_data     ,  		 Hora_data 			 ,													Logfun															, 		 Logdes		,	  	Logfue  	 ,    		Loghue  		  , Logema, Logest, Seguridad)
-			VALUES(				 	 'root', '".date("Y-m-d")."', '".(string)date("H:i:s")."', 'Movimiento Hospitalario IDC - Pacientes de IDC hacia tablero Matrix ".date("Y-m-d")." ".(string)date("H:i:s")."', '".$descripcion."', '".date("Y-m-d")."', '".(string)date("H:i:s")."',  'on' ,  'on' , 'C-root' );
+			INSERT INTO root_000118 (Medico,     Fecha_data     ,  		 Hora_data 			 ,										Logfun									   , 	  Logdes	   ,	  	Logfue  	,    		Loghue  		 , Logema, Logest, Seguridad)
+			VALUES(				 	 'root', '".date("Y-m-d")."', '".(string)date("H:i:s")."', 'Mov. Hos. IDC - Citas IDC a Matrix ".date("Y-m-d")." ".(string)date("H:i:s")."', '".$descripcion."', '".date("Y-m-d")."', '".(string)date("H:i:s")."',  'on' ,  'on' , 'C-root' );
 		";
 		$result_log = mysql_query( $query_log, $conex ) or die("Error insertando los datos del log en la tabla root_000118 : ".mysql_errno().":".mysql_error());
 		echo "<tr><td>********** TOTAL PACIENTES : ".$num." EN TABLERO ************</tr></td></table></center>";
