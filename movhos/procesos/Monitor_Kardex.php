@@ -342,11 +342,12 @@ else {
 							^CFP
 							^FO10,209^FDHAB: ".$dataPac[$i]["habitacion"]."^FS
 
-							^FX Tiempo de consumo
+							^FX Hora de toma
 							^CFQ
-							^FO10,240^A0,22,20^FDTIEMPO CONSUMO: ".$dataPac[$i]["frecuencia"]."s^FS
+							^FO10,240^A0,22,20^FDHORA DE TOMA: ".$dataPac[$i]["frecuencia"]."s^FS
 							^FO10,262^A0,22,20^FD".$dataPac[$i]["articulo"]."^FS
 							^FO10,284^A0,22,20^FD".$dataPac[$i]["dosis"]." - Via: ".$dataPac[$i]["via"]."^FS
+							^FO10,265^FDConservar en nevera de 2° a 6° C C^FS
 
 							^FX Cantidad de etiquetas a imprimir
 							^PQ1
@@ -2819,6 +2820,10 @@ else {
 				border-bottom-width: 1px;
 				margin: 2pt;
 			}
+
+			.imprimir-sticker{
+				margin-left: 80%;
+			}
 		</style>
 		<!--=====================================================================================================================================================================     
 	F I N   E S T I L O S 
@@ -4070,7 +4075,7 @@ else {
 						<div class='titulopagina' align='center'>PACIENTES CON SOPORTE NUTRICIONAL</div>
 					</td>";
 
-				echo "&nbsp;<input type=button value='Imprimir sticker' onclick='imprimirSticker()'>";
+				echo "&nbsp;<input class='imprimir-sticker' type=button value='Imprimir sticker' onclick='imprimirSticker()'>";
 
 				//Encabezado de tabla
 				echo "<table id='PacSoporteNuticional'>";
@@ -4159,7 +4164,8 @@ else {
 								"fecha" => $pos_art[3],
 								"hora" => $pos_art[4],
 								"habitacion" => $fila[0],
-								"frecuencia" => $pos_art[2],
+								"frecuencia" => $pos_art[0],
+								// "frecuencia" => $pos_art[2],
 								"articulo" => $pos_art[1],
 								"dosis" => $pos_art[7],
 								"via" => $pos_art[5]
