@@ -680,7 +680,6 @@ function validarTodo()
     {
         switch (concepto)
         {
-            case '2089':
             case '2001':
             case '2021':
             case '2022':
@@ -707,19 +706,19 @@ function validar9819(concDigitado,numRow)
     var fieldConcepto5 = document.getElementById('1-5');
 
     var conc1 = fieldConcepto1.value;
-    if(conc1 == '2089' || conc1 == '2002' || conc1 == '2023' || conc1 == '2088' || conc1 == '2001' || conc1 == '2021' || conc1 == '2022' || conc1 == '2025' || conc1 == '2078' || conc1 == '2079' || conc1 == '4216')
+    if(conc1 == '2002' || conc1 == '2023' || conc1 == '2088' || conc1 == '2001' || conc1 == '2021' || conc1 == '2022' || conc1 == '2025' || conc1 == '2078' || conc1 == '2079' || conc1 == '4216')
     {conc1 = 'iva'}
     var conc2 = fieldConcepto2.value;
-    if(conc2 == '2089' || conc2 == '2002' || conc2 == '2023' || conc2 == '2088' || conc2 == '2001' || conc2 == '2021' || conc2 == '2022' || conc2 == '2025' || conc2 == '2078' || conc2 == '2079' || conc2 == '4216')
+    if(conc2 == '2002' || conc2 == '2023' || conc2 == '2088' || conc2 == '2001' || conc2 == '2021' || conc2 == '2022' || conc2 == '2025' || conc2 == '2078' || conc2 == '2079' || conc2 == '4216')
     {conc2 = 'iva'}
     var conc3 = fieldConcepto3.value;
-    if(conc3 == '2089' || conc3 == '2002' || conc3 == '2023' || conc3 == '2088' || conc3 == '2001' || conc3 == '2021' || conc3 == '2022' || conc3 == '2025' || conc3 == '2078' || conc3 == '2079' || conc3 == '4216')
+    if(conc3 == '2002' || conc3 == '2023' || conc3 == '2088' || conc3 == '2001' || conc3 == '2021' || conc3 == '2022' || conc3 == '2025' || conc3 == '2078' || conc3 == '2079' || conc3 == '4216')
     {conc3 = 'iva'}
     var conc4 = fieldConcepto4.value;
-    if(conc4 == '2089' || conc4 == '2002' || conc4 == '2023' || conc4 == '2088' || conc4 == '2001' || conc4 == '2021' || conc4 == '2022' || conc4 == '2025' || conc4 == '2078' || conc4 == '2079' || conc4 == '4216')
+    if(conc4 == '2002' || conc4 == '2023' || conc4 == '2088' || conc4 == '2001' || conc4 == '2021' || conc4 == '2022' || conc4 == '2025' || conc4 == '2078' || conc4 == '2079' || conc4 == '4216')
     {conc4 = 'iva'}
     var conc5 = fieldConcepto5.value;
-    if(conc5 == '2089' || conc5 == '2002' || conc5 == '2023' || conc5 == '2088' || conc5 == '2001' || conc5 == '2021' || conc5 == '2022' || conc5 == '2025' || conc5 == '2078' || conc5 == '2079' || conc5 == '4216')
+    if(conc5 == '2002' || conc5 == '2023' || conc5 == '2088' || conc5 == '2001' || conc5 == '2021' || conc5 == '2022' || conc5 == '2025' || conc5 == '2078' || conc5 == '2079' || conc5 == '4216')
     {conc5 = 'iva'}
 
     if(concDigitado == '9819')

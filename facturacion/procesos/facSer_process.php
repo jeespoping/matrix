@@ -248,7 +248,7 @@ if($accion == 'saveTempo2')
 	// OJO: ESTÁ IGUAL EN $accion == 'saveTempo'.
     if($contPre == 0 || true)
     {
-        if($concepto == '2089' or $concepto == '2001' or $concepto == '2021' or $concepto == '2022' or $concepto == '2025' or $concepto == '2078' or $concepto == '2079' or $concepto == '4216' or $concepto == '9819')
+        if($concepto == '2001' or $concepto == '2021' or $concepto == '2022' or $concepto == '2025' or $concepto == '2078' or $concepto == '2079' or $concepto == '4216' or $concepto == '9819')
         {
             $queryTemp = "insert into amefactmp VALUES('$numFac','$fechafac','$plazo','$docPac','$nomPac','$tipoResp','$nitResp','$tarifa','E',
                      '$concepto','$ccosto','$valcon','$valdesc','$valneto')";
@@ -259,7 +259,7 @@ if($accion == 'saveTempo2')
                 {
                     opener.document.getElementById('divSave').style.display = 'none';
                     opener.document.getElementById('divListo').style.display = 'block';
-                    opener.alert('EL CONCEPTO DIGITADO REQUIERE INGRESAR UN CONCEPTO DE IVA');
+                    opener.alert('EL CONCEPTO DIGITADO REQUIRE INGRESAR UN CONCEPTO DE IVA');
                 }
                 window.close();
             </script>
@@ -543,7 +543,7 @@ if($accion == 'validarDato')
                 desCost = opener.document.getElementById('detCcosto1').value;  //Obtener descripcion del ccostos primera linea
                 opener.document.getElementById('detCcosto'+<?php echo $numRows ?>).value = desCost;  //adicionar atributo tittle
 
-                if(concepto == '2089' || concepto == '2001' || concepto == '2021' || concepto == '2022' || concepto == '2025' || concepto == '2078' || concepto == '2079' || concepto == '4216' || concepto == '9819')
+                if(concepto == '2001' || concepto == '2021' || concepto == '2022' || concepto == '2025' || concepto == '2078' || concepto == '2079' || concepto == '4216' || concepto == '9819')
                 {
                     var valIva = 19; concepIva = 'on';
                     <?php
@@ -551,7 +551,7 @@ if($accion == 'validarDato')
                     ?>
                     //OBTENER LOS VALORES, QUITAR LOS PUNTOS Y ASIGNAR VALOR 0 (CERO) SI ESTE VIENE EN NULL:
                     concepto1 = opener.document.getElementById('1-1').value;
-                    if(concepto1 == '2089' || concepto1 == '2001' || concepto1 == '2021' || concepto1 == '2022' || concepto1 == '2025' || concepto1 == '2078' || concepto1 == '2079' || concepto1 == '4216' || concepto1 == '9819' )
+                    if(concepto1 == '2001' || concepto1 == '2021' || concepto1 == '2022' || concepto1 == '2025' || concepto1 == '2078' || concepto1 == '2079' || concepto1 == '4216' || concepto1 == '9819' )
                     {
                         var totConcep1 = opener.document.getElementById('5-1').value;   totConcep1 = quita_comas2(totConcep1);  if(totConcep1 == 0){totConcep1 = 0}
                     }
@@ -561,7 +561,7 @@ if($accion == 'validarDato')
                     }
 
                     concepto2 = opener.document.getElementById('1-2').value;
-                    if(concepto2 == '2089' || concepto2 == '2001' || concepto2 == '2021' || concepto2 == '2022' || concepto2 == '2025' || concepto2 == '2078' || concepto2 == '2079' || concepto2 == '4216' || concepto2 == '9819' )
+                    if(concepto2 == '2001' || concepto2 == '2021' || concepto2 == '2022' || concepto2 == '2025' || concepto2 == '2078' || concepto2 == '2079' || concepto2 == '4216' || concepto2 == '9819' )
                     {
                         var totConcep2 = opener.document.getElementById('5-2').value;   totConcep2 = quita_comas2(totConcep2);  if(totConcep2 == 0){totConcep2 = 0}
                     }
@@ -571,7 +571,7 @@ if($accion == 'validarDato')
                     }
 
                     concepto3 = opener.document.getElementById('1-3').value;
-                    if(concepto3 == '2089' || concepto3 == '2001' || concepto3 == '2021' || concepto3 == '2022' || concepto3 == '2025' || concepto3 == '2078' || concepto3 == '2079' || concepto3 == '4216' || concepto3 == '9819' )
+                    if(concepto3 == '2001' || concepto3 == '2021' || concepto3 == '2022' || concepto3 == '2025' || concepto3 == '2078' || concepto3 == '2079' || concepto3 == '4216' || concepto3 == '9819' )
                     {
                         var totConcep3 = opener.document.getElementById('5-3').value;   totConcep3 = quita_comas2(totConcep3);  if(totConcep3 == 0){totConcep3 = 0}
                     }
@@ -581,7 +581,7 @@ if($accion == 'validarDato')
                     }
 
                     concepto4 = opener.document.getElementById('1-4').value;
-                    if(concepto4 == '2089' || concepto4 == '2001' || concepto4 == '2021' || concepto4 == '2022' || concepto4 == '2025' || concepto4 == '2078' || concepto4 == '2079' || concepto4 == '4216' || concepto4 == '9819' )
+                    if(concepto4 == '2001' || concepto4 == '2021' || concepto4 == '2022' || concepto4 == '2025' || concepto4 == '2078' || concepto4 == '2079' || concepto4 == '4216' || concepto4 == '9819' )
                     {
                         var totConcep4 = opener.document.getElementById('5-4').value;   totConcep4 = quita_comas2(totConcep4);  if(totConcep4 == 0){totConcep4 = 0}
                     }
@@ -591,7 +591,7 @@ if($accion == 'validarDato')
                     }
 
                     concepto5 = opener.document.getElementById('1-5').value;
-                    if(concepto5 == '2089' || concepto5 == '2001' || concepto5 == '2021' || concepto5 == '2022' || concepto5 == '2025' || concepto5 == '2078' || concepto5 == '2079' || concepto5 == '4216' || concepto5 == '9819' )
+                    if(concepto5 == '2001' || concepto5 == '2021' || concepto5 == '2022' || concepto5 == '2025' || concepto5 == '2078' || concepto5 == '2079' || concepto5 == '4216' || concepto5 == '9819' )
                     {
                         var totConcep5 = opener.document.getElementById('5-5').value;   totConcep5 = quita_comas2(totConcep5);  if(totConcep5 == 0){totConcep5 = 0}
                     }
@@ -853,7 +853,7 @@ if($accion == 'verConcep')
         opener.document.getElementById('chkCcos'+<?php echo $numRows ?>).style.pointerEvents = 'auto'; //habilitar el boton busqueda de Ccostos
         opener.document.getElementById('chkCcos'+<?php echo $numRows ?>).style.backgroundColor = '#5CB85C';
 
-         if(concepto == '2089' || concepto == '2001' || concepto == '2021' || concepto == '2022' || concepto == '2025' || concepto == '2078' || concepto == '2079' || concepto == '4216' || concepto == '9819')
+         if(concepto == '2001' || concepto == '2021' || concepto == '2022' || concepto == '2025' || concepto == '2078' || concepto == '2079' || concepto == '4216' || concepto == '9819')
          {
                     var valIva = 19; concepIva = 'on';
                     <?php
@@ -861,7 +861,7 @@ if($accion == 'verConcep')
                     ?>
                     //OBTENER LOS VALORES, QUITAR LOS PUNTOS Y ASIGNAR VALOR 0 (CERO) SI ESTE VIENE EN NULL:
                     concepto1 = opener.document.getElementById('1-1').value;
-                    if(concepto1 == '2089' || concepto1 == '2001' || concepto1 == '2021' || concepto1 == '2022' || concepto1 == '2025' || concepto1 == '2078' || concepto1 == '2079' || concepto1 == '4216' || concepto1 == '9819' )
+                    if(concepto1 == '2001' || concepto1 == '2021' || concepto1 == '2022' || concepto1 == '2025' || concepto1 == '2078' || concepto1 == '2079' || concepto1 == '4216' || concepto1 == '9819' )
                     {
                         var totConcep1 = opener.document.getElementById('5-1').value;   totConcep1 = quita_comas2(totConcep1);  if(totConcep1 == 0){totConcep1 = 0}
                     }
@@ -871,7 +871,7 @@ if($accion == 'verConcep')
                     }
 
                     concepto2 = opener.document.getElementById('1-2').value;
-                    if(concepto2 == '2089' || concepto2 == '2001' || concepto2 == '2021' || concepto2 == '2022' || concepto2 == '2025' || concepto2 == '2078' || concepto2 == '2079' || concepto2 == '4216' || concepto2 == '9819' )
+                    if(concepto2 == '2001' || concepto2 == '2021' || concepto2 == '2022' || concepto2 == '2025' || concepto2 == '2078' || concepto2 == '2079' || concepto2 == '4216' || concepto2 == '9819' )
                     {
                         var totConcep2 = opener.document.getElementById('5-2').value;   totConcep2 = quita_comas2(totConcep2);  if(totConcep2 == 0){totConcep2 = 0}
                     }
@@ -881,7 +881,7 @@ if($accion == 'verConcep')
                     }
 
                     concepto3 = opener.document.getElementById('1-3').value;
-                    if(concepto3 == '2089' || concepto3 == '2001' || concepto3 == '2021' || concepto3 == '2022' || concepto3 == '2025' || concepto3 == '2078' || concepto3 == '2079' || concepto3 == '4216' || concepto3 == '9819' )
+                    if(concepto3 == '2001' || concepto3 == '2021' || concepto3 == '2022' || concepto3 == '2025' || concepto3 == '2078' || concepto3 == '2079' || concepto3 == '4216' || concepto3 == '9819' )
                     {
                         var totConcep3 = opener.document.getElementById('5-3').value;   totConcep3 = quita_comas2(totConcep3);  if(totConcep3 == 0){totConcep3 = 0}
                     }
@@ -891,7 +891,7 @@ if($accion == 'verConcep')
                     }
 
                     concepto4 = opener.document.getElementById('1-4').value;
-                    if(concepto4 == '2089' || concepto4 == '2001' || concepto4 == '2021' || concepto4 == '2022' || concepto4 == '2025' || concepto4 == '2078' || concepto4 == '2079' || concepto4 == '4216' || concepto4 == '9819' )
+                    if(concepto4 == '2001' || concepto4 == '2021' || concepto4 == '2022' || concepto4 == '2025' || concepto4 == '2078' || concepto4 == '2079' || concepto4 == '4216' || concepto4 == '9819' )
                     {
                         var totConcep4 = opener.document.getElementById('5-4').value;   totConcep4 = quita_comas2(totConcep4);  if(totConcep4 == 0){totConcep4 = 0}
                     }
@@ -901,7 +901,7 @@ if($accion == 'verConcep')
                     }
 
                     concepto5 = opener.document.getElementById('1-5').value;
-                    if(concepto5 == '2089' || concepto5 == '2001' || concepto5 == '2021' || concepto5 == '2022' || concepto5 == '2025' || concepto5 == '2078' || concepto5 == '2079' || concepto5 == '4216' || concepto5 == '9819' )
+                    if(concepto5 == '2001' || concepto5 == '2021' || concepto5 == '2022' || concepto5 == '2025' || concepto5 == '2078' || concepto5 == '2079' || concepto5 == '4216' || concepto5 == '9819' )
                     {
                         var totConcep5 = opener.document.getElementById('5-5').value;   totConcep5 = quita_comas2(totConcep5);  if(totConcep5 == 0){totConcep5 = 0}
                     }
