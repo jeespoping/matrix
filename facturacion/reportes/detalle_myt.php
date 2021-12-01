@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="esp">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eï¿½es y tildes -->
     <title>MATRIX - [FACTURAS PARA MYT]</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <style>
         .alternar:hover{ background-color:#CADCFF;}
     </style>
@@ -31,7 +31,7 @@
         mysql_select_db("matrix");
 
         $conex = obtenerConexionBD("matrix");
-        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
+        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
         $wactualiz = "1.4 2-junio-2019";
     }
     session_start();
@@ -415,11 +415,11 @@ else
             <table class="table table-bordered table-list">
                 <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                 <tr>
-                    <th class="hidden-xs">N°. ENVIO</th>
+                    <th class="hidden-xs">Nï¿½. ENVIO</th>
                     <!--<th>CONSECUTIVO</th>-->
-                    <th>N°. COBRO</th>
+                    <th>Nï¿½. COBRO</th>
                     <th>TIPO ID</th>
-                    <th>N°. ID</th>
+                    <th>Nï¿½. ID</th>
                     <th>1ER APELLIDO</th>
                     <th>2DO APELLIDO</th>
                     <th>1ER NOMBRE</th>
@@ -430,7 +430,7 @@ else
                     -->
                     <th>NIVEL SISBEN</th>
                     <th>TIPO COBRO</th>
-                    <th>N°. FACTURA</th>
+                    <th>Nï¿½. FACTURA</th>
                     <th>FECHA EMISION DE LA FACTURA</th>
                     <th>NIT. PROVEEDOR</th>
                     <th>NOMBRE PROVEEDOR</th>
@@ -571,9 +571,9 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
                     ?>
                     <tbody>
                     <tr id="rowDATOS" class="alternar">
-                        <td>&nbsp;</td> <!-- Número de Envío-->
+                        <td>&nbsp;</td> <!-- Nï¿½mero de Envï¿½o-->
                         <!--<td><?php echo $consecutivo ?></td>--> <!-- Consecutivo-->
-                        <td><?php echo $numfaci ?> </td> <!-- Número de Cobro, es el mismo numero de Factura-->
+                        <td><?php echo $numfaci ?> </td> <!-- Nï¿½mero de Cobro, es el mismo numero de Factura-->
                         <td><?php echo $tip ?></td> <!-- tipo documento paciente-->
                         <td><?php echo $cep ?></td> <!-- numero documento paciente-->
                         <td><?php echo $ape1pac ?></td> <!-- apellido 1 paciente-->
@@ -585,7 +585,7 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
                         <td>NA</td> <!-- Nivel SISBEN, 1 por defecto -->
                         <!--<td><?php// echo $sitiser ?></td>--> <!-- Tipo cobro -->
                         <td>CTC</td> <!-- Tipo cobro -->
-                        <td><?php echo $numfaci ?></td> <!-- Número de la factura que comprende el item recobrado -->
+                        <td><?php echo $numfaci ?></td> <!-- Nï¿½mero de la factura que comprende el item recobrado -->
                         <td></td> <!-- FECHA DE LA FACTURA -->
                         <td><?php echo $nitproo ?></td> <!-- NIT proveedor medicamento -->
                         <td><?php echo $nomproo ?></td> <!-- Nombre proveedor medicamento -->
@@ -629,60 +629,60 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
             <table class="table table-bordered table-list">
                 <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                 <tr>
-                    <th class="hidden-xs">Número consecutivo interno para radicaciones de la entidad reclamante</th>
-                    <th>Número consecutivo del recobro</th>
-                    <th>Tipo de radicación</th>
-                    <th>Número de radicación anterior</th>
-                    <th>Código de la entidad administradora de planes de beneficio</th>
+                    <th class="hidden-xs">Nï¿½mero consecutivo interno para radicaciones de la entidad reclamante</th>
+                    <th>Nï¿½mero consecutivo del recobro</th>
+                    <th>Tipo de radicaciï¿½n</th>
+                    <th>Nï¿½mero de radicaciï¿½n anterior</th>
+                    <th>Cï¿½digo de la entidad administradora de planes de beneficio</th>
                     <th>Tipo de documento de identidad</th>
-                    <th>Número de documento de identidad</th>
+                    <th>Nï¿½mero de documento de identidad</th>
                     <th>Primer apellido del afiliado</th>
                     <th>Segundo apellido del afiliado</th>
                     <th>Primer nombre del afiliado</th>
                     <th>Segundo nombre del afiliado</th>
                     <th>Tipo de afiliado</th>
                     <th>Nivel de la cuota moderadora</th>
-                    <th>Nivel de la cuota de recuperación</th>
-                    <th>Número del item</th>
-                    <th>Número del fallo</th>
+                    <th>Nivel de la cuota de recuperaciï¿½n</th>
+                    <th>Nï¿½mero del item</th>
+                    <th>Nï¿½mero del fallo</th>
                     <th>Fecha del fallo</th>
-                    <th>Número de autoridad judicial</th>
+                    <th>Nï¿½mero de autoridad judicial</th>
                     <th>Tipo de autoridad judicial</th>
                     <th>Municipio de ubicacion autoridad judicial</th>
                     <th>Codigo causa del recobro</th>
-                    <th>Fecha solicitud del médico</th>
+                    <th>Fecha solicitud del mï¿½dico</th>
                     <th>Indicador de periodicidad del recobro</th>
                     <th>Mes del periodo suministrado</th>
-                    <th>Año del periodo suministrado</th>
-                    <th>Número de entrega de lo ordenado por el fallo de tutela</th>
-                    <th>Número de la factura que comprende el item recobrado</th>
-                    <th>Fecha de la prestación del servicio</th>
-                    <th>Fecha de radicación de la factura ante la entidad administradora de los planes de beneficios</th>
-                    <th>Código de diagnóstico según la clasificación internacional de enfermedades vigente</th>
+                    <th>Aï¿½o del periodo suministrado</th>
+                    <th>Nï¿½mero de entrega de lo ordenado por el fallo de tutela</th>
+                    <th>Nï¿½mero de la factura que comprende el item recobrado</th>
+                    <th>Fecha de la prestaciï¿½n del servicio</th>
+                    <th>Fecha de radicaciï¿½n de la factura ante la entidad administradora de los planes de beneficios</th>
+                    <th>Cï¿½digo de diagnï¿½stico segï¿½n la clasificaciï¿½n internacional de enfermedades vigente</th>
                     <th>Porcentaje de semanas</th>
                     <th>NIT del proveedor del medicamento</th>
                     <th>Nombre del proveedor del medicamento</th>
-                    <th>Código del medicamento, servicios médicos o prestaciones de salud suministrado</th>
-                    <th>Nombre del medicamento, servicios médicos o prestaciones de salud suministrado</th>
+                    <th>Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado</th>
+                    <th>Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado</th>
                     <th>Sigla del tipo de servicio de salud prestado</th>
                     <th>Cantidad suministrada item</th>
                     <th>Valor unitario del servicio suministrado</th>
                     <th>Valor total del servicio suministrado</th>
                     <th>Valor cuota moderadora o copago</th>
                     <th>Valor final recobrado</th>
-                    <th>Número del item</th>
+                    <th>Nï¿½mero del item</th>
                     <th>Nombre del medicamento, servicios medicos o prestaciones de salud suministrado</th>
                     <th>Presentacion del medicamento, servicios medicos o prestaciones de salud suministrado</th>
-                    <th>Unidades diarias del medicamento, servicio medico o prestación de salud</th>
-                    <th>Cantidad días que dura el servicio</th>
-                    <th>Cantidad total suministrada del medicamento, servicio medico o prestación de salud</th>
+                    <th>Unidades diarias del medicamento, servicio medico o prestaciï¿½n de salud</th>
+                    <th>Cantidad dï¿½as que dura el servicio</th>
+                    <th>Cantidad total suministrada del medicamento, servicio medico o prestaciï¿½n de salud</th>
                     <th>Valor unitario del servicio suministrado por item</th>
                     <th>Valor total del servicio suministrado por item</th>
-                    <th>Código del medicamento, servicios médicos o prestaciones de salud similar o que sustituye</th>
-                    <th>Nombre del medicamento, servicios médicos o prestaciones de salud suministrado similar o que sustituye</th>
-                    <th>Unidades diarias del medicamento, servicio médico o prestación de salud que sustituye o similar</th>
-                    <th>Cantidad días que dura el servicio del numeral 46</th>
-                    <th>Cantidad total del medicamento, servicio médico o prestación de salud que sustituye o similar</th>
+                    <th>Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud similar o que sustituye</th>
+                    <th>Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado similar o que sustituye</th>
+                    <th>Unidades diarias del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar</th>
+                    <th>Cantidad dï¿½as que dura el servicio del numeral 46</th>
+                    <th>Cantidad total del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar</th>
                     <th>Valor unitario del servicio que sustituye o similar</th>
                     <th>Valor total del servicio que sustituye o similar</th>
                     <th>Cantidad de fallos de tutela</th>
@@ -693,7 +693,7 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
                     <th>Cantidad de folios que evidencien la entrega del medicamento</th>
                     <th>Cantidad total de documentos</th>
                     <th>Cantidad total de folios</th>
-                    <th>No de radicación recobro anterior (formato MYT-02)</th>
+                    <th>No de radicaciï¿½n recobro anterior (formato MYT-02)</th>
                     <th>NIT Proveedor Prest</th>
                     <th>Nombre Proveedor Prest</th>
                     <th>Num Factura Proveedor Prest</th>
@@ -726,7 +726,7 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
                     $fecsolm = odbc_result($err_o, 17);//Fecha solicitud medico
                     $inperre = odbc_result($err_o, 18);//Indicador de periodicidad del recobro
                     $mespesu = odbc_result($err_o, 19);//Mes periodo suministrado
-                    $anpersu = odbc_result($err_o, 20);//Año periodo suministrado
+                    $anpersu = odbc_result($err_o, 20);//Aï¿½o periodo suministrado
                     $numenac = odbc_result($err_o, 21);//Numero entrega acta ctc para el periodo
                     $numfaci = odbc_result($err_o, 22);//Numero factura comprende item recobrado
                     $fecpres = odbc_result($err_o, 23);//Fecha prestacion del servicio
@@ -762,7 +762,7 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
                         <td><?php echo $tipoafi ?></td>
                         <td><?php echo $nicuota ?></td>
                         <td>&nbsp;</td>
-                        <td><?php echo $numitem ?></td> <!-- Número del item -->
+                        <td><?php echo $numitem ?></td> <!-- Nï¿½mero del item -->
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
@@ -772,7 +772,7 @@ $wemp_pmla=$_REQUEST['wemp_pmla'];
                         <td><?php echo $fecsolm ?></td> <!-- Fecha solicitud medico -->
                         <td><?php echo $inperre ?></td> <!-- Indicador de periodicidad del recobro -->
                         <td><?php echo $mespesu ?></td> <!-- Mes periodo suministrado -->
-                        <td><?php echo $anpersu ?></td> <!-- Año periodo suministrado -->
+                        <td><?php echo $anpersu ?></td> <!-- Aï¿½o periodo suministrado -->
                         <td>&nbsp;</td>
                         <td><?php echo $numfaci ?></td> <!-- Numero factura comprende item recobrado -->
                         <td><?php echo $fecpres ?></td> <!-- Fecha prestacion del servicio -->

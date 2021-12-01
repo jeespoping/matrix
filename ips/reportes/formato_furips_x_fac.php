@@ -335,17 +335,17 @@ function obtener_nombre_archivo2($codHabilitacion,$cont)
 
 <?php
 /******************************************************************
-   * 	  FORMULARIO ÚNICO DE RECLAMACIÓN IPS - FURIPS				*
+   * 	  FORMULARIO ï¿½NICO DE RECLAMACIï¿½N IPS - FURIPS				*
    * -------------------------------------------------------------- *
-   * Este script genera el Formulario Único de Reclamación de los 	*
+   * Este script genera el Formulario ï¿½nico de Reclamaciï¿½n de los 	*
    * Prestadores de Servicios de Salud por Servicios Prestados a	*
-   * Víctimas de Eventos Catastróficos y Accidentes de Tránsito 	*
-   * (Personas Jurídicas - FURIPS) 									*
+   * Vï¿½ctimas de Eventos Catastrï¿½ficos y Accidentes de Trï¿½nsito 	*
+   * (Personas Jurï¿½dicas - FURIPS) 									*
    * Los datos son consultados desde UNIX conectando a la Base de 	*
    * Datos de Servinte.												*
-   * Las fuentes, tamños, demás estilos y la distribuación de los	*
-   * formularios, se hizo para que su impresión física se pueda		*
-   * hacer similar a como viene impreso el formato físico que antes *
+   * Las fuentes, tamï¿½os, demï¿½s estilos y la distribuaciï¿½n de los	*
+   * formularios, se hizo para que su impresiï¿½n fï¿½sica se pueda		*
+   * hacer similar a como viene impreso el formato fï¿½sico que antes *
    * se llenaba manualmente.										*
    ******************************************************************/
 	/*
@@ -353,39 +353,39 @@ function obtener_nombre_archivo2($codHabilitacion,$cont)
 	 * Fecha creacion: 2011-09-23
 	 * Modificado:
 	 * 2020-09-08   David HH    - se agrega firma del representante legal de furips y se consulta los medicos desde matrix (antes se hacia por unix)
-	 * 2019-04-02	Jessica		- En el campo No factura / cuenta de cobro debe mostrar el número de factura electrónica, por tal motivo 
-	 * 							  se agrega el prefijo al número de factura.
+	 * 2019-04-02	Jessica		- En el campo No factura / cuenta de cobro debe mostrar el nï¿½mero de factura electrï¿½nica, por tal motivo 
+	 * 							  se agrega el prefijo al nï¿½mero de factura.
 	 * 2018-07-24 	Edwin MG	- Para farpmla (wemp_pmla = 09), la fuente de factura es 01 ( la fuente que corresponde a movfuo de la tabla famov de unix)
 	 * 2018-07-24 	Edwin MG	- Para las facturas viejas(movfuo != 01) se busca la informacion en las tablas aymov y aymovegr y se corrige el diagnostico de ingreso y de egreso para las
 	 *							  facturas hospitalarias ya que estaban invertidos (movfue = 01)
 	 * 2018-07-17 	Edwin MG	- Se consultan los formatos furips solamente por factura y sin importar la fuente de la factura
-	 * 2018-06-22 	Edwin MG	- Al validar la tabla inpac para verificar si el paciente está activo, se valida con el ingreso seleccionado. Antes de está publicación, la
-	 *							  validación con el ingreso estaba comentada
-	 * 2013-09-24 - Se quitó el guión del número de factura, para esto la variable $num_factura se le hace un str_replace. Este guión se debió quitar
-	 * por solicitud de facturación ya que la malla validadora del fosyga no reconoce estos números de facturas con el guión - Mario Cadavid
-	 * 2012-11-29 - Se implementó la consulta de eventos catastróficos debido que solo se estaba llenando el formato cuando el evento
-	 * es accidente de tránsito, con este cambio ya llena los datos del formato también cuando es un evento catastrófico - Mario Cadavid
-	 * 2012-10-31 - Se adicionó el filtro AND Fennac != '' en la Consulta de facturas de modo que se valide que la factura es de accidente
+	 * 2018-06-22 	Edwin MG	- Al validar la tabla inpac para verificar si el paciente estï¿½ activo, se valida con el ingreso seleccionado. Antes de estï¿½ publicaciï¿½n, la
+	 *							  validaciï¿½n con el ingreso estaba comentada
+	 * 2013-09-24 - Se quitï¿½ el guiï¿½n del nï¿½mero de factura, para esto la variable $num_factura se le hace un str_replace. Este guiï¿½n se debiï¿½ quitar
+	 * por solicitud de facturaciï¿½n ya que la malla validadora del fosyga no reconoce estos nï¿½meros de facturas con el guiï¿½n - Mario Cadavid
+	 * 2012-11-29 - Se implementï¿½ la consulta de eventos catastrï¿½ficos debido que solo se estaba llenando el formato cuando el evento
+	 * es accidente de trï¿½nsito, con este cambio ya llena los datos del formato tambiï¿½n cuando es un evento catastrï¿½fico - Mario Cadavid
+	 * 2012-10-31 - Se adicionï¿½ el filtro AND Fennac != '' en la Consulta de facturas de modo que se valide que la factura es de accidente
 	 * y no se muestren dobles las facturas que estan repetidas en la tabla $wbasedato_farm_000018 - Mario Cadavid
-	 * 2012-06-05 - Se adicionó condicionales para mostrar el nombre del conductor de modo que si es un nombre como Maria del Carmen, Pedro de las Casas
+	 * 2012-06-05 - Se adicionï¿½ condicionales para mostrar el nombre del conductor de modo que si es un nombre como Maria del Carmen, Pedro de las Casas
 	 * no vaya a tomar "del" o "de las" como el segundo nombre o apellido - Mario Cadavid
-	 * 2012-05-02 - Se pasa el documento del paciente asociado a la factura ($empresa_000018.Fendpa) a mayúcula con strtoupper
-	 * para asegurar la correcta comparación del query en Unix
+	 * 2012-05-02 - Se pasa el documento del paciente asociado a la factura ($empresa_000018.Fendpa) a mayï¿½cula con strtoupper
+	 * para asegurar la correcta comparaciï¿½n del query en Unix
 	 * 2012-04-27 - Se cambia el campo que obtiene el dato del medico, ya no se trae de la tabla inmegr.egrmed sino de
-	 * inpacinf.pacinfmed, ya que este es el médico tratante - Mario Cadavid
-	 * 2012-02-27 - Se modificó el condicional donde se obtienen los datos del médico tratante ya que estaba dentro del condicional
-	 * de los datos del propietario del vehículo - Mario Cadavid
+	 * inpacinf.pacinfmed, ya que este es el mï¿½dico tratante - Mario Cadavid
+	 * 2012-02-27 - Se modificï¿½ el condicional donde se obtienen los datos del mï¿½dico tratante ya que estaba dentro del condicional
+	 * de los datos del propietario del vehï¿½culo - Mario Cadavid
 	 * 2012-01-19 - Se permite modificar el campo de fecha de ingreso del paciente en el formato furips
-	 * petición realizada por Sandra de farmastore - Mario Cadavid
-	 * 2012-01-03 - Se permite modificar el campo de fecha de ingreso del paciente, petición realizada por Sandra de farmastore - Mario Cadavid
-	 * 2011-12-13 - Se agregó la función define_muncod y se definió la variable $Ctid que determina
-	 * el tipo de documento del conductor. Se adicionó el uso de la función establecer_geo siempre
+	 * peticiï¿½n realizada por Sandra de farmastore - Mario Cadavid
+	 * 2012-01-03 - Se permite modificar el campo de fecha de ingreso del paciente, peticiï¿½n realizada por Sandra de farmastore - Mario Cadavid
+	 * 2011-12-13 - Se agregï¿½ la funciï¿½n define_muncod y se definiï¿½ la variable $Ctid que determina
+	 * el tipo de documento del conductor. Se adicionï¿½ el uso de la funciï¿½n establecer_geo siempre
 	 * que se va a mostrar departamento y municipio de un registro - Mario Cadavid
-	 * 2011-12-02 - Se le asignó valor incial a la variable $estado_aseguramiento de modo
-	 * que si la variable $Aase no trae dato válido no se genere warning de variable no definida - Mario Cadavid
+	 * 2011-12-02 - Se le asignï¿½ valor incial a la variable $estado_aseguramiento de modo
+	 * que si la variable $Aase no trae dato vï¿½lido no se genere warning de variable no definida - Mario Cadavid
 	 * 2011-11-24 - El nombre de la seguradora estatal estaba quemado por lo que
 	 * se cambia para que consulte en root_000051 la empresa actual encargada - Mario Cadavid
-	 * 2012-01-31 - Se cambio la asignación $Amuncod=$array['accdetmuc'] y $Cmun=$array['accdetmun'], ya que estaban trocados
+	 * 2012-01-31 - Se cambio la asignaciï¿½n $Amuncod=$array['accdetmuc'] y $Cmun=$array['accdetmun'], ya que estaban trocados
 	 * estaba asignado el codigo de municipio del conductor como codigo de municipio de ocurrencia del accidente y vicerversa
 	 */
 
@@ -427,7 +427,7 @@ function obtener_nombre_archivo2($codHabilitacion,$cont)
 	  $winstitucion=$row[2];
 
     }
-// Permite separar el código del municipio cuando tiene dentro el del departamento
+// Permite separar el cï¿½digo del municipio cuando tiene dentro el del departamento
 	function define_muncod($munic,$depar)
 	{
 		// for ($i=0;$i<strlen($depar);$i++)
@@ -570,15 +570,15 @@ function obtener_nombre_archivo2($codHabilitacion,$cont)
 
 	session_start();
 
-// Inicia la sessión del usuario
+// Inicia la sessiï¿½n del usuario
 if (!isset($user))
 	if(!isset($_SESSION['user']))
 	  session_register("user");
 
-// Si el usuario no está registrado muestra el mensaje de error
+// Si el usuario no estï¿½ registrado muestra el mensaje de error
 if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs']))
 	echo "error";
-else	// Si el usuario está registrado inicia el programa
+else	// Si el usuario estï¿½ registrado inicia el programa
 {
   include_once("root/comun.php");
   include_once("root/montoescrito.php");
@@ -605,14 +605,14 @@ else	// Si el usuario está registrado inicia el programa
   $pos = strpos($user,"-");
   $wusuario = substr($user,$pos+1,strlen($user));
 
-  // Aca se coloca la ultima fecha de actualización
+  // Aca se coloca la ultima fecha de actualizaciï¿½n
   $wactualiz = "2020-09-08";
 
   //**********************************************//
   //********** P R I N C I P A L *****************//
   //**********************************************//
 
-  // Titulo de la página
+  // Titulo de la pï¿½gina
   $titulo = "FURIPS";
 
   $furips = "";
@@ -653,7 +653,7 @@ if($wemp_pmla =='09')
 				."   FROM ".$wbasedato_farm."_000018 "
 				." 	WHERE Fendpa = '".$wnumero."' "
 				."	  AND Fendpa != '' ";
-		//	    ."	  AND Fennac != '' ";	// Se comenta porque al incluir eventos catastróficos, este campo puede ir vacio
+		//	    ."	  AND Fennac != '' ";	// Se comenta porque al incluir eventos catastrï¿½ficos, este campo puede ir vacio
 		}
 		else
 		{
@@ -661,7 +661,7 @@ if($wemp_pmla =='09')
 				."   FROM ".$wbasedato_farm."_000018 "
 				." 	WHERE Fenfac = '".$wnumero."' "
 				."	  AND Fendpa != '' ";
-		//	    ."	  AND Fennac != '' ";	// Se comenta porque al incluir eventos catastróficos, este campo puede ir vacio
+		//	    ."	  AND Fennac != '' ";	// Se comenta porque al incluir eventos catastrï¿½ficos, este campo puede ir vacio
 		}
 		 
 		$fueOrigen  =   '01';
@@ -758,10 +758,10 @@ if($conexUnix)
 
 // Ciclo que recorre las facturas y muestra el formato furips para cada una
 
-///25, espacios para que no se limite el tamaño de los campos en el update que se hace a la temporal
+///25, espacios para que no se limite el tamaï¿½o de los campos en el update que se hace a la temporal
 $long='                                                                                              ';
 
-// Variable que se activará en caso de que el accidente sea un evento catastrófico
+// Variable que se activarï¿½ en caso de que el accidente sea un evento catastrï¿½fico
 $catastrofico = false;
 $conttemp = 0;	// Contador para agregar en el nombre de la tabla temporal y garantizar que no se repita
 
@@ -820,7 +820,7 @@ while($row = mysql_fetch_array($res))
   if(isset($tbpac) && $tbpac!="")
   {
 
-	// Si vienes dado el accidente se consulta los registros de éste
+	// Si vienes dado el accidente se consulta los registros de ï¿½ste
 	if(isset($acc) && $acc!="" && $acc!=" " && $acc!="0")
 	{
 		$select = " accdethis, accdetnum, '".$long."' as accdetfec, accdetacc ";
@@ -836,7 +836,7 @@ while($row = mysql_fetch_array($res))
 
 		$err_acc = ejecutar_consulta_furips ($select, $from, $where, $llaves, $conexUnix, $order );
 	}
-	// Si no viene dado el accidente se busca el último
+	// Si no viene dado el accidente se busca el ï¿½ltimo
 	else
 	{
 		$select = " accdethis, accdetnum, '".$long."' as accdetfec, accdetacc ";
@@ -853,7 +853,7 @@ while($row = mysql_fetch_array($res))
   //$err_acc = odbc_exec($conexUnix,$query);
 
   // Si no se encuentran datos consultando por accidente
-  // Consulto si es un evento catastrófico
+  // Consulto si es un evento catastrï¿½fico
   if(odbc_fetch_row($err_acc))
   {
 	
@@ -883,7 +883,7 @@ while($row = mysql_fetch_array($res))
 
 	$err_acc = ejecutar_consulta_furips ($select, $from, $where, $llaves, $conexUnix, $order );
 
-	// Activo el indicador de evento catastrófico
+	// Activo el indicador de evento catastrï¿½fico
 	$catastrofico = true;
 
 	odbc_fetch_row($err_acc);
@@ -979,7 +979,7 @@ while($row = mysql_fetch_array($res))
 
   $facturadoTex = ucwords(strtolower(montoescrito($facturado)));
 
-	// Consulto código actual de la aseguradora estatal según root_000051
+	// Consulto cï¿½digo actual de la aseguradora estatal segï¿½n root_000051
 	/*echo "<br>otro".*/
 	
 	if($wemp_pmla=='09')
@@ -1099,7 +1099,7 @@ while($row = mysql_fetch_array($res))
 		$randomnum = rand(1, 1000);
 		$temptable = "tmp_".date("his").$randomnum.$conttemp;                //nombre de la tabla temporal
 
-		// Si el indicador de evento catastrófico no está activo se conulta normalmente como accidente
+		// Si el indicador de evento catastrï¿½fico no estï¿½ activo se conulta normalmente como accidente
 		if(!$catastrofico)
 		{
 			
@@ -1326,7 +1326,7 @@ while($row = mysql_fetch_array($res))
 				$Capellido2='';
 			}
 		}
-		// Si no, el indicador de evento catastrófico está activo, se consultan las tablas de este tipo de eventos
+		// Si no, el indicador de evento catastrï¿½fico estï¿½ activo, se consultan las tablas de este tipo de eventos
 		else
 		{
 			
@@ -1461,7 +1461,7 @@ while($row = mysql_fetch_array($res))
 			$Capellido2='';
 		}
 
-		//busco máximo ingreso
+		//busco mï¿½ximo ingreso
 		/*
 		$query="SELECT max(accnum) FROM inacc";
 		$query= $query." WHERE acchis='$historia' AND accacc='$accidente'";
@@ -1469,11 +1469,11 @@ while($row = mysql_fetch_array($res))
 		$maximoingreso=odbc_result($err_o,1);
 		*/
 
-		//Busco si todavía está hospitalizado está en inpac
+		//Busco si todavï¿½a estï¿½ hospitalizado estï¿½ en inpac
 		$select= " '".$long."' as pacced, '".$long."' as pactid, '".$long."' as pacap1, '".$long."' as pacap2, '".$long."' as pacnom, '".$long."' as pacsex, '".$long."' as paclug, '".$long."' as pacnac, '".$long."' as pacdir, '".$long."' as pactel, '".$long."' as pacmun, '".$long."' as pachor, '".$long."' as pacdin, '".$long."' as pacfec, '".$long."' as pacmed, pachis, pacnum ";
 		$from =  " inpac ";
 		$where = " pachis='".trim($historia)."' "
-				 ." AND pacnum='".trim($ingreso)."' "; //2018-06-22 Se activa nuevamente esta línea ( antes: --2012/08/17 ya que no busca en inpac bien )
+				 ." AND pacnum='".trim($ingreso)."' "; //2018-06-22 Se activa nuevamente esta lï¿½nea ( antes: --2012/08/17 ya que no busca en inpac bien )
 
 		unset($llaves);
 		$llaves[0]=16;
@@ -1483,7 +1483,7 @@ while($row = mysql_fetch_array($res))
 
 		//$err_o = odbc_exec($conexUnix,$query);
 
-		// Si aun está hospitalizado consulto los datos generales del paciente en la tabla inpac
+		// Si aun estï¿½ hospitalizado consulto los datos generales del paciente en la tabla inpac
 		if (odbc_fetch_row($err_o))
 		{
 			
@@ -1537,7 +1537,7 @@ while($row = mysql_fetch_array($res))
 			$diasEst= ((int)$egrFec)-((int)$ingFec);
 			$fecha=date("d-m-Y");
 		}
-		// Si no está hospitalizado consulto los datos generales del paciente en las tablas inpaci, inpacinf e inmegr
+		// Si no estï¿½ hospitalizado consulto los datos generales del paciente en las tablas inpaci, inpacinf e inmegr
 		else
 		{
 			
@@ -1646,7 +1646,7 @@ while($row = mysql_fetch_array($res))
 				{
 					//no se pueden encontrar los datos de esa historia
 					$impresion.= "<table border=0 align=center>";
-					$impresion.= "<tr><td align=center bgcolor='#cccccc'><A NAME='Arriba'><font size=5>FORMULARIO DE RECLAMACIÓN DE ACCIDENTES</font></a></tr></td>";
+					$impresion.= "<tr><td align=center bgcolor='#cccccc'><A NAME='Arriba'><font size=5>FORMULARIO DE RECLAMACIï¿½N DE ACCIDENTES</font></a></tr></td>";
 					$impresion.= "</table></br></BR></BR>";
 					$impresion.= "<table border=0 align=center>";
 					$impresion.= "<tr><td align=center bgcolor='#cccccc'></td></tr>";
@@ -1764,7 +1764,7 @@ while($row = mysql_fetch_array($res))
 				{
 					//no se pueden encontrar los datos de esa historia
 					$impresion.= "<table border=0 align=center>";
-					$impresion.= "<tr><td align=center bgcolor='#cccccc'><A NAME='Arriba'><font size=5>FORMULARIO DE RECLAMACIÓN DE ACCIDENTES</font></a></tr></td>";
+					$impresion.= "<tr><td align=center bgcolor='#cccccc'><A NAME='Arriba'><font size=5>FORMULARIO DE RECLAMACIï¿½N DE ACCIDENTES</font></a></tr></td>";
 					$impresion.= "</table></br></BR></BR>";
 					$impresion.= "<table border=0 align=center>";
 					$impresion.= "<tr><td align=center bgcolor='#cccccc'></td></tr>";
@@ -1776,7 +1776,7 @@ while($row = mysql_fetch_array($res))
 			}
 		}
 
-	    // Calculo el total facturado en farpmla en el último ingreso
+	    // Calculo el total facturado en farpmla en el ï¿½ltimo ingreso
 		/*
 		$q = " SELECT SUM(Venvto)-SUM(Vendes) AS Facturado "
 		  ."     FROM ".$wbasedato_farm."_000016, ".$wbasedato_farm."_000018 "
@@ -1798,8 +1798,8 @@ while($row = mysql_fetch_array($res))
 			//*/
 
 
-		// Consulto datos de facturación en clínica
-		/* Se comenta porque solo se tiene en cuenta el valor de la factura no el facturado en la clínica
+		// Consulto datos de facturaciï¿½n en clï¿½nica
+		/* Se comenta porque solo se tiene en cuenta el valor de la factura no el facturado en la clï¿½nica
 		$query = "SELECT SUM(carval) "
 				."  FROM cacar, famov, sifue "
 				." WHERE movhis = '$historia'"
@@ -1965,7 +1965,7 @@ while($row = mysql_fetch_array($res))
 		
 		
 /*
-		//Busco datos del médico
+		//Busco datos del mï¿½dico
 		$select = " '".$long."' as medno1, '".$long."' as medno2, '".$long."' as medap1, '".$long."' as medap2, '".$long."' as mednom, '".$long."' as medtid, '".$long."' as medced, '".$long."' as medreg, medcod ";
 		$from =   " inmed ";
 		$where =  " medcod='".trim($medico)."' ";
@@ -2193,7 +2193,7 @@ while($row = mysql_fetch_array($res))
           <tr>
 
 		  <td style="width: 8%;">
-			<img style="width: 44px; height: 51px;" alt="Escudo de Colombia" src="http://'.$httpHost.'/matrix/images/medical/IPS/escudo-colombia.jpg">
+			<img style="width: 44px; height: 51px;" alt="Escudo de Colombia" src="//'.$httpHost.'/matrix/images/medical/IPS/escudo-colombia.jpg">
 		  </td>
 
 		  <td style="text-align: center; width: 92%;" class="encabezado"><div class="resolucion">Resoluci&oacute;n 01915 &nbsp;&nbsp;&nbsp;&nbsp; 28 MAY 2008</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REP&Uacute;BLICA DE COLOMBIA<br>
@@ -3063,7 +3063,7 @@ $impresion.= '
           <tr>
 
 		  <td style="width: 8%;">
-			<img style="width: 44px; height: 51px;" alt="Escudo de Colombia" src="http://'.$httpHost.'/matrix/images/medical/IPS/escudo-colombia.jpg">		  </td>
+			<img style="width: 44px; height: 51px;" alt="Escudo de Colombia" src="//'.$httpHost.'/matrix/images/medical/IPS/escudo-colombia.jpg">		  </td>
 
 		  <td style="text-align: center; width: 92%;" class="encabezado"><div class="resolucion">Resoluci&oacute;n 01915 &nbsp;&nbsp;&nbsp;&nbsp; 28 MAY 2008</div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;REP&Uacute;BLICA DE COLOMBIA<br>
 MINISTERIO DE LA PROTECCI&Oacute;N SOCIAL<br>
@@ -3953,7 +3953,7 @@ t&eacute;cnico n&uacute;mero 2.</td>
 					<td><div class="campoCodigo"> &nbsp; '.$responsable.' &nbsp;</div></td>
 
 					
-					<td style="text-align:left"><img style=" height: 40px;" src="http://'.$httpHost.'/matrix/images/medical/hce/Firmas/'.$firmaR.'png"></td>
+					<td style="text-align:left"><img style=" height: 40px;" src="//'.$httpHost.'/matrix/images/medical/hce/Firmas/'.$firmaR.'png"></td>
 
 
 				  </tr>
@@ -4031,7 +4031,7 @@ t&eacute;cnico n&uacute;mero 2.</td>
 ';
 
 /******************************************************************************************/
-//IMPRESIÓN DE LA CUENTA DE COBRO
+//IMPRESIï¿½N DE LA CUENTA DE COBRO
 
 if($wemp_pmla =='09')
 {
@@ -4208,7 +4208,7 @@ $impresion.='<td style="width: 20%;"><input type="text" value="'.$ingFec.'" name
 				<td style="width: 15%;"><div align="center" class="campoCta1">VALOR TOTAL</div></td>
 			  </tr> ';
 
-	/* Ya no se maneja consecutivo por txt, sino que se toma el número del documento
+	/* Ya no se maneja consecutivo por txt, sino que se toma el nï¿½mero del documento
 	  if($cont==1)
 		$consecutivo = obtener_consecutivo("../../planos/FURIPS/farpmla/consecutivo.txt");
 	*/
@@ -4424,8 +4424,8 @@ $html = $impresion;
 				  ."<object type='application/pdf' data='".$dir."/".$wnombrePDF.".pdf' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 width='900' height='700'>"
 					."<param name='src' value='".$dir."/".$wnombrePDF."' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"
 					."<p style='text-align:center; width: 60%;'>"
-					  ."Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />"
-					  ."<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
+					  ."Adobe Reader no se encuentra o la versiï¿½n no es compatible, utiliza el icono para ir a la pï¿½gina de descarga <br />"
+					  ."<a href='//get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
 						."<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"
 					  ."</a>"
 					."</p>"
@@ -4442,7 +4442,7 @@ $html = $impresion;
    }
    else
    {
-		//echo "No se ha encontrado información del paciente con la historia especificada";
+		//echo "No se ha encontrado informaciï¿½n del paciente con la historia especificada";
    }
   }
  }
@@ -4463,7 +4463,7 @@ else
 	echo "<tr>";
 	echo "<td align=center style='font-size:14px'>";
 	encabezado($titulo,$wactualiz, "clinica");
-	echo "<br />NO SE HA ESTABLECIDO CONEXIÓN CON LA BASE DE DATOS. <br> INTENTELO DE NUEVO MAS TARDE.<br /><br /><input type=button value='Cerrar ventana' onclick='javascript:window.close();'>";
+	echo "<br />NO SE HA ESTABLECIDO CONEXIï¿½N CON LA BASE DE DATOS. <br> INTENTELO DE NUEVO MAS TARDE.<br /><br /><input type=button value='Cerrar ventana' onclick='javascript:window.close();'>";
 	echo "</td></tr></table>";
 
 }

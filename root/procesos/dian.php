@@ -6,22 +6,22 @@
 <html lang="esp" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->
-Para que muestre eñes y tildes -->
+Para que muestre eï¿½es y tildes -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RUT</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel='stylesheet' type='text/css'>
     <link href="estilosevent.css" rel="stylesheet" type="text/css">
-    <script src="http://code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
+    <script src="//code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
     <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
     <script src="../../../include/root/jquery.blockUI.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" /><!--Estilo para el calendario-->
     <script src="calendarioevent.js" type="text/javascript"></script>
     <script src="JsProcesosevent.js" type="text/javascript"></script>
-	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://matrixtest.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-	<script src="http://mx.lasamericas.com.co/matrix/paf/procesos/calendariopaf.js" type="text/javascript"></script>
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//matrixtest.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+	<script src="//mx.lasamericas.com.co/matrix/paf/procesos/calendariopaf.js" type="text/javascript"></script>
     <script>
         $(function() {
             $( "#datepicker1" ).datepicker();
@@ -76,7 +76,7 @@ Para que muestre eñes y tildes -->
         mysql_select_db("matrix");
 
         $conex = obtenerConexionBD("matrix");
-        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
+        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
     }
 	$dian2=$_POST['dian2'];		$dian49=$_POST['dian49'];		$dian541=$_POST['dian541'];
 	$dian4=$_POST['dian4'];		$dian501=$_POST['dian501'];		$dian542=$_POST['dian542'];
@@ -190,7 +190,7 @@ mysql_queryV("INSERT INTO root_000119 (Medico,Fecha_data,Hora_data,dian2,dian4,d
                     <table class: "table-responsive" width="1200" height="113" style="border: groove; width: 1200px" align="center">
                         <tr>
                             <td width="20%" align="center" style="border: groove; width: 20%">
-                                <input type="image" id="btnVer" src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80">
+                                <input type="image" id="btnVer" src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80">
                           </td>
                             <td width="48%" align="center" style="border: groove; width: 55%">
                                 <p><b>RUT</b><strong></strong></p>

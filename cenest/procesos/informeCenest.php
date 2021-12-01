@@ -9,7 +9,7 @@
     <link href="EstilosCenest.css" rel="stylesheet" type="text/css">
     <link href="css/Buttons.css" rel="stylesheet" type="text/css">
     <link href="css/Css1.css" rel="stylesheet" type="text/css">
-    <script src="http://code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
+    <script src="//code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
     <style type="text/css"></style>
     <script src="js/js.js"></script>
     <script src="js/js2.js"></script>

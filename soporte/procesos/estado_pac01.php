@@ -4,11 +4,11 @@
 
 <html lang="esp">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eï¿½es y tildes -->
     <meta charset="utf-8">
     <title>MATRIX - Estado de Pacientes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
     <script src="estado_pac03.js" type="text/javascript"></script>
     <style>
         .alternar:hover{ background-color:#e1edf7;}
@@ -163,9 +163,9 @@
                                 <table class="table" style="min-width: 1280px">
                                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                                     <tr>
-                                        <td>Número de HC</td>
+                                        <td>Nï¿½mero de HC</td>
                                         <td>Tipo Documento</td>
-                                        <td>Número de Documento</td>
+                                        <td>Nï¿½mero de Documento</td>
                                         <td>Primer Apellido</td>
                                         <td>Segundo Apellido</td>
                                         <td>Primer Nombre</td>
@@ -242,8 +242,8 @@
                                     <tr>
                                         <td>Fecha_data</td>
                                         <td>Hora_data</td>
-                                        <td>Número de HC</td>
-                                        <td>Número de Ingreso</td>
+                                        <td>Nï¿½mero de HC</td>
+                                        <td>Nï¿½mero de Ingreso</td>
                                         <td>Fecha de Ingreso</td>
                                         <td>Servicio de Ingreso</td>
                                         <td>Codigo del Responsable</td>
@@ -338,7 +338,7 @@
                                 <table class="table" style="min-width: 1280px">
                                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                                     <tr>
-                                        <td>Número de Documento</td>
+                                        <td>Nï¿½mero de Documento</td>
                                         <td>Tipo Documento</td>
                                         <td>Primer Apellido</td>
                                         <td>Segundo Apellido</td>
@@ -403,7 +403,7 @@
                                 <table class="table" style="min-width: 1280px">
                                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                                     <tr>
-                                        <td>Número de Documento</td>
+                                        <td>Nï¿½mero de Documento</td>
                                         <td>Tipo Documento</td>
                                         <td>Numero de Historia</td>
                                         <td>Numero de Ingreso</td>
@@ -467,15 +467,15 @@
                                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                                     <tr>
                                         <td>Fecha_data</td>
-                                        <td>Número de HC</td>
-                                        <td>Número de Ingreso</td>
-                                        <td>Médico Asociado</td>
+                                        <td>Nï¿½mero de HC</td>
+                                        <td>Nï¿½mero de Ingreso</td>
+                                        <td>Mï¿½dico Asociado</td>
                                         <td>Tratante</td>
                                         <td>Especialidad Medico Asociado</td>
                                         <td>Ultima Conducta</td>
                                         <td>Consulta Urgencias</td>
                                         <td>Centro de costo de ingreso</td>
-                                        <td>Código cubículo Asignado</td>
+                                        <td>Cï¿½digo cubï¿½culo Asignado</td>
                                         <td>Turno</td>
                                     </tr>
                                     </thead>
@@ -543,9 +543,9 @@
                                     <tr>
                                         <td>Fecha_data</td>
                                         <td>Formulario</td>
-                                        <td>Número de HC</td>
-                                        <td>Número de Ingreso</td>
-                                        <td>Usuario que Grabó</td>
+                                        <td>Nï¿½mero de HC</td>
+                                        <td>Nï¿½mero de Ingreso</td>
+                                        <td>Usuario que Grabï¿½</td>
                                         <td>Firmado</td>
                                         <td>Rol de Quien Graba</td>
                                         <td>Centro de Costos Graba</td>
@@ -618,8 +618,8 @@
                                     <tr>
                                         <td>Fecha_data</td>
                                         <td>Hora_data</td>
-                                        <td>Número de HC</td>
-                                        <td>Número de Ingreso</td>
+                                        <td>Nï¿½mero de HC</td>
+                                        <td>Nï¿½mero de Ingreso</td>
                                         <td>Codigo Responsable</td>
                                         <td>Nombre Responsable</td>
                                         <td>Tipo de Ingreso</td>
@@ -684,8 +684,8 @@
                                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                                     <tr>
                                         <td>Fecha_data</td>
-                                        <td>Número de HC</td>
-                                        <td>Número de Ingreso</td>
+                                        <td>Nï¿½mero de HC</td>
+                                        <td>Nï¿½mero de Ingreso</td>
                                         <td>Cco Actual</td>
                                         <td>Cco Anterior</td>
                                         <td>Habitacion Actual</td>
@@ -838,8 +838,8 @@
                                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                                     <tr>
                                         <td>Fecha_Data</td>
-                                        <td>Número de HC</td>
-                                        <td>Número de Ingreso</td>
+                                        <td>Nï¿½mero de HC</td>
+                                        <td>Nï¿½mero de Ingreso</td>
                                         <td>Centro de costos</td>
                                         <td>Codigo del articulo</td>
                                         <td>Entrada Total Unix</td>
@@ -911,8 +911,8 @@
                                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                                     <tr>
                                         <td>Fecha_data</td>
-                                        <td>Número de HC</td>
-                                        <td>Número de Ingreso</td>
+                                        <td>Nï¿½mero de HC</td>
+                                        <td>Nï¿½mero de Ingreso</td>
                                         <td>Ronda</td>
                                         <td>Codigo Articulo</td>
                                         <td>Descripcion Articulo</td>
@@ -1004,8 +1004,8 @@
                                         <td>Codigo insumo</td>
                                         <td>Fecha del cargo</td>
                                         <td>Codigo del movimiento</td>
-                                        <td>Número de HC</td>
-                                        <td>Número de Ingreso</td>
+                                        <td>Nï¿½mero de HC</td>
+                                        <td>Nï¿½mero de Ingreso</td>
                                         <td>Centro costos paciente</td>
                                         <td>Habitacion</td>
                                         <td>Cantidad</td>
@@ -1085,10 +1085,10 @@
                                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                                     <tr>
                                         <td>Fecha_data</td>
-                                        <td>Número de HC</td>
-                                        <td>Número de Ingreso</td>
+                                        <td>Nï¿½mero de HC</td>
+                                        <td>Nï¿½mero de Ingreso</td>
                                         <td>Servicio</td>
-                                        <td>Número Ingreso al Servicio</td>
+                                        <td>Nï¿½mero Ingreso al Servicio</td>
                                         <td>Fecha Egreso del Servicio</td>
                                         <td>Hora Egreso del Servicio</td>
                                         <td>Tipo Egreso</td>

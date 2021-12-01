@@ -23678,7 +23678,7 @@ if (isset($_SERVER['HTTP_USER_AGENT'])) {
     $agent = $_SERVER['HTTP_USER_AGENT'];
 	if (strlen(strstr($agent, 'MSIE')) > 0) {
 		echo "<center><font size=5><br><br>El programa de admisiones no está habilitado para el navegador Internet Explorer.<br>
-		<a target='_blank' href='http://www.mozilla.org/es-ES/firefox/new/'><img src='../../images/medical/root/boton5.png'></a>
+		<a target='_blank' href='//www.mozilla.org/es-ES/firefox/new/'><img src='../../images/medical/root/boton5.png'></a>
 		</font></center>";
 		exit;
 	}
@@ -24254,7 +24254,7 @@ echo "<tr style='display:none;' class='tr_pacienteExtranjero fila2'>";
 	  </td>";*/
 echo "<td colspan='5'><input msgcampo='Digite la Direccion' type='text' name='pac_dle' id='pac_dle' class='reset' msgError='Digite la Direccion'></td>";
 echo "<td colspan='1'><input msgcampo='Digite El numero Telefonico' type='text' name='pac_tle' id='pac_tle'></td>";
-echo "<td colspan='2' align='center'><a href='http://apps.migracioncolombia.gov.co/sire/public/login.jsf'  target='_blank'><img border=0 src='../../images/medical/root/migracioncolombia.png'/></a></td>";
+echo "<td colspan='2' align='center'><a href='//apps.migracioncolombia.gov.co/sire/public/login.jsf'  target='_blank'><img border=0 src='../../images/medical/root/migracioncolombia.png'/></a></td>";
 //echo "<td class='fila2' colspan='2'>&nbsp;</td>";
 echo "</tr>";
 

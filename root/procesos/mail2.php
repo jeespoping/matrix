@@ -7,7 +7,7 @@
 <?php
 include_once("conex.php");
 		$headers = "Content-type: text/html; charset=iso-8859-1\r\n";
-		$path="<A HREF='http://clinica/matrix/".$ruta.">Haga Click Aqui Para Ver Su Colilla</A>";
+		$path="<A HREF='//clinica/matrix/".$ruta.">Haga Click Aqui Para Ver Su Colilla</A>";
 		$path="http://clinica/matrix/";
 		mail("paulomorales@pmamericas.com","Nomina",$path);
 		echo "MAIL ENVIADO NRO.".$numero;

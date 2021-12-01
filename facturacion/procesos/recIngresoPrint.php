@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="esp">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eï¿½es y tildes -->
     <title>MATRIX - RECIBOS DE CUENTAS POR COBRAR</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <link href="StyleRecIngreso.css" rel="stylesheet">
     <script src="JsrecIngreso.js" type="text/javascript"></script>
     <?php
@@ -30,8 +30,8 @@
         mysql_select_db("matrix");
 
         $conex = obtenerConexionBD("matrix");
-        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-        $wactualiz = "Versión: 1.0 07-Febrero-2020";
+        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
+        $wactualiz = "Versiï¿½n: 1.0 07-Febrero-2020";
     }
     session_start();
 
@@ -73,7 +73,7 @@
                 <span><label>Nit. 800067065</label></span>
             </div>
             <div align="right" style="width: 145px; float: right; margin-top: -50px; margin-right: 120px">
-                <img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="250" height="120">
+                <img src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="250" height="120">
             </div>
         </div>
 
@@ -87,7 +87,7 @@
                     <td><label>VALOR-RECIBO: &ensp;</label><label class="lblNormal" id="valorAbono"><?php echo number_format($movval2,2) ?></label></td>
                 </tr>
                 <tr>
-                    <td><label>SEÑORES: &ensp;</label><label class="lblNormal" id="senores"><?php echo $empNom ?></label></td>
+                    <td><label>SEï¿½ORES: &ensp;</label><label class="lblNormal" id="senores"><?php echo $empNom ?></label></td>
                     <td>&ensp;</td>
                     <td colspan="4"><label>NIT/CED: &ensp;</label><label class="lblNormal" id="nitCed"><?php echo $empCod ?></label></td>
                 </tr>
@@ -172,7 +172,7 @@ if($cont > 201)
                     <span><label>Nit. 800067065</label></span>
                 </div>
                 <div align="right" style="width: 145px; float: right; margin-top: -50px; margin-right: 55px">
-                    <img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="190" height="120">
+                    <img src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="190" height="120">
                 </div>
             </div>
 
@@ -186,7 +186,7 @@ if($cont > 201)
                         <td><label>VALOR-RECIBO: &ensp;</label><label class="lblNormal" id="valorAbono"><?php echo $movval ?></label></td>
                     </tr>
                     <tr>
-                        <td><label>SEÑORES: &ensp;</label><label class="lblNormal" id="senores"><?php echo $empNom ?></label></td>
+                        <td><label>SEï¿½ORES: &ensp;</label><label class="lblNormal" id="senores"><?php echo $empNom ?></label></td>
                         <td>&ensp;</td>
                         <td colspan="4"><label>NIT/CED: &ensp;</label><label class="lblNormal" id="nitCed"><?php echo $empCod ?></label></td>
                     </tr>
@@ -271,7 +271,7 @@ if($cont > 401)
                     <span><label>Nit. 800067065</label></span>
                 </div>
                 <div align="right" style="width: 145px; float: right; margin-top: -50px; margin-right: 55px">
-                    <img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="190" height="120">
+                    <img src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="190" height="120">
                 </div>
             </div>
 
@@ -285,7 +285,7 @@ if($cont > 401)
                         <td><label>VALOR-RECIBO: &ensp;</label><label class="lblNormal" id="valorAbono"><?php echo $movval ?></label></td>
                     </tr>
                     <tr>
-                        <td><label>SEÑORES: &ensp;</label><label class="lblNormal" id="senores"><?php echo $empNom ?></label></td>
+                        <td><label>SEï¿½ORES: &ensp;</label><label class="lblNormal" id="senores"><?php echo $empNom ?></label></td>
                         <td>&ensp;</td>
                         <td colspan="4"><label>NIT/CED: &ensp;</label><label class="lblNormal" id="nitCed"><?php echo $empCod ?></label></td>
                     </tr>
@@ -370,7 +370,7 @@ if($cont > 601)
                     <span><label>Nit. 800067065</label></span>
                 </div>
                 <div align="right" style="width: 145px; float: right; margin-top: -50px; margin-right: 55px">
-                    <img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="190" height="120">
+                    <img src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="190" height="120">
                 </div>
             </div>
 
@@ -384,7 +384,7 @@ if($cont > 601)
                         <td><label>VALOR-RECIBO: &ensp;</label><label class="lblNormal" id="valorAbono"><?php echo $movval ?></label></td>
                     </tr>
                     <tr>
-                        <td><label>SEÑORES: &ensp;</label><label class="lblNormal" id="senores"><?php echo $empNom ?></label></td>
+                        <td><label>SEï¿½ORES: &ensp;</label><label class="lblNormal" id="senores"><?php echo $empNom ?></label></td>
                         <td>&ensp;</td>
                         <td colspan="4"><label>NIT/CED: &ensp;</label><label class="lblNormal" id="nitCed"><?php echo $empCod ?></label></td>
                     </tr>

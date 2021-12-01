@@ -1262,7 +1262,7 @@ else
 					echo "<center>";	
 					
 					echo "<br><center><table border=0>";
-					echo "<tr><td align=center colspan=2><A HREF='http://intranetlasamericas.co' target='_blank' class='myButton'><IMG SRC='/matrix/images/medical/root/ingenia.jpg' style='vertical-align:middle;'></A></td></tr>";
+					echo "<tr><td align=center colspan=2><A HREF='//intranetlasamericas.co' target='_blank' class='myButton'><IMG SRC='/matrix/images/medical/root/ingenia.jpg' style='vertical-align:middle;'></A></td></tr>";
 					//echo "<tr><td align=center colspan=2><b>BIENVENIDO A LAS AMERICAS MATRIX<b></td></tr>";
 					echo "<tr><td align=center colspan=2><br><A HREF='https://www.lasamericas.com.co/Gesti%C3%B3n-%C3%A9tica' target='_blank' ><IMG SRC='/matrix/images/medical/root/linkGestionetica.jpg' width='62%' height='45%' style='vertical-align:middle;'></A></td></tr>";	
 
