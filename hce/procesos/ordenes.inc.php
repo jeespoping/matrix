@@ -23,7 +23,6 @@ include_once("conex.php");
 
 /************************************************************************************************************************
  * Modificaciones
- * Octubre 27 de 2021   Sebastian Alvarez B    - Se añadieron campos Kadfpv y Kadhpv para registrar la fecha y hora en la que se ve un artiuclo
  * Octubre 8 de 2021	Sebastián Nevado	-  Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
  * Agosto 13 de 2020	Edwin 		- Se permite ordenar cups buscando por codigo CUP
  * Agosto 05 de 2020	Edwin 		- Si un paciente está con traslado temporal en hemodinamia, en el mensaje HL7 enviado a laboratorio se manda la habitación dónde se encuentra
@@ -14835,7 +14834,7 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 		$exec = curl_exec($ch);
 		
 		if( $exec === false ){
-			echo "No hizo nada DE NADA....".curl_error($ch)." ". curl_errno($ch).json_encode( $data )." eso ".$autorizacion." ip " . $ipLabTomaMuestra;
+			echo "No hizo nada....";
 		}
 		else{
 			registrarMsgLogHl7( $conex, $wbasedato, $historia, $ingreso, $pac['tipoDocumento'], $pac['nroDocumento'], 'MATRIX-LMLA', $tip_orden, $nro_orden, 0, $mensaje_tm );
@@ -25600,11 +25599,11 @@ function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tip
 
 	//Parte 1:  Parametros de inserción en la tabla temporal
 	$q = "INSERT INTO ".$wbasedato."_000060
-			(Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadnar,Kadreg,Kadusu,Kadfir,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes, Kadfpv, Kadhpv, seguridad) ";
+		   	(Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadnar,Kadreg,Kadusu,Kadfir,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes,seguridad) ";
 
 	//Parte 1:  Consulta de servicio farmaceutico y grupos de medicamentos si aplica
 	$subConsulta1 =	" SELECT
-			 ".$wbasedato."_000054.Medico,".$wbasedato."_000054.Fecha_data,".$wbasedato."_000054.hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,'$fechaGrabacion',Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadnar,Kadreg,Kadusu,Kadfir,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes, Kadfpv, Kadhpv,".$wbasedato."_000054.Seguridad
+			 ".$wbasedato."_000054.Medico,".$wbasedato."_000054.Fecha_data,".$wbasedato."_000054.hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,'$fechaGrabacion',Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadnar,Kadreg,Kadusu,Kadfir,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes,".$wbasedato."_000054.Seguridad
 		FROM
 			".$wbasedato."_000054, ".$wbasedato."_000026
 		WHERE
@@ -25624,7 +25623,7 @@ function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tip
 			".$wbasedato."_000054.Medico,".$wbasedato."_000054.Fecha_data,".$wbasedato."_000054.hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kadido,".$wbasedato."_000054.Seguridad ";
 
 	$subConsulta2 = " SELECT
-			Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,'$fechaGrabacion',Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadnar,Kadreg,Kadusu,Kadfir,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes,Kadfpv, Kadhpv,seguridad
+			 Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,'$fechaGrabacion',Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadnar,Kadreg,Kadusu,Kadfir,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes,seguridad
 		FROM
 			".$wbasedato."_000054
 		WHERE
@@ -25929,7 +25928,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 	//********************************
 	$q = "SELECT
 		 	Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,'$fechaGrabacion',Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,'off' Kadpri,Kadpro,Kadcco,$aprobado Kadare,Kadsad,Kadnar,Kadron,Kadimp,Kadlog,seguridad,
-		 	(SELECT Perequ FROM ".$wbasedato."_000043 WHERE Percod = Kadper) periodicidad, id, Kadusu, Kadfir,Kadcpx, Kadreg, Kadfro, Kadaan, Kadcda,Kadcdt, Kadido, Kadusp, Kadpen, Kadule, Kadfle, Kadhle, Kadctr, Kadlev, Kaddoa, Kadnes, Kadfpv, Kadhpv
+		 	(SELECT Perequ FROM ".$wbasedato."_000043 WHERE Percod = Kadper) periodicidad, id, Kadusu, Kadfir,Kadcpx, Kadreg, Kadfro, Kadaan, Kadcda,Kadcdt, Kadido, Kadusp, Kadpen, Kadule, Kadfle, Kadhle, Kadctr, Kadlev, Kaddoa, Kadnes
 		FROM
 			".$wbasedato."_000054
 		WHERE
@@ -26866,13 +26865,13 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				}
 				
 				$q = "INSERT INTO ".$wbasedato."_000060
-							(Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadnar,kadreg,Kadusu,Kadfir,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kadido, Kadusp, Kadpen, Kadule, Kadfle, Kadhle, Kadctr, Kadlev, Kaddoa, Kadimp, Kadlog, Kadnes, Kadfpv, Kadhpv, seguridad)
+		   					(Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadnar,kadreg,Kadusu,Kadfir,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kadido, Kadusp, Kadpen, Kadule, Kadfle, Kadhle, Kadctr, Kadlev, Kaddoa, Kadimp, Kadlog, Kadnes, seguridad)
 		   				VALUES
 		   				   ('{$info['Medico']}','{$info['Fecha_data']}','{$info['hora_data']}','{$info['Kadhis']}',
 		   					'{$info['Kading']}','{$info['Kadart']}','{$info['Kadcfr']}','{$info['Kadufr']}','$diasTratamiento','{$info['Kadest']}','$noEnviar','{$info['Kadper']}','{$info['Kadffa']}',
 		   					'{$info['Kadfin']}','{$info['Kadhin']}','{$info['Kadvia']}','{$fechaGrabacion}','$confirmacionPreparacion','{$info['Kadobs']}','{$info['Kadori']}','{$info['Kadsus']}','{$info['Kadcnd']}',
 		   					'{$info['Kaddma']}','$cantGrabar','$cantidadDispensada','{$info['Kaduma']}','{$info['Kadcma']}','{$horaDispensacion}','{$info['Kadsal']}','$cantidadADispensar','{$info['Kadpri']}',
-		   					'{$info['Kadpro']}','{$info['Kadcco']}','{$info['Kadare']}','$saldoDispensacion','{$info['Kadnar']}','{$info['id']}','{$info['Kadusu']}','{$info['Kadfir']}','{$info['Kadcpx']}','{$info['Kadron']}','{$info['Kadfro']}','{$info['Kadaan']}','{$info['Kadcda']}','{$info['Kadcdt']}','{$info['Kadido']}','{$info['Kadusp']}','{$info['Kadpen']}','{$info['Kadule']}','{$info['Kadfle']}','{$info['Kadhle']}','{$info['Kadctr']}','{$info['Kadlev']}','{$info['Kaddoa']}','{$info['Kadimp']}','{$info['Kadlog']}','{$info['Kadnes']}','{$info['Kadfpv']}','{$info['Kadhpv']}','{$info['seguridad']}')";
+		   					'{$info['Kadpro']}','{$info['Kadcco']}','{$info['Kadare']}','$saldoDispensacion','{$info['Kadnar']}','{$info['id']}','{$info['Kadusu']}','{$info['Kadfir']}','{$info['Kadcpx']}','{$info['Kadron']}','{$info['Kadfro']}','{$info['Kadaan']}','{$info['Kadcda']}','{$info['Kadcdt']}','{$info['Kadido']}','{$info['Kadusp']}','{$info['Kadpen']}','{$info['Kadule']}','{$info['Kadfle']}','{$info['Kadhle']}','{$info['Kadctr']}','{$info['Kadlev']}','{$info['Kaddoa']}','{$info['Kadimp']}','{$info['Kadlog']}','{$info['Kadnes']}','{$info['seguridad']}')";
 
 				$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 				
@@ -27614,7 +27613,7 @@ function cargarArticulosADefinitivo( $historia, $ingreso, $fecha, $esPrimerKarde
 	/****************************************************************/
 	
 	$q = "SELECT
-			Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,seguridad,Kadreg,Kadron,Kadcpx,Kadfro,Kadaan,Kadcda,Kadcdt,Kadusu,Kadfir,Kadnar,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes,Kadfpv,Kadhpv
+			Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,seguridad,Kadreg,Kadron,Kadcpx,Kadfro,Kadaan,Kadcda,Kadcdt,Kadusu,Kadfir,Kadnar,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes
 		FROM
 			{$wbasedato}_000060
 		WHERE
@@ -27714,13 +27713,13 @@ function cargarArticulosADefinitivo( $historia, $ingreso, $fecha, $esPrimerKarde
 				$info['Kadcon'] = $conf  ? 'on': $info['Kadcon'];
 				
 				$q = "INSERT INTO ".$wbasedato."_000054
-							(Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadreg,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kadusu,Kadfir,Kadnar,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes,Kadfpv,Kadhpv,seguridad)
+			   				(Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadreg,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kadusu,Kadfir,Kadnar,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes,seguridad)
 			   			VALUES
 			   			   ('{$info['Medico']}','{$info['Fecha_data']}','{$info['hora_data']}','{$info['Kadhis']}',
 			   				'{$info['Kading']}','{$info['Kadart']}','{$info['Kadcfr']}','{$info['Kadufr']}','{$info['Kaddia']}','{$info['Kadest']}','{$info['Kadess']}','{$info['Kadper']}','{$info['Kadffa']}',
 			   				'{$info['Kadfin']}','{$info['Kadhin']}','{$info['Kadvia']}','{$fecha}','{$info['Kadcon']}','{$info['Kadobs']}','{$info['Kadori']}','{$info['Kadsus']}','{$info['Kadcnd']}',
 			   				'{$info['Kaddma']}','{$cantGrabar}','{$info['Kaddis']}','{$info['Kaduma']}','{$cantidadManejo}','{$info['Kadhdi']}','{$saldo}','{$cantDispensar}','{$info['Kadpri']}',
-			   				'{$info['Kadpro']}','{$info['Kadcco']}','{$info['Kadare']}','{$info['Kadsad']}','{$info['Kadreg']}','{$info['Kadcpx']}','{$info['Kadron']}','{$info['Kadfro']}','{$info['Kadaan']}','{$info['Kadcda']}','{$info['Kadcdt']}','{$info['Kadusu']}','{$info['Kadfir']}','{$info['Kadnar']}','{$info['Kaddan']}','{$info['Kadfum']}','{$info['Kadhum']}','{$info['Kadido']}','{$info['Kadfra']}','{$info['Kadfcf']}','{$info['Kadhcf']}','{$info['Kadimp']}','{$info['Kadalt']}','{$info['Kadcal']}','{$info['Kadusp']}','{$info['Kadpen']}','{$info['Kadule']}','{$info['Kadfle']}','{$info['Kadhle']}','{$info['Kadctr']}','{$info['Kadlev']}','{$info['Kaddoa']}','{$info['Kadlog']}','{$info['Kadnes']}','{$info['Kadfpv']}','{$info['Kadhpv']}','{$info['seguridad']}')";
+			   				'{$info['Kadpro']}','{$info['Kadcco']}','{$info['Kadare']}','{$info['Kadsad']}','{$info['Kadreg']}','{$info['Kadcpx']}','{$info['Kadron']}','{$info['Kadfro']}','{$info['Kadaan']}','{$info['Kadcda']}','{$info['Kadcdt']}','{$info['Kadusu']}','{$info['Kadfir']}','{$info['Kadnar']}','{$info['Kaddan']}','{$info['Kadfum']}','{$info['Kadhum']}','{$info['Kadido']}','{$info['Kadfra']}','{$info['Kadfcf']}','{$info['Kadhcf']}','{$info['Kadimp']}','{$info['Kadalt']}','{$info['Kadcal']}','{$info['Kadusp']}','{$info['Kadpen']}','{$info['Kadule']}','{$info['Kadfle']}','{$info['Kadhle']}','{$info['Kadctr']}','{$info['Kadlev']}','{$info['Kaddoa']}','{$info['Kadlog']}','{$info['Kadnes']}','{$info['seguridad']}')";
 
 				$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 			}
