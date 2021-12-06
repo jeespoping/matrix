@@ -699,6 +699,12 @@ else
 			$arr_var['proceso_a']			="";
 			$arr_var['tipoEmpresa']			=$vector_topes[$u]['tipo_empresa'];
 			$arr_var['esdepension']			="Es de pension";
+			/* SE AGREGAN ESTAS VARIABLES FALTANTES 2021-11-23 CIDENET SAS*/
+			
+			$arr_var['whistoria']			=$whistoria;
+			$arr_var['wing']				=$wing;
+			$arr_var['wfeccar']				=date('Y-m-d');
+			
 			//----------------------------------------------------
 
 			//trae las politicas - con los parametros que estan en $arr_variables
@@ -749,6 +755,11 @@ else
 				$arr_var['proceso_a']			="";
 				$arr_var['tipoEmpresa']			=$vector_topes[$u]['tipo_empresa'];
 				$arr_var['esdepension']			="Es de pension";
+				/* SE AGREGAN ESTAS VARIABLES FALTANTES 2021-11-23 CIDENET SAS*/
+				
+				$arr_var['whistoria']			=$whistoria;
+				$arr_var['wing']				=$wing;
+				$arr_var['wfeccar']				=date('Y-m-d');
 				//----------------------------------------------------
 
 				//trae las politicas - con los parametros que estan en $arr_variables
@@ -2064,7 +2075,11 @@ else
 			$arr_variables['CambiodeCargos']	= "";
 			$arr_variables['esdepension']		="Es de pension";
 
-
+			/* SE AGREGAN ESTAS VARIABLES FALTANTES 2021-11-23 CIDENET SAS*/
+			
+			$arr_variables['whistoria']			=$whistoria;
+			$arr_variables['wing']				=$wing;
+			$arr_variables['wfeccar']			=date('Y-m-d');
 			$qtip_res = " SELECT Emptem  "
 						."  FROM ".$wbasedato."_000024 "
 						." WHERE Empcod = '".$wempresa."'";
