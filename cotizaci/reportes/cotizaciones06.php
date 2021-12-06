@@ -32,7 +32,7 @@ if(!isset($_SESSION['user']))
 //$fecha = date("Y-m-d");  
 //$wano=substr($fecha,0,4);
 
-$wano="2020";
+$wano="2021";
 // **********************************************
 
 if (!isset($nroreg))
