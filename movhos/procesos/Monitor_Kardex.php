@@ -22,6 +22,7 @@ else {
 	$whora = (string)date("H:i:s");
 
 
+	$wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
 
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 	$wactualiz = "Octubre 22 de 2021";               // Aca se coloca la ultima fecha de actualizacion de este programa //
@@ -41,6 +42,15 @@ else {
 	//=========================================================================================================================================\\
 	//ACTUALIZACIONES
 	//=========================================================================================================================================\\
+
+	/** Octubre 27 del 2021 
+	 * Se hace modificación en el caso 5 (Kardex con articulos del lactario), basicamente lo que se hizo fue lo siguiente:
+	 * Estados: Se hicieron unos estados para validar que pacientes llegaban como nuevos, modificados o suspendidos esto 
+	 * para llevar un mejor manejo de los pacientes.
+	 * Pacientes con soporte nutricional (Parte operativa), esta sección en el monitor nos esta mosrando todos los pacientes que tengan algun tipo de nutricion
+	 * por otro lado tambien una vez el paciente sea cargado, se seguira viendo en la seccion pacientes con soporte nutricional ya que se requiere dejar alli
+	 * los datos para tener una mejor trazabulidad o manipulación de los datos.
+	*/
 	// Mayo 21 de 2018	Jessica	
 	// En la función consultarSiDAexiste() se agrega a la consulta el filtro con cenpro_000002 para saber si la dosis adaptada esta activa
 	// de esta forma, si la inactivaron permite crear otra, es decir, se muestra Crear producto ya que antes de este cambio si creaban una 
@@ -3333,21 +3343,37 @@ else {
 
 							case "5": //KARDEX CON ARTICULOS DEL LACTARIO
 								{
-									echo "<tr class='encabezadoTabla'>";
-									echo "<th>Habitacion</th>";
-									echo "<th>Historia</th>";
-									echo "<th>Paciente</th>";
-									echo "<th>Estado</th>";
-									// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
-									echo "<th colspan='2' width='101'>Acción</th>";
-									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
-									echo "<th>Habitacion</th>";
-									echo "<th>Historia</th>";
-									echo "<th>Paciente</th>";
-									echo "<th>Estado</th>";
-									// echo "<th>Imprimir todos</th>";
-									echo "<th colspan='2' width='101'>Acción</th>";
-									echo "</tr>";
+									if($wactivolactario == 'on'){
+										echo "<tr class='encabezadoTabla'>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th>Estado</th>";
+										// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
+										echo "<th colspan='2' width='101'>Acción</th>";
+										echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th>Estado</th>";
+										// echo "<th>Imprimir todos</th>";
+										echo "<th colspan='2' width='101'>Acción</th>";
+										echo "</tr>";
+									}else {
+										echo "<tr class='encabezadoTabla'>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th width='101'>Ver</th>";
+										echo "<th width='41' bgcolor='#ffffff'>&nbsp;</th>";
+										echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th width='101'>Ver</th>";
+										echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+										echo "</tr>";
+									}
 
 									break;
 								}
@@ -3399,23 +3425,39 @@ else {
 							case "5": //KARDEX CON ARTICULOS DEL LACTARIO
 
 								{
-									echo "<tr class='encabezadoTabla'>";
-									echo "<th>Habitacion</th>";
-									echo "<th>Historia</th>";
-									echo "<th>Paciente</th>";
-									echo "<th>Estado</th>";
-									// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
-									echo "<th colspan='2' width='101'>Acción</th>";
-									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
-									// echo "<th>Habitacion</th>";
-									// echo "<th>Historia</th>";
-									// echo "<th>Paciente</th>";
-									// echo "<th>Estado</th>";
-									// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
-									// echo "<th colspan='2' width='101'>Acción</th>";
-									
-									echo "</tr>";
-
+									if($wactivolactario == 'on'){
+										echo "<tr class='encabezadoTabla'>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th>Estado</th>";
+										// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
+										echo "<th colspan='2' width='101'>Acción</th>";
+										echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+										// echo "<th>Habitacion</th>";
+										// echo "<th>Historia</th>";
+										// echo "<th>Paciente</th>";
+										// echo "<th>Estado</th>";
+										// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
+										// echo "<th colspan='2' width='101'>Acción</th>";
+										
+										echo "</tr>";
+									}else{
+										echo "<tr class='encabezadoTabla'>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th width='101'>Ver</th>";
+										echo "<th width='41' bgcolor='#ffffff'>&nbsp;</th>";
+										echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+										// echo "<th>Habitacion</th>";
+										// echo "<th>Historia</th>";
+										// echo "<th>Paciente</th>";
+										// echo "<th width='101'>Ver</th>";
+										// echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+										echo "</tr>";
+									}
+							
 									break;
 								}
 
@@ -3473,7 +3515,7 @@ else {
 							if ($wptr == "on")
 								$walta_tras = "colorAzul4";
 
-								if ($wopcion == 5) //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
+								if ($wopcion == 5 && $wactivolactario == 'on') //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
 								{
 									//print_r($wmat_estado);
 									echo "<tr class=" . $wclass . " id='".$wmat_estado[$i][1]."'>";
@@ -3482,12 +3524,13 @@ else {
 									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
 									echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
 									// echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir</td>"; //Imprimir
-								} else {
+								}else{
 									echo "<tr class=" . $wclass . ">";
 									echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
 									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
 									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
 								}
+								
 
 							if ($wopcion != "12") {
 								if ($wopcion == "3" or $wopcion == "8")      //Esta es la opcion de historias que no tienen kardex actualizado
@@ -3597,7 +3640,7 @@ else {
 									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>";  //Historia-Ingreso
 									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>";                            //Paciente
 
-									if ($wopcion == 5) //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
+									if ($wopcion == 5 && $wactivolactario == 'on') //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
 									{
 										echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
 										// echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir</td>"; //Imprimir
@@ -3703,7 +3746,7 @@ else {
 							if ($wptr == "on")
 								$walta_tras = "colorAzul4";
 
-							if ($wopcion == 5) //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
+							if ($wopcion == 5 && $wactivolactario == 'on') //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
 							{
 								//print_r($wmat_estado);
 								echo "<tr class=" . $wclass . " id='".$wmat_estado[$i][1]."'>";
@@ -3828,7 +3871,7 @@ else {
 			echo "</table>";
 
 			//Desde aca comienza el detalle del kardex que tiene cada paciente
-			if ($wopcion == 5) //se hace condición para que solo muestre la tabla de pacientes con la informacion de medicamento
+			if ($wopcion == 5 && $wactivolactario == 'on') //se hace condición para que solo muestre la tabla de pacientes con la informacion de medicamento
 			{
 				function estado_del_Kardex_lactario($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac, &$esOrdenes)
 				{
@@ -4164,8 +4207,8 @@ else {
 								"fecha" => $pos_art[3],
 								"hora" => $pos_art[4],
 								"habitacion" => $fila[0],
-								"frecuencia" => $pos_art[0],
-								// "frecuencia" => $pos_art[2],
+								// "frecuencia" => $pos_art[0],
+								"frecuencia" => $pos_art[2],
 								"articulo" => $pos_art[1],
 								"dosis" => $pos_art[7],
 								"via" => $pos_art[5]

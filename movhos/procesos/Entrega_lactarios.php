@@ -233,32 +233,33 @@ function enter3( i, valor )
 <?php
 include_once("conex.php");
   /*********************************************************
-   *               APLICACION DE MEDICAMENTOS              *
+   *               ENTREGA DE NUTRICIONES             *
    *    EN LA UNIDAD EN DONDE SE ENCUENTRE EL PACIENTE     *
    *     				CONEX, FREE => OK				   *
    *********************************************************/
 
 //==================================================================================================================================
-//PROGRAMA                   : Entrega_lactarios.ph
-//AUTOR                      : Juan Carlos Hernández M.
-//FECHA CREACION             : Agosto 25 de 2010
-//FECHA ULTIMA ACTUALIZACION : Ene 25 de 2012 ";
+//PROGRAMA                   : Entrega_lactarios.php
+//AUTOR                      : Sebastian Alvarez Barona
+//FECHA CREACION             : Octubre 27 del 2021
+//FECHA ULTIMA ACTUALIZACION : Diciembre 06 del 2021 ";
 //DESCRIPCION
 //=============================================================================================================================================\\
 //=============================================================================================================================================\\
-//     Programa para el registro de la aplicación de medicamentos, basando siempre en las frecuencias definidas por la enfremera en el         \\
+//     Programa para la entrega de nutriciones, basando siempre en las frecuencias definidas por la enfremera en el         \\
 //     Kardex electronico y posteriormente basado en la Orden Medica electronica hecha por el médico.                                          \\
 //     ** Funcionamiento General:                                                                                                              \\
 //     Se selecciona el servicio en el que se esta, se despliega la lista de paciente en el servicio y se va ingresando a cada uno de          \\
-//     ellos y dando click en el botón APLICAR de cada uno de los medicamentos si se lo aplico.                                                \\
-//     Para ANULAR se da click en el botón ANULAR.                                                                                             \\
+//     ellos y dando click en el botón ENTREGAR de cada uno de los medicamentos si se lo ENTREGO.                                                \\
+//     Para ANULAR se da click en el botón ANULAR.                                                                                            \\
 //                                                                                                                                             \\
 //     ** Restricciones:                                                                                                                       \\
-//        * El programa solo puede ser y solo se dejará usar, en los IPOD's.                                                                   \\
+//        * El programa solo puede ser y solo se dejará usar.                                                                   \\
 //        * NO deja aplicar Rondas posteriores a la que este sucediendo en ese momento (esto lo hace automaticamente)       				   \\
 // 		  * Se puede aplicar o desatrazar máximo la ronda anterior a la que este en curso.                                                     \\
 //                                                                                                                                             \\
-//     Tabla(s) : movhos_000015 mov_000004, movhos_000053, movhos_000054, movhos_000060                                                        \\
+//     Tabla(s) : movhos_000015 mov_000004, movhos_000053, movhos_000054, movhos_000060, movhos_000298     
+// 		   * 000298: Se regisrtra toda la información de las entregas, incluyendo quien entrego y quien recibio la entrega                                                 \\
 //         * 000015: Se registra o anula la aplicación                                                                                         \\
 //         * 000004: Se actualiza el saldo del medicamento para el paciente                                                                    \\
 //         * 000053: Se consulta el kardex del día si existe, si no, se busca el del día anterior                                              \\
@@ -501,6 +502,16 @@ else
      	                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
   $wactualiz="Octubre 27 de 2021";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
+
+	$wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
+
+	if( $wactivolactario == 'off' ){
+		echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>
+			<tr><td>Favor contacte a servicio de alimentaci&oacute;n, este programa no esta habilitado.</td></tr>
+			</table></center>";
+		return;
+	}
+
 
   encabezado("ENTREGA DE NUTRICIONES",$wactualiz, "clinica");
 

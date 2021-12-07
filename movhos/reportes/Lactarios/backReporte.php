@@ -1,11 +1,17 @@
 <?php 
+
+/**DESCRIPCIÓN 27 DE OCTUBRE DEL 2021 
+ * Este archivo se basa en la creación de lo que es el backend del reporte, es en donde creamos la consulta 
+ * para consultar los datos y mostrarlos.
+*/
+
 $consultaAjax = '';
 
 include_once("conex.php");
 include_once("root/comun.php");
 
 
-$wactualiz = "2018-08-13";
+$wactualiz="Octubre 27 de 2021"; 
 
  if(!isset($_SESSION['user'])){
 	  echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>

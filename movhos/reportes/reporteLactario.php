@@ -1,11 +1,15 @@
 <?php
+
+/**DESCRIPCIÓN 27 DE OCTUBRE DEL 2021 
+ * Este programa muestra el listado de entregas de nutriciones que se han hecho.
+ * En este archivo lo unico que se vera reflejado es la parte front (todo lo que vera el usuario.)
+*/
+
 $consultaAjax = '';
 
 include_once("conex.php");
 include_once("root/comun.php");
 
-
-$wactualiz = "2018-11-02";
 
 if(!isset($_SESSION['user'])){
 	 echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>
@@ -14,11 +18,20 @@ if(!isset($_SESSION['user'])){
 	 return;
 } 
 
+$wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
+
+if( $wactivolactario == 'off' ){
+	echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>
+		<tr><td>Favor contacte a servicio de alimentaci&oacute;n, este programa no esta habilitado.</td></tr>
+		</table></center>";
+  	 return;
+}
+
 $fecha = date('Y-m-d');
 
 $wactualiz="Octubre 27 de 2021";         
 
-  encabezado("REPORTE DE ENTREGA LACTARIO",$wactualiz, "clinica");
+  encabezado("REPORTE DE ENTREGA LACTARIO",$wactualiz, $wemp_pmla);
 
 ?>
 <html>
