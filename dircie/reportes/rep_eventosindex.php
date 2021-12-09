@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="esp" xmlns="http://www.w3.org/1999/html">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eï¿½es y tildes -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Reporte de Eventos Adversos Serios Institucionales</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel='stylesheet' type='text/css'>
     <link href="estilosevent.css" rel="stylesheet" type="text/css">
-    <script src="http://code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
+    <script src="//code.jquery.com/jquery-1.9.1.js" type="text/javascript"></script>
     <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
     <script src="../../../include/root/jquery.blockUI.min.js" type="text/javascript"></script>
     <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" /><!--Estilo para el calendario-->
@@ -211,21 +211,21 @@ include_once("conex.php");
             $fechaEmision = "$fechaEmision[2]-$fechaEmision[1]-$fechaEmision[0]";
             $Dcceninvrep1 = $datoRegistro['Dcceninvrep'];
             $Dcceninvrep = explode("-", $Dcceninvrep1); //Centro de Investigacion Reportante
-            $Dcfecnotpat = $datoRegistro['Dcfecnotpat']; //Fecha Notificacion al Patrocinador de éste reporte
+            $Dcfecnotpat = $datoRegistro['Dcfecnotpat']; //Fecha Notificacion al Patrocinador de ï¿½ste reporte
             $Dcfecnotpat = explode("-",$Dcfecnotpat);
             $Dcfecnotpat = "$Dcfecnotpat[2]-$Dcfecnotpat[1]-$Dcfecnotpat[0]";
-            $Dcfecsitent = $datoRegistro['Dcfecsitent']; //Fecha en el que el sitio se entero de éste reporte
+            $Dcfecsitent = $datoRegistro['Dcfecsitent']; //Fecha en el que el sitio se entero de ï¿½ste reporte
             $Dcfecsitent = explode("-",$Dcfecsitent);
             $Dcfecsitent = "$Dcfecsitent[2]-$Dcfecsitent[1]-$Dcfecsitent[0]";
             $Dctitproinv = $datoRegistro['Dctitproinv']; //Titulo del Protocolo de Investigacion
             $Dccodinv = $datoRegistro['Dccodinv']; //Codigo Invima
             $Dccodpro = $datoRegistro['Dccodpro']; //Codigo Protocolo
             $Dcpatrocina = $datoRegistro['Dcpatrocina']; //Patrocinador
-            $Dcdisest = $datoRegistro['Dcdisest']; //Diseño del Estudio
+            $Dcdisest = $datoRegistro['Dcdisest']; //Diseï¿½o del Estudio
             $Dcidpac = $datoRegistro['Dcidpac']; //Id Paciente
             $Dcedad = $datoRegistro['Dcedad']; //Edad
             $DcedadO = $datoRegistro['Dcedad1'];
-            $Dcedad1 = explode("-",$DcedadO); //Años - Meses - Dias - Horas
+            $Dcedad1 = explode("-",$DcedadO); //Aï¿½os - Meses - Dias - Horas
             $Dcsexo1 = $datoRegistro['Dcsexo'];
             $Dcsexo = explode("-",$Dcsexo1); //Sexo
             $Dccie10 = $datoRegistro['Dccie10']; //Diagnostico del Evento Adverso CIE10
@@ -259,7 +259,7 @@ include_once("conex.php");
             $Dcromciedes1 = $datoRegistro['Dcromciedes'];
             $Dcromciedes = explode("-",$Dcromciedes1); //Si se rompio el ciego, Cual es el Brazo del Sujeto
             $Dcnomcometiinv1 = $datoRegistro['Dcnomcometiinv'];
-            $Dcnomcometiinv = explode("-",$Dcnomcometiinv1); //Nombre del Comité de Etica en Investigacion (CEI)
+            $Dcnomcometiinv = explode("-",$Dcnomcometiinv1); //Nombre del Comitï¿½ de Etica en Investigacion (CEI)
             $Dcfecnotcei = $datoRegistro['Dcfecnotcei']; //Fecha de Notificacion al CEI
             $Dcfecnotcei = explode("-",$Dcfecnotcei);
             $Dcfecnotcei = "$Dcfecnotcei[2]-$Dcfecnotcei[1]-$Dcfecnotcei[0]";
@@ -341,7 +341,7 @@ include_once("conex.php");
                     <table style="border: groove; width: 900px">
                         <tr>
                             <td align="center" style="border: groove; width: 20%">
-                                <input type="image" id="btnVer" src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80">
+                                <input type="image" id="btnVer" src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80">
                             </td>
                             <td align="center" style="border: groove; width: 55%">
                                 <b>FORMATO DE REPORTE DE EVENTOS<br>ADVERSOS SERIOS INSTITUCIONALES</b>
@@ -351,24 +351,24 @@ include_once("conex.php");
                                     <?php
 										echo "<tr>";
 										if ($Dccodigo == 'NO APLICA'){
-											echo "<td>Código: F-EC-7</td>";
+											echo "<td>Cï¿½digo: F-EC-7</td>";
 										}else{
-											echo "<td>Código:".$Dccodigo."</td>";
+											echo "<td>Cï¿½digo:".$Dccodigo."</td>";
 										}
 										echo "</tr>";
 										echo "<tr>";
 										if ($Dcversion == 'NO APLICA'){
-											echo "<td>Versión: 01</td>";
+											echo "<td>Versiï¿½n: 01</td>";
 										}else{
-											echo "<td>Versión:".$Dcversion."</td>";
+											echo "<td>Versiï¿½n:".$Dcversion."</td>";
 										}
 										echo "</tr>";
 									?>
                                     <tr>
-                                        <td>Página: 1</td>
+                                        <td>Pï¿½gina: 1</td>
                                     </tr>
                                     <tr>
-                                        <td>Fecha de Emisión: <?php echo $fechaEmision; ?></td>
+                                        <td>Fecha de Emisiï¿½n: <?php echo $fechaEmision; ?></td>
                                     </tr>
                                 </table>
                             </td>
@@ -383,7 +383,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove; width: 50%">
-                                <b>Centro de Investigación Reportante</b>
+                                <b>Centro de Investigaciï¿½n Reportante</b>
                             </td>
                             <td style="border: groove; width: 50%">
                                 <?php echo $Dcceninvrep[1] ?>
@@ -391,7 +391,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove">
-                                <b>Fecha Notificación al Patrocinador del Reporte</b>
+                                <b>Fecha Notificaciï¿½n al Patrocinador del Reporte</b>
                             </td>
                             <td style="border: groove">
                                 <?php echo $Dcfecnotpat ?>
@@ -399,7 +399,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove">
-                                <b>Fecha en el que el sitio se enteró del reporte</b>
+                                <b>Fecha en el que el sitio se enterï¿½ del reporte</b>
                             </td>
                             <td style="border: groove">
                                 <?php echo $Dcfecsitent ?>
@@ -415,7 +415,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove" colspan="3">
-                                <b>Titulo del Protocolo de Investigación</b>
+                                <b>Titulo del Protocolo de Investigaciï¿½n</b>
                             </td>
                         </tr>
                         <tr>
@@ -423,10 +423,10 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove; width: 25%">
-                                <b>Código Invima</b>
+                                <b>Cï¿½digo Invima</b>
                             </td>
                             <td style="border: groove; width: 25%">
-                                <b>Código Protocolo</b>
+                                <b>Cï¿½digo Protocolo</b>
                             </td>
                             <td style="border: groove; width: 50%">
                                 <b>Patrocinador</b>
@@ -445,7 +445,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove" colspan="3">
-                                <b>Diseño del Estudio</b>
+                                <b>Diseï¿½o del Estudio</b>
                             </td>
                         </tr>
                         <tr>
@@ -489,7 +489,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove; width: 33%">
-                                <b>Diagnóstico del Evento Adverso CIE-10</b>
+                                <b>Diagnï¿½stico del Evento Adverso CIE-10</b>
                             </td>
                             <td style="border: groove; width: 67%" colspan="4">
                                 <?php echo $Dccie10 ?>
@@ -503,7 +503,7 @@ include_once("conex.php");
                                 <b>Tipo de Reporte</b>
                             </td>
                             <td style="border: groove">
-                                <b>Número Seguimiento</b>
+                                <b>Nï¿½mero Seguimiento</b>
                             </td>
                             <td style="border: groove">
                                 <b>Fecha Final EAS</b>
@@ -552,7 +552,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove" colspan="3">
-                                <b>Acción Tomada por el Investigador:</b>
+                                <b>Acciï¿½n Tomada por el Investigador:</b>
                             </td>
                             <td style="border: groove" colspan="2">
                                 <?php echo $Dcaccinv[1] ?>
@@ -560,7 +560,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove" colspan="3">
-                                <b>Evolución y/o Desenlace:</b>
+                                <b>Evoluciï¿½n y/o Desenlace:</b>
                             </td>
                             <td style="border: groove" colspan="2">
                                 <?php echo $Dcevodes[1] ?>
@@ -576,7 +576,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove" colspan="3">
-                                <b>Se Presentó Desviación al Protocolo?:</b>
+                                <b>Se Presentï¿½ Desviaciï¿½n al Protocolo?:</b>
                             </td>
                             <td style="border: groove" colspan="2">
                                 <?php echo $Dcdespro[1] ?>
@@ -584,13 +584,13 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove; width: 20%">
-                                <b>Se Rompió el Ciego?</b>
+                                <b>Se Rompiï¿½ el Ciego?</b>
                             </td>
                             <td style="border: groove; width: 18%">
                                 <?php echo $Dcromcie[1] ?>
                             </td>
                             <td style="border: groove; width: 30%" colspan="2">
-                                <b>Si se Rompió el Ciego, cual es el brazo del sujeto?</b>
+                                <b>Si se Rompiï¿½ el Ciego, cual es el brazo del sujeto?</b>
                             </td>
                             <td style="border: groove; width: 20%">
                                 <?php echo $Dcromciedes[1] ?>
@@ -603,10 +603,10 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove; width: 60%" colspan="3" align="center">
-                                <b>Nombre del Comité de Ética en Investigacion (CEI)</b>
+                                <b>Nombre del Comitï¿½ de ï¿½tica en Investigacion (CEI)</b>
                             </td>
                             <td style="border: groove" colspan="1" align="center">
-                                <b>Fecha de Notificación al CEI:</b>
+                                <b>Fecha de Notificaciï¿½n al CEI:</b>
                             </td>
 							<td style="border: groove" colspan="1" align="center">
                                 <b>Criterio Severidad:</b>
@@ -633,7 +633,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove" colspan="4">
-                                <b>Nombre del Producto de Investigación</b>
+                                <b>Nombre del Producto de Investigaciï¿½n</b>
                             </td>
                             <td style="border: groove">
                                 <b>No de Lote</b>
@@ -661,10 +661,10 @@ include_once("conex.php");
                                 <b>Num Dosis Recibidas</b>
                             </td>
                             <td style="border: groove" colspan="3">
-                                <b>Fecha de Inicio de Administración</b>
+                                <b>Fecha de Inicio de Administraciï¿½n</b>
                             </td>
                             <td style="border: groove" colspan="2">
-                                <b>Fecha de Terminación de Administración</b>
+                                <b>Fecha de Terminaciï¿½n de Administraciï¿½n</b>
                             </td>
                         </tr>
                         <tr>
@@ -683,7 +683,7 @@ include_once("conex.php");
                         </tr>
                         <tr>
                             <td style="border: groove" colspan="3">
-                                <b>Se Suspendió el Producto de Investigación</b>
+                                <b>Se Suspendiï¿½ el Producto de Investigaciï¿½n</b>
                             </td>
                             <td style="border: groove" colspan="3">
                                 <?php echo $Dcsusproinv[1] ?>
@@ -699,7 +699,7 @@ include_once("conex.php");
                         </tr>
 						<tr>
                             <td style="border: groove; width: 65%" colspan="3">
-                                <b>Relacion Causal Evento y Producto de Investigación</b>
+                                <b>Relacion Causal Evento y Producto de Investigaciï¿½n</b>
                             </td>
                             <td style="border: groove; width: 35%" colspan="3">
                                 <?php echo $Dcreveprod[1] ?>
@@ -707,7 +707,7 @@ include_once("conex.php");
                         </tr>
 						<tr>
                             <td style="border: groove; width: 65%" colspan="3">
-                                <b>Relacion Causal Evento y Proceso de Investigación</b>
+                                <b>Relacion Causal Evento y Proceso de Investigaciï¿½n</b>
                             </td>
                             <td style="border: groove; width: 35%" colspan="3">
                                 <?php echo $Dcreveproc[1] ?>

@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="esp">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eï¿½es y tildes -->
     <title>MATRIX - Gestion de Stickers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="StyleStkCenest.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" /><!--Estilo para el calendario-->
-    <script src="http://mx.lasamericas.com.co/matrix/paf/procesos/calendariopaf.js" type="text/javascript"></script>
+    <script src="//mx.lasamericas.com.co/matrix/paf/procesos/calendariopaf.js" type="text/javascript"></script>
     <script src="JsStkCenest.js" type="text/javascript"></script>
     <style>
         .alternar:hover{ background-color:#CADCFF;}
@@ -90,7 +90,7 @@ include_once("conex.php");
             <table align="center" class="tblselecciones">
                 <tr>
                     <td colspan="7">
-                        <h5 class="text-primary"><strong>Selección de Etiqueta: </strong></h5>
+                        <h5 class="text-primary"><strong>Selecciï¿½n de Etiqueta: </strong></h5>
                     </td>
                 </tr>
                 <tr>
@@ -135,7 +135,7 @@ include_once("conex.php");
                     <table align="center" border="0">
                         <tr>
                             <td colspan="6"><label for="etq1Titulo">MATERIAL DE OSTEOSINTESIS</label></td>
-                            <td colspan="3" rowspan="3"><img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80"></td>
+                            <td colspan="3" rowspan="3"><img src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80"></td>
                         </tr>
                         <tr>
                             <td><label for="etq1Nombre">NOMBRE: </label></td>
@@ -191,7 +191,7 @@ include_once("conex.php");
                         <tr>
                             <td colspan="7" class="lblLeyenda">
                                 <label>MANTENGASE EN LUGAR FRESCO Y SECO<br>
-                                       TEMPERATURA: 17°C - 25°C<br>
+                                       TEMPERATURA: 17ï¿½C - 25ï¿½C<br>
                                        NO USAR SI EL EMPAQUE SE ENCUENTRA DETERIORADO.
                                 </label>
                             </td>
@@ -220,7 +220,7 @@ include_once("conex.php");
                         <tr>
                             <td colspan="5"><label for="etq1Titulo">MATERIAL QUIRURGICO Y HOSPITALARIO</label></td>
                             <td>&ensp;</td>
-                            <td colspan="2" rowspan="3"><img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80"></td>
+                            <td colspan="2" rowspan="3"><img src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80"></td>
                         </tr>
                         <tr>
                             <td><label for="etq2Unidad">UNIDAD: </label></td>
@@ -270,7 +270,7 @@ include_once("conex.php");
                         <tr>
                             <td colspan="8" class="lblLeyenda">
                                 <label>MANTENGASE EN LUGAR FRESCO Y SECO<br>
-                                    TEMPERATURA: 17°C - 25°C<br>
+                                    TEMPERATURA: 17ï¿½C - 25ï¿½C<br>
                                     NO USAR SI EL EMPAQUE SE ENCUENTRA DETERIORADO.
                                 </label>
                             </td>
@@ -301,7 +301,7 @@ include_once("conex.php");
                             <td><input type="text" style="width: 200px" name="etq3Detergente" id="etq3Detergente" value="ENDOZYNE"></td>
                             <td>&ensp;</td>
                             <td>&ensp;</td>
-                            <td colspan="2" rowspan="3"><img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80"></td>
+                            <td colspan="2" rowspan="3"><img src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80"></td>
                         </tr>
                         <tr>
                             <td><label for="etq3Fp">FP: </label></td>
@@ -364,7 +364,7 @@ include_once("conex.php");
                             -->
                             <td>&ensp;</td>
                             <td>&ensp;</td>
-                            <td colspan="2" rowspan="3"><img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80"></td>
+                            <td colspan="2" rowspan="3"><img src="//mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="80"></td>
                         </tr>
                         <tr>
                             <td><label for="etq4Unidad">UNIDAD: </label></td>

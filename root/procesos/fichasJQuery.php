@@ -25,7 +25,7 @@
 <script type="text/javascript" src="../../../include/root/jquery-ui-1.7.2.custom.min.js"></script> 	<!--  Nucleo jquery -->
 <script type="text/javascript" src="../../../include/root/jquery.blockUI.min.js"></script> <!-- Block UI -->
 <script type="text/javascript" src="../../../include/root/ui.core.min.js"></script>	<!-- Nucleo jquery -->
-<script type="text/javascript" src="../../../include/root/ui.tabs.min.js"></script> <!-- Pestañas -->
+<script type="text/javascript" src="../../../include/root/ui.tabs.min.js"></script> <!-- Pestaï¿½as -->
 <script type="text/javascript" src="../../../include/root/ui.draggable.min.js"></script>	<!-- Arrastrable -->
 <script type="text/javascript" src="../../../include/root/ui.accordion.js"></script>	<!-- Acordeon -->
 <script type="text/javascript" src="../../../include/root/ui.dialog.js"></script>	<!-- Modal nativo -->
@@ -56,7 +56,7 @@ var indiceTemporal = "";
 
 $(document).ready(function(){
 
-	//Inicio de pestañas
+	//Inicio de pestaï¿½as
     $("#tabs").tabs(); 
 
 	//Inicio de acordeon
@@ -90,7 +90,7 @@ $(document).ready(function(){
     }); 
 
     //Inicio de autocomplete
-    var datos = "Mauricio Macsanz Maria Mauro Mario Martha Mariela Arriba Autocompletar Autos Marca Mora Miro Mira Cosa Coso Mondá Melon Dulce Vida Alegría Eladio".split(" ");    
+    var datos = "Mauricio Macsanz Maria Mauro Mario Martha Mariela Arriba Autocompletar Autos Marca Mora Miro Mira Cosa Coso Mondï¿½ Melon Dulce Vida Alegrï¿½a Eladio".split(" ");    
     $("#auto1").focus().autocomplete(datos);
 
 	//http://localhost/matrix/root/procesos/autocompletar.php?q=a
@@ -160,7 +160,7 @@ $(document).ready(function(){
 	});
 
 	//Datagrid
-	$('#demoTable').jTPS( {perPages:[12], scrollStep:1, scrollDelay:30, perPageText:'Cantidad por página ', perPageShowing: 'Mostrando'} ); 
+	$('#demoTable').jTPS( {perPages:[12], scrollStep:1, scrollDelay:30, perPageText:'Cantidad por pï¿½gina ', perPageShowing: 'Mostrando'} ); 
 
 	// bind mouseover for each tbody row and change cell (td) hover style
     $('#demoTable tbody tr:not(.stubCell)').bind('mouseover mouseout',
@@ -516,14 +516,14 @@ if (!$usuarioValidado){
 	//Mensaje del tooltip
 	echo "<div id='tooltip' style='display: none; top: 1078px; left: 119px; right: auto;'>";
 	echo "<h3>Informacion adicional</h3>";
-	echo "Esto es una ampliación de la información adicional....";
+	echo "Esto es una ampliaciï¿½n de la informaciï¿½n adicional....";
 	echo "</div>";
 
 	//Indicador de si es fecha actual
-	echo "Pestañas";
-	echo "<div id='tabs'>";				//Inicio de lo que va a ir encerrado en las pestañas
+	echo "Pestaï¿½as";
+	echo "<div id='tabs'>";				//Inicio de lo que va a ir encerrado en las pestaï¿½as
 		
-	//Orden y nombre de las pestañas (tabs)
+	//Orden y nombre de las pestaï¿½as (tabs)
 	echo "<ul>";
 	echo "<li><a href='#fragment-1'><span>Acordeon</span></a></li>";
 	echo "<li><a href='#fragment-2'><span>Cuadro arrastrable</span></a></li>";
@@ -628,7 +628,7 @@ if (!$usuarioValidado){
 	echo "</div>";
 
 	echo "<div id='fragment-4'>";
-	echo "<span id='txtTooltip' title='Advertencia. - Recuerde que el numero maximo es másimo!.  Como que esto si va a funcionar...Integer dignissim consequat lectus. Integer dignissim consequat lectus'>Pase sobre este texto y verá lo que pasa...</span>";
+	echo "<span id='txtTooltip' title='Advertencia. - Recuerde que el numero maximo es mï¿½simo!.  Como que esto si va a funcionar...Integer dignissim consequat lectus. Integer dignissim consequat lectus'>Pase sobre este texto y verï¿½ lo que pasa...</span>";
 	echo "</div>";
 
 	echo "<div id='fragment-5'>";
@@ -693,7 +693,7 @@ if (!$usuarioValidado){
     * To support uploading of ZIP files, you need the PHP zip extension.
     * For proper support of multibyte strings (eg. UTF-8, which is currently default), you should install mbstring and ctype extensions.
     * You need GD2 support in PHP to display inline thumbnails of JPEGs ('image/jpeg: inline') with their original aspect ratio
-    * When using the 'cookie' authentication method, the mcrypt extension is strongly suggested for most users and is required for 64–bit machines. Not using mcrypt will cause phpMyAdmin to load pages significantly slower.
+    * When using the 'cookie' authentication method, the mcrypt extension is strongly suggested for most users and is required for 64ï¿½bit machines. Not using mcrypt will cause phpMyAdmin to load pages significantly slower.
     * To support upload progress bars, see FAQ 2.9.
 
 	# MySQL 5.0 or newer (details);";
@@ -834,7 +834,7 @@ if (!$usuarioValidado){
                  <td>4 max</td>
                  <td>$".($cont1+100)."</td>
                  <td align='right'>$676.00</td>
-                 <td align='right'><a href='http://www.google.com' target='_blank'>Prueba</a></td>
+                 <td align='right'><a href='//www.google.com' target='_blank'>Prueba</a></td>
              </tr>";
 	}
     

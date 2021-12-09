@@ -10,17 +10,17 @@ header("Content-Type: text/html;charset=ISO-8859-1");
   <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
   <script src="../../../include/root/print.js" type="text/javascript"></script>
   <link type='text/css' href='HCE.css' rel='stylesheet'> 
-  <title>Ordenes Médicas</title>
+  <title>Ordenes Mï¿½dicas</title>
 
   <script type='text/javascript'>
 	/******************************************************************
 	 * Realiza una llamada ajax a una pagina
 	 *
 	 * met:		Medtodo Post o Get
-	 * pag:		Página a la que se realizará la llamada
+	 * pag:		Pï¿½gina a la que se realizarï¿½ la llamada
 	 * param:	Parametros de la consulta
 	 * as:		Asincronro? true para asincrono, false para sincrono
-	 * fn:		Función de retorno del Ajax, no requerido si el ajax es sincrono
+	 * fn:		Funciï¿½n de retorno del Ajax, no requerido si el ajax es sincrono
 	 *
 	 * Nota:
 	 * - Si la llamada es GET las opciones deben ir con la pagina.
@@ -57,8 +57,8 @@ header("Content-Type: text/html;charset=ISO-8859-1");
 		}catch(e){	}
 	}
 	/************************************************************************/		
-	// Llama al script de impresión de los CTC para que traiga la impresión del CTC
-	// del artículo enviado
+	// Llama al script de impresiï¿½n de los CTC para que traiga la impresiï¿½n del CTC
+	// del artï¿½culo enviado
 	function consultarCTCArticulo( his, ing, art, div )
 	{
 		var vwemp_pmla = document.getElementById( "wemp_pmla" );
@@ -76,8 +76,8 @@ header("Content-Type: text/html;charset=ISO-8859-1");
 					);
 	}
 
-	// Llama a este mismo script para hacer la impresión solo del medicamento correspondiente al CTC
-	// para eso se envia el parámetro art
+	// Llama a este mismo script para hacer la impresiï¿½n solo del medicamento correspondiente al CTC
+	// para eso se envia el parï¿½metro art
 	function consultarArticulo( his, ing, art, div )
 	{
 		var vwemp_pmla = document.getElementById( "wemp_pmla" );
@@ -96,8 +96,8 @@ header("Content-Type: text/html;charset=ISO-8859-1");
 	}
 
 
-	// Llama a este mismo script para hacer la impresión solo del medicamento correspondiente al CTC
-	// para eso se envia el parámetro pro
+	// Llama a este mismo script para hacer la impresiï¿½n solo del medicamento correspondiente al CTC
+	// para eso se envia el parï¿½metro pro
 	function consultarProcedimiento( his, ing, pro, div )
 	{
 		var vwemp_pmla = document.getElementById( "wemp_pmla" );
@@ -236,9 +236,9 @@ $(document).ready(function()
 
 <?php
     /******************************************************************
-    * 	  			IMPRESIÓN DE ORDENES MÉDICAS					  *
+    * 	  			IMPRESIï¿½N DE ORDENES Mï¿½DICAS					  *
     * ----------------------------------------------------------------*
-    * Este script imprime la orden médica .							  *
+    * Este script imprime la orden mï¿½dica .							  *
     ******************************************************************/
 	/*
 	 * Autor: John M. Cadavid. G, Jonatan Lopez.
@@ -249,35 +249,35 @@ $(document).ready(function()
 	 *  Modificaciones:
 	  ================================================================================================================================================
 	 *	Mayo 4 de 2020: Jessica Madrid
-							- Para el envío de las ordenes por correo se modifica en la función enviarPdf() el mensaje y asunto como vacíos ya
-							  que el mensaje se construirá dinamicamente desde envioCorreoHCEOrdenes.php con los parámetros de root_000051 
+							- Para el envï¿½o de las ordenes por correo se modifica en la funciï¿½n enviarPdf() el mensaje y asunto como vacï¿½os ya
+							  que el mensaje se construirï¿½ dinamicamente desde envioCorreoHCEOrdenes.php con los parï¿½metros de root_000051 
 							  mensajeCorreoEnvioOrdenesPaciente y mensajeCorreoEnvioOrdenesEntidad
 	  ================================================================================================================================================
 	 *	Abril 2 de 2020: Jessica Madrid
-							- Se adiciona la opción de envío por correo del pdf con las ordenes médicas, se habilita la opción si se recibe el 
-							  parámetro enviarCorreo en on y se recibe el email en el parámetro emailEnviarCorreo
+							- Se adiciona la opciï¿½n de envï¿½o por correo del pdf con las ordenes mï¿½dicas, se habilita la opciï¿½n si se recibe el 
+							  parï¿½metro enviarCorreo en on y se recibe el email en el parï¿½metro emailEnviarCorreo
 	  ================================================================================================================================================
 	 *	Enero 17 de 2020: Jessica Madrid
-							- Se la consulta del responsable para garantizar que muestre el responsable del ingreso correspondiente y no del último.
-							- Se modifica la descripción del logo para que se visualice correctamente.
+							- Se la consulta del responsable para garantizar que muestre el responsable del ingreso correspondiente y no del ï¿½ltimo.
+							- Se modifica la descripciï¿½n del logo para que se visualice correctamente.
 	 ================================================================================================================================================
 	 *	Noviembre 21 de 2019: Edwin MG
-							- Se imprime el código de barras solo con el número de la orden sin el tipo de orden
+							- Se imprime el cï¿½digo de barras solo con el nï¿½mero de la orden sin el tipo de orden
 	 ================================================================================================================================================
 	 *	Noviembre 19 de 2019: Jessica Madrid
 							- Se modifica el calculo de la edad: si el paciente tiene alta definitiva debe realizar el calculo de 
 							  la edad con la fecha de egreso, de lo contrario realiza el calculo con la fecha actual.
-							- Se corrige la impresión ya que al generar el pdf no se visualiza correctamente la historia y la tarifa.
+							- Se corrige la impresiï¿½n ya que al generar el pdf no se visualiza correctamente la historia y la tarifa.
 	 ================================================================================================================================================
 	 *	Octubre 30 de 2019: Edwin MG
-							- Se imprime el código de barras de la historia y el número de orden
+							- Se imprime el cï¿½digo de barras de la historia y el nï¿½mero de orden
 	 ================================================================================================================================================
 	 *	Abril 4 de 2019: Edwin Molina
-							- Se muestra el nombre del procedimiento según el cup (root_000012) en lugar del lenguage Américas
+							- Se muestra el nombre del procedimiento segï¿½n el cup (root_000012) en lugar del lenguage Amï¿½ricas
 	 ================================================================================================================================================
 	 *	Diciembre 18 de 2017: Jessica Madrid
-							- Se comenta el contenido de la funcion consultarDxs() y agrega el llamado a la función consultarUltimoDiagnosticoHCE() 
-							de comun.php que devuelve la lista de los diagnósticos actuales del paciente
+							- Se comenta el contenido de la funcion consultarDxs() y agrega el llamado a la funciï¿½n consultarUltimoDiagnosticoHCE() 
+							de comun.php que devuelve la lista de los diagnï¿½sticos actuales del paciente
 	 ================================================================================================================================================
 	 
 	   *	Abril 21 de 2017: Jessica Madrid
@@ -308,7 +308,7 @@ $(document).ready(function()
 	 ================================================================================================================================================
 	 *	Marzo 11 de 2016: Edwin MG
 	 *						- Se corrige query de consulta de procedimientos cuando se imprime todas las ordenes para que tenga en cuentas aquellos 
-	 *						  examenes que están eliminados desde homologación de examenes, es decir, que solo se encuentran en la tabla hce_000017.
+	 *						  examenes que estï¿½n eliminados desde homologaciï¿½n de examenes, es decir, que solo se encuentran en la tabla hce_000017.
 	 ================================================================================================================================================
 	 *	Marzo 02 de 2016: Edwin MG
 	 *						- Se corrige filtro indicado por la variable $textAnd para la consulta de procedimientos cuando se imprime todas 
@@ -320,9 +320,9 @@ $(document).ready(function()
 							
 	 ================================================================================================================================================
 	 *	Enero 12 de 2016 Veronica Arismendy 
-							- Se modifica el archivo para agregar validación si la impresión se solicitó desde rp_PacientesEgresadosActivosOrdenes.php
-							también para agregar filtros dependiendo del tipo de orden que selecciono el usuario imprimir, con el fin de evitar que se le cargue
-							todo en el pdf y por el contrario sólo le salgan el tipo de ordenes que el solicitó.	 
+							- Se modifica el archivo para agregar validaciï¿½n si la impresiï¿½n se solicitï¿½ desde rp_PacientesEgresadosActivosOrdenes.php
+							tambiï¿½n para agregar filtros dependiendo del tipo de orden que selecciono el usuario imprimir, con el fin de evitar que se le cargue
+							todo en el pdf y por el contrario sï¿½lo le salgan el tipo de ordenes que el solicitï¿½.	 
 	 ================================================================================================================================================
 	 * Noviembre 19 de 2015: Edwin MG
 							- Se modifica la llave con la que se organizaba el arreglo de medicamentos, antes estaba kadido, ahora es el id del registro, 
@@ -344,24 +344,24 @@ $(document).ready(function()
 							- Se asigan en blanco el filtro de articulo reemplazado cuando es impreso desde CTC.
 	 * Enero 9 de 2015: Jonatan
 							- Se imprimiran solamente los que tengan la variable Kadaan = '' sin tener en cuente si esta suspendido, segun esto
-								solo se imprimirán los que registre el medico y no los que reemplace farmacia.
+								solo se imprimirï¿½n los que registre el medico y no los que reemplace farmacia.
 	 * Noviembre 25 de 2014: Jonatan
 							- Se comenta la variable $filtro_reemplazado que contiene kadaan = '' ya que se necesita imprimir los articulo asi hayan sido reeemplazados.
 							- Se agrega el sexo y la ubicacion del paciente.
 	 * Noviembre 21 de 2014: Jonatan
-							- Si se estan imprimiendo las ordenes desde la pestaña de alta se mostrara la cantidad, en caso contrario no.
+							- Si se estan imprimiendo las ordenes desde la pestaï¿½a de alta se mostrara la cantidad, en caso contrario no.
 	 * Noviembre 20 de 2014: Jonatan
 							- Se agregan columnas a los medicamentos y ayudas, ademas de la edad del paciente.
 	 * Noviembre 19 de 2014: Jonatan
 							- Se quita el filtro por estado para los examenes y procedimientos, mostrara los que estan marcados para imprimir.
 	 * Octubre 27 de 2014: Jonatan 
 							- Se agrega filtro que revisa si la ordenes es para imprimir.
-	 * Enero 29 de 2014: 	- Para las ordenes que tienen formulario emergente, se corrige la información del paciente, ya que si se imprimía solo una orden de este tipo
-	 *					   		no salía la información demográfica del paciente
-	 *					 	- Ya no se imprime DIAGNÓSTICO QUE JUSTIFICA LA TRANSFUSIÓN por que este ya fue eliminado del formulario de TRANSFUSIONES de HCE
-	*						 - Para la impresión de orden de TRANSFUSIÓN, se cambia observaciones por justificación
-	 * Enero 21 de 2014: 	- Se quita resumen de historia clínica para orden de hospitalización
-	 *					 	- Se corrige el motivo al imprimir una orden de hospitalización ya que estaba mostrando para el motivo las observaciones
+	 * Enero 29 de 2014: 	- Para las ordenes que tienen formulario emergente, se corrige la informaciï¿½n del paciente, ya que si se imprimï¿½a solo una orden de este tipo
+	 *					   		no salï¿½a la informaciï¿½n demogrï¿½fica del paciente
+	 *					 	- Ya no se imprime DIAGNï¿½STICO QUE JUSTIFICA LA TRANSFUSIï¿½N por que este ya fue eliminado del formulario de TRANSFUSIONES de HCE
+	*						 - Para la impresiï¿½n de orden de TRANSFUSIï¿½N, se cambia observaciones por justificaciï¿½n
+	 * Enero 21 de 2014: 	- Se quita resumen de historia clï¿½nica para orden de hospitalizaciï¿½n
+	 *					 	- Se corrige el motivo al imprimir una orden de hospitalizaciï¿½n ya que estaba mostrando para el motivo las observaciones
 	 ******************************************************************/
 
 /****************************************************
@@ -690,7 +690,7 @@ function agregarTarjetaPDF( $contenido_pdf, $numero_tarjeta=1 ){
 	$y = $pdf->getY();
 	$x = 0;
 			
-	//Explicacion: Las medidas de una hoja tamaño carta son 21.59 x 27.94
+	//Explicacion: Las medidas de una hoja tamaï¿½o carta son 21.59 x 27.94
 	//Cada celda para la tarjeta mide 10x6.984
 	//Si son dos tarjetas por fila se ocupa un width de 20, queda un espacio 1.59 que se divide entre 4 (0.3975) para dejar de "margen" izq y der para cada tarjeta. Asi se ocupa todo el width
 	//Si son 4 tarjetas por columna se ocupa un height de 6.984x4=27.936, quedan 0.004 despreciables. Se ocupa todo el heigth
@@ -721,7 +721,7 @@ function agregarTarjetaPDF( $contenido_pdf, $numero_tarjeta=1 ){
 	}
 	
 	$pdf->StartTransform();	
-	$pdf->Rect($x, $y, 10, 6.8, 'CNZ'); //Aunque la celda mide 10x6.984, solo se muestra el contenido hasta 6.8 por si la tarjeta desborda el tamaño de la celda
+	$pdf->Rect($x, $y, 10, 6.8, 'CNZ'); //Aunque la celda mide 10x6.984, solo se muestra el contenido hasta 6.8 por si la tarjeta desborda el tamaï¿½o de la celda
 	$pdf->writeHTMLCell(10, 6.984, $x, $y, $html); //Se imprime una celda de 10x6.984
 	$pdf->StopTransform();	
 }
@@ -742,7 +742,7 @@ function traer_diastto_ctc($wbasedato,$idctc){
 	$row = mysql_fetch_assoc($res);
 	
 	if($num > 0){
-	 $dias = $row['Ctcttn']." días";
+	 $dias = $row['Ctcttn']." dï¿½as";
 	}
 	
 	return $dias;
@@ -1945,7 +1945,7 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 	// return $val;
 }
 
-	// Función que retorna la edad con base en la fecha de nacimiento
+	// Funciï¿½n que retorna la edad con base en la fecha de nacimiento
 	function obtenerSexo($sexo)
 	{
 		if($sexo=='F')
@@ -1954,7 +1954,7 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 			return "Masculino";
 	}
 
-	// // Función que retorna la edad con base en la fecha de nacimiento
+	// // Funciï¿½n que retorna la edad con base en la fecha de nacimiento
 	// function calcularEdad($fechaNacimiento)
 	// {
 		// $ann=(integer)substr($fechaNacimiento,0,4)*360 +(integer)substr($fechaNacimiento,5,2)*30 + (integer)substr($fechaNacimiento,8,2);
@@ -1974,7 +1974,7 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 		// return $wedad;
 	// }
 
-	// Función que retorna la edad con base en la fecha de nacimiento
+	// Funciï¿½n que retorna la edad con base en la fecha de nacimiento
 	function calcularEdad($conex,$wbasedato,$historia,$ingreso,$fechaNacimiento)
 	{
 		// si tiene alta definitiva debe calcular la edad con la fecha de egreso, de lo contrario calcular la edad con la fecha actual
@@ -2269,7 +2269,7 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 				  
 				  
 
-		// División tabla principal
+		// Divisiï¿½n tabla principal
 		$htmlencabezado .= '
 			  </td>
 			</tr>
@@ -2291,16 +2291,16 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 						  <tbody>
 							<tr  style="height:17px;background-color:#EEEDED;">
 							  <td colspan="6">
-								&nbsp; <b>Información del Usuario</b>
+								&nbsp; <b>Informaciï¿½n del Usuario</b>
 							  </td>
 							  <td style="width:35px; text-align:center;">
-								<b>Día</b>
+								<b>Dï¿½a</b>
 							  </td>
 							  <td style="width:40px; text-align:center;">
 								<b>Mes</b>
 							  </td>
 							  <td style="width:40px; text-align:center;">
-								<b>Año</b>
+								<b>Aï¿½o</b>
 							  </td>
 							</tr>
 						  </tbody>
@@ -2355,7 +2355,7 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 			$res_ubi = mysql_query($q_ubi, $conex);
 			$row_ubi = mysql_fetch_array($res_ubi);
 			
-			$ubicacion = $row_ubi['Cconom']."<br>Sin ubicación asignada.";
+			$ubicacion = $row_ubi['Cconom']."<br>Sin ubicaciï¿½n asignada.";
 		}
 		
 		$htmlencabezado .= '
@@ -2439,7 +2439,7 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 								&nbsp;<b>Nro Contrato: </b>'.$numcontrato.'
 							  </td>							
 							  <td style="width:75%; text-align:left;">
-								&nbsp;<b>Diagnóstico: </b> '.$wdiagnostico.'
+								&nbsp;<b>Diagnï¿½stico: </b> '.$wdiagnostico.'
 							  </td>
 							</tr>
 						  </tbody>
@@ -2511,9 +2511,9 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 							</tr>
 							<tr>
 							  <td>
-								&nbsp;Nombre del Médico: '.$medap1.' '.$medap2.', '.$medno1.' '.$medno2.' <br />
-								&nbsp;Identificación: '.$medtdo.' '.$meddoc.' <br />
-								&nbsp;Registro Médico: '.$medreg.' <br />
+								&nbsp;Nombre del Mï¿½dico: '.$medap1.' '.$medap2.', '.$medno1.' '.$medno2.' <br />
+								&nbsp;Identificaciï¿½n: '.$medtdo.' '.$meddoc.' <br />
+								&nbsp;Registro Mï¿½dico: '.$medreg.' <br />
 								&nbsp;Especialidad: '.$espnom.' <br />
 							  </td>
 							</tr>
@@ -2528,25 +2528,25 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 				  </tbody>
 				</table>';
 
-		// Inicio tabla pie de página	
+		// Inicio tabla pie de pï¿½gina	
 		$htmlpiepagina .= '
 				<table style="border: 0px; width: 740px;" cellpadding="2" cellspacing="2">
 				  <tbody>
 					<tr>
 					  <td style="text-align:center;" calss="descripcion">
-						Diagonal 75B N. 2A-80/140 (057) 4 3421010 (057) 4 3412946 Medellín, Colombia
+						Diagonal 75B N. 2A-80/140 (057) 4 3421010 (057) 4 3412946 Medellï¿½n, Colombia
 					  </td>
 					</tr>
 				  </tbody>
 				</table>';
-		// Fin tabla pie de página
+		// Fin tabla pie de pï¿½gina
 		
 		$htmlpiepagina .= '
 				<table style="border: 0px; width: 740px;" cellpadding="2" cellspacing="2">
 				  <tbody>
 					<tr>
 					  <td style="text-align:center;" calss="descripcion">
-						<b>- Firmado electrónicamente -</b>
+						<b>- Firmado electrï¿½nicamente -</b>
 					  </td>
 					</tr>
 				  </tbody>
@@ -2637,11 +2637,11 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 session_start();
 
 
-// Si el usuario no está registrado muestra el mensaje de error, modificacion hecha por Jaime Mejia
+// Si el usuario no estï¿½ registrado muestra el mensaje de error, modificacion hecha por Jaime Mejia
 if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs'])){
-	echo "<br /> La sessión de usuario ha caducado. Vuelva a entrar a Matrix";
+	echo "<br /> La sessiï¿½n de usuario ha caducado. Vuelva a entrar a Matrix";
 }
-else	// Si el usuario está registrado inicia el programa
+else	// Si el usuario estï¿½ registrado inicia el programa
 {
 	include_once("root/comun.php");	
 
@@ -2679,24 +2679,24 @@ else	// Si el usuario está registrado inicia el programa
 	$wdiagnostico = consultarDxs( $conex, $wemp_pmla, $wbasedatohce, $whistoria, $wingreso );
 	
 
-	// Aca se coloca la ultima fecha de actualización
+	// Aca se coloca la ultima fecha de actualizaciï¿½n
 	$wactualiz = " 2020-05-04";
 
 	/***********************************************
 	*********** P R I N C I P A L ******************
 	************************************************/
 
-	// Titulo de la página
+	// Titulo de la pï¿½gina
 	$titulo = "ORDENES MEDICAS";
 
 
-	// Se asigna el valor por defecto para el filtro de impresión
+	// Se asigna el valor por defecto para el filtro de impresiï¿½n
 	$filtroArtImprimir = " AND Kadimp = 'on' "; 	// " AND Kadimp = 'on' ";
 	$filtroProImprimir = " AND Detimp = 'on' ";
 
-	// Si se llama desde la pestaña de Otras ordenes, se establece que solo se va a imprimir
+	// Si se llama desde la pestaï¿½a de Otras ordenes, se establece que solo se va a imprimir
 	// los procedimientos de la orden y no los medicamentos
-	// Esto aplica solo para ordenes clinica por la pestaña de alta
+	// Esto aplica solo para ordenes clinica por la pestaï¿½a de alta
 	if(isset($alt) && $alt=="on")
 	{
 		$filtroPestana = " AND Detalt = 'on' ";
@@ -2713,7 +2713,7 @@ else	// Si el usuario está registrado inicia el programa
 	$mostrarSoloCTCArt = false;
 	$mostrarSoloCTCPro = false;
 
-	// Si tipoimp viene con el valor impart se establece que solo se va a imprimir los artículos
+	// Si tipoimp viene con el valor impart se establece que solo se va a imprimir los artï¿½culos
 	if(isset($tipoimp) && $tipoimp=="impexa")
 		$mostrarSoloArticulos = true;
 
@@ -2736,7 +2736,7 @@ else	// Si el usuario está registrado inicia el programa
 	}
 
 	// Se define si solo se va a imprimir un medicamento o procedimiento especifico
-	// Esto pasa cuando se llama desde la impresión de CTC, solo se imprime
+	// Esto pasa cuando se llama desde la impresiï¿½n de CTC, solo se imprime
 	// el medicamento o el procedimiento correspondiente al CTC solicitado
 	$filtroProcedimiento = "";
 	if(isset($pro) && $pro!="")
@@ -2754,7 +2754,7 @@ else	// Si el usuario está registrado inicia el programa
 	}
 
 
-	// Datos cronológicos
+	// Datos cronolï¿½gicos
 	$anio = date("Y");
 	$mes = date("m");
 	$dia = date("d");
@@ -2766,10 +2766,10 @@ else	// Si el usuario está registrado inicia el programa
 
 	$observaciones = "";
 
-	// Arreglo que me guardará la lista de medicamentos No Pos ordenados
+	// Arreglo que me guardarï¿½ la lista de medicamentos No Pos ordenados
 	$medicamentosNoPos = array();
 
-	// Arreglo que me guardará la lista de procedimientos No Pos ordenados
+	// Arreglo que me guardarï¿½ la lista de procedimientos No Pos ordenados
 	$examenesNoPos = array();
 	
 	$wcenmez = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
@@ -2866,7 +2866,7 @@ else	// Si el usuario está registrado inicia el programa
 	if($mostrarSoloArticulos || (!$mostrarSoloProcedimientos && !$mostrarSoloCTC))
 	{
 		/**************************************************************************
-		********************* IMPRESIÓN MEDICAMENTOS EXTERNOS *********************
+		********************* IMPRESIï¿½N MEDICAMENTOS EXTERNOS *********************
 		***************************************************************************/
 				
 		if($alt == 'off'){			
@@ -3347,7 +3347,7 @@ else	// Si el usuario está registrado inicia el programa
 		
 		$subEncabezado = "";		
 					 
-		//Si se imprime desde la pestaña de alta si se muestra la cantidad.
+		//Si se imprime desde la pestaï¿½a de alta si se muestra la cantidad.
 		if($alt == 'on'){	
 		
 			$columna_cantidad = '<td style="width:9%;"><b>&nbsp;Cantidad</b></td>';
@@ -3364,13 +3364,13 @@ else	// Si el usuario está registrado inicia el programa
 										 
 					if(count($medicamentos) > 1){
 						
-						// Se define el filtro para consultar el médico tratante
+						// Se define el filtro para consultar el mï¿½dico tratante
 						if(isset($ide) && $ide!="")
 							$filtroMedico = " Meddoc = '".$ide."' ";
 						else
 							$filtroMedico = " Meduma = '".$key_medico."' ";
 
-						// Consulto los datos del médico
+						// Consulto los datos del mï¿½dico
 						$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 								."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 								." 	WHERE ".$filtroMedico." "
@@ -3379,10 +3379,10 @@ else	// Si el usuario está registrado inicia el programa
 						$nummed = mysql_num_rows($resmed);
 						$rowmed = mysql_fetch_array($resmed);
 
-						// Se calculan las dimensiones para la imagen de la firma del médico
+						// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 						dimensionesImagen($rowmed['Meddoc']);
 
-						// Datos del médico tratante
+						// Datos del mï¿½dico tratante
 						$medtdo = $rowmed['Medtdo'];
 						$meddoc = $rowmed['Meddoc'];
 						$medno1 = $rowmed['Medno1'];
@@ -3506,7 +3506,7 @@ else	// Si el usuario está registrado inicia el programa
 							$numfam = mysql_num_rows($resfam);
 							
 							
-							// Consulto el nombre de la codición
+							// Consulto el nombre de la codiciï¿½n
 							$qCnd =  " SELECT Condes "
 									."   FROM ".$wbasedato."_000042 a "
 									." 	WHERE Concod = '".$row['Kadcnd']."' ";
@@ -3592,7 +3592,7 @@ else	// Si el usuario está registrado inicia el programa
 									
 									if(trim($row['Kadobs'])!="" && strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) )!="")
 									{
-										$kadobs1 .= "<br><br><b>Observación:</b> ".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+										$kadobs1 .= "<br><br><b>Observaciï¿½n:</b> ".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 									}
 								}
 								else
@@ -3631,7 +3631,7 @@ else	// Si el usuario está registrado inicia el programa
 							{
 								if(trim($row['Kadobs'])!="")
 								{
-									$kadobs1 = "<br><br><b>Observación:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+									$kadobs1 = "<br><br><b>Observaciï¿½n:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 								}
 							}
 							$cont++;
@@ -3678,7 +3678,7 @@ else	// Si el usuario está registrado inicia el programa
 								if($row['Artpos'] == 'N'){
 									
 									$es_nutricion = "";
-									// Se define el filtro para consultar el médico tratante
+									// Se define el filtro para consultar el mï¿½dico tratante
 									if(isset($ide) && $ide!="")
 										$filtroMedico = " Meddoc = '".$ide."' ";
 									else
@@ -3686,7 +3686,7 @@ else	// Si el usuario está registrado inicia el programa
 									
 									$kadobs2 = "";
 									$desCnd2 = "";
-									// Consulto los datos del médico
+									// Consulto los datos del mï¿½dico
 									$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 										."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 										." 	WHERE ".$filtroMedico." "
@@ -3695,10 +3695,10 @@ else	// Si el usuario está registrado inicia el programa
 									$nummed = mysql_num_rows($resmed);
 									$rowmed = mysql_fetch_array($resmed);
 
-									// Se calculan las dimensiones para la imagen de la firma del médico
+									// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 									dimensionesImagen($rowmed['Meddoc']);
 
-									// Datos del médico tratante
+									// Datos del mï¿½dico tratante
 									$medtdo = $rowmed['Medtdo'];
 									$meddoc = $rowmed['Meddoc'];
 									$medno1 = $rowmed['Medno1'];
@@ -3815,7 +3815,7 @@ else	// Si el usuario está registrado inicia el programa
 										$numfam = mysql_num_rows($resfam);
 										
 										
-										// Consulto el nombre de la codición
+										// Consulto el nombre de la codiciï¿½n
 										$qCnd =  " SELECT Condes "
 												."   FROM ".$wbasedato."_000042 a "
 												." 	WHERE Concod = '".$row['Kadcnd']."' ";
@@ -3906,7 +3906,7 @@ else	// Si el usuario está registrado inicia el programa
 												
 												if(trim($row['Kadobs'])!="" && strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) )!="")
 												{
-													$kadobs2 .= "<br><br><b>Observación:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+													$kadobs2 .= "<br><br><b>Observaciï¿½n:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 												}
 											}
 											else
@@ -3946,7 +3946,7 @@ else	// Si el usuario está registrado inicia el programa
 										{
 											if(trim($row['Kadobs'])!="")
 											{
-												$kadobs2 = "<br><br><b>Observación:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+												$kadobs2 = "<br><br><b>Observaciï¿½n:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 											}
 										}
 										$cont++;
@@ -3996,7 +3996,7 @@ else	// Si el usuario está registrado inicia el programa
 						//Recorro los medicos que han firmado.
 							foreach($medicamentos as $key1 => $row){
 							$es_nutricion = "";	
-								// Se define el filtro para consultar el médico tratante
+								// Se define el filtro para consultar el mï¿½dico tratante
 							if(isset($ide) && $ide!="")
 								$filtroMedico = " Meddoc = '".$ide."' ";
 							else
@@ -4005,7 +4005,7 @@ else	// Si el usuario está registrado inicia el programa
 							$kadobs3 = "";
 							$desCnd3 = "";
 							
-							// Consulto los datos del médico
+							// Consulto los datos del mï¿½dico
 							$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 								."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 								." 	WHERE ".$filtroMedico." "
@@ -4014,10 +4014,10 @@ else	// Si el usuario está registrado inicia el programa
 							$nummed = mysql_num_rows($resmed);
 							$rowmed = mysql_fetch_array($resmed);
 
-							// Se calculan las dimensiones para la imagen de la firma del médico
+							// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 							dimensionesImagen($rowmed['Meddoc']);
 
-							// Datos del médico tratante
+							// Datos del mï¿½dico tratante
 							$medtdo = $rowmed['Medtdo'];
 							$meddoc = $rowmed['Meddoc'];
 							$medno1 = $rowmed['Medno1'];
@@ -4141,7 +4141,7 @@ else	// Si el usuario está registrado inicia el programa
 								$numfam = mysql_num_rows($resfam);
 								
 								
-								// Consulto el nombre de la codición
+								// Consulto el nombre de la codiciï¿½n
 								$qCnd =  " SELECT Condes "
 										."   FROM ".$wbasedato."_000042 a "
 										." 	WHERE Concod = '".$row['Kadcnd']."' ";
@@ -4244,7 +4244,7 @@ else	// Si el usuario está registrado inicia el programa
 										
 										if(trim($row['Kadobs'])!="" && strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) )!="")
 										{
-											$kadobs3 .= "<br><br><b>Observación:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+											$kadobs3 .= "<br><br><b>Observaciï¿½n:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 										}
 									}
 									else
@@ -4281,7 +4281,7 @@ else	// Si el usuario está registrado inicia el programa
 								{
 									if(trim($row['Kadobs'])!="")
 									{
-										$kadobs3 = "<br><br><b>Observación:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+										$kadobs3 = "<br><br><b>Observaciï¿½n:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 									}
 								}
 								$cont++;
@@ -4336,7 +4336,7 @@ else	// Si el usuario está registrado inicia el programa
 										
 										if($row['Artpos'] == 'N'){
 											$es_nutricion = "";
-											// Se define el filtro para consultar el médico tratante
+											// Se define el filtro para consultar el mï¿½dico tratante
 											if(isset($ide) && $ide!="")
 												$filtroMedico = " Meddoc = '".$ide."' ";
 											else
@@ -4345,7 +4345,7 @@ else	// Si el usuario está registrado inicia el programa
 											$kadobs4 = "";
 											$desCnd4 = "";
 											
-											// Consulto los datos del médico
+											// Consulto los datos del mï¿½dico
 											$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 												."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 												." 	WHERE ".$filtroMedico." "
@@ -4354,10 +4354,10 @@ else	// Si el usuario está registrado inicia el programa
 											$nummed = mysql_num_rows($resmed);
 											$rowmed = mysql_fetch_array($resmed);
 
-											// Se calculan las dimensiones para la imagen de la firma del médico
+											// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 											dimensionesImagen($rowmed['Meddoc']);
 
-											// Datos del médico tratante
+											// Datos del mï¿½dico tratante
 											$medtdo = $rowmed['Medtdo'];
 											$meddoc = $rowmed['Meddoc'];
 											$medno1 = $rowmed['Medno1'];
@@ -4474,7 +4474,7 @@ else	// Si el usuario está registrado inicia el programa
 												$numfam = mysql_num_rows($resfam);
 												
 												
-												// Consulto el nombre de la codición
+												// Consulto el nombre de la codiciï¿½n
 												$qCnd =  " SELECT Condes "
 														."   FROM ".$wbasedato."_000042 a "
 														." 	WHERE Concod = '".$row['Kadcnd']."' ";
@@ -4565,7 +4565,7 @@ else	// Si el usuario está registrado inicia el programa
 														
 														if(trim($row['Kadobs'])!="" && strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) )!="")
 														{
-															$kadobs4 .= "<br><br><b>Observación:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+															$kadobs4 .= "<br><br><b>Observaciï¿½n:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 														}
 													}
 													else
@@ -4601,7 +4601,7 @@ else	// Si el usuario está registrado inicia el programa
 												{
 													if(trim($row['Kadobs'])!="")
 													{
-														$kadobs4 = "<br><br><b>Observación:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+														$kadobs4 = "<br><br><b>Observaciï¿½n:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 													}
 												}
 												$cont++;
@@ -4717,7 +4717,7 @@ else	// Si el usuario está registrado inicia el programa
 				$es_nutricion = "";
 				$filtroMedico = " Meduma = '".$key_medico."' ";
 
-				// Consulto los datos del médico
+				// Consulto los datos del mï¿½dico
 				$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 						."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 						." 	WHERE ".$filtroMedico." "
@@ -4726,10 +4726,10 @@ else	// Si el usuario está registrado inicia el programa
 				$nummed = mysql_num_rows($resmed);
 				$rowmed = mysql_fetch_array($resmed);
 
-				// Se calculan las dimensiones para la imagen de la firma del médico
+				// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 				dimensionesImagen($rowmed['Meddoc']);
 
-				// Datos del médico tratante
+				// Datos del mï¿½dico tratante
 				$medtdo = $rowmed['Medtdo'];
 				$meddoc = $rowmed['Meddoc'];
 				$medno1 = $rowmed['Medno1'];
@@ -4865,7 +4865,7 @@ else	// Si el usuario está registrado inicia el programa
 							
 							if(trim($row['Kadobs'])!="" && strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) ) !="")
 							{
-								$kadobs1 .= "<br><br><b>Observación:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+								$kadobs1 .= "<br><br><b>Observaciï¿½n:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 							}
 						}
 						else
@@ -4892,7 +4892,7 @@ else	// Si el usuario está registrado inicia el programa
 						// if(trim($row['Kadobs'])!="")
 						if(trim($row['Kadobs'])!="")
 						{
-							$kadobs1 = "<br><br><b>Observación:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
+							$kadobs1 = "<br><br><b>Observaciï¿½n:</b>".strip_tags( substr( $row['Kadobs'], 0, strpos($row['Kadobs'], "<span" ) ) );
 						}
 					}
 					$cont++;
@@ -4941,7 +4941,7 @@ else	// Si el usuario está registrado inicia el programa
 								  <tbody>
 									<tr>
 									  <td style="text-align:center;" calss="descripcion">
-										<b>- Firmado electrónicamente -</b>
+										<b>- Firmado electrï¿½nicamente -</b>
 									  </td>
 									</tr>
 								  </tbody>
@@ -4955,10 +4955,10 @@ else	// Si el usuario está registrado inicia el programa
 	
 	
 	
-		/******************* FIN IMPRESIÓN MEDICAMENTOS EXTERNOS *******************/
+		/******************* FIN IMPRESIï¿½N MEDICAMENTOS EXTERNOS *******************/
 
 		// *****************************************************************
-		// *********************** IMPRESIÓN EXAMENES ***********************
+		// *********************** IMPRESIï¿½N EXAMENES ***********************
 		// ******************************************************************/
 		
 		
@@ -5206,14 +5206,14 @@ else	// Si el usuario está registrado inicia el programa
 						
 						if(count($ordenes) > 1){
 							
-							// Se define el filtro para consultar el médico tratante
+							// Se define el filtro para consultar el mï¿½dico tratante
 							if(isset($ide) && $ide!="")
 								$filtroMedico = " Meddoc = '".$ide."' ";
 							else
 								$filtroMedico = " Meduma = '".$key_medico_orden."' ";
 							
 							
-							// Consulto los datos del médico
+							// Consulto los datos del mï¿½dico
 							$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 								."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 								." 	WHERE ".$filtroMedico." "
@@ -5222,10 +5222,10 @@ else	// Si el usuario está registrado inicia el programa
 							$nummed = mysql_num_rows($resmed);
 							$rowmed = mysql_fetch_array($resmed);
 
-							// Se calculan las dimensiones para la imagen de la firma del médico
+							// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 							dimensionesImagen($rowmed['Meddoc']);
 
-							// Datos del médico tratante
+							// Datos del mï¿½dico tratante
 							$medtdo = $rowmed['Medtdo'];
 							$meddoc = $rowmed['Meddoc'];
 							$medno1 = $rowmed['Medno1'];
@@ -5272,7 +5272,7 @@ else	// Si el usuario está registrado inicia el programa
 															<b>Fecha a realizar</b>
 														  </td>
 														  <td style="width:40%;">
-															<b>Justificación</b>
+															<b>Justificaciï¿½n</b>
 														  </td>
 														</tr>';
 							
@@ -5291,7 +5291,7 @@ else	// Si el usuario está registrado inicia el programa
 								}
 								
 								// Mayo 27 de 2019
-								// Consulto los datos del médico
+								// Consulto los datos del mï¿½dico
 								// $nombreCup = " SELECT nombre "
 											// ."   FROM root_000012 "
 											// ." 	WHERE codigo = '".$cod_cup."' ";
@@ -5330,13 +5330,13 @@ else	// Si el usuario está registrado inicia el programa
 									//No Pos
 									if($row['NoPos']=='on'){
 							
-									// Se define el filtro para consultar el médico tratante
+									// Se define el filtro para consultar el mï¿½dico tratante
 									if(isset($ide) && $ide!="")
 										$filtroMedico = " Meddoc = '".$ide."' ";
 									else
 										$filtroMedico = " Meduma = '".$key_medico_orden."' ";
 
-									// Consulto los datos del médico
+									// Consulto los datos del mï¿½dico
 									$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 										."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 										." 	WHERE ".$filtroMedico." "
@@ -5345,10 +5345,10 @@ else	// Si el usuario está registrado inicia el programa
 									$nummed = mysql_num_rows($resmed);
 									$rowmed = mysql_fetch_array($resmed);
 
-									// Se calculan las dimensiones para la imagen de la firma del médico
+									// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 									dimensionesImagen($rowmed['Meddoc']);
 
-									// Datos del médico tratante
+									// Datos del mï¿½dico tratante
 									$medtdo = $rowmed['Medtdo'];
 									$meddoc = $rowmed['Meddoc'];
 									$medno1 = $rowmed['Medno1'];
@@ -5400,7 +5400,7 @@ else	// Si el usuario está registrado inicia el programa
 																<b>Fecha a realizar</b>
 															  </td>
 															  <td style="width:40%;">
-																<b>Justificación</b>
+																<b>Justificaciï¿½n</b>
 															  </td>
 															</tr>';
 										
@@ -5409,7 +5409,7 @@ else	// Si el usuario está registrado inicia el programa
 										}
 										
 										// Mayo 27 de 2019
-										// Consulto los datos del médico
+										// Consulto los datos del mï¿½dico
 										// $nombreCup = " SELECT nombre "
 													// ."   FROM root_000012 "
 													// ." 	WHERE codigo = '".$cod_cup."' ";
@@ -5442,7 +5442,7 @@ else	// Si el usuario está registrado inicia el programa
 								//Recorro los medicos que han firmado.
 								foreach($ordenes as $key1 => $row){
 									
-									// Se define el filtro para consultar el médico tratante
+									// Se define el filtro para consultar el mï¿½dico tratante
 								if(isset($ide) && $ide!="")
 									$filtroMedico = " Meddoc = '".$ide."' ";
 								else
@@ -5453,7 +5453,7 @@ else	// Si el usuario está registrado inicia el programa
 								$hora_proc = $row['hora_orden'];
 								$cod_cup = "";
 								
-								// Consulto los datos del médico
+								// Consulto los datos del mï¿½dico
 								$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 									."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 									." 	WHERE ".$filtroMedico." "
@@ -5462,10 +5462,10 @@ else	// Si el usuario está registrado inicia el programa
 								$nummed = mysql_num_rows($resmed);
 								$rowmed = mysql_fetch_array($resmed);
 
-								// Se calculan las dimensiones para la imagen de la firma del médico
+								// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 								dimensionesImagen($rowmed['Meddoc']);
 
-								// Datos del médico tratante
+								// Datos del mï¿½dico tratante
 								$medtdo = $rowmed['Medtdo'];
 								$meddoc = $rowmed['Meddoc'];
 								$medno1 = $rowmed['Medno1'];
@@ -5513,7 +5513,7 @@ else	// Si el usuario está registrado inicia el programa
 															<b>Fecha a realizar</b>
 														  </td>
 														  <td style="width:40%;">
-															<b>Justificación</b>
+															<b>Justificaciï¿½n</b>
 														  </td>
 														</tr>';			
 
@@ -5524,7 +5524,7 @@ else	// Si el usuario está registrado inicia el programa
 										}
 										
 										// Mayo 27 de 2019
-										// Consulto los datos del médico
+										// Consulto los datos del mï¿½dico
 										// $nombreCup = " SELECT nombre "
 													// ."   FROM root_000012 "
 													// ." 	WHERE codigo = '".$cod_cup."' ";
@@ -5560,7 +5560,7 @@ else	// Si el usuario está registrado inicia el programa
 											//No Pos
 											if($row['NoPos']=='on'){
 											
-												// Se define el filtro para consultar el médico tratante
+												// Se define el filtro para consultar el mï¿½dico tratante
 											if(isset($ide) && $ide!="")
 												$filtroMedico = " Meddoc = '".$ide."' ";
 											else
@@ -5571,7 +5571,7 @@ else	// Si el usuario está registrado inicia el programa
 											$hora_proc = $row['hora_orden'];
 											$cod_cup = "";
 											
-											// Consulto los datos del médico
+											// Consulto los datos del mï¿½dico
 											$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 												."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 												." 	WHERE ".$filtroMedico." "
@@ -5580,10 +5580,10 @@ else	// Si el usuario está registrado inicia el programa
 											$nummed = mysql_num_rows($resmed);
 											$rowmed = mysql_fetch_array($resmed);
 
-											// Se calculan las dimensiones para la imagen de la firma del médico
+											// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 											dimensionesImagen($rowmed['Meddoc']);
 
-											// Datos del médico tratante
+											// Datos del mï¿½dico tratante
 											$medtdo = $rowmed['Medtdo'];
 											$meddoc = $rowmed['Meddoc'];
 											$medno1 = $rowmed['Medno1'];
@@ -5631,7 +5631,7 @@ else	// Si el usuario está registrado inicia el programa
 																		<b>Fecha a realizar</b>
 																	  </td>
 																	  <td style="width:40%;">
-																		<b>Justificación</b>
+																		<b>Justificaciï¿½n</b>
 																	  </td>
 																	</tr>';			
 
@@ -5642,7 +5642,7 @@ else	// Si el usuario está registrado inicia el programa
 												}
 												
 												// Mayo 27 de 2019
-												// Consulto los datos del médico
+												// Consulto los datos del mï¿½dico
 												// $nombreCup = " SELECT nombre "
 															// ."   FROM root_000012 "
 															// ." 	WHERE codigo = '".$cod_cup."' ";
@@ -5736,7 +5736,7 @@ else	// Si el usuario está registrado inicia el programa
 						//Recorro los medicos que han firmado.
 						foreach($ordenes as $key1 => $row){
 							
-								// Se define el filtro para consultar el médico tratante
+								// Se define el filtro para consultar el mï¿½dico tratante
 								$filtroMedico = " Meduma = '".$row['Detusu']."' ";
 								$codigo_medico = $row['Detusu'];
 								
@@ -5748,7 +5748,7 @@ else	// Si el usuario está registrado inicia el programa
 								$tipo_orden = $row['Dettor'];
 								$nro_orden = $row['Detnro'];
 								
-								// Consulto los datos del médico
+								// Consulto los datos del mï¿½dico
 								$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 									."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 									." 	WHERE ".$filtroMedico." "
@@ -5757,10 +5757,10 @@ else	// Si el usuario está registrado inicia el programa
 								$nummed = mysql_num_rows($resmed);
 								$rowmed = mysql_fetch_array($resmed);
 
-								// Se calculan las dimensiones para la imagen de la firma del médico
+								// Se calculan las dimensiones para la imagen de la firma del mï¿½dico
 								dimensionesImagen($rowmed['Meddoc']);
 
-								// Datos del médico tratante
+								// Datos del mï¿½dico tratante
 								$medtdo = $rowmed['Medtdo'];
 								$meddoc = $rowmed['Meddoc'];
 								$medno1 = $rowmed['Medno1'];
@@ -5792,7 +5792,7 @@ else	// Si el usuario está registrado inicia el programa
 									}
 									
 									// Mayo 27 de 2019
-									// Consulto los datos del médico
+									// Consulto los datos del mï¿½dico
 									// $nombreCup = " SELECT nombre "
 												// ."   FROM root_000012 "
 												// ." 	WHERE codigo = '".$cod_cup."' ";
@@ -5820,7 +5820,7 @@ else	// Si el usuario está registrado inicia el programa
 									  <tbody>
 										<tr>
 										  <td style="text-align:center;" calss="descripcion">
-											<b>- Firmado electrónicamente -</b>
+											<b>- Firmado electrï¿½nicamente -</b>
 										  </td>
 										</tr>
 									  </tbody>
@@ -5941,13 +5941,13 @@ if($rowind['Karegr'] != ''){
 			  <td>&nbsp;<br><br>'.$rowind['Karegr'].'<br><br></td>
 			</tr>';					
 	
-	// Se define el filtro para consultar el médico tratante
+	// Se define el filtro para consultar el mï¿½dico tratante
 	if(isset($ide) && $ide!="")
 		$filtroMedico = " Meddoc = '".$ide."' ";
 	else
 		$filtroMedico = " Meduma = '".$rowind['Karusu']."' ";
 	
-	// Consulto los datos del médico
+	// Consulto los datos del mï¿½dico
 	$q_med = " SELECT Medtdo, Meddoc, Medno1, Medno2, Medap1, Medap2, Medreg, Medtel, Espnom "
 		."   FROM ".$wbasedato."_000048, ".$wbasedato."_000044 b "
 		." 	WHERE ".$filtroMedico." "
@@ -5956,7 +5956,7 @@ if($rowind['Karegr'] != ''){
 	$nummed = mysql_num_rows($resmed);
 	$rowmed = mysql_fetch_array($resmed);
 	
-	// Datos del médico tratante
+	// Datos del mï¿½dico tratante
 	$medtdo = $rowmed['Medtdo'];
 	$meddoc = $rowmed['Meddoc'];
 	$medno1 = $rowmed['Medno1'];
@@ -6004,8 +6004,8 @@ if($origen != ''){
 				  ."<object type='application/pdf' data='".$dir."/".$wnombrePDF.".pdf' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 width='900' height='700'>"
 					."<param name='src' value='".$dir."/".$wnombrePDF."' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"
 					."<p style='text-align:center; width: 60%;'>"
-					  ."Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />"
-					  ."<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
+					  ."Adobe Reader no se encuentra o la versiï¿½n no es compatible, utiliza el icono para ir a la pï¿½gina de descarga <br />"
+					  ."<a href='//get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
 						."<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"
 					  ."</a>"
 					."</p>"
@@ -6090,8 +6090,8 @@ if($origen != ''){
 					  ."<object type='application/pdf' data='".$dir."/".$wnombrePDF.".pdf' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 width='900' height='700'>"
 						."<param name='src' value='".$dir."/".$wnombrePDF."' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"
 						."<p style='text-align:center; width: 60%;'>"
-						  ."Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />"
-						  ."<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
+						  ."Adobe Reader no se encuentra o la versiï¿½n no es compatible, utiliza el icono para ir a la pï¿½gina de descarga <br />"
+						  ."<a href='//get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
 							."<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"
 						  ."</a>"
 						."</p>"

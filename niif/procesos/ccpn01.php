@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="esp">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eï¿½es y tildes -->
     <title>MATRIX - CONCEPTOS CLINICA PARA NIIF - PROCESOS -</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <style>
         .alternar:hover{ background-color:#CADCFF;}
     </style>
@@ -45,7 +45,7 @@ include_once("conex.php");
 
 
         $conex = obtenerConexionBD("matrix");
-        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
+        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
         $wactualiz = "1.0 11-abril-2017";
     }
     session_start();
@@ -84,7 +84,7 @@ encabezado("<font style='font-size: x-large; font-weight: bold'>"."CONCEPTOS CLI
                     if($query_o1)
                     {
                         ?>
-                        <label>El registro se actualizó correctamente</label>
+                        <label>El registro se actualizï¿½ correctamente</label>
                         <br>
                         <a href="ccpn02.php?valorRadio=<?php echo $valorRadio ?>&concepto=<?php echo $codigoSelected ?>">ACEPTAR</a>
                         <?php
@@ -145,7 +145,7 @@ encabezado("<font style='font-size: x-large; font-weight: bold'>"."CONCEPTOS CLI
 
                             <div style="margin-bottom: 10px; margin-left: 5px" class="input-group">
                                 <div class="input-group">
-                                    <span class="input-group-addon"><label>Cuenta Porcentaje Histórico Nota Crédito:</label></span>
+                                    <span class="input-group-addon"><label>Cuenta Porcentaje Histï¿½rico Nota Crï¿½dito:</label></span>
                                     <select id="porhSelected" name="porhSelected" class="form-control" style="width: 190px">
                                         <?php
                                         $query_o5 = "SELECT cuecod FROM cocuen WHERE cueniv = '5' ORDER BY cuecod ASC";
@@ -165,7 +165,7 @@ encabezado("<font style='font-size: x-large; font-weight: bold'>"."CONCEPTOS CLI
                             <div style="margin-bottom: 10px; margin-left: 5px" class="input-group">
                                 <div class="input-group">
 
-                                    <span class="input-group-addon" style="width: 352px"><label>Cuenta porcentaje Histórico Descuento:</label></span>
+                                    <span class="input-group-addon" style="width: 352px"><label>Cuenta porcentaje Histï¿½rico Descuento:</label></span>
                                     <select id="cuehSelected" name="cuehSelected" class="form-control" style="width: 190px">
                                         <?php
                                         $query_o5 = "SELECT cuecod FROM cocuen WHERE cueniv = '5' ORDER BY cuecod ASC";
@@ -239,7 +239,7 @@ encabezado("<font style='font-size: x-large; font-weight: bold'>"."CONCEPTOS CLI
                     if($query_o1)
                     {
                         ?>
-                        <label>El registro se guardó correctamente</label>
+                        <label>El registro se guardï¿½ correctamente</label>
                         <br>
                         <a href="ccpn02.php?valorRadio=<?php echo $valorRadio ?>&concepto=<?php echo $codigoInsert ?>">ACEPTAR</a>
                         <?php

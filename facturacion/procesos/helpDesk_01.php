@@ -4,13 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HELPDESK - MATRIX</title>
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://matrixtest.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//matrixtest.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <script>
         function openCity(evt, cityName) {
             var i, tabcontent, tablinks;
@@ -451,7 +451,7 @@ include_once("conex.php");
                     $fechaActual = date('Y-m-d');
                     $ma = explode('-',$fechaActual);
                     $mesActual = $ma[1];
-                    $añoActual = $ma[0];
+                    $aï¿½oActual = $ma[0];
                     ?>
                     <table>
                         <thead>
@@ -462,7 +462,7 @@ include_once("conex.php");
                         </thead>
                         <?php
                         consultarDatosPeriodo($mesActual);
-                        consultarDatosAño($añoActual);
+                        consultarDatosAï¿½o($aï¿½oActual);
                         ?>
                     </table>
                 </div>

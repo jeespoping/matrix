@@ -1061,7 +1061,7 @@ else
 						// Se envía el documento, fecha inicial y ficha final. No se envía el tipo de documento ya que en el laboratorio
 						// no se garantiza que el paciente tiene el tipo de documento correcto y por tal motivo no genera una consulta 
 						// con todos los resultados
-						var urlApi = "http://"+ipLaboratorio+"/api/lmla/v2/"+$('#wcedula').val()+"/"+$('#txtFechaInicial').val()+"/"+$('#txtFechaFinal').val();
+						var urlApi = "//"+ipLaboratorio+"/api/lmla/v2/"+$('#wcedula').val()+"/"+$('#txtFechaInicial').val()+"/"+$('#txtFechaFinal').val();
 						async function fetchURL() {
 							const res = await fetch(
 							  urlApi,
@@ -1277,7 +1277,7 @@ else
 					"<param name='src' value='"+urlResultado+"' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"+
 					"<p style='text-align:center; width: 60%;'>"+
 					"Adobe Reader no se encuentra o la versi&oacute;n no es compatible, utiliza el icono para ir a la p&aacute;gina de descarga <br />"+
-						"<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"+
+						"<a href='//get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"+
 						"<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"+
 						"</a>"+
 					"</p>"+

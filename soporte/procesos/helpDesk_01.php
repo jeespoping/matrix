@@ -4,14 +4,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>HELPDESK - MATRIX</title>
-    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="http://mtx.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk2.css" rel="stylesheet">
-    <link href="http://mtx.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
-    <link href="http://mtx.lasamericas.com.co/matrix/Library/Css/Bootstrap_v3.0.0.css" rel="stylesheet">
-    <script src="http://mtx.lasamericas.com.co/matrix/Library/Js/bootstrap_v3.0.0.js" type="text/javascript"></script>
-    <script src="http://mtx.lasamericas.com.co/matrix/Library/Js/jQuery_v1.11.1.js" type="text/javascript"></script>
-    <script src="http://mtx.lasamericas.com.co/matrix/Library/Js/Bootstrap_v3.1.0.js" type="text/javascript"></script>
-    <script src="http://mtx.lasamericas.com.co/matrix/Library/Js/GoogleCharts.js" type="text/javascript"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//mtx.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk2.css" rel="stylesheet">
+    <link href="//mtx.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
+    <link href="//mtx.lasamericas.com.co/matrix/Library/Css/Bootstrap_v3.0.0.css" rel="stylesheet">
+    <script src="//mtx.lasamericas.com.co/matrix/Library/Js/bootstrap_v3.0.0.js" type="text/javascript"></script>
+    <script src="//mtx.lasamericas.com.co/matrix/Library/Js/jQuery_v1.11.1.js" type="text/javascript"></script>
+    <script src="//mtx.lasamericas.com.co/matrix/Library/Js/Bootstrap_v3.1.0.js" type="text/javascript"></script>
+    <script src="//mtx.lasamericas.com.co/matrix/Library/Js/GoogleCharts.js" type="text/javascript"></script>
     <script>
         function openCity(evt, cityName) {
             var i, tabcontent, tablinks;
@@ -542,7 +542,7 @@
                     $fechaActual = date('Y-m-d');
                     $ma = explode('-',$fechaActual);
                     $mesActual = $ma[1];
-                    $añoActual = $ma[0];
+                    $aï¿½oActual = $ma[0];
                     ?>
                     <table>
                         <thead>
@@ -555,8 +555,8 @@
                         </tr>
                         </thead>
                         <?php
-                        consultarDatosPeriodo($mesActual,$añoActual);
-                        consultarDatosAño($añoActual);
+                        consultarDatosPeriodo($mesActual,$aï¿½oActual);
+                        consultarDatosAï¿½o($aï¿½oActual);
                         ?>
                     </table>
                 </div>
@@ -574,7 +574,7 @@
                 }
                 ?>
                 <h4>NUMERO DE CAUSAS POR MES Y A&Ntilde;O</h4>
-                <h5 style="font-weight: bold"><?php echo $mesHoy.' - '.$añoActual ?></h5>
+                <h5 style="font-weight: bold"><?php echo $mesHoy.' - '.$aï¿½oActual ?></h5>
                 <table border="0">
                     <thead>
                     <tr>
@@ -589,7 +589,7 @@
                 <div id="divContenido1" class="divContenido1" style="height: 213px; overflow: auto; margin-top: -5px">
                     <table border="0" style="width: 100%">
                         <?php
-                        consultarDatosCausas($mesActual,$añoActual);
+                        consultarDatosCausas($mesActual,$aï¿½oActual);
                         ?>
                     </table>
                 </div>
@@ -598,7 +598,7 @@
                 <h4>CANTIDAD LLAMADAS POR AREA ESTE A&Ntilde;O</h4>
                 <div id="divContenido1" class="divContenido1">
                     <?php
-                    consultarGrafico1($añoActual)
+                    consultarGrafico1($aï¿½oActual)
                     ?>
                 </div>
             </div>
