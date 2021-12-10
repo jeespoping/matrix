@@ -5001,7 +5001,7 @@ else	// Si el usuario está registrado inicia el programa
 					AND Eexpen = 'on'
 				UNION
 				SELECT
-					Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Tiprju,Tipfrm,c.Codigo as Codigo_cup, NoPos, {$wbasedatohce}_000028.Fecha_data as fecha_orden, {$wbasedatohce}_000028.Hora_data as hora_orden
+					Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Tiprju,Tipfrm,c.Codcups as Codigo_cup, NoPos, {$wbasedatohce}_000028.Fecha_data as fecha_orden, {$wbasedatohce}_000028.Hora_data as hora_orden
 				FROM 
 					{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000017 c,  {$wbasedatohce}_000015 d,".$wbasedato."_000045
 				WHERE 
@@ -5053,7 +5053,7 @@ else	// Si el usuario está registrado inicia el programa
 						" . $textAnd . "
 					UNION
 					SELECT
-						Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Tiprju,Tipfrm,c.Codigo as Codigo_cup, NoPos, {$wbasedatohce}_000028.Fecha_data as fecha_orden, {$wbasedatohce}_000028.Hora_data as hora_orden, {$wbasedatohce}_000028.id as id28
+						Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Tiprju,Tipfrm,c.Codcups as Codigo_cup, NoPos, {$wbasedatohce}_000028.Fecha_data as fecha_orden, {$wbasedatohce}_000028.Hora_data as hora_orden, {$wbasedatohce}_000028.id as id28
 					FROM 
 						{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000017 c,  {$wbasedatohce}_000015 d
 					WHERE 
@@ -5071,7 +5071,7 @@ else	// Si el usuario está registrado inicia el programa
 						" . $textAnd . "
 					UNION
 					SELECT
-						Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Tiprju,Tipfrm,c.Codigo as Codigo_cup, NoPos, {$wbasedatohce}_000028.Fecha_data as fecha_orden, {$wbasedatohce}_000028.Hora_data as hora_orden, {$wbasedatohce}_000028.id as id28
+						Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Tiprju,Tipfrm,c.Codcups as Codigo_cup, NoPos, {$wbasedatohce}_000028.Fecha_data as fecha_orden, {$wbasedatohce}_000028.Hora_data as hora_orden, {$wbasedatohce}_000028.id as id28
 					FROM 
 						{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000017 c,  {$wbasedatohce}_000015 d
 					WHERE 
