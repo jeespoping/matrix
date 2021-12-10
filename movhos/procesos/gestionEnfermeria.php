@@ -1120,51 +1120,20 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 		$whora = (string)date("H:i:s");
 
 		//=======================================================================================================================================================
-		//Se valida que sea una habitación la ubicación del paciente
-		$q = "SELECT count(*)"
-			."FROM $tablaHabitaciones"
-			."WHERE Habcod = '".$whab_actual."'";
+		//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
+		$q = " UPDATE ".$tablaHabitaciones." "
+			// ."    SET Habali = 'on', "	// Se comenta linea que actualiza campo habitación en estado listo para limpieza
+			."    SET Habdis = 'off', "
+			."        Habhis = '', "
+			."        Habing = '', "
+			."        Habfal = '".$wfecha."', "
+			."        Habhal = '".$whora."', "
+			."        Habprg = ''"    //Aca va la misma habitacion, si fue programada
+			."  WHERE Habcod = '".$whab_actual."'"
+			."    AND Habhis = '".$whis."'"
+			."    AND Habing = '".$wing."'";
 		$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-		$habitacion = mysql_fetch_array($err);
-		$existe = $habitacion[0];
 		//=======================================================================================================================================================
-		
-		if( $existe > 0 )
-		{
-			//=======================================================================================================================================================
-			//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
-			$q = " UPDATE ".$tablaHabitaciones." "
-				// ."    SET Habali = 'on', "	// Se comenta linea que actualiza campo habitación en estado listo para limpieza
-				."    SET Habdis = 'off', "
-				."        Habhis = '', "
-				."        Habing = '', "
-				."        Habfal = '".$wfecha."', "
-				."        Habhal = '".$whora."', "
-				."        Habprg = ''"    //Aca va la misma habitacion, si fue programada
-				."  WHERE Habcod = '".$whab_actual."'"
-				."    AND Habhis = '".$whis."'"
-				."    AND Habing = '".$wing."'";
-			$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-			//=======================================================================================================================================================
-		}
-		else
-		{
-			//=======================================================================================================================================================
-			//Actualizo o pongo en modo de limpieza la habitación en la que estaba el paciente
-			$q = " UPDATE ".$tablaHabitaciones." "
-				."    SET Habali = 'on', "	// Se comenta linea que actualiza campo habitación en estado listo para limpieza
-				."        Habdis = 'off', "
-				."        Habhis = '', "
-				."        Habing = '', "
-				."        Habfal = '".$wfecha."', "
-				."        Habhal = '".$whora."', "
-				."        Habprg = ''"    //Aca va la misma habitacion, si fue programada
-				."  WHERE Habcod = '".$whab_actual."'"
-				."    AND Habhis = '".$whis."'"
-				."    AND Habing = '".$wing."'";
-			$err = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-			//=======================================================================================================================================================
-		}
 
 		//=======================================================================================================================================================
 		// Consulta que permite obtener el número de ingreso al servicio
