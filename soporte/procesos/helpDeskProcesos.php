@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <title>HELPDESK - MATRIX</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//matrixtest.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://matrixtest.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <style>
         body {overflow-x:hidden;}
         .alternar:hover {background-color: #D9EDF7;}
@@ -486,13 +486,13 @@ function operaciones2($participante,$fechaActual,$parametro)
     }
 }
 
-function consultarDatosPeriodo($mesActual,$aï¿½oActual)
+function consultarDatosPeriodo($mesActual,$añoActual)
 {
-    function enero($aï¿½oActual)
+    function enero($añoActual)
     {
-        $aï¿½oActual = trim($aï¿½oActual);
-        $fechaInicial = $aï¿½oActual.'-01-01';
-        $fechaFinal = $aï¿½oActual.'-01-31';
+        $añoActual = trim($añoActual);
+        $fechaInicial = $añoActual.'-01-01';
+        $fechaFinal = $añoActual.'-01-31';
 
         $queryCountXmes1 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes1 = mysql_fetch_array($queryCountXmes1);
@@ -511,10 +511,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function febrero($aï¿½oActual)
+    function febrero($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-02-01';
-        $fechaFinal = $aï¿½oActual.'-02-28';
+        $fechaInicial = $añoActual.'-02-01';
+        $fechaFinal = $añoActual.'-02-28';
 
         $queryCountXmes2 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes2 = mysql_fetch_array($queryCountXmes2);
@@ -533,10 +533,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function marzo($aï¿½oActual)
+    function marzo($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-03-01';
-        $fechaFinal = $aï¿½oActual.'-03-31';
+        $fechaInicial = $añoActual.'-03-01';
+        $fechaFinal = $añoActual.'-03-31';
 
         $queryCountXmes3 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes3 = mysql_fetch_array($queryCountXmes3);
@@ -555,10 +555,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function abril($aï¿½oActual)
+    function abril($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-04-01';
-        $fechaFinal = $aï¿½oActual.'-04-30';
+        $fechaInicial = $añoActual.'-04-01';
+        $fechaFinal = $añoActual.'-04-30';
 
         $queryCountXmes4 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes4 = mysql_fetch_array($queryCountXmes4);
@@ -577,10 +577,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function mayo($aï¿½oActual)
+    function mayo($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-05-01';
-        $fechaFinal = $aï¿½oActual.'-05-31';
+        $fechaInicial = $añoActual.'-05-01';
+        $fechaFinal = $añoActual.'-05-31';
 
         $queryCountXmes5 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes5 = mysql_fetch_array($queryCountXmes5);
@@ -599,10 +599,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function junio($aï¿½oActual)
+    function junio($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-06-01';
-        $fechaFinal = $aï¿½oActual.'-06-30';
+        $fechaInicial = $añoActual.'-06-01';
+        $fechaFinal = $añoActual.'-06-30';
 
         $queryCountXmes6 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes6 = mysql_fetch_array($queryCountXmes6);
@@ -621,10 +621,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function julio($aï¿½oActual)
+    function julio($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-07-01';
-        $fechaFinal = $aï¿½oActual.'-07-31';
+        $fechaInicial = $añoActual.'-07-01';
+        $fechaFinal = $añoActual.'-07-31';
 
         $queryCountXmes7 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes7 = mysql_fetch_array($queryCountXmes7);
@@ -643,10 +643,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function agosto($aï¿½oActual)
+    function agosto($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-08-01';
-        $fechaFinal = $aï¿½oActual.'-08-31';
+        $fechaInicial = $añoActual.'-08-01';
+        $fechaFinal = $añoActual.'-08-31';
 
         $queryCountXmes8 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes8 = mysql_fetch_array($queryCountXmes8);
@@ -665,10 +665,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function septiembre($aï¿½oActual)
+    function septiembre($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-09-01';
-        $fechaFinal = $aï¿½oActual.'-09-30';
+        $fechaInicial = $añoActual.'-09-01';
+        $fechaFinal = $añoActual.'-09-30';
 
         $queryCountXmes9 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes9 = mysql_fetch_array($queryCountXmes9);
@@ -687,10 +687,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function octubre($aï¿½oActual)
+    function octubre($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-10-01';
-        $fechaFinal = $aï¿½oActual.'-10-31';
+        $fechaInicial = $añoActual.'-10-01';
+        $fechaFinal = $añoActual.'-10-31';
 
         $queryCountXmes10 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes10 = mysql_fetch_array($queryCountXmes10);
@@ -709,10 +709,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function noviembre($aï¿½oActual)
+    function noviembre($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-11-01';
-        $fechaFinal = $aï¿½oActual.'-11-30';
+        $fechaInicial = $añoActual.'-11-01';
+        $fechaFinal = $añoActual.'-11-30';
 
         $queryCountXmes11 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes11 = mysql_fetch_array($queryCountXmes11);
@@ -731,10 +731,10 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
         <?php
     }
 
-    function diciembre($aï¿½oActual)
+    function diciembre($añoActual)
     {
-        $fechaInicial = $aï¿½oActual.'-12-01';
-        $fechaFinal = $aï¿½oActual.'-12-31';
+        $fechaInicial = $añoActual.'-12-01';
+        $fechaFinal = $añoActual.'-12-31';
 
         $queryCountXmes12 = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
         $datoCountXmes12 = mysql_fetch_array($queryCountXmes12);
@@ -755,41 +755,41 @@ function consultarDatosPeriodo($mesActual,$aï¿½oActual)
 
     ?>
     <tr class="alternar">
-        <td><label>ENERO</label></td><td align="center"><?php enero($aï¿½oActual)?></td>
+        <td><label>ENERO</label></td><td align="center"><?php enero($añoActual)?></td>
         <td>&ensp;&ensp;&ensp;</td>
-        <td><label>JULIO</label></td><td align="center"><?php julio($aï¿½oActual) ?></td>
+        <td><label>JULIO</label></td><td align="center"><?php julio($añoActual) ?></td>
     </tr>
     <tr class="alternar">
-        <td><label>FEBRERO</label></td><td align="center"><?php febrero($aï¿½oActual) ?></td>
+        <td><label>FEBRERO</label></td><td align="center"><?php febrero($añoActual) ?></td>
         <td>&ensp;&ensp;&ensp;</td>
-        <td><label>AGOSTO</label></td><td align="center"><?php agosto($aï¿½oActual) ?></td>
+        <td><label>AGOSTO</label></td><td align="center"><?php agosto($añoActual) ?></td>
     </tr>
     <tr class="alternar">
-        <td><label>MARZO</label></td><td align="center"><?php marzo($aï¿½oActual) ?></td>
+        <td><label>MARZO</label></td><td align="center"><?php marzo($añoActual) ?></td>
         <td>&ensp;&ensp;&ensp;</td>
-        <td><label>SEPTIEMBRE</label></td><td align="center"><?php septiembre($aï¿½oActual) ?></td>
+        <td><label>SEPTIEMBRE</label></td><td align="center"><?php septiembre($añoActual) ?></td>
     </tr>
     <tr class="alternar">
-        <td><label>ABRIL</label></td><td align="center"><?php abril($aï¿½oActual) ?></td>
+        <td><label>ABRIL</label></td><td align="center"><?php abril($añoActual) ?></td>
         <td>&ensp;&ensp;&ensp;</td>
-        <td><label>OCTUBRE</label></td><td align="center"><?php octubre($aï¿½oActual) ?></td>
+        <td><label>OCTUBRE</label></td><td align="center"><?php octubre($añoActual) ?></td>
     </tr>
     <tr class="alternar">
-        <td><label>MAYO</label></td><td align="center"><?php mayo($aï¿½oActual) ?></td>
+        <td><label>MAYO</label></td><td align="center"><?php mayo($añoActual) ?></td>
         <td>&ensp;&ensp;&ensp;</td>
-        <td><label>NOVIEMBRE</label></td><td align="center"><?php noviembre($aï¿½oActual) ?></td>
+        <td><label>NOVIEMBRE</label></td><td align="center"><?php noviembre($añoActual) ?></td>
     </tr>
     <tr class="alternar">
-        <td><label>JUNIO</label></td><td align="center"><?php junio($aï¿½oActual) ?></td>
+        <td><label>JUNIO</label></td><td align="center"><?php junio($añoActual) ?></td>
         <td>&ensp;&ensp;&ensp;</td>
-        <td><label>DICIEMBRE</label></td><td align="center"><?php diciembre($aï¿½oActual) ?></td>
+        <td><label>DICIEMBRE</label></td><td align="center"><?php diciembre($añoActual) ?></td>
     </tr>
     <?php
 }
 
-function consultarDatosCausas($mesActual,$aï¿½oActual)
+function consultarDatosCausas($mesActual,$añoActual)
 {
-    $aï¿½oActual = trim($aï¿½oActual);
+    $añoActual = trim($añoActual);
     switch($mesActual)
     {
         case $mesActual == '01' or $mesActual == '03' or $mesActual == '05' or $mesActual == '07' or $mesActual == '08' or $mesActual == '10' or $mesActual == '12':
@@ -802,11 +802,11 @@ function consultarDatosCausas($mesActual,$aï¿½oActual)
             $diaFin = '30';
             break;
     }
-    $fechaInicial = $aï¿½oActual.'-'.$mesActual.'-01';
-    $fechaFinal = $aï¿½oActual.'-'.$mesActual.'-'.$diaFin;
+    $fechaInicial = $añoActual.'-'.$mesActual.'-01';
+    $fechaFinal = $añoActual.'-'.$mesActual.'-'.$diaFin;
 
-    $aï¿½oInicial = $aï¿½oActual.'-01-01';
-    $aï¿½oFinal = $aï¿½oActual.'-12-31';
+    $añoInicial = $añoActual.'-01-01';
+    $añoFinal = $añoActual.'-12-31';
 
     $queryCountCausaxMes = mysql_queryV("SELECT Causareq, Count(Causareq)
                                         FROM equipos_000006
@@ -822,31 +822,31 @@ function consultarDatosCausas($mesActual,$aï¿½oActual)
         $datoDescCausa = mysql_fetch_array($queryDescCausa);
         $descCausa = $datoDescCausa[0];
 
-        $queryTotalA = mysql_queryV("SELECT COUNT(id) FROM equipos_000006 WHERE Causareq = '$descCausa1' AND Fecini BETWEEN '$aï¿½oInicial' AND '$aï¿½oFinal'");
+        $queryTotalA = mysql_queryV("SELECT COUNT(id) FROM equipos_000006 WHERE Causareq = '$descCausa1' AND Fecini BETWEEN '$añoInicial' AND '$añoFinal'");
         $datoTotalA = mysql_fetch_array($queryTotalA);
-        $contCausaAï¿½o = $datoTotalA[0];
+        $contCausaAño = $datoTotalA[0];
         ?>
         <tr class="alternar">
             <td style="font-weight: bold" width="240"><?php echo $descCausa ?></td>
             <td align="center"><?php echo $contCausaMes?></td>
-            <td align="right"><?php consultarPromCausa($aï¿½oActual,$contCausaMes,$contCausaAï¿½o) ?>
+            <td align="right"><?php consultarPromCausa($añoActual,$contCausaMes,$contCausaAño) ?>
                 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;</td>
-            <td align="center"><?php echo $contCausaAï¿½o ?></td>
-            <td align="center">&ensp;<?php consultarPromCausaAï¿½o($aï¿½oActual,$contCausaMes,$contCausaAï¿½o) ?></td>
+            <td align="center"><?php echo $contCausaAño ?></td>
+            <td align="center">&ensp;<?php consultarPromCausaAño($añoActual,$contCausaMes,$contCausaAño) ?></td>
             <td>&ensp;&ensp;&ensp;&ensp;</td>
         </tr>
         <?php
     }
 }
 
-function consultarDatosAï¿½o($aï¿½oActual)
+function consultarDatosAño($añoActual)
 {
-    $fechaInicial = $aï¿½oActual.'-01-01';
-    $fechaFinal = $aï¿½oActual.'-12-31';
+    $fechaInicial = $añoActual.'-01-01';
+    $fechaFinal = $añoActual.'-12-31';
 
-    $queryAï¿½o = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
-    $datoAï¿½o = mysql_fetch_array($queryAï¿½o);
-    $casosAï¿½o = $datoAï¿½o[0];
+    $queryAño = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+    $datoAño = mysql_fetch_array($queryAño);
+    $casosAño = $datoAño[0];
 
     $queryCountXmes12Matrix = mysql_queryV("select COUNT(id) from root_000040 where Reqfen BETWEEN '$fechaInicial' AND '$fechaFinal'
                                               and Reqcco = '(01)1710' and Reqtip = '02' and Reqest = '05'");
@@ -854,47 +854,47 @@ function consultarDatosAï¿½o($aï¿½oActual)
     $casosDiciembreMatrix = $datoCountXmes12Matrix[0];
     if($casosDiciembreMatrix == ''){$casosDiciembreMatrix = '0';}
 
-    $totalCasos = $casosAï¿½o + $casosDiciembreMatrix;
+    $totalCasos = $casosAño + $casosDiciembreMatrix;
     ?>
     <tr><td>&ensp;</td></tr>
     <tr style="background-color: #C3D9FF">
-        <td><h5>TOTAL <?echo $aï¿½oActual ?>&nbsp;:</h5></td>
-        <td align="center" title="Llamadas: <?php echo $casosAï¿½o?>  Matrix: <?php echo $casosDiciembreMatrix?>"><?php echo $totalCasos ?></td>
+        <td><h5>TOTAL <?echo $añoActual ?>&nbsp;:</h5></td>
+        <td align="center" title="Llamadas: <?php echo $casosAño?>  Matrix: <?php echo $casosDiciembreMatrix?>"><?php echo $totalCasos ?></td>
     </tr>
     <?php
 }
 
-function consultarPromCausa($aï¿½oActual,$contCausaMes,$contCausaAï¿½o)
+function consultarPromCausa($añoActual,$contCausaMes,$contCausaAño)
 {
-    $fechaInicial = $aï¿½oActual.'-01-01';
-    $fechaFinal = $aï¿½oActual.'-12-31';
+    $fechaInicial = $añoActual.'-01-01';
+    $fechaFinal = $añoActual.'-12-31';
 
-    $queryAï¿½o = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
-    $datoAï¿½o = mysql_fetch_array($queryAï¿½o);
-    $casosAï¿½o = $datoAï¿½o[0];
+    $queryAño = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+    $datoAño = mysql_fetch_array($queryAño);
+    $casosAño = $datoAño[0];
 
-    $porcentaje = ($contCausaMes/$casosAï¿½o)*100;
+    $porcentaje = ($contCausaMes/$casosAño)*100;
     $porcentaje = round($porcentaje,2);
     echo $porcentaje.' '.'%';
 }
 
-function consultarPromCausaAï¿½o($aï¿½oActual,$contCausaMes,$contCausaAï¿½o)
+function consultarPromCausaAño($añoActual,$contCausaMes,$contCausaAño)
 {
-    $fechaInicial = $aï¿½oActual.'-01-01';
-    $fechaFinal = $aï¿½oActual.'-12-31';
+    $fechaInicial = $añoActual.'-01-01';
+    $fechaFinal = $añoActual.'-12-31';
 
-    $queryAï¿½o = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
-    $datoAï¿½o = mysql_fetch_array($queryAï¿½o);
-    $casosAï¿½o = $datoAï¿½o[0];
+    $queryAño = mysql_queryV("SELECT COUNT(id) from equipos_000006 WHERE Fecini BETWEEN '$fechaInicial' AND '$fechaFinal'");
+    $datoAño = mysql_fetch_array($queryAño);
+    $casosAño = $datoAño[0];
 
-    $porcentaje = ($contCausaAï¿½o/$casosAï¿½o)*100;
+    $porcentaje = ($contCausaAño/$casosAño)*100;
     $porcentaje = round($porcentaje,2);
     echo $porcentaje.' '.'%';
 }
 
-function consultarGrafico1($aï¿½oActual)
+function consultarGrafico1($añoActual)
 {
-    $fechaInicial = $aï¿½oActual.'-01-01';    $fechaFinal = $aï¿½oActual.'-12-31';
+    $fechaInicial = $añoActual.'-01-01';    $fechaFinal = $añoActual.'-12-31';
 
     $queryAreas = mysql_queryV("SELECT Ccoreq,Count(id)
                                FROM equipos_000006
@@ -907,7 +907,7 @@ function consultarGrafico1($aï¿½oActual)
         google.charts.setOnLoadCallback(drawChart);
         function drawChart() {
             var data = google.visualization.arrayToDataTable([
-                ['Areas', 'Llamadas por aï¿½o'],
+                ['Areas', 'Llamadas por año'],
                 <?php
                 while($datoArea = mysql_fetch_array($queryAreas))
                 {

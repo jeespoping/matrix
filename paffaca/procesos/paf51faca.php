@@ -545,7 +545,7 @@ if ($windicador == "PrimeraVez")
 	 $registroB = mysql_fetch_row($resultadoB);  
 	 $wmed = $wmed."-".$registroB[0];
 	}
-	echo "<br><A HREF='//mx.lasamericas.com.co/matrix/citas/procesos/000001_prx5.php?empresa=citafaca&wfec=".$wfpr."&wequ=".$wmed."' TARGET='_blank' >Agendar Cita</A>";
+	echo "<br><A HREF='http://mx.lasamericas.com.co/matrix/citas/procesos/000001_prx5.php?empresa=citafaca&wfec=".$wfpr."&wequ=".$wmed."' TARGET='_blank' >Agendar Cita</A>";
     
 	echo "</td>";
 	

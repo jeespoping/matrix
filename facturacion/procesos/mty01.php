@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="esp">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eï¿½es y tildes -->
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
     <title>MATRIX - [FACTURAS PARA MYT]</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" /> <!--Estilo para el calendario-->
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <script src="../../../paf/procesos/calendariopaf.js" type="text/javascript"></script>
     <style>
         .alternar:hover{ background-color:#CADCFF;}
@@ -39,7 +39,7 @@ include_once("conex.php");
 
 
         $conex = obtenerConexionBD("matrix");
-        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
+        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
         $wactualiz = "1.2 09-Marzo-2018";
     }
     session_start();
@@ -96,21 +96,21 @@ encabezado("<font style='font-size: x-large; font-weight: bold'>"."FACTURAS PARA
             <tr>
                 <td>
                     <div class="input-group" style="margin-top: 10px">
-                        <span class="input-group-addon"><label for="numConsRadicado">Nï¿½ CONS. RADICADO:</label></span>
+                        <span class="input-group-addon"><label for="numConsRadicado">N° CONS. RADICADO:</label></span>
                         <input id="numConsRadicado" name="numConsRadicado" type="text" class="form-control" style="width: 100px" value="">
                     </div>
                 </td>
                 <td><div class="input-group-addon" style="background-color: #ffffff; width: 10px; border: none"></div></td>
                 <td>
                     <div class="input-group" style="margin-top: 10px">
-                        <span class="input-group-addon" style="width: 217px"><label for="numConsRecobro">Nï¿½ CONS. RECOBRO:</label></span>
+                        <span class="input-group-addon" style="width: 217px"><label for="numConsRecobro">N° CONS. RECOBRO:</label></span>
                         <input id="numConsRecobro" name="numConsRecobro" type="text" class="form-control" style="width: 100px" value="">
                     </div>
                 </td>
                 <td><div class="input-group-addon" style="background-color: #ffffff; width: 10px; border: none"></div></td>
                 <td>
                     <div class="input-group" style="margin-top: 10px">
-                        <span class="input-group-addon" style="width: 180px"><label for="numeroActa">Nï¿½ ACTA:</label></span>
+                        <span class="input-group-addon" style="width: 180px"><label for="numeroActa">N° ACTA:</label></span>
                         <input id="numeroActa" name="numeroActa" type="text" class="form-control" style="width: 100px" value="">
                     </div>
                 </td>
@@ -458,69 +458,69 @@ else
                 <table class="table table-bordered table-list">
                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                     <tr>
-                        <th class="hidden-xs">Nï¿½mero consecutivo interno para radicaciones de la entidad reclamante</th>
-                        <th>Nï¿½mero consecutivo del recobro</th>
-                        <th>Nï¿½mero de tipo de radicaciï¿½n</th>
-                        <th>Nï¿½mero de radicaciï¿½n anterior</th>
-                        <th>Cï¿½digo de la entidad administradora de planes de beneficio</th>
+                        <th class="hidden-xs">Número consecutivo interno para radicaciones de la entidad reclamante</th>
+                        <th>Número consecutivo del recobro</th>
+                        <th>Número de tipo de radicación</th>
+                        <th>Número de radicación anterior</th>
+                        <th>Código de la entidad administradora de planes de beneficio</th>
                         <th>Tipo de documento de identidad</th>
-                        <th>Nï¿½mero de documento de identidad</th>
+                        <th>Número de documento de identidad</th>
                         <th>Primer apellido del afiliado</th>
                         <th>Segundo apellido del afiliado</th>
                         <th>Primer nombre del afiliado</th>
                         <th>Segundo nombre del afiliado</th>
                         <th>Tipo de afiliado</th>
                         <th>Nivel de la cuota moderadora</th>
-                        <th>Nï¿½mero del item</th>
-                        <th>Nï¿½mero del acta del comitï¿½ tï¿½cnico cientï¿½fico</th>
-                        <th>Fecha del acta del comitï¿½ tï¿½cnico cientï¿½fico</th>
-                        <th>Fecha solicitud del mï¿½dico</th>
+                        <th>Número del item</th>
+                        <th>Número del acta del comité técnico científico</th>
+                        <th>Fecha del acta del comité técnico científico</th>
+                        <th>Fecha solicitud del médico</th>
                         <th>Indicador de periodicidad del recobro</th>
                         <th>Mes del periodo suministrado</th>
-                        <th>Aï¿½o del periodo suministrado</th>
-                        <th>Nï¿½mero de entrega del acta del ctc para el periodo</th>
-                        <th>Nï¿½mero de la factura que comprende el item recobrado</th>
-                        <th>Fecha de la prestaciï¿½n del servicio</th>
+                        <th>Año del periodo suministrado</th>
+                        <th>Número de entrega del acta del ctc para el periodo</th>
+                        <th>Número de la factura que comprende el item recobrado</th>
+                        <th>Fecha de la prestación del servicio</th>
                         <th>Fecha de Factura</th>
-                        <th>Fecha de radicaciï¿½n de la factura ante la entidad administradora de los planes de beneficios</th>
-                        <th>Cï¿½digo de diagnï¿½stico segï¿½n la clasificaciï¿½n internacional de enfermedades vigente</th>
+                        <th>Fecha de radicación de la factura ante la entidad administradora de los planes de beneficios</th>
+                        <th>Código de diagnóstico según la clasificación internacional de enfermedades vigente</th>
                         <th>Porcentaje de semanas</th>
                         <th>NIT del proveedor del medicamento</th>
                         <th>Nombre del proveedor del medicamento</th>
-                        <th>Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado</th>
-                        <th>Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado</th>
+                        <th>Código del medicamento, servicios médicos o prestaciones de salud suministrado</th>
+                        <th>Nombre del medicamento, servicios médicos o prestaciones de salud suministrado</th>
                         <th>Sigla del tipo de servicio de salud prestado</th>
                         <th>Cantidad suministrada item</th>
                         <th>Valor unitario del servicio suministrado</th>
                         <th>Valor total del servicio suministrado</th>
                         <th>Valor cuota moderadora o copago</th>
                         <th>Valor final recobrado</th>
-                        <th>Nï¿½mero del item</th>
+                        <th>Número del item</th>
                         <th>Nombre del medicamento, servicios medicos o prestaciones de salud suministrado</th>
                         <th>Presentacion del medicamento, servicios medicos o prestaciones de salud suministrado</th>
-                        <th>Unidades diarias del medicamento, servicio medico o prestaciï¿½n de salud</th>
-                        <th>Cantidad dï¿½as que dura el servicio</th>
-                        <th>Cantidad total suministrada del medicamento, servicio medico o prestaciï¿½n de salud</th>
+                        <th>Unidades diarias del medicamento, servicio medico o prestación de salud</th>
+                        <th>Cantidad días que dura el servicio</th>
+                        <th>Cantidad total suministrada del medicamento, servicio medico o prestación de salud</th>
                         <th>Valor unitario del servicio suministrado por item</th>
                         <th>Valor total del servicio suministrado por item</th>
-                        <th>Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud similar o que sustituye</th>
-                        <th>Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado similar o que sustituye</th>
-                        <th>Unidades diarias del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar</th>
-                        <th>Cantidad dï¿½as que dura el servicio del numeral 46</th>
-                        <th>Cantidad total del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar</th>
+                        <th>Código del medicamento, servicios médicos o prestaciones de salud similar o que sustituye</th>
+                        <th>Nombre del medicamento, servicios médicos o prestaciones de salud suministrado similar o que sustituye</th>
+                        <th>Unidades diarias del medicamento, servicio médico o prestación de salud que sustituye o similar</th>
+                        <th>Cantidad días que dura el servicio del numeral 46</th>
+                        <th>Cantidad total del medicamento, servicio médico o prestación de salud que sustituye o similar</th>
                         <th>Valor unitario del servicio que sustituye o similar</th>
                         <th>Valor total del servicio que sustituye o similar</th>
                         <th>Cantidad de Actas de CTC</th>
-                        <th>Cantidad de folios correspondientes al nï¿½mero de actas de CTC</th>
+                        <th>Cantidad de folios correspondientes al número de actas de CTC</th>
                         <th>Cantidad de facturas</th>
                         <th>Cantidad de folios correspondientes a las facturas</th>
-                        <th>Cantidad de formulas mï¿½dicas</th>
-                        <th>Cantidad de folios correspondientes al nï¿½mero de formulas mï¿½dicas</th>
+                        <th>Cantidad de formulas médicas</th>
+                        <th>Cantidad de folios correspondientes al número de formulas médicas</th>
                         <th>Cantidad de documentos anexos al recobro</th>
                         <th>Cantidad de folios que evidencien la entrega del medicamento</th>
                         <th>Cantidad total de documentos</th>
                         <th>Cantidad total de folios</th>
-                        <th>Nï¿½mero de radicaciï¿½n del formato MTY-01</th>
+                        <th>Número de radicación del formato MTY-01</th>
                         <th>NIT Proveedor Prest</th>
                         <th>Nombre Proveedor Prest</th>
                         <th>Num Factura Proveedor Prest</th>
@@ -556,7 +556,7 @@ else
                         $fecsolm = odbc_result($err_o3, 17);//Fecha solicitud medico
                         $inperre = odbc_result($err_o3, 18);//Indicador de periodicidad del recobro
                         $mespesu = odbc_result($err_o3, 19);//Mes periodo suministrado
-                        $anpersu = odbc_result($err_o3, 20);//Aï¿½o periodo suministrado
+                        $anpersu = odbc_result($err_o3, 20);//Año periodo suministrado
                         $numenac = odbc_result($err_o3, 21);//Numero entrega acta ctc para el periodo
                         $numfaci = odbc_result($err_o3, 22);//Numero factura comprende item recobrado
                         $fechaPrestacion = odbc_result($err_o3, 23);
@@ -598,7 +598,7 @@ else
                             <td><?php echo $fechaActa ?></td> <!-- Fecha solicitud medico -->
                             <td>N</td> <!-- Indicador de periodicidad -->
                             <td><?php echo $mesAct ?></td> <!-- Mes periodo suministrado -->
-                            <td><?php echo $anioAct ?></td> <!-- Aï¿½o periodo suministrado -->
+                            <td><?php echo $anioAct ?></td> <!-- Año periodo suministrado -->
                             <td>1</td> <!-- Numero entrega acta ctc para el periodo -->
                             <td><?php echo $numfaci ?></td>
                             <td><?php echo $fecpres ?></td> <!-- Fecha prestacion del servicio -->
@@ -619,29 +619,29 @@ else
                             <td><?php echo $numite2 ?></td> <!-- Numero del item 2 -->
                             <td><?php echo $nommese ?></td> <!-- Nombre del medicamento, servicios medicos o prestaciones de salud suministrado 2 -->
                             <td>&nbsp;</td> <!-- Presentacion del medicamento, servicios medicos o prestaciones de salud suministrado -->
-                            <td>&nbsp;</td> <!-- Unidades diarias del medicamento, servicio medico o prestaciï¿½n de salud -->
-                            <td>&nbsp;</td> <!-- Cantidad dï¿½as que dura el servicio -->
-                            <td>&nbsp;</td> <!-- Cantidad total suministrada del medicamento, servicio medico o prestaciï¿½n de salud -->
+                            <td>&nbsp;</td> <!-- Unidades diarias del medicamento, servicio medico o prestación de salud -->
+                            <td>&nbsp;</td> <!-- Cantidad días que dura el servicio -->
+                            <td>&nbsp;</td> <!-- Cantidad total suministrada del medicamento, servicio medico o prestación de salud -->
                             <td>&nbsp;</td> <!-- Valor unitario del servicio suministrado por item -->
                             <td>&nbsp;</td> <!-- Valor total del servicio suministrado por item -->
-                            <td>&nbsp;</td> <!-- Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud similar o que sustituye -->
-                            <td>&nbsp;</td> <!-- Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado similar o que sustituye -->
-                            <td>&nbsp;</td> <!-- Unidades diarias del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar -->
-                            <td>&nbsp;</td> <!-- Cantidad dï¿½as que dura el servicio del numeral 46 -->
-                            <td>&nbsp;</td> <!-- Cantidad total del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar -->
+                            <td>&nbsp;</td> <!-- Código del medicamento, servicios médicos o prestaciones de salud similar o que sustituye -->
+                            <td>&nbsp;</td> <!-- Nombre del medicamento, servicios médicos o prestaciones de salud suministrado similar o que sustituye -->
+                            <td>&nbsp;</td> <!-- Unidades diarias del medicamento, servicio médico o prestación de salud que sustituye o similar -->
+                            <td>&nbsp;</td> <!-- Cantidad días que dura el servicio del numeral 46 -->
+                            <td>&nbsp;</td> <!-- Cantidad total del medicamento, servicio médico o prestación de salud que sustituye o similar -->
                             <td>&nbsp;</td> <!-- Valor unitario del servicio que sustituye o similar -->
                             <td>&nbsp;</td> <!-- Valor total del servicio que sustituye o similar -->
                             <td>&nbsp;</td> <!-- Cantidad de Actas de CTC -->
-                            <td>&nbsp;</td> <!-- Cantidad de folios correspondientes al nï¿½mero de actas de CTC -->
+                            <td>&nbsp;</td> <!-- Cantidad de folios correspondientes al número de actas de CTC -->
                             <td>&nbsp;</td> <!-- Cantidad de facturas -->
                             <td>&nbsp;</td> <!-- Cantidad de folios correspondientes a las facturas -->
-                            <td>&nbsp;</td> <!-- Cantidad de formulas mï¿½dicas -->
-                            <td>&nbsp;</td> <!-- Cantidad de folios correspondientes al nï¿½mero de formulas mï¿½dicas -->
+                            <td>&nbsp;</td> <!-- Cantidad de formulas médicas -->
+                            <td>&nbsp;</td> <!-- Cantidad de folios correspondientes al número de formulas médicas -->
                             <td>&nbsp;</td> <!-- Cantidad de documentos anexos al recobro -->
                             <td>&nbsp;</td> <!-- Cantidad de folios que evidencien la entrega del medicamento -->
                             <td>&nbsp;</td> <!-- Cantidad total de documentos -->
                             <td>&nbsp;</td> <!-- Cantidad total de folios -->
-                            <td>&nbsp;</td> <!-- Nï¿½mero de radicaciï¿½n del formato MTY-01 -->
+                            <td>&nbsp;</td> <!-- Número de radicación del formato MTY-01 -->
                             <td>&nbsp;</td> <!-- NIT Proveedor Prest -->
                             <td>&nbsp;</td> <!-- Nombre Proveedor Prest -->
                             <td>&nbsp;</td> <!-- Num Factura Proveedor Prest -->
@@ -674,60 +674,60 @@ else
                 <table class="table table-bordered table-list">
                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                     <tr>
-                        <th class="hidden-xs">Nï¿½mero consecutivo interno para radicaciones de la entidad reclamante</th>
-                        <th>Nï¿½mero consecutivo del recobro</th>
-                        <th>Tipo de radicaciï¿½n</th>
-                        <th>Nï¿½mero de radicaciï¿½n anterior</th>
-                        <th>Cï¿½digo de la entidad administradora de planes de beneficio</th>
+                        <th class="hidden-xs">Número consecutivo interno para radicaciones de la entidad reclamante</th>
+                        <th>Número consecutivo del recobro</th>
+                        <th>Tipo de radicación</th>
+                        <th>Número de radicación anterior</th>
+                        <th>Código de la entidad administradora de planes de beneficio</th>
                         <th>Tipo de documento de identidad</th>
-                        <th>Nï¿½mero de documento de identidad</th>
+                        <th>Número de documento de identidad</th>
                         <th>Primer apellido del afiliado</th>
                         <th>Segundo apellido del afiliado</th>
                         <th>Primer nombre del afiliado</th>
                         <th>Segundo nombre del afiliado</th>
                         <th>Tipo de afiliado</th>
                         <th>Nivel de la cuota moderadora</th>
-                        <th>Nivel de la cuota de recuperaciï¿½n</th>
-                        <th>Nï¿½mero del item</th>
-                        <th>Nï¿½mero del fallo</th>
+                        <th>Nivel de la cuota de recuperación</th>
+                        <th>Número del item</th>
+                        <th>Número del fallo</th>
                         <th>Fecha del fallo</th>
-                        <th>Nï¿½mero de autoridad judicial</th>
+                        <th>Número de autoridad judicial</th>
                         <th>Tipo de autoridad judicial</th>
                         <th>Municipio de ubicacion autoridad judicial</th>
                         <th>Codigo causa del recobro</th>
-                        <th>Fecha solicitud del mï¿½dico</th>
+                        <th>Fecha solicitud del médico</th>
                         <th>Indicador de periodicidad del recobro</th>
                         <th>Mes del periodo suministrado</th>
-                        <th>Aï¿½o del periodo suministrado</th>
-                        <th>Nï¿½mero de entrega de lo ordenado por el fallo de tutela</th>
-                        <th>Nï¿½mero de la factura que comprende el item recobrado</th>
-                        <th>Fecha de la prestaciï¿½n del servicio</th>
-                        <th>Fecha de radicaciï¿½n de la factura ante la entidad administradora de los planes de beneficios</th>
-                        <th>Cï¿½digo de diagnï¿½stico segï¿½n la clasificaciï¿½n internacional de enfermedades vigente</th>
+                        <th>Año del periodo suministrado</th>
+                        <th>Número de entrega de lo ordenado por el fallo de tutela</th>
+                        <th>Número de la factura que comprende el item recobrado</th>
+                        <th>Fecha de la prestación del servicio</th>
+                        <th>Fecha de radicación de la factura ante la entidad administradora de los planes de beneficios</th>
+                        <th>Código de diagnóstico según la clasificación internacional de enfermedades vigente</th>
                         <th>Porcentaje de semanas</th>
                         <th>NIT del proveedor del medicamento</th>
                         <th>Nombre del proveedor del medicamento</th>
-                        <th>Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado</th>
-                        <th>Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado</th>
+                        <th>Código del medicamento, servicios médicos o prestaciones de salud suministrado</th>
+                        <th>Nombre del medicamento, servicios médicos o prestaciones de salud suministrado</th>
                         <th>Sigla del tipo de servicio de salud prestado</th>
                         <th>Cantidad suministrada item</th>
                         <th>Valor unitario del servicio suministrado</th>
                         <th>Valor total del servicio suministrado</th>
                         <th>Valor cuota moderadora o copago</th>
                         <th>Valor final recobrado</th>
-                        <th>Nï¿½mero del item</th>
+                        <th>Número del item</th>
                         <th>Nombre del medicamento, servicios medicos o prestaciones de salud suministrado</th>
                         <th>Presentacion del medicamento, servicios medicos o prestaciones de salud suministrado</th>
-                        <th>Unidades diarias del medicamento, servicio medico o prestaciï¿½n de salud</th>
-                        <th>Cantidad dï¿½as que dura el servicio</th>
-                        <th>Cantidad total suministrada del medicamento, servicio medico o prestaciï¿½n de salud</th>
+                        <th>Unidades diarias del medicamento, servicio medico o prestación de salud</th>
+                        <th>Cantidad días que dura el servicio</th>
+                        <th>Cantidad total suministrada del medicamento, servicio medico o prestación de salud</th>
                         <th>Valor unitario del servicio suministrado por item</th>
                         <th>Valor total del servicio suministrado por item</th>
-                        <th>Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud similar o que sustituye</th>
-                        <th>Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado similar o que sustituye</th>
-                        <th>Unidades diarias del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar</th>
-                        <th>Cantidad dï¿½as que dura el servicio del numeral 46</th>
-                        <th>Cantidad total del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar</th>
+                        <th>Código del medicamento, servicios médicos o prestaciones de salud similar o que sustituye</th>
+                        <th>Nombre del medicamento, servicios médicos o prestaciones de salud suministrado similar o que sustituye</th>
+                        <th>Unidades diarias del medicamento, servicio médico o prestación de salud que sustituye o similar</th>
+                        <th>Cantidad días que dura el servicio del numeral 46</th>
+                        <th>Cantidad total del medicamento, servicio médico o prestación de salud que sustituye o similar</th>
                         <th>Valor unitario del servicio que sustituye o similar</th>
                         <th>Valor total del servicio que sustituye o similar</th>
                         <th>Cantidad de fallos de tutela</th>
@@ -738,7 +738,7 @@ else
                         <th>Cantidad de folios que evidencien la entrega del medicamento</th>
                         <th>Cantidad total de documentos</th>
                         <th>Cantidad total de folios</th>
-                        <th>No de radicaciï¿½n recobro anterior (formato MYT-02)</th>
+                        <th>No de radicación recobro anterior (formato MYT-02)</th>
                         <th>NIT Proveedor Prest</th>
                         <th>Nombre Proveedor Prest</th>
                         <th>Num Factura Proveedor Prest</th>
@@ -772,7 +772,7 @@ else
                         $fecsolm = odbc_result($err_o, 17);//Fecha solicitud medico
                         $inperre = odbc_result($err_o, 18);//Indicador de periodicidad del recobro
                         $mespesu = odbc_result($err_o, 19);//Mes periodo suministrado
-                        $anpersu = odbc_result($err_o, 20);//Aï¿½o periodo suministrado
+                        $anpersu = odbc_result($err_o, 20);//Año periodo suministrado
                         $numenac = odbc_result($err_o, 21);//Numero entrega acta ctc para el periodo
                         $numfaci = odbc_result($err_o, 22);//Numero factura comprende item recobrado
                         $fechaPrestacion = odbc_result($err_o, 23);
@@ -809,7 +809,7 @@ else
                             <td><?php echo $tipoafi ?></td>
                             <td><?php echo $nicuota ?></td>
                             <td>&nbsp;</td>
-                            <td><?php echo $numitem ?></td> <!-- Nï¿½mero del item -->
+                            <td><?php echo $numitem ?></td> <!-- Número del item -->
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
                             <td>&nbsp;</td>
@@ -819,7 +819,7 @@ else
                             <td><?php echo $fecsolm ?></td> <!-- Fecha solicitud medico -->
                             <td><?php echo $inperre ?></td> <!-- Indicador de periodicidad del recobro -->
                             <td><?php echo $mespesu ?></td> <!-- Mes periodo suministrado -->
-                            <td><?php echo $anpersu ?></td> <!-- Aï¿½o periodo suministrado -->
+                            <td><?php echo $anpersu ?></td> <!-- Año periodo suministrado -->
                             <td>&nbsp;</td>
                             <td><?php echo $numfaci ?></td> <!-- Numero factura comprende item recobrado -->
                             <td><?php echo $fecpres ?></td> <!-- Fecha prestacion del servicio -->
@@ -896,69 +896,69 @@ else
                 <table class="table table-bordered table-list">
                     <thead style="background-color: #3276b1; color: lightcyan; font-weight: bold">
                     <tr>
-                        <th class="hidden-xs">Nï¿½mero consecutivo interno para radicaciones de la entidad reclamante</th>
-                        <th>Nï¿½mero consecutivo del recobro</th>
-                        <th>Nï¿½mero de tipo de radicaciï¿½n</th>
-                        <th>Nï¿½mero de radicaciï¿½n anterior</th>
-                        <th>Cï¿½digo de la entidad administradora de planes de beneficio</th>
+                        <th class="hidden-xs">Número consecutivo interno para radicaciones de la entidad reclamante</th>
+                        <th>Número consecutivo del recobro</th>
+                        <th>Número de tipo de radicación</th>
+                        <th>Número de radicación anterior</th>
+                        <th>Código de la entidad administradora de planes de beneficio</th>
                         <th>Tipo de documento de identidad</th>
-                        <th>Nï¿½mero de documento de identidad</th>
+                        <th>Número de documento de identidad</th>
                         <th>Primer apellido del afiliado</th>
                         <th>Segundo apellido del afiliado</th>
                         <th>Primer nombre del afiliado</th>
                         <th>Segundo nombre del afiliado</th>
                         <th>Tipo de afiliado</th>
                         <th>Nivel de la cuota moderadora</th>
-                        <th>Nï¿½mero del item</th>
-                        <th>Nï¿½mero del acta del comitï¿½ tï¿½cnico cientï¿½fico</th>
-                        <th>Fecha del acta del comitï¿½ tï¿½cnico cientï¿½fico</th>
-                        <th>Fecha solicitud del mï¿½dico</th>
+                        <th>Número del item</th>
+                        <th>Número del acta del comité técnico científico</th>
+                        <th>Fecha del acta del comité técnico científico</th>
+                        <th>Fecha solicitud del médico</th>
                         <th>Indicador de periodicidad del recobro</th>
                         <th>Mes del periodo suministrado</th>
-                        <th>Aï¿½o del periodo suministrado</th>
-                        <th>Nï¿½mero de entrega del acta del ctc para el periodo</th>
-                        <th>Nï¿½mero de la factura que comprende el item recobrado</th>
-                        <th>Fecha de la prestaciï¿½n del servicio</th>
+                        <th>Año del periodo suministrado</th>
+                        <th>Número de entrega del acta del ctc para el periodo</th>
+                        <th>Número de la factura que comprende el item recobrado</th>
+                        <th>Fecha de la prestación del servicio</th>
                         <th>Fecha de Factura</th>
-                        <th>Fecha de radicaciï¿½n de la factura ante la entidad administradora de los planes de beneficios</th>
-                        <th>Cï¿½digo de diagnï¿½stico segï¿½n la clasificaciï¿½n internacional de enfermedades vigente</th>
+                        <th>Fecha de radicación de la factura ante la entidad administradora de los planes de beneficios</th>
+                        <th>Código de diagnóstico según la clasificación internacional de enfermedades vigente</th>
                         <th>Porcentaje de semanas</th>
                         <th>NIT del proveedor del medicamento</th>
                         <th>Nombre del proveedor del medicamento</th>
-                        <th>Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado</th>
-                        <th>Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado</th>
+                        <th>Código del medicamento, servicios médicos o prestaciones de salud suministrado</th>
+                        <th>Nombre del medicamento, servicios médicos o prestaciones de salud suministrado</th>
                         <th>Sigla del tipo de servicio de salud prestado</th>
                         <th>Cantidad suministrada item</th>
                         <th>Valor unitario del servicio suministrado</th>
                         <th>Valor total del servicio suministrado</th>
                         <th>Valor cuota moderadora o copago</th>
                         <th>Valor final recobrado</th>
-                        <th>Nï¿½mero del item</th>
+                        <th>Número del item</th>
                         <th>Nombre del medicamento, servicios medicos o prestaciones de salud suministrado</th>
                         <th>Presentacion del medicamento, servicios medicos o prestaciones de salud suministrado</th>
-                        <th>Unidades diarias del medicamento, servicio medico o prestaciï¿½n de salud</th>
-                        <th>Cantidad dï¿½as que dura el servicio</th>
-                        <th>Cantidad total suministrada del medicamento, servicio medico o prestaciï¿½n de salud</th>
+                        <th>Unidades diarias del medicamento, servicio medico o prestación de salud</th>
+                        <th>Cantidad días que dura el servicio</th>
+                        <th>Cantidad total suministrada del medicamento, servicio medico o prestación de salud</th>
                         <th>Valor unitario del servicio suministrado por item</th>
                         <th>Valor total del servicio suministrado por item</th>
-                        <th>Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud similar o que sustituye</th>
-                        <th>Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado similar o que sustituye</th>
-                        <th>Unidades diarias del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar</th>
-                        <th>Cantidad dï¿½as que dura el servicio del numeral 46</th>
-                        <th>Cantidad total del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar</th>
+                        <th>Código del medicamento, servicios médicos o prestaciones de salud similar o que sustituye</th>
+                        <th>Nombre del medicamento, servicios médicos o prestaciones de salud suministrado similar o que sustituye</th>
+                        <th>Unidades diarias del medicamento, servicio médico o prestación de salud que sustituye o similar</th>
+                        <th>Cantidad días que dura el servicio del numeral 46</th>
+                        <th>Cantidad total del medicamento, servicio médico o prestación de salud que sustituye o similar</th>
                         <th>Valor unitario del servicio que sustituye o similar</th>
                         <th>Valor total del servicio que sustituye o similar</th>
                         <th>Cantidad de Actas de CTC</th>
-                        <th>Cantidad de folios correspondientes al nï¿½mero de actas de CTC</th>
+                        <th>Cantidad de folios correspondientes al número de actas de CTC</th>
                         <th>Cantidad de facturas</th>
                         <th>Cantidad de folios correspondientes a las facturas</th>
-                        <th>Cantidad de formulas mï¿½dicas</th>
-                        <th>Cantidad de folios correspondientes al nï¿½mero de formulas mï¿½dicas</th>
+                        <th>Cantidad de formulas médicas</th>
+                        <th>Cantidad de folios correspondientes al número de formulas médicas</th>
                         <th>Cantidad de documentos anexos al recobro</th>
                         <th>Cantidad de folios que evidencien la entrega del medicamento</th>
                         <th>Cantidad total de documentos</th>
                         <th>Cantidad total de folios</th>
-                        <th>Nï¿½mero de radicaciï¿½n del formato MTY-01</th>
+                        <th>Número de radicación del formato MTY-01</th>
                         <th>NIT Proveedor Prest</th>
                         <th>Nombre Proveedor Prest</th>
                         <th>Num Factura Proveedor Prest</th>
@@ -991,7 +991,7 @@ else
                         $fecsolm = odbc_result($err_o3, 17);//Fecha solicitud medico
                         $inperre = odbc_result($err_o3, 18);//Indicador de periodicidad del recobro
                         $mespesu = odbc_result($err_o3, 19);//Mes periodo suministrado
-                        $anpersu = odbc_result($err_o3, 20);//Aï¿½o periodo suministrado
+                        $anpersu = odbc_result($err_o3, 20);//Año periodo suministrado
                         $numenac = odbc_result($err_o3, 21);//Numero entrega acta ctc para el periodo
                         $numfaci = odbc_result($err_o3, 22);//Numero factura comprende item recobrado
                         $fechaPrestacion = odbc_result($err_o3, 23);
@@ -1035,7 +1035,7 @@ else
                         <td><?php echo $fechaActa ?></td> <!-- Fecha solicitud medico -->
                         <td>N</td> <!-- Indicador de periodicidad -->
                         <td><?php echo $mesAct ?></td> <!-- Mes periodo suministrado -->
-                        <td><?php echo $anioAct ?></td> <!-- Aï¿½o periodo suministrado -->
+                        <td><?php echo $anioAct ?></td> <!-- Año periodo suministrado -->
                         <td>1</td> <!-- Numero entrega acta ctc para el periodo -->
                         <td><?php echo $numfaci ?></td>
                         <td><?php echo $fecpres ?></td> <!-- Fecha prestacion del servicio -->
@@ -1056,29 +1056,29 @@ else
                         <td><?php echo $numite2 ?></td> <!-- Numero del item 2 -->
                         <td><?php echo $nommese ?></td> <!-- Nombre del medicamento, servicios medicos o prestaciones de salud suministrado 2 -->
                         <td>&nbsp;</td> <!-- Presentacion del medicamento, servicios medicos o prestaciones de salud suministrado -->
-                        <td>&nbsp;</td> <!-- Unidades diarias del medicamento, servicio medico o prestaciï¿½n de salud -->
-                        <td>&nbsp;</td> <!-- Cantidad dï¿½as que dura el servicio -->
-                        <td>&nbsp;</td> <!-- Cantidad total suministrada del medicamento, servicio medico o prestaciï¿½n de salud -->
+                        <td>&nbsp;</td> <!-- Unidades diarias del medicamento, servicio medico o prestación de salud -->
+                        <td>&nbsp;</td> <!-- Cantidad días que dura el servicio -->
+                        <td>&nbsp;</td> <!-- Cantidad total suministrada del medicamento, servicio medico o prestación de salud -->
                         <td>&nbsp;</td> <!-- Valor unitario del servicio suministrado por item -->
                         <td>&nbsp;</td> <!-- Valor total del servicio suministrado por item -->
-                        <td>&nbsp;</td> <!-- Cï¿½digo del medicamento, servicios mï¿½dicos o prestaciones de salud similar o que sustituye -->
-                        <td>&nbsp;</td> <!-- Nombre del medicamento, servicios mï¿½dicos o prestaciones de salud suministrado similar o que sustituye -->
-                        <td>&nbsp;</td> <!-- Unidades diarias del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar -->
-                        <td>&nbsp;</td> <!-- Cantidad dï¿½as que dura el servicio del numeral 46 -->
-                        <td>&nbsp;</td> <!-- Cantidad total del medicamento, servicio mï¿½dico o prestaciï¿½n de salud que sustituye o similar -->
+                        <td>&nbsp;</td> <!-- Código del medicamento, servicios médicos o prestaciones de salud similar o que sustituye -->
+                        <td>&nbsp;</td> <!-- Nombre del medicamento, servicios médicos o prestaciones de salud suministrado similar o que sustituye -->
+                        <td>&nbsp;</td> <!-- Unidades diarias del medicamento, servicio médico o prestación de salud que sustituye o similar -->
+                        <td>&nbsp;</td> <!-- Cantidad días que dura el servicio del numeral 46 -->
+                        <td>&nbsp;</td> <!-- Cantidad total del medicamento, servicio médico o prestación de salud que sustituye o similar -->
                         <td>&nbsp;</td> <!-- Valor unitario del servicio que sustituye o similar -->
                         <td>&nbsp;</td> <!-- Valor total del servicio que sustituye o similar -->
                         <td>&nbsp;</td> <!-- Cantidad de Actas de CTC -->
-                        <td>&nbsp;</td> <!-- Cantidad de folios correspondientes al nï¿½mero de actas de CTC -->
+                        <td>&nbsp;</td> <!-- Cantidad de folios correspondientes al número de actas de CTC -->
                         <td>&nbsp;</td> <!-- Cantidad de facturas -->
                         <td>&nbsp;</td> <!-- Cantidad de folios correspondientes a las facturas -->
-                        <td>&nbsp;</td> <!-- Cantidad de formulas mï¿½dicas -->
-                        <td>&nbsp;</td> <!-- Cantidad de folios correspondientes al nï¿½mero de formulas mï¿½dicas -->
+                        <td>&nbsp;</td> <!-- Cantidad de formulas médicas -->
+                        <td>&nbsp;</td> <!-- Cantidad de folios correspondientes al número de formulas médicas -->
                         <td>&nbsp;</td> <!-- Cantidad de documentos anexos al recobro -->
                         <td>&nbsp;</td> <!-- Cantidad de folios que evidencien la entrega del medicamento -->
                         <td>&nbsp;</td> <!-- Cantidad total de documentos -->
                         <td>&nbsp;</td> <!-- Cantidad total de folios -->
-                        <td>&nbsp;</td> <!-- Nï¿½mero de radicaciï¿½n del formato MTY-01 -->
+                        <td>&nbsp;</td> <!-- Número de radicación del formato MTY-01 -->
                         <td>&nbsp;</td> <!-- NIT Proveedor Prest -->
                         <td>&nbsp;</td> <!-- Nombre Proveedor Prest -->
                         <td>&nbsp;</td> <!-- Num Factura Proveedor Prest -->

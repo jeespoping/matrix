@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="esp">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eï¿½es y tildes -->
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
     <meta charset="utf-8">
     <title>Registro de Actividades</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="css/Estilos.css" rel="stylesheet">
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <script src="regact/regact09.js" type="text/javascript"></script>
     <style type="text/css">
         .filterable {
@@ -197,7 +197,7 @@
 
             //script para poner estilos distintos para cada navegador
             if (BrowserDetect.browser != "Firefox") {
-                alert("Tu navegador NO es Mozilla Firefox, esta aplicaciï¿½n podria no funcionar correctamente, por favor, cambie de navegador")
+                alert("Tu navegador NO es Mozilla Firefox, esta aplicación podria no funcionar correctamente, por favor, cambie de navegador")
             }
         }
     </script>

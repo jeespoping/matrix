@@ -1,8 +1,8 @@
 <?php
 	// 2021-11-05: Luis F Meneses. Adicionar a Laboratorio como empresa de la misma fuente
-	//				de Promotora y Fundaciï¿½n, filtrando en Sql7 por movempresa=3
-	// 2021-03-08: Luis F Meneses. Adicionar a Fundaciï¿½n como empresa de la misma fuente
-	//				de Promotora, filtrando en Sql7 por movempresa=1 (promotora), movempresa=7 (Fundaciï¿½n)
+	//				de Promotora y Fundación, filtrando en Sql7 por movempresa=3
+	// 2021-03-08: Luis F Meneses. Adicionar a Fundación como empresa de la misma fuente
+	//				de Promotora, filtrando en Sql7 por movempresa=1 (promotora), movempresa=7 (Fundación)
 ?>
 
 <!DOCTYPE html>
@@ -12,14 +12,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>GENERACI&Oacute;N DE COMPROBANTES DE NOMINA - MATRIX</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> <!-- INDICADOR DE CARGA DE PAGINA-->
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="//mtx.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk2.css" rel="stylesheet">
-    <link href="//mtx.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
-    <link href="//mtx.lasamericas.com.co/matrix/Library/Css/Bootstrap_v3.0.0.css" rel="stylesheet">
-    <script src="//mtx.lasamericas.com.co/matrix/Library/Js/bootstrap_v3.0.0.js" type="text/javascript"></script>
-    <script src="//mtx.lasamericas.com.co/matrix/Library/Js/jQuery_v1.11.1.js" type="text/javascript"></script>
-    <script src="//mtx.lasamericas.com.co/matrix/Library/Js/Bootstrap_v3.1.0.js" type="text/javascript"></script>
-    <script src="//mtx.lasamericas.com.co/matrix/Library/Js/GoogleCharts.js" type="text/javascript"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://mtx.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk2.css" rel="stylesheet">
+    <link href="http://mtx.lasamericas.com.co/matrix/soporte/procesos/stylehelpDesk.css" rel="stylesheet">
+    <link href="http://mtx.lasamericas.com.co/matrix/Library/Css/Bootstrap_v3.0.0.css" rel="stylesheet">
+    <script src="http://mtx.lasamericas.com.co/matrix/Library/Js/bootstrap_v3.0.0.js" type="text/javascript"></script>
+    <script src="http://mtx.lasamericas.com.co/matrix/Library/Js/jQuery_v1.11.1.js" type="text/javascript"></script>
+    <script src="http://mtx.lasamericas.com.co/matrix/Library/Js/Bootstrap_v3.1.0.js" type="text/javascript"></script>
+    <script src="http://mtx.lasamericas.com.co/matrix/Library/Js/GoogleCharts.js" type="text/javascript"></script>
     <script type="text/javascript">
         $(window).load(function() {
             $(".loader").fadeOut("slow");
@@ -54,7 +54,7 @@
         mysql_select_db("matrix");
 
         $conex = obtenerConexionBD("matrix");
-        //$conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
+        //$conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
     }
 
     $conexion = $_GET['conexion'];
@@ -214,42 +214,42 @@
             //Promotora:
             if ($conexion == 1)
             {
-				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA, FUNDACIï¿½N Y LABORATORIO
-                //$conexSql7 = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
+				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA, FUNDACIÓN Y LABORATORIO
+                //$conexSql7 = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
 				echo 'SELECCIONO PROMOTORA...';
-                $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexiï¿½n con la BD de Promotora");
+                $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexión con la BD de Promotora");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'promotora', $wuse);
             }
             //Laboratorio:
             if ($conexion == 2)
             {
-				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA, FUNDACIï¿½N Y LABORATORIO
-                // $conexSql7 = odbc_connect('queryx7LMLA','','') or die("No se realizo conexiï¿½n con la BD de Laboratorio");
+				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA, FUNDACIÓN Y LABORATORIO
+                // $conexSql7 = odbc_connect('queryx7LMLA','','') or die("No se realizo conexión con la BD de Laboratorio");
                 echo 'SELECCIONO LABORATORIO...';				
-                $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexiï¿½n con la BD de Promotora");
+                $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexión con la BD de Promotora");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'laboratorio', $wuse);
             }
             //Patologia  
             if ($conexion == 3)
             {
                 echo 'SELECCIONO PATOLOGIA...';
-                $conexSql7 = odbc_connect('queryx7PAT','','') or die("No se realizo conexiï¿½n con la BD de Patologï¿½a");
+                $conexSql7 = odbc_connect('queryx7PAT','','') or die("No se realizo conexión con la BD de Patología");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'patologia', $wuse);
             }
             //Clisur
             if ($conexion == 4)
             {
                 echo 'SELECCIONO CLISUR...';
-                $conexSql7 = odbc_connect('queryx7CS','','') or die("No se realizo conexiï¿½n con la BD de Clisur");
+                $conexSql7 = odbc_connect('queryx7CS','','') or die("No se realizo conexión con la BD de Clisur");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'clisur', $wuse);
             }
-            //Fundaciï¿½n
+            //Fundación
             if ($conexion == 5)
             {
-				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA, FUNDACIï¿½N Y LABORATORIO
-                //$conexSql7 = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
+				// CONEXIONES COMPARTIDAS ENTRE PROMOTORA, FUNDACIÓN Y LABORATORIO
+                //$conexSql7 = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
 				echo 'SELECCIONO FUNDACION...';
-                $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexiï¿½n con la BD de Fundaciï¿½n");
+                $conexSql7 = odbc_connect('queryx7','','') or die("No se realizo conexión con la BD de Fundación");
                 modificarFte($conexSql7, $fuente, $documento, $anoFuente, $mesFuente, 'fundacion', $wuse);
             }
         }
@@ -268,16 +268,16 @@
 
 function modificarFte($conexionSql7, $fuente, $documento, $anoFuente, $mesFuente, $empresa, $usuario)
 {
-	// Vista COMOVENC: Se agregï¿½ columna MOVENCEMPRESA. En el momento los valores serï¿½an 1 para Clï¿½nica y 7 para Fundaciï¿½n
-	// Vista COMOV       : Se agregï¿½ columna MOVEMPRESA. En el momento los valores serï¿½an 1 para Clï¿½nica y 7 para Fundaciï¿½n
+	// Vista COMOVENC: Se agregó columna MOVENCEMPRESA. En el momento los valores serían 1 para Clínica y 7 para Fundación
+	// Vista COMOV       : Se agregó columna MOVEMPRESA. En el momento los valores serían 1 para Clínica y 7 para Fundación
     //DEFINIR EL CONEX DE UNIX PARA CADA EMPRESA:
     switch($empresa)
     {
-        case 'promotora': $conexUnix = odbc_connect('nomina','informix','sco') or die("No se realizo conexiï¿½n con la BD de Promotora/Fundaciï¿½n"); break;
-		case 'fundacion':$conexUnix = odbc_connect('cofunda','informix','sco') or die("No se realizo conexiï¿½n con la BD de Promotora/Fundaciï¿½n"); break;
-        case 'laboratorio': $conexUnix = odbc_connect('nomlab','informix','sco') or die("No se realizo conexiï¿½n con la BD de Laboratorio"); break;
-        case 'patologia': $conexUnix = odbc_connect('nompat','informix','sco') or die("No se realizo conexiï¿½n con la BD de Patologï¿½a"); break;
-        case 'clisur': $conexUnix = odbc_connect('nomsur','informix','sco') or die("No se realizo conexiï¿½n con la BD de Clisur"); break;        
+        case 'promotora': $conexUnix = odbc_connect('nomina','informix','sco') or die("No se realizo conexión con la BD de Promotora/Fundación"); break;
+		case 'fundacion':$conexUnix = odbc_connect('cofunda','informix','sco') or die("No se realizo conexión con la BD de Promotora/Fundación"); break;
+        case 'laboratorio': $conexUnix = odbc_connect('nomlab','informix','sco') or die("No se realizo conexión con la BD de Laboratorio"); break;
+        case 'patologia': $conexUnix = odbc_connect('nompat','informix','sco') or die("No se realizo conexión con la BD de Patología"); break;
+        case 'clisur': $conexUnix = odbc_connect('nomsur','informix','sco') or die("No se realizo conexión con la BD de Clisur"); break;        
     }
 	
 	// ---- QUITAR COMENTARIO PARA EFECTOS DE PRUEBAS -----------
@@ -305,7 +305,7 @@ function modificarFte($conexionSql7, $fuente, $documento, $anoFuente, $mesFuente
 	if (odbc_fetch_row($rs))
 		echo odbc_result($rs, 1); 
 	*/
-	// --- HASTA AQUï¿½ PARA PRUEBAS  -------------------------------------------
+	// --- HASTA AQUÍ PARA PRUEBAS  -------------------------------------------
 		
 	// ---- QUITAR COMENTARIO PARA EFECTOS DE PRUEBAS -----------
 	// BORRAR DATOS DE ESE PERIODO EN UNIX PARA PODER PROBAR CARGA DE NUEVO
@@ -323,7 +323,7 @@ function modificarFte($conexionSql7, $fuente, $documento, $anoFuente, $mesFuente
 					. "		AND movencmes = '$mesFuente'";
     $rs = odbc_do($conexUnix, $sql);
 	*/
-	// --- HASTA AQUï¿½ PARA PRUEBAS  -------------------------------------------
+	// --- HASTA AQUÍ PARA PRUEBAS  -------------------------------------------
 
 
     //VERIFICAR QUE EN NUESTRAS BASES DE DATOS NO EXISTAN YA ESTOS REGISTROS:

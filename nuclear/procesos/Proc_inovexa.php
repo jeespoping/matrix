@@ -18,7 +18,7 @@ include_once("conex.php");
 
 //<body TEXT="#000066" BGCOLOR="ffffff" oncontextmenu = "return false" onselectstart = "return false" ondragstart = "return false">
 //<body TEXT="#000066" BGCOLOR="ffffff" oncontextmenu = "return false" onselectstart = "return false" ondragstart = "return false">
-//Esta instrucciï¿½n sirve para apagar el mouse y que no deje hacer nada en la pagina, para que no copie alguna imagen etc etc.
+//Esta instrucción sirve para apagar el mouse y que no deje hacer nada en la pagina, para que no copie alguna imagen etc etc.
 
 /*******************************************************************************************************************************************
 *                                    PROCESO PARA INGRESAR NOVEDADES DE EXAMENES DE NUCLEAR                                                *
@@ -114,7 +114,7 @@ if (!isset($fte) or $fte == '' or !isset($doc) or $doc == '' )
   echo "<tr><td align=CENTER colspan=2 bgcolor=#DDDDDD><b><font text color=#003366 size=3> Dosis 1 Metro (Mr/Hora): </br><textarea name='dosis' cols='90' rows='4'>".$dosis."</textarea></td></tr>";
    
  /////////////////////////////////////////////////////////////////////////////////////// seleccion para las complicaciones.
-  echo "<tr><td align=CENTER colspan=2 bgcolor=#DDDDDD><b><font text color=#003366 size=3> Contaminaciï¿½n : </br><textarea name='conta' cols='90' rows='4'>".$conta."</textarea></td></tr>";
+  echo "<tr><td align=CENTER colspan=2 bgcolor=#DDDDDD><b><font text color=#003366 size=3> Contaminación : </br><textarea name='conta' cols='90' rows='4'>".$conta."</textarea></td></tr>";
 
  /////////////////////////////////////////////////////////////////////////////////////// Boton de OK o Grabar.
   echo "<tr><td align=center bgcolor=#cccccc colspan=2><input type='submit' value='Grabar'></td></tr>";          //submit osea el boton de OK o Aceptar  }
@@ -125,7 +125,7 @@ if (!isset($fte) or $fte == '' or !isset($doc) or $doc == '' )
   
    
    $conexi=odbc_connect('facturacion','','')
-	    or die("No se realizo conexiï¿½n con la BD Facturaciï¿½n");
+	    or die("No se realizo conexión con la BD Facturación");
 
    $fte1=strtoupper($fte);
    $compli1=strtoupper($compli);
@@ -144,14 +144,14 @@ if (!isset($fte) or $fte == '' or !isset($doc) or $doc == '' )
    if ($err1)
     {
      echo "<tr><td align=CENTER colspan=2 bgcolor=#DDDDDD><b><font text color=#03FFFF size=3>Se hizo el insert con exito<br></font></b></td></tr>";
-     echo "<tr><td align=center color:#000066 font-size:12pt font-family:Courier New font-weight:bold ><A HREF='//clinica.pmamericas.com/matrix/nuclear/procesos/proc_inovexa.php'>Insertar Mas</a></td></tr>";
+     echo "<tr><td align=center color:#000066 font-size:12pt font-family:Courier New font-weight:bold ><A HREF='http://clinica.pmamericas.com/matrix/nuclear/procesos/proc_inovexa.php'>Insertar Mas</a></td></tr>";
      //echo "<tr><td align=center color:#000066 font-size:12pt font-family:Courier New font-weight:bold ><A HREF='http://132.1.20.246/matrix/nuclear/procesos/proc_inovexa.php'>Insertar Mas</a></td></tr>";
 
     } 
    else 
     {
      echo "<tr><td align=CENTER colspan=2 bgcolor=#DDDDDD><b><font text color=#03FFFF size=3>ERROR en el insert, ya existe o no hay UNIX<br></font></b></td></tr>";
-     echo "<tr><td align=center color:#000066 font-size:12pt font-family:Courier New font-weight:bold ><A HREF='//clinica.pmamericas.com/matrix/nuclear/procesos/proc_inovexa.php'>Insertar Mas</a></td></tr>";
+     echo "<tr><td align=center color:#000066 font-size:12pt font-family:Courier New font-weight:bold ><A HREF='http://clinica.pmamericas.com/matrix/nuclear/procesos/proc_inovexa.php'>Insertar Mas</a></td></tr>";
    	 //echo "<tr><td align=center color:#000066 font-size:12pt font-family:Courier New font-weight:bold ><A HREF='http://132.1.20.246/matrix/nuclear/procesos/proc_inovexa.php'>Insertar Mas</a></td></tr>";
  
     }
@@ -159,7 +159,7 @@ if (!isset($fte) or $fte == '' or !isset($doc) or $doc == '' )
 	odbc_close($conexi);
 	odbc_close_all();
 
- }// cierre del else donde empieza la impresiï¿½n
+ }// cierre del else donde empieza la impresión
 
 }
 ?>

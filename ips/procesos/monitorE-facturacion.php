@@ -140,7 +140,7 @@ if(isset($accion))
 					  ."<param name='src' value='' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"
 					  ."<p style='text-align:center; width: 60%;'>"
 						."Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />"
-						."<a href='//get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
+						."<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
 						  ."<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"
 						."</a>"
 					  ."</p>"

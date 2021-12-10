@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="esp">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eï¿½es y tildes -->
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/> <!--ISO-8859-1 ->Para que muestre eñes y tildes -->
     <title>MATRIX - CONCEPTOS QUE NO VAN EN EL COMPROBANTE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <style>
         .alternar:hover{ background-color:#CADCFF;}
     </style>
@@ -40,7 +40,7 @@ include_once("conex.php");
 
 
         $conex = obtenerConexionBD("matrix");
-        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
+        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
         $wactualiz = "1.0 11-abril-2017";
     }
     session_start();

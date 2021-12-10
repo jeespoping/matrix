@@ -34,7 +34,7 @@ $array_meses = array( "1"=>"ENERO","2"=>"FEBRERO","3"=>"MARZO","4"=>"ABRIL","5"=
 
 if( $consultaAjax == "on" ){
 
-	//Verï¿½nica Arismendy
+	//Verónica Arismendy
 	if(isset($accion) & $accion == "obtenerFechasFactura" ){
 
 		// Se limpia la fuente de factura de caracteres especiales que puedan romper el query por este campo
@@ -60,8 +60,8 @@ if( $consultaAjax == "on" ){
 		}
 
 		//2016-04-05
-		//Se consulta si para el centro de costo de la factura actual se tiene configurado que tome la fecha de ingreso y salida de la ï¿½ltima evoluciï¿½n, si es asï¿½
-		//se listan las posibles fechas para que el usuario que vaya a realizar la impresiï¿½n seleccione cual fecha debe aparecer.
+		//Se consulta si para el centro de costo de la factura actual se tiene configurado que tome la fecha de ingreso y salida de la última evolución, si es así
+		//se listan las posibles fechas para que el usuario que vaya a realizar la impresión seleccione cual fecha debe aparecer.
 		$arrFechaIngreso = validarFechasCentroCosto($wcco, $whis, $wing, $wfec);
 
 		$htmlReturn = "";
@@ -190,9 +190,9 @@ if( $consultaAjax == "on" ){
         document.forms.impfacunix.submit();
     }
 
-    // Se crea esta funciï¿½n javascript para controlar los radio button
-    // muchas veces se desea imprimir la factura sin seleccionar ninguna opciï¿½n
-    // si antes se seleccionï¿½ una opciï¿½n se puede desmarcar nuevamente dandole clic.
+    // Se crea esta función javascript para controlar los radio button
+    // muchas veces se desea imprimir la factura sin seleccionar ninguna opción
+    // si antes se seleccionó una opción se puede desmarcar nuevamente dandole clic.
     var era;
     var previo=null;
     function desSeleccionar(rbutton)
@@ -276,7 +276,7 @@ if( $consultaAjax == "on" ){
         validarEmpresaPlan( $("#wfactura") );
       }
       if( validoEmpresa &&  $("#div_planes").html() != "" ){
-        alert( "Esta entidad tiene paquetes de facturaciï¿½n especiales" );
+        alert( "Esta entidad tiene paquetes de facturación especiales" );
       }else{
         document.getElementById("impfacunix").submit();
       }
@@ -290,7 +290,7 @@ if( $consultaAjax == "on" ){
       $("#imprimirDetallePaquete").val( "" );
 
 
-	  //2016-04-05 Verï¿½nica Arismendy
+	  //2016-04-05 Verónica Arismendy
 	  //Limpia el radio de tipo de factura y limpiar el contenido de la tabla para seleccionar la fecha a imprimir en caso de que aplique
 	  if(isChequeo != 1){
 		$("input:radio[name=wnopos]").attr("checked", false)
@@ -300,7 +300,7 @@ if( $consultaAjax == "on" ){
     }
 
 
-	//Verï¿½nica Arismendy
+	//Verónica Arismendy
 	function habilitarBotonImprimir(){
 		$("#imprimir").attr("disabled", false);
 	}
@@ -314,7 +314,7 @@ if( $consultaAjax == "on" ){
 			if(valWparam == 1 && wnopos != 3){
 				$("#imprimir").attr("disabled", true);
 
-				//Se consulta por ajax si el centro de costos de la factura estï¿½ configurado para seleccinoar la fecha a imprimir en fecha de ingreso y fecha salida
+				//Se consulta por ajax si el centro de costos de la factura está configurado para seleccinoar la fecha a imprimir en fecha de ingreso y fecha salida
 				$.post("imp_factura_unix_laser.php",
 				{
 					consultaAjax:   		'on',
@@ -327,7 +327,7 @@ if( $consultaAjax == "on" ){
 					var objRespuesta = $.parseJSON(respuesta);
 
 					if(objRespuesta.tipo != "error"){
-						//Se aï¿½ade al formulario la parte de seleccionar la fecha a imprimir
+						//Se añade al formulario la parte de seleccionar la fecha a imprimir
 						if(objRespuesta.respuesta != "" && objRespuesta.respuesta != null){
 							$("#fechasEvolucion").html(objRespuesta.respuesta);
 						}else{
@@ -372,58 +372,58 @@ if( $consultaAjax == "on" ){
 
 //==================================================================================================================================
 //MODIFICACIONES ===================================================================================================================
-//	2016-04-20 ( Verï¿½nica Arismendy) Se modifica para que el nombre de la empresa responsable de la factura se tome de inempdet(unix)
+//	2016-04-20 ( Verónica Arismendy) Se modifica para que el nombre de la empresa responsable de la factura se tome de inempdet(unix)
 //==================================================================================================================================
-//	2016-03-14 ( Verï¿½nica Arismendy) Se modifica para que en el parametro ccoFechaIngresoPorEvolucion se puedan incluir uno o varios
+//	2016-03-14 ( Verónica Arismendy) Se modifica para que en el parametro ccoFechaIngresoPorEvolucion se puedan incluir uno o varios
 //									 formularios a tener en cuenta para la fecha de ingreso de los centros de costos configurados.
 //==================================================================================================================================
-/*	2016-02-26( Verï¿½nica Arismendy ): Se cambia F.I y F.S por fecha de ingreso y fecha salida, se crea parametro en la 51 y se verifica el centro de costo de la factura comparado
-									  con los que estï¿½n guardados en el parï¿½metro si se encuentra ahï¿½ se debe tomar la fecha de ingreso desde el formulario de evoluciï¿½n tomando la mï¿½xima fecha.
-									  Se valida que la fecha de evoluciï¿½n no sea mayor que la fecha de la factura de ser asï¿½ se toma la fecha de ingreso que tenï¿½a en unix.
+/*	2016-02-26( Verónica Arismendy ): Se cambia F.I y F.S por fecha de ingreso y fecha salida, se crea parametro en la 51 y se verifica el centro de costo de la factura comparado
+									  con los que estén guardados en el parámetro si se encuentra ahí se debe tomar la fecha de ingreso desde el formulario de evolución tomando la máxima fecha.
+									  Se valida que la fecha de evolución no sea mayor que la fecha de la factura de ser así se toma la fecha de ingreso que tenía en unix.
 ==================================================================================================================================
-/*	2016-02-19( Verï¿½nica Arismendy ): Se cambia de lado el cï¿½digo de barras, donde estaba el cï¿½digo de barras se muestra un texto configurado por empresa en root_000051,
-									  Se modifica para que reconozca el nï¿½mero de copias configurado por empresa y se impriman, tambiï¿½n que guarde log de impresiones
-									  y que si es la primera vez la primera hoja de impresiï¿½n sea la original y las demï¿½s digan copia, si no siempre todas las hojas dicen copia.
+/*	2016-02-19( Verónica Arismendy ): Se cambia de lado el código de barras, donde estaba el código de barras se muestra un texto configurado por empresa en root_000051,
+									  Se modifica para que reconozca el número de copias configurado por empresa y se impriman, también que guarde log de impresiones
+									  y que si es la primera vez la primera hoja de impresión sea la original y las demás digan copia, si no siempre todas las hojas dicen copia.
 ==================================================================================================================================
-    2015-12-04( Camilo Zapata ):  se implementa la impresiï¿½n del detalle del concepto 2105 en la impresiï¿½n por paquetes, buscar en caso de ser necesario $imprimirDetallePaquete
+    2015-12-04( Camilo Zapata ):  se implementa la impresión del detalle del concepto 2105 en la impresión por paquetes, buscar en caso de ser necesario $imprimirDetallePaquete
 ====================================================================================================================================================================================================================================================================
-    2015-09-04( Camilo Zapata ):  se implementï¿½ la funciï¿½n construir queryunix en la funciï¿½n "imprimir_factura", para que se puedan imprimir
+    2015-09-04( Camilo Zapata ):  se implementó la función construir queryunix en la función "imprimir_factura", para que se puedan imprimir
                                   de manera satisfactoria las facturas multiusuarios con paquetes de sura.
 ==================================================================================================================================
-    2014-06-05( Edwar Jaramillo ):  Se crea la variable entidadNoDiscriminaTerceros asociada a un parï¿½metro en root_51, esto es para que a la
-                                    entidad configurada en ese parï¿½metro no le discrimine los valores por clinica y por tercero sino que en
-                                    clï¿½nica sume ambos valores de una vez.
+    2014-06-05( Edwar Jaramillo ):  Se crea la variable entidadNoDiscriminaTerceros asociada a un parámetro en root_51, esto es para que a la
+                                    entidad configurada en ese parámetro no le discrimine los valores por clinica y por tercero sino que en
+                                    clínica sume ambos valores de una vez.
 ==================================================================================================================================
-    2014-04-22( Camilo Zapata ):    se modificï¿½ el script para que las facturas de pacientes pertenecientes a fisiatrï¿½a tengan, la
-                                    fecha de salida del ï¿½ltimo registro en la tabla de formularios firmados( hce_000036 )
+    2014-04-22( Camilo Zapata ):    se modificó el script para que las facturas de pacientes pertenecientes a fisiatría tengan, la
+                                    fecha de salida del último registro en la tabla de formularios firmados( hce_000036 )
                                     de hce, en lugar de la fecha de
                                     egreso registrada en unix.
 ==================================================================================================================================
 ==================================================================================================================================
-    2013-09-11( Camilo Zapata ):    se rehabilitaron las observaciones y se retirï¿½ el mensaje de la resoluciï¿½n de la Dian
+    2013-09-11( Camilo Zapata ):    se rehabilitaron las observaciones y se retiró el mensaje de la resolución de la Dian
 ==================================================================================================================================
 ==================================================================================================================================
-    2013-09-10( Camilo Zapata ):    Se agregï¿½ el tipo de documento de identidad del paciente en el area de informaciï¿½n del paciente."
+    2013-09-10( Camilo Zapata ):    Se agregó el tipo de documento de identidad del paciente en el area de información del paciente."
 ==================================================================================================================================
 ==================================================================================================================================
-    2013-04-10( Edwar Jaramillo ):  Se modifiï¿½ el ï¿½rea de Observaciones temporalmente para mostrar en esa ï¿½rea el mensaje
+    2013-04-10( Edwar Jaramillo ):  Se modifió el área de Observaciones temporalmente para mostrar en esa área el mensaje
                                     "RESOLUCION DIAN N. 110000525435 FECHA 2013/04/02 NUMERACION DEL 3825687 AL 5000000."
 ==================================================================================================================================
 ==================================================================================================================================
-    2013-02-04( Mario Cadavid ):    Se adicionï¿½ la validaciï¿½n de la variable $whis en la funciï¿½n imprimir_factura_detalle de modo que si viene la historia
-									en cero o vacï¿½o no haga las consultas que usan esta variable ya que se arrojarï¿½a como resultado campos nulos
+    2013-02-04( Mario Cadavid ):    Se adicionó la validación de la variable $whis en la función imprimir_factura_detalle de modo que si viene la historia
+									en cero o vacío no haga las consultas que usan esta variable ya que se arrojaría como resultado campos nulos
 ==================================================================================================================================
     2012-11-19(Edwar Jaramillo):    Se realizan correcciones a los calculos cuando son facturas PAF, se estaba restando dos veces el valor del concepto 2105
-                                    Adicionalmente de actualiza la funciï¿½n montoescrito() puesto que al tratar de imprimir un nï¿½mero mayor a nueve cifras se mostraba un
-                                    mensaje informando que no se podï¿½a el texto para esa cifra.
+                                    Adicionalmente de actualiza la función montoescrito() puesto que al tratar de imprimir un número mayor a nueve cifras se mostraba un
+                                    mensaje informando que no se podía el texto para esa cifra.
 ==================================================================================================================================
-    2012-11-16(Edwar Jaramillo):    Se adiciona una nueva opciï¿½n de impresiï¿½n de factura, se denomina facturas PAF,
-                                    Para esto se insertï¿½ una nueva opciï¿½n en fachos_00001 con el cï¿½digo "PAF-2105" donde "2105" en este caso corresponde
-                                    al cï¿½digo del concepto que no debe ser sumado junto con el resto de conceptos de la factura pero que se debe mostrar
-                                    en el subtotal en una fila adicional, tambiï¿½n se crea un campo en el formulario para pedir la fuente de la factura.
+    2012-11-16(Edwar Jaramillo):    Se adiciona una nueva opción de impresión de factura, se denomina facturas PAF,
+                                    Para esto se insertó una nueva opción en fachos_00001 con el código "PAF-2105" donde "2105" en este caso corresponde
+                                    al código del concepto que no debe ser sumado junto con el resto de conceptos de la factura pero que se debe mostrar
+                                    en el subtotal en una fila adicional, también se crea un campo en el formulario para pedir la fuente de la factura.
 
-                                    En la funciï¿½n imprimir_factura_detalle se cambia el primer sql que aparece, solo cuanso es el tipo PAF, esto se hace porque
-                                    al seleccionar este tipo se encontrï¿½ con que la consulta de unix retornaba valores nulos que daï¿½aban el programa al ejecutarlo.
+                                    En la función imprimir_factura_detalle se cambia el primer sql que aparece, solo cuanso es el tipo PAF, esto se hace porque
+                                    al seleccionar este tipo se encontró con que la consulta de unix retornaba valores nulos que dañaban el programa al ejecutarlo.
 ==================================================================================================================================
     2012-08-29(Viviana Rodas):      Se modifico para cuando el paciente sea de ayudas diagnosticas no muestre fecha de salida.
 ==================================================================================================================================
@@ -433,24 +433,24 @@ if( $consultaAjax == "on" ){
                                     Se agrego sum(antfacval) en la consulta a la tabla anantfac para que sume los abonos.
                                     Se agrego para las observaciones un count para saber cuantas lineas trae y asi hacer las consultas correspondientes.
 ==================================================================================================================================
-    2012-06-23   :   Se creï¿½ la variable $wfecegr que permite mostrar la fecha de salida el paciente
+    2012-06-23   :   Se creó la variable $wfecegr que permite mostrar la fecha de salida el paciente
 ==================================================================================================================================
-    2012-05-15   :  Se crea funciï¿½n javascript para desmarcar las opciones de 'NO POS', esto porque varias veces se puede elegir imprimir sin
-                    marcar ninguna opciï¿½n.
+    2012-05-15   :  Se crea función javascript para desmarcar las opciones de 'NO POS', esto porque varias veces se puede elegir imprimir sin
+                    marcar ninguna opción.
 ==================================================================================================================================
-    2012-05-09  :   Se adicionï¿½ una nueva opciï¿½n al momento de imprimir la factura, ahora se puede seleccionar entre generar la factura
-                    con conceptos NO POS, o generar la factura NO POS para cirugï¿½a con el concepto 'PROCEDIMIENTOS NO POS'.
-                    esto permite que al seleccionar la opciï¿½n 'NO POS (Cirugï¿½a)' se mostrarï¿½ un solo concepto en la factura con las cifras totalizadas
+    2012-05-09  :   Se adicionó una nueva opción al momento de imprimir la factura, ahora se puede seleccionar entre generar la factura
+                    con conceptos NO POS, o generar la factura NO POS para cirugía con el concepto 'PROCEDIMIENTOS NO POS'.
+                    esto permite que al seleccionar la opción 'NO POS (Cirugía)' se mostrará un solo concepto en la factura con las cifras totalizadas
 ==================================================================================================================================
-    2012-04-03 -    Se adicionï¿½ la opciï¿½n de impresion de facturas NO POS y la sleccion de impresora, de modo que segï¿½n la impresora se
+    2012-04-03 -    Se adicionó la opción de impresion de facturas NO POS y la sleccion de impresora, de modo que según la impresora se
                     definen los margenes superior e izquierdo de impresion, para esto se crearon las tablas del grupo de facturacion hospitalaria:
-                    fachos_000001 -  Maestro de conceptos NO POS, si en el formulario se seleccionï¿½ NO POS y se encuentra el cï¿½digo del concepto en esta
+                    fachos_000001 -  Maestro de conceptos NO POS, si en el formulario se seleccionó NO POS y se encuentra el código del concepto en esta
                                      tabla se toma la descripcion de esta tabla y no la UNIX
-                    fachos_000002 -  Movimiento impresion de facturas, para grabar la auditoria de las impresiones de facturaciï¿½n
-                    fachos_000003 -  Configuracion impresoras facturacion, determina que margen superior e izquierda se debe dejar segï¿½n la impresora seleccionada
+                    fachos_000002 -  Movimiento impresion de facturas, para grabar la auditoria de las impresiones de facturación
+                    fachos_000003 -  Configuracion impresoras facturacion, determina que margen superior e izquierda se debe dejar según la impresora seleccionada
 ==================================================================================================================================
-    2012-03-14 -    Se creo la funciï¿½n 'imprimir_factura_detalle' que permite imprimir la factura con todos los conceptos de ï¿½sta,
-                    con el valor cargado a la clï¿½nica y el valor cargado a terceros, ademï¿½s de las observaciones y el log del pie de pï¿½gina
+    2012-03-14 -    Se creo la función 'imprimir_factura_detalle' que permite imprimir la factura con todos los conceptos de ésta,
+                    con el valor cargado a la clínica y el valor cargado a terceros, además de las observaciones y el log del pie de página
 ==================================================================================================================================
 */
 
@@ -468,8 +468,8 @@ if( $consultaAjax == "on" ){
     $datos_paciente = "datos";
 
     define("PDF_HEADER_LOGO_MX", "medical/root/".$nombre_logo.".jpg"); // Imagen del logo.
-    define("PDF_HEADER_LOGO_WIDTH_MX",3); // tamaï¿½o ancho en mm de la imagen del logo.
-    define("PDF_HEADER_TITLE_MX",$datos_paciente); // Tï¿½tulo 1 en encabezado.
+    define("PDF_HEADER_LOGO_WIDTH_MX",3); // tamaño ancho en mm de la imagen del logo.
+    define("PDF_HEADER_TITLE_MX",$datos_paciente); // Título 1 en encabezado.
     define("PDF_HEADER_STRING_MX","Laboratorio Tel: 3421010 ext. 1132"); // Texto 2 en encabezado.
 
     define("PDF_MARGIN_TOP_MX",16);
@@ -488,7 +488,7 @@ if( $consultaAjax == "on" ){
     $pdf->SetAuthor('PMLA');
     $pdf->SetTitle('Resultado');
     $pdf->SetSubject('Tarjeta Dietas');
-    $pdf->SetKeywords('PMLA, PDF, resultado, clï¿½nica, dietas');
+    $pdf->SetKeywords('PMLA, PDF, resultado, clínica, dietas');
 
 
     // set default header data
@@ -745,7 +745,7 @@ function mostrar_empresa($wemp_pmla)
     $query = "";
 
     $bits = count( $campos_nulos );
-    if( $bits >= 10 ){ //No pueden haber mï¿½s de 10 campos nulos
+    if( $bits >= 10 ){ //No pueden haber más de 10 campos nulos
       return false;
     }
 
@@ -918,7 +918,7 @@ function mostrar_empresa($wemp_pmla)
          $wced = odbc_result($res,7);	//Nro de documento
          $wres = odbc_result($res,8);	//Responsable
          $wval = odbc_result($res,9);	//Valor factura
-         $whis = odbc_result($res,10);	//Historia clï¿½nica
+         $whis = odbc_result($res,10);	//Historia clínica
          $wing = odbc_result($res,11);	//Ingreso historia
 
          $queryUnix = " SELECT egrsin
@@ -1010,7 +1010,7 @@ function mostrar_empresa($wemp_pmla)
         $htmlFactura .= "</table>";
         --> anterior */
 
-		//Se crea la imagen del cï¿½digo de barras para ponerse en el titulo
+		//Se crea la imagen del código de barras para ponerse en el titulo
 		$ruta = '/var/www/matrix/fachos/procesos/facturas';
         $nombre = 'fac_unix_'.$wfactura;
         generarcodigodebarras($wfactura,170,40,70,"JPEG", $ruta, $nombre);
@@ -1038,10 +1038,10 @@ function mostrar_empresa($wemp_pmla)
         $htmlFactura .= "<td style='width:41mm;' align='center' valign='top'>No. ".$wfactura."</td>";
         $htmlFactura .= "<td style='margin-top:4mm; width:8mm;' align='center' valign='top' class='td_bordeDerecho td_bordeIzquierdo'>".substr($wfec,8,2)."<br><span class='span_tituloPeq'>DIA</span></td>";            //Fecha
         $htmlFactura .= "<td style='margin-top:4mm; width:8mm;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfec,5,2)."<br><span class='span_tituloPeq'>MES</span></td>";            //Fecha
-        $htmlFactura .= "<td style='margin-top:4mm; width:15mm;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfec,0,4)."<br><span class='span_tituloPeq'>Aï¿½O</span></td>";            //Fecha
+        $htmlFactura .= "<td style='margin-top:4mm; width:15mm;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfec,0,4)."<br><span class='span_tituloPeq'>AÑO</span></td>";            //Fecha
         $htmlFactura .= "<td style='margin-top:4mm; width:8mm; background-color:#E6E6E6;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfev,8,2)."<br><span class='span_tituloPeq'>DIA</span></td>";            //Fecha de vencimiento
         $htmlFactura .= "<td style='margin-top:4mm; width:8mm; background-color:#E6E6E6;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfev,5,2)."<br><span class='span_tituloPeq'>MES</span></td>";            //Fecha de vencimiento
-        $htmlFactura .= "<td style='margin-top:4mm; width:15mm; background-color:#E6E6E6;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfev,0,4)."<br><span class='span_tituloPeq'>Aï¿½O</span></td>";            //Fecha de vencimiento
+        $htmlFactura .= "<td style='margin-top:4mm; width:15mm; background-color:#E6E6E6;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfev,0,4)."<br><span class='span_tituloPeq'>AÑO</span></td>";            //Fecha de vencimiento
         //$htmlFactura .= "<td style='width:0.77cm'></td>";                                                               //Espacio vacio
         $htmlFactura .= "</tr>";
         $htmlFactura .= "</table>";
@@ -1061,7 +1061,7 @@ function mostrar_empresa($wemp_pmla)
         $htmlFactura .= "<table addborder='on' cellspacing='0' cellpadding='0' style='width:185mm;font-size:11pt;height:8mm;'  class='monoespaciado'>";
         //$htmlFactura .= "<tr style='height:1cm'>";
         $htmlFactura .= "<tr class='tr_borderBottom tr_borderTop'>";
-        $htmlFactura .= "<td style='width:76mm; margin-top:2mm;' align='left' class='td_bordeDerecho'><span class='span_titulo'>SEï¿½ORES</span><br>".$wres."</td>"; // Nombre responsable
+        $htmlFactura .= "<td style='width:76mm; margin-top:2mm;' align='left' class='td_bordeDerecho'><span class='span_titulo'>SEÑORES</span><br>".$wres."</td>"; // Nombre responsable
         $htmlFactura .= "<td align='center' style='width:30mm; margin-top:2mm;' class='td_bordeDerecho'><span class='span_titulo'>NIT. O C.C.</span><br>".$wced."</td>";  // NIT responsable
         $htmlFactura .= "<td align='center' nowrap='nowrap' style='width:58mm; margin-top:1mm;' class='td_bordeDerecho'><span class='span_titulo'>DOMICILIO</span><br>&nbsp;</td>";    // Domicilio responsable
         $htmlFactura .= "<td align='center' style='width:20mm; margin-top:2mm;'><span class='span_titulo'>TELEFONO</span><br>&nbsp;</td>";   // Telefono responsable
@@ -1071,7 +1071,7 @@ function mostrar_empresa($wemp_pmla)
 
         //Fila del paciente
 
-		//2016-02-25 Se modifica la forma como se tenia escrito fecha de ingeso y de salida para ello se debe cambiar y separar un solo tr que habï¿½a en dos tr
+		//2016-02-25 Se modifica la forma como se tenia escrito fecha de ingeso y de salida para ello se debe cambiar y separar un solo tr que había en dos tr
 		$htmlFactura .= "<table addborder='on' cellspacing='0' cellpadding='0' style='width:185mm;font-size:10pt;height:8mm;'  class='monoespaciado'>";
 		$htmlFactura .= "<tr class='tr_contenido' style='border-bottom:0'>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:96mm;' align='left' valign='middle' class='td_bordeDerecho'><span class='span_titulo'>POR SERVICIOS PRESTADOS AL PACIENTE</span></td>";
@@ -1084,10 +1084,10 @@ function mostrar_empresa($wemp_pmla)
 		$htmlFactura .= "<td style=' margin-top:4mm; width:96mm;' align='left' valign='middle' class='td_bordeDerecho' >".substr($wpac,0,42)."</td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:8mm;' align='center' valign='middle'>".substr($wfecing,8,2)."<br><span class='span_tituloPeq'>DIA</span></td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:8mm;' align='center' valign='middle'>".substr($wfecing,5,2)."<br><span class='span_tituloPeq'>MES</span></td>";
-		$htmlFactura .= "<td style=' margin-top:4mm; width:15mm;' align='center' valign='middle' class='td_bordeDerecho'>".substr($wfecing,0,4)."<br><span class='span_tituloPeq'>Aï¿½O</span></td>";
+		$htmlFactura .= "<td style=' margin-top:4mm; width:15mm;' align='center' valign='middle' class='td_bordeDerecho'>".substr($wfecing,0,4)."<br><span class='span_tituloPeq'>AÑO</span></td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:8mm;' align='center' valign='middle' >".substr($wfecegr,8,2)."<br><span class='span_tituloPeq'>DIA</span></td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:8mm;' align='center' valign='middle' >".substr($wfecegr,5,2)."<br><span class='span_tituloPeq'>MES</span></td>";
-		$htmlFactura .= "<td style=' margin-top:4mm; width:15mm;' align='center' valign='middle' class='td_bordeDerecho'>".substr($wfecegr,0,4)."<br><span class='span_tituloPeq'>Aï¿½O</span></td>";
+		$htmlFactura .= "<td style=' margin-top:4mm; width:15mm;' align='center' valign='middle' class='td_bordeDerecho'>".substr($wfecegr,0,4)."<br><span class='span_tituloPeq'>AÑO</span></td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:28mm;' align='center' valign='middle' >".$whis."-".$wing."</td>";
 		$htmlFactura .= "</tr>";
 		$htmlFactura .= "</table>";
@@ -1161,7 +1161,7 @@ function mostrar_empresa($wemp_pmla)
                 //     $sumar_clinica_tercero = true;
                 // }*/
 
-                // /*if (!$cx_no_pos) // Si no se selecciona ver concepto cirugï¿½a NO POS - 2012-05-09
+                // /*if (!$cx_no_pos) // Si no se selecciona ver concepto cirugía NO POS - 2012-05-09
                 // {
                 //     if($wnopos=='1')
                 //     {
@@ -1216,7 +1216,7 @@ function mostrar_empresa($wemp_pmla)
                 // if($wpor && $wpor>0)
                 // {
 
-                //     // Se comenta porque en teter el valor del tercero no estï¿½ discriminado, es igual al total del concepto
+                //     // Se comenta porque en teter el valor del tercero no está discriminado, es igual al total del concepto
                 //     // entonces para obtener el valor del tercero se hace calculo por medio del porcentaje en faconnit
                 //     // consulto el valor asignado al tercero
                 //     $q =   " SELECT terval "
@@ -1237,7 +1237,7 @@ function mostrar_empresa($wemp_pmla)
                 //     $valor_clinica = $wval - $valor_tercero;
 
 
-                //     // Se obtiene porcentaje asociado a la clï¿½nica
+                //     // Se obtiene porcentaje asociado a la clínica
                 //     $porcentaje_tercero = $wpor;
                 //     $porcentaje_clinica = 100 - $porcentaje_tercero;
 
@@ -1282,8 +1282,8 @@ function mostrar_empresa($wemp_pmla)
                     $htmlFacturaDetalle .= "<tr style=''>";
                     $htmlFacturaDetalle .= "<td style='width:14mm;font-size:7pt;' align='center' class='td_bordeDerecho'>".$wcon2105."</td>";               //Codigo concepto
                     $htmlFacturaDetalle .= "<td style='width:50mm;font-size:7pt;' align='left'>".substr($wcde2105,0,28)."</td>";    //Descripcion concepto
-                    $htmlFacturaDetalle .= "<td style='width:39mm;font-size:7pt;' align='left'>".$wtde2105."&nbsp;</td>";                 //Descripciï¿½n tercero
-                    $htmlFacturaDetalle .= "<td style='width:22mm;font-size:8pt;' align='right'>&nbsp;</td>";    //Valor clï¿½nica
+                    $htmlFacturaDetalle .= "<td style='width:39mm;font-size:7pt;' align='left'>".$wtde2105."&nbsp;</td>";                 //Descripción tercero
+                    $htmlFacturaDetalle .= "<td style='width:22mm;font-size:8pt;' align='right'>&nbsp;</td>";    //Valor clínica
                     $htmlFacturaDetalle .= "<td style='width:22mm;font-size:8pt;' align='right' class='td_bordeDerecho'>&nbsp;</td>";    //Valor tercero
                     $htmlFacturaDetalle .= "<td style='width:38mm;font-size:8pt;' align='right'>".number_format( $wval2105, 0,'.', ',' )."&nbsp;</td>";
                     $htmlFacturaDetalle .= "</tr>";
@@ -1317,8 +1317,8 @@ function mostrar_empresa($wemp_pmla)
          $htmlFactura .= "<tr style=''>";
          $htmlFactura .= "<td style='width:14mm;font-size:7pt;' align='center' class='td_bordeDerecho'>".$codigo."</td>";               //Codigo concepto
          $htmlFactura .= "<td style='width:50mm;font-size:7pt;' align='left'>".$descripcion."</td>";    //Descripcion concepto
-         $htmlFactura .= "<td style='width:39mm;font-size:7pt;' align='left'>&nbsp;&nbsp;</td>";                 //Descripciï¿½n tercero
-         $htmlFactura .= "<td style='width:22mm;font-size:8pt;' align='right'>&nbsp;&nbsp;</td>";    //Valor clï¿½nica
+         $htmlFactura .= "<td style='width:39mm;font-size:7pt;' align='left'>&nbsp;&nbsp;</td>";                 //Descripción tercero
+         $htmlFactura .= "<td style='width:22mm;font-size:8pt;' align='right'>&nbsp;&nbsp;</td>";    //Valor clínica
          $htmlFactura .= "<td style='width:22mm;font-size:8pt;' align='right' class='td_bordeDerecho'>&nbsp;&nbsp;</td>";    //Valor tercero
          $htmlFactura .= "<td style='width:35mm;font-size:8pt;' align='right'>".number_format( $wval, 0,'.', ',' )."&nbsp;</td>";
          $htmlFactura .= "</tr>";
@@ -1334,8 +1334,8 @@ function mostrar_empresa($wemp_pmla)
               $htmlFactura .= "<tr style='height:{$size}mm'>";
               $htmlFactura .= "<td style='width:14mm;font-size:7pt;' align='center' class='td_bordeDerecho'>&nbsp;</td>";               //Codigo concepto
               $htmlFactura .= "<td style='width: 50mm;font-size:9pt;' align='left' >&nbsp;</td>";    //Descripcion concepto
-              $htmlFactura .= "<td style='width: 39mm;font-size:9pt;' align='left' >&nbsp;</td>";                 //Descripciï¿½n tercero
-              $htmlFactura .= "<td style='width: 22mm;font-size:10pt;' align='right'>&nbsp;</td>";    //Valor clï¿½nica
+              $htmlFactura .= "<td style='width: 39mm;font-size:9pt;' align='left' >&nbsp;</td>";                 //Descripción tercero
+              $htmlFactura .= "<td style='width: 22mm;font-size:10pt;' align='right'>&nbsp;</td>";    //Valor clínica
               $htmlFactura .= "<td style='width: 22mm;font-size:10pt;' align='right' class='td_bordeDerecho'>&nbsp;</td>";    //Valor tercero
               $htmlFactura .= "<td style='width 38mm;font-size:10pt;' align='right'>&nbsp;</td>";
               $htmlFactura .= "</tr>";
@@ -1402,7 +1402,7 @@ function mostrar_empresa($wemp_pmla)
 
         $parcial = $wval;
         $subtotal = $wval-$total_descuento;
-        $iva = 0;   // IVA siempre es cero ya que en hospitalizaciï¿½n no hay cargos que impliquen IVA
+        $iva = 0;   // IVA siempre es cero ya que en hospitalización no hay cargos que impliquen IVA
         $total_neto = $subtotal+$iva-$cop_cmo_frq-$ant_exc;
 
           //Forma de pago
@@ -1433,7 +1433,7 @@ function mostrar_empresa($wemp_pmla)
             $htmlFactura .= "<td style='width:54mm; margin-top:4mm;' valign='top' class='td_bordeDerecho'>";  //***********************************************
               $htmlFactura .= "<table width='100%' height='100%'>";
                 $htmlFactura .= "<tr><td width='100%' height='10%' align='center' class='tr_contenido'><span class='span_titulo'><b>INFORMACION TRIBUTARIA</b></span></td></tr>";
-                $htmlFactura .= "<tr><td width='100%' height='90%' align='center'><span class='span_titulo'>I.V.A. Rï¿½GIMEN COMï¿½N<br>GRAN CONTRIBUYENTE RES.7714<br>AGENTE RETENEDOR DE IVA<br><font color='red'>SOMOS AUTORRETENEDORES RES.10653 03/12/2014</font></span></td></tr>";
+                $htmlFactura .= "<tr><td width='100%' height='90%' align='center'><span class='span_titulo'>I.V.A. RÉGIMEN COMÚN<br>GRAN CONTRIBUYENTE RES.7714<br>AGENTE RETENEDOR DE IVA<br><font color='red'>SOMOS AUTORRETENEDORES RES.10653 03/12/2014</font></span></td></tr>";
               $htmlFactura .= "</table>";
             $htmlFactura .= "</td>";  //***********************************************
             $htmlFactura .= "<td style='width:70mm; margin-top:4mm;' valign='center' align='center' class='td_bordeDerecho'>";  //***********************************************
@@ -1559,8 +1559,8 @@ function mostrar_empresa($wemp_pmla)
 
               //$htmlFactura .= "<td style='width:7.3cm' align='left' valign='top'><font size='1'>".$observacion."</font></td>";    //Observaciones
 
-              /* TEMPORALMENTE SE COMENTA LA OBSERVACIï¿½N FINAL PARA MOSTRAR LA RESOLUCIï¿½N DE LA DIAN */
-              //$htmlFactura .= "<td style='width:76mm;margin-top:10mm;' align='left' valign='top'  ><br>".$observacionFinal."</td>"; // COMENTADO TEMPORALMENTE, al activarlo se deberï¿½ comentar el td siguiente
+              /* TEMPORALMENTE SE COMENTA LA OBSERVACIÓN FINAL PARA MOSTRAR LA RESOLUCIÓN DE LA DIAN */
+              //$htmlFactura .= "<td style='width:76mm;margin-top:10mm;' align='left' valign='top'  ><br>".$observacionFinal."</td>"; // COMENTADO TEMPORALMENTE, al activarlo se deberá comentar el td siguiente
 
              if( isset( $nombre_plan ) ){
               //$datos_plan = $nombre_plan." MES ".$mes_plan." DEL ".$anioHoy;
@@ -1635,7 +1635,7 @@ function mostrar_empresa($wemp_pmla)
           $htmlFactura .= "<div align='center'><br>No se encontraron datos para la factura</div>";
         else{
 
-			//Modificaciï¿½n Veronica Arismendy agregar copias al pdf
+			//Modificación Veronica Arismendy agregar copias al pdf
 			//Se consulta cuantas copias tiene configuradas la empresa imprimir
 			$nitEmpresa = $wced;
 			$cantCopiasConfig = validarCantidadCopias($nitEmpresa);
@@ -1680,8 +1680,8 @@ function mostrar_empresa($wemp_pmla)
                               ."<object type='application/pdf' data='facturas/".$wnombrePDF.".pdf' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 width='900' height='700'>"
                                 ."<param name='src' value='facturas/".$wnombrePDF."' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"
                                 ."<p style='text-align:center; width: 60%;'>"
-                                  ."Adobe Reader no se encuentra o la versiï¿½n no es compatible, utiliza el icono para ir a la pï¿½gina de descarga <br />"
-                                  ."<a href='//get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
+                                  ."Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />"
+                                  ."<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
                                     ."<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"
                                   ."</a>"
                                 ."</p>"
@@ -1738,8 +1738,8 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 
     // 2012-11-16
     // Si es del tipo PAF entonces no se requiere carcep ni carhis, porque se va a mostrar es una sumatoria, se debe entonces devolver '0' en esos dos campos
-    // para evitar valores nulos que daï¿½an el programa.
-    // El siguiente query se crea porque para las facturas tipo PAF se estaba detectando valores nulos que hacï¿½an fallar el programa
+    // para evitar valores nulos que dañan el programa.
+    // El siguiente query se crea porque para las facturas tipo PAF se estaba detectando valores nulos que hacían fallar el programa
     if (isset($wnopos) && $wnopos == '3')
     {
 
@@ -1817,11 +1817,11 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
         $resdiv = odbc_do($conexunix,$qdiv);
         $wdiv = odbc_result($resdiv,1); //Digito de verificacion
 
-        // Si no se encuentra digito de verificaciï¿½n por defecto es cero
+        // Si no se encuentra digito de verificación por defecto es cero
         if(!isset($wdiv) || $wdiv=="")
         $wdiv = '0';
 
-        // Busco los espacios a dejar en el encabezado y la izquierda segï¿½n la impresora seleccionada
+        // Busco los espacios a dejar en el encabezado y la izquierda según la impresora seleccionada
         $q = " SELECT cimtop, cimlef "
           ."   FROM ".$wfacturacion."_000003 "
           ."  WHERE cimnom = '".$wimpresora."'"
@@ -1841,7 +1841,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 					   WHERE pachis = '{$whis}'
 					     AND pacnum = '{$wing}'";
 			$restipd = odbc_do($conexunix,$qTipd);
-			$tipoDocumento = odbc_result($restipd,1); //tipo  de identificaciï¿½n
+			$tipoDocumento = odbc_result($restipd,1); //tipo  de identificación
 
 			if( $tipoDocumento == "" ){
 				$qTipd = "SELECT pactid
@@ -1849,11 +1849,11 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 						   WHERE pachis = '{$whis}'
 						     AND pacnum = '{$wing}'";
 				$restipd = odbc_do($conexunix,$qTipd);
-				$tipoDocumento = odbc_result($restipd,1); //tipo  de identificaciï¿½n
+				$tipoDocumento = odbc_result($restipd,1); //tipo  de identificación
 			}
 		}
 
-		//Se genera la imagen del cï¿½digo de barras
+		//Se genera la imagen del código de barras
 		$ruta = '/var/www/matrix/fachos/procesos/facturas';
         $nombre = 'fac_unix_'.$wfactura;
         generarcodigodebarras($wfactura,170,40,70,"JPEG", $ruta, $nombre);
@@ -1975,10 +1975,10 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
         $htmlFactura .= "<td style='width:41mm;' align='center' valign='top'>No. ".$wfactura."</td>";
         $htmlFactura .= "<td style='margin-top:4mm; width:8mm;' align='center' valign='top' class='td_bordeDerecho td_bordeIzquierdo'>".substr($wfec,8,2)."<br><span class='span_tituloPeq'>DIA</span></td>";            //Fecha
         $htmlFactura .= "<td style='margin-top:4mm; width:8mm;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfec,5,2)."<br><span class='span_tituloPeq'>MES</span></td>";            //Fecha
-        $htmlFactura .= "<td style='margin-top:4mm; width:15mm;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfec,0,4)."<br><span class='span_tituloPeq'>Aï¿½O</span></td>";            //Fecha
+        $htmlFactura .= "<td style='margin-top:4mm; width:15mm;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfec,0,4)."<br><span class='span_tituloPeq'>AÑO</span></td>";            //Fecha
         $htmlFactura .= "<td style='margin-top:4mm; width:8mm; background-color:#E6E6E6;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfev,8,2)."<br><span class='span_tituloPeq'>DIA</span></td>";            //Fecha de vencimiento
         $htmlFactura .= "<td style='margin-top:4mm; width:8mm; background-color:#E6E6E6;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfev,5,2)."<br><span class='span_tituloPeq'>MES</span></td>";            //Fecha de vencimiento
-        $htmlFactura .= "<td style='margin-top:4mm; width:15mm; background-color:#E6E6E6;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfev,0,4)."<br><span class='span_tituloPeq'>Aï¿½O</span></td>";            //Fecha de vencimiento
+        $htmlFactura .= "<td style='margin-top:4mm; width:15mm; background-color:#E6E6E6;' align='center' valign='top' class='td_bordeDerecho'>".substr($wfev,0,4)."<br><span class='span_tituloPeq'>AÑO</span></td>";            //Fecha de vencimiento
         //$htmlFactura .= "<td style='width:0.77cm'></td>";                                                               //Espacio vacio
         $htmlFactura .= "</tr>";
         $htmlFactura .= "</table>";
@@ -2000,7 +2000,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
         $htmlFactura .= "<table addborder='on' cellspacing='0' cellpadding='0' style='width:185mm;font-size:11pt;height:8mm;'  class='monoespaciado'>";
         //$htmlFactura .= "<tr style='height:1cm'>";
         $htmlFactura .= "<tr class='tr_contenido tr_borderTop'>";
-        $htmlFactura .= "<td style='width:76mm; margin-top:2mm;' align='left' class='td_bordeDerecho'><span class='span_titulo'>SEï¿½ORES</span><br>".substr($wres,0,34)."</td>"; // Nombre responsable
+        $htmlFactura .= "<td style='width:76mm; margin-top:2mm;' align='left' class='td_bordeDerecho'><span class='span_titulo'>SEÑORES</span><br>".substr($wres,0,34)."</td>"; // Nombre responsable
         $htmlFactura .= "<td align='center' style='width:30mm; margin-top:2mm;' class='td_bordeDerecho'><span class='span_titulo'>NIT. O C.C.</span><br>".trim($wcod)."-".$wdiv."</td>";  // NIT responsable
         $htmlFactura .= "<td align='center' nowrap='nowrap' style='width:58mm; margin-top:1mm;' class='td_bordeDerecho'><span class='span_titulo'>DOMICILIO</span><br>".$domicilioResponsable."</td>";    // Domicilio responsable
         $htmlFactura .= "<td align='center' style='width:20mm; margin-top:2mm;'><span class='span_titulo'>TELEFONO</span><br>".substr($wtel,0,8)."</td>";   // Telefono responsable
@@ -2009,7 +2009,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 
         $wfecing='0000-00-00';
         $wfecegr='0000-00-00';
-        // 2012-11-16 en muchas ocaciones se hacen consultas para historias con tipo 0, pero generan datos nulos y daï¿½an el programa, por defecto se pone la fecha en 0000-00-00
+        // 2012-11-16 en muchas ocaciones se hacen consultas para historias con tipo 0, pero generan datos nulos y dañan el programa, por defecto se pone la fecha en 0000-00-00
         //
         if($whis && trim($whis)!='' && $whis!='0')
 		{
@@ -2056,8 +2056,8 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 			$wing="";
 		}
 
-        // Si es ayuda diagnï¿½stica encuentro la fecha en aymov
-        // 2012-11-16 antes estaba quemado a.movfue = '20' y se cambiï¿½ por a.movfue = '".$wffa."'
+        // Si es ayuda diagnóstica encuentro la fecha en aymov
+        // 2012-11-16 antes estaba quemado a.movfue = '20' y se cambió por a.movfue = '".$wffa."'
         $query="SELECT b.movfec
                FROM famov a, aymov b
               WHERE a.movfue = '".$wffa."'
@@ -2075,15 +2075,15 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
             $wfecegr="";
         }
 
-		//2016-04-05 Verï¿½nica Arismendy
-		//La fecha a mostrar en fecha ingreso y fecha salida puede venir determinada desde el formulario antes de imprimir si el centro de costo de la factura estï¿½ configurado asï¿½
+		//2016-04-05 Verónica Arismendy
+		//La fecha a mostrar en fecha ingreso y fecha salida puede venir determinada desde el formulario antes de imprimir si el centro de costo de la factura está configurado así
 		if($fechaIngresoEvolucion != ""){
 			$wfecing = $fechaIngresoEvolucion;
 			$wfecegr = $fechaIngresoEvolucion;
 		}
 
         //Fila del paciente
-		//2016-02-25 Se modifica la forma como se tenia escrito fecha de ingeso y de salida para ello se debe cambiar y separar un solo tr que habï¿½a en dos tr
+		//2016-02-25 Se modifica la forma como se tenia escrito fecha de ingeso y de salida para ello se debe cambiar y separar un solo tr que había en dos tr
 		$htmlFactura .= "<table addborder='on' cellspacing='0' cellpadding='0' style='width:185mm;font-size:10pt;height:8mm;'  class='monoespaciado'>";
 		$htmlFactura .= "<tr class='tr_contenido' style='border-bottom:0'>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:96mm;' align='left' valign='middle' class='td_bordeDerecho'><span class='span_titulo'>POR SERVICIOS PRESTADOS AL PACIENTE</span></td>";
@@ -2096,10 +2096,10 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 		$htmlFactura .= "<td style=' margin-top:4mm; width:96mm;' align='left' valign='middle' class='td_bordeDerecho' >".substr($wpac,0,42)."</td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:8mm;' align='center' valign='middle'>".substr($wfecing,8,2)."<br><span class='span_tituloPeq'>DIA</span></td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:8mm;' align='center' valign='middle'>".substr($wfecing,5,2)."<br><span class='span_tituloPeq'>MES</span></td>";
-		$htmlFactura .= "<td style=' margin-top:4mm; width:15mm;' align='center' valign='middle' class='td_bordeDerecho'>".substr($wfecing,0,4)."<br><span class='span_tituloPeq'>Aï¿½O</span></td>";
+		$htmlFactura .= "<td style=' margin-top:4mm; width:15mm;' align='center' valign='middle' class='td_bordeDerecho'>".substr($wfecing,0,4)."<br><span class='span_tituloPeq'>AÑO</span></td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:8mm;' align='center' valign='middle' >".substr($wfecegr,8,2)."<br><span class='span_tituloPeq'>DIA</span></td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:8mm;' align='center' valign='middle' >".substr($wfecegr,5,2)."<br><span class='span_tituloPeq'>MES</span></td>";
-		$htmlFactura .= "<td style=' margin-top:4mm; width:15mm;' align='center' valign='middle' class='td_bordeDerecho'>".substr($wfecegr,0,4)."<br><span class='span_tituloPeq'>Aï¿½O</span></td>";
+		$htmlFactura .= "<td style=' margin-top:4mm; width:15mm;' align='center' valign='middle' class='td_bordeDerecho'>".substr($wfecegr,0,4)."<br><span class='span_tituloPeq'>AÑO</span></td>";
 		$htmlFactura .= "<td style=' margin-top:4mm; width:28mm;' align='center' valign='middle' >".$whis."-".$wing."</td>";
 		$htmlFactura .= "</tr>";
         $htmlFactura .= "</table>";
@@ -2140,7 +2140,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
             ."    AND movdetanu = '0'  ";
         $resdes = odbc_do($conexunix,$q);
 
-        // Inicializaciï¿½n de variables para usar en el ciclo
+        // Inicialización de variables para usar en el ciclo
         $limite_conceptos = 10;
         $total_otros_clinica = 0;
         $total_otros_terceros = 0;
@@ -2161,8 +2161,8 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
         $wf_paf = 'PAF-%';
 
         /** 2012-05-09
-         * Este bloque de cï¿½digo se adiciona para validar y consultar la descripciï¿½n del concepto cuando se va a imprimir una factura
-         * y se seleccionï¿½ la opciï¿½n 'NO POS CIRUGï¿½A'
+         * Este bloque de código se adiciona para validar y consultar la descripción del concepto cuando se va a imprimir una factura
+         * y se seleccionó la opción 'NO POS CIRUGÍA'
          */
         if (isset($wnopos) && $wnopos == '2')
         {
@@ -2185,7 +2185,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
         }
 
         /** 2012-11-16
-         * Este bloque de cï¿½digo se adiciona para validar y consultar la descripciï¿½n del concepto COPAGO
+         * Este bloque de código se adiciona para validar y consultar la descripción del concepto COPAGO
          *
          */
         if (isset($wnopos) && $wnopos == '3')
@@ -2200,7 +2200,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
                 {
                     $rowcx = mysql_fetch_array($rescx);
                     $wcde = trim($rowcx['condes']);  //Descripcion concepto
-                    $cod_paf_exp = trim($rowcx['concod']);  //Cï¿½digo de concepto tipo PAF
+                    $cod_paf_exp = trim($rowcx['concod']);  //Código de concepto tipo PAF
                     $cod_paf_exp = explode('-',$cod_paf_exp);
                     $cod_paf_con = $cod_paf_exp[1];
                     $cx_no_pos = true;
@@ -2245,7 +2245,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
                 $sumar_clinica_tercero = true;
             }
 
-            if (!$cx_no_pos) // Si no se selecciona ver concepto cirugï¿½a NO POS - 2012-05-09
+            if (!$cx_no_pos) // Si no se selecciona ver concepto cirugía NO POS - 2012-05-09
             {
                 if($wnopos=='1')
                 {
@@ -2285,7 +2285,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
             if($wpor && $wpor>0)
             {
                 /*
-                // Se comenta porque en teter el valor del tercero no estï¿½ discriminado, es igual al total del concepto
+                // Se comenta porque en teter el valor del tercero no está discriminado, es igual al total del concepto
                 // entonces para obtener el valor del tercero se hace calculo por medio del porcentaje en faconnit
                 // consulto el valor asignado al tercero
                 $q =   " SELECT terval "
@@ -2306,7 +2306,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
                 $valor_clinica = $wval - $valor_tercero;
                 */
 
-                // Se obtiene porcentaje asociado a la clï¿½nica
+                // Se obtiene porcentaje asociado a la clínica
                 $porcentaje_tercero = $wpor;
                 $porcentaje_clinica = 100 - $porcentaje_tercero;
 
@@ -2351,8 +2351,8 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
                 $htmlFactura .= "<tr style=''>";
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:14mm;font-size:7pt;' valing='top' align='center' class='td_bordeDerecho' >".$wcon."</td>";               //Codigo concepto
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:50mm;font-size:7pt;' valing='top' align='left'>".substr($wcde,0,28)."</td>";    //Descripcion concepto
-                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:39mm;font-size:7pt;' valing='top' align='left'>".$wtde."</td>";                 //Descripciï¿½n tercero
-                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:22mm;font-size:8pt;' valing='top' align='right'>".number_format( $valor_clinica, 0,'.', ',' )."&nbsp;</td>";    //Valor clï¿½nica
+                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:39mm;font-size:7pt;' valing='top' align='left'>".$wtde."</td>";                 //Descripción tercero
+                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:22mm;font-size:8pt;' valing='top' align='right'>".number_format( $valor_clinica, 0,'.', ',' )."&nbsp;</td>";    //Valor clínica
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:22mm;font-size:8pt;' valing='top' align='right' class='td_bordeDerecho'>".(($sumar_clinica_tercero) ? '&nbsp;' : number_format( $valor_tercero, 0,'.', ',' ))."&nbsp;</td>";    //Valor tercero
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:38mm;font-size:8pt;' valing='top' align='right'>".number_format( $wval, 0,'.', ',' )."&nbsp;</td>";
                 $htmlFactura .= "</tr>";
@@ -2382,7 +2382,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
             $cont++;
         }
 
-        // Si se seleccionï¿½ ver cirugï¿½a NO POS, en este bloque de cï¿½digo se muestra un solo concepto y las cifras totalizadas - 2012-05-09
+        // Si se seleccionó ver cirugía NO POS, en este bloque de código se muestra un solo concepto y las cifras totalizadas - 2012-05-09
         if ($cx_no_pos)
         {
             // if (isset($wnopos) && $wnopos == '2')
@@ -2391,8 +2391,8 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
                 $htmlFactura .= "<tr style=''>";
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:14mm;font-size:7pt;' valign='top' align='center' class='td_bordeDerecho'>&nbsp;</td>";               //Codigo concepto
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 50mm;font-size:7pt;' valign='top' align='left'>".substr($wcde,0,28)."</td>";    //Descripcion concepto
-                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 39mm;font-size:7pt;' valign='top' align='left' >&nbsp;</td>";                 //Descripciï¿½n tercero
-                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 22mm;font-size:8pt;' valign='top' align='right'>".number_format( $total_clinica, 0,'.', ',' )."&nbsp;</td>";    //Valor clï¿½nica
+                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 39mm;font-size:7pt;' valign='top' align='left' >&nbsp;</td>";                 //Descripción tercero
+                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 22mm;font-size:8pt;' valign='top' align='right'>".number_format( $total_clinica, 0,'.', ',' )."&nbsp;</td>";    //Valor clínica
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 22mm;font-size:8pt;' valign='top' align='right' class='td_bordeDerecho'>".number_format( $total_terceros, 0,'.', ',' )."&nbsp;</td>";    //Valor tercero
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width 38mm;font-size:8pt;' valign='top' align='right'>".number_format( $total, 0,'.', ',' )."&nbsp;</td>";
                 $htmlFactura .= "</tr>";
@@ -2413,18 +2413,18 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
                 $htmlFactura .= "<tr style=''>";
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:14mm;font-size:7pt;'  valign='top' align='center' class='td_bordeDerecho' >".$cod_paf_con."</td>";               //Codigo concepto
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 50mm;font-size:7pt;'  valign='top' align='left'>".substr($desconPaf,0,28)."</td>";    //Descripcion concepto
-                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 39mm;font-size:7pt;'  valign='top' align='left' >&nbsp;</td>";                 //Descripciï¿½n tercero
-                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 22mm;font-size:8pt;'  valign='top' align='right' >".number_format( $total_clinica_paf, 0,'.', ',' )."&nbsp;</td>";    //Valor clï¿½nica
+                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 39mm;font-size:7pt;'  valign='top' align='left' >&nbsp;</td>";                 //Descripción tercero
+                $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 22mm;font-size:8pt;'  valign='top' align='right' >".number_format( $total_clinica_paf, 0,'.', ',' )."&nbsp;</td>";    //Valor clínica
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width: 22mm;font-size:8pt;'  valign='top' align='right' class='td_bordeDerecho' >".number_format( $total_terceros_paf, 0,'.', ',' )."&nbsp;</td>";    //Valor tercero
                 $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width 38mm;font-size:8pt;'  valign='top' align='right'>".number_format( $total_desc_paf, 0,'.', ',' )."&nbsp;</td>";
                 $htmlFactura .= "</tr>";
 
-                // Como lo que es tipo PAF se va a relacionar en una fila aparte entonces lo que se sumï¿½ en rotales paf se le resta a la sumatoria de todos los conceptos
+                // Como lo que es tipo PAF se va a relacionar en una fila aparte entonces lo que se sumó en rotales paf se le resta a la sumatoria de todos los conceptos
                 $total_clinica = ($total_clinica_paf < 0) ? $total_clinica + $total_clinica_paf : $total_clinica - $total_clinica_paf;
                 $total_terceros = ($total_terceros_paf < 0) ? $total_terceros + $total_terceros_paf : $total_terceros - $total_terceros_paf;
                 $total = ($total_desc_paf < 0) ? $total + $total_desc_paf : $total - $total_desc_paf; // para el primer caso debe ser (+) porque $total_desc_paf tiene un valor negativo.
             }
-            $cont = 0; // Se reinicia el contador para que no muestre 'OTROS SERVICIOS, Ver Anexo' en la factura. El valor de anexos ya estï¿½ incluido en el total
+            $cont = 0; // Se reinicia el contador para que no muestre 'OTROS SERVICIOS, Ver Anexo' en la factura. El valor de anexos ya está incluido en el total
         }
 
         if($cont>=$limite_conceptos)
@@ -2443,7 +2443,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
         $htmlFactura .= "<tr style=''>";
         $htmlFactura .= "<td align='center' class='td_bordeDerecho'></td>";
         $htmlFactura .= "<td align='left' colspan='2' valign='middle' style='font-size:8pt;'>TOTAL GENERAL DE LOS SERVICIOS:</td>";	//Descripcion concepto
-        $htmlFactura .= "<td align='right' valign='middle' style='border-top: 1px solid #000000; font-size:8pt;'>".number_format( $total_clinica, 0,'.', ',' )."&nbsp;</td>";	//Valor clï¿½nica
+        $htmlFactura .= "<td align='right' valign='middle' style='border-top: 1px solid #000000; font-size:8pt;'>".number_format( $total_clinica, 0,'.', ',' )."&nbsp;</td>";	//Valor clínica
         $htmlFactura .= "<td align='right' valign='middle' style='border-top: 1px solid #000000; font-size:8pt;' class='td_bordeDerecho' >".number_format( $total_terceros, 0,'.', ',' )."&nbsp;</td>";	//Valor tercero
         $htmlFactura .= "<td align='right' valign='middle' style='border-top: 1px solid #000000; font-size:8pt;' >".number_format( $total, 0,'.', ',' )."&nbsp;</td>";
         $htmlFactura .= "</tr>";
@@ -2458,8 +2458,8 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
               $htmlFactura .= "<tr style=''>";
               $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:14mm;font-size:7pt;' valing='top' align='center' class='td_bordeDerecho' >&nbsp;</td>";               //Codigo concepto
               $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:50mm;font-size:7pt;' valing='top' align='left'>&nbsp;</td>";    //Descripcion concepto
-              $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:39mm;font-size:7pt;' valing='top' align='left'>&nbsp;</td>";                 //Descripciï¿½n tercero
-              $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:22mm;font-size:8pt;' valing='top' align='right'>&nbsp;</td>";    //Valor clï¿½nica
+              $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:39mm;font-size:7pt;' valing='top' align='left'>&nbsp;</td>";                 //Descripción tercero
+              $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:22mm;font-size:8pt;' valing='top' align='right'>&nbsp;</td>";    //Valor clínica
               $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:22mm;font-size:8pt;' valing='top' align='right' class='td_bordeDerecho'>&nbsp;</td>";    //Valor tercero
               $htmlFactura .= "<td cellspacing='0' cellpadding='0' style='width:38mm;font-size:8pt;' valing='top' align='right'>&nbsp;</td>";
               $htmlFactura .= "</tr>";
@@ -2510,7 +2510,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 
         $parcial = $total;
         $subtotal = $total-$total_descuento;
-        $iva = 0;   // IVA siempre es cero ya que en hospitalizaciï¿½n no hay cargos que impliquen IVA
+        $iva = 0;   // IVA siempre es cero ya que en hospitalización no hay cargos que impliquen IVA
         $total_neto = $subtotal+$iva-$cop_cmo_frq-$ant_exc;
 
         //Forma de pago
@@ -2528,7 +2528,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
             $htmlFactura .= "<td style='width:54mm; margin-top:4mm;' valign='top' class='td_bordeDerecho'>";  //***********************************************
               $htmlFactura .= "<table width='100%' height='100%'>";
                 $htmlFactura .= "<tr><td width='100%' height='10%' align='center' class='tr_contenido'><span class='span_titulo'><b>INFORMACION TRIBUTARIA</b></span></td></tr>";
-                $htmlFactura .= "<tr><td width='100%' height='90%' align='center'><span class='span_titulo'>I.V.A. Rï¿½GIMEN COMï¿½N<br>GRAN CONTRIBUYENTE RES.7714<br>AGENTE RETENEDOR DE IVA<br><font color='red'>SOMOS AUTORRETENEDORES RES.10653 03/12/2014</font></span></td></tr>";
+                $htmlFactura .= "<tr><td width='100%' height='90%' align='center'><span class='span_titulo'>I.V.A. RÉGIMEN COMÚN<br>GRAN CONTRIBUYENTE RES.7714<br>AGENTE RETENEDOR DE IVA<br><font color='red'>SOMOS AUTORRETENEDORES RES.10653 03/12/2014</font></span></td></tr>";
               $htmlFactura .= "</table>";
             $htmlFactura .= "</td>";  //***********************************************
             $htmlFactura .= "<td style='width:70mm; margin-top:4mm;' valign='center' align='center' class='td_bordeDerecho'>";  //***********************************************
@@ -2648,8 +2648,8 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 
         //$htmlFactura .= "<td style='width:7.3cm' align='left' valign='top'><font size='1'>".$observacion."</font></td>";		//Observaciones
 
-        /* TEMPORALMENTE SE COMENTA LA OBSERVACIï¿½N FINAL PARA MOSTRAR LA RESOLUCIï¿½N DE LA DIAN */
-        //$htmlFactura .= "<td style='width:76mm;margin-top:10mm;' align='left' valign='top'  ><br>".$observacionFinal."</td>"; // COMENTADO TEMPORALMENTE, al activarlo se deberï¿½ comentar el td siguiente
+        /* TEMPORALMENTE SE COMENTA LA OBSERVACIÓN FINAL PARA MOSTRAR LA RESOLUCIÓN DE LA DIAN */
+        //$htmlFactura .= "<td style='width:76mm;margin-top:10mm;' align='left' valign='top'  ><br>".$observacionFinal."</td>"; // COMENTADO TEMPORALMENTE, al activarlo se deberá comentar el td siguiente
 
        if( isset( $nombre_plan ) ){
         //$datos_plan = $nombre_plan." MES ".$mes_plan." DEL ".$anioHoy;
@@ -2746,7 +2746,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
         $htmlFactura .= "<div align='center'><br>No se encontraron datos para la factura</div>";
       else{
 
-			//Modificaciï¿½n Veronica Arismendy agregar copias al pdf
+			//Modificación Veronica Arismendy agregar copias al pdf
 			//Se consulta cuantas copias tiene configuradas la empresa imprimir
 			$nitEmpresa = trim($wcod)."-".$wdiv;
 			$cantCopiasConfig = validarCantidadCopias($nitEmpresa);
@@ -2792,8 +2792,8 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
                             ."<object type='application/pdf' data='facturas/".$wnombrePDF.".pdf' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 width='900' height='700'>"
                               ."<param name='src' value='facturas/".$wnombrePDF."' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"
                               ."<p style='text-align:center; width: 60%;'>"
-                                ."Adobe Reader no se encuentra o la versiï¿½n no es compatible, utiliza el icono para ir a la pï¿½gina de descarga <br />"
-                                ."<a href='//get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
+                                ."Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />"
+                                ."<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
                                   ."<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"
                                 ."</a>"
                               ."</p>"
@@ -2812,7 +2812,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 }
 
 
-//Funciï¿½n que consulta en la tabla fachos_000024 si ya existe un registro en on para la factura solicitada(lo que quiere decir que ya se imprimiï¿½ la original)
+//Función que consulta en la tabla fachos_000024 si ya existe un registro en on para la factura solicitada(lo que quiere decir que ya se imprimió la original)
 function validarEstadoImpresion($numfactura){
 	global $conex;
 	global $wfacturacion;
@@ -2833,7 +2833,7 @@ function validarEstadoImpresion($numfactura){
 	return $estadoFact;
 }
 
-//Funciï¿½n que permite guardar el log de la impresiï¿½n de facturaciï¿½n(conservando cuando fue se imprime la original y cuando son copias)
+//Función que permite guardar el log de la impresión de facturación(conservando cuando fue se imprime la original y cuando son copias)
 function guardarLogImpresion($wfactura, $estadoFactura){
 
 	global $wusuario;
@@ -2850,7 +2850,7 @@ function guardarLogImpresion($wfactura, $estadoFactura){
 }
 
 
-//Funciï¿½n que verifica cuntas copias se deben generar en la impresiï¿½n dependiendo de la empresa  la que pertenezca la factura.
+//Función que verifica cuntas copias se deben generar en la impresión dependiendo de la empresa  la que pertenezca la factura.
 function validarCantidadCopias($nitEmpresa){
 	global $conex;
 	global $wemp_pmla;
@@ -2873,20 +2873,20 @@ function validarCantidadCopias($nitEmpresa){
 	return $cantCopias;
 }
 
-//Funciï¿½n que valida si el centro de costo de la factura se encuentra configurado para que tome la fecha de ingreso desde evoluciï¿½n
+//Función que valida si el centro de costo de la factura se encuentra configurado para que tome la fecha de ingreso desde evolución
 function validarFechasCentroCosto($cco, $historia, $ingreso, $fechaFactura){
 
 	global $conex;
 	global $wemp_pmla;
 
 	$arrFechasEvolucion = array();
-	//Se consultan los centros de costos configurados para que impriman la fecha de ingreso desde evoluciï¿½n
+	//Se consultan los centros de costos configurados para que impriman la fecha de ingreso desde evolución
 		$todosCcoConfig = consultarAliasPorAplicacion($conex, $wemp_pmla, 'ccoFechaIngresoPorEvolucion');
 
-		//Se consulta si el centro de costos de la factura actual se encuentra en los centros de costos que estï¿½n congigurados para tomar fecha de ingreso desde la evoluciï¿½n
+		//Se consulta si el centro de costos de la factura actual se encuentra en los centros de costos que están congigurados para tomar fecha de ingreso desde la evolución
 		$existeCcoConfigurado = strpos($todosCcoConfig, $cco."-");
 
-		//Si existe ese centro de costo en la configuraciï¿½n se consulta el valor para el formulario y se saca la fecha maxima de la tabla 000036
+		//Si existe ese centro de costo en la configuración se consulta el valor para el formulario y se saca la fecha maxima de la tabla 000036
 		if($existeCcoConfigurado !== false){
 			$numeroTablaFormulario = "";
 			$arrCco = explode(";", $todosCcoConfig);
@@ -2896,7 +2896,7 @@ function validarFechasCentroCosto($cco, $historia, $ingreso, $fechaFactura){
 
 				if(isset($newArr[0]) && $newArr[0] === $cco){
 
-					//2016-03-14 se cambia para que pueda tomar de uno o varios formularios segï¿½n este configurado en el parï¿½metro ccoFechaIngresoPorEvolucion
+					//2016-03-14 se cambia para que pueda tomar de uno o varios formularios según este configurado en el parámetro ccoFechaIngresoPorEvolucion
 					$arrAllForm = explode("_",$newArr[1]);
 					$arrForm = implode("','",$arrAllForm);
 
@@ -3004,7 +3004,7 @@ else
             $res_imps = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
             $num_imps = mysql_num_rows($res_imps);
 
-            // Selecciï¿½n de impresora
+            // Selección de impresora
             echo "<tr><td height='31'><b> Impresora </b></td>";
 
             // Campo select de impresoras
@@ -3046,7 +3046,7 @@ else
                 <td colspan='3'>
                   <div style='color: #676767;font-family: verdana;font-size:9; background-color: #E4E4E4; text-align:center;' >
                      <img width='15' height='15' src='../../images/medical/root/Advertencia.png'/>
-                     [?] Imprimir una factura PAF sin seleccionar la opciï¿½n correspondiente puede generar errores en el programa.
+                     [?] Imprimir una factura PAF sin seleccionar la opción correspondiente puede generar errores en el programa.
                   </div>
                  </td>
             </tr>";
@@ -3062,14 +3062,14 @@ else
                             <td height='31' align='center'><input type='radio' name='wnopos' value='0'> Normal</td>
                         </tr>
 						<tr style='font-size:8pt;'>
-                            <td colspan='3' height='31' align='center'>Mostrar resoluciï¿½n DIAN:&nbsp;<b>".$conResolucionDian."</b></td>
+                            <td colspan='3' height='31' align='center'>Mostrar resolución DIAN:&nbsp;<b>".$conResolucionDian."</b></td>
                         </tr>
                     </table>
                 </td>
             </tr>";
         }
 
-		//Verï¿½nica Arismendy
+		//Verónica Arismendy
 		//Se agrega la parte en caso de que aplique para que el usuario seleccione la fecha de ingreso y de salida con la que dese imprimr la factura
 		echo "<tr><td colspan='2'><br><div id='fechasEvolucion'></div></td><tr>	";
 
@@ -3104,8 +3104,8 @@ else
             $wffa = '20';
         }
 
-		//2016-04-05 Verï¿½nica Arismendy
-		//Se valida si aplicaba la opciï¿½n de seleccionar fecha para mostrar en fecha ingreso y fecha salida
+		//2016-04-05 Verónica Arismendy
+		//Se valida si aplicaba la opción de seleccionar fecha para mostrar en fecha ingreso y fecha salida
 		if(isset($fecha_ingreso_evolucion)) {
             $fechaIngresoEvolucion = $fecha_ingreso_evolucion;
         } else {
@@ -3141,7 +3141,7 @@ else
           $wpaquete  = $nombre_plan." MES DE ".$array_meses[$mes_plan]." DEL ".$ano_plan;
         }
 
-		//2016-02-19 Antes de mostrar el pdf de la factura se guarda el registro(log) de que se envï¿½o el formulario
+		//2016-02-19 Antes de mostrar el pdf de la factura se guarda el registro(log) de que se envío el formulario
 		$estadoFactura = validarEstadoImpresion($wfactura);
 		guardarLogImpresion($wfactura, $estadoFactura);
 

@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>GRABACION DE FACTURAS PATOLOGIA - MATRIX</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script> <!-- INDICADOR DE CARGA DE PAGINA-->
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="cssFact_pat.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" /><!--Estilo para el calendario-->
-    <link href="//mx.lasamericas.com.co/matrix/paf/procesos/CssAcordeonpaf.css" rel="stylesheet">
-    <script src="//mx.lasamericas.com.co/matrix/paf/procesos/calendariopaf.js" type="text/javascript"></script>
+    <link href="http://mx.lasamericas.com.co/matrix/paf/procesos/CssAcordeonpaf.css" rel="stylesheet">
+    <script src="http://mx.lasamericas.com.co/matrix/paf/procesos/calendariopaf.js" type="text/javascript"></script>
     <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
     <script src="jsFact_pat.js"></script>
     <script>
         function copiar()
@@ -45,7 +45,7 @@
         mysql_select_db("matrix");
 
         $conex = obtenerConexionBD("matrix");
-        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexiï¿½n con la BD de Facturaciï¿½n");
+        $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
     }
     //*/
 
@@ -60,7 +60,7 @@
     $num = mysql_num_rows($res);
 
     $accion = $_GET['accion'];
-    $fechaActual = date('Y-m-d');       $horaActual = date('H:i:s');        $aï¿½oActual = date('Y');                 $mesActual = date('m');
+    $fechaActual = date('Y-m-d');       $horaActual = date('H:i:s');        $añoActual = date('Y');                 $mesActual = date('m');
     $fechaInicial = $_GET['fechaI'];    $fechaFinal = $_GET['fechaF'];      $valTotCargos = $_GET['valTotCar'];     $responsable = $_GET['responsable'];
     $valTotIva = 0;                     $valCopago = 0;                     $valCuotMod = 0;                        $valDescto = 0;
     $valAbono = 0;                      $valNotDeb = 0;                     $valNotCre = 0;                         $valSaldo = $valTotCargos;
@@ -273,11 +273,11 @@ switch($accion)
                 $wemail_pos=$row[15];
                 $wteldompos=$row[16];
 
-                $wresolucion= "Documento oficial de autorizaciï¿½n de numeraciï¿½n: ".$wnrores." del ".$wfecres.", "
+                $wresolucion= "Documento oficial de autorización de numeración: ".$wnrores." del ".$wfecres.", "
                     ."factura ".$wfacini." a la factura ".$wfacfin."."
                     ."Esta factura cambiaria de compraventa se asimila en "
                     ."todos sus efectos a una letra de cambio, Art. 621 y "
-                    ."SS, 671 y SS 772, 773, 770 y SS del cï¿½digo de comercio.<BR>"
+                    ."SS, 671 y SS 772, 773, 770 y SS del código de comercio.<BR>"
                     ."Factura impresa por computador cumpliendo con los "
                     ."requisitos del Art. 617 del E.T.<BR>";
                 ?>
@@ -322,7 +322,7 @@ switch($accion)
                                                    fenres,fenval,fenviv,fencop,fencmo,fendes,fenabo,fenvnd,fenvnc,fensal,fenest,fencre,
                                                    fenpde,fenrec,fentop,fenhis,fening,fenesf,fenrln,fencco,fenrbo,fenimp,fendpa,fennpa,
                                                    fendev,fennac,fenobs,Seguridad)
-                 VALUES('clisur','$fechaActual','$horaActual','$aï¿½oActual','$mesActual','$fechaActual','$fueFact','$newCons','$tipoEmp','$nitEmpresa','$empCode',
+                 VALUES('clisur','$fechaActual','$horaActual','$añoActual','$mesActual','$fechaActual','$fueFact','$newCons','$tipoEmp','$nitEmpresa','$empCode',
                         '$codEmpRes','$valTotCargos','$valTotIva','$valCopago','$valCuotMod','$valDescto','$valAbono','$valNotDeb','$valNotCre','$valTotCargos','$estCargo','$cantResp',
                         '$porDescTarifa','$porcReco','$valTope','VARIAS','NO APLICA','$estFactura','$wresolucion','$wcco','$valRecibo','off','NO APLICA','NO APLICA',
                         '0','','','$usuario')");

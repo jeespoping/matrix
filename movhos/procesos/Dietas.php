@@ -197,7 +197,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 	if($num_rows == 0){
 
 	 die ("<br>\n<br>\n".
-        " <H1>No puede ingresar al programa de Solicitud de Dietas desde un equipo externo a la Clï¿½nica Las Amï¿½ricas <br><br> Volver al <a href='//mx.lasamericas.com.co/matrix/f1.php'> inicio </a>");
+        " <H1>No puede ingresar al programa de Solicitud de Dietas desde un equipo externo a la Clínica Las Américas <br><br> Volver al <a href='http://mx.lasamericas.com.co/matrix/f1.php'> inicio </a>");
 
 	}
 /*
@@ -209,32 +209,32 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 //=========================================================================================================================================\\
 //2020-09-28 Edwin MG	  : Se corrige  fecha en la funcion traer_observaciones_dsn
 //2020-09-21 Camilo Zapata: Se corrige consultas con fecha debido al cambio de BD (ya no se permite consultas con fecha vacia ej: fecha_data = '' )
-//2019-10-28 Camilo Zapata: Ahora el programa se refresca despues de darle click al botï¿½n grabar en la modal de patrï¿½n SI(Servicio Individual), para que
+//2019-10-28 Camilo Zapata: Ahora el programa se refresca despues de darle click al botón grabar en la modal de patrón SI(Servicio Individual), para que
                             habilite los campos de observaciones e intolerancias inmediatamente. buscar por fecha si es necesario.
-//2019-10-23 Camilo Zapata: Modificaciï¿½n en el programa para evitar caracteres erroneos en el nombre del patrï¿½n DSN wpatron_dsn_asociado, de tal manera que
-                            Como en la modificaciï¿½n anterior ya se garantiza la configuraciï¿½n ut8 en el momento de grabar el registro, no haga ninguna transformaciï¿½n posterior, manteniendo los caracteres tal cual estï¿½n grabados en la bd.
-//2019-10-10 Camilo Zapata: Modificaciï¿½n en la funciï¿½n que hable la modal para DSN, para que calcule su respectivo tamaï¿½o sin asignar un tiempo de recarga.
-                             y correcciï¿½n en caracteres, en observaciones y nombres en el dns.(Buscar fecha de ser necesario.)
-//2019-10-03 Camilo Zapata: Modificacion para la validaciï¿½n del tamaï¿½o de texto permitido en observaciones e intolerancias. ya que son 350 caracteres
+//2019-10-23 Camilo Zapata: Modificación en el programa para evitar caracteres erroneos en el nombre del patrón DSN wpatron_dsn_asociado, de tal manera que
+                            Como en la modificación anterior ya se garantiza la configuración ut8 en el momento de grabar el registro, no haga ninguna transformación posterior, manteniendo los caracteres tal cual están grabados en la bd.
+//2019-10-10 Camilo Zapata: Modificación en la función que hable la modal para DSN, para que calcule su respectivo tamaño sin asignar un tiempo de recarga.
+                             y corrección en caracteres, en observaciones y nombres en el dns.(Buscar fecha de ser necesario.)
+//2019-10-03 Camilo Zapata: Modificacion para la validación del tamaño de texto permitido en observaciones e intolerancias. ya que son 350 caracteres
                             que se deben repartir entre los dos.
-//2019-09-24 Camilo Zapata: Se verifica si un servicio(DSN) para una historia e ingreso ya existe programado para un dia especï¿½fico,
-                            En caso de que ya exista se guardara en el log, la modificaciï¿½n de la dieta, si no existe se almacenarï¿½ como nuevo pedido.
-//2019-09-23 Camilo Zapata: Adiciï¿½n del nombre especï¿½fico de la zona y la habitaciï¿½n para cada uno de los pacientes de urgencias.
+//2019-09-24 Camilo Zapata: Se verifica si un servicio(DSN) para una historia e ingreso ya existe programado para un dia específico,
+                            En caso de que ya exista se guardara en el log, la modificación de la dieta, si no existe se almacenará como nuevo pedido.
+//2019-09-23 Camilo Zapata: Adición del nombre específico de la zona y la habitación para cada uno de los pacientes de urgencias.
 //2019-09-19 Camilo Zapata: Se realiza las modificaciones necesarias para que en los servicios hospitalarios y urgencias se puedan visualizar
-                            todos los pacientes que estï¿½n en el centro de costos definido y zona( cuando existan ); En caso de ser necesario
+                            todos los pacientes que estén en el centro de costos definido y zona( cuando existan ); En caso de ser necesario
                             buscar "wzona".
 //Enero 24 de 2019 Edwin MG
-//- No se permite modificar observaciones o intolerancias si no hay un patrï¿½n seleccionado
-//- Las observaciones se traen de acuerdo al ï¿½ltimo servicio
+//- No se permite modificar observaciones o intolerancias si no hay un patrón seleccionado
+//- Las observaciones se traen de acuerdo al último servicio
 //=========================================================================================================================================\\
 //Diciembre 21 de 2018 Edwin MG
-//- SE modifica query que trae las observaciones del ï¿½ltimo servicio
+//- SE modifica query que trae las observaciones del último servicio
 //=========================================================================================================================================\\
 //Diciembre 17 de 2018 Edwin MG
 //Se realizan cambios varios:
-//	- En la auditorï¿½a (movhos 78) al hacer un cambio en observaciones queda la observaciï¿½n anterior y la nueva
-//	- Al empezar a escribir en el campo de observaciones el tiempo de refrescar la pï¿½gina se detiene, una vez se deja de escribir pasados 5
-//	  segundos las observaciones se graban y 45 segundos despues la pï¿½gina se refresca
+//	- En la auditoría (movhos 78) al hacer un cambio en observaciones queda la observación anterior y la nueva
+//	- Al empezar a escribir en el campo de observaciones el tiempo de refrescar la página se detiene, una vez se deja de escribir pasados 5
+//	  segundos las observaciones se graban y 45 segundos despues la página se refresca
 //	- Se valida que no se pueda modificar las observaciones y tolerancias en horarios no permitidos
 //=========================================================================================================================================\\
 //Agosto 30 de 2018 Jonatan
@@ -295,7 +295,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 //tiene servicios con DSN anteriores y los registrara para el siguiente dia.
 //=========================================================================================================================================\\
 //Agosto 14 de 2014 (Jonatan Lopez)
-//Se corrige el redondeo en la edad para que tenga en cuenta los pacientes de menos de 1 aï¿½oy asi se haga correctamente el cobro de la dieta.
+//Se corrige el redondeo en la edad para que tenga en cuenta los pacientes de menos de 1 añoy asi se haga correctamente el cobro de la dieta.
 //=========================================================================================================================================\\
 //Julio 22 de 2014 (Jonatan Lopez)
 //Se corrige la asigancion de los patrones de dieta para el servicio asociado, permitiendo que la dieta del servicio ppal si se duplique en el
@@ -318,8 +318,8 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 //Se controla que la observacion DSN y el patron asociado a DSN no se pierdan cuando la dieta es cancelada y cambiada por otra.
 //=========================================================================================================================================\\
 //Enero 20 de 2014 (Jonatan Lopez)
-//Se agrega en cada area de texto la validaciï¿½n del mï¿½ximo de caracteres, esto con el fin de que la informaciï¿½n escrita no supere el tamaï¿½o de
-//la tarjeta de dietas y asi no se pierda informaciï¿½n en la impresiï¿½n.
+//Se agrega en cada area de texto la validación del máximo de caracteres, esto con el fin de que la información escrita no supere el tamaño de
+//la tarjeta de dietas y asi no se pierda información en la impresión.
 //=========================================================================================================================================\\
 //Enero 14 de 2014 (Jonatan Lopez)
 //Se cambia le modo de uso del evento .click() jquery por .trigger('click'), ya que en la nueva version cambio la forma de uso, ademas se corrige
@@ -346,7 +346,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 //grabe en cada servicio.
 //===========================================================================================================================================\\
 //Septiembre 09 de 2013
-//Se crea un nuevo campo en movhos_000018 Ubidie, los registros que estï¿½n en 'on' en este campo, esas hitorias se listan para la solicitud de dietas
+//Se crea un nuevo campo en movhos_000018 Ubidie, los registros que estén en 'on' en este campo, esas hitorias se listan para la solicitud de dietas
 //en urgencias.
 //=========================================================================================================================================\\
 //Agosto 14 de 2013
@@ -359,7 +359,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 //Se corrige para que al seleccionar SI y TMO al mismo tiempo si permita sacar eliminar uno de ellos del arreglo cuando sea cancelado.
 //=========================================================================================================================================\\
 //Julio 17 de 2013
-//Se valida que el servicio individual en el ultimo servicio no daï¿½e la DSN del paciente, ademas que la DSN se marque en la primera carga del
+//Se valida que el servicio individual en el ultimo servicio no dañe la DSN del paciente, ademas que la DSN se marque en la primera carga del
 //programa.
 //=========================================================================================================================================\\
 //Julio 12 de 2013
@@ -411,9 +411,9 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 //=============================================================================================================================================
 //Enero 14 de 2013
 //Se cambia el modo en que se toma el tiempo de actualizacion de la mensajeria, antes hacia conexion al script mensajeriaDietas.php por medio de ajax,
-//ahora para obtener este dato lo harï¿½ en este mismo script.
+//ahora para obtener este dato lo hará en este mismo script.
 //=============================================================================================================================================
-//Noviembre 20 - Jï¿½natan Lopez
+//Noviembre 20 - Jónatan Lopez
 //Se repara el calendario para que funcione en internet explorer, ya que en la misma interfaz no se debe tener la variable del calendario
 //oculta y la misma variable asignada al calendario.
 //Se optimiza la ventana modal para la solictud de servicios individuales y TMO. Para que la interfaz cargue mas rapido y no tenga que poner
@@ -691,7 +691,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                         });
 
                     //Valida que las cantidades si esten correctas
-                    if(!esok) { alert("La cantidad o cantidades marcadas con rojo estï¿½n erradas."); return; }
+                    if(!esok) { alert("La cantidad o cantidades marcadas con rojo están erradas."); return; }
 
                     var prt_asociado = escape(patron_asociado);
 
@@ -748,7 +748,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                 }
               else
                   {
-                      alert('Debe asignar patrï¿½n a la dieta.');
+                      alert('Debe asignar patrón a la dieta.');
                       $("#ptr_dsn_text").focus();
                   }
 
@@ -948,7 +948,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
     window.scrollTo(0,pos);
 
 	setInterval(function() {
-ï¿½ ï¿½ ï¿½
+     
 		$('.blink').effect("pulsate", {}, 5000);
 
 	}, 1000);
@@ -958,7 +958,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
     window.name=self.pageYOffset || (document.documentElement.scrollTop+document.body.scrollTop);
     }
 
-    //Marca la historia de urgencias que tiene mas de 3 dï¿½as para hacerle pedidos de alimentacion.
+    //Marca la historia de urgencias que tiene mas de 3 días para hacerle pedidos de alimentacion.
     function funcionhistoriaurgencias(wemp_pmla, basedato, centro_costos)
     {
 
@@ -1006,7 +1006,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 			//alert(ajax.responseText);
 
 			if( ajax.responseText == 1 ){
-				alert( "Ya existe un servicio posterior. Las observaciones no se reflejarï¿½n en los servicios ya creados" );
+				alert( "Ya existe un servicio posterior. Las observaciones no se reflejarán en los servicios ya creados" );
 			}
 
 			}catch(e){ alert(e) }
@@ -1101,7 +1101,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                         if (x == 1)
                             {
                              este.checked=false;
-                             alert('El producto seleccionado no tiene costo en la tabla 000082, para el Patrï¿½n: '+patron+' ** en la historia: ** '+historia+' **')
+                             alert('El producto seleccionado no tiene costo en la tabla 000082, para el Patrón: '+patron+' ** en la historia: ** '+historia+' **')
                              return;
                             }
 
@@ -1215,7 +1215,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                         if (x == 1)
                             {
                              este.checked=false;
-                             alert('El producto seleccionado no tiene costo en la tabla 000082, para el Patrï¿½n: '+patron+' ** en la historia: ** '+historia+' **')
+                             alert('El producto seleccionado no tiene costo en la tabla 000082, para el Patrón: '+patron+' ** en la historia: ** '+historia+' **')
                             }
 
                          if (x == 'inactivo')
@@ -1239,11 +1239,11 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
                 if (windicador != 'dsn')
                     {
-                     confirmar=confirm("ï¿½Esta seguro de realizar esta operaciï¿½n, cancelarï¿½ el servicio para el paciente y no podrï¿½ seleccionar otro patrï¿½n o patrones?");
+                     confirmar=confirm("¿Esta seguro de realizar esta operación, cancelará el servicio para el paciente y no podrá seleccionar otro patrón o patrones?");
                     }
                     else
                         {
-                        confirmar=confirm("                                                                               ! ALERTA ï¿½ \n ï¿½Esta seguro de desea cancelar el patron "+patron+", se cancelarï¿½ la DSN para el paciente.?");
+                        confirmar=confirm("                                                                               ! ALERTA ¡ \n ¿Esta seguro de desea cancelar el patron "+patron+", se cancelará la DSN para el paciente.?");
                         }
 
                 if (confirmar)
@@ -1288,7 +1288,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
           var checkbox = $("#patron_grid"+f+"-"+c).is(":checked");
 
 		  //Esta validacion permite identificar si estan deseleccionando el cajon de DSN por parte de enfermeria, si esta activo el cajon
-		  //mostrarï¿½ un mensaje de confirmaciï¿½n para la cancelaciï¿½n del servicio.
+		  //mostrará un mensaje de confirmación para la cancelación del servicio.
           if(checkbox == true)
               {
                var estado = 'on';
@@ -1336,7 +1336,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 										 cajon.style.backgroundColor="";
                                          var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                          var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-										 alert('El Patrï¿½n: **'+ patron +'** No tiene costo en la tabla 000079, para el tipo de empresa: ** '+ tipo_empresa +' ** en la historia: ** '+ historia+' **, o la edad del paciente es menor a 6 meses.');
+										 alert('El Patrón: **'+ patron +'** No tiene costo en la tabla 000079, para el tipo de empresa: ** '+ tipo_empresa +' ** en la historia: ** '+ historia+' **, o la edad del paciente es menor a 6 meses.');
 										 }
 
 									 if (x == 2)
@@ -1345,7 +1345,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                          document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                          var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                          var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-										 alert('El Patrï¿½n: **'+ patron +'** no se puede combinar con ningï¿½n otro');
+										 alert('El Patrón: **'+ patron +'** no se puede combinar con ningún otro');
 										 }
 
 
@@ -1357,7 +1357,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 										 document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=true;
                                          var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                          var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-										 alert('El servicio de la historia seleccionada no puede ser adicionado o modificado porque esta fuera del horario. Favor revisar el inicio de horario de adiciï¿½n o el horario final del pedido en la parte superior de la pantalla.');
+										 alert('El servicio de la historia seleccionada no puede ser adicionado o modificado porque esta fuera del horario. Favor revisar el inicio de horario de adición o el horario final del pedido en la parte superior de la pantalla.');
 										 }
 
 
@@ -1367,14 +1367,14 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 										{
 										 cajon.style.backgroundColor="";
 										 document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
-										 alert('El Patrï¿½n: **'+ patron +'** no se puede combinar con los patrones seleccionados.');
+										 alert('El Patrón: **'+ patron +'** no se puede combinar con los patrones seleccionados.');
 										 }
 
                                      if (x == 421 )
 										{
 										 cajon.style.backgroundColor="";
 										 document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
-										 alert('El patrï¿½n principal de los patrones seleccionados no tiene costo en el servicio actual.');
+										 alert('El patrón principal de los patrones seleccionados no tiene costo en el servicio actual.');
 										 }
 
 
@@ -1382,7 +1382,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 										{
 										 cajon.style.backgroundColor="";
 										 document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
-										 alert('El Patrï¿½n: **'+ patron +'** no se puede combinar con los patrones seleccionados.');
+										 alert('El Patrón: **'+ patron +'** no se puede combinar con los patrones seleccionados.');
 										 }
 
                                     if (x == 5)
@@ -1429,7 +1429,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                             var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                             var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-                                            alert('No es posible ingresar a **'+ patron +'** ya que no ha iniciado el horario de adiciï¿½n, favor revisar los horarios en la parte superior de la pantalla.');
+                                            alert('No es posible ingresar a **'+ patron +'** ya que no ha iniciado el horario de adición, favor revisar los horarios en la parte superior de la pantalla.');
                                             }
 
 
@@ -1452,7 +1452,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                             var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                             var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-                                            alert('El Patrï¿½n: **'+ patron +'** no se puede combinar con ningï¿½n otro');
+                                            alert('El Patrón: **'+ patron +'** no se puede combinar con ningún otro');
                                             return false;
                                             }
 
@@ -1465,7 +1465,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                             var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                             var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-                                            alert('El Patrï¿½n: **'+ patron +'** no se puede combinar con ningï¿½n otro');
+                                            alert('El Patrón: **'+ patron +'** no se puede combinar con ningún otro');
                                             return false;
                                             }
 
@@ -1492,7 +1492,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false ;
                                             var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                             var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-                                            alert('No es posible modificar o solicitar alimentaciï¿½n para el paciente ya que ha pasado el horario normal de pedido o ha cancelado la solicitud tres veces en el horario de adiciï¿½n.');
+                                            alert('No es posible modificar o solicitar alimentación para el paciente ya que ha pasado el horario normal de pedido o ha cancelado la solicitud tres veces en el horario de adición.');
                                             return false;
                                             }
 
@@ -1504,7 +1504,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false ;
                                             var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                             var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-                                            alert('Cancelï¿½ el pedido en horario de adicion, solo podrï¿½ solicitar servicios individuales o un patrï¿½n desde el siguiente servicio.');
+                                            alert('Canceló el pedido en horario de adicion, solo podrá solicitar servicios individuales o un patrón desde el siguiente servicio.');
                                             return false;
                                             }
 
@@ -1515,7 +1515,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
     //										document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                             var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                             var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-                                            alert('El Patrï¿½n: **'+ patron +'** No tiene costo en la tabla 000079, para el tipo de empresa: ** '+ tipo_empresa +' ** en la historia: ** '+ historia+' **, o la edad del paciente es menor a 6 meses.');
+                                            alert('El Patrón: **'+ patron +'** No tiene costo en la tabla 000079, para el tipo de empresa: ** '+ tipo_empresa +' ** en la historia: ** '+ historia+' **, o la edad del paciente es menor a 6 meses.');
                                             return false;
                                             }
 
@@ -1526,7 +1526,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                             var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                             var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-                                            alert('El Patrï¿½n: **'+ patron +'** No tiene costo en la tabla 000079, para el tipo de empresa: ** '+ tipo_empresa +' ** en la historia: ** '+ historia+' **, o la edad del paciente es menor a 6 meses.');
+                                            alert('El Patrón: **'+ patron +'** No tiene costo en la tabla 000079, para el tipo de empresa: ** '+ tipo_empresa +' ** en la historia: ** '+ historia+' **, o la edad del paciente es menor a 6 meses.');
                                             return false;
                                             }
 
@@ -1546,11 +1546,11 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                             var dato_media_porcion = document.getElementById("dato_media_porcion").value;
                                             var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
-                                            alert('El patrï¿½n no tiene costo para el servicio actual, ni para el servicio asociado.');
+                                            alert('El patrón no tiene costo para el servicio actual, ni para el servicio asociado.');
                                             return false;
                                             }
 
-                                          if (x == 30)// Este caso se da cuando el usuario intenta seleccionar otro patron que acompaï¿½e a un postquirurgico, si no selecciona el cajon postquirurgico primero, se mostrara este mensaje.
+                                          if (x == 30)// Este caso se da cuando el usuario intenta seleccionar otro patron que acompañe a un postquirurgico, si no selecciona el cajon postquirurgico primero, se mostrara este mensaje.
                                             {
 
                                             if(document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked == true)
@@ -1564,7 +1564,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                                     document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=true;
                                                     }
 
-                                            alert('No es posible hacer la combinaciï¿½n ya que no ha seleccionado el paciente como postquirï¿½rgico, favor seleccione el cajï¿½n de postquirï¿½rgico y luego seleccione otro patrï¿½n o patrones.');
+                                            alert('No es posible hacer la combinación ya que no ha seleccionado el paciente como postquirúrgico, favor seleccione el cajón de postquirúrgico y luego seleccione otro patrón o patrones.');
                                             return false;
                                             }
 
@@ -1574,7 +1574,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             cajon.style.backgroundColor="yellow";
                                             document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=true;
 
-                                            alert('No es posible deseleccionar el patrï¿½n ya que no ha deseleccionado el paciente de postquirï¿½rgico.');
+                                            alert('No es posible deseleccionar el patrón ya que no ha deseleccionado el paciente de postquirúrgico.');
                                             return false;
                                             }
                                             //Este caso se da cuando un usuario que no es nutricionista quiere ingresar a DSN.
@@ -1583,7 +1583,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
                                                     document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                                     cajon.style.backgroundColor="";
-                                                    alert('Su rol no esta autorizado para seleccionar patrï¿½n.');
+                                                    alert('Su rol no esta autorizado para seleccionar patrón.');
                                                     return false;
                                                 }
 
@@ -1593,7 +1593,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
                                                     document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                                     cajon.style.backgroundColor="";
-                                                    alert('Su rol no esta autorizado para seleccionar patrï¿½n.');
+                                                    alert('Su rol no esta autorizado para seleccionar patrón.');
                                                     return false;
                                                 }
 
@@ -1603,7 +1603,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
                                                     document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
                                                     cajon.style.backgroundColor="";
-                                                    alert('Su rol no esta autorizado para seleccionar este patrï¿½n.');
+                                                    alert('Su rol no esta autorizado para seleccionar este patrón.');
                                                     return false;
                                                 }
 
@@ -1613,7 +1613,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                                 {
                                                     cajon.style.backgroundColor="yellow";
                                                     document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=true;
-                                                    alert('Su rol no esta autorizado para seleccionar este patrï¿½n.');
+                                                    alert('Su rol no esta autorizado para seleccionar este patrón.');
                                                     return false;
                                                 }
 
@@ -1651,7 +1651,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 													if(j[1] == 'nohaydsn'){
 														cajon.style.backgroundColor="";
 														document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
-														alert('El paciente no ha tenido pedidos de Dieta Segï¿½n Nutriciï¿½n en dï¿½as anteriores para este servicio, favor comunicarse con la nutricionista.');
+														alert('El paciente no ha tenido pedidos de Dieta Según Nutrición en días anteriores para este servicio, favor comunicarse con la nutricionista.');
 														return false;
 													}
 
@@ -1659,7 +1659,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
 													if(j[1] == 'nohaydsn'){
 
-														alert('                                                                    **** ALERTA **** \n  Se reprogramï¿½ la ï¿½ltima DSN de este paciente, favor revisar el icono de informaciï¿½n.');
+														alert('                                                                    **** ALERTA **** \n  Se reprogramó la última DSN de este paciente, favor revisar el icono de información.');
 														//Si dentro del arreglo de servicios recuparados no esta el servicio actual seleccionado desmarca el cajon.
 														if(k.indexOf(servicio) == 0){
 															cajon.style.backgroundColor="";
@@ -1674,14 +1674,14 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
                                               if (x == 'alerta_nutricionista')
                                                 {
-													var mensaje = "ï¿½Esta seguro que desea ingresar al patrï¿½n "+patron+"?, cancelarï¿½ el patrï¿½n actual del paciente si solicita productos para este servicio.";
+													var mensaje = "¿Esta seguro que desea ingresar al patrón "+patron+"?, cancelará el patrón actual del paciente si solicita productos para este servicio.";
                                                     confirmar_solic_dsn(wemp_pmla, historia, ingreso, c, f, patron, centro_costos, servicio, fecha, habitacion, nom_pac, tipo_doc, doc_pac, proc_trasl, muerte, edad, alta_proc, tipo_empresa, dias_estancia, patron_combinable, usuario, modificar, chequeados_final, combinables, media_porcion, control_pos_quirur, wrol_usuario, wpatron_nutricion, wrolnutricion, mensaje)
                                                     return false;
                                                 }
 
 											  if (x == 'alerta_nutricionista_adicion')
                                                 {
-													var mensaje = "ï¿½Esta seguro que desea ingresar al patrï¿½n "+patron+"?";
+													var mensaje = "¿Esta seguro que desea ingresar al patrón "+patron+"?";
                                                     confirmar_solic_dsn(wemp_pmla, historia, ingreso, c, f, patron, centro_costos, servicio, fecha, habitacion, nom_pac, tipo_doc, doc_pac, proc_trasl, muerte, edad, alta_proc, tipo_empresa, dias_estancia, patron_combinable, usuario, modificar, chequeados_final, combinables, media_porcion, control_pos_quirur, wrol_usuario, wpatron_nutricion, wrolnutricion, mensaje)
                                                     return false;
                                                 }
@@ -1701,7 +1701,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
 									/**
 									 * Se busca si la fila tiene algun patron activo
-									 * Si la fila tiene algï¿½n patrï¿½n activo no se deje editar el campo observaciones
+									 * Si la fila tiene algún patrón activo no se deje editar el campo observaciones
 									 */
 
 									// $( ".fila1, .fila2" ).click(function(){
@@ -2036,11 +2036,11 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                     document.getElementById(id).checked=true;
                     if (hora_actual > hora_max_cancela)
                         {
-                            alert("No es posible cancelar el servicio Postquirï¿½rgico porque ha pasado la hora mï¿½xima de cancelaciï¿½n");
+                            alert("No es posible cancelar el servicio Postquirúrgico porque ha pasado la hora máxima de cancelación");
                             return false;
                         }
                     //Pregunta primero si desea quitar el posquirurgico.
-                    confirmar=confirm("ï¿½Esta seguro de realizar esta operaciï¿½n, cancelarï¿½ el patrï¿½n que ha seleccionado despuï¿½s del patron Postquirï¿½rgico?");
+                    confirmar=confirm("¿Esta seguro de realizar esta operación, cancelará el patrón que ha seleccionado después del patron Postquirúrgico?");
 
                     if (confirmar)
                         {
@@ -2436,7 +2436,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
 			var sinPatronesHabilitados = $( "[id^=patron]:disabled", this ).length == $( "[id^=patron]", this ).length;
 
-			//Si no hay patron seleccionado o no hay ningï¿½npatron habilitado no se permite escribir en los campos de observaciï¿½n e intolerancia
+			//Si no hay patron seleccionado o no hay ningúnpatron habilitado no se permite escribir en los campos de observación e intolerancia
 			if( !hayPatronSeleccionado || sinPatronesHabilitados ){
 				$( "[id^=wobs_],[id^=wint_]", this ).attr({disabled:true})
 			}
@@ -2478,7 +2478,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 	}
 
 	/**************************************************************************************************************
-	 * Esta funciï¿½n detiene la ejecuciï¿½n de recargar la pï¿½gina al momento de escribir en un textarea
+	 * Esta función detiene la ejecución de recargar la página al momento de escribir en un textarea
 	 **************************************************************************************************************/
 	function stop_reload_textarea(){
 
@@ -2945,7 +2945,7 @@ function verificar_dia_sgte($whis, $wing){
 	  $res = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
       $row = mysql_fetch_array($res);
 
-      return "<b>Horario <br>Normal</b>:".$row['serhin']."-".$row['serhfi']." <b>Adiciï¿½n:</b>".$row['serhia']."-".$row['serhad'];
+      return "<b>Horario <br>Normal</b>:".$row['serhin']."-".$row['serhfi']." <b>Adición:</b>".$row['serhia']."-".$row['serhad'];
 
     }
 
@@ -3459,7 +3459,7 @@ function verificar_dia_sgte($whis, $wing){
 	  $wtexto = trim( $wtexto );
 
       $wpatronesantes = consultar_patron_actual($whis, $wing, $wser, $wfec);
-	  //Si no hay un patrï¿½n seleccionado no se deja modificar
+	  //Si no hay un patrón seleccionado no se deja modificar
 
 	  $wdatopatrones = explode("-", $wpatronesantes);
 
@@ -3686,7 +3686,7 @@ function verificar_dia_sgte($whis, $wing){
 
 		//Devuelvo un uno si existe un servicio posterior
 		//Esto para indicarle al usuario que las modficaciones a las observaciones realizadas
-		//No afectarï¿½ a los servicios posteriores ya creados
+		//No afectará a los servicios posteriores ya creados
 		return $numSerPosterior > 0 ? '1' : '' ;
 	}
 
@@ -3770,7 +3770,7 @@ function verificar_dia_sgte($whis, $wing){
 
   //==================================================================================================================
   //==================================================================================================================
-  // Funcion que permite extraer la edad del paciente en aï¿½os, meses y dias.
+  // Funcion que permite extraer la edad del paciente en años, meses y dias.
   function calcularAnioMesesDiasTranscurridos($fecha_inicio, $fecha_fin = '')
     {
         $datos = array('anios'=>0,'meses'=>0,'dias'=>0);
@@ -3791,11 +3791,11 @@ function verificar_dia_sgte($whis, $wing){
             $array_nacimiento = explode ( "-", $fecha_de_nacimiento );
             $array_actual = explode ( "-", $fecha_actual );
 
-            $anos =  $array_actual[0] - $array_nacimiento[0]; // calculamos aï¿½os
+            $anos =  $array_actual[0] - $array_nacimiento[0]; // calculamos años
             $meses = $array_actual[1] - $array_nacimiento[1]; // calculamos meses
-            $dias =  $array_actual[2] - $array_nacimiento[2]; // calculamos dï¿½as
+            $dias =  $array_actual[2] - $array_nacimiento[2]; // calculamos días
 
-            //ajuste de posible negativo en $dï¿½as
+            //ajuste de posible negativo en $días
             if ($dias < 0)
             {
                 --$meses;
@@ -3830,7 +3830,7 @@ function verificar_dia_sgte($whis, $wing){
                 --$anos;
                 $meses=$meses + 12;
             }
-            //echo "<br>Tu edad es: $anos aï¿½os con $meses meses y $dias dï¿½as";
+            //echo "<br>Tu edad es: $anos años con $meses meses y $dias días";
             $datos['anios'] = $anos;
             $datos['meses'] = $meses;
             $datos['dias'] = $dias;
@@ -3995,7 +3995,7 @@ function verificar_dia_sgte($whis, $wing){
 				                 // $waccion="off";
 								  if ($wmodificar != '2')
 
-                                      echo "3";  //Mensaje javascript en el response text :  "El servicio de la historia seleccionada no puede ser adicionado o modificado porque esta fuera del horario. Favor revisar el inicio de horario de adiciï¿½n o el horario final del pedido en la parte superior de la pantalla"
+                                      echo "3";  //Mensaje javascript en el response text :  "El servicio de la historia seleccionada no puede ser adicionado o modificado porque esta fuera del horario. Favor revisar el inicio de horario de adición o el horario final del pedido en la parte superior de la pantalla"
 
 			                     }
 			               }
@@ -5095,7 +5095,7 @@ function verificar_dia_sgte($whis, $wing){
      }
 
 
-     //Consultar la composiciï¿½n actual de la dieta DSN en la fecha recibida desde la funciï¿½n procesar_datos_dsn.
+     //Consultar la composición actual de la dieta DSN en la fecha recibida desde la función procesar_datos_dsn.
      function consultarPedidoAnterior( $fecha_consulta, $whis, $wing, $whab, $wcco, $servicio ){
         global $conex;
         global $wbasedato;
@@ -5404,7 +5404,7 @@ function verificar_dia_sgte($whis, $wing){
 				$wservicio_aux = $servicio;
 				}
 
-            //-->  Validar si ya existe servicio programado con las caracterï¿½sticas indicadas, con el propï¿½sito de verificar si es una modificaciï¿½n o un pedido nuevo. 2019-09-24
+            //-->  Validar si ya existe servicio programado con las características indicadas, con el propósito de verificar si es una modificación o un pedido nuevo. 2019-09-24
             $q = " SELECT count(*) cantidad
                     FROM {$wbasedato}_000077
                    WHERE movfec = '$fecha_consulta'
@@ -5417,7 +5417,7 @@ function verificar_dia_sgte($whis, $wing){
             $err = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
             $rex = mysql_fetch_row( $err );
             if( $rex[0]*1 > 0 ){
-                //--> Se hace una comparaciï¿½n de los productos solicitados nuevos con los anteriores
+                //--> Se hace una comparación de los productos solicitados nuevos con los anteriores
                 $pedidoAnterior = consultarPedidoAnterior( $fecha_consulta, $whis, $wing, $whab, $wcco, $servicio );
                 $diferencia1    = array_diff( $pedidoAnterior, $productosActuales );
                 $diferencia2    = array_diff( $productosActuales, $pedidoAnterior );
@@ -5444,7 +5444,7 @@ function verificar_dia_sgte($whis, $wing){
 
 			//===============================================================================================================
 			//En este segmento se verifica si el paciente tiene pedidos automaticos de dsn para el dia siguiente, si es asi
-			//cancelarï¿½ los productos y pondrï¿½ los nuevos solicitados, con la fecha del dia siguiente.
+			//cancelará los productos y pondrá los nuevos solicitados, con la fecha del dia siguiente.
 			//===============================================================================================================
 			$wactivo = consultarservgrabado_dsn($whis, $wing, $wservicio_aux, $wcco, 'dsndesdeservicio');
 
@@ -5481,7 +5481,7 @@ function verificar_dia_sgte($whis, $wing){
             if($cant_prod > 0 && !array_key_exists($serv_can, $arr_principal))
             {
 
-                //Se valida la hora final del servicio, si es mayor a la actual el registro sera cancelado para maï¿½ana
+                //Se valida la hora final del servicio, si es mayor a la actual el registro sera cancelado para mañana
                 $horarios = consultar_horarios_servicio($serv_can);
                 $arr_horarios = explode('-', $horarios);
                 $hora_actual = date('H:i:s');
@@ -5559,7 +5559,7 @@ function verificar_dia_sgte($whis, $wing){
 			$wmanana_aux = time()+(1*24*60*60); //Suma un dia
 			$wmanana = date('Y-m-d', $wmanana_aux); //Formatea dia
 
-			$wfecha_actual = $wmanana; //La fecha actual sera la fecha de maï¿½ana y la variable $wayer1 sera la fecha de hoy.
+			$wfecha_actual = $wmanana; //La fecha actual sera la fecha de mañana y la variable $wayer1 sera la fecha de hoy.
 			$wayer1 = date('Y-m-d'); //Hoy.
 
 			}
@@ -6470,7 +6470,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
         $winf_nutricion_dsn = explode("-", $wdatos_rol_enfermeria);
         $wpatron_nutricion = $winf_nutricion_dsn[1]; // Patron asociado a las nutricionistas.
 
-		//Validar si el paciente tiene DSN para el dia de hoy o maï¿½ana en cualquier servicio, si no es asi pinta el boton para recuperar la dieta.
+		//Validar si el paciente tiene DSN para el dia de hoy o mañana en cualquier servicio, si no es asi pinta el boton para recuperar la dieta.
 		$q = " SELECT movdie
                  FROM ".$wbasedato."_000077
                 WHERE Fecha_data >= '".date("Y-m-d")."'
@@ -6891,7 +6891,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
       global $wlimite_caracteres_observ;
       global $wzona;
 
-	  $wdisabledTextArea = $whabilitado;	//whabilidatos es ENABLED si estï¿½ en horario de pedido y DISABLED en caso contrario
+	  $wdisabledTextArea = $whabilitado;	//whabilidatos es ENABLED si está en horario de pedido y DISABLED en caso contrario
 
 	  $whora =(string)date("H:i:s");
       $wusuario = substr($user,(strpos($user,"-")+1),strlen($user));
@@ -6927,7 +6927,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
       //Hora final del pedido, pero pasado este tiempo solo es posible hacer combinaciones con patrones individuales como SI y TMO, excepto DSN.
       //
       //Por eso se hace el siguiente procedimiento de determinar el horario en que se esta haciendo la transaccion para definir
-      //si los patrones son combinables o no, porque solo se combinan cuando es adiciï¿½n.
+      //si los patrones son combinables o no, porque solo se combinan cuando es adición.
       $wadi_ser=determinar_adicion($wser);
 
       //$wadi_ser='on' Indica que se esta en horario de adiciones para el servicio seleccionado, por lo tanto los patrones se
@@ -7160,7 +7160,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
 				break;
 
 				default:
-						echo '<br><br><font size="5"><span>Este centro de costos no puede realizar solicitud de alimentaciï¿½n.</span></font>';
+						echo '<br><br><font size="5"><span>Este centro de costos no puede realizar solicitud de alimentación.</span></font>';
 						return;
 				break;
 
@@ -7280,7 +7280,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
 		      echo "<tr class=encabezadoTabla>";
               echo "<td >Dieta Kardex</td>";
 		      echo "<td>Hab</td>";
-		      echo "<td>Dï¿½as</td>";
+		      echo "<td>Días</td>";
 		      echo "<td>Edad</td>";
 		      echo "<td>Historia</td>";
 		      echo "<td>Paciente</td>";
@@ -7306,10 +7306,10 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
                   echo "<input type='HIDDEN' id='wposquirur$i' value='".$row_die['diepqu']."'>";
 	             }
 	         }
-		  echo "<td>Media porciï¿½n</td>";
-          echo "<td align=center>Diagnï¿½stico</td>";
-	      echo "<td align=center>Observaciones <br> de la estancia <div style='display:block; font-size:10px; color:white;'>(Mï¿½ximo <span id='limite_obs'>".$wlimite_caracteres_observ."</span> carï¿½cteres)</div></td>";
-		  echo "<td align=center>Intolerancias <div style='display:block; font-size:10px; color:white;'>(Mï¿½ximo <span id='limite_into'>".$wlimite_caracteres_observ."</span> carï¿½cteres)</div></td>";
+		  echo "<td>Media porción</td>";
+          echo "<td align=center>Diagnóstico</td>";
+	      echo "<td align=center>Observaciones <br> de la estancia <div style='display:block; font-size:10px; color:white;'>(Máximo <span id='limite_obs'>".$wlimite_caracteres_observ."</span> carácteres)</div></td>";
+		  echo "<td align=center>Intolerancias <div style='display:block; font-size:10px; color:white;'>(Máximo <span id='limite_into'>".$wlimite_caracteres_observ."</span> carácteres)</div></td>";
 		  echo "<td align=center>Alergias y alertas</td>";
 		  echo "<td>Afinidad</td>";
 		  echo "</tr>";
@@ -7355,11 +7355,11 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
 
               if ($wedad_pacienteanos == 1)
               {
-                  $wanios = ' Aï¿½o ';
+                  $wanios = ' Año ';
               }
               else
               {
-                  $wanios = ' Aï¿½os ';
+                  $wanios = ' Años ';
               }
 
               if ($wedad_pacientemeses == 1)
@@ -7607,7 +7607,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
 
               //Postquirurgico
 
-              //echo "<td $wbgcolor align=center id='tdcajonposquirur".$i."'><SPAN id='wcajonposquirurspan".$i."' class='tooltip { direction: n; width: auto; font-weight:bold; background: #222; color: #ddd; }' title='POSTQUIRï¿½RGICO'><INPUT TYPE='checkbox' id='wcajonposquirur$i' NAME='wcelda[".$i."][".$j."]' $wchecked $whabilitaposqui onClick='grabar_posqx(\"".$wemp_pmla."\",\"".$wbasedato."\",\"".$whis[$i]."\",\"".$wing[$i]."\",\"".$whab[$i]."\",\"".$wser."\",\"wcajonposquirur$i\",this,\"tdcajonposquirur$i\",\"$wedad1[$i]\",\"$wtem[$i]\",\"$wusuario\",\"$wfec\",\"$wcco\",\"$whora_maxima_modificacion\",\"$whora_maxima_cancelacion\", \"$whora\");'><div id='patron_dato$i-$j'></div></SPAN></SPAN></td>";
+              //echo "<td $wbgcolor align=center id='tdcajonposquirur".$i."'><SPAN id='wcajonposquirurspan".$i."' class='tooltip { direction: n; width: auto; font-weight:bold; background: #222; color: #ddd; }' title='POSTQUIRÚRGICO'><INPUT TYPE='checkbox' id='wcajonposquirur$i' NAME='wcelda[".$i."][".$j."]' $wchecked $whabilitaposqui onClick='grabar_posqx(\"".$wemp_pmla."\",\"".$wbasedato."\",\"".$whis[$i]."\",\"".$wing[$i]."\",\"".$whab[$i]."\",\"".$wser."\",\"wcajonposquirur$i\",this,\"tdcajonposquirur$i\",\"$wedad1[$i]\",\"$wtem[$i]\",\"$wusuario\",\"$wfec\",\"$wcco\",\"$whora_maxima_modificacion\",\"$whora_maxima_cancelacion\", \"$whora\");'><div id='patron_dato$i-$j'></div></SPAN></SPAN></td>";
 		      echo "<td id='cajon$i-posqx' style='display: none; cursor: default' </td>";
               $wpatrones = array();
 
@@ -7723,7 +7723,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
                                                 }
                                         }
 
-								//Si el patron no es combinable y es DSN, se marcarï¿½.
+								//Si el patron no es combinable y es DSN, se marcará.
 								if($row_die['diecod'] == $wpatron_nutricion)
 									{
 										$wbgcolor = "bgcolor=".$wcolor."";
@@ -7800,7 +7800,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
 								procesar_datos_automatico($wemp_pmla, $whis[$i], $wing[$i], $wpatronfinal1, $wcco, $wser, $wfec, $whab[$i], $wpac[$i], $wdpa[$i], $wtid[$i], $wptr[$i], $wmue[$i], $wedad1[$i], $walp[$i], $wtem[$i], $west[$i], $wusuario, '2', '', '', '', '', 'on', $wservgrabado, $wcantidad, $wmedia_porcionbd, $wobservaciones, $wintolerancias, $wpatron_nutricion);
 
 							//En este caso ingresa cuando el ultimo patron que se solicito sea un servicio individual, ya que el paciente tiene solicitud
-							//de ese patron en el dia anterior, por lo tanto debe hacer la solicitud de DSN y no del ultimo patrï¿½n, el cual es diferente a DSN,
+							//de ese patron en el dia anterior, por lo tanto debe hacer la solicitud de DSN y no del ultimo patrón, el cual es diferente a DSN,
 							//esto se evalua en el parametro $wvalidahorario != 'on'.
 							}else{
 
@@ -7882,7 +7882,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
               $whabilitaint = '';
               $wobs[$i] = '';
 
-              if ($wdiag=="Sin Diagnostico")    //Si no lo encontro en el Kardex actual, lo busco en el Kardex de dï¿½a anterior
+              if ($wdiag=="Sin Diagnostico")    //Si no lo encontro en el Kardex actual, lo busco en el Kardex de día anterior
               {
                    $dia = time()-(1*24*60*60);   //Resta un dia (2*24*60*60) Resta dos y //asi...
                    $wayer = date('Y-m-d', $dia); //Formatea dia
@@ -9406,7 +9406,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
 
   //==================================================================================================================
   //==================================================================================================================
-  //Funcion que evalua si el paciente es de tipo POS, si es asi no guardarï¿½ merienda.
+  //Funcion que evalua si el paciente es de tipo POS, si es asi no guardará merienda.
     function evaluar_emp_paciente($wtemp, $wser)
     {
 		global $wbasedato;
@@ -9456,7 +9456,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
 
 
 
-//Funcion que evalua si el paciente es de tipo POS, si es asi no guardarï¿½ merienda.
+//Funcion que evalua si el paciente es de tipo POS, si es asi no guardará merienda.
     function mensajedelservicio($wser)
      {
 
@@ -9487,7 +9487,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
 
           elseif ($whora <= $whorariofinaladicion )
           {
-          $wmensaje = "<span class='blink'>Se encuentra en horario de adiciï¿½n</span><br><font size=1> Solo podrï¿½ cancelar mï¿½ximo 3 veces lo que pida en este horario <br> y no podrï¿½ pedir si cancela patrones pedidos en horario normal excepto NVO, LC y pacientes nuevos.</font>";
+          $wmensaje = "<span class='blink'>Se encuentra en horario de adición</span><br><font size=1> Solo podrá cancelar máximo 3 veces lo que pida en este horario <br> y no podrá pedir si cancela patrones pedidos en horario normal excepto NVO, LC y pacientes nuevos.</font>";
           }
           elseif($whora >= $whorariofinaladicion)
           {
@@ -9545,8 +9545,8 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
 		  $rowaso=mysql_fetch_array($resaso);
 		  $wserv_asociados=explode(",",$rowaso[0]);
 
-          $wpos_seractual = evaluar_emp_paciente($wtem, $wser); // Esta variable identifica si el paciente es POS, en caso de serlo no se guardarï¿½ el servicio de merienda(inicialmente).
-          $wpos_serasociado = evaluar_emp_paciente($wtem, $wserv_asociados[0]); // Esta variable identifica si el paciente es POS y para el servicio asociado, en caso de serlo no se guardarï¿½ el servicio de merienda(inicialmente).
+          $wpos_seractual = evaluar_emp_paciente($wtem, $wser); // Esta variable identifica si el paciente es POS, en caso de serlo no se guardará el servicio de merienda(inicialmente).
+          $wpos_serasociado = evaluar_emp_paciente($wtem, $wserv_asociados[0]); // Esta variable identifica si el paciente es POS y para el servicio asociado, en caso de serlo no se guardará el servicio de merienda(inicialmente).
 
           if($wserv_asociados[0] == '') // Esta validacion evalua que no se guarden datos si no tiene servicio asociado
                 $wserv_asociados = array();
@@ -9699,13 +9699,13 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
 
                                                 if($num_cancelapa >= 3)
                                                 {
-                                                    echo "91"; //Alerta javascript que muestra el mensaje "No es posible modificar o solicitar alimentaciï¿½n para el paciente ya que a pasado la hora limite"
+                                                    echo "91"; //Alerta javascript que muestra el mensaje "No es posible modificar o solicitar alimentación para el paciente ya que a pasado la hora limite"
                                                     return;
                                                 }
 
                                                 if($num_cancelaa >= 3)
                                                 {
-                                                    echo "91"; //Alerta javascript que muestra el mensaje "No es posible modificar o solicitar alimentaciï¿½n para el paciente ya que a pasado la hora limite"
+                                                    echo "91"; //Alerta javascript que muestra el mensaje "No es posible modificar o solicitar alimentación para el paciente ya que a pasado la hora limite"
                                                     return;
                                                 }
 
@@ -9769,7 +9769,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
 																		//Consulta el rol del usuario que cancela.
 																		$rol_cancelacion = validarenfermera($whce, $wbasedato, $wusuario_cancela);
 
-																		//Si el paciente tiene cancelaciones el dia actual y el rol del que cancelï¿½ es diferente al de nutricionista.
+																		//Si el paciente tiene cancelaciones el dia actual y el rol del que canceló es diferente al de nutricionista.
 																		if($num_aud > 0){
 
 																			if($rol_cancelacion != $wrol_nutricion){
@@ -9957,7 +9957,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
                                 {
 									if($wrol_usuario != $wrol_nutricion){ //La cancelacion de la DSN no se valida con estaa alerta y no se le debe mostrar a las nutricionistas.
 
-										echo "9"; //Alerta javascript que muestra el mensaje "No es posible solicitar alimentaciï¿½n para el paciente ya a pasado el limite de modificaciï¿½n de pedido"
+										echo "9"; //Alerta javascript que muestra el mensaje "No es posible solicitar alimentación para el paciente ya a pasado el limite de modificación de pedido"
 										return;
 									}
                                 }
@@ -10014,7 +10014,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
                 case '1':
                             if($whora >= $whoraactivacionposqx and $wpcomb != 'off' and $wpatron != $wpatroneshising[0])
                             {
-                              echo "30"; //Este dato genera un respuesta javascript con un mensaje diciendo "No es posible hacer la combinaciï¿½n ya que no ha seleccionado el paciente como posquirï¿½rgico"
+                              echo "30"; //Este dato genera un respuesta javascript con un mensaje diciendo "No es posible hacer la combinación ya que no ha seleccionado el paciente como posquirúrgico"
                               return;
                             }
 
@@ -10040,7 +10040,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
                             //tiene seleccionado el cajon de postquirurgico.
                             if($wmodificar == 1 and $wpcomb != 'off')
                             {
-                              echo "31"; //Este dato genera un respuesta javascript con un mensaje diciendo "No es posible deseleccionar el patron ya que no ha deseleccionado el paciente como posquirï¿½rgico."
+                              echo "31"; //Este dato genera un respuesta javascript con un mensaje diciendo "No es posible deseleccionar el patron ya que no ha deseleccionado el paciente como posquirúrgico."
                               return;
                             }
 
@@ -10166,7 +10166,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
                  //Esta validacion es importante ya que determina si el patron seleciconado tiene costo, en caso de estar conbinado o individual.
 				  if ($wvalpat > 0)
 					 {
-                      //Esta validacion se da para determinar el costo del patron en el dia de hoy o de maï¿½ana, ya que puede cambiar para dias posteriores.
+                      //Esta validacion se da para determinar el costo del patron en el dia de hoy o de mañana, ya que puede cambiar para dias posteriores.
 					  if ($wfecha >= $row_cos[1])
                       {
 
@@ -10297,7 +10297,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
                             if ($wmodificar != 1)
                             {
 
-                                   echo "1"; //Este 1 devuelve un mensaje diciendo lo siguiente: "El Patrï¿½n: **xx** No tiene costo en la tabla 000079, para el tipo de empresa: ** xx ** en la historia: ** xxxxxx **", en la funcion javascript grabar_datos.
+                                   echo "1"; //Este 1 devuelve un mensaje diciendo lo siguiente: "El Patrón: **xx** No tiene costo en la tabla 000079, para el tipo de empresa: ** xx ** en la historia: ** xxxxxx **", en la funcion javascript grabar_datos.
                                    return;
                             }
                             else
@@ -10393,7 +10393,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
 
 												$rol_cancelacion = validarenfermera($whce, $wbasedato, $wusuario_cancela);
 
-												//Si el paciente tiene cancelaciones el dia actual y el rol del que cancelï¿½ es diferente al de nutricionista .
+												//Si el paciente tiene cancelaciones el dia actual y el rol del que canceló es diferente al de nutricionista .
 												if($num_aud > 0){
 
 													if($rol_cancelacion != $wrol_nutricion){
@@ -11141,7 +11141,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
                                 $wdatos_historia = consultar_patron_actual($whis, $wing, $wserv_asociados[$k], $wfec); //Funcion para extraer los ultimos datos del servicio.
                                 $wdatos_historia1 = explode("-", $wdatos_historia);  //Como la respuesta es un arreglo se explotan los datos.
                                 $wpatronfinal = $wdatos_historia1[0]; // Ultimo patron del servicio asociado.
-                                $wvalpat_asoc = $wdatos_historia1[1];  //Valor del patrï¿½n asociado
+                                $wvalpat_asoc = $wdatos_historia1[1];  //Valor del patrón asociado
                                 $wpatron_anterior = $wdatos_historia1[2]; //Patron anterior del servicio asociado
                                 $wcontrolposqui = 1;   // Este control se hace para que el servicio asociado no reciba el parametro de posqx en on ya que es posible que el paciente
                             }                           //no sea posqx en el servicio asociado
@@ -11221,8 +11221,8 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
 		  $rowaso=mysql_fetch_array($resaso);
 		  $wserv_asociados=explode(",",$rowaso[0]);
 
-          $wpos_seractual = evaluar_emp_paciente($wtem, $wser); // Esta variable identifica si el paciente es POS, en caso de serlo no se guardarï¿½ el servicio de merienda(inicialmente).
-          $wpos_serasociado = evaluar_emp_paciente($wtem, $wserv_asociados[0]); // Esta variable identifica si el paciente es POS y para el servicio asociado, en caso de serlo no se guardarï¿½ el servicio de merienda(inicialmente).
+          $wpos_seractual = evaluar_emp_paciente($wtem, $wser); // Esta variable identifica si el paciente es POS, en caso de serlo no se guardará el servicio de merienda(inicialmente).
+          $wpos_serasociado = evaluar_emp_paciente($wtem, $wserv_asociados[0]); // Esta variable identifica si el paciente es POS y para el servicio asociado, en caso de serlo no se guardará el servicio de merienda(inicialmente).
 
           if($wserv_asociados[0] == '') // Esta validacion evalua que no se guarden datos si no tiene servicio asociado
                 $wserv_asociados = array();
@@ -11279,7 +11279,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
 			  $wptrcobra=$row_cos[6];                   //Indica el patron que se cobro.
               $wvalpat_asoc = $row_cos_asociado[0];     //Valor del patron asociado
 			  $wcontrolregistro = 'on';                 //Esta variable se utiliza para controlar el registro automatico de las dietas desde un servicio asociado
-                                                        //quiere decir desde la media maï¿½ana, algo o merienda, ya que algunos patrones no tienen costo en estos servicios.
+                                                        //quiere decir desde la media mañana, algo o merienda, ya que algunos patrones no tienen costo en estos servicios.
 
 			 }
            else
@@ -11290,7 +11290,7 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
                     $wvalpat = 0;
                     $wptrcobra = $wpatron;
                     $wcontrolregistro = 'on';  //Esta variable se utiliza para controlar el registro automatico de las dietas desde un servicio asociado
-                                               //quiere decir desde la media maï¿½ana, algo o merienda, ya que algunos patrones no tienen costo en estos servicios.
+                                               //quiere decir desde la media mañana, algo o merienda, ya que algunos patrones no tienen costo en estos servicios.
                     $num_cos_asociado = 1;
                }
                else
@@ -11859,7 +11859,7 @@ function filtrarZonas(){
                                     <td align=center><span style='font-weight: bold;'>CONVENCIONES</span></td>
                                 </tr>
                                 <tr style='font-family: Arial;'>
-                                    <td bgcolor=".$color_ant_sing.">PEDIDO PARA MAï¿½ANA</td>
+                                    <td bgcolor=".$color_ant_sing.">PEDIDO PARA MAÑANA</td>
                                 </tr>
                                 <tr style='font-family: Arial;'>
                                     <td bgcolor=".$color_esq_actual.">PEDIDO PARA HOY</td>
@@ -11877,8 +11877,8 @@ function filtrarZonas(){
                             <tr class=fila2>
                             <td style='font-family: Arial; font-weight: bold; text-align: center; width: 203px;'>Hora Inicio</td>
                             <td style='font-family: Arial; font-weight: bold; text-align: center; width: 215px;'>Hora Final</td>
-                            <td style='font-family: Arial; font-weight: bold; text-align: center; width: 201px;'>Hora Distribuciï¿½n</td>
-                            <td style='font-family: Arial; font-weight: bold; text-align: center; width: 188px;'>Hora Mï¿½xima Cancelaciï¿½n</td>
+                            <td style='font-family: Arial; font-weight: bold; text-align: center; width: 201px;'>Hora Distribución</td>
+                            <td style='font-family: Arial; font-weight: bold; text-align: center; width: 188px;'>Hora Máxima Cancelación</td>
                             </tr>
                             <tr>
                             <td style='font-family: Arial; width: 203px; text-align: center;'>".$row[0]."</td>
@@ -11892,8 +11892,8 @@ function filtrarZonas(){
                             <tr class=fila2>
                             <td style='font-family: Arial; font-weight: bold; text-align: center; width: 203px;'>Hora Inicio</td>
                             <td style='font-family: Arial; font-weight: bold; text-align: center; width: 215px;'>Hora Final</td>
-                            <td style='font-family: Arial; font-weight: bold; text-align: center; width: 201px;'>Hora Inicio Distribuciï¿½n</td>
-                            <td style='font-family: Arial; font-weight: bold; text-align: center; width: 188px;'>Hora Final Distribuciï¿½n</td>
+                            <td style='font-family: Arial; font-weight: bold; text-align: center; width: 201px;'>Hora Inicio Distribución</td>
+                            <td style='font-family: Arial; font-weight: bold; text-align: center; width: 188px;'>Hora Final Distribución</td>
                             </tr>
                             <tr>
                             <td style='font-family: Arial; width: 203px; text-align: center;' >".$row[2]."</td>
