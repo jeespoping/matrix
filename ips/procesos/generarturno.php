@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 /*
 tipoDocumento: CC,numeroIdentificacion: 98576923,nombrePaciente: LUIS MORA,edad: 50,tipoEdad: A,categoria: 01,tema: 01,prioridad: ,tipoTurnero: 01,codigoTurnero: ,validarExisteTurno: false,wemp_pmla: 01
 */
+	txtLog("", true);
 	$tipoDocumento = $_POST['tipoDocumento'];
 	$identificacion = $_POST['numeroIdentificacion'];
 	$nombrePaciente = $_POST['nombrePaciente'];	
@@ -27,8 +28,10 @@ tipoDocumento: CC,numeroIdentificacion: 98576923,nombrePaciente: LUIS MORA,edad:
 	$wemp_pmla = $_POST['wemp_pmla'];
 	$codigoTurnero = $_POST['codigoTurnero'];
 	$validarExisteTurno = $_POST['validarExisteTurno'];
+	$turneroRedireccion = $_POST['turneroRedireccion'];	
 
-	$objTurno = new Turno($identificacion,$tipoDocumento,$nombrePaciente,$edad,$tipoEdad,$categoria,$prioridad,$wemp_pmla,$codigoTurnero,$validarExisteTurno,$tema,$tipoTurnero);
+	txtLog("new turno");
+	$objTurno = new Turno($identificacion,$tipoDocumento,$nombrePaciente,$edad,$tipoEdad,$categoria,$prioridad,$wemp_pmla,$codigoTurnero,$validarExisteTurno,$tema,$tipoTurnero,$turneroRedireccion);
 
 	//echo "     1.";
 	//echo json_encode(" Turno ini:" . $objTurno->Turno);
@@ -36,7 +39,7 @@ tipoDocumento: CC,numeroIdentificacion: 98576923,nombrePaciente: LUIS MORA,edad:
 	$objTurno->GenerarTurno();
 	//echo json_encode(",objTurno:" . isset($objTurno)?"set":"nulo");	
 	//echo json_encode(",Turno asig:" . $objTurno->Turno);
-	// echo json_encode($objTurno);
+	txtLog("objTurno: " . json_encode($objTurno));
 
 	$obj = (object)[
 		'Turno' => $objTurno->Turno,
@@ -70,7 +73,8 @@ tipoDocumento: CC,numeroIdentificacion: 98576923,nombrePaciente: LUIS MORA,edad:
 //En caso de que ninguna de las opciones anteriores se haya ejecutado
 header("HTTP/1.1 400 Bad Request");
 
-class Turno {
+class Turno 
+{
 	public $TipoIdentificacion;
 	public $NumeroIdentificacion;
 	public $Nombre;
@@ -91,14 +95,14 @@ class Turno {
 	public $FichoTurno;
 	public $Error;
 	public $MensajeError;
+	public $TurneroRedireccion;
 	public $wbasedato;
-	public $codigoTurnero;
+	public $codigoTurnero;	
 	public $conex;	
+	public $wemp_pmla;	
 
-
-	public function __construct($numeroIdentificacion,$tipoIdentificacion,$nombrePaciente,$edad,$tipoEdad,$categoria,$prioridad,$wemp_pmla,$codigoTurnero,$validarExisteTurno,$tema,$tipoTurnero)
+	public function __construct($numeroIdentificacion,$tipoIdentificacion,$nombrePaciente,$edad,$tipoEdad,$categoria,$prioridad,$wemp_pmla,$codigoTurnero,$validarExisteTurno,$tema,$tipoTurnero,$turneroRedireccion)
 	{
-
 		$this->TipoIdentificacion = $tipoIdentificacion;
 		$this->NumeroIdentificacion = $numeroIdentificacion;
 		$this->Nombre = $nombrePaciente;
@@ -116,22 +120,30 @@ class Turno {
 		$this->Error=true;
 		$this->MensajeError="";
 		$this->codigoTurnero = $codigoTurnero;
+		$this->TurneroRedireccion = $turneroRedireccion;
+		$this->conex = obtenerConexionBD("matrix");	
+		$this->wemp_pmla = $wemp_pmla;			
 
-		$this->conex = obtenerConexionBD("matrix");		
-		if ($this->TipoTurnero == 'URGENCIAS')
-			$this->wbasedato = utf8_encode(consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos'));	
-		else
-			$this->wbasedato = utf8_encode(consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame'));	
+
 	}	
 	
 	public function GenerarTurno()
 	{
-		
-			if ($this->TipoTurnero == 'URGENCIAS')
-				$this->GenerarTurnoUrgencias();		
-			else
-				$this->GenerarTurnoLobby();		
-
+			
+			if ($this->TipoTurnero == "URGENCIAS")
+			{
+				$this->wbasedato = utf8_encode(consultarAliasPorAplicacion($this->conex, $this->wemp_pmla, 'movhos'));
+				//Genera el turno en la tabla movhos_000178 para conservar compatibilidad con los turneros de urgencias
+				$this->GenerarTurnoUrgencias();
+				return;
+			}		
+			
+			$this->wbasedato = utf8_encode(consultarAliasPorAplicacion($this->conex, $this->wemp_pmla, 'cliame'));
+			//Genera el turno en la tabla cliame_000304
+			$this->GenerarTurnoLobby();	
+	
+			
+	
 	}	
 	
 	public function GenerarTurnoUrgencias()
@@ -324,18 +336,20 @@ class Turno {
 			SELECT Serpre, Sernom, Serpis
 			  FROM ".$this->wbasedato."_000298
 			 WHERE Sertem = '".$this->Tema."' 
-			   AND Sercod = '".$Categoria."'
+			   AND Sercod = '".$this->Categoria."'
 			";
 			$resPrefijo = mysql_query($sqlPrefijo, $this->conex) or die("<b>ERROR EN QUERY MATRIX(sqlPrefijo):</b><br>".mysql_error());
+			txtLog("SQL obtener prefijo turno: ".$sqlPrefijo."; ");
 
+			//echo ("SQL obtener prefijo turno: ".$sqlPrefijo."; ");
 			if($rowPrefijo = mysql_fetch_array($resPrefijo))
 			{
 				$prefijo 		= $rowPrefijo['Serpre'];
 				$nomServicio 	= utf8_encode($rowPrefijo['Sernom']);
 				$desPiso        = $rowPrefijo['Serpis'];
 			}
-
 		
+			
 			$nomTema = "";
 			$sqlTema = "
 			SELECT Codnom,Codlog
@@ -349,7 +363,7 @@ class Turno {
 				$nomTema = $rowTema['Codnom'];
 				$nomlogo = $rowTema['Codlog'];
 			}
-		
+
 			// --> Bloquear tabla de turnos
 			//$sqlBloque = "
 			//LOCK TABLES ".$this->wbasedato."_000304 WRITE;
@@ -364,6 +378,7 @@ class Turno {
 			   AND Turtur LIKE '".date('ymd')."%'
 			   AND Turtse = '".$this->Categoria."'
 			";
+			//echo ("SQL obtener consecutivo turno: ".$sqlObtConsec."; ");
 			$resObtConsec = mysql_query($sqlObtConsec, $this->conex) or die("<b>ERROR EN QUERY MATRIX(sqlObtConsec):</b><br>".mysql_error());
 			if($rowObtConsec = mysql_fetch_array($resObtConsec))
 			{
@@ -376,12 +391,26 @@ class Turno {
 
 				$nuevoTurno = date('ymd').'-'.$prefijo.$ultConsecutivo;
 				
+				
+				if (($this->Turno+'') != '' )
+					$nuevoTurno = $this->Turno;
+				
+                if (isset($turnoACancelar) && $turnoACancelar != '')
+					// --> Asignarle el turno al paciente con redireccionamiento
+					$sqlAsigTur = "INSERT INTO ".$this->wbasedato."_000304 (Medico, 			Fecha_data, 			Hora_data, 				Turtem,			Turtur, 			Turdoc, 				Turtdo, 				Turest, Turnom,					Turtse,					Tursec,						Turupr, 		Turred,	Turtrd,		Seguridad, 		id)
+															  VALUES ('".$this->wbasedato."', '".date('Y-m-d')."', 	'".date('H:i:s')."',	'".$this->Tema."',	'".$nuevoTurno."', 	'".$this->NumeroIdentificacion."',	'".$this->TipoIdentificacion."', 	'on', 	'".$this->Nombre."',	'".$this->Categoria."',	'".$this->CategoriaSecundaria."',	'".$this->Prioridad."',	'".$turnoACancelar."','".$this->TurneroRedireccion."','C-".$wuse."',	'')
+					";
 
-				// --> Asignarle el turno al paciente
-				$sqlAsigTur = "INSERT INTO ".$this->wbasedato."_000304 (turven,turpat, Medico, 			Fecha_data, 			Hora_data, 				Turtem,			Turtur, 			Turdoc, 				Turtdo, 				Turest, Turnom,					Turtse,					Tursec,						Turupr, 					Seguridad, 		id)
-														  VALUES ('01','on', '".$this->wbasedato."', '".date('Y-m-d')."', 	'".date('H:i:s')."',	'".$this->Categoria."',	'".$nuevoTurno."', 	'".$this->NumeroIdentificacion."',	'".$this->TipoIdentificacion."', 	'on', 	'".$this->Nombre."',	'".$this->Categoria."',	'".$this->CategoriaSecundaria."',	'01',	'C-".$wuse."',	'')
-				";
-				//echo ($sqlAsigTur);
+                else
+					// --> Asignarle el turno al paciente
+					$sqlAsigTur = "INSERT INTO ".$this->wbasedato."_000304 (Medico, 			Fecha_data, 			Hora_data, 				Turtem,			Turtur, 			Turdoc, 				Turtdo, 				Turest, Turnom,					Turtse,					Tursec,						Turupr, Turtrd,					Seguridad, 		id)
+															  VALUES ('".$this->wbasedato."', '".date('Y-m-d')."', 	'".date('H:i:s')."',	'".$this->Tema."',	'".$nuevoTurno."', 	'".$this->NumeroIdentificacion."',	'".$this->TipoIdentificacion."', 	'on', 	'".$this->Nombre."',	'".$this->Categoria."',	'".$this->CategoriaSecundaria."',	'".$this->Prioridad."','".$this->TurneroRedireccion."','C-".$wuse."',	'')
+					";				
+				
+				
+				txtLog("SQL Insert turno: ".$sqlAsigTur."; ");
+				//echo ("SQL Insert turno: ".$sqlAsigTur."; ");
+				
 				$resObtConsec = mysql_query($sqlAsigTur, $conex);
 
 				
@@ -475,6 +504,19 @@ class Turno {
 		return $html;
 	}
 
-  
 }
+
+
+	function txtLog($txt, $inicializar=false)
+	{
+			try {
+					$l = date('H:i:s', time()) . ' ' . $txt . "\n";
+					if ($inicializar)
+						file_put_contents('log_la_obt.txt', $l, LOCK_EX);
+					else
+						file_put_contents('log_la_obt.txt', $l, FILE_APPEND | LOCK_EX);
+			} catch (\Exception $e) {
+			}
+	}
+  
 ?>
