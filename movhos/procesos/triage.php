@@ -46,6 +46,79 @@ else
 //=====================================================================================================================================================================     
 //		F U N C I O N E S	 G E N E R A L E S    P H P
 //=====================================================================================================================================================================
+
+	//---------------------------------------------------------
+	// --> Cargar menú "select", de turneros-servicios
+	//---------------------------------------------------------
+	function listaDeTurnosServicios($tipoDocumento,$numeroIdentificacion,$nombrePaciente,$edad,$tipoEdad)
+	{
+		// realizarTriage($rowTurnos['Atutur'],$rowTurnos['Atutdo'],$rowTurnos['Atudoc'],$rowTurnos['Atunom'],$rowTurnos['Atueda'],strtoupper($rowTurnos['Catnom']))
+		// function realizarTriage(turno, tipoDoc, documento, nombre, edad, categoria)
+		// var formTipoOrden 	= '000152'; 
+		// var numHistoriaTemp = 'TEMP'+$.trim(respuesta.Historia);		
+		// var urlform 		= '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa=hce&origen='+$('#wemp_pmla').val()+'&wdbmhos=movhos&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDoc+'&whis='+numHistoriaTemp+'&wing=1';
+
+		//return"";
+		global $wbasedato;
+		global $wemp_pmla;
+		global $conex;
+		global $wuse;
+		
+		$respuesta 						= "";
+		$wbasedatoCliame 				= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+
+		// Buscar los turneros a los que puede redireccionar.
+		$sql = "SELECT tur.Codtrd 
+				FROM ".$wbasedatoCliame."_000305 AS tur
+				WHERE tur.Codtem='09'
+		";
+		//echo "<br>$sql";
+		$temasRdr = "''";
+		$resServicios = mysql_query($sql, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlServiciotot):</b><br>".mysql_error());
+		if ($rowR = mysql_fetch_array($resServicios)) 
+		{
+			if ($rowR['Codtrd']!= '')
+				$temasRdr = $rowR['Codtrd'] ;
+		}
+		
+		$aTurneros= array();
+		$sql = "SELECT ser.Sertem, ser.Sercod, tur.Codnom, ser.Sernom 
+				FROM ".$wbasedatoCliame."_000305 AS tur
+				INNER JOIN ".$wbasedatoCliame."_000298 AS ser ON (tur.Codtem=ser.Sertem)
+				WHERE tur.Codest='on' AND ser.Serest='on'
+				AND tur.codnom<>'' AND ser.Sernom<>''
+				AND tur.Codtem in ($temasRdr)
+				ORDER BY ser.Sertem, ser.Sercod
+		";
+		$res = mysql_query($sql, $conex) or die("<b>ERROR EN QUERY MATRIX(sql Servicios):</b><br>".mysql_error());
+		
+		// Crear arreglo (por si se necesita luego).
+		// Construir html de la lista input select.
+		$ant = '-1';
+		$i = -1;
+		$respuesta = '<div ><select name="TurSer-'.$numeroIdentificacion.'" id="TurSer-'.$numeroIdentificacion.'" style="border-radius:10px;border:1px solid #AFAFAF;width:25px;color:white;background-color:white;background: url(flecha1.png) no-repeat #EEE;background-size:20px 15px;background-position: center;" required="" 
+		onchange="obtenerTurno(\''.$tipoDocumento.'\',\''.$numeroIdentificacion.'\',\''.$nombrePaciente.'\',\''.$edad.'\',\''.$tipoEdad.'\')">
+		<option hidden selected> </option>';
+
+		while($row = mysql_fetch_array($res)){
+			if ($row['Sertem'] != $ant) {
+				if ($ant!='-1')
+					$respuesta .= '</optgroup>';
+				$respuesta .= '<optgroup style="color:black;background-color:white;" label="'.$row['Codnom'].'">';
+				$i++;
+				$ant = $row['Sertem'];
+				$aTurneros[$i] = array("turno" => $row['Sertem'], "nombre" => $row['Codnom'], "servicios" => array());
+			}
+			$respuesta .= '<option style="color:black;background-color:white;" value="'. $row['Sertem'] . '-' . $row['Sercod'] .'">'.$row['Sernom'].'</option>';
+			$aTurneros[$i]['servicios'][] = array("servicio" => $row['Sercod'], "nombre" => $row['Sernom']);
+		}
+		
+		$respuesta .= "</select></div>";
+		
+		return $respuesta;
+	}
+
+
 	
 	//---------------------------------------------------------
 	// --> Pintar lista de pacientes pendientes de triage
@@ -88,11 +161,12 @@ else
 				<td class='encabezadoTabla'>Hce<br><span style='font-family: verdana;font-weight:normal;font-size: 7pt;'>Cl&iacutenica</span></td>
 				<td class='encabezadoTabla'>Hce<br><span style='font-family: verdana;font-weight:normal;font-size: 7pt;'>IDC</span></td>
 				<td class='encabezadoTabla' colspan='3' align='center'>Acciones</td>
+				<td class='encabezadoTabla'>Prioridad</td>
 			</tr>";
 		
 		// --> Obtener lista de pacientes pendientes de triage
 		$sqlTurnos = "
-		SELECT A.Fecha_data, A.Hora_data, Atutur, Atudoc, Atutdo, Atunom, Atueda, Atuted, Atullt, Atuutr, Atusea, Catnom, Orihis, Oriing
+		SELECT A.Fecha_data, A.Hora_data, Atutur, Atudoc, Atutdo, Atunom, Atueda, Atuted, Atullt, Atuutr, Atusea, Catnom, Orihis, Oriing, A.Atuprd
 		  FROM ".$wbasedato."_000178 AS A INNER JOIN ".$wbasedato."_000207 AS B ON(A.Atuten = B.Catcod) 
 			   LEFT JOIN root_000037 AS C ON(Atudoc = Oriced AND Oriori = '".$wemp_pmla."' AND  Atutdo = Oritid)
 		 WHERE Atuest  = 'on'
@@ -100,6 +174,18 @@ else
 		   AND Atusea LIKE '".$filtroSalaDeEspera."'
 		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
 		";
+		$sqlTurnos = "
+		SELECT A.Fecha_data, A.Hora_data, Atutur, Atudoc, Atutdo, Atunom, Atueda, Atuted, Atullt, Atuutr, Atusea, Sernom, Orihis, Oriing, cat.Connom as Prioridad
+		  FROM ".$wbasedato."_000178 AS A INNER JOIN ".$wbasedatoCliame."_000298 AS B ON(A.Atuten = B.Sercod) 
+			   LEFT JOIN root_000037 AS C ON (Atudoc = Oriced AND Oriori = '".$wemp_pmla."' AND  Atutdo = Oritid)
+			   LEFT JOIN ".$wbasedatoCliame."_000299 AS cat ON (A.Atuprd = cat.Concod)
+		 WHERE Atuest  = 'on'
+		   AND Atucta != 'on'
+		   AND Atusea LIKE '".$filtroSalaDeEspera."'
+		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
+		";
+		
+		//echo "<br>$sqlTurnos";
 		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
 		$coloFila	= 'fila2';
 		
@@ -147,7 +233,7 @@ else
 					$tipoEdad = "";
 					break;
 			}			
-			
+
 			$respuesta['html'].= "
 			<tr class='".$coloFila." find' id='trTurno_".$rowTurnos['Atutur']."'>
 				<td align='center'>".$rowTurnos['Fecha_data']."</td>
@@ -164,7 +250,7 @@ else
 				</td>
 				<td>".$rowTurnos['Atunom']."</td>
 				<td>".$rowTurnos['Atueda']." ".$tipoEdad."</td>
-				<td>".strtoupper($rowTurnos['Catnom'])."</td>
+				<td>".strtoupper($rowTurnos['Sernom'])."</td>
 				<td align='center'>".strtoupper($arraySalasEspera[$rowTurnos['Atusea']])."</td>
 				<td align='center'>
 					<img width='14' height='14' style='cursor:pointer;".(($rowTurnos['Orihis'] != '') ? "" : "display:none")."' tooltip='si' title='Ver HCE Cl&iacutenica' src='../../images/medical/sgc/lupa.png' onclick='abrirHce(\"".$rowTurnos['Atudoc']."\", \"".$rowTurnos['Atutdo']."\", \"".$rowTurnos['Orihis']."\", \"".$rowTurnos['Oriing']."\", \"".$wemp_pmla."\")'>
@@ -183,6 +269,7 @@ else
 				<td align='center' >
 					<img id='botonCancelar".$rowTurnos['Atutur']."' style='cursor:pointer;' tooltip='si' 	class='botonCancelarTurno' title='Cancelar turno' src='../../images/medical/eliminar1.png' onclick='cancelarTurno(\"".$rowTurnos['Atutur']."\")'>
 				</td>				
+				<td>".$rowTurnos['Prioridad']."</td>
 			</tr>
 			";
 			
@@ -200,6 +287,7 @@ else
 		
 		return $respuesta;
 	}
+
 	//-----------------------------------------------------------------------------------
 	// --> Pintar lista de pacientes a los que la enfermera de triage canceló el turno
 	//-----------------------------------------------------------------------------------
@@ -388,6 +476,7 @@ else
 				<td class='encabezadoTabla' rowspan='2'>Tiempo espera consulta<br><span style='font-size:9px'>(Desde el triage)</span></td>
 				<td class='encabezadoTabla' rowspan='2'>Estado</td>
 				<td class='encabezadoTabla' rowspan='2' align='center'>Reclasificar</td>
+				<td class='encabezadoTabla' rowspan='2' align='center'>Asignar turno</td>
 			</tr>
 			<tr align='center' rowspan='2'>
 				<td class='encabezadoTabla'>Fecha/Hora</td>
@@ -410,12 +499,20 @@ else
 		$sqlTurnos = "
 		SELECT A.Fecha_data, A.Hora_data, Atufad, Atuhad, Atufat, Atutur, Atudoc, Atutdo, Atunom, Atueda, Atuted, Atuadm, Atupri, Atusea, Catnom, Ahthis, Ahting, Ahthte, Atuest
 		  FROM ".$wbasedato."_000178 AS A INNER JOIN ".$wbasedato."_000207 AS B ON(A.Atuten = B.Catcod)
-			   LEFT JOIN ".$wbasedato."_000204 AS C ON(Atutur = Ahttur)
+			   LEFT JOIN ".$wbasedato."_000204 AS C ON (Atutur = Ahttur)
 		 WHERE Atucta  = 'on'
 		   AND Atufat  LIKE '".$fechaTriage."%'
 		 ORDER BY REPLACE(Atutur, '-', '')*1 DESC
 		";
-		
+		$sqlTurnos = "
+		SELECT A.Fecha_data, A.Hora_data, Atufad, Atuhad, Atufat, Atutur, Atudoc, Atutdo, Atunom, Atueda, Atuted, Atuadm, Atupri, Atusea, Sernom, Ahthis, Ahting, Ahthte, Atuest
+		  FROM ".$wbasedato."_000178 AS A INNER JOIN ".$wbasedatoCliame."_000298 AS B ON(A.Atuten = B.Sercod)
+			   LEFT JOIN ".$wbasedato."_000204 AS C ON (Atutur = Ahttur)
+		 WHERE Atucta  = 'on'
+		   AND Atufat  LIKE '".$fechaTriage."%'
+		 ORDER BY REPLACE(Atutur, '-', '')*1 DESC
+		";
+		//echo "$sqlTurnos";
 		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
 		$coloFila	= 'fila2';		
 		while($rowTurnos = mysql_fetch_array($resTurnos))
@@ -564,6 +661,7 @@ else
 			}	
 			
 			// --> Obtener el valor del triage
+			//echo "Obtener el valor del triage";
 			$respuestaHce		= obtenerDatoHce($historiaHce, $ingresoHce, trim($forYcampoTriage[0]), array($forYcampoTriage[1]));
 			$triage				= $respuestaHce[$forYcampoTriage[1]];
 			if($triage != '')
@@ -632,7 +730,7 @@ else
 				<td>".$rowTurnos['Atutdo']."-".$rowTurnos['Atudoc']."</td>
 				<td nowrap>".$rowTurnos['Atunom']."</td>
 				<td>".$rowTurnos['Atueda']." ".$tipoEdad."</td>
-				<td>".strtoupper($rowTurnos['Catnom'])."</td>
+				<td>".strtoupper($rowTurnos['Sernom'])."</td>
 				<td align='center'>".$arrayPrioridades[$rowTurnos['Atupri']]."</td>
 				<td align='center'>".strtoupper($arraySalasEspera[$rowTurnos['Atusea']])."</td>
 				<td align='center'>".$fhTomoTurno->format('Y-m-d h:i:s a')."</td>
@@ -655,10 +753,25 @@ else
 				<td align='center'>".gmdate("H:i:s", $tiempoEspera)."</td>";
 			}
 			
+			// verificar si se marcó OTRO SERVICIO en Plan.
+			$respHcePlan		= obtenerDatoHce($historiaHce, $ingresoHce, trim($forYcampoTriage[0]), array('105'));
+			//echo "<br>respuestaHce: " . json_encode($respHcePlan);
+			$otroServicio = false;
+			if (isset($respHcePlan['105'])){
+				//echo " 105=" . $respHcePlan['105'];
+				$arrPlan	= explode("-", $respHcePlan['105']);
+				if ($arrPlan[0] == '08')
+					$otroServicio = true;
+			}
+			
+			// $tipoDocumento,$numeroIdentificacion,$nombrePaciente,$edad,$tipoEdad
 			$respuesta['html'].= "
 				<td align='center'>".$estado."</td>
 				<td align='center' >
 					<img style='cursor:pointer;".(($permitirReclasi) ? "" : "display:none")."'  width='18' height='18' tooltip='si' title='Reclasificar' src='../../images/medical/root/grabar.png' onclick='reclasificarPaciente(\"".$rowTurnos['Atutur']."\", \"".$rowTurnos['Atutdo']."\", \"".$rowTurnos['Atudoc']."\", \"".$rowTurnos['Atunom']."\", \"".$historiaHce."\", \"".$ingresoHce."\", \"".$rowTurnos['Atupri']."\", \"".$triage."\", \"".$arrayPrioridades[$rowTurnos['Atupri']]."\")'>
+				</td>
+				<td align='center' >
+					". ($otroServicio? listaDeTurnosServicios($rowTurnos['Atutdo'],$rowTurnos['Atudoc'],$rowTurnos['Atunom'],$rowTurnos['Atueda'],$rowTurnos['Atuted']): "") ."
 				</td>
 			</tr>
 			";
@@ -711,15 +824,16 @@ else
 			 WHERE Fecha_data = '".$rowForTri['Fecha_data']."'
 			   AND Hora_data  = '".$rowForTri['Hora_data']."'
 			   AND movpro 		= '".$formulario."'
-			   AND movcon 		IN(".$campos.")
+			   AND movcon 		IN (".$campos.")
 			   AND movhis 		= '".$historia."'
 			   AND moving 		= '".$ingreso."'
 			";
+			//echo "<br>$sqlDatosHce";
 			$resDatosHce = mysql_query($sqlDatosHce, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlDatosHce):".$sqlDatosHce."</b><br>".mysql_error());
 			while($rowDatosHce = mysql_fetch_array($resDatosHce))
 				$respuesta[$rowDatosHce['movcon']] = trim($rowDatosHce['movdat']);
 		}
-		
+		//echo "<br>" . json_encode($respuesta);
 		return $respuesta;
 	}
 
@@ -747,6 +861,7 @@ if(isset($accion))
 			   AND Atuutr != '".$wuse."'
 			   AND Atuutr = Codigo
 			";
+			//echo "$sqlValLla";
 			$resValLla = mysql_query($sqlValLla, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlValLla):</b><br>".mysql_error());
 			if($rowValLla = mysql_fetch_array($resValLla))
 			{
@@ -1436,6 +1551,7 @@ else
 			});
 		}, 500);
 	});
+
 	//--------------------------------------------------------
 	//	--> Activar datapicker
 	//---------------------------------------------------------
@@ -1458,6 +1574,101 @@ else
 		};
 		$.datepicker.setDefaults($.datepicker.regional['esp']);
 	}
+
+	//------------------------------------------------------------------------------------
+	// --> Funcion que obtiene el turno al seleccionar el servicio en la lista de espera.
+	//------------------------------------------------------------------------------------
+	function obtenerTurno(TipoDoc,NumeroId,NombrePac,Edad,TipoEdad)
+	{
+		var arrayTurSer = $('#TurSer-'+NumeroId).val().split('-');
+		//alert ($('#TurSer-'+NumeroId).val());
+		if (arrayTurSer.length<2)
+		{
+			jAlert("<span style='color:red'>No se pudo procesar el servicio elegido</span>", "Mensaje");
+			return;
+		}
+		var Tema = arrayTurSer[0];
+		var TipoTurnero = arrayTurSer[0];
+		var Categoria = arrayTurSer[1];
+		// jAlert("<span style='color:red'>" + NombrePac + ' : ' + Tema + Categoria + "</span>", "Mensaje");
+		/*
+		alert ('tipoDocumento: ' +TipoDoc 
+		+ ',numeroIdentificacion: ' +NumeroId
+		+ ',nombrePaciente: ' +NombrePac
+		+ ',edad: ' +Edad
+		+ ',tipoEdad: ' +TipoEdad
+		+ ',categoria: ' +Categoria
+		+ ',tema: ' +Tema
+		+ ',prioridad: ' 
+		+ ',tipoTurnero: ' +TipoTurnero
+		+ ',codigoTurnero: '
+		+ ',validarExisteTurno: false'
+		+ ',wemp_pmla: ' + $('#wemp_pmla').val()
+		);
+		
+		return;
+		*/
+		
+		$.post("/matrix/ips/procesos/generarturno.php",
+		{
+			tipoDocumento:       	TipoDoc,
+			numeroIdentificacion:	NumeroId,
+			nombrePaciente:      	NombrePac,
+			edad:					Edad,
+			tipoEdad:         		TipoEdad,
+			categoria:         		Categoria,
+			tema:         			Tema,
+			prioridad:         		'',  // CUAL PRIORIDAD ??
+			tipoTurnero:         	TipoTurnero,
+			codigoTurnero:         	'',
+			validarExisteTurno:		false,
+			wemp_pmla:        		$('#wemp_pmla').val(),
+			turneroRedireccion:		'01' 
+		}, function(data){
+			//var obj = jQuery.parseJSON (JSON.stringify(data));
+			//jAlert("<span style='color:blue'>TURNO ASIGNADO: " + obj.Turno + "</span>", "Mensaje");
+		}, 'json').always(function(data) {
+			//alert (data.responseText);
+			//alert (JSON.stringify(data));
+			var obj = jQuery.parseJSON (JSON.stringify(data));
+			jAlert("<span style='color:blue'>TURNO ASIGNADO: " + obj.Turno + "</span>", "Mensaje");
+			//jAlert("<span style='color:blue'>TURNO ASIGNADO:</span>", "Mensaje");
+		});
+		
+		/*
+		$.ajax({
+			type:    "POST",
+			url:     "/matrix/webapi/turnero/generarturno.php",
+			data: {
+				tipoDocumento:       	TipoDoc,
+				numeroIdentificacion:	NumeroId,
+				nombrePaciente:      	NombrePac,
+				edad:					Edad,
+				tipoEdad:         		TipoEdad,
+				categoria:         		Categoria,
+				tema:         			Tema,
+				prioridad:         		'',
+				tipoTurnero:         	TipoTurnero,
+				codigoTurnero:         	'',
+				validarExisteTurno:		false,
+				wemp_pmla:        		$('#wemp_pmla').val()
+			},
+			success: function(data) {
+				//alert (data);
+				//alert("Turno asignado " + data.Turno);
+				jAlert("<span style='color:blue'>TURNO ASIGNADO: "+data+"</span>", "Mensaje");
+				alert("<span style='color:blue'>TURNO ASIGNADO: "+data+"</span>", "Mensaje");
+			},
+			error:   function(jqXHR, textStatus, errorThrown) {
+				alert("Error, status = " + textStatus + ", " +
+						"mensaje: " + errorThrown);
+			},
+			dataType: "json" 
+		});
+		*/
+
+	}
+
 	//------------------------------------------------------------------------------------
 	// --> Funcion que genera el llamado del paciente para que sea atendido en el triage
 	//------------------------------------------------------------------------------------
@@ -1505,6 +1716,7 @@ else
 			}
 		}, 'json');
 	}
+
 	//------------------------------------------------------------------------------------
 	// --> Funcion que genera el llamado del paciente para que sea atendido en el triage
 	//------------------------------------------------------------------------------------
