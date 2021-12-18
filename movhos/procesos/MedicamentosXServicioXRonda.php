@@ -276,6 +276,8 @@ function cerrarVentana()
 include_once("conex.php");
 /****************************************************************************************************************************************************************
  * Actualizaciones:
+ * Diciembre 10 de 2021 Sebastian Alvarez Barona - Se modifico el select de la unidad de destino, asignandole que cuando ingrese un usuario de la sede sur solo se le listen
+ * 											       las opciones que hay en la sede sur, de lo contrario si el usuario es de la sede 80 entonces mostrara las opciones de la sede 80.
  * Octubre 1 de 2019 Edwin Molina 	- No se muestran los articulos de stock, ni los grupos E00 de medicamentos ni las dosis unicas aplicadas
  * Octubre 1 de 2019 Jessica Madrid - Se modifican los estilos de los filtros de búsqueda.
  * Julio 07 de 2018 Juan Felipe Balcero - Se agrega filtro por tipo de producto para central de mezclas
@@ -357,7 +359,7 @@ else
 
 
 															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz  ="Octubre 1 de 2019";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz  ="Diciembre 10 de 2021";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
 															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
   //*******************************************************************************************************************************************
@@ -1717,9 +1719,15 @@ function pintarAritculos( $articulos ){
 		$filtro="--";
 		
 		$cco="ccohos = 'off' AND ccofac = 'on' AND ccotra = 'on'";  // filtros para la consulta
-		$centrosCostos = consultaCentrosCostos($cco, $filtro="--");  //tipo 3
+		$centrosCostos = consultaCentrosCostos($cco, $filtro="--", TRUE);  //tipo 3
 		
-		$cco="ccocpx = 'on' AND ccohos = 'on' OR ccolac = 'on'";  // filtros para la consulta
+		/**
+		 * Se añaden dos parentesis en el segumiento de la consulta que esta en la funcion consultaCentrosCostos
+		 * debido a que cuando en la consulta se asigna un OR es frecuente que ocasione 
+		 * problemas. 
+		 * By: Sebastian Alvarez Barona
+		 */
+		$cco="(ccocpx = 'on' AND ccohos = 'on' OR ccolac = 'on')";  // filtros para la consulta
 		$centrosCostosDestino = consultaCentrosCostos($cco, $filtro);  //tipo 3
 		
 		$cco="ccotra != 'on' AND ccodom = 'on' AND ccoest = 'on'";  // filtros para la consulta
