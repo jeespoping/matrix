@@ -658,7 +658,7 @@ else
 //$wautor="Juan C. Hernandez M. ";
 //FECHA CREACION             : Febrero 15 de 2011
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="(Abril 1 de 2020)";
+  $wactualiz="(Diciembre 19 de 2021)";
  /* 
 //DESCRIPCION
 //==========================================================================================================================================\\
@@ -680,6 +680,10 @@ else
 	Se edita el option vacio, por solicitud de calidad (lady) ya que al seleccionar el vacio el paciente vuelve a quedar 
 	en la lista de pacientes en espera y se reinician los tiempos lo que implicaba que los indicadores de oportunidad
 	se ampliaran. jerson trujillo 2019-12-16
+ //==========================================================================================================================================\\
+ * 2021-12-19 Sebastián Nevado
+	Se hace modificacion para llevar las funciones esCirugia, y consultarCcoUrgencias a comun.
+ 
  //==========================================================================================================================================\\
  * 2020-04-01 Juan C. Hdez
 	Se hace modificacion para poder ver en la colomna genero medico, los pacientes COVID19.
