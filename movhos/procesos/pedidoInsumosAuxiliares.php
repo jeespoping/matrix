@@ -567,7 +567,7 @@ else
 				$queryHabitaciones = "SELECT * FROM
 						(SELECT Ubisac as Habcco, Habcod, Habhis, Habing,
 									CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
-									Ubialp, Ubifap, Ubihap, pacced, pactid, '1' as ordenes, Habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '2' as orden
+									Ubialp, Ubifap, Ubihap, Pacced, Pactid, '1' as ordenes, Habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '2' as orden
 						   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016, ".$tablaHabitaciones."
 						  WHERE ubiald = 'off'
 							AND Ccocir != 'on'
@@ -586,7 +586,7 @@ else
 							UNION
 						SELECT Ubisac as Habcco, (SELECT Cconom FROM ".$wbasedato."_000011 WHERE Ccocod = Ubisac) as Habcod, ubihis as Habhis, ubiing as Habing,
 									CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
-									Ubialp, Ubifap, Ubihap, pacced, pactid, '1' as ordenes,'2000' as habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '1' as orden
+									Ubialp, Ubifap, Ubihap, Pacced, Pactid, '1' as ordenes,'2000' as Habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '1' as orden
 						   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016
 						  WHERE ubiald = 'off'
 							AND ubisac = Ccocod
