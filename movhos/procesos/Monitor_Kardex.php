@@ -26,7 +26,7 @@ else
   
   
                                                    // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Mayo 21 de 2018";               // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="Diciembre 19 de 2021";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                               // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
             
 //=========================================================================================================================================\\
@@ -42,6 +42,9 @@ else
 //=========================================================================================================================================\\
 //=========================================================================================================================================\\
 //ACTUALIZACIONES
+//=========================================================================================================================================\\
+// Diciembre 19 de 2021 Marlon Osorio:
+// Se reemplaza la funcion consultarCcoOrigen por consultarCcoOrigenUnificado que esta en el comun.php
 //=========================================================================================================================================\\
 // Mayo 21 de 2018	Jessica	
 // En la función consultarSiDAexiste() se agrega a la consulta el filtro con cenpro_000002 para saber si la dosis adaptada esta activa
@@ -1558,7 +1561,10 @@ else
 	/**********************************************************************************
 	 * Consulta código del centro de costos de origen
 	 **********************************************************************************/
-	function consultarCcoOrigen( $conex, $wbasedato, $ori ){
+	/**
+	 * Se debe reemplazar la funcion consultarCcoOrigen por consultarCcoOrigenUnificado en el comun.php
+	 */
+	 function consultarCcoOrigen( $conex, $wbasedato, $ori ){
 
 		$sql = "SELECT 
 					Ccocod
@@ -1748,7 +1754,7 @@ else
 	  global $wfecha;
 	  global $whora_par_actual;
 
-	  $wcco = consultarCcoOrigen( $conex, $wbasedato, $wori );
+	  $wcco = consultarCcoOrigenUnificado( $conex, $wbasedato, $wori );
 
 	  $info = consultarInfoTipoArticulos( $conex, $wbasedato );
 	  //$corteDispensacion = $info[ $kadpro ]['horaCaroteDispensacion'];
