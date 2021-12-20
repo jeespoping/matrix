@@ -29,6 +29,7 @@ $wusuario = substr($user, $pos + 1, strlen($user)); //extraigo el codigo del usu
 * Fecha de creacion:  2007-06-15
 * Autor: Carolina Castano P
 * Ultima actualizacion:
+* Diciembre 19 de 2021 Marlon   - Se reemplaza la funcion consultarCcos por consultarCcosUnificado que esta en el comun.php
 * Enero 29 de 2020 		Edwin 	- Se corrige variables de historia e ingreso en la función pintarBotonNPT ya que al realizar el query para buscar
 *								  el cco del paciente no lo consultaba correctamente.
 * Octubre 30 de 2019 	Jessica - Se agrega validación antes de reemplazar las dosis adaptadas para evitar que los reemplazos queden 
@@ -3905,7 +3906,7 @@ else
 
     include_once("cenpro/funciones.php"); 
     // pintarVersion(); //Escribe en el programa el autor y la version del Script.
-	$wactualiz = "Octubre 30 de 2019";
+	$wactualiz = "Diciembre 19 de 2021";
 	encabezado("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica");
     pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts    
     // consulto los datos del usuario de la sesion
@@ -3915,14 +3916,15 @@ else
     // si ya se ha seleccionado un centro de costos, se manda a funcion para que quede de primero en el select
     if (isset($cco))
     {
-        $ccos = consultarCcos($cco);
+        $ccos = consultarCcosUnificado($cco);
+        
     } 
     else // si no existe aun $cco, se carga como el primer centro de la lista de centros de costos
         {
-            $ccos = consultarCcos('');
+            $ccos = consultarCcosUnificado('');
         $cco = $ccos[0];
     } 
-    // si nos pasan un parametro de busqueda de lote, como numero o codigo del producto, se consultan los lotes para esa forma de busqueda
+        // si nos pasan un parametro de busqueda de lote, como numero o codigo del producto, se consultan los lotes para esa forma de busqueda
     // con el parametro ingresado
     if (isset($parcon) and $parcon != '')
     {
