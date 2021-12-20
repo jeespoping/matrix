@@ -1556,7 +1556,7 @@ function marcarLlegada($wid, $fecha, $hora, $wemp_pmla)
 	$datosPacienteAlta = obtenerDatosPacienteAlta( $wid, $wcencam, $wbasedato );
 
 	if( $datosPacienteAlta['Motivo'] == 'PACIENTE DE ALTA' &&
-			( $datosPacienteAlta['Habitacion'] != 'null' || $datosPacienteAlta['Habitacion'] != null ) )
+			( $datosPacienteAlta['Habitacion'] != 'null' ) )
 	{
 		/**
 		 * * Se hace solicitud de limpieza de habitación, teniendo en cuenta que el
@@ -1624,7 +1624,7 @@ function obtenerDatosPacienteAlta( $wid, $wcencam, $wbasedato )
 		$err = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 		$rowdia = mysql_fetch_array($err);
 		$rowdia['Motivo'] = $respuesta[1];
-		$rowdia['Habitacion'] = json_decode( $respuesta[2] )[0];
+		$rowdia['Habitacion'] = json_decode( $respuesta[2] )[0] == '' ? 'null' : json_decode( $respuesta[2] )[0];
 	}
 
 	return $rowdia;

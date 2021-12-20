@@ -120,8 +120,9 @@ if( isset( $peticionAjax ) ){
                              AND    Movfdi = '0000-00-00'
                     ";
                 $rest_select = mysql_query( $select, $conex ) or die (mysql_errno()." - en el query: ".mysql_error());
+                $cantidad = mysql_fetch_array( $rest_select );
 
-                if( mysql_fetch_array( $rest_select )[0] = 1 )
+                if( $cantidad[0] > 0 )
                 {
                     /**
                      * Actualizo el registro en la base de datos para la habitación correspondiente
@@ -217,10 +218,7 @@ if( isset( $peticionAjax ) ){
 								$q2 = " INSERT INTO ".$wbasedato."_000239 (   Medico       ,   Fecha_data,   Hora_data,   loghab    ,   Logfman    ,   Loghma     ,   logids   , logest, Seguridad        ) "
 												."                VALUES ('".$wbasedato."','".$wfecha."','".$whora."','".$whabi."', '".$wfecha."' , '".$whora."' ,  '".$id."' , 'on'  ,'C-".$wusuario."')";
 								$err2 = mysql_query($q2,$conex) or die (mysql_errno()." - en el query: ".$q2." - ".mysql_error());
-								
-							
 							}
-
                     }else{
                         $select = "
                             SELECT    count(*)
@@ -231,8 +229,9 @@ if( isset( $peticionAjax ) ){
                                AND    Movfdi = '0000-00-00'
                             ";
                         $rest_select = mysql_query( $select, $conex ) or die (mysql_errno()." - en el query: ".mysql_error());
+                        $cantidad = mysql_fetch_array( $rest_select );
 
-                        if( mysql_fetch_array( $rest_select )[0] = 1 )
+                        if( $cantidad[0] > 0 )
                         {
                             /**
                              * Actualizo el registro en la base de datos para la habitación correspondiente
