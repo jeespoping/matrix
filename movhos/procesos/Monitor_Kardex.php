@@ -24,7 +24,7 @@ else
   $whora = (string)date("H:i:s");	                                                           
 
                                                    // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz=" Diciembre 19 de 20211 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz=" Diciembre 19 de 2021 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                               // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
             
 //=========================================================================================================================================\\
