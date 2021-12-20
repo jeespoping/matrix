@@ -1275,6 +1275,7 @@ function solicitarCamillero($centroCosto, $wemp_pmla, $whistoria){
 }
 
 // Función que permite consultar el código actual de el centro de costos de Urgencias
+// Se reemplaza por consultarCentrocoUrgencias y está en comun.php
 function consultarCcoUrgencias(){
 	
 	global $wbasedato;
@@ -1299,6 +1300,7 @@ function consultarCcoUrgencias(){
 }
 
 // Función que permite consultar el código actual de el centro de costos de Cirugia
+// Se reemplaza por consultarCcoCirugiaUnificada y está en comun.php
 function consultarCcoCirugia(){
 	
 	global $wbasedato;
@@ -1567,8 +1569,8 @@ function reasignarCubiculo($whce, $wbasedato, $whis, $wing, $wusuario, $wcubicul
 				//Verifica si el paciente es tiene conducta de traslado.	
 				if($row_con_pac['contra'] == 'on'){
 					
-					$codCcoCirugia = consultarCcoCirugia();
-					$codCcoUrgencias = consultarCcoUrgencias();
+					$codCcoCirugia = consultarCcoCirugiaUnificada();
+					$codCcoUrgencias = consultarCentrocoUrgencias();
 					
 					//====================================
 					// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
@@ -2491,8 +2493,8 @@ function ponerConducta($whce, $wbasedato, $whis, $wing, $wusuario, $wconducta, $
 		//en proceso de traslado.
 		if($cond_nueva_traslado == 'on'){
 			
-			$codCcoCirugia = consultarCcoCirugia();
-			$codCcoUrgencias = consultarCcoUrgencias();
+			$codCcoCirugia = consultarCcoCirugiaUnificada();
+			$codCcoUrgencias = consultarCentrocoUrgencias();
 			
 			//====================================
 			// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
