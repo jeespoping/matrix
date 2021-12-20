@@ -276,6 +276,7 @@ function cerrarVentana()
 include_once("conex.php");
 /****************************************************************************************************************************************************************
  * Actualizaciones:
+ * Diciembre 19 de 2021 Marlon Osorio: 			 - Se reemplaza la funcion esCcoDomiciliarioMSR por esCcoDomiciliarioMSRUnificado
  * Diciembre 10 de 2021 Sebastian Alvarez Barona - Se modifico el select de la unidad de destino, asignandole que cuando ingrese un usuario de la sede sur solo se le listen
  * 											       las opciones que hay en la sede sur, de lo contrario si el usuario es de la sede 80 entonces mostrara las opciones de la sede 80.
  * Octubre 1 de 2019 Edwin Molina 	- No se muestran los articulos de stock, ni los grupos E00 de medicamentos ni las dosis unicas aplicadas
@@ -357,12 +358,11 @@ else
   $pos = strpos($user,"-");
   $wusuario = substr($user,$pos+1,strlen($user));
 
-
+  															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
+  $wactualiz  ="Diciembre 19 de 2021";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
 															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz  ="Diciembre 10 de 2021";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
-															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
-  //*******************************************************************************************************************************************
+  //***********************************v********************************************************************************************************
   //F U N C I O N E S
   //===========================================================================================================================================
   
@@ -871,7 +871,7 @@ else
 	
 		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $paciente->servicioActual );
 		
-		$esCcoDomiciliario = esCcoDomiciliarioMSR( $conex, $wbasedato, $paciente->servicioActual );
+		$esCcoDomiciliario = esCcoDomiciliarioMSRUnificado( $conex, $wbasedato, $paciente->servicioActual );
 		
 		$serDom = $esCcoDomiciliario ? '&servicioDomiciliario=on' : '' ;
 		
@@ -1371,7 +1371,7 @@ else
 	
 		$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $paciente->servicioActual );
 		
-		$esCcoDomiciliario = esCcoDomiciliarioMSR( $conex, $wbasedato, $paciente->servicioActual );
+		$esCcoDomiciliario = esCcoDomiciliarioMSRUnificado( $conex, $wbasedato, $paciente->servicioActual );
 		
 		$serDom = $esCcoDomiciliario ? '&servicioDomiciliario=on' : '' ;
 		
@@ -2295,7 +2295,7 @@ function pintarAritculos( $articulos ){
 	
 						
 						$paciente_inf 		= consultarUbicacionPaciente( $conex, $wbasedato, $historia, $ingreso);
-						$esCcoDomiciliario 	= esCcoDomiciliarioMSR( $conex, $wbasedato, $paciente_inf->servicioActual );
+						$esCcoDomiciliario 	= esCcoDomiciliarioMSRUnificado( $conex, $wbasedato, $paciente_inf->servicioActual );
 						$serDom 			= $esCcoDomiciliario ? '&servicioDomiciliario=on' : '' ;
 						
 						
