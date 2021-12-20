@@ -1569,8 +1569,8 @@ function reasignarCubiculo($whce, $wbasedato, $whis, $wing, $wusuario, $wcubicul
 				//Verifica si el paciente es tiene conducta de traslado.	
 				if($row_con_pac['contra'] == 'on'){
 					
-					$codCcoCirugia = consultarCcoCirugiaUnificada();
-					$codCcoUrgencias = consultarCentrocoUrgencias();
+					$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
+					$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato);
 					
 					//====================================
 					// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
@@ -2493,8 +2493,8 @@ function ponerConducta($whce, $wbasedato, $whis, $wing, $wusuario, $wconducta, $
 		//en proceso de traslado.
 		if($cond_nueva_traslado == 'on'){
 			
-			$codCcoCirugia = consultarCcoCirugiaUnificada();
-			$codCcoUrgencias = consultarCentrocoUrgencias();
+			$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
+			$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato);
 			
 			//====================================
 			// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					

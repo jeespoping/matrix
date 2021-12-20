@@ -998,7 +998,7 @@ if(!isset($wemp_pmla))
         $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
         //Consulto el codigo y nombre del centro de costo de urgencias
-        $ccoUrgencias = consultarCentrocoUrgencias();
+        $ccoUrgencias = consultarCentrocoUrgencias($wbasedato);
 
         //Formulario (forma)
         echo "<form name='forma' action='' method='post'>";
@@ -5234,7 +5234,7 @@ function ingresarPacientesUrgencias($basedatos,$basedatoshce,$codCco,$whistoria,
 			$ingresoPaciente->fechaAltaDefinitiva = "0000-00-00";
 			$ingresoPaciente->horaAltaDefinitiva = "00:00:00";
 
-			if(esCirugiaUnificada($codCco))
+			if(esCirugiaUnificada($codCco, $basedatos))
 				$ingresoPaciente->enProcesoTraslado = "on";
 			else
 				$ingresoPaciente->enProcesoTraslado = "off";

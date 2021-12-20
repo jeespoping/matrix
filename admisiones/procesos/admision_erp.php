@@ -2722,7 +2722,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 	$aplMovhos    = consultarAplicacion2($conex,$wemp_pmla,"movhos");
 	$servicioIng1 = explode("-",$ing_seisel_serv_ing);
 	$servicioIng  = $servicioIng1[1];
-	$ccoIngresoAyuda = verificarCcoIngresoAyudaUnificada( $servicioIng );
+	$ccoIngresoAyuda = verificarCcoIngresoAyudaUnificada( $servicioIng, $aplMovhos );
 	if( $ccoIngresoAyuda && $modoConsulta != "true" ){//--> 2016-12-27 inserts de alta automática para ayudas diagnósticas.
 
 		// Si el paciente a estado antes en el servicio para el mismo ingreso, traigo cuantas veces para sumarle una
@@ -6570,7 +6570,7 @@ if(isset($accion) and $accion == 'anularAdmision')
 					  AND ingnin = '{$ingreso}'";
 		$resMov = mysql_query( $query, $conex ) or ( $data[ 'mensaje' ] = mysql_errno()." - Error en el query $sqlMov - ".mysql_error() );
 		$row = mysql_fetch_array($resMov);
-		$ccoAyuda = verificarCcoIngresoAyudaUnificada( $row[0] );
+		$ccoAyuda = verificarCcoIngresoAyudaUnificada( $row[0], $aplMovhos );
 
 		if( $ccoAyuda ){
 			$query = "DELETE
