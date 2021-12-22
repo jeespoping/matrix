@@ -9,7 +9,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2019-06-26';
+			$wactualiz='2021-12-14';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //  2019-06-26 Jerson Trujillo: Se adapta el programa para que soporte dos campos del formulario de triage de la hce, para definir si se da de alta al paciente.              
 //
@@ -129,17 +129,20 @@ else
 		global $wemp_pmla;
 		global $conex;
 		global $wuse;
+        global $tema;
 		
 		$respuesta 						= array("html" => "", "cantidad" => 0);
 		$wbasedatoCliame 				= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
 		$turnoConLlamadoEnVentanilla 	= "";
+
+        $ccoUr = consultarCentrocoUrgencias();
 		
 		// --> Obtener maestro de salas de espera
 		$arraySalasEspera = array();
 		$sqlSalaEsp = "
 		SELECT Salcod, Salnom
 		  FROM ".$wbasedato."_000182
-		 WHERE Salest = 'on'
+		 WHERE Salest = 'on' AND Salcco = '".$ccoUr->codigo."'
 		";
 		$resSalaEsp = mysql_query($sqlSalaEsp, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlSalaEsp):</b><br>".mysql_error());
 		while($rowSalaEsp = mysql_fetch_array($resSalaEsp))
@@ -182,10 +185,10 @@ else
 		 WHERE Atuest  = 'on'
 		   AND Atucta != 'on'
 		   AND Atusea LIKE '".$filtroSalaDeEspera."'
+		   AND Atutem = '".$tema."'
 		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
 		";
-		
-		//echo "<br>$sqlTurnos";
+        
 		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
 		$coloFila	= 'fila2';
 		
@@ -297,6 +300,7 @@ else
 		global $wemp_pmla;
 		global $conex;
 		global $wuse;
+        global $tema;
 		
 		$respuesta 						= array("html" => "");
 		$wbasedatoCliame 				= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
@@ -325,12 +329,13 @@ else
 			
 		// --> Obtener lista de pacientes cancelados
 		$sqlTurnos = "
-		SELECT A.Fecha_data, A.Hora_data, Atutur, Atudoc, Atutdo, Atunom, Atueda, Atuted, Catnom, Salnom  
-		  FROM ".$wbasedato."_000178 AS A INNER JOIN ".$wbasedato."_000207 AS B ON(A.Atuten = B.Catcod)
+		SELECT A.Fecha_data, A.Hora_data, Atutur, Atudoc, Atutdo, Atunom, Atueda, Atuted, Sernom, Salnom  
+		  FROM ".$wbasedato."_000178 AS A INNER JOIN ".$wbasedatoCliame."_000298 AS B ON(A.Atuten = B.Sercod)
 			   INNER JOIN ".$wbasedato."_000182 AS C ON (Atusea = Salcod)
 		 WHERE Atuest 		!= 'on'
 		   AND Atucta 		!= 'on'
 		   AND A.Fecha_data  = '".$fecha."'
+		   AND Atutem = '".$tema."'
 		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
 		";
 		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
@@ -418,7 +423,7 @@ else
 		return $respuesta;
 	}
 	//---------------------------------------------------------
-	// --> Pintar lista de pacientes pendientes de triage
+	// --> Pintar lista de pacientes con triage
 	//---------------------------------------------------------
 	function listaDePacientesAtendidos($fechaTriage)
 	{
@@ -426,6 +431,7 @@ else
 		global $wemp_pmla;
 		global $conex;
 		global $wuse;
+        global $tema;
 		
 		$respuesta 						= array("html" => "");
 		$wbasedatoCliame 				= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
@@ -447,13 +453,15 @@ else
 			$arrHomoConductas[$rowHomoCon['Hctcon']][$rowHomoCon['Hctcch']]['Especialidad']		= $rowHomoCon['Hctcom'];
 			$arrHomoConductas[$rowHomoCon['Hctcon']][$rowHomoCon['Hctcch']]['permiteIngreso']	= $rowHomoCon['Hctpin'];
 		}
+
+        $ccoUr = consultarCentrocoUrgencias();
 		
 		// --> Obtener maestro de salas de espera
 		$arraySalasEspera = array();
 		$sqlSalaEsp = "
 		SELECT Salcod, Salnom
 		  FROM ".$wbasedato."_000182
-		 WHERE Salest = 'on'
+		 WHERE Salest = 'on' AND Salcco = '".$ccoUr->codigo."'
 		";
 		$resSalaEsp = mysql_query($sqlSalaEsp, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlSalaEsp):</b><br>".mysql_error());
 		while($rowSalaEsp = mysql_fetch_array($resSalaEsp))
@@ -510,11 +518,13 @@ else
 			   LEFT JOIN ".$wbasedato."_000204 AS C ON (Atutur = Ahttur)
 		 WHERE Atucta  = 'on'
 		   AND Atufat  LIKE '".$fechaTriage."%'
+		   AND Atutem = '".$tema."'
 		 ORDER BY REPLACE(Atutur, '-', '')*1 DESC
 		";
-		//echo "$sqlTurnos";
+
 		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
-		$coloFila	= 'fila2';		
+		$coloFila	= 'fila2';
+
 		while($rowTurnos = mysql_fetch_array($resTurnos))
 		{
 			$fechaTriage	= explode(" ",$rowTurnos['Atufat']);
@@ -1156,7 +1166,7 @@ if(isset($accion))
 		case 'listaPacientesPendientesTriage':
 		{			
 			$respuesta = listaDePacientesEnEspera($filtroSalaDeEspera);
-			
+            
 			echo json_encode($respuesta);
 			return;
 		}
@@ -1165,7 +1175,8 @@ if(isset($accion))
 			$respuesta = array("Error" => false, "Html" => "");
 			
 			$respuesta = listaDePacientesAtendidos($fechaTriage);
-			
+
+
 			echo json_encode($respuesta);
 			return;
 		}
@@ -1174,7 +1185,8 @@ if(isset($accion))
 			$respuesta = array("Error" => false, "html" => "");
 			
 			$respuesta = listaDePacientesCancelados($fecha);
-			
+
+            
 			echo json_encode($respuesta);
 			return;
 		}
@@ -1686,6 +1698,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'llamarPacienteAtencion',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			turno:					turno,
 			consultorio:			$("#puestoTrabajo").val()
 		}, function(respuesta){
@@ -1734,6 +1747,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'llamarPacienteAtencionRecla',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			turno:					turno,
 			historia:				historia,
 			ingreso:				ingreso,
@@ -1766,6 +1780,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'cancelarLlamarPacienteAtencion',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			turno:					turno
 		}, function(respuesta){
 
@@ -1786,6 +1801,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'cancelarLlamarPacienteAtencionRecla',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			turno:					turno
 		}, function(respuesta){
 
@@ -1808,6 +1824,7 @@ else
 					consultaAjax:   		'',
 					accion:         		'cancelarTurno',
 					wemp_pmla:        		$('#wemp_pmla').val(),
+                    tema:                   $('#tema').val(),
 					turno:					turno
 				}, function(respuesta){
 					if(respuesta.Error)
@@ -1828,6 +1845,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'selectorDePrioridades',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			turno:					turno,
 			prioridad:				prioridad
 		}, function(respuesta){
@@ -1893,6 +1911,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'guardarPrioridad',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			turno:					turno,
 			prioridad:				$("#selectPrioridad").val()
 		}, function(respuesta){
@@ -1924,6 +1943,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'obtenerHistoriaTemporal',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			turno:					turno,
 			puestoTrabajo:			$("#puestoTrabajo").val()
 		}, function(respuesta){
@@ -2063,6 +2083,7 @@ else
 		{
 			consultaAjax:   		'',
 			accion:         		'iniciaTriageReclasificacion',
+            tema:                   $('#tema').val(),
 			wemp_pmla:        		$('#wemp_pmla').val(),
 			turno:					turno
 		}, function(respuesta){
@@ -2174,6 +2195,7 @@ else
 				consultaAjax:   		'',
 				accion:         		'actualizarNivelTriage',
 				wemp_pmla:        		$('#wemp_pmla').val(),
+                tema:                   $('#tema').val(),
 				turno:					turno,
 				historia:				historia,
 				ingreso:				ingreso
@@ -2191,6 +2213,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'apagarAlertaDePacienteEnTriage',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			turno:					turno
 		}, function(respuesta){
 		});
@@ -2205,6 +2228,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'guardarRelacionPacienteHistoriaTemp',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			numHistoriaTemp:		numHistoriaTemp,
 			documento:				documento,
 			tipoDoc:				tipoDoc,
@@ -2224,6 +2248,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'listaPacientesPendientesTriage',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			filtroSalaDeEspera:		$("#filtroSalaDeEspera").val()
 		}, function(respuesta){
 			$("#listaEsperaTriage").html(respuesta.html);
@@ -2278,6 +2303,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'listaDePacientesAtendidos',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			fechaTriage:			$("#fechaTriage").val()
 		}, function(respuesta){
 			$("#listaConTriage").html(respuesta.html);
@@ -2529,6 +2555,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'listaDePacientesCancelados',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			fecha:					$("#fechaCancelo").val()
 		}, function(respuesta){
 			$("#listaCancelados").html(respuesta.html);
@@ -2549,6 +2576,7 @@ else
 					consultaAjax:   		'',
 					accion:         		'reactivarPaciente',
 					wemp_pmla:        		$('#wemp_pmla').val(),
+                    tema:                   $('#tema').val(),
 					turno:					turno
 				}, function(respuesta){
 					listaDePacientesCancelados();
@@ -2603,6 +2631,7 @@ else
 						consultaAjax:   		'',
 						accion:         		'actualizarNumeroDeDocumento',
 						wemp_pmla:        		$('#wemp_pmla').val(),
+                        tema:                   $('#tema').val(),
 						turno:					turno,
 						nuevoTipDoc:			$.trim($("#actTipDoc_"+turno).val()),
 						nuevoDoc:				$.trim($("#actNumDoc_"+turno).val()),
@@ -2644,6 +2673,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'cambiarPuestoTrabajo',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			puestoTrabajo:			$("#puestoTrabajo").val(),
 			respetarOcupacion:		respetarOcupacion
 		}, function(respuesta){
@@ -2721,6 +2751,14 @@ else
 	<?php
 	// -->	ENCABEZADO
 	encabezado("Triage", $wactualiz, 'clinica');
+
+    /*
+            * Filtrado de cco de consultorios
+            * @date: 01/12/2021
+            * @author: jesus.lopez
+    */
+
+    $centroCos = consultarCentrocoUrgencias();
 	
 	// --> Maestro de puestos de trabajo para triage
 	$sqlVentanillas	= "
@@ -2728,6 +2766,7 @@ else
 	  FROM ".$wbasedato."_000180
 	 WHERE Puectr = 'on'
 	   AND Pueest = 'on'
+	   and Ccostos = '".$centroCos->codigo."'
 	";
 	$resVentanillas = mysql_query($sqlVentanillas, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlVentanillas):</b><br>".mysql_error());
 	while($rowVentanillas = mysql_fetch_array($resVentanillas))
@@ -2737,14 +2776,17 @@ else
 		if($rowVentanillas['Pueusu'] == $wuse)
 			$ventanillaActUsu = $rowVentanillas['Puecod'];
 	}
-	
-	// --> Maestro de salas de espera
-	$arraySalasEspera = array();
-	$sqlSalaEsp = "
-	SELECT Salcod, Salnom
-	  FROM ".$wbasedato."_000182
-	 WHERE Salest = 'on'
-	";
+
+    $ccoUr = consultarCentrocoUrgencias();
+
+    // --> Obtener maestro de salas de espera
+    $arraySalasEspera = array();
+    $sqlSalaEsp = "
+		SELECT Salcod, Salnom
+		  FROM ".$wbasedato."_000182
+		 WHERE Salest = 'on' AND Salcco = '".$ccoUr->codigo."'
+		";
+
 	$resSalaEsp = mysql_query($sqlSalaEsp, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlSalaEsp):</b><br>".mysql_error());
 	while($rowSalaEsp = mysql_fetch_array($resSalaEsp))
 		$arraySalasEspera[$rowSalaEsp['Salcod']] = $rowSalaEsp['Salnom'];
@@ -2761,6 +2803,7 @@ else
 	
 	echo "
 	<input type='hidden' id='wemp_pmla' value='".$wemp_pmla."'>
+	<input type='hidden' id='tema' value='".$tema."'>
 	<input type='hidden' id='arrayTiposDeDocumentos' value='".json_encode($arrayTiposDeDocumentos)."'>
 	<div id='tabsTriage' style='margin:4px'>
 		<ul>
