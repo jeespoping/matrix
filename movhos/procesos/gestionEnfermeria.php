@@ -973,7 +973,9 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 
 	$datamensaje = array('mensaje'=>'', 'error'=>0 , 'formulario'=>'', 'justificacion'=>'', 'htmljusti'=>'');
 	
-	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
+	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );2
+
+	$wcamillerodomiciliaria = consultarAliasPorAplicacion( $conex, $wemp_pmla, "camilleroDomiciliaria" );
 
 	$wfecha = date("Y-m-d");
 	$whora  = date("H:i:s");
@@ -1249,7 +1251,7 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 		//$wcentral="CAMILLEROS";
 		//=======================================================================================================================================================
 
-		if ($rowmue[0]!="on")  //No pide el camillero si el paciente Murio, porque se pidio cuando marco la muerte
+		if ($rowmue[0]!="on" && $wcamillerodomiciliaria)  //No pide el camillero si el paciente Murio, porque se pidio cuando marco la muerte
 		{
 			//=======================================================================================================================================================
 			//Grabo el registro solicitud del camillero
