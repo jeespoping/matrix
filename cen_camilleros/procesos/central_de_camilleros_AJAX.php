@@ -751,6 +751,12 @@ if (!isset($consultaAjax))
 			//		jAlert(ajax.responseText, "Alerta");
 			}catch(e){ jAlert(e, "Alerta"); }
 	  }
+	  
+	function cambioSede(codigo)
+	{
+		document.getElementById('cambiarSede').click();
+		
+	}
 
       $(function(){
 			$.jatt();
@@ -763,7 +769,7 @@ if (!isset($consultaAjax))
 
 include_once("root/comun.php");
 
-function traer_pacientes_remision_urgencias(){
+function traer_pacientes_remision_urgencias($sCodigoSede = ''){
 	
 	global $wcencam;
 	global $conex;
@@ -778,54 +784,9 @@ function traer_pacientes_remision_urgencias(){
 	$res_rem = mysql_query($q_rem, $conex) or die ("Error: ".mysql_errno()." - en el query: ".$q_rem." - ".mysql_error());
 	$row_rem = mysql_fetch_array($res_rem);
 	$cond_remision = $row_rem['Concod'];
-
-	$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
-	$sFiltroSede="";
 	
-	if($estadosede=='on')
-	{
-		$codigoSede=consultarsedeFiltro();
-		$sFiltroSede=isset($codigoSede) ? " AND Ccosed = '{$codigoSede}' " : "";
-	}
-	
-	
-	echo "<h3>Seleccione la sede para ver los Pacientes en Remisión:  </h3>";
-	echo "<select method='POST' action='central_de_camilleros_AJAX.php' name='sedeefiltro'>
-			
-			<option selected select disabled >Seleccione una Sede</option>
-			<option value='SedeSur' >Sede Sur</option>
-			<option value='Sede80' >Sede 80</option>
-			<option value='Todo' >Todas las sedes</option>
-		</select> ";
-	echo "<input type='submit'  value='Actualizar pacientes por sede'></input>";
-	
-	$sedemanual=$_POST['sedeefiltro'];
-	
-
-	if(isset($sedemanual))
-	{
-		if($sedemanual=='SedeSur')
-		{
-			$codigoSede=$sedemanual;
-		}
-		if($sedemanual=='Sede80')
-		{
-			$codigoSede=$sedemanual;
-		}
-		if($sedemanual=='Todo')
-		{
-			$codigoSede=$sedemanual;
-		}
-		
-		$sFiltroSede=isset($codigoSede) ? " AND Ccosed = '{$codigoSede}' " : "";
-
-			if($codigoSede=='Todo')
-			{
-				$sFiltroSede='';
-			}
-	}
-
-
+	//2021-12-22: Se agrega filtro de sede en caso de enviarlo
+	$sFiltroSede = (isset($sCodigoSede) && !empty($sCodigoSede)) ? " AND Ccosed = '{$sCodigoSede}' " : "";
 	
 	
 
@@ -843,7 +804,8 @@ function traer_pacientes_remision_urgencias(){
 		    AND Mtring = Ubiing 
 			AND ubisac = Ccocod
 			AND ccourg = 'on'
-			AND Ubiald = 'off' {$sFiltroSede} 
+			AND Ubiald = 'off' 
+			{$sFiltroSede} 
 		  GROUP BY 1, 2, 3, 4, 5 
 		  ORDER BY CONCAT(Mtrftc,' ',Mtrhtc)";
 
@@ -1408,7 +1370,7 @@ function verificarhistoriaactiva($whis, $wemp_pmla)
 
     }
 
-function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramitesok)
+function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramitesok, $sedee='')
   {
 
    global $conex;
@@ -1775,11 +1737,14 @@ function grabarObservacion($wid, $wtexto)
   $wautor="Juan C. Hernandez M.";
 //FECHA CREACION             :
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="Sep 09 de 2021";
+  $wactualiz="Diciembre 22 de 2021";
 //========================================================================================================================================\\
 //========================================================================================================================================\\
 //ACTUALIZACIONES
 /*
+//========================================================================================================================================\\
+Diciembre 22 de 2021 - Marlon osorio:
+    Se agregó filtro de sede según el usuario logueado
 //========================================================================================================================================\\
 Septiembre 09 de 2021 - Joel Payares Hernández
 	Se modifica el metodo marcarLlegada, adicionando el segmento sql que permita insertar el registro de la habitación en la central de
@@ -2186,11 +2151,36 @@ if (!isset($consultaAjax))
 		//Valida si la fecha actual del servidor es mayor a la hora de inicio de traslado de pacientes de ayuda (6 pm), datos de la tabla root_000051 (Detapl= HoraInicioTrasladoAyuda).
 		if( $hora1 > $hora2 ) {
 			$hora_traslado_ayuda = true ;
-		} 
+		}
 		
-		if ($wcentral == 'CAMAS'){
+		$sFiltrarSede = consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+		$sMovhos = consultarAliasPorAplicacion($conexion, $wemp_pmla, "movhos");
+		$sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
+		$sCodigoSede = (isset($selectsede)) ? $selectsede : $sCodigoSede;
 		
-			traer_pacientes_remision_urgencias();
+		if ($wcentral == 'CAMAS')
+		{
+			//2021-12-22: Se agrega select de sede en caso de enviarlo
+			if($sFiltrarSede == 'on')
+			{
+				$sListadoSedes = getListaSedes();
+				echo "<div style='text-align:center'>";
+				echo "<h3>Seleccione la sede para filtrar las solicitudes:  </h3>";
+				echo "<select name='selectsede' id='selectsede' onchange=\"cambioSede( this.value )\" >";
+				$sSelected = ($oSedeLista['codigo'] == $sCodigoSede) ? 'selected' : '';
+				echo "<option {$sSelected} value='' >Todas las sedes</option>";
+				foreach($sListadoSedes AS $oSedeLista)
+				{
+					$sSelected = ($oSedeLista['codigo'] == $sCodigoSede) ? 'selected' : '';
+					echo "<option {$sSelected} value='{$oSedeLista['codigo']}' >{$oSedeLista['nombre']}</option>";
+				}
+				echo "</select>";
+				echo "<input style='display: none' id='cambiarSede' type='submit' method='POST' action='central_de_camilleros_AJAX.php' value='Actualizar pacientes por sede'></input>";
+				echo "<br><br>";
+				echo "</div>";
+			}
+		
+			traer_pacientes_remision_urgencias($sCodigoSede);
 		
 		}
 		
@@ -2203,14 +2193,22 @@ if (!isset($consultaAjax))
 	    //===================================================================================================================================================
 	    // ACA TRAIGO TODAS LAS SOLICITUDES HECHAS QUE NO TENGAN MAS DE DOS HORAS DE ESPERA
 	    //===================================================================================================================================================
+		//2021/12/22: Filtros dependiendo si está o no prendido el filtro de sede y el usuario tiene sede
+		$sFromFiltroSedeCamilleros = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? ' , '.$wcencam.'_000004 C, '.$wbasedato.'_000011 D ' : '';
+		$sJoinFiltroSedeCamilleros = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND C.Nombre = A.Origen AND SUBSTRING_INDEX(C.Cco, '-', 1) = D.Ccocod " : '';
+		$sWhereFiltroSedeCamilleros = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND Ccosed = '{$sCodigoSede}'" : '';
+		
 	   $q = "  SELECT A.Hora_data, Origen, Motivo, Observacion, Destino, Solicito, Camillero, "
 	        ."         Hora_llegada, Hora_Cumplimiento, A.Id, Habitacion, Observ_central, A.fecha_data, A.Historia, A.Hab_asignada,A.Fecha_data, Fechatramiteok, Horatramiteok, tramiteok "
 		    ."    FROM ".$wcencam."_000003 A, ".$wcencam."_000001 B"
+			.$sFromFiltroSedeCamilleros
 		    ."   WHERE Anulada           = 'No' "
 			."     AND TIMESTAMPDIFF(HOUR,CONCAT(A.Fecha_data,' ',A.Hora_data),CONCAT('".$wfecha."',' ','".$hora."')) <= ".$wvigencia_solicitudes
 		    ."     AND Hora_cumplimiento = '00:00:00' "
 		    ."     AND Motivo            = Descripcion "
-		    ."     AND A.central         = '".$wcentral."'"		  
+		    ."     AND A.central         = '".$wcentral."'"
+			."		".$sJoinFiltroSedeCamilleros." "
+			."		".$sWhereFiltroSedeCamilleros." "
 		    ."   ORDER BY A.Fecha_data desc, A.Hora_data desc";
 		$res = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());  //or die (mysql_errno()." - ".mysql_error());
 		$num = mysql_num_rows($res);    //or die (mysql_errno()." - ".mysql_error());
@@ -2463,16 +2461,22 @@ if (!isset($consultaAjax))
 
         //Este seleccionador solo sale para la central de camas
            if ($wcentral == 'CAMAS')
-            {						
+            {
+				$sFromFiltroSedeCamas = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? ' , '.$wbasedato.'_000011 D ' : '';
+				$sJoinFiltroSedeCamas = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND Habcco = D.Ccocod " : '';
+				$sWhereFiltroSedeCamas = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND Ccosed = '{$sCodigoSede}'" : '';
 				
            //Consultar camas disponibles
             $q_disp= "  SELECT habcod, habcco "
                     ."    FROM ".$wbasedato."_000020, ".$wcencam."_000007 "
+					.$sFromFiltroSedeCamas
                     ."   WHERE Habtip = tipcod"
                     ."     AND Habdis = 'on'"
                     ."     AND Habpro in ('off','','NO APLICA')"
                     ."     AND Habtip = '".$wcodigo."'"
 					."     AND Habest = 'on' "                    //JuanC Ene 13 de 2020
+					.$sJoinFiltroSedeCamas
+					.$sWhereFiltroSedeCamas
                     ."   ORDER BY Habcod, Habord " ;
 			$resdisp = mysql_query($q_disp,$conex) or die (mysql_errno()." - ".mysql_error());
 			$numdisp = mysql_num_rows($resdisp);
