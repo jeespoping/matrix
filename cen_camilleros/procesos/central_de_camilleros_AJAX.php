@@ -508,7 +508,7 @@ if (!isset($consultaAjax))
         } 
 		
 	 }
-	  var parametros = "consultaAjax=camillero&wemp_pmla="+document.getElementById("wemp_pmla").value+"&wid="+wid+"&wcentral="+document.getElementById("wcentral").value+"&wusuario="+wusuario+"&wcamillero="+opcionSeleccionada+"&whis="+historia+"&tramitesok="+marcado;
+	  var parametros = "consultaAjax=camillero&wemp_pmla="+document.getElementById("wemp_pmla").value+"&wid="+wid+"&wcentral="+document.getElementById("wcentral").value+"&wusuario="+wusuario+"&wcamillero="+opcionSeleccionada+"&whis="+historia+"&tramitesok="+marcado+"&codigoSede="+document.getElementById("selectsede").value;
 
       try
 		  {
@@ -752,10 +752,10 @@ if (!isset($consultaAjax))
 			}catch(e){ jAlert(e, "Alerta"); }
 	  }
 	  
-	function cambioSede(codigo)
+	function cambioSede(codigoSede)
 	{
-		document.getElementById('cambiarSede').click();
-		
+		//Si cambio de sede, refresco el formulario
+		reactivar(0);
 	}
 
       $(function(){
@@ -1370,7 +1370,7 @@ function verificarhistoriaactiva($whis, $wemp_pmla)
 
     }
 
-function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramitesok, $sedee='')
+function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramitesok, $sCodigoSede = '')
   {
 
    global $conex;
@@ -1380,6 +1380,7 @@ function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramite
    global $wfecha;
    global $whora_actual;
    global $esAyuda;
+   global $wemp_pmla;
 
    //Consulto los datos de la solicitud para saber si estan cambiando el camillero
    $q_cam =  "   SELECT Camillero"
@@ -1451,11 +1452,22 @@ function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramite
    $rescam = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 
    $wtipocama = explode("-", $wcamillero);
+   
+	//Mejora del filtro de habitación
+	$sFiltrarSede = 'off';
+	if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$sFiltrarSede = consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+	}
+	$sFromFiltroSedeCamas = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? ' , '.$wbasedato.'_000011 D ' : '';
+	$sJoinFiltroSedeCamas = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND Habcco = D.Ccocod " : '';
+	$sWhereFiltroSedeCamas = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND Ccosed = '{$sCodigoSede}'" : '';
 
    //Se cambia la relacion de la tabla cencam_000002 con la tabla cencam_000007 ya que esta contiene los tipos de cama requeridos. //08 Octubre 2013 Jonatan
    //Consultar camas disponibles
     $q_disp= "  SELECT habcod "
             ."    FROM ".$wbasedato."_000020, ".$wcencam."_000007 "
+			.$sFromFiltroSedeCamas
             ."   WHERE Habtip = Tipcod"
             ."     AND Habest = 'on' "
             ."     AND Habhis = ''"
@@ -1464,6 +1476,8 @@ function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramite
             ."     AND Habpro in ('off','')"
             ."     AND Habtip = '".trim($wtipocama[0])."'"
 			."     AND Habest = 'on' "              //Juanc Ene 13 2020
+			.$sJoinFiltroSedeCamas
+			.$sWhereFiltroSedeCamas
             ."   ORDER BY Habcod, Habord " ;
     $resdisp = mysql_query( $q_disp, $conex ) or die( mysql_errno()." - Error en el query $q_disp - ".mysql_error() );
     $numdisp = mysql_num_rows($resdisp);
@@ -2059,7 +2073,7 @@ function actualizar_operador($wcentral, $wcodope, $whorope)
             {
             case 'camillero':
                 {
-                echo ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramitesok);
+                echo ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramitesok, $codigoSede);
                 }
                 break;
             case 'anular':
@@ -2175,7 +2189,6 @@ if (!isset($consultaAjax))
 					echo "<option {$sSelected} value='{$oSedeLista['codigo']}' >{$oSedeLista['nombre']}</option>";
 				}
 				echo "</select>";
-				echo "<input style='display: none' id='cambiarSede' type='submit' method='POST' action='central_de_camilleros_AJAX.php' value='Actualizar pacientes por sede'></input>";
 				echo "<br><br>";
 				echo "</div>";
 			}
