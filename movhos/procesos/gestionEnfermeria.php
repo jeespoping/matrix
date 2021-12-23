@@ -7436,8 +7436,7 @@ function ccoesdomiciliaria( $wcco )
 
 	$q = "SELECT Ccodom
 		 	FROM ".$wbasedato."_000011
-		   WHERE Ccohos = 'on'
-		     AND Ccopan = 'on'";
+		   WHERE Ccoest = 'on'";
 	$err = mysql_query($q,$conex);
 	$result = mysql_fetch_assoc($err);
 
