@@ -761,6 +761,8 @@ if (!isset($consultaAjax))
 <?php
 }
 
+include_once("root/comun.php");
+
 function traer_pacientes_remision_urgencias(){
 	
 	global $wcencam;
@@ -776,7 +778,57 @@ function traer_pacientes_remision_urgencias(){
 	$res_rem = mysql_query($q_rem, $conex) or die ("Error: ".mysql_errno()." - en el query: ".$q_rem." - ".mysql_error());
 	$row_rem = mysql_fetch_array($res_rem);
 	$cond_remision = $row_rem['Concod'];
+
+	$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+	$sFiltroSede="";
 	
+	if($estadosede=='on')
+	{
+		$codigoSede=consultarsedeFiltro();
+		$sFiltroSede=isset($codigoSede) ? " AND Ccosed = '{$codigoSede}' " : "";
+	}
+	
+	
+	echo "<h3>Seleccione la sede para ver los Pacientes en Remisión:  </h3>";
+	echo "<select method='POST' action='central_de_camilleros_AJAX.php' name='sedeefiltro'>
+			
+			<option selected select disabled >Seleccione una Sede</option>
+			<option value='SedeSur' >Sede Sur</option>
+			<option value='Sede80' >Sede 80</option>
+			<option value='Todo' >Todas las sedes</option>
+		</select> ";
+	echo "<input type='submit'  value='Actualizar pacientes por sede'></input>";
+	
+	$sedemanual=$_POST['sedeefiltro'];
+	
+
+	if(isset($sedemanual))
+	{
+		if($sedemanual=='SedeSur')
+		{
+			$codigoSede=$sedemanual;
+		}
+		if($sedemanual=='Sede80')
+		{
+			$codigoSede=$sedemanual;
+		}
+		if($sedemanual=='Todo')
+		{
+			$codigoSede=$sedemanual;
+		}
+		
+		$sFiltroSede=isset($codigoSede) ? " AND Ccosed = '{$codigoSede}' " : "";
+
+			if($codigoSede=='Todo')
+			{
+				$sFiltroSede='';
+			}
+	}
+
+
+	
+	
+
 	$q = " SELECT CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, pactid, pacced, ingnre, ubihis, ubiing, mtrmed, Mtrftc, Mtrhtc
 		   FROM root_000036, root_000037, ".$wmovhos."_000018, ".$wmovhos."_000016, ".$hce."_000022, ".$wmovhos."_000011
 		  WHERE ubihis  = Inghis
@@ -791,9 +843,11 @@ function traer_pacientes_remision_urgencias(){
 		    AND Mtring = Ubiing 
 			AND ubisac = Ccocod
 			AND ccourg = 'on'
-			AND Ubiald = 'off'
+			AND Ubiald = 'off' {$sFiltroSede} 
 		  GROUP BY 1, 2, 3, 4, 5 
 		  ORDER BY CONCAT(Mtrftc,' ',Mtrhtc)";
+
+		  
 	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 	$num = mysql_num_rows($res);
 	
