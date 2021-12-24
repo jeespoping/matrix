@@ -29,6 +29,8 @@ $wusuario = substr($user, $pos + 1, strlen($user)); //extraigo el codigo del usu
 * Fecha de creacion:  2007-06-15
 * Autor: Carolina Castano P
 * Ultima actualizacion:
+* Diciembre 16 de 2021  Sebastian Alvarez B. - Se agrego parametros en la funcion cargarDAaPaciente() para recibir la informacion del sticker en off, para evitar que se imprimima antes de unir la unificada
+*                                              Por otro lado se agrego el parametro en los botones de la funcion cargarDAaPaciente().
 * Enero 29 de 2020 		Edwin 	- Se corrige variables de historia e ingreso en la función pintarBotonNPT ya que al realizar el query para buscar
 *								  el cco del paciente no lo consultaba correctamente.
 * Octubre 30 de 2019 	Jessica - Se agrega validación antes de reemplazar las dosis adaptadas para evitar que los reemplazos queden 
@@ -641,6 +643,9 @@ function consultarSiEsDA($historia,$ingreso,$codigoProducto,$lote,$codCco,$warti
 		{
 			$articuloSuspendido = consultarSiSupendido($historia,$ingreso,$warticuloda,$idoda);
 			$DAactiva = consultarDAactiva($historia,$ingreso,$codigoProducto);
+
+            /**Traemos el parametro del sticker unificado en apagado para omitir el sticker del paciente */
+            $StickerPacienteDA = consultarAliasPorAplicacion($conex, $wemp_pmla, "StickerPacienteDA");
 			
 			if($articuloSuspendido && $DAactiva)
 			{
@@ -648,11 +653,13 @@ function consultarSiEsDA($historia,$ingreso,$codigoProducto,$lote,$codCco,$warti
 				
 				$cadena = $cadena."&wido=".$nuevoIdoDA;
 				// mandar ido de la DA
-				$botonCargos = "<input type='button' id='CargosDA' name='CargosDA' value='Imprimir Sticker y cargar DA al paciente' onclick='cargarDAaPaciente(\"".$historia."\",\"".$ingreso."\",\"".$rowsDA['Rdaart']."\",\"".$rowsDA['Rdaido']."\",\"".$codigoProducto."\",\"".$lote."\",\"".$codCco."\",\"".$rowsDA['Habcco']."\",\"off\",\"".$cadena."\",\"".$wbasedato."\",\"".$wronda."\",\"".$wfecharonda."\")'>";
+                //Agregamos la variable $StickerPacienteDA
+				$botonCargos = "<input type='button' id='CargosDA' name='CargosDA' value='Imprimir Sticker y cargar DA al paciente' onclick='cargarDAaPaciente(\"".$historia."\",\"".$ingreso."\",\"".$rowsDA['Rdaart']."\",\"".$rowsDA['Rdaido']."\",\"".$codigoProducto."\",\"".$lote."\",\"".$codCco."\",\"".$rowsDA['Habcco']."\",\"off\",\"".$cadena."\",\"".$wbasedato."\",\"".$wronda."\",\"".$wfecharonda."\",\"".$StickerPacienteDA."\")'>";
 			}
 			elseif(!$articuloSuspendido)
 			{
-				$botonCargos = "<input type='button' id='CargosDA' name='CargosDA' value='Aprobar, reemplazar, Imprimir Sticker y cargar DA al paciente' onclick='cargarDAaPaciente(\"".$historia."\",\"".$ingreso."\",\"".$rowsDA['Rdaart']."\",\"".$rowsDA['Rdaido']."\",\"".$codigoProducto."\",\"".$lote."\",\"".$codCco."\",\"".$rowsDA['Habcco']."\",\"on\",\"".$cadena."\",\"".$wbasedato."\",\"".$wronda."\",\"".$wfecharonda."\")'>";
+                //Agregamos la variable $StickerPacienteDA
+				$botonCargos = "<input type='button' id='CargosDA' name='CargosDA' value='Aprobar, reemplazar, Imprimir Sticker y cargar DA al paciente' onclick='cargarDAaPaciente(\"".$historia."\",\"".$ingreso."\",\"".$rowsDA['Rdaart']."\",\"".$rowsDA['Rdaido']."\",\"".$codigoProducto."\",\"".$lote."\",\"".$codCco."\",\"".$rowsDA['Habcco']."\",\"on\",\"".$cadena."\",\"".$wbasedato."\",\"".$wronda."\",\"".$wfecharonda."\",\"".$StickerPacienteDA."\")'>";
 			}
 			else
 			{
@@ -3028,8 +3035,12 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 				{
 					if($warticuloda!="" && $idoda!="") // es DA
 					{
+                        /**Traemos el parametro del sticker unificado en apagado para omitir el sticker del paciente */
+                        $StickerPacienteDA = consultarAliasPorAplicacion($conex, $wemp_pmla, "StickerPacienteDA");
+
+                        //Agregamos variable $StickerPacienteDA
 						$cadena = 'etq_socket.php?wemp_pmla='.$wemp_pmla.'&wlot=' . $codlot . '&wnom=' . $nombre . '&wcod=' . $productos[0]['cod'] . '&wfev=' . $fecven . '&wetq=' . $imp .'&whistoria='.$whistoria.'&wingreso='.$wingreso.'&wronda='.$wronda.'&wfecharonda='.$wfecharonda."&wido=".$idoda;
-						$botonImprimir = "<input type='button' id='CargosDA' name='CargosDA' value='Imprimir Sticker y cargar DA al paciente' onclick='cargarDAaPaciente(\"".$whistoria."\",\"".$wingreso."\",\"".$productos[0]['cod']."\",\"".$idoda."\",\"".$warticuloda."\",\"".$codlot."\",\"".$ccos[0]."\",\"".$servicioPaciente."\",\"off\",\"".$cadena."\",\"".$wbasedato."\",\"".$wronda."\",\"".$wfecharonda."\")'>";
+						$botonImprimir = "<input type='button' id='CargosDA' name='CargosDA' value='Imprimir Sticker y cargar DA al paciente' onclick='cargarDAaPaciente(\"".$whistoria."\",\"".$wingreso."\",\"".$productos[0]['cod']."\",\"".$idoda."\",\"".$warticuloda."\",\"".$codlot."\",\"".$ccos[0]."\",\"".$servicioPaciente."\",\"off\",\"".$cadena."\",\"".$wbasedato."\",\"".$wronda."\",\"".$wfecharonda."\",\"".$StickerPacienteDA."\")'>";
 						$botonCargos="";
 					}
 					else // es NPT
@@ -3560,7 +3571,8 @@ function cargarProductoaPaciente(historia,ingreso,codProducto,lote,codCco,servic
 	window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&cod="+codProducto+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self")
 }
 
-function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,servicio,reemplazar,cadena,wbasedato,wronda,wfecharonda)
+// Agregamos parametro StickerPacienteDa en off para omitir el sticker del paciente
+function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,servicio,reemplazar,cadena,wbasedato,wronda,wfecharonda,StickerPacienteDA = 'off')
 {
 	var orden = "desc";
 	var origen = "";
@@ -3610,7 +3622,10 @@ function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,se
 		window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
 	}
 	
-	imprimirStickerPaciente(historia,wronda,codCco);
+    // Omitimos el sticker del paciente para que no salga una vez que se le da al boton Aprobar, Reemplazar, Imprimir Sticker y Cargar DA al paciente
+    if (StickerPacienteDA == 'off'){
+        imprimirStickerPaciente(historia,wronda,codCco);
+    }
 	
 }
    
@@ -3905,7 +3920,7 @@ else
 
     include_once("cenpro/funciones.php"); 
     // pintarVersion(); //Escribe en el programa el autor y la version del Script.
-	$wactualiz = "Octubre 30 de 2019";
+	$wactualiz = "Diciembre 16 de 2021";
 	encabezado("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica");
     pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts    
     // consulto los datos del usuario de la sesion
