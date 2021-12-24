@@ -561,7 +561,7 @@ else
 					$stikerInformacionPaciente = ''; // Variable vacia 
 
 
-					if ($StickerPacienteDA == 'on') // Si el parametro esta en on entonces el sticker DA sale unificado con el del paciente.
+					if ($StickerPacienteDA == 'on' && $whistoria != "" && $wingreso != "") // Si el parametro esta en on entonces el sticker DA sale unificado con el del paciente.
 					{
 						//Llamo a la función
 						$informacion_paciente = informacionPaciente($whistoria, $wingreso);
