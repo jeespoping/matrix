@@ -975,6 +975,8 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 	
 	$tablaHabitaciones = consultarTablaHabitaciones( $conex, $wbasedato, $wcco );
 
+	$wesdomiciliaria = ccoesdomiciliaria( $wcco );
+
 	$wfecha = date("Y-m-d");
 	$whora  = date("H:i:s");
 
@@ -1249,7 +1251,12 @@ if(isset($operacion) && $operacion == 'marcaraltadef_hospitalizacion'){
 		//$wcentral="CAMILLEROS";
 		//=======================================================================================================================================================
 
-		if ($rowmue[0]!="on")  //No pide el camillero si el paciente Murio, porque se pidio cuando marco la muerte
+		/**
+		 * No pide el camillero si el paciente Murio, porque se pidio cuando marco la muerte
+		 * 
+		 * Se adiciona parametro para que se solicite camillero en domiciliaria y se valida el centro de costo
+		 */
+		if ($rowmue[0]!="on" && !$wesdomiciliaria )
 		{
 			//=======================================================================================================================================================
 			//Grabo el registro solicitud del camillero
@@ -7416,6 +7423,28 @@ class movimientoHospitalarioDTO {
 //----------------------------------------------------------
 //			        FUNCIONES TRASLADO DE PACIENTES
 //----------------------------------------------------------
+
+/**
+ * Funcion que permite validar si el centro de costo pasado como parametro
+ * es de domiciliaria
+ */
+function ccoesdomiciliaria( $wcco )
+{
+	global $wbasedato;
+	global $conex;
+	global $wemp_pmla;
+
+	$q = "SELECT Ccodom
+		 	FROM ".$wbasedato."_000011
+		   WHERE Ccohos = 'on'
+		     AND Ccopan = 'on'";
+	$err = mysql_query($q,$conex);
+	$result = mysql_fetch_assoc($err);
+
+	$respuesta = $result[0] == 'on' ? true : false;
+
+	return $respuesta;
+}
 
 /**
  * Función que permite calcular los días de estancia de un servicio

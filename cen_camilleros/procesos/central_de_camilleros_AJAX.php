@@ -1556,29 +1556,42 @@ function marcarLlegada($wid, $fecha, $hora, $wemp_pmla)
 	$datosPacienteAlta = obtenerDatosPacienteAlta( $wid, $wcencam, $wbasedato );
 
 	if( $datosPacienteAlta['Motivo'] == 'PACIENTE DE ALTA' &&
-			( $datosPacienteAlta['Habitacion'] != 'null' || $datosPacienteAlta['Habitacion'] != null ) )
+			( $datosPacienteAlta['Habitacion'] != 'null' ) )
 	{
-		/**
-		 * * Se hace solicitud de limpieza de habitación, teniendo en cuenta que el
-		 * * motivo se paciente de alta y que este en una habitación
-		 */
-		$q = "
-		  UPDATE	{$tablaHabitaciones}
-			 SET	Habali = 'on'
-		   WHERE	Habcod = '{$datosPacienteAlta['Habitacion']}'
+		$query_count = "
+		  select	count(*)
+		  from		{$tablaHabitaciones}
+		  where		Habcod = '{$datosPacienteAlta['Habitacion']}'
+		    and		Habest = 'on'
 		";
 
-		$err = mysql_query($q, $conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		$err = mysql_query($query_count, $conex) or die ("Error: ".mysql_errno()." - en el query: - ".mysql_error());
+		$cantidad_registros = mysql_num_rows( $err );
 
-		/**
-		 * Se adiciona segmento de código que inserta un registro en central de habitación con la información de la habitación
-		 * en la movhos 25.
-		 * @author Joel David Payares Hernández
-		 * @since Julio 13 de 2021
-		 */
-		$q1 = " INSERT INTO ".$wbasedato."_000025 (		Medico     ,    Fecha_data     ,  Hora_data  ,				movhab					,  movemp ,	  movfec   ,  movhem  ,  movhdi  , movobs ,					movfal				 ,					movhal				 ,   movfdi	  ,	   Seguridad	) "
-		     ."                            VALUES ('".$wbasedato."','".$wfecha."','".$whora_actual."','".$datosPacienteAlta['Habitacion']."',	''	  ,'0000-00-00','00:00:00','00:00:00',	''	 ,'".$datosPacienteAlta['FechaEgreso']."','".$datosPacienteAlta['HoraEgreso']."','0000-00-00','C-".$wusuario."')";
-		$err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		if( $cantidad_registros > 0 )
+		{
+			/**
+			 * * Se hace solicitud de limpieza de habitación, teniendo en cuenta que el
+			 * * motivo se paciente de alta y que este en una habitación
+			 */
+			$q = "
+			UPDATE	{$tablaHabitaciones}
+				SET	Habali = 'on'
+			WHERE	Habcod = '{$datosPacienteAlta['Habitacion']}'
+			";
+
+			$err = mysql_query($q, $conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+
+			/**
+			 * Se adiciona segmento de código que inserta un registro en central de habitación con la información de la habitación
+			 * en la movhos 25.
+			 * @author Joel David Payares Hernández
+			 * @since Julio 13 de 2021
+			 */
+			$q1 = " INSERT INTO ".$wbasedato."_000025 (		Medico     ,    Fecha_data     ,  Hora_data  ,				movhab					,  movemp ,	  movfec   ,  movhem  ,  movhdi  , movobs ,					movfal				 ,					movhal				 ,   movfdi	  ,	   Seguridad	) "
+				."                            VALUES ('".$wbasedato."','".$wfecha."','".$whora_actual."','".$datosPacienteAlta['Habitacion']."',	''	  ,'0000-00-00','00:00:00','00:00:00',	''	 ,'".$datosPacienteAlta['FechaEgreso']."','".$datosPacienteAlta['HoraEgreso']."','0000-00-00','C-".$wusuario."')";
+			$err = mysql_query($q1,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		}
 	}
 }
 
@@ -1624,7 +1637,7 @@ function obtenerDatosPacienteAlta( $wid, $wcencam, $wbasedato )
 		$err = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 		$rowdia = mysql_fetch_array($err);
 		$rowdia['Motivo'] = $respuesta[1];
-		$rowdia['Habitacion'] = json_decode( $respuesta[2] )[0];
+		$rowdia['Habitacion'] = json_decode( $respuesta[2] )[0] == '' ? 'null' : json_decode( $respuesta[2] )[0];
 	}
 
 	return $rowdia;
