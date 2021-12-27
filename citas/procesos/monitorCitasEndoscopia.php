@@ -79,7 +79,7 @@ include_once("conex.php");
             $htmlAlertas = "
                 <table width='100%' style='color:#000000;font-family: verdana;font-weight: normal;font-size: 4rem;'>
                 <tr style='background-color: #2a5db0;color:#ffffff;font-weight:bold;'>
-                    <td align='center'># Atenci&oacute;n</td>
+                    <td align='center'>Atenci&oacute;n</td>
                     <td align='center'>Por favor pasar a:</td>
                 </tr>
             ";
@@ -210,7 +210,7 @@ include_once("conex.php");
 					} else {
 						$html_array[] .= "<tr style='background-color:".$colorFila."'>
 										<td align='center'>".substr($rowTurnos[$newPrefix.'tur'], 7)."</td>
-										<td align='left'>En espera de Atención</td>
+										<td align='left'>En espera de Atenci&oacute;n</td>
 									</tr>
 								";
 					}
@@ -377,7 +377,7 @@ else
                 $("#ventanaAlertas").html(respuesta.htmlAlertas);
                 $("#ventanaAlertas").dialog({
                     modal   : true,
-                    title   : "<div align='center' id='barraAtencion' style='font-size: 4rem;color:#D83933'>&nbsp;¡Atenci&oacute;n!</div>",
+                    title   : "<div align='center' id='barraAtencion' style='font-size: 4rem;color:#D83933'>¡Atenci&oacute;n!</div>",
                     width   : width*0.8,
                     height  : height*0.7,
                     show    : { effect: "slide", duration: 400 },
@@ -496,7 +496,7 @@ else
                         <img width='125' heigth='61' src='../../images/medical/root/".$institucion->baseDeDatos.".png'>
                     </td>
                     <td align='center'  width='70%'>
-						ATENCIÓN ".utf8_encode($infoCc["descripcion"])."
+						".utf8_encode("ATENCI&Oacute;N ")." ".($infoCc["descripcion"])."
                     </td>
                     <td id='msjPagina' width='10%' style='font-weight:normal;font-size:2.2rem;color:#000000' align='right'>
                     </td>
