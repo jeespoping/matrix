@@ -54,8 +54,7 @@
     include("conex.php");
     include("root/comun.php");
 
-	
-	
+
 	
     if(!isset($_SESSION['user']))
     {
@@ -68,6 +67,11 @@
     }
     else
     {
+			
+		// if (! isset( $wemp_pmla ))
+		// {
+			// $wemp_pmla = "01";
+		// }	
         $user_session = explode('-', $_SESSION['user']);
         $wuse = $user_session[1];
         mysql_select_db("matrix");
@@ -162,7 +166,7 @@ encabezado( "DUPLICACION GLOSAS SERVINTE", $actualiz ,"clinica" );
 		?>
 		<div class="card bg-light divContHome" style="border: none">
 			<div class="navigation" style="margin-top: 80px">
-				<form id="formHome" name="formHome" method="post" action="DuplicacionGlosas.php" style="margin-top: 50px">
+				<form id="formHome" name="formHome" method="post" action="DuplicacionGlosas.php?wemp_pmla=<?php echo $wemp_pmla ?>" style="margin-top: 50px">
 				<?php
 				if($accion == 'consultar')
 				{
@@ -256,7 +260,7 @@ encabezado( "DUPLICACION GLOSAS SERVINTE", $actualiz ,"clinica" );
 			$glodetcau = $row['glodetcau'];
 			$glodetnum = $row['glodetnum'];
 			$glodetest = 'GL';
-			$glodetrad = $row['glodetrad'];
+			//$glodetrad = $row['glodetrad'];
 			$glodetnit = $row['glodetnit'];
 		//Modificación Mayo 28 de 2021 Leandro Meneses
 		//Al campo godetcla (clasificada) se lleva l valor 'N' para que permita clasificar la glosa			
@@ -276,7 +280,7 @@ encabezado( "DUPLICACION GLOSAS SERVINTE", $actualiz ,"clinica" );
 			$glocoddte = $row['glocoddte'];
 			$glocodreg = $row['glocodreg'];
 			
-
+			$glodetrad = obtenerNumFactura($fuente,"1690",$conex_o);
 		
 			$sqlInsert = "insert into caglodet(";
 			$sqlInsert .= "glodetfue,glodetcco,glodetdoc,glodetfec,";
@@ -592,7 +596,7 @@ encabezado( "DUPLICACION GLOSAS SERVINTE", $actualiz ,"clinica" );
 <?php				
 				}
 ?>				  
-				<form id="formHome" name="formHome" method="post" action="DuplicacionGlosas.php" style="margin-top: 50px">
+				<form id="formHome" name="formHome" method="post" action="DuplicacionGlosas.php?wemp_pmla=<?php echo $wemp_pmla ?>" style="margin-top: 50px">
 
 				
 				  <div align="center" class="row">
@@ -669,7 +673,8 @@ function obtenerNumFactura($fuente,$cCostos ,$conex_o)
 {
     $query1 = "select fuesfu, fuecse from cafue WHERE fuecod = '$fuente' AND fuecco = '$cCostos'";
     $commit1 = odbc_do($conex_o, $query1);
-    $fuesfu = odbc_result($commit1, 1);    $fuecse = odbc_result($commit1, 2);
+    $fuesfu = odbc_result($commit1, 1);    
+	$fuecse = odbc_result($commit1, 2);
 
     $query2 = "select * from cafue WHERE fuecod = '$fuesfu' AND fuecco = '$fuecse'";
     $commit2 = odbc_do($conex_o, $query2);
