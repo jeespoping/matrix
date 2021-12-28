@@ -2114,6 +2114,7 @@ $(document).ready(function() {
 															wingreso:  data.ingreso,
 															responsable: $(this).attr('responsable'),
 															wemp_pmla: $('#wemp_pmla').val(),
+															tema: $('#tema').val,
 															insertar: $(this).val(),
 															activo: activo,
 															esadmision: esadmision,
@@ -2167,6 +2168,7 @@ $(document).ready(function() {
 															accion      : "empresahacedigitalizacion",
 															consultaAjax: '',
 															wemp_pmla: $('#wemp_pmla').val(),
+															tema: $('#tema').val,
 															empresa:   responsable1
 														},
 														async: false,
@@ -2467,6 +2469,7 @@ $(document).ready(function() {
 															wingreso:  data.ingreso,
 															responsable: $(this).attr('responsable'),
 															wemp_pmla: $('#wemp_pmla').val(),
+															tema: $('#tema').val,
 															insertar: $(this).val(),
 															activo: activo,
 															esadmision: esadmision,
@@ -2736,6 +2739,7 @@ $(document).ready(function() {
 			accion      : "crearListaAutomatica",
 			consultaAjax: '',
 			wemp_pmla: $('#wemp_pmla').val(),
+			tema: $('#tema').val,
 			whistoria: whistoria,
 			wingreso : wingreso,
 			wflujo   : wflujo,
@@ -2836,6 +2840,7 @@ $(document).ready(function() {
 			accion      : "naautomatico",
 			consultaAjax: '',
 			wemp_pmla: $('#wemp_pmla').val(),
+			tema: $('#tema').val,
 			whistoria: historia,
 			wingreso : ingreso,
 			opciones : variable
@@ -2957,6 +2962,7 @@ $(document).ready(function() {
 					accion      : "enviarnivelsiguiente",
 					consultaAjax: '',
 					wemp_pmla: $('#wemp_pmla').val(),
+					tema: $('#tema').val,
 					whis: historia,
 					wing : ingreso,
 				}, function(data){
@@ -3441,8 +3447,8 @@ $(document).ready(function() {
 						consultaAjax: '',
 						cedula2     : cedula2,
 						wbasedato   :$('#wbasedato').val(),
-						wemp_pmla   :$('#wemp_pmla').val()
-
+						wemp_pmla   :$('#wemp_pmla').val(),
+						tema: $('#tema').val,
 					},
 					function(data){
 						if(data.error == 1)
@@ -3629,8 +3635,8 @@ $(document).ready(function() {
 						consultaAjax: '',
 						cadena     : cadena,
 						wbasedato   :$('#wbasedato').val(),
-						wemp_pmla   :$('#wemp_pmla').val()
-
+						wemp_pmla   :$('#wemp_pmla').val(),
+						tema: $('#tema').val,
 					},
 					function(data){
 						if(data.error == 1)
@@ -3660,8 +3666,8 @@ $(document).ready(function() {
 				consultaAjax: '',
 				key         : $('#key').val(),
 				wbasedato   :$('#wbasedato').val(),
-				wemp_pmla   :$('#wemp_pmla').val()
-
+				wemp_pmla   :$('#wemp_pmla').val(),
+				tema: $('#tema').val,
 			},
 			function(data){
 				if(data.error == 1)
@@ -3791,7 +3797,8 @@ $(document).ready(function() {
 				consultaAjax: '',
 				key         : $('#key').val(),
 				wbasedato   :$('#wbasedato').val(),
-				wemp_pmla   :$('#wemp_pmla').val()
+				wemp_pmla   :$('#wemp_pmla').val(),
+				tema: $('#tema').val,
 			},
 			async: false,
 			dataType: "json",
@@ -4655,6 +4662,7 @@ $(document).ready(function() {
 												accion      : "traertopespreadmision",
 												consultaAjax: '',
 												wemp_pmla: $('#wemp_pmla').val(),
+												tema: $('#tema').val,
 												documento: $.trim($( "#pac_doctxtNumDoc" ).val()),
 												tipodocumento:  $( "#pac_tdoselTipoDoc" ).val()
 											},
@@ -4802,6 +4810,7 @@ $(document).ready(function() {
 																				accion      : "empresahacedigitalizacion",
 																				consultaAjax: '',
 																				wemp_pmla: $('#wemp_pmla').val(),
+																				tema: $('#tema').val,
 																				empresa:   responsable1
 																			},
 																			async: false,
@@ -5363,7 +5372,8 @@ $(document).ready(function() {
 		{
 			accion      : "llamarModalNoFlujo",
 			consultaAjax: '',
-			wemp_pmla: $('#wemp_pmla').val()
+			wemp_pmla: $('#wemp_pmla').val(),
+			tema: $('#tema').val,
 
 		}, function(data){
 			//alert (data.contenidoDiv);
@@ -5415,7 +5425,8 @@ $(document).ready(function() {
 			whistoria: whistoria,
 			wingreso:  wingreso,
 			westado:   valor,
-			wemp_pmla: $('#wemp_pmla').val()
+			wemp_pmla: $('#wemp_pmla').val(),
+			tema: $('#tema').val,
 
 		}, function(data){
 
@@ -5553,6 +5564,7 @@ $(document).ready(function() {
 		var objJson = {};	//Creo el objeto
 		objJson.accion          = "consultarAdmitidos";	//agrego un parametro más
 		objJson.wbasedato       = $( "#wbasedato" ).val();
+		objJson.tema			= $('#tema').val();
 		objJson.consultaAjax    = "";
 		objJson.wemp_pmla       = $( "#wemp_pmla" ).val();
 		objJson.cco_usuario     = $( "#cco_usuario" ).val();
@@ -6540,6 +6552,7 @@ function guardartopes(codRespGlobal ,DivTopes)
 						wingreso:  ingreso,
 						responsable: codRespGlobal,
 						wemp_pmla: $('#wemp_pmla').val(),
+						tema: $('#tema').val,
 						insertar: insertar,
 						activo: activo,
 						esadmision: esadmision,
@@ -6668,6 +6681,7 @@ function guardartopes(codRespGlobal ,DivTopes)
 						wingreso:  ingreso,
 						responsable: codRespGlobal,
 						wemp_pmla: $('#wemp_pmla').val(),
+						tema: $('#tema').val,
 						insertar: insertar,
 						activo: activo,
 						esadmision: esadmision,
@@ -6714,6 +6728,7 @@ function recalculartopes2()
 				wingreso:  ingreso,
 				responsable: $("#responsabletope").val(),
 				wemp_pmla: $('#wemp_pmla').val(),
+				tema: $('#tema').val,
 				activo: activo
 
 			}, function(data){
@@ -6759,6 +6774,7 @@ function recalculartopes2()
 						{
 							consultaAjax:   '',
 							wemp_pmla:      $('#wemp_pmla').val(),
+							tema: $('#tema').val,
 							accion:         'regrabarCargo',
 							idCargo:		idcargo,
 							responsble:		responsable,
@@ -8169,6 +8185,7 @@ function mostrarAdmisionDesdeTurno(turno, tipoDocumento, documento)
 		consultaAjax:   		'',
 		accion:         		'apagarAlertaDeLlamado',
 		wemp_pmla:        		$('#wemp_pmla').val(),
+		tema: $('#tema').val,
 		turno:					turno
 	}, function(respuesta){
 
@@ -8223,6 +8240,7 @@ function llamarPacienteAtencion(turno, elemento)
 		consultaAjax:   		'',
 		accion:         		'llamarPacienteAtencion',
 		wemp_pmla:        		$('#wemp_pmla').val(),
+		tema: $('#tema').val,
 		turno:					turno,
 		ventanilla:				$("#puestoTrabajo").val()
 	}, function(respuesta){
@@ -8260,6 +8278,7 @@ function cancelarLlamarPacienteAtencion(turno)
 		consultaAjax:   		'',
 		accion:         		'cancelarLlamarPacienteAtencion',
 		wemp_pmla:        		$('#wemp_pmla').val(),
+		tema: $('#tema').val,
 		turno:					turno
 	}, function(respuesta){
 
@@ -8291,6 +8310,7 @@ function cancelarTurno(turno)
 			consultaAjax:   		'',
 			accion:         		'cancelarTurno',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+			tema: $('#tema').val,
 			turno:					turno
 		}, function(respuesta){
 			if(respuesta.Error)
@@ -8313,7 +8333,8 @@ function verTurnosCancelados()
 	{
 		consultaAjax:   		'',
 		accion:         		'verTurnosCancelados',
-		wemp_pmla:        		$('#wemp_pmla').val()
+		wemp_pmla:        		$('#wemp_pmla').val(),
+		tema: 					$('#tema').val(),
 	}, function(respuesta){
 		$("#divTurnosCancelados").html(respuesta).dialog({
 			modal	: true,
@@ -8371,6 +8392,7 @@ function habilitarTurno(turno, elemento)
 			consultaAjax:   		'',
 			accion:         		'habilitarTurno',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+			tema: $('#tema').val,
 			turno:					turno
 		}, function(respuesta){
 			$(elemento).parent().parent().hide(500, function(){
@@ -8388,7 +8410,8 @@ function listarPacientesConTurno()
 	{
 		consultaAjax:   		'',
 		accion:         		'listarPacientesConTurno',
-		wemp_pmla:        		$('#wemp_pmla').val()
+		wemp_pmla:        		$('#wemp_pmla').val(),
+		tema:				$('#tema').val()
 	}, function(html){
 		//puestoTrabaSelec = $("#puestoTrabajo").val();
 		$("#divListaPacientesConTurno").html(html);
@@ -8448,6 +8471,7 @@ function cambiarPuestoTrabajo(respetarOcupacion)
 		consultaAjax:   		'',
 		accion:         		'cambiarPuestoTrabajo',
 		wemp_pmla:        		$('#wemp_pmla').val(),
+		tema: $('#tema').val,
 		puestoTrabajo:			$("#puestoTrabajo").val(),
 		respetarOcupacion:		respetarOcupacion
 	}, function(respuesta){
