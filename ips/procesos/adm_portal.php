@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -209,12 +209,7 @@
 		  display: none;
 		}
 
-		h1, .h1 {
-			color: 				#000000;
-			font-size: 			18px !important;
-			font-family: 		verdana;
-		}	
-				
+		
 		/* Show the checkmark when checked */
 		.container input:checked ~ .checkmark:after {
 		  display: block;
@@ -325,9 +320,6 @@
 	
     $accion = $_POST['accion']; 
     $cod = $_POST['porCod']; 
-    $est = $_POST['porEst']; 
-	if (empty($est))
-		$est = "on";
 	
 	$nom = mysql_real_escape_string($_POST['porNom']); 
     $txtMbv = mysql_real_escape_string($_POST['txtMbv']); 
@@ -350,7 +342,6 @@
 		$sql = "update " . $tblEnc . "
 			set Pornom = '$nom',
 				Pormbv = '$txtMbv',
-				Porest = '$est',
 				Pormsl = '$txtMsl'
 			where Porcod = '$cod'
 		";
@@ -431,7 +422,6 @@
 							<!-- <label for="selTema"><h4>TURNERO</h4></label> -->
 							<input type="hidden" id="accion" name="accion" value="grabar">
 							<input type="hidden" id="porCod" name="porCod" value="">
-							<input type="hidden" id="porEst" name="porEst" value="on">
 							<input type="hidden" id="arrCat" name="arrCat">
 
 							<label id="lblMsg" name="lblMsg" style="width:100%;color:DimGray;font-size:22px; font-weight:normal; text-align:center;
@@ -523,7 +513,7 @@
 							</tr>
 							<tr>
 								<td>
-								<label class="lblMsgTxt">Texto Selecci&oacute;n</label>
+								<label class="lblMsgTxt">Texto Selección</label>
 								<br>
 								<textarea id="txtMsl" name="txtMsl" rows="2" class="inputTxt" value=""></textarea>
 								</td>
