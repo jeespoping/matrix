@@ -1457,7 +1457,7 @@ function ponerCamillero($wid, $wcentral, $wusuario, $wcamillero, $whis, $tramite
 	$sFiltrarSede = 'off';
 	if(isset($wemp_pmla) && !empty($wemp_pmla))
 	{
-		$sFiltrarSede = consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+		$sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
 	}
 	$sFromFiltroSedeCamas = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? ' , '.$wbasedato.'_000011 D ' : '';
 	$sJoinFiltroSedeCamas = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND Habcco = D.Ccocod " : '';
@@ -2167,8 +2167,8 @@ if (!isset($consultaAjax))
 			$hora_traslado_ayuda = true ;
 		}
 		
-		$sFiltrarSede = consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
-		$sMovhos = consultarAliasPorAplicacion($conexion, $wemp_pmla, "movhos");
+		$sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+		$sMovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 		$sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
 		$sCodigoSede = (isset($selectsede)) ? $selectsede : $sCodigoSede;
 		
