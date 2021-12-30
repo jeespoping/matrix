@@ -2,17 +2,17 @@
 $consultaAjax = '';
 include_once("conex.php");
 include_once("root/comun.php");
-/**********************************************************************************************************************
+/**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : F1.php
 	   Fecha de Liberacion : 2004-04-20
 	   Autor : Pedro Ortiz Tamayo
 	   Version Inicial : 2004-04-20
 	   Version actual  : 2020-08-31
-
+	   
 	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface grafica que permite registrar los datos
 	   Administrativos, Financieros y Clinicos
-
+	   
 	   REGISTRO DE MODIFICACIONES :
 	   .2021-07-07 
 	   		Se agrega la validacion de numero de intentos maximo por usuario.
@@ -25,7 +25,7 @@ include_once("root/comun.php");
 	   .2014-06-24
 			Se agrega Session_Destroy cuando el login es incorrecto.
 	   .2014-05-12
-			Nueva Imagen.
+			Nueva Imagen.	
 	   .2004-04-20
 	   		Release de Version Beta.
 		.2021-12-27 Ruben Dario Holguin Castro 
@@ -33,19 +33,19 @@ include_once("root/comun.php");
 			para mostrar enlaces sin iconos y ajsutas la posición, los enlaces se obtiene de la 
 			tabla root_000058
 
-[*DOC]
+[*DOC]   		
 ***********************************************************************************************************************/
 function GetIP()
 {
 	$IP_REAL = " ";
 	$IP_PROXY = " ";
-	if (@getenv("HTTP_X_FORWARDED_FOR") != "")
-	{
-		$IP_REAL = getenv("HTTP_X_FORWARDED_FOR");
-		$IP_PROXY = getenv("REMOTE_ADDR");
-	}
-	else
-	{
+	if (@getenv("HTTP_X_FORWARDED_FOR") != "") 
+	{ 
+		$IP_REAL = getenv("HTTP_X_FORWARDED_FOR"); 
+		$IP_PROXY = getenv("REMOTE_ADDR"); 
+	} 
+	else 
+	{ 
 		$IP_REAL = getenv("REMOTE_ADDR");
 	}
 	$IPS=$IP_REAL."|".$IP_PROXY;
@@ -56,7 +56,7 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 {
 	$codigo = mysqli_real_escape_string( $conex, $codigo );
 	$usera 	= mysqli_real_escape_string( $conex, $usera );
-
+	
 	switch($grupo)
 	{
 		case 'AMERICAS':
@@ -80,22 +80,22 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 	}
 	// $err = mysql_query($query,$conex);
 	// $num = mysql_num_rows($err);
-
+	
 	/* crear una sentencia preparada */
 	$stmt = mysqli_prepare($conex, $query );
-
+	
 	/* ligar parámetros para marcadores */
 	$usera_pq	= '%'.$usera.'%';
 	mysqli_stmt_bind_param($stmt, "ss", $codigo, $usera_pq );
-
+	
 	/* ejecutar la consulta */
 	$num = mysqli_stmt_execute($stmt);
-
+	
 	$err = mysqli_stmt_get_result($stmt);
-
+	
 	//Cerrando la sentencia
 	mysqli_stmt_close($stmt);
-
+	
 	if ($num > 0)
 	{
 		// for ($i=0;$i<$num;$i++)
@@ -125,18 +125,18 @@ function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 			}
 		}
 	}
-
+	
 	$w++;
 	$DATA[$w][0]=$codigo;
-	$DATA[$w][1]= isset($row[0]) ? $row[0]: '';
+	$DATA[$w][1]=$row[0];
 	$DATA[$w][2]="";
 	$DATA[$w][3]="";
 	$DATA[$w][4]=3;
 }
 
 function eliminarPasswordTemporal($conex, $codigo)
-{
-	$update = " UPDATE usuarios
+{	
+	$update = " UPDATE usuarios 
 				   SET PasswordTemporal='',
 					   FechaPasswordTemp='0000-00-00',
 					   HoraPasswordTemp='00:00:00'
@@ -148,7 +148,7 @@ function eliminarPasswordTemporal($conex, $codigo)
 
 	/* Ejecutar la sentencia */
 	mysqli_stmt_execute( $stUpdate ) or die ("Error: " . mysqli_errno($conex) . " - en el query: " . $update . " - " . mysqli_error($conex));
-
+	
 	mysqli_stmt_close( $stUpdate );
 }
 
@@ -158,21 +158,21 @@ function validarTiempoRestablecer($conex, $codigo, $fechaPasswordTemp, $horaPass
 	if($fechaPasswordTemp!="0000-00-00" && $horaPasswordTemp!="00:00:00")
 	{
 		$query = "SELECT Detval
-					FROM root_000051
+					FROM root_000051 
 				   WHERE Detemp='01'
 					 AND Detapl='tiempoRestablecerPassword';";
 		
-		$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
-
+		
 		if($num>0)
 		{
 			$row = mysqli_fetch_array($res);
-
+			
 			$fechaHoraPasswordTemporal = strtotime($fechaPasswordTemp." ".$horaPasswordTemp);
 			$fechaHoraMaxPasswordTemporal = ((int)trim($row['Detval'])*60)+$fechaHoraPasswordTemporal;
 			$fechaHoraActual = strtotime(date("Y-m-d H:i:s"));
-
+			
 			$restablecerValido = true;
 			if($fechaHoraActual>$fechaHoraMaxPasswordTemporal)
 			{
@@ -181,7 +181,7 @@ function validarTiempoRestablecer($conex, $codigo, $fechaPasswordTemp, $horaPass
 			}
 		}
 	}
-
+	
 	return $restablecerValido;
 }
 
@@ -269,39 +269,39 @@ function resetIntentos($codigo,$conex){
     // return $num;
 }
 
-// // Autor: JESUS LOPEZ FlREZ - Analista en soluciones
-// function evaluacionRecapchat($tokenCaptcha){
-//     $ip = $_SERVER['REMOTE_ADDR'];
-//     $secret_key = '6LeX_54cAAAAAHB8XH4rovmT5jiN11Bmarv6EzdC';
-//     $url = "https://www.google.com/recaptcha/api/siteverify?secret=$secret_key&response=$tokenCaptcha";
-//     $fire = file_get_contents($url);
-//     $data =json_decode($fire);
+// Autor: JESUS LOPEZ FlREZ - Analista en soluciones
+function evaluacionRecapchat($tokenCaptcha){
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $secret_key = '6LeX_54cAAAAAHB8XH4rovmT5jiN11Bmarv6EzdC';
+    $url = "https://www.google.com/recaptcha/api/siteverify?secret=$secret_key&response=$tokenCaptcha";
+    $fire = file_get_contents($url);
+    $data =json_decode($fire);
 
-//     return $data->success;
-// }
+    return $data->success;
+}
 
 $includeLibrerias = "	<script src='../../../include/root/jquery.min.js'></script>
 						<script src='../../../include/root/jquery-ui-1.12.1/jquery-ui.min.js' type='text/javascript'></script>
 						<link type='text/css' href='../../../include/root/jquery-ui-1.12.1/jquery-ui.min.css' rel='stylesheet'/>
 						<link type='text/css' href='../../../include/root/jquery-ui-1.12.1/jquery-ui.theme.min.css' rel='stylesheet'/>
 						<link type='text/css' href='../../../include/root/jquery-ui-1.12.1/jquery-ui.structure.min.css' rel='stylesheet'/>
-
+						
 						<link rel='stylesheet' href='../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css' >
 						<link rel='stylesheet' href='../../../include/gentelella/vendors/bootstrap/dist/css/bootstrap.min.css'>
 
 						<script   src='../../../include/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js' ></script>
-
+						
 						<!-- Bootstrap -->
 						<link href='../../../include/gentelella/vendors/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet'>
-
+						
 						<link rel='stylesheet' href='../../../include/root/bootstrap.min.css'>
 
 						<script src='../../../include/root/bootstrap.min.js'></script>
-
-
+						
+						
 						<!-- Bootstrap -->
 						<script src='../../../include/gentelella/vendors/bootstrap/dist/js/bootstrap.min.js'></script>
-
+						
 						<link rel='stylesheet' href='../../../include/gentelella/vendors/font-awesome/css/font-awesome.min.css'>
 						<link href='../../../include/gentelella/vendors/font-awesome/css/font-awesome.min.css' rel='stylesheet'>
 						";
@@ -345,7 +345,7 @@ if(!isset($accion))
 	echo "		document.entrada.codigo.focus();";
 	echo "	}";
 	echo "</script>";
-	// echo "<script src='https://www.google.com/recaptcha/api.js' async defer></script>";
+	echo "<script src='https://www.google.com/recaptcha/api.js' async defer></script>";
 	?>
 		<script type='text/javascript'>
 		function abrirRestablecerPassword()
@@ -378,11 +378,11 @@ if(!isset($accion))
 								"		<p id='mensajeRestablecer' style='display:none;' align='center'></p>"+
 								"	</div>"+
 								"</div>";
-
+								
 			$("#bodyModal").html(htmlModal);
 			$("#divModalRestablecer").modal("show");
 			$("#btnAceptar").show();
-
+			
 			// evitar que al hacer enter en un input de la modal haga submit al form de inicio de sesion
 			$(".inputModal").keydown(function(event){
 				if( event.keyCode == 13) {
@@ -391,24 +391,24 @@ if(!isset($accion))
 				}
 			 });
 		}
-
+		
 		function iniciarCampos()
 		{
 			$("#mensajeRestablecer").html("");
 			$("#mensajeRestablecer").hide();
 			$("#btnAceptar").prop('disabled',true);
-
+			
 			$("#chk_recordarUsuario").prop('checked', false);
 			$("#chk_restablecerPassword").prop('checked', false);
 		}
-
+		
 		function cambiarOpciones()
 		{
 			$("#datoIngreso").val("");
 			$("#email").val("");
-
+			
 			iniciarCampos();
-
+			
 			if($("#tipoUsuario").val()=="documento")
 			{
 				$("#labelRecordarUsuario").show();
@@ -420,11 +420,11 @@ if(!isset($accion))
 				$("#divCheckOpciones").css('top','0px');
 			}
 		}
-
+		
 		function obtenerEmailUsuario()
 		{
 			iniciarCampos();
-
+			
 			$.ajax({
 				url: "root/procesos/registroUsuario.php",
 				type: "POST",
@@ -438,19 +438,19 @@ if(!isset($accion))
 					},
 					async: false,
 					success:function(result) {
-
+						
 						$("#codigoUsuario").val(result.codigo);
 						$("#documentoUsuario").val(result.documento);
 						$("#nombreUsuario").val(result.nombre);
 						$("#email").val(result.email);
-
+						
 						if(result.email!="")
 						{
 							$(".checkboxOpciones").change(validarOpciones);
 							$("#btnAceptar").prop('disabled',false);
 							$("#mensajeRestablecer").html("<span style='color:green;'>Se enviar&aacute; un mensaje con los datos de ingreso al correo electr&oacute;nico registrado.</span>");
 							$("#mensajeRestablecer").show();
-
+							
 							if($("#tipoUsuario").val()=="documento")
 							{
 								$("#chk_recordarUsuario").prop('checked', true);
@@ -470,7 +470,7 @@ if(!isset($accion))
 					}
 			});
 		}
-
+		
 		function validarOpciones()
 		{
 			if($("#chk_restablecerPassword").prop('checked')==false && $("#chk_recordarUsuario").prop('checked')==false)
@@ -482,7 +482,7 @@ if(!isset($accion))
 				$("#btnAceptar").prop('disabled',false);
 			}
 		}
-
+		
 		function restablecerDatosIngreso()
 		{
 			$("#btnAceptar").prop('disabled',false);
@@ -523,23 +523,23 @@ if(!isset($accion))
 			.panel-primary {
 				border-color: #2A5DB0;
 			}
-
+			
 			.panel-primary > .panel-heading {
 				color: #fff;
 				background-color: #2A5DB0;
 				border-color: #2A5DB0;
 			}
-
+			
 			.btnMatrix{
 				background-color: #2A5DB0;
 				color: #FFFFFF;
 			}
-
+			
 			.btnMatrix:hover {
 				background-color: #234d90;
 				color: #FFFFFF;
 			}
-
+			
 			.modal-header {
 				background-color: #2A5DB0;
 				padding:1px;
@@ -547,7 +547,7 @@ if(!isset($accion))
 				border-bottom:2px dashed #2A5DB0;
 				font-weight: bold;
 			}
-
+			
 			.modal-Alerta {
 				background-color: #2A5DB0;
 				padding:16px 16px;
@@ -556,7 +556,7 @@ if(!isset($accion))
 				font-weight: bold;
 				font-size: 10pt;
 			}
-
+			
 			.panel-body {
 				padding: 8px;
 			}
@@ -638,7 +638,7 @@ if(!isset($accion))
 					<div class='modal-content'>
 						<div class='modal-Alerta'>RESTABLECER USUARIO O CONTRASE&Ntilde;A</div>
 						<div class='modal-body' id='bodyModal'>
-
+							
 						</div>
 						<br/><br/><br/><br/>
 						<div class='modal-footer'>
@@ -656,13 +656,13 @@ if(!isset($accion))
 
 	//echo "	<div id='tipo4' class='tipoScreen02' style='text-align:center;font-size:20pt;'>SERVIDOR DE MIGRACION<br>".DATE( "Y-m-d H:i:s" )."</div>";
 	echo "	<div class='tipoScreen02'>";
-	echo "		<table border=0 style='width : 100%'>";
+	echo "		<table border=0 style='width : 100%'>";	
 	echo "			<tr><td align=center id=tipo5 colspan=2><IMG SRC='/matrix/images/medical/root/boton-9.png'></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
 	echo "			<tr><td align=center id=tipo4>C&oacute;digo</td><td align=center><input class='input-login' type='text' name='codigo' size=18 maxlength=8></td></tr>";
 	echo "			<tr><td align=center id=tipo4>Clave</td><td align=center><input class='input-login'  type='password' name='password' size=18 maxlength=30></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
-    // echo "			<tr><td align=center id=tipo5 colspan=2><div class='g-recaptcha' data-sitekey='6LeX_54cAAAAAO4Utru2JVgp4TISOhehiYzQDnM4'></div></td></tr>";
+    echo "			<tr><td align=center id=tipo5 colspan=2><div class='g-recaptcha' data-sitekey='6LeX_54cAAAAAO4Utru2JVgp4TISOhehiYzQDnM4'></div></td></tr>";
 	echo "			<tr><td align=center colspan=2><button onClick='enter()' class='tipoHIDE'><IMG SRC='/matrix/images/medical/root/boton-10.png'></button></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' id='restablecerPassword' colspan=2 >
 							<span onclick='abrirRestablecerPassword();'>&iquest;olvid&oacute; su usuario o contrase&ntilde;a?</span>
@@ -684,7 +684,7 @@ if(!isset($accion))
 	if ($num > 0)
 	{
 		for ($j=0;$j<$num;$j++)
-		{			
+		{
 			$row = mysql_fetch_array($err);
 			//Se valida si el campo Icono está vación para no incluir la etiqueta <img> y mostrar la Descripcion
 			$tieneIcono = $row[1] == '' ? false:true;
@@ -773,8 +773,8 @@ else
 			{
 				if(!isset($_SESSION['user']))
 				{
-					$_SESSION['user']  = "1-".strtolower($codigo);
-                    $user              ="1-".strtolower($codigo);
+					$_SESSION['user']  = "1-".strtolower($codigo);			
+                    $user              ="1-".strtolower($codigo); 
 					$_SESSION['usera'] = strtolower($codigo);
 					$ipdir             = explode("|",GetIP());
 					$_SESSION['IIPP']  = $ipdir[0];
@@ -784,50 +784,50 @@ else
 					$_SESSION['password'] = $password;
 
                     // se valida con recaptcha al momento de no estar logueado
-                    // $tokenCaptcha = $_POST['g-recaptcha-response'] ;
-                    // if ( evaluacionRecapchat($tokenCaptcha) == true){
-                    //     echo "<body bgcolor=#FFFFFF>";
-                    //     echo "<BODY TEXT='#000066'>";
-                    //     echo "<center>";
-                    //     echo "</center>";
-                    //     echo "<table  border=0 align=center>";
-                    //     echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
-                    //     echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
-                    //     @session_destroy();
-                    //     echo "<td id=tipo1><A HREF='F1.php' target='_top'>reCAPTCHA INVALIDO, vuelva a intentarlo!!</A></td></tr></table></body>";
-                    //     return;
-                    // }
+                    $tokenCaptcha = $_POST['g-recaptcha-response'] ;
+                    if ( evaluacionRecapchat($tokenCaptcha) == false){
+                        echo "<body bgcolor=#FFFFFF>";
+                        echo "<BODY TEXT='#000066'>";
+                        echo "<center>";
+                        echo "</center>";
+                        echo "<table  border=0 align=center>";
+                        echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
+                        echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
+                        @session_destroy();
+                        echo "<td id=tipo1><A HREF='F1.php' target='_top'>reCAPTCHA INVALIDO, vuelva a intentarlo!!</A></td></tr></table></body>";
+                        return;
+                    }
 				}
 			}
-
+			
 			mysql_select_db("matrix") or die ("ERROR AL CONECTARSE A MATRIX");
 			
 			$query = "SELECT codigo,prioridad,grupo,password,activo,Documento,Email,PasswordTemporal,FechaPasswordTemp,HoraPasswordTemp,Intentos,FechaLimIntentos,HoraLimIntentos 
 						FROM usuarios 
 					   WHERE codigo=?";
-
+			
 			/* crear una sentencia preparada */
 			$stmt = mysqli_prepare($conex, $query );
-
+			
 			/* ligar parámetros para marcadores */
 			mysqli_stmt_bind_param($stmt, "s", $codigo);
-
+			
 			/* ejecutar la consulta */
 			$num = mysqli_stmt_execute($stmt);
-
+			
 			$login = false;
 			//Se modifica mensaje de respuesta Mavila 29-10-2020 :)
 			//$mensajeLogin = "EL USUARIO NO EXISTE";
 			$mensajeLogin = "EL USUARIO O CONTRASE&NtildeA SON INCORRECTOS";
 			// if($num > 0)
 			if( $num )
-			{
+			{				
 				/* ligar variables de resultado */
 				mysqli_stmt_bind_result( $stmt, $codigo, $prioridad, $grupo, $pwd, $activo, $documento, $email, $passwordTemporal, $fechaPasswordTemp, $horaPasswordTemp, $intentos, $fechaLimIntentos, $horaLimIntentos );
 				
 				/* obtener valor */
 				mysqli_stmt_fetch($stmt);
-
+				
 				/* cerrar sentencia */
 				mysqli_stmt_close($stmt);
 
@@ -863,20 +863,20 @@ else
 							if($restablecerValido)
 							{
 								if( $passwordTemporal ==$password)
-								{
-									$update = " UPDATE usuarios
+								{	
+									$update = " UPDATE usuarios 
 												   SET Feccap='".date("Y-m-d",strtotime(date("Y-m-d")."- 1 days"))."'
 											     WHERE Codigo=?;";
-
+									
 									$stUpdate = mysqli_prepare( $conex, $update );
 
 									mysqli_stmt_bind_param( $stUpdate, "s", $codigo );
 
 									/* Ejecutar la sentencia */
 									mysqli_stmt_execute( $stUpdate );
-
+									
 									mysqli_stmt_close( $stUpdate );
-
+									
 									$login = true;
 									$mensajeLogin = "";
 									if ($intentos > 0)resetIntentos($codigo,$conex);
@@ -923,18 +923,18 @@ else
 				// mysql_free_result($err);
 				// mysqli_stmt_close($stmt);
 			}
-
+			
 			mysql_close($conex);
-
+			
 			if ($login)
 			{
 				if($documento=="" || $email=="")
 				{
 					echo "	<script>
-								window.open('root/procesos/registroUsuario.php','_self')
+								window.open('root/procesos/registroUsuario.php','_self') 
 							</script>";
 				}
-
+				
 				switch($grupo)
 				{
 					case 'pda':
@@ -947,7 +947,7 @@ else
 						}
 						echo "<tr><td align=center><A HREF='pda/procesos/pda_ingreso.php'>Haga Click Para Ingresar Al Sistema</A></td></tr></table>";
 					break;
-
+					
 					case 'pdadevol':
 						echo "<center><table border=0>";
 						echo "<tr><td align=center><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
@@ -958,18 +958,18 @@ else
 						}
 						echo "<tr><td align=center><A HREF='pda/procesos/devolucion.php'>Haga Click Para Ingresar Al Sistema</A></td></tr></table>";
 					break;
-
+									
 					case 'fidelidad':
 						echo "<center><table border=0>";
 						echo "<tr><td align=center><b>CLINICA LAS AMERICAS <b></td></tr>";
 						echo "<tr><td align=center>INFORMACI&Oacute;N CLIENTES</td></tr>";
 						echo "<tr><td align=center><A HREF='Magenta/procesos/Magenta.php?user=".$user."'>Haga Click Para Ingresar Al Sistema</A></td></tr></table>";
 					break;
-
+					
 					case 'ayudaenl':
 						$fecha = date("Y-m-d");
 						$hora = (string)date("H:i:s");
-
+						
 
 						mysql_select_db("MATRIX");
 							$query = "insert root_000004 (medico,fecha_data,hora_data,usuario,seguridad) values ('root','".$fecha."','".$hora."','".$codigo."','C-root')";
@@ -992,7 +992,7 @@ else
 						echo "<tr><td align=center><A HREF='/ayuda/indexAY.html'><b>HAGA CLICK PARA COMENZAR AYUDA EN LINEA</b></A></td></tr>";
 						echo "<tr><td align=center><A HREF='F1.php?END=on' target='_top'>Haga Click Para Salir del Programa</A></td></tr></table>";
 					break;
-
+						
 					default:
 						echo "<frameset cols=20%,80% frameborder=0 framespacing=2>";
 						echo "  <frame src='F1.php?accion=O&grupo=".$grupo."&amp;prioridad=".$prioridad."' name='options' marginwidth=0 marginheiht=0>";
@@ -1002,7 +1002,7 @@ else
 						echo "  </frameset>";
 						echo "</frameset>";
 
-					break;
+					break;	
 				}
 			}
 			else
@@ -1016,7 +1016,7 @@ else
 				// echo "<td id=tipo1><A HREF='f1.php?END=on'>USUARIO NO EXISTE O ESTA INACTIVO</a></td></tr></table></body>";
 				echo "<td id=tipo1><A HREF='f1.php?END=on'>".$mensajeLogin."</a></td></tr></table></body>";
 			}
-		}
+		}	
 	}
 	else
 	{
@@ -1045,7 +1045,7 @@ else
 			echo ".BlueThing{color:#000066;background: #CCCCFF;font-weight:normal;}";
 			echo ".SilverThing{color:#000066;background: #EAEAEA;font-weight:normal;}";
 			echo ".GrayThing{color:#000066;background: #EAEAEA;font-weight:normal;}";
-
+			
 			echo ".myButton {";
 			echo "	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #04bedb), color-stop(1, #330ead));";
 			echo "	background:-moz-linear-gradient(top, #04bedb 5%, #330ead 100%);";
@@ -1124,10 +1124,10 @@ else
 			echo "</style>";
 			echo "<meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>";
 			echo "</head>";
+			
 
-
-
-
+			
+ 	
 			$key = substr($user,2,strlen($user));
 			switch($accion)
 			{
@@ -1136,8 +1136,8 @@ else
 					echo"<tr><td align=center><IMG SRC='/matrix/images/medical/root/GELA1.png'  height='70%'></td><td align=right><A HREF='F1.php?END=on' target='_top' class='myButton1'>X</A></td></tr>";
 					echo"<tr></table>";
 				break;
-
-				case "O":
+				
+				case "O": 	
 					echo "<body BGCOLOR='#EAEAEA'>";
 					echo "<font size=2 face='tahoma'>";
 					echo "<BODY TEXT='#000066'>";
@@ -1145,23 +1145,23 @@ else
 					if(substr($user,2,strlen($user)) != $usera)
 						$user="1-".$usera;
 					$key = substr($user,2,strlen($user));
+					
 
-
-
+					
 
 					// $query = "select Codigo, Password, Passdel, Feccap, Tablas, Descripcion, Prioridad, Grupo, Empresa, Ccostos, Activo  from usuarios where codigo = '".substr($user,2,strlen($user))."'";
 					// $err = mysql_query($query,$conex);
 					// $num = mysql_num_rows($err);
 					// $row = mysql_fetch_array($err);
-
-					$query = "SELECT Feccap, Prioridad
-							    FROM usuarios
+					
+					$query = "SELECT Feccap, Prioridad  
+							    FROM usuarios 
 							   WHERE codigo = ? ";
-
+							   
 					$st = mysqli_prepare( $conex, $query );
-
+					
 					$user_pq = substr($user,2,strlen($user));
-
+					
 					/* ligar parámetros para marcadores */
 					mysqli_stmt_bind_param($st, "s", $user_pq );
 
@@ -1173,28 +1173,28 @@ else
 
 					/* obtener valor */
 					mysqli_stmt_fetch($st);
-
+					
 					 /* cerrar sentencia */
 					mysqli_stmt_close($st);
 
-
-
+					
+					
 					if(date("Y-m-d") > $feccap)
 						$grupo = "PASSWD";
 					echo "<center>";
 					echo "<hr>";
-
-
+					
+					
 					// $query = "select descripcion from usuarios where codigo = '".$key."'";
 					// $err1 = mysql_query($query,$conex);
 					// $row1 = mysql_fetch_array($err1);
-
-					$query = "SELECT descripcion
-								FROM usuarios
+					
+					$query = "SELECT descripcion 
+								FROM usuarios 
 							   WHERE codigo = ? ";
-
+					
 					$st = mysqli_prepare( $conex, $query );
-
+					
 					/* ligar parámetros para marcadores */
 					mysqli_stmt_bind_param($st, "s", $key );
 
@@ -1206,11 +1206,11 @@ else
 
 					/* obtener valor */
 					mysqli_stmt_fetch($st);
-
+					
 					 /* cerrar sentencia */
 					mysqli_stmt_close($st);
-
-
+					
+					
 					echo "<div class='tipoScreen02'>";
 					echo "<center><table border=0>";
 					echo "<tr><td Class='tipoT'>Usuario : ".substr($user,2,strlen($user))."</td></tr>";
@@ -1245,16 +1245,16 @@ else
 									// echo "<hr>";
 								// }
 							// }
-
+							
 							$key = substr($user,2,strlen($user));
 							$query = "select codigo,descripcion from root_000020 where usuarios like ? ";
 							$query .= " or usuarios like ? ";
 							$query .= " or usuarios like ? ";
 							$query .= " or usuarios = ? ";
 							$query .= " order by codigo";
-
+							
 							$st = mysqli_prepare( $conex, $query );
-
+					
 							/* ligar parámetros para marcadores */
 							$key_1 = "%-".$key."-%";
 							$key_2 = "%-".$key."";
@@ -1267,17 +1267,17 @@ else
 
 							/* ligar variables de resultado */
 							mysqli_stmt_bind_result( $st, $codigo, $descripcion );
-
+							
 							/* obtener valor */
 							while( mysqli_stmt_fetch($st) )
 							{
 								echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='f1.php?accion=W&grupo=".$grupo."&amp;codigo=".$codigo."' target='main'>".strtoupper($descripcion)."</A>";
 								echo "<hr>";
 							}
-
+							
 							/* cerrar sentencia */
 							mysqli_stmt_close($st);
-
+							
 							echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='F1.php?END=on' target='_top' class='myButton'>Salida Segura</A>";
 							echo "<hr>";
 							echo "</ol>";
@@ -1298,7 +1298,7 @@ else
 							// if ($num > 0)
 							// {
 								if ($prioridad > 1)
-								{
+								{			
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='F1.php?accion=M&grupo=".$grupo."' target='main'>Inicio</A>";
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='formularios.php' target='main'>Formularios</A>";
 									echo "<li onmouseover=".chr(34)."this.className='BlueThing';".chr(34)."  onmouseout=".chr(34)."this.className='GrayThing';".chr(34)."><A HREF='detform.php' target='main'>Detalle de Formularios</A>";
@@ -1351,16 +1351,16 @@ else
 						break;
 					}
 				break;
-
-				case "M":
+				
+				case "M": 	
 					echo "<font size=2 face='tahoma'>";
 					echo "<BODY TEXT='#000066'>";
-					echo "<center>";
-
+					echo "<center>";	
+					
 					echo "<br><center><table border=0>";
 					echo "<tr><td align=center colspan=2><A HREF='http://intranetlasamericas.co' target='_blank' class='myButton'><IMG SRC='/matrix/images/medical/root/ingenia.jpg' style='vertical-align:middle;'></A></td></tr>";
 					//echo "<tr><td align=center colspan=2><b>BIENVENIDO A LAS AMERICAS MATRIX<b></td></tr>";
-					echo "<tr><td align=center colspan=2><br><A HREF='https://www.lasamericas.com.co/Gesti%C3%B3n-%C3%A9tica' target='_blank' ><IMG SRC='/matrix/images/medical/root/linkGestionetica.jpg' width='62%' height='45%' style='vertical-align:middle;'></A></td></tr>";
+					echo "<tr><td align=center colspan=2><br><A HREF='https://www.lasamericas.com.co/Gesti%C3%B3n-%C3%A9tica' target='_blank' ><IMG SRC='/matrix/images/medical/root/linkGestionetica.jpg' width='62%' height='45%' style='vertical-align:middle;'></A></td></tr>";	
 
 					echo "<tr><td align=right colspan=2><font size=1>Powered by : <IMG SRC='/matrix/images/medical/root/powered.png' style='vertical-align:middle;'></font></td></tr>";
 					echo "<tr><td align=center colspan=2 bgcolor=#999999><b>NOTICIAS PARA HOY : ".date("d-m-Y")."<b></td></tr>";
@@ -1415,7 +1415,7 @@ else
 			echo "</head>";
 			echo "<body BGCOLOR=''>";
 			echo "<BODY TEXT='#000066'>";
-
+				
 			echo "<center>";
 			echo "<table border=0 align=center>";
 			echo "<tr><td align=center bgcolor='#cccccc'><A NAME='Arriba'><font size=3><b>Opciones del Grupo de Informacion</b></font></a></tr></td>";
@@ -1430,9 +1430,9 @@ else
 						echo "Posicion : ".$position;
 					$key = substr($user,2,strlen($user));
 					echo "<form name='inventario' action='F1.php' method=post>";
+					
 
-
-
+					
 
 					$index = -1;
 					$w = -1;
@@ -1444,7 +1444,7 @@ else
 					{
 						if($DATA[$i][4] == 0)
 						{
-							$color = "#999999";
+							$color = "#999999"; 
 							echo "<table border=0 align=center width='95%'>";
 							echo "<tr><td align=center bgcolor='#cccccc' colspan=3><font size=3 face='Tahoma'> <b>".$DATA[$i][1]." -  Grupo : ".$DATA[$i][0]."</b></font></td></tr>";
 							echo "<tr>";
@@ -1485,29 +1485,29 @@ else
 									if( $_SESSION && $_SESSION['codigo'] )
 									{
 										$encabezado	= [
-														'alg' => 'HS256',
-														'typ' => 'JWT'
+														'alg' => 'HS256', 
+														'typ' => 'JWT' 
 													];
-
+													
 										$datos 		= [
-														'usuario' 	=> $_SESSION['codigo'],
-														'password' 	=> $_SESSION['password'],
-														'wemp_pmla'	=> $JWT[1],
-														'iat'		=> time(),
-														'exp'		=> time()+24*3600,
+														'usuario' 	=> $_SESSION['codigo'], 
+														'password' 	=> $_SESSION['password'], 
+														'wemp_pmla'	=> $JWT[1], 
+														'iat'		=> time(), 
+														'exp'		=> time()+24*3600, 
 													];
-
+													
 										$secret_key = consultarAliasPorAplicacion( $conex, $JWT[1], "jwtLaravelToyota" );
 										$cifrado 	= 'sha256';
-
+										
 										$token = crearTokenJwt( $encabezado, $datos, $secret_key, $cifrado );
-
+										
 										$dt = explode( "/", $DATA[$i][2] );
 										$dt[ count($dt)-1 ] = "token/".$token.( parse_url( $DATA[$i][2] )['query'] ? "?".parse_url( $DATA[$i][2] )['query'] : '' );
 										$DATA[$i][2] = implode( "/", $dt );
 									}
 								}
-
+								
 								if(strtoupper(substr($DATA[$i][3],0,3)) == "JSP")
 								{
 									$path=substr($DATA[$i][3],3).$DATA[$i][2];
@@ -1521,11 +1521,11 @@ else
 							}
 						}
 					}
-
+					
 					//Se cierra conexión de la base de datos :)
 					//Se comenta cierre de conexion para la version estable de matrix :)
 					//mysql_close($conex);
-
+					
 					echo "</table>";
 					echo "<table border=0 align=center><tr><td align=center><A HREF='#Arriba'><B>Arriba</B></A></td></tr></table>";
 				}
