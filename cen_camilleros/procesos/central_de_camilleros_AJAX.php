@@ -508,7 +508,11 @@ if (!isset($consultaAjax))
         } 
 		
 	 }
-	  var parametros = "consultaAjax=camillero&wemp_pmla="+document.getElementById("wemp_pmla").value+"&wid="+wid+"&wcentral="+document.getElementById("wcentral").value+"&wusuario="+wusuario+"&wcamillero="+opcionSeleccionada+"&whis="+historia+"&tramitesok="+marcado+"&codigoSede="+document.getElementById("selectsede").value;
+
+		var selectorSede = document.getElementById("selectsede");
+		var valorSelectorSede = (selectorSede === null) ? '' : selectorSede.value;
+
+	  var parametros = "consultaAjax=camillero&wemp_pmla="+document.getElementById("wemp_pmla").value+"&wid="+wid+"&wcentral="+document.getElementById("wcentral").value+"&wusuario="+wusuario+"&wcamillero="+opcionSeleccionada+"&whis="+historia+"&tramitesok="+marcado+"&codigoSede="+valorSelectorSede;
 
       try
 		  {
