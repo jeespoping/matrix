@@ -1,4 +1,4 @@
-var audio = new Audio('Alerta.mp3');
+var audio = new Audio('../../images/medical/root/alertaMensaje.mp3');
 audio.autoplay=true;
 new Vue({
 	
@@ -17,6 +17,7 @@ new Vue({
 		  parametros: '',
 		  wemp_pmla: '', 
 		  tema: '',  
+		  tipoTur: '',
 		  solucionCitas: '',
 		  wsTurnero: ''
         }
@@ -30,11 +31,14 @@ new Vue({
 		
 		CalcularAltura(objTurno)
         {
-        if (objTurno.Prioridad == "on")
-          return 120;
-        else
+        // if Original para validar si hay prioridad se modifdica para validar si es endoscopia o urgencias 
+		//if (objTurno.Prioridad == "on")
+        if (this.tipoTur == 'ENDOSCOPIA')		
+			return 120;
+        else if (this.tipoTur == 'URGENCIAS')
+			return 180;
+		else
           return 70;
-
         },
 		async cargarPagina()
 		{
@@ -44,24 +48,34 @@ new Vue({
 			// this.turnospantalla = this.turnos;
 			// return;
 						
-			console.log('Carga pagina');
+			// console.log('Carga pagina');
+			// console.log('TipoTurnero: ' + this.tipoTur)
 			while ((this.lineactual < this.turnos.length) && (lineactualpantalla < lineainicial + 12))
 			{
-				console.log("while arreglo");
+				//console.log("while arreglo");
 				
 				this.turnospantalla[this.turnospantalla.length] = this.turnos[this.lineactual];
 				// console.log("turno actual" + this.turnos[this.lineactual]);
 				// console.log("linea actual: " +lineactualpantalla);
 				// console.log("linea inicial: " + lineainicial);
-				console.log("este es el turno en pantalla: ");
-				console.log(this.turnospantalla[this.turnospantalla.length-1]);
-				console.log("este es el turno original: ");
-				console.log(this.turnos[this.lineactual]);
-				if (this.turnos[this.lineactual].Prioridad == 'on') 
+				//console.log("este es el turno en pantalla: ");
+				//console.log(this.turnospantalla[this.turnospantalla.length-1]);
+				//console.log("este es el turno original: ");
+				//console.log(this.turnos[this.lineactual]);
+				// SE DEJA COMENTADA POR DECISION DE AUNA DE NO MOSTRAR LA PRIORIDAD
+				// if (this.turnos[this.lineactual].Prioridad == 'on') 
+				// {
+				// 	//console.log("entro a prioridad");
+				// 	lineactualpantalla++;
+				// }	
+				if ((tipoTur == 'ENDOSCOPIA') | (tipoTur == 'URGENCIAS'))
 				{
-					console.log("entro a prioridad");
 					lineactualpantalla++;
-				}	
+					if (tipoTur == 'URGENCIAS')
+					{
+						lineactualpantalla++;
+					}
+				}
 				this.lineactual++;
 				lineactualpantalla++;				
 			}
@@ -71,29 +85,14 @@ new Vue({
 				//var res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaTurnos',
 				this.parametros="wemp_pmla=0"+wemp_pmla+"&tema=0"+tema+"&funcion=listaTurnos&solucionCitas="+solucionCitas;
 				this.turnos = await (await fetch(this.wsTurnero + this.parametros)).json();
-				//var res = await fetch(this.wsTurnero + this.parametros,
-				//{
-				//'mode': 'cors',
-				//'headers': {
-				//	'Access-Control-Allow-Origin': '*',
-				//}
-				//});
-				//this.turnos = await res.json();
-				console.log('datos recibidos')
-				console.log(this.turnos);
+				//console.log('leyo turnos');
+				//console.log('datos recibidos')
+				//console.log(this.turnos);
 				this.parametros="wemp_pmla=0"+wemp_pmla+"&tema=0"+tema+"&funcion=listaAlertas&solucionCitas="+solucionCitas;
 				//res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaAlertas',
 				this.turnosAlerta = await (await fetch(this.wsTurnero + this.parametros)).json();
-				//var res = await fetch(this.wsTurnero + this.parametros,
-				//{
-				//'mode': 'cors',
-				//'headers': {
-				//	'Access-Control-Allow-Origin': '*',
-				//}
-				//});
-				//this.turnosAlerta = await res.json();
-				console.log('Alertas recibidas')
-				console.log(this.turnosAlerta);
+				//console.log('Alertas recibidas')
+				//console.log(this.turnosAlerta);
 			}
 			console.log("estos son los turnos de la pantalla");
 			console.log(this.turnospantalla);
@@ -106,23 +105,15 @@ new Vue({
 			// var res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaAlertas',
 			this.parametros="wemp_pmla=0"+wemp_pmla+"&tema=0"+tema+"&funcion=listaAlertas&solucionCitas="+solucionCitas;
 			this.turnosAlerta = await (await fetch(this.wsTurnero + this.parametros)).json();
-			// var res = await fetch(this.wsTurnero + this.parametros,
-			//	{
-			//	'mode': 'cors',
-			//	'headers': {
-			//		'Access-Control-Allow-Origin': '*',
-			//	}
-			//	});
-			//	this.turnosAlerta = await res.json();
 				if (this.turnosAlerta.length > 0) 
 				{
-				console.log("entra alerta");
-				console.log(this.turnosAlerta);
+				// console.log(this.turnosAlerta);
 				this.llamadoTurno = true;
-				// audio.muted=true;
+				console.log('entra alerta');
 				audio.play();
 				clearInterval(this.timerAlerta);
 				this.timerAlerta = setInterval(this.cerrarTurno, 10000);
+				console.log('sale de la alerta');
 				}
 		 },
 		cerrarTurno() 
@@ -130,6 +121,7 @@ new Vue({
 			this.llamadoTurno = false;
 			clearInterval(this.timerAlerta);
 			this.timerAlerta = setInterval(this.llamarTurno, 4000);
+			console.log('cierra alerta');
 		}
 	},
 	
@@ -137,25 +129,16 @@ new Vue({
 	{
 		this.wemp_pmla=wemp_pmla;
 		this.tema=tema;
+		this.tipoTur=tipoTur;
 		this.solucionCitas=solucionCitas;
-		this.wsTurnero=wsTurnero
+		this.wsTurnero=wsTurnero;
 		this.parametros="wemp_pmla=0"+wemp_pmla+"&tema=0"+tema+"&funcion=listaTurnos&solucionCitas="+solucionCitas;
-		// console.log(this.wsTurnero + this.parametros);
-		// var res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaTurnos',
-		// var res = await fetch(this.wsTurnero + this.parametros,
 		this.turnos = await (await fetch(this.wsTurnero + this.parametros)).json();
-		// {
-		// 'mode': 'cors',
-		// 'headers': {
-		// 	'Access-Control-Allow-Origin': '*',
-		// }
-		// });
-		//this.turnos = await res.json();
-		console.log('datos recibidos')
+		console.log('datos recibidos');
 		console.log(this.turnos);
 		this.timer = setInterval(this.cargarPagina, 10000);
 		this.timerAlerta = setInterval(this.llamarTurno, 4000);
-			  // console.log('timer inicializado');		  
+		console.log('timer inicializado');		  
 	}	
 	})
 	

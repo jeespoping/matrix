@@ -58,6 +58,7 @@
 			document.getElementById("accion")
 			document.getElementById("accion").value = 'crear';
 			document.getElementById("codNom").value = "Nuevo turnero";
+			document.getElementById("codCco").value = "";
 			document.getElementById("lblMsg").innerHTML  = '';
 		}
 		
@@ -67,6 +68,7 @@
 			document.getElementById("accion").value = 'crear';
 			document.getElementById("accionCat").value = "";	
 			document.getElementById("codNom").value = "Nuevo turnero";
+			document.getElementById("codCco").value = "";
 			document.getElementById("codigoCat").value = "";
 			document.getElementById("nombreCat").value = "";
 			document.getElementById("ordenCat").value = "";
@@ -408,6 +410,7 @@
 			document.getElementById("codTem").value = tema['Codtem'];
 			document.getElementById("codNom").value = tema['Codnom'];
 			document.getElementById("codSgt").value = tema['Codsgt'];
+			document.getElementById("codCco").value = tema['Codcco'];
 			document.getElementById("txtMbv").value = tema['Codmbv'];
 			document.getElementById("txtMlc").value = tema['Codmlc'];
 			document.getElementById("txtMim").value = tema['Codmim'];
@@ -426,6 +429,7 @@
 			document.getElementById("txtMed").value = tema['Codmed'];
 			document.getElementById("txtMsu").value = tema['Codmsu'];
 			document.getElementById("txtMpr").value = tema['Codmpr'];
+			document.getElementById("txtMsl").value = tema['Codmsl'];
 			// Checkbox
 			document.getElementById("chkEst").checked = (tema['Codest']=='on') ;
 			document.getElementById("chkLec").checked = (tema['Codlec']=='on') ;
@@ -440,6 +444,7 @@
 			document.getElementById("chkTed").checked = (tema['Codted']=='on') ;
 			document.getElementById("chkIpp").checked = (tema['Codipp']=='on') ;
 			document.getElementById("chkUrg").checked = (tema['Codurg']=='on') ;
+			document.getElementById("chkTci").checked = (tema['Codtci']=='on') ;
 			
 			// Turneros a redireccionar.
 			var trd = tema['Codtrd'];
@@ -771,11 +776,12 @@
 		  display: none;
 		}
 
-				h1, .h1 {
+		h1, .h1 {
 			color: 				#000000;
 			font-size: 			18px !important;
 			font-family: 		verdana;
-		}		
+		}	
+		
 		/* Show the checkmark when checked */
 		.container input:checked ~ .checkmark:after {
 		  display: block;
@@ -887,6 +893,7 @@
 	
 	$codNom = mysql_real_escape_string($_POST['codNom']); 
     $codSgt = mysql_real_escape_string($_POST['codSgt']); 
+    $codCco = mysql_real_escape_string($_POST['codCco']); 
     $txtMbv = mysql_real_escape_string($_POST['txtMbv']); 
     $txtMlc = mysql_real_escape_string($_POST['txtMlc']); 
 	$txtMim = mysql_real_escape_string($_POST['txtMim']); 
@@ -905,6 +912,7 @@
 	$txtMed = mysql_real_escape_string($_POST['txtMed']); 
 	$txtMsu = mysql_real_escape_string($_POST['txtMsu']); 
 	$txtMpr = mysql_real_escape_string($_POST['txtMpr']); 
+	$txtMsl = mysql_real_escape_string($_POST['txtMsl']); 
 	$chkEst = (strtolower($_POST['chkEst'])=='on'?'on':'off');
 	$chkLec = (strtolower($_POST['chkLec'])=='on'?'on':'off');
 	$chkMan = (strtolower($_POST['chkMan'])=='on'?'on':'off');
@@ -918,6 +926,7 @@
 	$chkTed = (strtolower($_POST['chkTed'])=='on'?'on':'off');
 	$chkIpp = (strtolower($_POST['chkIpp'])=='on'?'on':'off');
 	$chkUrg = (strtolower($_POST['chkUrg'])=='on'?'on':'off');
+	$chkTci = (strtolower($_POST['chkTci'])=='on'?'on':'off');
 	
 	// Turneros marcados a redireccionar.
 	//echo "<br>Turneros marcados a redireccionar";
@@ -958,6 +967,7 @@
 		$sql = "update " . $wbasedatoCliame . "_000305 
 			set codnom = '$codNom',
 				codsgt = '$codSgt',
+				codcco = '$codCco',
 				codmbv = '$txtMbv',
 				codmlc = '$txtMlc',
 				codmim = '$txtMim', 
@@ -976,6 +986,7 @@
 				codmed = '$txtMed',
 				codmsu = '$txtMsu',
 				codmpr = '$txtMpr',
+				codmsl = '$txtMsl',
 				codest = '$chkEst',
 				codlec = '$chkLec',
 				codman = '$chkMan',
@@ -989,6 +1000,7 @@
 				codted = '$chkTed',
 				codipp = '$chkIpp',
 				codurg = '$chkUrg',
+				codtci = '$chkTci',
 				codtrd = '$codTrd'
 			where Codtem = '$codTem'
 		";
@@ -1244,9 +1256,11 @@
 						<br>
 						<table style="width:90%;" cellspacing="5">
 							<colgroup>
-								<col span="1" style="width: 20%;">
+								<col span="1" style="width: 12%;">
 								<col span="1" style="width: 5%;">
-								<col span="1" style="width: 75%;">
+								<col span="1" style="width: 55%;">
+								<col span="1" style="width: 15%;">
+								<col span="1" style="width: 12%;">
 							</colgroup>
 							<tr>
 								<td>
@@ -1264,6 +1278,15 @@
 								<td>
 								<input type="text" id="codNom" name="codNom" class="inputTxt" value="">
 								</td>
+								<td>
+								<label style="width:100%;color:DimGray;font-size:22px; font-weight:normal; text-align:center;
+											background-color:white;">
+										 C.Costos
+								</label>
+								</td>
+								<td>
+								<input type="text" id="codCco" name="codCco" class="inputTxt" value="">
+								</td>
 							</tr>
 						</table>
 						<br>
@@ -1271,11 +1294,10 @@
 						<label class="fondoGris" style="font-size:20px;">Configuraci&oacute;n general</label>
 						<table>
 							<colgroup>
-								<col span="1" style="width: 20%;">
-								<col span="1" style="width: 20%;">
-								<col span="1" style="width: 20%;">
-								<col span="1" style="width: 20%;">
-								<col span="1" style="width: 20%;">
+								<col span="1" style="width: 25%;">
+								<col span="1" style="width: 25%;">
+								<col span="1" style="width: 25%;">
+								<col span="1" style="width: 25%;">
 							</colgroup>
 							<tr>
 								<td>
@@ -1302,12 +1324,30 @@
 										<span class="checkmark"></span>
 									</label>
 								</td>
+							</tr>
+							<tr>
 								<td>
-									<label class="container">Urgencias<br>&nbsp;
+									<label class="container">Urgencias
 											<input id="chkUrg" name="chkUrg" type="checkbox">
 											<span class="checkmark"></span>
 									</label>
 								</td>
+								<td>
+									<label class="container">Con cita
+											<input id="chkTci" name="chkTci" type="checkbox">
+											<span class="checkmark"></span>
+									</label>
+								</td>
+								<td>
+								<label style="width:100%;font-size:20px; font-weight:normal; text-align:left;
+											background-color:white;">
+										 Soluci&oacute;n citas
+								</label>
+								</td>
+								<td>
+								<input type="text" id="txtMsl" name="txtMsl" class="inputTxt" value="">
+								</td>
+
 							</tr>
 						</table>
 						<br>
@@ -1693,6 +1733,7 @@ function getCategorias($tema,$estado='')
 	$sql = "select sercod, sernom, serord, serpre
 		from " . $wbasedatoCliame . "_000298
 		where sertem ='$tema'
+		and serest = 'on'
 	    order by sernom asc";
 
 		//txtLog ("$sql");
@@ -1807,6 +1848,9 @@ function getOptTemas($estado='')
 			"Codtrd" => utf8_encode($rowDoc['Codtrd']),
 			"Codipp" => utf8_encode($rowDoc['Codipp']),
 			"Codurg" => utf8_encode($rowDoc['Codurg']),
+			"Codcco" => utf8_encode($rowDoc['Codcco']),
+			"Codtci" => utf8_encode($rowDoc['Codtci']),
+			"Codmsl" => utf8_encode($rowDoc['Codmsl']),
 			"arrCat" => $arrCat,
 
 			/*
