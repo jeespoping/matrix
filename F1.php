@@ -52,6 +52,26 @@ function GetIP()
 	return $IPS;
 }
 
+/*
+        * Implementacion de acceso sin recaptcha a robots de acuerdo a la ip de consulta
+        * @date: 01/12/2021
+        * @author: jesus.lopez
+*/
+function validarIp($ip){
+
+    global $conex;
+
+    $sql = "SELECT iprecapt FROM root_000156 WHERE iprecapt = '".$ip."' AND actrecapt != 'off'";
+
+    $res = mysql_query( $sql, $conex ) or die( mysql_errno(). " - Error en el query $sql - ". mysql_error() );
+
+    if( $rows = mysql_fetch_array($res) ){
+        return true;
+    }
+
+    return false;
+}
+
 function Listar($conex,$grupo,$codigo,$usera,&$w,&$DATA)
 {
 	$codigo = mysqli_real_escape_string( $conex, $codigo );
@@ -564,8 +584,7 @@ if(!isset($accion))
 			.contenedor-enlaces {
 				display: flex;
 				flex-direction: column;
-				width: 520px; 
-				height: 100%; 
+				width: 520px;
 				overflow-y: auto;
 				align-items: center; 
 				margin-top: auto;		
@@ -784,8 +803,9 @@ else
 					$_SESSION['password'] = $password;
 
                     // se valida con recaptcha al momento de no estar logueado
+                    $ipRobot = $_SERVER["REMOTE_ADDR"];
                     $tokenCaptcha = $_POST['g-recaptcha-response'] ;
-                    if ( evaluacionRecapchat($tokenCaptcha) == false){
+                    if ( evaluacionRecapchat($tokenCaptcha) == false and validarIp($ipRobot) == false){
                         echo "<body bgcolor=#FFFFFF>";
                         echo "<BODY TEXT='#000066'>";
                         echo "<center>";
