@@ -58,6 +58,7 @@
 			document.getElementById("accion")
 			document.getElementById("accion").value = 'crear';
 			document.getElementById("codNom").value = "Nuevo turnero";
+			document.getElementById("codCco").value = "";
 			document.getElementById("lblMsg").innerHTML  = '';
 		}
 		
@@ -67,6 +68,7 @@
 			document.getElementById("accion").value = 'crear';
 			document.getElementById("accionCat").value = "";	
 			document.getElementById("codNom").value = "Nuevo turnero";
+			document.getElementById("codCco").value = "";
 			document.getElementById("codigoCat").value = "";
 			document.getElementById("nombreCat").value = "";
 			document.getElementById("ordenCat").value = "";
@@ -408,6 +410,7 @@
 			document.getElementById("codTem").value = tema['Codtem'];
 			document.getElementById("codNom").value = tema['Codnom'];
 			document.getElementById("codSgt").value = tema['Codsgt'];
+			document.getElementById("codCco").value = tema['Codcco'];
 			document.getElementById("txtMbv").value = tema['Codmbv'];
 			document.getElementById("txtMlc").value = tema['Codmlc'];
 			document.getElementById("txtMim").value = tema['Codmim'];
@@ -771,11 +774,12 @@
 		  display: none;
 		}
 
-				h1, .h1 {
+		h1, .h1 {
 			color: 				#000000;
 			font-size: 			18px !important;
 			font-family: 		verdana;
-		}		
+		}	
+		
 		/* Show the checkmark when checked */
 		.container input:checked ~ .checkmark:after {
 		  display: block;
@@ -887,6 +891,7 @@
 	
 	$codNom = mysql_real_escape_string($_POST['codNom']); 
     $codSgt = mysql_real_escape_string($_POST['codSgt']); 
+    $codCco = mysql_real_escape_string($_POST['codCco']); 
     $txtMbv = mysql_real_escape_string($_POST['txtMbv']); 
     $txtMlc = mysql_real_escape_string($_POST['txtMlc']); 
 	$txtMim = mysql_real_escape_string($_POST['txtMim']); 
@@ -958,6 +963,7 @@
 		$sql = "update " . $wbasedatoCliame . "_000305 
 			set codnom = '$codNom',
 				codsgt = '$codSgt',
+				codcco = '$codCco',
 				codmbv = '$txtMbv',
 				codmlc = '$txtMlc',
 				codmim = '$txtMim', 
@@ -1244,9 +1250,11 @@
 						<br>
 						<table style="width:90%;" cellspacing="5">
 							<colgroup>
-								<col span="1" style="width: 20%;">
+								<col span="1" style="width: 12%;">
 								<col span="1" style="width: 5%;">
-								<col span="1" style="width: 75%;">
+								<col span="1" style="width: 55%;">
+								<col span="1" style="width: 15%;">
+								<col span="1" style="width: 12%;">
 							</colgroup>
 							<tr>
 								<td>
@@ -1263,6 +1271,15 @@
 								</td>
 								<td>
 								<input type="text" id="codNom" name="codNom" class="inputTxt" value="">
+								</td>
+								<td>
+								<label style="width:100%;color:DimGray;font-size:22px; font-weight:normal; text-align:center;
+											background-color:white;">
+										 C.Costos
+								</label>
+								</td>
+								<td>
+								<input type="text" id="codCco" name="codCco" class="inputTxt" value="">
 								</td>
 							</tr>
 						</table>
@@ -1693,6 +1710,7 @@ function getCategorias($tema,$estado='')
 	$sql = "select sercod, sernom, serord, serpre
 		from " . $wbasedatoCliame . "_000298
 		where sertem ='$tema'
+		and serest = 'on'
 	    order by sernom asc";
 
 		//txtLog ("$sql");
@@ -1807,6 +1825,7 @@ function getOptTemas($estado='')
 			"Codtrd" => utf8_encode($rowDoc['Codtrd']),
 			"Codipp" => utf8_encode($rowDoc['Codipp']),
 			"Codurg" => utf8_encode($rowDoc['Codurg']),
+			"Codcco" => utf8_encode($rowDoc['Codcco']),
 			"arrCat" => $arrCat,
 
 			/*

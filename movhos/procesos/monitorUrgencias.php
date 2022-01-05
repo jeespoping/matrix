@@ -9,7 +9,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2015-07-01';
+			$wactualiz='2021-12-22';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                    
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //	2018-08-06 Jerson Trujillo: Las consultas de los turnos ya no se haran 24 horas antes, sino 12 horas antes.
@@ -54,6 +54,7 @@ include_once("conex.php");
 		global $wbasedato;
 		global $conex;
 		global $monitorSala;
+        global $tema;
 
 		$respAlertas 	= array("hayAlertas" => false, "htmlAlertas" => "");
 		$primeraVez	 	= true;
@@ -78,6 +79,7 @@ include_once("conex.php");
 		 WHERE A.Fecha_data >= '".date('Y-m-d',strtotime('-1 day'))."'
 		   AND Atuest = 'on'
 		   AND Atullt = 'on'
+		   AND Atutem = '".$tema."'
 	   "./*AND (Atusea = '".$monitorSala."' OR Atusea = '*')*/"
 		   AND Atuctl = Puecod
 		 UNION
@@ -86,6 +88,7 @@ include_once("conex.php");
 		 WHERE A.Fecha_data >= '".date('Y-m-d',strtotime('-1 day'))."'
 		   AND Atuest = 'on'
 		   AND Atuart = 'on'
+		   AND Atutem = '".$tema."'
 	   "./*AND (Atusea = '".$monitorSala."' OR Atusea = '*')*/"
 		   AND Atuctl = Puecod
 		 UNION
@@ -94,6 +97,7 @@ include_once("conex.php");
 		 WHERE A.Fecha_data >= '".date('Y-m-d',strtotime('-1 day'))."'
 		   AND Atuest = 'on'
 		   AND Atullv = 'on'
+		   AND Atutem = '".$tema."'
 	   "./*AND (Atusea = '".$monitorSala."' OR Atusea = '*')*/"
 		   AND Atuven = Puecod
 		 UNION
@@ -102,6 +106,7 @@ include_once("conex.php");
 		 WHERE A.Fecha_data >= '".date('Y-m-d',strtotime('-1 day'))."'
 		   AND Atuest = 'on'
 		   AND Atullc = 'on'
+		   AND Atutem = '".$tema."'
 	   "./*AND (Atusea = '".$monitorSala."' OR Atusea = '*')*/"
 		   AND Atucon = Puecod
 		";
@@ -144,6 +149,7 @@ include_once("conex.php");
 		global $monitorSala;
 		global $arraySalas;
 		global $numRegistrosPorPagina;
+        global $tema;
 
 		$html 		= "
 		<div style='background-color:#FFFFFF;color:#E2007A;font-family: verdana;font-weight: normal;font-size: 2.2rem;'>
@@ -165,6 +171,7 @@ include_once("conex.php");
 		 WHERE Fecha_data >= '".date('Y-m-d',strtotime('-1 day'))."'
 		   AND Atuest = 'on'
 		   AND Atuaor != 'on'
+		   AND Atutem = '".$tema."'
 		   "./*AND (Atusea = '".$monitorSala."' OR Atusea = '*')*/"
 		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
 		";
@@ -287,6 +294,7 @@ include_once("conex.php");
 		global $conex;
 		global $wemp_pmla;
 		global $arraySalas;
+        global $tema;
 
 		$basedatoshce	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 		$infoTurnoHce22	= array();
@@ -295,7 +303,9 @@ include_once("conex.php");
 		// --> Obtener toda la informacion del turno de la hce_000022
 		$sqlInfo22 = "
 		SELECT A.*, B.Medtri
-		  FROM ".$basedatoshce."_000022 AS A LEFT JOIN ".$wbasedato."_000048 AS B ON A.Mtrmed = Meduma
+		  FROM ".$basedatoshce."_000022 AS A 
+		  LEFT JOIN ".$wbasedato."_000048 AS B ON A.Mtrmed = Meduma
+		  INNER JOIN ".$wbasedato."_000178 AS C ON (A.Mtrtur = C.Atutur AND C.Atutem = '".$tema."')
 		 WHERE Mtrtur = '".$turno."'
 		   AND Mtrest = 'on'
 		";
@@ -534,6 +544,7 @@ else
 			consultaAjax:   		'',
 			accion:         		'actualizarMonitor',
 			wemp_pmla:        		$('#wemp_pmla').val(),
+            tema:                   $('#tema').val(),
 			monitorSala:       		$('#monitorSala').val(),
 			arraySalas:				$("#arraySalas").val(),
 			numPagina:				$("#numPagina").val(),
@@ -656,6 +667,7 @@ else
 	// --> Pintar pantalla para asignar el turno
 	echo "
 	<input type='hidden' id='wemp_pmla' 				value='".$wemp_pmla."'>
+	<input type='hidden' id='tema' 				        value='".$tema."'>
 	<input type='hidden' id='monitorSala' 				value='".((isset($monitorSala)) ? $monitorSala : '*')."'>
 	<input type='hidden' id='numRegistrosPorPagina' 	value='".$numRegistrosPorPagina."'>
 	<input type='hidden' id='arraySalas' 				value='".json_encode($arraySalas)."'>

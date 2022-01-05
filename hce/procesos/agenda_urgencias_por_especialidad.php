@@ -46,30 +46,30 @@ function cargaToolTip()
 
 
  function atencionAutorizada(his, ing, e){
-	 
-	 
+
+
 	 var sin_aut = "";
-	 
+
 	 $( ".atencion_autorizada" ).each(function( index ) {
-				 if ($(this).is(':checked')) {	
-				 }else{					 
+				 if ($(this).is(':checked')) {
+				 }else{
 					 sin_aut = sin_aut+$(this).attr('his_ing')+" "+$(this).val()+"\n";
 				 }
 		});
-	 	 
+
 	 jAlert("Los siguientes pacientes no tiene marcado la atención autorizada:"+"\n\n"+sin_aut, "ALERTA");
-	 
+
 	 if ($(e).is(':checked')) {
-		 
+
 		 $(".atencion_aut_"+his+ing).css("background-color", "");
 		 var estado_aut = "on";
-		 
+
 	 }else{
-		 
-		 $(".atencion_aut_"+his+ing).css("background-color", "ECB782");		 
+
+		 $(".atencion_aut_"+his+ing).css("background-color", "ECB782");
 		 var estado_aut = "off";
 	 }
-	 
+
 	 $.ajax({
 				url: "agenda_urgencias_por_especialidad.php",
 				type: "POST",
@@ -80,7 +80,7 @@ function cargaToolTip()
 					basedatoshce	: $("#wbasedatohce").val(),
 					whis			: his,
 					wing			: ing,
-					estado_aut		: estado_aut					
+					estado_aut		: estado_aut
 				},
 				dataType: "json",
 				async: false,
@@ -88,15 +88,15 @@ function cargaToolTip()
 
 					if (data_json.error == 1)
 					{
-						
+
 					}
-					else{						
+					else{
 
 					}
 				}
 
 			});
-	 
+
  }
  //Ventanana emergente para el registro de usuarios
  //Se cambia a jquery esta funcion para que funcione de forma mas optima al permitir interactuar con la interfaz.
@@ -499,7 +499,7 @@ function asignarGeneroMedicoQueDebeAtender(Idgenero,historia,ingreso)
 		ingreso:				ingreso,
 		generoMedicoAtender:	genero
 	}, function(respuesta){
-		
+
 	}, 'json');
 
 }
@@ -557,7 +557,7 @@ include_once("conex.php");
                 Al actualizar el genero se realiza de acuerdo a la historia e ingreso y no por el turno (consulta ajax asignarGeneroMedicoQueDebeAtender)
  *************************************************************************************************
  * 2019-03-05: Arleyda I.C.
-                Migración realizada 
+                Migración realizada
  * 2018-05-23: Jonatan Lopez
 				Se muestra alerta con los pacientes que no tienen marcada la atencion autorizada, ademas se agrega color de fondo naranja con los no marcados.
   *************************************************************************************************
@@ -915,7 +915,7 @@ include_once("conex.php");
  * 2011-02-22 - Adición de columnas Activar y Reasignar historia para pacientes dados de alta
  *
  */
- 
+
 
 
  // Retorna el código y nombre del centro de costos de urgencias
@@ -4189,12 +4189,14 @@ else
 		}
 	}
 
+    $ccoUr = consultarCentrocoUrgencias($basedatos);
+
 	// --> Obtener maestro de salas de espera: Jerson trujillo 2015-07-21
 	$arraySalasEspera = array();
 	$sqlObtenerSalas = "
 	SELECT Salcod, Salnom, Salcap, Salaps
 	  FROM ".$basedatos."_000182
-	 WHERE Salest = 'on'
+	 WHERE Salest = 'on' AND Salcco = '".$ccoUr->codigo."'
 	 ORDER BY Salpri
 	";
 	$resObtenerSalas = mysql_query($sqlObtenerSalas, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlObtenerSalas):</b><br>".mysql_error());
@@ -4507,17 +4509,17 @@ else
 
 			// Columna de triage
 			echo "<td id='".$row['Ubihis'].$row['Ubiing']."' align=center>&nbsp;".$nivel_triage."&nbsp;</td>";
-						
+
 			if($row['Mtraut']=='on'){
-				
-				$atencion_autorizada = "checked";				
-				
+
+				$atencion_autorizada = "checked";
+
 			}else{
-				
+
 				$class_atencion_aut = "background-color:ECB782;";
-				
+
 			}
-			
+
 			// Columna de atencion autorizada
 			echo "<td id='".$row['Ubihis'].$row['Ubiing']."' class='atencion_aut_".$row['Ubihis'].$row['Ubiing']."' align=center style='".$class_atencion_aut."'>&nbsp;<input type='checkbox' class='atencion_autorizada' value='".$row['Pacno1']." ".$row['Pacno2']." ".$row['Pacap1']." ".$row['Pacap2']."' his_ing='".$row['Ubihis']."-".$row['Ubiing']."' ".$atencion_autorizada." onChange='atencionAutorizada(\"".$row['Ubihis']."\", \"".$row['Ubiing']."\", this)' ".$inacselect.">&nbsp;</td>";
 
@@ -5319,13 +5321,16 @@ function ingresarPacientesUrgencias($basedatos,$basedatoshce,$codCco,$whistoria,
 		{
 			$mostraAlertaSuperacion	= false;
 
+            $ccoUr = consultarCentrocoUrgencias($basedatos);
+
 			// --> Obtener maestro de salas de espera
 			$arraySalasEspera = array();
 			$sqlObtenerSalas = "
 			SELECT Salcod, Salnom, Salcap, Salaps
 			  FROM ".$basedatos."_000182
-			 WHERE Salest = 'on'
+			 WHERE Salest = 'on' AND Salcco = '".$ccoUr->codigo."'
 			";
+
 			$resObtenerSalas = mysql_query($sqlObtenerSalas, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlObtenerSalas):</b><br>".mysql_error());
 			while($rowObtenerSalas = mysql_fetch_array($resObtenerSalas))
 			{
@@ -5429,23 +5434,23 @@ function ingresarPacientesUrgencias($basedatos,$basedatoshce,$codCco,$whistoria,
 		}
 		default :
 			break;
-			
+
 		case 'atencionAutorizada':
 		{
 			$respuesta = array("Error", FALSE => "Mensaje", "");
 			$wuser = substr($_SESSION['user'], (strpos($_SESSION['user'], "-") + 1), strlen($_SESSION['user']));
-			
+
 			$sqlAtencioAut = "UPDATE ".$basedatoshce."_000022
 								   SET Mtraut = '".$estado_aut."', Mtrfat = '".date('Y-m-d')."', Mtrhat = '".date('H:i:s')."', Mtruau = '".$wuser."'
 								 WHERE Mtrhis = '".$whis."' 
 								   AND Mtring = '".$wing."' ";
 			mysql_query($sqlAtencioAut, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlAtencioAut):</b><br>".mysql_error());
-			
+
 			echo json_encode($respuesta);
-			
-		break;	
-		}		
-		
+
+		break;
+		}
+
 	}
 
 //Liberacion de conexion Matrix

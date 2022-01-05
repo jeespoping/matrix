@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 function validarExisteTabla100($conex, $wemp_pmla){
 	$wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
@@ -2447,6 +2447,7 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 	global $user2;
 	global $imprimirHistoria;
 
+
 	$data = array('error'=>0,'mensaje'=>'','html'=>'');
 
 	$aplMovhos=consultarAplicacion2($conex,$wemp_pmla,"movhos");
@@ -2642,6 +2643,8 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 
 
 	$filtroCco = ($filtrarCcoPorUsuario) ? " AND ingsei in ($ccoPermitidos) " : "";
+
+    $ccoUr = consultarCentrocoUrgencias();
 	//Busco los pacientes que tienen admisión el día actual
 	$sql = "SELECT
 				a.Pachis, c.Pactid as Pactdo, c.pacced as Pacdoc, c.Pacno1, c.Pacno2, c.Pacap1, c.Pacap2,
@@ -2649,8 +2652,8 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 			FROM
 				".$wbasedato."_000100 a, ".$wbasedato."_000101 b, root_000036 c
 			WHERE ingfei = '".$fechaMostrar."'
-			  AND pachis = inghis AND pactdo = pactid AND pacced = pacdoc {$filtroCco}";
-
+			  AND pachis = inghis AND pactdo = pactid AND pacced = pacdoc {$filtroCco} And Ingsei = '".$ccoUr->codigo."'" ;
+    
 	if( $cco_usuario != ""  && $filtrarCcoAyuda == "on" && !$filtrarCcoPorUsuario){
 		$sql.= " AND Ingsei = '".$cco_usuario."' ";
 	}
@@ -4434,16 +4437,21 @@ function listarPacientesConTurno()
 	global $conex;
 	global $wemp_pmla;
 	global $user;
+    global $tema;
 
 	$usuario		= explode("-", $user);
 	$usuario		= $usuario[1];
 
+    $ccost = consultarCentrocoUrgencias();
+
 	$wbasedato 		= consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+    $wcliame		= consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 	$sqlVentanillas	= "
 	SELECT Puecod, Puenom, Pueusu
 	  FROM ".$wbasedato."_000180
 	 WHERE Puetve = 'on'
 	   AND Pueest = 'on'
+	   And Ccostos = '".$ccost->codigo."'
 	";
 	$resVentanillas = mysql_query($sqlVentanillas, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlVentanillas):</b><br>".mysql_error());
 	while($rowVentanillas = mysql_fetch_array($resVentanillas))
@@ -4516,6 +4524,7 @@ function listarPacientesConTurno()
 		   AND Atupad != 'on'
 		   AND Atuadm != 'on'
 		   AND Ahtest = 'on'
+		   AND A.Atutem = '".$tema."'
 		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
 		";
 		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());

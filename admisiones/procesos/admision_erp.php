@@ -8512,11 +8512,12 @@ if (isset($accion) and $accion == 'cancelarTurno'){
 // --> 	Genera el html de los turnos cancelados.
 // 		Jerson trujillo, 2015-07-15.
 if (isset($accion) and $accion == 'verTurnosCancelados'){
-
 	global $wbasedato;
 	global $conex;
 	global $hay_unix;
+    global $tema;
 
+    $wcliame		= consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
 	$wbasedatoMov 	= consultarAplicacion2($conex,$wemp_pmla,"movhos");
 	$usuario		= explode("-", $user);
 	$usuario		= $usuario[1];
@@ -8553,6 +8554,7 @@ if (isset($accion) and $accion == 'verTurnosCancelados'){
 	   AND Atutur = Logtur
 	   AND Logacc = 'turnoCancelado'
 	   AND Logusu = codigo
+	   AND A.Atutem = '".$tema."'
 	 GROUP BY Logtur
 	 UNION
 	SELECT A.*, B.Fecha_data AS FechaCan, B.Hora_data AS HoraCan, descripcion, 'Sin finalizar admisión' estado
@@ -8567,6 +8569,7 @@ if (isset($accion) and $accion == 'verTurnosCancelados'){
 	 GROUP BY Logtur
 	 ORDER BY REPLACE(Atutur, '-', '')*1 DESC
 	";
+    
 	$resTurCancelados = mysql_query($sqlTurCancelados, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurCancelados):</b><br>".mysql_error());
 
 	if(mysql_num_rows($resTurCancelados) == 0)
@@ -9317,6 +9320,7 @@ $search_ingreso      = (!isset($search_ingreso)) ? '' : $search_ingreso;
 
 echo "<input type='hidden' name='wbasedato' id='wbasedato' value='".$wbasedato."'>";
 echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
+echo "<input type='hidden' name='wemp_pmla' id='tema' value='".$tema."'>";
 echo "<input type='hidden' name='soportesautomaticos' id='soportesautomaticos' value='".$soportesautomaticos."'>";
 echo "<input type='hidden' name='parametroDigitalizacion' id='parametroDigitalizacion' value='".$TableroDigitalizacionUrgencias."'>";
 echo "<input type='hidden' name='fechaAct'  id='fechaAct'  value='".$fechaAct."'>";

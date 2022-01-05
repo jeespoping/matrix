@@ -1679,6 +1679,9 @@ function buscar_paciente_ordenes($conex, $wbasedato, $historia, $ingreso){
 
 }
 
+$wcco = consultarCentrocoUrgencias();
+$wcco = $wcco->codigo;
+
 //Verifica si el centro de costos debe ir a ordenes.
 function ir_a_ordenes($wemp_pmla, $wcco){
 
@@ -4071,7 +4074,8 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
 	$q_cub =   " SELECT Habcod, Habcpa, Habzon, Habhis, Habing, Habvir  "
 			 . "   FROM ".$wbasedato."_000020 "
 			 . "  WHERE habcub = 'on'"
-			 . "	AND habest = 'on' "
+			 . "	AND habest = 'on'"
+             . "     And habcco = '".$wcco."'"
 			 . "	AND habdis = 'on' "
 			." ORDER BY habord, habcpa ";
 	$res_cub = mysql_query($q_cub, $conex) or die ("Error: ".mysql_errno()." - en el query: ".$q_cub." - ".mysql_error());
@@ -4641,6 +4645,7 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
 	SELECT Puecod, Puenom, Pueusu
 	  FROM ".$wbasedato."_000180
 	 WHERE Puetco = 'on'
+	   AND Ccostos = ".$wcco."	
 	   AND Pueest = 'on'
 	";
 	$resVentanillas 	= mysql_query($sqlVentanillas, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlVentanillas):</b><br>".mysql_error());
