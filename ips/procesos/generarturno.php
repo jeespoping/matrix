@@ -21,7 +21,8 @@ tipoDocumento: CC,numeroIdentificacion: 98576923,nombrePaciente: LUIS MORA,edad:
 	$nombrePaciente = $_POST['nombrePaciente'];	
 	$edad = $_POST['edad'];	
 	$tipoEdad = $_POST['tipoEdad'];		
-	$categoria = $_POST['categoria'];	
+	$categoria = $_POST['categoria'];
+	$subcategoria = $_POST['subcategoria'];	
 	$tema = $_POST['tema'];	
 	$prioridad = $_POST['prioridad'];	
 	$tipoTurnero = $_POST['tipoTurnero'];		
@@ -29,11 +30,12 @@ tipoDocumento: CC,numeroIdentificacion: 98576923,nombrePaciente: LUIS MORA,edad:
 	$codigoTurnero = $_POST['codigoTurnero'];
 	$validarExisteTurno = $_POST['validarExisteTurno'];
 	$turneroRedireccion = $_POST['turneroRedireccion'];	
+	$solucionCitas = $_POST['solucionCitas'];	
 
 	
 	
 	txtLog("new turno");
-	$objTurno = new Turno($identificacion,$tipoDocumento,$nombrePaciente,$edad,$tipoEdad,$categoria,$prioridad,$wemp_pmla,$codigoTurnero,$validarExisteTurno,$tema,$tipoTurnero,$turneroRedireccion);
+	$objTurno = new Turno($identificacion,$tipoDocumento,$nombrePaciente,$edad,$tipoEdad,$categoria,$subcategoria,$prioridad,$wemp_pmla,$codigoTurnero,$validarExisteTurno,$tema,$tipoTurnero,$turneroRedireccion,$solucionCitas);
 
 	//echo "     1.";
 	//echo json_encode(" Turno ini:" . $objTurno->Turno);
@@ -100,10 +102,11 @@ class Turno
 	public $TurneroRedireccion;
 	public $wbasedato;
 	public $codigoTurnero;	
+	public $SolucionCitas; 
 	public $conex;	
 	public $wemp_pmla;	
 
-	public function __construct($numeroIdentificacion,$tipoIdentificacion,$nombrePaciente,$edad,$tipoEdad,$categoria,$prioridad,$wemp_pmla,$codigoTurnero,$validarExisteTurno,$tema,$tipoTurnero,$turneroRedireccion)
+	public function __construct($numeroIdentificacion,$tipoIdentificacion,$nombrePaciente,$edad,$tipoEdad,$categoria,$subcategoria,$prioridad,$wemp_pmla,$codigoTurnero,$validarExisteTurno,$tema,$tipoTurnero,$turneroRedireccion,$solucionCitas)
 	{
 		$this->TipoIdentificacion = $tipoIdentificacion;
 		$this->NumeroIdentificacion = $numeroIdentificacion;
@@ -111,10 +114,11 @@ class Turno
 		$this->Edad = $edad;		
 		$this->TipoEdad = $tipoEdad;	
 		$this->Categoria = $categoria;		
+		$this->CategoriaSecundaria = $subcategoria;				
 		$this->Prioridad = $prioridad;			
 		$this->TipoTurnero = $tipoTurnero;			
 		$this->Tema = $tema;	
-		
+		$this->SolucionCitas = $solucionCitas;			
 		$this->ValidarExisteTurno=$validarExisteTurno;
 		$this->YaExisteTurnoHoy=false;
 		$this->Turno="";	
@@ -129,6 +133,20 @@ class Turno
 
 	}	
 	
+	public function getPrefixTables($prefix)
+	{
+		
+		$sql = "SELECT descripcion FROM 
+					root_000117
+				WHERE nombreCc = '".$prefix."'";
+		$res = mysql_query($sql, $this->conex);
+		$row = mysql_fetch_assoc($res);
+				
+		$newPrefix = substr($row["descripcion"],0,3);
+		
+		return strtolower($newPrefix);
+	}
+	
 	public function GenerarTurno()
 	{
 			
@@ -138,6 +156,14 @@ class Turno
 				//Genera el turno en la tabla movhos_000178 para conservar compatibilidad con los turneros de urgencias
 				$this->GenerarTurnoUrgencias();
 			}		
+
+			if ($this->TipoTurnero == "ENDOSCOPIA")
+			{
+			
+				$this->wbasedato = utf8_encode(consultarAliasPorAplicacion($this->conex, $this->wemp_pmla, $this->SolucionCitas));
+				//Genera el turno en la tabla citasen_000023 para conservar compatibilidad con los turneros de urgencias
+				$this->GenerarTurnoEndoscopia();
+			}				
 			
 			$this->wbasedato = utf8_encode(consultarAliasPorAplicacion($this->conex, $this->wemp_pmla, 'cliame'));
 			//Genera el turno en la tabla cliame_000304
@@ -347,7 +373,116 @@ class Turno
 
 	}
 	
-  
+ 	public function GenerarTurnoEndoscopia()
+	{
+
+	
+	
+		$prefix = $this->getPrefixTables($this->wbasedato);
+		
+
+		
+		$sqlValTurno = " SELECT ".$prefix."tur
+						   FROM " . $this->wbasedato . "_000023
+						  WHERE Fecha_data  = '" . date("Y-m-d")."'
+							AND ".$prefix."doc      = '" . $this->NumeroIdentificacion."'
+							AND ".$prefix."tip      = '" . $this->TipoIdentificacion."'						
+							AND ".$prefix."est      = 'on'
+						  ORDER BY ".$prefix."tur DESC";		
+		
+
+		$resValTurno = mysql_query($sqlValTurno, $this->conex) or die("<b>ERROR EN QUERY MATRIX(sqlValTurno):</b><br>".mysql_error());
+		if($this->ValidarExisteTurno == 'true' && $rowValTurno = mysql_fetch_array($resValTurno))
+		{
+			$this->Error=false;
+			$this->MensajeError="";			
+			$this->YaExisteTurnoHoy = true;
+			$this->Turno = $rowValTurno[$prefix.'tur'];
+			//$this->FichoTurno = htmlTurno($rowValTurno['Atutur'], $tipDocumento, $numDocumento, $nombrePaciente, true);
+			return;
+		}
+
+		$wbasedatoCliame = utf8_encode(consultarAliasPorAplicacion($this->conex, $this->wemp_pmla, 'cliame'));
+		// --> Obtener centro de costos del turnero
+		$ccoTurnero = '';
+		$sqlCco = "
+		SELECT codcco 
+		  FROM ".$wbasedatoCliame."_000305
+		 WHERE codtem = '".$this->Tema."'";
+		
+		$resCco = mysql_query($sqlCco, $this->conex) or die("<b>ERROR EN QUERY MATRIX(sqlSala):</b><br>".mysql_error());
+		if($rowCco = mysql_fetch_array($resCco))
+		{
+			if(trim($rowCco['codcco']) != '')
+				$ccoTurnero = $rowCco['codcco'];
+		}			
+		
+		// --> Obtener el ultimo consecutivo
+		$sqlObtConsec = " SELECT MAX(REPLACE(".$prefix."tur, '-E', '')*1) AS turno
+							FROM ".$this->wbasedato."_000023
+						   WHERE ".$prefix."tur LIKE '".date('ymd')."%'";
+		$resObtConsec = mysql_query($sqlObtConsec, $this->conex) or die("<b>ERROR EN QUERY MATRIX(sqlObtConsec):</b><br>".mysql_error());
+		
+		$rowObtConsec = mysql_fetch_array($resObtConsec);
+		
+		
+		if(!$rowObtConsec)
+		{
+			$this->Error=true;
+			$this->MensajeError="Error: El turno no se ha podido asignar.";		
+	
+			return;			
+		}
+
+		$fechaUltiConse = substr($rowObtConsec['turno'], 0, 6);
+		$ultConsecutivo = (($fechaUltiConse == date('ymd')) ? substr($rowObtConsec['turno'], 6) : 0);
+		$ultConsecutivo	= ($ultConsecutivo*1)+1;
+		if ($ultConsecutivo == 1)
+			$ultConsecutivo = $this->Tema."001";
+		// --> Asignar ceros a la izquierda hasta completar 5 digitos
+		while(strlen($ultConsecutivo) < 5)
+			$ultConsecutivo = '0'.$ultConsecutivo;
+
+		$nuevoTurno = date('ymd').'-E'.$ultConsecutivo;					
+		
+		
+		$sqlInactivarTurnosViejos = "UPDATE
+										" . $this->wbasedato . "_000023
+									SET 
+										  ".$prefix."est = 'off'
+									WHERE
+										Fecha_data  = '" . date("Y-m-d")."'
+										AND ".$prefix."doc      = '" . $this->NumeroIdentificacion."'
+										AND ".$prefix."tip      = '" . $this->TipoIdentificacion."'
+		";		
+		$resCancelarTurno = mysql_query($sqlInactivarTurnosViejos, $this->conex);		
+		
+		// --> Asignarle el turno al paciente
+		 
+		$sqlAsigTur = "INSERT INTO ".$this->wbasedato."_000023 (Medico,Fecha_data,Hora_data,".$prefix."tur,".$prefix."doc,".$prefix."tip,".$prefix."est,".$prefix."hau, ".$prefix."eau,Seguridad,id)
+		VALUES ('".$this->wbasedato."','".date('Y-m-d')."','".date('H:i:s')."','".$nuevoTurno."', 	'".$this->NumeroIdentificacion."','".$this->TipoIdentificacion."','on','".date('H:i:s')."','on','C-Turnero','')
+		";
+	
+			
+		$resObtConsec = mysql_query($sqlAsigTur, $this->conex);
+
+		// --> Si ha ocurrido un error guardando el turno
+		if(!$resObtConsec)
+		{
+			$this->Error = true;
+			$this->MensajeError = "Discúlpenos, a ocurrido un error asignando el turno. Por favor contacte al personal de soporte.";
+
+		}
+		// --> Genero el ficho del turno
+		else
+		{
+			$this->Error = false;
+			$this->Turno = $nuevoTurno;
+			//$this->FichoTurno 	= htmlTurno($nuevoTurno, $tipDocumento, $numDocumento, $nombrePaciente, false);
+		}
+
+	}
+	 
   
  	public function GenerarTurnoLobby()
 	{

@@ -429,6 +429,7 @@
 			document.getElementById("txtMed").value = tema['Codmed'];
 			document.getElementById("txtMsu").value = tema['Codmsu'];
 			document.getElementById("txtMpr").value = tema['Codmpr'];
+			document.getElementById("txtMsl").value = tema['Codmsl'];
 			// Checkbox
 			document.getElementById("chkEst").checked = (tema['Codest']=='on') ;
 			document.getElementById("chkLec").checked = (tema['Codlec']=='on') ;
@@ -443,6 +444,7 @@
 			document.getElementById("chkTed").checked = (tema['Codted']=='on') ;
 			document.getElementById("chkIpp").checked = (tema['Codipp']=='on') ;
 			document.getElementById("chkUrg").checked = (tema['Codurg']=='on') ;
+			document.getElementById("chkTci").checked = (tema['Codtci']=='on') ;
 			
 			// Turneros a redireccionar.
 			var trd = tema['Codtrd'];
@@ -910,6 +912,7 @@
 	$txtMed = mysql_real_escape_string($_POST['txtMed']); 
 	$txtMsu = mysql_real_escape_string($_POST['txtMsu']); 
 	$txtMpr = mysql_real_escape_string($_POST['txtMpr']); 
+	$txtMsl = mysql_real_escape_string($_POST['txtMsl']); 
 	$chkEst = (strtolower($_POST['chkEst'])=='on'?'on':'off');
 	$chkLec = (strtolower($_POST['chkLec'])=='on'?'on':'off');
 	$chkMan = (strtolower($_POST['chkMan'])=='on'?'on':'off');
@@ -923,6 +926,7 @@
 	$chkTed = (strtolower($_POST['chkTed'])=='on'?'on':'off');
 	$chkIpp = (strtolower($_POST['chkIpp'])=='on'?'on':'off');
 	$chkUrg = (strtolower($_POST['chkUrg'])=='on'?'on':'off');
+	$chkTci = (strtolower($_POST['chkTci'])=='on'?'on':'off');
 	
 	// Turneros marcados a redireccionar.
 	//echo "<br>Turneros marcados a redireccionar";
@@ -982,6 +986,7 @@
 				codmed = '$txtMed',
 				codmsu = '$txtMsu',
 				codmpr = '$txtMpr',
+				codmsl = '$txtMsl',
 				codest = '$chkEst',
 				codlec = '$chkLec',
 				codman = '$chkMan',
@@ -995,6 +1000,7 @@
 				codted = '$chkTed',
 				codipp = '$chkIpp',
 				codurg = '$chkUrg',
+				codtci = '$chkTci',
 				codtrd = '$codTrd'
 			where Codtem = '$codTem'
 		";
@@ -1288,11 +1294,10 @@
 						<label class="fondoGris" style="font-size:20px;">Configuraci&oacute;n general</label>
 						<table>
 							<colgroup>
-								<col span="1" style="width: 20%;">
-								<col span="1" style="width: 20%;">
-								<col span="1" style="width: 20%;">
-								<col span="1" style="width: 20%;">
-								<col span="1" style="width: 20%;">
+								<col span="1" style="width: 25%;">
+								<col span="1" style="width: 25%;">
+								<col span="1" style="width: 25%;">
+								<col span="1" style="width: 25%;">
 							</colgroup>
 							<tr>
 								<td>
@@ -1319,12 +1324,30 @@
 										<span class="checkmark"></span>
 									</label>
 								</td>
+							</tr>
+							<tr>
 								<td>
-									<label class="container">Urgencias<br>&nbsp;
+									<label class="container">Urgencias
 											<input id="chkUrg" name="chkUrg" type="checkbox">
 											<span class="checkmark"></span>
 									</label>
 								</td>
+								<td>
+									<label class="container">Con cita
+											<input id="chkTci" name="chkTci" type="checkbox">
+											<span class="checkmark"></span>
+									</label>
+								</td>
+								<td>
+								<label style="width:100%;font-size:20px; font-weight:normal; text-align:left;
+											background-color:white;">
+										 Soluci&oacute;n citas
+								</label>
+								</td>
+								<td>
+								<input type="text" id="txtMsl" name="txtMsl" class="inputTxt" value="">
+								</td>
+
 							</tr>
 						</table>
 						<br>
@@ -1826,6 +1849,8 @@ function getOptTemas($estado='')
 			"Codipp" => utf8_encode($rowDoc['Codipp']),
 			"Codurg" => utf8_encode($rowDoc['Codurg']),
 			"Codcco" => utf8_encode($rowDoc['Codcco']),
+			"Codtci" => utf8_encode($rowDoc['Codtci']),
+			"Codmsl" => utf8_encode($rowDoc['Codmsl']),
 			"arrCat" => $arrCat,
 
 			/*

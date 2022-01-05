@@ -57,6 +57,8 @@ class Turnero {
 	public $TieneNombre;
 	public $TieneEdad;	
 	public $EsUrgencias;
+	public $TieneCitas;	
+	public $SolucionCitas;		
 	public $ValidarExisteTurno;
 	public $MensajeBienvenida;
 	public $MensajeLector;
@@ -240,7 +242,13 @@ class Turnero {
 				 $this->TieneEdad = true;
 			 else
 				 $this->TieneEdad = false;
+			 
+			 if ($rowConfigTurnero['Codtci'] == 'on')
+				 $this->TieneCitas = true;
+			 else
+				 $this->TieneCitas = false;			 
 
+			 $this->SolucionCitas = utf8_encode(rplcSpecialChar($rowConfigTurnero['Codmsl']));			 
 			 $this->MensajeBienvenida = utf8_encode(rplcSpecialChar($rowConfigTurnero['Codmbv']));
 			 $this->MensajeLector = utf8_encode(rplcSpecialChar($rowConfigTurnero['Codmlc']));
 			 $this->MensajeIngresoManual = utf8_encode(rplcSpecialChar($rowConfigTurnero['Codmim']));
