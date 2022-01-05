@@ -2641,10 +2641,11 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 		}
 	}
 
-
-	$filtroCco = ($filtrarCcoPorUsuario) ? " AND ingsei in ($ccoPermitidos) " : "";
-
     $ccoUr = consultarCentrocoUrgencias();
+
+	$filtroCco = ($filtrarCcoPorUsuario) ? " AND ingsei in ($ccoPermitidos,'".$ccoUr->codigo."') " : "";
+
+
 	//Busco los pacientes que tienen admisión el día actual
 	$sql = "SELECT
 				a.Pachis, c.Pactid as Pactdo, c.pacced as Pacdoc, c.Pacno1, c.Pacno2, c.Pacap1, c.Pacap2,
@@ -2652,7 +2653,7 @@ function agendaAdmitidos( $fecha, $incremento = 0 )
 			FROM
 				".$wbasedato."_000100 a, ".$wbasedato."_000101 b, root_000036 c
 			WHERE ingfei = '".$fechaMostrar."'
-			  AND pachis = inghis AND pactdo = pactid AND pacced = pacdoc {$filtroCco} And Ingsei = '".$ccoUr->codigo."'" ;
+			  AND pachis = inghis AND pactdo = pactid AND pacced = pacdoc {$filtroCco}" ;
     
 	if( $cco_usuario != ""  && $filtrarCcoAyuda == "on" && !$filtrarCcoPorUsuario){
 		$sql.= " AND Ingsei = '".$cco_usuario."' ";
