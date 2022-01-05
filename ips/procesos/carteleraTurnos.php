@@ -259,7 +259,7 @@
     .textoTurno{
      color:#00B0CA!important;
      font-family: "Axiforma-Bold", Helvetica, Arial!important;
-     font-size: 43px!important;
+     font-size: 40px!important;
      line-height : 50px!important;
 	 vertical-align: middle;
 	 text-align: center!important;
