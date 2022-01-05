@@ -23,6 +23,8 @@ else
   $wfecha=date("Y-m-d");   
   $whora = (string)date("H:i:s");	                                                           
 
+  $wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
+
                                                    // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
   $wactualiz=" Diciembre 19 de 2021 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                               // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
@@ -46,6 +48,14 @@ else
 //=========================================================================================================================================\\
 // Diciembre 19 de 2021 Marlon Osorio:
 // Se agrega el filtro por sede con la funcion consultarsedeFiltro() que está en el comun.php
+//=========================================================================================================================================\\
+// Octubre 27 del 2021 - Sebastian Alvarez Barona
+// Se hace modificación en el caso 5 (Kardex con articulos del lactario), basicamente lo que se hizo fue lo siguiente:
+// Estados: Se hicieron unos estados para validar que pacientes llegaban como nuevos, modificados o suspendidos esto 
+// para llevar un mejor manejo de los pacientes.
+// Pacientes con soporte nutricional (Parte operativa), esta sección en el monitor nos esta mosrando todos los pacientes que tengan algun tipo de nutricion
+// por otro lado tambien una vez el paciente sea cargado, se seguira viendo en la seccion pacientes con soporte nutricional ya que se requiere dejar alli
+// los datos para tener una mejor trazabulidad o manipulación de los datos.
 //=========================================================================================================================================\\
 // Mayo 21 de 2018	Jessica	
 // En la función consultarSiDAexiste() se agrega a la consulta el filtro con cenpro_000002 para saber si la dosis adaptada esta activa
@@ -310,15 +320,87 @@ else
 		{
 			$data['error'] = 1;
 			$data['mensaje'] = "El programa de ordenes medicas esta siendo editado en estos momentos, espere por favor.";
-			
-			
 		}
-		
+
 		return $data;
-		
-		
 	}
 	
+	function ImprimirSticker($dataPac, $wemp_pmla){
+		global $conex;
+		
+		$wcliame=consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
+		$wip=consultarAliasPorAplicacion( $conex, $wemp_pmla, "IPImpStrickLactarios" );
+		
+		for ($i = 0; $i < count($dataPac); $i++){
+			$sql = "SELECT Pacdoc 
+				FROM ".$wcliame."_000100 
+				WHERE Pachis = '".$dataPac[$i]["historia"]."' LIMIT 1";
+    
+			$res = mysql_query($sql, $conex);
+			
+			if($row = mysql_fetch_row($res))
+			{
+				$paciente = $row[0];
+			}
+			$impresionZPL ="^XA
+							^FX Codigo de barras
+							^FO12,10
+							^BCN,70,N,N^FD".$dataPac[$i]["historia"]."^FS
+
+							^FX Codigo ,lote y fecha de vencimiento
+							^CFR
+							^FO240,40^FD".$dataPac[$i]["historia"]."^FS
+							^CFP
+							^FO240,20^FDHISTORIA:^FS
+
+							^FX Nombre del producto
+							^CFR,1
+							^FO10,90^A0,34,21^FD".$dataPac[$i]["nombre"]."^FS
+							^CFP
+							^FO10,120^FDDOC NRO: ".$paciente."^FS
+
+							^FX Fecha de preparación
+							^CFP
+							^FO10,150^FDF. PREP: ".$dataPac[$i]["fecha"]."^FS
+
+							^FX Hora de preparación
+							^CFP
+							^FO10,171^FDH. PREP: ".$dataPac[$i]["hora"]."^FS
+
+							^FX Preparado por
+							^CFP
+							^FO10,190^FDPREPARADO POR :^FS
+							^FO145,190^FDAUX CME^FS
+
+							^FX Habitacion
+							^CFP
+							^FO10,209^FDHAB: ".$dataPac[$i]["habitacion"]."^FS
+
+							^FX Hora de toma
+							^CFQ
+							^FO10,240^A0,22,20^FDHORA DE TOMA: ".$dataPac[$i]["frecuencia"]."s^FS
+							^FO10,262^A0,22,20^FD".$dataPac[$i]["articulo"]."^FS
+							^FO10,284^A0,22,20^FD".$dataPac[$i]["dosis"]." - Via: ".$dataPac[$i]["via"]."^FS
+							^FO10,265^FDConservar en nevera de 2° a 6° C C^FS
+
+							^FX Cantidad de etiquetas a imprimir
+							^PQ1
+
+							^XZ";
+						
+			$fp = fsockopen($wip, 9100, $errno, $errstr, 30);
+			if(!$fp) 
+				echo "ERROR : "."$errstr ($errno)<br>\n";
+			else 
+			{
+				fputs($fp,$impresionZPL);
+				echo "PAQUETE ENVIADO <br>\n";
+				fclose($fp);
+			}
+			sleep(5);
+		}
+	}			
+
 	function consultarPurgaDA($cco)
 	{
 		global $conex;
@@ -2394,27 +2476,32 @@ else
 //		F I N	 F U N C I O N E S	 P H P
 //=======================================================================================================================================================	
 
-//=======================================================================================================================================================
-//		F I L T R O S  	 D E  	L L A M A D O S  	P O R  	J Q U E R Y  	O  	A J A X
-//=======================================================================================================================================================
-if(isset($accion)) 
-{
-	switch($accion)
-	{
-		case 'cancelarPreparacionDA':
-		{	
-			$data = quitarMarcaDA($wbasedato,$wemp_pmla,$wusuario,$historia,$ingreso,$codArticulo,$ido,$marcado);
-			echo json_encode($data);
-			break;
-			return;
+	//=======================================================================================================================================================
+	//		F I L T R O S  	 D E  	L L A M A D O S  	P O R  	J Q U E R Y  	O  	A J A X
+	//=======================================================================================================================================================
+	if (isset($accion)) {
+		switch ($accion) {
+			case 'cancelarPreparacionDA': {
+					$data = quitarMarcaDA($wbasedato, $wemp_pmla, $wusuario, $historia, $ingreso, $codArticulo, $ido, $marcado);
+					echo json_encode($data);
+					break;
+					return;
+				}
+			
+			case 'ImprimirSticker': {
+					ImprimirSticker($dataPac,$wemp_pmla);
+					echo json_encode("Exito!");
+					break;
+					return;
+				}
+
+			default:
+				break;
 		}
-		
-		default: break;
 	}
-}
-//=======================================================================================================================================================
-//		F I N   F I L T R O S   A J A X 
-//=======================================================================================================================================================	
+	//=======================================================================================================================================================
+	//		F I N   F I L T R O S   A J A X 
+	//=======================================================================================================================================================	
 
 
 //=======================================================================================================================================================
@@ -2444,196 +2531,455 @@ else
 	<script type="text/javascript" src="../../../include/root/jqueryalert.js?v=<?=md5_file('../../../include/root/jqueryalert.js');?>"></script>
 		
 
-</head>
-<script type="text/javascript">
+		</head>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				// -------------------------------------
+				//	Tooltip
+				// -------------------------------------
+				var cadenaTooltipDetalle = $("#tooltipDetalle").val();
 
-	$(document).ready(function() 
-	{
-		// -------------------------------------
-		//	Tooltip
-		// -------------------------------------
-			var cadenaTooltipDetalle = $("#tooltipDetalle").val();
-			
-			cadenaTooltipDetalle = cadenaTooltipDetalle.split("|");
-			
-			for(var i = 0; i < cadenaTooltipDetalle.length-1;i++)
-			{
-				$( "#"+cadenaTooltipDetalle[i] ).tooltip();
-			}
-		// -------------------------------------
-	});
-	
-	function cancelarPreparacionDA(historia,ingreso,codArticulo,ido,elemento)
-	{
-		var marcado = $(elemento).prop("checked");
-		
-		
-		var mensajeConfirm = "";
-		if(marcado)
-		{
-			mensajeConfirm = "Desea cancelar la preparacion de la dosis adaptada";
-		}
-		else
-		{
-			mensajeConfirm = "Desea activar la preparacion de la dosis adaptada";
-		}
-		
-		jConfirm( mensajeConfirm, "ALERTA", function(resp){
-			if( resp ){
-				
-				$.post("Monitor_Kardex.php",
-				{
-					consultaAjax 	: '',
-					accion			: 'cancelarPreparacionDA',
-					wbasedato		: $('#wbasedato').val(),
-					wemp_pmla		: $('#wemp_pmla').val(),
-					wusuario		: $('#wusuario').val(),
-					historia		: historia,
-					ingreso			: ingreso,
-					codArticulo		: codArticulo,
-					ido				: ido,
-					marcado			: marcado
+				cadenaTooltipDetalle = cadenaTooltipDetalle.split("|");
+
+				for (var i = 0; i < cadenaTooltipDetalle.length - 1; i++) {
+					$("#" + cadenaTooltipDetalle[i]).tooltip();
 				}
-				, function(data) {
-					console.log(data);
-					jAlert(data.mensaje,"ALERTA");
-					
-					
-					// si hubo error quitar check
-					if(data.error==1)
-					{
-						$(elemento).prop("checked",false);
-					}
-					
-					
-				},'json');
-			}
-			else
-			{
-				$(elemento).prop("checked",false);
-			}
-		});
-		
-	}
-	
-	function descargarArchivoContingencia(nameFile)
-	{
-		// grab the content of the form field and place it into a variable
-		var textToWrite = $( document.documentElement ).clone();
-		$("meta",textToWrite).remove();
-		textToWrite = $( textToWrite ).html();
-		
-		if( textToWrite != '' ){
-			
-			//  create a new Blob (html5 magic) that conatins the data from your form feild
-			var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
-			// Specify the name of the file to be saved
-			var fileNameToSaveAs = nameFile+".html";
-			 
-			// create a link for our script to 'click'
-			// var downloadLink = document.createElement("a");
-			var downloadLink = $( "#aDownload" )[0];
-			//  supply the name of the file (from the var above).
-			// you could create the name here but using a var
-			// allows more flexability later.
-			downloadLink.download = fileNameToSaveAs;
-			
-			// allow our code to work in webkit & Gecko based browsers
-			// without the need for a if / else block.
-			window.URL = window.URL || window.webkitURL;
-				  
-			// Create the link Object.
-			downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-			
-			// click the new link
-			downloadLink.click();
-			
-		}
-	}
-	
-	function enter()
-	{
-	 document.forms.monkardex.submit();
-	}
-	
-	function cerrarVentana()
-	 {
-      window.close();		  
-     }
-	 
-	 window.onload = function(){
-		 
-		 setInterval(function() {
-	     
-			$('.blink').effect("pulsate", {}, 5000);
+				// -------------------------------------
+			});
 
-		}, 1000);
-		
-		$( ".tooltip").tooltip({track: true, delay: 0, showURL: false, opacity: 0.95, left: 0 });	
-	}
-	 
-	 
-</script>	
-<!--=====================================================================================================================================================================     
+			function cancelarPreparacionDA(historia, ingreso, codArticulo, ido, elemento) {
+				var marcado = $(elemento).prop("checked");
+
+
+				var mensajeConfirm = "";
+				if (marcado) {
+					mensajeConfirm = "Desea cancelar la preparacion de la dosis adaptada";
+				} else {
+					mensajeConfirm = "Desea activar la preparacion de la dosis adaptada";
+				}
+
+				jConfirm(mensajeConfirm, "ALERTA", function(resp) {
+					if (resp) {
+
+						$.post("Monitor_Kardex.php", {
+							consultaAjax: '',
+							accion: 'cancelarPreparacionDA',
+							wbasedato: $('#wbasedato').val(),
+							wemp_pmla: $('#wemp_pmla').val(),
+							wusuario: $('#wusuario').val(),
+							historia: historia,
+							ingreso: ingreso,
+							codArticulo: codArticulo,
+							ido: ido,
+							marcado: marcado
+						}, function(data) {
+							console.log(data);
+							jAlert(data.mensaje, "ALERTA");
+
+
+							// si hubo error quitar check
+							if (data.error == 1) {
+								$(elemento).prop("checked", false);
+							}
+
+
+						}, 'json');
+					} else {
+						$(elemento).prop("checked", false);
+					}
+				});
+
+			}
+
+			function descargarArchivoContingencia(nameFile) {
+				// grab the content of the form field and place it into a variable
+				var textToWrite = $(document.documentElement).clone();
+				$("meta", textToWrite).remove();
+				textToWrite = $(textToWrite).html();
+
+				if (textToWrite != '') {
+
+					//  create a new Blob (html5 magic) that conatins the data from your form feild
+					var textFileAsBlob = new Blob([textToWrite], {
+						type: 'text/plain'
+					});
+					// Specify the name of the file to be saved
+					var fileNameToSaveAs = nameFile + ".html";
+
+					// create a link for our script to 'click'
+					// var downloadLink = document.createElement("a");
+					var downloadLink = $("#aDownload")[0];
+					//  supply the name of the file (from the var above).
+					// you could create the name here but using a var
+					// allows more flexability later.
+					downloadLink.download = fileNameToSaveAs;
+
+					// allow our code to work in webkit & Gecko based browsers
+					// without the need for a if / else block.
+					window.URL = window.URL || window.webkitURL;
+
+					// Create the link Object.
+					downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+
+					// click the new link
+					downloadLink.click();
+
+				}
+			}
+
+			function enter() {
+				document.forms.monkardex.submit();
+			}
+
+			function cerrarVentana() {
+				window.close();
+			}
+			
+			function imprimirSticker(){
+				var dataPacs = [];
+				$("#PacSoporteNuticional input[type=checkbox]:checked").each(function () {
+					var dataPac = $(this).data("info");
+					if(dataPac != ""){
+						dataPacs.push(dataPac);
+					}
+				});
+				if(dataPacs.length == 0){
+					alert("Debe seleccionar por lo menos un registro");
+				}
+				$.post("Monitor_Kardex.php", {
+					consultaAjax: '',
+					accion: 'ImprimirSticker',
+					dataPac: dataPacs,
+					wemp_pmla: $('#wemp_pmla').val(),
+				}, function(data) {
+					console.log(data);
+				}, 'json');
+			}
+
+			window.onload = function() {
+
+				setInterval(function() {
+
+					$('.blink').effect("pulsate", {}, 5000);
+
+				}, 1000);
+
+				$(".tooltip").tooltip({
+					track: true,
+					delay: 0,
+					showURL: false,
+					opacity: 0.95,
+					left: 0
+				});
+			}
+			
+			$(function () {
+				$("#checkAll").change(function(){
+					$('input:checkbox').not(this).prop('checked', this.checked);
+				});
+			});
+		</script>
+		<!--=====================================================================================================================================================================     
 	E S T I L O S 
 =====================================================================================================================================================================-->
-	<style type="text/css">
-	
+		<style type="text/css">
+			A {
+				text-decoration: none;
+				color: #000066;
+			}
 
+			BODY {
+				font-family: verdana;
+				font-size: 10pt;
+				/* height: 1024px; */
+				/* width: 1280px; */
+				width: auto;
+				height: auto;
+			}
 
-		A	{text-decoration: none;color: #000066;}
+			.encabezadoTabla {
+				background-color: #2A5DB0;
+				color: #FFFFFF;
+				font-size: 10pt;
+				font-weight: bold;
+
+			}
+
+			.fila1 {
+				background-color: #C3D9FF;
+				color: #000000;
+				font-size: 10pt;
+			}
+
+			.fila2 {
+				background-color: #E8EEF7;
+				color: #000000;
+				font-size: 10pt;
+			}
+
+			.igual
+
+			/* Aqui asignamos de color gris claro el estado IGUAL*/
+				{
+				background-color: #F0F0F0;
+				text-align: center;
+				animation-name: igual;
+				animation-duration: 1s;
+				animation-timing-function: linear;
+				animation-iteration-count: infinite;
+
+				-webkit-animation-name: igual;
+				-webkit-animation-duration: 1s;
+				-webkit-animation-timing-function: linear;
+				-webkit-animation-iteration-count: infinite;
+			}
+
+			.modificado
+
+			/* Aqui asignamos de color amarillo claro el estado MODIFICADO*/
+				{
+				background-color: #FAF6E2;
+				text-align: center;
+				animation-name: modificado;
+				animation-duration: 1s;
+				animation-timing-function: linear;
+				animation-iteration-count: infinite;
+
+				-webkit-animation-name: modificado;
+				-webkit-animation-duration: 1s;
+				-webkit-animation-timing-function: linear;
+				-webkit-animation-iteration-count: infinite;
+			}
+
+			.nuevo
+
+			/* Aqui asignamos de color verde claro el estado NUEVO*/
+				{
+				background-color: #DEFFCF;
+				text-align: center;
+				animation-name: nuevo;
+				animation-duration: 1s;
+				animation-timing-function: linear;
+				animation-iteration-count: infinite;
+
+				-webkit-animation-name: nuevo;
+				-webkit-animation-duration: 1s;
+				-webkit-animation-timing-function: linear;
+				-webkit-animation-iteration-count: infinite;
+			}
+
+			.suspendido {
+
+				/* Aqui asiganamos de color rojo claro el estado SUSPENDIDO */
+				background-color: #FFD2D2;
+				text-align: center;
+				animation-name: suspendido;
+				animation-duration: 1s;
+				animation-timing-function: linear;
+				animation-iteration-count: infinite;
+
+				-webkit-animation-name: suspendido;
+				-webkit-animation-duration: 1s;
+				-webkit-animation-timing-function: linear;
+				-webkit-animation-iteration-count: infinite;
+			}
+
+			/*Desde aca comienza el estado suspendido */
+			@-moz-keyframes suspendido {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@-webkit-keyframes suspendido {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@keyframes suspendido {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			/*Desde aca comienza el keyframes del estado nuevo */
+
+			@-moz-keyframes nuevo {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@-webkit-keyframes nuevo {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@keyframes nuevo {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}	
+			}
+
+			/* Desde aca comienza el keyframes del modificado */
+			@-moz-keyframes modificado {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@-webkit-keyframes modificado {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@keyframes modificado {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			/*Desde aca comienza el keyframes del estado igual */
+			@-moz-keyframes igual {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@-webkit-keyframes igual {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
+
+			@keyframes igual {
+				0% {
+					opacity: 1.0;
+				}
+
+				50% {
+					opacity: 0.0;
+				}
+
+				100% {
+					opacity: 1.0;
+				}
+			}
 			
-		BODY            
-		{
-			font-family: verdana;
-			font-size: 10pt;
-			// height: 1024px;
-			// width: 1280px;
-			width: auto;
-			height: auto;
-		}
-		.encabezadoTabla                                 
-		{
-			 background-color: #2A5DB0;
-			 color: #FFFFFF;
-			 font-size: 10pt;
-			 font-weight: bold;
-			 
-		}
-		.fila1                                
-		{
-			 background-color: #C3D9FF;
-			 color: #000000;
-			 font-size: 10pt;
-		}
-		.fila2                                
-		{
-			 background-color: #E8EEF7;
-			 color: #000000;
-			 font-size: 10pt;
-		}
-		
-		.tituloPagina                     
-		{
-			 font-family: verdana;
-			 font-size: 18pt;
-			 overflow: hidden;
-			 text-transform: uppercase;
-			 font-weight: bold;
-			 height: 30px;
-			 border-top-color: #2A5DB0;
-			 border-top-width: 1px;
-			 border-left-color: #2A5DB0;
-			 border-left-width: 1px;
-			 border-right-color: #2A5DB0;
-			 border-bottom-color: #2A5DB0;
-			 border-bottom-width: 1px;
-			 margin: 2pt;
-		}
-								
-	
-	</style>
-<!--=====================================================================================================================================================================     
+
+			.tituloPagina {
+				font-family: verdana;
+				font-size: 18pt;
+				overflow: hidden;
+				text-transform: uppercase;
+				font-weight: bold;
+				height: 30px;
+				border-top-color: #2A5DB0;
+				border-top-width: 1px;
+				border-left-color: #2A5DB0;
+				border-left-width: 1px;
+				border-right-color: #2A5DB0;
+				border-bottom-color: #2A5DB0;
+				border-bottom-width: 1px;
+				margin: 2pt;
+			}
+
+			.imprimir-sticker{
+				margin-left: 80%;
+			}
+		</style>
+		<!--=====================================================================================================================================================================     
 	F I N   E S T I L O S 
 =====================================================================================================================================================================-->
 
@@ -2750,39 +3096,62 @@ if($estadosede=='on')
 		$ccoDisCM = '';
 		$ccoDisSF = '';
 
-		//Busco los centros de costos a donde van a dispensar, es decir SF o CM
-	  $sql = "SELECT Ccocod, Ccoima
-				FROM ".$wbasedato."_000011
+			if($wopcion == 5){ //Opcion 5 equivale al monitor para el lactario
+				//Busco los centros de costos a donde van a dispensar, es decir SF o CM
+				//Ccodla - > Dispensa al lactario (dla)
+				$sql = "SELECT Ccocod, Ccoima
+				FROM " . $wbasedato . "_000011
 				WHERE
 					Ccotra = 'on'
 					AND Ccofac = 'on'
 					AND Ccoest = 'on'
+					AND Ccodla = 'on'  
 				";
-	  
-	  $resCcoDis = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-				
-	  while( $rows = mysql_fetch_array($resCcoDis) )
-	    {
-		 if( $rows[ 'Ccoima' ] == 'on' ){
-			$ccoDisCM = $rows[ 'Ccocod' ];
-		 }
-		 else{
-			$ccoDisSF = $rows[ 'Ccocod' ];
-		 }
-		}
-		
-	  //FORMA ================================================================
-	  echo "<form name='monkardex' action='Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."' method=post>";
-  
-  
-	  echo "<input type='HIDDEN' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
-	  echo "<input type='HIDDEN' id='wbasedato' name='wbasedato' value='".$wbasedato."'>";
-	  echo "<input type='HIDDEN' id='wcencam' name='wcencam' value='".$wcencam."'>";
-	  
-	  if (strpos($user,"-") > 0)
-	     $wusuario = substr($user,(strpos($user,"-")+1),strlen($user)); 
-	 
-	  echo "<input type='HIDDEN' id='wusuario' name='wusuario' value='".$wusuario."'>";
+
+				$resCcoDis = mysql_query($sql, $conex) or die(mysql_errno() . " - Error en el query $sql - " . mysql_error());
+
+				while ($rows = mysql_fetch_array($resCcoDis)) {
+					if ($rows['Ccoima'] == 'on') {
+						$ccoDisCM = $rows['Ccocod'];
+					} else {
+						$ccoDisSF = $rows['Ccocod'];
+
+					}
+				}
+			}else{
+					//Busco los centros de costos a donde van a dispensar, es decir SF o CM
+					$sql = "SELECT Ccocod, Ccoima
+					FROM " . $wbasedato . "_000011
+					WHERE
+						Ccotra = 'on'
+						AND Ccofac = 'on'
+						AND Ccoest = 'on'
+					";
+
+				$resCcoDis = mysql_query($sql, $conex) or die(mysql_errno() . " - Error en el query $sql - " . mysql_error());
+
+				while ($rows = mysql_fetch_array($resCcoDis)) {
+					if ($rows['Ccoima'] == 'on') {
+						$ccoDisCM = $rows['Ccocod'];
+					} else {
+						$ccoDisSF = $rows['Ccocod'];
+
+					}
+				}
+			}
+			
+			//FORMA ================================================================
+			echo "<form name='monkardex' action='Monitor_Kardex.php?wemp_pmla=" . $wemp_pmla . "' method=post>";
+
+
+			echo "<input type='HIDDEN' id='wemp_pmla' name='wemp_pmla' value='" . $wemp_pmla . "'>";
+			echo "<input type='HIDDEN' id='wbasedato' name='wbasedato' value='" . $wbasedato . "'>";
+			echo "<input type='HIDDEN' id='wcencam' name='wcencam' value='" . $wcencam . "'>";
+
+			if (strpos($user, "-") > 0)
+				$wusuario = substr($user, (strpos($user, "-") + 1), strlen($user));
+
+			echo "<input type='HIDDEN' id='wusuario' name='wusuario' value='" . $wusuario . "'>";
 
 	  $usuario = consultarUsuario($conex,$wusuario);   
 	  $wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
@@ -3073,196 +3442,273 @@ if($estadosede=='on')
 								</table>
 							</div>
 							<br>";
-				}
-			  
-				 echo "<center><table style='height:20;'>";
-			     if ($j > 6)     //Si el numero de Hrias es mayor a 6 entonces lo muestro en dos grupos de columnas (Izq. y Derecha)
-			        {
-				     switch ($wopcion)
-					    {
-						 case "2":       //Perfil con articulos aprobados sin dispensar 
-						 case "3":       //Pacientes SIN Kardex
-						   {   
-					         echo "<tr class='encabezadoTabla'>";
-							 echo "<th>Habitacion</th>";
-							 echo "<th>Historia</th>";
-							 echo "<th>Paciente</th>";
-							 echo "<th width='101'>Ver</th>";
-							 echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
-							 echo "<th>Habitacion</th>";
-							 echo "<th>Historia</th>";
-							 echo "<th>Paciente</th>";
-							 echo "<th width='101'>Ver</th>";
-							 echo "</tr>";
-							 
-							 break;
-					       }
-						 case "8":
-				            {   
-							   echo "<tr class='encabezadoTabla'>";
-							   echo "<th>Habitacion</th>";
-							   echo "<th>Historia</th>";
-							   echo "<th>Paciente</th>";
-							   echo "<th width='101'>Ver</th>";
-							   echo "<th width='41' bgcolor='#ffffff'>&nbsp;</th>";
-							   echo "<th>Habitacion</th>";
-							   echo "<th>Historia</th>";
-							   echo "<th>Paciente</th>";
-							   echo "<th width='101'>Ver</th>";
-							   echo "<th bgcolor='#ffffff'>&nbsp;</th>";
-							   echo "</tr>";
-							   
-							   break;
-					        } 
-						 case "11":       //Articulos de Central de Mezclas NUEVOS (1RA VEZ) Sin Aprobar
-						   {   
-					        echo "<tr class='encabezadoTabla'>";
-							 echo "<th>Habitacion</th>";
-							 echo "<th>Historia</th>";
-							 echo "<th width='130px'>Paciente</th>";
-							 echo "<th>Articulos</th>";
-							 // echo "<th width='101'>Ver</th>";
-							 echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
-							 echo "<th>Habitacion</th>";
-							 echo "<th>Historia</th>";
-							 echo "<th width='130px'>Paciente</th>";
-							 echo "<th>Articulos</th>";
-							 // echo "<th width='101'>Ver</th>";
-							 echo "</tr>"; 
-							 
-							 break;
-					       }  
-						 case "12":       //Articulos de Central de Mezclas Suspendidos
-						   {   
-					         echo "<tr class='encabezadoTabla'>";
-							 echo "<th>Habitacion</th>";
-							 echo "<th>Historia</th>";
-							 echo "<th>Paciente</th>";
-							 echo "</tr>";
-							 
-							 break;
-					       }  
-						 default:
-				            {   
-							   echo "<tr class='encabezadoTabla'>";
-							   echo "<th>Habitacion</th>";
-							   echo "<th>Historia</th>";
-							   echo "<th>Paciente</th>";
-							   echo "<th width='101'>Ver</th>";
-							   echo "<th width='41' bgcolor='#ffffff'>&nbsp;</th>";
-							   echo "<th bgcolor='#ffffff'>&nbsp;</th>";
-							   echo "<th>Habitacion</th>";
-							   echo "<th>Historia</th>";
-							   echo "<th>Paciente</th>";
-							   echo "<th width='101'>Ver</th>";
-							   echo "<th bgcolor='#ffffff'>&nbsp;</th>";
-							   echo "</tr>";
-							   
-							   break;
-					        } 
-				   		}
-				    } 
-			       else
-			          {
-				       switch ($wopcion)
-					    {
-						  case "12":       //Articulos de Central de Mezclas Suspendidos
-						   {   
-					         echo "<tr class='encabezadoTabla'>";
-							 echo "<th>Habitacion</th>";
-							 echo "<th>Historia</th>";
-							 echo "<th>Paciente</th>";
-							 echo "</tr>";
-							 
-							 break;
-					       }
-						  case "11":       //Articulos de Central de Mezclas NUEVOS (1RA VEZ) Sin Aprobar
-						   {   
-					         echo "<tr class='encabezadoTabla'>";
-						    echo "<th>Habitacion</th>";
-						    echo "<th>Historia</th>";
-						    echo "<th>Paciente</th>";
-						    echo "<th>Articulos</th>";
-						    // echo "<th width='101'>Ver</th>";
-						    echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
-						    echo "</tr>";
+					}
+
+					echo "<center><table style='height:20;'>";
+					if ($j > 6)     //Si el numero de Hrias es mayor a 6 entonces lo muestro en dos grupos de columnas (Izq. y Derecha)
+					{
+						switch ($wopcion) {
+							case "2":       //Perfil con articulos aprobados sin dispensar 
+							case "3":       //Pacientes SIN Kardex
+								{
+									echo "<tr class='encabezadoTabla'>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th width='101'>Ver</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th width='101'>Ver</th>";
+									echo "</tr>";
+
+									break;
+								}
+							case "8": {
+									echo "<tr class='encabezadoTabla'>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th width='101'>Ver</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp;</th>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th width='101'>Ver</th>";
+									echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+									echo "</tr>";
+
+									break;
+								}
+							case "11":       //Articulos de Central de Mezclas NUEVOS (1RA VEZ) Sin Aprobar
+								{
+									echo "<tr class='encabezadoTabla'>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th width='130px'>Paciente</th>";
+									echo "<th>Articulos</th>";
+									// echo "<th width='101'>Ver</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th width='130px'>Paciente</th>";
+									echo "<th>Articulos</th>";
+									// echo "<th width='101'>Ver</th>";
+									echo "</tr>";
+
+									break;
+								}
+							case "12":       //Articulos de Central de Mezclas Suspendidos
+								{
+									echo "<tr class='encabezadoTabla'>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "</tr>";
+
+									break;
+								}
+
+							case "5": //KARDEX CON ARTICULOS DEL LACTARIO
+								{
+									if($wactivolactario == 'on'){
+										echo "<tr class='encabezadoTabla'>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th>Estado</th>";
+										// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
+										echo "<th colspan='2' width='101'>Acción</th>";
+										echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th>Estado</th>";
+										// echo "<th>Imprimir todos</th>";
+										echo "<th colspan='2' width='101'>Acción</th>";
+										echo "</tr>";
+									}else {
+										echo "<tr class='encabezadoTabla'>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th width='101'>Ver</th>";
+										echo "<th width='41' bgcolor='#ffffff'>&nbsp;</th>";
+										echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th width='101'>Ver</th>";
+										echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+										echo "</tr>";
+									}
+
+									break;
+								}
+
+							default: {
+									echo "<tr class='encabezadoTabla'>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th width='101'>Ver</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp;</th>";
+									echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th width='101'>Ver</th>";
+									echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+									echo "</tr>";
+
+									break;
+								}
+						}
+					} else {
+						switch ($wopcion) {
+							case "12":       //Articulos de Central de Mezclas Suspendidos
+								{
+									echo "<tr class='encabezadoTabla'>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "</tr>";
+
+									break;
+								}
+							case "11":       //Articulos de Central de Mezclas NUEVOS (1RA VEZ) Sin Aprobar
+								{
+									echo "<tr class='encabezadoTabla'>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th>Articulos</th>";
+									// echo "<th width='101'>Ver</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+									echo "</tr>";
+
+									break;
+								}
+
+							case "5": //KARDEX CON ARTICULOS DEL LACTARIO
+
+								{
+									if($wactivolactario == 'on'){
+										echo "<tr class='encabezadoTabla'>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th>Estado</th>";
+										// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
+										echo "<th colspan='2' width='101'>Acción</th>";
+										echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+										// echo "<th>Habitacion</th>";
+										// echo "<th>Historia</th>";
+										// echo "<th>Paciente</th>";
+										// echo "<th>Estado</th>";
+										// echo "<th>Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
+										// echo "<th colspan='2' width='101'>Acción</th>";
+										
+										echo "</tr>";
+									}else{
+										echo "<tr class='encabezadoTabla'>";
+										echo "<th>Habitacion</th>";
+										echo "<th>Historia</th>";
+										echo "<th>Paciente</th>";
+										echo "<th width='101'>Ver</th>";
+										echo "<th width='41' bgcolor='#ffffff'>&nbsp;</th>";
+										echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+										// echo "<th>Habitacion</th>";
+										// echo "<th>Historia</th>";
+										// echo "<th>Paciente</th>";
+										// echo "<th width='101'>Ver</th>";
+										// echo "<th bgcolor='#ffffff'>&nbsp;</th>";
+										echo "</tr>";
+									}
 							
-							 break;
-					       }
-						
-						 default:         //Pacientes SIN Kardex y Resto
-						   {   
-						    echo "<tr class='encabezadoTabla'>";
-						    echo "<th>Habitacion</th>";
-						    echo "<th>Historia</th>";
-						    echo "<th>Paciente</th>";
-						    echo "<th width='101'>Ver</th>";
-						    echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
-						    echo "</tr>";
-						    
-						    break;
-					       } 
-				        }
-			          }  
-				 
-				 $wsw=0; 
-				
-			     for($i=1;$i<=$j-1;$i++)
-			        {
-						
-					$procedimientosSinLeer = "";
-					$blink_sin_leer = "";
-					$texto_sin_leer = "";
-					
-					// $procedimientosSinLeer = consultarMensajesSinLeer( $conex, $wbasedato, $wmat_estado[$i][1], $wmat_estado[$i][2] );						 
-					$procedimientosSinLeer = consultarMensajesSinLeer( $conex, $wbasedato,"", $wmat_estado[$i][1], $wmat_estado[$i][2],"","" );						 
-						 
-						 if($procedimientosSinLeer > 0){
-							 
-							 $blink_sin_leer = "fondoRojo blink tooltip";
-							 $texto_sin_leer = "Mensajes sin leer";
-						 }
-					
-				     if ($j > 6)  //Numero de lineas que se muestran en pantalla por defecto si es mayor lo muestro en dos grupos de columnas
-		                {
-			             if ($wsw==0)
-			                {
-			                 $wclass="fila1";
-			                 $wsw=1;
-		                    } 
-			               else
-			                  {
-			                   $wclass="fila2";   
-			                   $wsw=0;
-		                      } 
-			                  
-						 $walp = $wmat_estado[$i][6];
-						 $wptr = $wmat_estado[$i][7];
-						 
-						 $walta_tras="";
-						 
-						 if ($walp=="on")
-						    $walta_tras="fondoAmarillo";
-							
-						 if ($wptr=="on")
-						    $walta_tras="colorAzul4";
-							
-			             echo "<tr class=".$wclass.">";
-				         echo "<td class='".$walta_tras." ".$blink_sin_leer."' title='".$texto_sin_leer."' align=center>&nbsp;".$wmat_estado[$i][0]."</td>";
-				         echo "<td class=".$walta_tras." align=center>".$wmat_estado[$i][1]." - ".$wmat_estado[$i][2]."</td>";
-				         echo "<td class=".$walta_tras." align=left  >".$wmat_estado[$i][3]."</td>";
-				         
-						 if ($wopcion != "12")
-						    {
-						 	 if ($wopcion=="3" or $wopcion=="8")      //Esta es la opcion de historias que no tienen kardex actualizado
-									if( $wmat_estado[$i][8] )
-											echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=".$wemp_pmla."&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
-									else	
-										echo "<td class=".$walta_tras."><div align='center'><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
-							   else
-								  {
-								    if ($wopcion == "11")
-								    {
+									break;
+								}
+
+
+							default:         //Pacientes SIN Kardex y Resto
+								{
+									echo "<tr class='encabezadoTabla'>";
+									echo "<th>Habitacion</th>";
+									echo "<th>Historia</th>";
+									echo "<th>Paciente</th>";
+									echo "<th width='101'>Ver</th>";
+									echo "<th width='41' bgcolor='#ffffff'>&nbsp</th>";
+									echo "</tr>";
+
+									break;
+								}
+						}
+					}
+
+					$wsw = 0;
+
+					for ($i = 1; $i <= $j - 1; $i++) {
+
+						$procedimientosSinLeer = "";
+						$blink_sin_leer = "";
+						$texto_sin_leer = "";
+
+						// $procedimientosSinLeer = consultarMensajesSinLeer( $conex, $wbasedato, $wmat_estado[$i][1], $wmat_estado[$i][2] );						 
+						$procedimientosSinLeer = consultarMensajesSinLeer($conex, $wbasedato, "", $wmat_estado[$i][1], $wmat_estado[$i][2], "", "");
+
+						if ($procedimientosSinLeer > 0) {
+
+							$blink_sin_leer = "fondoRojo blink tooltip";
+							$texto_sin_leer = "Mensajes sin leer";
+						}
+
+						if ($j > 6)  //Numero de lineas que se muestran en pantalla por defecto si es mayor lo muestro en dos grupos de columnas
+						{
+							if ($wsw == 0) {
+								$wclass = "fila1";
+								$wsw = 1;
+							} else {
+								$wclass = "fila2";
+								$wsw = 0;
+							}
+
+							$walp = $wmat_estado[$i][6];
+							$wptr = $wmat_estado[$i][7];
+
+							$walta_tras = "";
+
+							if ($walp == "on")
+								$walta_tras = "fondoAmarillo";
+
+							if ($wptr == "on")
+								$walta_tras = "colorAzul4";
+
+								if ($wopcion == 5 && $wactivolactario == 'on') //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
+								{
+									//print_r($wmat_estado);
+									echo "<tr class=" . $wclass . " id='".$wmat_estado[$i][1]."'>";
+									echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
+									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
+									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
+									echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
+									// echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir</td>"; //Imprimir
+								}else{
+									echo "<tr class=" . $wclass . ">";
+									echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
+									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
+									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
+								}
+								
+
+							if ($wopcion != "12") {
+								if ($wopcion == "3" or $wopcion == "8")      //Esta es la opcion de historias que no tienen kardex actualizado
+									if ($wmat_estado[$i][8])
+										echo "<td class=" . $walta_tras . " align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=" . $wemp_pmla . "&wcedula=" . $wmat_estado[$i][9] . "&wtipodoc=" . $wmat_estado[$i][10] . "&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
+									else
+										echo "<td class=" . $walta_tras . "><div align='center'><A href='generarKardex.php?wemp_pmla=" . $wemp_pmla . "&waccion=b&whistoria=" . $wmat_estado[$i][1] . "&wingreso=" . $wmat_estado[$i][2] . "&et=on&wfecha=" . $wfecha . "' target=_blank> Ir al Kardex </A></td>";
+								else {
+									if ($wopcion == "11") {
 										// pintar articulos y opcion de ir a central de mezclas
 										$articulosCM = consultarArticulosCM($wmat_estado[$i][1],$wmat_estado[$i][2]);
 											
@@ -3340,49 +3786,54 @@ if($estadosede=='on')
 										else
 										   echo "<td bgcolor='#ffffff'>&nbsp;</td>";
 									}
-								  } 
-								  
-								  
-							 echo "<td align='center' bgcolor='#ffffff'>&nbsp;</td>";
-							 $i++;
-							 
-							$procedimientosSinLeer = "";
-							$blink_sin_leer = "";
-							$texto_sin_leer = "";
-							
-							// $procedimientosSinLeer = consultarMensajesSinLeer( $conex, $wbasedato, $wmat_estado[$i][1], $wmat_estado[$i][2] );						 
-							$procedimientosSinLeer = consultarMensajesSinLeer( $conex, $wbasedato,"", $wmat_estado[$i][1], $wmat_estado[$i][2],"","" );						 
-								 
-								 if($procedimientosSinLeer > 0){
-									 
-									 $blink_sin_leer = "fondoRojo blink tooltip";
-									 $texto_sin_leer = "Mensajes sin leer";
-								 }
-							 
-							 $walta_tras="";
-							 if (isset($wmat_estado[$i][6])) $walp = $wmat_estado[$i][6];
-						     if (isset($wmat_estado[$i][7])) $wptr = $wmat_estado[$i][7];
-						 
-							 if ($walp=="on")
-						        $walta_tras="fondoAmarillo";
-							
-						     if ($wptr=="on")
-						        $walta_tras="colorAzul4";
-							 
-							 if ($i <= ($j-1))
-								{
-								 echo "<td class='".$walta_tras." ".$blink_sin_leer."' title='".$texto_sin_leer."' align=center>&nbsp;".$wmat_estado[$i][0]."</td>";                            //Habitacion 
-								 echo "<td class=".$walta_tras." align=center>".$wmat_estado[$i][1]." - ".$wmat_estado[$i][2]."</td>";  //Historia-Ingreso
-								 echo "<td class=".$walta_tras." align=left  >".$wmat_estado[$i][3]."</td>";                            //Paciente
-								 if ($wopcion=="3" or $wopcion=="8" or $wopcion=="12")  //Esta es la opcion de historias que no tienen kardex actualizado
-									if( $wmat_estado[$i][8] )
-										echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=".$wemp_pmla."&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
-									else	
-										echo "<td class=".$walta_tras."><div align='center'><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
-								   else
-									  {
-										if ($wopcion == "11")
-										{
+								}
+
+
+								echo "<td align='center' bgcolor='#ffffff'>&nbsp;</td>";
+								$i++;
+
+								$procedimientosSinLeer = "";
+								$blink_sin_leer = "";
+								$texto_sin_leer = "";
+
+								// $procedimientosSinLeer = consultarMensajesSinLeer( $conex, $wbasedato, $wmat_estado[$i][1], $wmat_estado[$i][2] );						 
+								$procedimientosSinLeer = consultarMensajesSinLeer($conex, $wbasedato, "", $wmat_estado[$i][1], $wmat_estado[$i][2], "", "");
+
+								if ($procedimientosSinLeer > 0) {
+
+									$blink_sin_leer = "fondoRojo blink tooltip";
+									$texto_sin_leer = "Mensajes sin leer";
+								}
+
+								$walta_tras = "";
+								if (isset($wmat_estado[$i][6])) $walp = $wmat_estado[$i][6];
+								if (isset($wmat_estado[$i][7])) $wptr = $wmat_estado[$i][7];
+
+								if ($walp == "on")
+									$walta_tras = "fondoAmarillo";
+
+								if ($wptr == "on")
+									$walta_tras = "colorAzul4";
+
+								if ($i <= ($j - 1)) {
+									
+									echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //Habitacion 
+									echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>";  //Historia-Ingreso
+									echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>";                            //Paciente
+
+									if ($wopcion == 5 && $wactivolactario == 'on') //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
+									{
+										echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
+										// echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir</td>"; //Imprimir
+									}
+									
+									if ($wopcion == "3" or $wopcion == "8" or $wopcion == "12")  //Esta es la opcion de historias que no tienen kardex actualizado
+										if ($wmat_estado[$i][8])
+											echo "<td class=" . $walta_tras . " align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=" . $wemp_pmla . "&wcedula=" . $wmat_estado[$i][9] . "&wtipodoc=" . $wmat_estado[$i][10] . "&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
+										else
+											echo "<td class=" . $walta_tras . "><div align='center'><A href='generarKardex.php?wemp_pmla=" . $wemp_pmla . "&waccion=b&whistoria=" . $wmat_estado[$i][1] . "&wingreso=" . $wmat_estado[$i][2] . "&et=on&wfecha=" . $wfecha . "' target=_blank> Ir al Kardex </A></td>";
+									else {
+										if ($wopcion == "11") {
 											// pintar articulos y opcion de ir a central de mezclas
 											$articulosCM = consultarArticulosCM($wmat_estado[$i][1],$wmat_estado[$i][2]);
 																					
@@ -3476,87 +3927,90 @@ if($estadosede=='on')
 		               else 
 		                  {  
 
-						   $walp = $wmat_estado[$i][6];
-						   $wptr = $wmat_estado[$i][7];
-						   
-			               if (is_integer($i/2))
-			                  $wclass="fila1";
-			                 else
-			                  $wclass="fila2";
-							   
-						   $walta_tras="";
-						 
-						   if ($walp=="on")
-						      $walta_tras="fondoAmarillo";
-							
-						   if ($wptr=="on")
-						      $walta_tras="colorAzul4";
-			                    
-				           echo "<tr class=".$wclass.">";
-					       echo "<td class='".$walta_tras." ".$blink_sin_leer."' title='".$texto_sin_leer."' align=center>&nbsp;".$wmat_estado[$i][0]."</td>";
-					       echo "<td class=".$walta_tras." align=center>".$wmat_estado[$i][1]." - ".$wmat_estado[$i][2]."</td>";
-					       echo "<td class=".$walta_tras." align=left  >".$wmat_estado[$i][3]."</td>";
-						   
-						   if ($wopcion != "12")
-						      {
-								 if ($wopcion=="3" or $wopcion=="8")   //Esta es la opcion de historias que no tienen kardex actualizado
-									if( $wmat_estado[$i][8] )
-										echo "<td class=".$walta_tras." align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=".$wemp_pmla."&wcedula=".$wmat_estado[$i][9]."&wtipodoc=".$wmat_estado[$i][10]."&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
-									else	
-										echo "<td class=".$walta_tras." align=center><A href='generarKardex.php?wemp_pmla=".$wemp_pmla."&waccion=b&whistoria=".$wmat_estado[$i][1]."&wingreso=".$wmat_estado[$i][2]."&et=on&wfecha=".$wfecha."' target=_blank> Ir al Kardex </A></td>";
-								 else
-									{
-										if ($wopcion == "11")
-										{
-											// pintar articulos y opcion de ir a central de mezclas
-											$articulosCM = consultarArticulosCM($wmat_estado[$i][1],$wmat_estado[$i][2]);
-																					
-											if(count($articulosCM)>0)
-											{
-												echo "	<td class='".$walta_tras."'>";
-													echo "	<table style='width:100%;height:100%;'>";
-													
-													foreach($articulosCM as $keyArtCM => $valueArtCM)
-													{
-														if ($fila_lista=='Fila1')
-															$fila_lista = "Fila2";
-														else
-															$fila_lista = "Fila1";
-														
-														$observacionesCM = "";
-														if($valueArtCM['observaciones']!="")
-														{
-															$observacionesCM = "Observaciones: <br>".trim($valueArtCM['observaciones']);
-														}
-														// ------------------------------------------
-														// Tooltip
-														// ------------------------------------------	
-															$infoTooltip = "Tipo: ".$valueArtCM['info']."<br> Fecha y hora de inicio: ".$valueArtCM['fechaHorainicio']."<br>".$observacionesCM;
-															$tooltip = "<div id=\"dvTooltip_".$valueArtCM['ido']."\" style=\"font-family:verdana;font-size:10pt\">".$infoTooltip."</div>";
-															$cadenaTooltipDetalle .= "tooltipDetalle_".$valueArtCM['ido']."|";
-														// ------------------------------------------					
-													
-														
-														$urlCM = $valueArtCM['url'];
-														
-														$cancelarDA = "";
-														if($valueArtCM['tipo']=="Dosis Adaptada")
-														{
-															$cancelarDA = "<span style='font-size:8pt;'><input type='checkbox' id='noPrepararDA' name='noPrepararDA' onclick='cancelarPreparacionDA(\"".$wmat_estado[$i][1]."\",\"".$wmat_estado[$i][2]."\",\"".$valueArtCM['articulo']."\",\"".$valueArtCM['ido']."\",this);'>No preparar como DA</span>";
-														}
-														
-														$fondoFila = "";
-														if($valueArtCM['nopos']==true)
-														{
-															$fondoFila = "class='fondoVioleta'";
-														}
-															
-														echo "  <tr ".$fondoFila." id='tooltipDetalle_".$valueArtCM['ido']."' title='".$tooltip."' style='cursor:pointer;'>
-																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:150px;'>".$valueArtCM['articulo']." - ".$valueArtCM['generico']."</td>
-																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:50px;'>".$valueArtCM['dosis']." ".$valueArtCM['unidad']."</td>
-																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:80px;'>".$valueArtCM['fechaHorainicio']."</td>
-																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:100px;' align='center'>".$urlCM."</td>
-																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:90px;' align='center'> ".$cancelarDA."</td>
+							$walp = $wmat_estado[$i][6];
+							$wptr = $wmat_estado[$i][7];
+
+							if (is_integer($i / 2))
+								$wclass = "fila1";
+							else
+								$wclass = "fila2";
+
+							$walta_tras = "";
+
+							if ($walp == "on")
+								$walta_tras = "fondoAmarillo";
+
+							if ($wptr == "on")
+								$walta_tras = "colorAzul4";
+
+							if ($wopcion == 5 && $wactivolactario == 'on') //Se hace condición para que en esta opción 5 muestre una columna de más llamada Estado.
+							{
+								//print_r($wmat_estado);
+								echo "<tr class=" . $wclass . " id='".$wmat_estado[$i][1]."'>";
+								echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
+								echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
+								echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
+								echo "<td class=" . $walta_tras . " align=left  id='estado_".$wmat_estado[$i][1]."' >". $estado ."</td>"; //Estado
+								// echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir</td>"; //Imprimir
+							} else {
+								echo "<tr class=" . $wclass . ">";
+								echo "<td class='" . $walta_tras . " " . $blink_sin_leer . "' title='" . $texto_sin_leer . "' align=center>&nbsp;" . $wmat_estado[$i][0] . "</td>"; //N Habitación
+								echo "<td class=" . $walta_tras . " align=center>" . $wmat_estado[$i][1] . " - " . $wmat_estado[$i][2] . "</td>"; //Historia - ingreso
+								echo "<td class=" . $walta_tras . " align=left  >" . $wmat_estado[$i][3] . "</td>"; //Nombre de paciente
+							}
+
+							if ($wopcion != "12") {
+								if ($wopcion == "3" or $wopcion == "8")   //Esta es la opcion de historias que no tienen kardex actualizado
+									if ($wmat_estado[$i][8])
+										echo "<td class=" . $walta_tras . " align=center><A href='../../hce/procesos/ordenes.php?wemp_pmla=" . $wemp_pmla . "&wcedula=" . $wmat_estado[$i][9] . "&wtipodoc=" . $wmat_estado[$i][10] . "&hce=on&programa=gestionEnfermeria&et=on&pgr_origen=gestionEnfermeria&esDeAyuda=off' target=_blank> Ir a Ordenes</A></td>";
+									else
+										echo "<td class=" . $walta_tras . " align=center><A href='generarKardex.php?wemp_pmla=" . $wemp_pmla . "&waccion=b&whistoria=" . $wmat_estado[$i][1] . "&wingreso=" . $wmat_estado[$i][2] . "&et=on&wfecha=" . $wfecha . "' target=_blank> Ir al Kardex </A></td>";
+								else {
+									if ($wopcion == "11") {
+										// pintar articulos y opcion de ir a central de mezclas
+										$articulosCM = consultarArticulosCM($wmat_estado[$i][1], $wmat_estado[$i][2]);
+
+										if (count($articulosCM) > 0) {
+											echo "	<td class='" . $walta_tras . "'>";
+											echo "	<table style='width:100%;height:100%;'>";
+
+											foreach ($articulosCM as $keyArtCM => $valueArtCM) {
+												if ($fila_lista == 'Fila1')
+													$fila_lista = "Fila2";
+												else
+													$fila_lista = "Fila1";
+
+												$observacionesCM = "";
+												if ($valueArtCM['observaciones'] != "") {
+													$observacionesCM = "Observaciones: <br>" . trim($valueArtCM['observaciones']);
+												}
+												// ------------------------------------------
+												// Tooltip
+												// ------------------------------------------	
+												$infoTooltip = "Tipo: " . $valueArtCM['info'] . "<br> Fecha y hora de inicio: " . $valueArtCM['fechaHorainicio'] . "<br>" . $observacionesCM;
+												$tooltip = "<div id=\"dvTooltip_" . $valueArtCM['ido'] . "\" style=\"font-family:verdana;font-size:10pt\">" . $infoTooltip . "</div>";
+												$cadenaTooltipDetalle .= "tooltipDetalle_" . $valueArtCM['ido'] . "|";
+												// ------------------------------------------					
+
+
+												$urlCM = $valueArtCM['url'];
+
+												$cancelarDA = "";
+												if ($valueArtCM['tipo'] == "Dosis Adaptada") {
+													$cancelarDA = "<span style='font-size:8pt;'><input type='checkbox' id='noPrepararDA' name='noPrepararDA' onclick='cancelarPreparacionDA(\"" . $wmat_estado[$i][1] . "\",\"" . $wmat_estado[$i][2] . "\",\"" . $valueArtCM['articulo'] . "\",\"" . $valueArtCM['ido'] . "\",this);'>No preparar como DA</span>";
+												}
+
+												$fondoFila = "";
+												if ($valueArtCM['nopos'] == true) {
+													$fondoFila = "class='fondoVioleta'";
+												}
+
+												echo "  <tr " . $fondoFila . " id='tooltipDetalle_" . $valueArtCM['ido'] . "' title='" . $tooltip . "' style='cursor:pointer;'>
+																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:150px;'>" . $valueArtCM['articulo'] . " - " . $valueArtCM['generico'] . "</td>
+																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:50px;'>" . $valueArtCM['dosis'] . " " . $valueArtCM['unidad'] . "</td>
+																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:80px;'>" . $valueArtCM['fechaHorainicio'] . "</td>
+																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:100px;' align='center'>" . $urlCM . "</td>
+																	<td style='font-size:10pt;border-color:#FFFFFF;border: 1px solid white;width:90px;' align='center'> " . $cancelarDA . "</td>
 																</tr>";
 																
 													}
@@ -3607,19 +4061,467 @@ if($estadosede=='on')
 			if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' )
 				echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion."&servicioDomiciliario=on'>";
 			else
-				echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion."'>";
+				echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=" . $wemp_pmla . "&wuser=" . $user . "&wopcion=" . $wopcion . "'>";
+
+
+			echo "</form>";
+			
+			echo "<br>";
+			echo "<table>";
+			echo "<tr><td align=center colspan=9><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'>";
+			// if($wopcion == "5"){
+			// 	echo "&nbsp;<input type=button value='Imprimir sticker' onclick='imprimirSticker()'>";
+			// }
+			echo "</td></tr>";
+			echo "<input type='hidden' id='tooltipDetalle' value='" . $cadenaTooltipDetalle . "'>";
+			echo "</table>";
+
+			//Desde aca comienza el detalle del kardex que tiene cada paciente
+			if ($wopcion == 5 && $wactivolactario == 'on') //se hace condición para que solo muestre la tabla de pacientes con la informacion de medicamento
+			{
+				function estado_del_Kardex_lactario($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac, &$esOrdenes)
+				{
+					global $wbasedato;
+					global $conex;
+					global $wespera;
+					global $wfecha;
+					global $waltadm;
+					global $wopcion;
+					global $whora_par_actual;
+					global $wemp_pmla;
+
+					global $wsuspendidos;
+
+					global $servicioDomiciliario;
+
+					//$disCco = false; 
+					$disCco = consultarHoraDispensacionPorCco($conex, $wbasedato, $wsac);	//consulto el tiempo de dispensación por cco
+
+
+					$westado = "off";  //Apago el estado, que indica segun la opcion si la historia si esta en el estado que indica la opcion.
+					$wactual = "Sin Kardex Hoy";  //Indica si el Kardex esta actualizado a la fecha, off = actualizado al día anterior, on= Actualizado a la fecha
+					$esOrdenes = false;
+
+
+					switch ($wopcion) {
+						case ("5"): {
+								//========================================================================================================================================================================
+								//Pacientes con Kardex con Articulos del Lactario
+								//========================================================================================================================================================================
+								$q = " SELECT kadcpx, kadpro, kadart, kadori "
+									. "  FROM " . $wbasedato . "_000054, " . $wbasedato . "_000053 A, " . $wbasedato . "_000011, " . $wbasedato . "_000026 "
+									. " WHERE karhis         = '" . $whis . "'"
+									. "   AND karing         = '" . $wing . "'"
+									. "   AND karhis         = kadhis "
+									. "   AND karing         = kading "
+									. "   AND kadfec         = '" . $wfecha . "'"       //Esto me valida que el Kardex sea del día
+									//. "  # AND kadsus        != 'on' "
+									. "   AND Kadess        != 'on' "				 //Valida que no esté como no enviar
+									//		          ."   AND kadcdi-kaddis  > 0    "               //Esto me indica que ya falta por dispensar parcial o totalmente	// Se comenta porque ya no se mira lo dispensado hasta la hora de corte sino seg{un la frecuencia del centro de costo actual
+									. "   AND kadart         = artcod "
+									. "   AND INSTR(ccogka, mid(artgru,1,INSTR(artgru,'-')-1)) "
+									. "   AND ccolac         = 'on' "
+									. "   AND karcon         = 'on' "
+									. "   AND A.Fecha_data   = kadfec ";
+								//."   AND kadare         = 'on' "; 
+								$res1 = mysql_query($q, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
+								$wnum = mysql_num_rows($res1);
+								//   print_r(mysql_fetch_array($res1));
+								//   die();
+								while ($wcan = mysql_fetch_array($res1)) {
+									$regleta_str = explode(",", $wcan['kadcpx']);
+
+									$sin_dispensar = estado_sin_dispensar($regleta_str, $disCco, $wcan['kadpro'], $wcan['kadori'], $wcan['kadart']);
+									if ($sin_dispensar >= 0) {
+										$westado = "on";        //Indica que la historia si esta sin Dispensar el Kardex pacial o totalmente, es decir en 'on'
+										$wactual = "Actualizado";        //Indica que esta actualizado a la fecha
+										
+									}
+								}
+								
+							}
+					} //Aca termina el switch	         
+
+					if ($wmuerte == "on")
+						$westado = "Falleció";
+				}
+
+				// Aca trae todos los pacientes que esten hospitalizados en la clinica y luego busco como es el estado en cuanto a Kardex de cada uno
+				$q = " CREATE TEMPORARY TABLE IF NOT EXISTS tempo_ART "
+					. " SELECT ubihac, ubihis, ubiing, " . $wbasedato . "_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac  "
+					. "   FROM " . $wbasedato . "_000018, " . $wbasedato . "_000011, " . $wbasedato . "_000020, " . $wbasedato . "_000017 "
+					. "  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+					//."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
+					. "    AND ubisac  = ccocod "
+					. "    AND ccohos  = 'on' "             //Que el CC sea hospitalario
+					. "    AND ccourg != 'on' "             //Que no se de Urgencias
+					. "    AND ccocir != 'on' "             //Que no se de Cirugia
+					. "    AND ubihis  = habhis "
+					. "    AND ubiing  = habing "
+					. "    AND ubihis != '' "
+					. "    AND ubihis  = eyrhis "            //Estas cuatro linea que siguen son temporales
+					. "    AND ubiing  = eyring "
+					. "    AND eyrsde  = ccocod "
+					. "    AND eyrtip  = 'Recibo' "
+					. "    AND eyrest  = 'on' "
+					//."    AND ccocpx != 'on' "              //CICLOS de Producción 'OFF'
+					. "  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
+					. "  UNION ALL "
+					//Solo traigo los pacientes que esten en un servicio que sea con el MODELO DE CICLOS DE PRODUCCION Y DISPENSACION FRECUENTE
+					. " SELECT ubihac, ubihis, ubiing, " . $wbasedato . "_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac  "
+					. "   FROM " . $wbasedato . "_000018, " . $wbasedato . "_000011, " . $wbasedato . "_000020, " . $wbasedato . "_000017, " . $wbasedato . "_000054, "
+					. "        " . $wbasedato . "_000043, " . $wbasedato . "_000099 "
+					. "  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+					//."    AND ubialp != 'on' "             //Que no este en Alta en Proceso
+					. "    AND ubisac  = ccocod "
+					. "    AND ccohos  = 'on' "             //Que el CC sea hospitalario
+					. "    AND ccourg != 'on' "             //Que no se de Urgencias
+					. "    AND ccocir != 'on' "             //Que no se de Cirugia
+					. "    AND ubihis  = habhis "
+					. "    AND ubiing  = habing "
+					. "    AND ubihis != '' "
+					. "    AND ubihis  = eyrhis "            //Estas cuatro linea que siguen son temporales
+					. "    AND ubiing  = eyring "
+					. "    AND eyrsde  = ccocod "
+					. "    AND eyrtip  = 'Recibo' "
+					. "    AND eyrest  = 'on' "
+					//."    AND ccocpx  = 'on' "              //CICLOS de Producción 'ON'
+					. "    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_par_actual',':00:00')),perequ) = 0 "   //Resto la fecha actual de la fecha de inicio y el resultado que da en horas las divido por la periodicidad (perequ), si hay decimales es porque el medicamento no es de esa hora, pero si es cero es porque si
+					. "    AND ubihis  = kadhis "
+					. "    AND ubiing  = kading "
+					. "    AND kadare  = 'on' "
+					. "    AND kadfec  = '" . $wfecha . "'"
+					. "    AND kadpro  = tarcod "
+					. "    AND tarpdx  = 'off' "            //Tipo de Articulo no se produce en ciclos osea, que son de dispensacion
+					. "    AND kadart  NOT IN ( SELECT artcod FROM " . $wcenmez . "_000002 WHERE artcod = kadart) "
+					. "    AND kadper  = percod "
+					. "  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
+
+					. "  UNION "
+
+					. " SELECT CONCAT(habzon,' - ',habcpa) as ubihac, ubihis, ubiing, " . $wbasedato . "_000018.id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac "
+					. "   FROM " . $wbasedato . "_000018, " . $wbasedato . "_000020, " . $wbasedato . "_000054, " . $wbasedato . "_000026, " . $wbasedato . "_000011 "
+					. "  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
+					. "    AND ubialp != 'on' "             //Que no este en Alta en Proceso
+					. "    AND ubihis  = habhis "
+					. "    AND ubiing  = habing "
+					. "    AND ubihis != '' "
+					. "    AND ubihis  = kadhis "
+					. "    AND ubiing  = kading "
+					. "    AND kadfec  = '" . $wfecha . "'"      //Hoy
+					. "    AND kadart  = artcod "
+					. "	AND ubisac  = ccocod "
+					. "	AND ccourg  != 'off'"
+					. "  GROUP BY 1,2,3,4,5,6,7,8,9 ";
+				$res = mysql_query($q, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
+				//    echo "<pre>".print_r($q,true)."</pre>";
+				$q = " SELECT ubihac, ubihis, ubiing, id, ubihot, ubihap, ubimue, ubihan, ubialp, ubiptr, ubisac "
+					. "   FROM tempo_ART "
+					. "  GROUP BY 1, 2, 5, 6, 7, 8, 9, 10 ";
+				$res = mysql_query($q, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
+				$num_pacientes = mysql_num_rows($res);
+
+				$j = 1;
+				for ($i = 1; $i <= $num_pacientes; $i++) {
+					$row = mysql_fetch_array($res);
+					$whab = $row[0];      //habitación actual
+					$whis = $row[1];     //Historia
+					$wing = $row[2];    //Ingreso
+					$wreg = $row[3];   //Id
+					$whap = $row[5];  //Hora Alta en Proceso
+					$wmue = $row[6]; //Indicador de Muerte
+					$whan = $row[7]; //Habitación Anterior
+					$walp = $row[8]; //Alta en proceso
+					$wptr = $row[9]; //En proceso de traslado
+					$wsac = $row[10];
+
+					//Traigo los datos demograficos del paciente
+					$q = " SELECT pacno1, pacno2, pacap1, pacap2, pacced, pactid "
+						. "   FROM root_000036, root_000037 "
+						. "  WHERE orihis = '" . $whis . "'"
+						. "    AND oriing = '" . $wing . "'"
+						. "    AND oriori = '" . $wemp_pmla . "'"  //Empresa Origen de la historia, 
+						. "    AND oriced = pacced ";
+					$respac = mysql_query($q, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
+					$rowpac = mysql_fetch_array($respac);
+
+					$wpac = $rowpac[0] . " " . $rowpac[1] . " " . $rowpac[2] . " " . $rowpac[3]; //Nombre
+					$wdpa = $rowpac[4];  //Documento del Paciente
+					$wtid = $rowpac[5]; //Tipo de Documento o Identificacion
+
+					estado_del_Kardex_lactario($whis, $wing, $westado, $wmue, $wcolor, $wactual, $wsac, $esOrdenes);
+
+					if ($wmue == "on") {
+						$whab = $whan;
+					}
+
+					//Llevo los registros con estado=="on" a una matrix, para luego imprimirla por el orden (worden)
+					if ($westado == "on") {
+
+						// Consulta detalle del kardex, es la que nos trae los arituclos de cada pacientes
+						$q = "
+						SELECT	kadcpx, Artcom, CONCAT_WS( ' ', Percan, Peruni ) as Frecuencia, Kadfin, Kadhin, Viades, Kadobs, CONCAT_WS( ' ', Kadcfr, Kadufr ) as Dosis, Kadsus, K.Fecha_data, K.Hora_data, K.Kadfle, K.Kadhle, kadfpv, kadhpv
+							FROM movhos_000054 K
+							JOIN movhos_000040 ON Kadvia = Viacod
+							JOIN movhos_000043 ON Kadper = Percod 
+							JOIN movhos_000026 ON Kadart = Artcod
+						WHERE	Kadhis = '" . $whis . "'
+							AND	Kading = '" . $wing . "'
+							AND	Kadfec = '" . $wfecha . "'
+							AND	Kadvia = Viacod
+							AND	Percod = Kadper
+							AND	kadart = Artcod							
+							";
+
+						$result = mysql_query($q, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
+						$num_art = mysql_num_rows($result);
+						// $kar = mysql_fetch_array($result);
+
+						$articulos = array();
+
+						$wmat_estado[$j][0] = $whab;
+						$wmat_estado[$j][1] = $whis;
+						$wmat_estado[$j][2] = $wing;
+						$wmat_estado[$j][3] = $wpac;
+						$wmat_estado[$j][4] = $westado;
+						$wmat_estado[$j][5] = $wcolor;
+						$wmat_estado[$j][6] = $walp;
+						$wmat_estado[$j][7] = $wptr;
+						$wmat_estado[$j][8] = $esOrdenes;
+						$wmat_estado[$j][9] = $wdpa;
+						$wmat_estado[$j][10] = $wtid;
+
+						if ($num_art > 1) {
+							while ($fila = mysql_fetch_array($result)) {
+								$articulos[] = $fila;
+							}							
+							$wmat_estado[$j][11] = $articulos;
+						} else {
+							$fila = mysql_fetch_array($result);
+							
+							$wmat_estado[$j][11] = $fila[1];
+							$wmat_estado[$j][12] = $fila[2];
+							$wmat_estado[$j][13] = $fila[3];
+							$wmat_estado[$j][14] = $fila[4];
+							$wmat_estado[$j][15] = $fila[5];
+							$wmat_estado[$j][16] = $fila[6];
+							$wmat_estado[$j][17] = $fila[7];
+							$wmat_estado[$j][18] = $fila[8];
+							$wmat_estado[$j][19] = $fila[9];
+							$wmat_estado[$j][20] = $fila[10];
+							$wmat_estado[$j][21] = $fila[11];
+							$wmat_estado[$j][22] = $fila[12];
+							$wmat_estado[$j][23] = $fila[13];
+							$wmat_estado[$j][24] = $fila[14];
+						}
+						$j++;
+					}
+				}
 				
-	                 
-	  echo "</form>";
-	  
-	  echo "<br>";
-	  echo "<table>";
-	  echo "<tr><td align=center colspan=9><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
-	  echo "<input type='hidden' id='tooltipDetalle' value='".$cadenaTooltipDetalle."'>";
-	  echo "</table>";
-    }
-}
-	
+				echo "<hr style='height:3px;border-width:0;color:#cc0000;background-color:#cc0000'>";
+
+				echo "<td class='fila1' width='90%'>
+						<div class='titulopagina' align='center'>PACIENTES CON SOPORTE NUTRICIONAL</div>
+					</td>";
+
+				echo "&nbsp;<input class='imprimir-sticker' type=button value='Imprimir sticker' onclick='imprimirSticker()'>";
+
+				//Encabezado de tabla
+				echo "<table id='PacSoporteNuticional'>";
+				// echo "<hr style='height:3px;border-width:0;color:#cc0000;background-color:#cc0000'>";
+				echo "<tr class='encabezadoTabla'>";
+				echo "<th>Habitacion</th>";
+				echo "<th>Historia</th>";
+				echo "<th>Paciente</th>";
+				echo "<th>Estado</th>";
+				echo "<th>Artículo</th>";
+				echo "<th>Dosis</th>";
+				echo "<th>Via de administración</th>";
+				echo "<th>Frecuencia</th>";
+				echo "<th>Fecha y hora de inicio</th>";
+				echo "<th>Observación</th>";
+				echo "<th>Sticker - Imprimir todos<input type='checkbox' id='checkAll' data-info='' /></th>";
+				// echo "<th colspan='2' width='101'>Acción</th>"; //Se comenta porque no es necesario la accion en la parte informativa
+				echo "</tr>";
+
+				//Condicional while para pintar los datos que vienen desde la consulta
+				// while ($kar = mysql_fetch_row($result)){  
+
+				$color_filas = 0; //Inicializamos variable en 0 para el color de las filas
+				$arrayActivos= array();			 // indica si hay un articulo activo
+				
+				foreach ($wmat_estado as $index => $fila) {
+					$estado = '';
+					$clase_estado = '';
+					
+					$arrayActivos[$fila[1]]= array(
+													"activos" => 0,
+													"nuevo" => 0,
+													"modificado" => 0,
+													"igual" => 0
+												);
+					
+					if (count($fila[11]) > 1) {
+						for ($k = 0; $k < count($fila[11]); $k++) {
+							
+							//Condicional para que se intercale el color de las filas en cada registro
+							if (($k % 2) != 0) {
+								$wclass = "fila1";
+							} else {
+								$wclass = "fila2";
+							}
+
+
+							$pos_art = $fila[11][$k];
+
+							
+
+							//Aqui asignamos el estado suspendido si el articulo esta en on, quiere decir que no esta activo.
+							if ($pos_art[8] == 'on') {
+								$estado = 'SUSPENDIDO';
+								$clase_estado = 'suspendido';
+										
+							}else{
+								$arrayActivos[$fila[1]]['activos'] = 1+$arrayActivos[$fila[1]]['activos'];
+								$estado = "";
+								$clase_estado = '';
+
+								if(($pos_art[9] >= $pos_art[13] && $pos_art[10] > $pos_art[14]) || ($pos_art[13] == '0000-00-00')){
+									
+									$estado = "NUEVO";
+									$clase_estado = 'nuevo';
+									$arrayActivos[$fila[1]]['nuevo'] = 1+$arrayActivos[$fila[1]]['nuevo'];
+								}
+								if(($pos_art[13] >= $pos_art[9] && $pos_art[14] > $pos_art[10]) && ($pos_art[13] >= $pos_art[11] && $pos_art[14] > $pos_art[12])){
+									//$estado = "IGUAL";
+									//$clase_estado = 'igual';
+									$arrayActivos[$fila[1]]['igual'] = 1+$arrayActivos[$fila[1]]['igual'];
+								}
+								if($pos_art[11] >= $pos_art[13] && $pos_art[12] > $pos_art[14]){
+									$estado = "MODIFICADO";
+									$clase_estado = 'modificado';
+									$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
+								}
+							}
+					
+							
+							//Pintamos los datos 
+							$dataPac = array(
+								"historia" => $fila[1],
+								"ingreso" => $fila[2],
+								"nombre" => $fila[3],
+								"fecha" => $pos_art[3],
+								"hora" => $pos_art[4],
+								"habitacion" => $fila[0],
+								// "frecuencia" => $pos_art[0],
+								"frecuencia" => $pos_art[2],
+								"articulo" => $pos_art[1],
+								"dosis" => $pos_art[7],
+								"via" => $pos_art[5]
+							);
+							echo "<tr align='center' class=" . $wclass . ">";
+							echo "<td align='center' >" . $fila[0] . "</td>"; //Habitación pac
+							echo "<td align='center' >" . $fila[1] . "-" . $fila[2] . "</td>"; //Historia pac
+							echo "<td align='center' >" . $fila[3] . "</td>"; //Name pac
+							echo "<td align='center' class=" . $clase_estado . " >" . $estado . "</td>"; //Estado
+							echo "<td align='center' >" . $pos_art[1] . "</td>"; //Articulo, Producto
+							echo "<td align='center' >" . $pos_art[7] . "</td>"; //Dosis
+							echo "<td align='center' >" . $pos_art[5] . "</td>"; //Via de administración
+							echo "<td align='center' >" . $pos_art[2] . "</td>"; //Frecuencia
+							echo "<td align='center' >" . $pos_art[3] . " <br>a las</br> " . $pos_art[4] . "</td>";	//Fecha y hora de inicio 
+							echo "<td align='center' >" . $pos_art[6] . "</td>"; //Obervación
+							echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir Sticker</td>"; //Imprimir
+							echo "</tr>";
+						}
+					} else {
+
+						// Condicional de la manera corta para asignar color a cada fila
+						$color_filas % 2 != 0 ? $wclass = 'fila1' : $wclass = 'fila2';
+
+						
+						if ($fila[18] == 'on') {
+							$estado = 'SUSPENDIDO';
+							$clase_estado = 'suspendido';
+							
+						}else{
+							$arrayActivos[$fila[1]]['activos'] = 1+$arrayActivos[$fila[1]]['activos'];
+								$estado = "";
+								$clase_estado = '';
+								if(($fila[19] >= $fila[23] && $fila[20] > $fila[24]) || ($fila[23] == '0000-00-00')){
+									
+									$estado = "NUEVO";
+									$clase_estado = 'nuevo';
+									$arrayActivos[$fila[1]]['nuevo'] = 1+$arrayActivos[$fila[1]]['nuevo'];
+								}
+								if(($fila[23] >= $fila[19] && $fila[24] > $fila[20]) && ($fila[23] >= $fila[21] && $fila[24] > $fila[22])){
+									//$estado = "IGUAL";
+									//$clase_estado = 'igual';
+									$arrayActivos[$fila[1]]['igual'] = 1+$arrayActivos[$fila[1]]['igual'];
+								}
+								if($fila[21] >= $fila[23] && $fila[22] > $fila[24]){
+									$estado = "MODIFICADO";
+									$clase_estado = 'modificado';
+									$arrayActivos[$fila[1]]['modificado'] = 1+$arrayActivos[$fila[1]]['modificado'];
+								}
+						}
+
+						//Pintamos los datos 
+						$dataPac = array(
+							"historia" => $fila[1],
+							"ingreso" => $fila[2],
+							"nombre" => $fila[3],
+							"fecha" => $fila[13],
+							"hora" => $fila[14],
+							"habitacion" => $fila[0],
+							"frecuencia" => $fila[12],
+							"articulo" => $fila[11],
+							"dosis" => $fila[17],
+							"via" => $fila[15]
+						);
+						echo "<tr align='center' class=" . $wclass . ">";
+						echo "<td align='center' >" . $fila[0] . "</td>"; //Habitación pac
+						echo "<td align='center' >" . $fila[1] . "-" . $fila[2] . "</td>"; //Historia pac
+						echo "<td align='center' >" . $fila[3] . "</td>"; //Name pac
+						echo "<td align='center' class=" . $clase_estado . " >" . $estado . "</td>"; //Estado
+						echo "<td align='center' >" . $fila[11] . "</td>"; //Articulo, Producto
+						echo "<td align='center' >" . $fila[17] . "</td>"; //Dosis
+						echo "<td align='center' >" . $fila[15] . "</td>"; //Via de administración
+						echo "<td align='center' >" . $fila[12] . "</td>"; //Frecuencia
+						echo "<td align='center' >" . $fila[13] . " <br>a las</br> " . $fila[14] . "</td>";	//Fecha y hora de inicio 
+						echo "<td align='center' >" . $fila[16] . "</td>"; //Obervación
+						echo "<td align='center' ><input type='checkbox' data-info='" . json_encode($dataPac) . "'/>&nbsp; Imprimir Sticker</td>"; //Imprimir
+						echo "</tr>";
+
+						$color_filas++; //Vamos incrementando
+					}
+				}
+				 // print_r($arrayActivos);
+				echo '<script type="text/javascript">';
+				
+				foreach ($arrayActivos as $key => $value) {
+					$estado = "estado_".$key;
+					//echo 'alert("'.$estado.'");';
+					if($value['nuevo'] != 0 && ($value['modificado'] == 0 || $value['modificado'] != 0) && ($value['igual'] == 0 || ($value['modificado'] == 0 || $value['igual'] != 0))){
+						echo '$("#'.$estado.'").html("NUEVO");'	;
+						echo '$("#'.$estado.'").addClass("nuevo");';
+					}elseif($value['igual'] != 0 && $value['modificado'] == 0){
+						//echo '$("#'.$estado.'").html("IGUAL");';
+						//echo '$("#'.$estado.'").addClass("igual");';	
+					}
+					elseif($value['modificado'] != 0 && value['nuevo'] == 0 ){
+
+						echo '$("#'.$estado.'").html("MODIFICADO");';
+						echo '$("#'.$estado.'").addClass("modificado");';
+					}
+					if($value['activos'] == 0){
+						echo 'var node = document.getElementById("'.$key.'");';
+						echo 'node.parentNode.removeChild(node);';
+					}
+				}
+				echo '</script>';
+			}
+		}
+	}
 
 include_once("free.php");
 //=======================================================================================================================================================
@@ -3627,3 +4529,5 @@ include_once("free.php");
 //=======================================================================================================================================================
 } // if de register
 ?>
+    
+</script>
