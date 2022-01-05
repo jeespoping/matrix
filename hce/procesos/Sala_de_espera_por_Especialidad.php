@@ -658,7 +658,7 @@ else
 //$wautor="Juan C. Hernandez M. ";
 //FECHA CREACION             : Febrero 15 de 2011
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="(Abril 1 de 2020)";
+  $wactualiz="(Diciembre 19 de 2021)";
  /* 
 //DESCRIPCION
 //==========================================================================================================================================\\
@@ -680,6 +680,10 @@ else
 	Se edita el option vacio, por solicitud de calidad (lady) ya que al seleccionar el vacio el paciente vuelve a quedar 
 	en la lista de pacientes en espera y se reinician los tiempos lo que implicaba que los indicadores de oportunidad
 	se ampliaran. jerson trujillo 2019-12-16
+ //==========================================================================================================================================\\
+ * 2021-12-19 Sebastián Nevado
+	Se hace modificacion para llevar las funciones esCirugia, y consultarCcoUrgencias a comun.
+ 
  //==========================================================================================================================================\\
  * 2020-04-01 Juan C. Hdez
 	Se hace modificacion para poder ver en la colomna genero medico, los pacientes COVID19.
@@ -1271,6 +1275,7 @@ function solicitarCamillero($centroCosto, $wemp_pmla, $whistoria){
 }
 
 // Función que permite consultar el código actual de el centro de costos de Urgencias
+// Se reemplaza por consultarCentrocoUrgencias y está en comun.php
 function consultarCcoUrgencias(){
 	
 	global $wbasedato;
@@ -1295,6 +1300,7 @@ function consultarCcoUrgencias(){
 }
 
 // Función que permite consultar el código actual de el centro de costos de Cirugia
+// Se reemplaza por consultarCcoCirugiaUnificada y está en comun.php
 function consultarCcoCirugia(){
 	
 	global $wbasedato;
@@ -1563,8 +1569,8 @@ function reasignarCubiculo($whce, $wbasedato, $whis, $wing, $wusuario, $wcubicul
 				//Verifica si el paciente es tiene conducta de traslado.	
 				if($row_con_pac['contra'] == 'on'){
 					
-					$codCcoCirugia = consultarCcoCirugia();
-					$codCcoUrgencias = consultarCcoUrgencias();
+					$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
+					$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato);
 					
 					//====================================
 					// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
@@ -2487,8 +2493,8 @@ function ponerConducta($whce, $wbasedato, $whis, $wing, $wusuario, $wconducta, $
 		//en proceso de traslado.
 		if($cond_nueva_traslado == 'on'){
 			
-			$codCcoCirugia = consultarCcoCirugia();
-			$codCcoUrgencias = consultarCcoUrgencias();
+			$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
+			$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato);
 			
 			//====================================
 			// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					

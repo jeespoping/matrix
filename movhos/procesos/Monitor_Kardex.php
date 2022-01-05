@@ -23,10 +23,8 @@ else
   $wfecha=date("Y-m-d");   
   $whora = (string)date("H:i:s");	                                                           
 
-  
-  
                                                    // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Mayo 21 de 2018";               // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz=" Diciembre 19 de 2021 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                               // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
             
 //=========================================================================================================================================\\
@@ -42,6 +40,12 @@ else
 //=========================================================================================================================================\\
 //=========================================================================================================================================\\
 //ACTUALIZACIONES
+//=========================================================================================================================================\\
+// Diciembre 19 de 2021 Marlon Osorio:
+// Se reemplaza la funcion consultarCcoOrigen por consultarCcoOrigenUnificado que esta en el comun.php
+//=========================================================================================================================================\\
+// Diciembre 19 de 2021 Marlon Osorio:
+// Se agrega el filtro por sede con la funcion consultarsedeFiltro() que está en el comun.php
 //=========================================================================================================================================\\
 // Mayo 21 de 2018	Jessica	
 // En la función consultarSiDAexiste() se agrega a la consulta el filtro con cenpro_000002 para saber si la dosis adaptada esta activa
@@ -1558,6 +1562,9 @@ else
 	/**********************************************************************************
 	 * Consulta código del centro de costos de origen
 	 **********************************************************************************/
+	/**
+	 * Se debe reemplazar la funcion consultarCcoOrigen por consultarCcoOrigenUnificado en el comun.php
+	 */
 	function consultarCcoOrigen( $conex, $wbasedato, $ori ){
 
 		$sql = "SELECT 
@@ -1748,7 +1755,7 @@ else
 	  global $wfecha;
 	  global $whora_par_actual;
 
-	  $wcco = consultarCcoOrigen( $conex, $wbasedato, $wori );
+	  $wcco = consultarCcoOrigenUnificado( $conex, $wbasedato, $wori );
 
 	  $info = consultarInfoTipoArticulos( $conex, $wbasedato );
 	  //$corteDispensacion = $info[ $kadpro ]['horaCaroteDispensacion'];
@@ -1836,6 +1843,14 @@ else
 	  $esOrdenes = false;
 	  
 	  
+		$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+		$sFiltroSede="";
+		if($estadosede=='on')
+		{
+			$codigoSede=consultarsedeFiltro();
+			$sFiltroSede=isset($codigoSede) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+
 	  switch ($wopcion)   
         {
 	     case ("1"):
@@ -1947,7 +1962,7 @@ else
 		          ."   AND  ccolac          != 'on') "
 		          ."    OR kadcco            = '*') "
 		          ."   AND kadori            = 'SF' "
-				  ."   AND karaut           != 'on' ";            //Busca que sea generado automaticamente
+				  ."   AND karaut           != 'on' {$sFiltroSede} ";            //Busca que sea generado automaticamente
 			  $res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 		      $wnum = mysql_num_rows($res1); 
 		      
@@ -2242,7 +2257,7 @@ else
 			  //Kardex con Articulo(s) de CENTRAL DE MEZCLAS ** Nuevos ** o de 1ra Vez Sin Aprobar
 			  //========================================================================================================================================================================
 			  $q= " SELECT kadcpx, kadpro, kadart, kadori "
-		          ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B "
+		          ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B, " . $wbasedato."_000011 " 
 		          ." WHERE kadhis        = '".$whis."'"
 		          ."   AND kading        = '".$wing."'"
 		          ."   AND kadfec        = '".$wfecha."'"       //Esto me valida que el Kardex sea del día
@@ -2259,11 +2274,11 @@ else
 				  //2015-11-25
 				  //no se tiene en cuenta los de CM que sean LEV
 				  //Esto para que no salga los pacientes que tienen articulos genericos LQ0000 e IC0000
-				  ."   AND A.kadlev		!= 'on' "
+				  ."   AND A.kadlev		!= 'on' {$sFiltroSede} "
 				  ." UNION "
 				  //Articulos marcados como Dosis Adaptada
 				  ." SELECT kadcpx, kadpro, kadart, kadori "
-		          ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B "
+		          ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B, " . $wbasedato."_000011 "
 		          ." WHERE kadhis        = '".$whis."'"
 		          ."   AND kading        = '".$wing."'"
 		          ."   AND kadfec        = '".$wfecha."'"       //Esto me valida que el Kardex sea del día
@@ -2273,11 +2288,11 @@ else
 				  ."   AND kaddoa        = 'on' "  //Campo que marca el articulo como dosis adaptada.
 				  ."   AND kadhis        = karhis "
 				  ."   AND kading        = karing "
-				  ."   AND karcco        = '*' "
+				  ."   AND karcco        = '*' {$sFiltroSede} "
 				  ." UNION "
 				  //Articulos marcados como NE (No enteral)
 				  ." SELECT kadcpx, kadpro, kadart, kadori "
-		          ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B "
+		          ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B, " . $wbasedato."_000011 "
 		          ." WHERE kadhis        = '".$whis."'"
 		          ."   AND kading        = '".$wing."'"
 		          ."   AND kadfec        = '".$wfecha."'"       //Esto me valida que el Kardex sea del día
@@ -2287,11 +2302,11 @@ else
 				  ."   AND kadnes        = 'on' "  //Campo que marca el articulo como dosis adaptada.
 				  ."   AND kadhis        = karhis "
 				  ."   AND kading        = karing "
-				  ."   AND karcco        = '*' "
+				  ."   AND karcco        = '*' {$sFiltroSede} "
 				  ." UNION "
 				  //Articulos que son antibióticos nuevos
 				  ." SELECT kadcpx, kadpro, kadart, kadori "
-		          ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B, ".$wbasedato."_000026 C "
+		          ."  FROM ".$wbasedato."_000054 A, ".$wbasedato."_000053 B, ".$wbasedato."_000026 C, " . $wbasedato."_000011 "
 		          ." WHERE kadhis        = '".$whis."'"
 		          ."   AND kading        = '".$wing."'"
 		          ."   AND kadfec        = '".$wfecha."'"       //Esto me valida que el Kardex sea del día
@@ -2305,7 +2320,7 @@ else
 				  // ."   AND Kadlog        = Logcod "
 				  // ."   AND Logsus        != 'on' "
 				  ."   AND kadfec        = A.fecha_data "
-				  ."   AND SUBSTRING( Artgru, 1, LOCATE( '-', Artgru )-1 ) IN ( $gpAntibioticos ) ";
+				  ."   AND SUBSTRING( Artgru, 1, LOCATE( '-', Artgru )-1 ) IN ( $gpAntibioticos ) {$sFiltroSede} ";
 				    
 				// echo "<pre>".print_r($q,true)."</pre>" ;
 		      $res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -2624,7 +2639,13 @@ else
 
   <?php
   
-		                                                                                                       
+$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+$sFiltroSede="";
+if($estadosede=='on')
+{	  
+	$codigoSede=consultarsedeFiltro();
+	$sFiltroSede=isset($codigoSede) ? " AND Ccosed = '{$codigoSede}' " : "";
+}		                                                                                                       
   $q = " SELECT empdes "
       ."   FROM root_000050 "
       ."  WHERE empcod = '".$wemp_pmla."'"
@@ -2818,7 +2839,7 @@ else
 			      ."    AND ubiing  = kading "
 			      ."    AND kadfec  = '".$wfecha."'"     //HOY
 			      ."    AND kadart  = artcod "
-			      ."    AND artpos  = 'N' "
+			      ."    AND artpos  = 'N' {$sFiltroSede} "
 			      ."  GROUP BY 1,2,3,4,5,6,7,8,9 "
 			      
 	              ."  UNION "
@@ -2841,7 +2862,7 @@ else
 			      ."    AND ubiing  = kading "
 			      ."    AND kadfec  = '".$wayer."'"      //AYER
 			      ."    AND kadart  = artcod "
-			      ."    AND artpos  = 'N' "
+			      ."    AND artpos  = 'N' {$sFiltroSede} "
 			      ."  GROUP BY 1,2,3,4,5,6,7,8,9 "; 
 			  $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 			  
@@ -2869,8 +2890,8 @@ else
 					  ."  WHERE ubiald != 'on' "			 //Que no este en Alta Definitiva
 					  ."    AND ubisac  = ccocod "
 					  ."    AND ccodom  = 'on' "             //Que el CC sea domiciliario
-					  ."    AND ubihis != '' "
-					  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 ";
+					  ."    AND ubihis != '' {$sFiltroSede} "
+					  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10  ";
 			  }
 			  else{
 				  
@@ -2891,7 +2912,7 @@ else
 					  ."    AND ubiing  = eyring "             
 					  ."    AND eyrsde  = ccocod "
 					  ."    AND eyrtip  = 'Recibo' "
-					  ."    AND eyrest  = 'on' "
+					  ."    AND eyrest  = 'on' {$sFiltroSede} "
 					  //."    AND ccocpx != 'on' "              //CICLOS de Producción 'OFF'
 					  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
 					  ."  UNION ALL "
@@ -2922,7 +2943,7 @@ else
 					  ."    AND kadpro  = tarcod "
 					  ."    AND tarpdx  = 'off' "            //Tipo de Articulo no se produce en ciclos osea, que son de dispensacion
 					  ."    AND kadart  NOT IN ( SELECT artcod FROM ".$wcenmez."_000002 WHERE artcod = kadart) "
-					  ."    AND kadper  = percod "
+					  ."    AND kadper  = percod {$sFiltroSede} "
 					  ."  GROUP BY 1,2,3,4,5,6,7,8,9,10 "
 					  
 					   ."  UNION "
@@ -2939,7 +2960,7 @@ else
 					  ."    AND kadfec  = '".$wfecha."'"      //Hoy
 					  ."    AND kadart  = artcod "
 					  ."	AND ubisac  = ccocod "
-					  ."	AND ccourg  != 'off'"
+					  ."	AND ccourg  != 'off' {$sFiltroSede} "
 					  ."  GROUP BY 1,2,3,4,5,6,7,8,9 ";
 					$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 					 // echo "<pre>".print_r($q,true)."</pre>";

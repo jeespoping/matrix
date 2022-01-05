@@ -4,6 +4,7 @@ define('MYSQL_ASSOC',MYSQLI_ASSOC);
 //header("Content-Type: text/html;charset=UTF8");
 /****************************************************************************
 * accion
+2021-12-19 Sebastián Nevado: se cambia la función verificarCcoIngresoAyuda.
 2021-04-26 Juan David Rodriguez: Se separa codigo js y funciones de php en archivos por separados para una mejor comprensión del codigo (js_admisiones_erp.js y funciones_admsiones_erp.php)
 2021-04-26 Juan David Rodriguez: Se realiza modifición para que los datos demograficos de un paciente sean traidos desde la tabla root_000036 y no de la tabla 100 de cada empresa
 2020-09-03 Jessica Madrid Mejía: Para los pacientes con tipo de documento configurado en el parámetro tipoDocumentoPacienteInternacional en root_000051 se envía correo notificando que son pacientes internacionales al hacer 
@@ -2721,7 +2722,7 @@ if (isset($accion) and $accion == 'guardarDatos'){
 	$aplMovhos    = consultarAplicacion2($conex,$wemp_pmla,"movhos");
 	$servicioIng1 = explode("-",$ing_seisel_serv_ing);
 	$servicioIng  = $servicioIng1[1];
-	$ccoIngresoAyuda = verificarCcoIngresoAyuda( $servicioIng );
+	$ccoIngresoAyuda = verificarCcoIngresoAyudaUnificada( $servicioIng, $aplMovhos );
 	if( $ccoIngresoAyuda && $modoConsulta != "true" ){//--> 2016-12-27 inserts de alta automática para ayudas diagnósticas.
 
 		// Si el paciente a estado antes en el servicio para el mismo ingreso, traigo cuantas veces para sumarle una
@@ -6569,7 +6570,7 @@ if(isset($accion) and $accion == 'anularAdmision')
 					  AND ingnin = '{$ingreso}'";
 		$resMov = mysql_query( $query, $conex ) or ( $data[ 'mensaje' ] = mysql_errno()." - Error en el query $sqlMov - ".mysql_error() );
 		$row = mysql_fetch_array($resMov);
-		$ccoAyuda = verificarCcoIngresoAyuda( $row[0] );
+		$ccoAyuda = verificarCcoIngresoAyudaUnificada( $row[0], $aplMovhos );
 
 		if( $ccoAyuda ){
 			$query = "DELETE
@@ -9193,7 +9194,7 @@ if(isset($accion) and $accion == 'solicitarCambioDocumento'){
 
 $conex = obtenerConexionBD("matrix");
 
-$wactualiz="2020-09-03";
+$wactualiz="2021-12-19";
 
 if( !isset($wemp_pmla) ){
 	terminarEjecucion($MSJ_ERROR_FALTA_PARAMETRO."wemp_pmla");
