@@ -1,5 +1,29 @@
 <html>
 <head>
+    <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
+    <link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css">
+     <!-- PNotify -->
+    <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+    <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.brighttheme.css" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/ui.core.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/ui.tabs.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/ui.draggable.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery.blockUI.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery.dimensions.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery.tooltip.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery.simple.tree.js"></script>
+    <script type="text/javascript" src="../../../include/root/jqueryalert.js?v=<?=md5_file('../../../include/root/jqueryalert.js');?>"></script>
+    <!-- PNotify -->
+    <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.js" type="text/rocketscript"></script>
+    <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.buttons.js" type="text/rocketscript"></script>
+    <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.nonblock.js" type="text/rocketscript"></script>
+
     <title>MATRIX Listas Para Altas</title>
     <!-- UTF-8 is the recommended encoding for your pages -->
 
@@ -106,61 +130,63 @@
       top.close()
      }
 
-    function realizarEnServicio( historia, ingreso ){
-	
-	    var msg = "Existen cargos en un estado diferente a Procesado, desea consultar en Unix?";
-	
-        function consultarUnix( resp ){
-            
-            $.post("Listas.php",
-                {
-                    consultaAjax		: '',
-                    wemp_pmla			: $("#wemp_pmla").val(),
-                    whistoria			: historia,
-                    wingreso			: ingreso,
-                    wusuario		  	: $('#user').val(),
-                }
-                ,function(data) {
-                    console.log(data);
-                },"json" );
-        }
-	
-        $( "<div style='color: black;font-size:12pt;height: 250px;' title='CONSULTA EN UNIX' class='dvModalAltas'>"+msg+"</div>" ).dialog({
-            width		: 700,
-            height		: 350,
-            modal		: true,
-            resizable	: false,
-            buttons	: {
-                "Si": function() {
-                        cmp.checked = false;
-                        cmp.value = 'on';
-                        consultarUnix( 'on' );
-                        $( this ).dialog( "close" );
-                        $( cmp ).css({display:""});
-                    },
-                "No": function() {
-                        cmp.checked = true;
-                        cmp.value = 'off';
-                        consultarUnix( 'off' );
-                        $( __self ).dialog( "close" );
-                        $( cmp ).css({display:"none"});
-                    },
-                "Cancelar": function() {
-                        cmp.checked = false;
-                        cmp.value = '';
-                        $( this ).dialog( "close" );
-                    },
-            },
-        });
-	
-        $( ".dvModalAltas" ).parent().css({
-            left: ( $( window ).width() - 700 )/2,
-            top : ( $( window ).height() - 350 )/2,
-        });
+    function modalAltas( cmp, estadoCargos ){
+
+        if( estadoCargos )
+        {
+
+            var msg = "Existen cargos en un estado diferente a Procesado, desea consultar en Unix?";
         
-        $( ".ui-dialog-titlebar-close" ).css({
-            display : "none",
-        });
+            function consultarUnix( resp ){
+                
+                $.post("Listas.php",
+                    {
+                        wemp_pmla			: $("#wemp_pmla").val(),
+                        respuestaUsuario    : resp,
+                        modal               : true
+                    }
+                    ,function(data) {
+                        console.log(data);
+                    },"json" );
+            }
+        
+            $( "<div style='color: black;font-size:12pt;height: 250px;' title='CONSULTA EN UNIX' class='dvModalAltas'>"+msg+"</div>" ).dialog({
+                width		: 550,
+                height		: 100,
+                modal		: true,
+                resizable	: false,
+                buttons	: {
+                    "Si": function() {
+                            cmp.checked = false;
+                            cmp.value = 'on';
+                            consultarUnix( true );
+                            $( this ).dialog( "close" );
+                            $( cmp ).css({display:""});
+                        },
+                    "No": function() {
+                            cmp.checked = true;
+                            cmp.value = 'off';
+                            consultarUnix( false );
+                            $( this ).dialog( "close" );
+                            $( cmp ).css({display:"none"});
+                        },
+                    "Cancelar": function() {
+                            cmp.checked = false;
+                            cmp.value = '';
+                            $( this ).dialog( "close" );
+                        },
+                },
+            });
+        
+            $( ".dvModalAltas" ).parent().css({
+                left: ( $( window ).width() - 550 )/2,
+                top : ( $( window ).height() - 100 )/2,
+            });
+        }
+        else
+        {
+            document.forms.listas.submit();
+        }
     }
 
 </script>
@@ -692,7 +718,29 @@ function resolverCargos( $his, $ing, $user, $obs ){
 
 }
 
-function validar_medins($conex,$whis,$wnin, $wcontrol)
+function validarCargosDiferenteProcesado($conex,$whis,$wnin)
+{
+    global $empresa;
+
+    $query = "SELECT * FROM ".$empresa."_000002
+	    WHERE Fenhis = '".$whis."'
+	    AND Fening = ".$wnin." 
+	    AND ( Fenues <> 'P' OR (Fenues='P' and Fecha_data='".date('Y-m-d')."') )
+	    AND Fenest =  'on'
+	    ORDER BY Fencco, Fecha_data";
+
+    $err=mysql_query($query,$conex);
+    $num=@mysql_num_rows($err);
+
+    if($num > 0){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+function validar_medins($conex,$whis,$wnin, $wcontrol, $respuestaUsuario)
 {
     global $empresa;
     global $conex_o;
@@ -707,7 +755,7 @@ function validar_medins($conex,$whis,$wnin, $wcontrol)
 
     $bd=$empresa;
     connectOdbc($conex_o, "inventarios");
-    actualizacionDetalleRegistros ($pac, $array);
+    actualizacionDetalleRegistros ($pac, $array, $respuestaUsuario );
     $query = "select sum((spamen + spauen) - (spamsa + spausa)) ";	//Mayo 2 de 2013
     $query .= " from ".$empresa."_000004 ";
     $query .= " where spahis = '".$whis."'";
@@ -915,7 +963,7 @@ else
             else
             {
                 echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
-                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=99&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wcco=".$wcco."&wlogo=".$wlogo."'>";
+                // echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=99&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wcco=".$wcco."&wlogo=".$wlogo."'>";
 
                 encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica");
 
@@ -1033,8 +1081,8 @@ else
                 $query .= " where cuegdf = 'on'  ";
                 $query .= " and Cuehis = ubihis  ";
                 $query .= " and Cueing = ubiing  ";
-            //  $query .= " and ubiald = 'off'  ";
-            //  $query .= " and ubialp = 'on'  ";
+                // $query .= " and ubiald = 'off'  ";
+                //  $query .= " and ubialp = 'on'  ";
                 $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
                 $query .= " and ubihis = orihis  ";
                 $query .= " and ubiing = oriing  ";
@@ -1172,11 +1220,20 @@ else
                                 $wporfacturar[$i] = '';
                             }
 
-                    if(isset($wval[$i]))
+                        $estadoCargos = validarCargosDiferenteProcesado($conex,$row[0],$row[1]);
+                        if(isset($wval[$i]))
                         {
 
                             $wres=array();
-                            $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i]);
+                            $respuestaUsuario = true;
+
+                            if( $estadoCargos && !$modal )
+                            {
+                                echo "<script type='text/javascript'> modalAltas(this) </script>";
+                                $respuestaUsuario = $_POST['respuestaUsuario'];
+                            }
+
+                            $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i], $respuestaUsuario);
 
                             switch ($resultado)
                             {
@@ -1298,11 +1355,11 @@ else
                             if(isset($wres[$i]) and isset($wporfacturar[$i])) //Si estan declaradas las dos variables se mostrará esta opción.
                             {
 
-                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='enter()'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
+                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
                             }
                             else{
                                 echo "<tr>";
-                                echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='enter()'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
+                                echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
                                 echo "</td></tr>";
                             }
                         }
