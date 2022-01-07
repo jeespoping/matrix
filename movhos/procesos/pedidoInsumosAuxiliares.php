@@ -11,7 +11,8 @@ include_once("conex.php");
 //AUTOR:				Jessica Madrid Mejía
 //FECHA DE CREACION: 	2017-06-30
 //--------------------------------------------------------------------------------------------------------------------------------------------
-//                  ACTUALIZACIONES   
+//                  ACTUALIZACIONES
+// Diciembre 18 de 2021		Sebastián Nevado - Se corrige problema con ayudas diagnosticas que guardaba el nombre del paciente en la historia.
 // Septiembre 2 de 2021		Joel PH		- Se modifica programa para mostrar los pacientes del botiquin de Hemodinamia, centro de costo 2503,
 //										  este centro de costos no tiene tabla de citas, por lo cual se realiza una modificación en el código
 //										  para que obtenga los pacientes del piso o servicio y los liste en el programa. Se debe tener en cuenta
@@ -61,7 +62,7 @@ include_once("conex.php");
 // Julio 5 de 2017.			Edwin MG.	SE muestra los insumos que tengan saldo o permitan negativos.
 //										Al momento de dar clic sobre el boton de realizar pedido, se bloquea para no dar clic dos veces sobre el.
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2021-09-02';
+			$wactualiz='2021-12-15';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //                
 //
@@ -566,7 +567,7 @@ else
 				$queryHabitaciones = "SELECT * FROM
 						(SELECT Ubisac as Habcco, Habcod, Habhis, Habing,
 									CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
-									Ubialp, Ubifap, Ubihap, pacced, pactid, '1' as ordenes, Habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '2' as orden
+									Ubialp, Ubifap, Ubihap, Pacced, Pactid, '1' as ordenes, Habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '2' as orden
 						   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016, ".$tablaHabitaciones."
 						  WHERE ubiald = 'off'
 							AND Ccocir != 'on'
@@ -585,7 +586,7 @@ else
 							UNION
 						SELECT Ubisac as Habcco, (SELECT Cconom FROM ".$wbasedato."_000011 WHERE Ccocod = Ubisac) as Habcod, ubihis as Habhis, ubiing as Habing,
 									CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
-									Ubialp, Ubifap, Ubihap, pacced, pactid, '1' as ordenes,'2000' as habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '1' as orden
+									Ubialp, Ubifap, Ubihap, Pacced, Pactid, '1' as ordenes,'2000' as Habord, Ingres, Ingnre, tabla18.Fecha_data as 18_fecha_data, tabla18.Hora_data as 18_hora_data, tabla18.id as id_tabla18, Ubisan, '1' as orden
 						   FROM ".$wbasedato."_000018 as tabla18, ".$wbasedato."_000011, root_000037, root_000036,".$wbasedato."_000016
 						  WHERE ubiald = 'off'
 							AND ubisac = Ccocod
@@ -619,7 +620,7 @@ else
 					return "El campo número tabla citas no existe &oacute; est&aacute; vac&iacute;o, en la tabla servicios o centros de costos!";
 				}
 
-				$queryHabitaciones =  "SELECT ".$tipoDocumento.",".$numeroDocumento.",CONCAT_WS(' ',Pacno1,Pacno2,Pacap1,Pacap2) AS nombre,Ubihis,Ubiing
+				$queryHabitaciones =  "SELECT ".$tipoDocumento." AS Pactid,".$numeroDocumento." AS Pacced,CONCAT_WS(' ',Pacno1,Pacno2,Pacap1,Pacap2) AS Nombre,Ubihis AS Habhis,Ubiing AS Habing
 										FROM ".$tablaAyudasDiagnosticas." a,".$tablaTurnero." b,".$wbasedatoCliame."_000100,".$wbasedatoCliame."_000101,".$wbasedato."_000018
 										WHERE Fecha='".date("Y-m-d")."' 
 										AND Activo='A' 
@@ -680,11 +681,11 @@ else
 			{
 				if($ccoTipo=="ayudaDiagnostica")
 				{
-					$historia = $rowHabitaciones[2];
-					$ingreso = $rowHabitaciones[3];
+					$historia = $rowHabitaciones['Habhis'];
+					$ingreso = $rowHabitaciones['Habing'];
 					
 					// si no tiene historia e ingreso es porque es de chequeo ejecutivo
-					if( $rowHabitaciones[2]=="" && $rowHabitaciones[3]=="" )
+					if( $rowHabitaciones['Habhis']=="" && $rowHabitaciones['Habing']=="" )
 					{
 						$historia = $rowHabitaciones['Ubihis'];
 						$ingreso = $rowHabitaciones['Ubiing'];
@@ -698,8 +699,8 @@ else
 						$pacientes[$habitacion]['ingreso'] = $ingreso;
 						$pacientes[$habitacion]['habitacion'] = $habitacion;
 						$pacientes[$habitacion]['descHabitacion'] = $habitacion;
-						$pacientes[$habitacion]['tipoDocumento'] = $rowHabitaciones[11];
-						$pacientes[$habitacion]['documento'] = $rowHabitaciones[10];
+						$pacientes[$habitacion]['tipoDocumento'] = $rowHabitaciones['Pactid'];
+						$pacientes[$habitacion]['documento'] = $rowHabitaciones['Pacced'];
 						$pacientes[$habitacion]['nombre'] = $rowHabitaciones['Nombre'];
 						$pacientes[$habitacion]['consultaUrgencias'] = "";
 					}
@@ -723,6 +724,10 @@ else
 					$pacientes[$habitacion]['consultaUrgencias'] = $rowHabitaciones['Mtrcur'];
 				}				
 			}
+		}
+		else
+		{
+			$pacientes = "No se tienen pacientes";
 		}
 
 		return $pacientes;
