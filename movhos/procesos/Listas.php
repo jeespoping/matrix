@@ -130,7 +130,7 @@
       top.close()
      }
 
-    function modalAltas( cmp, estadoCargos ){
+    function modalAltas( cmp, estadoCargos, posicion ){
 
         if( estadoCargos )
         {
@@ -138,12 +138,17 @@
             var msg = "Existen cargos en un estado diferente a Procesado, desea consultar en Unix?";
         
             function consultarUnix( resp ){
-                
+                var wemp_pmla = $("#wemp_pmla").val();
+                var ok = $("#ok").val();
+                var wcco = $("#wcco").val();
                 $.post("Listas.php",
                     {
-                        wemp_pmla			: $("#wemp_pmla").val(),
+                        wemp_pmla			: wemp_pmla,
+                        ok                  : ok,
+                        wcco                : wcco,
                         respuestaUsuario    : resp,
-                        modal               : true
+                        modal               : true,
+                        posicion            : posicion
                     }
                     ,function(data) {
                         console.log(data);
@@ -717,7 +722,15 @@ function resolverCargos( $his, $ing, $user, $obs ){
     }
 
 }
-
+/**
+ * Esta función verifica si hay cargos con estado diferente a procesado
+ * @param string $conex : Conexión
+ * @param string $whis : Historia
+ * @param string $wnin : Ingreso
+ * 
+ * @return true Si hay cargos con estado diferente a procesado
+ * @return false Si no hay cargos con estado diferente a procesado
+ */
 function validarCargosDiferenteProcesado($conex,$whis,$wnin)
 {
     global $empresa;
@@ -905,9 +918,11 @@ else
 
     echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
     echo "<center><input type='HIDDEN' name= 'wbasedato' value='".$empresa."'>";
-    echo "<center><input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
+    echo "<center><input type='HIDDEN' id='wemp_pmla' name= 'wemp_pmla' value='".$wemp_pmla."'>";
     echo "<input type='HIDDEN' name= 'codemp' value='".$wemp_pmla."'>";
     echo "<input type='HIDDEN' name= 'wlogo' value='".$wlogo."'>";
+    echo "<input type='HIDDEN' id = 'ok' name= 'ok' value='".$ok."'>";
+    echo "<input type='HIDDEN' id = 'wcco' name= 'wcco' value='".$wcco."'>";
 
     switch ($ok)
     {
@@ -1046,7 +1061,7 @@ else
                 $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
                 $query .= " and ubihis = orihis  ";
                 $query .= " and ubiing = oriing  ";
-                $query .= " and oriori = '".$codemp."'  ";
+                $query .= " and oriori = '".$wemp_pmla."'  ";
                 $query .= " and oriced = pacced  ";
                 $query .= " and oritid = pactid  ";
                 $query .= " and ubisac = costosyp_000005.ccocod  ";
@@ -1064,7 +1079,7 @@ else
                 $query .= " and ubiing Not in (Select Cueing from ".$empresa."_000022 where Cuehis = ubihis and Cueing = ubiing)  ";
                 $query .= " and ubihis = orihis  ";
                 $query .= " and ubiing = oriing  ";
-                $query .= " and oriori = '".$codemp."'  ";
+                $query .= " and oriori = '".$wemp_pmla."'  ";
                 $query .= " and oriced = pacced  ";
                 $query .= " and oritid = pactid  ";
                 $query .= " and ubisac = costosyp_000005.ccocod  ";
@@ -1086,7 +1101,7 @@ else
                 $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
                 $query .= " and ubihis = orihis  ";
                 $query .= " and ubiing = oriing  ";
-                $query .= " and oriori = '".$codemp."'  ";
+                $query .= " and oriori = '".$wemp_pmla."'  ";
                 $query .= " and oriced = pacced  ";
                 $query .= " and oritid = pactid  ";
                 $query .= " and ubisac = costosyp_000005.ccocod  ";
@@ -1197,13 +1212,13 @@ else
 
 
                         //No permite facturar si hay algun dato por facturar desde las 7 AM hasta las 10 PM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
-                        if (($whora > $wformatohorainicial or $whora < $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
+                        if (($whora > $wformatohorainicial or $whora < $wformatohorafinal) and $wcontrol[$i] > 0 and isset($posicion))
                             {
                                 $wporfacturar[$i] = "<hr>FALTA GRABAR ".$wmsgglucos.$wmsginsumos.$wmsgnebus.$wmsgoxigenos.$wmsgtransfusiones.$wmsgevoluciones.$wmsginsumosenferm;
                             }
                             //Muestra el mensaje de validacion de elementos pendientes y permite facturar si hay algun elemento por facturar desde
                             //las 10 PM hasta las 9 AM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
-                        if(($whora < $wformatohorainicial or $whora > $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
+                        if(($whora < $wformatohorainicial or $whora > $wformatohorafinal) and $wcontrol[$i] > 0 and isset($posicion))
                             {
 
                                 $wporfacturar1 =  str_replace('<hr>','',$wporfacturar[$i]);  //Quita el hr para el horario de la noche.
@@ -1221,17 +1236,11 @@ else
                             }
 
                         $estadoCargos = validarCargosDiferenteProcesado($conex,$row[0],$row[1]);
-                        if(isset($wval[$i]))
+                        if(isset($posicion))
                         {
 
                             $wres=array();
                             $respuestaUsuario = true;
-
-                            if( $estadoCargos && !$modal )
-                            {
-                                echo "<script type='text/javascript'> modalAltas(this) </script>";
-                                $respuestaUsuario = $_POST['respuestaUsuario'];
-                            }
 
                             $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i], $respuestaUsuario);
 
@@ -1329,7 +1338,7 @@ else
                                 else{
                                     $class="";
                                 }
-                            //  <input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6>
+                                //  <input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6>
                                 echo "<tr $class>
                                 <td $class id=".$tipo.">".$row[0]."</td>
                                 <td $class id=".$tipo.">".$row[1]."</td>
@@ -1342,8 +1351,8 @@ else
                                 <td $class id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3></textarea></td>
                                 <td $class id=".$tipoA.">";
 
-                            //  if( $row[20] == 'off')
-                                //  echo "<input type='RADIO' name='wf[".$i."]' value=1 onclick='enter()'>Pagar <input type='RADIO' name='wf[".$i."]' value=2 onclick='enter()'>Sin Pago";
+                                //  if( $row[20] == 'off')
+                                    //  echo "<input type='RADIO' name='wf[".$i."]' value=1 onclick='enter()'>Pagar <input type='RADIO' name='wf[".$i."]' value=2 onclick='enter()'>Sin Pago";
 
                                 if( $row[19] == "on" ){
                                     echo "<INPUT type='radio' name='resolver[$i]' onclick='javascript: resolverCargo( {$wdata[$i][0]}, {$wdata[$i][1]});'> Resuelto";
@@ -1355,11 +1364,11 @@ else
                             if(isset($wres[$i]) and isset($wporfacturar[$i])) //Si estan declaradas las dos variables se mostrará esta opción.
                             {
 
-                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
+                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$i.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
                             }
                             else{
                                 echo "<tr>";
-                                echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
+                                echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$i.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
                                 echo "</td></tr>";
                             }
                         }
@@ -1450,7 +1459,7 @@ else
             //$query .= " and ubiald = 'off'  ";
             $query .= " and ubihis = orihis  ";
             $query .= " and ubiing = oriing  ";
-            $query .= " and oriori = '".$codemp."'  ";
+            $query .= " and oriori = '".$wemp_pmla."'  ";
             $query .= " and oriced = pacced  ";
             $query .= " and oritid = pactid  ";
             $query .= " and ubisac = ccocod  ";
@@ -1507,7 +1516,7 @@ else
                     echo "<input type='HIDDEN' name= 'wdata[".$i."][2]' value='".$wdata[$i][2]."'>";
                     echo "<input type='HIDDEN' name= 'wdata[".$i."][3]' value='".$wdata[$i][3]."'>";
                     echo "<input type='HIDDEN' name= 'num' value='".$num."'>";
-                    $path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+                    $path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
                     echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$row[3]."</td><td id=".$tipo.">".$row[2]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[17]."</td><td id=".$tipo."><input type='checkbox' name='wf[".$i."]' onclick='enter()'></td><td id=".$tipo.">".$Pago."</td></tr>";
                 }
             }
@@ -1548,7 +1557,7 @@ else
             else
             {
                 echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
-                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=97&wemp_pmla=".$codemp."&empresa=".$empresa."&codemp=".$codemp."&wcco=".$wcco."&wlogo=".$wlogo."'>";
+                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=97&wemp_pmla=".$wemp_pmla."&empresa=".$empresa."&codemp=".$codemp."&wcco=".$wcco."&wlogo=".$wlogo."'>";
 
                 encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica");
                 echo "<table border=0 align=center id=tipo5>";
@@ -1615,7 +1624,7 @@ else
                 $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
                 $query .= " and ubihis = orihis  ";
                 $query .= " and ubiing = oriing  ";
-                $query .= " and oriori = '".$codemp."'  ";
+                $query .= " and oriori = '".$wemp_pmla."'  ";
                 $query .= " and oriced = pacced  ";
                 $query .= " and oritid = pactid  ";
                 $query .= " and ubisac = ccocod  ";
@@ -1656,7 +1665,7 @@ else
                             $tipo="tipo13";
                         }
                         $nombre=$row[4]." ".$row[5]." ".$row[6]." ".$row[7];
-                        $path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+                        $path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
                         echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[17]."</td></tr>";
                     }
                 }
