@@ -23,6 +23,7 @@ include_once("conex.php");
 
 /************************************************************************************************************************
  * Modificaciones
+ * Noviembre 11 de 2021	Sebastián Nevado	- Se agregan filtros de interoperabilidad con la tabla de tipos de exámenes (hce15) con interoperabilidad encendido (Tipiws en on).
  * Agosto 13 de 2020	Edwin 		- Se permite ordenar cups buscando por codigo CUP
  * Agosto 05 de 2020	Edwin 		- Si un paciente está con traslado temporal en hemodinamia, en el mensaje HL7 enviado a laboratorio se manda la habitación dónde se encuentra
  *									- Se cambia el nombre del archivo que se crea en el ftp para los mensajes hl7 con la interoperabilidad de laboratorio, agregando a la fecha, 
@@ -1262,9 +1263,10 @@ function enviarHL7FaltantesPorHistoria( $conex, $wemp_pmla, $wmovhos, $whce, $us
 		$tipoOrdenHiruko[] = $rowsH['Sedtor'];
 	}
 	
+	//Agregar inner join con hce15, y filtro Tipiws en on
 	//Consulto si existe cups ofertados por tipo de orden
 	$sql = "SELECT a.habcod, a.habhis, a.habing, c.Dettor
-			  FROM ".$wmovhos."_000020 a, ".$whce."_000027 b, ".$whce."_000028 c, ".$whce."_000047 d
+			  FROM ".$wmovhos."_000020 a, ".$whce."_000027 b, ".$whce."_000028 c, ".$whce."_000047 d, ".$whce."_000015 e
 			 WHERE a.habhis  = b.ordhis
 			   AND a.habing  = b.ording
 			   AND c.dettor  = b.ordtor
@@ -1277,6 +1279,8 @@ function enviarHL7FaltantesPorHistoria( $conex, $wemp_pmla, $wmovhos, $whce, $us
 			   AND d.codcups!= ''
 			   AND a.habhis = '".$his."'
 			   AND a.habing = '".$ing."'
+			   AND c.Dettor = e.Codigo
+			   AND e.Tipiws = 'on'
 		  GROUP BY 1,2,3,4
 			 ";
 	
@@ -1343,7 +1347,7 @@ function cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, 
 	
 	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 	
-	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	if( $hayInteroperabilidad && $cupOfertado )
@@ -1455,7 +1459,7 @@ function marcarRealizadoEnPiso( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro,
 	
 	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 	
-	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	// $detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
@@ -1567,7 +1571,7 @@ function enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $to
 	
 	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 	
-	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
@@ -1956,9 +1960,10 @@ function enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $u
 		$tipoOrdenHiruko[] = $rowsH['Sedtor'];
 	}
 	
+	//Agregar inner join con hce15, y filtro Tipiws en on
 	//Consulto si existe cups ofertados por tipo de orden
 	$sql = "SELECT a.habcod, a.habhis, a.habing, c.Dettor
-			  FROM ".$wmovhos."_000020 a, ".$whce."_000027 b, ".$whce."_000028 c, ".$whce."_000047 d
+			  FROM ".$wmovhos."_000020 a, ".$whce."_000027 b, ".$whce."_000028 c, ".$whce."_000047 d, ".$whce."_000015 e
 			 WHERE a.habhis  = b.ordhis
 			   AND a.habing  = b.ording
 			   AND c.dettor  = b.ordtor
@@ -1970,6 +1975,8 @@ function enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $u
 			   AND d.codcups!= ''
 			   AND ( c.fecha_data < '".date("Y-m-d")."' 
 			    OR ( c.fecha_data = '".date("Y-m-d")."' AND c.hora_data <= '".date("H:i:s", time()-10*60 )."') )
+				AND c.Dettor = e.Codigo 
+				AND e.Tipiws = 'on'
 		  GROUP BY 1,2,3,4
 			 ";
 	
@@ -2003,10 +2010,11 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 				
 	$ids = [];
 	
+	//Agregar inner join con hce15, y filtro Tipiws en on. Preguntar si de una de estas tablas me puedo conectar a hce15
 	// AND a.Ordfec = '".date("Y-m-d")."'
 	//En este caso se debe procesar las ordenes cuyo tipo de orden se encuentran en las sedes de Hiruko (movhos 264)
 	$sql = "SELECT a.*
-			  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$wbasedato."_000264 c
+			  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$wbasedato."_000264 c, ".$whce."_000015 e
 			 WHERE a.Ordhis = '".$historia."'
 			   AND a.Ording = '".$ingreso."'
 			   AND a.Ordest = 'on'
@@ -2014,6 +2022,8 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 			   AND a.Ordnro = b.Detnro
 			   AND b.Detenv = 'on'
 			   AND c.Sedtor = a.Ordtor
+			   AND b.Dettor = e.Codigo
+			   AND e.Tipiws = 'on'
 		 GROUP BY Ordtor, Ordnro
 			   ";
 	
@@ -2177,7 +2187,7 @@ function tomarMuestrasDesdeGestion( $conex, $whce, $wmovhos, $tor, $nro, $item, 
 	
 	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 	
-	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
@@ -2369,7 +2379,7 @@ function ccoRealizaEstudios( $conex, $wbasedato, $cco ){
 	return $val;
 }
  
-function hayInteroperabilidadPorTipoDeOrden( $conex, $wbasedato, $tor ){
+function hayInteroperabilidadPorTipoDeOrden( $conex, $wbasedato, $tor, $whce ){
 		
 	$val = false;
 	
@@ -2377,8 +2387,10 @@ function hayInteroperabilidadPorTipoDeOrden( $conex, $wbasedato, $tor ){
 	//o en la tabla de tipos ofertados (movhos_000267 para laboratorio)
 	$sql = "SELECT Valtor
 			  FROM ".$wbasedato."_000267 a
-			 WHERE Valtor = '".$tor."'
-			   AND Valest = 'on'
+			  INNER JOIN ".$whce."_000015 b ON (a.Valtor = b.Codigo)
+			 WHERE a.Valtor = '".$tor."'
+			   AND a.Valest = 'on'
+			   AND b.Tipiws = 'on'
 			";
 			
 	$res = mysql_query( $sql, $conex )  or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -15154,6 +15166,7 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 			
 	$sql = "SELECT *
 			  FROM ".$whce."_000027 a
+			  INNER JOIN ".$whce."_000015 e ON (e.Codigo = a.Ordtor)
 			 WHERE Ordhis = '".$historia."'
 			   AND Ording = '".$ingreso."'
 			   AND Ordest = 'on'
@@ -15163,6 +15176,7 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 								  AND b.Detnro = a.Ordnro 
 								  AND Detenv = 'on' 
 								  AND b.Detest = 'on' )
+				AND e.Tipiws = 'on'
 			";
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -15180,12 +15194,14 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 		$campoOferta	= "";
 		$campoEstado	= "";
 				
-		
+		//Agregar inner join con hce15, y filtro Tipiws en on
 		//Consulto si existe cups ofertados por tipo de orden
-		$sql = "SELECT Valtoc, Valcoc, Valeoc
-				  FROM ".$wbasedato."_000267
+		$sql = "SELECT a.Valtoc, a.Valcoc, a.Valeoc
+				  FROM ".$wbasedato."_000267 a
 				 WHERE valtor = '".$rows['Ordtor']."'
-				   AND valest = 'on'
+				 INNER JOIN ".$whce."_000015 b ON (b.Codigo = a.Valtor)
+				   AND a.valest = 'on'
+				   AND b.Tipiws = 'on'
 			  GROUP BY 1,2,3";
 		
 		$resToOfertado 	= mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
@@ -34467,7 +34483,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 	$estado = "0";	
 	
 	//Indica si hay interoperabilidad por tipo de orden
-	$hayInteroperabilidad = hayInteroperabilidadPorTipoDeOrden( $conexion, $wbasedato, $codigoExamen );
+	$hayInteroperabilidad = hayInteroperabilidadPorTipoDeOrden( $conexion, $wbasedato, $codigoExamen, $whce );
 	
 	//Si hay interoperabilidad el estado de envio de mensaje es activo (on), caso contrario es off
 	$estadoEnvioMsgHL7 = 'on';
@@ -39857,8 +39873,9 @@ function insertarOrdenWs( $conex, $wemp_pmla, $historia, $ingreso){
 
 
 function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
+	//Agregar inner join con hce15, y filtro Tipiws en on
 		$sql="SELECT DISTINCT a.Detnro,a.dettor
-				  FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c
+				  FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c, ".$whce."_000015 e
 				 WHERE a.Dettor = 'A04'
 				   AND a.Detcod = b.codigo
 				   AND a.Detenv = 'on'
@@ -39868,7 +39885,9 @@ function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 				   AND d.Ordtor = a.Dettor
 				   AND d.Ordnro = a.Detnro
 				   AND d.Ordhis = '".$historia."'
-				   AND d.Ording = '".$ingreso."'";
+				   AND d.Ording = '".$ingreso."'
+				   AND a.Dettor = e.Codigo
+				   AND e.Tipiws = 'on'";
 		$ordenes=[];
 	
 	$res 	= mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
