@@ -3,7 +3,7 @@ include_once("conex.php");
 //ORDENES PARA HCE a
 //BSD
 //Creado JUNIO 1 DE 2010
-//Mauricio Sanchez Castaño
+//Mauricio Sanchez Castaño 
 
 /************************************************************************************************************************
  * A tener en cuenta
