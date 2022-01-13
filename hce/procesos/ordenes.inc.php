@@ -15198,8 +15198,8 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 		//Consulto si existe cups ofertados por tipo de orden
 		$sql = "SELECT a.Valtoc, a.Valcoc, a.Valeoc
 				  FROM ".$wbasedato."_000267 a
-				 WHERE valtor = '".$rows['Ordtor']."'
-				 INNER JOIN ".$whce."_000015 b ON (b.Codigo = a.Valtor)
+				  INNER JOIN ".$whce."_000015 b ON (b.Codigo = a.Valtor)
+				 WHERE a.valtor = '".$rows['Ordtor']."'
 				   AND a.valest = 'on'
 				   AND b.Tipiws = 'on'
 			  GROUP BY 1,2,3";
