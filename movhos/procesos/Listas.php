@@ -141,18 +141,27 @@
                 var wemp_pmla = $("#wemp_pmla").val();
                 var ok = $("#ok").val();
                 var wcco = $("#wcco").val();
-                $.post("Listas.php",
-                    {
-                        wemp_pmla			: wemp_pmla,
-                        ok                  : ok,
-                        wcco                : wcco,
-                        respuestaUsuario    : resp,
-                        modal               : true,
-                        posicion            : posicion
-                    }
-                    ,function(data) {
-                        console.log(data);
-                    },"json" );
+
+                var formData = new FormData();
+                formData.append("wemp_pmla", wemp_pmla);
+                formData.append("ok", ok);
+                formData.append("wcco", wcco);
+                var request = new XMLHttpRequest();
+                request.open("POST", "#");
+                request.send(formData);
+                document.forms.listas.submit();
+                // $.post("Listas.php",
+                //     {
+                //         wemp_pmla			: wemp_pmla,
+                //         ok                  : ok,
+                //         wcco                : wcco,
+                //         respuestaUsuario    : resp,
+                //         modal               : true,
+                //         posicion            : posicion
+                //     }
+                //     ,function(data) {
+                //         console.log(data);
+                //     },"json" );
             }
         
             $( "<div style='color: black;font-size:12pt;height: 250px;' title='CONSULTA EN UNIX' class='dvModalAltas'>"+msg+"</div>" ).dialog({
@@ -746,10 +755,10 @@ function validarCargosDiferenteProcesado($conex,$whis,$wnin)
     $num=@mysql_num_rows($err);
 
     if($num > 0){
-        return true;
+        return '1';
     }
     else{
-        return false;
+        return '0';
     }
 }
 
@@ -1670,13 +1679,6 @@ else
                     }
                 }
                 echo "</table></center>";
-                echo "<table border=0 align=center id=tipo5>";
-                echo "<tr><td align=center><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
-                if(isset($wcco))
-                {
-                echo "<tr><td align=center><A HREF='listas.php?ok=97&wemp_pmla=".$wemp_pmla."&wlogo=".$wlogo."'>Retornar</A></td></tr>";
-                }
-                echo "</table>";
             }
         break;
     }
