@@ -1506,7 +1506,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             }
 
 
-                                        if (x == 10)
+                                            if (x == 10)
                                             {
     //										cajon.style.backgroundColor="";
     //										document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
@@ -1515,6 +1515,16 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             alert('El Patrón: **'+ patron +'** No tiene costo en la tabla 000079, para el tipo de empresa: ** '+ tipo_empresa +' ** en la historia: ** '+ historia+' **, o la edad del paciente es menor a 6 meses.');
                                             return false;
                                             }
+
+                                        if (x == 1020)
+                                        {
+    //										cajon.style.backgroundColor="";
+    //										document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
+                                            var dato_media_porcion = document.getElementById("dato_media_porcion").value;
+                                            var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
+                                            alert('El Patrón: **'+ patron +'** la edad del paciente es menor a 6 meses.');
+                                            return false;
+                                        }
 
 
                                         if (x == 101)
@@ -8347,6 +8357,30 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
                     $q = " SELECT cosact, cosfec, cosant, diecob, diesec, diecbi, cospat "
                         ."   FROM ".$wbasedato."_000079, ".$wbasedato."_000041, ".$wbasedato."_000128 "
                         ."  WHERE costem  = '*'"
+                        ."    AND cosest  = 'on' "
+                        ."    AND patest  = 'on' "
+                        ."    AND cosser  = '".$wser."'"
+                        ."    AND cospat  = diecod "
+                        ."    AND cospat  = patpri "
+                        ."    AND patpri  = '".$wchequeados."'"
+                        ." GROUP BY cospat "
+                        ." ORDER BY cosact DESC";
+                    $res_cos = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                    $num_cos = mysql_num_rows($res_cos);
+
+                    if ($num_cos == 0 and $wpcomb != 'off' and $wnocobrapatron != 'on')
+                    {
+                        echo "10"; //Muestra un mensaje javascript diciendo que no se encontro costo para el patron en la tabla 79 de movhos (funcion js grabar_datos).
+
+                        if ($num_cos == '')
+                            //  $num_cos = 0;
+                            return $num_cos;
+                        return;
+                    }
+
+                    $q = " SELECT count(*) "
+                        ."   FROM ".$wbasedato."_000079, ".$wbasedato."_000041, ".$wbasedato."_000128 "
+                        ."  WHERE costem  = '*'"
                         ."    AND cosedi <= '".($wedad_pac*12)."'"
                         ."    AND cosedf >=  '".($wedad_pac*12)."'"
                         ."    AND cosest  = 'on' "
@@ -8362,7 +8396,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
 
                     if ($num_cos == 0 and $wpcomb != 'off' and $wnocobrapatron != 'on')
                     {
-                        echo "10"; //Muestra un mensaje javascript diciendo que no se encontro costo para el patron en la tabla 79 de movhos (funcion js grabar_datos).
+                        echo "1020"; //Muestra un mensaje javascript diciendo que no se encontro costo para el patron en la tabla 79 de movhos (funcion js grabar_datos).
 
                         if ($num_cos == '')
                             //  $num_cos = 0;
@@ -8437,6 +8471,32 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
                     return $num_cos;
 
 
+                return;
+            }
+
+            $q = " SELECT count(*) "
+                        ."   FROM ".$wbasedato."_000079, ".$wbasedato."_000041, ".$wbasedato."_000128 "
+                        ."  WHERE costem  = '*'"
+                        ."    AND cosedi <= '".($wedad_pac*12)."'"
+                        ."    AND cosedf >=  '".($wedad_pac*12)."'"
+                        ."    AND cosest  = 'on' "
+                        ."    AND patest  = 'on' "
+                        ."    AND cosser  = '".$wser."'"
+                        ."    AND cospat  = diecod "
+                        ."    AND cospat  = patpri "
+                        ."    AND patpri  = '".$wchequeados."'"
+                        ." GROUP BY cospat "
+                        ." ORDER BY cosact DESC";
+            $res_cos = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+            $num_cos = mysql_num_rows($res_cos);
+
+            if ($num_cos == 0 and $wpcomb != 'off' and $wnocobrapatron != 'on')
+            {
+                echo "1020"; //Muestra un mensaje javascript diciendo que no se encontro costo para el patron en la tabla 79 de movhos (funcion js grabar_datos).
+
+                if ($num_cos == '')
+                    //  $num_cos = 0;
+                    return $num_cos;
                 return;
             }
            }
