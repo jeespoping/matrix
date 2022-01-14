@@ -110,7 +110,22 @@
 </head>
 <body onload=ira() bgcolor=#FFFFFF oncontextmenu = "return true" onselectstart = "return true" ondragstart = "return true">
 <BODY TEXT="#000066">
+
+
 <script type="text/javascript">
+
+
+    // jQuery(document).ready(function($){
+
+    //     $(document).on('click','.dvModalAltas button',function(e){
+    //         e.preventDefault();
+    //         // 
+    //         debugger;
+    //         var respuestaUsu = jQuery('.ui-state-default.ui-corner-all.ui-state-hover.ui-state-focus').text();
+    //     });
+
+
+    // });
 
     function resolverCargo( nhis, ning ){
     //  document.forms.listas.his.value = nhis;
@@ -130,38 +145,47 @@
       top.close()
      }
 
-    function modalAltas( cmp, estadoCargos, posicion ){
+    function modalAltas( cmp, estadoCargos ){
+        
 
         if( estadoCargos )
         {
 
             var msg = "Existen cargos en un estado diferente a Procesado, desea consultar en Unix?";
-        
+
+            
+            
+
             function consultarUnix( resp ){
                 var wemp_pmla = $("#wemp_pmla").val();
                 var ok = $("#ok").val();
                 var wcco = $("#wcco").val();
-
-                var formData = new FormData();
-                formData.append("wemp_pmla", wemp_pmla);
-                formData.append("ok", ok);
-                formData.append("wcco", wcco);
-                var request = new XMLHttpRequest();
-                request.open("POST", "#");
-                request.send(formData);
-                document.forms.listas.submit();
-                // $.post("Listas.php",
-                //     {
-                //         wemp_pmla			: wemp_pmla,
-                //         ok                  : ok,
-                //         wcco                : wcco,
-                //         respuestaUsuario    : resp,
-                //         modal               : true,
-                //         posicion            : posicion
-                //     }
-                //     ,function(data) {
-                //         console.log(data);
-                //     },"json" );
+                var respuestaUsu = jQuery('.ui-state-default.ui-corner-all.ui-state-hover.ui-state-focus').text();
+console.log(respuestaUsu);
+//debugger;
+                // var formData = new FormData();
+                // formData.append("wemp_pmla", wemp_pmla);
+                // formData.append("ok", ok);
+                // formData.append("wcco", wcco);
+                // formData.append("respuestaUsuario", resp);
+                // var request = new XMLHttpRequest();
+                // request.open("POST", "#");
+                // request.send(formData);
+                $.post("Listas.php",
+                {
+                    wemp_pmla			: wemp_pmla,
+                    ok                  : ok,
+                    wcco                : wcco,
+                        // respuestaUsuario    : resp,
+                        respuestaUsuario    : respuestaUsu,
+                        modal               : true,
+                        // posicion            : posicion
+                    }
+                    ,function(data) {
+                        console.log(data);
+                    },"json" );
+                 //   document.forms.listas.submit();
+                    // debugger;
             }
         
             $( "<div style='color: black;font-size:12pt;height: 250px;' title='CONSULTA EN UNIX' class='dvModalAltas'>"+msg+"</div>" ).dialog({
@@ -303,7 +327,20 @@ include_once("root/comun.php");
 
 $empresa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 $wbasedato=$empresa;
- /**
+/**
+* --
+*/
+
+if(isset($_POST['respuestaUsuario']) && $_POST['respuestaUsuario'] == 'No' ){
+$respuestaUsuario = '0';
+}
+else {
+    $respuestaUsuario = '1';
+
+}
+
+  
+/**
  * Resuelva el caso para los medicamentos cargados despues de facturar
  *
  * @param $his      Historia
@@ -755,6 +792,7 @@ function validarCargosDiferenteProcesado($conex,$whis,$wnin)
     $num=@mysql_num_rows($err);
 
     if($num > 0){
+
         return '1';
     }
     else{
@@ -774,7 +812,7 @@ function validar_medins($conex,$whis,$wnin, $wcontrol, $respuestaUsuario)
     $pac['permisoAlta']=false;
     $array=array();
     $conex_o=0;
-
+echo $respuestaUsuario.'****<br>';
     $bd=$empresa;
     connectOdbc($conex_o, "inventarios");
     actualizacionDetalleRegistros ($pac, $array, $respuestaUsuario );
@@ -1221,13 +1259,13 @@ else
 
 
                         //No permite facturar si hay algun dato por facturar desde las 7 AM hasta las 10 PM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
-                        if (($whora > $wformatohorainicial or $whora < $wformatohorafinal) and $wcontrol[$i] > 0 and isset($posicion))
+                        if (($whora > $wformatohorainicial or $whora < $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
                             {
                                 $wporfacturar[$i] = "<hr>FALTA GRABAR ".$wmsgglucos.$wmsginsumos.$wmsgnebus.$wmsgoxigenos.$wmsgtransfusiones.$wmsgevoluciones.$wmsginsumosenferm;
                             }
                             //Muestra el mensaje de validacion de elementos pendientes y permite facturar si hay algun elemento por facturar desde
                             //las 10 PM hasta las 9 AM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
-                        if(($whora < $wformatohorainicial or $whora > $wformatohorafinal) and $wcontrol[$i] > 0 and isset($posicion))
+                        if(($whora < $wformatohorainicial or $whora > $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
                             {
 
                                 $wporfacturar1 =  str_replace('<hr>','',$wporfacturar[$i]);  //Quita el hr para el horario de la noche.
@@ -1245,11 +1283,11 @@ else
                             }
 
                         $estadoCargos = validarCargosDiferenteProcesado($conex,$row[0],$row[1]);
-                        if(isset($posicion))
+                        if(isset($wval[$i]) && $estadoCargos == '1' )
                         {
 
                             $wres=array();
-                            $respuestaUsuario = true;
+                           // $respuestaUsuario = true;
 
                             $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i], $respuestaUsuario);
 
@@ -1311,6 +1349,13 @@ else
                         echo "<input type='HIDDEN' name= 'num' value='".$num."'>";
 
 
+                        // if($respuestaUsuario === "0" )
+                        // {
+                        //     echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3>$wobservaciones_textarea</textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egresar De Urgencias </td></tr>";
+                        
+                        // }
+
+
                         //Valida si ya puede generar factura y además si todo esta registrado desde la entrega de turno secretaria.
                         if($row[16] == 1 and $wcontrol[$i] == 0)
                             {
@@ -1327,7 +1372,7 @@ else
                         }
                         elseif( $row[16] == 3)
                         {
-
+                            
                             if( $filgen == '' ){
                                 echo "<tr align=center><td colspan='10' style='background-color:#FFcc66'>PACIENTES CON CARGOS DESPUES DE FACTURAR</td></tr>";
                                 $filgen = 1;
@@ -1373,11 +1418,11 @@ else
                             if(isset($wres[$i]) and isset($wporfacturar[$i])) //Si estan declaradas las dos variables se mostrará esta opción.
                             {
 
-                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$i.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
+                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
                             }
                             else{
                                 echo "<tr>";
-                                echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$i.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
+                                echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
                                 echo "</td></tr>";
                             }
                         }
@@ -1468,7 +1513,7 @@ else
             //$query .= " and ubiald = 'off'  ";
             $query .= " and ubihis = orihis  ";
             $query .= " and ubiing = oriing  ";
-            $query .= " and oriori = '".$wemp_pmla."'  ";
+            $query .= " and oriori = '".$codemp."'  ";
             $query .= " and oriced = pacced  ";
             $query .= " and oritid = pactid  ";
             $query .= " and ubisac = ccocod  ";
@@ -1566,7 +1611,7 @@ else
             else
             {
                 echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
-                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=97&wemp_pmla=".$wemp_pmla."&empresa=".$empresa."&codemp=".$codemp."&wcco=".$wcco."&wlogo=".$wlogo."'>";
+                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=97&wemp_pmla=".$codemp."&empresa=".$empresa."&codemp=".$codemp."&wcco=".$wcco."&wlogo=".$wlogo."'>";
 
                 encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica");
                 echo "<table border=0 align=center id=tipo5>";
@@ -1633,7 +1678,7 @@ else
                 $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
                 $query .= " and ubihis = orihis  ";
                 $query .= " and ubiing = oriing  ";
-                $query .= " and oriori = '".$wemp_pmla."'  ";
+                $query .= " and oriori = '".$codemp."'  ";
                 $query .= " and oriced = pacced  ";
                 $query .= " and oritid = pactid  ";
                 $query .= " and ubisac = ccocod  ";
