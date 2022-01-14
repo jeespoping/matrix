@@ -145,7 +145,7 @@
       top.close()
      }
 
-    function modalAltas( cmp, estadoCargos ){
+    function modalAltas( cmp, estadoCargos, num, posicion ){
         
 
         if( estadoCargos )
@@ -160,32 +160,21 @@
                 var wemp_pmla = $("#wemp_pmla").val();
                 var ok = $("#ok").val();
                 var wcco = $("#wcco").val();
-                var respuestaUsu = jQuery('.ui-state-default.ui-corner-all.ui-state-hover.ui-state-focus').text();
-console.log(respuestaUsu);
-//debugger;
-                // var formData = new FormData();
-                // formData.append("wemp_pmla", wemp_pmla);
-                // formData.append("ok", ok);
-                // formData.append("wcco", wcco);
-                // formData.append("respuestaUsuario", resp);
-                // var request = new XMLHttpRequest();
-                // request.open("POST", "#");
-                // request.send(formData);
+
                 $.post("Listas.php",
                 {
                     wemp_pmla			: wemp_pmla,
                     ok                  : ok,
                     wcco                : wcco,
-                        // respuestaUsuario    : resp,
-                        respuestaUsuario    : respuestaUsu,
-                        modal               : true,
-                        // posicion            : posicion
-                    }
-                    ,function(data) {
-                        console.log(data);
-                    },"json" );
-                 //   document.forms.listas.submit();
-                    // debugger;
+                    respuestaUsuario    : resp,
+                    posicion            : posicion,
+                    num                 : num,
+                }
+                ,function(data) {
+                    console.log(data);
+                },"json" );
+                
+                document.forms.listas.submit();
             }
         
             $( "<div style='color: black;font-size:12pt;height: 250px;' title='CONSULTA EN UNIX' class='dvModalAltas'>"+msg+"</div>" ).dialog({
@@ -331,13 +320,6 @@ $wbasedato=$empresa;
 * --
 */
 
-if(isset($_POST['respuestaUsuario']) && $_POST['respuestaUsuario'] == 'No' ){
-$respuestaUsuario = '0';
-}
-else {
-    $respuestaUsuario = '1';
-
-}
 
   
 /**
@@ -812,7 +794,6 @@ function validar_medins($conex,$whis,$wnin, $wcontrol, $respuestaUsuario)
     $pac['permisoAlta']=false;
     $array=array();
     $conex_o=0;
-echo $respuestaUsuario.'****<br>';
     $bd=$empresa;
     connectOdbc($conex_o, "inventarios");
     actualizacionDetalleRegistros ($pac, $array, $respuestaUsuario );
@@ -1257,6 +1238,11 @@ else
                             $wcontrol[$i] = 1;
                         }
 
+                        if($posicion == $i)
+                        {
+                            $wval[$i] = "on";
+                        }
+
 
                         //No permite facturar si hay algun dato por facturar desde las 7 AM hasta las 10 PM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
                         if (($whora > $wformatohorainicial or $whora < $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
@@ -1287,7 +1273,7 @@ else
                         {
 
                             $wres=array();
-                           // $respuestaUsuario = true;
+                            // $respuestaUsuario = $_POST['respuestaUsuario'];
 
                             $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i], $respuestaUsuario);
 
@@ -1418,11 +1404,11 @@ else
                             if(isset($wres[$i]) and isset($wporfacturar[$i])) //Si estan declaradas las dos variables se mostrará esta opción.
                             {
 
-                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
+                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$num.", ".$i.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
                             }
                             else{
                                 echo "<tr>";
-                                echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
+                                echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$num.", ".$i.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
                                 echo "</td></tr>";
                             }
                         }
