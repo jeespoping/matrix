@@ -868,6 +868,9 @@ else
         
 
         include_once("root/comun.php");
+        
+        $ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+        $ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
         $key = substr($user,2,strlen($user));
 
@@ -876,9 +879,11 @@ else
 
         $wusuario=$wuser;
 
-        $wactualiz="2019-09-26";
+        $wactualiz="2022-01-12";
 		
 		$horasPares = 12;
+        //=========================================================================================================================
+        // 2022-01-12 Marlon Osorio         -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico y Central de Mezclas
         //=========================================================================================================================
         // 2021-05-12 Juan David Rodriguez. Se agrega validación para que se haga consulta a las tablas backup de movhos_000015
         //                                  ubicadas en la base de datos matrixp, se agrega configuración en root_000051 (Detapl = 'hoja_medicamentos_historica'), 
@@ -1165,12 +1170,14 @@ else
           {
            global $conex;
            global $wbasedato;
+           global $ccoCM;
+           global $ccoSF;
 
            $wdos_apl=$wcan_apl;    //Dosis
 
            $q = " SELECT deffra, deffru "
                ."   FROM ".$wbasedato."_000059 "
-               ."  WHERE defcco in ('1050','1051')"
+               ."  WHERE defcco in ({$ccoSF},{$ccoCM})"
                ."    AND defart = '".$wart."'"
                ."    AND defest = 'on' ";
            $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
