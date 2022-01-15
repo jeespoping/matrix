@@ -145,9 +145,18 @@
       top.close()
      }
 
+
+     function addHidden(theForm, key, value) {
+        // Create a hidden input element, and append it to the form:
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key; // 'the key/name of the attribute/field that is sent to the server
+        input.value = value;
+        theForm.appendChild(input);
+    }
+
     function modalAltas( cmp, estadoCargos, num, posicion ){
         
-
         if( estadoCargos )
         {
 
@@ -160,7 +169,6 @@
                 var wemp_pmla = $("#wemp_pmla").val();
                 var ok = $("#ok").val();
                 var wcco = $("#wcco").val();
-
                 $.post("Listas.php",
                 {
                     wemp_pmla			: wemp_pmla,
@@ -173,7 +181,11 @@
                 ,function(data) {
                     console.log(data);
                 },"json" );
-                
+
+                var listaForm = document.forms['listas'];
+                addHidden(listaForm, 'posicion', posicion);
+                addHidden(listaForm, 'num', num);
+                // listaFom.submit();
                 document.forms.listas.submit();
             }
         
@@ -1269,7 +1281,7 @@ else
                             }
 
                         $estadoCargos = validarCargosDiferenteProcesado($conex,$row[0],$row[1]);
-                        if(isset($wval[$i]) && $estadoCargos == '1' )
+                        if(isset($wval[$i])  )
                         {
 
                             $wres=array();
