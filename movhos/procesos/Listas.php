@@ -322,7 +322,9 @@ include_once("movhos/fxValidacionArticulo.php");
 include_once("movhos/registro_tablas.php");
 include_once("root/comun.php");
 
-
+if(!empty($respuestaUsuario)){
+echo $respuestaUsuario;
+}
 
 
 
