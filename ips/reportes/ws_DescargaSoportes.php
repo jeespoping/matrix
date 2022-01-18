@@ -18,7 +18,8 @@
  * . @update [2021-09-20]	-	Actualizacion para soporte MIPRES
  * . @update [2021-09-24]	-	Actualizacion para soporte Imex
  * . @update [2021-09-27]	-	Actualizacion para soporte Laboratorio
- */ 
+ * . @update [2022-01-17]	-	Actualizacion para mostrar los resultados de los soportes subidos mediante un solo json
+ */
 
 /** Se inicializa el bufer de salida de php **/
 ob_start();
@@ -30,7 +31,6 @@ ob_start();
 include_once("conex.php");
 include_once("root/comun.php");
 include_once("GeneradorSoportesPDF.php");
-
 
 /** Limpiamos el buffer de salida de php para no retornar los datos de los "echos" que se hacen en los include **/
 ob_end_clean();
@@ -57,16 +57,16 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
 
     $patientList = json_decode($jsonData, true);
     $count = count($patientList);
-    $arrayEstadoRespuesta = [];
     $arrayRespuestaSoportes = [];
     $consultaEstadoDescargas = [];
-    $consultaArreglosHCEParametrizados = consultarAliasPorAplicacion($conex,$wemp_pmla,'soportesHCE');
-    $arraySoportesHCEAConsultar = preg_split ("/\,/", $consultaArreglosHCEParametrizados);
-    $consultaArreglosImexParametrizados = consultarAliasPorAplicacion($conex,$wemp_pmla,'soportesImex');
-    $arraySoportesImexAConsultar = preg_split ("/\,/", $consultaArreglosImexParametrizados);
+    $consultaArreglosHCEParametrizados = consultarAliasPorAplicacion($conex, $wemp_pmla, 'soportesHCE');
+    $arraySoportesHCEAConsultar = preg_split("/\,/", $consultaArreglosHCEParametrizados);
+    $consultaArreglosImexParametrizados = consultarAliasPorAplicacion($conex, $wemp_pmla, 'soportesImex');
+    $arraySoportesImexAConsultar = preg_split("/\,/", $consultaArreglosImexParametrizados);
 
     for ($i = 0; $i < $count; $i++) {
 
+        $arrayEstadoRespuesta = [];
         $historia = $patientList[$i]["history"];
         $ingreso =  $patientList[$i]["entry"];
         $responsable = $patientList[$i]["responsible"];
@@ -76,68 +76,108 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
         $factura = $patientList[$i]["invoiceNumber"];
         $fuenteDeFactura = $patientList[$i]["typeOfInvoice"];
         $array =  $patientList[$i]["supports"];
-        
+
         $data = [];
 
         foreach ($array as $support) {
             array_push($data, $support);
         }
-        
-        if (array_search($soporte = "03", array_column($data,'code')) !== false) {
+
+        if (array_search($soporte = "03", array_column($data, 'code')) !== false) {
             $posicion = array_search($soporte = "03", array_column($data, 'code'));
             $url = $data[$posicion]['url'];
             $descripcion = $data[$posicion]['supportName'];
             $rutaOrigen = $data[$posicion]['sopalm'];
-            $ordenesMedicas = consultaOrdenMedica($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$url,$descripcion,
-            $rutaOrigen);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($ordenesMedicas,$historia,$ingreso);
+            $ordenesMedicas = consultaOrdenMedica(
+                $conex,
+                $wemp_pmla,
+                $historia,
+                $ingreso,
+                $responsable,
+                $soporte,
+                $url,
+                $descripcion,
+                $rutaOrigen
+            );
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($ordenesMedicas, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
-        
-        if (array_search($soporte = "22", array_column($data,'code')) !== false) {
+
+        if (array_search($soporte = "22", array_column($data, 'code')) !== false) {
             $posicion = array_search($soporte = "22", array_column($data, 'code'));
             $url = $data[$posicion]['url'];
             $descripcion = $data[$posicion]['supportName'];
 
-            $miPresMedsNoPbs = consultaMiPresMedsNoPbs($conex,$wemp_pmla,$historia,$ingreso,$responsable,$documentoDeIdentidad,
-            $tipoDeDocumento,$fechadeAdmision,$soporte,$url,$descripcion);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($miPresMedsNoPbs, $historia, $ingreso);
+            $miPresMedsNoPbs = consultaMiPresMedsNoPbs(
+                $conex,
+                $wemp_pmla,
+                $historia,
+                $ingreso,
+                $responsable,
+                $documentoDeIdentidad,
+                $tipoDeDocumento,
+                $fechadeAdmision,
+                $soporte,
+                $url,
+                $descripcion
+            );
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($miPresMedsNoPbs, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
 
-        if (array_search($soporte = "41", array_column($data,'code')) !== false) {
+        if (array_search($soporte = "41", array_column($data, 'code')) !== false) {
             $posicion = array_search($soporte = "41", array_column($data, 'code'));
             $url = $data[$posicion]['url'];
             $descripcion = $data[$posicion]['supportName'];
             $rutaOrigen = $data[$posicion]['sopalm'];
 
-            $furips = consultaFurips($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$factura,$url,$descripcion,$rutaOrigen);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($furips, $historia, $ingreso);
+            $furips = consultaFurips($conex, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, $factura, $url, $descripcion, $rutaOrigen);
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($furips, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
-      
-        if (array_search($soporte = "43", array_column($data,'code')) !== false) {
+
+        if (array_search($soporte = "43", array_column($data, 'code')) !== false) {
             $posicion = array_search($soporte = "43", array_column($data, 'code'));
             $url = $data[$posicion]['url'];
             $descripcion = $data[$posicion]['supportName'];
 
-            $facturaPdf = consultaFacturaPDF($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$factura,$fuenteDeFactura,$url,
-            $descripcion);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($facturaPdf, $historia, $ingreso);
+            $facturaPdf = consultaFacturaPDF(
+                $conex,
+                $wemp_pmla,
+                $historia,
+                $ingreso,
+                $responsable,
+                $soporte,
+                $factura,
+                $fuenteDeFactura,
+                $url,
+                $descripcion
+            );
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($facturaPdf, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
 
-        if (array_search($soporte = "46", array_column($data,'code')) !== false) {
-            $posicion = array_search($soporte = "46", array_column($data,'code'));
+        if (array_search($soporte = "46", array_column($data, 'code')) !== false) {
+            $posicion = array_search($soporte = "46", array_column($data, 'code'));
             $url = $data[$posicion]['url'];
             $descripcion = $data[$posicion]['supportName'];
 
-            $detalleDeCargos = consultaDetalleDeCargos($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$factura,
-            $fuenteDeFactura,$url,$descripcion);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($detalleDeCargos, $historia, $ingreso);
+            $detalleDeCargos = consultaDetalleDeCargos(
+                $conex,
+                $wemp_pmla,
+                $historia,
+                $ingreso,
+                $responsable,
+                $soporte,
+                $factura,
+                $fuenteDeFactura,
+                $url,
+                $descripcion
+            );
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($detalleDeCargos, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
-        
+
         if (array_search($soporte = "48", array_column($data,'code')) !== false) {
             $posicion = array_search($soporte = "48", array_column($data,'code'));
             $url = $data[$posicion]['url'];
@@ -147,7 +187,7 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
            
             $historiaClinica = consultaHistoriaClinica($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$url,$descripcion,
             $rutaOrigen,$parametros);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($historiaClinica, $historia, $ingreso);
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($historiaClinica, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
 
@@ -160,54 +200,73 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
 
             $registroAnestesia = consultaRegistroAnestesia($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$url,
             $descripcion,$rutaOrigen,$datosAdicionales);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($registroAnestesia, $historia, $ingreso);
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($registroAnestesia, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }        
 
-        if (array_search($soporte = "66", array_column($data,'code')) !== false) {
-            $posicion = array_search($soporte = "66", array_column($data,'code'));
+        if (array_search($soporte = "66", array_column($data, 'code')) !== false) {
+            $posicion = array_search($soporte = "66", array_column($data, 'code'));
             $url = $data[$posicion]['url'];
             $descripcion = $data[$posicion]['supportName'];
 
-            $detalleDeMateriales = consultaDetalleDeMateriales($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$factura,
-            $fuenteDeFactura,$url,$descripcion);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($detalleDeMateriales,$historia,$ingreso);
+            $detalleDeMateriales = consultaDetalleDeMateriales(
+                $conex,
+                $wemp_pmla,
+                $historia,
+                $ingreso,
+                $responsable,
+                $soporte,
+                $factura,
+                $fuenteDeFactura,
+                $url,
+                $descripcion
+            );
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($detalleDeMateriales, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
 
-        if (array_search($soporte = "67", array_column($data,'code')) !== false) {
-            $posicion = array_search($soporte = "67", array_column($data,'code'));
+        if (array_search($soporte = "67", array_column($data, 'code')) !== false) {
+            $posicion = array_search($soporte = "67", array_column($data, 'code'));
             $url = $data[$posicion]['url'];
             $descripcion = $data[$posicion]['supportName'];
 
-            $hojaDeMedicamentos = ConsultaHojaDeMedicamentos($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$url,$descripcion);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($hojaDeMedicamentos,$historia,$ingreso);
+            $hojaDeMedicamentos = ConsultaHojaDeMedicamentos($conex, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, $url, $descripcion);
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($hojaDeMedicamentos, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
 
-        if (array_search($soporte = "69", array_column($data,'code')) !== false) {
-            $posicion = array_search($soporte = "69", array_column($data,'code'));
+        if (array_search($soporte = "69", array_column($data, 'code')) !== false) {
+            $posicion = array_search($soporte = "69", array_column($data, 'code'));
             $descripcion = $data[$posicion]['supportName'];
 
-            $laboratorio = ConsultaLaboratorio($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$descripcion);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($laboratorio,$historia,$ingreso);
+            $laboratorio = ConsultaLaboratorio($conex, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, $descripcion);
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($laboratorio, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
-        
-        foreach($arraySoportesImexAConsultar as $soporteImex){
-            if (array_search(in_array($soporteImex,  array_column($data,'code')), array_column($data,'code')) !== false) {
-                $posicion = array_search($soporteImex, array_column($data,'code'));
+
+        foreach ($arraySoportesImexAConsultar as $soporteImex) {
+            if (array_search(in_array($soporteImex,  array_column($data, 'code')), array_column($data, 'code')) !== false) {
+                $posicion = array_search($soporteImex, array_column($data, 'code'));
                 $concepto = $data[$posicion]['concept'];
                 $descripcion = $data[$posicion]['supportName'];
+                
                 $ayuda = $data[$posicion]['sopcop'];
-
-                $soportesImex = consultaSoportesImex($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporteImex,$concepto,$ayuda,
-                $descripcion);
-                $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesImex,$historia,$ingreso);
+                $soportesImex = consultaSoportesImex(
+                    $conex,
+                    $wemp_pmla,
+                    $historia,
+                    $ingreso,
+                    $responsable,
+                    $soporteImex,
+                    $concepto,
+                    $ayuda,
+                    $descripcion
+                );
+                $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesImex, $historia, $ingreso, $soporteImex, $descripcion);
                 array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
-            }            
+            }
         }
-       
+
         foreach($arraySoportesHCEAConsultar as $soporteHCE){
             if (array_search(in_array($soporteHCE,  array_column($data,'code')), array_column($data,'code')) !== false) {
                 $posicion = array_search($soporteHCE, array_column($data,'code'));
@@ -219,27 +278,26 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
 
                 $soportesHCE = consultaSoportesHCE($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporteHCE,$descripcion,
                 $formulario,$url,$rutaOrigen,$datosAdicionales);
-                $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesHCE,$historia,$ingreso);
+                $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesHCE, $historia, $ingreso, $soporteHCE, $descripcion);
                 array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
             }
         }
+
+        $estadoTemporal = [];
+        foreach ($arrayEstadoRespuesta as $estados) {
+            array_push($estadoTemporal, $estados['status']);
+        }
+
+        if (in_array(300, $estadoTemporal, true) || in_array(400, $estadoTemporal, true) || in_array(500, $estadoTemporal, true)) {
+            $consultaEstadoDescargas['status'] = '400';
+        } else {
+            $consultaEstadoDescargas['status'] = '200';
+        }
+        $consultaEstadoDescargas['responsable'] = $responsable;
+        $consultaEstadoDescargas['result'] = $arrayEstadoRespuesta;
+        guardarRespuesta($conex, $wemp_pmla, $historia, $ingreso, $responsable, $consultaEstadoDescargas, '', '');
     }
 
-    $estadoTemporal = [];
-    foreach ($arrayEstadoRespuesta as $estados) {
-        array_push($estadoTemporal,$estados['status']);
-    }
-
-    if(in_array(300,$estadoTemporal,true) || in_array(400,$estadoTemporal,true) || in_array(500,$estadoTemporal,true)){
-        $consultaEstadoDescargas['status'] = '400';
-        $arrayRespuestaSoportes['responsable'] = $responsable;
-        $consultaEstadoDescargas['result'] = $arrayEstadoRespuesta;
-    } 
-    else {
-        $consultaEstadoDescargas['status'] = '200';
-        $arrayRespuestaSoportes['responsable'] = $responsable;
-        $consultaEstadoDescargas['result'] = $arrayEstadoRespuesta;
-    }
     return $consultaEstadoDescargas;
 }
 
@@ -259,133 +317,199 @@ function ConsultaEstadoWithGet(
     $formulario = null,
     $concepto = null,
     $soportes
-){
+) {
     $arrayEstadoRespuesta = [];
     $arrayRespuestaSoportes = [];
     $consultaEstadoDescargas = [];
-    $consultaArreglosHCEParametrizados = consultarAliasPorAplicacion($conex,$wemp_pmla,'soportesHCE');
-    $arraySoportesHCEAConsultar = preg_split ("/\,/",$consultaArreglosHCEParametrizados);
-    $consultaArreglosImexParametrizados = consultarAliasPorAplicacion($conex,$wemp_pmla,'soportesImex');
-    $arraySoportesImexAConsultar = preg_split ("/\,/", $consultaArreglosImexParametrizados);
+    $consultaArreglosHCEParametrizados = consultarAliasPorAplicacion($conex, $wemp_pmla, 'soportesHCE');
+    $arraySoportesHCEAConsultar = preg_split("/\,/", $consultaArreglosHCEParametrizados);
+    $consultaArreglosImexParametrizados = consultarAliasPorAplicacion($conex, $wemp_pmla, 'soportesImex');
+    $arraySoportesImexAConsultar = preg_split("/\,/", $consultaArreglosImexParametrizados);
     $arraySoportes = array();
-    array_push($arraySoportes,$soportes);
+    array_push($arraySoportes, $soportes);
 
     if (array_search($soporte = '03', $arraySoportes) !== false) {
-        $ordenesMedicas = consultaOrdenMedica($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,
-        'http://matrix.lasamericas.com.co/matrix/hce/procesos/ordenes_imp.php?','orden medica',
-        '/var/www/matrix/hce/procesos/impresion_ordenes/');
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($ordenesMedicas,$historia,$ingreso);
-        array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+        $ordenesMedicas = consultaOrdenMedica(
+            $conex,
+            $wemp_pmla,
+            $historia,
+            $ingreso,
+            $codigo_responsable,
+            $soporte,
+            'http://matrix-test.lasamericas.com.co/matrix/hce/procesos/ordenes_imp.php?',
+            'orden medica',
+            '/var/www/matrix/hce/procesos/impresion_ordenes/'
+        );
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($ordenesMedicas, $historia, $ingreso, $soporte, $descripcion);
+        array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '22', $arraySoportes) !== false) {
-        $miPresMedsNoPbs = consultaMiPresMedsNoPbs($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$documentoDeIdentidad,
-        $tipoDeDocumento,$fechadeAdmision,$soporte,'http://matrix.lasamericas.com.co/matrix/hce/procesos/CTCmipres.php?','Mi Pres');
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($miPresMedsNoPbs,$historia,$ingreso);
-        array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+        $miPresMedsNoPbs = consultaMiPresMedsNoPbs(
+            $conex,
+            $wemp_pmla,
+            $historia,
+            $ingreso,
+            $codigo_responsable,
+            $documentoDeIdentidad,
+            $tipoDeDocumento,
+            $fechadeAdmision,
+            $soporte,
+            'http://matrix.lasamericas.com.co/matrix/hce/procesos/CTCmipres.php?',
+            'Mi Pres'
+        );
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($miPresMedsNoPbs, $historia, $ingreso, $soporte, $descripcion);
+        array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '41', $arraySoportes) !== false) {
         $url = 'http://matrix.lasamericas.com.co/matrix/ips/reportes/formato_furips_x_fac.php?';
         $descripcion = 'Furips';
-        $furips = consultaFurips($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,$factura,$url,$descripcion,
-        '/var/www/matrix/ips/reportes/facturas/');
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($furips,$historia,$ingreso);
-        array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+        $furips = consultaFurips(
+            $conex,
+            $wemp_pmla,
+            $historia,
+            $ingreso,
+            $codigo_responsable,
+            $soporte,
+            $factura,
+            $url,
+            $descripcion,
+            '/var/www/matrix/ips/reportes/facturas/'
+        );
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($furips, $historia, $ingreso, $soporte, $descripcion);
+        array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '43', $arraySoportes) !== false) {
-        $url = 'http://matrix.lasamericas.com.co/matrix/ips/procesos/monitorE-facturacion.php?';
+        $url = 'http://matrix-test.lasamericas.com.co/matrix/ips/procesos/monitorE-facturacion.php?';
         $descripcion = 'Factura PDF';
-        $facturaPdf = consultaFacturaPDF($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,$factura,$fuenteDeFactura,$url,
-        $descripcion);
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($facturaPdf,$historia,$ingreso);
-        array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+        $facturaPdf = consultaFacturaPDF(
+            $conex,
+            $wemp_pmla,
+            $historia,
+            $ingreso,
+            $codigo_responsable,
+            $soporte,
+            $factura,
+            $fuenteDeFactura,
+            $url,
+            $descripcion
+        );
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($facturaPdf, $historia, $ingreso, $soporte, $descripcion);
+        array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '46', $arraySoportes) !== false) {
         $descripcion = 'Detalle de cargos';
         $url = 'http://matrix.lasamericas.com.co/matrix/facturacion/reportes/rep_detafactuayuda.php?';
-        $detalleDeCargos = consultaDetalleDeCargos($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,$factura,$fuenteDeFactura,
-        $url,$descripcion);
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($detalleDeCargos,$historia,$ingreso);
-        array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+        $detalleDeCargos = consultaDetalleDeCargos(
+            $conex,
+            $wemp_pmla,
+            $historia,
+            $ingreso,
+            $codigo_responsable,
+            $soporte,
+            $factura,
+            $fuenteDeFactura,
+            $url,
+            $descripcion
+        );
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($detalleDeCargos, $historia, $ingreso, $soporte, $descripcion);
+        array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '48', $arraySoportes) !== false) {
         $historiaClinica = consultaHistoriaClinica($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,
         'http://matrix.lasamericas.com.co/matrix/hce/procesos/solimp.php?','Historia Clinica','../../hce/reportes/cenimp/');
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($historiaClinica,$historia,$ingreso);
-        array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($historiaClinica, $historia, $ingreso, $soporte, $descripcion);
+        array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '50', $arraySoportes) !== false) {
         $historiaClinica = consultaRegistroAnestesia($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,
         'http://matrix.lasamericas.com.co/matrix/hce/procesos/solimp.php?','Registro de anestesia','../../hce/reportes/cenimp/');
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($historiaClinica,$historia,$ingreso);
-        array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($historiaClinica, $historia, $ingreso, $soporte, $descripcion);
+        array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '66', $arraySoportes) !== false) {
         $url = 'http://matrix.lasamericas.com.co/matrix/facturacion/reportes/rep_detafactu.php?';
-        $descripcion = 'Detalle de materiales';        
-        $detalleDeMateriales = consultaDetalleDeMateriales($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,$factura,
-        $fuenteDeFactura,$url,$descripcion);
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($detalleDeMateriales, $historia, $ingreso);
+        $descripcion = 'Detalle de materiales';
+        $detalleDeMateriales = consultaDetalleDeMateriales(
+            $conex,
+            $wemp_pmla,
+            $historia,
+            $ingreso,
+            $codigo_responsable,
+            $soporte,
+            $factura,
+            $fuenteDeFactura,
+            $url,
+            $descripcion
+        );
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($detalleDeMateriales, $historia, $ingreso, $soporte, $descripcion);
         array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '67', $arraySoportes) !== false) {
         $url = 'http://matrix.lasamericas.com.co/matrix/movhos/reportes/Hoja_medicamentos_enfermeria_IPODS.php?';
-        $descripcion = 'Detalle de medicamentos';        
-        $hojaDeMedicamentos = ConsultaHojaDeMedicamentos($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,$url,$descripcion);
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($hojaDeMedicamentos, $historia, $ingreso);
-        array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+        $descripcion = 'Detalle de medicamentos';
+        $hojaDeMedicamentos = ConsultaHojaDeMedicamentos($conex, $wemp_pmla, $historia, $ingreso, $codigo_responsable, $soporte, $url, $descripcion);
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($hojaDeMedicamentos, $historia, $ingreso, $soporte, $descripcion);
+        array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '69', $arraySoportes) !== false) {
         $descripcion = 'laboratorio';
-        $laboratorio = ConsultaLaboratorio($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,$descripcion);
-        $arrayRespuestaSoportes = devolverRespuestaSoporte($laboratorio,$historia,$ingreso);
-        array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+        $laboratorio = ConsultaLaboratorio($conex, $wemp_pmla, $historia, $ingreso, $codigo_responsable, $soporte, $descripcion);
+        $arrayRespuestaSoportes = devolverRespuestaSoporte($laboratorio, $historia, $ingreso, $soporte, $descripcion);
+        array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
-    foreach($arraySoportesImexAConsultar as $soporteImex){
+    foreach ($arraySoportesImexAConsultar as $soporteImex) {
         if (array_search($soporteImex, $arraySoportes) !== false) {
             $ayuda = '0700';
-            $soportesImex = consultaSoportesImex($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporteImex,$concepto,$ayuda,
-            $descripcion);
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesImex,$historia,$ingreso);
+            $soportesImex = consultaSoportesImex(
+                $conex,
+                $wemp_pmla,
+                $historia,
+                $ingreso,
+                $codigo_responsable,
+                $soporteImex,
+                $concepto,
+                $ayuda,
+                $descripcion
+            );
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesImex, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
-        }            
+        }
     }
 
     foreach($arraySoportesHCEAConsultar as $soporteHCE){
         if (array_search($soporteHCE, $arraySoportes) !== false) {
-            $url = 'http://matrix.lasamericas.com.co/matrix/hce/procesos/solimp.php?';
+            $url = 'http://matrix-test.lasamericas.com.co/matrix/hce/procesos/solimp.php?';
             $soportesHCE = consultaSoportesHCE($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporteHCE,$descripcion,$formulario,
             $url,'../../hce/reportes/cenimp/');
-            $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesHCE,$historia,$ingreso);
-            array_push($arrayEstadoRespuesta,$arrayRespuestaSoportes);
+            $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesHCE, $historia, $ingreso, $soporteHCE, $descripcion);
+            array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
     }
 
     //Luego de unificado todos los soportes se saca la respuesta general del webservice
     $estadoTemporal = [];
-
     foreach ($arrayEstadoRespuesta as $estados) {
         array_push($estadoTemporal, $estados['status']);
     }
-    if (in_array(300,$estadoTemporal,true) || in_array(400,$estadoTemporal,true) || in_array(500,$estadoTemporal,true)) {
+
+    if (in_array(300, $estadoTemporal, true) || in_array(400, $estadoTemporal, true) || in_array(500, $estadoTemporal, true)) {
         $consultaEstadoDescargas['status'] = 400;
-        $consultaEstadoDescargas['responsable'] = $codigo_responsable;
-        $consultaEstadoDescargas['result'] = $arrayEstadoRespuesta;
     } else {
         $consultaEstadoDescargas['status'] = 200;
-        $consultaEstadoDescargas['responsable'] = $codigo_responsable;
-        $consultaEstadoDescargas['result'] = $arrayEstadoRespuesta;
     }
-
+    $consultaEstadoDescargas['responsable'] = $codigo_responsable;
+    $consultaEstadoDescargas['result'] = $arrayEstadoRespuesta;
+    guardarRespuesta($conex, $wemp_pmla, $historia, $ingreso, $codigo_responsable, $consultaEstadoDescargas, '', '');
     return $consultaEstadoDescargas;
 }
 
@@ -460,11 +584,11 @@ function armarURLHistoriaClinica(
  * @return [array] Respuesta del servicio
  */
 
-function cargarOpcionesPOST($url,$data)
+function cargarOpcionesPOST($url, $data)
 {
 
     $options = array(
-        CURLOPT_URL                 => $url."&automatizacion_pdfs=",
+        CURLOPT_URL                 => $url . "&automatizacion_pdfs=",
         CURLOPT_HEADER              => false,
         CURLOPT_RETURNTRANSFER      => 1,
         CURLOPT_POSTFIELDS          => $data,
@@ -474,11 +598,21 @@ function cargarOpcionesPOST($url,$data)
     return $options;
 }
 
-function validarFactura($factura,$descripcion){
+/**
+ * Este metodo permite generar una respuesta si la factura existe para un paciente o no
+ * En caso que existe puede avanzar
+ * En caso contrario inmediatamente saldra del programa
+ * @param url[string]	[array de los datos enviados al POST]
+ * @param data[array]	[array de los datos enviados al POST]
+ * @return [array] Respuesta del servicio
+ */
+
+function validarFactura($factura, $nombreDelSoporte)
+{
     if (is_null($factura) || $factura === "N/A") {
-        $pdf_generado['status'] = '400';
-        $pdf_generado['result'] = 'La historia-ingreso no posee factura generada para el soporte'. $descripcion;
-        return $pdf_generado;
+        $validarFactura['status'] = '400';
+        $validarFactura['result'] = 'La historia-ingreso no posee factura generada para el soporte : ' . $nombreDelSoporte;
+        return $validarFactura;
     }
 }
 
@@ -494,44 +628,43 @@ function validarFactura($factura,$descripcion){
  * @return [json] Respuesta del servicio
  */
 
-function guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte, $respuesta, $codError, $descripcion){
-
-    $codError = !empty($codError) ? 'ERR18' : ($respuesta['status']!= '200' ? 'ERR17' : null);
-    $descripcion = !empty($descripcion) ? $descripcion : 'La auditoria tiene un error en el soporte '.$soporte;
-	// Crear un manejador cURL
+function guardarRespuesta($conex, $wemp_pmla, $historia, $ingreso, $responsable, $respuesta, $codError, $descripcion)
+{
+    $codError = !empty($codError) ? 'ERR18' : ($respuesta['status'] != '200' ? 'ERR17' : null);
+    $descripcion = $respuesta['status'] == '200' ? 'se subieron los soportes correctamente' : 'algun soporte no se subio correctamente';
+    // Crear un manejador cURL
     $ch = curl_init();
     if (!$ch) {
         die("Couldn't initialize a cURL handle");
     }
 
-    $data = array(  
-		'history' => $historia,
-		'entryNumber' => $ingreso,
-		'companyCode' => $responsable,
-		'support' => $soporte,
-		'type' => 'R',
-		'process' => json_encode($respuesta),
-		'auditAction' => '15',
-		'dateProcess' => date('Y-m-d'),
-		'hourProcess' => date('h:i'),
-		'httpCode' => $respuesta['status'],
-		'errorCode' => $codError,
-		'description' => $descripcion
+    $data = array(
+        'history' => $historia,
+        'entryNumber' => $ingreso,
+        'companyCode' => $responsable,
+        'support' => NULL,
+        'type' => 'R',
+        'process' => json_encode($respuesta['result']),
+        'auditAction' => '15',
+        'dateProcess' => date('Y-m-d'),
+        'hourProcess' => date('h:i'),
+        'httpCode' => $respuesta['status'],
+        'errorCode' => $codError,
+        'description' => $descripcion
     );
 
-	$urlAConsumir = consultarAliasPorAplicacion($conex,$wemp_pmla,'urlSoportesAutomaticos');
-
-	$opciones = array(
+    $urlAConsumir = consultarAliasPorAplicacion($conex, $wemp_pmla, 'urlSoportesAutomaticos');
+    $opciones = array(
         CURLOPT_URL                 => $urlAConsumir,
         CURLOPT_HEADER              => false,
         CURLOPT_RETURNTRANSFER      => 1,
         CURLOPT_POSTFIELDS          => $data,
         CURLOPT_CUSTOMREQUEST       => 'POST',
-    );      
+    );
 
     curl_setopt_array($ch, $opciones);
     $respuesta = curl_exec($ch);
-	curl_close($ch);
+    curl_close($ch);
 }
 
 /**
@@ -585,18 +718,13 @@ function armarPDFHistoriaClinica(
  * @return json[json] Respuesta del servicio y una descripcion
  */
 
-function devolverRespuestaSoporte($respuesta, $historia, $ingreso)
+function devolverRespuestaSoporte($respuesta, $historia, $ingreso, $soporte, $nombreDelSoporte)
 {
-    if ($respuesta['status'] == 200){
-        $arrayRespuestaSoportes['status'] = $respuesta['status'];
-        $arrayRespuestaSoportes['descripcion'] = $respuesta['result'];
-        $arrayRespuestaSoportes['paciente'] = $historia . '-' . $ingreso;
-    } 
-    else{
-        $arrayRespuestaSoportes['status'] = 400;
-        $arrayRespuestaSoportes['descripcion'] = $respuesta['result'];
-        $arrayRespuestaSoportes['paciente'] = $historia . '-' . $ingreso;
-    }
+    $arrayRespuestaSoportes['status'] = $respuesta['status'] == 200 ? $respuesta['status'] : 400;
+    $arrayRespuestaSoportes['codigoDelSoporte'] = $soporte;
+    $arrayRespuestaSoportes['nombreDelSoporte'] = $nombreDelSoporte;
+    $arrayRespuestaSoportes['descripcion'] = $respuesta['result'];
+    $arrayRespuestaSoportes['paciente'] = $historia . '-' . $ingreso;
     return $arrayRespuestaSoportes;
 }
 
@@ -611,12 +739,12 @@ function devolverRespuestaSoporte($respuesta, $historia, $ingreso)
  * @return json[json] Respuesta del servicio y una descripcion
  */
 
-function cargarDom($dom,$wemp_pmla,$codigoFormularioArbol)
+function cargarDom($dom, $wemp_pmla, $codigoFormularioArbol)
 {
 
-    if (empty($dom->getElementById('fecha_inicial')) || empty($dom->getElementById('fecha_final'))){
+    if (empty($dom->getElementById('fecha_inicial')) || empty($dom->getElementById('fecha_final'))) {
         $pdf_generado['status'] = '400';
-        $pdf_generado['result'] = 'Ha ocurrido un error inesperado';
+        $pdf_generado['result'] = 'No se ha encontrado datos iniciales para generar PDF en la historia clinica';
         return $pdf_generado;
     }
 
@@ -731,7 +859,7 @@ function cargarDom($dom,$wemp_pmla,$codigoFormularioArbol)
         'wespecial'                     => $wespecial,
         'tipoPeticion'                    => "normal",
         'htmlProgramasAnexos'            => $htmlProgramasAnexos,
-        'formulariosElegidos'            => $formulariosElegidos    
+        'formulariosElegidos'            => $formulariosElegidos
     );
 
     return $data;
@@ -791,15 +919,16 @@ function creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable)
  * @param archivoOrigen[array]	[ruta inicial de donde se ubica el soporte]
  * @return [string] Retorna un string con la ubicacion relativa de la carpeta
  */
-function recuperarSoporte($historia,$ingreso,$responsable,$wemp_pmla,$soporte,$archivoOrigen){
+function recuperarSoporte($historia, $ingreso, $responsable, $wemp_pmla, $soporte, $archivoOrigen)
+{
 
     if (file_exists($archivoOrigen)) {
         $nombreSoporte = $historia . '-' . $ingreso . '-' . $soporte . '.pdf';
         $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
-        $archivoDestino = $carpetaResponsable . '/' . $nombreSoporte ;
+        $archivoDestino = $carpetaResponsable . '/' . $nombreSoporte;
         copy($archivoOrigen, $archivoDestino);
         unlink($archivoOrigen);
-    }    
+    }
 }
 
 /**
@@ -815,14 +944,12 @@ function recuperarSoporte($historia,$ingreso,$responsable,$wemp_pmla,$soporte,$a
  * @return [html] Respuesta html
  */
 
-function generarPDF($conex,$estructura, $wnombrePDF, $historia, $ingreso, $descripcion, $wemp_pmla, $responsable, $hoja = null, $soporte)
+function generarPDF($estructura, $wnombrePDF, $historia, $ingreso, $descripcion, $wemp_pmla, $responsable, $hoja = null)
 {
-    $codError = '';
-	$descError = '';
-	try{
-		$decode_pdf = html_entity_decode($estructura);
-		// ************* CUERPO *************
-		$html = '<!DOCTYPE html>
+    try {
+        $decode_pdf = html_entity_decode($estructura);
+        // ************* CUERPO *************
+        $html = '<!DOCTYPE html>
 					<head></head>
 					<body style="border:0; margin:2px;">
 						' . $decode_pdf . '
@@ -830,54 +957,49 @@ function generarPDF($conex,$estructura, $wnombrePDF, $historia, $ingreso, $descr
 				</html>
 				<br>';
 
-		$carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
+        $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
 
-		//CREAR UN ARCHIVO .HTML CON EL CONTENIDO CREADO
-		$archivo_dir = $wnombrePDF . '-' . $hoja . ".html";
-        echo 'el nombre generado del archivo fue'.$archivo_dir;
+        //CREAR UN ARCHIVO .HTML CON EL CONTENIDO CREADO
+        $archivo_dir = $wnombrePDF . '-' . $hoja . ".html";
 
-		if (file_exists($archivo_dir)) {
-			unlink($archivo_dir);
-		}
+        if (file_exists($archivo_dir)) {
+            unlink($archivo_dir);
+        }
 
-		$f = fopen($archivo_dir, "w+");
-		fwrite($f, $html);
-		fclose($f);
+        $f = fopen($archivo_dir, "w+");
+        fwrite($f, $html);
+        fclose($f);
 
-		$salida = shell_exec("./generarPdfSoportes.sh \"" . $wnombrePDF . '-' . $hoja . '"');
-		$archivo_origen = $wnombrePDF . '-' . $hoja . '.pdf';
-        echo "<pre>$salida el nombre del pdf generado fue $archivo_origen</pre>";
+        shell_exec("./generarPdfSoportes.sh \"" . $wnombrePDF . '-' . $hoja . '"');
+        $archivo_origen = $wnombrePDF . '-' . $hoja . '.pdf';
 
-		if ($hoja == null) {
-			$archivo_destino = $carpetaResponsable . '/' . $wnombrePDF . ".pdf";
-		} else {
-			$archivo_destino = $carpetaResponsable . '/' . $wnombrePDF . '-' . $hoja . ".pdf";
-		}
+        if ($hoja == null) {
+            $archivo_destino = $carpetaResponsable . '/' . $wnombrePDF . ".pdf";
+        } else {
+            $archivo_destino = $carpetaResponsable . '/' . $wnombrePDF . '-' . $hoja . ".pdf";
+        }
 
-		if (file_exists($archivo_origen)) {
-			copy($archivo_origen, $archivo_destino);
-			unlink($archivo_origen);
-		}
+        if (file_exists($archivo_origen)) {
+            copy($archivo_origen, $archivo_destino);
+            unlink($archivo_origen);
+        }
 
-		if (file_exists($archivo_dir)) {
-			unlink($archivo_dir);
-		}
-		if (file_exists($archivo_destino)) {
-			$array_pdf_respuesta['status'] = 200;
-			$array_pdf_respuesta['result'] = 'se ha cargado el soporte correctamente:' . ' ' . $descripcion;
-		} else {
-			$pdf_generado['status'] = 400;
-			$pdf_generado['result'] = 'Ha ocurrido un error en el soporte:' . ' ' . $descripcion;
-		}
+        if (file_exists($archivo_dir)) {
+            unlink($archivo_dir);
+        }
+        if (file_exists($archivo_destino)) {
+            $array_pdf_respuesta['status'] = 200;
+            $array_pdf_respuesta['result'] = 'Transferencia completa del soporte:' . ' ' . $descripcion;
+        } else {
+            $pdf_generado['status'] = 400;
+            $pdf_generado['result'] = 'El soporte automatico no se ha podido descargar correctamente:' . ' ' . $descripcion;
+        }
 
-        guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte, $pdf_generado, $codError, $descripcion);
-		return $array_pdf_respuesta;
-
-	} catch (Exception $e) {
-		$codError = $e->getCode();
-		$descError = $e->getMessage();
-        guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte, $pdf_generado, $codError, $descError);
-	}
+        return $array_pdf_respuesta;
+    } catch (Exception $e) {
+        $codError = $e->getCode();
+        $descError = $e->getMessage();
+    }
 }
 
 /**
@@ -899,7 +1021,7 @@ function generarPDF($conex,$estructura, $wnombrePDF, $historia, $ingreso, $descr
  * @return [string] Retorna un string con la ubicacion relativa de la carpeta
  */
 
-function armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, $hoja = null,$conex = null,$codError = null)
+function armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, $hoja = null, $conex = null, $resultadoAdicional = null)
 {
     //Verificamos resultado de la consulta CURL
     $rutaPrincipal = consultarAliasPorAplicacion($conex, $wemp_pmla, 'documentosAutomatizacion');
@@ -907,24 +1029,28 @@ function armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsa
 
     if ($hoja == null) {
         $nombrePDFautomatizacion = $historia . '-' . $ingreso . '-' . $soporte . '.pdf';
-    } 
-    else {
+    } else {
         $nombrePDFautomatizacion = $historia . '-' . $ingreso . '-' . $soporte . '-' . '1' . '.pdf';
     }
-   
+
     $rutaArchivoGuardado = $rutaPrincipal . $rutaHistoria . '/' . $responsable . '/' . $nombrePDFautomatizacion;
 
     if (file_exists($rutaArchivoGuardado)) {
-        $pdf_generado['status'] = 200;
-        $pdf_generado['result'] = 'Transferencia completa del soporte :' . ' ' . $descripcion;
-    } 
-    else {
-        $pdf_generado['status'] = 400;
-        $pdf_generado['result'] = 'Ha ocurrido un error en el soporte:' . ' ' . $descripcion;
+        $pdfGenerado['status'] = 200;
+        $pdfGenerado['codigoDelSoporte'] = $soporte;
+        $pdfGenerado['nombreDelSoporte'] = $nombreDelSoporte;
+        $pdfGenerado['result'] = 'Transferencia completa del soporte :' . ' ' . $nombreDelSoporte;
+    } else {
+        $pdfGenerado['status'] = 400;
+        $pdfGenerado['codigoDelSoporte'] = $soporte;
+        $pdfGenerado['nombreDelSoporte'] = $nombreDelSoporte;
+        if (is_null($resultadoAdicional)) {
+            $pdfGenerado['result'] = 'El soporte automatico no se ha podido descargar correctamente:' . ' ' . $nombreDelSoporte;
+        } else {
+            $pdfGenerado['result'] = $resultadoAdicional;
+        }
     }
-
-    guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$pdf_generado,$codError,$descripcion);
-    return $pdf_generado;
+    return $pdfGenerado;
 }
 
 /***** FIN DE FUNCIONES GENERALES DEL WEBSERVICE */
@@ -956,75 +1082,78 @@ function consultaOrdenMedica(
     $rutaOrigen
 ) {
     global $wbasedato;
-	global $whce;
+    global $whce;
 
     $codError = '';
-	try{
-   //se valida credenciales
-    validarIngreso($conex, $wemp_pmla);
+    try {
+        //se valida credenciales
+        validarIngreso($conex, $wemp_pmla);
 
-    //Creacion del array para saber si tiene medicamentos o no
-    $examenesAImprimir = array();
-    //se hace el sql para decir si tiene mediamentos o no
-    $sqlContarOrdMedic = "SELECT count(0) AS cantidad 
-    FROM " . $wbasedato . "_000054 mov 
-    WHERE mov.Kadhis = '" . $historia . "'
-    AND mov.Kading = '" . $ingreso . "';";
+        //Creacion del array para saber si tiene medicamentos o no
+        $examenesAImprimir = array();
+        //se hace el sql para decir si tiene mediamentos o no
+        $sqlContarOrdMedic = "SELECT count(0) AS cantidad 
+        FROM " . $wbasedato . "_000054 mov 
+        WHERE mov.Kadhis = '" . $historia . "'
+        AND mov.Kading = '" . $ingreso . "';";
 
-    $ordMedicamentos = mysql_query($sqlContarOrdMedic, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlObtenerTiposOrden):</b><br>" . mysql_error());
-    $ordMedicamentos = mysql_fetch_assoc($ordMedicamentos);
+        $ordMedicamentos = mysql_query($sqlContarOrdMedic, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlObtenerTiposOrden):</b><br>" .
+            mysql_error());
+        $ordMedicamentos = mysql_fetch_assoc($ordMedicamentos);
 
-    if ($ordMedicamentos['cantidad'] > 0) {
-        array_push($examenesAImprimir, 'medtos');
+        if ($ordMedicamentos['cantidad'] > 0) {
+            array_push($examenesAImprimir, 'medtos');
+        }
+
+        //Se hace el sql para buscar las cantidades de opciones que debe de imprimirse
+        $sqlObtenerTiposOrden = "SELECT DISTINCT hcq.Codigo, hcq.Descripcion 
+        FROM " . $whce . "_000015 hcq
+        INNER JOIN " . $whce . "_000027  hcv on hcq.Codigo = hcv.Ordtor
+        WHERE Ordhis = '" . $historia . "'
+        AND Ording = '" . $ingreso . "'
+        ORDER BY 2 ASC;";
+
+        $tiposOrdenes = mysql_query($sqlObtenerTiposOrden, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlObtenerTiposOrden):</b><br>" .
+            mysql_error());
+
+        while ($rowTiposOrdenes = mysql_fetch_array($tiposOrdenes)) {
+            array_push($examenesAImprimir, $rowTiposOrdenes["Codigo"]);
+        }
+
+        $separado = implode(",", $examenesAImprimir);
+
+        // Se arma la estructura que va a llamar a la URL
+
+        $urlWemp_pmla = "wemp_pmla=" . $wemp_pmla;
+        $urlHistoria = "&whistoria=" . $historia;
+        $urlIngreso = "&wingreso=" . $ingreso;
+        $adicionales = '&tipoimp=imp&alt=off&pacEps=off&wtodos_ordenes=on&orden=asc&origen=' . '&arrOrden=' .
+            $separado . '&desdeImpOrden=on';
+        $urlOrdenMedica = $url . $urlWemp_pmla . $urlHistoria . $urlIngreso  . $adicionales .  "&soporte=" . $soporte .
+            '&automatizacion_pdfs=';
+
+        //inicializar url
+        $ch = curl_init();
+        if (!$ch) {
+            die("Couldn't initialize a cURL handle");
+        }
+
+        // opciones del cURL
+        curl_setopt($ch, CURLOPT_URL, $urlOrdenMedica);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+
+        $respuesta = curl_exec($ch);
+        curl_close($ch);
+
+        $archivoOrigen = $rutaOrigen . $historia . '-' . $ingreso . '-' . $soporte . '.pdf';
+        recuperarSoporte($historia, $ingreso, $responsable, $wemp_pmla, $soporte, $archivoOrigen);
+    } catch (Exception $e) {
+        $codError = $e->getCode();
+        return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
     }
 
-    //Se hace el sql para buscar las cantidades de opciones que debe de imprimirse
-    $sqlObtenerTiposOrden = "SELECT DISTINCT hcq.Codigo, hcq.Descripcion 
-	FROM ".$whce."_000015 hcq
-	INNER JOIN ".$whce."_000027  hcv on hcq.Codigo = hcv.Ordtor
-    WHERE Ordhis = '" . $historia . "'
-    AND Ording = '" . $ingreso . "'
-    ORDER BY 2 ASC;";
-
-    $tiposOrdenes = mysql_query($sqlObtenerTiposOrden, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlObtenerTiposOrden):</b><br>" . mysql_error());
-
-    while ($rowTiposOrdenes = mysql_fetch_array($tiposOrdenes)) {
-        array_push($examenesAImprimir, $rowTiposOrdenes["Codigo"]);
-    }
-
-    $separado = implode(",", $examenesAImprimir);
-
-    // Se arma la estructura que va a llamar a la URL
-    
-    $urlWemp_pmla = "wemp_pmla=" . $wemp_pmla;
-    $urlHistoria = "&whistoria=" . $historia;
-    $urlIngreso = "&wingreso=" . $ingreso;
-    $adicionales = '&tipoimp=imp&alt=off&pacEps=off&wtodos_ordenes=on&orden=asc&origen=' . '&arrOrden=' . $separado . '&desdeImpOrden=on';
-    $urlOrdenMedica = $url . $urlWemp_pmla . $urlHistoria . $urlIngreso  . $adicionales .  "&soporte=" . $soporte . '&automatizacion_pdfs=';
-
-    //inicializar url
-    $ch = curl_init();
-    if (!$ch) {
-        die("Couldn't initialize a cURL handle");
-    }
-
-    // opciones del cURL
-    curl_setopt($ch, CURLOPT_URL, $urlOrdenMedica);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-
-    curl_exec($ch);
-    curl_close($ch);
-
-    $archivoOrigen = $rutaOrigen . $historia . '-' . $ingreso . '-' . $soporte . '.pdf';
-    recuperarSoporte($historia, $ingreso, $responsable, $wemp_pmla, $soporte, $archivoOrigen);
-
-	} catch (Exception $e) {
-		$codError = $e->getCode();
-        return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex,$codError);
-	}
-
-	return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex);
+    return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
 }
 
 /**
@@ -1057,50 +1186,49 @@ function consultaMiPresMedsNoPbs(
     $url,
     $descripcion
 ) {
-    
-	$codError = '';
-	try{
-    //se valida credenciales
-    validarIngreso($conex, $wemp_pmla);
 
-    // Crear un manejador cURL
-    $ch = curl_init();
-    if (!$ch) {
-        die("Couldn't initialize a cURL handle");
-    }
+    $codError = '';
+    try {
+        //se valida credenciales
+        validarIngreso($conex, $wemp_pmla);
 
-    if (!empty($tipoDeDocumento && $documentoDeIdentidad)) {
-        $data = array(
-            'consultaAjax'                  => '',
-            'accion'                        => 'pintarReportePrescripcionMipres',
-            'wemp_pmla'                     => $wemp_pmla,
-            'historia'                      => $historia,
-            'ingreso'                       => $ingreso,
-            'responsable'                   => $responsable,
-            'fechaInicial'                  => $fechadeAdmision,
-            'fechaFinal'                    => date("Y-m-d"),
-            'tipDocPac'                     => $tipoDeDocumento,
-            'docPac'                        => $documentoDeIdentidad,
-            'tipDocMed'                     => '',
-            'docMed'                        => '',
-            'codEps'                        => '',
-            'tipoPrescrip'                  => '',
-            'nroPrescripcion'               => '',
-            'filtroMipres'                  => '',
-            'ambitoAtencion'                => ''
-        );
-        $url = $url . "&soporte=" . $soporte ;
-        $opciones = cargarOpcionesPOST($url,$data);        
-        curl_setopt_array($ch,$opciones);
-        curl_exec($ch);
-        curl_close($ch);
-    }
+        // Crear un manejador cURL
+        $ch = curl_init();
+        if (!$ch) {
+            die("Couldn't initialize a cURL handle");
+        }
 
+        if (!empty($tipoDeDocumento && $documentoDeIdentidad)) {
+            $data = array(
+                'consultaAjax'                  => '',
+                'accion'                        => 'pintarReportePrescripcionMipres',
+                'wemp_pmla'                     => $wemp_pmla,
+                'historia'                      => $historia,
+                'ingreso'                       => $ingreso,
+                'responsable'                   => $responsable,
+                'fechaInicial'                  => $fechadeAdmision,
+                'fechaFinal'                    => date("Y-m-d"),
+                'tipDocPac'                     => $tipoDeDocumento,
+                'docPac'                        => $documentoDeIdentidad,
+                'tipDocMed'                     => '',
+                'docMed'                        => '',
+                'codEps'                        => '',
+                'tipoPrescrip'                  => '',
+                'nroPrescripcion'               => '',
+                'filtroMipres'                  => '',
+                'ambitoAtencion'                => ''
+            );
+            $url = $url . "&soporte=" . $soporte;
+            $opciones = cargarOpcionesPOST($url, $data);
+            curl_setopt_array($ch, $opciones);
+            curl_exec($ch);
+            curl_close($ch);
+        }
     } catch (Exception $e) {
         $codError = $e->getCode();
-        return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex,$codError);
+        return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
     }
-    return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,'1',$conex);
+    return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, '1', $conex);
 }
 
 /**
@@ -1125,18 +1253,18 @@ function consultaFurips(
     $soporte,
     $factura = null,
     $urlFurips,
-    $descripcion,
+    $nombreDelSoporte,
     $rutaOrigen
 ) {
-	$codError = '';
-	try{
+    $codError = '';
+    try {
         //se valida credenciales
         validarIngreso($conex, $wemp_pmla);
-        
+
         //Se valida que venga la factura y no sea NULL
-        $validarFactura = validarFactura($factura,$descripcion);
-        
-        if($validarFactura['status'] != '400'){
+        $validarFactura = validarFactura($factura, $nombreDelSoporte);
+
+        if ($validarFactura['status'] != '400') {
 
             //se inicia el curl
             $ch = curl_init();
@@ -1148,21 +1276,21 @@ function consultaFurips(
                 'bandera'                       => '1',
             );
 
-            $opciones = cargarOpcionesPOST($urlFurips,$data);    
+            $opciones = cargarOpcionesPOST($urlFurips, $data);
             curl_setopt_array($ch, $opciones);
             curl_exec($ch);
             curl_close($ch);
 
             $archivoOrigen = $rutaOrigen . $factura . '.pdf';
-            recuperarSoporte($historia, $ingreso, $responsable, $wemp_pmla, $soporte,$archivoOrigen);
+            recuperarSoporte($historia, $ingreso, $responsable, $wemp_pmla, $soporte, $archivoOrigen);
+            return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
+        } else {
+            return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex, $validarFactura['result']);
         }
-
     } catch (Exception $e) {
-		$codError = $e->getCode();
-        return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex,$codError);
-	}
-
-	return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex);
+        $codError = $e->getCode();
+        return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
+    }
 }
 
 /**
@@ -1188,18 +1316,18 @@ function consultaFacturaPDF(
     $factura,
     $fuenteDeFactura,
     $url,
-    $descripcion
+    $nombreDelSoporte
 ) {
 
     $codError = '';
-	try{
+    try {
         //se valida credenciales
         validarIngreso($conex, $wemp_pmla);
 
         //Se valida que venga la factura y no sea NULL
-        $validarFactura = validarFactura($factura,$descripcion);
-        
-        if($validarFactura['status'] != '400'){
+        $validarFactura = validarFactura($factura, $nombreDelSoporte);
+
+        if ($validarFactura['status'] != '400') {
 
             // Crear un manejador cURL
             $ch = curl_init();
@@ -1214,20 +1342,27 @@ function consultaFacturaPDF(
                 'documento'                    => $factura,
             );
 
-            $UrlFacturaPDF = $url."historia=" . $historia . "&ingreso=" . $ingreso . "&responsable=" . $responsable . "&soporte=" . $soporte ;
-            
-            $opciones = cargarOpcionesPOST($UrlFacturaPDF,$data);       
+            $UrlFacturaPDF = $url . "historia=" . $historia . "&ingreso=" . $ingreso . "&responsable=" . $responsable . "&soporte=" . $soporte;
+
+            $opciones = cargarOpcionesPOST($UrlFacturaPDF, $data);
             curl_setopt_array($ch, $opciones);
-            curl_exec($ch);
+            $respuesta = curl_exec($ch);
             curl_close($ch);
+            $respuestaCenFinanciero = 'No se pudo obtener el archivo pdf desde el cen financiero';
+            $posicionCoincidencia = strpos($respuesta, $respuestaCenFinanciero);
+            if ($posicionCoincidencia != false) {
+                return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex, $respuestaCenFinanciero);
+            }
+            else{
+                return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
+            }
+        } else {
+            return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex, $validarFactura['result']);
         }
-
-	} catch (Exception $e) {
-		$codError = $e->getCode();
-        return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex,$codError);
-	}
-
-    return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex);
+    } catch (Exception $e) {
+        $codError = $e->getCode();
+        return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
+    }
 }
 
 /**
@@ -1253,18 +1388,18 @@ function consultaDetalleDeCargos(
     $factura,
     $fuenteDeFactura,
     $urlDetalleDeCargos,
-    $descripcion
+    $nombreDelSoporte
 ) {
-	$codError = '';
-	try{    
+    $codError = '';
+    try {
         //se valida credenciales
         validarIngreso($conex, $wemp_pmla);
 
         //Se valida que venga la factura y no sea NULL
-        $validarFactura = validarFactura($factura,$descripcion);
+        $validarFactura = validarFactura($factura, $nombreDelSoporte);
 
-        if($validarFactura['status'] != '400'){
-            
+        if ($validarFactura['status'] != '400') {
+
             //Se inicia curl
             $ch = curl_init();
 
@@ -1274,39 +1409,37 @@ function consultaDetalleDeCargos(
                 'fac'                    => $factura,
                 'com'                    => 'a',
             );
-    
-            $opciones = cargarOpcionesPOST($urlDetalleDeCargos,$data);
+
+            $opciones = cargarOpcionesPOST($urlDetalleDeCargos, $data);
             curl_setopt_array($ch, $opciones);
             $response = curl_exec($ch);
             curl_close($ch);
-    
+
             $facturaEnSaldoCero = 'no tiene factura';
             $usuarioNoAutenticado = 'Usuario no autenticado';
-            $posicion_coincidencia = strpos($response,$facturaEnSaldoCero); 
-            $posicionUsuarioAutenticado = strpos($response,$usuarioNoAutenticado);            
+            $posicion_coincidencia = strpos($response, $facturaEnSaldoCero);
+            $posicionUsuarioAutenticado = strpos($response, $usuarioNoAutenticado);
+            if ($posicion_coincidencia === false && $posicionUsuarioAutenticado === false) {
+                $nombrePDFDetalleDeCargos = $historia . '-' . $ingreso . '-' .  $soporte;
+                return generarPDF(
+                    htmlentities($response),
+                    $nombrePDFDetalleDeCargos,
+                    $historia,
+                    $ingreso,
+                    $nombreDelSoporte,
+                    $wemp_pmla,
+                    $responsable,
+                    null
+                );
+            } else {
+                return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex,'No tiene asociado ningun detalle de cargo');
+            }
+        } else {
+            return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex, $validarFactura['result']);
         }
-
-	} catch (Exception $e) {
-		$codError = $e->getCode();
-		$descError = $e->getMessage();
-	}
-
-	if ($posicion_coincidencia === false && $posicionUsuarioAutenticado === false) {
-        $nombrePDFDetalleDeCargos = $historia . '-' . $ingreso . '-' .  $soporte;
-        return generarPDF(
-            $conex,
-            htmlentities($response),
-            $nombrePDFDetalleDeCargos,
-            $historia,
-            $ingreso,
-            $descripcion,
-            $wemp_pmla,
-            $responsable,
-			null,
-			$soporte
-        );
-    } else {
-        return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex,$codError);
+    } catch (Exception $e) {
+        $codError = $e->getCode();
+        $descError = $e->getMessage();
     }
 }
 
@@ -1365,7 +1498,7 @@ function consultaHistoriaClinica(
 
         if (empty($dom->getElementById('fecha_inicial'))) {
             $pdf_generado['status'] = '400';
-            $pdf_generado['result'] = 'Ha ocurrido un error inesperado';
+            $pdf_generado['result'] = 'El soporte automatico no se ha podido descargar correctamente';
             return $pdf_generado;
         }
 
@@ -1623,22 +1756,22 @@ function consultaDetalleDeMateriales(
     $factura,
     $fuenteDeFactura,
     $urlDetalleDeMateriales,
-    $descripcion
+    $nombreDelSoporte
 ) {
-	$codError = '';
-	try{
+    $codError = '';
+    try {
         //se valida credenciales
         validarIngreso($conex, $wemp_pmla);
         $usuarioAutomatizacion = consultarAliasPorAplicacion($conex, $wemp_pmla, 'usuarioAutomatizacionDetalleDeCargos');
         //Se valida que venga la factura y no sea NULL
-        $validarFactura = validarFactura($factura,$descripcion);
+        $validarFactura = validarFactura($factura, $nombreDelSoporte);
 
         //traer resultado de nueva eps
         $nitNuevaEps = consultarAliasPorAplicacion($conex, $wemp_pmla, 'nitNuevaEps');
-        
+
         $eps = $responsable != $nitNuevaEps ? 'N' : 'S';
-       
-        if($validarFactura['status'] != '400'){
+
+        if ($validarFactura['status'] != '400') {
             $ch = curl_init();
             $data = array(
                 'usuario'                => $usuarioAutomatizacion,
@@ -1649,37 +1782,34 @@ function consultaDetalleDeMateriales(
                 'cneps'                  => $eps
             );
 
-            $opciones = cargarOpcionesPOST($urlDetalleDeMateriales,$data);
+            $opciones = cargarOpcionesPOST($urlDetalleDeMateriales, $data);
             curl_setopt_array($ch, $opciones);
             $response = curl_exec($ch);
             curl_close($ch);
             $facturaEnSaldoCero = 'no tiene detalle de materiales';
+            
             $posicion_coincidencia = strpos($response, $facturaEnSaldoCero);
+            if ($posicion_coincidencia === false) {
+                $nombrePDFDetalleDeMateriales = $historia . '-' . $ingreso . '-' . $soporte;
+                return generarPDF(
+                    htmlentities($response),
+                    $nombrePDFDetalleDeMateriales,
+                    $historia,
+                    $ingreso,
+                    $nombreDelSoporte,
+                    $wemp_pmla,
+                    $responsable,
+                    null
+                );
+            } else {
+                return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex, 'No tiene asociado ningun detalle de materiales');
+            }
+        } else {
+            return armarRespuesta($nombreDelSoporte, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex, $validarFactura['result']);
         }
-
-
     } catch (Exception $e) {
-		$codError = $e->getCode();
-		$descError = $e->getMessage();
-	}
-    
-    if ($posicion_coincidencia === false) {
-        $nombrePDFDetalleDeMateriales = $historia . '-' . $ingreso . '-' . $soporte;
-        return generarPDF(
-            $conex,
-            htmlentities($response),
-            $nombrePDFDetalleDeMateriales,
-            $historia,
-            $ingreso,
-            $descripcion,
-            $wemp_pmla,
-            $responsable,
-            null,
-            $soporte
-        );
-    } 
-    else {
-        return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex,$codError);
+        $codError = $e->getCode();
+        $descError = $e->getMessage();
     }
 }
 
@@ -1707,7 +1837,7 @@ function ConsultaHojaDeMedicamentos(
 ) {
     global $wbasedato;
     $codError = '';
-    try{
+    try {
 
         validarIngreso($conex, $wemp_pmla);
         $query_rango = "SELECT  Ubihis, Ubiing, Ubialp as alta_pac,movhos18.Fecha_data AS fecha_ingreso,movhos18.Hora_data, Ubifad AS fecha_alta,Ubihad,Ccocod,Cconom
@@ -1762,7 +1892,7 @@ function ConsultaHojaDeMedicamentos(
             $urlTipoPos = "&wtipopos=todos&imprimir=true";
             $urlFecha = '&wfechainicial=' . $fecha_ingreso . '&wfechafinal=' . $fecha_final . '&wrango_fechas=1';
             $url = $domain . $urlHistoria . $urlIngreso . $urlCentroDeCosto . $urlWemp_pmla . $urlTipoPos . $urlFecha . '&automatizacion_pdfs=';
-            
+
             // Crear un manejador cURL
             $ch = curl_init();
             if (!$ch) {
@@ -1780,21 +1910,20 @@ function ConsultaHojaDeMedicamentos(
                 // some kind of an error happened
                 curl_close($ch); // close cURL handler       
                 $pdf_generado['status'] = '400';
-                $pdf_generado['result'] = 'Ha ocurrido un error en: Hoja de medicamentos';
+                $pdf_generado['result'] = 'El soporte automatico no se ha podido descargar correctamente: Hoja de medicamentos';
             } else {
                 $info = curl_getinfo($ch);
                 curl_close($ch); // close cURL handler
 
                 if (empty($info['http_code']) || $info['http_code'] !== 200) {
                     $pdf_generado['status'] = '400';
-                    $pdf_generado['result'] = 'Ha ocurrido un error en: Hoja de medicamentos';
+                    $pdf_generado['result'] = 'El soporte automatico no se ha podido descargar correctamente: Hoja de medicamentos';
                 } else {
                     // load the HTTP codes
                     $nombrePDFHojaDeMedicamentos = $historia . '-' . $ingreso . '-' . $soporte;
                     if ($posicion_coincidencia === false) {
                         $llamadoPDF = $llamadoPDF + 1;
                         $pdf_generado = generarPDF(
-                            $conex,
                             htmlentities($ret),
                             $nombrePDFHojaDeMedicamentos,
                             $historia,
@@ -1802,8 +1931,7 @@ function ConsultaHojaDeMedicamentos(
                             $descripcion,
                             $wemp_pmla,
                             $responsable,
-                            $numero_de_hojas,
-                            $soporte
+                            $numero_de_hojas
                         );
                     }
                 }
@@ -1816,9 +1944,8 @@ function ConsultaHojaDeMedicamentos(
                 $formato = 'Y-m-d';
                 $fecha = DateTime::createFromFormat($formato, $fecha_ingreso);
                 $new_date =  $fecha->format('Y-m-d H:i:s');
-                $rango['dif_fechas'] = diasEntreFechas($new_date, $rango['fecha_alta']); 
+                $rango['dif_fechas'] = diasEntreFechas($new_date, $rango['fecha_alta']);
                 $numero_de_hojas++;
-
             } else {
                 $rango['dif_fechas'] = 0;
             }
@@ -1826,40 +1953,42 @@ function ConsultaHojaDeMedicamentos(
     } catch (Exception $e) {
         $codError = $e->getCode();
     }
-	return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,'1',$conex,$codError);
+    return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, '1', $conex);
 }
 
-function ConsultaLaboratorio($conex, 
-    $wemp_pmla, 
-    $historia, 
-    $ingreso, 
-    $responsable, 
+function ConsultaLaboratorio(
+    $conex,
+    $wemp_pmla,
+    $historia,
+    $ingreso,
+    $responsable,
     $soporte,
-    $descripcion){
+    $descripcion
+) {
 
     global $whce;
     global $wbasedato;
 
     $codError = '';
 
-    try{
+    try {
         $sacarResultados = "SELECT Eexcod
         FROM " . $wbasedato . "_000045 o
         WHERE Eexcas = 'on'";
 
         $resResultados = mysql_query($sacarResultados, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $resResultados . " - " . mysql_error());
-        $numResultados = mysql_num_rows($resResultados);    
+        $numResultados = mysql_num_rows($resResultados);
 
         $having = '';
 
         if ($numResultados > 0) {
             $having = 'having(';
-            while( $row = mysql_fetch_array( $resResultados ) ){
-                $having .= 'NOT FIND_IN_SET("'.$row['Eexcod'].'",estados) AND ';         
-            }   
+            while ($row = mysql_fetch_array($resResultados)) {
+                $having .= 'NOT FIND_IN_SET("' . $row['Eexcod'] . '",estados) AND ';
+            }
 
             $having = substr($having, 0, -5);
-            $having .= ')'; 
+            $having .= ')';
         }
 
         //Las historias deben de ser desde 2021-08-01
@@ -1883,60 +2012,57 @@ function ConsultaLaboratorio($conex,
             while ($rowsLaboratorio = mysql_fetch_array($resLaboratorio)) {
 
                 $urlCompleta = $rowsLaboratorio['Deturp'];
-                $verificarURL = explode(",", $urlCompleta );
-                foreach($verificarURL as $resultadoLaboratorio){
-                    $verificarExtensionPDF = substr($resultadoLaboratorio,-4);
-                    if($verificarExtensionPDF === '.pdf'){
-                        $nombreLaboratorio = $historia . '-' . $ingreso . '-' . $soporte .'-'.  $numeroDelPDF;
+                $verificarURL = explode(",", $urlCompleta);
+                foreach ($verificarURL as $resultadoLaboratorio) {
+                    $verificarExtensionPDF = substr($resultadoLaboratorio, -4);
+                    if ($verificarExtensionPDF === '.pdf') {
+                        $nombreLaboratorio = $historia . '-' . $ingreso . '-' . $soporte . '-' .  $numeroDelPDF;
                         $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
                         $archivoDestino = $carpetaResponsable . '/' . $nombreLaboratorio . ".pdf";
                         if (copy($resultadoLaboratorio, $archivoDestino)) {
                             $numeroDelPDF += 1;
                         }
-                    }
-                    else{
-                        $urlAmazon = consultarAliasPorAplicacion($conex,$wemp_pmla,'urlActualizarLaboratorio');
-                        $mysqli = new mysqli('131.1.18.106:3306', '4D_UCONSULTA', 'NTmUsQbPvRC2UD74','4dlab');
+                    } else {
+                        $urlAmazon = consultarAliasPorAplicacion($conex, $wemp_pmla, 'urlActualizarLaboratorio');
+                        $mysqli = new mysqli('131.1.18.106:3306', '4D_UCONSULTA', 'NTmUsQbPvRC2UD74', '4dlab');
 
-                        $subStringUrlOriginal = recortarUrl($urlAmazon,$resultadoLaboratorio);
-                        $agregarCaracteresParaSQL = '%'.$subStringUrlOriginal.'%';
+                        $subStringUrlOriginal = recortarUrl($urlAmazon, $resultadoLaboratorio);
+                        $agregarCaracteresParaSQL = '%' . $subStringUrlOriginal . '%';
                         $sqlUrlLaboratorio = "SELECT *
                         FROM " . 'OT' . " mov 
                         WHERE mov.NumeroEnLaWeb LIKE '$agregarCaracteresParaSQL';";
-                        
-                        $resultado = $mysqli->query($sqlUrlLaboratorio) or die("<b>ERROR EN QUERY MATRIX(sqlUrlLaboratorio ):</b><br>". 
-                        $mysqli->error);
+
+                        $resultado = $mysqli->query($sqlUrlLaboratorio) or die("<b>ERROR EN QUERY MATRIX(sqlUrlLaboratorio ):</b><br>" .
+                            $mysqli->error);
 
                         while ($fila = $resultado->fetch_assoc()) {
                             $url = $fila['NumeroEnLaWeb'];
                         }
-                        
-                        $resultadoUrlLaboratorio = $urlAmazon.$url.'.pdf';
+
+                        $resultadoUrlLaboratorio = $urlAmazon . $url . '.pdf';
                         mysqli_close($mysqli);
 
-                        if(!empty($resultadoUrlLaboratorio) && !empty($resultadoLaboratorio)){                            
-                            $nombreLaboratorio = $historia . '-' . $ingreso . '-' . $soporte .'-'.  $numeroDelPDF;
+                        if (!empty($resultadoUrlLaboratorio) && !empty($resultadoLaboratorio)) {
+                            $nombreLaboratorio = $historia . '-' . $ingreso . '-' . $soporte . '-' .  $numeroDelPDF;
                             $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
                             $archivoDestino = $carpetaResponsable . '/' . $nombreLaboratorio . ".pdf";
                             if (copy($resultadoUrlLaboratorio, $archivoDestino)) {
                                 $numeroDelPDF += 1;
                             }
                         }
-                    }                 
+                    }
                 }
             }
-        }
-        else{
+        } else {
             $respuestaLaboratorio['status'] = '400';
-            $respuestaLaboratorio['result'] = 'Ha ocurrido un error con el soporte de:' . ' ' . $descripcion;
-            return $respuestaLaboratorio;            
+            $respuestaLaboratorio['result'] = 'El soporte automatico no se ha podido descargar correctamente:' . ' ' . $descripcion;
+            return $respuestaLaboratorio;
         }
-    }
-     catch (Exception $e) {
+    } catch (Exception $e) {
         $codError = $e->getCode();
-        return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,'1',$conex,$codError);
-    }       
-    return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,'1',$conex,$codError);
+        return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, '1', $conex);
+    }
+    return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, '1', $conex);
 }
 
 /**
@@ -1972,14 +2098,14 @@ function consultaSoportesImex(
     global $wcliame;
 
     $codError = '';
-    
-    try{
+
+    try {
 
         //Se valida si tiene la conexion a matrix y cual es su empresa
-        validarIngreso($conex,$wemp_pmla);
+        validarIngreso($conex, $wemp_pmla);
 
         //Se inidica la fecha inicial en que comenzo la interoperabilidad con Imex
-        $fechaInicioImex = consultarAliasPorAplicacion($conex,$wemp_pmla,'fechaInicioImex');
+        $fechaInicioImex = consultarAliasPorAplicacion($conex, $wemp_pmla, 'fechaInicioImex');
 
         //Query para sacar la Url de Imex para cada uno de los soportes asociados a los pacientes
         // la fecha de inicio imex es 2020-10-01
@@ -1995,22 +2121,22 @@ function consultaSoportesImex(
             AND a.Fecha_data > $fechaInicioImex 
             GROUP BY 1;";
 
-        $resPrescripciones = mysql_query($sacarUrlPorSql, $conex) or die("Error: ".mysql_errno()."- en el query: " . $sacarUrlPorSql . " - " . mysql_error());
+        $resPrescripciones = mysql_query($sacarUrlPorSql, $conex) or die("Error: " . mysql_errno() . "- en el query: " . $sacarUrlPorSql . " - " . mysql_error());
         $numPrescripciones = mysql_num_rows($resPrescripciones);
-    
+
         //Se valida si tiene algun registro para recorrerlo
-        if ($numPrescripciones > 0){
+        if ($numPrescripciones > 0) {
 
             $numeroDelPDF = 1;
-            while ($rowsPrescripciones = mysql_fetch_array($resPrescripciones)){
-    
+            while ($rowsPrescripciones = mysql_fetch_array($resPrescripciones)) {
+
                 //Se nombra el archivo, se extrae la url y se lleva al intercambiador.
                 $url = $rowsPrescripciones['mvcurp'];
-                if ($url !== null){
+                if ($url !== null) {
 
                     // Crear un manejador cURL
                     $ch = curl_init();
-                    if (!$ch){
+                    if (!$ch) {
                         die("Couldn't initialize a cURL handle");
                     }
 
@@ -2021,44 +2147,81 @@ function consultaSoportesImex(
 
                     //Ejecutar cURL
                     $ret = curl_exec($ch);
-                    if($ret == false){
+                    if ($ret == false) {
                         echo curl_error($ch);
                     }
-                    $regexImex = consultarAliasPorAplicacion($conex,$wemp_pmla,'regexImex');
+                    $regexImex = consultarAliasPorAplicacion($conex, $wemp_pmla, 'regexImex');
                     preg_match_all($regexImex, $ret, $match);
-                    if(count($match[0]) > 1 ){
+                    $versionPDF = consultarAliasPorAplicacion($conex, $wemp_pmla, 'versionPDF');
+                    $regexPDF = "/^%PDF-$versionPDF/";
+                    if (count($match[0]) > 1) {
                         $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
-                        foreach($match[0] as $soporteUrl){
-                            $nombreImex =   $historia . '-' . $ingreso . '-' . $soporte .'-'.  $numeroDelPDF;
+                        foreach ($match[0] as $soporteUrl) {
+                            $nombreImex =   $historia . '-' . $ingreso . '-' . $soporte . '-' .  $numeroDelPDF;
                             $archivoDestino = $carpetaResponsable . '/' . $nombreImex . ".pdf";
                             copy($soporteUrl, $archivoDestino);
-                            chmod($archivoDestino,0777);
+                            $filecontent = file_get_contents($archivoDestino);
+                            if (!preg_match($regexPDF, $filecontent)) {
+                                modificarFuncion($archivoDestino, $versionPDF);
+                            }
+                            chmod($archivoDestino, 0777);
                             $numeroDelPDF += 1;
                         }
-                    }
-                    else{
-                        $nombreImex =   $historia . '-' . $ingreso . '-' . $soporte .'-'.  $numeroDelPDF;
+                    } else {
+                        $nombreImex =   $historia . '-' . $ingreso . '-' . $soporte . '-' .  $numeroDelPDF;
                         $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
                         $archivoDestino = $carpetaResponsable . '/' . $nombreImex . ".pdf";
                         copy($url, $archivoDestino);
-                        chmod($archivoDestino,0777);
+                        $filecontent = file_get_contents($archivoDestino);
+                        if (!preg_match($regexPDF, $filecontent)) {
+                            modificarFuncion($archivoDestino, $versionPDF);
+                        }
+                        chmod($archivoDestino, 0777);
                         $numeroDelPDF += 1;
-                    }  
-                }
-                else{
+                    }
+                } else {
                     $respuestaImex['status'] = '400';
                     $respuestaImex['descripcion'] = 'No se le ha generado el soporte:' . $descripcion;
                     return $respuestaImex;
                 }
             }
         }
-    }
-    catch (Exception $e) {
+    } catch (Exception $e) {
         $codError = $e->getCode();
-        return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,'1',$conex,$codError);
-    }           
+        return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, '1', $conex);
+    }
     //Se verifica la respuesta fue exitosa, es porque se creo el PDF correctamente
-    return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,'1',$conex,$codError);
+    return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, '1', $conex);
+}
+
+/**
+ * Este metodo permite cambiar la version del pdf de un documento
+ * recibiendo como parametro donde se encuentra el archivo y la version del pdf a cambiar
+ *
+ * @param conex_unix[object]		[Conexión a unix]
+ * @param wemp_pmla[object]		    [Conexión a empresa]
+ * 
+ * @return [json] Respuesta Json con 200 si fue correcto o 400 si fue errado
+ */
+
+function modificarFuncion($path, $version)
+{
+    $fileName = (basename($path, '.pdf'));
+    $temporalName = $fileName . '-temp';
+    $temporalPath = explode('/', $path);
+    array_pop($temporalPath);
+    $temporalPath = implode('/', $temporalPath) . '/' . $temporalName . '.pdf';
+    $command = 'gs -sDEVICE=pdfwrite -dCompatibilityLevel=' . $version . ' -dNOPAUSE -dBATCH -sOutputFile=' . $temporalPath . ' ' . $path;
+    $exitCode = 0;
+    $output = '';
+    exec($command, $output, $exitCode);
+    if ($exitCode == 0) {
+        $oldPath = str_replace($fileName, $temporalName, $path);
+        copy($oldPath, $path);
+        unlink($oldPath);
+    }
+
+    return;
 }
 
 /**
@@ -2161,24 +2324,36 @@ function sumaDiasAFecha($fecha, $dias, $accion = '', $horas = '')
     return $fecha_aumentada;
 }
 
-function recortarUrl($urlAmazon,$urlMatrix){
+function recortarUrl($urlAmazon, $urlMatrix)
+{
     if (!is_bool(strpos($urlMatrix, $urlAmazon)))
-    return substr($urlMatrix, strpos($urlMatrix,$urlAmazon)+strlen($urlAmazon));
+        return substr($urlMatrix, strpos($urlMatrix, $urlAmazon) + strlen($urlAmazon));
 };
 
 // Se valida si la acción fue enviada por GET o por POST para las pruebas
-    if (isset($_REQUEST['accionGet'])){
-        $arrayRespuesta = ConsultaEstadoWithGet($conex,$_GET['wemp_pmla'],$_GET['historia'],$_GET['ingreso'],$_GET['responsable'],
-        $_GET['documentoDeIdentidad'],$_GET['tipoDeDocumento'],$_GET['fechaDeAdmision'],$_GET['numeroFactura'],$_GET['fuenteFactura'],
-        $_GET['descripcion'],$_GET['formulario'],$_GET['concepto'],$_GET['soportes']);
-    }
-    else if(isset($_REQUEST['accionPost'])){
-        $arrayRespuesta = ConsultaEstadoWithPost($conex, $_GET['wemp_pmla'], $_POST['patients']);        
-    }
-    else{
-        $arrayRespuesta = ConsultaErronea();        
-    }
+if (isset($_REQUEST['accionGet'])) {
+    $arrayRespuesta = ConsultaEstadoWithGet(
+        $conex,
+        $_GET['wemp_pmla'],
+        $_GET['historia'],
+        $_GET['ingreso'],
+        $_GET['responsable'],
+        $_GET['documentoDeIdentidad'],
+        $_GET['tipoDeDocumento'],
+        $_GET['fechaDeAdmision'],
+        $_GET['numeroFactura'],
+        $_GET['fuenteFactura'],
+        $_GET['descripcion'],
+        $_GET['formulario'],
+        $_GET['concepto'],
+        $_GET['soportes']
+    );
+} else if (isset($_REQUEST['accionPost'])) {
+    $arrayRespuesta = ConsultaEstadoWithPost($conex, $_GET['wemp_pmla'], $_POST['patients']);
+} else {
+    $arrayRespuesta = ConsultaErronea();
+}
 
-    // Respuesta codificada en Javascript 
-    header('Content-type: text/javascript');
-    echo json_encode($arrayRespuesta, JSON_PRETTY_PRINT);
+// Respuesta codificada en Javascript 
+header('Content-type: text/javascript');
+echo json_encode($arrayRespuesta, JSON_PRETTY_PRINT);
