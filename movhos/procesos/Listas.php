@@ -169,22 +169,24 @@
                 var wemp_pmla = $("#wemp_pmla").val();
                 var ok = $("#ok").val();
                 var wcco = $("#wcco").val();
-                $.post("Listas.php",
-                {
-                    wemp_pmla			: wemp_pmla,
-                    ok                  : ok,
-                    wcco                : wcco,
-                    respuestaUsuario    : resp,
-                    posicion            : posicion,
-                    num                 : num,
-                }
-                ,function(data) {
-                    console.log(data);
-                },"json" );
+                // $.post("Listas.php",
+                // {
+                //     wemp_pmla			: wemp_pmla,
+                //     ok                  : ok,
+                //     wcco                : wcco,
+                //     respuestaUsuario    : resp,
+                //     posicion            : posicion,
+                //     num                 : num,
+                // }
+                // ,function(data) {
+                //     console.log(data);
+                // },"json" );
+                debugger;
 
                 var listaForm = document.forms['listas'];
                 addHidden(listaForm, 'posicion', posicion);
                 addHidden(listaForm, 'num', num);
+                // document.querySelector("form").reset();
                 // listaFom.submit();
                 document.forms.listas.submit();
             }
@@ -953,7 +955,7 @@ if(!isset($_SESSION['user']))
 else
 {
     $key = substr($user,2,strlen($user));
-    echo "<form name='listas' action='Listas.php' method=post>";
+    echo "<form name='listas' action='#' method=post>";
 
     $empresa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
     $whce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'HCE');
