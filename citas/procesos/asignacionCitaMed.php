@@ -237,7 +237,7 @@ if (isset($accion) and $accion == 'buscar')
 		$("#FecSol").datepicker({
 			dateFormat:"yy-mm-dd",
 			fontFamily: "verdana",
-			dayNames: [ "Lunes", "Martes", "Mi√©rcoles", "Jueves", "Viernes", "S√°bado", "Domingo" ],
+			dayNames: [ "Lunes", "Martes", "MiÈrcoles", "Jueves", "Viernes", "S·bado", "Domingo" ],
 			monthNames: [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
 			dayNamesMin: [ "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa" ],
 			dayNamesShort: [ "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa" ],
@@ -374,21 +374,21 @@ if (isset($accion) and $accion == 'buscar')
 /**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : 000001_prx6.php
-	   Fecha de Liberaci√≥n : 2007-05-03
+	   Fecha de LiberaciÛn : 2007-05-03
 	   Autor : Ing. Pedro Ortiz Tamayo
 	   Version Actual : 2011-01-07
 	   
-	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface gr√°fica que permite grabar los  de las
+	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface gr·fica que permite grabar los  de las
 	   las citas par los diferentes servicios hospitalarios ambulatorios.
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
 		2020-09-09:	Edwin Molina
 					Se hacen cambios varios para recibir los datos por defecto que quedaran en la cita y vienen de la lista de espera para Drive Thru
-	    2020-04-02: Arleyda Insignares C. Se adicionan parametros en la funci√≥n envioEmailCita() para implementar 
+	    2020-04-02: Arleyda Insignares C. Se adicionan parametros en la funciÛn envioEmailCita() para implementar 
 	                citas de teleorientacion.
-	    2020-03-25: Arleyda Insignares C. Se adiciona campo de correo electr√≥nico para ser diligenciado en caso de dar una cita por telemedicina, solo en este caso el programa enviar√° un correo informando los datos de la cita y especificaciones seg√∫n par√°metro 'EmailAgendamiento' y 'telemedicina' en la tabla root_000051. 
-	    2020-01-20: Arleyda Insignares C. se mejora la consulta de citas posteriores por identificaci√≥n del paciente mediante la consulta consultarCitas() localizada en el include de citas.
+	    2020-03-25: Arleyda Insignares C. Se adiciona campo de correo electrÛnico para ser diligenciado en caso de dar una cita por telemedicina, solo en este caso el programa enviar· un correo informando los datos de la cita y especificaciones seg˙n par·metro 'EmailAgendamiento' y 'telemedicina' en la tabla root_000051. 
+	    2020-01-20: Arleyda Insignares C. se mejora la consulta de citas posteriores por identificaciÛn del paciente mediante la consulta consultarCitas() localizada en el include de citas.
 	    2013-09-03: Se modifica el script para que calcule el indice de oportunidad desde la fecha actual hasta la fecha de la cita. Viviana Rodas
 	    2013-08-29: Se modifica el programa para que calcule el indice de oportunidad entre las dos fechas ingresadas, la fecha solicitada y la fecha en la que se le dio la cita. Viviana Rodas
 		2013-05-15: Se corrige la validacion de la fecha para que las citas no queden trocadas. Viviana Rodas
@@ -405,15 +405,13 @@ if (isset($accion) and $accion == 'buscar')
 	   		paciente cuando se digita la cedula.
 	   				
 	   .2007-05-03
-	   		Release de Versi√≥n Beta.
+	   		Release de VersiÛn Beta.
 	   		
 	   
 	   		
 	   		
 [*DOC]   		
 ***********************************************************************************************************************/
-
-
 
 function comentariosAnteriores( $id ){
 	
@@ -488,7 +486,7 @@ function sendToEmail( $wasunto, $mensaje, $altbody, $wremitente, $wdestinatarios
 	}
 	
 	//Correos de los destinatarios
-	//Puede llevar un nombre de destino por posici√≥n y debe ser separado por - entre el correo y el nombre
+	//Puede llevar un nombre de destino por posiciÛn y debe ser separado por - entre el correo y el nombre
 	for($i=0; $i<count($wdestinatarios); $i++)
 	{
 		list( $wemail_destino, $wnombre_destino ) 	= explode( "-", $wdestinatarios[$i] );
@@ -499,7 +497,7 @@ function sendToEmail( $wasunto, $mensaje, $altbody, $wremitente, $wdestinatarios
 	
 	if(!$mail->Send()) {
 		$data[ 'Error' ] 	 =  "0";
-		$data[ 'mensError' ] =  "No se envi√≥ el correo";
+		$data[ 'mensError' ] =  "No se enviÛ el correo";
 	}
 	else{
 		$accion 	    	 = "envio email";
@@ -570,7 +568,7 @@ if(!isset($_SESSION['user']))
 else
 {		
 	$key = substr($user,2,strlen($user));	
-	strpos($Codequ,"-") = consultarAliasPorAplicacion($conex, $wemp_pmla, "digitosSbtrAg");
+	$digitosPermitidosAg = consultarAliasPorAplicacion($conex, $wemp_pmla, "digitosSbtrAg");
 
 	echo "<input type='HIDDEN' id='empresa' name='empresa' value='".$empresa."'>";
     echo "<input type='hidden' id='colorDiaAnt' name='colorDiaAnt' value='".$colorDiaAnt."'>";
@@ -591,7 +589,7 @@ else
     
 	if (isset($wpar) and !isset($ok))
 	{
-		//filtrar la opci√≥n examen en el men√∫
+		//filtrar la opciÛn examen en el men˙
 	    $pos = strpos(strtoupper($Codexa), $wtelemedicina);
 	
 		if (substr($Estado,0,1) == "A")
@@ -658,13 +656,11 @@ else
 			{
 				if($tiperr == 0)
 				{
-					
-					
-					$query = "select id from ".$empresa."_000009 where  cod_equ='".substr($Codequ,0, strpos($Codequ,"-"))."' and fecha='".$Fecha."' and hi='".$Hi."'";
+					$query = "select id from ".$empresa."_000009 where  cod_equ='".substr($Codequ,0,$digitosPermitidosAg)."' and fecha='".$Fecha."' and hi='".$Hi."'";
 					$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 					$row = mysql_fetch_array($err);
 					$OLDID=$row[0];
-					$query = "delete from ".$empresa."_000009 where  cod_equ= '".substr($Codequ,0, strpos($Codequ,"-"))."' and fecha='".$Fecha."' and hi='".$Hi."'";
+					$query = "delete from ".$empresa."_000009 where  cod_equ= '".substr($Codequ,0,$digitosPermitidosAg)."' and fecha='".$Fecha."' and hi='".$Hi."'";
 					$err = mysql_query($query,$conex);
 				}
 				else
@@ -754,7 +750,7 @@ else
 						$Asistida="on";
 					else
 						$Asistida="off"; 
-					$query = "insert ".$empresa."_000009 (medico,fecha_data,hora_data,cod_equ,cod_exa,fecha,hi,hf,Cedula,nom_pac,nit_res,telefono,urlcit,email,edad,comentario,Asistida,usuario,activo,tipoA,tipoS, tipoCita,dias_opor,fecSol,diaOporAct,seguridad) values ('".$empresa."','".$fecha."','".$hora."','".substr($Codequ,0, strpos($Codequ,"-"))."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$Fecha."','".$Hi."','".$Hf."','".ucwords($Cedula)."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Urlcit."','".$Email."',".$Edad.",'".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$wtat."','".$wser."','".@$tipoCita."','".@$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";
+					$query = "insert ".$empresa."_000009 (medico,fecha_data,hora_data,cod_equ,cod_exa,fecha,hi,hf,Cedula,nom_pac,nit_res,telefono,urlcit,email,edad,comentario,Asistida,usuario,activo,tipoA,tipoS, tipoCita,dias_opor,fecSol,diaOporAct,seguridad) values ('".$empresa."','".$fecha."','".$hora."','".substr($Codequ,0,$digitosPermitidosAg)."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$Fecha."','".$Hi."','".$Hf."','".ucwords($Cedula)."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Urlcit."','".$Email."',".$Edad.",'".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$wtat."','".$wser."','".@$tipoCita."','".@$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";
 
                     if ($Email != '' && $pos==true)
                     {
@@ -762,7 +758,7 @@ else
                     }
 
 					$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
-					$query = "select id from ".$empresa."_000009 where  cod_equ='".substr($Codequ,0, strpos($Codequ,"-"))."' and fecha='".$Fecha."' and hi='".$Hi."'";
+					$query = "select id from ".$empresa."_000009 where  cod_equ='".substr($Codequ,0,$digitosPermitidosAg)."' and fecha='".$Fecha."' and hi='".$Hi."'";
 					$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 					$row = mysql_fetch_array($err);
 					$query = "update ".$empresa."_000008 set cita=".$row[0]." where  cita= ".$OLDID;
@@ -838,7 +834,7 @@ else
 						$Asistida="on";
 					else
 						$Asistida="off"; 
-					 $query = "insert ".$empresa."_000009 (medico,fecha_data,hora_data,cod_equ,cod_exa,fecha,hi,hf,Cedula,nom_pac,nit_res,telefono,urlcit,email,edad,comentario,Asistida,usuario,activo,tipoA,tipoS,tipoCita,dias_opor,fecSol,diaOporAct,seguridad) values ('".$empresa."','".$fecha."','".$hora."','".substr($Codequ,0, strpos($Codequ,"-"))."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$Fecha."','".$Hi."','".$Hf."','".ucwords($Cedula)."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Urlcit."','".$Email."',".$Edad.",'".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$wtat."','".$wser."','".@$tipoCita."','".@$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";
+					 $query = "insert ".$empresa."_000009 (medico,fecha_data,hora_data,cod_equ,cod_exa,fecha,hi,hf,Cedula,nom_pac,nit_res,telefono,urlcit,email,edad,comentario,Asistida,usuario,activo,tipoA,tipoS,tipoCita,dias_opor,fecSol,diaOporAct,seguridad) values ('".$empresa."','".$fecha."','".$hora."','".substr($Codequ,0,$digitosPermitidosAg)."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$Fecha."','".$Hi."','".$Hf."','".ucwords($Cedula)."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Urlcit."','".$Email."',".$Edad.",'".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$wtat."','".$wser."','".@$tipoCita."','".@$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";
 					$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 					
 					if ($Email != '' && $pos==true)
@@ -846,7 +842,7 @@ else
 
 					if(isset($wsw1))
 					{
-						$query = "select id from ".$empresa."_000009 where  cod_equ='".substr($Codequ,0, strpos($Codequ,"-"))."' and fecha='".$Fecha."' and hi='".$Hi."'";
+						$query = "select id from ".$empresa."_000009 where  cod_equ='".substr($Codequ,0,$digitosPermitidosAg)."' and fecha='".$Fecha."' and hi='".$Hi."'";
 						$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 						$row = mysql_fetch_array($err);
 						$query = "insert ".$empresa."_000008 (medico,fecha_data,hora_data, Fecha, Hora, Cita, Identificacion, Paciente, Edad, Sexo, Historia, Sgs, Atencion, Diagnostico1, Dx_Nuevo1, Nrosotf, Nrosatf, Nrosoto, Nrosato, Nrosotl, Nrosatl, Terapeuta, Ri_pac, Ri_ter, Alta, Control, Observaciones, seguridad) values ('".$empresa."','".$fecha."','".$hora."','".$Fecha."','".substr($Hi,0,2).":".substr($Hi,2,2).":00','".$row[0]."','".ucwords($Cedula)."','".ucwords($Nompac)."',".$Edad.",'NO APLICA',0,0,'NO APLICA','NO APLICA','NO APLICA','NO',0,0,0,0,0,0,'NO APLICA','NO APLICA','NO APLICA','NO APLICA','.','C-".$empresa."')";
@@ -861,12 +857,12 @@ else
 					echo "<br><br>";
 				break;
 				case 3:
-					$query = "select id from ".$empresa."_000009 where  cod_equ='".substr($Codequ,0, strpos($Codequ,"-"))."' and fecha='".$Fecha."' and hi='".$Hi."'";
+					$query = "select id from ".$empresa."_000009 where  cod_equ='".substr($Codequ,0,$digitosPermitidosAg)."' and fecha='".$Fecha."' and hi='".$Hi."'";
 					$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 					$row = mysql_fetch_array($err);
 					$query = "delete from ".$empresa."_000008 where  cita= ".$row[0];
 					$err = mysql_query($query,$conex);
-					$query = "delete from ".$empresa."_000009 where  cod_equ= '".substr($Codequ,0, strpos($Codequ,"-"))."' and fecha='".$Fecha."' and hi='".$Hi."'";
+					$query = "delete from ".$empresa."_000009 where  cod_equ= '".substr($Codequ,0,$digitosPermitidosAg)."' and fecha='".$Fecha."' and hi='".$Hi."'";
 					$err = mysql_query($query,$conex);
 					echo "<font size=3><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#00FF00 LOOP=-1>!!!! TURNO BORRADO !!!!</MARQUEE></FONT>";
 					echo "<br><br>";
