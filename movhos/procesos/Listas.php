@@ -156,24 +156,27 @@
             
             
 
-            function consultarUnix( resp ){
-                var wemp_pmla = $("#wemp_pmla").val();
-                var ok = $("#ok").val();
-                var wcco = $("#wcco").val();
+            function consultarUnix( respuestaUsuario ){
+                // var wemp_pmla = $("#wemp_pmla").val();
+                // var ok = $("#ok").val();
+                // var wcco = $("#wcco").val();
 
-                $.post("Listas.php",
-                {
-                    wemp_pmla			: wemp_pmla,
-                    ok                  : ok,
-                    wcco                : wcco,
-                    respuestaUsuario    : resp,
-                    posicion            : posicion,
-                    num                 : num,
-                }
-                ,function(data) {
-                    console.log(data);
-                },"json" );
-                
+                // $.post("Listas.php",
+                // {
+                //     wemp_pmla			: wemp_pmla,
+                //     ok                  : ok,
+                //     wcco                : wcco,
+                //     respuestaUsuario    : resp,
+                //     posicion            : posicion,
+                //     num                 : num,
+                // }
+                // ,function(data) {
+                //     console.log(data);
+                // },"json" );
+                // document.forms.listas.append("respuestaUsuario", respuestaUsuario);
+                var formData = new FormData();
+                formData.append('respuestaUsuario', respuestaUsuario);
+                formData.getAll('respuestaUsuario');
                 document.forms.listas.submit();
             }
         
@@ -1071,7 +1074,7 @@ else
                         else
                             grabar_factura($conex,$wdata[$i][0],$wdata[$i][1],$wfac[$i],$wf[$i],$wobs[$i]);
                     }
-                for ($i=0;$i<$num;$i++)
+                // for ($i=0;$i<$num;$i++)
 
 
 
@@ -1238,11 +1241,6 @@ else
                             $wcontrol[$i] = 1;
                         }
 
-                        if($posicion == $i)
-                        {
-                            $wval[$i] = "on";
-                        }
-
 
                         //No permite facturar si hay algun dato por facturar desde las 7 AM hasta las 10 PM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
                         if (($whora > $wformatohorainicial or $whora < $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
@@ -1268,12 +1266,11 @@ else
                                 $wporfacturar[$i] = '';
                             }
 
-                        $estadoCargos = validarCargosDiferenteProcesado($conex,$row[0],$row[1]);
-                        if(isset($wval[$i]) && $estadoCargos == '1' )
+                        if(isset($wval[$i]))
                         {
 
                             $wres=array();
-                            // $respuestaUsuario = $_POST['respuestaUsuario'];
+                            $respuestaUsuario = $_REQUEST['respuestaUsuario'];
 
                             $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i], $respuestaUsuario);
 
@@ -1335,16 +1332,10 @@ else
                         echo "<input type='HIDDEN' name= 'num' value='".$num."'>";
 
 
-                        // if($respuestaUsuario === "0" )
-                        // {
-                        //     echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3>$wobservaciones_textarea</textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egresar De Urgencias </td></tr>";
-                        
-                        // }
-
-
+                        $estadoCargos = validarCargosDiferenteProcesado($conex,$row[0],$row[1]);
                         //Valida si ya puede generar factura y además si todo esta registrado desde la entrega de turno secretaria.
                         if($row[16] == 1 and $wcontrol[$i] == 0)
-                            {
+                        {
 
                             if($row[17] == "on")
                             {
