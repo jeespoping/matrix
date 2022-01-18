@@ -1309,8 +1309,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                 try {
 					$.blockUI(
 						{
-
-								message: $('#msjEspere')
+							message: $('#msjEspere')
 						});
 					} catch(e){ }
 					var ajax = nuevoAjax();
@@ -1320,8 +1319,6 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
                     ajax.onreadystatechange=function()
                     {
-
-
                             if (ajax.readyState==4  && ajax.status==200)
                             {
                                     // Respuesta ajax para validar algunas acciones, entre ellas la combinacion de patrones, el horario de adicion o cancelacion
@@ -1509,7 +1506,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             }
 
 
-                                        if (x == 10)
+                                            if (x == 10)
                                             {
     //										cajon.style.backgroundColor="";
     //										document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
@@ -1518,6 +1515,16 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
                                             alert('El Patrón: **'+ patron +'** No tiene costo en la tabla 000079, para el tipo de empresa: ** '+ tipo_empresa +' ** en la historia: ** '+ historia+' **, o la edad del paciente es menor a 6 meses.');
                                             return false;
                                             }
+
+                                        if (x == 1020)
+                                        {
+    //										cajon.style.backgroundColor="";
+    //										document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
+                                            var dato_media_porcion = document.getElementById("dato_media_porcion").value;
+                                            var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
+                                            alert('El Patrón: **'+ patron +'** la edad del paciente es menor a 6 meses.');
+                                            return false;
+                                        }
 
 
                                         if (x == 101)
@@ -2092,7 +2099,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
     //Funcion princpal que evalua cada seleccion.
 	function combina(wemp_pmla, f, c, patron, adi_ser, historia, ingreso, patron_combinable, centro_costos, servicio, fecha, habitacion, nom_pac, tipo_doc, doc_pac, proc_trasl, muerte, edad, alta_proc, tipo_empresa, dias_estancia, usuario, controlseranterior, media_porcion, este, posqx, wrol_usuario, wpatron_nutricion, wrolnutricion) //f=fila, c=columna, cod_dieta=patron, adi_ser=servicio adicional (on o off), tipo_dieta=(unica seleccionable=on, seleccion multiple=off)
-	   {
+	{
 
         var cont1    = 1;
 
@@ -2233,7 +2240,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
 			 }
 
-      }
+    }
 
 
     function evaluarEnvio(fila, patron, f, c, historia, ingreso, wemp_pmla, basedato, servicio, usuario, habitacion, centro_costos, novalidahorario, wfec)
@@ -8350,6 +8357,30 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
                     $q = " SELECT cosact, cosfec, cosant, diecob, diesec, diecbi, cospat "
                         ."   FROM ".$wbasedato."_000079, ".$wbasedato."_000041, ".$wbasedato."_000128 "
                         ."  WHERE costem  = '*'"
+                        ."    AND cosest  = 'on' "
+                        ."    AND patest  = 'on' "
+                        ."    AND cosser  = '".$wser."'"
+                        ."    AND cospat  = diecod "
+                        ."    AND cospat  = patpri "
+                        ."    AND patpri  = '".$wchequeados."'"
+                        ." GROUP BY cospat "
+                        ." ORDER BY cosact DESC";
+                    $res_cos = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+                    $num_cos = mysql_num_rows($res_cos);
+
+                    if ($num_cos == 0 and $wpcomb != 'off' and $wnocobrapatron != 'on')
+                    {
+                        echo "10"; //Muestra un mensaje javascript diciendo que no se encontro costo para el patron en la tabla 79 de movhos (funcion js grabar_datos).
+
+                        if ($num_cos == '')
+                            //  $num_cos = 0;
+                            return $num_cos;
+                        return;
+                    }
+
+                    $q = " SELECT count(*) "
+                        ."   FROM ".$wbasedato."_000079, ".$wbasedato."_000041, ".$wbasedato."_000128 "
+                        ."  WHERE costem  = '*'"
                         ."    AND cosedi <= '".($wedad_pac*12)."'"
                         ."    AND cosedf >=  '".($wedad_pac*12)."'"
                         ."    AND cosest  = 'on' "
@@ -8365,7 +8396,7 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
 
                     if ($num_cos == 0 and $wpcomb != 'off' and $wnocobrapatron != 'on')
                     {
-                        echo "10"; //Muestra un mensaje javascript diciendo que no se encontro costo para el patron en la tabla 79 de movhos (funcion js grabar_datos).
+                        echo "1020"; //Muestra un mensaje javascript diciendo que no se encontro costo para el patron en la tabla 79 de movhos (funcion js grabar_datos).
 
                         if ($num_cos == '')
                             //  $num_cos = 0;
@@ -8440,6 +8471,32 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
                     return $num_cos;
 
 
+                return;
+            }
+
+            $q = " SELECT count(*) "
+                        ."   FROM ".$wbasedato."_000079, ".$wbasedato."_000041, ".$wbasedato."_000128 "
+                        ."  WHERE costem  = '*'"
+                        ."    AND cosedi <= '".($wedad_pac*12)."'"
+                        ."    AND cosedf >=  '".($wedad_pac*12)."'"
+                        ."    AND cosest  = 'on' "
+                        ."    AND patest  = 'on' "
+                        ."    AND cosser  = '".$wser."'"
+                        ."    AND cospat  = diecod "
+                        ."    AND cospat  = patpri "
+                        ."    AND patpri  = '".$wchequeados."'"
+                        ." GROUP BY cospat "
+                        ." ORDER BY cosact DESC";
+            $res_cos = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+            $num_cos = mysql_num_rows($res_cos);
+
+            if ($num_cos == 0 and $wpcomb != 'off' and $wnocobrapatron != 'on')
+            {
+                echo "1020"; //Muestra un mensaje javascript diciendo que no se encontro costo para el patron en la tabla 79 de movhos (funcion js grabar_datos).
+
+                if ($num_cos == '')
+                    //  $num_cos = 0;
+                    return $num_cos;
                 return;
             }
            }
@@ -10318,7 +10375,6 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
 
                       $wpatron_combinable = valida_combinable($wpatron); // Verifica si el patron es combinable (SI, DSN, TMO)
                       $wvalidahorario = validahorariopatron($wpatron); // Esta funcion valida si el patron no valida horario, se aplica especialmente al patron DSN.
-
 
                           //Si no hay ningun patron seleccionado ingresa a la ventana modal del patron (SI, DSN, TMO)
 	                      if (trim($wchequeados) == '')

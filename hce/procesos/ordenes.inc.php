@@ -2675,18 +2675,32 @@ function abrirCTCcontributivo($wemp_pmla,$historia,$ingreso,$codMedico,$cadenaCT
 										</div>";
 		
 	$urlCTCministerio = consultarAliasPorAplicacion( $conex, $wemp_pmla, "urlCTCministerio" );
-	
-	
+		
+	// Iframe usado antes del 20/12/2021
+	// echo "	<div id='divCTCcontributivo' style='width:100%;height:100%;' >
+	// 			".$listaPendientesCTCcontributivo."
+	// 			<span id='botonCerrarCTCcontributivo'>
+	// 				<iframe id='iframeCTCcontributivo' sandbox='allow-top-navigation allow-scripts allow-forms'  scrolling='yes' src='".$urlCTCministerio."' style='width:1260px;height:100px;right:0px;left:0px;top:0px;padding:0px;background-color:white;overflow-y: auto;'></iframe>
+	// 				<br>
+	// 				<!--<input type='button' value='Cerrar ventana' onclick='cerrarDivIframeCTCcontributivo();'>-->
+	// 				<input type='button' value='Cerrar ventana' onclick='cerrarDivIframeCTCcontributivo(\"".$cadenaCTCcontributivo."\");'>
+	// 				<!--<input type='button' value='Cerrar ventana' onclick='cerrarDivIframeCTCcontributivo(\"".$wemp_pmla."\",\"".$historia."\",\"".$ingreso."\",\"".$codMedico."\",\"".$cadenaCTCcontributivo."\");'>-->
+	// 			</span>
+	// 		</div>";
+
+
+
 	echo "	<div id='divCTCcontributivo' style='width:100%;height:100%;' >
 				".$listaPendientesCTCcontributivo."
 				<span id='botonCerrarCTCcontributivo'>
-					<iframe id='iframeCTCcontributivo'  scrolling='yes' src='".$urlCTCministerio."' style='width:1260px;height:100px;right:0px;left:0px;top:0px;padding:0px;background-color:white;overflow-y: auto;'></iframe>
+				<script type='text/javascript'>window.open('".$urlCTCministerio."','Mipres','width=1080,height=620,scrollbars=YES')</script>
 					<br>
-					<!--<input type='button' value='Cerrar ventana' onclick='cerrarDivIframeCTCcontributivo();'>-->
 					<input type='button' value='Cerrar ventana' onclick='cerrarDivIframeCTCcontributivo(\"".$cadenaCTCcontributivo."\");'>
-					<!--<input type='button' value='Cerrar ventana' onclick='cerrarDivIframeCTCcontributivo(\"".$wemp_pmla."\",\"".$historia."\",\"".$ingreso."\",\"".$codMedico."\",\"".$cadenaCTCcontributivo."\");'>-->
-				</span>
-			</div>";
+				</span>";
+				
+	echo"</div>";
+
+
 }
 
 function consultarSiContributivo($codigoResponsable)
