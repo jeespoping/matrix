@@ -879,10 +879,22 @@ else
 	echo "<td bgcolor=#cccccc>Responsable_Cuenta</td>";
 	echo "<td bgcolor=#cccccc>";
 	echo "<select name='Nitres'>";
-	$query = "select descripcion,Empresa from ".$empresa."_000013,".$empresa."_000002 ";
-	$query .= "  WHERE Medico_Tratante =  '".substr($pos2,0,strpos($pos2,"-"))."' ";
-	$query .= "       AND Empresa =  Nit ";
-	$query .= "  order by descripcion ";
+	/** Se crea un parametro para que se pueda diferenciar cuando se toman todas las aseguraras y cuando se limitan por medico
+	 * en la tabla 000013
+	 * Autor: Julián Mejía
+	 */
+	$paramAseguradoras = consultarAliasPorAplicacion($conex, $wemp_pmla, "agendamientoAseguradoras"); 
+	if ($paramAseguradoras != 'off'){
+		$query = "select descripcion,Nit from ".$empresa."_000002 ";
+		$query .= "       WHERE Activo =  'A'  ";
+		$query .= "  order by descripcion ";
+	}else{
+		$query = "select descripcion,Empresa from ".$empresa."_000013,".$empresa."_000002 ";
+		$query .= "  WHERE Medico_Tratante =  '".substr($pos2,0,strpos($pos2,"-"))."' ";
+		$query .= "       AND Empresa =  Nit ";
+		$query .= "  order by descripcion ";
+	}
+	
 	$err1 = mysql_query($query,$conex);
 	$num1 = mysql_num_rows($err1);
 	for ($i=0;$i<$num1;$i++)
