@@ -3407,8 +3407,11 @@ function volver(wemp_pmla, waux, wsp, esServicioDomiciliario )
 	if(wsp != '' ){
 		extra += '&wsp='+wsp;
 	}
+	
+	var selectorSede = document.getElementById("selectsede");
+	var valorSelectorSede = (selectorSede === null) ? '' : '&selectsede='+selectorSede.value;
 
-	location.href = 'gestionEnfermeria.php?wemp_pmla='+wemp_pmla+extra+parametroServicioDomiciliario;
+	location.href = 'gestionEnfermeria.php?wemp_pmla='+wemp_pmla+extra+parametroServicioDomiciliario+valorSelectorSede;
 }
 
 //Funcion que llama al programa modificacion de traslados para que cancele la entrega de una paciente.
@@ -6556,12 +6559,28 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 		return usuarioHabilitado;
 	}
 
+    var queryString = window.location.search;
+    var urlParams = new URLSearchParams(queryString);
+
+    var anuncioParam = urlParams.get('servicioDomiciliario');
+
+    if  (anuncioParam){
+        $(document).on('change','#selectsede',function(){
+            window.location.href = "gestionEnfermeria.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&servicioDomiciliario="+anuncioParam
+        });
+    }else{
+        $(document).on('change','#selectsede',function(){
+            window.location.href = "gestionEnfermeria.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+        });
+    }
+    console.log(anuncioParam);
+
 </script>
 </head>
 <body>
 <?php
 
-$actualiz="2020-05-15";
+$actualiz="Enero 13 de 2022";
 //TABLA TEMPORAL Y CONSULTANDO TODOS LOS MEDICAMENTOS DE LA 15 EN UN SOLO PASO
 
 /**********************************************************************************************************************************************************
@@ -6582,6 +6601,8 @@ $actualiz="2020-05-15";
 /**********************************************************************************************************************************************************
 
  * Modificaciones:
+ * 2022-01-04: Sebastian Alvarez B. - Se adiciona el on change para el filtro de sede del centro de costos (servicio). Pasamos el valor del select de sede 
+ * 									  como oculto y luego pasamos la variable $selectsede como parametro en donde se llama la funcion consultaCentrosCostos().
  * 2021-07-13: Joel Payares Hdz		- Se comenta lineas de código que colocan en modo limpieza la habitación que estaba habitada por el paciente,
  * 										este cambio esta ubicado en las lineas 1060 a 1074
  * 2020-11-19: Edwin MG				- Se modifica para que se validen las claves de acuerdo a la nueva encriptación
@@ -13222,7 +13243,7 @@ function pintarDatosFila( $datos ){
 
 	//Valida si muestra el encabezado
 	if($wsp == ''){
-		encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica" );
+		encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica", TRUE );
 		echo $convenciones;
 	}
 
@@ -16337,6 +16358,7 @@ else{
 	echo "<INPUT type='hidden' id='ccoUrgencias' name='ccoCirugia' value='$codCcoUrgencias'>";
 	echo "<INPUT type='hidden' id='wbasedato' name='wbasedato' value='$wbasedato'>";
 	echo "<INPUT type='hidden' id='usuario' value='".$_SESSION["user"]."'>";
+	echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
 	$user_session = explode('-',$_SESSION['user']);
 	$wuser = $user_session[1];
 	echo "<INPUT type='hidden' id='user' value='".$wuser."'>";
@@ -16350,7 +16372,7 @@ else{
 
 	if( $mostrar == "off"  ){
 
-		encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica" );
+		encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica", TRUE );
 
 		$esServicioDomiciliario = false;
 		if( !empty($servicioDomiciliario) && $servicioDomiciliario == 'on' ){
@@ -16366,7 +16388,7 @@ else{
 			$ipod="off";
 
 			//$cco=" ";
-			$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccodom = 'on'", "otros" );
+			$centrosCostos = consultaCentrosCostos("Ccotra != 'on' AND ccodom = 'on'", "otros" , FALSE, $selectsede);
 		}
 		else{
 			
@@ -16379,7 +16401,7 @@ else{
 				$ipod="off";
 
 				//$cco=" ";
-				$centrosCostos = consultaCentrosCostos($cco);
+				$centrosCostos = consultaCentrosCostos($cco, "", FALSE, $selectsede);
 			}
 			else{
 				$nameSelect = "ccoayuda";
