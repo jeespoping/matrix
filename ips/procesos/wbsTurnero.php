@@ -18,10 +18,10 @@
         $tema = $_GET['tema'];
         $funcion = $_GET['funcion'];
         $solucionCitas = $_GET['solucionCitas'];
-
-        switch($tema)
+        $tipoTurnero = $_GET['tipoTur'];
+        switch($tipoTurnero)
         {
-            case '01':          // SALA DE ATENCION, PAP
+            case 'ESTANDAR':          // SALA DE ATENCION, PAP
                 if ($funcion == 'listaTurnos')
                 {        
                     $objTurnos = new listarTurnos($wemp_pmla, $tema);
@@ -36,7 +36,7 @@
                     echo json_encode($objAlertas->arrAlerta);
                 }
                 exit();
-            case '11':      //ENDOSCOPIA
+            case 'ENDOSCOPIA':      //ENDOSCOPIA
                 // ENDOSCOPIA RECIBE UN PARAMETRO ADICIONAL solucionCitas
                 if ($funcion == 'listaTurnos')
                 {        
@@ -51,8 +51,7 @@
                     echo json_encode($objAlertas->arrAlerta);
                 }
                 exit();
-            case '12':      // URGENCIAS 
-            case '09':      // URGENCIAS 
+            case 'URGENCIAS':      // URGENCIAS 
                 if ($funcion == 'listaTurnos')
                 {
                     $objTurnos = new listarTurnosUr($wemp_pmla, $tema);
@@ -189,7 +188,7 @@
                 $objTurno->Turno = substr($rowTurnos['Atutur'], 7);
                 $objTurno->Modulo = "";
                 $objTurno->Sala = "";
-                $objTurno->Ubicacion = "";
+                $objTurno->Ubicacion = "Sala de espera";
                 $objTurno->Estado = "";
                 // --> Si no tiene triage
                 if($rowTurnos['Atucta'] != "on")
