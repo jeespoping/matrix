@@ -641,6 +641,10 @@ else
   include_once("root/magenta.php");
   include_once("root/comun.php");
 
+    if (is_null($selectsede)){
+        $selectsede = consultarsedeFiltro();
+    }
+
   $conex = obtenerConexionBD("matrix");
   $wfecha=date("Y-m-d");
   $whora =(string)date("H:i:s");
@@ -1570,7 +1574,7 @@ function reasignarCubiculo($whce, $wbasedato, $whis, $wing, $wusuario, $wcubicul
 				if($row_con_pac['contra'] == 'on'){
 					
 					$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
-					$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato);
+					$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
 					
 					//====================================
 					// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
@@ -1679,7 +1683,7 @@ function buscar_paciente_ordenes($conex, $wbasedato, $historia, $ingreso){
 
 }
 
-$wcco = consultarCentrocoUrgencias();
+$wcco = consultarCentrocoUrgencias('',$selectsede);
 $wcco = $wcco->codigo;
 
 //Verifica si el centro de costos debe ir a ordenes.
@@ -2497,7 +2501,7 @@ function ponerConducta($whce, $wbasedato, $whis, $wing, $wusuario, $wconducta, $
 		if($cond_nueva_traslado == 'on'){
 			
 			$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
-			$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato);
+			$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
 			
 			//====================================
 			// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
@@ -4601,7 +4605,7 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
        echo "NO EXISTE NINGUNA APLICACION DEFINIDAD PARA ESTA EMPRESA";
   if (!isset($consultaAjax))
     {
-  encabezado("SALA DE ESPERA URGENCIAS",$wactualiz, "clinica");
+  encabezado("SALA DE ESPERA URGENCIAS",$wactualiz, "clinica", true, false);
 
   //FORMA ================================================================
   echo "<form name='sala' action='Sala_de_espera_por_Especialidad.php' method=post id='pacientes'>";
@@ -4621,6 +4625,7 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
   $wnomcco=$row[1];
 
   echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
+  echo "<input type='HIDDEN' id='sede' name='selectsede' value='".$selectsede."'>";
   echo "<input type='HIDDEN' name='wbasedato' id='wbasedato' value='".$wbasedato."'>";
   echo "<input type='HIDDEN' name='whce' id='whce' value='".$whce."'>";
   echo "<input type='HIDDEN' name='wusuario' id='wusuario' value='".$wusuario."'>";
@@ -4978,9 +4983,9 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
   echo "</form>";
 
   if (isset($wsup) and $wsup=="on")  //Es superusuario
-     echo "<meta http-equiv='refresh' content='300;url=Sala_de_espera_por_Especialidad.php?wemp_pmla=".$wemp_pmla."&wuser=".$wusuario."&user=".$user."&wcco=".$wcco."&zona=".$zona."'>";
+     echo "<meta http-equiv='refresh' content='300;url=Sala_de_espera_por_Especialidad.php?wemp_pmla=".$wemp_pmla."&wuser=".$wusuario."&user=".$user."&wcco=".$wcco."&zona=".$zona."&selectsede=".$selectsede."'>";
   else
-     echo "<meta http-equiv='refresh' content='30;url=Sala_de_espera_por_Especialidad.php?wemp_pmla=".$wemp_pmla."&wuser=".$wusuario."&user=".$user."&wcco=".$wcco."&zona=".$zona."'>";
+     echo "<meta http-equiv='refresh' content='30;url=Sala_de_espera_por_Especialidad.php?wemp_pmla=".$wemp_pmla."&wuser=".$wusuario."&user=".$user."&wcco=".$wcco."&zona=".$zona."&selectsede=".$selectsede."'>";
 
 
   echo "<table>";
@@ -4991,3 +4996,8 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
 include_once("free.php");
 }
 ?>
+<script>
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "Sala_de_espera_por_Especialidad.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+    });
+</script>
