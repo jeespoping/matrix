@@ -145,9 +145,18 @@
       top.close()
      }
 
+
+     function addHidden(theForm, key, value) {
+        // Create a hidden input element, and append it to the form:
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key; // 'the key/name of the attribute/field that is sent to the server
+        input.value = value;
+        theForm.appendChild(input);
+    }
+
     function modalAltas( cmp, estadoCargos, num, posicion ){
         
-
         if( estadoCargos )
         {
 
@@ -156,11 +165,10 @@
             
             
 
-            function consultarUnix( respuestaUsuario ){
-                // var wemp_pmla = $("#wemp_pmla").val();
-                // var ok = $("#ok").val();
-                // var wcco = $("#wcco").val();
-
+            function consultarUnix( resp ){
+                var wemp_pmla = $("#wemp_pmla").val();
+                var ok = $("#ok").val();
+                var wcco = $("#wcco").val();
                 // $.post("Listas.php",
                 // {
                 //     wemp_pmla			: wemp_pmla,
@@ -174,9 +182,16 @@
                 //     console.log(data);
                 // },"json" );
                 // document.forms.listas.append("respuestaUsuario", respuestaUsuario);
-                var formData = new FormData();
-                formData.append('respuestaUsuario', respuestaUsuario);
-                formData.getAll('respuestaUsuario');
+                // var formData = new FormData();
+                // formData.append('respuestaUsuario', respuestaUsuario);
+                // formData.getAll('respuestaUsuario');
+                // debugger;
+
+                var listaForm = document.forms['listas'];
+                addHidden(listaForm, 'posicion', posicion);
+                addHidden(listaForm, 'num', num);
+                // document.querySelector("form").reset();
+                // listaFom.submit();
                 document.forms.listas.submit();
             }
         
@@ -313,7 +328,9 @@ include_once("movhos/fxValidacionArticulo.php");
 include_once("movhos/registro_tablas.php");
 include_once("root/comun.php");
 
-
+if(!empty($respuestaUsuario)){
+echo $respuestaUsuario;
+}
 
 
 
@@ -942,7 +959,7 @@ if(!isset($_SESSION['user']))
 else
 {
     $key = substr($user,2,strlen($user));
-    echo "<form name='listas' action='Listas.php' method=post>";
+    echo "<form name='listas' action='#' method=post>";
 
     $empresa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
     $whce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'HCE');
