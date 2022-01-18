@@ -501,15 +501,12 @@ echo "<tr><td align=center bgcolor='#cccccc'><font size=2> <b> asignacionCitaEqu
 echo "</center>";
 echo "<form  name='Citas' action='asignacionCitaEqu.php' method=post>";
 session_start();
-
-
-
 if(!isset($_SESSION['user']))
 	echo "Error Usuario NO Registrado";
 else
 {		
 	$key = substr($user,2,strlen($user));	
-	strpos($Codmed,"-") = consultarAliasPorAplicacion($conex, $wemp_pmla, "digitosSbtrAg");
+	$digitosPermitidosAg = consultarAliasPorAplicacion($conex, $wemp_pmla, "digitosSbtrAg");
 
 	echo "<input type='HIDDEN' name= 'empresa'  id= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'wsw' id= 'wsw' value='".$wsw."'>";
@@ -600,7 +597,7 @@ else
 			if ($wpar == 2)
 			{
 				// Verificacion de Disponibilidad de Espacio
-				$query = "select cod_med,cod_equ,cod_exa,fecha,hi,hf,nom_pac,nit_resp,telefono,email,edad,comentarios,usuario,activo from ".$empresa."_000001 where cod_equ = '".substr($Codequ,0, strpos($Codequ,"-"))."'";
+				$query = "select cod_med,cod_equ,cod_exa,fecha,hi,hf,nom_pac,nit_resp,telefono,email,edad,comentarios,usuario,activo from ".$empresa."_000001 where cod_equ = '".substr($Codequ,0, $digitosPermitidosAg)."'";
 				$query = $query." and fecha = '".$wfec."'";
 				$query = $query." and hi = '".$Hi."'";
 				$query = $query." and hf = '".$Hf."'";
@@ -708,7 +705,7 @@ else
 			//Verificacion x Equipo si las citas son Multiples
 			if(substr($wsw,1,1) == "1")
 			{   //agregado para saber el id de la cita que va a preguntar
-				$query = "SELECT  id FROM ".$empresa."_000001 WHERE  cod_equ='".substr($Codequ,0, strpos($Codequ,"-"))."' and fecha='".$wfec."' and hi='".$Hi."' and activo = 'A' ";
+				$query = "SELECT  id FROM ".$empresa."_000001 WHERE  cod_equ='".substr($Codequ,0, $digitosPermitidosAg)."' and fecha='".$wfec."' and hi='".$Hi."' and activo = 'A' ";
 				$err = mysql_query($query,$conex) or die(mysql_errno().": Error en el query: $query ".mysql_error());
 				
 				if( $rowId = mysql_fetch_array( $err ) ){
@@ -716,7 +713,7 @@ else
 					$query = "update ".$empresa."_000001 set activo='I' where  id={$rowId['id']}";
 					$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 					
-					$query = "select hi,hf from ".$empresa."_000001 where cod_equ = '".substr($Codequ,0, strpos($Codequ,"-"))."'";
+					$query = "select hi,hf from ".$empresa."_000001 where cod_equ = '".substr($Codequ,0, $digitosPermitidosAg)."'";
 					$query = $query." and fecha = '".$wfec."'";
 					$query = $query." and ((hi <= '".$Hi."' and hf <= '".$Hf."' and hf > '".$Hi."')";
 					$query = $query."  or  (hi >= '".$Hi."' and hf >= '".$Hf."' and hi < '".$Hf."')";
@@ -888,19 +885,19 @@ else
 					$query = "select  codigo,descripcion,uni_hora,hi,hf,activo,Sednom 
 					            From ".$empresa."_000003 
 					            Left join root_000128 on root_000128.Sedcod = ".$empresa."_000003.Sedcod 
-		                       where codigo='".substr($Codequ,0, strpos($Codequ,"-"))."'";
+		                       where codigo='".substr($Codequ,0, $digitosPermitidosAg)."'";
 					$err = mysql_query($query,$conex) or die(mysql_errno().": Error en el query: $query ".mysql_error());
 					$num     = mysql_num_rows($err);
 					$row     = mysql_fetch_array($err);	
 
-					$query = "select fecha,equipo,uni_hora,hi,hf from ".$empresa."_000004 where fecha = '".$Fecha."' and equipo = '".substr($Codequ,0, strpos($Codequ,"-"))."'";
+					$query = "select fecha,equipo,uni_hora,hi,hf from ".$empresa."_000004 where fecha = '".$Fecha."' and equipo = '".substr($Codequ,0, $digitosPermitidosAg)."'";
 					$err = mysql_query($query,$conex) or die(mysql_errno().": Error en el query: $query ".mysql_error());	
 					$num = mysql_num_rows($err);
 					if ($num == 0)
 					{
 						$fecha = date("Y-m-d");
 						$hora = (string)date("H:i:s");
-						$query = "insert ".$empresa."_000004 (medico,fecha_data,hora_data,fecha,equipo,uni_hora,hi,hf,seguridad) values ('".$empresa."','".$fecha."','".$hora."','".$Fecha."','".substr($Codequ,0, strpos($Codequ,"-"))."',".$row[2].",'".$row[3]."','".$row[4]."','C-".$empresa."')";
+						$query = "insert ".$empresa."_000004 (medico,fecha_data,hora_data,fecha,equipo,uni_hora,hi,hf,seguridad) values ('".$empresa."','".$fecha."','".$hora."','".$Fecha."','".substr($Codequ,0, $digitosPermitidosAg)."',".$row[2].",'".$row[3]."','".$row[4]."','C-".$empresa."')";
 						$err = mysql_query($query,$conex) or die(mysql_errno().": Error en el query: $query ".mysql_error());	
 						 if ($err != 1)
 					 	{
@@ -1029,18 +1026,18 @@ else
 						if($Edad != '')
 						{
 							$query = "insert ".$empresa."_000001 (medico,fecha_data,hora_data,cod_med,cod_equ,cod_exa,fecha,hi,hf,Cedula,nom_pac,nit_resp,telefono,email,edad,comentarios,Asistida,usuario,activo, tipoA ,tipoCita, dias_opor, fecSol, diaOporAct,seguridad) 
-							   values ('".$empresa."','".$fecha."','".$hora."','".substr($Codmed,0,strpos($Codmed,"-"))."','".substr($Codequ,0, strpos($Codequ,"-"))."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$wfec."','".$Hi."','".$Hf."','".$Cedula."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Email."','".$Edad."','".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$tipoa."','".$tipoCita."','".$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";
+							   values ('".$empresa."','".$fecha."','".$hora."','".substr($Codmed,0,strpos($Codmed,"-"))."','".substr($Codequ,0, $digitosPermitidosAg)."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$wfec."','".$Hi."','".$Hf."','".$Cedula."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Email."','".$Edad."','".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$tipoa."','".$tipoCita."','".$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";
 						}
 						else 
 						{
 							$query = "insert ".$empresa."_000001 (medico,fecha_data,hora_data,cod_med,cod_equ,cod_exa,fecha,hi,hf,Cedula,nom_pac,nit_resp,telefono,email,comentarios,Asistida,usuario,activo, tipoA ,tipoCita, dias_opor, fecSol, diaOporAct,seguridad) 
-							   values ('".$empresa."','".$fecha."','".$hora."','".substr($Codmed,0,strpos($Codmed,"-"))."','".substr($Codequ,0, strpos($Codequ,"-"))."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$wfec."','".$Hi."','".$Hf."','".$Cedula."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Email."','".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$tipoa."','".$tipoCita."','".$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";	
+							   values ('".$empresa."','".$fecha."','".$hora."','".substr($Codmed,0,strpos($Codmed,"-"))."','".substr($Codequ,0, $digitosPermitidosAg)."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$wfec."','".$Hi."','".$Hf."','".$Cedula."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Email."','".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$tipoa."','".$tipoCita."','".$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";	
 						}
 					}
 					else 
 					{
 						$query = "insert ".$empresa."_000001 (medico,fecha_data,hora_data,cod_med,cod_equ,cod_exa,fecha,hi,hf,Cedula,nom_pac,nit_resp,telefono,email,edad,comentarios,Asistida,usuario,activo, tipoA ,tipoCita, dias_opor, fecSol, diaOporAct,seguridad) 
-							   values ('".$empresa."','".$fecha."','".$hora."','".substr($Codmed,0,strpos($Codmed,"-"))."','".substr($Codequ,0, strpos($Codequ,"-"))."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$wfec."','".$Hi."','".$Hf."','".$Cedula."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Email."','".$Edad."','".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$tipoa."','".$tipoCita."','".$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";
+							   values ('".$empresa."','".$fecha."','".$hora."','".substr($Codmed,0,strpos($Codmed,"-"))."','".substr($Codequ,0, $digitosPermitidosAg)."','".substr($Codexa,0,strpos($Codexa,"-"))."','".$wfec."','".$Hi."','".$Hf."','".$Cedula."','".ucwords($Nompac)."','".$Nitres."','".$Tel."','".$Email."','".$Edad."','".$Coment."','".$Asistida."','".substr($user,2,strlen($user))."','".substr($Estado,0,1)."','".$tipoa."','".$tipoCita."','".$diasOpor."','".$FecSol."','".$diasOporAct."','C-".$empresa."')";
 					}
 
                     //////////////////////////////
@@ -1063,18 +1060,18 @@ else
 					{
 						$query = "select codigo,descripcion,uni_hora,hi,hf,activo,Sednom from ".$empresa."_000003 
 						            Left join root_000128 on root_000128.Sedcod = ".$empresa."_000003.Sedcod 
-						          where codigo='".substr($Codequ,0, strpos($Codmed,"-"))."'";
+						          where codigo='".substr($Codequ,0, $digitosPermitidosAg)."'";
 						$err = mysql_query($query,$conex) or die(mysql_errno().": Error en el query: $query ".mysql_error());
 						$num = mysql_num_rows($err);
 						$row = mysql_fetch_array($err);				
-						$query = "select fecha,equipo,uni_hora,hi,hf from ".$empresa."_000004 where fecha = '".$Fecha."' and equipo = '".substr($Codequ,0, strpos($Codequ,"-"))."'";
+						$query = "select fecha,equipo,uni_hora,hi,hf from ".$empresa."_000004 where fecha = '".$Fecha."' and equipo = '".substr($Codequ,0, $digitosPermitidosAg)."'";
 						$err = mysql_query($query,$conex) or die(mysql_errno().": Error en el query: $query ".mysql_error());	
 						$num = mysql_num_rows($err);
 						if ($num == 0)
 						{
 							$fecha = date("Y-m-d");
 							$hora = (string)date("H:i:s");
-							$query = "insert ".$empresa."_000004 (medico,fecha_data,hora_data,fecha,equipo,uni_hora,hi,hf,seguridad) values ('".$empresa."','".$fecha."','".$hora."','".$Fecha."','".substr($Codequ,0,  strpos($Codequ,"-"))."',".$row[2].",'".$row[3]."','".$row[4]."','C-".$empresa."')";
+							$query = "insert ".$empresa."_000004 (medico,fecha_data,hora_data,fecha,equipo,uni_hora,hi,hf,seguridad) values ('".$empresa."','".$fecha."','".$hora."','".$Fecha."','".substr($Codequ,0,  $digitosPermitidosAg)."',".$row[2].",'".$row[3]."','".$row[4]."','C-".$empresa."')";
 							$err = mysql_query($query,$conex) or die(mysql_errno().": Error en el query: $query ".mysql_error());	
 							 if ($err != 1)
 						 	{
@@ -1129,7 +1126,7 @@ else
 
 				break;
 				case 3:
-				$query = "delete from ".$empresa."_000001 where  cod_equ= '".substr($Codequ,0, strpos($Codequ,"-"))."' and fecha='".$Fecha."' and hi='".$Hi."'";
+				$query = "delete from ".$empresa."_000001 where  cod_equ= '".substr($Codequ,0, $digitosPermitidosAg)."' and fecha='".$Fecha."' and hi='".$Hi."'";
 				$err = mysql_query($query,$conex) or die(mysql_errno().": Error en el query: $query ".mysql_error());
 				echo "<font size=3><div BEHAVIOR=SCROLL BGCOLOR=#00FF00 LOOP=-1 style='padding: 10px; background-color: #e76f67; color: white; text-align: center; margin: 20px auto; margin-bottom: 20px; width: 25%; margin-bottom: -20px; border: 1px solid #d72020; border-radius: 7px;'>!!!! TURNO BORRADO !!!!</div></FONT>";
 				echo "<br><br>";
