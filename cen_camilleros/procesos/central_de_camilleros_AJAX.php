@@ -756,7 +756,7 @@ if (!isset($consultaAjax))
 			}catch(e){ jAlert(e, "Alerta"); }
 	  }
 	  
-	function cambioSede(codigoSede)
+	function cambioSede(codigoSede = '')
 	{
 		//Si cambio de sede, refresco el formulario
 		reactivar(0);
@@ -766,6 +766,11 @@ if (!isset($consultaAjax))
 			$.jatt();
 			$(".tramiteok").tooltip({track: true, delay: 0, showURL: false, opacity: 0.95, left: 0 });
         });
+	
+	//Onchange del select de sede del encabezado
+	$(document).on('change','#selectsede',function(){
+		cambioSede();
+	});
 
 </script>
 <?php
@@ -1785,11 +1790,14 @@ function grabarObservacion($wid, $wtexto)
   $wautor="Juan C. Hernandez M.";
 //FECHA CREACION             :
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="Diciembre 22 de 2021";
+  $wactualiz="Diciembre 30 de 2021";
 //========================================================================================================================================\\
 //========================================================================================================================================\\
 //ACTUALIZACIONES
 /*
+//========================================================================================================================================\\
+Diciembre 30 de 2021 - Sebastián Nevado:
+    Se agrega funcionalidad al select de sede del encabezado
 //========================================================================================================================================\\
 Diciembre 22 de 2021 - Marlon osorio:
     Se agregó filtro de sede según el usuario logueado
@@ -2171,9 +2179,6 @@ if (!isset($consultaAjax))
 	   $westado_central       = $row[3];    //Estado de la central 'on': activa, 'off':inactiva
 	   $wcodope               = $row[3];    //Codigo del operador de la central
 	   $whorope               = $row[3];    //Hora hasta la que esta el operario
-
-	   encabezado("CENTRAL ".$wnomcen,$wactualiz, "clinica");
-	   actualizar_operador($wcentral, $wcodope, $whorope);
 	  }
 	 else
 	    echo "<tr><td align=center bgcolor=#fffffff colspan=13><font size=3 text color=#CC0000><b>FALTA DEFINIR EN LA TABLA cencam_000006 EL CODIGO DE LA CENTRAL</b></font></td></tr>";
@@ -2186,6 +2191,10 @@ if (!isset($consultaAjax))
 	    //COMIENZA LA FORMA
 	    //echo "<form name=central action='central_de_camilleros_AJAX.php' method=post>";
 		echo "<form name=central id=central method=post>";
+		
+		encabezado("CENTRAL ".$wnomcen,$wactualiz, "clinica", TRUE);
+		actualizar_operador($wcentral, $wcodope, $whorope);
+		
 	    echo "<input type='HIDDEN' ID='wemp_pmla' value='".$wemp_pmla."'>";
 		echo "<input type='HIDDEN' ID='wcentral' value='".$wcentral."'>";
 		echo "<input type='HIDDEN' ID='wtiempo_refresh' value='".$wtiempo_refresh."'>";
@@ -2208,25 +2217,6 @@ if (!isset($consultaAjax))
 		
 		if ($wcentral == 'CAMAS')
 		{
-			//2021-12-22: Se agrega select de sede en caso de enviarlo
-			if($sFiltrarSede == 'on')
-			{
-				$sListadoSedes = getListaSedes();
-				echo "<div style='text-align:center'>";
-				echo "<h3>Seleccione la sede para filtrar las solicitudes:  </h3>";
-				echo "<select name='selectsede' id='selectsede' onchange=\"cambioSede( this.value )\" >";
-				$sSelected = ($oSedeLista['codigo'] == $sCodigoSede) ? 'selected' : '';
-				echo "<option {$sSelected} value='' >Todas las sedes</option>";
-				foreach($sListadoSedes AS $oSedeLista)
-				{
-					$sSelected = ($oSedeLista['codigo'] == $sCodigoSede) ? 'selected' : '';
-					echo "<option {$sSelected} value='{$oSedeLista['codigo']}' >{$oSedeLista['nombre']}</option>";
-				}
-				echo "</select>";
-				echo "<br><br>";
-				echo "</div>";
-			}
-		
 			traer_pacientes_remision_urgencias($sCodigoSede);
 		
 		}

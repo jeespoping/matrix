@@ -1901,7 +1901,7 @@ else
 	  return $sin_dispensar;
 	}
  
-  function estado_del_Kardex($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac, &$esOrdenes )
+  function estado_del_Kardex($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac, &$esOrdenes, $sCodigoSede = '' )
     {
 	  global $wbasedato;
 	  global $conex;
@@ -1911,6 +1911,7 @@ else
 	  global $wopcion;
 	  global $whora_par_actual;
 	  global $wemp_pmla;
+	  global $selectsede;
 	  
 	  global $wsuspendidos;
 	  
@@ -1929,8 +1930,8 @@ else
 		$sFiltroSede="";
 		if($estadosede=='on')
 		{
-			$codigoSede=consultarsedeFiltro();
-			$sFiltroSede=isset($codigoSede) ? " AND Ccosed = '{$codigoSede}' " : "";
+			$codigoSede = (isset($sCodigoSede)) ? $sCodigoSede : consultarsedeFiltro();
+			$sFiltroSede = (isset($codigoSede) && $codigoSede != '') ? " AND Ccosed = '{$codigoSede}' " : "";
 		}
 
 	  switch ($wopcion)   
@@ -2678,6 +2679,11 @@ else
 					$('input:checkbox').not(this).prop('checked', this.checked);
 				});
 			});
+
+			$(document).on('change','#selectsede',function(){
+				window.location.href = "Monitor_Kardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&wuser="+$('#wusuario').val()+"&wopcion="+$('#wopcion').val()+"&selectsede="+$('#selectsede').val();
+			});
+
 		</script>
 		<!--=====================================================================================================================================================================     
 	E S T I L O S 
@@ -2987,10 +2993,11 @@ else
   
 $estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
 $sFiltroSede="";
+$codigoSede = '';
 if($estadosede=='on')
 {	  
-	$codigoSede=consultarsedeFiltro();
-	$sFiltroSede=isset($codigoSede) ? " AND Ccosed = '{$codigoSede}' " : "";
+	$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+	$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
 }		                                                                                                       
   $q = " SELECT empdes "
       ."   FROM root_000050 "
@@ -3087,8 +3094,6 @@ if($estadosede=='on')
 	    break;		
     }    
 	
-	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-	encabezado( $wtitulo, $wactualiz, $institucion->baseDeDatos );
   
   if ($wopcion != "0")
     {
@@ -3143,6 +3148,9 @@ if($estadosede=='on')
 			//FORMA ================================================================
 			echo "<form name='monkardex' action='Monitor_Kardex.php?wemp_pmla=" . $wemp_pmla . "' method=post>";
 
+			$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+			encabezado( $wtitulo, $wactualiz, $institucion->baseDeDatos, TRUE );
+
 
 			echo "<input type='HIDDEN' id='wemp_pmla' name='wemp_pmla' value='" . $wemp_pmla . "'>";
 			echo "<input type='HIDDEN' id='wbasedato' name='wbasedato' value='" . $wbasedato . "'>";
@@ -3152,6 +3160,10 @@ if($estadosede=='on')
 				$wusuario = substr($user, (strpos($user, "-") + 1), strlen($user));
 
 			echo "<input type='HIDDEN' id='wusuario' name='wusuario' value='" . $wusuario . "'>";
+
+			echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+
+			echo "<input type='hidden' id='wopcion' name= 'wopcion'  value='".$_GET['wopcion']."'>";
 
 	  $usuario = consultarUsuario($conex,$wusuario);   
 	  $wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
@@ -3386,7 +3398,7 @@ if($estadosede=='on')
 				  $wdpa = $rowpac[4];                                                 //Documento del Paciente
 			      $wtid = $rowpac[5];                                                 //Tipo de Documento o Identificacion
 
-			      estado_del_kardex($whis, $wing, $westado, $wmue, $wcolor, $wactual, $wsac, $esOrdenes );     
+			      estado_del_kardex($whis, $wing, $westado, $wmue, $wcolor, $wactual, $wsac, $esOrdenes, $codigoSede );     
 			      
 				  if ($wmue=="on")
 			         {
@@ -4054,14 +4066,15 @@ if($estadosede=='on')
 		 else
 		    echo "NO HAY HABITACIONES OCUPADAS"; 
 	  echo "</table>";
-     
+		//window.location.href = "Monitor_Kardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&wuser="+$('#wusuario').val()+"&wopcion="+$('#wopcion').val()+"&selectsede="+$('#selectsede').val();
+		$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
 	  if ($wopcion=="9")
-	     echo "<meta http-equiv='refresh' content='300;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion."'>";
+	     echo "<meta http-equiv='refresh' content='300;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion.$sUrlCodigoSede."'>";
 	    else
 			if( isset($servicioDomiciliario) && $servicioDomiciliario == 'on' )
-				echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion."&servicioDomiciliario=on'>";
+				echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wopcion=".$wopcion."&servicioDomiciliario=on".$sUrlCodigoSede."'>";
 			else
-				echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=" . $wemp_pmla . "&wuser=" . $user . "&wopcion=" . $wopcion . "'>";
+				echo "<meta http-equiv='refresh' content='240;url=Monitor_Kardex.php?wemp_pmla=" . $wemp_pmla . "&wuser=" . $user . "&wopcion=" . $wopcion . $sUrlCodigoSede."'>";
 
 
 			echo "</form>";

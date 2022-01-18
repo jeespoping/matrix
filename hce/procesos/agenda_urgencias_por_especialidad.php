@@ -955,6 +955,10 @@ include_once("movhos/movhos.inc.php");
 $wbasedato = "";
 $wactualiz = "Diciembre 19 de 2021";
 
+if (is_null($selectsede)){
+    $selectsede = consultarsedeFiltro();
+}
+
 // Validación de usuario
 if (!isset($user))
 {
@@ -998,7 +1002,7 @@ if(!isset($wemp_pmla))
         $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
         //Consulto el codigo y nombre del centro de costo de urgencias
-        $ccoUrgencias = consultarCentrocoUrgencias($wbasedato);
+        $ccoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
 
         //Formulario (forma)
         echo "<form name='forma' action='' method='post'>";
@@ -1006,6 +1010,7 @@ if(!isset($wemp_pmla))
         echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
         echo "<input type='hidden' name='wbasedato' id='wbasedato' value='".$wbasedato."'>";
         echo "<input type='hidden' name='wbasedatohce' id='wbasedatohce' value='".$wbasedatohce."'>";
+        echo "<input type='HIDDEN' id='sede' name='selectsede' value='".$selectsede."'>";
 
         echo "<input type='hidden' id='modoConsulta' value='".((isset($modoConsulta) && $modoConsulta == 'on') ? 'on' : 'off')."'>";
 
@@ -1063,7 +1068,7 @@ if(!isset($wemp_pmla))
         echo "</div>";
 
         // Definición del encabezado del aplicativo
-        encabezado("ASIGNACION ESPECIALIDAD ".$nombreCco, $wactualiz, "clinica");
+        encabezado("ASIGNACION ESPECIALIDAD ".$nombreCco, $wactualiz, "clinica", true, false);
 
         //Botones "Actualizar" y "Cerrar ventana"
         echo "<br /><p align='center'><input type='button' value='Actualizar' onclick='javascript:agendaUrgencias();'> &nbsp; | &nbsp; <input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";
@@ -4189,7 +4194,7 @@ else
 		}
 	}
 
-    $ccoUr = consultarCentrocoUrgencias($basedatos);
+    $ccoUr = consultarCentrocoUrgencias($basedatos, $selectsede);
 
 	// --> Obtener maestro de salas de espera: Jerson trujillo 2015-07-21
 	$arraySalasEspera = array();
@@ -5321,7 +5326,7 @@ function ingresarPacientesUrgencias($basedatos,$basedatoshce,$codCco,$whistoria,
 		{
 			$mostraAlertaSuperacion	= false;
 
-            $ccoUr = consultarCentrocoUrgencias($basedatos);
+            $ccoUr = consultarCentrocoUrgencias($basedatos, $selectsede);
 
 			// --> Obtener maestro de salas de espera
 			$arraySalasEspera = array();
@@ -5355,6 +5360,7 @@ function ingresarPacientesUrgencias($basedatos,$basedatoshce,$codCco,$whistoria,
 			   AND Ubialp != 'on'
 			   AND Ubiald != 'on'
 			";
+
 			$resNumPac = mysql_query($sqlNumPac, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlNumPac):</b><br>".mysql_error());
 			$rowNumPac = mysql_fetch_array($resNumPac);
 
@@ -5460,6 +5466,11 @@ liberarConexionBD($conex);
 //liberarConexionOdbc($conexUnix);
 }
 if(!isset($consultaAjax)) { ?>
+<script>
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "agenda_urgencias_por_especialidad.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+    });
+</script>
 </body>
 </html>
 <?php
