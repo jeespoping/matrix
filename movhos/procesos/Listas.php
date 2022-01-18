@@ -162,36 +162,12 @@
 
             var msg = "Existen cargos en un estado diferente a Procesado, desea consultar en Unix?";
 
-            
-            
-
-            function consultarUnix( resp ){
-                var wemp_pmla = $("#wemp_pmla").val();
-                var ok = $("#ok").val();
-                var wcco = $("#wcco").val();
-                // $.post("Listas.php",
-                // {
-                //     wemp_pmla			: wemp_pmla,
-                //     ok                  : ok,
-                //     wcco                : wcco,
-                //     respuestaUsuario    : resp,
-                //     posicion            : posicion,
-                //     num                 : num,
-                // }
-                // ,function(data) {
-                //     console.log(data);
-                // },"json" );
-                // document.forms.listas.append("respuestaUsuario", respuestaUsuario);
-                // var formData = new FormData();
-                // formData.append('respuestaUsuario', respuestaUsuario);
-                // formData.getAll('respuestaUsuario');
-                // debugger;
+            function consultarUnix( respuestaUsuario ){
 
                 var listaForm = document.forms['listas'];
+                addHidden(listaForm, 'respuestaUsuario', respuestaUsuario);
                 addHidden(listaForm, 'posicion', posicion);
-                addHidden(listaForm, 'num', num);
-                // document.querySelector("form").reset();
-                // listaFom.submit();
+
                 document.forms.listas.submit();
             }
         
@@ -204,14 +180,14 @@
                     "Si": function() {
                             cmp.checked = false;
                             cmp.value = 'on';
-                            consultarUnix( true );
+                            consultarUnix( 'true' );
                             $( this ).dialog( "close" );
                             $( cmp ).css({display:""});
                         },
                     "No": function() {
                             cmp.checked = true;
                             cmp.value = 'off';
-                            consultarUnix( false );
+                            consultarUnix( 'false' );
                             $( this ).dialog( "close" );
                             $( cmp ).css({display:"none"});
                         },
@@ -1026,7 +1002,7 @@ else
             else
             {
                 echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
-                // echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=99&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wcco=".$wcco."&wlogo=".$wlogo."'>";
+                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=99&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wcco=".$wcco."&wlogo=".$wlogo."'>";
 
                 encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica");
 
@@ -1258,6 +1234,10 @@ else
                             $wcontrol[$i] = 1;
                         }
 
+                        if(isset($posicion) and $posicion==$i) 
+                        {
+                            $wval[$i] = "on";
+                        }
 
                         //No permite facturar si hay algun dato por facturar desde las 7 AM hasta las 10 PM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
                         if (($whora > $wformatohorainicial or $whora < $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
@@ -1287,7 +1267,6 @@ else
                         {
 
                             $wres=array();
-                            $respuestaUsuario = $_REQUEST['respuestaUsuario'];
 
                             $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i], $respuestaUsuario);
 
