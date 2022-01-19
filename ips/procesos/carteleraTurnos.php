@@ -137,11 +137,11 @@
 											<p v-text="turno.Ubicacion" >Ubicacion</p>
 										</div>            
           							</v-card>
-									<v-card v-if="!turno.Ubicacion" dark color="#00B0CA" height="60px" elevation="0" max-width="550">
+									<!-- <v-card v-if="!turno.Ubicacion" dark color="#00B0CA" height="60px" elevation="0" max-width="550">
 										<div class="text-centerAl textoregular  pt-3" >
 											<p>Sala de espera</p>
-										</div>
-          							</v-card>
+										</div>  
+          							</v-card>--> 
 								</v-card>
 						</v-col>   
 					</v-row>
@@ -193,7 +193,6 @@
 										</v-card>
 									</v-col>
 									<v-col cols="7">
-										
 										<v-card v-if="tipoTur === 'ENDOSCOPIA'" light plain color="white" height="50px" elevation="0" width="280">
 											<div class="text-centerAl textoTurno" >
 											<p v-text="turno.Estado" >Estado</p>
