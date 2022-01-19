@@ -533,7 +533,81 @@
 
 		return $response;
 	}
-				
+	
+	/**
+	 * 
+	 */
+	function validarFacturaPAF($historia = null, $ingreso = null, $responsable = null)
+	{
+		$esPAF = false;
+		$sql = "
+			  SELECT	movcer
+				FROM	facardet, facarfac, famov, cafue
+			   WHERE	cardethis = '{$historia}'
+				 AND	cardetnum = '{$ingreso}'
+				 AND	cardetfac = 'S'
+				 AND	cardetreg = carfacreg
+				 AND	movdoc = carfacdoc
+				 AND	movfue = fuecod
+				 AND	fuetip = 'FA'
+			";
+		
+		$respuesta = odbc_exec($conex_unix, $sql);
+
+		if( $respuesta )
+		{
+			while ($fila = odbc_fetch_array($respuesta))
+			{
+				foreach( $responsablesPAF as $responsablePAF )
+				{
+					// Se validaria si el nit es de un PAF
+					$esPAF = ($fila['movcer'] == $responsablePAF ? true : false);
+				}
+			}
+		}
+
+		return $esPAF;
+	}
+
+	/**
+	 * Metodo que permite obtener el listado de resposables del PAF
+	 * 
+	 * @param conex[object]		[Conexión a base de datos]
+	 * @param wemp_pmla[String]	[Número de empresa]
+	 * 
+	 * @return [array] Respuesta de base de datos
+	 */
+	function responsablesPAF($conex, $wemp_pmla)
+	{
+		$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
+		$responsables = [];
+		$responsable = [];
+		
+		$query = "
+		  SELECT	*
+			FROM	{$wcliame}_000024
+		   WHERE	Emppaf = 'on'
+		";
+					
+		$result = mysqli_query($conex, $query) or die(mysqli_error($conex));
+		$num_rows = mysqli_num_rows($result);
+
+		if( $num_rows > 0 ) {
+			while($fila = mysqli_fetch_array($result)) {
+				$responsable = [
+					'codigo'		=>		$fila['Empcod'],
+					'nit'			=>		$fila['Empnit'],
+					'resposnable'	=>		$fila['Empres'],
+					'nombre'		=>		$fila['Empnom']
+				];
+
+				array_push( $responsables, $responsable );
+			}
+		}
+
+		return $responsables;
+	}
+	
 	/**
 	 * Este metodo permite cambiar el formato de las keys que contienen guión
 	 * bajo (underscore) un array a formato camel case (esEjemplo), y devuelve
