@@ -16381,7 +16381,7 @@ else{
 
 	echo "<INPUT type='hidden' id='wemp_pmla' name='wemp_pmla' value='$wemp_pmla'>";
 	echo "<INPUT type='hidden' id='ccoCirugia' name='ccoCirugia' value='$codCcoCirugia'>";
-	echo "<INPUT type='hidden' id='ccoUrgencias' name='ccoCirugia' value='$codCcoUrgencias'>";
+	echo "<INPUT type='hidden' id='ccoUrgencias' name='ccoUrgencias' value='$codCcoUrgencias'>";
 	echo "<INPUT type='hidden' id='wbasedato' name='wbasedato' value='$wbasedato'>";
 	echo "<INPUT type='hidden' id='usuario' value='".$_SESSION["user"]."'>";
 	echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
@@ -16436,7 +16436,7 @@ else{
 				$tod="";
 				$ipod="off";
 
-				$centrosCostos = consultaCentrosCostos($cco);
+				$centrosCostos = consultaCentrosCostos($cco, "", FALSE, $selectsede);
 
 				//Solo saco los ccos necesarios
 				$ccs = array();
@@ -17109,7 +17109,12 @@ else{
 				break;
 			//Centro de  costos de cirugia.
 			case ($wcirugia):
-
+					$sFiltrarSedeCirugia = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+					$sFiltroCirugiaSede = "";
+					if($sFiltrarSedeCirugia == 'on')
+					{
+						$sFiltroCirugiaSede = (isset($selectsede) && ($selectsede != '')) ? " AND Ccosed = '{$selectsede}' " : "";	
+					}
 					$sql = " SELECT * FROM
 					(SELECT Ubisac as Habcco, Habcod, Habhis, Habing,
 								CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
@@ -17131,6 +17136,7 @@ else{
 						AND turnin = inging
 						AND ubimue != 'on'
 						AND turfec BETWEEN '".$dia_anterior."' AND '".$wfecha_actual."'
+						".$sFiltroCirugiaSede."
 						UNION
 					SELECT Ubisac as Habcco, 'Cx' as Habcod, ubihis as Habhis, ubiing as Habing,
 								CONCAT(pacno1,' ',pacno2,' ',pacap1,' ',pacap2) as Nombre, Cconom, Ubiptr,
@@ -17148,7 +17154,8 @@ else{
 						AND turhis = inghis
 						AND turnin = inging
 						AND ubimue != 'on'
-						AND turfec BETWEEN '".$dia_anterior."' AND '".$wfecha_actual."') AS t
+						AND turfec BETWEEN '".$dia_anterior."' AND '".$wfecha_actual."'
+						".$sFiltroCirugiaSede.") AS t
 				   GROUP BY habhis, habing
 				   ORDER BY habcod, habord";
 
