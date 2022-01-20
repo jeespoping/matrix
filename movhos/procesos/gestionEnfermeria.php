@@ -7457,7 +7457,8 @@ function ccoesdomiciliaria( $wcco )
 
 	$q = "SELECT Ccodom
 		 	FROM ".$wbasedato."_000011
-		   WHERE Ccoest = 'on'";
+		   WHERE Ccoest = 'on'
+		   AND Ccocod = '{$wcco}' ";
 	$err = mysql_query($q,$conex);
 	$result = mysql_fetch_assoc($err);
 
@@ -10286,6 +10287,10 @@ function consultarCcoUrgencias(){
 
 	global $wbasedato;
 	global $conex;
+	global $selectsede;
+
+	$aCCO = consultarCentrocoUrgencias($wbasedato,$selectsede);
+	return $aCCO->codigo;
 
 	$q = "SELECT Ccocod
 		    FROM ".$wbasedato."_000011
@@ -10312,6 +10317,9 @@ function consultarCcoCirugia(){
 
 	global $wbasedato;
 	global $conex;
+	global $selectsede;
+
+	return consultarCcoCirugiaUnificada($wbasedato,$selectsede);
 
 	$q = "SELECT Ccocod
 		    FROM ".$wbasedato."_000011
@@ -12749,11 +12757,12 @@ function Consultar_dietas($whis,$wing,$wser)
 
 
  //Array de zonas.
-function array_zonas( $tabla, $sCodigoSedeSelector = NULL ){
+function array_zonas( $tabla ){
 
 	global $conex;
 	global $wbasedato;
 	global $wemp_pmla;
+	global $selectsede;
 
 	$sFiltrarSede = 'off';
 	if(isset($wemp_pmla) && !empty($wemp_pmla))
@@ -12762,7 +12771,7 @@ function array_zonas( $tabla, $sCodigoSedeSelector = NULL ){
 	}
 
 	$sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
-	$sCodigoSede = (isset($sCodigoSedeSelector)) ? $sCodigoSedeSelector : $sCodigoSede;
+	$sCodigoSede = (isset($selectsede)) ? $selectsede : $sCodigoSede;
 	
 	$sFromFiltroSede = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? ' , '.$wbasedato.'_000011 D ' : '';
 	$sJoinFiltroSede = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND ((Arecco = D.Ccocod OR Arecco = '') " : '';
@@ -13113,7 +13122,7 @@ function pintarDatosFila( $datos, $sCodigoSelectorSede = NULL ){
 	$colEstadosExamenRol = consultarEstadosExamenesRol();
 
 	$array_his_cub = array_his_cub( $tablaHabitaciones );
-	$array_zonas = array_zonas( $tablaHabitaciones, $sCodigoSelectorSede );
+	$array_zonas = array_zonas( $tablaHabitaciones );
 	$array_log = array_log();
 	$pacientes_atendidos_activos = pacientes_atendidos_activos($ccoCodigo);
 	$wtiempos_urgencias = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tiempos_urgencias');
