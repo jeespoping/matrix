@@ -12749,18 +12749,35 @@ function Consultar_dietas($whis,$wing,$wser)
 
 
  //Array de zonas.
-function array_zonas( $tabla ){
+function array_zonas( $tabla, $sCodigoSedeSelector = NULL ){
 
 	global $conex;
 	global $wbasedato;
+	global $wemp_pmla;
+
+	$sFiltrarSede = 'off';
+	if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	}
+
+	$sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
+	$sCodigoSede = (isset($sCodigoSedeSelector)) ? $sCodigoSedeSelector : $sCodigoSede;
+	
+	$sFromFiltroSede = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? ' , '.$wbasedato.'_000011 D ' : '';
+	$sJoinFiltroSede = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND ((Arecco = D.Ccocod OR Arecco = '') " : '';
+	$sWhereFiltroSede = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND (D.Ccosed = '{$sCodigoSede}' OR Arecco = ''))" : '';
 
 	$array_zonas = array();
 
 	$q_zon = "SELECT Aredes, Arecod
-			    FROM ".$tabla.", ".$wbasedato."_000169
+			    FROM ".$tabla.", ".$wbasedato."_000169 " 
+				.$sFromFiltroSede."
 			   WHERE Areest = 'on'
 			     AND Habzon = Arecod
 			     AND Habcub = 'on'
+				 ".$sJoinFiltroSede."
+				 ".$sWhereFiltroSede."
 		    GROUP BY Arecod" ;
 	$res_zon = mysql_query($q_zon);
 
@@ -13048,7 +13065,7 @@ function traer_medico_tte($whis, $wing, $wfecha, &$cuantos, $wsp, $mostrar)
 /********************************************************************************
  * Pinta los datos necesarios en pantalla
  ********************************************************************************/
-function pintarDatosFila( $datos ){
+function pintarDatosFila( $datos, $sCodigoSelectorSede = NULL ){
 
 	global $colores;
 	global $fecha;
@@ -13096,7 +13113,7 @@ function pintarDatosFila( $datos ){
 	$colEstadosExamenRol = consultarEstadosExamenesRol();
 
 	$array_his_cub = array_his_cub( $tablaHabitaciones );
-	$array_zonas = array_zonas( $tablaHabitaciones );
+	$array_zonas = array_zonas( $tablaHabitaciones, $sCodigoSelectorSede );
 	$array_log = array_log();
 	$pacientes_atendidos_activos = pacientes_atendidos_activos($ccoCodigo);
 	$wtiempos_urgencias = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tiempos_urgencias');
@@ -17409,7 +17426,8 @@ else{
 		// echo "</pre>";
 
 		if( !empty( $datosHabitaciones ) ){
-			pintarDatosFila( $datosHabitaciones );
+			$sCodigoSelector = (isset($selectsede)) ? $selectsede : NULL;
+			pintarDatosFila( $datosHabitaciones, $sCodigoSelector );
 		}
 		else{
 			encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica" );
