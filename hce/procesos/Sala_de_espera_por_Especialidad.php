@@ -1573,7 +1573,7 @@ function reasignarCubiculo($whce, $wbasedato, $whis, $wing, $wusuario, $wcubicul
 				//Verifica si el paciente es tiene conducta de traslado.	
 				if($row_con_pac['contra'] == 'on'){
 					
-					$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
+					$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato, $selectsede);
 					$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
 					
 					//====================================
@@ -2500,7 +2500,7 @@ function ponerConducta($whce, $wbasedato, $whis, $wing, $wusuario, $wconducta, $
 		//en proceso de traslado.
 		if($cond_nueva_traslado == 'on'){
 			
-			$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
+			$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato, $selectsede);
 			$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
 			
 			//====================================
