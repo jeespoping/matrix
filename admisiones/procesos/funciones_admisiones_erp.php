@@ -4506,6 +4506,7 @@ function listarPacientesConTurno()
 				<td>Nombre</td>
 				<td>Triage</td>
 				<td>Especialidad</td>
+				<td>Categor&iacute;a</td>
 				<td>Prioridad</td>
 				<td colspan='3' align='center'>Opciones</td>
 			</tr>";
@@ -4528,6 +4529,24 @@ function listarPacientesConTurno()
 		   AND A.Atutem = '".$tema."'
 		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
 		";
+		// 2022-01-20 Luis F Meneses: Reemplaza al query anterior 
+		//				para obtener adicionalmente la categoría 
+		$sqlTurnos = "
+		SELECT Atufat, Atutur, Atudoc, Atutdo, Atullv, Atuusu, Atunom, A.id, Ahthte, Prinom, T.Sernom
+		  FROM ".$wbasedato."_000178 AS A 
+			INNER JOIN ".$wcliame."_000298 AS T ON(A.Atuten = T.Sercod)
+			INNER JOIN ".$wbasedato."_000204 AS B ON (Atutur = Ahttur)
+		    LEFT JOIN ".$wbasedato."_000206 AS C ON (Atupri = Pricod)
+		 WHERE A.Fecha_data >= '".$fechaTur."'
+		   AND Atuest  = 'on'
+		   AND Atucta  = 'on'
+		   AND Atupad != 'on'
+		   AND Atuadm != 'on'
+		   AND Ahtest = 'on'
+		   AND A.Atutem = '".$tema."'
+		 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
+		";
+		//echo "$sqlTurnos";
 		$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
 		$coloFila	= 'fila2';
 		$turnoConLlamadoEnVentanilla = '';
@@ -4639,6 +4658,7 @@ function listarPacientesConTurno()
 					<td style='padding:2px;' >".$nomPaciente."</td>
 					<td style='padding:2px;' align='center'>".$triage."</td>
 					<td style='padding:2px;' align='center'>".ucfirst(strtolower($nomEspecialidad))."</td>
+					<td>".$rowTurnos['Sernom']."</td>
 					<td style='padding:2px;' align='center'>".$rowTurnos['Prinom']."</td>
 					<td style='padding:2px;' align='center' >
 						<img id='imgLlamar".$rowTurnos['Atutur']."' style='cursor:pointer;".(($tieneLlamado) ? "display:none" : "")."' class='botonLlamarPaciente' width='20' heigth='20' tooltip='si' title='Llamar' src='../../images/medical/root/Call2.png'	onclick='llamarPacienteAtencion(\"".$rowTurnos['Atutur']."\", \"imgLlamar".$rowTurnos['Atutur']."\")'>
