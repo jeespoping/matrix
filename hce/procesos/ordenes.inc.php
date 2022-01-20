@@ -34712,34 +34712,30 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 			$realizarEnServicio 	= 'off';
 			$realizacionExterna 	= 'off';
 			$requiereAutorizacion 	= 'off';
+
+			$cup = consultarCupPorCodigoEstudio( $conex, $whce, $consecutivoExamen );
+				
+			$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
+			
+			$clasificacionEstudio = consultarClasificacionPorEstudio( $conex, $wcliame, $cup );
+			
+			$requiereAut = requiereAutorizacion( $conex, $wcliame, $wemp_pmla, [
+									'tipoEmpresa' 	=> consultarTipoEmpresaPorHistoria( $conex, $wbasedato, $historia, $ingreso ),
+									'nit'			=> $pac['nitResponsable'],
+									'codigoEmpresa'	=> $pac['codigoResponsable'],
+									'planEmpresa'	=> consultarPlanEmpresaPorHistoria( $conex, $wcliame, $historia, $ingreso ),
+									'tarifa'		=> $pac['tarifa'],
+									'clasificacion'	=> $clasificacionEstudio == '*' ? '' : $clasificacionEstudio,
+									'cup'			=> $cup,
+								]);
+										
+			if( $requiereAut ){
+				$requiereAutorizacion = 'on';
+				$esOfertado = 'off';
+			}
 			
 			if( $hayInteroperabilidad )
 			{
-				$cup = consultarCupPorCodigoEstudio( $conex, $whce, $consecutivoExamen );
-				
-				$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
-				
-				$clasificacionEstudio = consultarClasificacionPorEstudio( $conex, $wcliame, $cup );
-				
-				$requiereAut = requiereAutorizacion( $conex, $wcliame, $wemp_pmla, [
-										'tipoEmpresa' 	=> consultarTipoEmpresaPorHistoria( $conex, $wbasedato, $historia, $ingreso ),
-										'nit'			=> $pac['nitResponsable'],
-										'codigoEmpresa'	=> $pac['codigoResponsable'],
-										'planEmpresa'	=> consultarPlanEmpresaPorHistoria( $conex, $wcliame, $historia, $ingreso ),
-										'tarifa'		=> $pac['tarifa'],
-										'clasificacion'	=> $clasificacionEstudio == '*' ? '' : $clasificacionEstudio,
-										'cup'			=> $cup,
-									]);
-											
-				if( $requiereAut ){
-					$requiereAutorizacion = 'on';
-					$esOfertado = 'off';
-				}
-				// else
-				// {
-				// 	$estadoExamen = 'A'; // Si no requiere autorización, se establece como autorizado
-				// }
-				
 				$requierePreguntarServicioRealizacion = requierePreguntarServicioRealizacion( $conex, $wcliame, $cup );
 				if( $requierePreguntarServicioRealizacion ){
 					$realizarEnServicio = 'on';
