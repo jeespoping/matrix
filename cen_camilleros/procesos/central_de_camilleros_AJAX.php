@@ -958,6 +958,9 @@ function marcartramitesok($wemp_pmla, $wid, $marcado){
 function consultarCcoCirugia(){
 	global $wbasedato;
 	global $conex;
+	global $selectsede;
+
+	return consultarCcoCirugiaUnificada($wbasedato,$selectsede);
 
 	$q = "SELECT Ccocod
 		    FROM ".$wbasedato."_000011
