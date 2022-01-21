@@ -12777,6 +12777,11 @@ function array_zonas( $tabla ){
 	$sJoinFiltroSede = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND ((Arecco = D.Ccocod OR Arecco = '') " : '';
 	$sWhereFiltroSede = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND (D.Ccosed = '{$sCodigoSede}' OR Arecco = ''))" : '';
 
+	//Mejora de velocidad
+	$sFromFiltroSede = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " LEFT JOIN ".$wbasedato."_000011 C ON (B.Arecco = C.Ccocod) " : '';
+	$sWhereFiltroSede = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND (C.Ccosed = '{$sCodigoSede}' OR C.Ccosed IS NULL) " : '';
+	
+
 	$array_zonas = array();
 
 	$q_zon = "SELECT Aredes, Arecod
@@ -12788,6 +12793,17 @@ function array_zonas( $tabla ){
 				 ".$sJoinFiltroSede."
 				 ".$sWhereFiltroSede."
 		    GROUP BY Arecod" ;
+	
+	//Mejora de velocidad
+	$q_zon = "SELECT B.Aredes, B.Arecod
+			FROM ".$tabla." A 
+			INNER JOIN ".$wbasedato."_000169 B ON (A.Habzon = B.Arecod)
+			".$sFromFiltroSede."
+		   WHERE B.Areest = 'on'
+			 AND A.Habcub = 'on'
+			 ".$sWhereFiltroSede."
+		GROUP BY B.Arecod" ;
+	
 	$res_zon = mysql_query($q_zon);
 
 	while($row_zon = mysql_fetch_assoc($res_zon)){
