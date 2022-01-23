@@ -58,7 +58,7 @@ $wactualiz = "Enero 14 de 2021";
 include_once("root/comun.php");
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
-$ccoSF=ccoUnificadoSF();;
+$ccoSF=ccoUnificadoSF();
 
 
 if(!isset($_SESSION['user']))

@@ -814,7 +814,8 @@ function ArticulosXPaciente( $pac ){
 	global $conex;
 	global $bd;
 	global $cco;
-	global $centraldemezclas;
+	global $ccoCM;
+	global $ccoSF;
 	global $fecDispensacion;
 //	global $wcenmez;
 	
@@ -824,7 +825,7 @@ function ArticulosXPaciente( $pac ){
 	
 	$ori = 'SF';
 	
-	if( $cco['cod'] == $centraldemezclas ){
+	if( $cco['cod'] == $ccoCM ){
 		$ori = 'CM';
 	}
 	
@@ -997,12 +998,12 @@ function registrarArticuloKE( $art, $pac, $trans = "C", $tras = true ){
 	global $conex;
 	global $bd;
 	global $cco;
-	global $centraldemezclas;
+	global $ccoCM;
 	global $fecDispensacion;
 	
 	$ori = 'SF';
 	
-	if( $cco['cod'] == $centraldemezclas ){
+	if( $cco['cod'] == $ccoCM ){
 		$ori = 'CM';
 	}
 	
