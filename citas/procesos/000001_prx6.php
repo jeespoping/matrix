@@ -736,7 +736,7 @@ else
 	echo "<td bgcolor=#cccccc>Examen</td>";
 	echo "<td bgcolor=#cccccc>";
 	echo "<select name='Codexa'>";
-	$query = "select codigo,descripcion,preparacion,cod_equipo,activo from ".$empresa."_000011 where cod_equipo='".substr($pos2,0,strpos($pos2,"-"))."' and codigo != '0' order by codigo";
+	$query = "select codigo,descripcion,preparacion,cod_equipo,activo from ".$empresa."_000011 where cod_equipo='".substr($pos2,0,strpos($pos2,"-"))."' and codigo != '0' and Activo = 'A' order by codigo";
 	$err1 = mysql_query($query,$conex);
 	$num1 = mysql_num_rows($err1);
 	for ($i=0;$i<$num1;$i++)
