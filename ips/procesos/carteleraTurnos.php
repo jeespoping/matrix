@@ -96,7 +96,7 @@
 										<v-row>
 											<v-col cols="4">
 												<v-card light  plain color="white" height="80px" elevation="0" width="275">   
-													<div class="text-center textoTurno">
+													<div class="text-centerAl textoTurno">
 														<p v-text="turno.Turno">T-000</p>
 													</div>
 												</v-card>
@@ -137,11 +137,11 @@
 											<p v-text="turno.Ubicacion" >Ubicacion</p>
 										</div>            
           							</v-card>
-									<!-- <v-card v-if="!turno.Ubicacion" dark color="#00B0CA" height="60px" elevation="0" max-width="550">
+									<v-card v-if="!turno.Ubicacion" dark color="#00B0CA" height="60px" elevation="0" max-width="550">
 										<div class="text-centerAl textoregular  pt-3" >
 											<p>Sala de espera</p>
 										</div>  
-          							</v-card>--> 
+          							</v-card> 
 								</v-card>
 						</v-col>   
 					</v-row>

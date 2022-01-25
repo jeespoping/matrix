@@ -15,7 +15,8 @@
     if ($_SERVER['REQUEST_METHOD'] == 'GET')
     {
         $wemp_pmla = $_GET['wemp_pmla'];
-        $tema = $_GET['tema'];
+        $value = "0".$_GET['tema'];
+        $tema = substr($value,-2,2);
         $funcion = $_GET['funcion'];
         $solucionCitas = $_GET['solucionCitas'];
         $tipoTurnero = $_GET['tipoTur'];
@@ -148,8 +149,8 @@
                 $objAlerta->prioridadAlerta = "";
                 $objAlerta->Estado = "";
                 // --> Solo mostrar turnos de maximo 12 horas atras // OJO HABILITAR ANTES DE PONER EN PRODUCCION
-                //if(strtotime($rowAlertas['Fecha_data']." ".$rowAlertas['Hora_data']) < strtotime('-12 hours'))
-                //continue;   
+                if(strtotime($rowAlertas['Fecha_data']." ".$rowAlertas['Hora_data']) < strtotime('-12 hours'))
+                continue;   
                 $objAlerta->turnoAlerta = substr($rowAlertas['Atutur'], 7);
                 $objAlerta->moduloAlerta = $rowAlertas['Puenom'];
                 $this->arrAlerta[]= $objAlerta;
@@ -188,7 +189,7 @@
                 $objTurno->Turno = substr($rowTurnos['Atutur'], 7);
                 $objTurno->Modulo = "";
                 $objTurno->Sala = "";
-                $objTurno->Ubicacion = "Sala de espera";
+                $objTurno->Ubicacion = "";
                 $objTurno->Estado = "";
                 // --> Si no tiene triage
                 if($rowTurnos['Atucta'] != "on")
@@ -208,7 +209,7 @@
                 {
                     if($rowTurnos['Atupad'] == "on" && $rowTurnos['Atuadm'] != "on")
                         {
-                        $objTurno->Estado =  utf8_encode("En admision");
+                        $objTurno->Estado =  "En admision";
                         //echo("En admisi&oacute;n");
                         }
                     elseif($rowTurnos['Atuetr'] == "on")
@@ -226,12 +227,14 @@
                             FROM ".$basedatoshce."_000022 AS A 
                             LEFT JOIN ".$wbasedato."_000048 AS B ON A.Mtrmed = Meduma
                             INNER JOIN ".$wbasedato."_000178 AS C ON (A.Mtrtur = C.Atutur AND C.Atutem = '".$tema."')
-                            WHERE Mtrtur = '".$turno."'
+                            WHERE Mtrtur = '".$rowTurnos['Atutur']."'
                             AND Mtrest = 'on'";
                             //echo($sqlInfo22);
                             $resInfo22 = mysql_query($sqlInfo22, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlInfo22):</b><br>".mysql_error());
                             if (mysql_num_rows($resInfo22) > 0)
                             {
+                                $rowInfo22 = mysql_fetch_array($resInfo22, MYSQL_ASSOC);
+                                $infoTurnoHce22 = $rowInfo22;
                                 // --> Si el paciente tiene una entrega en la 17 no lo muestro, ya que me indica que el paciente va para hospitalizacion.
                                 $sqlEntrega = "SELECT Eyrnum FROM ".$wbasedato."_000017
                                 WHERE Eyrhis = '".$infoTurnoHce22['Mtrhis']."'
@@ -273,7 +276,7 @@
                                                     $resUbicacion = mysql_query($sqlUbicacion, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlUbicacion):</b><br>".mysql_error());
                                                     if($rowUbicacion = mysql_fetch_array($resUbicacion))
                                                     {
-                                                        $objTurno->Sala = ucfirst(strtolower($arraySalas[$rowUbicacion['Habzon']]));
+                                                        $objTurno->Sala = ucfirst(strtolower($rowUbicacion['Habzon']));
                                                         $objTurno->Ubicacion = ucfirst(strtolower($rowUbicacion['Habcpa']));
                                                     }
                                                 }
@@ -294,7 +297,7 @@
                                                 WHERE Pueusu = '".$infoTurnoHce22['Mtrmed']."'";
                                                 $resEnConsulta = mysql_query($sqlEnConsulta, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlEnConsulta):</b><br>".mysql_error());
                                                 if($rowEnConsulta = mysql_fetch_array($resEnConsulta))
-                                                $objTurno->Ubicacion = ucfirst(strtolower($rowEnConsulta['Puenom']));
+                                                    $objTurno->Ubicacion = ucfirst(strtolower(utf8_encode($rowEnConsulta['Puenom'])));
                                             }
                                             else
                                             {
@@ -322,6 +325,8 @@
                                     $altaOmuerte = "true";
                                 }
                             }
+                            else
+                                $objTurno->Estado = "Pendiente de admision";
                         }
                 }
                 $this->arrFilasTur[]= $objTurno;
@@ -476,7 +481,7 @@
                         $objTurno->Estado = utf8_encode($texto);
                     } else
                     {
-                        $objTurno->Estado = utf8_encode("En espera de Atención");
+                        $objTurno->Estado = "En espera de Atencion";
                     }
                     // echo($objTurno->Turno.$objTurno->Estado."<BR>");
                     $this->arrFilasTur[] = $objTurno;
