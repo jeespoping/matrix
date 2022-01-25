@@ -336,7 +336,7 @@ function ConsultaEstadoWithGet(
             $ingreso,
             $codigo_responsable,
             $soporte,
-            'http://matrix-test.lasamericas.com.co/matrix/hce/procesos/ordenes_imp.php?',
+            'http://matrix.lasamericas.com.co/matrix/hce/procesos/ordenes_imp.php?',
             'orden medica',
             '/var/www/matrix/hce/procesos/impresion_ordenes/'
         );
@@ -382,7 +382,7 @@ function ConsultaEstadoWithGet(
     }
 
     if (array_search($soporte = '43', $arraySoportes) !== false) {
-        $url = 'http://matrix-test.lasamericas.com.co/matrix/ips/procesos/monitorE-facturacion.php?';
+        $url = 'http://matrix.lasamericas.com.co/matrix/ips/procesos/monitorE-facturacion.php?';
         $descripcion = 'Factura PDF';
         $facturaPdf = consultaFacturaPDF(
             $conex,
@@ -488,7 +488,7 @@ function ConsultaEstadoWithGet(
 
     foreach($arraySoportesHCEAConsultar as $soporteHCE){
         if (array_search($soporteHCE, $arraySoportes) !== false) {
-            $url = 'http://matrix-test.lasamericas.com.co/matrix/hce/procesos/solimp.php?';
+            $url = 'http://matrix.lasamericas.com.co/matrix/hce/procesos/solimp.php?';
             $soportesHCE = consultaSoportesHCE($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporteHCE,$descripcion,$formulario,
             $url,'../../hce/reportes/cenimp/');
             $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesHCE, $historia, $ingreso, $soporteHCE, $descripcion);
@@ -652,7 +652,7 @@ function guardarRespuesta($conex, $wemp_pmla, $historia, $ingreso, $responsable,
         'errorCode' => $codError,
         'description' => $descripcion
     );
-
+    var_dump($data);
     $urlAConsumir = consultarAliasPorAplicacion($conex, $wemp_pmla, 'urlSoportesAutomaticos');
     $opciones = array(
         CURLOPT_URL                 => $urlAConsumir,
@@ -664,6 +664,7 @@ function guardarRespuesta($conex, $wemp_pmla, $historia, $ingreso, $responsable,
 
     curl_setopt_array($ch, $opciones);
     $respuesta = curl_exec($ch);
+    echo $respuesta;
     curl_close($ch);
 }
 
