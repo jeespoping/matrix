@@ -178,12 +178,15 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
 
-        if (array_search($soporte = "48", array_column($data, 'code')) !== false) {
-            $posicion = array_search($soporte = "48", array_column($data, 'code'));
+        if (array_search($soporte = "48", array_column($data,'code')) !== false) {
+            $posicion = array_search($soporte = "48", array_column($data,'code'));
             $url = $data[$posicion]['url'];
             $descripcion = $data[$posicion]['supportName'];
-
-            $historiaClinica = consultaHistoriaClinica($conex, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, $url, $descripcion);
+            $rutaOrigen = $data[$posicion]['sopalm'];
+            $parametros = $data[$posicion]['sopopa'];
+           
+            $historiaClinica = consultaHistoriaClinica($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$url,$descripcion,
+            $rutaOrigen,$parametros);
             $arrayRespuestaSoportes = devolverRespuestaSoporte($historiaClinica, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
@@ -192,20 +195,14 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
             $posicion = array_search($soporte = "50", array_column($data, 'code'));
             $url = $data[$posicion]['url'];
             $descripcion = $data[$posicion]['supportName'];
+            $rutaOrigen = $data[$posicion]['sopalm'];
+            $datosAdicionales = $data[$posicion]['sopopa'];
 
-            $registroAnestesia = consultaRegistroAnestesia(
-                $conex,
-                $wemp_pmla,
-                $historia,
-                $ingreso,
-                $responsable,
-                $soporte,
-                $url,
-                $descripcion
-            );
+            $registroAnestesia = consultaRegistroAnestesia($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$url,
+            $descripcion,$rutaOrigen,$datosAdicionales);
             $arrayRespuestaSoportes = devolverRespuestaSoporte($registroAnestesia, $historia, $ingreso, $soporte, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
-        }
+        }        
 
         if (array_search($soporte = "66", array_column($data, 'code')) !== false) {
             $posicion = array_search($soporte = "66", array_column($data, 'code'));
@@ -270,24 +267,17 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
             }
         }
 
-        foreach ($arraySoportesHCEAConsultar as $soporteHCE) {
-            if (array_search(in_array($soporteHCE,  array_column($data, 'code')), array_column($data, 'code')) !== false) {
-                $posicion = array_search($soporteHCE, array_column($data, 'code'));
+        foreach($arraySoportesHCEAConsultar as $soporteHCE){
+            if (array_search(in_array($soporteHCE,  array_column($data,'code')), array_column($data,'code')) !== false) {
+                $posicion = array_search($soporteHCE, array_column($data,'code'));
                 $url = $data[$posicion]['url'];
                 $descripcion = $data[$posicion]['supportName'];
                 $formulario = $data[$posicion]['soptab'];
+                $rutaOrigen = $data[$posicion]['sopalm'];
+                $datosAdicionales = $data[$posicion]['sopopa'];
 
-                $soportesHCE = consultaSoportesHCE(
-                    $conex,
-                    $wemp_pmla,
-                    $historia,
-                    $ingreso,
-                    $responsable,
-                    $soporteHCE,
-                    $descripcion,
-                    $formulario,
-                    $url
-                );
+                $soportesHCE = consultaSoportesHCE($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporteHCE,$descripcion,
+                $formulario,$url,$rutaOrigen,$datosAdicionales);
                 $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesHCE, $historia, $ingreso, $soporteHCE, $descripcion);
                 array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
             }
@@ -298,7 +288,7 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
             array_push($estadoTemporal, $estados['status']);
         }
 
-        if (empty($estadoTemporal) || in_array(300, $estadoTemporal, true) || in_array(400, $estadoTemporal, true) || in_array(500, $estadoTemporal, true)) {
+        if (in_array(300, $estadoTemporal, true) || in_array(400, $estadoTemporal, true) || in_array(500, $estadoTemporal, true)) {
             $consultaEstadoDescargas['status'] = '400';
         } else {
             $consultaEstadoDescargas['status'] = '200';
@@ -346,7 +336,7 @@ function ConsultaEstadoWithGet(
             $ingreso,
             $codigo_responsable,
             $soporte,
-            'http://matrix.lasamericas.com.co/matrix/hce/procesos/ordenes_imp.php?',
+            'http://matrix-test.lasamericas.com.co/matrix/hce/procesos/ordenes_imp.php?',
             'orden medica',
             '/var/www/matrix/hce/procesos/impresion_ordenes/'
         );
@@ -392,7 +382,7 @@ function ConsultaEstadoWithGet(
     }
 
     if (array_search($soporte = '43', $arraySoportes) !== false) {
-        $url = 'http://matrix.lasamericas.com.co/matrix/ips/procesos/monitorE-facturacion.php?';
+        $url = 'http://matrix-test.lasamericas.com.co/matrix/ips/procesos/monitorE-facturacion.php?';
         $descripcion = 'Factura PDF';
         $facturaPdf = consultaFacturaPDF(
             $conex,
@@ -430,31 +420,15 @@ function ConsultaEstadoWithGet(
     }
 
     if (array_search($soporte = '48', $arraySoportes) !== false) {
-        $historiaClinica = consultaHistoriaClinica(
-            $conex,
-            $wemp_pmla,
-            $historia,
-            $ingreso,
-            $codigo_responsable,
-            $soporte,
-            'http://matrix.lasamericas.com.co/matrix/hce/procesos/solimp.php?',
-            'Historia Clinica'
-        );
+        $historiaClinica = consultaHistoriaClinica($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,
+        'http://matrix.lasamericas.com.co/matrix/hce/procesos/solimp.php?','Historia Clinica','../../hce/reportes/cenimp/');
         $arrayRespuestaSoportes = devolverRespuestaSoporte($historiaClinica, $historia, $ingreso, $soporte, $descripcion);
         array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
 
     if (array_search($soporte = '50', $arraySoportes) !== false) {
-        $historiaClinica = consultaRegistroAnestesia(
-            $conex,
-            $wemp_pmla,
-            $historia,
-            $ingreso,
-            $codigo_responsable,
-            $soporte,
-            'http://matrix.lasamericas.com.co/matrix/hce/procesos/solimp.php?',
-            'Registro de anestesia'
-        );
+        $historiaClinica = consultaRegistroAnestesia($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporte,
+        'http://matrix.lasamericas.com.co/matrix/hce/procesos/solimp.php?','Registro de anestesia','../../hce/reportes/cenimp/');
         $arrayRespuestaSoportes = devolverRespuestaSoporte($historiaClinica, $historia, $ingreso, $soporte, $descripcion);
         array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
     }
@@ -512,20 +486,11 @@ function ConsultaEstadoWithGet(
         }
     }
 
-    foreach ($arraySoportesHCEAConsultar as $soporteHCE) {
+    foreach($arraySoportesHCEAConsultar as $soporteHCE){
         if (array_search($soporteHCE, $arraySoportes) !== false) {
-            $url = 'http://matrix.lasamericas.com.co/matrix/hce/procesos/solimp.php?';
-            $soportesHCE = consultaSoportesHCE(
-                $conex,
-                $wemp_pmla,
-                $historia,
-                $ingreso,
-                $codigo_responsable,
-                $soporteHCE,
-                $descripcion,
-                $formulario,
-                $url
-            );
+            $url = 'http://matrix-test.lasamericas.com.co/matrix/hce/procesos/solimp.php?';
+            $soportesHCE = consultaSoportesHCE($conex,$wemp_pmla,$historia,$ingreso,$codigo_responsable,$soporteHCE,$descripcion,$formulario,
+            $url,'../../hce/reportes/cenimp/');
             $arrayRespuestaSoportes = devolverRespuestaSoporte($soportesHCE, $historia, $ingreso, $soporteHCE, $descripcion);
             array_push($arrayEstadoRespuesta, $arrayRespuestaSoportes);
         }
@@ -598,18 +563,16 @@ function armarURLHistoriaClinica(
     $wemp_pmla,
     $historia,
     $ingreso,
-    $responsable,
-    $soporte,
     $url
-) {
+){
 
     // Se arma la estructura que va a llamar a la URL
-    $urlWemp_pmla = "&wemp_pmla=" . $wemp_pmla;
+    $urlWemp_pmla = "wemp_pmla=" . $wemp_pmla;
     $urlHistoria = "&whis=" . $historia;
     $urlIngreso = "&wing=" . $ingreso;
     $adicionales = "&wservicio=*";
 
-    return $url . $urlWemp_pmla . $urlHistoria . $urlIngreso  . "&responsable=" . $responsable . "&soporte=" . $soporte . $adicionales . '&automatizacion_pdfs=';
+    return $url . $urlWemp_pmla . $urlHistoria . $urlIngreso . $adicionales . '&automatizacion_pdfs=';
 }
 
 /**
@@ -689,7 +652,7 @@ function guardarRespuesta($conex, $wemp_pmla, $historia, $ingreso, $responsable,
         'errorCode' => $codError,
         'description' => $descripcion
     );
-    var_dump($data);
+
     $urlAConsumir = consultarAliasPorAplicacion($conex, $wemp_pmla, 'urlSoportesAutomaticos');
     $opciones = array(
         CURLOPT_URL                 => $urlAConsumir,
@@ -701,8 +664,48 @@ function guardarRespuesta($conex, $wemp_pmla, $historia, $ingreso, $responsable,
 
     curl_setopt_array($ch, $opciones);
     $respuesta = curl_exec($ch);
-    echo $respuesta;
     curl_close($ch);
+}
+
+/**
+ * Este metodo permite armar el PDF y luego descargarlo
+ * recibiendo como parametro respuesta del curl,conexion del curl,wemp_pmla,historia
+ * ingreso,numero de soporte,descripcion del soporte
+ * 
+ * @param response[string]		[Respuesta dada por el consumo del curl]
+ * @param ch[int]		[conexion del curl para manejo de excepciones]
+ * @param wemp_pmla[int]		[empresa conectada]
+ * @param historia[int]				[Número de historia del paciente]
+ * @param ingreso[int]				[Número de ingreso del paciente]
+ * @param soporte[int]				[Número del soporte a generar PDF]
+ * @param descripcion[int]				[Descripcion del soporte a generar PDF]
+ * @return [json] Respuesta del servicio
+ */
+
+function armarPDFHistoriaClinica(
+    $response,
+    $wemp_pmla,
+    $historia,
+    $ingreso,
+    $soporte,
+    $descripcion,
+    $responsable,
+    $rutaOrigen,
+    $conex
+) {
+
+    $porciones = explode("|", $response);
+    $wcodigo_solicitud = end($porciones);
+    $cadena_buscada   = 'OK';
+    $posicion_coincidencia = strpos($response, $cadena_buscada);
+    
+    if ($posicion_coincidencia !== false) {
+        $wnombrePDF = $wemp_pmla . "Solicitud_" . $wcodigo_solicitud;
+        $archivoOrigen = $rutaOrigen. $wnombrePDF . ".pdf";
+        recuperarSoporte($historia, $ingreso, $responsable, $wemp_pmla, $soporte,$archivoOrigen);     
+    }
+    
+    return armarRespuesta($descripcion,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,null,$conex,null);
 }
 
 /**
@@ -1140,7 +1143,7 @@ function consultaOrdenMedica(
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, 0);
 
-        curl_exec($ch);
+        $respuesta = curl_exec($ch);
         curl_close($ch);
 
         $archivoOrigen = $rutaOrigen . $historia . '-' . $ingreso . '-' . $soporte . '.pdf';
@@ -1461,14 +1464,16 @@ function consultaHistoriaClinica(
     $responsable,
     $soporte,
     $url,
-    $descripcion
+    $descripcion,
+    $rutaOrigen
 ) {
 
     //se valida credenciales
     validarIngreso($conex, $wemp_pmla);
 
     // Se arma la estructura que va a llamar a la URL
-    $url = armarURLHistoriaClinica($wemp_pmla, $historia, $ingreso, $responsable, $soporte, $url);
+    $url = armarURLHistoriaClinica($wemp_pmla, $historia, $ingreso,$url);
+    
     // Crear un manejador cURL
     $ch = curl_init();
     if (!$ch) {
@@ -1482,12 +1487,12 @@ function consultaHistoriaClinica(
 
     //Ejecutar cURL
     $ret = curl_exec($ch);
+
     //buscamos palabra
-    $sinFormulariosPaciente  = 'El usuario no tiene formularios firmados';
-    $formulariosPaciente = 'NO EXISTEN FORMULARIOS DILIGENCIADOS PARA EL PACIENTE';
-    $validacionSinFormulariosPaciente = strpos($ret, $sinFormulariosPaciente);
-    $validacionFormulariosPaciente = strpos($ret, $formulariosPaciente);
-    if ($validacionSinFormulariosPaciente === false && $validacionFormulariosPaciente === false) {
+    $cadena_buscada   = 'El usuario no tiene formularios firmados';
+    $posicion_coincidencia = strpos($ret, $cadena_buscada);
+    
+    if ($posicion_coincidencia === false ) {
         $dom = new DOMDocument();
         @$dom->loadHTML($ret);
 
@@ -1642,20 +1647,23 @@ function consultaHistoriaClinica(
             'wespecial'                     => $wespecial,
             'tipoPeticion'                    => "normal",
             'htmlProgramasAnexos'            => $htmlProgramasAnexos,
-            'formulariosElegidos'            => $formulariosElegidos
+            'formulariosElegidos'            => $formulariosElegidos    
         );
 
-        $opciones = cargarOpcionesPOST($url, $data);
+        $opciones = cargarOpcionesPOST($url,$data);        
         curl_setopt_array($ch, $opciones);
         $response = curl_exec($ch);
         curl_close($ch);
-    } else {
-        $pdf_generado['status'] = '400';
-        $pdf_generado['result'] = 'El soporte automatico no se ha podido descargar correctamente';
-        return $pdf_generado;
     }
 
-    return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
+    else{
+        $pdf_generado['status'] = '400';
+        $pdf_generado['result'] = 'Ha ocurrido un error generando la historia Clinica';
+        guardarRespuesta($conex,$wemp_pmla,$historia,$ingreso,$responsable,$soporte,$pdf_generado,'ERR17',$descripcion);
+        return $pdf_generado;       
+    }
+
+    return armarPDFHistoriaClinica($response,$wemp_pmla,$historia,$ingreso,$soporte,$descripcion,$responsable,$rutaOrigen,$conex);
 }
 
 /**
@@ -1679,54 +1687,50 @@ function consultaRegistroAnestesia(
     $responsable,
     $soporte,
     $url,
-    $descripcion
+    $descripcion,
+    $rutaOrigen
 ) {
-    $codError = '';
-    try {
-        validarIngreso($conex, $wemp_pmla);
 
-        // Se arma la estructura que va a llamar a la URL
-        $UrlHistoriaClinica = armarURLHistoriaClinica($wemp_pmla, $historia, $ingreso, $responsable, $soporte, $url);
+    validarIngreso($conex, $wemp_pmla);
 
-        // Crear un manejador cURL
-        $ch = curl_init();
-        if (!$ch) {
-            die("Couldn't initialize a cURL handle");
-        }
+    // Se arma la estructura que va a llamar a la URL
+    $UrlHistoriaClinica = armarURLHistoriaClinica($wemp_pmla, $historia, $ingreso,$url);
 
-        // opciones del cURL
-        curl_setopt($ch, CURLOPT_URL, $UrlHistoriaClinica);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-
-        //Ejecutar cURL
-        $respuestaInicial = curl_exec($ch);
-
-        //buscamos si hay un error en el formulario antes de llamar al DOM
-        $usuarioSinFormulario  = 'El usuario no tiene formularios firmados';
-        $posicionCoincidencia = strpos($respuestaInicial, $usuarioSinFormulario);
-
-        if ($posicionCoincidencia === false) {
-
-            $dom = new DOMDocument();
-            @$dom->loadHTML($respuestaInicial);
-
-            //000075 = preanestecia adjunto
-            //000077 = anestesia adjunto
-            //000334 = NotaAnestesia adjunto
-            $data =  cargarDom($dom, $wemp_pmla, ['000150', '000334', '000075']);
-
-            $opciones = cargarOpcionesPOST($UrlHistoriaClinica, $data);
-            curl_setopt_array($ch, $opciones);
-            $response = curl_exec($ch);
-            curl_close($ch);
-        }
-    } catch (Exception $e) {
-        $codError = $e->getCode();
-        return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
+    // Crear un manejador cURL
+    $ch = curl_init();
+    if (!$ch) {
+        die("Couldn't initialize a cURL handle");
     }
 
-    return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
+    // opciones del cURL
+    curl_setopt($ch, CURLOPT_URL, $UrlHistoriaClinica);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+
+    //Ejecutar cURL
+    $respuestaInicial = curl_exec($ch);
+
+    //buscamos si hay un error en el formulario antes de llamar al DOM
+    $usuarioSinFormulario  = 'El usuario no tiene formularios firmados';
+    $posicionCoincidencia = strpos($respuestaInicial, $usuarioSinFormulario);
+
+    if ($posicionCoincidencia === false) {
+        
+        $dom = new DOMDocument();
+        @$dom->loadHTML($respuestaInicial);
+
+        //000075 = preanestecia adjunto
+        //000077 = anestesia adjunto
+        //000334 = NotaAnestesia adjunto
+        $data =  cargarDom($dom, $wemp_pmla, ['000150', '000334', '000075']); 
+
+        $opciones = cargarOpcionesPOST($url,$data);        
+        curl_setopt_array($ch, $opciones);
+        $response = curl_exec($ch);
+        curl_close($ch);
+    }
+
+    return armarPDFHistoriaClinica($response,$wemp_pmla,$historia,$ingreso,$soporte,$descripcion,$responsable,$rutaOrigen,$conex);
 }
 
 /**
@@ -1929,10 +1933,6 @@ function ConsultaHojaDeMedicamentos(
                             $responsable,
                             $numero_de_hojas
                         );
-                    }
-                    else{
-                        $pdf_generado['status'] = '400';
-                        $pdf_generado['result'] = 'No se le han procesado medicamentos al paciente';                        
                     }
                 }
             }
@@ -2249,50 +2249,47 @@ function consultaSoportesHCE(
     $soporte,
     $descripcion,
     $formularioHCE,
-    $url
-) {
-    $codError = '';
-    try {
-        validarIngreso($conex, $wemp_pmla);
+    $url,
+    $rutaOrigen
+){
+    validarIngreso($conex, $wemp_pmla);
 
-        // Se arma la estructura que va a llamar a la URL
-        $urlHistoriaClinica = armarURLHistoriaClinica($wemp_pmla, $historia, $ingreso, $responsable, $soporte, $url);
-        // Crear un manejador cURL
-        $ch = curl_init();
-        if (!$ch) {
-            die("Couldn't initialize a cURL handle");
-        }
+    // Se arma la estructura que va a llamar a la URL
+    $urlHistoriaClinica = armarURLHistoriaClinica($wemp_pmla, $historia, $ingreso,$url);
 
-        // opciones del cURL
-        $ret = curl_setopt($ch, CURLOPT_URL, $urlHistoriaClinica);
-        $ret = curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $ret = curl_setopt($ch, CURLOPT_HEADER, 0);
-
-        //Ejecutar cURL
-        $ret = curl_exec($ch);
-
-        //buscamos palabra
-        $cadena_buscada   = 'El usuario no tiene formularios firmados';
-        $posicion_coincidencia = strpos($ret, $cadena_buscada);
-        if ($posicion_coincidencia === false) {
-
-            //Se carga el DOM para buscar en el documento el formulario correspondiente
-            $substringHCE = consultarAliasPorAplicacion($conex, $wemp_pmla, 'substringHCE');
-            $formularioHCE = substr($formularioHCE, $substringHCE); //Nota : si se va a cargar el formula meds soat los datos son : ['10144', '000235', '000160']
-            $dom = new DOMDocument();
-            @$dom->loadHTML($ret);
-
-            $data =  cargarDom($dom, $wemp_pmla, [$formularioHCE]);
-            $opciones = cargarOpcionesPOST($urlHistoriaClinica, $data);
-            curl_setopt_array($ch, $opciones);
-            $response = curl_exec($ch);
-            curl_close($ch);
-        }
-    } catch (Exception $e) {
-        $codError = $e->getCode();
-        return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
+    // Crear un manejador cURL
+    $ch = curl_init();
+    if (!$ch) {
+        die("Couldn't initialize a cURL handle");
     }
-    return armarRespuesta($descripcion, $wemp_pmla, $historia, $ingreso, $responsable, $soporte, null, $conex);
+
+    // opciones del cURL
+    $ret = curl_setopt($ch, CURLOPT_URL, $urlHistoriaClinica);
+    $ret = curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $ret = curl_setopt($ch, CURLOPT_HEADER, 0);
+
+    //Ejecutar cURL
+    $ret = curl_exec($ch);
+
+    //buscamos palabra
+    $cadena_buscada   = 'El usuario no tiene formularios firmados';
+    $posicion_coincidencia = strpos($ret, $cadena_buscada);
+    if ($posicion_coincidencia === false){
+
+        //Se carga el DOM para buscar en el documento el formulario correspondiente
+        $substringHCE = consultarAliasPorAplicacion($conex,$wemp_pmla,'substringHCE');
+        $formularioHCE = substr($formularioHCE,$substringHCE); //Nota : si se va a cargar el formula meds soat los datos son : ['10144', '000235', '000160']
+        $dom = new DOMDocument();
+        @$dom->loadHTML($ret);
+
+        $data =  cargarDom($dom,$wemp_pmla,[$formularioHCE]);
+        $opciones = cargarOpcionesPOST($url,$data);        
+        curl_setopt_array($ch,$opciones);
+        $response = curl_exec($ch);
+        curl_close($ch);
+    }
+
+    return armarPDFHistoriaClinica($response,$wemp_pmla,$historia,$ingreso,$soporte,$descripcion,$responsable,$rutaOrigen,$conex);
 }
 
 function diasEntreFechas($fecha1, $fecha2)
