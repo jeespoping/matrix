@@ -9,6 +9,7 @@ include_once("conex.php");
  Muestra los pacientes que son trasladados desde urgencias.
 
  CAMBIOS:
+  25 enero 2022 - Diego Torres: Se actualiza variable hora_asigcama a su valor normal y se le quita el valor por defecto que se le estaba pasando de Hora_cumplimiento.
   25 Febrero 2019:      Arleyda I.C. Migración realizada.
   03 octubre 2012:  	Ahora el rango de fechas se hace de la tabla 0000_17 y no de la 0000_18. Este cambio implica tener en cuenta
 						que hay pacientes que no registran una entrega pero si recibo y viceversa
@@ -19,6 +20,7 @@ include_once("conex.php");
   19 septiembre 2012: 	Se quitaron algunos datos que el reporte arrojaba 
 						Se agregaron los usuarios que intervienen en el proceso de admision, entrega y recibo
   18 septiembre 2012: 	Se creo la funcion vistaInicial que imprime la primera pantalla que ve el usuario al cargar la pagina.
+  
 
 **/
 
@@ -75,12 +77,12 @@ if(! isset($_REQUEST['action'] )){
 	
 	//**************************FUNCIONES DE PHP********************************************//
 	
-	function consultarSolicitudCamas($whis, $fecha){
+	function consultarSolicitudCamas($whis, $fecha){ // aqui
 	
 		global $wbasedatoCamas;
 		global $conex;
 		
-		$query = "SELECT Solicito, Usu_central, Fecha_data, Hora_data, Fecha_cumplimiento, Hora_cumplimiento "
+		$query = "SELECT Solicito, Usu_central, Fecha_data, Hora_data, Fecha_cumplimiento, Hora_asigcama "
 				  ."FROM ".$wbasedatoCamas."_000003 "
 			     ."WHERE central = 'CAMAS' "
 				 ."AND Anulada ='No' "
@@ -343,7 +345,7 @@ if(! isset($_REQUEST['action'] )){
 							$fila['usuario_asigcama'] = str_replace( 'Ñ', '&Ntilde;', $fila['usuario_asigcama'] );
 							if(isset($valx['Fecha_cumplimiento'])){
 								$fila['fecha_asigcama'] = $valx['Fecha_cumplimiento'];
-								$fila['hora_asigcama'] = $valx['Hora_cumplimiento'];
+								$fila['hora_asigcama'] = $valx['Hora_asigcama'];
 							}
 						}
 					}else{
@@ -735,7 +737,7 @@ if(! isset($_REQUEST['action'] )){
 					$texto_oculto.="<td align='center' nowrap='nowrap'>".substr_replace($row['hora_solcama'] ,"",-3)."</td>";
 					$texto_oculto.="<td align='center' nowrap='nowrap'>".$row['usuario_asigcama']."</td>";
 					$texto_oculto.="<td align='center' nowrap='nowrap'>".$row['fecha_asigcama']."</td>";
-					$texto_oculto.="<td align='center' nowrap='nowrap'>".substr_replace($row['hora_asigcama'],"",-3)."</td>";
+					$texto_oculto.="<td align='center' nowrap='nowrap'>".substr_replace($row['hora_asigcama'],"",-3) ."</td>"; 
 
 					//TIEMPO DIFERENCIA ENTRE SOLICITUD DE CAMA Y CUMPLIMIENTO
 					$respuesta.="<td class='$wclass centrar' nowrap='nowrap'>".$row['tiempo_solcama']."</td>";
