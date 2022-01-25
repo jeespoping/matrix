@@ -111,13 +111,9 @@ else
     }
 
     $wfecha = date("Y-m-d");
-    $q  = " select Ccocod from {$wbasedato}_000011 where ccourg = 'on' and Ccoest = 'on' {$sFiltroSede}";
-    $rs = mysql_query( $q, $conex );
-    while( $row = mysql_fetch_assoc( $rs ) ){
-        $ccourg = $row['Ccocod'];
-    }
 
-    $ccourg =
+    $centroUr = consultarCentrocoUrgencias('',$selectsede);
+    $ccourg = $centroUr->codigo;
 
     //Traigo las habitaciones con su respectivo centro de costos
     if ($selectsede != ''){
