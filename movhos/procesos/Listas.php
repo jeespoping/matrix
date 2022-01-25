@@ -2,7 +2,7 @@
 <head>
     <title>MATRIX Listas Para Altas</title>
     <!-- UTF-8 is the recommended encoding for your pages -->
-
+    <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
     <style type="text/css">
         body{background:white url(portal.gif) transparent center no-repeat scroll;}
         #tipo1{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;}
@@ -165,8 +165,14 @@ include_once("root/comun.php");
 
 
 
+/*
+        * Se agrega costos para no quemar la consulta en el witch 98
+        * @date: 01/12/2021
+        * @author: jesus.lopez
+*/
 
 $empresa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+$costos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'COSTOS');
 $wbasedato=$empresa;
  /**
  * Resuelva el caso para los medicamentos cargados despues de facturar
@@ -748,12 +754,16 @@ function grabar_pago($conex,$whis,$wnin,$wfac,$wpag)
 }
 
 /********** comienza la aplicacion***********/
-$wactualiz = "Junio 8 de 2017";
+$wactualiz = "Enero 03 de 2022";
 
 if(!isset($_SESSION['user']))
     echo "error";
 else
 {
+    if (is_null($selectsede)){
+        $selectsede = consultarsedeFiltro();
+    }
+
     $key = substr($user,2,strlen($user));
     echo "<form name='listas' action='Listas.php' method=post>";
 
@@ -762,9 +772,10 @@ else
 
     echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
     echo "<center><input type='HIDDEN' name= 'wbasedato' value='".$empresa."'>";
-    echo "<center><input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
-    echo "<input type='HIDDEN' name= 'codemp' value='".$wemp_pmla."'>";
-    echo "<input type='HIDDEN' name= 'wlogo' value='".$wlogo."'>";
+    echo "<center><input type='HIDDEN' id='wemp_pmla' name= 'wemp_pmla' value='".$wemp_pmla."'>";
+    echo "<input type='HIDDEN' id='codemp' name= 'codemp' value='".$wemp_pmla."'>";
+    echo "<input type='HIDDEN' id='wlogo' name= 'wlogo' value='".$wlogo."'>";
+    echo "<input type='HIDDEN' id='sede' name= 'sede' value='".$selectsede."'>";
 
     switch ($ok)
     {
@@ -797,18 +808,18 @@ else
                 echo "<input type='hidden' name='his' value='0'>";
                 echo "<input type='hidden' name='ing' value='0'>";
 
-                echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+                echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
                 if(!isset($wcco))
                 {
                     echo "<center><table border=0>";
-                    encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica");
+                    encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica", true);
 
                     $cco="Ccohos";
                     $sub="off";
                     $tod="";
                     $ipod="off";
                     //$cco=" ";
-                    $centrosCostos = consultaCentrosCostos($cco);
+                    $centrosCostos = consultaCentrosCostos($cco, "", FALSE, $selectsede);
                     echo "<table align='center' border=0 >";
                     $dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
 
@@ -820,9 +831,9 @@ else
                 else
                 {
                     echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
-                    echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=99&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wcco=".$wcco."&wlogo=".$wlogo."'>";
+                    echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=99&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wcco=".$wcco."&wlogo=".$wlogo."&selectsede=".$selectsede."'>";
 
-                    encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica");
+                    encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica", true);
 
                     echo "<table border=0 align=center id=tipo5>";
                     ?>
@@ -875,7 +886,7 @@ else
                     echo "<td class='fila2' align=center><b>".$diasem."</b></td>";
                     echo "<td class='fila2' colspan=2 align=center valign=center><input type='TEXT' name='wfecha' size=10 maxlength=10 readonly='readonly' value=".$wfecha." class=tipo6></td></tr>";
                     echo "</table><br>";
-                    echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+                    echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
 
                     for ($i=0;$i<$num;$i++)
                         if(isset($wf[$i]))
@@ -1218,16 +1229,17 @@ else
                 }
             break;
             case 98:
-                echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
-                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=98&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wlogo=".$wlogo."'>";
+                encabezado("PACIENTES FACTURADOS PENDIENTES DE PAGO", $wactualiz, "clinica", true);
+
+                echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
+                echo "<input type='HIDDEN' id='sede' name= 'selectsede' value='".$selectsede."'>";
+                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=98&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wlogo=".$wlogo."&selectsede=".$selectsede."'>";
                 echo "<table border=0 align=center id=tipo5>";
                 ?>
                 <script>
                     function ira(){document.listas.wfecha.focus();}
                 </script>
                 <?php
-                if($wlogo == 1)
-                    echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/movhos/logo_".$empresa.".png'></td></tr>";
 
                 echo "<tr><td align=center colspan=4 id=tipo14><b>PACIENTES FACTURADOS PENDIENTES DE PAGO</td></tr>";
                 if (!isset($wfecha))
@@ -1272,7 +1284,8 @@ else
                 echo "<td bgcolor='#cccccc' align=center><b>".$diasem."</b></td>";
                 echo "<td bgcolor='#cccccc' colspan=2 align=center valign=center><input type='TEXT' name='wfecha' size=10 maxlength=10 readonly='readonly' value=".$wfecha." class=tipo6></td></tr>";
                 echo "</table><br>";
-                echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+                echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
+                echo "<input type='HIDDEN' id='sede' name= 'selectsede' value='".$selectsede."'>";
 
                 for ($i=0;$i<$num;$i++)
                     if(isset($wf[$i]))
@@ -1280,25 +1293,33 @@ else
                         grabar_pago($conex,$wdata[$i][0],$wdata[$i][1],$wdata[$i][2],$wdata[$i][3]);
                     }
                 $wdata=array();
-
+                /*
+                        * Se coloca costos para no quemar
+                        * @date: 01/12/2021
+                        * @author: jesus.lopez
+                */
                 //                  0       1       2       3       4       5       6       7       8       9      10      11      12      13      14      15      16      17      18      19
-                $query = "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cuefac, Cueobs, Ubihac, Cuepag ";
-                $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016 ";
+                $query = "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, ".$costos."_000005.Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cuefac, Cueobs, Ubihac, Cuepag ";
+                $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,".$costos."_000005,".$empresa."_000016,".$empresa."_000011";
                 $query .= " where Cuegen = 'on'  ";
                 $query .= " and Cuepgr = 'off'  ";
+                $query .= " and ".$costos."_000005.ccocod = ".$empresa."_000011.ccocod";
+                if ($selectsede != ''){
+                    $query .= " and ".$empresa."_000011.Ccosed = '".$selectsede."'";
+                }
                 $query .= " and Cuehis = ubihis  ";
                 $query .= " and Cueing = ubiing  ";
-                //$query .= " and ubiald = 'off'  ";
                 $query .= " and ubihis = orihis  ";
                 $query .= " and ubiing = oriing  ";
                 $query .= " and oriori = '".$codemp."'  ";
                 $query .= " and oriced = pacced  ";
                 $query .= " and oritid = pactid  ";
-                $query .= " and ubisac = ccocod  ";
+                $query .= " and ubisac = ".$costos."_000005.ccocod  ";
                 $query .= " and ubihis = inghis ";
                 $query .= " and ubiing = inging  ";
-                $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
+                $query .= " and ".$costos."_000005.ccoemp = '".$wemp_pmla."' ";
                 $query .= " order by Ubisac,Pacced ";
+
                 $err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
                 $num = mysql_num_rows($err);
                 if ($num>0)
@@ -1355,19 +1376,19 @@ else
                 echo "</table></center>";
             break;
             case 97:
-                echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+                echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
                 if(!isset($wcco))
                 {
                     echo "<center><table border=0>";
 
-                    encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica");
+                    encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica", true);
 
                     $cco="Ccohos";
                     $sub="off";
                     $tod="";
                     $ipod="off";
                     //$cco=" ";
-                    $centrosCostos = consultaCentrosCostos($cco);
+                    $centrosCostos = consultaCentrosCostos($cco, "", FALSE, $selectsede);
                     echo "<table align='center' border=0 >";
                     $dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
 
@@ -1382,9 +1403,9 @@ else
                 else
                 {
                     echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
-                    echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=97&wemp_pmla=".$codemp."&empresa=".$empresa."&codemp=".$codemp."&wcco=".$wcco."&wlogo=".$wlogo."'>";
+                    echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=97&wemp_pmla=".$codemp."&empresa=".$empresa."&codemp=".$codemp."&wcco=".$wcco."&wlogo=".$wlogo."&selectsede=".$selectsede."'>";
 
-                    encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica");
+                    encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica", true);
                     echo "<table border=0 align=center id=tipo5>";
                     ?>
                     <script>
@@ -1437,7 +1458,7 @@ else
                     echo "<td class='fila2' align=center><b>".$diasem."</b></td>";
                     echo "<td class='fila2' colspan=2 align=center valign=center><input type='TEXT' name='wfecha' size=10 maxlength=10 readonly='readonly' value=".$wfecha." class=tipo6></td></tr>";
                     echo "</table><br>";
-                    echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+                    echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
 
                     //                  0       1       2       3       4       5       6       7       8       9      10      11      12      13      14      15      16      17      18
                     $query = "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cuefac, Cueobs, Ubihac ";
@@ -1502,12 +1523,17 @@ else
     echo "<tr><td align=center><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
     if(isset($wcco))
     {
-    echo "<tr><td align=center><A HREF='listas.php?ok=99&wemp_pmla=".$wemp_pmla."&wlogo=".$wlogo."'>Retornar</A></td></tr>";
+    echo "<tr><td align=center><A HREF='listas.php?ok=99&wemp_pmla=".$wemp_pmla."&wlogo=".$wlogo."&selectsede=".$selectsede."'>Retornar</A></td></tr>";
     }
     echo "</table>";
 
 
 }
 ?>
+<script>
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "listas.php?ok="+$('#ok').val()+"&wemp_pmla="+$('#wemp_pmla').val()+"&wlogo="+$('#wlogo').val()+"&codemp="+$('#codemp').val()+"&selectsede="+$('#selectsede').val()
+    });
+</script>
 </body>
 </html>
