@@ -895,6 +895,8 @@ else
 		$query = "select descripcion,Empresa from ".$empresa."_000013,".$empresa."_000002 ";
 		$query .= "  WHERE Medico_Tratante =  '".substr($pos2,0,strpos($pos2,"-"))."' ";
 		$query .= "       AND Empresa =  Nit ";
+		$query .= "       AND ".$empresa."_000013.Activo =  'on' ";
+		$query .= "       AND ".$empresa."_000002.Activo =  'A'  ";
 		$query .= "  order by descripcion ";
 	}
 	$err1 = mysql_query($query,$conex);
