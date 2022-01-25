@@ -16,6 +16,10 @@ if (!isset($consultaAjax))
 	<script src="../../../include/root/jquery.tooltip.js" type="text/javascript"></script>
   <script type="text/javascript">
 
+      $(document).on('change','#selectsede',function(){
+          window.location.href = "Sala_de_espera_por_Especialidad.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+      });
+
 	$(function(){
 		// --> Tooltip en la lista de turnos
 		$('[tooltip=si]').tooltip({track: true, delay: 0, showURL: false, showBody: ' - ', opacity: 0.95, left: -50 });
@@ -242,7 +246,7 @@ if (!isset($consultaAjax))
 				}
 			}
 
-		});
+        });
 
 	}
 
@@ -4992,12 +4996,8 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
   echo "<tr><td align=center height=21>&nbsp;</td></tr>";
   echo "<tr><td align=center><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
   echo "</table>";
+
 } //Cierra la validacion cuando se hace una consultaAjax
 include_once("free.php");
 }
 ?>
-<script>
-    $(document).on('change','#selectsede',function(){
-        window.location.href = "Sala_de_espera_por_Especialidad.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
-    });
-</script>
