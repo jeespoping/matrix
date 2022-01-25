@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>Monitor Sistema de Altas</title>
+<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
 </head>
 <font face='arial'>
 <BODY>
@@ -46,7 +47,7 @@ include_once("conex.php");
 // Nov. 6 2014 - Juan C. Hdez
 // Se modifica el query principal para que NO tome de la tabla movhos_000020 los registros que son tipo Cubiculo
 // ==========================================================================================================================================
-$wactualiz = "2015-09-17";
+$wactualiz = "Enero 07 2022";
 
 session_start();
 if (!isset($_SESSION['user']))
@@ -57,19 +58,18 @@ else
 {
     $empresa = 'root';
 
-    
-
-    
-
     include_once("root/magenta.php");
     include_once("root/comun.php");
 
-    encabezado("Monitor Sistema de Altas",$wactualiz, "clinica");
+    if (is_null($selectsede)){
+        $selectsede = consultarsedeFiltro();
+    }
 
+    encabezado("Monitor Sistema de Altas",$wactualiz, "clinica", true);
 
     $query = " SELECT Detapl,Detval"
      		."   FROM ".$empresa."_000051 "
-     		."  WHERE Detemp = '" . $wemp . "'";
+     		."  WHERE Detemp = '" . $wemp_pmla . "'";
 	$err = mysql_query($query, $conex);
     $num = mysql_num_rows($err);
 
@@ -101,24 +101,44 @@ else
     echo '<div id="page" align="center">';
     echo '<div id="feature" class="box-orange" align="center">';
 
+    $estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+
+    $sFiltroSede = '';
+
+    if($estadosede=='on')
+    {
+        $sFiltroSede = (isset($selectsede) && ($selectsede !='')) ? " AND Ccosed = '{$selectsede}' " : "";
+    }
+
     $wfecha = date("Y-m-d");
-    $q  = " select Ccocod from {$wbasedato}_000011 where ccourg = 'on' and Ccoest = 'on'";
+    $q  = " select Ccocod from {$wbasedato}_000011 where ccourg = 'on' and Ccoest = 'on' {$sFiltroSede}";
     $rs = mysql_query( $q, $conex );
     while( $row = mysql_fetch_assoc( $rs ) ){
         $ccourg = $row['Ccocod'];
     }
 
+    $ccourg =
+
     //Traigo las habitaciones con su respectivo centro de costos
-    $q = " SELECT habcod, habhis, habing, habali, habdis, habest, habfal, habhal, habpro, habcco, cconom, habcub, habcpa "
-       . "   FROM ".$wbasedato."_000020, ".$wbasedato."_000011"
-       ."   WHERE habcco = ccocod "
-       . "  ORDER BY 11, 1 ";
+    if ($selectsede != ''){
+        $q = " SELECT habcod, habhis, habing, habali, habdis, habest, habfal, habhal, habpro, habcco, cconom, habcub, habcpa "
+            . "   FROM ".$wbasedato."_000020, ".$wbasedato."_000011"
+            ."   WHERE habcco = ccocod and Ccosed = '".$selectsede."'"
+            . "  ORDER BY 11, 1 ";
+    }else{
+        $q = " SELECT habcod, habhis, habing, habali, habdis, habest, habfal, habhal, habpro, habcco, cconom, habcub, habcpa "
+            . "   FROM ".$wbasedato."_000020, ".$wbasedato."_000011"
+            ."   WHERE habcco = ccocod"
+            . "  ORDER BY 11, 1 ";
+    }
+
        //. "  WHERE habcod = '".$whab."'";
     $res = mysql_query($q, $conex) or die("ERROR EN QUERY");
     $wnum = mysql_num_rows($res);
 
 
     echo '<div class="content">';
+    echo "<center><input type='HIDDEN' id='wemp_pmla' name= 'wemp_pmla' value='".$wemp_pmla."'>";
     echo '<table align=center>';
 
 
@@ -180,7 +200,7 @@ else
 	               {
 		            $q = " SELECT pacno1, pacno2, pacap1, pacap2, ubialp, ubiald, ubiptr, ubihan, ubihac, ubifap, ubihap, ubiprg, ".$wbasedato."_000018.Fecha_data, ".$wbasedato."_000018.Hora_data "
 		                ."   FROM root_000037, root_000036, ".$wbasedato."_000018 "
-		                ."  WHERE oriori  = '".$wemp."'"
+		                ."  WHERE oriori  = '".$wemp_pmla."'"
 		                ."    AND orihis  = '".$whis."'"
 		                ."    AND oriing  = '".$wing."'"
 		                ."    AND oriced  = pacced "
@@ -410,7 +430,7 @@ else
           echo "<tr><td bgcolor=99FF99 align=left><font size=4 color=000000><b>Ocupación clínica  : </td><td bgcolor=99FF99 align=right><font size=4 color=000000><b>".number_format((($wcan_ocupadas/($wcan_ocupadas+$wcan_desocu))*100),2,'.',',')."%</b></font></td></tr>";
 
        echo "<tr></tr>";
-       echo "<tr><td align=center colspan=5><A href='monitor_altas.php?wemp=".$wemp."' id='searchsubmit'> Actualizar</A></td></tr>";
+       echo "<tr><td align=center colspan=5><A href='monitor_altas.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' id='searchsubmit'> Actualizar</A></td></tr>";
        echo "</table>"; // cierra la tabla o cuadricula de la impresión
 
 	   echo "<br>";
@@ -419,4 +439,9 @@ else
 	   echo "</table>";
 }
 ?>
+<script>
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "monitor_altas.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+    });
+</script>
 </html>

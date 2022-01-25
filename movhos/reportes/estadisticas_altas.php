@@ -7,6 +7,13 @@
 	<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
 </head>
 <body onload=ira()>
+
+<script>
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "estadisticas_altas.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&wfec_i="+$('#wfec_i').val()+"&wfec_f"+$('#wfec_f').val()
+    });
+</script>
+
 <script type="text/javascript">
 
 	$.datepicker.regional['esp'] = {
@@ -102,11 +109,25 @@ else
   
 
   include_once("root/comun.php");
+
+  if (is_null($selectsede)){
+      $selectsede = consultarsedeFiltro();
+  }
+
   
   $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
+  $estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+
+    $sFiltroSede = '';
+
+    if($estadosede=='on')
+    {
+        $sFiltroSede = (isset($selectsede) && ($selectsede !='')) ? " AND Ccosed = '{$selectsede}' " : "";
+    }
   
 	                                                 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Junio 21 de 2017";                    // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="Enero 06 de 2022";                    // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                                 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 	                                         
 	                                         
@@ -219,7 +240,7 @@ else
        echo "NO EXISTE NINGUNA APLICACION DEFINIDAD PARA ESTA EMPRESA";      
   
   
-  encabezado("ESTADISTICAS SISTEMA DE ALTAS",$wactualiz, "clinica");
+  encabezado("ESTADISTICAS SISTEMA DE ALTAS",$wactualiz, "clinica", true);
   
   
   function marcar_alta_mas_demorada_por_dia()
@@ -284,10 +305,11 @@ else
   
   
   //FORMA ================================================================
-  echo "<form name='altas' action='estadisticas_altas.php?wemp_pmla=".$wemp_pmla."' method=post>";
+  echo "<form name='altas' action='estadisticas_altas.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' method=post>";
   
-  echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
-  
+  echo "<input type='HIDDEN' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
+    echo "<input type='HIDDEN' name='$selectsede' value='".$selectsede."'>";
+
   
   if (strpos($user,"-") > 0)
      $wusuario = substr($user,(strpos($user,"-")+1),strlen($user)); 
@@ -304,7 +326,7 @@ else
 	  $tod="Todos";
 	  //$cco=" ";
 	  $ipod="off";
-	  $centrosCostos = consultaCentrosCostos($cco);
+	  $centrosCostos = consultaCentrosCostos($cco, "", FALSE, $selectsede);
 	  echo "<table align='center' border=0 >";
 	  $dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
 					
@@ -360,7 +382,7 @@ else
 	   $q = " SELECT MAX(TIMEDIFF(ubihad,ubihap)), ubisac, ubihis, ubiing "
 	       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011 "
 	       ."  WHERE ubifad  BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald  = 'on' "
 	       ."    AND ubifap  = ubifad "
 	       ."    AND ubisac  = ccocod "
@@ -394,7 +416,7 @@ else
 	       ."        COUNT(*), ubisac, ".$wtabcco.".cconom "
 	       ."   FROM ".$wbasedato."_000018, ".$wtabcco.", ".$wbasedato."_000011 "
 	       ."  WHERE ubifad              BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac              LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac              LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald              = 'on' "
 	       ."    AND ubifap              = ubifad "
 	       ."    AND ubisac              = ".$wtabcco.".ccocod "
@@ -406,6 +428,7 @@ else
 	       ."    AND ubiamd             != 'on' "                                                     //Oct 6 2009
 	       //."    AND CONCAT(ubihis,ubiing) != '".$whis_alta_mas_demorada.$wing_alta_mas_demorada."'"  //Oct 6 2009
 	       ."  GROUP BY 5, 6 ";
+
 	   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	   $num = mysql_num_rows($res);
 	   if ($num > 0)
@@ -482,7 +505,7 @@ else
 	   $q = " SELECT COUNT(*) "
 	       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011 "
 	       ."  WHERE ubifad BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald = 'on' "
 	       ."    AND ubisac = ccocod "
 	       ."    AND ccohos = 'on' "
@@ -525,7 +548,7 @@ else
 	   $q = " SELECT COUNT(*) "
 	       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011 "
 	       ."  WHERE ubifad                 BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac                 LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac                 LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald                 = 'on' "
 	       ."    AND ubifap                 = ubifad "
 	       ."    AND ubisac                 = ccocod "
@@ -572,7 +595,7 @@ else
 	   $q = " SELECT MIN(TIMEDIFF(ubihad,ubihap)), ubisac, ubihis, ubiing "
 	       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011 "
 	       ."  WHERE ubifad                            BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac                            LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac                            LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald                            = 'on' "
 	       ."    AND ubifap                            = ubifad "
 	       ."    AND ubisac                            = ccocod "
@@ -610,7 +633,7 @@ else
           ."            ubihis, ubiing, ubisac, ".$wtabcco.".cconom "
           ."   FROM ".$wmovhos."_000018, ".$wtabcco.", ".$wbasedato."_000011 "
           ."  WHERE ubifad                 BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-          ."    AND ubisac                 LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+          ."    AND ubisac                 LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
           ."    AND ubiald                 = 'on' "
           ."    AND ubifap                 = ubifad "
           ."    AND ubisac                 = ".$wbasedato."_000011.ccocod "
@@ -993,7 +1016,7 @@ else
 						   AND ubihap > hor1 
 						 GROUP BY 1, 2, 3 ) A 
 				WHERE ubifad BETWEEN '".$wfec_i."' AND '".$wfec_f."'
-				  AND ubisac LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' 
+				  AND ubisac LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}
 				  AND ubiald = 'on' 
 				  AND ubifap = ubifad 
 				  AND ubisac = ccocod 
@@ -1075,7 +1098,7 @@ else
 	       ."        COUNT(*), ubisac "
 	       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000011, ".$wbasedato."_000035 "
 	       ."  WHERE ubifad  BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald  = 'on' "
 	       ."    AND ubifap  = ubifad "
 	       ."    AND ubisac  = ccocod "
@@ -1145,45 +1168,14 @@ else
           }
           
        //*** TIEMPO ENTRE LA DEVOLUCION O ALTA EN PROCESO HASTA QUE SE EMPIEZA A FACTURAR ***
-       $q = " SELECT SUM(HOUR(TIMEDIFF(A.ubihap, ".$wmovhos."_000022.hora_data))), " 
-		   ."        SUM(MINUTE(TIMEDIFF(A.ubihap, ".$wmovhos."_000022.hora_data))), " 
-		   ."        SUM(SECOND(TIMEDIFF(A.ubihap, ".$wmovhos."_000022.hora_data))), " 
-			."        COUNT(*), A.ubisac "
-			."   FROM ".$wmovhos."_000018 A, ".$wmovhos."_000022, ".$wmovhos."_000011, ( SELECT ubihis, ubiing " 
-			."                                                             FROM ".$wmovhos."_000018 "
-			."                                                            WHERE CONCAT(ubihis,ubiing) NOT IN (SELECT CONCAT(denhis,dening) "
-			."                                                                                                  FROM ".$wmovhos."_000035 "
-			."                                                                                                 WHERE ubifad BETWEEN '2010-02-17' AND '2010-02-17' "
-			."                                                                                                   AND ubihis = denhis "
-			."                                                                                                   AND ubiing = dening "
-			."                                                                                                   AND ubifad = ".$wmovhos."_000035.fecha_data "
-			."                                                                                                   AND ubihap > ".$wmovhos."_000035.hora_data) "
-			."                                                              AND ubifad BETWEEN '2010-02-17' AND '2010-02-17') B "
-			."   WHERE A.ubifad  BETWEEN '2010-02-17' AND '2010-02-17' "
-			."     AND A.ubisac  LIKE '%' "
-			."     AND A.ubiald  = 'on' " 
-			."     AND A.ubifap  = A.ubifad " 
-			."     AND A.ubihis  = cuehis " 
-			."     AND A.ubiing  = cueing "
-			."     AND A.ubifap  = ".$wmovhos."_000022.fecha_data " 
-			."     AND A.ubisac  = ccocod "
-			."     AND ccohos  = 'on' "
-			."     AND ccopal  = 'on' " 
-			."     AND A.ubimue != 'on' "                    
-			."     AND A.ubiamd != 'on' " 
-			."     AND A.ubihis  = B.ubihis "
-			."     AND A.ubiing  = B.ubiing "
-			."   GROUP BY 5 "
-			//"   ORDER BY 5 "
-			." UNION ALL "
-            ." SELECT SUM(HOUR(TIMEDIFF(".$wbasedato."_000022.hora_data, ".$wbasedato."_000035.hora_data))), "      //Ingreso facturacion - Devolucion 
+       $q = " SELECT SUM(HOUR(TIMEDIFF(".$wbasedato."_000022.hora_data, ".$wbasedato."_000035.hora_data))), "      //Ingreso facturacion - Devolucion
 	  // $q = " SELECT SUM(HOUR(TIMEDIFF(".$wbasedato."_000022.hora_data, ".$wbasedato."_000035.hora_data))), "      //Ingreso facturacion - Devolucion 
 	       ."        SUM(MINUTE(TIMEDIFF(".$wbasedato."_000022.hora_data, ".$wbasedato."_000035.hora_data))), "    //Ingreso facturacion - Devolucion
 	       ."        SUM(SECOND(TIMEDIFF(".$wbasedato."_000022.hora_data, ".$wbasedato."_000035.hora_data))), "    //Ingreso facturacion - Devolucion
 	       ."        COUNT(*), ubisac "
 	       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000022, ".$wbasedato."_000035, ".$wbasedato."_000011 "
 	       ."  WHERE ubifad  BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald  = 'on' "
 	       ."    AND ubifap  = ubifad "
 	       ."    AND ubihis  = cuehis "
@@ -1203,6 +1195,7 @@ else
 	       ."  ORDER BY 5 ";   
 	   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	   $num = mysql_num_rows($res);
+
 	   
 	   if ($num > 0)
 	      {
@@ -1267,7 +1260,7 @@ else
 	       ."        COUNT(*), ubisac "
 	       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000022, ".$wbasedato."_000011 "
 	       ."  WHERE ubifad  BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald  = 'on' "
 	       ."    AND ubifap  = ubifad "
 	       ."    AND ubihis  = cuehis "
@@ -1348,7 +1341,7 @@ else
 	       ."        COUNT(*), ubisac "
 	       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000022, ".$wbasedato."_000011 "
 	       ."  WHERE ubifad  BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald  = 'on' "
 	       ."    AND ubifap  = ubifad "
 	       ."    AND ubihis  = cuehis "
@@ -1429,7 +1422,7 @@ else
 	       ."        COUNT(*), ubisac "
 	       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000022, ".$wbasedato."_000011 "
 	       ."  WHERE ubifad  BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac  LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald  = 'on' "
 	       ."    AND ubifap  = ubifad "
 	       ."    AND ubihis  = cuehis "
@@ -1538,7 +1531,7 @@ else
 	       ."        COUNT(*), ubisac "
 	       ."   FROM ".$wbasedato."_000018, ".$wcencam."_000003, ".$wbasedato."_000011 "
 	       ."  WHERE ubifad        BETWEEN '".$wfec_i."' AND '".$wfec_f."'"
-	       ."    AND ubisac        LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."'"
+	       ."    AND ubisac        LIKE '".trim(substr($wcco,0,strpos($wcco,'-')-0))."' {$sFiltroSede}"
 	       ."    AND ubiald        = 'on' "
 	       ."    AND ubifap        = ubifad "
 	       ."    AND ubisac        = ccocod "
@@ -1557,6 +1550,7 @@ else
 	       //."    AND CONCAT(ubihis,ubiing) != '".$whis_alta_mas_demorada.$wing_alta_mas_demorada."'"  //No tengo en cuenta el alta mas demorada - Oct 6 2009
 	       ."  GROUP BY 5 "
 	       ."  ORDER BY 5 ";
+
 		  
 	   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	   $num = mysql_num_rows($res);
@@ -1818,7 +1812,7 @@ else
 	   //========================================================================================================
 	   
 	   	    
-	   echo "<td align=center colspan=15 class=link><A href='estadisticas_altas.php?wemp_pmla=".$wemp_pmla."&wfec_i=".$wfec_i."&wfec_f=".$wfec_f."'><b><font size=3 color=660099>Retornar</font></b></A></td>";
+	   echo "<td align=center colspan=15 class=link><A href='estadisticas_altas.php?wemp_pmla=".$wemp_pmla."&wfec_i=".$wfec_i."&wfec_f=".$wfec_f."&selectsede=".$selectsede."'><b><font size=3 color=660099>Retornar</font></b></A></td>";
 	         
       }      
 	echo "</table>";   	  
@@ -1828,6 +1822,7 @@ else
     echo "<center><table>"; 
     echo "<tr><td align=center><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
     echo "</table>";
+
     
 } // if de register
 
