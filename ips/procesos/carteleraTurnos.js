@@ -83,12 +83,12 @@ new Vue({
 			{
 				this.lineactual = 0;
 				//var res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaTurnos',
-				this.parametros="wemp_pmla=0"+wemp_pmla+"&tema=0"+tema+"&funcion=listaTurnos&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
+				this.parametros="wemp_pmla=0"+wemp_pmla+"&tema="+tema+"&funcion=listaTurnos&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
 				this.turnos = await (await fetch(this.wsTurnero + this.parametros)).json();
 				//console.log('leyo turnos');
 				//console.log('datos recibidos')
 				//console.log(this.turnos);
-				this.parametros="wemp_pmla=0"+wemp_pmla+"&tema=0"+tema+"&funcion=listaAlertas&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
+				this.parametros="wemp_pmla=0"+wemp_pmla+"&tema="+tema+"&funcion=listaAlertas&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
 				//res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaAlertas',
 				this.turnosAlerta = await (await fetch(this.wsTurnero + this.parametros)).json();
 				//console.log('Alertas recibidas')
@@ -103,7 +103,7 @@ new Vue({
 			// console.log("control llamar turno")
 			// console.log(this.parametros);
 			// var res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaAlertas',
-			this.parametros="wemp_pmla=0"+wemp_pmla+"&tema=0"+tema+"&funcion=listaAlertas&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
+			this.parametros="wemp_pmla=0"+wemp_pmla+"&tema="+tema+"&funcion=listaAlertas&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
 			this.turnosAlerta = await (await fetch(this.wsTurnero + this.parametros)).json();
 				if (this.turnosAlerta.length > 0) 
 				{
@@ -132,7 +132,7 @@ new Vue({
 		this.tipoTur=tipoTur;
 		this.solucionCitas=solucionCitas;
 		this.wsTurnero=wsTurnero;
-		this.parametros="wemp_pmla=0"+wemp_pmla+"&tema=0"+tema+"&funcion=listaTurnos&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
+		this.parametros="wemp_pmla=0"+wemp_pmla+"&tema="+tema+"&funcion=listaTurnos&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
 		this.turnos = await (await fetch(this.wsTurnero + this.parametros)).json();
 		//console.log('datos recibidos');
 		//console.log(this.turnos);
