@@ -622,6 +622,7 @@ function validarHistoria( $conex, $wbasedato, $historia, &$ingreso, &$datosPacie
 function generarKardex( $conex, $wbasedato, $wcenmez, $historia, $datosArticulos ){
 
 	global $usuario;
+	global $ccoSF;
 	
 	if( empty( $usuario->codigo ) ){ 
 		$usuario->codigo;
@@ -714,7 +715,7 @@ function generarKardex( $conex, $wbasedato, $wcenmez, $historia, $datosArticulos
 				if( !$existeArticulo ){
 					
 					//Consulto el medicamento en el kardex
-					$resArticulo = consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$datosArticulos[ $i ][ 'Conart' ],'','%','1050','*',$tipoProtocolo, '');
+					$resArticulo = consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$datosArticulos[ $i ][ 'Conart' ],'','%',$ccoSF,'*',$tipoProtocolo, '');
 				
 					if( !empty( $resArticulo ) ){
 						
@@ -1082,7 +1083,8 @@ function cargarArticulos( $conex, $wbasedato, $historia, $articulo, $fechaKardex
 	global $wbasedato;
 	global $wcenmez;
 	global $conex;
-	
+	global $ccoSF;
+
 	$mensajes = "";
 	
 	$wuser = substr($user, (strpos($user, "-") + 1), strlen($user));
@@ -1090,7 +1092,7 @@ function cargarArticulos( $conex, $wbasedato, $historia, $articulo, $fechaKardex
 	
 	validarHistoria( $conex, $wbasedato, $historia, &$ingreso, &$datosPacientes, &$activo );
 	
-	$ccoOrigen = '1050';
+	$ccoOrigen = $ccoSF;
 	$fecha = date( "Y-m-d" );
 	
 	if( $activo ){
@@ -1307,7 +1309,7 @@ include_once( "movhos/registro_tablas.php" );
 include_once( "root/comun.php" );
 
 
-
+$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
 // $conex = obtenerConexionBD("matrix");
 
@@ -1437,6 +1439,15 @@ else{
 }
 
 echo "</form>";
+
+
+/**
+ * Actualizacion:
+ *  -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico 
+ * @by: Marlon Osorio
+ * @date: 2022/01/11
+ * 
+*/
 
 ?>
 

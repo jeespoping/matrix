@@ -6601,7 +6601,8 @@ $actualiz="Enero 13 de 2022";
 /**********************************************************************************************************************************************************
 
  * Modificaciones:
- * 2022-01-04: Sebastian Alvarez B. - Se adiciona el on change para el filtro de sede del centro de costos (servicio). Pasamos el valor del select de sede 
+* 2021-01-12: Marlon Osorio 		- Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico 
+* 2022-01-04: Sebastian Alvarez B. - Se adiciona el on change para el filtro de sede del centro de costos (servicio). Pasamos el valor del select de sede 
  * 									  como oculto y luego pasamos la variable $selectsede como parametro en donde se llama la funcion consultaCentrosCostos().
  * 2021-07-13: Joel Payares Hdz		- Se comenta lineas de código que colocan en modo limpieza la habitación que estaba habitada por el paciente,
  * 										este cambio esta ubicado en las lineas 1060 a 1074
@@ -7002,6 +7003,8 @@ class habitacion{
 		global $fecha;					//Fecha de la ronda
 		global $informacionArticulos;	//Array con la información basica de los articulos
 		global $ccoayuda;				//Array con la información basica de los articulos
+		
+		$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
 		global $wemp_pmla;
 		$ccoDispensaInsumos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ccoHabilitadosDispensacionInsumos" );
@@ -7073,7 +7076,7 @@ class habitacion{
 		$info[ 'msgSaldo' ] = $wmensaje;
 		$info[ 'idOriginal' ] = $idOriginal;
 
-		$info[ 'dosisVariable' ] = consultarDosisVariable( $conex, $wbasedato, $codigoArticulo, '1050', $this->cco );
+		$info[ 'dosisVariable' ] = consultarDosisVariable( $conex, $wbasedato, $codigoArticulo, $ccoSF, $this->cco );
 
 		$info[ 'indexMed' ] = $this->numMedicamentos[ $ronda ];
 
