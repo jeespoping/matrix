@@ -983,12 +983,15 @@ function pasaraltaenprocesoaaltadefinitiva($whistoria, $wingreso, $wcco, $whab)
 	//FIN DE LA ESPERA
 	echo "Ultima actualizacion: ".$wactualizacion;
 	echo "<BR>EJECUTO A LAS : ".date('h:i:s') . "<br>";
-
+	$ProcesaFechaPorParametro = false;
+	
 	if(!isset($wfecha))
 	{
 		$wfecha = date("Y-m-d");
 	}else{
 		
+		$ProcesaFechaPorParametro = true;
+
 		$wfecha = strtoupper($wfecha);
 		if ($wfecha == "AYER")
 		{
@@ -1547,33 +1550,37 @@ function pasaraltaenprocesoaaltadefinitiva($whistoria, $wingreso, $wcco, $whab)
 
 		echo "<br><br><br>";
 		echo "<BR>TERMINO A LAS : ".date('h:i:s') . "\n";
-		 //Se borra lo que exista en la fecha en la tabla de historial de ocupacion de habitaciones para todos los servicios
-		$q = "DELETE FROM ".$wBaseDato."_000067 WHERE Fecha_data = '".$wfecha."'";
-    	$res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+		
+		if (!$ProcesaFechaPorParametro)
+		{
+			 //Se borra lo que exista en la fecha en la tabla de historial de ocupacion de habitaciones para todos los servicios
+			$q = "DELETE FROM ".$wBaseDato."_000067 WHERE Fecha_data = '".$wfecha."'";
+			$res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 
-		 //Realiza insert masivo sobre la tabla historial de habitaciones
-		 $q = "INSERT INTO ".$wBaseDato."_000067
-		 			(Medico,Fecha_data,Hora_data,Habcod,Habcco,Habhis,Habing,Habali,Habdis,Habest,habpro,habfal,habhal,habtmp,habprg,habtip,habtfa,Seguridad)
-		 		SELECT
-		 			Medico,'$wfecha','$whora',Habcod,Habcco,Habhis,Habing,Habali,Habdis,Habest,habpro,habfal,habhal,habtmp,habprg,habtip,habtfa,Seguridad
-		 		FROM
-		 			".$wBaseDato."_000020";
-		 $res1 = mysql_query($q,$conex) or die("ERROR GRABANDO CIERRE DIARIO DE CAMAS : ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+			 //Realiza insert masivo sobre la tabla historial de habitaciones
+			 $q = "INSERT INTO ".$wBaseDato."_000067
+						(Medico,Fecha_data,Hora_data,Habcod,Habcco,Habhis,Habing,Habali,Habdis,Habest,habpro,habfal,habhal,habtmp,habprg,habtip,habtfa,Seguridad)
+					SELECT
+						Medico,'$wfecha','$whora',Habcod,Habcco,Habhis,Habing,Habali,Habdis,Habest,habpro,habfal,habhal,habtmp,habprg,habtip,habtfa,Seguridad
+					FROM
+						".$wBaseDato."_000020";
+			 $res1 = mysql_query($q,$conex) or die("ERROR GRABANDO CIERRE DIARIO DE CAMAS : ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 
-		 //Actualizar la foto de acuerdo a las entrega-recibo que no han sido efectuadas.
-		 //Si solo tiene la entrega, la cama ocupada es donde estaba, desocupada la cama destino
-		 foreach($pacientes_limpiar as $pos=>$paciente){
-			$qq= " UPDATE ".$wBaseDato."_000067 SET Habhis='', Habing='' "
-			  ."   WHERE Habhis= '".$paciente['his']."' AND Habing ='".$paciente['ing']."' AND Habcod='".$paciente['hab']."' AND Habcco='".$paciente['cco']."'"
-			  ."     AND Fecha_data = '".$wfecha."'";
-			$resq = mysql_query($qq,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$qq." - ".mysql_error());
-		 }
-		 foreach($pacientes_agregar as $pos=>$paciente){
-			$qq= " UPDATE ".$wBaseDato."_000067 SET Habhis= '".$paciente['his']."', Habing ='".$paciente['ing']."'"
-			  ."   WHERE  Habcod='".$paciente['hab']."' AND Habcco='".$paciente['cco']."' "
-			  ."     AND Fecha_data = '".$wfecha."'";
-			$resq = mysql_query($qq,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$qq." - ".mysql_error());
-		 }
+			 //Actualizar la foto de acuerdo a las entrega-recibo que no han sido efectuadas.
+			 //Si solo tiene la entrega, la cama ocupada es donde estaba, desocupada la cama destino
+			 foreach($pacientes_limpiar as $pos=>$paciente){
+				$qq= " UPDATE ".$wBaseDato."_000067 SET Habhis='', Habing='' "
+				  ."   WHERE Habhis= '".$paciente['his']."' AND Habing ='".$paciente['ing']."' AND Habcod='".$paciente['hab']."' AND Habcco='".$paciente['cco']."'"
+				  ."     AND Fecha_data = '".$wfecha."'";
+				$resq = mysql_query($qq,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$qq." - ".mysql_error());
+			 }
+			 foreach($pacientes_agregar as $pos=>$paciente){
+				$qq= " UPDATE ".$wBaseDato."_000067 SET Habhis= '".$paciente['his']."', Habing ='".$paciente['ing']."'"
+				  ."   WHERE  Habcod='".$paciente['hab']."' AND Habcco='".$paciente['cco']."' "
+				  ."     AND Fecha_data = '".$wfecha."'";
+				$resq = mysql_query($qq,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$qq." - ".mysql_error());
+			 }
+		}
          echo "<center><table>";
 		 echo "<tr><td align=center bgcolor=#999999 colspan=2><font size=6 face='tahoma'><b>TERMINO DE GENERAR EL CIERRE DIARIO DE CAMAS</font></b></font></td></tr>";
 		 echo "</table></center>";
