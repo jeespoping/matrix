@@ -3,14 +3,21 @@ include_once("conex.php");
 
 include_once("root/comun.php");
 
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 
 $wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
 $bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 
 
-if( empty( $wemp_pmla ) )
-	$wemp_pmla = "01";
+$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+$bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
+
+
+//if( empty( $wemp_pmla ) )
+//	$wemp_pmla = "01";
+//
 
 include_once( "movhos/kardex.inc.php" );
 

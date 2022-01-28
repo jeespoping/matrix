@@ -110,7 +110,9 @@ include_once("conex.php");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
-	   .2010-02-24
+	    .2021-12-07   Daniel CB. Se realiza correccion de parametro 01 quemado.
+		
+		.2010-02-24
 	   		Release de Versión Beta.
 [*DOC]   		
 ***********************************************************************************************************************/
@@ -557,7 +559,7 @@ else
 				$DATA[(integer)substr($split[$i],0,strpos($split[$i],":"))]=substr($split[$i],strpos($split[$i],":")+1);
 			$DATA[count($split)+1]=$row[4];
 			//                  0       1       2       3      4       5       6       7       8       9   
-			$query = "SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pactid='".$wtdo."' and Pacced='".$wdoc."' and Pacced=Oriced and Pactid=Oritid and Oriori='01' ";
+			$query = "SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pactid='".$wtdo."' and Pacced='".$wdoc."' and Pacced=Oriced and Pactid=Oritid and Oriori='".$wemp_pmla;
 			$err = mysql_query($query,$conex);
 			$num = mysql_num_rows($err);
 			if ($num > 0)
@@ -701,7 +703,7 @@ else
 	if($wdoc != "")
 	{
 		//                  0       1       2       3      4       5       6       7       8       9   
-		$query = "SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pactid='".$wtdo."' and Pacced='".$wdoc."' and Pacced=Oriced and Pactid=Oritid and Oriori='01' ";
+		$query = "SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pactid='".$wtdo."' and Pacced='".$wdoc."' and Pacced=Oriced and Pactid=Oritid and Oriori='".$wemp_pmla;
 		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		if ($num > 0)

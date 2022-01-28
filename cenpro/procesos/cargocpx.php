@@ -75,21 +75,22 @@ function mykeyhandler(event)
    {
 	   // try{
 	   // a = window.opener;
-// //	   window.opener.producto.submit();
+		//	   window.opener.producto.submit();
 		// a.document.producto.submit();
 	   // }
 	   // catch(e){}
 
 	   try{
 		   a = window.opener;
-//		   window.opener.producto.submit();
+		   //	window.opener.producto.submit();
 			a.document.producto.submit();
 	   }
 	   catch(e){}
 	   window.close();
 	   // window.onbeforeunload = '';
+	   wemp_pmla =  $( "#wemp_pmla" ).val();
 	   
-	   window.open ("cen_mez.php?wbasedato=cenpro&wemp_pmla=01","_self")
+	   window.open ("cen_mez.php?wbasedato=cenpro&wemp_pmla="+wemp_pmla+"","_self")
    }
 
    function desmarcarOpcionesArticulosGenericos(){
@@ -113,6 +114,8 @@ function mykeyhandler(event)
 include_once("conex.php");
 $desde_CargosPDA = true;
 $accion_iq = '';
+
+//actualizacion: Dieciembre 02 de 2021  (Daniel CB) Se realiza corrección de parametro 01 quemado.
 //actualizacion: Noviembre 02 de 2017	(Edwin)		Entre el tiempo de dispensación por defecto de CM(10 horas al momento de la publicación) y el tiempo de dispensacion de cco del paciente se toma la de mayor valor.
 //													Ejemplo: UCI tiene 8 horas y CM tiene 10 horas de tiempo de dispensación, se toma la de CM por ser mayor
 //actualizacion: Septiembre 19 de 2016	(Edwin)		Se corrige calculo de rondas en la función articulosGenericosKE
@@ -192,12 +195,13 @@ function consultarHabitacion($historia,$ingreso)
 function consultarNombrePaciente($historia,$ingreso)
 {
 	global $conex;
+	global $emp;
 	
 	$q = "SELECT Pacno1,Pacno2,Pacap1,Pacap2 
 			FROM root_000037,root_000036 
 		   WHERE Orihis='".$historia."' 
 			 AND Oriing='".$ingreso."' 
-			 AND Oriori='01' 
+			 AND Oriori='".$emp."' 
 			 AND Oriced=Pacced 
 			 AND Oritid=Pactid;";
 	
@@ -2178,6 +2182,8 @@ function pintarAlerta($mensaje)
 
 function pintarBoton()
 {
+	global $wemp_pmla;
+	echo "<input type='hidden' name='wemp_pmla2' id='wemp_pmla2' value='".$wemp_pmla."'/>";
     echo "<tr><td >&nbsp;</td></tr>";
     echo "<tr><td ALIGN='CENTER' ><INPUT TYPE='button' NAME='ok' VALUE='ACEPTAR' onclick='enter();'></td></tr>";
     echo "</form>";
@@ -2187,11 +2193,11 @@ function pintarPreparacion($preparacion, $escogidos, $carro)
 {
 	global $cod;
 	global $conex;
-	
+	global $wemp_pmla;	
 	$esNPT = esNutricion( $cod );
 	if($esNPT)
 	{
-		$insumosPorDefecto = consultarAliasPorAplicacion($conex, "01", "insumosAdicionalesNPT");
+		$insumosPorDefecto = consultarAliasPorAplicacion($conex, $wemp_pmla, "insumosAdicionalesNPT");
 	}
 	
 	
@@ -2199,7 +2205,7 @@ function pintarPreparacion($preparacion, $escogidos, $carro)
 	if(substr($cod,0,2)=="DA")
 	{
 		$esDA = true;
-		$insumosPorDefecto = consultarAliasPorAplicacion($conex, "01", "insumosAdicionalesDA");
+		$insumosPorDefecto = consultarAliasPorAplicacion($conex, $wemp_pmla, "insumosAdicionalesDA");
 	}
 	
 	$insumoASeleccionar = explode(",",$insumosPorDefecto);	
@@ -2930,7 +2936,7 @@ else
 {
 	$aplicaron = false;
     //$wbasedato = 'cenpro';
-    
+    $wemp_pmla = $_REQUEST['wemp_pmla'];
     include_once( "cenpro/cargos.inc.php" );	//incluye las funciones para ciclos de produccion
     include_once( "conex.php" );
     
@@ -2965,7 +2971,7 @@ else
 	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
 	
 	//$test = centroCostosCM(); echo $test;
-	$tmpDispensacion = consultarTiempoDispensacionIncCM( $conex, "01" );
+	$tmpDispensacion = consultarTiempoDispensacionIncCM( $conex, $wemp_pmla );
 	
     connectOdbc($conex_o, 'facturacion');
 	
@@ -3155,9 +3161,9 @@ else
 							
 																?>
 																<script>
-		//					                                        window . opener . producto . submit();
-		//					                                        window . close();
-																 </script >
+																	//	window . opener . producto . submit();
+																	//	window . close();
+																 </script>
 																<?php
 															}
 															else{
@@ -3741,7 +3747,7 @@ else
 															<script>
 	//					                                        window . opener . producto . submit();
 	//					                                        window . close();
-															 </script >
+															 </script>
 															<?php
 													}
 													else{
@@ -4518,7 +4524,7 @@ else
 															<script>
 	//					                                        window . opener . producto . submit();
 	//					                                        window . close();
-															 </script >
+															 </script>
 															<?php
 													}
 													else{

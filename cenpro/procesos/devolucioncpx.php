@@ -36,6 +36,9 @@ include_once("root/comun.php");
 	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 /***
  * Modificación.
+ * Diciembre 14 de 2021 (Juan Rodriguez): Se modifica parámetro wemp_pmla quemado, se rectifica que desde donde se llama al archivo, exista wemp_pmla
+ * 
+ * Octubre 20 de 2021 (Daniel Corredor ) Se realiza la actualización de datos quemados y se agrega el global wemp_pmla en la funcion anular cargo
  * 
  * Agosto 14 de 2013  (Edwin MG)	Se valida que halla conexión unix en inventario desde matrix, si no hay conexión
  *									con unix se activa la contigencia de dispensación.
@@ -791,6 +794,7 @@ function anularCargo($cco, $destino, $insumo, $dato, $lote)
 {
     global $conex;
     global $wbasedato;
+	global $wemp_pmla;
 
     $q = " SELECT Concod"
      . "       FROM " . $wbasedato . "_000008  "
@@ -868,7 +872,7 @@ else
     //$wbasedato = 'cenpro';
 //    $conex = mysql_connect('localhost', 'root', '')
 //    or die("No se ralizo Conexion");
-    
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
     include_once( "conex.php" );
     include_once( "cenpro/cargos.inc.php" );
     
@@ -902,12 +906,12 @@ else
     if( true || $conex_o != 0 )
     {
         $tipTrans = 'D'; //segun ana es una transaccion de devolucion
-        $emp = '01';
+        $emp = $wemp_pmla;
         $aprov = true; //siempre es por aprovechamiento;
         $exp = explode('-', $cco);
         $centro['cod'] = $exp[0];
         $centro['neg'] = false;
-        getCco($centro, $tipTrans, '01');
+        getCco($centro, $tipTrans, $emp);
         $pac['his'] = $historia;
         $pac['ing'] = $ingreso;
         $cns = 0;
@@ -915,7 +919,7 @@ else
         $art['ini'] = $cod;
         $art['ubi'] = 'US';
         $serv['cod'] = $servicio;
-        getCco($serv, $tipTrans, '01');
+        getCco($serv, $tipTrans, $emp);
         if (isset($serv['apl']) and $serv['apl'])
         {
             $centro['apl'] = true;
@@ -1023,7 +1027,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script >
+										 </script>
 										<?php
 									} 
 									else
@@ -1288,7 +1292,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script >
+										 </script>
 										<?php
 								} 
 								else
@@ -1402,7 +1406,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script >
+										 </script>
 										<?php
 									} 
 									else
@@ -1687,7 +1691,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script >
+										 </script>
 									<?php
 								}
 								else

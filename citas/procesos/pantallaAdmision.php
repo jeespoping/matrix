@@ -639,7 +639,7 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 	{
 		var ancho=screen.width;
 		var alto=screen.availHeight;
-		var path = "../../admisiones/procesos/admision_erp.php?wemp_pmla=01&TipoDocumentoPacAm=" + wtdo + "&DocumentoPacAm=" + wdoc + "&TurnoCsAm=''&AgendaMedica=" + wagendaMedica + "&solucionCitas=" + solucion;
+		var path = "../../admisiones/procesos/admision_erp.php?wemp_pmla="+wemp_pmla+"&TipoDocumentoPacAm=" + wtdo + "&DocumentoPacAm=" + wdoc + "&TurnoCsAm=''&AgendaMedica=" + wagendaMedica + "&solucionCitas=" + solucion;
 		window.open(path,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes');
 	}
 
@@ -829,7 +829,7 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 					var caso = $("#caso").val();
 			        
 					if(solucionCitas === "citasen") {
-						location.href = "../../citas/procesos/pantallaAdmision.php?wemp_pmla=01&caso="+caso+"&solucionCitas="+solucionCitas+"&ccosto="+ccosto+"&per="+monitores+"&ubn="+ubicacion;
+						location.href = "../../citas/procesos/pantallaAdmision.php?wemp_pmla="+wemp_pmla+"&caso="+caso+"&solucionCitas="+solucionCitas+"&ccosto="+ccosto+"&per="+monitores+"&ubn="+ubicacion;
 					}
 
 				}
@@ -1109,7 +1109,7 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 					var caso = $("#caso").val();
 			        
 					if(solucionCitas === "citasen") {
-						location.href = "../../citas/procesos/pantallaAdmision.php?wemp_pmla=01&caso="+caso+"&solucionCitas="+solucionCitas+"&ccosto="+ccosto+"&per="+monitores+"&ubn="+ubicacion;
+						location.href = "../../citas/procesos/pantallaAdmision.php?wemp_pmla="+wemp_pmla+"&caso="+caso+"&solucionCitas="+solucionCitas+"&ccosto="+ccosto+"&per="+monitores+"&ubn="+ubicacion;
 					}
 
 				}
@@ -1168,7 +1168,7 @@ if(isset($consultaAjax) && $consultaAjax != "" )
                 $("#" + idAdmision).prop("checked", false);
             } else {
 
-				var path = "../../admisiones/procesos/admision_erp.php?wemp_pmla=01&TipoDocumentoPacAm="+ data.typeDoc +"&DocumentoPacAm=" + identification + "&TurnoEnAm=" + data.Turno + "&AgendaMedica=on&solucionCitas=" + solucionCitas;
+				var path = "../../admisiones/procesos/admision_erp.php?wemp_pmla="+wemp_pmla+"&TipoDocumentoPacAm="+ data.typeDoc +"&DocumentoPacAm=" + identification + "&TurnoEnAm=" + data.Turno + "&AgendaMedica=on&solucionCitas=" + solucionCitas;
             	window.open(path,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes');
 
             }
@@ -1269,7 +1269,8 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 
 <?php
     // - - - - - - - - - - - - - - - - - - - - - Modificaciones - - - - - - - - - - - - - - - -
-    // 
+    // 2021-11-18  Daniel CB.           Se realiza corrección de parametros 01 quemados.
+	//
     // 2020-01-08  Arleyda Insignares C. Se modifica select que lista los médicos, a un multiselect de selección única para la utilización del filtro (busqueda por texto).
 	//---------------------------------------------------------ACA TERMINAN LOS LLAMADOS AJAX
 	//SON EL RESTO DE FUNCIONES QUE NO SE LLAMAN POR AJAX
@@ -1341,9 +1342,9 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 	$wentidad = $institucion->nombre;
 
 	if ($wemp_pmla == 01) {
-		encabezado("AGENDA MEDICA", "2017-07-14", $wbasedato );
+		encabezado("AGENDA MEDICA", "2021-11-18", $wbasedato );
 	} else {
-		encabezado("AGENDA MEDICA", "2017-07-14", "logo_".$wbasedato );
+		encabezado("AGENDA MEDICA", "2021-11-18", "logo_".$wbasedato );
 	}
 		//---------------------------------------------------------FIN ENCABEZADO-----------------------------------------------------------------------------
 
