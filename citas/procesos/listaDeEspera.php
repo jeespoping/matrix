@@ -164,7 +164,7 @@
         $sql =
             "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE CodigoCups<>''  and SEREALIZA=1  order by Codigo ASC";
         // make query $ get result
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query_multiempresa($connLab, $sql);
         // fetch the resulting rows as an aaray
         $html = "<option value='' selected><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>";
 
@@ -465,7 +465,7 @@
 
         $html = "";
 
-        $result = mysqli_query_multiempresa($connLab, $sql);
+        $result = mysqli_query_multiempresa($$conex, $sql);
 
         if (!$result) {
             echo ("Error description: " . mysqli_error($conex));
