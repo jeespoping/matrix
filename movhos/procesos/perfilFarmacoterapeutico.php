@@ -45,17 +45,28 @@ function mostrarImprimirSticker(){
 }
 
 //Esta funcion permite a impresion de un solo sticker, segun la historia digitada.
+/*Modificación:
+ ****** 2022-01-31 - sebastian.nevado: se independiza impresora por defecto de la seleccionable.
+*/
+	
 function sticker_historia(wbasedato, wemp_pmla, whis)
 {
     var whis			 = $("#whistoria").val();
 	var wccoo 			 = $("#servicioPaciente").val();
 	var wipimpresora 	 = $("#wipimpresora").val();
+	var wipimpresoraDefault 	 = $("#wipimpresoraDefault").val();
 	var whora_par_actual = document.getElementById("whora_par_actual").value;
 
 	if(whis == '')
 	{
 		alert('Debe ingresar una historia.');
 		return;
+	}
+
+	//Se agrega validación de que seleccione la impresora por defecto si no viene una seleccionada.
+	if(wipimpresora == '')
+	{
+		wipimpresora = wipimpresoraDefault;
 	}
 	
     $.post("../reportes/stickers_Dispensacion.php",
@@ -376,6 +387,7 @@ include_once("conex.php");
  * Autor: Mauricio Sánchez Castaño.
  *
  * Modificaciones:
+ * 31 de enero de 2022 - sebastian.nevado: se independiza impresora por defecto de la seleccionable para permitir imprimir sticker en otras impresoras.
  * 
  * 21 de octubre de 2021    (Sebastian Alvarez B) -> Se descomentan las lineas 1673 a la 1677 debido a que se requiere registrar la fehca y hora de cuando se ve un perfil.
  * 													 Esto con el fin de que cuando un paciente tenga un estado NUEVO en el kardex y una vez se vea el perfil debe de cambiar el estado por IGUAL.
@@ -837,7 +849,7 @@ function esGrupoAntibiotico( $conex, $wbd, $wemp_pmla, $grp ){
 }
  
 $usuarioValidado = true;
-$wactualiz = "Diciembre 18 de 2017";
+$wactualiz = "Enero 31 de 2022";
 
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false;
@@ -891,7 +903,7 @@ if (!$usuarioValidado){
 	echo "<input type='HIDDEN' NAME= 'centroCostosGrabacion' value='".$usuario->centroCostosGrabacion."'/>";
 	
 	$wipimpresora = consultarAliasPorAplicacion($conex, $wemp_pmla, 'ImpresoraStickersDispen');
-	echo "<input type='HIDDEN' id='wipimpresora' name='wipimpresora' value='".$wipimpresora."'/>";
+	echo "<input type='HIDDEN' id='wipimpresoraDefault' name='wipimpresoraDefault' value='".$wipimpresora."'/>";
 
 	$datosUsuario = consultarUsuario($conex,$wuser);
 	echo "<input type='HIDDEN' NAME= 'usuariodes' id='usuariodes' value='".$datosUsuario->descripcion."'/>";
