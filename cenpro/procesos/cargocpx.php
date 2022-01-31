@@ -195,13 +195,13 @@ function consultarHabitacion($historia,$ingreso)
 function consultarNombrePaciente($historia,$ingreso)
 {
 	global $conex;
-	global $emp;
+	global $wemp_pmla;
 	
 	$q = "SELECT Pacno1,Pacno2,Pacap1,Pacap2 
 			FROM root_000037,root_000036 
 		   WHERE Orihis='".$historia."' 
 			 AND Oriing='".$ingreso."' 
-			 AND Oriori='".$emp."' 
+			 AND Oriori='".$wemp_pmla."' 
 			 AND Oriced=Pacced 
 			 AND Oritid=Pactid;";
 	
@@ -4578,7 +4578,7 @@ else
  */
 function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto )
 {
-	global $emp;
+	global $wemp_pmla;
 	global $wbasedato;
 	global $wusuario;
 	global $wuse;
@@ -4600,7 +4600,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 	}
 	
 	//Si el cco no maneja cargo ERP o no está activo los cargos ERP no se ejecuta esta acción
-	$cargarEnErp = consultarAliasPorAplicacion( $conex, $emp, "cargosPDA_ERP" );
+	$cargarEnErp = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cargosPDA_ERP" );
 	if( !$CcoErp || $cargarEnErp != 'on' ){
 		return;
 	}
@@ -4628,7 +4628,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 		if( $rowsIng = mysql_fetch_array( $resIng) ){
 		
 			
-			$codEmpParticular = consultarAliasPorAplicacion($conex, $emp, 'codigoempresaparticular');
+			$codEmpParticular = consultarAliasPorAplicacion($conex, $wemp_pmla, 'codigoempresaparticular');
 		
 			if( $rowsIng[ 'Ingtpa' ] == 'P' ){
 				$empresa = $codEmpParticular;
@@ -4661,12 +4661,12 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 				$wfecing	  = $rowsIng[ 'Ingfei' ];
 				
 				//Consulta información de pacientes
-				$infoPacienteCargos = consultarNombresPaciente( $conex, $pac['his'], $emp );
+				$infoPacienteCargos = consultarNombresPaciente( $conex, $pac['his'], $wemp_pmla );
 				
 				//Conceptos de grabación
-				$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_medicamentos_mueven_inv" );
+				$wcodcon = consultarAliasPorAplicacion( $conex, $wemp_pmla, "concepto_medicamentos_mueven_inv" );
 				if( esMMQServicioFarmaceutico($art['cod']) )
-					$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_materiales_mueven_inv" );
+					$wcodcon = consultarAliasPorAplicacion( $conex, $wemp_pmla, "concepto_materiales_mueven_inv" );
 				
 				$wnomcon = consultarNombreConceptos( $conex, $wcliame, $wcodcon );
 				
@@ -4758,7 +4758,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 				$datos['desde_CargosPDA']			= $desde_CargosPDA;
 
 				//$codEmpParticular = consultarAliasPorAplicacion($conex, $wemp_pmla, 'codigoempresaparticular');
-				$codEmpParticular = consultarAliasPorAplicacion($conex, $emp, 'codigoempresaparticular');
+				$codEmpParticular = consultarAliasPorAplicacion($conex, $wemp_pmla, 'codigoempresaparticular');
 
 				// --> Si la empresa es particular esto se graba como excedente
 				if($wcodemp == $codEmpParticular)
@@ -4828,7 +4828,7 @@ function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $
  * @date: 2021-06-11
  * @return: array
  */
-function consultarNombresPaciente( $conex, $his, $emp ){
+function consultarNombresPaciente( $conex, $his, $wemp_pmla ){
 
 	$val = false;
 
@@ -4837,7 +4837,7 @@ function consultarNombresPaciente( $conex, $his, $emp ){
 			 WHERE orihis = '".$his."'
 			   AND pacced = oriced
 			   AND pactid = oritid
-			   AND oriori = '".$emp."'
+			   AND oriori = '".$wemp_pmla."'
 		";
 		
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
