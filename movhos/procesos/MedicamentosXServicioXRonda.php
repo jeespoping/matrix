@@ -83,6 +83,14 @@
 
 $(document).ready(function() 
 {
+	var selectorSede = document.getElementById("selectsede");
+	
+	if(selectorSede !== null)
+	{
+		selectorSede.addEventListener('change', () => {
+			window.location.href = "MedicamentosXServicioXRonda.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&user="+$('#user').val();
+		});
+	}
 	// -------------------------------------
 	//	Tooltip
 	// -------------------------------------
@@ -276,6 +284,9 @@ function cerrarVentana()
 include_once("conex.php");
 /****************************************************************************************************************************************************************
  * Actualizaciones:
+ * Enero 13 de 2022 Sebastian Alvarez Barona:    - Se adiciono el parametro $selectsede en el llamado de función ConsultaCentrosCostos & query_todos_articulos_cco
+ * 													para que cuando se seleccione la sede solo filtre las unidades de destino y cuando se seleccione la opcion de todas
+ * 													que solo muestre los de sede80 o de lo contrario sedeSur.
  * Diciembre 19 de 2021 Marlon Osorio: 			 - Se reemplaza la funcion esCcoDomiciliarioMSR por esCcoDomiciliarioMSRUnificado
  * Diciembre 10 de 2021 Sebastian Alvarez Barona - Se modifico el select de la unidad de destino, asignandole que cuando ingrese un usuario de la sede sur solo se le listen
  * 											       las opciones que hay en la sede sur, de lo contrario si el usuario es de la sede 80 entonces mostrara las opciones de la sede 80.
@@ -359,7 +370,7 @@ else
   $wusuario = substr($user,$pos+1,strlen($user));
 
   															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz  ="Diciembre 19 de 2021";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz  ="Enero 13 de 2022";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
 															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
   //***********************************v********************************************************************************************************
@@ -1565,7 +1576,7 @@ function pintarAritculos( $articulos ){
 
 	  $winstitucion=$row[2];
 
-	  encabezado("Medicamentos por Ronda y C.Costo",$wactualiz, "clinica");
+	  encabezado("Medicamentos por Ronda y C.Costo",$wactualiz, "clinica", TRUE);
      }
 
 
@@ -1695,7 +1706,7 @@ function pintarAritculos( $articulos ){
 	 }
 
 	
-  function elegir_centro_de_costo()
+  function elegir_centro_de_costo($selectsede = '')
      {
 	  global $user;
 	  global $conex;
@@ -1728,7 +1739,7 @@ function pintarAritculos( $articulos ){
 		 * By: Sebastian Alvarez Barona
 		 */
 		$cco="(ccocpx = 'on' AND ccohos = 'on' OR ccolac = 'on')";  // filtros para la consulta
-		$centrosCostosDestino = consultaCentrosCostos($cco, $filtro);  //tipo 3
+		$centrosCostosDestino = consultaCentrosCostos($cco, $filtro, FALSE, $selectsede);  //tipo 3
 		
 		$cco="ccotra != 'on' AND ccodom = 'on' AND ccoest = 'on'";  // filtros para la consulta
 		$centrosCostosDomiciliario = consultaCentrosCostos($cco, $filtro);  //tipo 3
@@ -1770,7 +1781,7 @@ function pintarAritculos( $articulos ){
 						</td>
 					</tr>
 					<tr>
-						<td class='fila1'>Unidad de origen: </td>
+						<td class='fila1'>Unidad de origen: <br> (todas las sedes)  </td>
 						<td class='fila2'>
 							<select id='wccoo' name='wccoo' size='1'>
 								<option value='' selected>&nbsp</option>";
@@ -1946,13 +1957,15 @@ function pintarAritculos( $articulos ){
   $unixFechaActual = strtotime( $wfecha." 00:00:00" );
 
 
-  echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
+  echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
+  echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+  echo "<input type='hidden' id='user' name='user' value='".$user."'>";
 
   mostrar_empresa($wemp_pmla);
 
   if (!isset($wcco) or !isset($wccoo))
      {
-      elegir_centro_de_costo();
+      elegir_centro_de_costo($selectsede);
      }
 	else
        {
@@ -2102,7 +2115,7 @@ function pintarAritculos( $articulos ){
 		
 		// query_articulos_cco($wfecha, &$res, $wcco1[0], $wccoo1[0], &$wccotim);
 		// query_articulos_cco($wfecha, &$res, $wcco1[0], $wccoo1[0], &$wccotim,"on");
-		$res = query_todos_articulos_cco( $conex, $wbasedato, $wcenmez, $wfecha, $wcco1[0], $wccoo1[0] );
+		$res = query_todos_articulos_cco( $conex, $wbasedato, $wcenmez, $wfecha, $wcco1[0], $wccoo1[0], $selectsede );
 		$num = mysql_num_rows($res);
 
 		$datos = array();		
@@ -2487,7 +2500,7 @@ function pintarAritculos( $articulos ){
 
 		echo "<br><br>";
 		echo "<table>";
-		echo "<tr><td><A HREF='MedicamentosXServicioXRonda.php?wemp_pmla=".$wemp_pmla."&user=".$user."' class=tipo4V>Retornar</A></td></tr>";
+		echo "<tr><td><A HREF='MedicamentosXServicioXRonda.php?wemp_pmla=".$wemp_pmla."&user=".$user."&selectsede=".$selectsede."' class=tipo4V>Retornar</A></td></tr>";
 		echo "</table>";
 
 		echo "<meta http-equiv='refresh' content='120;url=MedicamentosXServicioXRonda.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wcco=".$wcco."&wccoo=".$wccoo."&whora_par_actual=".$whora_par_actual."&diaSelecionada=".$diaSelecionada."&tipoMedicamento=".$tipoMedicamento."'>";

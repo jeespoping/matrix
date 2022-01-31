@@ -411,11 +411,19 @@
 	{
 		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
+		$responsablesPAF = responsablesPAF($conex, $wemp_pmla);
 
 		$factura = [];
 		$response = [];
 		$fechaInicio = $cuentas['fechaInicio'];
 		$fechaCorte = $cuentas['fechaCorte'];
+		$tipoPorceso = $cuentas['tipoProceso'];
+		$historia = isset( $cuentas['historia'] ) ? $cuentas['historia'] : '';
+		$ingreso = isset( $cuentas['ingreso'] ) ? $cuentas['ingreso'] : '';
+
+		if ( !in_array( $tipoPorceso, [0, 1] ) ) {
+			return "El tipo de proceso no es válido debe ser '0 <> RD' ó '1 = RD'";
+		}
 
 		if( isset( $cuentas['responsable'] ) && is_array( $cuentas['responsable'] ) )
 		{
@@ -427,22 +435,60 @@
 
 				$sql = "
 					  SELECT 	envdetdoc as cuenta_cobro,
-								envdetfan as prefijo,
+								fuecse as prefijo,
 								envdetdan as factura,
+								encest as estado_factura,
 								envdetval as valor_total,
 								movhis as historia,
-								movnum as ingreso
-						FROM    caenvdet, caenvenc, famov
-					   WHERE   envdetfue = '80'
+								movnum as ingreso,
+								fuecod as fuente
+						FROM    caenvdet, caenvenc, famov, caenc , cafue
+					   WHERE	envdetfue = '80'
 						 AND    envdetnit = '{$responsable}'
 						 AND    envdetdoc = envencden
 						 AND    envdetfue = envencfen
 						 AND    movfue = envdetfan
-						 AND    movdoc = envdetdan
+						 AND    movdoc = envdetdan";
+
+				if( intval($tipoPorceso) == intval(0) )
+				{
+					$sql .= "
+						 AND    movfue = encfue
+						 AND    movdoc = encdoc
+						 AND    encest <> 'RD'
+						";
+				}
+				elseif( intval($tipoPorceso) == intval(1) )
+				{
+					$sql .= "
+						 AND    movfue = encfue
+						 AND    movdoc = encdoc
+						 AND    encest = 'RD'
+						";
+				}
+				
+				if( $historia != '' && $ingreso != '' )
+				{
+					$sql .= "
+						 AND    movhis = '{$historia}'
+						 AND    movnum = '{$ingreso}'
+						";
+				}
+				
+				$sql .= "
+						 AND    envdetcco = fuecco
+						 AND    envdetfan = fuefue
+						 AND	fuetip = 'FA'
 						 AND    envdetrfe >= '{$fechaInicio}'
 						 AND    envdetrfe <= '{$fechaCorte}'
-				    GROUP BY	envdetdoc, envdetfan, envdetdan, movhis, movnum, envdetval
+				    GROUP BY	envdetdoc, fuecse, envdetdan, movhis, movnum, envdetval, envdetcco, encest, fuecod
 				";
+
+				// Filtro para prefijo
+				// AND    envdetcco = fuecco
+				// AND    envdetfan = fuefue
+				// AND    fuesec <= envdetdan
+				// AND    fuesfi >= envdetdan
 
 				$respuesta = odbc_exec($conex_unix, $sql);
 
@@ -452,21 +498,27 @@
 
 					while ($fila = odbc_fetch_array($respuesta)) {
 
-						$factura = (object) [
-							'historia'		=>		$fila['historia'],
-							'ingreso'		=>		$fila['ingreso'],
-							'factura'		=>		$fila['factura'],
-							'valor_total'	=>		$fila['valor_total']
-						];
-						
-						if( $cuentaCobroAux != $fila['cuenta_cobro'] )
+						if( !validarFacturaPAF( $fila['historia'], $fila['ingreso'], $responsablesPAF ) )
 						{
-							$cuentaCobro[$fila['cuenta_cobro']] = [];
-						}
-
-						array_push( $cuentaCobro[$fila['cuenta_cobro']], $factura );
+							$factura = [
+								'historia'			=>		$fila['historia'],
+								'ingreso'			=>		$fila['ingreso'],
+								'prefijo'			=>		$fila['prefijo'],
+								'fuente'			=>		$fila['fuente'],
+								'factura'			=>		$fila['factura'],
+								'estado_factura'	=>		$fila['estado_factura'],
+								'valor_total'		=>		$fila['valor_total']
+							];
 						
-						$cuentaCobroAux = $fila['cuenta_cobro'];
+							if( $cuentaCobroAux != $fila['cuenta_cobro'] )
+							{
+								$cuentaCobro[$fila['cuenta_cobro']] = [];
+							}
+
+							array_push( $cuentaCobro[$fila['cuenta_cobro']], (object) convertKeysToCamelCase( $factura ) );
+							
+							$cuentaCobroAux = $fila['cuenta_cobro'];
+						}
 					}
 
 					$responsables[$responsable] = $cuentaCobro;
@@ -481,7 +533,81 @@
 
 		return $response;
 	}
-				
+	
+	/**
+	 * 
+	 */
+	function validarFacturaPAF($historia = null, $ingreso = null, $responsable = null)
+	{
+		$esPAF = false;
+		$sql = "
+			  SELECT	movcer
+				FROM	facardet, facarfac, famov, cafue
+			   WHERE	cardethis = '{$historia}'
+				 AND	cardetnum = '{$ingreso}'
+				 AND	cardetfac = 'S'
+				 AND	cardetreg = carfacreg
+				 AND	movdoc = carfacdoc
+				 AND	movfue = fuecod
+				 AND	fuetip = 'FA'
+			";
+		
+		$respuesta = odbc_exec($conex_unix, $sql);
+
+		if( $respuesta )
+		{
+			while ($fila = odbc_fetch_array($respuesta))
+			{
+				foreach( $responsablesPAF as $responsablePAF )
+				{
+					// Se validaria si el nit es de un PAF
+					$esPAF = ($fila['movcer'] == $responsablePAF ? true : false);
+				}
+			}
+		}
+
+		return $esPAF;
+	}
+
+	/**
+	 * Metodo que permite obtener el listado de resposables del PAF
+	 * 
+	 * @param conex[object]		[Conexión a base de datos]
+	 * @param wemp_pmla[String]	[Número de empresa]
+	 * 
+	 * @return [array] Respuesta de base de datos
+	 */
+	function responsablesPAF($conex, $wemp_pmla)
+	{
+		$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
+		$responsables = [];
+		$responsable = [];
+		
+		$query = "
+		  SELECT	*
+			FROM	{$wcliame}_000024
+		   WHERE	Emppaf = 'on'
+		";
+					
+		$result = mysqli_query($conex, $query) or die(mysqli_error($conex));
+		$num_rows = mysqli_num_rows($result);
+
+		if( $num_rows > 0 ) {
+			while($fila = mysqli_fetch_array($result)) {
+				$responsable = [
+					'codigo'		=>		$fila['Empcod'],
+					'nit'			=>		$fila['Empnit'],
+					'resposnable'	=>		$fila['Empres'],
+					'nombre'		=>		$fila['Empnom']
+				];
+
+				array_push( $responsables, $responsable );
+			}
+		}
+
+		return $responsables;
+	}
+	
 	/**
 	 * Este metodo permite cambiar el formato de las keys que contienen guión
 	 * bajo (underscore) un array a formato camel case (esEjemplo), y devuelve

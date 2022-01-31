@@ -16,6 +16,10 @@ if (!isset($consultaAjax))
 	<script src="../../../include/root/jquery.tooltip.js" type="text/javascript"></script>
   <script type="text/javascript">
 
+      $(document).on('change','#selectsede',function(){
+          window.location.href = "Sala_de_espera_por_Especialidad.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+      });
+
 	$(function(){
 		// --> Tooltip en la lista de turnos
 		$('[tooltip=si]').tooltip({track: true, delay: 0, showURL: false, showBody: ' - ', opacity: 0.95, left: -50 });
@@ -242,7 +246,7 @@ if (!isset($consultaAjax))
 				}
 			}
 
-		});
+        });
 
 	}
 
@@ -640,6 +644,10 @@ else
 
   include_once("root/magenta.php");
   include_once("root/comun.php");
+
+    if (is_null($selectsede)){
+        $selectsede = consultarsedeFiltro();
+    }
 
   $conex = obtenerConexionBD("matrix");
   $wfecha=date("Y-m-d");
@@ -1569,8 +1577,8 @@ function reasignarCubiculo($whce, $wbasedato, $whis, $wing, $wusuario, $wcubicul
 				//Verifica si el paciente es tiene conducta de traslado.	
 				if($row_con_pac['contra'] == 'on'){
 					
-					$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
-					$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato);
+					$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato, $selectsede);
+					$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
 					
 					//====================================
 					// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
@@ -1679,7 +1687,7 @@ function buscar_paciente_ordenes($conex, $wbasedato, $historia, $ingreso){
 
 }
 
-$wcco = consultarCentrocoUrgencias();
+$wcco = consultarCentrocoUrgencias('',$selectsede);
 $wcco = $wcco->codigo;
 
 //Verifica si el centro de costos debe ir a ordenes.
@@ -2496,8 +2504,8 @@ function ponerConducta($whce, $wbasedato, $whis, $wing, $wusuario, $wconducta, $
 		//en proceso de traslado.
 		if($cond_nueva_traslado == 'on'){
 			
-			$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato);
-			$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato);
+			$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato, $selectsede);
+			$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
 			
 			//====================================
 			// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
@@ -4601,7 +4609,7 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
        echo "NO EXISTE NINGUNA APLICACION DEFINIDAD PARA ESTA EMPRESA";
   if (!isset($consultaAjax))
     {
-  encabezado("SALA DE ESPERA URGENCIAS",$wactualiz, "clinica");
+  encabezado("SALA DE ESPERA URGENCIAS",$wactualiz, "clinica", true, false);
 
   //FORMA ================================================================
   echo "<form name='sala' action='Sala_de_espera_por_Especialidad.php' method=post id='pacientes'>";
@@ -4621,6 +4629,7 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
   $wnomcco=$row[1];
 
   echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
+  echo "<input type='HIDDEN' id='sede' name='selectsede' value='".$selectsede."'>";
   echo "<input type='HIDDEN' name='wbasedato' id='wbasedato' value='".$wbasedato."'>";
   echo "<input type='HIDDEN' name='whce' id='whce' value='".$whce."'>";
   echo "<input type='HIDDEN' name='wusuario' id='wusuario' value='".$wusuario."'>";
@@ -4978,15 +4987,16 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
   echo "</form>";
 
   if (isset($wsup) and $wsup=="on")  //Es superusuario
-     echo "<meta http-equiv='refresh' content='300;url=Sala_de_espera_por_Especialidad.php?wemp_pmla=".$wemp_pmla."&wuser=".$wusuario."&user=".$user."&wcco=".$wcco."&zona=".$zona."'>";
+     echo "<meta http-equiv='refresh' content='300;url=Sala_de_espera_por_Especialidad.php?wemp_pmla=".$wemp_pmla."&wuser=".$wusuario."&user=".$user."&wcco=".$wcco."&zona=".$zona."&selectsede=".$selectsede."'>";
   else
-     echo "<meta http-equiv='refresh' content='30;url=Sala_de_espera_por_Especialidad.php?wemp_pmla=".$wemp_pmla."&wuser=".$wusuario."&user=".$user."&wcco=".$wcco."&zona=".$zona."'>";
+     echo "<meta http-equiv='refresh' content='30;url=Sala_de_espera_por_Especialidad.php?wemp_pmla=".$wemp_pmla."&wuser=".$wusuario."&user=".$user."&wcco=".$wcco."&zona=".$zona."&selectsede=".$selectsede."'>";
 
 
   echo "<table>";
   echo "<tr><td align=center height=21>&nbsp;</td></tr>";
   echo "<tr><td align=center><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
   echo "</table>";
+
 } //Cierra la validacion cuando se hace una consultaAjax
 include_once("free.php");
 }
