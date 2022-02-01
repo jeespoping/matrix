@@ -411,7 +411,6 @@
 	{
 		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
-		$responsablesPAF = responsablesPAF($conex, $wemp_pmla);
 
 		$factura = [];
 		$response = [];
@@ -425,115 +424,98 @@
 			return "El tipo de proceso no es válido debe ser '0 <> RD' ó '1 = RD'";
 		}
 
-		if( isset( $cuentas['responsable'] ) && is_array( $cuentas['responsable'] ) )
+		$cuentaCobro = [];
+
+		$sql = "
+			  SELECT	envencdoc as cuenta_cobro,
+						envdetdan as factura,
+						fuecod as fuente_factura,
+						fuecse as prefijo,
+						envdetval as valor_total,
+						encest as estado_factura,
+						movhis as historia,
+						movnum as ingreso,
+						envencnit as nit_responsable
+				FROM	caenvenc, caenvdet, cafue, famov, caenc
+			   WHERE	envencfue = (
+							SELECT fuecod
+							FROM cafue
+							WHERE fuetip = 'EV'
+							GROUP BY fuecod
+						)
+				 AND	envencnit IN ( {$cuentas['responsables']} )
+				 AND	envdetdoc = envencden
+				 AND	envdetfue = envencfen
+				 AND	envencfec >= '{$fechaInicio}'
+				 AND	envencfec <= '{$fechaCorte}'
+				 AND	envdetcco = fuecco
+				 AND	envdetfan = fuefue
+				 AND	movfue = envdetfan
+				 AND	movdoc = envdetdan
+				 AND	movfue = encfue
+				 AND	movdoc = encdoc
+		";
+
+		if( intval($tipoPorceso) == intval(0) )
 		{
-			$responsables = [];
-
-			foreach( $cuentas['responsable'] as $key => $responsable )
-			{
-				$cuentaCobro = [];
-
-				$sql = "
-					  SELECT 	envdetdoc as cuenta_cobro,
-								fuecse as prefijo,
-								envdetdan as factura,
-								encest as estado_factura,
-								envdetval as valor_total,
-								movhis as historia,
-								movnum as ingreso,
-								fuecod as fuente
-						FROM    caenvdet, caenvenc, famov, caenc , cafue
-					   WHERE	envdetfue = '80'
-						 AND    envdetnit = '{$responsable}'
-						 AND    envdetdoc = envencden
-						 AND    envdetfue = envencfen
-						 AND    movfue = envdetfan
-						 AND    movdoc = envdetdan";
-
-				if( intval($tipoPorceso) == intval(0) )
-				{
-					$sql .= "
-						 AND    movfue = encfue
-						 AND    movdoc = encdoc
-						 AND    encest <> 'RD'
-						";
-				}
-				elseif( intval($tipoPorceso) == intval(1) )
-				{
-					$sql .= "
-						 AND    movfue = encfue
-						 AND    movdoc = encdoc
-						 AND    encest = 'RD'
-						";
-				}
-				
-				if( $historia != '' && $ingreso != '' )
-				{
-					$sql .= "
-						 AND    movhis = '{$historia}'
-						 AND    movnum = '{$ingreso}'
-						";
-				}
-				
-				$sql .= "
-						 AND    envdetcco = fuecco
-						 AND    envdetfan = fuefue
-						 AND	fuetip = 'FA'
-						 AND    envdetrfe >= '{$fechaInicio}'
-						 AND    envdetrfe <= '{$fechaCorte}'
-				    GROUP BY	envdetdoc, fuecse, envdetdan, movhis, movnum, envdetval, envdetcco, encest, fuecod
+			$sql .= "
+					AND    movfue = encfue
+					AND    movdoc = encdoc
+					AND    encest <> 'RD'
 				";
-
-				// Filtro para prefijo
-				// AND    envdetcco = fuecco
-				// AND    envdetfan = fuefue
-				// AND    fuesec <= envdetdan
-				// AND    fuesfi >= envdetdan
-
-				$respuesta = odbc_exec($conex_unix, $sql);
-
-				if( $respuesta )
-				{
-					$cuentaCobroAux = 0;
-
-					while ($fila = odbc_fetch_array($respuesta)) {
-
-						if( !validarFacturaPAF( $fila['historia'], $fila['ingreso'], $responsablesPAF ) )
-						{
-							$factura = [
-								'historia'			=>		$fila['historia'],
-								'ingreso'			=>		$fila['ingreso'],
-								'prefijo'			=>		$fila['prefijo'],
-								'fuente'			=>		$fila['fuente'],
-								'factura'			=>		$fila['factura'],
-								'estado_factura'	=>		$fila['estado_factura'],
-								'valor_total'		=>		$fila['valor_total']
-							];
-						
-							if( $cuentaCobroAux != $fila['cuenta_cobro'] )
-							{
-								$cuentaCobro[$fila['cuenta_cobro']] = [];
-							}
-
-							array_push( $cuentaCobro[$fila['cuenta_cobro']], (object) convertKeysToCamelCase( $factura ) );
-							
-							$cuentaCobroAux = $fila['cuenta_cobro'];
-						}
-					}
-
-					$responsables[$responsable] = $cuentaCobro;
-				}
-			}
-			$response = ( object ) ['cuentasResponsables' =>  $responsables];
 		}
-		else
+		elseif( intval($tipoPorceso) == intval(1) )
 		{
-			$response = "El parametro enviado, no es un array.";
+			$sql .= "
+					AND    movfue = encfue
+					AND    movdoc = encdoc
+					AND    encest = 'RD'
+				";
+		}
+
+		if( $historia != '' && $ingreso != '' )
+		{
+			$sql .= "
+					AND    movhis = '{$historia}'
+					AND    movnum = '{$ingreso}'
+				";
+		}
+
+		$respuesta = odbc_exec($conex_unix, $sql);
+
+		if( $respuesta )
+		{
+			$cuentaCobroAux = 0;
+
+			while ($fila = odbc_fetch_array($respuesta)) {
+
+				$factura = [
+					'historia'			=>		$fila['historia'],
+					'ingreso'			=>		$fila['ingreso'],
+					'prefijo'			=>		$fila['prefijo'],
+					'fuente'			=>		$fila['fuente_factura'],
+					'factura'			=>		$fila['factura'],
+					'estado_factura'	=>		$fila['estado_factura'],
+					'valor_total'		=>		$fila['valor_total'],
+					'nit_responsable'	=>		$fila['nit_responsable']
+				];
+
+				if( $cuentaCobroAux != $fila['cuenta_cobro'] )
+				{
+					$cuentaCobro[$fila['cuenta_cobro']] = [];
+				}
+
+				array_push( $cuentaCobro[$fila['cuenta_cobro']], (object) convertKeysToCamelCase( $factura ) );
+				
+				$cuentaCobroAux = $fila['cuenta_cobro'];
+			}
+
+			$response = (object) $cuentaCobro;
 		}
 
 		return $response;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -670,9 +652,7 @@
 
 				break;
 			case 'facturasResponsables':
-				if( !empty( $_POST['cuentas']['responsable'] ) &&
-						is_array( $_POST['cuentas']['responsable'] ) &&
-							( count( $_POST['cuentas']['responsable'] ) > 0 ) )
+				if( !empty( $_POST['cuentas']['responsables'] ) )
 				{
 					if ( ( isset( $_POST['cuentas']['fechaInicio'] ) && !empty( $_POST['cuentas']['fechaInicio'] ) ) &&
 							( isset( $_POST['cuentas']['fechaCorte'] ) && !empty( $_POST['cuentas']['fechaCorte'] ) ) &&
