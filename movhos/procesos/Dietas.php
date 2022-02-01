@@ -14,7 +14,7 @@ else
   $array_user_aux = explode("-",$sesion_usuario);
 
 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz = "2020-09-28"; // Ultima fecha de actualizacion de este programa
+  $wactualiz = "Enero 21 de 2022"; // Ultima fecha de actualizacion de este programa
 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 //-----------------------------------------------------------------------------------------------------
@@ -206,6 +206,9 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 //DESCRIPCION                                                                                                                              \\
 //=========================================================================================================================================\\
 //En este programa se registran las diferentes dietas por servicio y pacientes de la clinica.                                              \\
+//=========================================================================================================================================\\
+//2022-01-21 Sebastian Alvarez Barona : Se agrega funcionalidad al select de sede
+// para que cuando seleccionemos la sede nos filtre los correspondientes centros de costos.
 //=========================================================================================================================================\\
 //2020-09-28 Edwin MG	  : Se corrige  fecha en la funcion traer_observaciones_dsn
 //2020-09-21 Camilo Zapata: Se corrige consultas con fecha debido al cambio de BD (ya no se permite consultas con fecha vacia ej: fecha_data = '' )
@@ -433,7 +436,12 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
  if (!isset($consultaAjax))
 	{
 
-  encabezado("REGISTRO DE DIETAS",$wactualiz, "clinica");
+
+
+  echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
+  echo "<input type='HIDDEN' name='wbasedato' id='wbasedato' value='".$wbasedato."'>";
+  echo "<input type='HIDDEN' name='wcco' id='wcco' value='".trim($wcco)."'>";
+  echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
 
 ?>
 <head>
@@ -2583,6 +2591,9 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
     }
 
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "Dietas.php?wtabcco="+$('#wcco').val()+"&wbasedato="+$('#wbasedato').val()+"&wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+    });
 
 </script>
 
@@ -11660,6 +11671,8 @@ function filtrarZonas(){
   echo "<form name='dietas' id='dietas' action='' method='post' >";
   echo "<input type='hidden' id='wlimite_caracteres_observ' name='wlimite_caracteres_observ' value='".$wlimite_caracteres_observ."'>";
 
+  encabezado("REGISTRO DE DIETAS",$wactualiz, "clinica", TRUE);
+
   $wccosto=explode("-",$wcco);
   $wusuario = substr($user,(strpos($user,"-")+1),strlen($user));
 
@@ -11672,7 +11685,7 @@ function filtrarZonas(){
      {
 
      //Esta funcion trae los centros de costo hospitalarios, cirugia y urgencias.
-     $centrosCostosCCO = consultaCentrosCostos($cco = 'ccohos, ccocir, ccourg');
+     $centrosCostosCCO = consultaCentrosCostos($cco = 'ccohos, ccocir, ccourg', "", FALSE, $selectsede);
 
 
 	  echo "<tr><td align=right class=fila1><b>SELECCIONE LA UNIDAD EN LA QUE SE ENCUENTRA: </b></td>";
@@ -11995,7 +12008,7 @@ function filtrarZonas(){
 
 
         echo "<tr>";
-        echo "<td align=center colspan=7><A href='Dietas.php?wtabcco=".$wtabcco."&wbasedato=".$wbasedato."&wemp_pmla=".$wemp_pmla."'><b>Retornar</b></A></td>";
+        echo "<td align=center colspan=7><A href='Dietas.php?wtabcco=".$wtabcco."&wbasedato=".$wbasedato."&wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."'><b>Retornar</b></A></td>";
         echo "</tr>";
 
      }  //if cco, ser y fecha

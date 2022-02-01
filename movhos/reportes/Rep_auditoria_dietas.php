@@ -13,6 +13,10 @@ include_once("conex.php");
 //==========================================================================================================================================\\	
 //ACTUALIZACIONES                                                                                                                          \\
 //=========================================================================================================================================\\
+// 2022-01-21: Sebastian Alvarez Barona - Se realiza filtro por sede a la opcion centros de costos para que nos muestre los centros de cada sede
+// Tambien se modifico la consulta de la linea 515 agregandole el valor del select para que nos muestre la informacion filtrada por sedes cuando le damos 
+// en la opcion % - TODOS.
+//=========================================================================================================================================\\
 //2018-05-28: (Jonatan) Se agrega la columna Fecha de Registro (Audfre) para que muestre el dia exacto de registro, ademas se ordena por este registro.
 //2017-04-05: (Jonatan) Se agrega el estado del articulo en la funcion consultarProductos.
 //2013-10-29: Se modifica la consulta principal par aque no haga relacion con las tablas root_000036 y root_000037, ya que la tabla 37 contiene
@@ -42,7 +46,7 @@ else
 {
 	include_once("root/comun.php");
 	$conex = obtenerConexionBD("matrix");
-	$wactualiz="Mayo 28 de 2017";                      // ultima fecha de actualizacion               
+	$wactualiz="Enero 21 de 2022";                      // ultima fecha de actualizacion               
 	$wfecha	=	date("Y-m-d");   
 	$whora 	= 	(string)date("H:i:s");                                                         
   
@@ -281,6 +285,10 @@ else
 					document.getElementById(idElemento).style.display='';
 				}
 			} 
+
+			$(document).on('change','#selectsede',function(){
+        		window.location.href = "Rep_auditoria_dietas.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+    		});
 		</script>	
 		</head>
 		<body>
@@ -296,12 +304,16 @@ else
 			echo "$.blockUI({ message: $('#msjEspere') });";
 			echo "</script>";
 		
-		encabezado("Reporte Auditoria Dietas", $wactualiz, 'clinica');
 		//================================================================
 		//	FORMA 
 		//================================================================
 		echo "<form name='AuditoriaDietas' action='' method=post>";
-		echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";     
+		echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>"; 
+		echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";    
+
+		encabezado("Reporte Auditoria Dietas", $wactualiz, 'clinica', TRUE);
+
+
 		if (strpos($user,"-") > 0)
 			$wusuario = substr($user,(strpos($user,"-")+1),strlen($user)); 
 		 
@@ -313,16 +325,6 @@ else
 		// SELECCIONAR CENTRO DE COSTOS
 		//=================================
 		
-		//Traigo los centros de costos
-		$q = " SELECT Ccoord, Ccocod, Cconom "
-			."   FROM ".$wbasedato."_000011"
-			."  WHERE Ccoest = 'on' "
-			."    AND ccohos  = 'on' "
-			."	ORDER BY Ccoord, Ccocod ";
-			
-			  
-		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-		$num = mysql_num_rows($res);
 		echo "<tr class=seccion1>";
 			echo "<td colspan=2 align=center><b>CENTRO DE COSTOS: </b>&nbsp;
 				 <SELECT name='wcco' id='wcco' >";
@@ -331,11 +333,7 @@ else
 				echo "<OPTION SELECTED>".$wcco."</OPTION>";
 			} 
 			echo "<option>% - TODOS</option>";
-			for ($i=1;$i<=$num;$i++)
-			{
-				$row = mysql_fetch_array($res); 
-				echo "<OPTION>".$row['Ccocod']." - ".$row['Cconom']."</OPTION>";
-			}
+				$centrosCostos = centrosCostosHospitalariosTodos($selectsede);
 			echo "</SELECT></td>";
 		echo "</tr>";
 		//=================================
@@ -515,7 +513,8 @@ else
 			if( $whistoria == "%" )
 				$and_his = "";
 				
-			$q_principal = "SELECT  Audusu, Descripcion, A.Fecha_data, A.Hora_data, movcco, Cconom, movhab, movhis, movnut, movods, movdsn, moving, Sernom, Movser, audacc, auddie,  audfle, audhle, audule, Movobs, Movint, movest, Audser, Audfre
+			if ($selectsede == ''){
+				$q_principal = "SELECT  Audusu, Descripcion, A.Fecha_data, A.Hora_data, movcco, Cconom, movhab, movhis, movnut, movods, movdsn, moving, Sernom, Movser, audacc, auddie,  audfle, audhle, audule, Movobs, Movint, movest, Audser, Audfre
 							  FROM ".$wbasedato."_000078 as A, ".$wbasedato."_000077 B, usuarios, ".$wbasedato."_000011, ".$wbasedato."_000076 
 							 WHERE	A.Fecha_data between '".$wfec_i."' AND '".$wfec_f."' 
 							   ".$and_ser."
@@ -530,11 +529,34 @@ else
 							   AND  Audcco = Movcco
 							   AND  Audser = Sercod							   
 							   AND  Movcco = Ccocod	
-							   AND 	Audusu = Codigo 
+							   AND 	Audusu = Codigo
 						  ORDER BY A.Audfre DESC, A.Fecha_data DESC, A.Hora_data DESC, movcco, movhab, movser 
 							";
-			$res_principal = mysql_query($q_principal,$conex) or die ("Error: ".mysql_errno()." - en el query(Principal): ".$q_principal." - ".mysql_error());
-			$num_principal = mysql_num_rows($res_principal);	
+				$res_principal = mysql_query($q_principal,$conex) or die ("Error: ".mysql_errno()." - en el query(Principal): ".$q_principal." - ".mysql_error());
+				$num_principal = mysql_num_rows($res_principal);
+			}else{
+				$q_principal = "SELECT  Audusu, Descripcion, A.Fecha_data, A.Hora_data, movcco, Cconom, movhab, movhis, movnut, movods, movdsn, moving, Sernom, Movser, audacc, auddie,  audfle, audhle, audule, Movobs, Movint, movest, Audser, Audfre
+							  FROM ".$wbasedato."_000078 as A, ".$wbasedato."_000077 B, usuarios, ".$wbasedato."_000011, ".$wbasedato."_000076 
+							 WHERE	A.Fecha_data between '".$wfec_i."' AND '".$wfec_f."' 
+							   ".$and_ser."
+							   ".$and_his."							  
+							   ".$and_cco."
+							   ".$and_hab."
+							   ".$and_acc."
+							   AND  A.Fecha_data = B.Fecha_data
+							   AND  Audhis = Movhis
+							   AND  Auding = Moving
+							   AND  Audser = Movser
+							   AND  Audcco = Movcco
+							   AND  Audser = Sercod							   
+							   AND  Movcco = Ccocod	
+							   AND 	Audusu = Codigo
+							   AND  Ccosed = '".$selectsede."'
+						  ORDER BY A.Audfre DESC, A.Fecha_data DESC, A.Hora_data DESC, movcco, movhab, movser 
+							";
+				$res_principal = mysql_query($q_principal,$conex) or die ("Error: ".mysql_errno()." - en el query(Principal): ".$q_principal." - ".mysql_error());
+				$num_principal = mysql_num_rows($res_principal);
+			}
 			//--------------------------
 			// Fin Consulta de datos
 			//--------------------------		
