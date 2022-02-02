@@ -819,6 +819,7 @@ function consultarEstudiosPorOrden( $conex, $whce, $wmovhos, $tipoOrden, $nroOrd
 						'justificacion'	=> $row[ 'Detjus' ] ,
 						'estadoExterno'	=> $row[ 'Deteex' ] ,	//Estado en que se encuentra la cita hl7
 						'medico'		=> $row[ 'Detusu' ] ,	//Médico que ordena
+						'procod'		=> $row[ 'Codlma' ] ,	//2022-01-28 - Sebastián Nevado: Se agrega código de procedmiento
 					];
 			}
 			else
@@ -2259,7 +2260,7 @@ if( $_POST ){
 								'nroOrden' 			=> $nroOrden,
 								'sede' 				=> $sede['cco'],
 								'item' 				=> $orden['item'],
-								'cup' 				=> $orden['codigo'],
+								'cup' 				=> $orden['procod'], //2022-01-28 - Sebastián Nevado: Se cambia código cups por código del procedimiento 
 								'modalidad' 		=> $modDefecto,
 								'medico' 			=> $medico,		//Esto es un objeto con la información del médico
 								'medicoRemitente'	=> $orden['medico'],		//Esto es un objeto con la información del médico
@@ -2309,7 +2310,7 @@ if( $_POST ){
 							foreach( $modalidadesCup as $keyMods => $mods ){
 								
 								$datosCita['cups'][] = [
-										'cup' 			=> $orden['codigo'],
+										'cup' 			=> $orden['procod'], //2022-01-28 - Sebastián Nevado: Se cambia código cups por código del procedimiento 
 										'item' 			=> $tipoOrden."-".$nroOrden."-".$orden['item'].( $tieneCita ? '' : ",".$index ),
 										'orden'			=> $tipoOrden."-".$nroOrden,
 										'modalidad' 	=> $mods,
@@ -2338,7 +2339,7 @@ if( $_POST ){
 							foreach( $modalidadesCup as $keyMods => $mods ){
 								
 								$datosPorEstado[ 'O' ][0]['cups'][] = [
-											'cup' 			=> $orden['codigo'],
+											'cup' 			=> $orden['procod'], //2022-01-28 - Sebastián Nevado: Se cambia código cups por código del procedimiento 
 											'item' 			=> $tipoOrden."-".$nroOrden."-".$orden['item'].",".$index,
 											'orden'			=> $tipoOrden."-".$nroOrden,
 											'modalidad' 	=> $mods,
