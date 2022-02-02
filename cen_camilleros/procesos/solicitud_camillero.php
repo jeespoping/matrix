@@ -1,5 +1,35 @@
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+
+$sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+$sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
+echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+?>
+<input type="hidden" name="<?php echo $wemp_pmla;?>" value="<?php echo $wemp_pmla;?>" id="wemp_pmla">
+<input type="hidden" name="<?php echo $wuso;?>" value="<?php echo $wuso;?>" id="wuso">
+<?php if(isset($_GET['caso'])){$caso=$_GET['caso'];?>
+<input type="hidden" name="caso" value="<?php echo $caso;?>" id="caso">
+<?php }else{ ?>
+	<input type="hidden" name="caso" value="pantallaincial" id="caso">
+	<?php }?>
+<?php
+/*
+* Filtro sede
+*/
+if(isset($_GET['selectsede'])  &&  !empty($_GET['selectsede']) )
+{
+	$sCodigoSede = $_GET['selectsede'];
+}
+// if(isset($_GET['caso'])  &&  !empty($_GET['caso']) ){
+// 	$caso = $_GET['caso'];
+
+// }
+
+
+
+
+
 
     /**
      * Lógica de los llamados AJAX del todo el programa
@@ -9,8 +39,6 @@ include_once("conex.php");
         
 
         
-
-        include_once("root/comun.php");
         // $wbasedato       = consultarAliasPorAplicacion($conex, $wemp_pmla, 'root');
 		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
         $wbasedato = "root";
@@ -81,10 +109,66 @@ include_once("conex.php");
 <link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
 <script type="text/javascript">
 
-    $(document).ready(function(){
+    jQuery(document).ready(function($){
 
        $('.tooltip').tooltip({track: true, delay: 0, showURL: false, showBody: ' - ', opacity: 0.95, left: -50 });
-    });  
+
+		/* 
+		* Filtro sede
+		*/
+		
+		if(!localStorage.getItem('step')){
+		//	localStorage.setItem('step',1);
+		}
+		$('input[value="Enviar Solicitud"]').click(function(e){
+			//localStorage.setItem('step',1);
+		});
+
+
+
+		var selectorSede = document.getElementById("selectsede");
+
+		if(selectorSede !== null)
+		{
+			selectorSede.addEventListener('change', () => {
+
+				var queryString = window.location.search;
+				var urlParams = new URLSearchParams(queryString);
+
+				var anuncioParam = urlParams.get('selectsede');
+				var anuncioParamCaso = urlParams.get('caso');
+
+				if(anuncioParam != $('#selectsede').val() && (anuncioParamCaso != 'pantallasolicitud') ){
+					// event.stopPropagation();
+					location.href = "solicitud_camillero.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&wuso="+$('#wuso').val()+"&caso=pantallainicial";
+				}
+				else {
+					$('#wdestino').val('');
+					$('#solicitud_camillero').attr('action',"solicitud_camillero.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&wuso="+$('#wuso').val()+"&caso=pantallainicial");
+					$('#solicitud_camillero').submit();
+
+				}
+			
+			});
+		}
+
+    });
+	
+	function cambioSede(sede,event)  {
+		var wemp_pmla = $('#wemp_pmla').val();
+		var wuso = $('#wuso').val();
+		var caso = $('#caso').val();
+
+
+
+		var queryString = window.location.search;
+		var urlParams = new URLSearchParams(queryString);
+
+		var anuncioParam = urlParams.get('selectSede');
+
+		location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede='+sede+'&caso=pantallasinicial';
+
+	}
 
 	function cerrarVentana()
 	{
@@ -196,6 +280,9 @@ include_once("conex.php");
 
 // A C T U A L I Z A C I O N E S
 // ==========================================================================================================================================
+// Enero 21 del 2022 : Esteban Villa 
+// Filtro por sede.
+// ==========================================================================================================================================
 // Abril 3 de 2017 : Arleyda Insignares Ceballos 
 // Se retira de la consulta los registros anulados.
 // ==========================================================================================================================================
@@ -295,7 +382,7 @@ else
     
 
   	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-    $wactualiz="2017-04-03";                                 // Aca se coloca la ultima fecha de actualizacion de este programa //
+    $wactualiz="2022-01-21";                                 // Aca se coloca la ultima fecha de actualizacion de este programa //
 	// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 
@@ -491,7 +578,7 @@ else
 	$WMENSAJE = "*** POR FAVOR HAGA SU SOLICITUD CON LA MAYOR CLARIDAD POSIBLE ***";
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	echo "<form id='solicitud_camillero' action='solicitud_camillero.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<form id='solicitud_camillero' action='solicitud_camillero.php?wemp_pmla=".$wemp_pmla."&wuso=".$wuso."&selectsede=".$sCodigoSede."&caso=pantallasolicitud' method=post>";
 
     $wunidestsolcamas1 = consultarAliasPorAplicacion($conex, $wemp_pmla, 'UnidadDestinoSolCamas');
     $wunidestsolcamas_dato = explode("-", $wunidestsolcamas1);
@@ -510,12 +597,24 @@ else
     $wmotivo_solicitud = $row['Descripcion'];
 
     //Traigo el nombre del destino que se marcara automaticamente.
-    $q =     " SELECT nombre "
-            ."   FROM ".$wcencam."_000004"
-            ."  WHERE Estado = 'on' "
-            ."    AND (Uso   = '".$wuso."'"
-            ."     OR  Uso   = 'A') "      //A: Indica que puede ser Interno o Externo
-            ."    AND id = ".$wdestinodb."";
+    if(!empty($sCodigoSede)){
+		$q =     " SELECT c.nombre "
+		."   FROM ".$wcencam."_000004 c"
+		."  WHERE c.Estado = 'on' "
+		."    AND (c.Uso   = '".$wuso."'"
+		."     OR  c.Uso   = 'A') "      //A: Indica que puede ser Interno o Externo
+		."    AND c.id = ".$wdestinodb.""
+		." OR c.codigoSede = '".$sCodigoSede."'";
+	}
+	else {
+
+		$q =     " SELECT nombre "
+		."   FROM ".$wcencam."_000004"
+		."  WHERE Estado = 'on' "
+		."    AND (Uso   = '".$wuso."'"
+		."     OR  Uso   = 'A') "      //A: Indica que puede ser Interno o Externo
+		."    AND id = ".$wdestinodb."";
+	}
     $res = mysql_query($q,$conex)or die(mysql_errno().":".mysql_error());
     $row = mysql_fetch_array($res);
     $wunidestsolcamas = $row['nombre'];
@@ -524,6 +623,8 @@ else
     echo "<input type='HIDDEN' id='wunidestsolcamas' value='".$wunidestsolcamas."'>";
 	echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."' id='wemp_pmla'>";
 	echo "<input type='HIDDEN' name='wuso' value='".$wuso."'>";
+	
+	echo '<input type="hidden" name="caso" value="pantallasolicitud" id="caso">';
 
 	//Entro aca si no se ha seleccionado el servicio origen
     if (!isset($wser) or trim($wser) == "" or trim($wser) == " " or strlen($wser) == 1 )
@@ -532,12 +633,26 @@ else
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //ACA TRAIGO LOS DESTINOS DIGITADOS EN LA TABLA DE MATRIX
-		$q =  " SELECT nombre, cco "
-			 ."   FROM ".$wcencam."_000004"
-			 ."  WHERE Estado = 'on' "
-			 ."    AND (Uso   = '".$wuso."'"
-			 ."     OR  Uso   = 'A') "      //A: Indica que puede ser Interno o Externo
-			 ."  ORDER BY 1 ";
+		// Si codigo sede existe filtra destinos
+		if(!empty($sCodigoSede)){
+			$q =  " SELECT c.nombre, c.cco "
+			."   FROM ".$wcencam."_000004 c" 
+			."  WHERE c.Estado = 'on' "
+			."		AND c.codigoSede = '".$sCodigoSede."'"
+			."    AND (c.Uso   = '".$wuso."'"
+			."     OR  c.Uso   = 'A') "
+			."  ORDER BY 1 "; 
+
+		}
+		else {
+
+			$q =  " SELECT nombre, cco "
+				 ."   FROM ".$wcencam."_000004"
+				 ."  WHERE Estado = 'on' "
+				 ."    AND (Uso   = '".$wuso."'"
+				 ."     OR  Uso   = 'A') "      //A: Indica que puede ser Interno o Externo
+				 ."  ORDER BY 1 ";
+		}
 		$res = mysql_query($q,$conex)or die(mysql_errno().":".mysql_error());
 	    $num = mysql_num_rows($res);
 
@@ -545,7 +660,7 @@ else
 	    echo "<br>";
 	    echo "<br>";
 
-	    encabezado("SOLICITUD SERVICIO DE CAMILLERO y/o SERVICIOS ",$wactualiz, "clinica");
+	    encabezado("SOLICITUD SERVICIO DE CAMILLERO y/o SERVICIOS ",$wactualiz, "clinica",TRUE);
 
 	    echo "<center><table border=1>";
 
@@ -573,7 +688,7 @@ else
             if (!isset($wmotivo) or !isset($wdestino) or (strpos($wdestino,"-") == 0))
 		       {
 
-			    encabezado("SOLICITUD SERVICIO DE CAMILLERO y/o SERVICIOS ",$wactualiz, "clinica");
+			    encabezado("SOLICITUD SERVICIO DE CAMILLERO y/o SERVICIOS ",$wactualiz, "clinica",TRUE);
 
 			    echo "<center><table border=1>";
 		        echo "<tr class=fila1><td align=center colspan=7><font size=4><b>SERVICIO EN EL QUE SE ENCUENTRA: </FONT><U><I><FONT SIZE=4> ".$wser." </b></font></I></U></td></tr>";
@@ -713,12 +828,28 @@ else
 				//============================================================================
 				//ACA TRAIGO LOS DESTINOS DIGITADOS EN LA TABLA DE MATRIX
 				//============================================================================
-				$q =  " SELECT nombre "
-					 ."   FROM ".$wcencam."_000004 "
-					 ."  WHERE Estado = 'on' "
-					 ."    AND (Uso   = '".$wuso."'"
-					 ."     OR  Uso   = 'A') "
-					 ."  ORDER BY 1 ";
+				// Si codigo sede existe filtra destinos
+				if(!empty($sCodigoSede)){
+						
+					$q =  " SELECT c.nombre "
+					."   FROM ".$wcencam."_000004 c"
+					."  WHERE c.Estado = 'on' "
+					."    AND (c.Uso   = '".$wuso."'"
+					."     OR  c.Uso   = 'A') "
+					."	AND c.codigoSede = '".$sCodigoSede."'"
+					."  ORDER BY 1 ";
+
+				}
+				else {
+
+					
+					$q =  " SELECT nombre "
+					."   FROM ".$wcencam."_000004 "
+					."  WHERE Estado = 'on' "
+					."    AND (Uso   = '".$wuso."'"
+					."     OR  Uso   = 'A') "
+					."  ORDER BY 1 ";
+				}
 				$res = mysql_query($q,$conex)or die(mysql_errno().":".mysql_error());
 			    $num = mysql_num_rows($res);
 
@@ -889,7 +1020,7 @@ else
                             $err = mysql_query($q, $conex) or die (mysql_errno() . $q . " - " . mysql_error());
 
     	                     //echo "<td align=center bgcolor=".$wcolor."><font size=1><INPUT TYPE=CHECKBOX NAME='wanulada[".$i."]' CHECKED></font></td>";
-    	                     echo "<meta http-equiv='refresh' content='0;url=solicitud_camillero.php?wser=".$wser."&wemp_pmla=".$wemp_pmla."&wuso=".$wuso."'>";
+    	                     echo "<meta http-equiv='refresh' content='0;url=solicitud_camillero.php?wser=".$wser."&wemp_pmla=".$wemp_pmla."&wuso=".$wuso."&selectsede=".$sCodigoSede."&caso=".$caso."'>";
 	                    }
 			         //////////
 			         echo "<td align=center bgcolor=#cccccc></b><input type='submit' value='OK' id='btnOK_".$row[12]."' ".$habilitado."></b></td>";
@@ -1627,7 +1758,7 @@ else
                                 $err = mysql_query($q, $conex) or die (mysql_errno() . $q . " - " . mysql_error());
 
 
-			                     echo "<meta http-equiv='refresh' content='0;url=solicitud_camillero.php?wser=".$wser."&wemp_pmla=".$wemp_pmla."&wuso=".$wuso."'>";
+			                     echo "<meta http-equiv='refresh' content='0;url=solicitud_camillero.php?wser=".$wser."&wemp_pmla=".$wemp_pmla."&wuso=".$wuso."&selectsede=".$sCodigoSede."&caso=".$caso."'>";
 			                    }
 			                 ///////
 			                 echo "<td align=center bgcolor=#cccccc></b><input type='submit' value='OK'></b></td>";
@@ -1639,7 +1770,7 @@ else
 				    unset ($wdestino);
 			       }
 
-			 echo "<meta http-equiv='refresh' content=".$wrefresh.";url=solicitud_camillero.php?wser=".$wser."&wemp_pmla=".$wemp_pmla."&wuso=".$wuso."'>";
+			 echo "<meta http-equiv='refresh' content=".$wrefresh.";url=solicitud_camillero.php?wser=".$wser."&wemp_pmla=".$wemp_pmla."&wuso=".$wuso."&selectsede=".$sCodigoSede."&caso=".$caso."'>";
 		 }
      echo "<tr></tr>";
      echo "<tr></tr>";
