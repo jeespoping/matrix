@@ -26,9 +26,7 @@
 			cco_sede			: __self.cco_sede,
 		}, 
 		function(data){
-			
-				console.log(data);
-				
+
 				var validar = data.validar;
 				var mostrar = data.mostrar;
 				
@@ -37,6 +35,7 @@
 					if( mostrar ){
 						
 						datos.modalidad 	= data.modalidades;
+						datos.modalidades_cup 	= data.modalidades_cup;
 						datos.prioridad 	= data.prioridades;
 						datos.sala 			= data.salas;
 						datos.defaults		= data.defaults;
@@ -64,6 +63,7 @@
 						modal += "<div class='mtx-ct-container'>";
 						modal += "<div><div class='mtx-col-4 mtx-label'><label>Modalidad</label></div><div  class='mtx-col-8'><select data-tipo='modalidad'></select></div></div>";
 						modal += "<div><div class='mtx-col-4 mtx-label'><label>Sala</label></div><div class='mtx-col-8'><select data-tipo='sala'></select></div></div>";
+						modal += "<div><div class='mtx-col-4 mtx-label'><label>Sede</label></div><div class='mtx-col-8'><select data-tipo='sede'></select></div></div>";
 						modal += "<div><div class='mtx-col-4 mtx-label'><label>Prioridad</label></div><div class='mtx-col-8'><select data-tipo='prioridad'></select></div></div>";
 						modal += "<div class='mtx-medico-remitente'><div class='mtx-col-4 mtx-label'><label>M&eacute;dico remitente</label></div><div class='mtx-col-8'><INPUT type='text' data-tipo='medico-remitente' data-idmedico=''></div></div>";
 						modal += "<div class='mtx-indicacion'><div class='mtx-col-4 mtx-label'><label>Indicaci&oacute;n</label></div><div class='mtx-col-8'><select data-tipo='indicador'></select></div></div>";
@@ -99,13 +99,14 @@
 			
 			var slModalidad 		= $( "select[data-tipo='modalidad']", objModal );
 			var slSala 				= $( "select[data-tipo='sala']", objModal );
+			var slSede 				= $( "select[data-tipo='sede']", objModal );
 			var slPrioridad 		= $( "select[data-tipo='prioridad']", objModal );
 			var inMedicoRemitente 	= $( "input[data-tipo='medico-remitente']", objModal );
 			var slIndicaciones 		= $( "select[data-tipo='indicador']", objModal );
 			var btnAccept 			= $( ".mtx-btn-accpet > a", objModal );
 			
 			$( objModal ).dialog({
-					width:"600px",
+					width:"680px",
 					modal: true,
 				});
 			
@@ -155,6 +156,7 @@
 					if( total > 1 )
 						slSala[0].selectedIndex = -1;
 				});
+			$( slSede ).append( "<option value='" + sede.codigo + "'>[" + sede.cco + "] " + sede.descripcion.toUpperCase() + "</option>" );
 			
 			$( slPrioridad ).on( 'change', function(){
 				habilitarBotonAceptar()
@@ -207,8 +209,17 @@
 				}
 			});
 				
-			for( var x in datos.modalidad ){
-				$( slModalidad ).append( "<option value='"+datos.modalidad[x].codigo+"'>"+datos.modalidad[x].descripcion+"</option>" );
+			if( typeof datos.cita !== 'undefined' )
+			{
+				for( var x in datos.modalidad ){
+					$( slModalidad ).append( "<option value='"+datos.modalidad[x].codigo+"'>"+datos.modalidad[x].descripcion+"</option>" );
+				}
+			}
+			else
+			{
+				for( var x in datos.modalidades_cup ){
+					$( slModalidad ).append( "<option value='"+datos.modalidades_cup[x].codigo+"'>"+datos.modalidades_cup[x].descripcion+"</option>" );
+				}
 			}
 			
 			for( var x in datos.prioridad ){
@@ -228,18 +239,18 @@
 			slModalidad[0].selectedIndex = -1;
 			slSala[0].selectedIndex = -1;
 			slPrioridad[0].selectedIndex = -1;
-			console.log(datos.defaults.prioridad)
+
 			if( datos.defaults ){
 				
 				if( datos.defaults.prioridad ){
 					$( slPrioridad ).val( datos.defaults.prioridad );
 					
 					//Deshabilitito todas las opciones menos la que tenga por defecto
-					$( "option", slPrioridad )
-						.not( $("option:selected", slPrioridad ) )
-						.attr({disabled:true})
-						.prop({disabled:true})
-						.css({display:"none"});
+					// $( "option", slPrioridad )
+					// 	.not( $("option:selected", slPrioridad ) )
+					// 	.attr({disabled:true})
+					// 	.prop({disabled:true})
+					// 	.css({display:"none"});
 				}
 				
 				if( datos.defaults.modalidad ){
@@ -247,15 +258,15 @@
 					$( slModalidad ).change();
 					
 					//Deshabilitito todas las opciones menos la que tenga por defecto
-					$( "option", slModalidad )
-						.not( $("option:selected", slModalidad ) )
-						.attr({disabled:true})
-						.prop({disabled:true})
-						.css({display:"none"});
+					// $( "option", slModalidad )
+					// 	.not( $("option:selected", slModalidad ) )
+					// 	.attr({disabled:true})
+					// 	.prop({disabled:true})
+					// 	.css({display:"none"});
 				}	
 				
 				if( datos.defaults.sala ){
-					$( slSala ).val( datos.defaults.sala );
+					$( slSala ).val( typeof datos.cita.Mvcsal === 'undefined' ? datos.defaults.sala : datos.cita.Mvcsal );
 					$( slSala ).change();
 					
 					// //Deshabilitito todas las opciones menos la que tenga por defecto
@@ -266,6 +277,10 @@
 						// .css({display:"none"});
 				}	
 				
+				if( sede.codigo ){
+					$( slSede ).val( sede.codigo );
+					$( slSede ).change();
+				}
 				if( datos.defaults.indicaciones ){
 					$( slIndicaciones ).val( datos.defaults.indicaciones );
 					$( slIndicaciones ).change();
@@ -296,33 +311,4 @@
 				},
 			});
 		}
-		
-		// var validar = true;
-		// var mostrar = true;
-		
-		
-		// if( validar ){
-			
-			// if( mostrar ){
-				
-				// // var objModal = $( modal );
-				
-				// // $( objModal ).dialog();
-				
-				// moduloModal();
-			// }
-			// else{
-			// }
-		// }
 	}
-	
-	// setTimeout(
-		// function(){ $.mtxCitas({
-			// historia 	: 212353,
-			// ingreso 	: 21,
-			// wemp_pmla 	: '01',
-			// accept		: function(){ alert("realizando accion") }
-		// }) },
-		// 1000
-	// )
-	
