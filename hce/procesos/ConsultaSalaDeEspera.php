@@ -214,7 +214,7 @@ else
 //$wautor="Juan C. Hernandez M. ";
 //FECHA CREACION             : Abril 27 de 2011
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="(Mayo 13 de 2011)"; 
+	$wactualiz="(Noviembre 18 de 2021)"; 
 //DESCRIPCION
 //==========================================================================================================================================\\
 //==========================================================================================================================================\\
@@ -235,7 +235,9 @@ else
 //==========================================================================================================================================\\
 //Abril 27 de 2011                                                                                                                          \\
 //==========================================================================================================================================\\
-//                                                                              \\
+//Modificaciones:
+//	
+//Noviembre 18 de 2021 Daniel CB.  -Se realiza modificación en parametros 01 quemados.                                                                            	                                                                            \\
 //==========================================================================================================================================\\
 	               
 				  
@@ -804,12 +806,12 @@ function mostrarPacientesSinDarledeAlta($wbasedato, $whce, $wemp_pmla, $wcco, $w
   //ACA COMIENZA EL MAIN DEL PROGRAMA   
   //===============================================================================================================================================
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  echo "<frameset rows=50%,* frameborder=1 framespacing=2 bordercolor='#FF0000'>";
+  	echo "<frameset rows=50%,* frameborder=1 framespacing=2 bordercolor='#FF0000'>";
        echo "<frameset cols=50%,* frameborder=1 framespacing=2 bordercolor='#FF0000'>";
-          echo "<frame src='ConsultaSalaDeEspera.php?wemp_pmla=01&wopcion=mpsm' name='mpsm' marginwidth=0 marginheiht=0>";
-	      echo "<frame src='ConsultaSalaDeEspera.php?wemp_pmla=01&wopcion=mpcm' name='mpcm' marginwidth=0 marginheiht=0>";
+	   echo "<frame src='ConsultaSalaDeEspera.php?wemp_pmla=".$wemp_pmla."'&wopcion=mpsm' name='mpsm' marginwidth=0 marginheiht=0>";
+	   echo "<frame src='ConsultaSalaDeEspera.php?wemp_pmla=".$wemp_pmla."'&wopcion=mpcm' name='mpcm' marginwidth=0 marginheiht=0>";
 	   echo "</frameset>";
-	   echo "<frame src='ConsultaSalaDeEspera.php?wemp_pmla=01&wopcion=mpso' name='mpso' marginwidth=0 marginheiht=0>";
+	   echo "<frame src='ConsultaSalaDeEspera.php?wemp_pmla=".$wemp_pmla."'&wopcion=mpso' name='mpso' marginwidth=0 marginheiht=0>";
   echo "</frameset>";
   
   switch ($wopcion)
