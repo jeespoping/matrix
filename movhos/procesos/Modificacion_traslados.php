@@ -21,7 +21,7 @@ function inicio(){
 }
 
 function enviar(){	
-	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value;
+	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value+'&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 	document.forms.forma.submit();
 }
 
@@ -64,7 +64,7 @@ function cargarArts(){
 
 function consultarHistoria() {
 	if(document.forms.forma.whistoria && document.forms.forma.whistoria.value != ''){
-		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value;
+		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value +'&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 		document.forms.forma.submit();
 	} else {
 		alert('Debe ingresar el número de la historia');
@@ -73,14 +73,14 @@ function consultarHistoria() {
 
 function procesoAnulacion() {
 	if(confirm("Va a realizar la anulacion del traslado. Desea continuar?")){
-		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=A';
+		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=A&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 		document.forms.forma.submit();
 	}
 }
 
 function procesoAnulacionRecibo(){
 	if(confirm("Va a realizar la anulación del RECIBO UNICAMENTE.  ¿Desea continuar?")){
-		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=R';
+		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=R&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 		document.forms.forma.submit();
 	}
 }
@@ -88,7 +88,7 @@ function procesoAnulacionRecibo(){
 function procesoDestino() {
 	if(document.forms.forma.wccocod && document.forms.forma.wccocod.value != ''){
 		if(document.forms.forma.whabcod && document.forms.forma.whabcod.value != ''){
-			document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=D';
+			document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=D&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 			document.forms.forma.submit();
 		} else {
 			alert('Debe seleccionar la habitación destino');
@@ -99,17 +99,17 @@ function procesoDestino() {
 }
 
 function procesoDestinoHabitaciones() {
-	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=D&wccocod=' + document.forms.forma.wccocod.value;
+	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=D&wccocod=' + document.forms.forma.wccocod.value + '&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 	document.forms.forma.submit();
 }
 
 function consultarHabitaciones() {
-	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value;
+	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 	document.forms.forma.submit();
 }
 
 function modificarMaterial() {
-	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=M';
+	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=M&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 	document.forms.forma.submit();
 }
 

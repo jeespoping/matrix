@@ -1330,6 +1330,7 @@ function enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $u
 
 
 function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso ){
+	global $wemp_pmla;
 				
 	$ids = [];
 	
@@ -1359,6 +1360,7 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 				'accion'		=> 'agendarOrden', 
 				'historia'		=> $historia,
 				'ingreso'		=> $ingreso, 
+				'wemp_pmla'		=> $wemp_pmla,
 				'tipoOrden'		=> $rows['Ordtor'], 
 				'nroOrden'		=> $rows['Ordnro'], 
 			);
