@@ -43,8 +43,9 @@ define("PV1_SEDE", 10 );
 define("OBX_URL", 1 );
 define("OBX_URL_REPORTE", 5 );
 
-if( !isset( $wemp_pmla ) )
-	$wemp_pmla = "01";
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+//if( !isset( $wemp_pmla ) )
+//	$wemp_pmla = "01";
 
 
 class medicoDTO {
