@@ -9,9 +9,11 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2017-10-25';
+$wactualiz='2021-11-19';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-//                
+//    2021-11-19  Daniel CB.  -Se realiza modificación de paramatro 01 quemado.
+//					
+// 						
 //
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -719,7 +721,7 @@ else
 	//---------------------------------------------------------
 	function abrirProgramaGlosas(idGlosa)
 	{
-		ruta = "/matrix/ips/procesos/registroDeGlosas.php?wemp_pmla=01&idGlosaMostrar="+idGlosa+"";
+		ruta = "/matrix/ips/procesos/registroDeGlosas.php?wemp_pmla="+$wemp_pmla+"&idGlosaMostrar="+idGlosa+"";
 		window.open(ruta,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes');
 	}
 	

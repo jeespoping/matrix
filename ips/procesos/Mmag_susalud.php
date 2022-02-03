@@ -14,6 +14,7 @@ function enter()
 
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 
 /* **********************************************************
    *     PROGRAMA PARA LA GENERACION DE MEDIO MAGNETICO     *
@@ -26,7 +27,7 @@ include_once("conex.php");
   $wautor="Juan D. Jaramillo R.";
 //FECHA CREACION             : Junio 2 de 2006
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="(2017-01-17)";
+$wactualiz="(2021-11-18)";
 //DESCRIPCION
 //====================================================================================================================================\\
 //Este programa se hace con el objetivo de generar el medio magnetico que se debe enviar a susalud, el cual generara un archivo plano \\
@@ -38,6 +39,8 @@ include_once("conex.php");
 //========================================================================================================================================\\
 //========================================================================================================================================\\
 //ACTUALIZACIONES
+// 2021-11-17: Juan David Rodriguez
+//				Se modifica nit quemado
 //2017-01-17: camilo zapata
 //            redefinición de programa para construcción de nuevo archivo de sura.                                                                                                                   \\
 //========================================================================================================================================\\
@@ -57,9 +60,11 @@ include_once("conex.php");
 //2007-11-14: Se modifico el programa para que pusiera el valor del copago y la cuota moderadora cuando tenian y para cuando es           \\
 //            susalud eps que colocara el codigo cups.                                                                                    \\
 //________________________________________________________________________________________________________________________________________\\
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+$wnit = explode('-', $institucion->nit);
 
-$wnitips="890939026";
-$wnitdip="1";
+$wnitips= $wnit[0];
+$wnitdip= $wnit[1];
 
 $wcf="DDDDDD";   //COLOR DEL FONDO    -- Gris claro
 $wcf2="006699";  //COLOR DEL FONDO 2  -- Azul claro
@@ -173,11 +178,11 @@ else
 
 		return $fecha;
 	}
-
+	encabezado( "GENERACION MEDIO MAGNETICO PARA SUSALUD", $wactualiz, $institucion->baseDeDatos );
     echo "<center><table border=0>";
-	echo "<tr><td colspan= 8 align=center><IMG width=300 height=100 SRC='/matrix/images/medical/Citas/logo_citascs.png'></td>";
-	echo "<tr><td><br></td></tr>";
-    echo "<tr><td colspan= 8 align=center bgcolor=".$wcf2."><font size=6 text color=#FFFFFF><b>GENERACION MEDIO MAGNETICO PARA SUSALUD</b></font></td></tr>";
+	// echo "<tr><td colspan= 8 align=center><IMG width=300 height=100 SRC='/matrix/images/medical/Citas/logo_citascs.png'></td>";
+	// echo "<tr><td><br></td></tr>";
+    // echo "<tr><td colspan= 8 align=center bgcolor=".$wcf2."><font size=6 text color=#FFFFFF><b>GENERACION MEDIO MAGNETICO PARA SUSALUD</b></font></td></tr>";
 
     // Inicio de captura de datos en formulario
 
@@ -685,10 +690,10 @@ else
 
 		    	for ($j=1; $j<=2; $j++)
 			 	{
-		    	if (file_exists($ruta."890939026-1_".$wconenv.".txt"))
-			     		unlink ($ruta."890939026-1_".$wconenv.".txt");
-		     	}
-		     	$file=fopen ($ruta."890939026-1_".$wconenv.".txt","w+");
+					if (file_exists($ruta.$institucion->nit."_".$wconenv.".txt"))
+					unlink ($ruta.$institucion->nit."_".$wconenv.".txt");
+				}
+				$file=fopen ($ruta.$institucion->nit."_".$wconenv.".txt","w+");
 
 		  		$wtotenv=0;				// Total de Registros a Enviar.
 		     	$wfacenv=0;				// Total Facturas a Enviar.
@@ -1052,7 +1057,7 @@ else
 			       		$d = dir("../../planos/ips/".$user."/");
 			       		$files =$d->read();
                         //echo "edb-->".$files;
-						echo "<tr><td bgcolor=#FFFFFF align=left><font size=2><A href='../../planos/ips/".$user."/890939026-1_".$wconenv.".txt' target='_blank'>890939026-1_".$wconenv.".txt &nbsp;&nbsp;&nbsp; Haga Click Para Descargar el Medio Magnetico</A></font></td></tr>";
+						echo "<tr><td bgcolor=#FFFFFF align=left><font size=2><A href='../../planos/ips/".$user."/".$institucion->nit."_".$wconenv.".txt' target='_blank'>".$institucion->nit."_".$wconenv.".txt &nbsp;&nbsp;&nbsp; Haga Click Para Descargar el Medio Magnetico</A></font></td></tr>";
 						$d->close();
 
 

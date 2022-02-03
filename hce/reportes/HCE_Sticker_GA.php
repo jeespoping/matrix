@@ -17,7 +17,8 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form action='HCE_Sticker_GA.php' method=post>";
+	global $wemp_pmla;
+	echo "<form action='HCE_Sticker_GA.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	
 
 	

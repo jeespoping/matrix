@@ -6,6 +6,9 @@ include_once("conex.php");
 *** AUTOR: ING. Camilo Zapata Z.
 *** DESCRIPCION: Este programa genera un documento que responde a los requerimientos del ministerio de salud en la circular conjunta 000030 anexo técnico # 2,
 ***              donde se exige el reporte de las facturas presentadas ante las entidades responsables de pago(EPS).
+
+** Modificaciones:
+  * 2022-01-03 - Juan Rodriguez: Se quita wemp_pmla quemado
 **/
 ?>
 <?php
@@ -28,7 +31,7 @@ if(!isset($_SESSION['user'])){
 
 include_once( "conex.php" );
 
-
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 $pos        = strpos($user,"-");
 $wuser      = substr($user,$pos+1,strlen($user));
 
@@ -710,7 +713,7 @@ if( isset( $peticionAjax ) ){
       $registros[0] = "1,2,NI,{$nitEmpresa},{$razonSocial},{$wfechaIni},{$wfechaFin},".$consecutivo."";
       imprimirDatos( $registros, $nombreDocumento );
       echo "<div id='desarc' align='center'>
-              <a id='warchi' onclick='quitarEnlace(this);' target='_new' name='warchi' href='rep_pisis.php?ajaxdes=pisis&wdesc={$nombreDocumento}&wemp_pmla=02'>DESCARGAR ARCHIVO PISIS</a>
+              <a id='warchi' onclick='quitarEnlace(this);' target='_new' name='warchi' href='rep_pisis.php?ajaxdes=pisis&wdesc={$nombreDocumento}&wemp_pmla=".$wemp_pmla."'>DESCARGAR ARCHIVO PISIS</a>
             </div>";
 
     }
@@ -837,15 +840,15 @@ if( isset( $peticionAjax ) ){
 
 include_once( "root/comun.php" );
 
-$wactualiz   = "2014-04-01";
+$wactualiz   = "2022-01-03";
 $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 $wbasedatos  = $institucion->baseDeDatos;
 $wyear       = date("Y");
 
-encabezado("GENERACI&Oacute;N DOCUMENTO FIPS",$wactualiz, "clinica"); //fips = facturas reportadas por ips.
+encabezado("GENERACI&Oacute;N DOCUMENTO FIPS",$wactualiz, $wbasedatos); //fips = facturas reportadas por ips.
 
 ?>
-    <form name='rep_pisis' action='rep_pisis.php?wemp_pmla=<?phpecho $wemp_pmla ?>' method='post'>
+    <form name='rep_pisis' action='rep_pisis.php?wemp_pmla=<?php echo $wemp_pmla ?>' method='post'>
         <center>
             <table width='500'>
                 <tr>

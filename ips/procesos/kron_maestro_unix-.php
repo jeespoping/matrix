@@ -1276,6 +1276,7 @@ function construirQueryUnix( $tablas, $campos_nulos, $campos_todos='', $condicio
 function llenarTablaPacientesIngreso( $seccion="" )
 {
 	global $conex;
+	global $wemp_pmla;
 	global $bd;
 	global $parte1, $parte2, $parte3,$parte4;
 	global $cantidadp1, $cantidadp2, $cantidadp3;
@@ -1300,14 +1301,14 @@ function llenarTablaPacientesIngreso( $seccion="" )
 	$arrPaisNac = Array();
 	$arrEstCivil = Array();
 
-	$institucion = consultarInstitucionPorCodigo($conex, '01');
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
     $wbasedato = $institucion->baseDeDatos;
     $winstitucion = $institucion->nombre;
 
-    $wbasedato_mov = consultarAliasPorAplicacion($conex, '01', "movhos");
+    $wbasedato_mov = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
     conexionOdbc($conex, $wbasedato_mov, &$conex_o, 'facturacion');
 
-	$rowid=$this->consultarAplicacion( $conex, '01', "Rowid" );
+	$rowid=$this->consultarAplicacion( $conex, $wemp_pmla, "Rowid" );
 	$rr=1;
 
 	/*******************************************************************************************************************
@@ -1517,7 +1518,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 							) VALUES ".$filas_unix_aux.';';
 							if($err = mysql_query($q,$conex))
 							{
-								 echo "<br>Insertó correctamente en '000101'".trim( odbc_result($err_o,1) )." ) <br>";
+								echo "<br>Insert&oacute; correctamente en '000101'".trim( odbc_result($err_o,1) )." ) <br>";
 								//$act1=$this->actualizarAplicacion( $conex, '01', 'Rowid', trim( odbc_result($err_o,21) ) );
 							}
 					}else{
@@ -1525,7 +1526,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 						$res = mysql_query( $qq, $conex );
 					}
 					$this->guardarResponsables($conex_o, trim( odbc_result($err_o,1) ),trim( odbc_result($err_o,20) ));
-					$act1=$this->actualizarAplicacion( $conex, '01', 'Rowid', trim( odbc_result($err_o,21) ) );
+					$act1=$this->actualizarAplicacion( $conex, $wemp_pmla, 'Rowid', trim( odbc_result($err_o,21) ) );
 					continue;
 				}
 				/* fin valicaciones antes de guardar datos en la tabla*/
@@ -1589,7 +1590,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 				if($this->insertarTemporal($conex,$nmtemp,$filas_unix,$total_lotes,'temporal'))
 				{ }
 				$filas_unix = "";
-				echo (!$VER_DETALLE) ? "" : "<br><font color='black' face='Arial'>Leídos de unix: ".$total_lotes."</font><br>";
+				echo (!$VER_DETALLE) ? "" : "<br><font color='black' face='Arial'>Le&iacute;dos de unix: ".$total_lotes."</font><br>";
 			}
 
 			/* Si se insertaron datos desde Unix, continúa para realizar la comparación contra la tabla root_37 en Matrix */
@@ -1600,7 +1601,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 				$num_row_mx = 0;
 				$qmx = "	SELECT Oriced,	Oritid,	Orihis,	Oriing,	Oriori
 							  FROM root_000037 AS t1
-							 where Oriori = '01' limit 1
+							  where Oriori = '".$wemp_pmla."' limit 1
 							";
 							//and Orihis*1 > ".$Historia."
 				if($resmx = mysql_query($qmx,$conex))
@@ -1813,7 +1814,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 				} //if de res de la consulta a la temporal
 				else
 				{
-					echo (!$VER_DETALLE) ? "" : "<br><font color='black' face='Arial'>No pudo consultar temporal de pacientes leídos desde unix.<br>".$q_un."-".mysql_errno().":".mysql_error()."</font>";
+					echo (!$VER_DETALLE) ? "" : "<br><font color='black' face='Arial'>No pudo consultar temporal de pacientes le&iacute;dos desde unix.<br>".$q_un."-".mysql_errno().":".mysql_error()."</font>";
 				}
 			}  //total_lotes > 0
 
@@ -1828,7 +1829,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 					$fechaFinal=$fecha;
 				}
 
-			$act1=$this->actualizarAplicacion( $conex, '01', 'Rowid', $ultimoRowid );
+			$act1=$this->actualizarAplicacion( $conex, $wemp_pmla, 'Rowid', $ultimoRowid );
 			// $act2=actualizarAplicacion( $conex, '01', 'ultimaFecha', $fechaFinal );
 			if ($act1 == true ) //&& $act2 == true
 			{
@@ -2340,7 +2341,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 											) VALUES ".$filas_unix_aux.';';
 											if($err = mysql_query($q,$conex))
 											{
-												 echo "<br>Insertó correctamente en '000101'".trim( odbc_result($err_o,1) )." ) <br>";
+												echo "<br>Insert&oacute; correctamente en '000101'".trim( odbc_result($err_o,1) )." ) <br>";
 												//$act1=$this->actualizarAplicacion( $conex, '01', 'Rowid', trim( odbc_result($err_o,21) ) );
 											}
 									}else{
@@ -2419,7 +2420,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 				{ }
 				$filas_unix = "";
 
-				echo "<br><font color='black' face='Arial'>Leídos de unix: ".$total_lotes."</font><br>";
+				echo "<br><font color='black' face='Arial'>Le&iacute;dos de unix: ".$total_lotes."</font><br>";
 			}
 
 			/* Si se insertaron datos desde Unix, continúa para realizar la comparación contra la tabla 100 y la 101 en Matrix */
@@ -2815,7 +2816,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 
 				echo "parte 3";
 
-				$rowIdAccidentes = consultarAliasPorAplicacion($conex, '01', "rowIdAccidentes");
+				$rowIdAccidentes = consultarAliasPorAplicacion($conex, $wemp_pmla, "rowIdAccidentes");
 
 				$campos_nulos = "accdetpol, accdetfin, accdetffi, accdetmar,accdetpla,accdettip";
 				$defecto_nulo = "'',date(0000-00-00),date(0000-00-00),'','',''";
@@ -3056,7 +3057,7 @@ function llenarTablaPacientesIngreso( $seccion="" )
 					}
 				}
 
-				$act1=$this->actualizarAplicacion( $conex, '01', 'rowIdAccidentes', $rowid );
+				$act1=$this->actualizarAplicacion( $conex, $wemp_pmla, 'rowIdAccidentes', $rowid );
 				if ($act1 == true ){
 					echo "<br>Parametro en la tabla root_000051 actualizado con exito: ".$rowid."";
 				}else{
@@ -4215,8 +4216,8 @@ function kron_egresosUnix_Matrix( $comprobarExistencia = false ){
 	global $conex;
 	global $wemp_pmla;
 	$wbasedato = $this->consultarAliasPorAplicacion( 'facturacion' );
-	$wbasedato_mov = consultarAliasPorAplicacion($conex, '01', "movhos");
-	$rowIdEgresos = consultarAliasPorAplicacion($conex, '01', "rowIdEgresosUnix");
+	$wbasedato_mov = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+	$rowIdEgresos = consultarAliasPorAplicacion($conex, $wemp_pmla, "rowIdEgresosUnix");
 
 	$this->conexionOdbc( 'admisiones' );
 
@@ -4478,7 +4479,7 @@ function kron_egresosUnix_Matrix( $comprobarExistencia = false ){
 					//$rowidFinal++;
 				}//fin while
 
-				$act1=$this->actualizarAplicacion( $conex, '01', 'rowIdEgresosUnix', $rowidFinal );
+				$act1=$this->actualizarAplicacion( $conex, $wemp_pmla, 'rowIdEgresosUnix', $rowidFinal );
 				if ($act1 == true ){
 					echo "<br>Parametro en la tabla root_000051 actualizado con exito: ".$rowidFinal."";
 				}else{
@@ -4501,7 +4502,7 @@ function kron_actualizarIngresos(){
 	global $conex;
 	global $wemp_pmla;
 	$wbasedato = $this->consultarAliasPorAplicacion( 'facturacion' );
-	$wbasedato_mov = consultarAliasPorAplicacion($conex, '01', "movhos");
+	$wbasedato_mov = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 	$this->conexionOdbc( 'admisiones' );
 
@@ -7058,7 +7059,7 @@ function actualizarAplicacion($conexion, $codigoInstitucion, $nombreAplicacion, 
 	**********************************************************************/
 	function actualizarMedicamentos()
 	{
-
+		global $wemp_pmla;
 		$wbasedato 	= $this->consultarAliasPorAplicacion( 'facturacion' );
 		$conexUnix 	= $this->conexionOdbc( 'facturacion' );
 		$conex 		= $this->conex;
@@ -7078,7 +7079,7 @@ function actualizarAplicacion($conexion, $codigoInstitucion, $nombreAplicacion, 
 		{
 
 
-			$wbasedato_mov = consultarAliasPorAplicacion($conex, '01', "movhos");
+			$wbasedato_mov = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 
 			$sql1 = "SELECT  Fdeubi

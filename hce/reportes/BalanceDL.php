@@ -206,7 +206,7 @@ else
 			$query = "select Orihis,Oriing from root_000037 ";
 			$query .= " where oriced = '".$wcedula."'";
 			$query .= "   and oritid = '".$wtipodoc."'";
-			$query .= "   and oriori = '01' ";
+			$query .= "   and oriori = '".$wemp_pmla."' ";
 			$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 			$num = mysql_num_rows($err);
 			if($num > 0)
@@ -240,7 +240,7 @@ else
 				$query = "select oriced,oritid from root_000037 ";
 				$query .= " where Orihis = '".$whis."'";
 				$query .= "   and Oriing = '".$wing."'";
-				$query .= "   and oriori = '01' ";
+				$query .= "   and oriori = '".$wemp_pmla."' ";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$num = mysql_num_rows($err);
 				if($num > 0)
@@ -301,7 +301,7 @@ else
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and  pacced = oriced ";
 		$query .= "   and  pactid = oritid ";
-		$query .= "   and oriori = '01' ";
+		$query .= "   and oriori = '".$wemp_pmla."' ";
 		$query .= "   and inghis = orihis ";
 		$query .= "   and  inging = oriing ";
 		$query .= "   and ubihis = inghis "; 

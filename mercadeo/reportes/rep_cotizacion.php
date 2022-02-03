@@ -131,7 +131,7 @@ else
 				//echo "<img SRC='/MATRIX/images/medical/mercadeo/logoclinica.JPG' width='127' height='65'></td>";
 				echo "<tr><td id='tipo01'>FA-GC-01-04</td></tr>";
 				echo "<tr><td id='tipo01'>V-2</td></tr>";
-				echo "<tr><td id='tipo01'>PROMOTORA MEDICA LAS AMERICAS NIT 800067065-9</td></tr>";
+				echo "<tr><td id='tipo01'>".$institucion->nombre." NIT ".$institucion->nit."</td></tr>";
 				echo "<tr><td id='tipo01'>PRESUPUESTO DE SERVICIOS</td></tr>";
 			echo "</center></table>";
 		//echo "<td align=center><img SRC='/MATRIX/images/medical/mercadeo/logoclinica.JPG' width='127' height='65'></td>";
