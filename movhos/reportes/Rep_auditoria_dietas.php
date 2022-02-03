@@ -512,8 +512,15 @@ else
 			$and_his = " AND	Audhis = '".$whistoria."'";
 			if( $whistoria == "%" )
 				$and_his = "";
-				
-			if ($selectsede == ''){
+			
+			$sFiltrarSede='off';
+
+			if(isset($wemp_pmla) && !empty($wemp_pmla))
+			{
+				$sFiltrarSede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+			}
+
+			if ($sFiltrarSede == 'off' || $selectsede == ''){
 				$q_principal = "SELECT  Audusu, Descripcion, A.Fecha_data, A.Hora_data, movcco, Cconom, movhab, movhis, movnut, movods, movdsn, moving, Sernom, Movser, audacc, auddie,  audfle, audhle, audule, Movobs, Movint, movest, Audser, Audfre
 							  FROM ".$wbasedato."_000078 as A, ".$wbasedato."_000077 B, usuarios, ".$wbasedato."_000011, ".$wbasedato."_000076 
 							 WHERE	A.Fecha_data between '".$wfec_i."' AND '".$wfec_f."' 
