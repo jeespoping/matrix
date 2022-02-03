@@ -26,7 +26,7 @@ include_once("conex.php");
  */
 include_once("root/comun.php");
 
-$wactualiz = " 1.0 15-Oct-09";
+$wactualiz = "2021-11-18";
 $usuarioValidado = true;
 
 if (!isset($user) || !isset($_SESSION['user'])){
@@ -327,7 +327,7 @@ if (!$usuarioValidado){
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 	//Forma
-	echo "<form name='forma' action='FarmastoreMigracion1.php' method='post'>";
+	echo "<form name='forma' action='FarmastoreMigracion1.php?wemp_pmla=".$wemp_pmla."' method='post'>";
 	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<input type='HIDDEN' NAME= 'wbasedato' value='".$wbasedato."'/>";
 

@@ -81,7 +81,8 @@ function ocultarFlotante(numdiv)
 <?php
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
-//--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//--------------------------------------------------------------------------------------------------------------------------------------------   ----------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//	2021-11-11 	-	Sebastián Nevado:		Se corrige el encabezado para que sea multiempresa.                                                                                                                    \\
 //	2020-05-20	-	Jessica Madrid Mejía:	Se valida si en la tabla movhos_000282 el centro de costos tiene 
 // 											restricción y de ser así si el usuario esta habilitado para acceder 
 // 											a los pacientes de dicho centro de costos.
@@ -112,7 +113,7 @@ function consultarCcoPaciente($conex, $wdbmhos, $historia, $ingreso)
 						WHERE Ubihis='".$historia."' 
 						  AND Ubiing='".$ingreso."';";
 	
-	$resUbicacion = mysqli_query($conex,$queryUbicacion) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+	$resUbicacion = mysqli_query_multiempresa($conex,$queryUbicacion) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 	$numUbicacion = mysql_num_rows($resUbicacion);
 	
 	$ccoPaciente = "";
@@ -133,7 +134,7 @@ function consultarCcoRestriccion($conex, $wdbmhos, $ccoPaciente)
 			     AND Craest='on' 
 			   LIMIT 1;";
 		
-	$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+    $res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 	$num = mysql_num_rows($res);
 	
 	$ccoConRestriccion = false;
@@ -153,7 +154,7 @@ function consultarUsuarioPermitido($conex, $wdbmhos, $ccoPaciente, $usuario)
 			     AND Crausu='".$usuario."' 
 			     AND Craest='on';";
 		
-	$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+	$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 	$num = mysql_num_rows($res);
 	
 	$usuarioHabilitado = false;
@@ -183,7 +184,7 @@ function consultarUsuarioHabilitado($conex, $origen, $wdbmhos, $usuario, $wcedul
 							 AND Oritid='".$wtipodoc."' 
 							 AND Oriori='".$origen."';";
 		
-		$resPaciente = mysqli_query($conex,$queryPaciente) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$resPaciente = mysqli_query_multiempresa($conex,$queryPaciente) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$numPaciente = mysql_num_rows($resPaciente);
 		
 		if($numPaciente>0)

@@ -11,6 +11,10 @@
     <script src="JsAntyabo.js" type="text/javascript"></script>
     <?php
 include_once("conex.php");
+/** 
+     * Modificaciones:
+     * 2021-11-16 - Juan David Rodriguez: Se modifica variables quemadas (nit y nombre de empresa)
+    */
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -32,7 +36,7 @@ include_once("conex.php");
 
         $conex = obtenerConexionBD("matrix");
         $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-        $wactualiz = "1.1 16-Mayo-2017";
+        $wactualiz = "2021-11-16";
     }
     session_start();
     ?>
@@ -155,14 +159,19 @@ include_once("conex.php");
             $observacion = odbc_result($dato_3, 1); // observaciones
             //if(is_null($observacion)){$observacion = 'NA';}
         }
+
+        $wemp_pmla = $_REQUEST['wemp_pmla'];
+        $wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+        $wnit = $wbasedato1->nit;
+        $wnombre = $wbasedato1->nombre;
         ?>
 
         <div id="divContenido" class="divContenido">
             <div id="divEncabezado" class="divEncabezado" align="center">
                 <div>
-                    <span><label>PROMOTORA MEDICA LAS AMERICAS S.A.</label></span>
+                    <span><label><?php echo $wnombre; ?></label></span>
                     <br>
-                    <span><label>Nit. 800067065</label></span>
+                    <span><label>Nit. <?php echo $wnit; ?></label></span>
                 </div>
                 <div align="right" style="width: 145px; float: right; margin-top: -65px; margin-right: 30px">
                     <img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="140" height="70">
