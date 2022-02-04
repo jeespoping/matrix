@@ -694,6 +694,67 @@ function crearArrayDatos($wbasedato, $prefijoBD, $prefijoHtml, $longitud, $datos
  * $datos   Array que tiene como clave el nombre del campo y valor el valor a insertar
  * $tabla   Nombre de la tabla a la que se va a insertar los datos
  ***************************************************************************************/
+/**
+ * Permite comparar los valores de las opciones que se muestra para el egreso con las registradas en la epicrisis del paciente
+ * esto con el fin de mostrar seleccionada la opción que se encuentra en la epicrisis
+ * @autor Johan Córdoba
+ * @param $historia
+ * @param $ingreso
+ * @return mixed|null opción que deberia estar por defecto, si no hay coincidencias returna null
+ */
+function consultarCausaEgresoEpicrisis($historia, $ingreso)
+{
+    global $conex, $wbasedato, $aplicacionHce;
+
+    /** Valor de retorno para el select **/
+    $opcion = null;
+
+    /*** Leemos las opciones disponibles para el egreso **/
+    $sqlOpcionesEgreso = " SELECT Selcod,Seldes FROM {$wbasedato}_000105 WHERE Seltip = '10' and Selest='on' ORDER BY Seldes";
+    $queryOpcionesEgreso = mysql_query($sqlOpcionesEgreso, $conex);
+
+    while ($rowsOpcionesEgreso = mysql_fetch_array($queryOpcionesEgreso)) {
+
+        /** Consultamos el valor de egreso de la epicrisis si existe **/
+        $sqlEpicrisis = "SELECT movdat FROM {$aplicacionHce}_000353 ";
+        $sqlEpicrisis .= " WHERE movtip='Seleccion' and movhis='{$historia}' and moving='{$ingreso}'";
+        $sqlEpicrisis .= " AND UPPER(movdat) LIKE '%" . strtoupper($rowsOpcionesEgreso['Seldes']) . "%'";
+
+        $queryEpicrisis = mysql_query($sqlEpicrisis, $conex);
+
+        if (mysql_num_rows($queryEpicrisis)) {
+            $opcion = $rowsOpcionesEgreso['Selcod'];
+            break;
+        }
+    }
+
+    return $opcion;
+}
+
+/**
+ * Permite consultar el nombre de una opción de causa de egreso recibiendo la llave
+ * @param $codigoOpcion llave de la opción de egreso
+ * @return mixed|null
+ */
+function consultarNombreOpcionEgreso($codigoOpcion)
+{
+    global $conex, $wbasedato;
+
+    $textoOpcion = null;
+
+    /*** Leemos las opciones disponibles para el egreso **/
+    $sqlOpcionesEgreso = " SELECT Selcod,Seldes FROM {$wbasedato}_000105 ";
+    $sqlOpcionesEgreso .= " WHERE Seltip = '10' and Selest='on' AND Selcod='{$codigoOpcion}' ORDER BY Seldes";
+    $queryOpcionesEgreso = mysql_query($sqlOpcionesEgreso, $conex);
+
+
+    if (mysql_num_rows($queryOpcionesEgreso)) {
+        $row = mysql_fetch_array($queryOpcionesEgreso);
+        $textoOpcion = $row['Seldes'];
+    }
+
+    return $textoOpcion;
+}
 function crearStringInsert($tabla, $datos)
 {
 

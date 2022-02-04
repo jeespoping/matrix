@@ -69,7 +69,7 @@ if ($mostrarConteo) {
         //consultar los datos
         $pacienteEgreso->data = mostrarDatosAlmacenados($pacienteEgreso);
         //realizar el egreso
-        $pacienteEgreso->errores = guardarDatos($pacienteEgreso);
+        $pacienteEgreso->errores = guardarDatos2($pacienteEgreso);
         unset($pacienteEgreso->data);
         $pacienteEgreso->descripcion = utf8_encode($pacienteEgreso->errores["mensaje"]);
 
