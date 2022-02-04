@@ -548,7 +548,7 @@ $wbasedato = $infoMedico->bdHC;
 
 //$key = substr($user, 2, strlen($user));
 
-$wemp_pmla = '01';
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 
 //$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 
