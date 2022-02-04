@@ -115,7 +115,8 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	echo "<form name='HCE_Tipo3' action='HCE_Tipo3.php' method=post>";
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+	echo "<form name='HCE_Tipo3' action='HCE_Tipo3.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	
 
 	
@@ -188,7 +189,7 @@ else
 	$query .= "   and pactid = '".$wtipodoc."'";
 	$query .= "   and  pacced = oriced ";
 	$query .= "   and  pactid = oritid ";
-	$query .= "   and oriori = '01' ";
+	$query .= "   and oriori = '".$wemp_pmla."' ";
 	$query .= "   and inghis = orihis ";
 	$query .= "   and  inging = oriing ";
 	$query .= "   and ubihis = inghis "; 

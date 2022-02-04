@@ -18,6 +18,10 @@
         });
     </script>
     <?php
+    /** 
+     * Modificaciones:
+     * 2022 Daniel CB: Se modifica variables quemadas (nit y nombre de empresa)
+    */
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -37,7 +41,7 @@
 
         $conex = obtenerConexionBD("matrix");
         $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-        $wactualiz = "1.4 10-julio-2018";
+        $wactualiz = "2022-02-01";
     }
     session_start();
     ?>
@@ -161,6 +165,11 @@ else
     $numConsRadicado = $_POST['numConsRadicado'];       $numConsRecobro = $_POST['numConsRecobro'];
     $numeroActa = $_POST['numeroActa'];                 $fechaActa = date("d/m/Y", strtotime($fechaAc));
     $porcSemanas = $_POST['porcSemanas'];
+    $wemp_pmla = $_REQUEST['wemp_pmla'];
+    $wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+    $wnit = $wbasedato1->nit;
+    $wnombre = $wbasedato1->nombre;
+
     $wemp_pmla = $_REQUEST['wemp_pmla'];
     $wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
     $wnit = $wbasedato1->nit;
