@@ -117,7 +117,7 @@
 					AND root_000037.Oritid = '" . $tipo_documento . "'
 					AND root_000037.Oriori = " . $wemp_pmla;
 					
-			$resultado_query = mysqli_query($conex, $query_historia_ingreso) or die(mysqli_error($conex));
+			$resultado_query = mysqli_query_multiempresa($conex, $query_historia_ingreso) or die(mysqli_error($conex));
 
 			if( !$resultado_query || mysqli_num_rows($resultado_query) > 0 ) {
 				
@@ -209,7 +209,7 @@
 						AND root_000037.Oritid = '" . $paciente['tipoDocumento'] . "'
 							AND root_000037.Oriori = " . $wemp_pmla;
 
-				$resultado_query = mysqli_query($conex, $query_historia_ingreso) or die(mysqli_error($conex));
+				$resultado_query = mysqli_query_multiempresa($conex, $query_historia_ingreso) or die(mysqli_error($conex));
 				if( !$resultado_query || mysqli_num_rows($resultado_query) > 0 ) {
 					
 					while($fila = mysqli_fetch_array($resultado_query)) {

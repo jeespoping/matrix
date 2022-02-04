@@ -3429,7 +3429,7 @@ function cancelarReciboHospitalizacion( wemp_pmla, historia, ingreso, ser_anteri
 		if(r){
 
 			$("#td_traslado_"+historia+"-"+ingreso).html("<img src='../../images/medical/sgc/Refresh-128.png' width='30px' height='30px' style='cursor:pointer;' onclick='location.reload();'><br>Recargar");
-			ejecutar("Modificacion_traslados.php?wproceso=D&wccoIngreso=UN."+ser_anterior+"&whistoria="+historia);
+			ejecutar("Modificacion_traslados.php?wemp_pmla="+wemp_pmla+"wproceso=D&wccoIngreso=UN."+ser_anterior+"&whistoria="+historia);
 
 		}else{
 			$.unblockUI();
@@ -6493,6 +6493,7 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 						consultaAjax: '',
 						whis		: whis,
 						wing		: wing,
+						wemp_pmla	: $("#wemp_pmla").val(),
 						wip			: $("#wipimpresoraga").val(),
 						wtor		: tor,	//tipo de orden
 						wnor		: nor,	//numero de orden

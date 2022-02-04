@@ -253,6 +253,8 @@ if( isset($consultaAjax) == false ){
 }
 
 //**************************ENCARGADO DE RECIBIR LOS LLAMADOS CON AJAX********************************************//
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+
 if(isset($accion))
 {
 	include_once("root/comun.php");
@@ -290,7 +292,7 @@ function consultarMedicamentos($wemp_pmla,$fechainicio,$fechafin,$cco)
 
 
 
-	$wemp_pmla = "01";
+	// $wemp_pmla = "01";
 
 
 
@@ -848,7 +850,7 @@ function consultarcco ($fechaini, $fechafin,$wemp_pmla)
 {
 	global $conex;
 	global $conexUnix;
-	$wemp_pmla = "01";
+	// $wemp_pmla = "01";
 
 
 	// $wemp_pmla = "01";
@@ -899,14 +901,13 @@ function consultarcco ($fechaini, $fechafin,$wemp_pmla)
 	****************************** INICIO APLICACIÓN ********************************************
 	********************************************************************************************/
 	$wbasedato = "";
-	$wactualiz = " Septiembre 9 de 2015 ";
-
+	$wactualiz = "2021-11-19";
 
 	//Variable para determinar la empresa
-	if(!isset($wemp_pmla))
-	{
-		$wemp_pmla = '01';
-	}
+	// if(!isset($wemp_pmla))
+	// {
+	// 	$wemp_pmla = '01';
+	// }
 
 	encabezado("Estado Medicamentos Unix VS Matrix ", $wactualiz, "clinica");
 

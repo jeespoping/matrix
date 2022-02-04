@@ -8,8 +8,10 @@ include_once("conex.php");
 //FECHA DE CREACION:
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES
+//
+//  2021-11-24.   Daniel CB. -Se realiza corrección de parametro 01 quemado 
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2019-10-08';
+$wactualiz='2021-11-24';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 /**
 	2019-10-08, Jerson Trujillo:
@@ -4180,7 +4182,7 @@ else
 	
 	function verReporteGlosas()
 	{
-		ruta = "/matrix/ips/reportes/reporteGlosasObjeciones.php?wemp_pmla=01";
+		ruta = "/matrix/ips/reportes/reporteGlosasObjeciones.php?wemp_pmla="+$("#wemp_pmla").val();
 		window.open(ruta,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes');
 	}
 	

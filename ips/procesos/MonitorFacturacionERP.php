@@ -7,8 +7,10 @@ AUTOR:				Felipe Alvarez
 FECHA DE CREACION:
 
  --------------------------------------------------------------------------------------------------------------------------------------------
- */$wactualiza='Marzo 10 de 2020';/*
+ */$wactualiza='Noviembre 1 2021';/*
  ACTUALIZACIONES
+Octubre 27 2021: Juan David R, Se hacen modificaciones en parametros quemados 
+
 Enero 21 2020: Jerson, mostrar codigo propio en el tooltip de los procedimientos de la cx
 Enero 21 2020: Jerson, En el monitor de auditoria/autorizaciones cuando una cx requiere que se autoricen los procedimientos para el segundo
 				responsable por superación de topes, todos estos deben quedar como confirmados para que el usuario de autorizaciones solo le corresponsa ingresar el numero
@@ -1630,9 +1632,9 @@ function consultarlog($wdocumento, $wlinea, $whistoria, $wingreso, $wfuente,$wre
 {
 	global $conex;
 	global $conexUnix;
-	$wemp_pmla = "01";
+	global $wemp_pmla;
 	$conex = obtenerConexionBD("matrix");
-	$wbasedato = 'movhos';
+	$wbasedato = consultarAliasAplicacion($conex, $wemp_pmla, 'movhos');
 
 
 
@@ -3361,7 +3363,7 @@ function Grabarpafbitacora($whistoria,$wingreso,$wresponsable,$wresseleccionado,
 							(medico,
 							 Fecha_data, Hora_data, Audhis, Auding, Audest, Audmed, Audayd, Audpob, Audvob, Audead, Audrei, Audalt, Audobs, Seguridad)
 						 VALUES
-							('movhos', '".date("Y-m-d")."', '".(string)date("H:i:s")."', '".$whistoria."', '".$wingreso."', '', '', '', '', '','', '', '', '".$mensaje." ".$wtextareapaf." , a partir de la fecha: ".$wdatofecha."',  'C-".$wuse."');";
+						 	('".$wbasedatoMovhos."', '".date("Y-m-d")."', '".(string)date("H:i:s")."', '".$whistoria."', '".$wingreso."', '', '', '', '', '','', '', '', '".$mensaje." ".$wtextareapaf." , a partir de la fecha: ".$wdatofecha."',  'C-".$wuse."');";
 				mysql_query($q, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlInserBit):</b><br>".mysql_error());
 		}
 
@@ -13823,7 +13825,7 @@ else
 	//----------------------------------------------------------------------------------
 	function abrirBitacora(historia, ingreso)
 	{
-		var url 	= "/matrix/movhos/procesos/rBitacora.php?ok=0&empresa=movhos&codemp="+$("#wemp_pmla").val()+"&whis="+historia+"&wnin="+ingreso;
+		var url 	= "/matrix/movhos/procesos/rBitacora.php?ok=0&empresa="+$("#wmovhos").val()+"&codemp="+$("#wemp_pmla").val()+"&whis="+historia+"&wnin="+ingreso;
 		alto		= screen.availHeight;
 		ventana 	= window.open('','','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
 		ventana.document.open();
@@ -13835,7 +13837,7 @@ else
 	function abrirHce(documento, tipoDoc, historia, ingreso, desde)
 	{
 
-		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa=hce&origen="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
+		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa="+$("#whce").val()+"&origen="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos="+$("#wmovhos").val()+"&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
 		alto		= screen.availHeight;
 		ventana 	= window.open('','','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
 		ventana.document.open();
@@ -14094,7 +14096,7 @@ else
 	{
 		var raiz_matrix = "http://<?=$RAIZ_MATRIX?>";
 		// var url = raiz_matrix+"/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=01&wtema=05";
-		var url = "/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=01&wtema=IPSERP&whistoria="+historia+"&wing="+ingreso+"";
+		var url = "/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla="+$("#wemp_pmla").val()+"&wtema=IPSERP&whistoria="+historia+"&wing="+ingreso+"";
 		// console.log(url);
 		referenciaVentana = window.open(url, "nuevo", "directories=no, location=no, menubar=no, scrollbars=yes, statusbar=no, tittlebar=no, width=2000, height=1000");
 		//referenciaVentana.close();
@@ -14107,7 +14109,7 @@ else
 	{
 		var raiz_matrix = "http://<?=$RAIZ_MATRIX?>";
 		// var url = raiz_matrix+"/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=01&wtema=05";
-		var url = "/matrix/ips/procesos/plantillasMercadosCirugia.php?wemp_pmla=01&consultaview=on";
+		var url = "/matrix/ips/procesos/plantillasMercadosCirugia.php?wemp_pmla="+$("#wemp_pmla").val()+"&consultaview=on";
 		// console.log(url);
 		referenciaVentana = window.open(url, "nuevo", "directories=no, location=no, menubar=no, scrollbars=yes, statusbar=no, tittlebar=no, width=2000, height=1000");
 	}
@@ -14129,7 +14131,7 @@ else
 			// cronUnixCargos();
 		});
 		var raiz_matrix = "http://<?=$RAIZ_MATRIX?>";
-		var url = "/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla=01&wtema=IPSERP&whistoria="+historia+"&wing="+ingreso+"&turnopermitido="+turnopermitido+"&pqte_mon="+pqte;
+		var url = "/matrix/gesapl/procesos/gestor_aplicaciones.php?wemp_pmla="+$("#wemp_pmla").val()+"&wtema=IPSERP&whistoria="+historia+"&wing="+ingreso+"&turnopermitido="+turnopermitido+"&pqte_mon="+pqte;
 		// console.log(url);
 		referenciaVentana = window.open(url, "nuevo", "directories=no, location=no, menubar=no, scrollbars=yes, statusbar=no, tittlebar=no, width=2000, height=1000");
 		//referenciaVentana.close();
@@ -14352,6 +14354,8 @@ else
 
 	
 	<input type='hidden' id = 'wemp_pmla' value='<?=$wemp_pmla?>'>
+	<input type='hidden' id = 'wmovhos' value='<?=consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos')?>'>
+	<input type='hidden' id = 'whce' value='<?=consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce')?>'>
 	<input type='hidden' id = 'wemp_pmla_tal' value='<?=$wemp_pmla?>'>
 	<input type='hidden' id = 'fechas_cirugias_oculto' value='<?=$wfecha?>'>
 	<input type='hidden' id = 'wcodigo_cargo_wuse' value=''>

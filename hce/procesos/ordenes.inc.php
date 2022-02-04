@@ -1366,6 +1366,7 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 				'accion'		=> 'agendarOrden', 
 				'historia'		=> $historia,
 				'ingreso'		=> $ingreso, 
+				'wemp_pmla'		=> $wemp_pmla,
 				'tipoOrden'		=> $rows['Ordtor'], 
 				'nroOrden'		=> $rows['Ordnro'], 
 				'wemp_pmla'		=> $wemp_pmla,

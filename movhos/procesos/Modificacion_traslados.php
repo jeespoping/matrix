@@ -16,12 +16,12 @@ function cerrarVentana() {	window.close(); }
 function inicio(){	
 	document.forms.forma.reset();
 	document.forms.forma.wccoIngreso.value = '';
-	document.forms.forma.action = 'Modificacion_traslados.php?wemp_pmla=01';
+	document.forms.forma.action = 'Modificacion_traslados.php?wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 	document.forms.forma.submit();
 }
 
 function enviar(){	
-	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value;
+	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value+'&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 	document.forms.forma.submit();
 }
 
@@ -64,7 +64,7 @@ function cargarArts(){
 
 function consultarHistoria() {
 	if(document.forms.forma.whistoria && document.forms.forma.whistoria.value != ''){
-		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value;
+		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value +'&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 		document.forms.forma.submit();
 	} else {
 		alert('Debe ingresar el número de la historia');
@@ -73,14 +73,14 @@ function consultarHistoria() {
 
 function procesoAnulacion() {
 	if(confirm("Va a realizar la anulacion del traslado. Desea continuar?")){
-		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=A';
+		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=A&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 		document.forms.forma.submit();
 	}
 }
 
 function procesoAnulacionRecibo(){
 	if(confirm("Va a realizar la anulación del RECIBO UNICAMENTE.  ¿Desea continuar?")){
-		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=R';
+		document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=R&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 		document.forms.forma.submit();
 	}
 }
@@ -88,7 +88,7 @@ function procesoAnulacionRecibo(){
 function procesoDestino() {
 	if(document.forms.forma.wccocod && document.forms.forma.wccocod.value != ''){
 		if(document.forms.forma.whabcod && document.forms.forma.whabcod.value != ''){
-			document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=D';
+			document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=D&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 			document.forms.forma.submit();
 		} else {
 			alert('Debe seleccionar la habitación destino');
@@ -99,17 +99,17 @@ function procesoDestino() {
 }
 
 function procesoDestinoHabitaciones() {
-	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=D&wccocod=' + document.forms.forma.wccocod.value;
+	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=D&wccocod=' + document.forms.forma.wccocod.value + '&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 	document.forms.forma.submit();
 }
 
 function consultarHabitaciones() {
-	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value;
+	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 	document.forms.forma.submit();
 }
 
 function modificarMaterial() {
-	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=M';
+	document.forms.forma.action = 'Modificacion_traslados.php?wproceso=' + document.forms.forma.wproceso.value + '&whistoria=' + document.forms.forma.whistoria.value + '&waccion=M&wemp_pmla=' + document.forms.forma.wemp_pmla.value;
 	document.forms.forma.submit();
 }
 
@@ -208,7 +208,7 @@ include_once("conex.php");
  * Autor: Mauricio Sánchez Castaño. 
  * 
  */
-$wactualiz = "(Versión: 08 Enero de 2014)";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
+$wactualiz = "(Versión: 16 de Diciembre 2021)";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
 
 /*
  * TABLAS UTILIZADAS.
@@ -228,6 +228,8 @@ $wactualiz = "(Versión: 08 Enero de 2014)";                      // Aca se coloc
  * root_000037:  Numero de Ingreso de historias clinicas
  *
  * Modificaciones:
+ * Diciembre 16 de 2021: Daniel CB.  Se comentan lineas con parametro wemp_pmla sobrescrito.
+ * Octubre 27 de 2021: Juan David Rodriguez. Se realiza modificación de parametros quemados 
  * Septiembre 15 de 2016: Jonatan Lopez. Se cambia el numero de horas limite para cancelar el traslado a 24 horas por peticion de Beatriz Montoya, ademas se manejara como un parametro en la root_000051.
  * Septiembre 7 de 2016: Jonatan Lopez. Se asocia este programa a gestion de enfermeria para que la enfermera pueda cancelar el traslado del paciente, ademas si cambia el destino pueda recibirlo en ese nuevo destino.
 	// --> 	Se inhabilita la opcion de de anular los recibos de pacientes.
@@ -3276,8 +3278,8 @@ $colorLetraFondo2 = "660099";
  */
 include_once("root/comun.php");
 include_once("root/barcod.php");
-
-$wactualiz = "Septiembre 15 de 2016";
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+$wactualiz = "Diciembre 15de 2021";
 
 if (!isset($user)){
 	if (!isset($_SESSION['user'])) {
@@ -3294,9 +3296,9 @@ if (!isset($_SESSION['user'])){
 	$conex = obtenerConexionBD("matrix");
 	
 	//Estas variables se incluyen para variar la empresa y el codigo de base de datos (esquema a apuntar).  Por defecto sera la 01
-	if(!isset($wemp_pmla)){
-		$wemp_pmla = '01';
-	} 
+	// if(!isset($wemp_pmla)){
+	// 	$wemp_pmla = '01';
+	// } 
 	
 	$horasMaximoModificacion = consultarAliasPorAplicacion($conex, $wemp_pmla, 'HorasMaximoModificacionTraslado'); //Se cambia el numero de horas con esta funcion para que pueda ser manejado desde la root_000051
 
@@ -3311,6 +3313,7 @@ if (!isset($_SESSION['user'])){
 
 	//Forma
 	echo "<form name='forma' action='Modificacion_traslados.php' method=post>";
+	echo "<input type='hidden' name='wemp_pmla' value='".$wemp_pmla."'>";
 
 	encabezado("MODIFICACION TRASLADOS Y LISTA DE MEDICAMENTOS", $wactualiz, "clinica");
 	
