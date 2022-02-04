@@ -29,7 +29,7 @@
 			var contenedor = document.getElementById('cntHabitacion');
 			var parametros = "";
 
-			parametros = "consultaAjaxInclude=2&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + servicio;
+			parametros = "consultaAjaxInclude=2&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + servicio+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
 
 			try{
 				$.blockUI({ message: $('#msjEspere') });
@@ -400,7 +400,7 @@
 
 	 	//Si la longitud es de 13 caracteres se trata de una lectura de codigo, se debe buscar 7613030045786
 	 	var parametros = "";
-	 	parametros = "consultaAjaxInclude=01&basedatos="+document.forms.forma.wbasedato.value+"&codigoBarras="+codigo;
+	 	parametros = "consultaAjaxInclude=01&basedatos="+document.forms.forma.wbasedato.value+"&codigoBarras="+codigo+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
 
 	 	try
 		{
