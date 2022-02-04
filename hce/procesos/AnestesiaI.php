@@ -181,7 +181,6 @@
 </script>
 <?php
 include_once("conex.php");
-$wemp_pmla = $_REQUEST['wemp_pmla'];
 /*
 *********************************************************************************************************************  
 [DOC]
@@ -194,13 +193,8 @@ $wemp_pmla = $_REQUEST['wemp_pmla'];
 	   hemodinamicos de anestesia de un paciente en el quirofano.
 	   
 	   REGISTRO DE MODIFICACIONES :
-	   2021-11-16 Daniel CB.
-			- Archivo no maneja variable wemp_pmla, no aparece en la root_000021 y no se llama desde otro archivo 
-			  por lo cual no se puede trabajar con multiempresa
-
 	   .2018-05-22
 	   		Release de Version Beta.
-			   
 	   
 [*DOC]   		
 **********************************************************************************************************************
@@ -463,7 +457,7 @@ else
 		$query = "select oriced,oritid from root_000037 ";
 		$query .= " where Orihis = '".$whis."'";
 		$query .= "   and Oriing = '".$wing."'";
-		$query .= "   and oriori = '".$wemp_pmla."'";
+		$query .= "   and oriori = '01' ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$num = mysql_num_rows($err);
 		if($num > 0)
@@ -478,7 +472,7 @@ else
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and  pacced = oriced ";
 		$query .= "   and  pactid = oritid ";
-		$query .= "   and oriori = '".$wemp_pmla."'";
+		$query .= "   and oriori = '01' ";
 		$query .= "   and inghis = orihis ";
 		$query .= "   and  inging = oriing ";
 		$query .= "   and ubihis = inghis "; 

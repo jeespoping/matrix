@@ -31,7 +31,7 @@
 
         $conex = obtenerConexionBD("matrix");
         $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-        $wactualiz = "2021-11-16";
+        $wactualiz = "Versión: 1.0 07-Febrero-2020";
     }
     session_start();
 
@@ -134,18 +134,13 @@
                     $empCod = odbc_result($commEmpresa, 1); $empNom = odbc_result($commEmpresa, 3);
                 }
 
-                $wemp_pmla = $_REQUEST['wemp_pmla'];
-                $wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-                $wnit = $wbasedato1->nit;
-                $wnombre = $wbasedato1->nombre;
-
                 ?>
                 <div id="divContenido" class="divContenido">
                     <div id="divEncabezado" class="divEncabezado" align="center">
                         <div>
-                            <span><label><?php $wnombre; ?></label></span>
+                            <span><label>PROMOTORA MEDICA LAS AMERICAS S.A.</label></span>
                             <br>
-                            <span><label>Nit. <?php echo $wnit; ?></label></span>
+                            <span><label>Nit. 800067065</label></span>
                         </div>
                         <div align="right" style="width: 145px; float: right; margin-top: -50px; margin-right: 55px">
                             <img src="http://mx.lasamericas.com.co/matrix/images/medical/paf/logo.png" width="190" height="120">

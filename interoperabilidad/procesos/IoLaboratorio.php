@@ -38,10 +38,8 @@ define("OBR_MUESTRA_SITIO_ANATOMICO", 15 );
 include_once("root/comun.php");
 include_once("./funcionesGeneralesEnvioHL7.php");
 
-$wemp_pmla = $_REQUEST['wemp_pmla'];
-
-// if( !isset( $wemp_pmla ) )
-// 	$wemp_pmla = "01";
+if( !isset( $wemp_pmla ) )
+	$wemp_pmla = "01";
 
 function actualizarUrl( $conex, $whce, $wmovhos, $tipoOrden, $nroOrden, $item, $url ){
 	

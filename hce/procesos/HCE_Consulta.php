@@ -240,9 +240,6 @@ function ver($chain)
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
-	     .2021-11-16 Daniel CB.
-			- Archivo no maneja variable wemp_pmla, no aparece en la root_000021 y no se llama desde otro archivo 
-			  por lo cual no se puede trabajar con multiempresa
 	     .2012-12-17
               Se empaqueto la seguridad contra copy+paste en el archivo HCE_Seguridad.js
               

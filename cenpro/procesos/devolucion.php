@@ -32,8 +32,6 @@
 <?php
 include_once("conex.php");
 /***
- * @modified Diciembre 14 de 2021 (Juan Rodriguez): Se modifica parámetro wemp_pmla quemado, se rectifica que desde donde se llama al archivo, exista wemp_pmla
- * 
  * @modified Agosto 14 de 2013	(Edwin MG)	Se valida que halla conexión unix en inventario desde matrix, si no hay conexión
  *											con unix se activa la contigencia de dispensación.
  * @modified Febrero 25 de 2013 (Edwin MG). Cambios varios para cuando no hay conexión con UNIX. Entre ellos se registra el movimiento en tabla de paso
@@ -58,7 +56,7 @@ function descargarCarro2( $cod, $codari, $his, $ing, $cco ){
 	$sql = "SELECT
 				ccofca
 			FROM
-			".$bd."_000011
+				movhos_000011
 			WHERE
 				ccocod = '".$expcco[0]."'
 			";
@@ -117,7 +115,7 @@ function descargarCarro( $cod, $his, $ing, $cco ){
 	$sql = "SELECT
 				ccofca
 			FROM
-			".$bd."_000011
+				movhos_000011
 			WHERE
 				ccocod = '".$expcco[0]."'
 			";
@@ -178,7 +176,7 @@ function registrarArticuloKE( $art, $his, $ing, $dev = false ){
 		$sqlid="SELECT 
 					max(id) 
 				FROM 
-				".$bd."_000054 
+					movhos_000054 
 				WHERE 
 					kadart = '$art'
 					AND kadcdi > kaddis+0
@@ -201,7 +199,7 @@ function registrarArticuloKE( $art, $his, $ing, $dev = false ){
 		
 		//Actualizando registro con el articulo cargado
 		$sql = "UPDATE 
-					".$bd."_000054 
+					movhos_000054 
 		       	SET 
 		       		kaddis = kaddis+1,
 		       		kadhdi = '".date("H:i:s")."'
@@ -227,7 +225,7 @@ function registrarArticuloKE( $art, $his, $ing, $dev = false ){
 		$sqlid="SELECT 
 					max(id), kaddis 
 				FROM 
-				".$bd."_000054 
+					movhos_000054 
 				WHERE 
 					kadart = '$art'
 					AND kaddis > 0
@@ -250,7 +248,7 @@ function registrarArticuloKE( $art, $his, $ing, $dev = false ){
 		if( $row[1] > 1 ){
 			//Actualizando registro con el articulo cargado
 			$sql = "UPDATE 
-						".$bd."_000054 
+						movhos_000054 
 			       	SET 
 			       		kaddis = kaddis-1
 			        WHERE 
@@ -266,7 +264,7 @@ function registrarArticuloKE( $art, $his, $ing, $dev = false ){
 		else{
 			//Actualizando registro con el articulo cargado
 			$sql = "UPDATE 
-						".$bd."_000054 
+						movhos_000054 
 			       	SET 
 			       		kaddis = kaddis-1,
 			       		kadhdi = '00:00:00'
@@ -346,7 +344,6 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
 {
     global $conex;
     global $wbasedato;
-	global $bd;
 
     $q = " SELECT Mencon, Mendoc "
      . "        FROM " . $wbasedato . "_000006, " . $wbasedato . "_000007, " . $wbasedato . "_000008 "
@@ -388,7 +385,7 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
             $row1 = mysql_fetch_array($res1);
 
             $q = " SELECT Artcom, Unides "
-			 . "        FROM  " . $wbasedato . "_000002, ".$bd."_000027 "
+             . "        FROM  " . $wbasedato . "_000002, movhos_000027 "
              . "      WHERE Artcod = '" . $row1[0] . "' "
              . "            and Artuni=Unicod "
              . "            and Artest='on' ";
@@ -404,7 +401,7 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
             if ($row1[1] != '')
             {
                 $q = " SELECT Artcom "
-				 . "        FROM  ".$bd."_000026 "
+                 . "        FROM  movhos_000026 "
                  . "      WHERE Artcod = mid('" . $row1[1] . "',1,instr('" . $row1[1] . "','-')-1) "
                  . "            and Artest='on' ";
 
@@ -436,7 +433,7 @@ function consultarMovimiento($codigo, $historia, $ingreso, $lote, $cco)
             if ($row1[3] != '')
             {
                 $q = " SELECT Artcom"
-				 . "        FROM  ".$bd."_000026 "
+                 . "        FROM  movhos_000026 "
                  . "      WHERE Artcod = mid('" . $row1[3] . "',1,instr('" . $row1[3] . "','-')-1) "
                  . "            and Artest='on' ";
 
@@ -831,20 +828,17 @@ if (!isset($_SESSION['user']))
     echo "error";
 else
 {
-    // $wbasedato = 'cenpro';
+    $wbasedato = 'cenpro';
 //    $conex = mysql_connect('localhost', 'root', '')
 //    or die("No se ralizo Conexion");
-	$wemp_pmla = $_REQUEST['wemp_pmla'];
     
 	include_once( "cenpro/cargos.inc.php" );	//2013-08-14
     include_once( "conex.php" );
-	include_once("root/comun.php");
-	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
-	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
     
 
+
     pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
-    //$bd = 'movhos'; 
+    $bd = 'movhos'; 
     // invoco la funcion connectOdbc del inlcude de ana, para saber si unix responde, en caso contrario,
     // este programa no debe usarse
     // include_once("pda/tablas.php");
@@ -870,7 +864,7 @@ else
         $exp = explode('-', $cco);
         $centro['cod'] = $exp[0];
         $centro['neg'] = false;
-        getCco(&$centro, $tipTrans, $wemp_pmla);
+        getCco(&$centro, $tipTrans, '01');
         $pac['his'] = $historia;
         $pac['ing'] = $ingreso;
         $cns = 0;
@@ -878,7 +872,7 @@ else
         $art['ini'] = $cod;
         $art['ubi'] = 'US';
         $serv['cod'] = $servicio;
-        getCco(&$serv, $tipTrans, $wemp_pmla);
+        getCco(&$serv, $tipTrans, '01');
         if (isset($serv['apl']) and $serv['apl'])
         {
             $centro['apl'] = true;
@@ -896,7 +890,7 @@ else
         // estos se cargan en un select llamado ccos.
         // consultamos si el producto es codificado o no
         $q = "SELECT Artcom, Tipcdo, Tippro, Arttnc "
-		 . "     FROM   " . $wbasedato . "_000002, ".$bd."_000027, " . $wbasedato . "_000001 "
+         . "     FROM   " . $wbasedato . "_000002, movhos_000027, " . $wbasedato . "_000001 "
          . "   WHERE Artcod='" . $cod . "' "
          . "     AND Unicod = Artuni "
          . "     AND Tipcod = Arttip "
@@ -987,7 +981,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script>
+										 </script >
 										<?php
 									} 
 									else
@@ -1216,7 +1210,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script>
+										 </script >
 									<?php
 								} 
 								else
@@ -1332,7 +1326,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script>
+										 </script >
 										<?php
 									} 
 									else
@@ -1581,7 +1575,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script>
+										 </script >
 									<?php
 								} 
 								else

@@ -2571,7 +2571,7 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 				   WHERE Orihis='".$whistoria."' 
 					 AND Oriori='".$wemp_pmla."';";
 					 
-	    $res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		$nombrePaciente = "";
@@ -2591,7 +2591,7 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 			       WHERE Inghis='".$historia."' 
 					 AND Inging='".$ingreso."';";
 					 
-		$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		$nombreEntidad = "";
@@ -2613,7 +2613,7 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 							 FROM ".$wbasedatohce."_000015 
 							WHERE Codigo IN ('".$tipos."');";
 		
-		$res = mysqli_query_multiempresa($conex,$queryTipoOrden) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$queryTipoOrden) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		$tiposOrdenesGeneradas = "";

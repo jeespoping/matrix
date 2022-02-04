@@ -221,7 +221,6 @@
 
 <?php
 include_once("conex.php");
-include_once("root/comun.php");
 /**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : Tablero.php
@@ -234,8 +233,6 @@ include_once("root/comun.php");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
-	   .2021-11-24 - Juan David Rodriguez
-	   			Se mdifica encabezado para que sea multiempresa
 	   .2020-10-20
 				Se agrega filtro para que no se muestre pacientes de servicio domiciliario
 		.2019-11-18
@@ -570,10 +567,6 @@ else
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
 	echo "<input type='HIDDEN' name= 'wdbhce' value='".$wdbhce."'>";
-	$wactualiz = '2021-11-24';
-	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-	$wbasedato1 = strtolower( $institucion->baseDeDatos );
-	encabezado("TABLERO DE PACIENTES HC ",$wactualiz, $wbasedato1);
 	
 	// echo "<table border=0 CELLSPACING=0>";
 	// echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$codemp.".jpg'></td>";

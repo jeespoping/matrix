@@ -43,11 +43,10 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES 
 //-------------------------------------------------------------------------------------------------------------------------------------------- 
-$wactualiz='2021-12-15';// para pasar a produccion la variable $esproduccion debe estar en true y de manera visual se quitan los puntos a $wactualiz
+			$wactualiz='2020-06-18';// para pasar a produccion la variable $esproduccion debe estar en true y de manera visual se quitan los puntos a $wactualiz
 //--------------------------------------------------------------------------------------------------------------------------------------------  
 
 //--------------------------------------------------------------------------------------------------------------------------------------------   
-// 2021-12-15 (Juan Rodriguez): Se modifica wemp_pmla sobre escrito
 // 2020-04-15 Actualizacion del reporte de impresion de facturacion , tambien se le adicionan todos los IDs.
 // 2020-01-21 Se corrige el llamado  del reporte de facturacion para que se demore menos , evitando la actualizacion innecesaria de IDS
 
@@ -189,12 +188,10 @@ else
 {
 	include_once("root/comun.php");
 
-	$wemp_pmla = $_REQUEST['wemp_pmla'];
-
-	// if(!isset($wemp_pmla))
-	// {
-	// 	$wemp_pmla = "01";
-	// }
+	if(!isset($wemp_pmla))
+	{
+		$wemp_pmla = "01";
+	}
 	header('Content-type: text/html;charset=ISO-8859-1');
 	$user_session = explode('-',$_SESSION['user']);
 	$wuse = $user_session[1];
@@ -15598,16 +15595,16 @@ function add_months( dt , n )
 		$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 		$wbasedato1 = strtolower( $institucion->baseDeDatos );
 
-		// if ($wemp_pmla == 01 || $wemp_pmla == 10 )
-		// {
-		// 	$logo = $wbasedato1;
-		// }
-		// else
-		// {
-		// 	$logo = "logo_".$wbasedato1;
-		// }
+		if ($wemp_pmla == 01 || $wemp_pmla == 10 )
+		{
+			$logo = $wbasedato1;
+		}
+		else
+		{
+			$logo = "logo_".$wbasedato1;
+		}
 		// -->	ENCABEZADO
-		encabezado("Mipres de Suministros y Facturacion", $wactualiz, $wbasedato1);
+		encabezado("Mipres de Suministros y Facturacion", $wactualiz, $logo);
 
 
 		$wfechahoy=date("Y-m-d");

@@ -141,13 +141,10 @@ if(!isset($_SESSION['user']) && $proceso != "actualizar" && !isset($_GET['automa
 }
 else
 {
-		//if(!isset($wemp_pmla))
-	//{
-	//	$wemp_pmla = "01";
-	//}
-
-    $wemp_pmla = $_REQUEST['wemp_pmla'];
-	
+	if(!isset($wemp_pmla))
+	{
+		$wemp_pmla = "01";
+	}
 	header('Content-type: text/html;charset=ISO-8859-1');
 	$user_session = explode('-',$_SESSION['user']);
 	$wuse = $user_session[1];

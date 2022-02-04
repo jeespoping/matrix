@@ -54,7 +54,7 @@ if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $es
 	
 	$resabo = mysql_query( $sqlabo , $conex );
 	
-	echo "<form action='repDemandas.php?wemp_pmla=".$wemp_pmla."' method='post'><table align='center'>
+	echo "<form action='repDemandas.php?wemp_pmla=01' method='post'><table align='center'>
 		<tr class='encabezadotabla'>
 			<td>Abogado</td>
 			<td>Estado</td>
@@ -193,7 +193,7 @@ else
 	echo "</table>"; 
 	
 	echo "<br><br>
-	<form action='repDemandas.php?wemp_pmla=".$wemp_pmla."' method='post'>
+	<form action='repDemandas.php?wemp_pmla=01' method='post'>
 		<table align='center'>
 			<tr class='encabezadotabla'>
 				<td><INPUT type='submit' value='Retornar' style='width:100'></td>

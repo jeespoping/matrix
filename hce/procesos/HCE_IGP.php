@@ -163,7 +163,7 @@ else
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and  pacced = oriced ";
 		$query .= "   and  pactid = oritid ";
-		$query .= "   and oriori = '".$wemp_pmla."' ";
+		$query .= "   and oriori = '01' ";
 		$query .= "   and inghis = orihis ";
 		$query .= "   and  inging = oriing ";
 		$query .= "   and ubihis = inghis "; 

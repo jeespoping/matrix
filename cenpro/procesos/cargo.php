@@ -110,7 +110,6 @@ function mykeyhandler(event)
 <body>
 <?php
 include_once("conex.php");
-//actualización: Diciembre 13 de 2021 (Juan Rodriguez) -> Modificacion de variable quemada
 //actualizacion: Agosto 14 de 2013	(Edwin MG)	Se valida que halla conexión unix en inventario desde matrix, si no hay conexión
 //												con unix se activa la contigencia de dispensación.
 //actualizacion: Marzo 18 de 2013 		(Edwin MG)	Si un paciente se encuentra en urgencias se puede cargar cualquier producto.
@@ -249,11 +248,10 @@ function buscarCodigoNombreCamillero(){
 	
 	global $conex;
 	global $bd;
-	global $wemp_pmla;
 	
-	// global $bdCencam;
+	global $bdCencam;
 	
-	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
+	$bdCencam = "cencam";
 	
 	$val = '';
 	
@@ -293,10 +291,8 @@ function crearPeticionCamillero( $origen, $motivo, $hab, $destino, $solicita, $c
 	return;
 	global $conex;
 	global $bdCencam;
-	global $wemp_pmla;
 	
-	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
-	// $bdCencam = "cencam";
+	$bdCencam = "cencam";
 	
 	$fecha = date( "Y-m-d" );
 	$hora = date( "H:i:s" );
@@ -386,16 +382,13 @@ function nombreCcoCentralCamilleros( $codigo ){
 	
 	global $conex;
 	global $bd;
-	global $wemp_pmla;
-
-	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
 	
 	$val = '';
 	
 	$sql = "SELECT
 				Nombre
 			FROM
-			".$bdCencam."_000004
+				cencam_000004
 			WHERE
 				SUBSTRING_INDEX( cco, '-', 1 ) = '$codigo'
 				AND Estado = 'on'
@@ -1718,11 +1711,9 @@ function consultarInsumos($codigo, &$inslis)
 {
     global $conex;
     global $wbasedato;
-	global $wemp_pmla;
-	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
     $q = " SELECT Pdeins, Pdecan, Artcom, Artgen, Artuni, Unides "
-	 . "       FROM " . $wbasedato . "_000003, " . $wbasedato . "_000002, ".$wmovhos."_000027 "
+     . "       FROM " . $wbasedato . "_000003, " . $wbasedato . "_000002, movhos_000027 "
      . "    WHERE  Pdepro = '" . $codigo . "' "
      . "       AND Pdeest = 'on' "
      . "       AND Pdeins= Artcod "
@@ -1750,11 +1741,9 @@ function consultarPresentaciones(&$insumo, $cco, $historia, $ingreso)
 {
     global $conex;
     global $wbasedato;
-	global $wemp_pmla;
-	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
     $q = " SELECT Apppre, Artcom, Appcnv "
-	 . "        FROM  " . $wbasedato . "_000009, ".$wmovhos."_000026 "
+     . "        FROM  " . $wbasedato . "_000009, movhos_000026 "
      . "      WHERE  Appcod='" . $insumo['cod'] . "' "
      . "            and Appcco=mid('" . $cco . "',1,instr('" . $cco . "','-')-1) "
      . "            and Appest='on' "
@@ -1774,7 +1763,7 @@ function consultarPresentaciones(&$insumo, $cco, $historia, $ingreso)
             $presentacion[$i]['cnv'] = $row1['Appcnv']; 
             // consulto el ajuste que hay para la presentación
             $q = " SELECT Ajpart, Ajpcan, Ajpfve, Ajphve, Artcom, Artgen "
-			 . "        FROM " . $wbasedato . "_000010, " . $wbasedato . "_000009, ".$wmovhos."_000026 "
+             . "        FROM " . $wbasedato . "_000010, " . $wbasedato . "_000009, movhos_000026 "
              . "      WHERE Ajphis= '" . $historia . "' "
              . "            and Ajpest ='on' "
              . "            and Ajping = '" . $ingreso . "' "
@@ -1843,8 +1832,6 @@ function consultarPreparacion(&$escogidos)
 {
     global $conex;
     global $wbasedato;
-	global $wemp_pmla;
-	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
     $q = " SELECT Tipcod, Tipdes "
      . "        FROM " . $wbasedato . "_000001 "
@@ -1859,7 +1846,7 @@ function consultarPreparacion(&$escogidos)
         $preparacion [$i]['nom'] = $row[1]; 
         // consulto los conceptos
         $q = " SELECT Apppre, C.Artcom, Appuni, Appcod"
-		 . "        FROM " . $wbasedato . "_000002 A, " . $wbasedato . "_000009 B, ".$wmovhos."_000026 C "
+         . "        FROM " . $wbasedato . "_000002 A, " . $wbasedato . "_000009 B, movhos_000026 C "
          . "      WHERE A.Arttip = '" . $row[0] . "' "
          . "        AND A.Artcod = B.Appcod "
          . "        AND A.Artest='on' "
@@ -2256,9 +2243,8 @@ if( isset($user) && $user == '' )
     echo "error";
 else
 {
-	$wemp_pmla = $_REQUEST['wemp_pmla'];
 	$aplicaron = false;
-    //$wbasedato = 'cenpro';
+    $wbasedato = 'cenpro';
     
     include_once( "conex.php" );
 	include_once( "cenpro/cargos.inc.php" );
@@ -2275,19 +2261,17 @@ else
 	/******************************************************************/
 
     pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
-    //$bd = 'movhos'; 
+    $bd = 'movhos'; 
     // invoco la funcion connectOdbc del inlcude de ana, para saber si unix responde, en caso contrario,
     // este programa no debe usarse
     // include_once("pda/tablas.php");
     include_once("movhos/fxValidacionArticulo.php");
     include_once("movhos/registro_tablas.php");
     include_once("movhos/otros.php");
-	include_once("root/comun.php");
     include_once("cenpro/funciones.php");
     include_once("cenpro/carro.php");
     connectOdbc($conex_o, 'facturacion');
-	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
-	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+	
 	/**********************************************************************
 	 * Agosto 14 de 2013
 	 **********************************************************************/
@@ -2303,7 +2287,7 @@ else
         $exp = explode('-', $cco);
         $centro['cod'] = $exp[0];
         $centro['neg'] = false;
-        getCco($centro, $tipTrans, $wemp_pmla);
+        getCco($centro, $tipTrans, '01');
         $pac['his'] = $historia;
         $pac['ing'] = $ingreso;
         $cns = 0;
@@ -2312,7 +2296,7 @@ else
         $art['ubi'] = 'US';
         $serv['cod'] = $servicio;
         $art['ser'] = $servicio;
-        getCco($serv, $tipTrans, $wemp_pmla);
+        getCco($serv, $tipTrans, '01');
         
         $hab = $nom = '';
         
@@ -2342,7 +2326,7 @@ else
         // estos se cargan en un select llamado ccos.
         // consultamos si el producto es codificado o no
         $q = "SELECT Artcom, Tipcdo, Tippro, Arttnc "
-		 . "     FROM   " . $wbasedato . "_000002, ".$bd."_000027, " . $wbasedato . "_000001 "
+         . "     FROM   " . $wbasedato . "_000002, movhos_000027, " . $wbasedato . "_000001 "
          . "   WHERE Artcod='" . $cod . "' "
          . "     AND Unicod = Artuni "
          . "     AND Tipcod = Arttip "
@@ -2391,7 +2375,7 @@ else
 									if ($res)
 									{//3 
 										//Busco la información del paciente con Kardex Electronico
-	//                                	// esKE( $pac['his'], $pac['ing'], $packe );
+	//                                	esKE( $pac['his'], $pac['ing'], $packe );
 										$packe = $pac;
 										condicionesKE( $packe, $cod );
 										if( !$packe['ke'] || $packe['nut'] || $packe['nka'] || ( $packe['ke'] && $packe['gra'] ) || $packe['mmq'] )

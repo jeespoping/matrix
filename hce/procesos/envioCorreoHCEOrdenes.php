@@ -66,7 +66,7 @@ else
 				   WHERE Orihis='".$historia."' 
 				     AND Oriori='".$wemp_pmla."';";
 					 
-		$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		$ingresos = array();
@@ -88,7 +88,7 @@ else
 					FROM ".$wbasedatoCliame."_000100 
 				   WHERE Pachis='".$historia."';";
 					 
-		$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		$paciente = array();
@@ -106,7 +106,7 @@ else
 					   WHERE Orihis='".$historia."'
 					     AND Oriori='".$wemp_pmla."';";
 						 
-			$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+			$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 			$num = mysql_num_rows($res);
 			
 			if($num>0)
@@ -138,7 +138,7 @@ else
 				   WHERE Inghis='".$historia."' 
 					 AND Inging='".$ingreso."';";
 					 
-		$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		$entidad = array();
@@ -165,7 +165,7 @@ else
 				   WHERE Orihis='".$historia."' 
 				     AND Oriori='".$wemp_pmla."';";
 					 
-		$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		$documento = array();
@@ -197,7 +197,7 @@ else
 				   WHERE Inghis='".$historia."' 
 					 AND Inging='".$ingreso."';";
 					 
-		$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$num = mysql_num_rows($res);
 		
 		$email = "";
@@ -221,7 +221,7 @@ else
 					   WHERE Ubihis='".$historia."' 
 						 AND Ubiing='".$ingreso."';";
 						 
-			$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+			$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 			$num = mysql_num_rows($res);
 			
 			if($num>0)
@@ -243,7 +243,7 @@ else
 		$insert = " INSERT INTO ".$wbasedatoMovhos."_000281(Medico,Fecha_data,Hora_data,Loghis,Loging,Logtip,Logpdf,Logema,Logmsj,Logusu,Logeor,Seguridad) 
 													VALUES ('".$wbasedatoMovhos."','".date("Y-m-d")."','".date("H:i:s")."','".$historia."','".$ingreso."','".$tipo."','".$correo."','".$nombreArchivo."','".$mensaje."','".$usuario."','".$correoOrigen."','C-".$wbasedatoMovhos."');";
 	
-		$resultadoInsertar = mysqli_query_multiempresa($conex,$insert) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
+		$resultadoInsertar = mysqli_query($conex,$insert) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 	}
 	
 	function enviarPdf($conex, $wemp_pmla, $historia, $ingreso, $correo, $rutaArchivo, $nombreArchivo, $asunto, $mensaje, $prefijo, $wbasedatoMovhos, $usuario, $envioPaciente, $nombrePaciente, $nombreEntidad, $nombreEmpresa, $tiposOrdenesGeneradas)

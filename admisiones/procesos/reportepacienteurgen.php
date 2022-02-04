@@ -5,9 +5,7 @@
 //==========================================================================================================================================
 //PROGRAMA				      : REPORTE DE PACIENTES QUE LLEVA MAS DE 20 HORAS URGENCIAS                                      |
 //AUTOR				          : Ing. Didier Orozco Carmona.                                                                                       |
-//FECHA CREACION			  : 2019-02-26. 
-//FECHA ULTIMA ACTUALIZACION.
-                              : 2021-11-23.  Daniel CB.   -Se realiza modificación de parametro 01 quemado.                                                                                            |
+//FECHA CREACION			  : 2019-02-26.                                                                                             |
 //FECHA ULTIMA ACTUALIZACION  : 2019-02-26.                                                                                             |
 //DESCRIPCION			      : REPORTE DE PACIENTES QUE LLEVA MAS DE 20 HORAS URGENCIAS                                      |.        |
 //                                                                                                                                          |
@@ -18,13 +16,10 @@
 //                                                                                                                                     |
 //==========================================================================================================================================
 	-->
-<?php 
-    $wemp_pmla = $_REQUEST['wemp_pmla'];
-?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" HTTP-EQUIV="REFRESH" CONTENT="1;URL=http://132.1.18.13/matrix/admisiones/reportes/reportepacienteurgen.php?wemp_pmla=<?php echo $wemp_pmla; ?>"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" HTTP-EQUIV="REFRESH" CONTENT="1;URL=http://132.1.18.13/matrix/admisiones/reportes/reportepacienteurgen.php?wemp_pmla=01"/>
 <title>Consultar Registro</title>
 
 <script> 

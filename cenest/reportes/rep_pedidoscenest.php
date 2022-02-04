@@ -313,7 +313,7 @@ else
 		}
 
 		// $err1 = mysql_query($query,$conex);
-		$resultado_query = mysqli_query_multiempresa($conex, $query) or die(mysqli_error($conex));
+		$resultado_query = mysqli_query($conex, $query) or die(mysqli_error($conex));
 		// $num1 = mysql_num_rows($err1);
 		$num1 = mysqli_num_rows($resultado_query);
 

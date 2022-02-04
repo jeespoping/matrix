@@ -1,11 +1,5 @@
 <?php
 
-
-//===================== Actualizaciones ======================
-// 2021-10-15 Juan David Rodriguez: Modificacion de cliame global en la función validar usuario
-//=============================================================                      
-
-
 function validarExisteTabla100($conex, $wemp_pmla){
 	$wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 	$wbasedato = $wbasedato1->baseDeDatos;

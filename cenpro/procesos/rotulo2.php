@@ -952,7 +952,7 @@ function pintarRotulo($wemp_pmla,$wbasedato,$historia="",$codigo,$lote,$ph,$hora
 		$q = "SELECT Oriing, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac "
 		."      FROM root_000037, root_000036 "
 		."     WHERE Orihis = '".$historia."' "
-		."       AND Oriori = '".$wemp_pmla."' "
+		."       AND Oriori = '01' "
 		."       AND Oriced = Pacced "
 		."       AND Oritid = Pactid ";
 
@@ -970,7 +970,7 @@ function pintarRotulo($wemp_pmla,$wbasedato,$historia="",$codigo,$lote,$ph,$hora
 		."     WHERE Ubihis = '".$historia."' "
 		."       AND ubiing = '".$ingreso."' "
 		."       AND ubisac = Ccocod "
-		."       AND Ccoemp = '".$wemp_pmla."' ";
+		."       AND Ccoemp = '01' ";
 
 		$err=mysql_query($q,$conex);
 		$row1=mysql_fetch_array($err);

@@ -132,12 +132,10 @@ else
 
   $conex = obtenerConexionBD("matrix");
 
-  $wactualiz="(Noviembre 4 de 2021)";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="(Noviembre 7 de 2017)";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                                   // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 													   //=========================================================================================================================================\\
 //ACTUALIZACIONES
-// - DESCRIPCION Noviembre 04 de 2021 Daniel CB 
-// * Se agrega global Wemp_pmla en la función  generar_menu_justificaciones y se corrigen parametros quemados.
 //=========================================================================================================================================
 // - DESCRIPCION Julio 13 de 2021 Joel Payares Hernández
 //	* Se comenta lineas de código que colocan en modo limpieza la habitación que estaba habitada por el paciente.
@@ -514,9 +512,8 @@ else
 	{
 
         global $conex;
-		global $wemp_pmla;
 
-		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+		$wmovhos = consultarAliasPorAplicacion($conex, "01", "movhos");
 
 		$query = "SELECT Juscod, Jusdes
 					FROM `".$wmovhos."_000023`
@@ -561,7 +558,6 @@ else
 function obtenerRegistrosFila($qlog)
 {
 	global $conex;
-	global $wemp_pmla;
 
 	$reslog = mysql_query($qlog, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qlog . " - " . mysql_error());
 	$rowlog = mysql_fetch_row($reslog);
@@ -766,7 +762,7 @@ function obtenerRegistrosFila($qlog)
   //===============================================================================================================================================
 
 
-  $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+  $wmovhos = consultarAliasPorAplicacion($conex, "01", "movhos");
   $q = " SELECT Ubihac, Ubihis, Ubiing, ".$wbasedato."_000018.id, Ubihot, Ubisac "
       ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000011 "
       ."  WHERE Ubiptr != 'on' "             //Solo los pacientes que no esten siendo trasladados
@@ -1146,7 +1142,7 @@ function obtenerRegistrosFila($qlog)
             $resa = mysql_query($a,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$a." - ".mysql_error());
             $rowa = mysql_fetch_array($resa);
 
-            $wcentrosostoshot = consultarAliasPorAplicacion($conex, $wemp_pmla, "Hoteleros"); //Consulta el centro de costos de los usuario de hoteleria.
+            $wcentrosostoshot = consultarAliasPorAplicacion($conex, "01", "Hoteleros"); //Consulta el centro de costos de los usuario de hoteleria.
             $whoteleros = explode("-", $wcentrosostoshot);
             $num_usuarios = count($whoteleros);
 //            //Traigo los usuarios asociados al centro de costos

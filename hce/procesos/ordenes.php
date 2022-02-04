@@ -728,10 +728,7 @@ div.growlUI h1, div.growlUI h2 {
 	*************************************************
 	*
 	* Modificaciones:
-	* Diciembre 03 de 2021 Daniel CB.-Se realiza correccion de parametro 01 quemado.	
-	* Octubre 19 2021 juan David R  - Se modifican parametros quemados. 
 	* Octubre 8 2021		Sebastián Nevado	-Se agrega funcionalidad de mipres obligatorio basado en parámetro mipresEnListaMedicamentosOrdenes. Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
-	* Octubre 19 2021 juan David R  - Se modifican parametros quemados. 
 	* Junio 30 de 2020 		Edwin	- Se muestra la fecha y hora de toma de muestra
 	* Junio 23 de 2020 		Edwin	- Se muestra la justificación de cancelado en laboratorio bajo ele estado de la orden
 	* Mayo 19 de 2020 		Edwin	- Se llama a la función cambioEstadoInteroperabilidad para que se haga el cambio de estados por interoperabilidad automáticamente. 
@@ -838,7 +835,7 @@ if( !empty($hce) ){
 }
 
 $usuarioValidado = true;
-$wactualiz = "2021-12-03";
+$wactualiz = "Octubre 8 de 2021";
 
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false; 	
@@ -882,7 +879,7 @@ if(!isset($wemp_pmla)){
 }
 
 //Encabezado
-encabezado("Ordenes M&eacutedicas",$wactualiz,"clinica");
+encabezado("Ordenes médicas",$wactualiz,"clinica");
 	
 if (!$usuarioValidado){
 	echo '<span class="subtituloPagina2" align="center">';
@@ -1118,7 +1115,7 @@ if (!$usuarioValidado){
 		echo '<span class="encabezadotabla"><br><br>';
 		echo '<font size=3>La firma electrónica se encuentra vencida.</font>';
 		echo "</span><br><br>";
-		echo '<span style="font-weight:bold;">Por favor actualícela en: <a href="/matrix/hce/procesos/PassHCE.php?wemp_pmla='.$wemp_pmla.'&empresa='.$whce.'">Actualizar Firma</a></span>';
+		echo '<span style="font-weight:bold;">Por favor actualícela en: <a href="/matrix/hce/procesos/PassHCE.php?wemp_pmla='.$wemp_pmla.'&empresa=hce">Actualizar Firma</a></span>';
 		echo "</td>";
 		echo "</tr>";
 		echo "</table>";
@@ -4258,7 +4255,7 @@ if (!$usuarioValidado){
 						// Columna de tipo de servicio
 						echo "<td>".$examen->nombreCentroCostos."</td>";	
 						$pendiente_lectura = "";
-						if( permiteLecturaOrdenesPendientes( $conex, $wemp_pmla, $usuario->codigoRolHCE ) ){
+						if( permiteLecturaOrdenesPendientes( $conex, "01", $usuario->codigoRolHCE ) ){
 							if($examen->pendienteLectura=="on"){				
 								$pendiente_lectura = "style='background-color:#3CB648'";
 							}

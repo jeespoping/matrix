@@ -28,9 +28,6 @@ include_once("conex.php");
 
 //====================================================ACTUALIZACIONES=============================================================================//
 //========================================================================================================================================\\
-//Daniel CB: (18-Noviembre-2021)-> Se realiza corrección de parametro 01 quemado.
-//========================================================================================================================================\\
-//================================================================================================================================================
 //Camilo Zapata: (14-mayo-2012) -> Se agrego al reporte el campo costo produccion, el cual representa el costo que implicó producir una unidad del 
 //								   producto en cada uno de sus lotes, para esto se consultan las tablas 7, 8, y 14 de cenpro, las cuales contienen 
 //								   la informacion necesaria del inventario de los articulos ademas de los movimientos, la idea es que se busca 
@@ -250,7 +247,7 @@ include_once("conex.php");
 	echo "</table>";
  }
 
- 	$wactualiz = "2021-11-18"; /***********************
+	$wactualiz = "2012-04-18"; /***********************
 								** fecha actualizacion	
 								***********************/
 
@@ -271,7 +268,7 @@ encabezado("LISTADO PRODUCTOS EXISTENTES",$wactualiz, "clinica");
 	$fhoy = date("Y-m-d");
 	$acumulado = 0;
 	
-	echo "<form name='listarProdEx' action='rep_listarProductosExistentes.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<form name='listarProdEx' action='rep_listarProductosExistentes.php?wemp_pmla=01' method=post>";
 	
 		
 	if(!isset($wtip_pr))

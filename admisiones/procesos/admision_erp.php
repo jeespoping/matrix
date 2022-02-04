@@ -2707,7 +2707,6 @@ if (isset($accion) and $accion == 'guardarDatos'){
 
 	/*Fin insercion o actualizacion en la tabla hce_000022(medicos tratantes por historia)*/
 	global $key;
-	$wbasedato  = consultarAplicacion2($conex,$wemp_pmla,"cliame");
 	if( $data["error"] == 0 ){
 		$sql = "delete from ".$wbasedato."_000163
 				where Logusu='".utf8_decode($key)."'
@@ -4956,8 +4955,7 @@ if (isset($accion) and $accion == 'llenarTablaDatosLog')
 
 if (isset($accion) and $accion == 'traerTablaDatosLog')
 {
-	global $wemp_pmla;
-	$wbasedato  = consultarAplicacion2($conex,$wemp_pmla,"cliame");
+	global $wbasedato;
 	global $conex;
 
 	$data = array('error'=>0,'mensaje'=>'','html'=>'');

@@ -9,9 +9,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-				$wactualiz='Noviembre 19 de 2021';
-//--------------------------------------------------------------------------------------------------------------------------------------------   
-//	2021-11-19 Daniel CB.               - Se realiza corrección de parametro 01 quemado en oriori.                 
+			$wactualiz='Septiembre 26 de 2017';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //  2017-09-26 Jessica Madrid Mejía		- Se agrega espacio en la parte superior para que el quimico farmaceutico firme al imprimir el reporte
 //  2017-09-20 Jessica Madrid Mejía		- Se agrega utf8_encode ya que no se mostraba el reporte si había algún caracter especial.
@@ -114,7 +112,7 @@ else
 								 AND Preurp=Codigo
 								 AND Prehis=Orihis
 								 AND Preing=Oriing
-								 AND Oriori='".$wemp_pmla."'
+								 AND Oriori='01'
 								 AND Oriced=Pacced
 								 AND Oritid=Pactid
 							ORDER BY Prehis,Preing,Precod,Prelot";

@@ -2125,14 +2125,13 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 	global $wbasedato;
 	global $bd;
 	global $wfarstore;
-	global $wemp_pmla;
 
 	if(is_numeric($historia))
 	{
 		$q = "SELECT Oriing, Pacno1, Pacno2, Pacap1, Pacap2 
 		       FROM root_000037, root_000036 
 			  WHERE Orihis = '".$historia."' 
-				AND Oriori = '".$wemp_pmla."' 
+				AND Oriori = '01' 
 				AND Oriced = Pacced 
 				AND Oritid = Pactid";
 
@@ -2766,7 +2765,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 									 AND Kadcon = 'on'
 									 AND Kadhis = Orihis
 									 AND Kading = Oriing
-									 AND Oriori = '".$wemp_pmla."'
+									 AND Oriori = '01'
 									 AND Oriced = Pacced
 									 AND Oritid = Pactid
 									 AND Kadhis = Ubihis
@@ -2789,7 +2788,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 									 AND Kading = Oriing
 									 AND Kadcon = 'on'
 									 AND Kadart = Arkcod
-									 AND Oriori = '".$wemp_pmla."' 
+									 AND Oriori = '01' 
 									 AND Oriced = Pacced 
 									 AND Oritid = Pactid 
 									 AND Kadhis = Ubihis 
@@ -4639,7 +4638,7 @@ function queryDA($wemp_pmla,$wbasedatocm,$bd)
 								 ".$cadenaGruposAntibioticos."
 								 AND Orihis = Kadhis
 								 AND Oriing = Kading
-								 AND Oriori = '".$wemp_pmla."'
+								 AND Oriori = '01'
 								 AND Oriced = Pacced
 								 AND Oritid = Pactid
 								 AND Kadhis = Ubihis
@@ -4660,7 +4659,7 @@ function queryDA($wemp_pmla,$wbasedatocm,$bd)
 								 AND Artest='on'
 								 AND Orihis = Kadhis
 								 AND Oriing = Kading
-								 AND Oriori = '".$wemp_pmla."'
+								 AND Oriori = '01'
 								 AND Oriced = Pacced
 								 AND Oritid = Pactid
 								 AND Kadhis = Ubihis
@@ -4678,7 +4677,7 @@ function queryDA($wemp_pmla,$wbasedatocm,$bd)
 								 AND Kadest='on'
 								 AND Orihis = Kadhis
 								 AND Oriing = Kading
-								 AND Oriori = '".$wemp_pmla."'
+								 AND Oriori = '01'
 								 AND Oriced = Pacced
 								 AND Oritid = Pactid
 								 AND Kadhis = Ubihis

@@ -409,8 +409,6 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	$codemp = $_REQUEST['codemp'];
-	$wemp_pmla = $codemp;
 	echo "<form name='TableroAnt' action='TableroAnt.php' method=post>";
 	
 

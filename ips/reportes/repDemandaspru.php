@@ -17,10 +17,6 @@ include_once("conex.php");
 /*********************************************************************************************************
  * Actualizaciones
  * 
- *						2021-11-18
-						Daniel CB
-						-Se realiza modificación de paramatros 01 quemados.
- * 
  * Fecha:				2009-11-25
  * Programador:			Edwin Molina Grisales
  * Modificacion:		Se elimina tres campos, estos son: 
@@ -39,7 +35,7 @@ if(!isset($_SESSION['user']))
 $conex = obtenerConexionBD("matrix");
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "juridica");
 
-encabezado("DEMANDAS DE RESPONSABILIDAD CIVIL", "Noviembre 18 de 2021" , "clinica");
+encabezado("DEMANDAS DE RESPONSABILIDAD CIVIL", "1.0 Julio 24 de 2009" , "clinica");
 
 if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $estado ) ){
 	
@@ -90,7 +86,7 @@ if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $es
 	
 	$respol = mysql_query( $sqlpol , $conex );
 	
-	echo "<form action='repDemandaspru.php?wemp_pmla=".$wemp_pmla."' method='post'><table align='center'>
+	echo "<form action='repDemandaspru.php?wemp_pmla=01' method='post'><table align='center'>
 		<br><p align=center>Nombre médico involucrado: <INPUT type='text' name='medicos'></p><br>
 		<tr class='encabezadotabla'>
 			<td>Abogado</td>
@@ -296,7 +292,7 @@ else
 	echo "</table>"; 
 	
 	echo "<br><br>
-	<form action='repDemandaspru.php?wemp_pmla=".$wemp_pmla."' method='post'>
+	<form action='repDemandaspru.php?wemp_pmla=01' method='post'>
 		<table align='center'>
 			<tr align=center>
 				<td><INPUT type='submit' value='Retornar' style='width:100'></td>

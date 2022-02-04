@@ -49,7 +49,6 @@ function comparacion($vec1,$vec2)
 	   en un campo tipo Grid
 	   
 	   REGISTRO DE MODIFICACIONES 
-	    .2021-12-03 Daniel CB. Se realiza correccion de parametro quemado en oriori.
 	   	.2015-01-07
 	   		Release de Versión Beta. 
 	   
@@ -85,7 +84,7 @@ else
 	{
 		$query = "select Oriced, Oritid from root_000037 ";
 		$query .= " where Orihis = '".$whis."' ";
-		$query .= "   and Oriori = '".$origen."'";
+		$query .= "   and Oriori = '02' ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$row = mysql_fetch_array($err);
 		$wcedula = $row[0];

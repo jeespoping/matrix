@@ -10,8 +10,7 @@
 	</script>
 <body>
 <?php
-	include_once("conex.php");
-	include_once("root/comun.php");
+include_once("conex.php");
 	/***********************************************************************************************************************************
 	***    																															 ***				    
 	***	 										Solicitud De Autorizacion Servicion de Salud			     			 			 ***	
@@ -25,13 +24,8 @@
 	//DESCRIPCION					: 
 	//								 
 	//MODIFICACIONES:
-	// 2021-11-17: Juan David Rodriguez - Se modifica nit quemado
 	//===================================================================================================================================
-	$wemp_pmla= $_REQUEST['wemp_pmla'];
-	$wactualiz = "2021-11-18";
-	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-	encabezado( "Solicitud De Autorizacion De Servicios De Salud", $wactualiz, $institucion->baseDeDatos );
-	echo"<form name='forma' action='solSerSalud.php?wemp_pmla=".$wemp_pmla."' method='post'>";
+	echo"<form name='forma' action='solSerSalud.php' method='post'>";
 	{
 	
 	///////////////////////////////////////////////////////////////////////////////
@@ -220,11 +214,11 @@
 if(!isset($btnGenerar))
 {
 	echo"<table align='center' border='1' width='800'>";
-	// echo"<tr>";
-	// 	echo"<td colspan='1'><img src='/matrix/images/medical/pos/logo_".$empresa.".png' width='200' height='70' vspace=15 hspace=15></td>";
-	// 	echo"<td align='center' bgcolor='#227CE8' colspan='3'><font size='6' color='white'>Solicitud De Autorizacion De Servicios De Salud</font></td>";
-	// 	echo"</tr>";
-	// 	echo"<tr>";
+	echo"<tr>";
+		echo"<td colspan='1'><img src='/matrix/images/medical/pos/logo_".$empresa.".png' width='200' height='70' vspace=15 hspace=15></td>";
+		echo"<td align='center' bgcolor='#227CE8' colspan='3'><font size='6' color='white'>Solicitud De Autorizacion De Servicios De Salud</font></td>";
+		echo"</tr>";
+		echo"<tr>";
 		if(isset($txtHis) and isset($txtIng) and $txtHis != '' and $txtIng != '')
 		{
 			echo"<td align='center' colspan='6'><b>Historia: </b><input type='text' name='txtHis' size='8' value='".$txtHis."'><b> Ingreso: </b><input type='text' name='txtIng' size='2' value='".$txtIng."'></td>";
@@ -633,7 +627,7 @@ if((isset($btnGenerar) and $btnGenerar == '1') or (isset($btnConsultar) and $btn
 	   
 	//Se guarda la Informacion que no se encuentra en la Bd Matrix Hasta que se cree
 	
-	if($rowSelEmp[0]== $institucion->nit)
+	if($rowSelEmp[0]== '890939026-1')
 	{
 		$arrayDep = Div('005');
 		$arrayMun = Div('05266');
@@ -1149,18 +1143,18 @@ echo"<table width='800' border='1' align='center'>";
 		
 		return array($resSelect,$numSelect);
 	}
-	// function leading_zero( $aNumber, $intPart, $floatPart=NULL, $dec_point=NULL, $thousands_sep=NULL) 
-	// {        
-	//    $formattedNumber = $aNumber;
-	//    if (!is_null($floatPart)) 
-	//    {    //without 3rd parameters the "float part" of the float shouldn't be touched
-	//       $formattedNumber = number_format($formattedNumber, $floatPart, $dec_point, $thousands_sep);
-	//    }
-	//    if ($intPart > floor(log10($formattedNumber)))
-	//     $formattedNumber = str_repeat("0",($intPart + -1 - floor(log10($formattedNumber)))).$formattedNumber;
+	function leading_zero( $aNumber, $intPart, $floatPart=NULL, $dec_point=NULL, $thousands_sep=NULL) 
+	{        
+	   $formattedNumber = $aNumber;
+	   if (!is_null($floatPart)) 
+	   {    //without 3rd parameters the "float part" of the float shouldn't be touched
+	      $formattedNumber = number_format($formattedNumber, $floatPart, $dec_point, $thousands_sep);
+	   }
+	   if ($intPart > floor(log10($formattedNumber)))
+	    $formattedNumber = str_repeat("0",($intPart + -1 - floor(log10($formattedNumber)))).$formattedNumber;
 	 
-	//   return $formattedNumber;
-	// }
+	  return $formattedNumber;
+	}
 	function Div($string)
 	{
 		$splitted = '';

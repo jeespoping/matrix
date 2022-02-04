@@ -12,7 +12,7 @@
 </script>
 <script type="text/javascript">
 	function inicio(){ 
-		document.location.href='rep_PromedioUrgencias.php?wemp_pmla='+document.forms.forma.wemp_pmla.value; 
+		document.location.href='rep_PromedioUrgencias.php?wemp_pmla=01'+document.forms.forma.wemp_pmla.value; 
 	}
 </script>	
 <body>

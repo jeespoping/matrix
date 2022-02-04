@@ -1,8 +1,7 @@
 <?php
 /****************************************************************************************
  * Modificaciones:
- * Diciembre 16 de 2021     Juan David Rodriguez: -Se comentan lineas con el wemp_pmla sobrescrito.
- * Noviembre 24 de 2021     Daniel CB.  - Se realiza corrección de parametro 01 quemado. 
+ *
  * Actualizado: 18-Ene-2021 (Fernando Meneses): Creación de log en Guardar, descartar, guardar valor, verificar pago y admitir.
  * Actualizado: 21-Ene-2021 (Fernando Meneses): Se inhabilita Aseguradora al inicio de la carga para evitar error de carga en Plan.
  * Enero 15 de 2021 		Edwin MG:	- Se valida que el usuario este logueado.
@@ -27,7 +26,7 @@
 	if(!isset($_SESSION['user']))
 		exit( "<b>Usuario no registrado" );
 
-    $wactualiz = '2021-11-24';
+    $wactualiz = '2021-08-11';
     date_default_timezone_set("America/Bogota");
     // include('./config/db_connect.php');
     include_once("conex.php");
@@ -89,7 +88,7 @@
     //Consulta del listado de EPS Mavila :)
     $sql = "SELECT drvanm,drvnlb FROM ".$wbasedato."_000033 where drvast='on' order by drvanm ASC";
     // make query $ get result
-    $result = mysqli_query_multiempresa($conex, $sql);
+    $result = mysqli_query($conex, $sql);
     // fetch the resulting rows as an aaray
     $eps = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
@@ -97,7 +96,7 @@
 
     //Consulta de listado de barrios :)
     $sql = "SELECT Bardes,Barcod FROM root_000034 where Barmun='05001' order by Bardes ASC";
-    $result = mysqli_query_multiempresa($conex, $sql);
+    $result = mysqli_query($conex, $sql);
     $barrios = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
@@ -113,12 +112,12 @@
         c32.drvrtel,c32.drvrpar,c32.drvrpai,c32.drvrciu,c32.drvrdir, c33.drvanm, c35.drvser
         FROM ".$wbasedato."_000032 c32, ".$wbasedato."_000035 c35 , ".$wbasedato."_000033 c33
         WHERE drvord='' and c32.drvest='on'  AND c32.drvser=c35.drvcse AND c32.drvase=c33.drvnlb order by c32.Fecha_data DESC, c32.Hora_data DESC;";
-        $result = mysqli_query_multiempresa($conex, $sql);
+    $result = mysqli_query($conex, $sql);
     $registros = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
     //Consulta de tipos de servicios prestados :)
     $sql = "SELECT drvser, drvcse FROM ".$wbasedato."_000035 where drvest='on'  order by id ASC";
-    $result = mysqli_query_multiempresa($conex, $sql);
+    $result = mysqli_query($conex, $sql);
     $servicios = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
@@ -128,15 +127,15 @@
      */
     //piases
     $sql = "SELECT paicod,painom FROM root_000077 WHERE paiest='on' ORDER BY painom;";
-    $result = mysqli_query_multiempresa($conex, $sql);
+    $result = mysqli_query($conex, $sql);
     $paises = mysqli_fetch_all($result, MYSQLI_ASSOC);
     //parentescos
     $sql = "SELECT parcod, pardes FROM root_000067 WHERE parest='on' ORDER BY pardes;";
-    $result = mysqli_query_multiempresa($conex, $sql);
+    $result = mysqli_query($conex, $sql);
     $parentescos = mysqli_fetch_all($result, MYSQLI_ASSOC);
    //ciudades
     $sql = "SELECT codigo,nombre FROM root_000006 ORDER BY nombre;";
-    $result = mysqli_query_multiempresa($conex, $sql);
+    $result = mysqli_query($conex, $sql);
     $ciudades = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
@@ -164,7 +163,7 @@
         $sql =
             "SELECT Codigo , CodigoCups, NombreExamen, CodTubo FROM Examenes WHERE CodigoCups<>''  and SEREALIZA=1  order by Codigo ASC";
         // make query $ get result
-        $result = mysqli_query_multiempresa($connLab, $sql);
+        $result = mysqli_query($connLab, $sql);
         // fetch the resulting rows as an aaray
         $html = "<option value='' selected><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>";
 
@@ -213,7 +212,7 @@
         if ($data['Error'] == '1') {
             # code...
             $sql =   "UPDATE ".$wbasedato."_000032 SET drvenv='on' WHERE id='$id';";
-            $result = mysqli_query_multiempresa($conex, $sql);
+            $result = mysqli_query($conex, $sql);
 
             if ($result) {
                 echo $data['Error'];
@@ -233,7 +232,7 @@
         $empresa = $_GET['wemp_pmla'];
 
         $sql = "SELECT drvcam FROM ".$wbasedato."_000034 WHERE  drvemp=" . $empresa . ";";
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $configuraciones = mysqli_fetch_all($result, MYSQLI_ASSOC);
         // print_r($configuraciones);
 
@@ -244,7 +243,7 @@
         }
 
         $sql = "SELECT * FROM ".$wbasedato."_000034 WHERE  drvemp=" . $empresa . ";";
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $todasLasConfiguraciones = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
 
@@ -259,7 +258,7 @@
 
 
         $sql = "SELECT *  FROM root_000007 where Estado='on' order by id ASC";
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $tipoDocumento = mysqli_fetch_all($result, MYSQLI_ASSOC);
     }
 
@@ -269,7 +268,7 @@
         $cups = $_POST['consultarValorParticular'];
 
         $sql =  "SELECT drvncl FROM ".$wbasedato."_000031 where drvser='DT' AND drvnex=$cups;";
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $valorExamen = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
         print_r($valorExamen);
@@ -284,7 +283,7 @@
         drvnex,
         drvaut " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
 
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $html = "";
 
         // $html = "";
@@ -312,7 +311,7 @@
         drvnex,
         drvaut, drvpos,medico " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
 
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $examenesParaOT = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
         echo json_encode($examenesParaOT);
@@ -326,7 +325,7 @@
         // write query
         $id = $_POST['consultaPagosPendientes'];
         $sql = "SELECT id, drvpcf FROM ".$wbasedato."_000032 WHERE drvpcf='off' AND drvest ='on' order by id DESC";
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $pagosPentientes = mysqli_fetch_all($result, MYSQLI_ASSOC);
         echo json_encode($pagosPentientes);
         exit; // Agregado para que no retorne todo el resto de html que sigue para abajo
@@ -337,7 +336,7 @@
         $orden = $_POST['ordenLaboratorio'];
         $id = $_POST['id'];
         $sql =  "UPDATE ".$wbasedato."_000032 SET drvord='$orden' WHERE id='$id';";
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         if (!$result) {
             echo ("Error description: " . mysqli_error($conex));
         }
@@ -358,7 +357,7 @@
             $drvaut = $autorizaciones[$i]['drvaut'];
             $sql =  "UPDATE ".$wbasedato."_000036 SET drvaut='$drvaut' WHERE drvcit='$drvcit' AND drvcup='$drvcup';";
 
-            $result = mysqli_query_multiempresa($conex, $sql);
+            $result = mysqli_query($conex, $sql);
             if (!$result) {
                 echo ("Error description: " . mysqli_error($conex));
             }
@@ -374,7 +373,7 @@
         $sql = "UPDATE ".$wbasedato."_000032 SET drvpcf = CASE WHEN drvpcf = 'on' THEN 'off' WHEN drvpcf = 'off' THEN 'on' END WHERE id='$id'";
 
         // make query $ get result
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $pagoConfirmado = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
         print_r($pagoConfirmado);
@@ -388,7 +387,7 @@
         $date = date('Y-m-d H:i:s');
         $sql = "UPDATE ".$wbasedato."_000032 SET drvest = 'off', drvfed = '$date', drvusd = '$wusuario_logueado' WHERE id='$id'";
         // make query $ get result
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $pacienteDescartado = mysqli_fetch_all($result, MYSQLI_ASSOC);
         print_r($pacienteDescartado);
         exit;
@@ -400,14 +399,14 @@
         $id = $_POST['obtenerExamenes'];
 
         // $sql = "SELECT CodigoTarifa FROM Empresas  WHERE Nit = '" . $id . "';";
-        // $result = mysqli_query_multiempresa($connLab, $sql);
+        // $result = mysqli_query($connLab, $sql);
         // $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
         // $codigoTarifa = $tarifaLab[0]['CodigoTarifa'];
 
         // $sql = "SELECT CodigoExamen FROM ValorExamenes WHERE  ValorActual>=0 AND CodigoTarifa ='" . $codigoTarifa . "' AND CodigoExamen IN (SELECT Codigo FROM Examenes WHERE TipoPrueba<>'')";
 
 
-        // $result = mysqli_query_multiempresa($connLab, $sql);
+        // $result = mysqli_query($connLab, $sql);
         // $examenesConvenio = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
         // $listaExamenes = array();
@@ -426,7 +425,7 @@
                     FROM ValorExamenes WHERE  ValorActual>=0 
                     AND CodigoTarifa IN (SELECT CodigoTarifa FROM Empresas WHERE Nit = '".$id."') AND CodigoExamen IN (SELECT Codigo FROM Examenes WHERE TipoPrueba<>'')) order by Codigo ASC";
         // echo $sql;
-        $result = mysqli_query_multiempresa($connLab, $sql);
+        $result = mysqli_query($connLab, $sql);
         // $exams = mysqli_fetch_all($result, MYSQLI_ASSOC);
         // print_r($exams);
 
@@ -465,7 +464,7 @@
 
         $html = "";
 
-        $result = mysqli_query_multiempresa($$conex, $sql);
+        $result = mysqli_query($conex, $sql);
 
         if (!$result) {
             echo ("Error description: " . mysqli_error($conex));
@@ -483,7 +482,7 @@
     if (isset($_POST['consultarCodigoEmpresaLab'])) {
         $nit = $_POST['consultarCodigoEmpresaLab'];
         $sql = "SELECT Codigo FROM Empresas  WHERE Nit = '" . $nit . "';";
-        $result = mysqli_query_multiempresa($connLab, $sql);
+        $result = mysqli_query($connLab, $sql);
         $tarifaLab = mysqli_fetch_all($result, MYSQLI_ASSOC);
         $codigo = $tarifaLab[0]['Codigo'];
         mysqli_free_result($result);
@@ -510,7 +509,7 @@
         $sql = "UPDATE ".$wbasedato."_000032 SET drvvcr =$total  WHERE id='$id'";
 
         // make query $ get result
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         if (!$result) {
             echo ("Error description: " . mysqli_error($conex));
         }
@@ -537,7 +536,7 @@
         $sql = "UPDATE ".$wbasedato."_000032 SET drvlnk ='$link'  WHERE id='$id'";
 
         // make query $ get result
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         if (!$result) {
             echo ("Error description: " . mysqli_error($conex));
         }
@@ -551,7 +550,7 @@
         $parametro = $_POST['parametro'];
         $sql = "SELECT drvclb,drvvlr FROM citaslc_000031 where drvncl=$parametro order by Fecha_data";
         // make query $ get result
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $html = "<option value=''><?php echo utf8_decode('Elige una opci&oacute;n') ?></option>";
         while ($row = $result->fetch_array(MYSQLI_ASSOC)) {
             $html .= "<option value='$row[drvvlr]'>$row[drvclb]</option>";
@@ -571,7 +570,7 @@
             drvnex,
             drvaut " . "FROM ".$wbasedato."_000036 " . "WHERE drvcit='" . $id . "' order by Fecha_data";
 
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
         $html = "";
 
 
@@ -590,7 +589,7 @@
         echo $id;
         $sql = "UPDATE ".$wbasedato."_000032 SET drvest='off' WHERE id=" . $id . ";";
         echo $sql;
-        $result = mysqli_query_multiempresa($conex, $sql);
+        $result = mysqli_query($conex, $sql);
 
         exit;
     }
@@ -645,7 +644,7 @@
                 // Create sql
                 $sql = "INSERT INTO ".$wbasedato."_000032(Medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2,drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase,drvpol, drvcpl, drvser, drvexa, drvfsi, drvsin, drvcla, drvvcr,drvest, Seguridad, drvrtid, drvridp, drvrnom, drvrap, drvrtel, drvrpar, drvrpai,drvrciu, drvrdir) VALUES ('".$wbasedato."', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2','$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol','$drvcpl', '$drvser', '$drvexa', '$drvfsi', '$drvsin', '$drvcla', 0,'on','$wuse','$drvrtid', '$drvridp', '$drvrnom', '$drvrap', '$drvrtel', '$drvrpar', '$drvrpai', '$drvrciu', '$drvrdir' );";
                 //Validamos el insertar si se guarda la información :)
-                if (mysqli_query_multiempresa($conex, $sql)) {
+                if (mysqli_query($conex, $sql)) {
                     //Se procede a insertar los datos de los examenes :)
                     $fecha_data = date("Y-m-d");
                     $hora_data = date("H:i:s");
@@ -666,7 +665,7 @@
                     //Consulta para ingresar los examenes :)
                     $sqlExamenes = "INSERT INTO ".$wbasedato."_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
                     //Se valida el ingreso de los datos :)
-                    if (mysqli_query_multiempresa($conex, $sqlExamenes)) {
+                    if (mysqli_query($conex, $sqlExamenes)) {
                         $response['code'] = '200';
                         $response['content'] = 'Se registran los datos correctamente.';
                         escribirLog ('Cita creada','-1',$data);
@@ -1001,7 +1000,7 @@
             // Create sql
             $sql = "INSERT INTO ".$wbasedato."_000032(Medico, Fecha_data, Hora_data, drvtid, drvidp, drvnom, drvap1, drvap2,drvbdy, drvsex, drvtel, drvmov, drvdir, drvbar, drvema, drvase,drvpol, drvcpl, drvser, drvexa, drvfsi, drvsin, drvcla, drvvcr,drvest, Seguridad, drvrtid, drvridp, drvrnom, drvrap, drvrtel, drvrpar, drvrpai,drvrciu, drvrdir) VALUES ('".$wbasedato."', '$fecha_data', '$hora_data', '$drvtid', '$drvidp', '$drvnom', '$drvap1', '$drvap2','$drvbdy', '$drvsex', '$drvtel', '$drvmov', '$drvdir', '$drvbar', '$drvema', '$drvase', '$drvpol','$drvcpl', '$drvser', '$drvexa', '$drvfsi', '$drvsin', '$drvcla', 0,'on','$wuse','$drvrtid', '$drvridp', '$drvrnom', '$drvrap', '$drvrtel', '$drvrpar', '$drvrpai','$drvrciu', '$drvrdir' );";
           
-            if (mysqli_query_multiempresa($conex, $sql)) {
+            if (mysqli_query($conex, $sql)) {
                 // Sucess
                 // The connection will be closed when the index php is loaded
                 // header('Location: ' . $url);
@@ -1027,7 +1026,7 @@
                 //$sql = "INSERT INTO citaslc_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
                 $sql = "INSERT INTO ".$wbasedato."_000036 (medico,Fecha_data,Hora_data,drvcit,drvcup,drvnex,drvpos,Seguridad) VALUES " . $inserts;
 
-                if (mysqli_query_multiempresa($conex, $sql)) {
+                if (mysqli_query($conex, $sql)) {
                     header('Location: ' . $url);
                 } else {
                     # code...
@@ -2924,7 +2923,7 @@
                     respuesta = response;
                     comentarios = respuesta.replace(/\s/g, "_")
                     let edad = getAge(fechaNacimiento)
-                    window.open(`/matrix/citas/procesos/calendar.php?empresa=citaslc&wemp_pmla=${wemp_pmla}&caso=2&wsw=&fest=off&consultaAjax=&id=${id}&cedula=${cedula}&paciente=${paciente}&telefono=${telefono}&email=${email}&url=${url}&edad=${edad}&comentarios=${comentarios}&aseguradora=${aseguradora}`, "_blank")
+                    window.open(`/matrix/citas/procesos/calendar.php?empresa=citaslc&wemp_pmla=01&caso=2&wsw=&fest=off&consultaAjax=&id=${id}&cedula=${cedula}&paciente=${paciente}&telefono=${telefono}&email=${email}&url=${url}&edad=${edad}&comentarios=${comentarios}&aseguradora=${aseguradora}`, "_blank")
 					//EscribirLog (id, 'Abrir agenda');		
                 },
                 error: function() {

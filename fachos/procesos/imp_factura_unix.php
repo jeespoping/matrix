@@ -212,8 +212,7 @@ if( $consultaAjax == "on" ){
       document.body.style.height = '185mm';
     }
     function regresar(){
-       var wemp_pmla = $("#wemp_pmla").val();
-       window.location = "imp_factura_unix.php?wemp_pmla="+wemp_pmla+"&wparam=1";
+       window.location = "imp_factura_unix.php?wemp_pmla=01&wparam=1";
     }
 
     function cerrarPagina(){

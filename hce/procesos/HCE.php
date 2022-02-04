@@ -6,14 +6,12 @@ include_once("conex.php");
 	   Fecha de Liberacion : 2009-07-09
 	   Autor : Pedro Ortiz Tamayo
 	   Version Inicial : 2009-07-09
-	   Version actual  : 2021-11-11
+	   Version actual  : 2020-06-23
 	   
 	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface grafica que permite registrar los datos clinicos
 	   de un paciente, en distintos formularios segun la estructura logica definida en la metadata de la HCE.
 	   
 	   REGISTRO DE MODIFICACIONES :
-	   .2021-11-11
-			1. Se corrige el encabezado para que sea multiempresa.  
 	   .2020-06-23
 			1. Para los campos tipo tabla antes de insertar valida si ese campo permite repetidos (están configurados en 
 			   root_000051 - permitiRepetirCodigoCampoTablaHCE) de lo contrario los elimina (funcionamiento normal) 
@@ -431,7 +429,7 @@ function consultarCcoInteroperabilidad($conex,$wdbmhos,$whis,$wing)
 			   WHERE Ubihis='".$whis."' 
 				 AND Ubiing='".$wing."';";
 				 
-	$res = mysqli_query_multiempresa($conex,$query) or die ("Error: " . mysqli_errno() . " - en el query:  - " . mysqli_error());
+	$res = mysqli_query($conex,$query) or die ("Error: " . mysqli_errno() . " - en el query:  - " . mysqli_error());
 	$num = mysql_num_rows($res);
 	
 	$ccoInteroperabilidad = false;
@@ -990,13 +988,16 @@ else
 		{
 			case "T":
 				echo "</head>";
+				echo "<body style='background-color:#E8EEF7' FACE='ARIAL' LINK='BLACK'>";
 				echo "<div id='1'>";
+				echo "<form name='HCE1' action='HCE.php' method=post>";
 				
-				include_once("root/comun.php");
-				$institucion = consultarInstitucionPorCodigo($conex, $origen);
-            	$wbasedato = strtolower( $institucion->baseDeDatos );
-				$wactualiz = '2021-11-11';
-				encabezado("HISTORIA CLINICA ELECTRONICA HCE",$wactualiz,$wbasedato);
+				echo "<table border=0 CELLSPACING=0>";
+				echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$origen.".jpg'></td>";
+				echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;HISTORIA CLINICA ELECTRONICA HCE&nbsp;&nbsp;<A HREF='/matrix/root/Reportes/DOC.php?files=/var/www/matrix/hce/procesos/HCE.php' target='_blank'>Version 2018-04-05</A></td></tr>";
+				echo "<tr><td id=tipoT03 colspan=2></td></tr>";
+				echo "</table>";
+				echo"</form>";
 			break;
 			
 			case "U": 
@@ -1004,7 +1005,7 @@ else
 	  			echo "<BODY TEXT='#000000' FACE='ARIAL'>";
 	  			echo "<div id='1'>";
 				$key = substr($user,2,strlen($user));
-				echo "<form name='HCE2' action='HCE.php?wemp_pmla=".$origen."' method=post>";
+				echo "<form name='HCE2' action='HCE.php' method=post>";
 				$query = "select descripcion from usuarios where codigo = '".$key."'";
 				$err = mysql_query($query,$conex);
 				$row = mysql_fetch_array($err);
@@ -1036,7 +1037,7 @@ else
 	  			echo "<div id='29'>";
 				$key = substr($user,2,strlen($user));
 				echo "<form name='HCE3' action='HCE.php' method=post>";
-				echo "<meta http-equiv='refresh' content='240;url=/matrix/HCE/procesos/HCE.php?wemp_pmla=".$origen."&accion=A&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' target='alergias'>";
+				echo "<meta http-equiv='refresh' content='240;url=/matrix/HCE/procesos/HCE.php?accion=A&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' target='alergias'>";
 				echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 				echo "<center><input type='HIDDEN' name= 'origen' value='".$origen."'>";
 				echo "<center><input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
@@ -1239,7 +1240,7 @@ else
 	  			echo "<BODY TEXT='#000066' BGCOLOR='#E8EEF7' FACE='ARIAL'>";
 	  			echo "<div id='1'>";
 	  			$key = substr($user,2,strlen($user));
-				echo "<form name='HCE4' action='HCE.php?wemp_pmla=".$origen."' method=post>";
+				echo "<form name='HCE4' action='HCE.php' method=post>";
 				echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 				echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
 				echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
@@ -1346,7 +1347,7 @@ else
 								$wpostit = 99;
 								if(strpos($MENU[$numM][3],"-") !== false)
 									$wpostit = substr($MENU[$numM][3],strpos($MENU[$numM][3],"-")+1);
-									$MENU[$numM][3]="/matrix/hce/Procesos/HCE.php?wemp_pmla=".$origen."&accion=M&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wformulario=".substr($MENU[$numM][3],2,6)."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wpostit=".$wpostit."";
+								$MENU[$numM][3]="/matrix/hce/Procesos/HCE.php?accion=M&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wformulario=".substr($MENU[$numM][3],2,6)."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wpostit=".$wpostit."";
 							}
 							else
 							{
@@ -1502,7 +1503,7 @@ else
 	  			echo "<BODY TEXT='#000000' FACE='ARIAL'>";
 	  			echo "<div id='1'>";
 				$key = substr($user,2,strlen($user));
-				echo "<form name='HCE5' action='HCE.php?wemp_pmla=".$origen."' method=post>";
+				echo "<form name='HCE5' action='HCE.php' method=post>";
 				echo "<body style='background-color:#FFFFFF'  onload='mueveReloj()' FACE='ARIAL'>";
 				echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 				echo "<center><input type='HIDDEN' name= 'origen' value='".$origen."'>";
@@ -1608,16 +1609,16 @@ else
 				if(!isset($wservicio))
 					$wservicio = "*";
 				
-				$path0="/matrix/HCE/Procesos/HCE.php?wemp_pmla=".$origen."&accion=W2&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing;
+				$path0="/matrix/HCE/Procesos/HCE.php?accion=W2&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing;
 				// CENTRO DE IMPRESION
 				$path1="/matrix/HCE/procesos/solimp.php?wemp_pmla=".$origen."&whis=".$whis."&wing=".$wing."&wservicio=".$wservicio;
-				$path2="/matrix/HCE/procesos/HCE_Notas.php?wemp_pmla=".$origen."&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wservicio=".$wservicio;
-				$path3="/matrix/HCE/procesos/HCE_Historico.php?wemp_pmla=".$origen."&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing;
-				$path4="/matrix/HCE/procesos/HCE_Impresion.php?wemp_pmla=".$origen."&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing."&protocolos=0&CLASE=C&noCentrar=true";
-				$path5="/matrix/HCE/procesos/HCE_NotasC.php?wemp_pmla=".$origen."&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing;
-				$path6="/matrix/HCE/procesos/HCE_Impresion.php?wemp_pmla=".$origen."&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing."&protocolos=1&CLASE=I";
+				$path2="/matrix/HCE/procesos/HCE_Notas.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wservicio=".$wservicio;
+				$path3="/matrix/HCE/procesos/HCE_Historico.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing;
+				$path4="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing."&protocolos=0&CLASE=C&noCentrar=true";
+				$path5="/matrix/HCE/procesos/HCE_NotasC.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing;
+				$path6="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing."&protocolos=1&CLASE=I";
 				$path7="/matrix/HCE/procesos/envioCorreoHCEOrdenes.php?wemp_pmla=".$origen."&historia=".$whis."&ingreso=".$wing."&esIframe=on";
-				$path8="/matrix/HCE/procesos/visorOrdenes.php?wemp_pmla=".$origen."&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing;
+				$path8="/matrix/HCE/procesos/visorOrdenes.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing;
 				
 				$mostrarVisorResultados = consultarAliasPorAplicacionHCE($conex,$origen,"mostrarVisorResultadosHCE");
 				$visorResultados = "";
@@ -1655,7 +1656,7 @@ else
 				}
 				
 				echo "<tr><td colspan=4 id=tipoL04C><input type='TEXT' name='txtformulario' id='txtformulario' size=1 value='' readonly='readonly' class=tipo3TW><input type='TEXT' name='txttitulo' id='txttitulo' size=45 value='".$wtitulo."' readonly='readonly' class=tipo3T></td><td colspan=2 id=tipoL03C>";
-				echo "<A HREF='#' id='btnModal".$index."' name='btnModal".$index."'  onClick='javascript:mostrarFlotante(\"\",\"nombreIframe\",\"/matrix/HCE/Procesos/HCE.php?wemp_pmla=".$origen."&accion=W2&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wtitframe=no\",\"".$alto."\",\"".$ancho."\");'><IMG SRC='/matrix/images/medical/HCE/hceR.png' id='ICONOS[1]' title='Otros Registros Asociados'  onMouseMove='tooltipIconos(1)' style='width:40px;'></A>&nbsp;";
+				echo "<A HREF='#' id='btnModal".$index."' name='btnModal".$index."'  onClick='javascript:mostrarFlotante(\"\",\"nombreIframe\",\"/matrix/HCE/Procesos/HCE.php?accion=W2&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wtitframe=no\",\"".$alto."\",\"".$ancho."\");'><IMG SRC='/matrix/images/medical/HCE/hceR.png' id='ICONOS[1]' title='Otros Registros Asociados'  onMouseMove='tooltipIconos(1)' style='width:40px;'></A>&nbsp;";
 				//echo "<A HREF='#' id='REGISTROS ASOCIADOS' onclick='javascript:activarModalIframe(\"REGISTROS ASOCIADOS\",\"nombreIframe\",\"".$path0."\",\"0\",\"0\");'><IMG SRC='/matrix/images/medical/HCE/hceR.png' id='ICONOS[1]' title='Otros Registros Asociados'  onMouseMove='tooltipIconos(1)'></A>&nbsp;&nbsp;";
 				echo "<A HREF='#' id='VISTA PRELIMINAR' onclick='javascript:activarModalIframe(\"VISTA PRELIMINAR\",\"nombreIframe\",\"".$path1."\",\"0\",\"0\");'><IMG SRC='/matrix/images/medical/HCE/hceP.png' id='ICONOS[2]' title='Vista Preliminar'  onMouseMove='tooltipIconos(2)' style='width:40px;'></A>&nbsp;";
 				echo "<A HREF='#' id='NOTAS' onclick='javascript:activarModalIframe(\"NOTAS\",\"nombreIframe\",\"".$path2."\",\"0\",\"0\");'><IMG SRC='/matrix/images/medical/HCE/hceN.png' id='ICONOS[3]' title='Notas Complementarias'  onMouseMove='tooltipIconos(3)' style='width:40px;'></A>&nbsp;";
@@ -1704,9 +1705,9 @@ else
 					$span1=$row[2];
 					$span2=$row[1];
 					if(isset($LABELSMART))
-					echo "<iframe src='HCE.php?wemp_pmla=".$origen."&accion=W1&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$wformulario."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wpostit=".$wpostit."&width=".$span1."&LABELSMART=".$LABELSMART."' name='titulos' marginwidth=0 scrolling='no' framespacing='0' frameborder='0' border='0'  border='0' height='".$span2."' width='".$span1."'  marginheiht=0>";
+						echo "<iframe src='HCE.php?accion=W1&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$wformulario."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wpostit=".$wpostit."&width=".$span1."&LABELSMART=".$LABELSMART."' name='titulos' marginwidth=0 scrolling='no' framespacing='0' frameborder='0' border='0'  border='0' height='".$span2."' width='".$span1."'  marginheiht=0>";
 					else
-					echo "<iframe src='HCE.php?wemp_pmla=".$origen."&accion=W1&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$wformulario."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wpostit=".$wpostit."&width=".$span1."' name='titulos' marginwidth=0 scrolling='no' framespacing='0' frameborder='0' border='0'  border='0' height='".$span2."' width='".$span1."'  marginheiht=0>";
+						echo "<iframe src='HCE.php?accion=W1&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$wformulario."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wpostit=".$wpostit."&width=".$span1."' name='titulos' marginwidth=0 scrolling='no' framespacing='0' frameborder='0' border='0'  border='0' height='".$span2."' width='".$span1."'  marginheiht=0>";
 					echo "</iframe>";
 				}
 				else
@@ -1852,7 +1853,7 @@ else
 				echo "<div id='19'>";
 				$key = substr($user,2,strlen($user));
 				
-				echo "<form name='HCE6' action='HCE.php?wemp_pmla=".$origen."' method=post>";
+				echo "<form name='HCE6' action='HCE.php' method=post>";
 				echo "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />";
 				echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 				echo "<center><input type='HIDDEN' name= 'origen' value='".$origen."'>";
@@ -3620,7 +3621,7 @@ else
 										$id1="if(grabagrid(".$i.")){ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','".$okGrid."');}";
 										$id2="if(modificagrid(".$i.")){ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','".$okGrid."');}";
 										$id3="borragrid(".$i.");ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','".$okGrid."');";
-										$path="/matrix/hce/reportes/HCE_Grid_History.php?wemp_pmla=".$origen."&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wformulario=".$wformulario."&wcons=".$registro[$i][2];
+										$path="/matrix/hce/reportes/HCE_Grid_History.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wformulario=".$wformulario."&wcons=".$registro[$i][2];
 										//echo "<td id=tipoL02GRID2><IMG SRC='/matrix/images/medical/HCE/gra.png' onClick=".$id1." /></td><td id=tipoL02GRID2><IMG SRC='/matrix/images/medical/HCE/mod.png' onClick=".$id2." /></td><td id=tipoL02GRID2><IMG SRC='/matrix/images/medical/HCE/del.png' onClick=".$id3." /></td><td id=tipoL02GRID2><IMG SRC='/matrix/images/medical/HCE/lim.png' onClick='limpiagrid(".$i.")' /></td></tr>";
 										echo "<td id='GRIDTT[1]' title='GRABAR' class=tipoL02GRID2 onMouseMove='tooltipGrid(1)' onClick=".$id1."><IMG SRC='/matrix/images/medical/HCE/gra.png'></td><td id='GRIDTT[2]' title='MODIFICAR' class=tipoL02GRID2 onMouseMove='tooltipGrid(2)' onClick=".$id2."><IMG SRC='/matrix/images/medical/HCE/mod.png'></td><td id='GRIDTT[3]' title='BORRAR' class=tipoL02GRID2 onMouseMove='tooltipGrid(3)' onClick=".$id3."><IMG SRC='/matrix/images/medical/HCE/del.png'></td><td id='GRIDTT[4]' title='LIMPIAR' class=tipoL02GRID2 onMouseMove='tooltipGrid(4)' onClick='limpiagrid(".$i.")'><IMG SRC='/matrix/images/medical/HCE/lim.png'><td id='GRIDTT[5]' title='HISTORICO' class=tipoL02GRID2 onMouseMove='tooltipGrid(5)' onclick='javascript:activarModalIframe(\"HISTORICO\",\"nombreIframe\",\"".$path."\",\"0\",\"0\");'><IMG SRC='/matrix/images/medical/HCE/History.png'></td></tr>";
 										$Gdataseg=explode("*",$registro[$i][0]);
@@ -4264,7 +4265,7 @@ else
 										
 										$rwidth=(integer)(($width * $span)/$Span);
 										if(is_numeric($registro[$i][25]))
-										echo "<td colspan=".$span." width=".$rwidth." id=tipoL02 align=center>".$salto."<input type='button' id='btnModal".$i."' name='btnModal".$i."' value='".htmlentities($registro[$i][9])."' onClick='javascript:activarModalIframe(\"".htmlentities($registro[$i][9])."\",\"nombreIframe\",\"/matrix/HCE/Procesos/HCE.php?wemp_pmla=".$origen."&accion=W1&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$registro[$i][25]."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wtitframe=no&width=".$width."\",\"".$alto."\",\"".$ancho."\");'></td>";
+											echo "<td colspan=".$span." width=".$rwidth." id=tipoL02 align=center>".$salto."<input type='button' id='btnModal".$i."' name='btnModal".$i."' value='".htmlentities($registro[$i][9])."' onClick='javascript:activarModalIframe(\"".htmlentities($registro[$i][9])."\",\"nombreIframe\",\"/matrix/HCE/Procesos/HCE.php?accion=W1&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$registro[$i][25]."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wtitframe=no&width=".$width."\",\"".$alto."\",\"".$ancho."\");'></td>";
 										else
 										{
 											$registro[$i][25]=str_replace("HIS",$whis,$registro[$i][25]);
@@ -4819,7 +4820,7 @@ else
 								{
 									if($WTIPO == 3)
 									{
-										$path4="/matrix/HCE/procesos/HCE_Tipo3.php?wemp_pmla=".$origen."empresa=hce&wformulario=".$wformulario."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wtitulo=".$wtitulo;
+										$path4="/matrix/HCE/procesos/HCE_Tipo3.php?empresa=hce&wformulario=".$wformulario."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wtitulo=".$wtitulo;
 										echo "<tr><td id=tipoL06 colspan=".$span."><A HREF='#' id='FIRMA' class=tipo3V onclick='javascript:activarModalIframe(\"FIRMA DIGITAL\",\"nombreIframe\",\"".$path4."\",\"0\",\"0\");'>FIRMA DIGITAL</A></td></tr>";
 									}
 									else
@@ -4963,7 +4964,7 @@ else
 				echo "<div id='1' height=50px>";
 				
 				$key = substr($user,2,strlen($user));
-				echo "<form name='HCE7' action='HCE.php?wemp_pmla=".$origen."' method=post>";
+				echo "<form name='HCE7' action='HCE.php' method=post>";
 							
 				echo "<div id='tabs' class='tipotabs'>";		
 				echo "<ul>";

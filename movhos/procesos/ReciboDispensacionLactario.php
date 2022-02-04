@@ -33,7 +33,7 @@
 			var contenedor = document.getElementById('cntHabitacion');
 			var parametros = "";
 
-			parametros = "consultaAjaxInclude=2&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + servicio+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
+			parametros = "consultaAjaxInclude=2&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + servicio;
 
 			try{
 				$.blockUI({ message: $('#msjEspere') });
@@ -390,7 +390,7 @@
 
 	 	//Si la longitud es de 13 caracteres se trata de una lectura de codigo, se debe buscar 7613030045786
 	 	var parametros = "";
-	 	parametros = "consultaAjaxInclude=01&basedatos="+document.forms.forma.wbasedato.value+"&codigoBarras="+codigo+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;;
+	 	parametros = "consultaAjaxInclude=01&basedatos="+document.forms.forma.wbasedato.value+"&codigoBarras="+codigo;
 
 	 	try{
 //	 		$.blockUI({ message: $('#msjEspere') });
@@ -465,9 +465,7 @@ include_once("root/comun.php");
  * Autor: Msanchez
  * Version: 1.0
  *
-	* Cambios:
- * 2021-11-04 (Daniel CB) Se realiza modificación de parametros quemados y se agrega el global wemp_pmla en la función consultarListadoPendienteReciboLactario.
- * 
+ * Cambios:
  * 2013-12-12 ( Camilo ZZ) se modificó el script para que muestre en pantalla el consolidado( la suma de los cargos del mismo artículo y del mismo número de documento),
  * 			   adicionalmente se crearon funciones js para que lo que se reciba en ese consolidado quede distribuído de manera correcta dentro de los inputs que mantienen la información de los cargos
  *			   individuales. De tal manera que se muestre en conjunto pero se guarde en la tabla correcta y en los registros correctos
@@ -641,7 +639,6 @@ function centrosCostosRecibenCarro(){
 function consultarListadoPendienteReciboLactario($servicio,$grupos){
 	global $conex;
 	global $wbasedato;
-	global $wemp_pmla;
 
 	$col = array();
 
@@ -750,7 +747,7 @@ function consultarListadoPendienteReciboLactario($servicio,$grupos){
 			$consulta = $consulta."<tr class='$clase'>";
 
 			//*************************Paciente
-			$q2 = "SELECT pacno1, pacno2, pacap1, pacap2, pactid, pacced FROM root_000036, root_000037 WHERE oriced = pacced AND orihis = '".$rs4['Habhis']."' AND oriing = '".$rs4['Habing']."' AND Oriori = '".$wemp_pmla;
+			$q2 = "SELECT pacno1, pacno2, pacap1, pacap2, pactid, pacced FROM root_000036, root_000037 WHERE oriced = pacced AND orihis = '".$rs4['Habhis']."' AND oriing = '".$rs4['Habing']."' AND Oriori = '01';";
 //			echo $q2;
 			$res2 = mysql_query($q2,$conex) or die ("Error: " . mysql_errno() . " - en el queryas: " . $q2 . " - " . mysql_error());
 			$paciente = mysql_fetch_array($res2);
@@ -1239,7 +1236,7 @@ function consultarArticulosPendientesReciboPaciente($historia,$ingreso,$consecut
 /*****************
  * Inicio
  *****************/
-$wactualiz = " 2021-11-04";
+$wactualiz = " 2013-12-12";
 $usuarioValidado = true;
 
 if (!isset($user) || !isset($_SESSION['user'])){

@@ -12,10 +12,6 @@
     </style>
     <?php
 include_once("conex.php");
- /** 
-     * Modificaciones:
-     * 2021-11-16 - Juan David Rodriguez: Se modifica variables quemadas (nit y nombre de empresa)
-    */
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -37,7 +33,7 @@ include_once("conex.php");
 
         $conex = obtenerConexionBD("matrix");
         $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-        $wactualiz = "2021-11-16";
+        $wactualiz = "1.1 16-Mayo-2017";
     }
     session_start();
     ?>
@@ -104,14 +100,10 @@ if(!isset($fte) or $fte=='' or !isset($fac) or $fac == '')
 else
 {
     $valorRadio = $_POST['radio'];
-    $wemp_pmla = $_REQUEST['wemp_pmla'];
-    $wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-    $wnit = $wbasedato1->nit;
-    $wnombre = $wbasedato1->nombre;
 
     $query_o1="SELECT '' numcosec,'' numconrec,'' numtiprad,'' numradant,'EPS010' codent,ateidetii,ateideide,ateideap1,ateideap2,ateideno1,
                         ateideno2,pacarsafi,'' nivcta,'' numacta,'' fechaact,'' fecsolmed,'' indperirec,'' mesper,'' anoper,'' numentre,movfue,
-                        movdoc,cardetfec,mdiadia,'' porsema,'".$wnit."' nitprov,conarc,'".$wnombre."' nomprov,
+                        movdoc,cardetfec,mdiadia,'' porsema,'800067065' nitprov,conarc,'PROMOTORA MEDICA LAS AMERICAS S.A.' nomprov,
                         cardetcon,cardetcod,cardetcan,cardetvun,cardettot,0 vlrctamod,carfacval,cardetfue,cardetdoc,cardetite,cardetreg"
         ."	FROM famov,facarfac,facardet,msate,msateide,inmegr,inmdia,facon,inpacars"
         ."	WHERE movfue='$fte'"

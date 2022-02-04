@@ -26,7 +26,6 @@ include_once("conex.php");  header("Content-Type: text/html;charset=ISO-8859-1")
  * Modificaciones:
  * Enero 22 de 2022  Marlon Osorio  Se parametriza los centros de costos de Dispensacion Servicio Farmaceutico (1050) y 
  * 									Central de Mezclas (1051)
- * Octubre 25 de 2021   Daniel CB   Se realizan cambios en parametros quemados 
  * Agosto 13 de 2019	Edwin MG	Se castea valor en array ($arrAplicacion) como entero
  * Enero 29 de 2019		Edwin MG	En la función generarListaProtocolos se agrega filtro de estado en la consulta principal
  * Agosto 6 de 2018		Edwin MG	A la función consultarExamenesAnteriorHCE se comenta su contenido ya que esta función se llama
@@ -99,11 +98,9 @@ $conex = obtenerConexionBD("matrix");
 /**********************************
  * PARAMETROS DE LA BASE DE DATOS *
  **********************************/
-
-global $wemp_pmla
-$horaCorteDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"horaCorteDispensacion");
-$inicioDiaDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"inicioDiaDispensacion");
-$topePorcentualCtc 		= consultarAliasPorAplicacion($conex,$wemp_pmla,"topePorcentualCTC");
+$horaCorteDispensacion 	= consultarAliasPorAplicacion($conex,"10","horaCorteDispensacion");
+$inicioDiaDispensacion 	= consultarAliasPorAplicacion($conex,"10","inicioDiaDispensacion");
+$topePorcentualCtc 		= consultarAliasPorAplicacion($conex,"10","topePorcentualCTC");
 
 /***********************************
  * CLASES
@@ -1125,15 +1122,13 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
-	global $wemp_pmla;
 
 	$esSF = $centroCostos == $centroCostosServicioFarmaceutico ? true : false;
 	$esCM = $centroCostos == $centroCostosCentralMezclas ? true : false;
 
 	$codigo = str_replace("-","%",$codigo);
 	
-	$wcenpro = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenpro" );
-	registrarFraccion( $conex, $wbasedato, $cenpro, $codigo, $centroCostosCentralMezclas, $wbasedato );	//Marzo 7 de 2011
+	registrarFraccion( $conex, $wbasedato, "cenpro", $codigo, $centroCostosCentralMezclas, $wbasedato );	//Marzo 7 de 2011
 
 	//*******************************Grupos que puede ver el centro de costos del usuario
 	$tieneGruposIncluidos = false;
@@ -11347,9 +11342,8 @@ function consultarDetalleDefinitivoPerfil($historia,$ingreso,$fecha){
 function consultarDetallePerfilKardex($historia,$ingreso,$fecha){
 	global $wbasedato;
 	global $conex;
-	global $wemp_pmla;
 	global $usuario;		//Información de usuario
-	
+
 	$coleccion = array();
 
 	global $centroCostosServicioFarmaceutico;
@@ -11460,7 +11454,7 @@ function consultarDetallePerfilKardex($historia,$ingreso,$fecha){
 			/****************************************************************************************
 			 * Junio 7 de 2012
 			 ****************************************************************************************/
-			$wcenmez = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+			$wcenmez = consultarAliasPorAplicacion( $conex, "10", "cenmez" );
 			 
 			if( isset($detalle->origen) && $detalle->origen == $codigoCentralMezclas ){
 				if( esProductoNoPOSCM( $conex, $wbasedato, $wcenmez, $info['Kadart'] ) ){
@@ -18601,7 +18595,6 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 	global $centroCostosServicioFarmaceutico;
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
-	global $wemp_pmla;
 
 	global $protocoloNormal;
 	
@@ -18735,8 +18728,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 	$cantidadDosis = $fila['Kadcan'];
 	$dosisMaxima = trim( $fila['Kaddma'] );
 	
-	$wcempro = consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenpro" );
-	$esGenerico = esArticuloGenerico( $conexion, $wbasedatos, $wcenpro, $codArticulo );
+	$esGenerico = esArticuloGenerico( $conexion, $wbasedatos, "cenpro", $codArticulo );
 	
 	//Si el articulo que se va a reemplazar es generico se debe cambiar la cantidad de fracción
 	//según la definición de fracciones
@@ -18751,8 +18743,8 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 				if( trim($fila['Kadufr']) != trim($fila3['Deffru']) ){	//Febrero 21 de 2011
 					
 					$cantidadFraccion = ceil( $fila['Kadcfr']/$fila['Kadcma'] )*$fila3['Deffra'];	//Enero 24 de 2011
-					$wcempro = consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenpro" );
-					if( esTipoGenerico( $conexion, $wbasedatos, $wcenpro, $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){		
+					
+					if( esTipoGenerico( $conexion, $wbasedatos, "cenpro", $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){
 //						$cantidadFraccion = ceil( $fila['Kadcfr']/$fila3['Deffra'] )*$fila3['Deffra'];
 						$cantidadFraccion = (1)*$fila3['Deffra'];
 					}
@@ -18775,9 +18767,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 					 * 
 					 * Si el articulo es de un tipo  generico se debe gastar toda la bolsa
 					 ************************************************************************************************************/
-
-					consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenpro" );
-					if( esTipoGenerico( $conexion, $wbasedatos, $wcenpro, $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){
+					if( esTipoGenerico( $conexion, $wbasedatos, "cenpro", $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){
 //						$cantidadFraccion = ceil( $fila['Kadcfr']/$fila3['Deffra'] )*$fila3['Deffra'];
 						$cantidadFraccion = (1)*$fila3['Deffra'];
 					}

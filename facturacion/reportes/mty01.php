@@ -18,10 +18,6 @@
         });
     </script>
     <?php
-    /** 
-     * Modificaciones:
-     * 2022 Daniel CB: Se modifica variables quemadas (nit y nombre de empresa)
-    */
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -41,7 +37,7 @@
 
         $conex = obtenerConexionBD("matrix");
         $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-        $wactualiz = "2022-02-01";
+        $wactualiz = "1.4 10-julio-2018";
     }
     session_start();
     ?>
@@ -165,19 +161,10 @@ else
     $numConsRadicado = $_POST['numConsRadicado'];       $numConsRecobro = $_POST['numConsRecobro'];
     $numeroActa = $_POST['numeroActa'];                 $fechaActa = date("d/m/Y", strtotime($fechaAc));
     $porcSemanas = $_POST['porcSemanas'];
-    $wemp_pmla = $_REQUEST['wemp_pmla'];
-    $wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-    $wnit = $wbasedato1->nit;
-    $wnombre = $wbasedato1->nombre;
-
-    $wemp_pmla = $_REQUEST['wemp_pmla'];
-    $wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-    $wnit = $wbasedato1->nit;
-    $wnombre = $wbasedato1->nombre;
 
     $query_o1="SELECT '' numcosec,'' numconrec,'' numtiprad,'' numradant,'EPS010' codent,ateidetii,ateideide,ateideap1,ateideap2,ateideno1,
                         ateideno2,pacarsafi,'' nivcta,'' numacta,'' fechaact,'' fecsolmed,'' indperirec,'' mesper,'' anoper,'' numentre,movfue,
-                        movdoc,cardetfec,mdiadia,'' porsema,'".$wnit."' nitprov,conarc,'".$wnombre."' nomprov,
+                        movdoc,cardetfec,mdiadia,'' porsema,'800067065' nitprov,conarc,'PROMOTORA MEDICA LAS AMERICAS S.A.' nomprov,
                         cardetcon,cardetcod,cardetcan * conmul can,cardetvun * conmul vun,cardettot * conmul val1,0 vlrctamod,carfacval * conmul val2,cardetfue,cardetdoc,cardetite,cardetreg"
         ."	FROM famov,facarfac,facardet,msate,msateide,inmegr,inmdia,facon,inpacars"
         ."	WHERE movfue='$fte'"

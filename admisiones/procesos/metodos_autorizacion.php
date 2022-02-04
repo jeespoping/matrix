@@ -140,7 +140,7 @@
 
 		// print_r( $queryDatosPaciente );die();
 
-		$resultado_query = mysqli_query_multiempresa($conex, $queryDatosPaciente) or $data['error'] = (mysqli_error($conex));
+		$resultado_query = mysqli_query($conex, $queryDatosPaciente) or $data['error'] = (mysqli_error($conex));
 
 		if( mysqli_num_rows($resultado_query) == 0 ) {
 			return [
@@ -226,7 +226,7 @@
 		}
 
 		mysqli_set_charset( $conex, 'utf8' );
-		$resEnc = mysqli_query_multiempresa( $conex, $sqlInsert ) || ( $data[ 'mensaje' ] = utf8_encode( mysqli_errno( $conex )." - Error grabando en la tabla - ".mysqli_error( $conex ) ) );
+		$resEnc = mysqli_query( $conex, $sqlInsert ) || ( $data[ 'mensaje' ] = utf8_encode( mysqli_errno( $conex )." - Error grabando en la tabla - ".mysqli_error( $conex ) ) );
 
 		if ( !$resEnc ){
 			return [
@@ -525,7 +525,7 @@
 				 AND Autest = 'on'
 				";
 
-			$resultado_query = mysqli_query_multiempresa($conex, $sqlser) or die( mysqli_error($conex) );
+		$resultado_query = mysqli_query($conex, $sqlser) or die( mysqli_error($conex) );
 
 		if( mysqli_num_rows($resultado_query) == 0 ) {
 			return $data = [];
@@ -577,7 +577,7 @@
 		}
 
 		mysqli_set_charset($conex, 'utf8');
-		$resultado_query = mysqli_query_multiempresa($conex, $sqlser) or die( mysqli_error($conex) );
+		$resultado_query = mysqli_query($conex, $sqlser) or die( mysqli_error($conex) );
 
 		if( mysqli_num_rows($resultado_query) == 0 ) {
 			return $data = false;

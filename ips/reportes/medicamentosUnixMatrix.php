@@ -352,7 +352,6 @@ if( isset($consultaAjax) == false ){
 }
 
 //**************************ENCARGADO DE RECIBIR LOS LLAMADOS CON AJAX********************************************//
-$wemp_pmla = $_REQUEST['wemp_pmla'];
 if(isset($accion))
 {
 	include_once("root/comun.php");
@@ -390,8 +389,7 @@ function consultarlog($wdocumento, $wlinea, $whistoria, $wingreso, $wfuente,$wre
 {
 	global $conex;
 	global $conexUnix;
-	global $wemp_pmla;
-	// $wemp_pmla = "01";
+	$wemp_pmla = "01";
 	$conex = obtenerConexionBD("matrix");
 	$wbasedato = 'movhos';
 
@@ -518,8 +516,7 @@ function consultarMedicamentos($wemp_pmla,$fechainicio,$fechafin,$cco)
 
 	global $conex;
 	global $conexUnix;
-	global $wemp_pmla;
-	// $wemp_pmla = "01";
+	$wemp_pmla = "01";
 	$conex = obtenerConexionBD("matrix");
 	$wbasedato = 'movhos';
 
@@ -1275,8 +1272,7 @@ function consultarcco ($fechaini, $fechafin,$wemp_pmla)
 {
 	global $conex;
 	global $conexUnix;
-	global $wemp_pmla;
-	// $wemp_pmla = "01";
+	$wemp_pmla = "01";
 
 	$conex = obtenerConexionBD("matrix");
 
@@ -1315,21 +1311,21 @@ function consultarcco ($fechaini, $fechafin,$wemp_pmla)
 	include_once("root/comun.php");
 	include_once("movhos/movhos.inc.php");
 	//include_once("root/magenta.php");
-	$wemp_pmla = $_REQUEST['wemp_pmla'];
+
 
 
 	/********************************************************************************************
 	****************************** INICIO APLICACIÓN ********************************************
 	********************************************************************************************/
 	$wbasedato = "";
-	$wactualiz = " Diciembre 17 de 2021 ";
+	$wactualiz = " Noviembre 25 de 2015 ";
 
 
 	//Variable para determinar la empresa
-	// if(!isset($wemp_pmla))
-	// {
-	// 	$wemp_pmla = '01';
-	// }
+	if(!isset($wemp_pmla))
+	{
+		$wemp_pmla = '01';
+	}
 
 	encabezado("Estado Medicamentos Unix VS Matrix ", $wactualiz, "clinica");
 

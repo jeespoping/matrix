@@ -12,7 +12,7 @@
 </script>
 <script type="text/javascript">
 	function inicio(){ 
-		document.location.href='rep_PromedioUrgencias.php?wemp_pmla='+document.forms.forma.wemp_pmla.value; 
+		document.location.href='rep_PromedioUrgencias.php?wemp_pmla=01'+document.forms.forma.wemp_pmla.value; 
 	}
 </script>	
 <body>
@@ -36,11 +36,7 @@ include_once("conex.php");
 // MOVHOS_000018			  :Tabla que contiene los centros de costos con los que se va a hacer la relacion con la tabla HCE_000022	
 //                                                                                         													 |
 // ==========================================================================================================================================
-//	Modificaciones:
-//  Noviembre 18 de 2021   Daniel CB.   - Se realiza corrección de parametro 01 quemado.	
-// ==========================================================================================================================================
-
-$wactualiz = "2021-11-18";
+$wactualiz = "Ver. 2011-12-16";
 
 	
 //================================================================================
