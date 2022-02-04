@@ -1576,7 +1576,7 @@ else{
 			echo "<div id='dvPiePagina'>";
 			echo "<br><br>";
 			echo "<center>"; 
-			echo "<a id='lkCita' href='../../citas/procesos/000001_prx5.php?empresa=$wbasecitas' target='_blank'>Asignar cita</a>";
+			echo "<a id='lkCita' href='../../citas/procesos/000001_prx5.php?empresa=$wbasecitas&wemp_pmla=$wemp_pmla' target='_blank'>Asignar cita</a>";
 			echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 //			echo "<a id='lkImpresion' href='impresion.php?doc={$infoMedico->codigo}' target='_blank'>Consultar e imprimir</a>";
 			echo "<a id='lkImpresion' href='../../{$infoMedico->grupoSolucion}/procesos/impresion.php?doc={$infoMedico->codigo}' target='_blank'>Consultar e imprimir</a>";
