@@ -165,6 +165,7 @@
 		$historia = '';
 		$ingreso = '';
 		$codigo_responsable = '';
+		$pacientes_paf = array();
 
 		if( !isset($conex) )
 		{
@@ -180,6 +181,11 @@
 				'state'			=>	404,
 				'description'	=>	'Falta el campo código de empresa, es obligatorio.'
 			];
+		}
+
+		foreach( $pacientes as $paciente )
+		{
+
 		}
 
 		foreach( $pacientes as $paciente )
@@ -520,6 +526,38 @@
 	 * 
 	 */
 	function validarFacturaPAF($historia = null, $ingreso = null, $responsable = null)
+	{
+		$esPAF = false;
+		$sql = "
+			  SELECT	movcer
+				FROM	facardet, facarfac, famov, cafue
+			   WHERE	cardethis = '{$historia}'
+				 AND	cardetnum = '{$ingreso}'
+				 AND	cardetfac = 'S'
+				 AND	cardetreg = carfacreg
+				 AND	movdoc = carfacdoc
+				 AND	movfue = fuecod
+				 AND	fuetip = 'FA'
+			";
+		
+		$respuesta = odbc_exec($conex_unix, $sql);
+
+		if( $respuesta )
+		{
+			while ($fila = odbc_fetch_array($respuesta))
+			{
+				foreach( $responsablesPAF as $responsablePAF )
+				{
+					// Se validaria si el nit es de un PAF
+					$esPAF = ($fila['movcer'] == $responsablePAF ? true : false);
+				}
+			}
+		}
+
+		return $esPAF;
+	}
+
+	function validarResponsablePAF( $conex_unix = null, $responsable = null)
 	{
 		$esPAF = false;
 		$sql = "
