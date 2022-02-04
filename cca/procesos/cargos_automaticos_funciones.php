@@ -48,7 +48,7 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 							, Grudes as ccaconnom
 							, Grutip as ccacontip
 							, ccacup 
-							, Nombre as ccacupnom
+							, Pronom as ccacupnom
 							, ccacco 
 							, ccaart
 							, Artcom as ccaartnom
@@ -68,7 +68,7 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 					LEFT JOIN ".$wbasedato_movhos."_000026 ON Artcod = ccaart 
 					LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
 					LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> ''
-					LEFT JOIN root_000012 ON Codigo = ccacup
+					LEFT JOIN ".$wbasedato_facturacion."_000103 ON Procod = ccacup
 					LEFT JOIN ".$wbasedato_hce."_".$wformulario." as fhce ON ( cca.ccachce = movcon AND Dettip = movtip AND ccadat = 'on' AND movusu = '".$mov_usu."' AND fhce.Fecha_data = '".$fecha."' AND fhce.id = (SELECT MAX(id) FROM ".$wbasedato_hce."_".$wformulario." WHERE movusu = '".$mov_usu."' AND Fecha_data = '".$fecha."' AND movhis = '".$movhis."' AND moving = '".$moving."' AND cca.ccachce = movcon AND Dettip = movtip) )
 					WHERE ccafhce = '".$wformulario."'";	
 	
@@ -95,8 +95,8 @@ function obtenerDatosCCAxOrden($conex, $origen, $wprocedimiento, $tipoOrdAdmComo
 		$query = "SELECT ccacon 
 							, Grudes as ccaconnom
 							, Grutip as ccacontip
-							, Codigo ccacup 
-							, Nombre as ccacupnom
+							, Procod ccacup 
+							, Pronom as ccacupnom
 							, ccacco 
 							, ccaart
 							, Artcom as ccaartnom
@@ -112,7 +112,7 @@ function obtenerDatosCCAxOrden($conex, $origen, $wprocedimiento, $tipoOrdAdmComo
 					LEFT JOIN ".$wbasedato_movhos."_000026 ON Artcod = ccaart 
 					LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
 					LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> ''
-					LEFT JOIN root_000012 ON Codigo = ".$wprocedimiento."
+					LEFT JOIN ".$wbasedato_facturacion."_000103 ON Procod = ".$wprocedimiento."
 					WHERE FIND_IN_SET('".$wprocedimiento."', ccacup)
 					AND ccator = ''
 					AND ccaord='on'";
@@ -121,8 +121,8 @@ function obtenerDatosCCAxOrden($conex, $origen, $wprocedimiento, $tipoOrdAdmComo
 		$query = "SELECT ccacon 
 							, Grudes as ccaconnom
 							, Grutip as ccacontip
-							, Codigo ccacup 
-							, Nombre as ccacupnom
+							, Procod ccacup 
+							, Pronom as ccacupnom
 							, ccacco 
 							, ccaart
 							, Artcom as ccaartnom
@@ -138,7 +138,7 @@ function obtenerDatosCCAxOrden($conex, $origen, $wprocedimiento, $tipoOrdAdmComo
 					LEFT JOIN ".$wbasedato_movhos."_000026 ON Artcod = ccaart 
 					LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
 					LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> ''
-					LEFT JOIN root_000012 ON Codigo = ".$wprocedimiento."
+					LEFT JOIN ".$wbasedato_facturacion."_000103 ON Procod = ".$wprocedimiento."
 				   WHERE ccator = '".$tor."'  
 					 AND (FIND_IN_SET('".$wprocedimiento."', ccacup) OR (ccacup = '*' AND NOT FIND_IN_SET('".$wprocedimiento."', ccapex)))
 					 AND ccaord='on'";
@@ -167,7 +167,7 @@ function obtenerDatosCCAxAplicacion($conex, $origen, $wmedicamento, $movhis, $mo
 							, Grutip as ccacontip
 							, Gruinv as wconinv
 							, ccacup 
-							, Nombre as ccacupnom
+							, Pronom as ccacupnom
 							, ccacco 
 							, ccaart 
 							, a1.Artcom as ccaartnom
@@ -185,7 +185,7 @@ function obtenerDatosCCAxAplicacion($conex, $origen, $wmedicamento, $movhis, $mo
 					LEFT JOIN ".$wbasedato_movhos."_000026 a2 ON a2.Artcod = ccamoi 
 					LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
 					LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> ''
-					LEFT JOIN root_000012 ON Codigo = ccacup
+					LEFT JOIN ".$wbasedato_facturacion."_000103 ON Procod = ccacup
 					WHERE ccamoi = '".$wmedicamento."' 
 					AND ccapre='on' ".$condicion_tipo_cco;
 					
