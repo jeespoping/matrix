@@ -129,13 +129,15 @@ function consultarCentrosCostos(){
 function consultarUsuariosQueRecibenDevoluciones(){
 	global $wbasedato;
 	global $conex;
+	global $ccoCM;
+	global $ccoSF;
 	
 	$q = "SELECT 
 			Codigo, Descripcion 
 		FROM 
 			usuarios
 		WHERE 
-			Ccostos IN ('1050','1051')
+			Ccostos IN ({$ccoSF},{$ccoCM})
 			AND Activo = 'A'
 		ORDER BY Descripcion";
 	
@@ -164,7 +166,10 @@ function consultarUsuariosQueRecibenDevoluciones(){
  */
 include_once("root/comun.php");
 
-$wactualiz = " 1.0 15/Abril/2009";
+$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+
+$wactualiz = " Enero 12 de 2022";
 
 if (!isset($user)){
 	if (!isset($_SESSION['user'])) {
@@ -314,6 +319,13 @@ if (!isset($_SESSION['user'])){
 	}
 	liberarConexionBD($conex);
 }
+/**
+ * Actualizacion:
+ *  -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico 
+ * @by: Marlon Osorio
+ * @date: 2022/01/11
+ * 
+*/
 ?>
 </body>
 </html>

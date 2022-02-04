@@ -58,7 +58,7 @@ include_once("conex.php");
  
  /************************************************************************************************************************************************************************
   * Modificaciones:
-  * 
+  * Enero 12 de 2022 Marlon Osorio. -Se parametrizo el centro de costo de Central de Mezclas
   * Julio 11 de 2012 Viviana Rodas.  Se agrega el llamado a las funciones 
   * consultaCentrosCostos que hace la consulta de los centros de costos 
   * de un grupo seleccionado y dibujarSelect que dibuja el select con los 
@@ -236,6 +236,8 @@ function registrarTipoProducto( $conex, $wcenmez, $codigo, $descripcion, $codifi
  */
 function crearInsumo( $conex, $wcenmez, $wbasedato, $articulo, $nombreComercial, $nombreGenerico, $unidad, $conversion ){
 	
+	global $ccoCM;
+	
 	$val = true;
 	
 	//Consulto si presentacion del aritculo
@@ -272,7 +274,7 @@ function crearInsumo( $conex, $wcenmez, $wbasedato, $articulo, $nombreComercial,
 		$tiempoVencimiento = 24*60;
 		$costo = 0;
 		
-		registrarPresentacion( $conex, $wcenmez, $insumo, $articulo, '1051', $conversion, $existencias, $tiempoVencimiento, $unidad, $costo );
+		registrarPresentacion( $conex, $wcenmez, $insumo, $articulo, $ccoCM, $conversion, $existencias, $tiempoVencimiento, $unidad, $costo );
 		
 		$via = '';
 		$fechaCreacion = date( "Y-m-d" );
@@ -2653,9 +2655,11 @@ window.onload = function(){
 //echo date("Y-m-d H:i:s");
 echo "<form method=post>";
 	
-	$wactualiz = " Julio 11 de 2012";
+	$wactualiz = "Enero 12 de 2022";
 
 	include_once("root/comun.php");
+
+	$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
 
 	$conex = obtenerConexionBD("matrix");
 	$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
