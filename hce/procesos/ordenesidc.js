@@ -4711,7 +4711,7 @@ function autocompletarParaConsultaDiagnosticas(){
 					//////////////////////////////////////////////////////////
 
 
-					var urlform = 'HCE.php?accion=M&ok=0&empresa='+document.forms.forma.wbasedatohce.value+'&origen='+document.forms.forma.wemp_pmla.value+'&wdbmhos='+document.forms.forma.wbasedato.value+'&wformulario='+formTipoOrden+'&wcedula='+document.forms.forma.wcedula.value+'&wtipodoc='+document.forms.forma.wtipodoc.value;
+					var urlform = 'HCE.php?accion=M&ok=0&empresa='+document.forms.forma.wbasedatohce.value+'&origen='+document.forms.forma.wemp_pmla.value+'&wdbmhos='+document.forms.forma.wbasedato.value+'&wformulario='+formTipoOrden+'&wcedula='+document.forms.forma.wcedula.value+'&wtipodoc='+document.forms.forma.wtipodoc.value+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
 					
 					//window.open(urlform,'_blank');
 					$.blockUI({ message: $('<iframe src="'+urlform+'" width="950px" height="95%" scrolling="yes" frameborder="0" align="center"></iframe><div align="center"><input type="button" name="cerrarvtnhce" id="cerrarvtnhce" onClick="cerrarFormHCE('+cuentaExamenes+',\''+document.forms.forma.wbasedatohce.value+'\',\''+formTipoOrden+'\',\''+historia+'\',\''+ingreso+'\')" value="Cerrar ventana" /></div>'),
@@ -7009,7 +7009,7 @@ function grabarKardex(wimprimir){
 					
 				}
 			
-				abrir_ventana("ordenesidc_imp.php", document.forms.forma.wemp_pmla.value, document.forms.forma.whistoria.value, document.forms.forma.wingreso.value,txDiag,wimprimir);
+				abrir_ventana("ordenesidc_imp.php", document.forms.forma.wemp_pmla.value, document.forms.forma.whistoria.value, document.forms.forma.wingreso.value,txDiag,wimprimir+"&wemp_pmla="+document.forms.forma.wemp_pmla.value);
 			}
 			else
 				alert("Debe firmar digitalmente para poder realizar la impresión de a orden");
