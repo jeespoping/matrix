@@ -26,7 +26,7 @@
 
     <title>MATRIX Listas Para Altas</title>
     <!-- UTF-8 is the recommended encoding for your pages -->
-    <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <!-- <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script> -->
     <style type="text/css">
         body{background:white url(portal.gif) transparent center no-repeat scroll;}
         #tipo1{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;}
@@ -1317,6 +1317,7 @@ else
                             echo "<input type='HIDDEN' name= 'num' value='".$num."'>";
 
 
+                            $estadoCargos = validarCargosDiferenteProcesado($conex,$row[0],$row[1]);
                             //Valida si ya puede generar factura y además si todo esta registrado desde la entrega de turno secretaria.
                             if($row[16] == 1 and $wcontrol[$i] == 0)
                                 {
@@ -1331,6 +1332,8 @@ else
                                     echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3>$wobservaciones_textarea</textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=1 onclick='enter()'>Pagar <input type='RADIO' name='wf[".$i."]' value=2 onclick='enter()'>Sin Pago</td></tr>";
                                 }
                             }
+                            
+                    
                             elseif( $row[16] == 3)
                             {
 
@@ -1379,11 +1382,11 @@ else
                                 if(isset($wres[$i]) and isset($wporfacturar[$i])) //Si estan declaradas las dos variables se mostrará esta opción.
                                 {
 
-                                    echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='enter()'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
+                                    echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$num.", ".$i.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
                                 }
                                 else{
                                     echo "<tr>";
-                                    echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='enter()'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
+                                    echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$num.", ".$i.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
                                     echo "</td></tr>";
                                 }
                             }
