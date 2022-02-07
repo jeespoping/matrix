@@ -185,7 +185,15 @@
 
 		foreach( $pacientes as $paciente )
 		{
+			$responsable = isset( $paciente['responsable'] ) && !empty( $paciente['responsable'] ) ? $paciente['responsable'] : null;
 
+			$respuesta_validacion = validarResponsablePAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $responsable);
+
+			if( $respuesta_validacion['esPaf'] )
+			{
+				$paciente['responsable'] = $respuesta_validacion['responsable'];
+				array_push($pacientes_paf, $paciente);
+			}
 		}
 
 		foreach( $pacientes as $paciente )
@@ -245,11 +253,72 @@
 			array_push($array_respuesta, $paciente);
 		}
 
+		$respuesta = array();
+
+		if( count($pacientes_paf) > 0 )
+		{
+			foreach( $pacientes_paf as $paciente )
+			{
+				$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $paciente['codigo_responsable'], $paciente['fecha_inicio'], $paciente['fecha_corte']);
+
+				if( count($respuesta) == 0 ) {
+					$respuesta = [
+						"state"			=>	200,
+						"description"	=>	"Consulta Satisfactoria.",
+						"data"			=>	"No existen registros para la historia '$historia' e ingreso '$ingreso'."
+					];
+				}
+				
+				$paciente += ["estadoFactura" => $respuesta];
+	
+				array_push($array_respuesta, $paciente);
+			}
+		}
+
 		return [
 				'state'			=>	200,
 				'description'	=>	'Consulta Satisfactoria.',
 				'data'			=>	$array_respuesta
 			];
+	}
+
+	function consultarEstadoFacturaPacientesPAF($conex_unix, $historia, $ingreso, $codigo_responsable = null, $fecha_inicio, $fecha_corte)
+	{
+		$sql = "
+			  SELECT	cardethis as historia,
+			  			cardetnum as ingreso,
+						cardetvfa as valor_total,
+						envencnit as responsable,
+						envencest as estado
+			  	FROM	caenvdet, caenvenc, facarfac, facardet
+			   WHERE	envencnit = '{$codigo_responsable}'
+			     AND	envencanu = '0'
+				 AND	envencfec >= '{$fecha_inicio}'
+				 AND	envencfec <= '{$fecha_corte}'
+			     AND	envencfue = envdetfue
+			     AND	envencdoc = envdetdoc
+			     AND	carfacfue = envdetfan
+			     AND	carfacdoc = envdetdan
+			     AND	carfacanu = '0'
+			     AND	cardetreg = carfacreg
+			     AND	cardetanu = '0'
+				 AND	cardetfac = 'S'
+				 AND	cardettip = 'R'
+			GROUP BY	1, 2
+			 ";
+
+		$respuesta = odbc_exec($conex_unix, $sql);
+		
+		if( $respuesta )
+		{
+			while ($fila = odbc_fetch_array($respuesta)) {
+				$response['historia']		= $fila['historia'];
+				$response['ingreso']		= $fila['ingreso'];
+				$response['valor_total']	= $fila['valor_total'];
+			}
+		}
+
+		return $response;
 	}
 
 	/**
@@ -557,10 +626,14 @@
 		return $esPAF;
 	}
 
-	function validarResponsablePAF( $conex_unix = null, $responsable = null)
+	function validarResponsablePAF( $conex_unix = null, $historia = null, $ingreso = null, $responsable = null)
 	{
-		$esPAF = false;
-		$sql = "
+		$respuesta = array();
+		$responsablesPAF = responsablesPAF($conex, $_REQUEST['wemp_pmla']);
+
+		if( $responsable == null )
+		{
+			$sql = "
 			  SELECT	movcer
 				FROM	facardet, facarfac, famov, cafue
 			   WHERE	cardethis = '{$historia}'
@@ -572,21 +645,27 @@
 				 AND	fuetip = 'FA'
 			";
 		
-		$respuesta = odbc_exec($conex_unix, $sql);
+			$respuesta = odbc_exec($conex_unix, $sql);
 
-		if( $respuesta )
-		{
-			while ($fila = odbc_fetch_array($respuesta))
+			if( $respuesta )
 			{
-				foreach( $responsablesPAF as $responsablePAF )
+				while ($fila = odbc_fetch_array($respuesta))
 				{
-					// Se validaria si el nit es de un PAF
-					$esPAF = ($fila['movcer'] == $responsablePAF ? true : false);
+					if( in_array($fila['movcer'], $responsablesPAF) )
+					{
+						$respuesta['responsable'] = $fila['movcer'];
+						$respuesta['esPaf'] = true;
+					}
+					else
+					{
+						$respuesta['responsable'] = $fila['movcer'];
+						$respuesta['esPaf'] = null;
+					}
 				}
 			}
 		}
 
-		return $esPAF;
+		return $respuesta;
 	}
 
 	/**
