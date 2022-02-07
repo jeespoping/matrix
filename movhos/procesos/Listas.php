@@ -26,7 +26,7 @@
 
     <title>MATRIX Listas Para Altas</title>
     <!-- UTF-8 is the recommended encoding for your pages -->
-
+    <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
     <style type="text/css">
         body{background:white url(portal.gif) transparent center no-repeat scroll;}
         #tipo1{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;}
@@ -113,19 +113,6 @@
 
 
 <script type="text/javascript">
-
-
-    // jQuery(document).ready(function($){
-
-    //     $(document).on('click','.dvModalAltas button',function(e){
-    //         e.preventDefault();
-    //         // 
-    //         debugger;
-    //         var respuestaUsu = jQuery('.ui-state-default.ui-corner-all.ui-state-hover.ui-state-focus').text();
-    //     });
-
-
-    // });
 
     function resolverCargo( nhis, ning ){
     //  document.forms.listas.his.value = nhis;
@@ -304,21 +291,25 @@ include_once("movhos/fxValidacionArticulo.php");
 include_once("movhos/registro_tablas.php");
 include_once("root/comun.php");
 
-if(!empty($respuestaUsuario)){
-echo $respuestaUsuario;
-}
 
 
 
-$empresa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
-$wbasedato=$empresa;
-/**
-* --
+
+
+
+
+
+
+/*
+        * Se agrega costos para no quemar la consulta en el witch 98
+        * @date: 01/12/2021
+        * @author: jesus.lopez
 */
 
-
-  
-/**
+$empresa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+$costos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'COSTOS');
+$wbasedato=$empresa;
+ /**
  * Resuelva el caso para los medicamentos cargados despues de facturar
  *
  * @param $his      Historia
@@ -934,6 +925,10 @@ if(!isset($_SESSION['user']))
     echo "error";
 else
 {
+    if (is_null($selectsede)){
+        $selectsede = consultarsedeFiltro();
+    }
+
     $key = substr($user,2,strlen($user));
     echo "<form name='listas' action='#' method=post>";
 
@@ -943,78 +938,475 @@ else
     echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
     echo "<center><input type='HIDDEN' name= 'wbasedato' value='".$empresa."'>";
     echo "<center><input type='HIDDEN' id='wemp_pmla' name= 'wemp_pmla' value='".$wemp_pmla."'>";
-    echo "<input type='HIDDEN' name= 'codemp' value='".$wemp_pmla."'>";
-    echo "<input type='HIDDEN' name= 'wlogo' value='".$wlogo."'>";
-    echo "<input type='HIDDEN' id = 'ok' name= 'ok' value='".$ok."'>";
-    echo "<input type='HIDDEN' id = 'wcco' name= 'wcco' value='".$wcco."'>";
+    echo "<input type='HIDDEN' id='codemp' name= 'codemp' value='".$wemp_pmla."'>";
+    echo "<input type='HIDDEN' id='wlogo' name= 'wlogo' value='".$wlogo."'>";
+    echo "<input type='HIDDEN' id='sede' name= 'sede' value='".$selectsede."'>";
 
     switch ($ok)
     {
-        case 99:
+            case 99:
             $wcontrol = '';
-            //  if( !isset($resolver) ){
-            //      echo "<input type='hidden' name = 'resolver' value='1'>";
-            //  }
-            //  else{
-            //      echo "<input type='hidden' name = 'resolver' value='$resolver'>";
-            //  }
+//              if( !isset($resolver) ){
+//                  echo "<input type='hidden' name = 'resolver' value='1'>";
+//              }
+//              else{
+//                  echo "<input type='hidden' name = 'resolver' value='$resolver'>";
+//              }
+//
+//              if( $resolver == 2 ){
+//                  resolverCargos( $his, $ing, $key );
+//              }
 
-            //  if( $resolver == 2 ){
-            //      resolverCargos( $his, $ing, $key );
-            //  }
-
-            if( isset( $resolver ) ){
-                for( $i = 0; $i <= count($wdata); $i++ ){
-                    if( !empty($resolver[$i]) ){
-                        if( !empty($wobs[$i]) ){
-                            resolverCargos( $wdata[$i][0], $wdata[$i][1], $key, $wobs[$i] );
-                        }
-                        else{
-                            resolverCargos( $wdata[$i][0], $wdata[$i][1], $key, '' );
+                if( isset( $resolver ) ){
+                    for( $i = 0; $i <= count($wdata); $i++ ){
+                        if( !empty($resolver[$i]) ){
+                            if( !empty($wobs[$i]) ){
+                                resolverCargos( $wdata[$i][0], $wdata[$i][1], $key, $wobs[$i] );
+                            }
+                            else{
+                                resolverCargos( $wdata[$i][0], $wdata[$i][1], $key, '' );
+                            }
                         }
                     }
                 }
-            }
 
-            echo "<input type='hidden' name='his' value='0'>";
-            echo "<input type='hidden' name='ing' value='0'>";
+                echo "<input type='hidden' name='his' value='0'>";
+                echo "<input type='hidden' name='ing' value='0'>";
 
-            echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
-            if(!isset($wcco))
-            {
-                echo "<center><table border=0>";
-                encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica");
+                echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
+                if(!isset($wcco))
+                {
+                    echo "<center><table border=0>";
+                    encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica", true);
 
-                $cco="Ccohos";
-                $sub="off";
-                $tod="";
-                $ipod="off";
-                //$cco=" ";
-                $centrosCostos = consultaCentrosCostos($cco);
-                echo "<table align='center' border=0 >";
-                $dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
+                    $cco="Ccohos";
+                    $sub="off";
+                    $tod="";
+                    $ipod="off";
+                    //$cco=" ";
+                    $centrosCostos = consultaCentrosCostos($cco, "", FALSE, $selectsede);
+                    echo "<table align='center' border=0 >";
+                    $dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
 
-                echo $dib;
-                echo "</table>";
+                    echo $dib;
+                    echo "</table>";
 
-                echo "<tr class='fila1'><td colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
-            }
-            else
-            {
-                echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
-                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=99&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wcco=".$wcco."&wlogo=".$wlogo."'>";
+                    echo "<tr class='fila1'><td colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
+                }
+                else
+                {
+                    echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
+                    echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=99&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wcco=".$wcco."&wlogo=".$wlogo."&selectsede=".$selectsede."'>";
 
-                encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica");
+                    encabezado("PACIENTES EN PROCESO DE ALTA", $wactualiz, "clinica", true);
 
+                    echo "<table border=0 align=center id=tipo5>";
+                    ?>
+                    <script>
+                        function ira(){document.listas.wfecha.focus();}
+                    </script>
+                    <?php
+                    if($wlogo == 1)
+                        //echo "<tr><td><IMG SRC='/matrix/images/medical/movhos/logo_".$empresa.".png'></td></tr>";
+                    echo "<tr><td align=center colspan=4 class='encabezadoTabla'><b>PACIENTES EN PROCESO DE ALTA</td></tr>";
+                    if (!isset($wfecha))
+                        $wfecha=date("Y-m-d");
+                    if(!isset($whis))
+                        $whis="";
+                    if(!isset($wnin))
+                        $wnin="";
+                    if(!isset($num))
+                        $num=0;
+                    $year = (integer)substr($wfecha,0,4);
+                    $month = (integer)substr($wfecha,5,2);
+                    $day = (integer)substr($wfecha,8,2);
+                    $nomdia=mktime(0,0,0,$month,$day,$year);
+                    $nomdia = strftime("%w",$nomdia);
+                    $wsw=0;
+                    switch ($nomdia)
+                    {
+                        case 0:
+                            $diasem = "DOMINGO";
+                            break;
+                        case 1:
+                            $diasem = "LUNES";
+                            break;
+                        case 2:
+                            $diasem = "MARTES";
+                            break;
+                        case 3:
+                            $diasem = "MIERCOLES";
+                            break;
+                        case 4:
+                            $diasem = "JUEVES";
+                            break;
+                        case 5:
+                            $diasem = "VIERNES";
+                            break;
+                        case 6:
+                            $diasem = "SABADO";
+                            break;
+                    }
+                    echo "<tr><td class='fila1' align=center><b>Fecha :</b></td>";
+                    echo "<td class='fila2' align=center><b>".$diasem."</b></td>";
+                    echo "<td class='fila2' colspan=2 align=center valign=center><input type='TEXT' name='wfecha' size=10 maxlength=10 readonly='readonly' value=".$wfecha." class=tipo6></td></tr>";
+                    echo "</table><br>";
+                    echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
+
+                    for ($i=0;$i<$num;$i++)
+                        if(isset($wf[$i]))
+                        {
+                            if($wf[$i] == 3)
+                                grabar_factura($conex,$wdata[$i][0],$wdata[$i][1],"Urgencias",$wf[$i],$wobs[$i]);
+                            else
+                                grabar_factura($conex,$wdata[$i][0],$wdata[$i][1],$wfac[$i],$wf[$i],$wobs[$i]);
+                        }
+                    for ($i=0;$i<$num;$i++)
+
+
+
+                    $wdata=array();
+
+
+                    //                  0       1       2       3       4       5       6       7       8       9      10         11                  12      13      14      15        16         17       18      19      20
+                    $query = "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, costosyp_000005.Cconom, Ingres, Ingnre, Ubialp, Ubiptr, '1' as tipo, Ccourg, Ubihac, cuegdf, cuegen ";
+                    $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016,".$empresa."_000011 ";
+                    $query .= " where Cuegen = 'off'  ";
+                    $query .= " and Cuehis = ubihis  ";
+                    $query .= " and Cueing = ubiing  ";
+                    $query .= " and ubiald = 'off'  ";
+                    $query .= " and ubialp = 'on'  ";
+                    $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
+                    $query .= " and ubihis = orihis  ";
+                    $query .= " and ubiing = oriing  ";
+                    $query .= " and oriori = '".$codemp."'  ";
+                    $query .= " and oriced = pacced  ";
+                    $query .= " and oritid = pactid  ";
+                    $query .= " and ubisac = costosyp_000005.ccocod  ";
+                    $query .= " and ubihis = inghis ";
+                    $query .= " and ubiing = inging  ";
+                    $query .= " and ubisac = ".$empresa."_000011.Ccocod  ";
+                    $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
+                    $query .= " UNION ";
+                    //                  0       1       2       3       4       5       6       7       8       9      10             11                 12      13      14      15      16           17      18        19                  20
+                    $query .= " select ubihis, ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, costosyp_000005.Cconom, Ingres, Ingnre, Ubialp, Ubiptr, '2' as tipo, Ccourg, Ubihac, 'off' as cuegdf, 'off' as cuegen ";
+                    $query .= " from ".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016,".$empresa."_000011 ";
+                    $query .= " where ubiald = 'off'  ";
+                    $query .= " and ubialp = 'on'  ";
+                    $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
+                    $query .= " and ubiing Not in (Select Cueing from ".$empresa."_000022 where Cuehis = ubihis and Cueing = ubiing)  ";
+                    $query .= " and ubihis = orihis  ";
+                    $query .= " and ubiing = oriing  ";
+                    $query .= " and oriori = '".$codemp."'  ";
+                    $query .= " and oriced = pacced  ";
+                    $query .= " and oritid = pactid  ";
+                    $query .= " and ubisac = costosyp_000005.ccocod  ";
+                    $query .= " and ubihis = inghis ";
+                    $query .= " and ubiing = inging  ";
+                    $query .= " and ubisac = ".$empresa."_000011.Ccocod  ";
+                    $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
+
+                    //2010-01-05
+                    $query .= " UNION ";
+                    //                  0       1       2       3       4       5       6       7       8       9      10         11                  12      13      14      15        16         17       18      19      20
+                    $query .= "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, costosyp_000005.Cconom, Ingres, Ingnre, Ubialp, Ubiptr, '3' as tipo, Ccourg, Ubihac, cuegdf, cuegen ";
+                    $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016,".$empresa."_000011 ";
+                    $query .= " where cuegdf = 'on'  ";
+                    $query .= " and Cuehis = ubihis  ";
+                    $query .= " and Cueing = ubiing  ";
+//                  $query .= " and ubiald = 'off'  ";
+//                  $query .= " and ubialp = 'on'  ";
+                    $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
+                    $query .= " and ubihis = orihis  ";
+                    $query .= " and ubiing = oriing  ";
+                    $query .= " and oriori = '".$codemp."'  ";
+                    $query .= " and oriced = pacced  ";
+                    $query .= " and oritid = pactid  ";
+                    $query .= " and ubisac = costosyp_000005.ccocod  ";
+                    $query .= " and ubihis = inghis ";
+                    $query .= " and ubiing = inging  ";
+                    $query .= " and ubisac = ".$empresa."_000011.Ccocod  ";
+                    $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
+                    $query .= " order by tipo,Cuehis ";
+                    //FIN 2010-01-05
+
+                    $err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
+                    $num = mysql_num_rows($err);
+
+                    if ($num>0)
+                    {
+                        echo "<table border=0 align=center id=tipo5>";
+                        echo "<tr class='encabezadoTabla'><td align=center colspan=13>PACIENTES ACTIVOS</td></tr>";
+                        echo "<tr class='encabezadoTabla'><td align=center>HISTORIA</td><td align=center>NRO. INGRESO</td><td align=center>NOMBRE</td><td align=center>CODIGO<BR>HABITACION</td><td align=center>SERVICIO</td><td align=center>RESPONSABLE</td><td align=center>DESCRIPCION</td><td align=center>NRO. FACTURA/<br> VALIDACION MED - INS</td><td align=center>OBSERVACIONES</td><td align=center>GRABAR FACTURA/<br>VALIDACION MED - INS/<br>EGRESO URGENCIAS</td></tr>";
+
+                        //Indica si se pinta la fila de cargos despues de facturar
+                        $filgen = '';   //nuevo 2009-01-07
+                        for ($i=0;$i<$num;$i++)
+                        {
+
+                             $row = mysql_fetch_array($err);
+                             $wmsginsumos = '';
+                             $wmsgtransfusiones = '';
+                             $wobservaciones = '';
+                             $wmsgglucos = '';
+                             $wporfacturar = array();
+                             $wmsgnebus = '';
+                             $wmsgoxigenos = '';
+                             $wobservaciones_textarea = '';
+                             $wmsgevoluciones = '';
+                             $wcontrol[$i] = 0;
+                             $whora = date("H:i:s");
+                             $wevoluciones = traer_evoluciones($empresa, $row[0], $row[1], $wemp_pmla); //Trae las glucometrias pendientes por facturar.
+                             $wglucomerias = traer_glucometer($empresa, $row[0], $row[1], $wemp_pmla); //Trae las glucometrias pendientes por facturar.
+                             $winsumos = traer_insumos($empresa, $row[0], $row[1], $wemp_pmla); //Trae los insumos pendientes por facturar.
+                             $wnebulizaciones = traer_nebulizaciones($empresa, $row[0], $row[1], $wemp_pmla, $wcco); //Trae las nebulizaciones pendientes por facturar.
+                             $woximetrias = traer_oximetrias($empresa, $row[0], $row[1], $wemp_pmla); //Trae los oxigenos pendientes por facturar.
+                             $wtrasfusiones = traer_transfusiones($empresa, $row[0], $row[1], $wemp_pmla); //Trae las transfusiones pendientes por facturar.
+                             $winsumos_enfermeria = traer_insumos_enfermeria($empresa, $row[0], $row[1], $wemp_pmla); //Saldo de insumos cargados a los auxiliares.
+
+                             $whorariolimite1 = consultarAliasPorAplicacion($conex, $wemp_pmla, 'HorarioRestrcCargosSecretaria'); //Trae el horario inicial y final para mostrar el cajon de seleccion.
+                             $whorariolimite = explode("-", $whorariolimite1);
+                             $whoralimiteinicial = $whorariolimite[0]; //Hora inicial para mostrar la validacion como mensaje.
+                             $whorariolimitefinal = $whorariolimite[1]; //Hora final para mostrar la validacion como mensaje.
+                             $wformatohorainicial = $whoralimiteinicial.":00:00";
+                             $wformatohorafinal = $whorariolimitefinal.":00:00";
+
+
+                             //Validaciones para cada uno de los pendientes por facturar.
+                            if ($wglucomerias > 0 )
+                            {
+                               $wporfacturar[$i] = "-GLUCOMETRIAS";
+                               $wmsgglucos = $wporfacturar[$i];
+                               $wcontrol[$i] = 1;
+                            }
+
+                            if ($winsumos > 0 )
+                            {
+
+                                $wporfacturar[$i] = "-INSUMOS";
+                                $wmsginsumos = $wporfacturar[$i];
+                                $wcontrol[$i] = 1;
+
+                            }
+
+                            if ($wnebulizaciones > 0 )
+                            {
+                                $wporfacturar[$i] = "-NEBULIZACIONES";
+                                $wmsgnebus = $wporfacturar[$i];
+                                $wcontrol[$i] = 1;
+                            }
+
+                            if($woximetrias > 0 )
+                            {
+
+                                $wporfacturar[$i] = "-OXIGENOS";
+                                $wmsgoxigenos = $wporfacturar[$i];
+                                $wcontrol[$i] = 1;
+
+                            }
+
+                            if ($wtrasfusiones > 0)
+                            {
+                                $wporfacturar[$i] = "-TRANSFUSIONES";
+                                $wmsgtransfusiones = $wporfacturar[$i];
+                                $wcontrol[$i] = 1;
+                            }
+
+                             //Validaciones para cada uno de los pendientes por facturar.
+                            if ($wevoluciones > 0 )
+                            {
+                               $wporfacturar[$i] = "-EVOLUCIONES";
+                               $wmsgevoluciones = $wporfacturar[$i];
+                               $wcontrol[$i] = 1;
+                            }
+							
+							//Saldo insumos enfermeria auxiliares.
+							if ($winsumos_enfermeria > 0 )
+                            {
+                               $wporfacturar[$i] = "-APLICACION O DEVOLUCION DE INSUMOS AL BOTIQUIN";
+                               $wmsginsumosenferm = $wporfacturar[$i];
+                               $wcontrol[$i] = 1;
+                            }
+
+
+                            //No permite facturar si hay algun dato por facturar desde las 7 AM hasta las 10 PM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
+                            if (($whora > $wformatohorainicial or $whora < $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
+                                {
+                                  $wporfacturar[$i] = "<hr>FALTA GRABAR ".$wmsgglucos.$wmsginsumos.$wmsgnebus.$wmsgoxigenos.$wmsgtransfusiones.$wmsgevoluciones.$wmsginsumosenferm;
+                                }
+                                //Muestra el mensaje de validacion de elementos pendientes y permite facturar si hay algun elemento por facturar desde
+                                //las 10 PM hasta las 9 AM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
+                            if(($whora < $wformatohorainicial or $whora > $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
+                                {
+
+                                    $wporfacturar1 =  str_replace('<hr>','',$wporfacturar[$i]);  //Quita el hr para el horario de la noche.
+                                    $wobservaciones = "<font color='red'>".$wporfacturar1."</font>"; //Esta variable se imprime en el td de observaciones.
+                                    $wobservaciones_textarea = $wporfacturar1; // Esta variable se imprime en el textarea de observaciones.
+                                    $wporfacturar[$i] = '';
+                                    $wcontrol[$i] = 0;
+
+                                }
+
+                            //Esta variable de control == 0 evita mensajes de arreglos vacios para historias que no tengan nada pendiente por grabar.
+                                if ($wcontrol[$i] == 0)
+                                {
+                                    $wporfacturar[$i] = '';
+                                }
+
+                        if(isset($wval[$i]))
+                            {
+
+                                $wres=array();
+                                $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i],$respuestaUsuario);
+
+                                switch ($resultado)
+                                {
+
+                                    case 0:
+                                        $row[16] = 1;
+                                    break;
+
+                                    case 1:
+                                        $wres[$i]="ERRORES EN GRABACION DE INSUMOS LLAMAR URGENTE A SERVICIO FARMACEUTICO";
+                                    break;
+                                    case 2:
+                                        $wres[$i]="PACIENTE CON SALDO EN MEDICAMENTOS - DEVOLUCION PENDIENTE";
+                                    break;
+                                    case 3:
+                                        $wres[$i]="ERRORES EN GRABACION DE INSUMOS LLAMAR URGENTE A SERVICIO FARMACEUTICO Y PACIENTE CON SALDO EN MEDICAMENTOS - DEVOLUCION PENDIENTE";
+                                    break;
+                                    case 4:
+                                        $wres[$i] = '';
+                                    break;
+                                }
+
+                            }
+
+                            $query = "select Habcod ";
+                            $query .= " from ".$empresa."_000020 ";
+                            $query .= " where Habhis = '".$row[0]."'  ";
+                            $query .= " and Habing = '".$row[1]."'  ";
+                            $err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
+                            $num1 = mysql_num_rows($err1);
+                            if($num1 > 0)
+                            {
+                                $row1 = mysql_fetch_array($err1);
+                                $row[18]=$row1[0];
+                            }
+                            else
+                                $row[18]="";
+                            if($i % 2 == 0)
+                            {
+                                $tipo="tipo12";
+                                $tipoA="tipo20";
+                                $tipoB="tipo12A";
+                            }
+                            else
+                            {
+                                $tipo="tipo13";
+                                $tipoA="tipo21";
+                                $tipoB="tipo13A";
+                            }
+
+                            $wdata[$i][0]=$row[0]; //Historia
+                            $wdata[$i][1]=$row[1]; //Ingreso
+
+                            $nombre=$row[4]." ".$row[5]." ".$row[6]." ".$row[7];
+                            echo "<input type='HIDDEN' name= 'wdata[".$i."][0]' value='".$wdata[$i][0]."'>";
+                            echo "<input type='HIDDEN' name= 'wdata[".$i."][1]' value='".$wdata[$i][1]."'>";
+                            echo "<input type='HIDDEN' name= 'num' value='".$num."'>";
+
+
+                            //Valida si ya puede generar factura y además si todo esta registrado desde la entrega de turno secretaria.
+                            if($row[16] == 1 and $wcontrol[$i] == 0)
+                                {
+
+                                if($row[17] == "on")
+                                {
+                                    //echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[10]."</td><td id=".$tipo.">".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3></textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egreso Urgencias </td></tr>";
+                                    echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3>$wobservaciones_textarea</textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egresar De Urgencias </td></tr>";
+                                }
+                                else
+                                {
+                                    echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3>$wobservaciones_textarea</textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=1 onclick='enter()'>Pagar <input type='RADIO' name='wf[".$i."]' value=2 onclick='enter()'>Sin Pago</td></tr>";
+                                }
+                            }
+                            elseif( $row[16] == 3)
+                            {
+
+                                if( $filgen == '' ){
+                                    echo "<tr align=center><td colspan='10' style='background-color:#FFcc66'>PACIENTES CON CARGOS DESPUES DE FACTURAR</td></tr>";
+                                    $filgen = 1;
+                                }
+
+                                if($row[17] == "on")
+                                {
+                                    //echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[10]."</td><td id=".$tipo.">".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3></textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egreso Urgencias </td></tr>";
+                                    echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3></textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egresar De Urgencias</td></tr>";
+                                }
+                                else{
+
+                                    if( $row[19] == "on" ){
+//                                      $class="style='background-color:#E8eeF7'";
+                                        $class="style='background-color:#c3d9FF'";
+                                    }
+                                    else{
+                                        $class="";
+                                    }
+//                                  <input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6>
+                                    echo "<tr $class>
+                                    <td $class id=".$tipo.">".$row[0]."</td>
+                                    <td $class id=".$tipo.">".$row[1]."</td>
+                                    <td $class id=".$tipo.">".$nombre."</td>
+                                    <td $class id=".$tipo.">".$row[18]."</td>
+                                    <td $class id=".$tipo.">".$row[10]."-".$row[11]."</td>
+                                    <td $class id=".$tipo.">".$row[12]."</td>
+                                    <td $class id=".$tipo.">".$row[13]."</td>
+                                    <td $class id=".$tipo."></td>
+                                    <td $class id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3></textarea></td>
+                                    <td $class id=".$tipoA.">";
+
+//                                  if( $row[20] == 'off')
+//                                      echo "<input type='RADIO' name='wf[".$i."]' value=1 onclick='enter()'>Pagar <input type='RADIO' name='wf[".$i."]' value=2 onclick='enter()'>Sin Pago";
+
+                                    if( $row[19] == "on" ){
+                                        echo "<INPUT type='radio' name='resolver[$i]' onclick='javascript: resolverCargo( {$wdata[$i][0]}, {$wdata[$i][1]});'> Resuelto";
+                                    }
+                                    echo "</td></tr>";
+                                }
+                            }
+                            else{
+                                if(isset($wres[$i]) and isset($wporfacturar[$i])) //Si estan declaradas las dos variables se mostrará esta opción.
+                                {
+
+                                    echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='enter()'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
+                                }
+                                else{
+                                    echo "<tr>";
+                                    echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='enter()'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
+                                    echo "</td></tr>";
+                                }
+                            }
+
+                        }
+                    }
+                    echo "</table></center>";
+                }
+            break;
+            case 98:
+                encabezado("PACIENTES FACTURADOS PENDIENTES DE PAGO", $wactualiz, "clinica", true);
+
+                echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
+                echo "<input type='HIDDEN' id='sede' name= 'selectsede' value='".$selectsede."'>";
+                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=98&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wlogo=".$wlogo."&selectsede=".$selectsede."'>";
                 echo "<table border=0 align=center id=tipo5>";
                 ?>
                 <script>
                     function ira(){document.listas.wfecha.focus();}
                 </script>
                 <?php
-                if($wlogo == 1)
-                    //echo "<tr><td><IMG SRC='/matrix/images/medical/movhos/logo_".$empresa.".png'></td></tr>";
-                echo "<tr><td align=center colspan=4 class='encabezadoTabla'><b>PACIENTES EN PROCESO DE ALTA</td></tr>";
+
+                echo "<tr><td align=center colspan=4 id=tipo14><b>PACIENTES FACTURADOS PENDIENTES DE PAGO</td></tr>";
                 if (!isset($wfecha))
                     $wfecha=date("Y-m-d");
                 if(!isset($whis))
@@ -1054,610 +1446,43 @@ else
                         break;
                 }
                 echo "<tr><td class='fila1' align=center><b>Fecha :</b></td>";
-                echo "<td class='fila2' align=center><b>".$diasem."</b></td>";
-                echo "<td class='fila2' colspan=2 align=center valign=center><input type='TEXT' name='wfecha' size=10 maxlength=10 readonly='readonly' value=".$wfecha." class=tipo6></td></tr>";
+                echo "<td bgcolor='#cccccc' align=center><b>".$diasem."</b></td>";
+                echo "<td bgcolor='#cccccc' colspan=2 align=center valign=center><input type='TEXT' name='wfecha' size=10 maxlength=10 readonly='readonly' value=".$wfecha." class=tipo6></td></tr>";
                 echo "</table><br>";
-                echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+                echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
+                echo "<input type='HIDDEN' id='sede' name= 'selectsede' value='".$selectsede."'>";
 
                 for ($i=0;$i<$num;$i++)
                     if(isset($wf[$i]))
                     {
-                        if($wf[$i] == 3)
-                            grabar_factura($conex,$wdata[$i][0],$wdata[$i][1],"Urgencias",$wf[$i],$wobs[$i]);
-                        else
-                            grabar_factura($conex,$wdata[$i][0],$wdata[$i][1],$wfac[$i],$wf[$i],$wobs[$i]);
+                        grabar_pago($conex,$wdata[$i][0],$wdata[$i][1],$wdata[$i][2],$wdata[$i][3]);
                     }
-                // for ($i=0;$i<$num;$i++)
-
-
-
                 $wdata=array();
-
-
-                //                  0       1       2       3       4       5       6       7       8       9      10         11                  12      13      14      15        16         17       18      19      20
-                $query = "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, costosyp_000005.Cconom, Ingres, Ingnre, Ubialp, Ubiptr, '1' as tipo, Ccourg, Ubihac, cuegdf, cuegen ";
-                $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016,".$empresa."_000011 ";
-                $query .= " where Cuegen = 'off'  ";
+                /*
+                        * Se coloca costos para no quemar
+                        * @date: 01/12/2021
+                        * @author: jesus.lopez
+                */
+                //                  0       1       2       3       4       5       6       7       8       9      10      11      12      13      14      15      16      17      18      19
+                $query = "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, ".$costos."_000005.Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cuefac, Cueobs, Ubihac, Cuepag ";
+                $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,".$costos."_000005,".$empresa."_000016,".$empresa."_000011";
+                $query .= " where Cuegen = 'on'  ";
+                $query .= " and Cuepgr = 'off'  ";
+                $query .= " and ".$costos."_000005.ccocod = ".$empresa."_000011.ccocod";
+                if ($selectsede != ''){
+                    $query .= " and ".$empresa."_000011.Ccosed = '".$selectsede."'";
+                }
                 $query .= " and Cuehis = ubihis  ";
                 $query .= " and Cueing = ubiing  ";
-                $query .= " and ubiald = 'off'  ";
-                $query .= " and ubialp = 'on'  ";
-                $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
-                $query .= " and ubihis = orihis  ";
-                $query .= " and ubiing = oriing  ";
-                $query .= " and oriori = '".$wemp_pmla."'  ";
-                $query .= " and oriced = pacced  ";
-                $query .= " and oritid = pactid  ";
-                $query .= " and ubisac = costosyp_000005.ccocod  ";
-                $query .= " and ubihis = inghis ";
-                $query .= " and ubiing = inging  ";
-                $query .= " and ubisac = ".$empresa."_000011.Ccocod  ";
-                $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
-                $query .= " UNION ";
-                //                  0       1       2       3       4       5       6       7       8       9      10             11                 12      13      14      15      16           17      18        19                  20
-                $query .= " select ubihis, ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, costosyp_000005.Cconom, Ingres, Ingnre, Ubialp, Ubiptr, '2' as tipo, Ccourg, Ubihac, 'off' as cuegdf, 'off' as cuegen ";
-                $query .= " from ".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016,".$empresa."_000011 ";
-                $query .= " where ubiald = 'off'  ";
-                $query .= " and ubialp = 'on'  ";
-                $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
-                $query .= " and ubiing Not in (Select Cueing from ".$empresa."_000022 where Cuehis = ubihis and Cueing = ubiing)  ";
-                $query .= " and ubihis = orihis  ";
-                $query .= " and ubiing = oriing  ";
-                $query .= " and oriori = '".$wemp_pmla."'  ";
-                $query .= " and oriced = pacced  ";
-                $query .= " and oritid = pactid  ";
-                $query .= " and ubisac = costosyp_000005.ccocod  ";
-                $query .= " and ubihis = inghis ";
-                $query .= " and ubiing = inging  ";
-                $query .= " and ubisac = ".$empresa."_000011.Ccocod  ";
-                $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
-
-                //2010-01-05
-                $query .= " UNION ";
-                //                  0       1       2       3       4       5       6       7       8       9      10         11                  12      13      14      15        16         17       18      19      20
-                $query .= "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, costosyp_000005.Cconom, Ingres, Ingnre, Ubialp, Ubiptr, '3' as tipo, Ccourg, Ubihac, cuegdf, cuegen ";
-                $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016,".$empresa."_000011 ";
-                $query .= " where cuegdf = 'on'  ";
-                $query .= " and Cuehis = ubihis  ";
-                $query .= " and Cueing = ubiing  ";
-                // $query .= " and ubiald = 'off'  ";
-                //  $query .= " and ubialp = 'on'  ";
-                $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
-                $query .= " and ubihis = orihis  ";
-                $query .= " and ubiing = oriing  ";
-                $query .= " and oriori = '".$wemp_pmla."'  ";
-                $query .= " and oriced = pacced  ";
-                $query .= " and oritid = pactid  ";
-                $query .= " and ubisac = costosyp_000005.ccocod  ";
-                $query .= " and ubihis = inghis ";
-                $query .= " and ubiing = inging  ";
-                $query .= " and ubisac = ".$empresa."_000011.Ccocod  ";
-                $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
-                $query .= " order by tipo,Cuehis ";
-                //FIN 2010-01-05
-
-                $err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
-                $num = mysql_num_rows($err);
-
-                if ($num>0)
-                {
-                    echo "<table border=0 align=center id=tipo5>";
-                    echo "<tr class='encabezadoTabla'><td align=center colspan=13>PACIENTES ACTIVOS</td></tr>";
-                    echo "<tr class='encabezadoTabla'><td align=center>HISTORIA</td><td align=center>NRO. INGRESO</td><td align=center>NOMBRE</td><td align=center>CODIGO<BR>HABITACION</td><td align=center>SERVICIO</td><td align=center>RESPONSABLE</td><td align=center>DESCRIPCION</td><td align=center>NRO. FACTURA/<br> VALIDACION MED - INS</td><td align=center>OBSERVACIONES</td><td align=center>GRABAR FACTURA/<br>VALIDACION MED - INS/<br>EGRESO URGENCIAS</td></tr>";
-
-                    //Indica si se pinta la fila de cargos despues de facturar
-                    $filgen = '';   //nuevo 2009-01-07
-                    for ($i=0;$i<$num;$i++)
-                    {
-
-                            $row = mysql_fetch_array($err);
-                            $wmsginsumos = '';
-                            $wmsgtransfusiones = '';
-                            $wobservaciones = '';
-                            $wmsgglucos = '';
-                            $wporfacturar = array();
-                            $wmsgnebus = '';
-                            $wmsgoxigenos = '';
-                            $wobservaciones_textarea = '';
-                            $wmsgevoluciones = '';
-                            $wcontrol[$i] = 0;
-                            $whora = date("H:i:s");
-                            $wevoluciones = traer_evoluciones($empresa, $row[0], $row[1], $wemp_pmla); //Trae las glucometrias pendientes por facturar.
-                            $wglucomerias = traer_glucometer($empresa, $row[0], $row[1], $wemp_pmla); //Trae las glucometrias pendientes por facturar.
-                            $winsumos = traer_insumos($empresa, $row[0], $row[1], $wemp_pmla); //Trae los insumos pendientes por facturar.
-                            $wnebulizaciones = traer_nebulizaciones($empresa, $row[0], $row[1], $wemp_pmla, $wcco); //Trae las nebulizaciones pendientes por facturar.
-                            $woximetrias = traer_oximetrias($empresa, $row[0], $row[1], $wemp_pmla); //Trae los oxigenos pendientes por facturar.
-                            $wtrasfusiones = traer_transfusiones($empresa, $row[0], $row[1], $wemp_pmla); //Trae las transfusiones pendientes por facturar.
-                            $winsumos_enfermeria = traer_insumos_enfermeria($empresa, $row[0], $row[1], $wemp_pmla); //Saldo de insumos cargados a los auxiliares.
-
-                            $whorariolimite1 = consultarAliasPorAplicacion($conex, $wemp_pmla, 'HorarioRestrcCargosSecretaria'); //Trae el horario inicial y final para mostrar el cajon de seleccion.
-                            $whorariolimite = explode("-", $whorariolimite1);
-                            $whoralimiteinicial = $whorariolimite[0]; //Hora inicial para mostrar la validacion como mensaje.
-                            $whorariolimitefinal = $whorariolimite[1]; //Hora final para mostrar la validacion como mensaje.
-                            $wformatohorainicial = $whoralimiteinicial.":00:00";
-                            $wformatohorafinal = $whorariolimitefinal.":00:00";
-
-
-                            //Validaciones para cada uno de los pendientes por facturar.
-                        if ($wglucomerias > 0 )
-                        {
-                            $wporfacturar[$i] = "-GLUCOMETRIAS";
-                            $wmsgglucos = $wporfacturar[$i];
-                            $wcontrol[$i] = 1;
-                        }
-
-                        if ($winsumos > 0 )
-                        {
-
-                            $wporfacturar[$i] = "-INSUMOS";
-                            $wmsginsumos = $wporfacturar[$i];
-                            $wcontrol[$i] = 1;
-
-                        }
-
-                        if ($wnebulizaciones > 0 )
-                        {
-                            $wporfacturar[$i] = "-NEBULIZACIONES";
-                            $wmsgnebus = $wporfacturar[$i];
-                            $wcontrol[$i] = 1;
-                        }
-
-                        if($woximetrias > 0 )
-                        {
-
-                            $wporfacturar[$i] = "-OXIGENOS";
-                            $wmsgoxigenos = $wporfacturar[$i];
-                            $wcontrol[$i] = 1;
-
-                        }
-
-                        if ($wtrasfusiones > 0)
-                        {
-                            $wporfacturar[$i] = "-TRANSFUSIONES";
-                            $wmsgtransfusiones = $wporfacturar[$i];
-                            $wcontrol[$i] = 1;
-                        }
-
-                            //Validaciones para cada uno de los pendientes por facturar.
-                        if ($wevoluciones > 0 )
-                        {
-                            $wporfacturar[$i] = "-EVOLUCIONES";
-                            $wmsgevoluciones = $wporfacturar[$i];
-                            $wcontrol[$i] = 1;
-                        }
-                        
-                        //Saldo insumos enfermeria auxiliares.
-                        if ($winsumos_enfermeria > 0 )
-                        {
-                            $wporfacturar[$i] = "-APLICACION O DEVOLUCION DE INSUMOS AL BOTIQUIN";
-                            $wmsginsumosenferm = $wporfacturar[$i];
-                            $wcontrol[$i] = 1;
-                        }
-
-                        if(isset($posicion) and $posicion==$i) 
-                        {
-                            $wval[$i] = "on";
-                        }
-
-                        //No permite facturar si hay algun dato por facturar desde las 7 AM hasta las 10 PM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
-                        if (($whora > $wformatohorainicial or $whora < $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
-                            {
-                                $wporfacturar[$i] = "<hr>FALTA GRABAR ".$wmsgglucos.$wmsginsumos.$wmsgnebus.$wmsgoxigenos.$wmsgtransfusiones.$wmsgevoluciones.$wmsginsumosenferm;
-                            }
-                            //Muestra el mensaje de validacion de elementos pendientes y permite facturar si hay algun elemento por facturar desde
-                            //las 10 PM hasta las 9 AM (root_000051(Detapl)= HorarioRestrcCargosSecretaria)
-                        if(($whora < $wformatohorainicial or $whora > $wformatohorafinal) and $wcontrol[$i] > 0 and isset($wval[$i]))
-                            {
-
-                                $wporfacturar1 =  str_replace('<hr>','',$wporfacturar[$i]);  //Quita el hr para el horario de la noche.
-                                $wobservaciones = "<font color='red'>".$wporfacturar1."</font>"; //Esta variable se imprime en el td de observaciones.
-                                $wobservaciones_textarea = $wporfacturar1; // Esta variable se imprime en el textarea de observaciones.
-                                $wporfacturar[$i] = '';
-                                $wcontrol[$i] = 0;
-
-                            }
-
-                        //Esta variable de control == 0 evita mensajes de arreglos vacios para historias que no tengan nada pendiente por grabar.
-                            if ($wcontrol[$i] == 0)
-                            {
-                                $wporfacturar[$i] = '';
-                            }
-
-                        if(isset($wval[$i]))
-                        {
-
-                            $wres=array();
-
-                            $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i], $respuestaUsuario);
-
-                            switch ($resultado)
-                            {
-
-                                case 0:
-                                    $row[16] = 1;
-                                break;
-
-                                case 1:
-                                    $wres[$i]="ERRORES EN GRABACION DE INSUMOS LLAMAR URGENTE A SERVICIO FARMACEUTICO";
-                                break;
-                                case 2:
-                                    $wres[$i]="PACIENTE CON SALDO EN MEDICAMENTOS - DEVOLUCION PENDIENTE";
-                                break;
-                                case 3:
-                                    $wres[$i]="ERRORES EN GRABACION DE INSUMOS LLAMAR URGENTE A SERVICIO FARMACEUTICO Y PACIENTE CON SALDO EN MEDICAMENTOS - DEVOLUCION PENDIENTE";
-                                break;
-                                case 4:
-                                    $wres[$i] = '';
-                                break;
-                            }
-
-                        }
-
-                        $query = "select Habcod ";
-                        $query .= " from ".$empresa."_000020 ";
-                        $query .= " where Habhis = '".$row[0]."'  ";
-                        $query .= " and Habing = '".$row[1]."'  ";
-                        $err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
-                        $num1 = mysql_num_rows($err1);
-                        if($num1 > 0)
-                        {
-                            $row1 = mysql_fetch_array($err1);
-                            $row[18]=$row1[0];
-                        }
-                        else
-                            $row[18]="";
-                        if($i % 2 == 0)
-                        {
-                            $tipo="tipo12";
-                            $tipoA="tipo20";
-                            $tipoB="tipo12A";
-                        }
-                        else
-                        {
-                            $tipo="tipo13";
-                            $tipoA="tipo21";
-                            $tipoB="tipo13A";
-                        }
-
-                        $wdata[$i][0]=$row[0]; //Historia
-                        $wdata[$i][1]=$row[1]; //Ingreso
-
-                        $nombre=$row[4]." ".$row[5]." ".$row[6]." ".$row[7];
-                        echo "<input type='HIDDEN' name= 'wdata[".$i."][0]' value='".$wdata[$i][0]."'>";
-                        echo "<input type='HIDDEN' name= 'wdata[".$i."][1]' value='".$wdata[$i][1]."'>";
-                        echo "<input type='HIDDEN' name= 'num' value='".$num."'>";
-
-
-                        $estadoCargos = validarCargosDiferenteProcesado($conex,$row[0],$row[1]);
-                        //Valida si ya puede generar factura y además si todo esta registrado desde la entrega de turno secretaria.
-                        if($row[16] == 1 and $wcontrol[$i] == 0)
-                        {
-
-                            if($row[17] == "on")
-                            {
-                                //echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[10]."</td><td id=".$tipo.">".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3></textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egreso Urgencias </td></tr>";
-                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3>$wobservaciones_textarea</textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egresar De Urgencias </td></tr>";
-                            }
-                            else
-                            {
-                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3>$wobservaciones_textarea</textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=1 onclick='enter()'>Pagar <input type='RADIO' name='wf[".$i."]' value=2 onclick='enter()'>Sin Pago</td></tr>";
-                            }
-                        }
-                        elseif( $row[16] == 3)
-                        {
-                            
-                            if( $filgen == '' ){
-                                echo "<tr align=center><td colspan='10' style='background-color:#FFcc66'>PACIENTES CON CARGOS DESPUES DE FACTURAR</td></tr>";
-                                $filgen = 1;
-                            }
-
-                            if($row[17] == "on")
-                            {
-                                //echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[10]."</td><td id=".$tipo.">".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3></textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egreso Urgencias </td></tr>";
-                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3></textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=3 onclick='enter()'>Egresar De Urgencias</td></tr>";
-                            }
-                            else{
-
-                                if( $row[19] == "on" ){
-                                //  $class="style='background-color:#E8eeF7'";
-                                    $class="style='background-color:#c3d9FF'";
-                                }
-                                else{
-                                    $class="";
-                                }
-                                //  <input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6>
-                                echo "<tr $class>
-                                <td $class id=".$tipo.">".$row[0]."</td>
-                                <td $class id=".$tipo.">".$row[1]."</td>
-                                <td $class id=".$tipo.">".$nombre."</td>
-                                <td $class id=".$tipo.">".$row[18]."</td>
-                                <td $class id=".$tipo.">".$row[10]."-".$row[11]."</td>
-                                <td $class id=".$tipo.">".$row[12]."</td>
-                                <td $class id=".$tipo.">".$row[13]."</td>
-                                <td $class id=".$tipo."></td>
-                                <td $class id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3></textarea></td>
-                                <td $class id=".$tipoA.">";
-
-                                //  if( $row[20] == 'off')
-                                    //  echo "<input type='RADIO' name='wf[".$i."]' value=1 onclick='enter()'>Pagar <input type='RADIO' name='wf[".$i."]' value=2 onclick='enter()'>Sin Pago";
-
-                                if( $row[19] == "on" ){
-                                    echo "<INPUT type='radio' name='resolver[$i]' onclick='javascript: resolverCargo( {$wdata[$i][0]}, {$wdata[$i][1]});'> Resuelto";
-                                }
-                                echo "</td></tr>";
-                            }
-                        }
-                        else{
-                            if(isset($wres[$i]) and isset($wporfacturar[$i])) //Si estan declaradas las dos variables se mostrará esta opción.
-                            {
-
-                                echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$num.", ".$i.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
-                            }
-                            else{
-                                echo "<tr>";
-                                echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$num.", ".$i.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
-                                echo "</td></tr>";
-                            }
-                        }
-
-                    }
-                }
-                echo "</table></center>";
-                echo "<table border=0 align=center id=tipo5>";
-                echo "<tr><td align=center><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
-                if(isset($wcco))
-                {
-                echo "<tr><td align=center><A HREF='listas.php?ok=99&wemp_pmla=".$wemp_pmla."&wlogo=".$wlogo."'>Retornar</A></td></tr>";
-                }
-                echo "</table>";
-            }
-        break;
-        case 98:
-            echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
-            echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=98&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."&wlogo=".$wlogo."'>";
-            echo "<table border=0 align=center id=tipo5>";
-            ?>
-            <script>
-                function ira(){document.listas.wfecha.focus();}
-            </script>
-            <?php
-            if($wlogo == 1)
-                echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/movhos/logo_".$empresa.".png'></td></tr>";
-
-            echo "<tr><td align=center colspan=4 id=tipo14><b>PACIENTES FACTURADOS PENDIENTES DE PAGO</td></tr>";
-            if (!isset($wfecha))
-                $wfecha=date("Y-m-d");
-            if(!isset($whis))
-                $whis="";
-            if(!isset($wnin))
-                $wnin="";
-            if(!isset($num))
-                $num=0;
-            $year = (integer)substr($wfecha,0,4);
-            $month = (integer)substr($wfecha,5,2);
-            $day = (integer)substr($wfecha,8,2);
-            $nomdia=mktime(0,0,0,$month,$day,$year);
-            $nomdia = strftime("%w",$nomdia);
-            $wsw=0;
-            switch ($nomdia)
-            {
-                case 0:
-                    $diasem = "DOMINGO";
-                    break;
-                case 1:
-                    $diasem = "LUNES";
-                    break;
-                case 2:
-                    $diasem = "MARTES";
-                    break;
-                case 3:
-                    $diasem = "MIERCOLES";
-                    break;
-                case 4:
-                    $diasem = "JUEVES";
-                    break;
-                case 5:
-                    $diasem = "VIERNES";
-                    break;
-                case 6:
-                    $diasem = "SABADO";
-                    break;
-            }
-            echo "<tr><td class='fila1' align=center><b>Fecha :</b></td>";
-            echo "<td bgcolor='#cccccc' align=center><b>".$diasem."</b></td>";
-            echo "<td bgcolor='#cccccc' colspan=2 align=center valign=center><input type='TEXT' name='wfecha' size=10 maxlength=10 readonly='readonly' value=".$wfecha." class=tipo6></td></tr>";
-            echo "</table><br>";
-            echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
-
-            for ($i=0;$i<$num;$i++)
-                if(isset($wf[$i]))
-                {
-                    grabar_pago($conex,$wdata[$i][0],$wdata[$i][1],$wdata[$i][2],$wdata[$i][3]);
-                }
-            $wdata=array();
-
-            //                  0       1       2       3       4       5       6       7       8       9      10      11      12      13      14      15      16      17      18      19
-            $query = "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cuefac, Cueobs, Ubihac, Cuepag ";
-            $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016 ";
-            $query .= " where Cuegen = 'on'  ";
-            $query .= " and Cuepgr = 'off'  ";
-            $query .= " and Cuehis = ubihis  ";
-            $query .= " and Cueing = ubiing  ";
-            //$query .= " and ubiald = 'off'  ";
-            $query .= " and ubihis = orihis  ";
-            $query .= " and ubiing = oriing  ";
-            $query .= " and oriori = '".$codemp."'  ";
-            $query .= " and oriced = pacced  ";
-            $query .= " and oritid = pactid  ";
-            $query .= " and ubisac = ccocod  ";
-            $query .= " and ubihis = inghis ";
-            $query .= " and ubiing = inging  ";
-            $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
-            $query .= " order by Ubisac,Pacced ";
-            $err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
-            $num = mysql_num_rows($err);
-            if ($num>0)
-            {
-                echo "<table border=0 align=center id=tipo5>";
-                echo "<tr class='encabezadoTabla'><td align=center colspan=14>PACIENTES ACTIVOS</td></tr>";
-                echo "<tr class='encabezadoTabla'><td align=center>HISTORIA</td><td align=center>NRO. INGRESO</td><td align=center>TIPO<BR>DOCUMENTO</td><td align=center>IDENTIFICACION</td><td align=center>NOMBRE</td><td align=center>CODIGO<BR>HABITACION</td><td align=center>SERVICIO</td><td align=center>RESPONSABLE</td><td align=center>DESCRIPCION</td><td align=center>NRO. FACTURA</td><td align=center>OBSERVACIONES</td><td align=center>PAGO O<br>PAGARE</td><td align=center>ESTADO</td></tr>";
-                for ($i=0;$i<$num;$i++)
-                {
-                    $row = mysql_fetch_array($err);
-                    $query = "select Habcod ";
-                    $query .= " from ".$empresa."_000020 ";
-                    $query .= " where Habhis = '".$row[0]."'  ";
-                    $query .= " and Habing = '".$row[1]."'  ";
-                    $err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
-                    $num1 = mysql_num_rows($err1);
-                    if($num1 > 0)
-                    {
-                        $row1 = mysql_fetch_array($err1);
-                        $row[18]=$row1[0];
-                    }
-                    else
-                        $row[18]="";
-                    if($row[19] == "on")
-                    {
-                        $Pago="NO PAGA";
-                        $tipo="tipo15";
-                    }
-                    else
-                        if($i % 2 == 0)
-                        {
-                            $Pago="";
-                            $tipo="tipo12";
-                        }
-                        else
-                        {
-                            $Pago="";
-                            $tipo="tipo13";
-                        }
-                    $wdata[$i][0]=$row[0];
-                    $wdata[$i][1]=$row[1];
-                    $wdata[$i][2]=$row[16];
-                    $wdata[$i][3]=$row[19];
-                    $nombre=$row[4]." ".$row[5]." ".$row[6]." ".$row[7];
-                    echo "<input type='HIDDEN' name= 'wdata[".$i."][0]' value='".$wdata[$i][0]."'>";
-                    echo "<input type='HIDDEN' name= 'wdata[".$i."][1]' value='".$wdata[$i][1]."'>";
-                    echo "<input type='HIDDEN' name= 'wdata[".$i."][2]' value='".$wdata[$i][2]."'>";
-                    echo "<input type='HIDDEN' name= 'wdata[".$i."][3]' value='".$wdata[$i][3]."'>";
-                    echo "<input type='HIDDEN' name= 'num' value='".$num."'>";
-                    $path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
-                    echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$row[3]."</td><td id=".$tipo.">".$row[2]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[17]."</td><td id=".$tipo."><input type='checkbox' name='wf[".$i."]' onclick='enter()'></td><td id=".$tipo.">".$Pago."</td></tr>";
-                }
-            }
-            echo "</table></center>";
-            echo "<table border=0 align=center id=tipo5>";
-            echo "<tr><td align=center><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
-            if(isset($wcco))
-            {
-            echo "<tr><td align=center><A HREF='listas.php?ok=98&wemp_pmla=".$wemp_pmla."&wlogo=".$wlogo."'>Retornar</A></td></tr>";
-            }
-            echo "</table>";
-        break;
-        case 97:
-            echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
-            if(!isset($wcco))
-            {
-                echo "<center><table border=0>";
-
-                encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica");
-
-                $cco="Ccohos";
-                $sub="off";
-                $tod="";
-                $ipod="off";
-                //$cco=" ";
-                $centrosCostos = consultaCentrosCostos($cco);
-                echo "<table align='center' border=0 >";
-                $dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
-
-                echo $dib;
-                echo "</table>";
-
-
-
-                echo "</td></tr>";
-                echo "<tr class='fila1'><td colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
-            }
-            else
-            {
-                echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
-                echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=97&wemp_pmla=".$codemp."&empresa=".$empresa."&codemp=".$codemp."&wcco=".$wcco."&wlogo=".$wlogo."'>";
-
-                encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica");
-                echo "<table border=0 align=center id=tipo5>";
-                ?>
-                <script>
-                    function ira(){document.listas.wfecha.focus();}
-                </script>
-                <?php
-                if($wlogo == 1)
-                    //echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/movhos/logo_".$empresa.".png'></td></tr>";
-                echo "<tr><td align=right colspan=4><font size=2>Ver. 2011-12-28 </font></td></tr>";
-                echo "<tr><td align=center colspan=4 class='encabezadoTabla'><b>PACIENTES CON ALTA ADMINISTRATIVA</td></tr>";
-                if (!isset($wfecha))
-                    $wfecha=date("Y-m-d");
-                if(!isset($whis))
-                    $whis="";
-                if(!isset($wnin))
-                    $wnin="";
-                if(!isset($num))
-                    $num=0;
-                $year = (integer)substr($wfecha,0,4);
-                $month = (integer)substr($wfecha,5,2);
-                $day = (integer)substr($wfecha,8,2);
-                $nomdia=mktime(0,0,0,$month,$day,$year);
-                $nomdia = strftime("%w",$nomdia);
-                $wsw=0;
-                switch ($nomdia)
-                {
-                    case 0:
-                        $diasem = "DOMINGO";
-                        break;
-                    case 1:
-                        $diasem = "LUNES";
-                        break;
-                    case 2:
-                        $diasem = "MARTES";
-                        break;
-                    case 3:
-                        $diasem = "MIERCOLES";
-                        break;
-                    case 4:
-                        $diasem = "JUEVES";
-                        break;
-                    case 5:
-                        $diasem = "VIERNES";
-                        break;
-                    case 6:
-                        $diasem = "SABADO";
-                        break;
-                }
-                echo "<tr><td class='fila1' align=center><b>Fecha :</b></td>";
-                echo "<td class='fila2' align=center><b>".$diasem."</b></td>";
-                echo "<td class='fila2' colspan=2 align=center valign=center><input type='TEXT' name='wfecha' size=10 maxlength=10 readonly='readonly' value=".$wfecha." class=tipo6></td></tr>";
-                echo "</table><br>";
-                echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
-
-                //                  0       1       2       3       4       5       6       7       8       9      10      11      12      13      14      15      16      17      18
-                $query = "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cuefac, Cueobs, Ubihac ";
-                $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016 ";
-                $query .= " where Cuepag = 'on'  ";
-                $query .= " and Cuehis = ubihis  ";
-                $query .= " and Cueing = ubiing  ";
-                $query .= " and ubiald = 'off'  ";
-                $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
                 $query .= " and ubihis = orihis  ";
                 $query .= " and ubiing = oriing  ";
                 $query .= " and oriori = '".$codemp."'  ";
                 $query .= " and oriced = pacced  ";
                 $query .= " and oritid = pactid  ";
-                $query .= " and ubisac = ccocod  ";
+                $query .= " and ubisac = ".$costos."_000005.ccocod  ";
                 $query .= " and ubihis = inghis ";
                 $query .= " and ubiing = inging  ";
-                $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
+                $query .= " and ".$costos."_000005.ccoemp = '".$wemp_pmla."' ";
                 $query .= " order by Ubisac,Pacced ";
 
                 $err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
@@ -1665,8 +1490,8 @@ else
                 if ($num>0)
                 {
                     echo "<table border=0 align=center id=tipo5>";
-                    echo "<tr class='encabezadoTabla'><td align=center colspan=13>PACIENTES ACTIVOS PARA ALTA INMEDIATA</td></tr>";
-                    echo "<tr class='encabezadoTabla'><td align=center>HISTORIA</td><td align=center>NRO. INGRESO</td><td align=center>NOMBRE</td><td align=center>CODIGO<BR>HABITACION</td><td align=center>SERVICIO</td><td align=center>RESPONSABLE</td><td align=center>DESCRIPCION</td><td align=center>NRO. FACTURA</td><td align=center>OBSERVACIONES</td></tr>";
+                    echo "<tr class='encabezadoTabla'><td align=center colspan=14>PACIENTES ACTIVOS</td></tr>";
+                    echo "<tr class='encabezadoTabla'><td align=center>HISTORIA</td><td align=center>NRO. INGRESO</td><td align=center>TIPO<BR>DOCUMENTO</td><td align=center>IDENTIFICACION</td><td align=center>NOMBRE</td><td align=center>CODIGO<BR>HABITACION</td><td align=center>SERVICIO</td><td align=center>RESPONSABLE</td><td align=center>DESCRIPCION</td><td align=center>NRO. FACTURA</td><td align=center>OBSERVACIONES</td><td align=center>PAGO O<br>PAGARE</td><td align=center>ESTADO</td></tr>";
                     for ($i=0;$i<$num;$i++)
                     {
                         $row = mysql_fetch_array($err);
@@ -1683,33 +1508,197 @@ else
                         }
                         else
                             $row[18]="";
-                        if($i % 2 == 0)
+                        if($row[19] == "on")
                         {
-                            $tipo="tipo12";
+                            $Pago="NO PAGA";
+                            $tipo="tipo15";
                         }
                         else
-                        {
-                            $tipo="tipo13";
-                        }
+                            if($i % 2 == 0)
+                            {
+                                $Pago="";
+                                $tipo="tipo12";
+                            }
+                            else
+                            {
+                                $Pago="";
+                                $tipo="tipo13";
+                            }
+                        $wdata[$i][0]=$row[0];
+                        $wdata[$i][1]=$row[1];
+                        $wdata[$i][2]=$row[16];
+                        $wdata[$i][3]=$row[19];
                         $nombre=$row[4]." ".$row[5]." ".$row[6]." ".$row[7];
-                        $path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
-                        echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[17]."</td></tr>";
+                        echo "<input type='HIDDEN' name= 'wdata[".$i."][0]' value='".$wdata[$i][0]."'>";
+                        echo "<input type='HIDDEN' name= 'wdata[".$i."][1]' value='".$wdata[$i][1]."'>";
+                        echo "<input type='HIDDEN' name= 'wdata[".$i."][2]' value='".$wdata[$i][2]."'>";
+                        echo "<input type='HIDDEN' name= 'wdata[".$i."][3]' value='".$wdata[$i][3]."'>";
+                        echo "<input type='HIDDEN' name= 'num' value='".$num."'>";
+                        $path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+                        echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$row[3]."</td><td id=".$tipo.">".$row[2]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[17]."</td><td id=".$tipo."><input type='checkbox' name='wf[".$i."]' onclick='enter()'></td><td id=".$tipo.">".$Pago."</td></tr>";
                     }
                 }
                 echo "</table></center>";
-            }
-        break;
+            break;
+            case 97:
+                echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
+                if(!isset($wcco))
+                {
+                    echo "<center><table border=0>";
+
+                    encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica", true);
+
+                    $cco="Ccohos";
+                    $sub="off";
+                    $tod="";
+                    $ipod="off";
+                    //$cco=" ";
+                    $centrosCostos = consultaCentrosCostos($cco, "", FALSE, $selectsede);
+                    echo "<table align='center' border=0 >";
+                    $dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
+
+                    echo $dib;
+                    echo "</table>";
+
+
+
+                    echo "</td></tr>";
+                    echo "<tr class='fila1'><td colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
+                }
+                else
+                {
+                    echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
+                    echo "<meta http-equiv='refresh' content='60;url=/matrix/movhos/procesos/listas.php?ok=97&wemp_pmla=".$codemp."&empresa=".$empresa."&codemp=".$codemp."&wcco=".$wcco."&wlogo=".$wlogo."&selectsede=".$selectsede."'>";
+
+                    encabezado("PACIENTES CON ALTA ADMINISTRATIVA", $wactualiz, "clinica", true);
+                    echo "<table border=0 align=center id=tipo5>";
+                    ?>
+                    <script>
+                        function ira(){document.listas.wfecha.focus();}
+                    </script>
+                    <?php
+                    if($wlogo == 1)
+                        //echo "<tr><td align=center colspan=4><IMG SRC='/matrix/images/medical/movhos/logo_".$empresa.".png'></td></tr>";
+                    echo "<tr><td align=right colspan=4><font size=2>Ver. 2011-12-28 </font></td></tr>";
+                    echo "<tr><td align=center colspan=4 class='encabezadoTabla'><b>PACIENTES CON ALTA ADMINISTRATIVA</td></tr>";
+                    if (!isset($wfecha))
+                        $wfecha=date("Y-m-d");
+                    if(!isset($whis))
+                        $whis="";
+                    if(!isset($wnin))
+                        $wnin="";
+                    if(!isset($num))
+                        $num=0;
+                    $year = (integer)substr($wfecha,0,4);
+                    $month = (integer)substr($wfecha,5,2);
+                    $day = (integer)substr($wfecha,8,2);
+                    $nomdia=mktime(0,0,0,$month,$day,$year);
+                    $nomdia = strftime("%w",$nomdia);
+                    $wsw=0;
+                    switch ($nomdia)
+                    {
+                        case 0:
+                            $diasem = "DOMINGO";
+                            break;
+                        case 1:
+                            $diasem = "LUNES";
+                            break;
+                        case 2:
+                            $diasem = "MARTES";
+                            break;
+                        case 3:
+                            $diasem = "MIERCOLES";
+                            break;
+                        case 4:
+                            $diasem = "JUEVES";
+                            break;
+                        case 5:
+                            $diasem = "VIERNES";
+                            break;
+                        case 6:
+                            $diasem = "SABADO";
+                            break;
+                    }
+                    echo "<tr><td class='fila1' align=center><b>Fecha :</b></td>";
+                    echo "<td class='fila2' align=center><b>".$diasem."</b></td>";
+                    echo "<td class='fila2' colspan=2 align=center valign=center><input type='TEXT' name='wfecha' size=10 maxlength=10 readonly='readonly' value=".$wfecha." class=tipo6></td></tr>";
+                    echo "</table><br>";
+                    echo "<input type='HIDDEN' id='ok' name= 'ok' value='".$ok."'>";
+
+                    //                  0       1       2       3       4       5       6       7       8       9      10      11      12      13      14      15      16      17      18
+                    $query = "select Cuehis, Cueing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cuefac, Cueobs, Ubihac ";
+                    $query .= " from ".$empresa."_000022,".$empresa."_000018,root_000036,root_000037,costosyp_000005,".$empresa."_000016 ";
+                    $query .= " where Cuepag = 'on'  ";
+                    $query .= " and Cuehis = ubihis  ";
+                    $query .= " and Cueing = ubiing  ";
+                    $query .= " and ubiald = 'off'  ";
+                    $query .= " and ubisac = '".substr($wcco,0,strpos($wcco,"-"))."'";
+                    $query .= " and ubihis = orihis  ";
+                    $query .= " and ubiing = oriing  ";
+                    $query .= " and oriori = '".$codemp."'  ";
+                    $query .= " and oriced = pacced  ";
+                    $query .= " and oritid = pactid  ";
+                    $query .= " and ubisac = ccocod  ";
+                    $query .= " and ubihis = inghis ";
+                    $query .= " and ubiing = inging  ";
+                    $query .= " and costosyp_000005.ccoemp = '".$wemp_pmla."' ";
+                    $query .= " order by Ubisac,Pacced ";
+
+                    $err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
+                    $num = mysql_num_rows($err);
+                    if ($num>0)
+                    {
+                        echo "<table border=0 align=center id=tipo5>";
+                        echo "<tr class='encabezadoTabla'><td align=center colspan=13>PACIENTES ACTIVOS PARA ALTA INMEDIATA</td></tr>";
+                        echo "<tr class='encabezadoTabla'><td align=center>HISTORIA</td><td align=center>NRO. INGRESO</td><td align=center>NOMBRE</td><td align=center>CODIGO<BR>HABITACION</td><td align=center>SERVICIO</td><td align=center>RESPONSABLE</td><td align=center>DESCRIPCION</td><td align=center>NRO. FACTURA</td><td align=center>OBSERVACIONES</td></tr>";
+                        for ($i=0;$i<$num;$i++)
+                        {
+                            $row = mysql_fetch_array($err);
+                            $query = "select Habcod ";
+                            $query .= " from ".$empresa."_000020 ";
+                            $query .= " where Habhis = '".$row[0]."'  ";
+                            $query .= " and Habing = '".$row[1]."'  ";
+                            $err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
+                            $num1 = mysql_num_rows($err1);
+                            if($num1 > 0)
+                            {
+                                $row1 = mysql_fetch_array($err1);
+                                $row[18]=$row1[0];
+                            }
+                            else
+                                $row[18]="";
+                            if($i % 2 == 0)
+                            {
+                                $tipo="tipo12";
+                            }
+                            else
+                            {
+                                $tipo="tipo13";
+                            }
+                            $nombre=$row[4]." ".$row[5]." ".$row[6]." ".$row[7];
+                            $path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+                            echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[17]."</td></tr>";
+                        }
+                    }
+                    echo "</table></center>";
+                }
+            break;
     }
-    // echo "<table border=0 align=center id=tipo5>";
-    // echo "<tr><td align=center><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
-    // if(isset($wcco))
-    // {
-    // echo "<tr><td align=center><A HREF='listas.php?ok=99&wemp_pmla=".$wemp_pmla."&wlogo=".$wlogo."'>Retornar</A></td></tr>";
-    // }
-    // echo "</table>";
+    echo "<table border=0 align=center id=tipo5>";
+    echo "<tr><td align=center><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>";
+    if(isset($wcco))
+    {
+    echo "<tr><td align=center><A HREF='listas.php?ok=99&wemp_pmla=".$wemp_pmla."&wlogo=".$wlogo."&selectsede=".$selectsede."'>Retornar</A></td></tr>";
+    }
+    echo "</table>";
 
 
 }
 ?>
+<script>
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "listas.php?ok="+$('#ok').val()+"&wemp_pmla="+$('#wemp_pmla').val()+"&wlogo="+$('#wlogo').val()+"&codemp="+$('#codemp').val()+"&selectsede="+$('#selectsede').val()
+    });
+</script>
 </body>
 </html>
