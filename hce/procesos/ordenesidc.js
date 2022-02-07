@@ -147,8 +147,9 @@ function marcarImpresionHist( campo,historia,ingreso,articulo,fecha,ido )
 	var parametros = "";
 	
 	var imprimir = campo.checked ? "on":"off";
+	var wemp_pmla = document.forms.forma.wemp_pmla.value;
 		
-	parametros = "consultaAjaxKardex=56&basedatos="+document.forms.forma.wbasedato.value+"&estado="+imprimir+"&whis="+historia+"&wing="+ingreso+"&codigoArticulo="+articulo+"&wfecha="+fecha+"&ido="+ido; 
+	parametros = "consultaAjaxKardex=56&basedatos="+document.forms.forma.wbasedato.value+"&estado="+imprimir+"&whis="+historia+"&wing="+ingreso+"&codigoArticulo="+articulo+"&wfecha="+fecha+"&ido="+ido+"&wemp_pmla="+wemp_pmla; 
 
 	try{
 		var ajax=nuevoAjax();
@@ -424,7 +425,7 @@ function abrirCTCMultiple()
 						// Si el responsable del paciente es una EPS se abre el formulario CTC
 						if(responsableEsEPS > 0)
 						{
-							parametros = "consultaAjaxKardex=45&basedatos="+document.forms.forma.wbasedato.value+"&wart="+arrNoPos[1]; 
+							parametros = "consultaAjaxKardex=45&basedatos="+document.forms.forma.wbasedato.value+"&wart="+arrNoPos[1]+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 							try
 							{
 								// Ajax que consulta los tratamientos existentes y devuelve el array de estos
@@ -509,7 +510,7 @@ function cerrarFormHCE(contExamen,basedatohce,formTipoOrden,historia,ingreso)
 	//alert(cuentaExamenes+','+basedatohce+','+formTipoOrden+','+historia+','+ingreso)
 
 	// Consulto si el formulario ha sido diligenciado en la historia clínica electrónica
-	parametros = "consultaAjaxKardex=50&basedatoshce="+basedatohce+"&formTipoOrden="+formTipoOrden+"&historia="+historia+"&ingreso="+ingreso; 
+	parametros = "consultaAjaxKardex=50&basedatoshce="+basedatohce+"&formTipoOrden="+formTipoOrden+"&historia="+historia+"&ingreso="+ingreso+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 
 	try{
 		ajax=nuevoAjax();
@@ -803,8 +804,9 @@ function mostrarCtcArticulos2( codArticulo, protocolo, id, tratamiento, deAlta  
 		var historia = document.forms.forma.whistoria.value;
 		var ingreso = document.forms.forma.wingreso.value;
 		var fecha = document.forms.forma.wfecha.value;
+		var wemp_pmla= document.forms.forma.wemp_pmla.value;
 					 
-		parametros = "wemp_pmla=10&historia="+historia+"&ingreso="+ingreso+"&fechaKardex="+fecha+"&codArticulo="+codArticulo+"&idx="+idx + parametros +"&protocolo="+protocolo+"&id="+id+"&tratamiento="+tratamiento+"&tiempoTratamiento="+$( "#wdiastto"+idAux ).val();
+		parametros = "wemp_pmla="+wemp_pmla+"&historia="+historia+"&ingreso="+ingreso+"&fechaKardex="+fecha+"&codArticulo="+codArticulo+"&idx="+idx + parametros +"&protocolo="+protocolo+"&id="+id+"&tratamiento="+tratamiento+"&tiempoTratamiento="+$( "#wdiastto"+idAux ).val();
 		try{
 			
 			ajax=nuevoAjax();
@@ -1040,7 +1042,8 @@ function mostrarCtcArticulos( codArticulo, protocolo, id  ){
 	var hin = fechaInicio[1]; 				//hora de inicio
 	
 	// generarCTCprocedimientos.php?wemp_pmla="+wemp_pmla+"&historia="+historia+"&ingreso="+ingreso+"&fechaKardex="+fechaKardex
-	parametros = "wemp_pmla=10&historia="+historia+"&ingreso="+ingreso+"&fechaKardex="+fecha+"&codArticulo="+codArticulo+"&idx="+idx
+	var wemp_pmla = document.forms.forma.wemp_pmla.value;
+	parametros = "wemp_pmla="+wemp_pmla+"&historia="+historia+"&ingreso="+ingreso+"&fechaKardex="+fecha+"&codArticulo="+codArticulo+"&idx="+idx
 	             +"&frecuencia="+frecuencia
 				 +"&dosis="+dosis
 				 +"&canManejo="+canManejo
