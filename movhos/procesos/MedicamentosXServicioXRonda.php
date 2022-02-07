@@ -284,6 +284,8 @@ function cerrarVentana()
 include_once("conex.php");
 /****************************************************************************************************************************************************************
  * Actualizaciones:
+ * Enero 28 de 2022 Sebastian Alvarez Barona:	 - Se lleva la funcion consultarCcoCiclos24 al comun con el nombre consultarCcoCiclos24Unificado sin borrar 
+ * 												   la que esta actualmente en este archivo, esto con el fin de evitar funciones con centros de costos quemados.
  * Enero 13 de 2022 Sebastian Alvarez Barona:    - Se adiciono el parametro $selectsede en el llamado de función ConsultaCentrosCostos & query_todos_articulos_cco
  * 													para que cuando se seleccione la sede solo filtre las unidades de destino y cuando se seleccione la opcion de todas
  * 													que solo muestre los de sede80 o de lo contrario sedeSur.
@@ -370,7 +372,7 @@ else
   $wusuario = substr($user,$pos+1,strlen($user));
 
   															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz  ="Enero 13 de 2022";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz  ="Febrero 07 de 2022";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
 															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
   //***********************************v********************************************************************************************************
@@ -1033,7 +1035,7 @@ else
 								
 								$dosisConPurga=$dosis;
 								// tener en cuenta la purga
-								$purgaDA = consultarPurgaDA($rows['Habcco']);
+								$purgaDA = consultarPurgaDAUnificado($rows['Habcco']);
 								
 								if($purgaDA!="0" && $equivalenteCM!="")
 								{
@@ -1749,7 +1751,7 @@ function pintarAritculos( $articulos ){
 			$serviciosDomiciliarios[] = $ccoDoms->codigo;
 		}
 		
-		$ccoConCiclos24 = consultarCcoCiclos24();
+		$ccoConCiclos24 = consultarCcoCiclos24Unificado();
 		
 	  echo "<div>
 				<table align='center'>
