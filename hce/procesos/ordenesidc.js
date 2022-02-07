@@ -149,7 +149,7 @@ function marcarImpresionHist( campo,historia,ingreso,articulo,fecha,ido )
 	var imprimir = campo.checked ? "on":"off";
 	var wemp_pmla = document.forms.forma.wemp_pmla.value;
 		
-	parametros = "consultaAjaxKardex=56&basedatos="+document.forms.forma.wbasedato.value+"&estado="+imprimir+"&whis="+historia+"&wing="+ingreso+"&codigoArticulo="+articulo+"&wfecha="+fecha+"&ido="+ido+"&wemp_pmla="+wemp_pmla; 
+	parametros = "consultaAjaxKardex=56&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&estado="+imprimir+"&whis="+historia+"&wing="+ingreso+"&codigoArticulo="+articulo+"&wfecha="+fecha+"&ido="+ido+"&wemp_pmla="+wemp_pmla; 
 
 	try{
 		var ajax=nuevoAjax();
@@ -398,6 +398,7 @@ function abrirCTCMultiple()
 		{
 			var historia = document.forms.forma.whistoria.value;
 			var ingreso = document.forms.forma.wingreso.value;
+			var wemp_pmla = document.forms.forma.wemp_pmla.value;
 			// var fecha = document.forms.forma.wfecha.value;
 			
 			
@@ -1324,7 +1325,7 @@ function cargarMedicamentosAnteriores(historia,ingreso,fecha,cco){
 
 	var parametros = ""; 
 
-	parametros = "consultaAjaxKardex=32&wbasedato="+document.forms.forma.wbasedato.value+"&wcenmez=cenpro&historia="+historia+"&ingreso="+ingreso+"&fecha="+fecha
+	parametros = "consultaAjaxKardex=32&wbasedato="+document.forms.forma.wbasedato.value+"&wcenmez=cenpro&historia="+historia+"&ingreso="+ingreso+"&fecha="+fecha+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
 				+"&cco="+cco
 		
 	try{
@@ -4616,7 +4617,7 @@ function autocompletarParaConsultaDiagnosticas(){
 	var historia = document.forms.forma.whistoria.value;
 	var ingreso = document.forms.forma.wingreso.value;	
 	
-	parametros = "consultaAjaxKardex=47&basedatoshce="+document.forms.forma.wbasedatohce.value+"&wtipo="+tipoServicioSel; 
+	parametros = "consultaAjaxKardex=47&basedatoshce="+document.forms.forma.wbasedatohce.value+"&wtipo="+tipoServicioSel+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 
 	try{
 		ajax=nuevoAjax();
@@ -4637,7 +4638,7 @@ function autocompletarParaConsultaDiagnosticas(){
 					//////////////////////////////////////////////////////////
 
 					// Consulto si el formulario ha sido diligenciado en la historia clínica electrónica
-					parametros = "consultaAjaxKardex=50&basedatoshce="+document.forms.forma.wbasedatohce.value+"&formTipoOrden="+formTipoOrden+"&historia="+historia+"&ingreso="+ingreso; 
+					parametros = "consultaAjaxKardex=50&basedatoshce="+document.forms.forma.wbasedatohce.value+"&formTipoOrden="+formTipoOrden+"&historia="+historia+"&ingreso="+ingreso+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 
 					try{
 						ajax=nuevoAjax();
@@ -6102,7 +6103,7 @@ function consultarHabitaciones()
 	var contenedor = document.getElementById('cntHabitacion');
 	var parametros = ""; 
 				
-	parametros = "consultaAjaxKardex=25&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + document.getElementById('wsservicio').value; 
+	parametros = "consultaAjaxKardex=25&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + document.getElementById('wsservicio').value+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 		
 	try{
 		$.blockUI({ message: $('#msjEspere') });
@@ -6131,7 +6132,7 @@ function consultarHabitaciones()
 function validarFirmaDigital(usuario,firma){
 	var contenedor = document.getElementById('tdEstadoFirma');
 	var parametros = ""; 
-	parametros = "consultaAjaxKardex=26&basedatos="+document.forms.forma.wbasedato.value+"&usuarioHce=" + usuario + "&firma=" + firma; 
+	parametros = "consultaAjaxKardex=26&basedatos="+document.forms.forma.wbasedato.value+"&usuarioHce=" + usuario + "&firma=" + firma+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 	try{
 		//$.blockUI({ message: $('#msjEspere') });
 		ajax=nuevoAjax();
@@ -7054,7 +7055,7 @@ function actualizaImpresion( historia,ingreso,fecha )
 {
 	var parametros = "";
 	
-	parametros = "consultaAjaxKardex=42&basedatos="+document.forms.forma.wbasedato.value+"&whis="+historia+"&wing="+ingreso+"&wfec="+fecha; 
+	parametros = "consultaAjaxKardex=42&basedatos="+document.forms.forma.wbasedato.value+"&whis="+historia+"&wing="+ingreso+"&wfec="+fecha+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 
 	try{
 		ajax=nuevoAjax();
@@ -7094,7 +7095,7 @@ function marcarImpresion( campo,historia,ingreso,articulo,fecha,finicio,hinicio 
 	if(campo=='quitar')
 		articuloAlta = "off";
 		
-	parametros = "consultaAjaxKardex=39&basedatos="+document.forms.forma.wbasedato.value+"&articuloAlta="+articuloAlta+"&whis="+historia+"&wing="+ingreso+"&codigoArticulo="+articulo+"&wfecha="+fecha+"&wfecini="+finicio+"&wfecfin="+hinicio; 
+	parametros = "consultaAjaxKardex=39&basedatos="+document.forms.forma.wbasedato.value+"&articuloAlta="+articuloAlta+"&whis="+historia+"&wing="+ingreso+"&codigoArticulo="+articulo+"&wfecha="+fecha+"&wfecini="+finicio+"&wfecfin="+hinicio+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 
 	try{
 		ajax=nuevoAjax();
@@ -7134,7 +7135,7 @@ function marcarManejoInterno( campo,historia,ingreso,articulo,fecha,finicio,hini
 	if(campo.checked==true)
 		articuloInterno = "on";
 		
-	parametros = "consultaAjaxKardex=43&basedatos="+document.forms.forma.wbasedato.value+"&articuloInterno="+articuloInterno+"&whis="+historia+"&wing="+ingreso+"&codigoArticulo="+articulo+"&wfecha="+fecha+"&wfecini="+finicio+"&wfecfin="+hinicio; 
+	parametros = "consultaAjaxKardex=43&basedatos="+document.forms.forma.wbasedato.value+"&articuloInterno="+articuloInterno+"&whis="+historia+"&wing="+ingreso+"&codigoArticulo="+articulo+"&wfecha="+fecha+"&wfecini="+finicio+"&wfecfin="+hinicio+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 
 	try{
 		ajax=nuevoAjax();
@@ -7198,7 +7199,7 @@ function marcarImpresionExamen( campo,tipo_orden,numero_orden,examen,fecha,contE
 		imprimirExamen = "off";
 	
 	
-	parametros = "consultaAjaxKardex=40&basedatos="+document.forms.forma.wbasedato.value+"&imprimirExamen="+imprimirExamen+"&wcodigo_examen="+examen+"&wfecha="+fecha+"&wtipo_orden="+tipo_orden+"&wnumero_orden="+numero_orden+"&item="+item; 
+	parametros = "consultaAjaxKardex=40&basedatos="+document.forms.forma.wbasedato.value+"&imprimirExamen="+imprimirExamen+"&wcodigo_examen="+examen+"&wfecha="+fecha+"&wtipo_orden="+tipo_orden+"&wnumero_orden="+numero_orden+"&item="+item+"&wemp_pmla="+document.forms.forma.wemp_pmla.value; 
 
 	try{
 		ajax=nuevoAjax();
@@ -9874,7 +9875,7 @@ function quitarExamen( idxElemento, prefijoAlta, nuevoExamen, tipoMensaje ){
 
 			//////////////////////////////////////////////////////////
 			// Elimino los datos del formulario si es una orden asociada a un formulario de HCE
-			parametros = "consultaAjaxKardex=51&basedatoshce="+document.forms.forma.wbasedatohce.value+"&wcco="+cco+"&historia="+historia+"&ingreso="+ingreso+"&firmHce="+firmForm;
+			parametros = "consultaAjaxKardex=51&basedatoshce="+document.forms.forma.wbasedatohce.value+"&wcco="+cco+"&historia="+historia+"&ingreso="+ingreso+"&firmHce="+firmForm+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
 
 			try{
 				ajaxhce=nuevoAjax();
@@ -11351,7 +11352,7 @@ function grabarIndicaciones(indicaiones,fechaKardex,historia,ingreso){
 	var parametros = "";
 	var mensaje = "";
 		
-	parametros = "consultaAjaxKardex=41&basedatos="+document.forms.forma.wbasedato.value+"&historia="+historia+"&ingreso="+ingreso+"&wfecha="+fechaKardex+"&windicaiones="+indicaiones;
+	parametros = "consultaAjaxKardex=41&basedatos="+document.forms.forma.wbasedato.value+"&historia="+historia+"&ingreso="+ingreso+"&wfecha="+fechaKardex+"&windicaiones="+indicaiones+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
 		
 //	alert(parametros);
 	
@@ -13110,7 +13111,7 @@ function grabarEstadoAprobacionArticulos(historia,ingreso,fecha,codigosArticulos
 	var parametros = ""; 
 				
 	parametros = "consultaAjaxKardex=26&basedatos="+document.forms.forma.wbasedato.value+"&historia="+historia+"&ingreso="+ingreso+"&fecha="+fecha+"&codigosArticulos="+codigosArticulos
-				+"&codUsuario="+codUsuario+"&estadoAprobacion="+estadoAprobacion;
+				+"&codUsuario="+codUsuario+"&estadoAprobacion="+estadoAprobacion+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
 		
 	try{
 		$.blockUI({ message: $('#msjEspere') });
