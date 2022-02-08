@@ -679,6 +679,27 @@ function cambiarEstadoExamen( $conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, 
 	return $val;
 }
 
+function modalidadesPorCup( $conex, $wmovhos, $cup )
+{
+	//Consultando modalidades y salas
+	$sql = "SELECT Promod, b.Moddes
+			  FROM ".$wmovhos."_000271 a, ".$wmovhos."_000262 b
+			 WHERE a.Procup = '".$cup."'
+			   AND a.Proest = 'on'
+			   AND b.Modcod = a.Promod
+			";
+	
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	while( $rows = mysql_fetch_array($res) ){
+		$modalidadesPorCup[] = [
+			'codigo' 	  => $rows['Promod'],
+			'descripcion' => utf8_encode( $rows['Moddes'] ),
+		];
+	}
+
+	return $modalidadesPorCup;
+}
 
 function consultarModalidadPorCup( $conex, $wmovhos, $cup ){
 	
@@ -2475,6 +2496,8 @@ if( $_GET ){
 				//Modalidad por defecto
 				$modDefecto = consultarModalidadPorCup( $conex, $wmovhos, $cup );
 				
+				//Modalidades del cup
+				$modPorCup = modalidadesPorCup( $conex, $wmovhos, $cup );
 				//Consulto la sede
 				$sede  = consultarSedePorCcoYCup( $conex, $wmovhos, $cco_sede, $cup );
 				
@@ -2484,6 +2507,8 @@ if( $_GET ){
 				
 				//Solo se muestra la modal si se encuentra una sede para el cco que carga y el cup cargado
 				$result['validar'] = !empty($sede);
+				//Modalidades del cup
+				$result['modalidades_cup'] = $modPorCup;
 				
 				//Debe mostrarse la modal solo tiene cita
 				$result['mostrar'] = true;	//Variable que indica si la modal se muestra
@@ -2494,12 +2519,15 @@ if( $_GET ){
 				
 				$result['indicaciones'] = consultarIndicacionesPorCup( $conex, $whce, $sede['tipoOrden'], $cup );
 				
-				// var_dump($cita);
+				$datosCita = consultarPacienteConCita( $conex, $wemp_pmla, $wmovhos, $historia, $ingreso, $paciente['tipoDocumento'], $paciente['nroDocumento'], $cup );
+				
+				if( $datosCita )
+					$result['datosCita'] = $datosCita;
 				if( count( $cita ) > 0 )
 					$result['defaults']['prioridad'] = $cita['Mvcpri'];
 				
 				if( !empty($modDefecto) ){ 
-					$result['defaults']['modalidad'] = $modDefecto;
+					$result['defaults']['modalidad'] = ( isset($datosCita['Mvcmod']) && !empty($datosCita['Mvcmod']) ) ? $datosCita['Mvcmod'] : $modDefecto;
 				}
 				
 				if( !empty($cita['Mvcind']) ){
@@ -2507,13 +2535,8 @@ if( $_GET ){
 				}
 				
 				if( !empty($cita) ){
-					$result['defaults']['sala'] = $cita['Mvcsal'];
+					$result['defaults']['sala'] = $datosCita['Mvcsal'];
 				}
-				
-				$datosCita = consultarPacienteConCita( $conex, $wemp_pmla, $wmovhos, $historia, $ingreso, $paciente['tipoDocumento'], $paciente['nroDocumento'], $cup );
-				
-				if( $datosCita )
-					$result['datosCita'] = $datosCita;
 				
 				echo json_encode($result);
 			break;
