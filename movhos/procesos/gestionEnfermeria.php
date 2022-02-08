@@ -2794,7 +2794,7 @@ if(isset($operacion) && $operacion == 'cambiar_estado_examen'){
 					'wdetcod'	    		=> $datos['Detcod'],
 					'wite'	        		=> $datos['Detite'],
 					'wdettor'	       		=> $datos['Dettor'],
-					'worigen'	        	=> "Historia Clinica Electronica",
+					'worigen'	        	=> "Gesti&oacute;n de Enfermer&iacute;a",
 					'wcen_cos'				=> $_POST['centroCostosCca'],
 					'wanulacion_cca'		=> $anulacion_cca,
 					'wdeticg'				=> $datos['Deticg'],
@@ -6580,7 +6580,7 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 <body>
 <?php
 
-$actualiz="Enero 13 de 2022";
+$actualiz="Febrero 04 de 2022";
 //TABLA TEMPORAL Y CONSULTANDO TODOS LOS MEDICAMENTOS DE LA 15 EN UN SOLO PASO
 
 /**********************************************************************************************************************************************************
@@ -6601,6 +6601,8 @@ $actualiz="Enero 13 de 2022";
 /**********************************************************************************************************************************************************
 
  * Modificaciones:
+ * 2022-02-04: Cristhian Barros     - Se modifica parametro worigen cambia de "Historia Clinica Electronica" a "Gestion de Enfermeria", con el fin de corregir el origen de 
+									  donde se realizan los cargos automaticos desde gestion de enfermeria.
  * 2022-01-04: Sebastian Alvarez B. - Se adiciona el on change para el filtro de sede del centro de costos (servicio). Pasamos el valor del select de sede 
  * 									  como oculto y luego pasamos la variable $selectsede como parametro en donde se llama la funcion consultaCentrosCostos().
  * 2021-07-13: Joel Payares Hdz		- Se comenta lineas de código que colocan en modo limpieza la habitación que estaba habitada por el paciente,
