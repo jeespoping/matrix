@@ -9,7 +9,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2021-12-14';
+			$wactualiz='2022-02-04';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //  2019-06-26 Jerson Trujillo: Se adapta el programa para que soporte dos campos del formulario de triage de la hce, para definir si se da de alta al paciente.              
 //
@@ -1976,12 +1976,11 @@ else
 			+"</fieldset>";
 	
 			// --> Cargar el iframe
-			$("#divFormularioHce").html("<div align=center>"+infoPaciente+"</div><iframe id='frameFormularioTriage' name='frameFormularioTriage' src='"+urlform+"' height='600px' width='950px' scrolling=yes frameborder='0'></iframe>");
+			$("#divFormularioHce").html("<div align=center>"+infoPaciente+"</div><iframe id='frameFormularioTriage' name='frameFormularioTriage' src='"+urlform+"'  height='600px' width='950px' scrolling='yes' frameborder='0'></iframe>");
 			
 			// --> Validar si ya se guardo el formulario
 			setTimeout( function(){	
 				frame1 = $('#frameFormularioTriage').contents();
-				$(frame1).contents().find("iframe").height(1200);
 				
 				// --> 	Cada segundo se valida si existe el elemento "tipoLGOK" con el texto "DATOS GRABADOS OK", si existen
 				//		esto indica que se grabo el formulario con exito.
@@ -2111,7 +2110,6 @@ else
 			// --> Validar si ya se guardo el formulario
 			setTimeout( function(){	
 				frame1 = $('#frameFormularioTriage').contents();
-				$(frame1).contents().find("iframe").height(1200);
 				
 				// --> 	Cada segundo se valida si existe el elemento "tipoLGOK" con el texto "DATOS GRABADOS OK", si existen
 				//		esto indica que se grabo el formulario con exito.
@@ -2688,7 +2686,6 @@ else
 			}
 		}, 'json');
 	}
-	
 	
 //=======================================================================================================================================================	
 //	F I N  F U N C I O N E S  J A V A S C R I P T 
