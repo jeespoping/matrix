@@ -8,10 +8,16 @@
 		<?php
 		include_once("conex.php");
 
-		$wactualiz = "15 De Diciembre del 2021";
+		$wactualiz = "01 De Febrero del 2022";
 
 		/**
 		 * Acutalizacion:
+		 * 
+		 * Febrero 01 del 2022		Sebastian Alvarez B.  Se crea la función obetenrLotePaciente() que nos trae el lote que esta asociado a una historia de un paciente.
+		 * 												  Esto con el fin de que cuando se daña un sticker de medicamentos en central de mezclas se opta por sacar
+		 * 												  uno nuevo desde la opcion gestion central - impresion de codigo de barras. La modificación que se realizo
+		 * 												  fue que cuando se dañe un sticker y se saque por esta opcion debe de salir tambien con la información
+		 * 												  del paciente unificado al del medicamento.
 		 * 
 		 * Noviembre 30 del 2021    Sebastian Alvarez B.  Se hace la unificación del sticker del medicamento con la información del paciente, anteriormente
 		 * 												  se hacian por separado, entonces para mas practicidad se opto por unificar las dos informaciones en uno solo. 
@@ -291,8 +297,32 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 	
 		}
 
-	
+		/**
+		 * Date: 01/02/2022
+		 * By: Sebastian Alvarez Barona
+		 * Descripcion : Creamos una función en donde nos traeremos 
+		 * el lote que esta asociado a cada paciente
+		 */
+		function obetenrLotePaciente($wcod, $wlot){
 
+			global $wbasedatocenpro;
+			global $conex;
+
+			$QueryLote = "
+			SELECT
+				Prehis , Preing, Preron
+			FROM
+				". $wbasedatocenpro ."_000022
+			WHERE
+				Precod = '". $wcod . "'
+				AND Prelot = '". $wlot ."'";
+
+			$result_lote = mysql_query($QueryLote, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $QueryLote . " - " . mysql_error());
+			$aResultado = mysql_fetch_assoc($result_lote);
+
+			return $aResultado;
+
+		}
 
 		//$wemp_pmla="01";
 		$soloconsulta = true;
@@ -560,6 +590,20 @@ else
 
 					$stikerInformacionPaciente = ''; // Variable vacia 
 
+					if ($StickerPacienteDA == 'on' && $whistoria == "" && $wingreso == "") // Si el parametro esta en on entonces el sticker DA sale unificado con el del paciente.
+					{
+
+						$datosPacientes = obetenrLotePaciente($wcod, $wlot);
+
+						if (count($datosPacientes)>0)
+						{
+
+							$whistoria = $datosPacientes['Prehis'];
+							$wingreso = $datosPacientes['Preing'];
+							$wronda = $datosPacientes['Preron'];
+						}
+					
+					}
 
 					if ($StickerPacienteDA == 'on' && $whistoria != "" && $wingreso != "") // Si el parametro esta en on entonces el sticker DA sale unificado con el del paciente.
 					{
@@ -614,7 +658,7 @@ else
 						^CFP
 						^FO5,499^FDEPS: ".$ResponsablePaciente." ^FS
 						^CFR,1
-						^FO120,528^FDHAB: ".$Habitacion."^FS";
+						^FO120,517^FDHAB: ".$Habitacion."^FS";
 						
 					}
 
