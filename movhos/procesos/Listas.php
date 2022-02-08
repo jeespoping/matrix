@@ -1,8 +1,32 @@
 <html>
 <head>
+    <link type="text/css" href="../../../include/root/jqueryalert.css" rel="stylesheet" />
+    <link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css">
+     <!-- PNotify -->
+    <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.css" rel="stylesheet">
+    <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.buttons.css" rel="stylesheet">
+    <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.nonblock.css" rel="stylesheet">
+    <link href="../../../include/gentelella/vendors/pnotify/dist/pnotify.brighttheme.css" rel="stylesheet">
+
+    <script type="text/javascript" src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/ui.core.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/ui.tabs.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/ui.draggable.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery.blockUI.min.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery.dimensions.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery.tooltip.js"></script>
+    <script type="text/javascript" src="../../../include/root/jquery.simple.tree.js"></script>
+    <script type="text/javascript" src="../../../include/root/jqueryalert.js?v=<?=md5_file('../../../include/root/jqueryalert.js');?>"></script>
+    <!-- PNotify -->
+    <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.js" type="text/rocketscript"></script>
+    <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.buttons.js" type="text/rocketscript"></script>
+    <script type="text/javascript" src="../../../include/gentelella/vendors/pnotify/dist/pnotify.nonblock.js" type="text/rocketscript"></script>
+
     <title>MATRIX Listas Para Altas</title>
     <!-- UTF-8 is the recommended encoding for your pages -->
-    <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <!-- <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script> -->
     <style type="text/css">
         body{background:white url(portal.gif) transparent center no-repeat scroll;}
         #tipo1{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;}
@@ -47,29 +71,132 @@
         #tipoM01{color:#000066;background:#DDDDDD;font-size:7pt;font-family:Tahoma;font-weight:bold;width:20em;text-align:left;height:3em;}
         #tipoM02{color:#000066;background:#99CCFF;font-size:7pt;font-family:Tahoma;font-weight:bold;width:20em;text-align:left;height:3em;}
 
+        .ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
+	    .ui-dialog .ui-dialog-titlebar { padding: .5em 1em .3em; position: relative;  }
+        .ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .2em 0; } 
+        .ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
+        .ui-dialog .ui-dialog-titlebar-close span { display: block; margin: 1px; }
+        .ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0; }
+        .ui-dialog .ui-dialog-content { position: relative; border: 0; padding: .5em 1em; background: none; overflow: auto; zoom: 1; }
+        .ui-dialog .ui-dialog-buttonpane { text-align: right; border-width: 1px 0 0 0; background-image: none; margin: .5em 0 0 0; padding: .3em 1em .5em .4em; }
+        .ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }
+        .ui-dialog .ui-dialog-buttonpane button { margin: 0 5px; cursor: pointer; }
+        .ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+        .ui-draggable .ui-dialog-titlebar { cursor: move; }
+
+        .ui-dialog-titlebar{
+            background: #C3D9FF none repeat scroll 0% 0%;
+        }
+
+        .ui-dialog{
+            background: #E8EEF7;
+        }
+
+        .ui-dialog-buttonpane{
+            text-align: right;
+            background: transparent;
+        }
+
+
+        .ui-dialog-buttonpane button{
+            padding: 10px;
+            margin: 0 5px;
+            font-weight: bold;
+            color: black;
+            background: #C3D9FF;
+        }
+
     </style>
 </head>
 <body onload=ira() bgcolor=#FFFFFF oncontextmenu = "return true" onselectstart = "return true" ondragstart = "return true">
 <BODY TEXT="#000066">
+
+
 <script type="text/javascript">
 
     function resolverCargo( nhis, ning ){
-//      document.forms.listas.his.value = nhis;
-//      document.forms.listas.ing.value = ning;
-//      document.forms.listas.resolver.value = 2;
+    //  document.forms.listas.his.value = nhis;
+    //  document.forms.listas.ing.value = ning;
+    //  document.forms.listas.resolver.value = 2;
         document.forms.listas.submit();
     }
-<!--
+
     function enter()
     {
         document.forms.listas.submit();
     }
 
-//-->
+
     function cerrarVentana()
      {
       top.close()
      }
+
+
+     function addHidden(theForm, key, value) {
+        // Create a hidden input element, and append it to the form:
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key; // 'the key/name of the attribute/field that is sent to the server
+        input.value = value;
+        theForm.appendChild(input);
+    }
+
+    function modalAltas( cmp, estadoCargos, num, posicion ){
+        
+        if( estadoCargos )
+        {
+
+            var msg = "Existen cargos en un estado diferente a Procesado, desea consultar en Unix?";
+
+            function consultarUnix( respuestaUsuario ){
+
+                var listaForm = document.forms['listas'];
+                addHidden(listaForm, 'respuestaUsuario', respuestaUsuario);
+                addHidden(listaForm, 'posicion', posicion);
+
+                document.forms.listas.submit();
+            }
+        
+            $( "<div style='color: black;font-size:12pt;height: 250px;' title='CONSULTA EN UNIX' class='dvModalAltas'>"+msg+"</div>" ).dialog({
+                width		: 550,
+                height		: 100,
+                modal		: true,
+                resizable	: false,
+                buttons	: {
+                    "Si": function() {
+                            cmp.checked = false;
+                            cmp.value = 'on';
+                            consultarUnix( 'true' );
+                            $( this ).dialog( "close" );
+                            $( cmp ).css({display:""});
+                        },
+                    "No": function() {
+                            cmp.checked = true;
+                            cmp.value = 'off';
+                            consultarUnix( 'false' );
+                            $( this ).dialog( "close" );
+                            $( cmp ).css({display:"none"});
+                        },
+                    "Cancelar": function() {
+                            cmp.checked = false;
+                            cmp.value = '';
+                            $( this ).dialog( "close" );
+                        },
+                },
+            });
+        
+            $( ".dvModalAltas" ).parent().css({
+                left: ( $( window ).width() - 550 )/2,
+                top : ( $( window ).height() - 100 )/2,
+            });
+        }
+        else
+        {
+            document.forms.listas.submit();
+        }
+    }
+
 </script>
 <?php
 include_once("conex.php");
@@ -102,6 +229,8 @@ include_once("conex.php");
 
 
        REGISTRO DE MODIFICACIONES :
+       .2022-01-05 - Juan Rodriguez: Se agrega model para que usuario decida si ingresar a unix o no, 
+                        esto se hace a raiz de las frecuentes caidas de unix.
        .2019-02-19 - Arleyda I.C. Migración realizada
 	     .2017-06-08 - Jonatan. Se valida que el paciente no tenga insumos pendientes para aplicar o devolver.
        .2017-02-09 - Arleyda I.C. Se agrega filtro en el campo ccoemp en caso de que el Query utilice la tabla costosyp_000005
@@ -161,6 +290,17 @@ include_once("movhos/validacion_hist.php");
 include_once("movhos/fxValidacionArticulo.php");
 include_once("movhos/registro_tablas.php");
 include_once("root/comun.php");
+
+
+
+
+/*
+        * Se agrega costos para no quemar la consulta en el witch 98
+        * @date: 01/12/2021
+        * @author: jesus.lopez
+*/
+
+
 
 
 
@@ -602,8 +742,39 @@ function resolverCargos( $his, $ing, $user, $obs ){
     }
 
 }
+/**
+ * Esta función verifica si hay cargos con estado diferente a procesado
+ * @param string $conex : Conexión
+ * @param string $whis : Historia
+ * @param string $wnin : Ingreso
+ * 
+ * @return true Si hay cargos con estado diferente a procesado
+ * @return false Si no hay cargos con estado diferente a procesado
+ */
+function validarCargosDiferenteProcesado($conex,$whis,$wnin)
+{
+    global $empresa;
 
-function validar_medins($conex,$whis,$wnin, $wcontrol)
+    $query = "SELECT * FROM ".$empresa."_000002
+	    WHERE Fenhis = '".$whis."'
+	    AND Fening = ".$wnin." 
+	    AND ( Fenues <> 'P' OR (Fenues='P' and Fecha_data='".date('Y-m-d')."') )
+	    AND Fenest =  'on'
+	    ORDER BY Fencco, Fecha_data";
+
+    $err=mysql_query($query,$conex);
+    $num=@mysql_num_rows($err);
+
+    if($num > 0){
+
+        return '1';
+    }
+    else{
+        return '0';
+    }
+}
+
+function validar_medins($conex,$whis,$wnin, $wcontrol, $respuestaUsuario)
 {
     global $empresa;
     global $conex_o;
@@ -615,10 +786,9 @@ function validar_medins($conex,$whis,$wnin, $wcontrol)
     $pac['permisoAlta']=false;
     $array=array();
     $conex_o=0;
-
     $bd=$empresa;
     connectOdbc($conex_o, "inventarios");
-    actualizacionDetalleRegistros ($pac, $array);
+    actualizacionDetalleRegistros ($pac, $array, $respuestaUsuario );
     $query = "select sum((spamen + spauen) - (spamsa + spausa)) ";	//Mayo 2 de 2013
     $query .= " from ".$empresa."_000004 ";
     $query .= " where spahis = '".$whis."'";
@@ -754,7 +924,7 @@ function grabar_pago($conex,$whis,$wnin,$wfac,$wpag)
 }
 
 /********** comienza la aplicacion***********/
-$wactualiz = "Enero 03 de 2022";
+$wactualiz = "2022-01-05";
 
 if(!isset($_SESSION['user']))
     echo "error";
@@ -765,7 +935,7 @@ else
     }
 
     $key = substr($user,2,strlen($user));
-    echo "<form name='listas' action='Listas.php' method=post>";
+    echo "<form name='listas' action='#' method=post>";
 
     $empresa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
     $whce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'HCE');
@@ -1092,7 +1262,7 @@ else
                             {
 
                                 $wres=array();
-                                $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i]);
+                                $resultado=validar_medins($conex,$row[0],$row[1], $wcontrol[$i],$respuestaUsuario);
 
                                 switch ($resultado)
                                 {
@@ -1152,6 +1322,7 @@ else
                             echo "<input type='HIDDEN' name= 'num' value='".$num."'>";
 
 
+                            $estadoCargos = validarCargosDiferenteProcesado($conex,$row[0],$row[1]);
                             //Valida si ya puede generar factura y además si todo esta registrado desde la entrega de turno secretaria.
                             if($row[16] == 1 and $wcontrol[$i] == 0)
                                 {
@@ -1166,6 +1337,8 @@ else
                                     echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='TEXT' name='wfac[".$i."]' size=10 maxlength=10 class=tipo6></td><td id=".$tipoA."><textarea name='wobs[".$i."]' cols=60 rows=3 class=tipo3>$wobservaciones_textarea</textarea></td><td id=".$tipoA."><input type='RADIO' name='wf[".$i."]' value=1 onclick='enter()'>Pagar <input type='RADIO' name='wf[".$i."]' value=2 onclick='enter()'>Sin Pago</td></tr>";
                                 }
                             }
+                            
+                    
                             elseif( $row[16] == 3)
                             {
 
@@ -1214,11 +1387,11 @@ else
                                 if(isset($wres[$i]) and isset($wporfacturar[$i])) //Si estan declaradas las dos variables se mostrará esta opción.
                                 {
 
-                                    echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='enter()'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
+                                    echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$num.", ".$i.")'></td><td id=".$tipo.">".$wobservaciones."</td><td id=".$tipoB.">".$wres[$i]."<br>".$wporfacturar[$i]."</td></tr>";
                                 }
                                 else{
                                     echo "<tr>";
-                                    echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='enter()'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
+                                    echo "<td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[18]."</td><td id=".$tipo.">".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td><td id=".$tipo."><input type='checkbox' name='wval[".$i."]' onclick='modalAltas(this, ".$estadoCargos.", ".$num.", ".$i.")'></td><td id=".$tipo."></td><td id=".$tipo.">VALIDACION PENDIENTE";
                                     echo "</td></tr>";
                                 }
                             }
