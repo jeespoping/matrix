@@ -502,10 +502,10 @@ function actualizarInsertarNuevoCupsUnix($conex, $conexUnix, $modo_pruebas, $cup
             if($resultUpd_inpro = @odbc_exec($conexUnix,$sqlUpd_inproCupProp)) {
                 $nuevoCupActivo = true;
 
-                $msj_cambio_estado = ($estado_cup == 'N') ? "estaba inactivo y <u>se ACTIV�� nuevamente</u>, ": "";
+                $msj_cambio_estado = ($estado_cup == 'N') ? "estaba inactivo y <u>se ACTIVÓ nuevamente</u>, ": "";
                 $resultadoProceso[$index_res]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Se encontró el CUPS [{$cupNuevo}] en un mismo registro como código anexo y código propio, {$msj_cambio_estado}se actualizó descripción, grupo, uvr si era necesario en maestro {$nombre_maestro} Unix.");
             } else {
-                $msj_cambio_estado = ($estado_cup == 'N') ? "estaba inactivo y <u>se ACTIV�� nuevamente</u>, ": "";
+                $msj_cambio_estado = ($estado_cup == 'N') ? "estaba inactivo y <u>se ACTIVÓ nuevamente</u>, ": "";
                 $resultadoProceso[$index_res]["mensajes"][] = array("err_sql"=>htmlentities($sqlUpd_inproCupProp, ENT_QUOTES).">".odbc_errormsg(),"tip_class"=>"danger", "mensaje" => "Se encontró el CUPS [{$cupNuevo}] en un mismo registro como código anexo y código propio pero no se pudo hacer actualización de estado, descripción, grupo o uvr si era necesario en maestro {$nombre_maestro} Unix.");
             }
 
@@ -527,7 +527,7 @@ function actualizarInsertarNuevoCupsUnix($conex, $conexUnix, $modo_pruebas, $cup
                 ($modo_pruebas) ? ($sqlIns_cup = "INSERT INTO in{$suf_pref}eeee () VALUES ()") : '';
                 if($resultIns_inpro = @odbc_exec($conexUnix,$sqlIns_cup)) {
                     $nuevoCupActivo = true;
-                    $resultadoProceso[$index_res]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Código CUPS [{$cupNuevo}] se <mark>INSERT��</mark> como código anexo y código propio en el maestro {$nombre_maestro}.");
+                    $resultadoProceso[$index_res]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Código CUPS [{$cupNuevo}] se <mark>INSERTÓ</mark> como código anexo y código propio en el maestro {$nombre_maestro}.");
                 } else {
                     $resultadoProceso[$index_res]["mensajes"][] = array("err_sql"=>htmlentities($sqlIns_cup, ENT_QUOTES).">".odbc_errormsg(),"tip_class"=>"danger", "mensaje" => "Error intentando guardar el CUPS [{$cupNuevo}] como código anexo y código propio en maestro de {$nombre_maestro} Unix <small><u>[Error:No insertó]</u></small>.");
                 }
@@ -565,7 +565,7 @@ function actualizarInsertarNuevoCupsMatrix($conex, $modo_pruebas,  $user_session
                 $sqlUpd_inproCupProp = "UPDATE {$wbasedato_cliame}_000103 SET Proest = 'on' WHERE Procup = '{$cupNuevo}' AND Procod = '{$cupNuevo}'";
                 ($modo_pruebas) ? ($sqlUpd_inproCupProp = "UPDATE {$wbasedato_cliame}_000103 SET Proest = 'on' WHERE 1<>1") : '';
                 if($resultUpd_inpro = mysql_query($sqlUpd_inproCupProp,$conex)) {
-                    $resultadoProceso["cli_103"]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Se encontró el CUPS [{$cupNuevo}] en un mismo registro como código anexo y código propio, estaba inactivo y <mark>se ACTIV�� nuevamente</mark> en maestro procedimientos-exámenes Matrix.");
+                    $resultadoProceso["cli_103"]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Se encontró el CUPS [{$cupNuevo}] en un mismo registro como código anexo y código propio, estaba inactivo y <mark>se ACTIVÓ nuevamente</mark> en maestro procedimientos-exámenes Matrix.");
                 } else {
                     $resultadoProceso["cli_103"]["mensajes"][] = array("tip_class"=>"danger", "mensaje" => "Se encontró el CUPS [{$cupNuevo}] en un mismo registro como código anexo y código propio pero <mark>INACTIVO</mark>, no se puedo cambiar el estado a ACTIVO en maestro procedimientos-exámenes Matrix.");
                 }
@@ -580,7 +580,7 @@ function actualizarInsertarNuevoCupsMatrix($conex, $modo_pruebas,  $user_session
                             WHERE   Procup = '{$cupNuevo}' AND Procod = '{$cupNuevo}'";
             ($modo_pruebas) ? ($query_proTm="INSERT  INTO {$wbasedato_cliame}_000103 () VALUES ()") : '';
             if($result_proTm = mysql_query($query_proTm,$conex)) {
-                $resultadoProceso["cli_103"]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Código CUPS [{$cupNuevo}] se <mark>INSERT��</mark> como código anexo y código propio en el maestro procedimientos-exámenes Matrix.");
+                $resultadoProceso["cli_103"]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Código CUPS [{$cupNuevo}] se <mark>INSERTÓ</mark> como código anexo y código propio en el maestro procedimientos-exámenes Matrix.");
             } else {
                 $resultadoProceso["cli_103"]["mensajes"][] = array("tip_class"=>"danger", "mensaje" => "Error intentando comprobar si el código CUPS [{$cupNuevo}] existe como código anexo y código propio en maestro de procedimientos-exámenes Matrix. <small><u>[Error:1]</u></small>.");
             }
@@ -828,7 +828,7 @@ function actualizarMaestroUnix($conex, $conexUnix, $modo_pruebas, $user_session,
                     $sql_inproCupProp = "UPDATE {$tabla_unx} SET {$suf_pref}act = 'N', {$suf_pref}fmo = '{$fecha_actualizado}' WHERE {$suf_pref}ane = '{$cupAnterior}' AND {$suf_pref}cod = '{$cupAnterior}'";
                     ($modo_pruebas) ? ($sql_inproCupProp = "UPDATE {$tabla_unx} SET {$suf_pref}act = 'N', {$suf_pref}fmo = '{$fecha_actualizado}' WHERE 1<>1") : '';
                     if($result_inpro = @odbc_exec($conexUnix,$sql_inproCupProp)) {
-                        $resultadoProceso[$index_res]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Se <u>INACTIV�� CUPS [{$cupAnterior}]</u> en maestro {$nombre_maestro} Unix."); //,"updated" => "Actualizados: ".odbc_num_rows($result_inpro)
+                        $resultadoProceso[$index_res]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Se <u>INACTIVÓ CUPS [{$cupAnterior}]</u> en maestro {$nombre_maestro} Unix."); //,"updated" => "Actualizados: ".odbc_num_rows($result_inpro)
                     } else {
                         $resultadoProceso[$index_res]["mensajes"][] = array("err_sql"=>htmlentities($sql_inproCupProp, ENT_QUOTES).">".odbc_errormsg(),"tip_class"=>"danger", "mensaje" => "No se pudo inactivar el CUPS [{$cupAnterior}] en maestro {$nombre_maestro} Unix.");
                     }
@@ -846,7 +846,7 @@ function actualizarMaestroUnix($conex, $conexUnix, $modo_pruebas, $user_session,
             $resultadoProceso[$index_res]["mensajes"][] = array("tip_class"=>"danger", "mensaje" => "Error recuperando respuesta código CUPS [{$cupAnterior}] en campo anexo del maestro de {$nombre_maestro} Unix.");
         }
 
-        // >> ACTUALIZACI��N DE TARIFAS
+        // >> ACTUALIZACIÓN DE TARIFAS
         // Si existe ya el nuevo cups como activo se actualizan las tarifas, cambiando el cups anterior por el nuevo cup.
         // if($nuevoCupActivo)
         {
@@ -857,7 +857,7 @@ function actualizarMaestroUnix($conex, $conexUnix, $modo_pruebas, $user_session,
             $actualizoTarifasHab = actualizarCupTarifasHabUnix($conex, $conexUnix, $modo_pruebas, $user_session, $cupAnterior, $cupNuevo, $defaultMaestro, $resultadoProceso);
         }
 
-        // >> ACTUALIZACI��N DE RELACI��N EMPRESA PROCEDIMIENTOS/EXAMENES
+        // >> ACTUALIZACIÓN DE RELACIÓN EMPRESA PROCEDIMIENTOS/EXAMENES
         $actualizoRelacionEmp = actualizarCupRelacionEmpresa($conex, $conexUnix, $modo_pruebas, $user_session, $cupAnterior, $cupNuevo, $defaultMaestro, $resultadoProceso);
     }else{
         $resultadoProceso[$index_res]["mensajes"][] = array("err_sql"=>htmlentities($sqlSel_inpro, ENT_QUOTES).">".odbc_errormsg(),"tip_class"=>"danger", "mensaje" => "Error consultando código CUPS [{$cupAnterior}] en campo anexo del maestro de {$nombre_maestro} Unix.");
@@ -892,7 +892,7 @@ function actualizarMaestroMatrix($conex, $modo_pruebas, $user_session, $wbasedat
                     $sql_inproCupProp = "UPDATE {$wbasedato_cliame}_000103 SET Proest = 'off' WHERE Procod = '{$cupAnterior}' AND Procup = '{$cupAnterior}'";
                     ($modo_pruebas) ? ($sql_inproCupProp = "UPDATE {$wbasedato_cliame}_000103 SET Proest = 'off' WHERE 1<>1") : '';
                     if($result_inpro = mysql_query($sql_inproCupProp,$conex)) {
-                        $resultadoProceso["cli_103"]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Se <mark>INACTIV�� CUPS [{$cupAnterior}]</mark> en maestro de procedimientos-exámenes Matrix.","updated" => "Actualizó: ".mysql_affected_rows());
+                        $resultadoProceso["cli_103"]["mensajes"][] = array("tip_class"=>"success", "mensaje" => "Se <mark>INACTIVÓ CUPS [{$cupAnterior}]</mark> en maestro de procedimientos-exámenes Matrix.","updated" => "Actualizó: ".mysql_affected_rows());
                     } else {
                         $resultadoProceso["cli_103"]["mensajes"][] = array("tip_class"=>"danger", "mensaje" => "No se pudo inactivar el CUPS [{$cupAnterior}] en maestro de procedimientos-exámenes Matrix.");
                     }
@@ -1595,7 +1595,6 @@ $modo_pruebas = (isset($modo_pruebas)) ? $modo_pruebas: '';
          */
         function actualizarMatrixCron(btn) {
             var obJson           = {};
-            obJson['wemp_pmla']     = $("#wemp_pmla").val();
             obJson['tiempoEjec'] = 'TARIFAS';
             obJson['consultaAjax'] = '';
 

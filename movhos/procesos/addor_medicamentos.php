@@ -1,6 +1,6 @@
 <?php
 include_once("conex.php");
-$wactualiz = "Enero 14 de 2021";
+$wactualiz = "2013-04-09";
 /*
  PROGRAMA                   : addor_medicamentos.php
  AUTOR                      : Edwar Jaramillo.
@@ -58,9 +58,6 @@ $wactualiz = "Enero 14 de 2021";
 include_once("root/comun.php");
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
-$ccoSF=ccoUnificadoSF();
-
-
 if(!isset($_SESSION['user']))
 {
     // Implementado para hacer algunas pruebas, a veces es necesario realizar algunas pruebas sin tener que estar loqueado.
@@ -91,7 +88,7 @@ $user_session = $user_session[1];
 /** DICCIONARIO **/
 define("LATIN1_UC_CHARS", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝ");
 define("LATIN1_LC_CHARS", "àáâãäåæçèéêëìíîïðñòóôõöøùúûüý");
-define("CENTRO_COSTO_FIJO", $ccoSF);
+define("CENTRO_COSTO_FIJO", "1050");
 define("MSJ1_CODIGO_CUM", "Ej. 123456789-01.");
 define("MSJ1_CONVERSION_CUM", "Este n&uacute;mero permite convertir la presentaci&oacute;n interna (Unidad interna) de un articulo a la presentaci&oacute;n CUM (Unidad nacional).");
 define("MSJ2_CONVERSION_CUM", "(Debe ser un n&uacute;mero entre cero y uno Ej. 0, 0.001, 0.5, 1, 1.00)");

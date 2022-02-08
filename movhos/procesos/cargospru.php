@@ -234,7 +234,6 @@ if(isset($artcod))
  * Es decir, cuando hay un error la tabla debe cambiar de color para indicarselo al usuario, ese cambio de color esta dictado por el class del <td>, lo que se obtiene
  * es el valor de class para el <td>
  * 
- * @modified 2022-01-11 -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico y Central de Mezclas  (Marlon Osorio)
  * @modified 2009-02-09 Se permite que un centro de costo hospitalario le grabe a otro, esto se valida en funcion buscar_si_puede_grabar_a_otro_cco, que se le envia el cco que graba y el cco donde esta el paciente y valida que se le pueda grabar, segun la tabla _000058.
  * @modified 2008-02-02 Color rosado para devoluciones
  * @modified 2007-11-14 Se evita grabacion de ceros y se avisa si la factura ya se tiro
@@ -814,8 +813,7 @@ function ArticulosXPaciente( $pac ){
 	global $conex;
 	global $bd;
 	global $cco;
-	global $ccoCM;
-	global $ccoSF;
+	global $centraldemezclas;
 	global $fecDispensacion;
 //	global $wcenmez;
 	
@@ -825,7 +823,7 @@ function ArticulosXPaciente( $pac ){
 	
 	$ori = 'SF';
 	
-	if( $cco['cod'] == $ccoCM ){
+	if( $cco['cod'] == $centraldemezclas ){
 		$ori = 'CM';
 	}
 	
@@ -998,12 +996,12 @@ function registrarArticuloKE( $art, $pac, $trans = "C", $tras = true ){
 	global $conex;
 	global $bd;
 	global $cco;
-	global $ccoCM;
+	global $centraldemezclas;
 	global $fecDispensacion;
 	
 	$ori = 'SF';
 	
-	if( $cco['cod'] == $ccoCM ){
+	if( $cco['cod'] == $centraldemezclas ){
 		$ori = 'CM';
 	}
 	
@@ -1558,11 +1556,14 @@ include_once("movhos/registro_tablas.php");
 include_once("movhos/otros.php");
 include_once("root/comun.php");
 
-$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
-$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
-$serviciofarmaceutico = ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
-$centraldemezclas = ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+
+
+
+
+$serviciofarmaceutico = '1050';
+$centraldemezclas = '1051';
+
 echo "<center><table border='0' width='270'>";
 
 //$q = " SELECT detapl, detval, empdes "

@@ -247,9 +247,6 @@ $(document).ready(function()
 	 */
 	/******************************************************************
 	 *  Modificaciones:
-	 * ================================================================================================================================================
-	 *	Enero 21 de 2022: Marlon Osorio
-							- Se parametrizo el centro de costos de Dispensacion Servicio Farmaceutico
 	  ================================================================================================================================================
 	 *	Mayo 4 de 2020: Jessica Madrid
 							- Para el envío de las ordenes por correo se modifica en la función enviarPdf() el mensaje y asunto como vacíos ya
@@ -479,7 +476,6 @@ function consultarMedicamentoEquivalenteCTC( $wbasedato, $codMedicamento )
 {
 	global $conex;
 	global $wemp_pmla;
-	global $ccoSF;
 	
 	$cenmez = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
 	
@@ -520,7 +516,7 @@ function consultarMedicamentoEquivalenteCTC( $wbasedato, $codMedicamento )
 		 // -- AND Areceq > '1'
 		$sql = "SELECT Artgen, Unides
 				  FROM ".$wbasedato."_000008, ".$wbasedato."_000026, ".$wbasedato."_000027
-				 WHERE Arecco={$ccoSF} 
+				 WHERE Arecco='1050' 
 				   AND Areces='".$codMedicamento."'
 				   AND Areaeq = Artcod
 				   AND Artest = 'on'
@@ -2648,7 +2644,6 @@ if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs'])){
 else	// Si el usuario está registrado inicia el programa
 {
 	include_once("root/comun.php");	
-	$ccoSF=ccoUnificadoSF();
 
 	$conex = obtenerConexionBD("matrix");
 	$html .= estilo();

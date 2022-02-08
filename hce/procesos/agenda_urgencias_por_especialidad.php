@@ -198,7 +198,7 @@ function muertePaciente(i)
 {
 	if(confirm("Confirme la muerte del paciente"))
 	{
-		var parametros = "consultaAjax=12&basedatos="+document.forms.forma.wbasedato.value+"&basedatoshce="+document.forms.forma.wbasedatohce.value+"&codcco="+document.forms.forma.codCco.value+"&paciente=" +document.getElementById('wpaciente'+i).value+"&ingreso=" +document.getElementById('wingreso'+i).value+"&seguridad=" +document.getElementById('wseguridad').value+"&wcubiculo_ocupado="+document.getElementById('wcubiculo_ocupado'+i).value+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
+		var parametros = "consultaAjax=12&basedatos="+document.forms.forma.wbasedato.value+"&basedatoshce="+document.forms.forma.wbasedatohce.value+"&codcco="+document.forms.forma.codCco.value+"&paciente=" +document.getElementById('wpaciente'+i).value+"&ingreso=" +document.getElementById('wingreso'+i).value+"&seguridad=" +document.getElementById('wseguridad').value+"&wcubiculo_ocupado="+document.getElementById('wcubiculo_ocupado'+i).value;
 
 		try
 		{
@@ -227,7 +227,7 @@ function activarPaciente(i)
 {
 	if(confirm("Realmente desea activar el paciente"))
 	{
-		var parametros = "consultaAjax=15&basedatos="+document.forms.forma.wbasedato.value+"&basedatoshce="+document.forms.forma.wbasedatohce.value+"&codcco="+document.forms.forma.codCco.value+"&paciente=" +document.getElementById('wpaciente'+i).value+"&ingreso=" +document.getElementById('wingreso'+i).value+"&seguridad=" +document.getElementById('wseguridad').value+"&wemp_pmla="+document.forms.forma.wemp_pmla.value;
+		var parametros = "consultaAjax=15&basedatos="+document.forms.forma.wbasedato.value+"&basedatoshce="+document.forms.forma.wbasedatohce.value+"&codcco="+document.forms.forma.codCco.value+"&paciente=" +document.getElementById('wpaciente'+i).value+"&ingreso=" +document.getElementById('wingreso'+i).value+"&seguridad=" +document.getElementById('wseguridad').value;
 
 		try
 		{

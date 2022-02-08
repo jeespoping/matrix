@@ -15,9 +15,8 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='Enero 12 de 2022';
+			$wactualiz='Septiembre 23 de 2019';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-//  2022-01-12  Marlon Osorio 		     -Se parametrizo el centro de costo de Central de Mezclas
 //  2019-09-23	Jessica Madrid Mejía	- Se agrega cast para evitar warning por migración.
 //  2017-11-07	Jessica Madrid Mejía	- Se modifica la función consultarHorarioDispensacion() para que tenga en cuenta el tiempo de 
 // 										  dispensación mayor (entre el centro de costos movhos_000011 [ccotdi] y tipo de producto 
@@ -48,8 +47,6 @@ else
 	
 
 	include_once("root/comun.php");
-
-	$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
 	
 
 	$conex = obtenerConexionBD("matrix");
@@ -1080,11 +1077,10 @@ else
 	function consultarListaUsuarios()
 	{
 		global $conex;
-		global $ccoCM;
 		
 		$queryUsuarios = "SELECT Codigo,Descripcion 
 							FROM usuarios 
-						   WHERE Ccostos={$ccoCM} 
+						   WHERE Ccostos='1051' 
 						     AND Activo='A' 
 							 AND Empresa='01';";
 							 

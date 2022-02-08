@@ -4,8 +4,7 @@ header("Content-Type: text/html;charset=ISO-8859-1");
 
 include_once("root/comun.php");
 
-$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
-$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+
 
 $pos = strpos($user,"-");
 $wusuario = substr($user,$pos+1,strlen($user));
@@ -93,7 +92,6 @@ function consultarMedicamentoEquivalenteCTC( $wbasedato, $codMedicamento )
 {
 	global $conex;
 	global $wemp_pmla;
-	global $ccoSF;
 	
 	$cenmez = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
 	
@@ -141,7 +139,7 @@ function consultarMedicamentoEquivalenteCTC( $wbasedato, $codMedicamento )
 				   
 		$sql = "SELECT Areaeq,Areceq,Artcom,Artgen,Artreg,Artuni,Unides, Artfar 
 				  FROM ".$wbasedato."_000008, ".$wbasedato."_000026, ".$wbasedato."_000027
-				 WHERE Arecco={$ccoSF} 
+				 WHERE Arecco='1050' 
 				   AND Areces='".$codMedicamento."'
 				   AND Areaeq = Artcod
 				   AND Artest = 'on'
@@ -1840,7 +1838,6 @@ if(!$_SESSION['user'])
  * cantidad aprobada correspondiente.
  *
  **************************************************************************************************************
-- Enero 11 de 2022 Marlon Osorio -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico
 - Enero 24 de 2018 Jessica:		Se modifica el texto del encabezado de la impresión del ctc
 - Diciembre 21 de 2017 Jessica:	Se corrige el query querySinCTC ya que estaba generando lentitud por error en relacion
 - Diciembre 18 de 2017 Jessica:	Se comenta el contenido de la funcion consultarDatosTablaHCE() y agrega el llamado a la función consultarUltimoDiagnosticoHCE() de comun.php
@@ -2104,9 +2101,6 @@ else{	//si no hay ajax
 
 	include_once("root/montoescrito.php");
 
-	$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
-	
-
 	$institucion = consultarInstitucionPorCodigo($conex,$wemp_pmla);
 
 	$whabilitado = "";
@@ -2114,7 +2108,7 @@ else{	//si no hay ajax
 	//Verifica que usuarios pueden aprobar CTC
 	$sql1 = "SELECT Ccouct
 			  FROM ".$wbasedato."_000011
-			 WHERE Ccocod = {$ccoSF}";
+			 WHERE Ccocod = '1050'";
 	$res1 = mysql_query( $sql1, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	$row1 = mysql_fetch_array($res1);
 	$usuarios_ctc_apr = explode(",", $row1['Ccouct']);
@@ -2133,7 +2127,7 @@ else{	//si no hay ajax
 
 	if( !isset($imprimir) ){
 
-		$wactualiz = "Enero 11 de 2022";
+		$wactualiz = "Enero 24 de 2018";
 
 		encabezado("IMPRESION FORMULARIOS CTC DE MEDICAMENTOS",$wactualiz, "clinica");
 

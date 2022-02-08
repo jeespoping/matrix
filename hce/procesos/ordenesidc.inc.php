@@ -24,8 +24,6 @@ include_once("conex.php");  header("Content-Type: text/html;charset=ISO-8859-1")
  ************************************************************************************************************************/
 /************************************************************************************************************************
  * Modificaciones:
- * Enero 22 de 2022  Marlon Osorio  Se parametriza los centros de costos de Dispensacion Servicio Farmaceutico (1050) y 
- * 									Central de Mezclas (1051)
  * Agosto 13 de 2019	Edwin MG	Se castea valor en array ($arrAplicacion) como entero
  * Enero 29 de 2019		Edwin MG	En la función generarListaProtocolos se agrega filtro de estado en la consulta principal
  * Agosto 6 de 2018		Edwin MG	A la función consultarExamenesAnteriorHCE se comenta su contenido ya que esta función se llama
@@ -55,11 +53,8 @@ include_once("root/magenta.php");
  **********************************/
 $grupoControl = "CTR";
 
-$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
-$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
-
-$centroCostosServicioFarmaceutico = ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
-$centroCostosCentralMezclas = ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+$centroCostosServicioFarmaceutico = "1050";
+$centroCostosCentralMezclas = "1051";
 
 $codigoServicioFarmaceutico = "SF";
 $codigoCentralMezclas = "CM";
@@ -17160,8 +17155,6 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
 	
 	global $codigoCentralMezclas;
 	global $horaCorteDispensacion;
-	global $ccoSF;
-	global $ccoCM;
 	
 	$saldoDispensacion	= (integer) $saldoDispensacion;
 	$cantDosis			= (integer) $cantDosis;
@@ -17197,10 +17190,10 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
 	}
 
 	//La solución a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
-	$tarti = $ccoCM;
+	$tarti = "1051";
 	
 	if( $ccoOrigen == "SF" ){
-		$tarti = $ccoSF;
+		$tarti = "1050";
 	}
 
 	$qf = "SELECT
@@ -17389,8 +17382,6 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	$conexion = obtenerConexionBD("matrix");
 	
 	global $horaCorteDispensacion;
-	global $ccoSF;
-	global $ccoCM;
 	
 	$obs = utf8_decode( $obs );
 	//Confirmada preparación.
@@ -17496,9 +17487,9 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	$num = mysql_num_rows($res);
 
 	//La solución a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
-	$tarti = $ccoCM;
+	$tarti = "1051";
 	if($origenArticulo == "SF"){
-		$tarti = $ccoSF;
+		$tarti = "1050";
 	}
 
 	$qf = "SELECT
@@ -21873,7 +21864,6 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
-	global $ccoSF;
 	
 	global $protocoloNormal;
 
@@ -22173,7 +22163,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 			$componentesTipo = "";
 			$tieneComponentes = false;
 			while($infoComp = mysql_fetch_array($resComp)){
-				if($infoComp['Carcco'] == $ccoSF){
+				if($infoComp['Carcco'] == "1050"){
 					$qArt = "SELECT Artcom,Artgen FROM mhosidc_000026 WHERE Artcod = '{$infoComp['Carcod']}';";
 				} else {
 					$qArt = "SELECT Artcom,Artgen FROM cenpro_000002 WHERE Artcod = '{$infoComp['Carcod']}';";
@@ -22372,7 +22362,6 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
-	global $ccoSF;
 	
 	global $protocoloNormal;
 
@@ -22905,7 +22894,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			$tieneComponentes = false;
 			while($infoComp = mysql_fetch_array($resComp))
 			{
-				if($infoComp['Carcco'] == $ccoSF)
+				if($infoComp['Carcco'] == "1050")
 				{
 					$qArt = " SELECT Artcom, Artgen, Deffra, Deffru  
 								FROM mhosidc_000026, mhosidc_000059 
@@ -23118,7 +23107,6 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
-	global $ccoSF;
 	
 	global $protocoloNormal;
 
@@ -23385,7 +23373,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 			$tieneComponentes = false;
 			while($infoComp = mysql_fetch_array($resComp))
 			{
-				if($infoComp['Carcco'] == $ccoSF){
+				if($infoComp['Carcco'] == "1050"){
 					$qArt = "SELECT Artcom,Artgen FROM mhosidc_000026 WHERE Artcod = '{$infoComp['Carcod']}';";
 				} else {
 					$qArt = "SELECT Artcom,Artgen FROM cenpro_000002 WHERE Artcod = '{$infoComp['Carcod']}';";

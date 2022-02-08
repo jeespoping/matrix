@@ -19,7 +19,7 @@ if(!isset($_SESSION['user']) && !isset($accion))
 
 $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 $wlogoempresa = strtolower( $institucion->baseDeDatos );
-$wactualiz = "(Febrero 04 de 2022)";
+$wactualiz = "(Febrero 23 de 2021)";
 
 ?>
 <html>

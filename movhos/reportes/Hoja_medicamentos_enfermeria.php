@@ -33,16 +33,14 @@ else
  	
 
  	include_once("root/comun.php");
-  	
-	$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
-	$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+  					    
   					    
   	$key = substr($user,2,strlen($user));
 		
 	if (strpos($user,"-") > 0)
           $wuser = substr($user,(strpos($user,"-")+1),strlen($user)); 
     
-    $wactualiz="(Enero 12 de 2022)";      
+    $wactualiz="(Abril 5 de 2011)";      
      
     //=======================================================================================================
 	//FUNCIONES
@@ -147,14 +145,12 @@ else
       {
 	   global $conex;
 	   global $wbasedato;
-	   global $ccoCM;
-	   global $ccoSF;
-
+	        
 	   $wdos_apl=0;    //Dosis
 	   
 	   $q = " SELECT deffra, deffru "
 	       ."   FROM ".$wbasedato."_000059 "
-	       ."  WHERE defcco in ({$ccoSF},{$ccoCM})"
+	       ."  WHERE defcco in ('1050','1051')"
 	       ."    AND defart = '".$wart."'"
 	       ."    AND defest = 'on' ";
 	   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -601,12 +597,4 @@ else
 	   echo "</table></center>";
 }
 include_once("free.php");
-
-/**
- * Actualizacion:
- *  -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico y Central de Mezclas
- * @by: Marlon Osorio
- * @date: 2022/01/11
- * 
-*/
 ?>

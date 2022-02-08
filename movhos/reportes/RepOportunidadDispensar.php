@@ -11,7 +11,6 @@ include_once("conex.php");
  *********************************************************************************************************
  
  Actualizaciones:
- 2022-01-12 (Marlon Osorio) -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico.
  2018-09-06 (Edwin MG)	Se modfican los queries con UNIX_TIMESTAMP y las columnas entrega camillero-pedido y Promedio entrega camillero-dispensación se comentan
  2013-11-07 (Jonatan Lopez)
 			Se agrega la mismo consulta con "UNION" de la tabla movhos_000143 donde se use la tabla 000003 de movhos, 
@@ -35,7 +34,7 @@ include_once("conex.php");
  
  **********************************************************************************************************/
  
- $wactualiz = "Enero 12 del 2022";
+ $wactualiz = "Noviembre 7 de 2013";
  
  if(!isset($_SESSION['user'])){
 	echo "error";
@@ -60,7 +59,7 @@ if(! isset($_REQUEST['action'] )){
 
 include_once("root/comun.php");
 
-$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+
 
 $conex = obtenerConexionBD("matrix");
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
@@ -302,7 +301,6 @@ function ejecutarConsulta($wcco_origen, $wcco_destino, $wfecha_inicio, $wfecha_f
 		global $tablaTemporal000093;
 		global $tablaTemporal000053;
 		global $tablaTemporalcencam03;
-		global $ccoSF;
 		
 		//$SALIDA="";
 		
@@ -344,7 +342,7 @@ function ejecutarConsulta($wcco_origen, $wcco_destino, $wfecha_inicio, $wfecha_f
 		 $exp = explode( "-", $wcco_origen );
 		 $wcco_origen =  $exp[0];
 		 
-		if( $wcco_origen == $ccoSF ){
+		if( $wcco_origen == '1050' ){
 			$origen = 'SF';
 		}
 		else{
