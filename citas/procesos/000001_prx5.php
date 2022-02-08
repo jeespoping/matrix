@@ -317,7 +317,7 @@ else
 				$r = 0;
 				$i = 0;
 				$fila = 0;
-				$query = "select cod_equ,cod_exa,fecha,hi,hf,nom_pac,nit_res,telefono,edad,comentario,usuario,activo,Asistida,Cedula from ".$empresa."_000009 where fecha='".$wfec."' and cod_equ='".substr($wequ,0,strpos($wequ,"-"))."' {$condicionCco} order by hi";
+				$query = "select cod_equ,cod_exa,fecha,hi,hf,nom_pac,nit_res,telefono,edad,comentario,usuario,activo,Asistida,Cedula from ".$empresa."_000009 where fecha='".$wfec."' and cod_equ='".substr($wequ,0,strpos($wequ,"-"))."' {$condicionCco} and Activo = 'A' order by hi";
 
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$num = mysql_num_rows($err);
