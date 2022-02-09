@@ -525,7 +525,7 @@
 				 AND Autest = 'on'
 				";
 
-		$resultado_query = mysqli_query($conex, $sqlser) or die( mysqli_error($conex) );
+				$resultado_query = mysqli_query($conex, $sqlser) or die( mysqli_error($conex) );
 
 		if( mysqli_num_rows($resultado_query) == 0 ) {
 			return $data = [];
