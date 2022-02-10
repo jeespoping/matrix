@@ -1011,7 +1011,7 @@ function userDetails(){
 					}
 					else
 					{
-						set_update += $(this).attr('nombrecampo')+" = '"+$("#imput_"+$(this).attr('nombrecampo')+"_"+id).val()+"' ,";
+						set_update += $(this).attr('nombrecampo')+" = '"+($("#imput_"+$(this).attr('nombrecampo')+"_"+id).val()).trim()+"' ,";
 						vector_cambios[$(this).attr('nombrecampo')] = $("#imput_"+$(this).attr('nombrecampo')+"_"+id).val();
 
 					}
