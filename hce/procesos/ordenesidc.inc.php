@@ -24,6 +24,9 @@ include_once("conex.php");  header("Content-Type: text/html;charset=ISO-8859-1")
  ************************************************************************************************************************/
 /************************************************************************************************************************
  * Modificaciones:
+ *  * Enero 22 de 2022  Marlon Osorio  
+ * 									Se parametriza los centros de costos de Dispensacion Servicio Farmaceutico (1050) y 
+ * 									Central de Mezclas (1051)
  * Agosto 13 de 2019	Edwin MG	Se castea valor en array ($arrAplicacion) como entero
  * Enero 29 de 2019		Edwin MG	En la función generarListaProtocolos se agrega filtro de estado en la consulta principal
  * Agosto 6 de 2018		Edwin MG	A la función consultarExamenesAnteriorHCE se comenta su contenido ya que esta función se llama
@@ -53,8 +56,8 @@ include_once("root/magenta.php");
  **********************************/
 $grupoControl = "CTR";
 
-$centroCostosServicioFarmaceutico = "1050";
-$centroCostosCentralMezclas = "1051";
+$centroCostosServicioFarmaceutico = ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+$centroCostosCentralMezclas = ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
 
 $codigoServicioFarmaceutico = "SF";
 $codigoCentralMezclas = "CM";
@@ -17155,6 +17158,7 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
 	
 	global $codigoCentralMezclas;
 	global $horaCorteDispensacion;
+	global $wemp_pmla;
 	
 	$saldoDispensacion	= (integer) $saldoDispensacion;
 	$cantDosis			= (integer) $cantDosis;
@@ -17189,11 +17193,13 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
 		$fila = mysql_fetch_array($res);
 	}
 
+	$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+	$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 	//La solución a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
-	$tarti = "1051";
+	$tarti = $ccoCM;
 	
 	if( $ccoOrigen == "SF" ){
-		$tarti = "1050";
+		$tarti = $ccoSF;
 	}
 
 	$qf = "SELECT
@@ -17382,6 +17388,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	$conexion = obtenerConexionBD("matrix");
 	
 	global $horaCorteDispensacion;
+	global $wemp_pmla;
 	
 	$obs = utf8_decode( $obs );
 	//Confirmada preparación.
@@ -17486,10 +17493,12 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	$fila = mysql_fetch_array($res);
 	$num = mysql_num_rows($res);
 
+	$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+	$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 	//La solución a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
-	$tarti = "1051";
+	$tarti = $ccoCM;
 	if($origenArticulo == "SF"){
-		$tarti = "1050";
+		$tarti = $ccoSF;
 	}
 
 	$qf = "SELECT
@@ -21864,6 +21873,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
+	global $wemp_pmla;
 	
 	global $protocoloNormal;
 
@@ -22162,8 +22172,9 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 			$resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
 			$componentesTipo = "";
 			$tieneComponentes = false;
+			$ccoSF = ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 			while($infoComp = mysql_fetch_array($resComp)){
-				if($infoComp['Carcco'] == "1050"){
+				if($infoComp['Carcco'] == $ccoSF){
 					$qArt = "SELECT Artcom,Artgen FROM mhosidc_000026 WHERE Artcod = '{$infoComp['Carcod']}';";
 				} else {
 					$qArt = "SELECT Artcom,Artgen FROM cenpro_000002 WHERE Artcod = '{$infoComp['Carcod']}';";
@@ -22362,6 +22373,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
+	global $wemp_pmla;
 	
 	global $protocoloNormal;
 
@@ -22892,9 +22904,10 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			$resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
 			$componentesTipo = "";
 			$tieneComponentes = false;
+			$ccoSF = ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 			while($infoComp = mysql_fetch_array($resComp))
 			{
-				if($infoComp['Carcco'] == "1050")
+				if($infoComp['Carcco'] == $ccoSF)
 				{
 					$qArt = " SELECT Artcom, Artgen, Deffra, Deffru  
 								FROM mhosidc_000026, mhosidc_000059 
@@ -23371,9 +23384,10 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 			$resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
 			$componentesTipo = "";
 			$tieneComponentes = false;
+			$ccoSF = ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 			while($infoComp = mysql_fetch_array($resComp))
 			{
-				if($infoComp['Carcco'] == "1050"){
+				if($infoComp['Carcco'] == $ccoSF){
 					$qArt = "SELECT Artcom,Artgen FROM mhosidc_000026 WHERE Artcod = '{$infoComp['Carcod']}';";
 				} else {
 					$qArt = "SELECT Artcom,Artgen FROM cenpro_000002 WHERE Artcod = '{$infoComp['Carcod']}';";
