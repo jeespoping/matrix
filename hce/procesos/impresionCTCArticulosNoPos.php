@@ -136,10 +136,10 @@ function consultarMedicamentoEquivalenteCTC( $wbasedato, $codMedicamento )
 	}
 	else{
 		// -- AND Areceq > '1'
-				   
+		$ccoSF=ccoUnificadoSF();		   
 		$sql = "SELECT Areaeq,Areceq,Artcom,Artgen,Artreg,Artuni,Unides, Artfar 
 				  FROM ".$wbasedato."_000008, ".$wbasedato."_000026, ".$wbasedato."_000027
-				 WHERE Arecco='1050' 
+				 WHERE Arecco='{$ccoSF}' 
 				   AND Areces='".$codMedicamento."'
 				   AND Areaeq = Artcod
 				   AND Artest = 'on'
@@ -1838,6 +1838,8 @@ if(!$_SESSION['user'])
  * cantidad aprobada correspondiente.
  *
  **************************************************************************************************************
+- Febrero 10 de 2022 Marlon osorio:
+								Se parametriza el centro de costos 1050 mediante la funcion ccoUnificadoSF() del comun.php
 - Enero 24 de 2018 Jessica:		Se modifica el texto del encabezado de la impresión del ctc
 - Diciembre 21 de 2017 Jessica:	Se corrige el query querySinCTC ya que estaba generando lentitud por error en relacion
 - Diciembre 18 de 2017 Jessica:	Se comenta el contenido de la funcion consultarDatosTablaHCE() y agrega el llamado a la función consultarUltimoDiagnosticoHCE() de comun.php
@@ -2105,10 +2107,12 @@ else{	//si no hay ajax
 
 	$whabilitado = "";
 
+	$ccoSF=ccoUnificadoSF();
+
 	//Verifica que usuarios pueden aprobar CTC
 	$sql1 = "SELECT Ccouct
 			  FROM ".$wbasedato."_000011
-			 WHERE Ccocod = '1050'";
+			 WHERE Ccocod = '{$ccoSF}'";
 	$res1 = mysql_query( $sql1, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	$row1 = mysql_fetch_array($res1);
 	$usuarios_ctc_apr = explode(",", $row1['Ccouct']);
@@ -2127,7 +2131,7 @@ else{	//si no hay ajax
 
 	if( !isset($imprimir) ){
 
-		$wactualiz = "Enero 24 de 2018";
+		$wactualiz = "Febrero 10 de 2022";
 
 		encabezado("IMPRESION FORMULARIOS CTC DE MEDICAMENTOS",$wactualiz, "clinica");
 
