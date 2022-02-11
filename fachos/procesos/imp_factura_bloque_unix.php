@@ -46,7 +46,8 @@
       document.body.style.height = '185mm';
     }
     function regresar(){
-       window.location = "imp_factura_bloque_unix.php?wemp_pmla=01&wparam=1";
+        var wemp_pmla = $('#wemp_pmla').val();
+        window.location = "imp_factura_bloque_unix.php?wemp_pmla="+wemp_pmla+"&wparam=1";
     }
 
     function cerrarPagina(){
@@ -100,6 +101,8 @@
 <body>
 <?php
 include_once("conex.php");
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 /***************************************************
 *            IMPRIMIR FACTURA DE UNIX             *
 *            CONEX, FREE => OK                    *
@@ -120,6 +123,7 @@ include_once("conex.php");
 //MODIFICACIONES ===================================================================================================================
 //==================================================================================================================================
 /*
+    2021-12-10 (Juan David Rodriguez): Se modifica wemp_pmla dentro de url para que sea multiempresa
 ==================================================================================================================================
     2014-06-05( Edwar Jaramillo ):  Se crea la variable entidadNoDiscriminaTerceros asociada a un parámetro en root_51, esto es para que a la
                                     entidad configurada en ese parámetro no le discrimine los valores por clinica y por tercero sino que en
@@ -329,7 +333,7 @@ include_once("conex.php");
           }
           if( trim( $servicioIngreso ) == trim( $servicioFisiatria ) ){
             $querySalida = " SELECT max( Fecha_data )
-                               FROM hce_000036
+                               FROM ".$whce."_000036
                               WHERE Firhis = '{$whis}'
                                 AND Firing = '{$wing}'";
             $rsSalida  = mysql_query( $querySalida, $conex );
@@ -746,7 +750,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
         }
         if( trim( $servicioIngreso ) == trim( $servicioFisiatria ) ){
           $querySalida = " SELECT max( Fecha_data )
-                             FROM hce_000036
+                             FROM ".$whce."_000036
                             WHERE Firhis = '{$whis}'
                               AND Firing = '{$wing}'";
           $rsSalida  = mysql_query( $querySalida, $conex );
