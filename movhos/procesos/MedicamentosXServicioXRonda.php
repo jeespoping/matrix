@@ -1751,7 +1751,7 @@ function pintarAritculos( $articulos ){
 			$serviciosDomiciliarios[] = $ccoDoms->codigo;
 		}
 		
-		$ccoConCiclos24 = consultarCcoCiclos24Unificado();
+		$ccoConCiclos24 = consultarCcoCiclos24Unificado($selectsede);
 		
 	  echo "<div>
 				<table align='center'>
