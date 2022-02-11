@@ -1086,7 +1086,7 @@ else
 							FROM usuarios 
 						   WHERE Ccostos='{$ccoCM}' 
 						     AND Activo='A' 
-							 AND Empresa='01';";
+							 AND Empresa='{$wemp_pmla}';";
 							 
 		$resUsuarios=  mysql_query($queryUsuarios,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$queryUsuarios." - ".mysql_error());
 		$numUsuarios = mysql_num_rows($resUsuarios);	
