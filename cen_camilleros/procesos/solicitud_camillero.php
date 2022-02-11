@@ -177,7 +177,7 @@ if(isset($_GET['selectsede'])  &&  !empty($_GET['selectsede']) )
 
 	function volver(wemp_pmla, wuso)
 	{
-	  location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede='+'&caso=pantallasolicitud';
+	  location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede='+'&caso=pantallainicial';
 	}
 
     function destinoautomatico()
