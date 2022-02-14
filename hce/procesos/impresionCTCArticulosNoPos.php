@@ -15,6 +15,8 @@ $wusuario=trim($wuser1[1]);
 $wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 $whce = consultarAliasPorAplicacion( $conex, $wemp_pmla, "hce" );
 
+$ccoSF=ccoUnificadoSF();
+
 $wfecha = date('Y-m-d');
 $whora = date("H:i:s");
 
@@ -92,6 +94,7 @@ function consultarMedicamentoEquivalenteCTC( $wbasedato, $codMedicamento )
 {
 	global $conex;
 	global $wemp_pmla;
+	global $ccoSF;
 	
 	$cenmez = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
 	
@@ -136,7 +139,7 @@ function consultarMedicamentoEquivalenteCTC( $wbasedato, $codMedicamento )
 	}
 	else{
 		// -- AND Areceq > '1'
-		$ccoSF=ccoUnificadoSF();		   
+		   
 		$sql = "SELECT Areaeq,Areceq,Artcom,Artgen,Artreg,Artuni,Unides, Artfar 
 				  FROM ".$wbasedato."_000008, ".$wbasedato."_000026, ".$wbasedato."_000027
 				 WHERE Arecco='{$ccoSF}' 
@@ -2107,7 +2110,7 @@ else{	//si no hay ajax
 
 	$whabilitado = "";
 
-	$ccoSF=ccoUnificadoSF();
+	
 
 	//Verifica que usuarios pueden aprobar CTC
 	$sql1 = "SELECT Ccouct
@@ -4220,7 +4223,7 @@ else{	//si no hay ajax
 			if($empresaEquivalente == true)
 			{
 				$reemplazarMedCTC = consultarMedicamentoEquivalenteCTC( $wbasedato, $art );	
-				// var_dump($reemplazarMedCTC);
+				 // var_dump($reemplazarMedCTC);
 			}
 			// -------------
 			
