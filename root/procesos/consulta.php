@@ -74,6 +74,10 @@ include_once("conex.php");
             $("#"+ele).show();
         }
     }
+
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "Consulta.php?wemp_pmla="+$('#wemp_pmla').val()+"&para="+$('#para').val()+"&orden="+$('#orden').val()+"&orden2="+$('#orden2').val()+"&selectsede="+$('#selectsede').val()
+    });
     </script>
 
 </head>
@@ -394,7 +398,7 @@ function pintarVersion()
 function pintarTitulo($para,$wacutaliza, $titulo_requerimientos)
 {
     global $wemp_pmla;
-    echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica');
+    echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', TRUE);
     echo "<form name='informatica' action='consulta.php?wemp_pmla=".$wemp_pmla."' method=post>";
     echo "<table ALIGN=CENTER width='50%'>";
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
@@ -517,9 +521,11 @@ function pintarRequerimientos($requerimientos, $para, $orden, $orden2)
         echo "</tr>";
     }
     echo "</table>";
-    echo "<input type='hidden' name='para' value='" . $para. "'></td>";
-    echo "<input type='hidden' name='orden' value='" . $orden . "'></td>";
-    echo "<input type='hidden' name='orden2' value='" . $orden2 . "'></td>";
+    echo "<input type='hidden' name='para' id='para' value='" . $para. "'></td>";
+    echo "<input type='hidden' name='orden' id='orden' value='" . $orden . "'></td>";
+    echo "<input type='hidden' name='orden2' id='orden2' value='" . $orden2 . "'></td>";
+    echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";    
+    echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
 }
 
 /**
@@ -560,7 +566,7 @@ if (!isset($_SESSION["user"]))
     echo "error";
 else
 {
-    $wacutaliza = "2014-06-25";
+    $wacutaliza = "14 de febrero de 2022";
     if (!isset ($para))
     {
         $para = 'recibidos';
