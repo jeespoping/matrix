@@ -60,7 +60,7 @@ function calcularProducto($cantidad, $lote, &$ins, $concepto)
 		if($row2[2]!='')
 		{
 			//echo $cantidad;
-			$puesto=bi($ins,count($ins),$row2[2],'cod');
+			$puesto=bi($ins,count($ins),$row2[2],'cod',$row2[0],'ins');
 			$ins[$puesto]['exi']=$ins[$puesto]['exi']+$row2[1]*$cantidad/$rowp[0];
 		}
 		else
@@ -79,7 +79,7 @@ function calcularProducto($cantidad, $lote, &$ins, $concepto)
 	}
 }
 
-function bi($d,$n,$k,$i)
+function bi($d,$n,$k,$i,$sInsumo = '', $sCampoInsumo = '')
 {
 	$n--;
 	if($n > 0)
@@ -89,22 +89,22 @@ function bi($d,$n,$k,$i)
 		while ($ls - $li > 1)
 		{
 			$lm=(integer)(($li + $ls) / 2);
-			if(strtoupper($k) == strtoupper($d[$lm][$i]))
-			return $lm;
+			if((strtoupper($k) == strtoupper($d[$lm][$i]) && $sInsumo=='') || (strtoupper($k) == strtoupper($d[$lm][$i]) && $sInsumo!='' && $sCampoInsumo!='' && strtoupper($sInsumo) == strtoupper($d[$lm][$sCampoInsumo]))) 
+				return $lm;
 			elseif(strtoupper($k) < strtoupper($d[$lm][$i]))
-			$ls=$lm;
+				$ls=$lm;
 			else
-			$li=$lm;
+				$li=$lm;
 		}
-		if(strtoupper($k) == strtoupper($d[$li][$i]))
-		return $li;
-		elseif(strtoupper($k) == strtoupper($d[$ls][$i]))
-		return $ls;
+		if((strtoupper($k) == strtoupper($d[$li][$i]) && $sInsumo=='') || (strtoupper($k) == strtoupper($d[$li][$i]) && $sInsumo!='' && $sCampoInsumo!='' && strtoupper($sInsumo) == strtoupper($d[$li][$sCampoInsumo])) )
+			return $li;
+		elseif((strtoupper($k) == strtoupper($d[$ls][$i]) && $sInsumo=='') || (strtoupper($k) == strtoupper($d[$ls][$i]) && $sInsumo!='' && $sCampoInsumo!='' && strtoupper($sInsumo) == strtoupper($d[$ls][$sCampoInsumo])))
+			return $ls;
 		else
-		return -1;
+			return -1;
 	}
 	else
-	return -1;
+		return -1;
 }
 
 /**

@@ -54,7 +54,8 @@ function calcularProducto($cantidad, $lote, &$vector, $concepto, $tipo)
 
 		if($row2[2]!='')
 		{
-			$puesto=bi($vector,count($vector),$row2[2],1);
+			$sCampoInsumo = 7; //posición del campo relacionado a código de insumo
+			$puesto=bi($vector,count($vector),$row2[2],1, $row2[0], $sCampoInsumo);
 			if ($tipo==1)
 			{
 				$vector[$puesto]['entradas']=$vector[$puesto]['entradas']+$row2[1]*$cantidad/$rowp[0];
@@ -91,7 +92,8 @@ function comparacion($vec1,$vec2)
 	return 0;
 }
 
-function bi($d,$n,$k,$i)
+//Puesto dentro de array: recibe->$d=$vector,$n=count($vector),$k=presentación,$i=1, //NUEVO: $sInsumo='' SEBASTIAN_NEVADO
+function bi($d,$n,$k,$i,$sInsumo='', $sCampoInsumo = '')
 {
 	$n--;
 	if($n > 0)
@@ -101,22 +103,22 @@ function bi($d,$n,$k,$i)
 		while ($ls - $li > 1)
 		{
 			$lm=(integer)(($li + $ls) / 2);
-			if(strtoupper($k) == strtoupper($d[$lm][$i]))
-			return $lm;
+			if((strtoupper($k) == strtoupper($d[$lm][$i]) && $sInsumo=='') || (strtoupper($k) == strtoupper($d[$lm][$i]) && $sInsumo!='' && strtoupper($sInsumo) == strtoupper($d[$lm][$sCampoInsumo]))) //NUEVO: SEBASTIAN_NEVADO 
+				return $lm;
 			elseif(strtoupper($k) < strtoupper($d[$lm][$i]))
-			$ls=$lm;
+				$ls=$lm;
 			else
-			$li=$lm;
+				$li=$lm;
 		}
-		if(strtoupper($k) == strtoupper($d[$li][$i]))
-		return $li;
-		elseif(strtoupper($k) == strtoupper($d[$ls][$i]))
-		return $ls;
+		if((strtoupper($k) == strtoupper($d[$li][$i]) && $sInsumo=='') || (strtoupper($k) == strtoupper($d[$li][$i]) && $sInsumo!='' && strtoupper($sInsumo) == strtoupper($d[$li][$sCampoInsumo])) ) //NUEVO: SEBASTIAN_NEVADO
+			return $li;
+		elseif((strtoupper($k) == strtoupper($d[$ls][$i]) && $sInsumo=='') || (strtoupper($k) == strtoupper($d[$ls][$i]) && $sInsumo!='' && strtoupper($sInsumo) == strtoupper($d[$ls][$sCampoInsumo]))) //NUEVO: SEBASTIAN_NEVADO 
+			return $ls;
 		else
-		return -1;
+			return -1;
 	}
 	else
-	return -1;
+		return -1;
 }
 
 ///////////////////////////////////////////////////////PROGRAMA/////////////////////////////////////////
@@ -166,7 +168,7 @@ else
 		echo "<tr><td class='texto4'><font face='tahoma'><b>MES DE PROCESO : </b>".$wmes."</td></tr></table><br><br>";
 		$dsan=array();
 		//consultamos en la tabla de saldos de inventarios, el saldo inicial
-		$query = "SELECT  Salcco, Salcod, Salexi, Salvuc,  Artcom, Artuni, Unides, Salpro from ".$empresa."_000014 , ".$bdMovhos."_000026, ".$bdMovhos."_000027  ";
+		$query = "SELECT  Salcco, Salcod, Salexi, Salvuc,  Artcom, Artuni, Unides, Salpro, Salins from ".$empresa."_000014 , ".$bdMovhos."_000026, ".$bdMovhos."_000027  ";
 		$query .= " where  Salano=".$wanoa;
 		$query .= "     and   Salmes= ".$wmesa;
 		$query .= "     and   Salcod =Artcod ";
@@ -186,11 +188,12 @@ else
 			$d[$i][4]=$row[4];
 			$d[$i][5]=$row[5].'-'.$row[6];
 			$d[$i][6]=$row[7];
+			$d[$i][7]=$row[8];
 		}
 
 		$dsac=array();
 		//consultamos en la tabla de saldos de inventarios el saldo actual
-		$query = "SELECT  Salcco, Salcod, Salexi, Salvuc, Artcom, Artuni, Unides, Salpro  from ".$empresa."_000014, ".$bdMovhos."_000026, ".$bdMovhos."_000027 ";
+		$query = "SELECT  Salcco, Salcod, Salexi, Salvuc, Artcom, Artuni, Unides, Salpro, Salins  from ".$empresa."_000014, ".$bdMovhos."_000026, ".$bdMovhos."_000027 ";
 		$query .= " where  Salano=".$wano;
 		$query .= "     and   Salmes=".$wmes;
 		$query .= "     and   Salcod =Artcod ";
@@ -209,13 +212,14 @@ else
 			{
 				if(strtoupper($d[$k][1])==strtoupper($row[1]))
 				{
-					$dsac[$j][0]=$row[0];
-					$dsac[$j][1]=$row[1];
-					$dsac[$j][2]=$row[2];
-					$dsac[$j][3]=$row[3];
-					$dsac[$j][4]=$row[4];
-					$dsac[$j][5]=$row[5].'-'.$row[6];
-					$dsac[$j][6]=$row[7];
+					$dsac[$j][0]=$row[0];					//Centro de costo
+					$dsac[$j][1]=$row[1];					//Código
+					$dsac[$j][2]=$row[2];					//Existencias
+					$dsac[$j][3]=$row[3];					//Valor unitario
+					$dsac[$j][4]=$row[4];					//Nombre comercial
+					$dsac[$j][5]=$row[5].'-'.$row[6];		//Unidad
+					$dsac[$j][6]=$row[7];					//Factor conversión
+					$dsac[$j][7]=$row[8];					//NUEVO: Insumo SEBASTIAN_NEVADO
 
 					$dsan[$j][0]=$d[$k][0];
 					$dsan[$j][1]=$d[$k][1];
@@ -224,6 +228,7 @@ else
 					$dsan[$j][4]=$d[$k][4];
 					$dsan[$j][5]=$d[$k][5];
 					$dsan[$j][6]=$d[$k][6];
+					$dsan[$j][7]=$d[$k][7];					//NUEVO: Insumo SEBASTIAN_NEVADO
 					$j++;
 					$k++;
 					$row = mysql_fetch_array($err);
@@ -239,6 +244,7 @@ else
 						$dsac[$j][4]=$d[$k][4];
 						$dsac[$j][5]=$d[$k][5];
 						$dsac[$j][6]=$d[$k][6];
+						$dsac[$j][7]=$d[$k][7];					//NUEVO: Insumo SEBASTIAN_NEVADO
 
 						$dsan[$j][0]=$d[$k][0];
 						$dsan[$j][1]=$d[$k][1];
@@ -247,6 +253,7 @@ else
 						$dsan[$j][4]=$d[$k][4];
 						$dsan[$j][5]=$d[$k][5];
 						$dsan[$j][6]=$d[$k][6];
+						$dsan[$j][7]=$d[$k][7];					//NUEVO: Insumo SEBASTIAN_NEVADO
 						$j++;
 						$k++;
 						$i--;
@@ -260,6 +267,7 @@ else
 						$dsac[$j][4]=$row[4];
 						$dsac[$j][5]=$row[5].'-'.$row[6];
 						$dsac[$j][6]=$row[7];
+						$dsac[$j][7]=$row[8];					//NUEVO: Insumo SEBASTIAN_NEVADO
 
 						$dsan[$j][0]=$row[0];
 						$dsan[$j][1]=$row[1];
@@ -268,6 +276,7 @@ else
 						$dsan[$j][4]=$row[4];
 						$dsan[$j][5]=$row[5].'-'.$row[6];
 						$dsan[$j][6]=$row[7];
+						$dsan[$j][7]=$row[8];					//NUEVO: Insumo SEBASTIAN_NEVADO
 						$j++;
 						$row = mysql_fetch_array($err);
 					}
@@ -283,6 +292,7 @@ else
 						$dsac[$j][4]=$d[$k][4];
 						$dsac[$j][5]=$d[$k][5];
 						$dsac[$j][6]=$d[$k][6];
+						$dsac[$j][7]=$d[$k][7];					//NUEVO: Insumo SEBASTIAN_NEVADO
 
 						$dsan[$j][0]=$d[$k][0];
 						$dsan[$j][1]=$d[$k][1];
@@ -291,6 +301,7 @@ else
 						$dsan[$j][4]=$d[$k][4];
 						$dsan[$j][5]=$d[$k][5];
 						$dsan[$j][6]=$d[$k][6];
+						$dsan[$j][7]=$d[$k][7];					//NUEVO: Insumo SEBASTIAN_NEVADO
 						$j++;
 						$k++;
 						$i--;
@@ -304,6 +315,7 @@ else
 						$dsac[$j][4]=$row[4];
 						$dsac[$j][5]=$row[5].'-'.$row[6];
 						$dsac[$j][6]=$row[7];
+						$dsac[$j][7]=$row[8];					//NUEVO: Insumo SEBASTIAN_NEVADO
 
 						$dsan[$j][0]=$row[0];
 						$dsan[$j][1]=$row[1];
@@ -312,6 +324,7 @@ else
 						$dsan[$j][4]=$row[4];
 						$dsan[$j][5]=$row[5].'-'.$row[6];
 						$dsan[$j][6]=$row[7];
+						$dsan[$j][7]=$row[8];					//NUEVO: Insumo SEBASTIAN_NEVADO
 						$j++;
 						$row = mysql_fetch_array($err);
 					}
@@ -326,6 +339,7 @@ else
 				$dsac[$j][4]=$row[4];
 				$dsac[$j][5]=$row[5].'-'.$row[6];
 				$dsac[$j][6]=$row[7];
+				$dsac[$j][7]=$row[8];					//NUEVO: Insumo SEBASTIAN_NEVADO
 
 				$dsan[$j][0]=$row[0];
 				$dsan[$j][1]=$row[1];
@@ -334,6 +348,7 @@ else
 				$dsan[$j][4]=$row[4];
 				$dsan[$j][5]=$row[5].'-'.$row[6];
 				$dsan[$j][6]=$row[7];
+				$dsan[$j][7]=$row[8];					//NUEVO: Insumo SEBASTIAN_NEVADO
 				$j++;
 				$row = mysql_fetch_array($err);
 			}
@@ -342,7 +357,7 @@ else
 			$rev=0;
 			if($dsan[$j-1][6]>0)
 			{
-				$rev=($dsac[$j-1][3]-$dsan[$j-1][3])*$dsan[$j-1][2]/$dsan[$j-1][6];
+				$rev=($dsac[$j-1][3]-$dsan[$j-1][3])*$dsan[$j-1][2]/$dsan[$j-1][6]; // (Valor unitario actual - Valor unitario anterior) * existencias anteriores / factor de conversión anterior
 				
 			}
 			// echo $rev.'</br>';
@@ -416,8 +431,8 @@ else
 			else if($row1[1] != 'on')
 			{
 				$exp=explode('-',$row1[2]);
-
-				$puesto=bi($dsan,count($dsan),$exp[0],1);
+				$sCampoInsumo = 7; //posición del campo relacionado a código de insumo
+				$puesto=bi($dsan,count($dsan),$exp[0],1, $row1[0], $sCampoInsumo);
 
 				if ($row1[5]==1)
 				{
