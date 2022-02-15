@@ -129,13 +129,17 @@ function consultarCentrosCostos(){
 function consultarUsuariosQueRecibenDevoluciones(){
 	global $wbasedato;
 	global $conex;
+	global $wemp_pmla;
+
+	$ccoSF=ccoUnificadoSF();
+	$ccoCM=ccoUnificadoCM();
 	
 	$q = "SELECT 
 			Codigo, Descripcion 
 		FROM 
 			usuarios
 		WHERE 
-			Ccostos IN ('1050','1051')
+			Ccostos IN ('{$ccoSF}','{$ccoCM}')
 			AND Activo = 'A'
 		ORDER BY Descripcion";
 	
@@ -164,7 +168,7 @@ function consultarUsuariosQueRecibenDevoluciones(){
  */
 include_once("root/comun.php");
 
-$wactualiz = " 1.0 15/Abril/2009";
+$wactualiz = "Febrero 10 de 2022";
 
 if (!isset($user)){
 	if (!isset($_SESSION['user'])) {
@@ -314,6 +318,12 @@ if (!isset($_SESSION['user'])){
 	}
 	liberarConexionBD($conex);
 }
+/**
+ * Actualizacion: -Se parametrizo los centros de costos de Central de Mezclas y Dispensacion Servicio Farmaceutico
+ * @by: Marlon Osorio
+ * @date: 2022/01/11
+ * 
+*/
 ?>
 </body>
 </html>

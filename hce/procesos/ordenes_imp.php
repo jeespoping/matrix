@@ -247,6 +247,9 @@ $(document).ready(function()
 	 */
 	/******************************************************************
 	 *  Modificaciones:
+	 * ================================================================================================================================================
+	 *	Enero 21 de 2022: Marlon Osorio
+							- Se parametrizo el centro de costos de Dispensacion Servicio Farmaceutico
 	  ================================================================================================================================================
 	 *	Mayo 4 de 2020: Jessica Madrid
 							- Para el envío de las ordenes por correo se modifica en la función enviarPdf() el mensaje y asunto como vacíos ya
@@ -513,10 +516,11 @@ function consultarMedicamentoEquivalenteCTC( $wbasedato, $codMedicamento )
 		}
 	}
 	else{
+		$ccoSF=ccoUnificadoSF();
 		 // -- AND Areceq > '1'
 		$sql = "SELECT Artgen, Unides
 				  FROM ".$wbasedato."_000008, ".$wbasedato."_000026, ".$wbasedato."_000027
-				 WHERE Arecco='1050' 
+				 WHERE Arecco='{$ccoSF}' 
 				   AND Areces='".$codMedicamento."'
 				   AND Areaeq = Artcod
 				   AND Artest = 'on'

@@ -19,6 +19,12 @@
 <BODY>
 
 <?php
+/**
+ * Actualizacion: -Se parametrizo los centros de costos de Central de Mezclas y Dispensacion Servicio Farmaceutico
+ * @by: Marlon Osorio
+ * @date: 2022/01/11
+ * 
+*/
 include_once("conex.php");
 include_once("root/comun.php");
 function calcularValorProducto($cantidad, $lote, &$val)
@@ -90,7 +96,7 @@ else
 
 	include_once("movhos/otros.php");
 	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-	$wactualiz = "2021-08-13";
+	$wactualiz = "Febrero 09 de 2022";
 	encabezado( "CARGA DE COSTOS PORMEDIO PARA PRODUCTOS CODIFICADOS", $wactualiz, $institucion->baseDeDatos );
 
 	echo "<form name='forma' action='' method=post>";
@@ -143,6 +149,8 @@ else
 				$num = mysql_num_rows($err);
 				if($num > 0)
 				{
+					$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+					$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 					//consultamos los conceptos de traslado
 					$q = "Select Mdeart, Mdecan, Mdenlo, Menfec from  ".$empresa."_000008, ".$empresa."_000007, ".$empresa."_000002,  ".$empresa."_000006, ".$empresa."_000001";
 					$q .= " where Contra = 'on' ";
@@ -155,8 +163,8 @@ else
 					$q .= "   and Menmes = '".$wmes."' ";
 					$q .= "   and Mendoc = Mdedoc ";
 					$q .= "   and Mencon = Mdecon";
-					$q .= "   and Mencco = '1051' ";
-					$q .= "   and Menccd = '1050' ";
+					$q .= "   and Mencco = '{$ccoCM}' ";
+					$q .= "   and Menccd = '{$ccoSF}' ";
 					$q .= "  ORDER BY 1, 4 ";
 
 					$err = mysql_query($q,$conex);
