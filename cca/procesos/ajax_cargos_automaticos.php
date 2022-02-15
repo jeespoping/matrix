@@ -1,4 +1,5 @@
 <?php
+
 include_once("conex.php");
 include_once("root/comun.php");
 
@@ -10,13 +11,14 @@ include_once('cargos_automaticos_funciones.php');
 
 /************************************************************************************************************************
  * Modificaciones
- * Febrero 04 de 2022   (Cidenet S.A) Cristhian Barros, Andrés Gallo  - Se añade la validacion cuando el tercero no tiene porcentaje de participación, en este caso el sistema almacena un log y envía
+ * Febrero 15 de 2022 (Cidenet S.A) Cristhian Barros, Andrés Gallo - Se añaden todo el código relacionado con el tipo empresa, empresa, facturable, especialidad y tercero comodín
+ * Febrero 04 de 2022 (Cidenet S.A) Cristhian Barros, Andrés Gallo - Se añade la validacion cuando el tercero no tiene porcentaje de participación, en este caso el sistema almacena un log y envía
 																		la notificación vía correo, esta modificación se realiza en la funcion guardarCargoAutomaticoFacturacionERP y guardarCargoAutomaticoPreescripcion
- * Enero 07 de 2022   (Cidenet S.A) Cristhian Barros, Andrés Gallo    - Se modifica la tabla root_000012 por la cliame_103 en la función obtenerArrayProcedimientos
+ * Enero 07 de 2022   (Cidenet S.A) Cristhian Barros, Andrés Gallo - Se modifica la tabla root_000012 por la cliame_103 en la función obtenerArrayProcedimientos
                                                                         para que coincida los resultados de búsqueda con respecto a la interfaz de Facturación Matrix-ERP
  
  ************************************************************************************************************************/
-
+ 
 function  obtenerArrayFormulariosHCE($conex, $wbasedato_hce, $name_hce )
 {
 	$name_hce = strtolower($name_hce);
@@ -81,7 +83,6 @@ function  obtenerArrayInfoConceptos($conex, $wemp_pmla, $wbasedato_cliame, $muev
 	$arr_conceptos = array();
 	while($row_conceptos = mysql_fetch_array($res_conceptos))
 	{
-		$row_conceptos['Grudes'] = str_replace($caracter_ma, $caracter_ok, $row_conceptos['Grudes']);
 		$arr_conceptos[trim($row_conceptos['Grucod'])]['nombre']  		= $row_conceptos['Grudes'];
 		$arr_conceptos[trim($row_conceptos['Grucod'])]['archivo'] 		= $row_conceptos['Grudes'];
 		$arr_conceptos[trim($row_conceptos['Grucod'])]['modificaVal'] 	= $row_conceptos['Grumva'];
@@ -247,9 +248,13 @@ function obtenerCCAPorId($conex, $wbasedato_cliame, $wbasedato_movhos, $wbasedat
 				IF(FIND_IN_SET('U',ccatcco), CONCAT('Urgencia',', '), ''),
 				IF(FIND_IN_SET('Cx',ccatcco), CONCAT('Cirug&iacute;a', ', '), '')
 			)) tcco
-		, CASE WHEN ccater IS NOT NULL THEN TRIM(CONCAT(Meddoc , '-' , Medno1, ' ', Medno2, ' ' ,Medap1, ' ' ,Medap2)) ELSE '' END tercero
+		, CASE WHEN ccater IS NOT NULL AND ccater != '*' THEN TRIM(CONCAT(Meddoc , '-' , Medno1, ' ', Medno2, ' ' ,Medap1, ' ' ,Medap2)) ELSE (CASE WHEN ccater = '*' THEN '*-TODOS' ELSE '' END) END tercero
 		, GROUP_CONCAT(CONCAT(pe.Procod,'-', pe.Pronom)) ccapex
 		, CASE WHEN ccacup = '*' THEN '*-TODOS' ELSE GROUP_CONCAT(CONCAT(p.Procod,'-', p.Pronom)) END ccacup
+		, ccafac
+		, CASE WHEN ccatem = '*' THEN '*' ELSE temp.Temdes END ccatem
+		, CASE WHEN ccaemp = '*' THEN '*' ELSE CONCAT(emp.Empcod, '-', emp.Empnom) END ccaemp
+		, CASE WHEN ccaesp IS NOT NULL THEN TRIM(CONCAT(Espcod,'-',Espnom)) ELSE '' END ccaesp
 			FROM ".$wbasedato_cliame."_000341 as cca
 			LEFT JOIN ".$wbasedato_cliame."_000200 ON ccacon = Grucod 
 			LEFT JOIN ".$wbasedato_movhos."_000011 ON Ccocod = ccacco
@@ -261,7 +266,12 @@ function obtenerCCAPorId($conex, $wbasedato_cliame, $wbasedato_movhos, $wbasedat
 			LEFT JOIN ".$wbasedato_hce."_000001 ON Encpro = ccafhce 
 			LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> ''
 			LEFT JOIN ".$wbasedato_hce."_000002 ON Detpro = ccafhce AND ccachce = Detcon
+			LEFT JOIN ".$wbasedato_cliame."_000029 as temp ON Temcod = ccatem AND Temest = 'on'
+			LEFT JOIN ".$wbasedato_cliame."_000024 as emp ON Empcod = ccaemp AND Empest = 'on'
+			LEFT JOIN ".$wbasedato_movhos."_000044 as esp ON Espcod = ccaesp
 			WHERE cca.id = ".$id." GROUP BY id";
+			
+	
 	
 	$character_utf8 = 'SET character_set_results=utf8';
     mysql_query( $character_utf8, $conex);
@@ -273,6 +283,7 @@ function obtenerCCAPorId($conex, $wbasedato_cliame, $wbasedato_movhos, $wbasedat
 
 function obtenerArrayListado($conex, $wbasedato_cliame, $wbasedato_movhos, $wbasedato_hce, $formulario){
 	
+	/* MODIFICADO 2021-12-23 */
 	$q_ins = "
 	SELECT cca.id
 			, ccaeve as evento
@@ -303,10 +314,15 @@ function obtenerArrayListado($conex, $wbasedato_cliame, $wbasedato_movhos, $wbas
 			, Encdes as hce
 			, Detnpa as conse 
 			, tor.Descripcion tipo_orden
-			, CASE WHEN ccater IS NOT NULL THEN TRIM(CONCAT(Meddoc , '-' , Medno1, ' ', Medno2, ' ' ,Medap1, ' ' ,Medap2)) ELSE '' END tercero
+			, CASE WHEN ccater IS NOT NULL AND ccater != '*' THEN TRIM(CONCAT(Meddoc , '-' , Medno1, ' ', Medno2, ' ' ,Medap1, ' ' ,Medap2)) ELSE (CASE WHEN ccater = '*' THEN '*-TODOS' ELSE '' END) END tercero
 			, GROUP_CONCAT(CONCAT(pe.Procod,'-', pe.Pronom)) ccapex
 			, CASE WHEN ccacup = '*' THEN '*' ELSE GROUP_CONCAT(CONCAT(p.Procod,'-', p.Pronom)) END ccacup
-		FROM ".$wbasedato_cliame."_000341 as cca
+			, CASE WHEN ccafac = 'on' THEN 'si' ELSE 'no' END ccafac
+			, ccatem
+			, ccaemp
+			, CASE WHEN ccatem = '*' AND ccaemp = '*' THEN '*-TODOS' ELSE  CONCAT(CASE WHEN ccatem = '*' THEN '*-TODOS' ELSE temp.Temdes END,'-', CASE WHEN ccaemp = '*' THEN '*-TODOS' ELSE emp.Empnom END) END responsable
+			, CASE WHEN ccaesp IS NOT NULL THEN TRIM(CONCAT(Espcod,'-',Espnom)) ELSE '' END especialidad
+		FROM ".$wbasedato_cliame."_000341 as cca 
 		LEFT JOIN ".$wbasedato_cliame."_000200 ON ccacon = Grucod 
 		LEFT JOIN ".$wbasedato_movhos."_000011 ON Ccocod = ccacco
 		LEFT JOIN ".$wbasedato_cliame."_000103 p ON FIND_IN_SET(p.Procod, ccacup)
@@ -316,8 +332,11 @@ function obtenerArrayListado($conex, $wbasedato_cliame, $wbasedato_movhos, $wbas
 		LEFT JOIN ".$wbasedato_movhos."_000026 a2 ON  ccamoi = a2.Artcod
 		LEFT JOIN ".$wbasedato_hce."_000001 ON Encpro = ccafhce 
 		LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> ''
-		LEFT JOIN ".$wbasedato_hce."_000002 ON Detpro = ccafhce AND ccachce = Detcon".(!empty($formulario) ? " WHERE ccafhce = '".$formulario."' " : "")." GROUP BY id";
-	
+		LEFT JOIN ".$wbasedato_cliame."_000029 as temp ON Temcod = ccatem AND Temest = 'on'
+		LEFT JOIN ".$wbasedato_cliame."_000024 as emp ON Empcod = ccaemp AND Empest = 'on'
+		LEFT JOIN ".$wbasedato_movhos."_000044 as esp ON Espcod = ccaesp
+		LEFT JOIN ".$wbasedato_hce."_000002 ON Detpro = ccafhce AND ccachce = Detcon".(!empty($formulario) ? " WHERE ccafhce = '".$formulario."' " : "")." 
+		GROUP BY id";
 	
 	$character_utf8 = 'SET character_set_results=utf8';
     mysql_query($character_utf8, $conex);
@@ -352,6 +371,12 @@ function obtenerArrayListado($conex, $wbasedato_cliame, $wbasedato_movhos, $wbas
 										, 'pre' 			=> $row_ins['pre'] 
 										, 'orden' 			=> $row_ins['orden']
 										, 'tipo_concepto' 	=> $row_ins['Grutip']
+										, 'ccafac' 			=> $row_ins['ccafac']
+										, 'ccatem' 			=> $row_ins['ccatem']
+										, 'ccaemp' 			=> $row_ins['ccaemp']
+										, 'responsable' 	=> $row_ins['responsable']
+										, 'ccaesp' 			=> (!empty($row_ins['especialidad']) ? $row_ins['especialidad'] : '')
+										
 									];
 		}
 		
@@ -431,10 +456,26 @@ function cargarCcoXCodcon($wcodcon, $wcodcco = null)
 
 function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbasedato_movhos, $wbasedato_hce, $usu, $id, $concepto, $cco, $procedimiento_o_insumo, $fhce, $confhce, $tipo_origen, $procOIns, $tipo_cco, $articulo, $parametros_adicionales = null) {
 	
+	
+	$ccacon = $concepto;
+	$ccacup = $procOIns == 'procedimiento' ? $procedimiento_o_insumo : '';
+	$ccacco = $cco;
+	$ccaart = $procOIns == 'insumo' ? $procedimiento_o_insumo : '';
+	$ccafhce = $fhce;
+	$ccachce = $confhce;
+	
 	/*  PARAMETROS NUEVO DE ORDENES MEDICAS */
 	$ccator  = $parametros_adicionales['ccator'];
 	$ccater	 = $parametros_adicionales['ccater'];
 	$ccapex	 = $parametros_adicionales['ccapex'];
+	
+	/* NUEVO  2021-12-23 */
+	$ccafac  = $parametros_adicionales['ccafac'];
+	$ccatem	 = $parametros_adicionales['ccatem'];
+	$ccaemp	 = $parametros_adicionales['ccaemp'];
+	
+	/* NUEVO 2022-01-14 */
+	$ccaesp	 = $parametros_adicionales['ccaesp'];
 	
 	$wuse = $usu;
 	
@@ -443,8 +484,37 @@ function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbas
 	$ccapre = 'off';
 	$ccaord = 'off';
 	
-	$columna_tipo_origen = '';
+	if(empty($tipo_origen)) {
+		echo json_encode([ "msj" => "El campo \"Tipo Cargo\" es requerido.", "code" => 0]);
+		return;
+	}
 	
+	if(empty($ccacon)) {
+		echo json_encode([ "msj" => "El campo \"Concepto\" es requerido.", "code" => 0]);
+		return;
+	}
+	
+	if(empty($tipo_cco)) {
+		echo json_encode([ "msj" => "El campo \"Tipo Centro Costos\" es requerido.", "code" => 0]);
+		return;
+	}
+	
+	if(empty($ccatem)) {
+		echo json_encode([ "msj" => "El campo \"Tipo Empresa\" es requerido.", "code" => 0]);
+		return;
+	}
+	
+	if(empty($ccaemp)) {
+		echo json_encode([ "msj" => "El campo \"Empresa\" es requerido.", "code" => 0]);
+		return;
+	}
+	
+	if(($procOIns == 'procedimiento' &&  empty($ccacup)) || ($procOIns == 'insumo' &&  empty($ccaart))) {
+		echo json_encode([ "msj" => "El campo \"Procedimiento o Insumo\" es requerido.", "code" => 0]);
+		return;
+	}
+	
+	$columna_tipo_origen = '';
 	switch($tipo_origen) {
 		case 'evento':
 			$ccaeve = 'on';
@@ -464,233 +534,38 @@ function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbas
 		break;
 	}
 	
-	$ccacon = $concepto;
-	$ccacup = $procOIns == 'procedimiento' ? $procedimiento_o_insumo : '';
-	$ccacco = $cco;
-	$ccaart = $procOIns == 'insumo' ? $procedimiento_o_insumo : '';
-	$ccafhce = $fhce;
-	$ccachce = $confhce;
-	$ccaarticulo = $ccapre == 'on' ? $articulo : '';	
+	$condicion_tipo_origen = !empty($columna_tipo_origen) ? " ".$columna_tipo_origen." = 'on'" : "";
+	$tipo_ccatem = $ccatem == '*' ? 'c' : 'e';
+	$tipo_ccaemp = $ccaemp == '*' ? 'c' : 'e';
+
+	// INICIALIZAMOS ESTA VARIABLE YA QUE SOLO SE ASIGNA AL MOMENTO DE QUE LA CCA ES DE TIPO APLICACION PARA EL RESTO DE LOS CASOS SE ALMACENA VACIO
+	$ccaarticulo = '';
 	
-	if($ccacon == '') {
-		echo json_encode([ "msj" => "El campo Concepto es requerido.", "code" => 0]);
-		return;
-	}
-	
-	if($ccaarticulo == '' && $ccapre == 'on') {
-		echo json_encode([ "msj" => 'El campo "Medicamento/Insumo" es requerido.', "code" => 0]);
-		return;
-	}
-	
-	if(($procOIns == 'procedimiento' &&  $ccacup == '') || ($procOIns == 'insumo' &&  $ccaart == '')) {
-		echo json_encode([ "msj" => "El campo Procedimiento o Insumo es requerido.", "code" => 0]);
-		return;
-	}
-	
-	/*if($ccapre == 'on' && $procOIns == 'insumo') {
-		$query_existe_articulo = "SELECT CONCAT(Artcod, '-',Artcom) FROM `".$wbasedato_movhos."_000026` WHERE Artcod = '$ccaart'";
-		$num_registros = mysql_num_rows(mysql_query($query_existe_articulo, $conex));
+	if( $tipo_origen == 'evento' || $tipo_origen == 'dato') {
 		
-		if($num_registros == 0) {
-			echo json_encode([ "msj" => "Lo sentimos, pero el Art&iacute;culo que estas asociando a esta Prescripci&oacute;n no se encuentra en la base de datos.", "code" => 0]);
+		
+		if(empty($ccafhce)) {
+			echo json_encode([ "msj" => "El campo \"Formulario HCE\" es requerido.", "code" => 0]);
+			return;
+		} 
+		
+		if ($tipo_origen == 'dato' && empty($ccachce)) {
+			echo json_encode([ "msj" => "El campo \"Campo HCE\" es requerido.", "code" => 0]);
 			return;
 		}
-	} else if($ccapre == 'on' && $procOIns == 'procedimiento') {
-		echo json_encode([ "msj" => "Lo sentimos, pero un Procedimiento no puede estar asociando a una Prescripci&oacute;n, por favor verifique la informaci&oacute;n.", "code" => 0]);
-		return;
-	}*/
-	
-	$array_procedimientos = explode(',', $ccacup);
-	
-	$condicion_proc_existen = '';
-	$condicion_proc_incluidos = '';
-	$condicion_proc_excluidos = '';
-	/* 
-		Validamos que los procedimientos incluidos existan en el maestro de procedimientos
-	*/
-	if($ccaord == 'on') {
-		$condicion_proc_existen = ' AND (';
-		$condicion_proc_incluidos = ' AND (';
-		$condicion_proc_excluidos = ' AND (';
 		
-		for($i = 0; $i < count($array_procedimientos); $i++){
-			$condicion_proc_existen .= " Codigo = '".$array_procedimientos[$i]."' OR ";
-			$condicion_proc_incluidos .= ' FIND_IN_SET("'.$array_procedimientos[$i].'", ccacup) OR ';
-			$condicion_proc_excluidos .= ' NOT FIND_IN_SET("'.$array_procedimientos[$i].'", ccapex) OR ';
-		}
+		$condicion_fhce = ($ccaeve == 'on' || $ccadat == 'on') ? " AND ccafhce = '".$ccafhce."' " : "";
+		$condicion_chce = ($ccadat == 'on') ? " AND ccachce = '".$ccachce."' " : "";
+		$condicion_proc_o_insumo = $procOIns == 'procedimiento' ? " AND ccacup = '".$procedimiento_o_insumo."' " : " AND ccaart = '".$procedimiento_o_insumo."' ";
+		$condicion_id = "AND IF('".$id."' <> '' AND '".$id."' IS NOT NULL, id <> '".$id."', TRUE)";
 		
-		$condicion_proc_existen .= ')';
-		$condicion_proc_incluidos .= ')';
-		$condicion_proc_excluidos .= ')';
-		
-		$condicion_proc_existen = str_replace(' OR )', ')', $condicion_proc_existen);
-		$condicion_proc_incluidos = str_replace(' OR )', ')', $condicion_proc_incluidos);
-		$condicion_proc_excluidos = str_replace(' OR )', ')', $condicion_proc_excluidos);
-	}
-	
-	if ($ccaord == 'on' && $procOIns == 'procedimiento' && $ccacup != '*') {
-		/*
-		$query_existe_procedimiento = "SELECT CONCAT(Codigo, '-',Nombre) procedimiento FROM root_000012 WHERE Codigo IS NOT NULL ".$condicion_proc_existen;
-		
-		$num_registros = mysql_num_rows(mysql_query($query_existe_procedimiento, $conex));
-		
-		if($num_registros == 0) {
-			echo json_encode([ "msj" => "Lo sentimos, pero el Procedimiento que estas asociando a esta Orden no se encuentra en la base de datos.", "code" => 0]);
-			return;
-		}
-		*/
-	} else if($ccaord == 'on' && $procOIns == 'insumo') {
-		echo json_encode([ "msj" => "Lo sentimos, pero un Art&iacute;culo no puede estar asociando a una Orden, por favor verifique la informaci&oacute;n.", "code" => 0]);
-		return;
-	}
-	
-	if(($ccadat == 'on') && ($ccafhce == '' || $ccachce == '')) {
-		if($ccafhce == '') {
-			echo json_encode([ "msj" => "El campo Formulario HCE es requerido.", "code" => 0]);
-			return;
-		} else if ($ccachce == '') {
-			echo json_encode([ "msj" => "El campo Consecutivo HCE es requerido.", "code" => 0]);
-			return;
-		}
-	}
-	
-	/*
-	$array_procedimientos = explode(',', $cca);
-	if($ccaord == 'on') {
-		$condicion_tcco = ' AND (';
-		for($i = 0; $i < count($array_procedimientos); $i++){
-			$condicion_tcco .= 'FIND_IN_SET("'.$array_tcco[$i].'", ccatcco) OR ';
-		}
-		$condicion_tcco .= ')';
-		
-		$condicion_tcco = str_replace(' OR )', ')', $condicion_tcco);
-	}
-	*/
-	
-	
-	$condicion_tipo_origen = $columna_tipo_origen != '' ? " $columna_tipo_origen = 'on'" : "";
-	$condicion_proc_o_insumo = $ccapre == 'off' ? ($procOIns == 'procedimiento' ? $condicion_proc_incluidos : " AND ccaart = '$procedimiento_o_insumo' ") : "";
-	
-	$condicion_fhce = ($ccaeve == 'on' || $ccadat == 'on') ? " AND ccafhce = '".$ccafhce."' " : "";
-	$condicion_chce = ($ccadat == 'on') ? " AND ccachce = '".$ccachce."' " : "";
-	$condicion_articulo = $ccapre == 'on' ? " AND ccamoi = '".$ccaarticulo."' ":'';
-	$condicion_tcco = '';
-	$array_tcco = explode(",", $tipo_cco);
-	/*
-	SE COMENTA ESTA VALIDACION PARA QUE NO TENGA EN CUENTA EL TIPO DE CENTRO DE COSTOS
-	if($ccapre == 'on') {
-		$condicion_tcco = ' OR (';
-		for($i = 0; $i < count($array_tcco); $i++){
-			$condicion_tcco .= 'FIND_IN_SET("'.$array_tcco[$i].'", ccatcco) OR ';
-		}
-		$condicion_tcco .= ')';
-		
-		$condicion_tcco = str_replace(' OR )', ')', $condicion_tcco);
-		$condicion_tcco .= ')';
-	}
-	*/
-	
-	$condicion_ccater = $ccaord == 'on' && $ccater != '' ? " OR ( ccator = '' AND ccater  = '".$ccater."' )" : ''; 
-	$condicion_ccator = " AND ccator = '".$ccator."' ";
-	
-	// CONSULTA ANTERIOR SIN LA VALIDACION DE TIPO CARGO EVENTO
-	//$query_existe_cca = "SELECT id FROM ".$wbasedato_cliame."_000341 WHERE ccacon = '$ccacon' $condicion_proc_o_insumo $condicion_cco $condicion_tipo_origen $condicion_fhce_confhce $condicion_fhce";
-		
-	//$case_mensaje_ccacomodin = $ccator <> '' && $ccacup <> '*' ? " 
-	$case_mensaje_ccacomodin = " , (CASE WHEN ( ccator = '".$ccator."' ".$condicion_proc_incluidos." ) THEN 'existente' ";
-	$case_mensaje_ccacomodin .= ($ccator <> '' && $ccacup <> '*') ? " WHEN ( ccacup = '*' ".$condicion_proc_excluidos." ) THEN 'comodin' " : '';
-	$case_mensaje_ccacomodin .= " WHEN ( ccator = '".$ccator."' AND ccater = '".$ccater."' ) THEN 'tercero'";
-	$case_mensaje_ccacomodin .= " END) AS mensaje_ccacomodin ";
-	$campo_moi_ccapre = $ccapre == 'on' ?  ', ccamoi' : '';
-		
-	$query_existe_cca = "SELECT id, ccatcco ".$campo_moi_ccapre." ".$case_mensaje_ccacomodin."
-						FROM ".$wbasedato_cliame."_000341 ";
-	
-	$validar_query_existe_cca = true;
-	
-	if($ccaord <> 'on') {
-		$condicion_proc_o_insumo = $ccapre == 'off' ? ($procOIns == 'procedimiento' ? " AND ccacup = '".$procedimiento_o_insumo."' " : " AND ccaart = '$procedimiento_o_insumo' ") : "";
-		$query_existe_cca .= " WHERE (".$condicion_tipo_origen." ".$condicion_proc_o_insumo." ".$condicion_fhce." ".$condicion_chce." ".$condicion_articulo." ".$condicion_tcco.") 
-								AND IF('".$id."' <> '' AND '".$id."' IS NOT NULL, id <> '".$id."', TRUE)";	
-	} else {
-		
-		$condicion_general_comodin = '';
-		$mensaje_comodin = '';
-		
-		if($ccator <> '') {
-			
-			if($ccacup <> '*') {
-				$condicion_general_comodin = " AND ( ";
-			
-				$condicion_ccator = " AND ccator = '".$ccator."' ";
-				$condicion_ccacup_comodin = $ccator <> '' ? " ( ccator = '".$ccator."' ".$condicion_proc_incluidos." )" : '';
-				$condicion_ccapex = $ccator <> '' ? " OR ( ccacup = '*' ".$condicion_proc_excluidos." )" : '';
-				$condicion_ccater = $ccator <> '' && $ccater != '' ? " OR ( ccator = '".$ccator."' AND ccater = '".$ccater."')" : '';
-				
-				$condicion_general_comodin .= $condicion_ccacup_comodin." ".$condicion_ccapex." ".$condicion_ccater.")";
-			} else if($ccacup == '*') {
-				$validar_query_existe_cca = false;
-				$condicion_id = !is_null($id) ? ' AND id <> '.$id : '';
-				
-				$sql_group_concat_tor = "SELECT GROUP_CONCAT(ccacup) FROM ".$wbasedato_cliame."_000341 WHERE ccator = '".$ccator."' ".$condicion_id." GROUP BY id";
-				$query_group_concat_tor = mysql_query($sql_group_concat_tor, $conex);
-				$num_registros = mysql_num_rows($query_group_concat_tor);
-				
-				if($num_registros > 0) {
-					$proc_validar_pex = mysql_fetch_array($query_group_concat_tor);
-					
-					$explode_pex = explode(',' , $proc_validar_pex[0]);
-					$explode_ccapex = explode(',' , $ccapex);
-					
-					if(in_array('*', $explode_pex)) {
-						$mensaje_comodin = ' Lo sentimos, no se puede registrar esta configuración de cargo automático con procedimiento: *-TODOS, ';
-						$mensaje_comodin .= ' porque ya existe una configuración para este tipo de orden ('.$ccator.') con procedimiento: *-TODOS.';
-						
-						echo json_encode([ "msj" => $mensaje_comodin, "code" => 0]);
-						return;
-					}
-					
-					$mensaje_comodin = 'Lo sentimos, no se puede registrar esta configuración de cargo automático con procedimiento: *-TODOS, porque ya existe una configuración con '.(count($explode_pex) > 1 ? 'los' : 'el').' procedimiento'.(count($explode_pex) > 1 ? 's' : '').': ';
-					
-					$str_mensaje_comodin = '';
-					foreach( $explode_pex as $proc) {
-						if(!in_array($proc, $explode_ccapex)) {
-							$str_mensaje_comodin .= $proc.',';
-						}
-					}
-					
-					if($str_mensaje_comodin != '') {
-						$mensaje_comodin .= $str_mensaje_comodin;
-						$mensaje_comodin .= '<br><br> Para poder registrar esta configuración debes de clasificar '.(count($explode_pex) > 1 ? 'los' : 'el').' procedimiento'.(count($explode_pex) > 1 ? 's' : '').': '.$str_mensaje_comodin.' como procedimientos excluidos.';
-						
-						echo json_encode([ "msj" => $mensaje_comodin, "code" => 0]);
-						return;
-					}
-				}
-				
-					
-				$sql_ccator_tercero = "SELECT id FROM ".$wbasedato_cliame."_000341 WHERE ccator = '".$ccator."' AND ccater = '".$ccater."' ".$condicion_id;
-				$query_ccator_tercero = mysql_query($sql_ccator_tercero, $conex);
-				$num_ccator_tercero = mysql_num_rows($query_ccator_tercero);
-				
-				if($num_ccator_tercero > 0) {
-					$mensaje_comodin = 'Lo sentimos, no puede registrar esta configuración de cargo automático de tipo orden con procedimiento: *-TODOS, para el tipo de orden ('.$ccator.') con tercero ('.$ccater.'), porque ya existen una configuración de cargo automático con el mismo tipo de orden y tercero.';
-					echo json_encode([ "msj" => $mensaje_comodin, "code" => 0]);
-					return;
-				}
-			}
-		} else {
-			$condicion_ccator_vacio = "  AND (ccator = '' ".$condicion_proc_incluidos." ".$condicion_ccater.")";	
-		}
-		
-		$query_existe_cca .= " WHERE (".$condicion_tipo_origen." ".$condicion_ccator_vacio." ".$condicion_tcco." ".$condicion_ccator." ".$condicion_general_comodin.") 
-								AND IF('".$id."' <> '' AND '".$id."' IS NOT NULL, id <> '".$id."', TRUE)";
-			
-	}
-	
-	if($validar_query_existe_cca) {
-		$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Tipo Evento): $query_existe_cca - ".mysql_error());
-		$num_reg = mysql_num_rows($exec);	
+		$msj_ccatem = $ccatem == '*' ? '*-TODOS' : $ccatem;
+		$msj_ccaemp = $ccaemp == '*' ? '*-TODOS' : $ccaemp;
+		$msj_ccafac = $ccafac == 'on' ? 'Si' : 'No';
+
+		/* 2022-01-18 */
+		$condicion_facturable = !empty($ccafac) ? " AND ccafac = '".$ccafac."' " : '';
+
 		$array_tcco = array(
 						"H" => "Hospitalizacion",
 						"D" => "Domiciliaria",
@@ -699,92 +574,551 @@ function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbas
 						"Cx" => "Cirugías"
 					);
 		
-		if($num_reg > 0) {
-			$row = mysql_fetch_row($exec);	
-			$array_tipo_cco_registered = explode(",", $row[1]);
-			$ccamoi_existente = ($ccapre == on ) ? $row[2] : null;
+		$query_existe_cca = "SELECT GROUP_CONCAT(id) as ids
+						       FROM ".$wbasedato_cliame."_000341 
+		                      WHERE (".$condicion_tipo_origen." ".$condicion_proc_o_insumo." ".$condicion_fhce." ".$condicion_chce.") ".$condicion_id;	
+		
+		$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Evento - Dato 001): ".$query_existe_cca." - ".mysql_error());
+		$row = mysql_fetch_array($exec);
+		
+		if (!empty($row['ids'])) {
+			$ids = $row['ids'];
 			
-			$message_val = "Lo sentimos, no puede registrar esta configuración de cargo automático de tipo ".($ccaeve == on ? 'evento ' : ($ccadat == on ? 'dato ' : ($ccaord == on ? 'orden ' : 'aplicación '))).' ';
-			if($ccaord != 'on') {
-				
-				$message_val .= ' porque ya existe una configuración para el procedimiento/insumo '.$procedimiento_o_insumo;
-				$message_val .= ($ccaeve == on || $ccadat == on) ? ', el formulario HCE "'.$ccafhce.'"' : '';
-				$message_val .= ($ccadat == on) ? ', el campo HCE "'.$ccafhce.'"' : '';
-				$message_val .= ($ccapre == on) ? ', el Medicamento/Insumo "'.$ccamoi_existente.'"' : '';
-				$message_val .= ' y los tipos de centro de costo: "';
-				
-				for($i=0; $i < count($array_tipo_cco_registered); $i++){
-					$message_val .= $array_tcco[$array_tipo_cco_registered[$i]].(($i < count($array_tipo_cco_registered)-2) ? ', ' : ' y ');
-				}
-				$message_val = trim($message_val, " y ");
-				$message_val .= '".<br><br>Si desea agregar o quitar un tipo de centro de costo a esta configuración, por favor actualice el registro existente.';		
-				
-			} else if (($ccator <> '' && $ccacup <> '*') || $ccator == '') {
-				if(isset($row[2])) {
-					switch($row[2]) {
-						case 'existente':
-							
-							$sql_group_concat_tor = "SELECT GROUP_CONCAT(ccacup) FROM ".$wbasedato_cliame."_000341 WHERE ccator = '".$ccator."' AND ccaord = 'on' GROUP BY id ";
-							$query_group_concat_tor = mysql_query($sql_group_concat_tor, $conex);
-							$proc_validar_ccacup = mysql_fetch_array($query_group_concat_tor);
+			switch ($tipo_ccatem) {
+				case 'c':
 					
-							$explode_ccacup = explode(',' , $proc_validar_ccacup[0]);
-							
-							$str_procedimientos = '';
-							$contador_procedimientos = 0;
-							
-							for($i = 0; $i < count($array_procedimientos); $i++){
-								if(in_array($array_procedimientos[$i], $explode_ccacup)) {
-									$str_procedimientos .= $array_procedimientos[$i].',' ;
-									$contador_procedimientos++;
-								}
-							}
-							if(!empty($str_procedimientos)) {
-								$strlen = strlen($str_procedimientos);
-								$str_procedimientos = substr($str_procedimientos, 0, $strlen -1);
-							}
-						
-							$message_val .= $ccator <> '' ? ' para el tipo de orden ('.$ccator.') y ' : '';
-							$message_val .= 'con '.(count($array_procedimientos) > 1 ? ' los ' : 'el' ).' procedimiento'.(count($array_procedimientos) > 1 ? 's' : '').': '.$ccacup.', porque ya existe una configuración con '.($contador_procedimientos > 1 ? 'los' : 'el' ).' procedimiento'.($contador_procedimientos > 1 ? 's' : '').': '.$str_procedimientos.'.';
-						break;
-						case 'comodin':
-						
-							$sql_group_concat_tor = "SELECT GROUP_CONCAT(ccapex) FROM ".$wbasedato_cliame."_000341 WHERE ccator = '".$ccator."' AND ccacup = '*' AND ccaord = 'on' GROUP BY id";
-							$query_group_concat_tor = mysql_query($sql_group_concat_tor, $conex);
-							$proc_validar_pex = mysql_fetch_array($query_group_concat_tor);
+					/* EXISTE un Tipo Empresa (ccatem): Comodín(*) Ó EXISTE un Tipo Empresa (ccatem): Comodín(*) Facturable Opuesto */
+
+					$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+											   FROM " . $wbasedato_cliame . "_000341 
+											  WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccatem <> '*' AND FIND_IN_SET(id, '" . $ids . "') " . $condicion_facturable.")) " . $condicion_id;
+
+					$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Evento - Dato 002): " . $query_existe_cca . " - " . mysql_error());
+					$row = mysql_fetch_array($exec);
 					
-							$explode_pex = explode(',' , $proc_validar_pex[0]);
+					if (!empty($row['ids'])) {
+						$ids = $row['ids'];
+
+						/* EXISTE un Tercero y Especialidad igual */
+						$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+												  FROM " . $wbasedato_cliame . "_000341
+												 WHERE ((ccater = '" . $ccater . "' AND ccaesp = '" . $ccaesp . "' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccater = '*' AND ccaesp = '" . $ccaesp . "' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccater <> '*' AND ccaesp = '" . $ccaesp . "' AND FIND_IN_SET(id, '" . $ids . "'))) " . $condicion_id;
+						
+						$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Evento - Dato 003): " . $query_existe_cca . " - " . mysql_error());
+						$row = mysql_fetch_array($exec);
+						
+						if (!empty($row['ids'])) {
 							
-							$str_procedimientos = '';
-							$contador_procedimientos = 0;
+							$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+							$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+							$mensaje_comodin .= ' - Tipo Empresa, Empresa, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa, Empresa con Facturable Opuesto.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodín con Facturable igual.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
 							
-							for($i = 0; $i < count($array_procedimientos); $i++){
-								if(!in_array($array_procedimientos[$i], $explode_pex)) {
-									$str_procedimientos .= $array_procedimientos[$i].',' ;
-									$contador_procedimientos++;
-								}
+							if(!empty($ccater)) {
+								$mensaje_comodin .= ' - Tercero Cómodin (*-TODOS).<br>';
+								$mensaje_comodin .= ' - Tercero Específico.<br>';
 							}
 							
-							$message_val .= ' con procedimiento'.($contador_procedimientos > 1 ? 's' : '').': '.$str_procedimientos.' porque ya existe una configuración de cargo automático con procedimiento: *-TODOS y '.($contador_procedimientos > 1 ? 'los' : 'el').' procedimiento'.($contador_procedimientos > 1 ? 's' : '').': '.$str_procedimientos.' no hace'.($contador_procedimientos > 1 ? 'n' : '').' parte de los procedimientos excluidos.';
-							$message_val .= '<br><br> Para poder registrar esta configuración debes de modificar la configuración existente con procedimiento: *-TODOS y clasificar '.($contador_procedimientos > 1 ? 'los' : 'el').' procedimiento'.($contador_procedimientos > 1 ? 's' : '').': '.$str_procedimientos.' como procedimientos excluidos.';
-						break;
-						case 'tercero':
-							$message_val .= $ccator <> '' ? ' para el tipo de orden ('.$ccator.') ' : '';
-							$message_val .= '  con tercero ('.$ccater.'), porque ya existen una configuración de cargo automático con el mismo ';
-							$message_val .= $ccator <> '' ? ' tipo de orden y ' : '';
-							$message_val .= ' tercero. <br><br> Para agregar un nuevo procedimiento/examen, edite la configuración existente, agregando los procedimientos requeridos.';
-						break;
-						
+							echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+							return;
+						}
 					}
-				}
+					
+				break;
+				case 'e':
+					switch($tipo_ccaemp){
+						case 'c':
+						
+							$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+													FROM " . $wbasedato_cliame . "_000341 
+													WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable.") OR (ccatem <> '*' AND FIND_IN_SET(id, '" . $ids . "') AND ccatem = '".$ccatem."' " . $condicion_facturable . ") OR ( ccatem = '".$ccatem."' AND ccaemp = '".$ccaemp."' AND FIND_IN_SET(id, '" . $ids . "'))) " . $condicion_id;
+
+							$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Evento - Dato 004): " . $query_existe_cca . " - " . mysql_error());
+							$row = mysql_fetch_array($exec);
+							
+							if (!empty($row['ids'])) {
+								$ids = $row['ids'];
+
+								$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+														FROM " . $wbasedato_cliame . "_000341
+														WHERE ((ccater = '" . $ccater . "' AND ccaesp = '" . $ccaesp . "' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccater = '*' AND ccaesp = '" . $ccaesp . "' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccater <> '*' AND ccaesp = '" . $ccaesp . "' AND FIND_IN_SET(id, '" . $ids . "'))) " . $condicion_id;
+
+								$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Evento - Dato 005): " . $query_existe_cca . " - " . mysql_error());
+								$row = mysql_fetch_array($exec);
+								
+								if (!empty($row['ids'])) {
+									$ids = $row['ids'];
+
+									$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa Específica: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+									$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodín, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa, Empresa Comodín con Facturable iguales.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodín con Facturable Opuesto.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
+									
+									if(!empty($ccater)) {
+										$mensaje_comodin .= ' - Tercero Cómodin (*-TODOS).<br>';
+										$mensaje_comodin .= ' - Tercero Específico.<br>';
+									}
+									
+									echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+									return;
+								}
+								
+							}
+						break;
+						case 'e':
+							
+							$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+													FROM " . $wbasedato_cliame . "_000341 
+													WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable.") OR (ccaemp = '*' AND FIND_IN_SET(id, '" . $ids . "') AND ccatem = '".$ccatem."' ".$condicion_facturable.") OR (ccatem = '".$ccatem."' AND ccaemp = '".$ccaemp."' AND FIND_IN_SET(id, '" . $ids . "'))) " . $condicion_id;
+
+							$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Evento - Dato 006): " . $query_existe_cca . " - " . mysql_error());
+							$row = mysql_fetch_array($exec);
+							
+								if (!empty($row['ids'])) {
+									$ids = $row['ids'];
+									
+									$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+														FROM " . $wbasedato_cliame . "_000341
+														WHERE ((ccater = '" . $ccater . "' AND ccaesp = '" . $ccaesp . "' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccater = '*' AND ccaesp = '" . $ccaesp . "' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccater <> '*' AND ccaesp = '" . $ccaesp . "' AND FIND_IN_SET(id, '" . $ids . "'))) " . $condicion_id;
+
+									$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Evento - Dato 007): " . $query_existe_cca . " - " . mysql_error());
+									$row = mysql_fetch_array($exec);
+
+									if (!empty($row['ids'])) {
+										$ids = $row['ids'];
+
+										$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa Específica: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+										$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+										$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodín, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+										$mensaje_comodin .= ' - Tipo Empresa, Empresa Comodín con Facturable iguales.<br>';
+										$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual u opuesto.<br>';
+										
+										if(!empty($ccater)) {
+											$mensaje_comodin .= ' - Tercero Cómodin (*-TODOS).<br>';
+											$mensaje_comodin .= ' - Tercero Específico.<br>';
+										}
+										
+										echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+										return;
+									}
+								}
+						break;
+					}
+				break;
 			}
+		}
+		
+	} else if($tipo_origen == 'orden')  {
+		
+		$conTipoOrden = $ccator <> '' ? true : false;
+		$esProcedimientoComodin = $ccacup == '*' ? true : false;
+		
+		$condicion_id = "AND IF('".$id."' <> '' AND '".$id."' IS NOT NULL, id <> '".$id."', TRUE)";
+		$condicion_ccator = " AND ccator = '".$ccator."' ";
+		
+		$msj_ccatem = $ccatem == '*' ? '*-TODOS' : $ccatem;
+		$msj_ccaemp = $ccaemp == '*' ? '*-TODOS' : $ccaemp;
+		$msj_ccafac = $ccafac == 'on' ? 'Si' : 'No';
+
+		/* 2022-01-18 */
+		$condicion_facturable = !empty($ccafac) ? " AND ccafac = '".$ccafac."' " : '';
+		
+		$query_existe_cca = "SELECT GROUP_CONCAT(id) as ids
+						       FROM ".$wbasedato_cliame."_000341 
+		                      WHERE (".$condicion_tipo_origen."  ".$condicion_ccator.") ".$condicion_id;	
+		
+		
+		$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden 001): ".$query_existe_cca." - ".mysql_error());
+		$row = mysql_fetch_array($exec);
+		
+		if(!empty($row['ids'])) {
+			$ids = $row['ids'];
 			
-			echo json_encode([ "msj" => $message_val, "code" => 0]);
+			if($conTipoOrden) {
+				
+				$condicion_campo_ccacup_o_ccapex = $esProcedimientoComodin ? 'ccacup' : 'ccapex';
+				$condicion_campo_not_find_in_set = $esProcedimientoComodin ? $ccapex : $ccacup;
+				
+				$sql_group_concat_ccacup_o_ccapex_tor = "SELECT GROUP_CONCAT(".$condicion_campo_ccacup_o_ccapex.") FROM ".$wbasedato_cliame."_000341 WHERE ccator = '".$ccator."' ".$condicion_id." GROUP BY id";
+				$query_group_concat_ccacup_o_ccapex_tor = mysql_query($sql_group_concat_ccacup_o_ccapex_tor, $conex);
+				$row_ccacup_o_ccapex = mysql_fetch_array($query_group_concat_ccacup_o_ccapex_tor);
+				
+				$con_generica_procedimiento = '';
+				
+				$param_array_foreach   = $esProcedimientoComodin ? explode(',' , $row_ccacup_o_ccapex[0]) : explode(',', $ccacup);
+				$param_not_find_in_set = $esProcedimientoComodin ? $ccapex : $row_ccacup_o_ccapex[0];
+				
+				if(count($param_array_foreach) > 0) {
+					$con_generica_procedimiento = ' AND (';
+					
+					foreach( $param_array_foreach as $proc) {
+						$con_generica_procedimiento .= ' NOT FIND_IN_SET("'.$proc.'", "'.$param_not_find_in_set.'") OR ';
+					}
+					
+					$con_generica_procedimiento .= ')';
+					$con_generica_procedimiento = str_replace(' OR )', ')', $con_generica_procedimiento);
+					
+				}
+				
+				switch ($tipo_ccatem) {
+					case 'c':
+					/* EXISTE un Tipo Empresa (ccatem): Comodín(*) Ó EXISTE un Tipo Empresa (ccatem): Comodín(*) Facturable Opuesto */
+
+					$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+											   FROM " . $wbasedato_cliame . "_000341 
+											  WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.") OR (ccatem <> '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable." ".$condicion_ccator.")) " . $condicion_id;
+
+					$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden 002): " . $query_existe_cca . " - " . mysql_error());
+					$row = mysql_fetch_array($exec);
+						
+					if(!empty($row['ids'])) {
+						$ids = $row['ids'];
+						
+						$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+											   FROM " . $wbasedato_cliame . "_000341 
+											  WHERE ((ccacup = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator." ".$con_generica_procedimiento.") OR (ccacup <> '*' AND FIND_IN_SET(id, '" . $ids . "')  ".$condicion_ccator." ".$con_generica_procedimiento.") OR (ccater = '" . $ccater . "' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+						
+						$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden 003): " . $query_existe_cca . " - " . mysql_error());
+						$row = mysql_fetch_array($exec);
+						
+						if(!empty($row['ids'])) {
+							
+							$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+							$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+							$mensaje_comodin .= ' - Tipo Empresa, Empresa, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa, Empresa con Facturable Opuesto.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodin con Facturable igual.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
+							$mensaje_comodin .= ' - Procedimientos Específicos existentes no clasificados como Procedimientos Exlcuidos.<br>';
+							
+							echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+							return;
+						}
+					}
+					
+					break;
+					case 'e':
+						/* 2022-01-18 */
+						switch ($tipo_ccaemp) {						
+							case 'c':
+							$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+												   FROM " . $wbasedato_cliame . "_000341 
+												  WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable." ".$condicion_ccator.") OR (ccatem <> '*' AND FIND_IN_SET(id, '" . $ids . "') AND ccatem = '".$ccatem."' " . $condicion_facturable . " ".$condicion_ccator." ) OR ( ccatem = '".$ccatem."' AND ccaemp = '".$ccaemp."' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+
+							$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden - Dato 004): " . $query_existe_cca . " - " . mysql_error());
+							$row = mysql_fetch_array($exec);	
+						
+							if(!empty($row['ids'])) {
+								$ids = $row['ids'];
+								
+								$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+													   FROM " . $wbasedato_cliame . "_000341 
+													  WHERE ((ccacup = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator." ".$con_generica_procedimiento.") OR (ccacup <> '*' AND FIND_IN_SET(id, '" . $ids . "')  ".$condicion_ccator." ".$con_generica_procedimiento.") OR (ccater = '" . $ccater . "' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+								
+								$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden 005): " . $query_existe_cca . " - " . mysql_error());
+								$row = mysql_fetch_array($exec);
+								
+								if(!empty($row['ids'])) {
+											
+									$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+									$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+									$mensaje_comodin .= ' - Tipo Empresa, Empresa, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa, Empresa con Facturable Opuesto.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodin con Facturable igual.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
+									$mensaje_comodin .= ' - Procedimientos Específicos existentes no clasificados como Procedimientos Exlcuidos.<br>';
+									
+									echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+									return;
+								}
+							}
+							break;
+							
+							case 'e':
+							$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+												   FROM " . $wbasedato_cliame . "_000341 
+												  WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable." ".$condicion_ccator.") OR (ccaemp = '*' AND FIND_IN_SET(id, '" . $ids . "') AND ccatem = '".$ccatem."' ".$condicion_facturable." ".$condicion_ccator.") OR (ccatem = '".$ccatem."' AND ccaemp = '".$ccaemp."' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+
+							$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden - Dato 006): " . $query_existe_cca . " - " . mysql_error());
+							$row = mysql_fetch_array($exec);	
+
+							if(!empty($row['ids'])) {
+								$ids = $row['ids'];
+								
+								$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+													   FROM " . $wbasedato_cliame . "_000341 
+													  WHERE ((ccacup = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator." ".$con_generica_procedimiento.") OR (ccacup <> '*' AND FIND_IN_SET(id, '" . $ids . "')  ".$condicion_ccator." ".$con_generica_procedimiento.") OR (ccater = '" . $ccater . "' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+								
+								$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden 007): " . $query_existe_cca . " - " . mysql_error());
+								$row = mysql_fetch_array($exec);
+								
+								if(!empty($row['ids'])) {
+											
+									$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+									$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+									$mensaje_comodin .= ' - Tipo Empresa, Empresa, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa, Empresa con Facturable Opuesto.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodin con Facturable igual.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
+									$mensaje_comodin .= ' - Procedimientos Específicos existentes no clasificados como Procedimientos Exlcuidos.<br>';
+									
+									echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+									return;
+								}
+							}
+							break;
+						}
+					break;
+				}
+			} else {
+				
+				$array_procedimientos = explode(',', $ccacup);
+				$con_procedimientos = '';	
+				
+				/* 
+					Validamos que los procedimientos incluidos existan en el maestro de procedimientos
+				*/
+				if(count($array_procedimientos) > 0) {
+					$con_procedimientos = ' AND (';
+										
+					for($i = 0; $i < count($array_procedimientos); $i++){
+						$con_procedimientos .= ' FIND_IN_SET("'.$array_procedimientos[$i].'", ccacup) OR ';
+					}
+					
+					$con_procedimientos .= ')';
+					$con_procedimientos = str_replace(' OR )', ')', $con_procedimientos);
+				}
+				
+				
+				switch ($tipo_ccatem) {
+					case 'c':
+					/* EXISTE un Tipo Empresa (ccatem): Comodín(*) Ó EXISTE un Tipo Empresa (ccatem): Comodín(*) Facturable Opuesto */
+
+					$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+										   FROM " . $wbasedato_cliame . "_000341 
+										  WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.") OR (ccatem <> '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable." ".$condicion_ccator.")) " . $condicion_id;
+
+					$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden 008): " . $query_existe_cca . " - " . mysql_error());
+					$row = mysql_fetch_array($exec);
+						
+					if(!empty($row['ids'])) {
+						$ids = $row['ids'];
+						
+						$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+											   FROM " . $wbasedato_cliame . "_000341 
+											  WHERE ((FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator." ".$con_procedimientos.") OR (ccater = '" . $ccater . "' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+						
+						$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden 009): " . $query_existe_cca . " - " . mysql_error());
+						$row = mysql_fetch_array($exec);
+						
+						if(!empty($row['ids'])) {
+							
+							$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+							$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+							$mensaje_comodin .= ' - Tipo Empresa, Empresa, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa, Empresa con Facturable Opuesto.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodin con Facturable igual.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
+							
+							echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+							return;
+						}
+					}
+					
+					break;
+					case 'e':
+						/* 2022-01-18 */
+						switch ($tipo_ccaemp){						
+							case 'c':
+							$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+												   FROM " . $wbasedato_cliame . "_000341 
+												  WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable." ".$condicion_ccator.") OR (ccatem <> '*' AND FIND_IN_SET(id, '" . $ids . "') AND ccatem = '".$ccatem."' " . $condicion_facturable . " ".$condicion_ccator." ) OR ( ccatem = '".$ccatem."' AND ccaemp = '".$ccaemp."' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+
+							$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden - Dato 010): " . $query_existe_cca . " - " . mysql_error());
+							$row = mysql_fetch_array($exec);	
+						
+							if(!empty($row['ids'])) {
+								$ids = $row['ids'];
+								
+								$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+													   FROM " . $wbasedato_cliame . "_000341 
+													  WHERE ((FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator." ".$con_procedimientos." ) OR (ccater = '" . $ccater . "' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+								
+								$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden 011): " . $query_existe_cca . " - " . mysql_error());
+								$row = mysql_fetch_array($exec);
+								
+								if(!empty($row['ids'])) {
+											
+									$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+									$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+									$mensaje_comodin .= ' - Tipo Empresa, Empresa, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa, Empresa con Facturable Opuesto.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodin con Facturable igual.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
+									
+									echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+									return;
+								}
+							}
+							break;
+							
+							case 'e':
+								$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+													   FROM " . $wbasedato_cliame . "_000341 
+													  WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable." ".$condicion_ccator.") OR (ccaemp = '*' AND FIND_IN_SET(id, '" . $ids . "') AND ccatem = '".$ccatem."' ".$condicion_facturable." ".$condicion_ccator.") OR (ccatem = '".$ccatem."' AND ccaemp = '".$ccaemp."' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+
+								$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden - Dato 012): " . $query_existe_cca . " - " . mysql_error());
+								$row = mysql_fetch_array($exec);	
+
+								if(!empty($row['ids'])) {
+									$ids = $row['ids'];
+									
+									$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+														   FROM " . $wbasedato_cliame . "_000341 
+														  WHERE ((FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator." ".$con_procedimientos.") OR (ccater = '" . $ccater . "' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_ccator.")) " . $condicion_id;
+									
+									$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Orden 013): " . $query_existe_cca . " - " . mysql_error());
+									$row = mysql_fetch_array($exec);
+									
+									if(!empty($row['ids'])) {
+												
+										$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+										$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+										$mensaje_comodin .= ' - Tipo Empresa, Empresa, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+										$mensaje_comodin .= ' - Tipo Empresa, Empresa con Facturable Opuesto.<br>';
+										$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodin con Facturable igual.<br>';
+										$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
+										
+										echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+										return;
+									}
+								}
+							break;
+						}
+					break;
+				}
+				
+			}
+		
+		}
+		
+	} else if($tipo_origen == 'aplicacion') {
+		
+		if(empty($articulo)) {
+			echo json_encode([ "msj" => 'El campo "Medicamento/Insumo" es requerido.', "code" => 0]);
 			return;
 		}
+		
+		$ccaarticulo = $articulo;
+		$condicion_articulo = " AND ccamoi = '".$articulo."' ";
+		$condicion_id = " AND IF('".$id."' <> '' AND '".$id."' IS NOT NULL, id <> '".$id."', TRUE)";
+		
+		$msj_ccatem = $ccatem == '*' ? '*-TODOS' : $ccatem;
+		$msj_ccaemp = $ccaemp == '*' ? '*-TODOS' : $ccaemp;
+		$msj_ccafac = $ccafac == 'on' ? 'Si' : 'No';
+
+		/* 2022-01-18 */
+		$condicion_facturable = !empty($ccafac) ? " AND ccafac = '".$ccafac."' " : '';
+		
+		$query_existe_cca = "SELECT GROUP_CONCAT(id) as ids
+						       FROM ".$wbasedato_cliame."_000341 
+		                      WHERE (".$condicion_tipo_origen."  ".$condicion_articulo.") ".$condicion_id;	
+		
+		$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Aplicacion 001): ".$query_existe_cca." - ".mysql_error());
+		$row = mysql_fetch_array($exec);
+		
+		if(!empty($row['ids'])) {
+			$ids = $row['ids'];
+			
+			switch ($tipo_ccatem) {
+				case 'c':
+					
+					/* EXISTE un Tipo Empresa (ccatem): Comodín(*) Ó EXISTE un Tipo Empresa (ccatem): Comodín(*) Facturable Opuesto */
+
+					$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+											   FROM " . $wbasedato_cliame . "_000341 
+											  WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccatem <> '*' AND FIND_IN_SET(id, '" . $ids . "') " . $condicion_facturable.") OR (ccater = '" . $ccater . "' AND FIND_IN_SET(id, '" . $ids . "'))) " . $condicion_id;
+
+					$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Aplicacion 002): " . $query_existe_cca . " - " . mysql_error());
+					$row = mysql_fetch_array($exec);
+					
+					if (!empty($row['ids'])) {
+						$ids = $row['ids'];
+							
+							$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+							$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+							$mensaje_comodin .= ' - Tipo Empresa, Empresa, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa, Empresa con Facturable Opuesto.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodin con Facturable igual.<br>';
+							$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
+							
+							echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+							return;
+					}
+					
+				break;
+				case 'e':
+					switch($tipo_ccaemp){
+						case 'c':
+						
+							$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+													FROM " . $wbasedato_cliame . "_000341 
+													WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable.") OR (ccatem <> '*' AND FIND_IN_SET(id, '" . $ids . "') " . $condicion_facturable . ") OR ( ccatem = '".$ccatem."' AND ccaemp = '".$ccaemp."' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccater = '" . $ccater . "' AND FIND_IN_SET(id, '" . $ids . "'))) " . $condicion_id;
+
+							$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Aplicacion 003): " . $query_existe_cca . " - " . mysql_error());
+							$row = mysql_fetch_array($exec);
+							
+							if (!empty($row['ids'])) {
+								$ids = $row['ids'];
+
+								$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa Específica: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+								$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+								$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodín, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+								$mensaje_comodin .= ' - Tipo Empresa, Empresa Comodín con Facturable iguales.<br>';
+								$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodín con Facturable Opuesto.<br>';
+								$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual.<br>';
+								
+								echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+								return;
+								
+								
+							}
+						break;
+						case 'e':
+							
+							$query_existe_cca = "SELECT GROUP_CONCAT(id) ids
+													FROM " . $wbasedato_cliame . "_000341 
+													WHERE ((ccatem = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable.") OR (ccaemp = '*' AND FIND_IN_SET(id, '" . $ids . "') ".$condicion_facturable.") OR (ccatem = '".$ccatem."' AND ccaemp = '".$ccaemp."' AND FIND_IN_SET(id, '" . $ids . "')) OR (ccater = '" . $ccater . "' AND FIND_IN_SET(id, '" . $ids . "'))) " . $condicion_id;
+
+							$exec = mysql_query($query_existe_cca, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar CCA Aplicacion 004): " . $query_existe_cca . " - " . mysql_error());
+							$row = mysql_fetch_array($exec);
+							
+								if (!empty($row['ids'])) {
+									$ids = $row['ids'];
+
+									$mensaje_comodin  = ' Lo sentimos, no puede registrar esta configuración de cargo automático con Tipo Empresa Específica: '.$msj_ccatem.', Empresa: '.$msj_ccaemp.', Facturable: '.$msj_ccafac.( !empty($ccater) ? ' y Tercero: '.$ccater: '').', porque ya existe ';
+									$mensaje_comodin .= ' una configuración que cumple con una de las siguientes consideraciones: <br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa Comodín, Facturable '.( !empty($ccater) ? ' y Tercero' : '').' iguales.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa, Empresa Comodín con Facturable iguales.<br>';
+									$mensaje_comodin .= ' - Tipo Empresa Específica, Empresa(s) Específica(s) con Facturable igual u opuesto.<br>';
+									
+									echo json_encode(["msj" => $mensaje_comodin, "code" => 0]);
+									return;
+									
+								}
+						break;
+					}
+				break;
+			}
+		}
+		
 	}
 	
-	if($id == null){
+	if($id == null) {
 		
 		$query_nuevo_cca = 
 		"INSERT INTO ".$wbasedato_cliame."_000341 (Medico, 
@@ -805,19 +1139,22 @@ function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbas
 			ccator,
 			ccater,
 			ccapex,
+			ccafac,
+			ccatem,
+			ccaemp,
+			ccaesp,
 			Seguridad) 
-			VALUES ('".$wbasedato_cliame."', now(), now(), '".$ccacon."', '".$ccacup."', '".$ccacco."', '".$ccaart."', '".$ccaeve."', '".$ccadat."', '".$ccapre."', '".$ccaord."', '".$ccafhce."', '".$ccachce."', '".$tipo_cco."', '".$ccaarticulo."', '".$ccator."', '".$ccater."', '".$ccapex."','C-".$wuse."');";
+			VALUES ('".$wbasedato_cliame."', now(), now(), '".$ccacon."', '".$ccacup."', '".$ccacco."', '".$ccaart."', '".$ccaeve."', '".$ccadat."', '".$ccapre."', '".$ccaord."', '".$ccafhce."', '".$ccachce."', '".$tipo_cco."', '".$ccaarticulo."', '".$ccator."', '".$ccater."', '".$ccapex."', '".$ccafac."', '".$ccatem."', '".$ccaemp."', '".$ccaesp."','C-".$wuse."');";
 			
 		$exec = mysql_query($query_nuevo_cca, $conex);
 	
+		$query_max_idcca = "SELECT MAX(id) FROM ".$wbasedato_cliame."_000341";
+		$exec_max_idcca = mysql_query($query_max_idcca, $conex);
+		$data = mysql_fetch_array($exec_max_idcca);
+		$json = json_encode(obtenerCCAPorId($conex, $wbasedato_cliame, $wbasedato_movhos, $wbasedato_hce, $data[0]));
+
 		if($exec) {
 			echo json_encode([ "msj" => "La configuraci&oacute;n de cargo autom&aacute;tico ha sido almacenada exitosamente.", "code" => 1]);
-			
-			$query_max_idcca = "SELECT MAX(id) FROM ".$wbasedato_cliame."_000341";
-			$exec_max_idcca = mysql_query($query_max_idcca, $conex);
-			$data = mysql_fetch_array($exec_max_idcca);
-			$json = json_encode(obtenerCCAPorId($conex, $wbasedato_cliame, $wbasedato_movhos, $wbasedato_hce, $data[0]));
-			
 			logTransaccion($conex, $wbasedato_cliame, $wuse, $json, NULL, NULL, 'on', 'INSERT','cca');
 			return;
 		} else {
@@ -850,15 +1187,18 @@ function guardar_configuracion_cargo_automatico($conex, $wbasedato_cliame, $wbas
 				ccator = '".$ccator."',
 				ccater = '".$ccater."',
 				ccapex = '".$ccapex."',
+				ccafac = '".$ccafac."',
+				ccatem = '".$ccatem."',
+				ccaemp = '".$ccaemp."',
+				ccaesp = '".$ccaesp."',
 				Seguridad = 'C-".$wuse."'
 			WHERE  id = '".$id."' ";
 			
 		$exec = mysql_query($query_nuevo_cca, $conex);
-		
+		$json_actualizado = json_encode(obtenerCCAPorId($conex, $wbasedato_cliame, $wbasedato_movhos, $wbasedato_hce, $id));
+
 		if($exec) {
-			
 			echo json_encode([ "msj" => "La actualizaci&oacute;n de configuraci&oacute;n de cargo autom&aacute;tico ha sido almacenada exitosamente.", "code" => 1]);
-			$json_actualizado = json_encode(obtenerCCAPorId($conex, $wbasedato_cliame, $wbasedato_movhos, $wbasedato_hce, $id));
 			logTransaccion($conex, $wbasedato_cliame, $wuse, $json_sin_actualizar, $json_actualizado, NULL, 'on', 'UPDATE','cca');
 			return;
 		} else {
@@ -915,6 +1255,7 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 			$CcoErp = $rowsCco[ 'Ccoerp' ] == 'on' ? true: false;
 			$tcco = $rowsCco['tcco'];		
 		}	
+		
 		
 		//Si el cco no maneja cargo ERP o no esta activo los cargos ERP no se ejecuta esta accion
 		$cargarEnErp = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cargosPDA_ERP" );
@@ -1060,7 +1401,11 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 						$datos_tercero = datos_desde_tercero($wcodter, $especialidad, $wcodcon, $tipoPaciente, $whora , $wfecha, $tipoEmpresa, $wtar, $wcodemp, $cco, $procOArt, '', $codMedNoDisponible);
 						$wporter = $datos_tercero['wporter'];
 						$wterunix = $datos_tercero['wterunix'];
+	  
 					}
+					
+					/* NUEVO 2021-12-13 */
+					$wfacturable = $configCCA['ccafac'] == 'on' ? 'S' : 'N';
 					
 					$wno1 = $infoPacienteCargos['Pacno1']; // $wno1;
 					$wno2 = $infoPacienteCargos['Pacno2']; // $wno2;
@@ -1103,7 +1448,7 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					$datos['wvaltar']				=$wvaltar;	//			--> valor PENDIENTE FUNCION
 					//$datos['porDescuento'] 		= 0; PARAMETRO FALTANTE
 					$datos['wrecexc']				='R'; // $wrecexc;				--> 'R'
-					$datos['wfacturable']			='S'; // $wfacturable;			--> 'S'
+					$datos['wfacturable']			=$wfacturable; // $wfacturable;			--> 'S'
 					//$datos['aplicarRecago'] 		= 'on'; PARAMETRO FALTANTE
 					$datos['wcco']					=$cco;	// $wcco;					--> Centro de costos graba
 					$datos['wccogra']				=$cco;// $wccogra;				--> cco paciente
@@ -1142,8 +1487,13 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					
 					$datos['numCargoInv']			= '';
 					$datos['linCargoInv']			= '';
-					$datos['wEstadoExamen']			= $datosAdic['wEstadoExamen'];
-					$datos['wite']			        = $datosAdic['wite'];
+					
+					if($configCCA['ccaord'] == 'on') {
+						$datos['wEstadoExamen']			= $datosAdic['wEstadoExamen'];
+						$datos['wite']			        = $datosAdic['wite'];
+						$datos['wdettor']				= $datosAdic['wdettor'];
+					}
+					
 					//Esto es nuevo
 					$datos['desde_CargosPDA']		= false;
 					$datos['norden']				= !empty($datosAdic['worden']) ? $datosAdic['worden'] : '';
@@ -1183,6 +1533,11 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					}
 					
 					$datos['wtipomov'] = empty($datosAdic['wanulacion_cca']) || $datosAdic['wanulacion_cca'] == 'off' ? 'Cargo' : 'Anulacion';
+					
+					/* NUEVO 2021-12-23 */
+					
+					$datos['ccatem'] = $configCCA['ccatem'];
+					$datos['ccaemp'] = $configCCA['ccaemp'];
 															
 					if($datosAdic['wanulacion_cca'] == 'on' && !empty($datosAdic['wdeticg'])) {
 						
@@ -1222,25 +1577,15 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 							$row_ccaord_log = mysql_fetch_array($query_log_ccaord);
 							$array_ccaord_log = json_decode($row_ccaord_log['Logdes'], true);	
 							
-							$datos['wcodcon']		= $array_ccaord_log['wcodcon'];
-							$datos['warctar'] 		= $array_ccaord_log['warctar'];
-							$datos['wnomcon']		= $array_ccaord_log['wnomcon'];
-							$datos['wprocod']		= $array_ccaord_log['wprocod'];
-							$datos['wpronom']		= $array_ccaord_log['wpronom'];
-							$datos['wcodter']		= $array_ccaord_log['wcodter'];
-							$datos['wnomter']		= $array_ccaord_log['wnomter'];
-							$datos['wporter']		= $array_ccaord_log['wporter'];
-							$datos['wcantidad']	    = $array_ccaord_log['wcantidad'];
-							$datos['wvaltar']		= $array_ccaord_log['wvaltar'];
-							$datos['wvaltarReco']	= $array_ccaord_log['wvaltarReco'];
+							$datos_log = array_merge($array_ccaord_log, array());
 							
 						}
 						
 						if(!empty($datosAdic['wdeticg'])) {
-							$datos['idCargo'] = $datosAdic['wdeticg'];
+							$datos_log['idCargo'] = $datosAdic['wdeticg'];
 						}
 						
-						$json_datos = json_encode($datos);
+						$json_datos = json_encode($datos_log);
 						$json_datos2 = json_encode($datos2);
 						logTransaccion($conex, $wbasedato_cliame, $wuse, $json_datos, $json_datos2, json_encode($array_error), 'on', 'INSERT', "ccaord");
 						return;
@@ -1261,9 +1606,10 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 						$json_datos2 = json_encode($datos2);
 						logTransaccion($conex, $wbasedato_cliame, $wuse, $json_datos, $json_datos2, json_encode($respuesta['Mensajes']), 'on', 'INSERT', $logTip);
 						return;
-					}	
-					
+					}
+
 					if($wvaltar == 0) {
+											
 						
 						$paciente = $infoPacienteCargos['Pacno1']." ".$infoPacienteCargos['Pacno2']." ".$infoPacienteCargos['Pacap1']." ".$infoPacienteCargos['Pacap2'];
 						$paciente_ced = $infoPacienteCargos['Oriced'];
@@ -1282,16 +1628,15 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 						$json_datos2 = json_encode($datos2);
 						logTransaccion($conex, $wbasedato_cliame, $wuse, $json_datos, $json_datos2, json_encode($respuesta['Mensajes']), 'on', 'INSERT', $logTip);
 						return;
-					}
-					
-					
-					if($wcontip == 'C' && !empty($configCCA['ccater'])  && empty($wporter)) {
+					}	
+
+					if($wcontip == 'C' && !empty($configCCA['ccater'])  && $wporter == "") {
 							
 						$paciente = $infoPacienteCargos['Pacno1']." ".$infoPacienteCargos['Pacno2']." ".$infoPacienteCargos['Pacap1']." ".$infoPacienteCargos['Pacap2'];
 						$paciente_ced = $infoPacienteCargos['Oriced'];
 					
-						$wasunto = "Cargo Automatico (".$tipo_cargo.") - Tercero Sin Porcentaje de Participación";
-						$detalle1 = "Cargo Automatico (".$tipo_cargo.") - Tercero Sin Porcentaje de Participación";
+						$wasunto = "Cargo Automatico (".$tipo_cargo.") - Tercero Sin Porcentaje de Participaci&oacute;n";
+						$detalle1 = "Cargo Automatico (".$tipo_cargo.") - Tercero Sin Porcentaje de Participaci&oacute;n";
 						
 						$info_formulario = !is_null($configCCA['wformulario']) ? '\n Formulario: '.$configCCA['wformulario'] : '';
 						
@@ -1304,7 +1649,7 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 						logTransaccion($conex, $wbasedato_cliame, $wuse, $json_datos, $json_datos2, json_encode($respuesta['Mensajes']), 'on', 'INSERT', $logTip);
 						enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, '', 'emailNotificacionCargosTarifa');
 						return;
-					}
+					}					
 					
 					// Validamos la cantidad y la tarifa para que no se hagan cargos que tengan cantidades en 0 y tarifas en 0				
 					if( $datos['wcantidad'] != null && $datos['wcantidad'] != 0 && $datos['wcantidad'] != '' && $wvaltar > 0) {
@@ -1343,7 +1688,6 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 							$datos['idCargo'] = $idCargo;
 						} 
 					}
-						
 					
 					$json_datos = json_encode($datos);
 					$json_datos2 = json_encode($datos2);
@@ -1371,7 +1715,8 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 }
 
 //                                             movhos    01 425850 29     1183 R3BB04       0.008      0110734
-function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing, $cco, $medicamento, $cantidad, $usuario, $configCCA, $wdevol, $ido, $ronda, $fecha_aplicacion) {
+function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing, $cco, $medicamento, $cantidad, $usuario, $configCCA, $wdevol, $ido, $ronda, $fecha_aplicacion) 
+{
 	
 	$wcliame = consultarAliasPorAplicacion($conex, $emp, 'facturacion');
 	$Ubisac = consultarUbicacionPacienteHCE($conex, $basedato, $his, $ing );
@@ -1412,10 +1757,8 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 		";
 	
 	$resRes = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
-	$numRes = mysql_num_rows( $resRes );
+	
 	if( $rowsRes = mysql_fetch_array( $resRes) ){
-		
-				
 		$sql = "SELECT *
 				  FROM ".$wcliame."_000101
 				 WHERE Inghis = '".$his."'
@@ -1423,8 +1766,7 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 			";
 		
 		$resIng = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		$numIng = mysql_num_rows( $resIng );
-	
+		
 		if( $rowsIng = mysql_fetch_array( $resIng) ){
 		
 			
@@ -1479,17 +1821,35 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 				$wcantidad = !empty($configCCA['ccacup']) ? 1 : $cantidad;
 				$wcantidad =  $wcantidad * ($row_cantidad_condicion_apl['concan'] != '' ? $row_cantidad_condicion_apl['concan'] : 1);											 
 				
+				$q =  " SELECT grucod, grudes, gruarc, gruser, grutip, grumva, gruinv, gruabo, grutab, grumca
+							  FROM ".$wcliame."_000200
+							WHERE gruest = 'on'
+							AND grucod = '".$wcodcon."'
+							AND gruser in ('A','H')";
+					
+					$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
+					$num = mysql_num_rows($res);
+					$row = mysql_fetch_array($res);
+
+					$wcontip = $row['grutip'];   //Tipo de concepto (P)ropio o (C)ompartido
+					$warctar = $row['gruarc'];   //Archivo para validar las tarifas
+					$wconabo = $row['gruabo'];   //indica si es un concepto de abono
+					$wconmva = $row['grumva'];   //Indica si el valor se puede colocar al momento de grabar el cargo
+					$wconinv = $row['gruinv'];   //Indica si mueve inventarios
+					$wconser = $row['gruser'];   //Tipo de servicio (P)OS, (H)OSPITALARIO o (A)MBOS
+					$wconmca = $row['grumca'];   //indica si el concepto mueve caja
+				
 				$wfecha=date("Y-m-d");		
 				$whora = date("H:i:s");
 				
-				$auxWbasedato = $wbasedato;
+				$auxWbasedato = $basedato;
 				$wbasedato = $wcliame;
 				$wuse = $usuario;
 				
 				$wprocod = !empty($configCCA['ccacup']) ? $configCCA['ccacup'] : $configCCA['ccaart'];
 				$wpronom = !empty($configCCA['ccacup']) ? $configCCA['ccacupnom'] : $configCCA['ccaartnom'];
 				//$dosProc = datos_desde_procedimiento(codigoArticulo, codigoConcepto, wccogra    , ccoActualPac, wcodemp , wfeccar, '', '*', 'on', false, '', fecha  , hora  , '*', '*');
-				$datosProc = datos_desde_procedimiento( $wprocod, $wcodcon, $cco, $ubi_pac->servicioActual, $wcodemp, $wfecha, '', '*', 'on', false, '', $wfecha, $whora, '*', '*');
+				$datosProc = datos_desde_procedimiento( $wprocod, $wcodcon, $cco, $Ubisac, $wcodemp, $wfecha, '', '*', 'on', false, '', $wfecha, $whora, '*', '*');
 				
 				$info_tabla_articulos = consultarAliasPorAplicacion($conex, $emp, 'tablaArticulosInventario');
 
@@ -1497,19 +1857,10 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 				$tabla_articulos = $explode_info_tabla_articulos[0];
 				$campo_nombre_articulo = $explode_info_tabla_articulos[1];
 				
-				/*$q_ins = "
-					SELECT Artcod, ".$campo_nombre_articulo." as nombre_articulo 
-						FROM ".$tabla_articulos." 
-					WHERE Artest = 'on' AND Artcod = '".$medicamento."'";
-				
-				$query_art = mysql_query($q_ins, $conex);
-				$nom_art = mysql_fetch_array($query_art);*/
-				
 				$wvaltar = $datosProc[ 'wvaltar' ];
 				
 				//Buscar medico 
-				$turno='';
-				$especialidad='*';
+				$wespecialidad='*';
 				$wcodter='';
 				$wterunix='';
 				$wnomter=''; 
@@ -1521,13 +1872,16 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 					$wcodter = $configCCA['ccater'];
 					$wnomter = $configCCA['tercero']; 
 					
-					$codMedNoDisponible =	consultarAliasPorAplicacion($conex, $wemp_pmla, 'codParticipacionMedicoNoDisponible');
+					$codMedNoDisponible =	consultarAliasPorAplicacion($conex, $emp, 'codParticipacionMedicoNoDisponible');
 					
-					$datos_tercero = datos_desde_tercero($wcodter, $especialidad, $wcodcon, $tipoPaciente, $whora , $wfecha, $tipoEmpresa, $wtar, $wcodemp, $cco, $procOArt, '', $codMedNoDisponible);
+					$datos_tercero = datos_desde_tercero($wcodter, $especialidad, $wcodcon, $tipoPaciente, $whora , $wfecha, $tipoEmpresa, $wtar, $wcodemp, $cco, $wprocod, '', $codMedNoDisponible);
 					$wporter = $datos_tercero['wporter'];
 					$wterunix = $datos_tercero['wterunix'];
 				}
 				
+				/* NUEVO 2021-12-23 */
+				$wfacturable = $configCCA['ccafac'] == 'on' ? 'S' : 'N';
+
 				$datos=array();
 				$datos['whistoria']		=$his; // $whistoria;
 				$datos['wing']			=$ing; // $wing;
@@ -1555,11 +1909,11 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 				$datos['wnomter']		=$wnomter; //$wnomter;				--> ''
 				$datos['wporter']		=$wporter; // $wporter;				--> '' 0
 				$datos['grupoMedico']	=''; // $grupoMedico;			--> ''
-				$datos['wterunix']		=''; // $wterunix;				--> ''
+				$datos['wterunix']		=$wterunix; // $wterunix;				--> ''
 				$datos['wcantidad']		=$wcantidad; //$wcantidad;			--> cantidad
 				$datos['wvaltar']		=$wvaltar;	//			--> valor PENDIENTE FUNCION
 				$datos['wrecexc']		='R'; // $wrecexc;				--> 'R'
-				$datos['wfacturable']	='S'; // $wfacturable;			--> 'S'
+				$datos['wfacturable']	=$wfacturable; // $wfacturable;			--> 'S'
 				$datos['wcco']			=$cco;	// $wcco;					--> Centro de costos graba
 				$datos['wccogra']		=$cco;// $wccogra;				--> cco paciente
 				$datos['wfeccar']		=$wfecha; // $wfeccar;				--> Fecha del cargo
@@ -1611,29 +1965,31 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 					$datos['wvaltarReco'] = round($wcantidad*$wvaltar);
 
 				$datos['wtipomov']	=  $wdevol == 'off' ? 'Cargo' : 'Anulacion';
-				
-				if($wcontip == 'C' && !empty($configCCA['ccater'])  && empty($wporter)) {
+				/* NUEVO 2021-12-23 */
+				$datos['ccatem'] = $configCCA['ccatem'];
+				$datos['ccaemp'] = $configCCA['ccaemp'];
+						
+				if($wcontip == 'C' && !empty($configCCA['ccater'])  && $wporter == "") {
 							
 					$paciente = $infoPacienteCargos['Pacno1']." ".$infoPacienteCargos['Pacno2']." ".$infoPacienteCargos['Pacap1']." ".$infoPacienteCargos['Pacap2'];
 					$paciente_ced = $infoPacienteCargos['Oriced'];
 				
-					$wasunto = "Cargo Automatico (".$tipo_cargo.") - Tercero Sin Porcentaje de Participaci&oacute;n";
-					$detalle1 = "Cargo Automatico (".$tipo_cargo.") - Tercero Sin Porcentaje de Participaci&oacute;n";
+					$wasunto = "Cargo Automatico (Aplicaci&oacute;n) - Tercero Sin Porcentaje de Participaci&oacute;n";
+					$detalle1 = "Cargo Automatico (Aplicaci&oacute;n) - Tercero Sin Porcentaje de Participaci&oacute;n";
 					
 					$info_formulario = !is_null($configCCA['wformulario']) ? '\n Formulario: '.$configCCA['wformulario'] : '';
 					
 					$detalle2  = "El siguiente cargo autom&aacute;tico no cuenta con porcentaje de participación en el tercero,";
-					$detalle2 .= "por lo tanto no se realiz&oacute;. \n Historia: ".$whis."-".$wing."\n Paciente:".$paciente." Documento:".$paciente_ced."\n Responsable: ".$wnomemp." - ".$nitEmpresa." Cod: ".$wcodemp." Tarifa: ".$wtar."\n Procedimiento o Articulo: ".$procOArtNom." - ".$procOArt." \n Concepto: ".$wcodcon." \n Tercero: ".$wcodter."-".$wnomter." ".$info_formulario;
+					$detalle2 .= "por lo tanto no se realiz&oacute;. \n Historia: ".$his."-".$ing."\n Paciente:".$paciente." Documento:".$paciente_ced."\n Responsable: ".$wnomemp." - ".$nitEmpresa." Cod: ".$wcodemp." Tarifa: ".$wtar."\n Procedimiento o Articulo: ".$wpronom." - ".$wprocod." \n Concepto: ".$wcodcon." \n Tercero: ".$wcodter."-".$wnomter." ".$info_formulario;
 					
 					$respuesta['Mensajes'] = [ 'error' => 1, 'mensaje' => 'El cargo automatico no se realiz&oacute;, porque el tercero no tiene porcentaje de participaci&oacute;n en este concepto.' ];
 					$json_datos = json_encode($datos);
-					$json_datos2 = json_encode($datos2);
-					logTransaccion($conex, $wbasedato_cliame, $wuse, $json_datos, $json_datos2, json_encode($respuesta['Mensajes']), 'on', 'INSERT', $logTip);
-					enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1, $detalle2, '', 'emailNotificacionCargosTarifa');
+					
+					logTransaccion($conex, $wcliame, $wuse, $json_datos, null, json_encode($respuesta['Mensajes']), 'on', 'INSERT', 'ccapre');
+					enviarCorreo( $conex, $emp, $wasunto, $detalle1, $detalle2, '', 'emailNotificacionCargosTarifa');
 					
 					return;
 				}
-				
 				//validar si el cargo aplica a la ubicacion del paciente
 				if(array_search($tcco, explode(',', $configCCA['ccatcco'])) === false){
 					$respuesta['Mensajes'] = [ 'error' => 1, 'mensaje' => 'El cargo automatico no se realiz&oacute;, porque no existe una configuraci&oacute;n para la ubicaci&oacute;n del paciente.'];
@@ -1752,9 +2108,7 @@ function guardarCargoAutomaticoPreescripcion($conex, $basedato, $emp, $his, $ing
 		}
 		//else{ echo "<h1>ingreso cliame</h1>" ;}
 	}
-	//else{ echo "<h1>ingreso movhos</h1>" ;}
-		
-	
+	//else{ echo "<h1>ingreso movhos</h1>" ;}	
 }
 
 function obtenerInfoConcepto($conex, $wbasedato_cliame, $codcon) {
@@ -1763,7 +2117,7 @@ function obtenerInfoConcepto($conex, $wbasedato_cliame, $codcon) {
 					FROM ".$wbasedato_cliame."_000200
 				 WHERE Grucod = '".$codcon."' ";
 				 
-	$row = mysql_query($info_concepto,$conex) or die("Error en el query: ".$ifno_concepto."<br>Tipo Error:".mysql_error());
+	$row = mysql_query($info_concepto,$conex) or die("Error en el query: ".$info_concepto."<br>Tipo Error:".mysql_error());
 	
 	return mysql_fetch_assoc($row);
 }
@@ -1908,7 +2262,7 @@ function obtenerLogTransaccion($conex, $wbasedato_cliame, $esCCA, $fecha) {
 	
 }
 
-function obtener_array_terceros_especialidad_filtro($parametro = '')
+function obtener_array_terceros_especialidad_filtro($parametro = '', $tipo_cargo = '')
 {
 	global $conex;
 	global $wemp_pmla;
@@ -1931,6 +2285,12 @@ function obtener_array_terceros_especialidad_filtro($parametro = '')
    $res_terceros = mysql_query($q_terceros,$conex) or die("Error: " . mysql_errno() . " - en el query (Consultar medicos): ".$q_terceros." - ".mysql_error());
 
    $arr_terceros = array();
+   
+	if($tipo_cargo == 'evento' || $tipo_cargo == 'dato') {
+		$arr_terceros['*']['nombre'] = ['TODOS'];
+	}
+   
+   
    while($row_terceros = mysql_fetch_array($res_terceros))
    {
 		$row_terceros['Medno1'] = str_replace($caracter_ma, $caracter_ok, $row_terceros['Medno1']);
@@ -1951,7 +2311,7 @@ function obtener_array_terceros_especialidad_filtro($parametro = '')
 
 
 function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
-	
+		
 	$Fecha_data = $fecha != '' ? $fecha : date('Y-m-d');
 	$Logtip = '';
 	
@@ -1975,7 +2335,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 			$Logtip = 'estancia';
 		break;
 	}
-	
+
 	$condicion_Logtip = $Logtip != '' ? " AND Logtip = '".$Logtip."' " : '';
 	$condicion_Fecha_data = $fecha != '' ? " AND Fecha_data = '".$Fecha_data."' " : '';
 	
@@ -2015,6 +2375,9 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 			$detalle2 = '';
 			$tipo_log = '';
 			$notas = '';
+			
+			//$Logdes['ccafac'] = $Logdes['ccafac'] == 'on' ? 'Si' : 'No';
+			
 			if( $row['Logtip'] == 'cca' ) {
 				
 				$Logdes['ccacco'] = !empty($Logdes['ccacco']) && $Logdes['ccacco'] != '' ? $Logdes['ccacco'] : 'No seleccionado';
@@ -2022,6 +2385,9 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 				
 				$detalle = !empty($Logdes['ccator'])  ? '<strong>Tipo Orden:</strong> '.$Logdes['ccator'].'<br>'   : '';
 				$detalle .= '<strong>Concepto:</strong> '.$Logdes['ccacon'].'<br>';
+				$detalle .= '<strong>Tipo Empresa:</strong> '.$Logdes['ccatem'].'<br>';
+				$detalle .= '<strong>Empresa:</strong> '.$Logdes['ccaemp'].'<br>';
+				$detalle .= '<strong>Facturable:</strong> '.($Logdes['ccafac'] == 'on' ? 'Si' : 'No').'<br>';
 				$detalle .= '<strong>C. Costos:</strong> '.$Logdes['ccacco'].'<br>';
 				$detalle .= '<strong>Tipo Cen. Costos:</strong> '.$Logdes['tcco'].'<br>';
 				$detalle .= !empty($Logdes['articulo'])? '<strong>Medicamento/Insumo:</strong> '.$Logdes['articulo'].'<br>'   : '';
@@ -2031,18 +2397,23 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 				$detalle .= !empty($Logdes['ccaart'])  ? '<strong>Art&iacute;culo:</strong> '.$Logdes['ccaart'].'<br>' : '';
 				$detalle .= !empty($Logdes['ccafhce']) ? '<strong>Formulario HCE:</strong> '.$Logdes['ccafhce'].'<br>' : '';
 				$detalle .= !empty($Logdes['ccachce']) ? '<strong>Campo HCE:</strong> '.$Logdes['ccachce'].'<br>' 	 : '';
+				$detalle .= !empty($Logdes['ccaesp'])  ? '<strong>Especialidad :</strong> '.$Logdes['ccaesp'].'<br>'   : '';
 				
 				$detalle2 = !empty($Logdes2['ccator'])  ? '<strong>Tipo Orden:</strong> '.$Logdes2['ccator'].'<br>'   : '';
 				$detalle2 .= '<strong>Concepto:</strong> '.$Logdes2['ccacon'].'<br>';
+				$detalle2 .= '<strong>Tipo Empresa:</strong> '.$Logdes2['ccatem'].'<br>';
+				$detalle2 .= '<strong>Empresa:</strong> '.$Logdes2['ccaemp'].'<br>';
+				$detalle2 .= '<strong>Facturable:</strong> '.($Logdes2['ccafac'] == 'on' ? 'Si' : 'No').'<br>';
 				$detalle2 .= '<strong>C. Costos:</strong> '.$Logdes2['ccacco'].'<br>';
 				$detalle2 .= '<strong>Tipo Cen. Costos:</strong> '.$Logdes2['tcco'].'<br>';
 				$detalle2 .= !empty($Logdes2['articulo'])  ? '<strong>Medicamento/Insumo:</strong> '.$Logdes2['articulo'].'<br>'   : '';
 				$detalle2 .= !empty($Logdes2['ccacup'])  ? '<strong>Procedimiento(s):</strong> '.$Logdes2['ccacup'].'<br>'   : '';
 				$detalle2 .= !empty($Logdes2['ccapex'])  ? '<strong>Procedimiento(s) Excluido(s):</strong> '.$Logdes2['ccapex'].'<br>'   : '';
-				$detalle2 .= !empty($Logdes2['tercero'])  ? '<strong>Tercero:</strong> '.$Logdes2['tercero'].'<br>'   : '';
+				$detalle2 .= !empty($Logdes2['tercero']) ? '<strong>Tercero:</strong> '.$Logdes2['tercero'].'<br>'   : '';
 				$detalle2 .= !empty($Logdes2['ccaart'])  ? '<strong>Art&iacute;culo:</strong> '.$Logdes2['ccaart'].'<br>' : '';
 				$detalle2 .= !empty($Logdes2['ccafhce']) ? '<strong>Formulario HCE:</strong> '.$Logdes2['ccafhce'].'<br>' : '';
-				$detalle2 .= !empty($Logdes2['ccachce']) ? '<strong>Campo HCE:</strong> '.$Logdes2['ccachce'].'<br>' 		: '';
+				$detalle2 .= !empty($Logdes2['ccachce']) ? '<strong>Campo HCE:</strong> '.$Logdes2['ccachce'].'<br>' 	  : '';
+				$detalle2 .= !empty($Logdes2['ccaesp']) ? '<strong>Especialidad :</strong> '.$Logdes2['ccaesp'].'<br>'     : '';
 				
 				if($Logdes['ccaeve'] == 'on') {
 					$tipo_log = 'Configuraci&oacute;n Cargo Autom&aacute;tico - Evento';
@@ -2057,6 +2428,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 				$detalle2 = ($row['Logins'] == 'on' || $row['Logdel'] == 'on') ? '' : $detalle2;
 			} else if ($row['Logtip'] == 'ccaeve' || $row['Logtip'] == 'ccadat' || $row['Logtip'] == 'ccaord' || $row['Logtip'] == 'ccapre') {
 				
+				/* MODIFICADO 2021-12-23 */			   
 				$detalle  = '<strong>Historia:</strong> '.$Logdes['whistoria'].'-'.$Logdes['wing'].'<br>';
 				$detalle .= !empty($Logdes['wno1']) && 
 							!empty($Logdes['wno2']) && 
@@ -2072,15 +2444,19 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 				$detalle .= !empty($Logdes['wnomemp']) 	  ? '<strong>Responsable:</strong> '.$Logdes['wnomemp'].'<br>' : '';
 				$detalle .= !empty($Logdes['wcodemp']) 	  ? '<strong>Cod Responsable:</strong> '.$Logdes['wcodemp'].'<br>' : '';
 				$detalle .= !empty($Logdes['tipoEmpresa'])  ? '<strong>Tipo Responsable:</strong> '.$Logdes['tipoEmpresa'].'<br>' 	 : '';
-				$detalle .= !empty($Logdes['norden'])  		  ? '<strong>Num. Orden:</strong> '.$Logdes['norden'].'<br>' : '';
-				$detalle .= !empty($Logdes['wite']) ? '<strong>Num. Examen: </strong> '.$Logdes['wite'].'<br>' : '';
+				$detalle .= !empty($Logdes['norden'])  		  ? '<strong>Num. Orden:</strong> '.(!empty($Logdes['wdettor']) ? $Logdes['wdettor'].'-' : '').''.$Logdes['norden'].(!empty($Logdes['wite']) ? '-'.$Logdes['wite'] : '').'<br>' : '';
 				$detalle .= ($row['Logtip'] == 'ccapre' && !empty($Logdes['wmedinsucod'])) ? '<strong>Medicamento/Insumo: </strong> '.$Logdes['wmedinsucod'].'-'.$Logdes['wmedinsunom'].'<br>' : '';
+				$detalle .= !empty($Logdes['ccatem']) ? '<strong>Tipo Empresa:</strong> '.$Logdes['ccatem'].'<br>' : '';
+				$detalle .= !empty($Logdes['ccaemp']) ? '<strong>Empresa:</strong> '.$Logdes['ccaemp'].'<br>' : '';
+				$detalle .= !empty($Logdes['wfacturable']) ? '<strong>Facturable:</strong> '.$Logdes['wfacturable'].'<br>' : '';
 				$detalle .= !empty($Logdes['wcodcon']) &&
 							!empty($Logdes['wnomcon'])      ? '<strong>Concepto:</strong> '.$Logdes['wcodcon'].'-'.$Logdes['wnomcon'].'<br>' 	 : '';
 				$detalle .= !empty($Logdes['wccogra']) 	  ? '<strong>Cen. Costos:</strong> '.$Logdes['wccogra'].'<br>' : '';
 				$detalle .= !empty($Logdes['wprocod']) &&
 							!empty($Logdes['wpronom'])      ? '<strong>Procedimiento o Articulo:</strong> '.$Logdes['wprocod'].'-'.$Logdes['wpronom'].'<br>' 	 : '';
-				$detalle .= !empty($Logdes['wcodter']) 	      ? '<strong>Tercero:</strong> '.$Logdes['wcodter'].' '.$Logdes['wnomter'].' '.(!empty($Logdes['wporter']) ? ' - '.$Logdes['wporter'].'%' : '').'<br>'   : '';			
+				$detalle .= !empty($Logdes['wcodter']) 	    ? '<strong>Tercero:</strong> '.$Logdes['wcodter'].' '.$Logdes['wnomter'].' '.($Logdes['wporter'] != '' ? ' - '.$Logdes['wporter'].'%' : '').'<br>'   : '';			
+				$detalle .= !empty($Logdes['wespecialidad']) && $Logdes['wespecialidad'] <> '*' 
+							  ? '<strong>Especialidad:</strong> '.$Logdes['wespecialidad'].'<br>' : '';
 				$detalle .= !empty($Logdes['formulario_hce']) ? '<strong>Formulario HCE:</strong> '.$Logdes['formulario_hce'].'<br>' : '';				
 				$detalle .= !empty($Logdes['wcantidad']) 	  ? '<strong>Cantidad:</strong> '.$Logdes['wcantidad'].'<br>' : '';
 				$detalle .= !empty($Logdes['wvaltar']) 	  ? '<strong>Valor. Uni:</strong> '.number_format($Logdes['wvaltar'], 0, ',', '.').'<br>' : '';
@@ -2175,7 +2551,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 	
 	$html.="</table>";
 	
-	return $html;
+	return $html;	
 }
 
 function enviarCorreo( $conex, $wemp_pmla, $wasunto, $detalle1,$detalle2, $html, $detApl = 'emailNotificacionEstancia') {
@@ -4393,12 +4769,12 @@ function actualizar_id_cargo($conex, $wemp_pmla, $datosAdic){
 	$wbasedato_hce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 	$sql = 'SELECT id FROM '.$wbasedato_hce.'_000028
 			 WHERE Detnro = "'.$datosAdic['worden'].'"
-				AND Detcod = "'.$datosAdic['wdetcod'].'"
-				AND Dettor = "'.$datosAdic['wdettor'].'"
-				AND Detite = "'.$datosAdic['wite'].'"
-				AND COALESCE(Deticg,"") = ""';
+			   AND Detcod = "'.$datosAdic['wdetcod'].'"
+			   AND Dettor = "'.$datosAdic['wdettor'].'"
+			   AND Detite = "'.$datosAdic['wite'].'"
+			   AND COALESCE(Deticg,"") = ""';
 	
-	$exec = mysql_query($sql, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar campo cca nulo): $query_existe_cca - ".mysql_error());
+	$exec = mysql_query($sql, $conex) or die("Error: " . mysql_errno() . " - en el query (Validar campo cca nulo): $sql - ".mysql_error());
 	$num_reg = mysql_num_rows($exec);
 	if($num_reg > 0){
 		$row = mysql_fetch_row($exec);	
@@ -4410,6 +4786,80 @@ function actualizar_id_cargo($conex, $wemp_pmla, $datosAdic){
 			WHERE id = '.$id;
 		$exec = mysql_query($sql, $conex) or die("Error: " . mysql_errno() . " - en el query (Actualizar id cargo): $sql - ".mysql_error());
 	}	
+}
+
+function traer_tipos_empresa($conex, $wbasedato_cliame, $temcod = null) {
+	
+	$sql_temp = "SELECT Temcod, Temdes 
+						  FROM ".$wbasedato_cliame."_000029 
+						 WHERE Temest = 'on';";
+						 
+	$character_utf8 = 'SET character_set_results=utf8';
+    mysql_query( $character_utf8, $conex);
+						 
+	$exec_query_temp = mysql_query($sql_temp, $conex) or die("Error: " . mysql_errno() . " - en el query (Listar Tipo Empresas): $sql_temp - ".mysql_error());
+	
+	$selected_seleccione = empty($temcod) && $temcod != '*' ? 'selected' : '';
+	$selected_todos = !empty($temcod) && $temcod == '*' ? 'selected' : '';
+	
+	$option_select  = "<option value='' {$selected_seleccione} >Seleccione..</option>";
+	$option_select .= "<option value='*' {$selected_todos} >*-TODOS</option>";
+	
+	while($row = mysql_fetch_array($exec_query_temp))
+	{
+		$selected = $row['Temcod'] == $temcod ? 'selected' : '';
+		$option_select.= "<option value='$row[Temcod]' $selected> $row[Temcod] - $row[Temdes]</option>";
+	}
+	
+	return $option_select;
+}
+
+function traer_empresas($conex, $wbasedato_cliame, $temcod, $empcod = null) {
+	
+	$sql_temp = "SELECT Empcod, Empnom 
+						  FROM {$wbasedato_cliame}_000024 
+						 WHERE Empest = 'on' AND Emptem = '{$temcod}' ";
+						 
+	$character_utf8 = 'SET character_set_results=utf8';
+    mysql_query( $character_utf8, $conex);
+						 
+	$exec_query_temp = mysql_query($sql_temp, $conex) or die("Error: " . mysql_errno() . " - en el query (Listar Tipo Empresas): $sql_temp - ".mysql_error());
+	
+	$selected_seleccione = empty($empcod) && $empcod != '*' ? 'selected' : '';
+	$selected_todos = !is_null($empcod) && ($empcod == '*' || $temcod == '*') ? 'selected' : '';
+	
+	$option_select = "<option value='' ".$selected_seleccione.">Seleccione..</option>";
+	$option_select .= "<option value='*' ".$selected_todos.">*-TODOS</option>";
+	
+	
+	while($row = mysql_fetch_array($exec_query_temp))
+	{
+		$selected = $row['Empcod'] == $empcod ? 'selected' : '';
+		$option_select.= "<option value='$row[Empcod]' $selected> $row[Empcod] - $row[Empnom]</option>";
+	}
+	
+	return $option_select;
+	
+}
+
+function traer_especialidades($conex, $wbasedato_movhos, $parametro) {
+	
+	$sql_especialidades = "SELECT Espcod, Espnom 
+						     FROM ".$wbasedato_movhos."_000044 
+						    WHERE (Espcod <> '*' OR Espnom <> 'TODOS') AND (Espcod LIKE '%".$parametro."%' OR Espnom LIKE '%".$parametro."%') ";
+	
+	$character_utf8 = 'SET character_set_results=utf8';
+    mysql_query( $character_utf8, $conex); 
+	
+	$res_especialidades = mysql_query($sql_especialidades, $conex) or die("Error: " . mysql_errno() . " - en el query (Consultar Especialidades Médicas): ".$sql_especialidades." - ".mysql_error());
+
+	$arr_especialidades = array();
+	while($row = mysql_fetch_array($res_especialidades)) {
+		$arr_especialidades[trim($row['Espcod'])]['nombre'] = $row['Espnom'];
+		
+	}
+	return $arr_especialidades;
+	
 }
 
 
@@ -4498,7 +4948,6 @@ if(isset($_POST['accion'])) {
 		case 'traer_procedimientos':
 			
 			$name_proc = $_POST['name_proc'];
-			//$codcon = $_POST['codcon'];
 			$data = obtenerArrayProcedimientos($conex, $name_proc, $wemp_pmla);
 			echo json_encode($data);
 		break;
@@ -4532,10 +4981,23 @@ if(isset($_POST['accion'])) {
 			$tercero = $_POST['tercero'];
 			$procedimientos_excluidos = $_POST['proc_exc'];
 			
+			/* NUEVO 2021-12-23 */
+			
+			$facturable = $_POST['facturable'];
+			$tipo_empresa = $_POST['tipo_empresa'];
+			$empresa = $_POST['empresa'];
+			
+			/* NUEVO 2022-01-14 */
+			$especialidad = $_POST['especialidad'];
+			
 			$parametros_adicionales = array(
 				'ccator' 	=> $tipo_orden,
 				'ccater'	=> $tercero,
-				'ccapex'	=> $procedimientos_excluidos
+				'ccapex'	=> $procedimientos_excluidos,
+				'ccafac'	=> $facturable == 'si' ? 'on' : 'off',
+				'ccatem'	=> $tipo_empresa,
+				'ccaemp'	=> $empresa,
+				'ccaesp'	=> $especialidad
 			);
 				
 			guardar_configuracion_cargo_automatico($conex, $wbasedato, $wbasedato_movhos, $wbasedato_hce, $wuse, null, $concepto, $centro_costos, $procedimiento_o_insumo, $formulario_hce, $consecutivo_hce, $tipo_origen, $poi, $tipo_cco, $articulo, $parametros_adicionales);
@@ -4558,16 +5020,31 @@ if(isset($_POST['accion'])) {
 			$tercero = $_POST['tercero'];
 			$procedimientos_excluidos = $_POST['proc_exc'];
 			
+			/* NUEVO 2021-12-23 */
+			
+			$facturable = $_POST['facturable'];
+			$tipo_empresa = $_POST['tipo_empresa'];
+			$empresa = $_POST['empresa'];
+			
+			/* NUEVO 2022-01-14 */
+			
+			$especialidad = $_POST['especialidad'];
+			
 			$parametros_adicionales = array(
 				'ccator' 	=> $tipo_orden,
 				'ccater'	=> $tercero,
-				'ccapex'	=> $procedimientos_excluidos
+				'ccapex'	=> $procedimientos_excluidos,
+				'ccafac'	=> $facturable == 'si' ? 'on' : 'off',
+				'ccatem'	=> $tipo_empresa,
+				'ccaemp'	=> $empresa,
+				'ccaesp'	=> $especialidad
 			);			
 			
 			guardar_configuracion_cargo_automatico($conex, $wbasedato, $wbasedato_movhos, $wbasedato_hce, $wuse, $id, $concepto, $centro_costos, $procedimiento_o_insumo, $formulario_hce, $consecutivo_hce, $tipo_origen, $poi, $tipo_cco, $articulo, $parametros_adicionales);
 		break;
 		case 'guardar_config_cargo_automatico_hce':
 			
+			/* MODIFICADO 2022-01-13 */				  
 			$wemp_pmla = $_POST['wemp_pmla'];
 			$whis = $_POST['whis'];
 			$wing = $_POST['wing'];
@@ -4578,13 +5055,20 @@ if(isset($_POST['accion'])) {
 			$explode_consecutivos = explode('|', $str_consecutivos_formulario);
 			
 			$wuse = $movusu;
+			/* MODIFICACION 2022-01-13 */
+
+			$wespecialidad = $_POST['wespecialidad'];
+			$wmeddoc = $_POST['wmeddoc'];
+			$datosAdic['wespecialidad'] = $wespecialidad;
+			$datosAdic['wmeddoc'] = $wmeddoc;					
 			
-			$configCCA = obtenerDatosCCAxFormulario($conex, $wemp_pmla, $wformulario, $movusu, $whis, $wing);	
-			$numCCA = sizeof($configCCA);			
+			$configCCA = obtenerDatosCCAxFormulario($conex, $wemp_pmla, $wformulario, $movusu, $whis, $wing, $wespecialidad, $wmeddoc);
+			$numCCA = sizeof($configCCA);
+			
 			for($i = 0; $i < $numCCA; $i++) {
 				if($configCCA[$i]['ccaeve'] == 'on' || ($configCCA[$i]['ccadat'] == 'on' && in_array($configCCA[$i]['Detcon'], explode("|", $str_consecutivos_formulario_todos)))) {					
 					$configCCA[$i]["consecutivos_formulario"] = $str_consecutivos_formulario;
-					guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $wuse, $whis, $wing, $configCCA[$i]);
+					guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $wuse, $whis, $wing, $configCCA[$i], $datosAdic);
 				}
 			}
 		break;
@@ -4665,7 +5149,7 @@ if(isset($_POST['accion'])) {
 			
 			if($anulacion_cca == 'off') {
 			
-				$configCCA = obtenerDatosCCAxOrden($conex, $wemp_pmla, $wprocedimiento, $tipoOrdAdmComodin, $datosAdic['wdettor']);
+				$configCCA = obtenerDatosCCAxOrden($conex, $wemp_pmla, $wprocedimiento, $tipoOrdAdmComodin, $datosAdic['wdettor'], $whis, $wing);
 				$numCCA = sizeof($configCCA);
 			
 				for($i = 0; $i < $numCCA; $i++) {		
@@ -4712,7 +5196,34 @@ if(isset($_POST['accion'])) {
 		case 'traer_terceros':
 		{
 			$parametro = $_POST['parametro'];
-			echo json_encode(obtener_array_terceros_especialidad_filtro($parametro));
+			$tipo_cargo = $_POST['tipo_cargo'];
+			
+			echo json_encode(obtener_array_terceros_especialidad_filtro($parametro, $tipo_cargo));
+			break;
+			return;
+		}
+		case 'traer_tipos_empresa':
+		{
+			$temcod = $_POST['temcod'];
+			
+			echo json_encode(traer_tipos_empresa($conex, $wbasedato, $temcod));
+			break;
+			return;
+		}
+		case 'traer_empresas':
+		{
+			$temcod = $_POST['temcod'];
+			$empcod = $_POST['empcod'];
+			
+			echo json_encode(traer_empresas($conex, $wbasedato, $temcod, $empcod));
+			break;
+			return;
+		}
+		case 'traer_especialidades':
+		{
+			$parametro = $_POST['parametro'];
+			
+			echo json_encode(traer_especialidades($conex, $wbasedato_movhos, $parametro));
 			break;
 			return;
 		}
