@@ -19,6 +19,7 @@
  * . @update [2021-09-24]	-	Actualizacion para soporte Imex
  * . @update [2021-09-27]	-	Actualizacion para soporte Laboratorio
  * . @update [2022-01-17]	-	Actualizacion para mostrar los resultados de los soportes subidos mediante un solo json
+ * . @update [2022-02-14]	-	Actualizacion para mostrar los resultados de los soportes subidos cuando viene vacio(No se procesa ningun soporte)
  */
 
 /** Se inicializa el bufer de salida de php **/
@@ -298,9 +299,13 @@ function ConsultaEstadoWithPost($conex = null, $wemp_pmla, $jsonData)
             array_push($estadoTemporal, $estados['status']);
         }
 
-        if (empty($estadoTemporal) || in_array(300, $estadoTemporal, true) || in_array(400, $estadoTemporal, true) || in_array(500, $estadoTemporal, true)) {
+        if (in_array(300, $estadoTemporal, true) || in_array(400, $estadoTemporal, true) || in_array(500, $estadoTemporal, true)) {
             $consultaEstadoDescargas['status'] = '400';
-        } else {
+        }
+        elseif(empty($estadoTemporal)){
+            $consultaEstadoDescargas['status'] = '204';            
+        }
+        else {
             $consultaEstadoDescargas['status'] = '200';
         }
         $consultaEstadoDescargas['responsable'] = $responsable;
@@ -2153,17 +2158,14 @@ function consultaSoportesImex(
                     $regexImex = consultarAliasPorAplicacion($conex, $wemp_pmla, 'regexImex');
                     preg_match_all($regexImex, $ret, $match);
                     $versionPDF = consultarAliasPorAplicacion($conex, $wemp_pmla, 'versionPDF');
-                    $regexPDF = "/^%PDF-$versionPDF/";
+                    //$regexPDF = "/^%PDF-$versionPDF/";
                     if (count($match[0]) > 1) {
                         $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
                         foreach ($match[0] as $soporteUrl) {
                             $nombreImex =   $historia . '-' . $ingreso . '-' . $soporte . '-' .  $numeroDelPDF;
                             $archivoDestino = $carpetaResponsable . '/' . $nombreImex . ".pdf";
                             copy($soporteUrl, $archivoDestino);
-                            $filecontent = file_get_contents($archivoDestino);
-                            if (!preg_match($regexPDF, $filecontent)) {
-                                modificarFuncion($archivoDestino, $versionPDF);
-                            }
+                            modificarFuncion($archivoDestino, $versionPDF);
                             chmod($archivoDestino, 0777);
                             $numeroDelPDF += 1;
                         }
@@ -2172,10 +2174,7 @@ function consultaSoportesImex(
                         $carpetaResponsable = creacionCarpeta($wemp_pmla, $historia, $ingreso, $responsable);
                         $archivoDestino = $carpetaResponsable . '/' . $nombreImex . ".pdf";
                         copy($url, $archivoDestino);
-                        $filecontent = file_get_contents($archivoDestino);
-                        if (!preg_match($regexPDF, $filecontent)) {
-                            modificarFuncion($archivoDestino, $versionPDF);
-                        }
+                        modificarFuncion($archivoDestino, $versionPDF);
                         chmod($archivoDestino, 0777);
                         $numeroDelPDF += 1;
                     }
