@@ -9294,16 +9294,20 @@ if(!array_key_exists("user", $_SESSION))
     echo "error";
 else
 {
-$fechaAct=date("Y-m-d");
-$horaAct=date("H:i:s");
-if ($wemp_pmla == 01)
-{
+	$wactualiz = '2022-02-14';
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
 	encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, $wbasedato1);
-}
-else 
-{
-	encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, "logo_".$wbasedato1);
-}
+//$fechaAct=date("Y-m-d");
+//$horaAct=date("H:i:s");
+//if ($wemp_pmla == 01)
+//{
+//	encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, $wbasedato1);
+//}
+//else 
+//{
+//	encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, "logo_".$wbasedato1);
+//}
 
 $soportesautomaticos =  consultarAliasPorAplicacion( $conex, $wemp_pmla, 'soportesautomaticos' );
 $TableroDigitalizacionUrgencias = consultarAliasPorAplicacion($conex,$wemp_pmla,"TableroDigitalizacionUrgencias");
