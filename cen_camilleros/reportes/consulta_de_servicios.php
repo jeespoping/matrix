@@ -1,6 +1,13 @@
-<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
 <head>
 	<title>CONSULTA DE SERVICIOS</title>
+    <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+
+    <script>
+        $(document).on('change','#selectsede',function(){
+            window.location.href = "consulta_de_servicios.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+        });
+    </script>
+
 </head>
 <body BGCOLOR="">
 <BODY TEXT="#000000">
@@ -40,11 +47,15 @@ else
     include_once("root/comun.php");
 	$wemp_pmla=$_REQUEST['wemp_pmla'];
     $conex = obtenerConexionBD("matrix");
-	
-    
+
+    if (is_null($selectsede)){
+        $selectsede = consultarsedeFiltro();
+    }
+
+    echo "<input type='HIDDEN' id='wemp_pmla' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 
   	                                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-    $wactualiz="(Octubre 06 de 2015)";                              // Aca se coloca la ultima fecha de actualizacion de este programa //
+    $wactualiz="(Febrero 10 de 2022)";                              // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
     /*
  		ACTUALIZACIONES:
@@ -64,7 +75,7 @@ else
           
     //====================================================================================================================================
     //COMIENZA LA FORMA      
-    echo "<form action='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."' method=post>";
+    echo "<form action='consulta_de_servicios.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' method=post>";
     
     $wfecha=date("Y-m-d"); 
     $hora = (string)date("H:i:s");
@@ -74,7 +85,7 @@ else
     $wcolor="dddddd";
     $wcolorfor="666666";
     
-    encabezado("CONSULTA DE SERVICIOS ",$wactualiz, "clinica");
+    encabezado("CONSULTA DE SERVICIOS ",$wactualiz, "clinica", true);
     
     if ((!isset($wfecha_i) or !isset($wfecha_f) or (!isset($wser) and !isset($wcamillero))) and !isset($wid) and !isset($wcentral))
        {
@@ -92,10 +103,19 @@ else
         campofechaDefecto("wfecha_f",$wfecha);
         echo "</td>";
         echo "</tr>";
+
+        $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
         
         $q =  " SELECT nombre "
 			 ."   FROM ".$wcencam."_000004 "
 			 ."  ORDER BY 1 ";
+        if ($sFiltrarSede == 'on' && $selectsede != '') {
+            $q =  " SELECT nombre "
+                ."   FROM ".$wcencam."_000004 "
+                ."  WHERE codigoSede = '".$selectsede."'"
+                ."  ORDER BY 1 ";
+        }
+
 			 	 
 	    $res = mysql_query($q,$conex);
 	    $num = mysql_num_rows($res);
@@ -136,6 +156,8 @@ else
 	     //===================================================================================================================================================
 	     // QUERY: 
 	     //===================================================================================================================================================
+         $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+         $querySede = ( $sFiltrarSede == 'on' && $selectsede != '' ) ? " AND SedeDestino = '{$selectsede}' " : "";
 	     if (isset($whora_i))
 	        $wrangohora=" AND Hora_data BETWEEN '".$whora_i."' AND '".$whora_f."' ";
 	       else
@@ -147,6 +169,7 @@ else
 		          ."    FROM ".$wcencam."_000003 "
 		          ."   WHERE Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 		          ."     AND id         = ".$wid
+                  .      $querySede
 		          ."     AND Central    like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
 		          .$wrangohora;
 	         }    
@@ -158,6 +181,7 @@ else
 			            ."    FROM ".$wcencam."_000003 "
 			            ."   WHERE Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 			            ."     AND Motivo         like '".$wmotivo."'"
+                        .      $querySede
 			            ."     AND Hora_respuesta != '00:00:00' "
 		                ."     AND Hora_llegada   != '00:00:00' "
 		                ."     AND Central        like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
@@ -173,6 +197,7 @@ else
 				           ."     AND Fecha_data BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 				           ."     AND Hora_respuesta != '00:00:00' "
 				           ."     AND Hora_llegada   != '00:00:00' "
+                           .     $querySede
 				           ."     AND Camillero       = '".$wcamillero."'"
 				           ."     AND Central        like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
 				           ."   GROUP BY 1 "
@@ -184,6 +209,7 @@ else
 				              ."    FROM ".$wcencam."_000003 "
 				              ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 				              ."     AND Origen         like '".$wser."'"
+                              .    $querySede
 				              ."     AND Hora_respuesta != '00:00:00' "
 			                  ."     AND Hora_llegada   != '00:00:00' "
 			                  ."     AND Central        like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
@@ -233,7 +259,8 @@ else
 		       $q=   "  SELECT * "
 			        ."    FROM ".$wcencam."_000003 "
 			        ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-			        ."     AND id              = ".$wid  
+			        ."     AND id              = ".$wid
+                    .    $querySede
 			        ."     AND Hora_respuesta != '00:00:00' "
 			        ."     AND Hora_llegada   != '00:00:00' "
 			        ."     AND Central        like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
@@ -249,7 +276,8 @@ else
 					         ."                (SECOND(TIMEDIFF(hora_llegada,hora_data)))/60)  "
 					         ."    FROM ".$wcencam."_000003 "
 					         ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
-					         ."     AND Origen         like '".$wser."'"  
+					         ."     AND Origen         like '".$wser."'"
+                             .  $querySede
 					         ."     AND Hora_respuesta != '00:00:00' "
 		                     ."     AND Hora_llegada   != '00:00:00' "
 		                     ."     AND Central        like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
@@ -265,6 +293,7 @@ else
 					           ."   WHERE Anulada        = 'No' " 
 					           ."     AND Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 					           ."     AND Hora_respuesta != '00:00:00' "
+                               .  $querySede
 					           ."     AND Hora_llegada   != '00:00:00' "
 					           ."     AND Camillero       = '".$wcamillero."'"
 					           ."     AND Central        like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
@@ -278,6 +307,7 @@ else
 						          ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 						          ."     AND Origen         like '".$wser."'" 
 						          ."     AND Hora_respuesta != '00:00:00' "
+                                  .    $querySede
 			                      ."     AND Hora_llegada   != '00:00:00' "
 			                      ."     AND Central        like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
 			                      .$wrangohora
@@ -294,6 +324,7 @@ else
 						       ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 						       ."     AND Motivo         like '".$wmotivo."'" 
 						       ."     AND Hora_respuesta != '00:00:00' "
+                               . $querySede
 		                       ."     AND Hora_llegada   != '00:00:00' "
 		                       ."     AND Central        like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
 		                       .$wrangohora
@@ -304,10 +335,11 @@ else
 						       ."   WHERE Fecha_data     BETWEEN '".$wfecha_i."' AND '".$wfecha_f."'"
 						       ."     AND Motivo         like '".$wmotivo."'" 
 						       ."     AND Hora_respuesta != '00:00:00' "
+                               .    $querySede
 		                       ."     AND Hora_llegada   != '00:00:00' "
 		                       ."     AND Central        like mid('".$wcentral."',1,instr('".$wcentral."','-')-2)"
 		                       .$wrangohora 
-						       ."   ORDER BY fecha_data, hora_data ";            
+						       ."   ORDER BY fecha_data, hora_data ";
 			          
 			$res = mysql_query($q,$conex);  //or die (mysql_errno()." - ".mysql_error());
 			$num = mysql_num_rows($res);    //or die (mysql_errno()." - ".mysql_error());
