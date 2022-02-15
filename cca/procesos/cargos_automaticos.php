@@ -19,7 +19,7 @@ if(!isset($_SESSION['user']) && !isset($accion))
 
 $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 $wlogoempresa = strtolower( $institucion->baseDeDatos );
-$wactualiz = "(Febrero 04 de 2022)";
+$wactualiz = "(Febrero 15 de 2022)";
 
 ?>
 <html>
@@ -41,6 +41,8 @@ $wactualiz = "(Febrero 04 de 2022)";
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
 	<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
    <script type="text/javascript">
+	
+	/* INICIO DECLARACIONES FUNCIONES PRINCIPALES */
 	
 	var protocol = "<?php echo $_SERVER['REQUEST_SCHEME'].'://'; ?>";
 	var _URL_AJAX = protocol+"<?php echo $_SERVER['SERVER_NAME']; ?>/matrix/cca/procesos/ajax_cargos_automaticos.php?wemp_pmla=<?php echo $wemp_pmla; ?>";
@@ -178,6 +180,12 @@ $wactualiz = "(Febrero 04 de 2022)";
 	function ValidarTipoConcepto(CodigoConcepto, ccoSelected = null)
 	{
 		document.getElementById('camp_tercero').value = '';
+
+		// 2022/01/28
+
+		document.getElementById('camp_tercero').setAttribute('valor', '');
+		document.getElementById('camp_tercero').setAttribute('nombre', '');
+		validarTerceroComodin(document.getElementById('camp_tercero').getAttribute('valor'));
 								
 		$.post(_URL_AJAX,
 		{
@@ -269,7 +277,7 @@ $wactualiz = "(Febrero 04 de 2022)";
 		});
 		
 	}
-	
+	/*
 	function traer_conceptos(muevenInventario)
 	{
 		$.post(_URL_AJAX,
@@ -281,6 +289,7 @@ $wactualiz = "(Febrero 04 de 2022)";
 			cargar_conceptos(data);
 		}, 'json');
 	}
+	*/
 	
 	function traer_fhce()
 	{
@@ -416,6 +425,8 @@ $wactualiz = "(Febrero 04 de 2022)";
 							<thead>\
 								<tr id="tr_enc_det_concepto" class="encabezadoTabla" style="font-size: 10pt;" align="center">\
 									<th>Concepto</th>\
+									<th>Tipo Empresa - Empresa</th>\
+									<th>Facturable</th>\
 									<th>Cen. Costos</th>\
 									<th>Medicamento/Insumo</th>\
 									<th>Procedimiento/Examen</th>\
@@ -424,6 +435,7 @@ $wactualiz = "(Febrero 04 de 2022)";
 									<th>Formulario HCE</th>\
 									<th>Campo HCE</th>\
 									<th>Tercero</th>\
+									<th>Especialidad</th>\
 									<th>Tipo de Cargo</th>\
 									<th>Tipo Cen. Costos</th>\
 									<th>Eliminar</th>\
@@ -452,6 +464,8 @@ $wactualiz = "(Febrero 04 de 2022)";
 					
 					tr += "<tr class='"+fila+"'>"
 						  + "<td>"+data[id]['concepto']+"</td>"
+						  + "<td>"+data[id]['responsable']+"</td>"
+						  + "<td>"+data[id]['ccafac']+"</td>"
 						  + "<td>"+data[id]['c_costos']+"</td>"
 						  + "<td>"+data[id]['articuloapl']+"</td>"
 						  + "<td>"+data[id]['procedimiento'].replace(',','<br>')+"</td>"
@@ -460,10 +474,11 @@ $wactualiz = "(Febrero 04 de 2022)";
 						  + "<td>"+data[id]['hce']+"</td>"
 						  + "<td>"+data[id]['consecutivo']+"</td>"
 						  + "<td>"+data[id]['tercero']+"</td>"
+						  + "<td>"+data[id]['ccaesp']+"</td>"
 						  + "<td>"+tipo+"</td>"
 						  + "<td>"+data[id]['cad_tipo_cco']+"</td>"
 						  + "<td style='text-align: center'><button  onclick='eliminar(\""+id+"\")'><img src='"+server+"/matrix/images/medical/root/borrar.png' alt=''></button></td>"
-						  + "<td style='text-align: center'><button  onclick='editar(\""+id+"\",\""+data[id]['concepto']+"\",\""+data[id]['c_costos']+"\",\""+data[id]['procedimiento']+"\",\""+data[id]['articulo']+"\",\""+data[id]['hce']+"\",\""+data[id]['consecutivo']+"\",\""+tipo+"\",\""+data[id]['tipo_cco']+"\",\""+data[id]['articuloapl']+"\",\""+data[id]['tipo_concepto']+"\",\""+data[id]['ccator']+"\",\""+data[id]['ccapex']+"\",\""+data[id]['tercero']+"\")'><img src='"+server+"/matrix/images/medical/root/grabar.png' alt=''></button></td>"
+						  + "<td style='text-align: center'><button  onclick='editar(\""+id+"\",\""+data[id]['concepto']+"\",\""+data[id]['c_costos']+"\",\""+data[id]['procedimiento']+"\",\""+data[id]['articulo']+"\",\""+data[id]['hce']+"\",\""+data[id]['consecutivo']+"\",\""+tipo+"\",\""+data[id]['tipo_cco']+"\",\""+data[id]['articuloapl']+"\",\""+data[id]['tipo_concepto']+"\",\""+data[id]['ccator']+"\",\""+data[id]['ccapex']+"\",\""+data[id]['tercero']+"\",\""+data[id]['ccafac']+"\",\""+data[id]['ccatem']+"\",\""+data[id]['ccaemp']+"\",\""+data[id]['ccaesp']+"\")'><img src='"+server+"/matrix/images/medical/root/grabar.png' alt=''></button></td>"
 					+   "</tr>";
 				}
 				
@@ -518,11 +533,15 @@ $wactualiz = "(Febrero 04 de 2022)";
 		tipo_cco: [],
 		articuloapl: '',		
 		tercero: '',
-		procedimientoExc: []
+		procedimientoExc: [],
+		facturable: '',
+		tipo_empresa: '',
+		empresa: '',
+		especialidad: ''
 	};
 
 	
-	function editar(id,concepto,c_costos,procedimiento,articulo,hce,consecutivo,tipo,tipo_cco, articuloapl, tipo_concepto, tipo_orden, proc_exc, tercero) {
+	function editar(id,concepto,c_costos,procedimiento,articulo,hce,consecutivo,tipo,tipo_cco, articuloapl, tipo_concepto, tipo_orden, proc_exc, tercero, facturable, tipo_empresa, empresa, especialidad) {
 		jConfirm('Seguro quieres editar esta configuracion?', 'Mensaje', function(e) { 
 			if(e){				
 				tipo = tipo.split(':')[0];
@@ -538,6 +557,11 @@ $wactualiz = "(Febrero 04 de 2022)";
 				obj_cargo.tipo_orden = tipo_orden;
 				obj_cargo.procedimientoExc = proc_exc.length > 0 ? proc_exc.split(',').sort() : [];
 				obj_cargo.tercero = tercero;
+				obj_cargo.facturable = facturable;
+				obj_cargo.tipo_empresa = tipo_empresa;
+				obj_cargo.empresa = empresa;
+				/* NUEVO 2022-01-14 */
+				obj_cargo.especialidad = especialidad;
 				
 				this.cargo_editado = id;
 				
@@ -550,7 +574,6 @@ $wactualiz = "(Febrero 04 de 2022)";
 				var inputArticuloApl = $("#busc_articulo_1");
 				var inputProcedimientoOInsumo = $("#busc_procedimiento_1");
 				var inputFormularioHCE = $("#busc_formulario_hce_1");
-				var inputTercero = $("#camp_tercero");
 				
 				var splitConcepto = '';
 				var codigoConcepto = '';
@@ -586,7 +609,8 @@ $wactualiz = "(Febrero 04 de 2022)";
 				} else {					
 					$("#aplicacion").prop("checked", true);					
 					desactivar('editar');					
-				}				
+				}
+				
 				/* NUEVO */
 				var checksTcc = document.getElementsByName('check_tcc');			
 				checksTcc.forEach(function (el) {
@@ -595,10 +619,16 @@ $wactualiz = "(Febrero 04 de 2022)";
 					}
 				});
 				
+				traer_tipos_empresa(tipo_empresa);
+				traer_empresas(tipo_empresa, empresa);
+				
+				checked_facturable = facturable == 'si' ? true: false;
+				$("#wfac").prop("checked", checked_facturable);
+				
+				
 				splitConcepto = concepto.split('-');
 				codigoConcepto = splitConcepto[0];
 				nombreConcepto = splitConcepto[1];
-			
 				
 				inputConcepto.val(concepto);
 				inputConcepto.attr('valor', codigoConcepto);
@@ -677,6 +707,21 @@ $wactualiz = "(Febrero 04 de 2022)";
 					
 					datos_desde_fhce(codigoFormularioHCE, codigoConsecFormularioHCE);
 					
+					var splitEspecialidad = '';
+					var codigoEspecialidad = '';
+					var nombreEspecialidad = '';
+					var inputEspecialidad = $("#wesp");
+					
+					splitEspecialidad = especialidad.split('-');
+					codigoEspecialidad = splitEspecialidad[0];
+					nombreEspecialidad = splitEspecialidad[1];
+				
+					inputEspecialidad.val(especialidad);
+					inputEspecialidad.attr('valor', codigoEspecialidad);
+					inputEspecialidad.attr('nombre', nombreEspecialidad);
+					
+					validarTerceroComodin(tercero.split('-')[0]);
+					
 				}
 				origenGeneral = 1;
 			}
@@ -697,20 +742,28 @@ $wactualiz = "(Febrero 04 de 2022)";
 		var articuloVal = document.getElementById('busc_articulo_1').getAttribute('valor');
 		var radiosTipoCargo = document.getElementsByName('radio');
 		var radiosProcOIns = document.getElementsByName('radio_p');
-		/* NUEVO */
+		
 		var checksTipoCco = document.getElementsByName('check_tcc');
 		var tipoConcepto = 	document.getElementById('busc_concepto_1').getAttribute('tipo');	
 		
 		var msjErrores = '';
 		var tipo_cargo = '';
 		var procOInsu = '';
-		/* NUEVO */
+		
 		var tipo_cco = '';
 		var arrayProcExc = [];
 		var procExc = [];
 		var tipoOrden = '';
 		var tercero = '';
-
+		
+		/* NUEVO 2021-12-23 */
+		var facturable = document.getElementById("wfac").checked ? 'si' : 'no';
+		var tipo_empresa = document.getElementById('wtemp').value;
+		var empresa = document.getElementById('wemp').value;
+		
+		/* NUEVO 2022-01-14 */
+		var especialidad = '';
+		
 		if(centro_costos=="0") {
 			centro_costos='';
 		}
@@ -738,7 +791,8 @@ $wactualiz = "(Febrero 04 de 2022)";
 		if(tipo_cco == '') {
 			msjErrores += 'Debe seleccionar al menos un tipo de centro de costo. \n';
 		}
-				
+			
+		procExc = '';
 		if(tipo_cargo == 'orden') {
 			tipoOrden = document.getElementById('tipo_orden').value;			
 			if(tipoOrden != '') {
@@ -754,7 +808,14 @@ $wactualiz = "(Febrero 04 de 2022)";
 		if(tipoConcepto == 'C'){				
 			tercero = document.getElementById('camp_tercero').getAttribute('valor');
 			terceroTexto = document.getElementById('camp_tercero').value;
+			
+			if(tercero == '*') {
+				especialidad = document.getElementById('wesp').getAttribute('valor');
+				especialidadTexto = trim(document.getElementById('wesp').value);	
+				msjErrores +=  (especialidadTexto.length == '') ? 'El campo "Especialidad" es requerido.\n' : '';
+			}
 			msjErrores +=  (tercero == '' || terceroTexto.length == '') ? 'El campo "Tercero" es requerido.\n' : '';
+			
 		}
 		
 		if(concepto == '' || conceptoText == '') {
@@ -791,7 +852,17 @@ $wactualiz = "(Febrero 04 de 2022)";
 		if((tipo_cargo == 'evento') && (formulario_hce == '')) {
 			msjErrores += formulario_hce == ''  ? 'El campo "Formulario HCE" es requerido.\n' : '';
 		
-		}	
+		}
+		
+		/* 2021-12-23 */
+		if(tipo_empresa == '') {
+			msjErrores += 'El campo "Tipo Empresa" es requerido.\n';
+		}
+		
+		if(empresa == '') {
+			msjErrores += 'El campo "Empresa" es requerido.\n';
+		}
+		
 		if(msjErrores != '') {
 			jAlert(msjErrores, "Alerta");
 			return;
@@ -814,10 +885,17 @@ $wactualiz = "(Febrero 04 de 2022)";
 					
 					listaCargos = response.data;
 					contador = 0;
+					
 					for (const cargo in listaCargos) {
 						if(cargo != cargo_editado) {
 							contador++;
-							textoCCA += listaCargos[cargo].procedimiento ? '- <b>Procedimiento:</b> ' + listaCargos[cargo].procedimiento + '\n\n' : '- Art&iacute;culo: ' + listaCargos[cargo].articulo + ' , Campo HCE: ' + listaCargos[cargo].consecutivo + '\n\n';
+							
+							/* MODIFICADO 2021-12-23 */
+							str_procedimiento = listaCargos[cargo].procedimiento.length > 20 ? listaCargos[cargo].procedimiento.substr(0,20) + '...' : listaCargos[cargo].procedimiento;
+							str_responsable = listaCargos[cargo].responsable.length > 20 ? listaCargos[cargo].responsable.substr(0,20) + '...' : listaCargos[cargo].responsable;
+							
+							textoCCA += listaCargos[cargo].procedimiento ? '- <b title= "'+ listaCargos[cargo].procedimiento +'">Proc:</b> ' + str_procedimiento + ', <b title= "'+ listaCargos[cargo].responsable +'">Resp:</b>' + str_responsable + ', <b>Fact: </b> ' + listaCargos[cargo].ccafac +'\n\n' 
+							         : '- Art: ' + listaCargos[cargo].articulo + ' , Campo HCE: ' + listaCargos[cargo].consecutivo + ', <b>Resp:</b>' + listaCargos[cargo].responsable + '\n\n';
 						}
 						
 					}
@@ -846,7 +924,7 @@ $wactualiz = "(Febrero 04 de 2022)";
 		} else {
 			guardar_interno()
 		}
-				
+		
 		function guardar_interno(){
 					
 			if(cargo_editado != 0) { 
@@ -864,12 +942,17 @@ $wactualiz = "(Febrero 04 de 2022)";
 					confhce: consecutivo_hce,
 					tc: tipo_cargo,
 					poi: procOInsu,
-					/* NUEVO */
 					tcco: tipo_cco,
 					articulo: articuloVal,
 					tipo_orden: tipoOrden,
 					tercero: tercero,
 					proc_exc: procExc,
+					/* NUEVO 2021-12-23*/
+					facturable: facturable,
+					tipo_empresa: tipo_empresa,
+					empresa: empresa,
+					/* NUEVO 2022-14-01*/
+					especialidad: especialidad,
 					id: cargo_editado
 					
 				}, function (data){
@@ -893,13 +976,18 @@ $wactualiz = "(Febrero 04 de 2022)";
 					fhce: formulario_hce,
 					confhce: consecutivo_hce,
 					tc: tipo_cargo,
-					/* NUEVO */
 					tcco: tipo_cco,
 					articulo: articuloVal,
 					poi: procOInsu,
 					tipo_orden: tipoOrden,
 					tercero: tercero,
-					proc_exc: procExc
+					proc_exc: procExc,
+					/* NUEVO 2021-12-23 */
+					facturable: facturable,
+					tipo_empresa: tipo_empresa,
+					empresa: empresa,
+					/* NUEVO 2022-14-01*/
+					especialidad: especialidad
 					
 				}, function (data){
 					if(data.code) {
@@ -912,8 +1000,8 @@ $wactualiz = "(Febrero 04 de 2022)";
 		}
 	}
  
-	function change_edit(section, origen = 0){	
-		if(origen != 'editar'){	
+	function change_edit(section, origen = 0) {
+		if(origen != 'editar') {	
 			if(this.cargo_editado > 0) {
 				var obj_cargo_editado;
 				if(origen == 1){					
@@ -947,7 +1035,13 @@ $wactualiz = "(Febrero 04 de 2022)";
 												tipo_cco: tipo_cco.split(','),
 												articuloapl : document.getElementById('busc_articulo_1').value,
 												tercero: document.getElementById('camp_tercero').value,
-												procedimientoExc: procExc
+												procedimientoExc: procExc,
+												/* NUEVO 2021-12-23 */
+												facturable: document.getElementById("wfac").checked ? 'si' : 'no',
+												tipo_empresa: document.getElementById('wtemp').value,
+												empresa: document.getElementById('wemp').value,
+												/* NUEVO 2022-14-01*/
+												especialidad: document.getElementById('wesp').value,
 											};
 				}else{
 					obj_cargo_editado = Object.assign({}, this.obj_cargo);
@@ -958,8 +1052,10 @@ $wactualiz = "(Febrero 04 de 2022)";
 				   pro='insumo';
 				}
 				var btn_editar_cca = document.getElementById('button_guardar');
-				if(section == 'tipo_origen')
+				if(section == 'tipo_origen') {
 					limpiarFormulario(false);
+				}
+				
 				if(JSON.stringify(obj_cargo_editado).split('').sort().join('') === JSON.stringify(this.obj_cargo).split('').sort().join('')){
 					btn_editar_cca.setAttribute('disabled', true);
 				}else{
@@ -979,8 +1075,10 @@ $wactualiz = "(Febrero 04 de 2022)";
 			document.getElementById("busc_formulario_hce_1").removeAttribute('disabled');
 			document.getElementById("wconfhce_1").removeAttribute('disabled');
 		}
+		$("#camp_tercero").autocomplete({ source: []});
 		document.getElementById('camp_tercero').value = '';
 		document.getElementById('camp_tercero').setAttribute('valor', '');
+		document.getElementById('camp_tercero').setAttribute('nombre', '');
 		document.getElementById('camp_tercero').disabled = true;
 		
 		document.getElementById("tipo_orden").innerHTML = '';
@@ -989,6 +1087,12 @@ $wactualiz = "(Febrero 04 de 2022)";
 		
 		document.getElementById("wconfhce_1").innerHTML = '';
 		document.getElementById("wccogra_1").innerHTML = '';
+		
+		/* NUEVO 2021-12-23 */
+		//document.getElementById('wfac').checked = false;
+		document.getElementById("wtemp").innerHTML = options_select_tipo_empresa;
+		document.getElementById("wemp").innerHTML = '';
+		
 		
 		document.getElementById("busc_concepto_1").value = '';
 		document.getElementById("busc_procedimiento_1").value = '';
@@ -1002,6 +1106,8 @@ $wactualiz = "(Febrero 04 de 2022)";
 		checksTipoCco.forEach(function (el) {
 			el.checked = false;
 		});
+
+		validarTerceroComodin(document.getElementById('camp_tercero').getAttribute('valor'));
 	}    
 
     function cerrarVentanaPpal()
@@ -1396,8 +1502,9 @@ $wactualiz = "(Febrero 04 de 2022)";
 			{
 				consultaAjax:     '',
 				wemp_pmla:        $('#wemp_pmla').val(),
-				parametro: parametro,
-				accion:           'traer_terceros'
+				parametro:        parametro,
+				accion:           'traer_terceros',
+				tipo_cargo:       $('input[name="radio"]:checked').val()
 			}, function (data) {
 				ArrayInfoTerceros  = eval('(' + data + ')');
 				cargar_terceros(ArrayInfoTerceros);
@@ -1409,6 +1516,7 @@ $wactualiz = "(Febrero 04 de 2022)";
 	{
 		var index			= -1;
 		var arrayTerceros	= new Array();
+		
 		for (var cod_ter in ArrayValores)
 		{
 			index++;
@@ -1427,6 +1535,7 @@ $wactualiz = "(Febrero 04 de 2022)";
 				$("#camp_tercero").attr('valor', ui.item.value);
 				$("#camp_tercero").attr('nombre', ui.item.name);
 				change_edit('tercero', 1);
+				validarTerceroComodin(document.getElementById('camp_tercero').getAttribute('valor'));
 				//cargarSelectEspecialidades(ui.item.especialidades);
 
 				//datos_desde_tercero('on');
@@ -1478,14 +1587,74 @@ $wactualiz = "(Febrero 04 de 2022)";
 		}
 	}
 	
+	function traer_especialidades()
+	{
+		if (document.getElementById("wesp").value.length>2)
+		{
+			$.post(_URL_AJAX,
+			{
+				name_hce:        $('#wesp').val(),
+				consultaAjax:     '',
+				accion:           'traer_especialidades',
+			}, function (data) {
+				cargar_especialidades(data);
+			}, 'json');
+		}
+	}
+	
+	function cargar_especialidades(ArrayValores)
+	{
+		var esp	= new Array();
+		var index		  	= -1;
+		for (var cod in ArrayValores)
+		{
+			index++;
+			esp[index] = {};
+			esp[index].value  = cod;
+			esp[index].label  = cod+'-'+ArrayValores[cod]['nombre'];
+			esp[index].nombre = ArrayValores[cod]['nombre'];
+			esp[index].valor  = cod;
+		}
+		
+		$( "#wesp" ).autocomplete({
+		
+			minLength: 	0,
+			source: 	esp,
+			select: 	function( event, ui ){
+				$("#wesp").val(ui.item.label);
+				$("#wesp").attr('valor', ui.item.valor);
+				$("#wesp").attr("nombre", ui.item.nombre);
+				//change_edit('formulario_hce', 1);
+				
+				return false;
+			}
+		});
+	}
+	
+	function  validarTerceroComodin(valor) {
+		
+		var display = valor == '*' ? 'table-row' : 'none';
+		
+		document.getElementsByClassName('especialidad')[0].style.display = display;
+		document.getElementsByClassName('especialidad')[1].style.display = display;
+	}
+	
+	/* FIN DECLARACIONES FUNCIONES PRINCIPALES */
+	
 	// elProcExc/elProcOrden: esta variable se usara en cada lugar donde se 
 	// requiera acceder al elemento inicializado con los tags
 	var elProcExc;
 	var elProcOrden;
 	var origenGeneral;//variable que indica si el llamado a change_edit es desde la carga del formulario o desde el cambio de los campos
-	$(document).ready(function(){
+	
+	$(document).ready(function() {
+		
+		/* REALIZAMO EL LLAMADO DE TODAS LA FUNCIONES DE CARGA INICIAL */
+		
 		$('[data-toggle="tooltip"]').tooltip();
 		traer_conceptos('%');
+		traer_tipos_empresa();
+		
 		inicializarDatepickerFecha();
 		elProcExc = $('#autocompleteProc').magicSuggest({          
 		  data: [],
@@ -1568,6 +1737,38 @@ $wactualiz = "(Febrero 04 de 2022)";
 			allowFreeEntries: false
         });
       });*/
+	  
+	var options_select_tipo_empresa = '';
+	function traer_tipos_empresa(temcod = null){
+		$.post(_URL_AJAX,
+		{
+			consultaAjax:     	'',
+			wemp_pmla:        	$('#wemp_pmla').val(),
+			accion:           	'traer_tipos_empresa',
+			temcod:		  		temcod,
+			
+		}, function (data){
+			if(temcod === null) {
+				options_select_tipo_empresa = data;
+			}
+			$("#wtemp").html(data);
+		},'json');
+	}
+	
+	function traer_empresas(temcod, empcod = null){
+		$.post(_URL_AJAX,
+		{
+			consultaAjax:     	'',
+			wemp_pmla:        	$('#wemp_pmla').val(),
+			accion:           	'traer_empresas',
+			temcod:		  		temcod,
+			empcod:	    		empcod
+			
+		}, function (data){
+			$("#wemp").html(data);
+			//change_edit('tipo_empresa', 1);
+		},'json');
+	}
 
 </script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet"/>
@@ -1862,7 +2063,6 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 								</select>
 							</td>
 						</tr>
-						<!-- NUEVO -->
 						<tr class='encabezadoTabla'  align="center">
 							<td>
 								Tipo Centro Costos
@@ -1875,6 +2075,30 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 								Cirug&iacute;a <input name="check_tcc" value="Cx" id="cirugia" type="checkbox" onclick="change_edit('tipo_cco', 1);" />
 							</td>
 						</tr>
+						<!-- NUEVO 2021-12-22 -->
+						<tr class='encabezadoTabla'  align="center">
+							<td>
+								Tipo Empresa
+							</td>
+							<td class="fila2" align='left' id="col_tipo_emp">
+								<select name='wtemp' id='wtemp'  onchange="traer_empresas(this.value); change_edit('tipo_empresa', 1);" style='width:100%;text-transform:uppercase;'></select>
+							</td>
+						</tr>
+						<tr class='encabezadoTabla'  align="center">
+							<td>
+								Empresa
+							</td>
+							<td class="fila2" align='left' id="col_emp">
+								<select name='wemp' id='wemp' onchange="change_edit('empresa', 1);" style='width:100%;text-transform:uppercase;'></select>
+							</td>
+						</tr>
+						<tr class='encabezadoTabla'  align="center">
+							<td>
+								Facturable
+							</td>
+							<td class="fila2 cargo_cargo" colspan="5" align="left" >
+								<input type="checkbox" name="check_wfac" id="wfac"  onclick="change_edit('facturable', 1);" checked/>
+							</td>
 						</tr>
 						<!-- FIN NUEVO -->
 						<tr id='tr_enc_det_concepto' class='encabezadoTabla fila-encabezado-1'  align='center' style="width:100%">
@@ -1910,6 +2134,14 @@ encabezado("<div class='titulopagina2'>".$nombre_tema."</div>", $wactualiz, $wlo
 							</td>
 							<td align='left' id="col_camp_chce">
 								<select name='confhce' id='wconfhce_1' oninput="traer_fhce();" onchange="change_edit('consecutivo_hce', 1);" style='width:100%;text-transform:uppercase;'></select>
+							</td>
+						</tr>
+						<tr class="encabezadoTabla fila-encabezado-2 especialidad" align='center' style="display: none;">
+							<td colspan="3" id="col_label_fhce"> Especialidad </td>
+						</tr>
+						<tr class="fila-detalle-2 especialidad" style="display: none;">
+							<td colspan="3" align='left' id="col_camp_chce">
+								<input type='text' name="wesp" id='wesp' value='' valor='' nombre='' oninput="traer_especialidades()" size='30' style="width: 100%;text-transform:uppercase;" />
 							</td>
 						</tr>
 						<tr id = "enc_label_procord" style = "display:none;">							

@@ -12,6 +12,9 @@ include_once("conex.php");
 	   de un paciente, en distintos formularios segun la estructura logica definida en la metadata de la HCE.
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   .2022-01-13
+			1. Se cambia de posicion la condicion de if ($tieneCCA) y se agrega el parametro wespecialidad para verificar si la Configuracion Cargo Automatico tiene 
+			asignado una especialidad
 	   .2020-06-23
 			1. Para los campos tipo tabla antes de insertar valida si ese campo permite repetidos (están configurados en 
 			   root_000051 - permitiRepetirCodigoCampoTablaHCE) de lo contrario los elimina (funcionamiento normal) 
@@ -2347,44 +2350,16 @@ else
 										}
 									}
 									
-									/*
-										Si existe alguna configuracion de cargo automatico para el formulario, se envia la informacion
-										al proceso de registro de cargos
-									*/
-
-									if ($tieneCCA) {
-										$ch = curl_init();
-										$data = array( 
-												'consultaAjax'					=> '',
-												'accion'						=> 'guardar_config_cargo_automatico_hce',
-												'movusu'						=> $key,
-												'whis' 							=> $whis,
-												'wing' 							=> $wing,
-												'wemp_pmla'						=> $origen,
-												'wformulario'					=> $wformulario,
-												'str_consecutivos_formulario'	=> $str_consecutivos_formulario,
-												'str_consecutivos_formulario_todos'	=> $str_consecutivos_formulario_todos
-											);
-										
-										$options = array(
-													CURLOPT_URL 			=> "localhost/matrix/cca/procesos/ajax_cargos_automaticos.php",
-													CURLOPT_HEADER 			=> false,
-													CURLOPT_POSTFIELDS 		=> $data,
-													CURLOPT_CUSTOMREQUEST 	=> 'POST',
-												);
-
-										$opts = curl_setopt_array($ch, $options);
-										$exec = curl_exec($ch);
-										curl_close($ch);
-									}
-									
 									// GRABACION EN FORMULARIO NRO 36 DE FORMULARIOS FIRMADOS
 									$query = "select count(*) FROM ".$empresa."_000036 where Firpro='".$wformulario."' and fecha_data='".$fecha."' and hora_data='".$hora."' and Firhis='".$whis."' and Firing='".$wing."' and Firusu='".$key."' ";
 									$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 									$row1 = mysql_fetch_array($err1);
+
+									$HCEROL="";
+									$meddoc = "";
+
 									if ($row1[0] == 0)
 									{
-										$HCEROL="";
 										$query = "SELECT Medtdo,Meddoc,Medreg,Medesp 
 													FROM ".$wdbmhos."_000048 
 												   WHERE Meduma = '".$key."' 
@@ -2395,6 +2370,7 @@ else
 										{
 											$row2 = mysql_fetch_array($err2);
 											$HCEROL=$row2[3];
+											$meddoc=$row2[1];
 										}
 										
 										$HCECCO="";
@@ -2441,6 +2417,42 @@ else
 											Delete_Recovery($wformulario,$key,$whis,$wing);
 										}
 									}
+
+									/*
+										Si existe alguna configuracion de cargo automatico para el formulario, se envia la informacion
+										al proceso de registro de cargos
+									*/
+
+									/* MODIFICADO 2022-01-13 */
+									
+									if ($tieneCCA) {
+										$ch = curl_init();
+										$data = array( 
+												'consultaAjax'						=> '',
+												'accion'							=> 'guardar_config_cargo_automatico_hce',
+												'movusu'							=> $key,
+												'whis' 								=> $whis,
+												'wing' 								=> $wing,
+												'wemp_pmla'							=> $origen,
+												'wformulario'						=> $wformulario,
+												'wespecialidad'						=> $HCEROL,
+												'wmeddoc'							=> $meddoc,
+												'str_consecutivos_formulario'		=> $str_consecutivos_formulario,
+												'str_consecutivos_formulario_todos'	=> $str_consecutivos_formulario_todos
+											);
+										
+										$options = array(
+													CURLOPT_URL 			=> "localhost/matrix/cca/procesos/ajax_cargos_automaticos.php",
+													CURLOPT_HEADER 			=> false,
+													CURLOPT_POSTFIELDS 		=> $data,
+													CURLOPT_CUSTOMREQUEST 	=> 'POST',
+												);
+
+										$opts = curl_setopt_array($ch, $options);
+										$exec = curl_exec($ch);
+										curl_close($ch);
+									}
+
 									if($wswfirma == 1)
 									{
 										$query = "SELECT usures  from ".$empresa."_000020 ";
