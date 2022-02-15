@@ -33,7 +33,7 @@ if (!isset($consultaAjax))
 
 <script type="text/javascript">
 
-	function cambiar_ocupacion(wemp_pmla,wbasedato,whab,wtipo, posicion){
+	function cambiar_ocupacion(wemp_pmla,wbasedato,whab,wtipo, posicion, selectsede){
 
      $.blockUI({ message:	'<img src="../../images/medical/ajax-loader.gif" >',
 						css: 	{
@@ -46,6 +46,7 @@ if (!isset($consultaAjax))
             {
                     consultaAjax:   	'cambiar_ocupacion',
 					wemp_pmla:      	wemp_pmla,
+                    $selectsede:        selectsede,
 					whab :      		whab,
 					wbasedato:			wbasedato,
                     wtipo :         	wtipo
@@ -67,7 +68,7 @@ if (!isset($consultaAjax))
 					$('#td_wocupada_'+posicion).removeAttr('bgcolor');
 					$('#td_wocupada_'+posicion).removeAttr('background-color');
 					$('#td_wocupada_'+posicion).removeAttr('style');
-					$('#td_wocupada_'+posicion).html("<input id=wocupada_"+posicion+" type=radio onclick=cambiar_ocupacion('"+wemp_pmla+"','"+wbasedato+"','"+whab+"','ocupar','"+posicion+"')>");
+					$('#td_wocupada_'+posicion).html("<input id=wocupada_"+posicion+" type=radio onclick=cambiar_ocupacion('"+wemp_pmla+"','"+wbasedato+"','"+whab+"','ocupar','"+posicion+"', '"+selectsede+"')>");
 					$('#wcancela_'+posicion).attr('checked', false);
 					}
 
@@ -88,6 +89,11 @@ if (!isset($consultaAjax))
 	 {
       window.close()
      }
+
+
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "Habitaciones_Disponibles.php?wbasedato="+$('#wbasedato').val()+"&wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+    });
 
 </script>
 <?php
@@ -133,7 +139,11 @@ else
 
     header('Content-type: text/html;charset=ISO-8859-1');
 
-    $wactualiz="Enero 28 de 2020";
+    if (is_null($selectsede)){
+       $selectsede = consultarsedeFiltro();
+    }
+
+    $wactualiz="Febrero 11 de 2022";
 
   	$key = substr($user,2,strlen($user));
 
@@ -192,6 +202,10 @@ else
 		global $wbasedato;
 		global $conex;
 		global $whora;
+		global $selectsede;
+
+		$sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+		$querySede = ( $sFiltrarSede == 'on' && $selectsede != '' ) ? " AND Ccosed = '{$selectsede}' " : "";
 
 
 	    //===================================================================================================================================================
@@ -207,6 +221,7 @@ else
 			."     AND oriced  = pacced "
 			."     AND oritid  = pactid "
 			."     AND habcco  = ccocod "
+            . $querySede
 			."     AND ccohos  = 'on' "
 			."     AND ccourg != 'on' "
 			."     AND ubiptr  = 'on' "
@@ -264,6 +279,10 @@ else
 		global $wbasedato;
 		global $conex;
 		global $whora;
+		global $selectsede;
+
+        $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+        $querySede = ( $sFiltrarSede == 'on' && $selectsede != '' ) ? " AND Ccosed = '{$selectsede}' " : "";
 
 
 	    //===================================================================================================================================================
@@ -279,6 +298,7 @@ else
 			."     AND oriced  = pacced "
 			."     AND oritid  = pactid "
 			."     AND habcco  = ccocod "
+            . $querySede
 			."     AND ccohos  = 'on' "
 			."     AND ccourg != 'on' "
 			."     AND ubialp  = 'on' "
@@ -349,167 +369,6 @@ else
 		return $nombres_pac;
 	}
 
-	//19 Diciembre 2012
-	function diferenciasUnixMatrix(){
-		global $wemp_pmla;
-		global $wbasedato;
-		global $conex;
-		global $whora;
-
-		$conexUnixPac; // conexion a unix para informacion de pacientes
-		conexionOdbc($conex, 'movhos', $conexUnixPac, 'facturacion');
-
-		$habitaciones_matrix = array();
-		$q = "  SELECT ubisan, Ubihan, habhis, Habing, pacno1, pacno2, pacap1, pacap2, ubihac, ubiptr, ubiald, habcod, Ubifad, Ubihad, Ubialp, Ubifap, Ubihap "
-			."    FROM ".$wbasedato."_000018, ".$wbasedato."_000020, root_000036, root_000037, ".$wbasedato."_000011 "
-			."   WHERE habest  = 'on' "
-			."     AND habhis  = ubihis "
-			."     AND habing  = ubiing "
-			."     AND habhis  = orihis "
-			."     AND oriori  = '".$wemp_pmla."'"
-			."     AND oriced  = pacced "
-			."     AND oritid  = pactid "
-			."     AND habcco  = ccocod "
-			."     AND ccohos  = 'on' "
-			."     AND ccourg != 'on' "
-			."     AND ubiald != 'on' "
-			."   ORDER BY ubihis ";
-		$res = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
-		$num = mysql_num_rows($res);
-
-		if( $num > 0 ){
-			while($datatmp = mysql_fetch_assoc($res)){
-				$dato['habitacion'] = strtoupper( $datatmp['habcod'] );
-				$dato['historia'] = $datatmp['habhis'];
-				$dato['paciente'] = $datatmp['pacno1']." ".$datatmp['pacno2']." ".$datatmp['pacap1']." ".$datatmp['pacap2'];
-				$dato['mensaje'] = "";
-				if( $datatmp['ubiald'] == 'on' )
-					$dato['mensaje'] = "Alta definitiva el ".$datatmp['Ubifad']." ".$datatmp['Ubihad'];
-				if( $datatmp['ubiald'] != 'on' && $datatmp['ubiptr'] == 'on' )
-					$dato['mensaje'] = 'En proceso de traslado';
-				if( $datatmp['ubiald'] != 'on' && $datatmp['Ubialp'] == 'on' )
-					$dato['mensaje'] = "Alta en proceso el ".$datatmp['Ubifap']." ".$datatmp['Ubihap'];
-
-				$habitaciones_matrix[ $datatmp['habhis'] ] = $dato;
-			}
-		}
-
-		$habitaciones_unix = array();
-		$query="SELECT 	habcod, habhis
-				  FROM 	inhab
-				 WHERE  habact = 'S'
-				   AND  habcod IS NOT NULL
-				   AND  habhis IS NOT NULL
-				 UNION
-				SELECT  '' as habcod, habhis
-				  FROM 	inhab
-				 WHERE  habact = 'S'
-				   AND  habcod IS NULL
-				   AND  habhis IS NOT NULL
-				 UNION
-				SELECT  habcod, 0 as habhis
-				  FROM 	inhab
-				 WHERE  habact = 'S'
-				   AND  habcod IS NOT NULL
-				   AND  habhis IS NULL ";
-
-		$err_o = odbc_do($conexUnixPac,$query) or die( odbc_error()." $query - ".odbc_errormsg() );
-		while (odbc_fetch_row($err_o)){
-			$datow['habitacion'] = trim( odbc_result($err_o, 'habcod') );
-			$datow['habitacion'] = strtoupper( $datow['habitacion'] );
-			$histo_unix = trim ( odbc_result($err_o, 'habhis') );
-			$datow['historia'] = $histo_unix;
-			if( $histo_unix == 0 )
-				continue;
-
-			$habitaciones_unix[ $histo_unix ] = $datow;
-		}
-
-		$encabezado = "<br><br>";
-		$encabezado.= "<table id='diferencias_unix_matrix' bgcolor='#ffffff' border=0 align='center'>";
-		$encabezado.= "<tr><td align=center colspan=6 bgcolor=#cccccc>&nbsp</td></tr>";
-		$encabezado.= "<tr class=seccion1><td align=center colspan=6><font size=5><b>DIFERENCIAS UNIX-MATRIX</b></font></td></tr>";
-		$encabezado.= "<tr><td align=center colspan=6 bgcolor=#cccccc>&nbsp</td></tr>";
-
-		$respuesta =  "<tr class='encabezadoTabla'>";
-		$respuesta.=  "<td rowspan=2 align=center><b>Historia</b></td>";
-		$respuesta.=  "<td rowspan=2 align=center><b>Paciente</b></td>";
-		$respuesta.=  "<td align='center' ><font size=4 color=yellow><b>UNIX</b></font></td>";
-		$respuesta.=  "<td>&nbsp;</td>";
-		$respuesta.=  "<td colspan=2 align='center'><font size=4 color=yellow><b>MATRIX</b></font></td>";
-		$respuesta.=  "</tr>";
-		$respuesta.=  "<tr class='encabezadoTabla'>";
-		$respuesta.=  "<td align=center><b>Habitaci&oacute;n</b></td>";
-		$respuesta.=  "<td>&nbsp;</td>";
-		$respuesta.=  "<td align=center><b>Habitaci&oacute;n</b></td>";
-		$respuesta.=  "<td><b>&nbsp;</b></td>";
-		$respuesta.=  "</tr>";
-		$i = 0;
-
-		foreach ( $habitaciones_unix as $key => $valor ){
-
-			if (array_key_exists($key, $habitaciones_matrix)) {
-				$dato_matrix = array();
-				$dato_matrix = $habitaciones_matrix[ $key ];
-
-				$habitaciones_matrix[ $key ]['visitado'] = true;
-
-				if( trim($dato_matrix['habitacion']) == trim($valor['habitacion']) )
-					continue;
-
-				(($i % 2) == 0 ) ? $wclass = "fila1" : $wclass = "fila2";
-				$respuesta.=  "<tr class='".$wclass."'>";
-				$hist = $valor['historia'];
-				$respuesta.=  "<td align='center'>".$hist."</td>";
-
-				$paciente = $dato_matrix['paciente'];
-				$respuesta.=  "<td align='left' nowrap='nowrap'>".utf8_encode($paciente)."</td>";
-
-				$respuesta.=  "<td align='left'>".$valor['habitacion']."</td>";
-				$respuesta.=  "<td bgcolor='white'>&nbsp;</td>";
-				$respuesta.=  "<td align='left'>".$dato_matrix['habitacion']."</td>";
-				$respuesta.=  "<td align='left'>".$dato_matrix['mensaje']."</td>";
-				$i++;
-				$respuesta.=  "</tr>";
-			}else{
-				(($i % 2) == 0 ) ? $wclass = "fila1" : $wclass = "fila2";
-				$respuesta.=  "<tr class='".$wclass."'>";
-				$hist = $valor['historia'];
-				if( $valor['historia'] == 0 ) $hist="&nbsp;";
-				$respuesta.=  "<td align='center'>".$hist."</td>";
-
-				$paciente = "";
-				if( $valor['historia'] != 0 )  $paciente = buscarPaciente(  $valor['historia']  );
-				$respuesta.=  "<td align='left' nowrap='nowrap'>".utf8_encode($paciente)."</td>";
-				$i++;
-				$respuesta.=  "<td align='left'>".$valor['habitacion']."</td>";
-				$respuesta.=  "<td bgcolor='white'>&nbsp;</td>";
-				$respuesta.=  "<td>&nbsp;</td>";
-				$respuesta.=  "<td>&nbsp;</td>";
-				$respuesta.=  "</tr>";
-			}
-		}
-
-		foreach ( $habitaciones_matrix as $key => $valor ){
-			if( isset( $valor['visitado'] ) == false ){
-				(($i % 2) == 0 ) ? $wclass = "fila1" : $wclass = "fila2";
-				$respuesta.=  "<tr class='".$wclass."'>";
-				$respuesta.=  "<td align='center'>".$valor['historia']."</td>";
-				$respuesta.=  "<td align='left' nowrap='nowrap'>".utf8_encode($valor['paciente'])."</td>";
-				$respuesta.=  "<td>&nbsp;</td>";
-				$respuesta.=  "<td bgcolor='white'>&nbsp;</td>";
-				$respuesta.=  "<td align='left'>".$valor['habitacion']."</td>";
-				$respuesta.=  "<td align='left'>".utf8_encode($valor['mensaje'])."</td>";
-				$respuesta.=  "</tr>";
-				$i++;
-			}
-		}
-		$hora_cantidad =  "<tr><td align=left colspan=3><font size=2><b>Hora: ".$whora."</b></font></td><td align=left colspan=4><font size=2><b>Cantidad : ".$i."</b></font></td></tr>";
-		$respuesta = $encabezado.$hora_cantidad.$respuesta."</table><br><br>";
-
-		echo $respuesta;
-	}
-
 	//Este segmento interactua con los llamados ajax
 
 //Si la variable $consultaAjax tiene datos entonces busca la funcion que trae la variable.
@@ -535,8 +394,9 @@ if (!isset($consultaAjax))
     //COMIENZA LA FORMA
     echo "<form name=habitaciones action='Habitaciones_Disponibles.php' method=post>";
 
-    echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
-    echo "<input type='HIDDEN' name='wbasedato' value='".$wbasedato."'>";
+    echo "<input type='HIDDEN' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
+    echo "<input type='HIDDEN' id='wbasedato' name='wbasedato' value='".$wbasedato."'>";
+    echo "<input type='HIDDEN' id='sede' name='selectsede' value='".$selectsede."'>";
     if (isset($wini)) echo "<input type='HIDDEN' name='wini' value='".$wini."'>";
 
     $wfecha=date("Y-m-d");
@@ -545,11 +405,13 @@ if (!isset($consultaAjax))
     echo "<HR align=center></hr>";
 
     //--> centro de costos de urgencias
-    $q  = " select Ccocod from {$wbasedato}_000011 where ccourg = 'on' and Ccoest = 'on'";
-    $rs = mysql_query( $q, $conex );
-    while( $row = mysql_fetch_assoc( $rs ) ){
-        $ccourg = $row['Ccocod'];
-    }
+    $centro_costoUr = consultarCentrocoUrgencias('',$selectsede);
+//    $q  = " select Ccocod from {$wbasedato}_000011 where ccourg = 'on' and Ccoest = 'on'";
+//    $rs = mysql_query( $q, $conex );
+//    while( $row = mysql_fetch_assoc( $rs ) ){
+//        $ccourg = $row['Ccocod'];
+//    }
+    $ccourg = $centro_costoUr->codigo;
 
     //Traigo la tabla del Centro de Costo a partir de la base de datos y del usuario
     $q = " SELECT Emptcc "
@@ -570,12 +432,16 @@ if (!isset($consultaAjax))
 
     $wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'Camilleros');
     $wcentral_camas = consultarAliasPorAplicacion($conex, $wemp_pmla, 'CentralCamas');
+
+    $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+    $querySede = ( $sFiltrarSede == 'on' && $selectsede != '' ) ? " AND Ccosed = '{$selectsede}' " : "";
 	
 	$sqlAlis = "  
 	SELECT count(*) as c 
 	  FROM ".$wbasedato."_000020, ".$wbasedato."_000011 
 	 WHERE Habest = 'on' 
 	   AND habali = 'on' 
+	   {$querySede}
 	   AND Habcco = Ccocod 
 	   AND Ccourg != 'on' ";
 	   
@@ -589,6 +455,7 @@ if (!isset($consultaAjax))
 	    ."   WHERE habali = 'off' "
 	    ."     AND habdis = 'on' "
 	    ."     AND habest = 'on' "
+        . $querySede
 	    ."     AND habcco = ccocod "
 	    ."     AND ccourg = 'off'"
         ."   UNION "
@@ -599,6 +466,7 @@ if (!isset($consultaAjax))
         ."     AND habpro = 'on' "
         ."     AND habhis = ubihis"
         ."     AND habing = ubiing"
+        . $querySede
         ."     AND habcco = ubisac"
 	    ."     AND habcco = ccocod "
 	    ."     AND ccourg = 'off'"
@@ -616,7 +484,7 @@ if (!isset($consultaAjax))
 	$res = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 	$num = mysql_num_rows($res);
 
-	encabezado("HABITACIONES DISPONIBLES",$wactualiz, "clinica");
+	encabezado("HABITACIONES DISPONIBLES",$wactualiz, "clinica", true);
 
     echo "<center><table border=0>";
     echo "<tr><td colspan=3><font size=2><b>Hora: ".$whora."</b></font></td><td align=left bgcolor=#fffffff colspan=10><font size=2><b>Cantidad de Habitaciones Disponibles:</b> ".$num." | <b>En alistamiento:</b> ".$habEnAlis." | <b>TOTAL : </b>".((int)$num+(int)$habEnAlis)."</b></td></tr>";
@@ -655,10 +523,10 @@ if (!isset($consultaAjax))
 			  $disabled = 'disabled';
              }
 	      else{
-	         echo "<td id='td_wocupada_$i' align=center><INPUT TYPE='radio' id='wocupada_$i' onclick='cambiar_ocupacion(\"$wemp_pmla\",\"$wbasedato\",\"".trim($row['Habcod'])."\",\"ocupar\", \"$i\");'></td>";
+	         echo "<td id='td_wocupada_$i' align=center><INPUT TYPE='radio' id='wocupada_$i' onclick='cambiar_ocupacion(\"$wemp_pmla\",\"$wbasedato\",\"".trim($row['Habcod'])."\",\"ocupar\", \"$i\", \"$selectsede\");'></td>";
 			 }
 
-	       echo "<td id='td_wcancela_$i' align=center><INPUT TYPE='radio' id='wcancela_$i' $disabled onclick='cambiar_ocupacion(\"$wemp_pmla\",\"$wbasedato\",\"".trim($row['Habcod'])."\",\"desocupar\", \"$i\");'></td>";
+	       echo "<td id='td_wcancela_$i' align=center><INPUT TYPE='radio' id='wcancela_$i' $disabled onclick='cambiar_ocupacion(\"$wemp_pmla\",\"$wbasedato\",\"".trim($row['Habcod'])."\",\"desocupar\", \"$i\", \"$selectsede\");'></td>";
 
 	    echo "</tr>";
 	}
@@ -683,6 +551,7 @@ if (!isset($consultaAjax))
 		    ."   WHERE habest = 'on' "
 		    ."     AND habcco = A.ccocod "
 		    ."     AND habali = 'on' "
+            . $querySede
 		    ."     AND habcco = B.ccocod "
 		    ."	   AND ccourg != 'on'"
 		    ."     AND A.ccoemp = '".$wemp_pmla."' "
@@ -695,6 +564,7 @@ if (!isset($consultaAjax))
 		    ."   WHERE habest = 'on' "
 		    ."     AND habcco = A.ccocod "
 		    ."     AND habali = 'on' "
+            . $querySede
 		    ."     AND habcco = B.ccocod "
 		    ."	   AND ccourg != 'on'"
 		    ."   ORDER BY 3, 1 ";
@@ -785,7 +655,7 @@ if (!isset($consultaAjax))
 
 	pacientesdeAlta();
 	pacientesenTraslado();
-	diferenciasUnixMatrix();//19 Diciembre
+
 
 
     echo "<br>";
@@ -795,7 +665,7 @@ if (!isset($consultaAjax))
 	echo "<br><br><br>";
 
 
-    echo "<meta http-equiv='refresh' content='60;url=Habitaciones_Disponibles.php?wbasedato=".$wbasedato."&wemp_pmla=".$wemp_pmla."&wini=".$wini."'>";
+    echo "<meta http-equiv='refresh' content='60;url=Habitaciones_Disponibles.php?wbasedato=".$wbasedato."&wemp_pmla=".$wemp_pmla."&wini=".$wini."&selectsede=".$selectsede."'>";
    }
 include_once("free.php");
 }

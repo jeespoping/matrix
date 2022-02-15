@@ -4292,8 +4292,6 @@ function modificarTrProcedimientosAgrupados($whis,$wing,$agrupados,$tipoOrdenAgr
 	
 	global $arrayParaCrearJsAgrupados;
 	
-	$ccoUrgencias = consultarCcoUrgencias();
-	
 	$consultarEstadosAyudasDx = consultarEstadoGeneralProcAgrup();
 				 
 	$query = "SELECT Ordfec,Ordtor,Ordnro,Ordimp
@@ -4400,7 +4398,7 @@ function modificarTrProcedimientosAgrupados($whis,$wing,$agrupados,$tipoOrdenAgr
 						$cantEstadosRealizados++;
 					}
 					
-					if($ccoPaciente == $ccoUrgencias)
+					if( esUrgenciasUnificado($ccoPaciente) )
 					{
 						if($fecHorModificacion > $diaAnterior)
 						{
@@ -27076,11 +27074,10 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 		$condicionAlta = " AND Detalt = 'on' ";
 	else
 		$condicionAlta = " AND Detalt != 'on' ";
-	
-	$ccoUrgencias = consultarCcoUrgencias();
+
 	
 	//Si el centro de costos del paciente es igual a urgencias agrega las ordenes con estado diferente de pendiente.
-	if($ccoPaciente == $ccoUrgencias){
+	if(esUrgenciasUnificado($ccoPaciente)){
 	
 		$q_realizados = " UNION SELECT
 				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm
@@ -27170,7 +27167,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 		if( !isset( $examenesPendientes[ $info['Ordtor'] ][ $info['Ordnro'] ] ) )
 			$examenesPendientes[ $info['Ordtor'] ][ $info['Ordnro'] ] = false;
 		
-		if( ( $ccoPaciente == $ccoUrgencias ) || $info['Eexpen'] == 'on' ){
+		if( ( esUrgenciasUnificado($ccoPaciente) ) || $info['Eexpen'] == 'on' ){
 			$examenesPendientes[ $info['Ordtor'] ][ $info['Ordnro'] ] = true;
 		}
 		
@@ -36992,8 +36989,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 	$centroCostos = "1183";
 	$criterio = strtoupper($criterio);
 	//echo $ccoPaciente;
-	$ccoUrgencias = consultarCcoUrgencias();
-	$esCcoPacienteUrgencias = $ccoPaciente == $ccoUrgencias;
+	$esCcoPacienteUrgencias = esUrgenciasUnificado($ccoPaciente) ;
 
 	$coleccion = array();
 	$consulta = "";
@@ -38347,9 +38343,8 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 
 	$esSF = $centroCostos == $centroCostosServicioFarmaceutico ? true : false;
 	$esCM = $centroCostos == $centroCostosCentralMezclas ? true : false;
-	
-	$ccoUrgencias = consultarCcoUrgencias();
-	$esCcoPacienteUrgencias = $ccoPaciente == $ccoUrgencias;
+
+	$esCcoPacienteUrgencias = esUrgenciasUnificado($ccoPaciente);
 
 	$dosis_exacta = true;
 	$articulo_pos = true;

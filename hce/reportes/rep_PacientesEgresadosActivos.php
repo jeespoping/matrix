@@ -12,7 +12,7 @@ include_once("conex.php");
  DESCRIPCION:
  Muestra los pacientes que ingresan o egresan para un servicio seleccionado o todos.
 
- */$wactualiz = "2017-05-10";
+ */$wactualiz = "2022-02-02";
 /**
 
  CAMBIOS:
@@ -58,6 +58,10 @@ $ccoRegistrosMedicos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'ccoRegis
 $pos                 = strpos($user,"-");
 $user                = $_SESSION['user'];
 $wuser               = explode("-",$user);
+
+if (is_null($selectsede)){
+    $selectsede = consultarsedeFiltro();
+}
 
 
 if (isset($_POST["accion"]) && $_POST["accion"] == "GrabarEgreso"){
@@ -177,6 +181,7 @@ function ConsultaPendiente2($wfecha_i,$wfecha_f,$wcco0){
 	global $wbasedato;
 	global $whce;
 	global $wcliame;
+	global $selectsede;
 
 	$centros_de_costo      = array();
 	$funcionariosRegistros = array();
@@ -247,7 +252,10 @@ function ConsultaPendiente2($wfecha_i,$wfecha_f,$wcco0){
 	if($wcco0 != "todos") {
 		$q.=" AND 	( F.Servicio = '".trim($wcco1[0])."'  ";
 		$q.=" OR 	F.Tipo_egre_serv = '".trim($wcco1[0])."'  )";
-	}
+	}else{
+        $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+        if ($sFiltrarSede == 'on' && $selectsede != '') $q.=" AND G.Ccosed = '".$selectsede."'";
+    }
 	if( $wcco0 != "todos" && trim($wcco1[0]) == '1179' ){
 		$q.= " AND   UB.Ubihac != '' ";
 	}
@@ -464,6 +472,7 @@ function ConsultaEgreso2($wfecha_i,$wfecha_f,$wcco0){
 	global $wemp_pmla;
 	global $conex;
 	global $wbasedato;
+	global $selectsede;
 	global $whce;
 	global $wcliame;
 	global $ccoRegistrosMedicos;
@@ -543,7 +552,10 @@ function ConsultaEgreso2($wfecha_i,$wfecha_f,$wcco0){
 	if($wcco0 != "todos") {
 		$q.=" AND 	( F.Servicio = '".trim($wcco1[0])."'  ";
 		$q.=" OR 	F.Tipo_egre_serv = '".trim($wcco1[0])."'  )";
-	}
+	}else{
+        $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+        if ($sFiltrarSede == 'on' && $selectsede != '') $q.=" AND G.Ccosed = '".$selectsede."'";
+    }
 	if( $wcco0 != "todos" && trim($wcco1[0]) == '1179' ){
 		$q.= " AND   UB.Ubihac != '' ";
 	}
@@ -728,6 +740,7 @@ function ConsultaEgreso2($wfecha_i,$wfecha_f,$wcco0){
 function ConsultaIngreso2($wfecha_i,$wfecha_f,$wcco0){
 	global $wemp_pmla;
 	global $conex;
+	global $selectsede;
 	global $wbasedato;
 	global $whce;
 
@@ -750,7 +763,10 @@ function ConsultaIngreso2($wfecha_i,$wfecha_f,$wcco0){
 
 		if($wcco0!= "todos") {
 			$q.=" AND 	F.Servicio = '".$wcco1[0]."'  ";
-		}
+		}else{
+            $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+            if ($sFiltrarSede == 'on' && $selectsede != '') $q.=" AND G.Ccosed = '".$selectsede."'";
+        }
 
 		$q.=" ORDER BY ccocod, fecha_ingreso, hora_ingreso";
 		echo "<br/>";
@@ -1049,6 +1065,7 @@ function vistaInicial(){
 	global $bandera;
 	global $tipo;
 	global $conex;
+	global $selectsede;
 	global $user;
 	global $wcliame;
 	global $ccoRegistrosMedicos;
@@ -1073,7 +1090,8 @@ function vistaInicial(){
 
 	 $titulo = "Reporte Pacientes Egresados y Activos";
      echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
-	 encabezado($titulo, $wactualiz, "clinica");
+    echo "<input type='HIDDEN' name='selectsede' id='sede' value='".$selectsede."'>";
+	 encabezado($titulo, $wactualiz, "clinica", true);
 	 echo "<br/>";
 
 	 echo "<form action='rep_PacientesEgresadosActivos.php' name='historias' method='post'>";
@@ -1092,6 +1110,8 @@ function vistaInicial(){
 						    FROM {$wcliame}_000081
 						   WHERE Perfue = '01'
 						     AND Perusu ='{$user2[1]}'";
+
+            $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
 
 			$rsAux = mysql_query( $querycco, $conex );
 			$numRs = mysql_num_rows( $rsAux );
@@ -1116,6 +1136,13 @@ function vistaInicial(){
 							 FROM ".$wbasedato."_000011
 						    WHERE {$condicionCcoPermitidos}
 							ORDER by Cconom";
+
+                    if ($sFiltrarSede == 'on' && $selectsede != '') {
+                        $q = " SELECT Ccocod,Cconom, Ccocod, Ccosei
+							 FROM ".$wbasedato."_000011
+						    WHERE {$condicionCcoPermitidos} AND Ccosed = '".$selectsede."'
+							ORDER by Cconom";
+                    }
 				}
 			}
 
@@ -1127,6 +1154,16 @@ function vistaInicial(){
 				."( SELECT Ccocod, Cconom"
 				."    FROM ".$wbasedato."_000011 G "
 				."   WHERE Ccoing = 'on' ) ORDER BY Cconom ";
+
+                if ($sFiltrarSede == 'on' && $selectsede != '') {
+                    $q = "( SELECT Ccocod, Cconom"
+                        ."    FROM ".$wbasedato."_000011 G "
+                        ."   WHERE Ccohos = 'on' AND Ccosed = '".$selectsede."' ) "
+                        ." UNION "
+                        ."( SELECT Ccocod, Cconom"
+                        ."    FROM ".$wbasedato."_000011 G "
+                        ."   WHERE Ccoing = 'on' AND Ccosed = '".$selectsede."' ) ORDER BY Cconom ";
+                }
 			}
 
 			$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -1148,6 +1185,7 @@ function vistaInicial(){
 			echo "<tr><td colspan=6 class=fila1 align=center><b> Servicio</b></td></tr>";
 			echo "<tr><td colspan= 6 align =center class=fila1>";
 			echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
+            echo "<input type='HIDDEN' id='sede' name='selectsede' value='".$selectsede."'>";
 			echo "<select name='wcco0' id='wcco0'>";
 			echo "<option value ='todos'>todos</option>";
 
@@ -1194,7 +1232,7 @@ function vistaInicial(){
 
 			$wcco1 = explode("-",$wcco0);
 			$bandera=1;
-			echo "<center><input type='button' name='btn_retornar2' value='Retornar' align='left' onclick='retornar(\"".$wemp_pmla."\",\"".$wfecha_i."\",\"".$wfecha_f."\",\"".$bandera."\", \"".$wcco1[0]."\",\"".$whisconsultada."\")'/>&nbsp; &nbsp; <input type='button' align='right' name='btn_cerrar2' value='Cerrar' onclick='cerrar_ventana()'/></center>";
+			echo "<center><input type='button' name='btn_retornar2' value='Retornar' align='left' onclick='retornar(\"".$wemp_pmla."\",\"".$wfecha_i."\",\"".$wfecha_f."\",\"".$bandera."\", \"".$wcco1[0]."\",\"".$whisconsultada."\",\"".$selectsede."\")'/>&nbsp; &nbsp; <input type='button' align='right' name='btn_cerrar2' value='Cerrar' onclick='cerrar_ventana()'/></center>";
 			echo "<br/>";
 			if( $whisconsultada ){
 				if( $tipo == "cambioDocumento" )
@@ -1214,7 +1252,7 @@ function vistaInicial(){
 				    }
 				}
 			}
-			echo "<center><input type='button' name='btn_retornar2' value='Retornar' align='left' onclick='retornar(\"".$wemp_pmla."\",\"".$wfecha_i."\",\"".$wfecha_f."\",\"".$bandera."\", \"".$wcco1[0]."\",\"".$whisconsultada."\")'/>&nbsp; &nbsp; <input type='button' align='right' name='btn_cerrar2' value='Cerrar' onclick='cerrar_ventana()'/></center>";
+			echo "<center><input type='button' name='btn_retornar2' value='Retornar' align='left' onclick='retornar(\"".$wemp_pmla."\",\"".$wfecha_i."\",\"".$wfecha_f."\",\"".$bandera."\", \"".$wcco1[0]."\",\"".$whisconsultada."\",\"".$selectsede."\")'/>&nbsp; &nbsp; <input type='button' align='right' name='btn_cerrar2' value='Cerrar' onclick='cerrar_ventana()'/></center>";
 
         }
 }
@@ -1342,9 +1380,9 @@ function solicitudesCambioDocumento(){
 		}
 	});
 
-function retornar(wemp_pmla,wfecha_i,wfecha_f,bandera,wcco0, whistoria){
+function retornar(wemp_pmla,wfecha_i,wfecha_f,bandera,wcco0, whistoria, sede){
 
-		location.href = "rep_PacientesEgresadosActivos.php?wemp_pmla="+wemp_pmla+"&wfecha_i="+wfecha_i+"&wfecha_f="+wfecha_f+"&bandera="+bandera+"&wcco0="+wcco0+"&whisconsultada="+whistoria;
+		location.href = "rep_PacientesEgresadosActivos.php?wemp_pmla="+wemp_pmla+"&wfecha_i="+wfecha_i+"&wfecha_f="+wfecha_f+"&bandera="+bandera+"&wcco0="+wcco0+"&whisconsultada="+whistoria+"&selectsede="+sede;
 }
 
 
@@ -1364,6 +1402,7 @@ function Grabardaralta(datos){
 	{
 
 		var wemp_pmla = $("#wemp_pmla").val();
+		var sede = $("#sede").val();
 		var vfila     = datos.split('-');
 		var vcampo    = 'chkdaralta_'+vfila[3];
 
@@ -1377,6 +1416,7 @@ function Grabardaralta(datos){
 		    consultaAjax:   true,
 		    accion      :  'GrabarEgreso',
 		    wemp_pmla   :   wemp_pmla,
+            selectsede  :   sede,
 		    wopcion     :   wopcion,
 		    wdatos      :   datos
 		   }, function(resultado){
@@ -1414,6 +1454,10 @@ function abrirProgramaCambioDocumento( obj, historia, nuevoTD, nuevoDocumento ){
 function ejecutar(path){
 	window.open(path,'','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=1,scrollbars=1,titlebar=0');
 }
+
+$(document).on('change','#selectsede',function(){
+    window.location.href = "rep_PacientesEgresadosActivos.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+});
 
 </script>
 </head>

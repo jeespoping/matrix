@@ -2963,8 +2963,10 @@ if (!$usuarioValidado){
 							$horParActInicial = floor(date("H" )/2) * 2;
 							$horIniAdmInicial = "$horParActInicial:00:00";
 							$ccoUrgencias = consultarCcoUrgencias();
+
+
 							//Si el centro de costos es de urgencias toma la ronda actual, sino toma la ronda par siguiente. Jonatan 5 Nov 2014
-							if($usuario->centroCostos != $ccoUrgencias && !$paciente->esDeAyudaDx ) {
+							if( !esUrgenciasUnificado($usuario->centroCostos) && !$paciente->esDeAyudaDx ) {
 								
 								$fecIniAdmInicial = strtotime(date("Y-m-d $horIniAdmInicial")) + (60*60*2);	
 								
