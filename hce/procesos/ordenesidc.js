@@ -1126,9 +1126,11 @@ function mostrarCtcProcedimientos( codExamen, cuentaExamenes ){
 	var historia = document.forms.forma.whistoria.value;
 	var ingreso = document.forms.forma.wingreso.value;
 	var fecha = document.forms.forma.wfecha.value;
+
+	var wemp_pmla = document.forms.forma.wemp_pmla.value;
 	
 	// generarCTCprocedimientos.php?wemp_pmla="+wemp_pmla+"&historia="+historia+"&ingreso="+ingreso+"&fechaKardex="+fechaKardex
-	parametros = "wemp_pmla=10&historia="+historia+"&ingreso="+ingreso+"&fechaKardex="+fecha+"&codExamen="+codExamen+"&idExamen="+cuentaExamenes;
+	parametros = "wemp_pmla="+wemp_pmla+"&historia="+historia+"&ingreso="+ingreso+"&fechaKardex="+fecha+"&codExamen="+codExamen+"&idExamen="+cuentaExamenes;
 		
 	try{
 		
@@ -4866,6 +4868,8 @@ function abrirModalHCE(){
 	
 	var nroDocumento = document.forms.forma.wcedula.value;
 	var tipoDocumento = document.forms.forma.wtipodoc.value;
+
+	var wemp_pmla = document.forms.forma.wemp_pmla.value;
 	
 	var url = "http://localhost/matrix/hce/procesos/HCE.php?accion=W2&ok=0";
 	
@@ -4874,7 +4878,8 @@ function abrirModalHCE(){
 	url += "&wtipodoc="+tipoDocumento;
 	url += "&whis="+historia;
 	url += "&wing="+ingreso;
-	url += "&wtitframe=no";
+	url += "&wtitframe=no"
+	url += "&wemp_pmla="+wemp_pmla;
 	
 	var alto = "400";
 	var ancho = "400";
