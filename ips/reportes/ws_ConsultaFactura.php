@@ -188,6 +188,8 @@
 			$responsable = isset( $paciente['responsable'] ) && !empty( $paciente['responsable'] ) ? $paciente['responsable'] : null;
 
 			$respuesta_validacion = validarResponsablePAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $responsable);
+			echo "\nrespuesta_validacion: ";
+			print_r( $respuesta_validacion );die();
 
 			if( $respuesta_validacion['esPaf'] )
 			{
@@ -346,6 +348,7 @@
 			  	FROM	cacar, caenc, famov
 			   WHERE	movhis = {$historia}
 			   	 AND	movnum = {$ingreso}
+				 AND	movfuo = '01'
 			     AND	carfue = encfue
 			     AND	cardoc = encdoc
 			     AND	carfue = movfue
@@ -628,9 +631,12 @@
 
 	function validarResponsablePAF( $conex_unix = null, $historia = null, $ingreso = null, $responsable = null)
 	{
+		global $conex;
+
 		$respuesta = array();
 		$responsablesPAF = responsablesPAF($conex, $_REQUEST['wemp_pmla']);
-
+		echo "\nresponsablesPAF: ";
+		var_dump( $responsablesPAF );die();
 		if( $responsable == null )
 		{
 			$sql = "
@@ -644,12 +650,12 @@
 				 AND	movfue = fuecod
 				 AND	fuetip = 'FA'
 			";
-		
-			$respuesta = odbc_exec($conex_unix, $sql);
 
-			if( $respuesta )
+			$response_sql = odbc_exec($conex_unix, $sql);
+
+			if( $response_sql )
 			{
-				while ($fila = odbc_fetch_array($respuesta))
+				while ($fila = odbc_fetch_array($response_sql))
 				{
 					if( in_array($fila['movcer'], $responsablesPAF) )
 					{
@@ -664,6 +670,7 @@
 				}
 			}
 		}
+		//Falta validación si existe responsable en el request
 
 		return $respuesta;
 	}
@@ -686,6 +693,7 @@
 		  SELECT	*
 			FROM	{$wcliame}_000024
 		   WHERE	Emppaf = 'on'
+		     AND	Empest = 'on'
 		";
 					
 		$result = mysqli_query($conex, $query) or die(mysqli_error($conex));
@@ -737,7 +745,6 @@
 		switch( $_REQUEST['accion'] )
 		{
 			case 'estadoFactura':
-				
 				// Se valida el metodo de petición GET o POST
 				switch( $_SERVER['REQUEST_METHOD'] )
 				{
