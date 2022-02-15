@@ -4878,7 +4878,7 @@ function abrirModalHCE(){
 	url += "&wtipodoc="+tipoDocumento;
 	url += "&whis="+historia;
 	url += "&wing="+ingreso;
-	url += "&wtitframe=no"
+	url += "&wtitframe=no";
 	url += "&wemp_pmla="+wemp_pmla;
 	
 	var alto = "400";
