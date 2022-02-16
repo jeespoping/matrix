@@ -1567,7 +1567,7 @@ function pintarConfi($cod, $var, $nom, $sub)
 function pintarAlerta($mensaje)
 {
     echo "<form name='producto3' action='cargo.php' method=post>";
-
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
     echo "<table ALIGN=CENTER width='50%'>";
     echo "<tr><td class='titulo5'>" . $mensaje . "</td></tr>";
 } 
