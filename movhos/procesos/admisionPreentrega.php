@@ -1538,7 +1538,10 @@ if (!isset($_SESSION['user'])){
 	}
 
 	//************INICIO LOG::: Log de todas las admisiones
-	$debug = true;
+	
+	$admisionpreentrega = consultarAliasPorAplicacion($conex, $wemp_pmla, 'logadmisionespreentrega');
+	
+	$debug = ($admisionpreentrega != 'off') ? true : false ;
 	if($debug){
 		$fechaLog = date("Y-m-d");
 		$horaLog = date("H:i:s");
