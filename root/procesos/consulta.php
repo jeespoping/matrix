@@ -551,6 +551,23 @@ function centroCostoUsuario($conex, $codigo_use)
     return $cco;
 }
 
+function obtenerTablaValidacionSede($conex)
+{
+
+    $ccostoSede=explode(";",$row['Mtrtvs']);
+    
+    $QuerySede = "SELECT Mtrtvs FROM root_000041 ";
+
+    $QueryCcoSede = " SELECT Cconom 
+                FROM ".$wmovhos."_000011 
+            WHERE Ccocod='".$ccostoSede['Mtrvs']."'
+            AND Ccoest='on'";
+    
+
+    $resSede = mysql_query($QueryCcoSede, $conex);
+   
+}
+
 /**
 * =========================================================PROGRAMA==========================================================================
 */
@@ -619,7 +636,7 @@ else
         pintarAlert2('NO TIENE REQUERIMIENTOS PENDIENTES');
     }
 
-    echo "<meta http-equiv='refresh' content='40;url=consulta.php?wemp_pmla=".$wemp_pmla."&para=".$para."&orden=".$orden."&orden2=".$orden2."'>";
+    echo "<meta http-equiv='refresh' content='40;url=consulta.php?wemp_pmla=".$wemp_pmla."&para=".$para."&orden=".$orden."&orden2=".$orden2."&selectsede=".$selectsede."'>";
 }
 /**
 * ===========================================================================================================================================

@@ -18,6 +18,14 @@
 //==========================================================================================================================================|
 //                  ACTUALIZACIONES
 //==========================================================================================================================================|
+// 2022-02-16		- Se realiza validacion para que cuando se escoja la sede se filtren los centros de costos correspondientes.
+//					se agrego un onchange, un script src para traernos una version de jquery en especifico para que nos sirviera el onchange
+//					posteriormente creamos dos input oculto uno con el del wemp_pmla y el otro con el valor del selector de sede
+//          		luego se realizo validacion de que si el parametro esta encendido o no para llevarnos los cambios tambien para CPA
+//					por ultimo le pasamos a la consulta que trae los centros de costo la sede de cada una.
+//					Linea de codigo: 41(script src), 64-68(onchange), 126(fecha de actualizacion), 163(encabezado lo pusimos despues del <form>)
+//					207-239 (validacion de sede en la consulta que nos trae los centros de costo).
+//==========================================================================================================================================|
 // 2021-04-27		-	Se realiza modificación al código del reporte de central de esterilización, agregando a la tabla, una nueva columna
 //						con los totales de las cantidades despachadas y una nueva fila para totalizar las cantidades solicitadas y
 //						despachadas al igual que el total del costos.
@@ -31,6 +39,7 @@ $wemp_pmla = $_GET["wemp_pmla"];
 
 <html>
 <head>
+<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
 <title>MATRIX - [REPORTE PEDIDOS A LA CENTRAL DE ESTERILIZACION]</title>
 
 <script type="text/javascript">
@@ -53,6 +62,11 @@ $wemp_pmla = $_GET["wemp_pmla"];
 	{
 		history.back(1)
 	}
+
+	$(document).on('change','#selectsede',function(){
+        window.location.href = "rep_pedidoscenest.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+    });
+
 </script>
 
 <?php
@@ -110,7 +124,7 @@ include_once("root/comun.php");
 
 $conex = obtenerConexionBD("matrix");
 
-$wactualiz="Noviembre 13 de 2019.";
+$wactualiz="Febrero 16 de 2022";
 
 $usuarioValidado = true;
 
@@ -126,7 +140,6 @@ if(empty($wuser) || $wuser == ""){
 
 session_start();
 //Encabezado
-encabezado("REGISTRO DE PEDIDOS A LA CENTRAL DE ESTERILIZACION", $wactualiz, "clinica");
 
 if (!$usuarioValidado)
 {
@@ -145,7 +158,10 @@ else
 	echo "<form name='forma' action='rep_pedidoscenest.php?wemp_pmla={$wemp_pmla}' method='post'>";
 	echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
 	echo "<input type='HIDDEN' NAME= 'tabla' value='".$tabla."'/>";
- 
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' id= 'wemp_pmla' value='".$wemp_pmla."'/>";
+
+	encabezado("REGISTRO DE PEDIDOS A LA CENTRAL DE ESTERILIZACION", $wactualiz, "clinica", TRUE);
+	
 	if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '')
 	{
 		echo "<form name='rep_pedidoscenest' action='' method=post>";
@@ -188,7 +204,16 @@ else
 		echo "<td align='CENTER' colspan='2' class='fila1'><b><font text color=#003366 size=3><B>Ccostos Solicita:</B><br></font></b><select name='pp' id='searchinput'>";
 		echo "<option>TODOS</option>";
 
-		$query = "SELECT DISTINCT r40.Reqccs,c5.Cconom,SUBSTRING(r40.Reqccs,5,8) 
+		$sFiltrarSede='off';
+
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$sFiltrarSede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+		}
+
+		if ($sFiltrarSede == 'off' || $selectsede == ''){
+
+			$query = "SELECT DISTINCT r40.Reqccs,c5.Cconom,SUBSTRING(r40.Reqccs,5,8) 
 				FROM   root_000040 r40
 							left join 
 							costosyp_000005 c5 on (SUBSTRING(r40.Reqccs,5,8) = c5.Ccocod ) 
@@ -196,10 +221,27 @@ else
 					AND   Reqtip = '13' 
 					AND   (Reqcla='42' OR Reqcla='43')
 					AND   Reqest='05'
-					AND   Reqccs !=''  ";
-			
-		$err3 = mysql_query($query,$conex);
-		$num3 = mysql_num_rows($err3);
+					AND   Reqccs !='' ";
+			$err3 = mysql_query($query,$conex);
+			$num3 = mysql_num_rows($err3);
+		}else{
+			$query = "SELECT DISTINCT r40.Reqccs,c5.Cconom,SUBSTRING(r40.Reqccs,5,8) 
+				FROM   root_000040 r40
+							left join 
+							costosyp_000005 c5 on (SUBSTRING(r40.Reqccs,5,8) = c5.Ccocod ) 
+							left join 
+							movhos_000011 c6 on (SUBSTRING(r40.Reqccs,5,8) = c6.Ccocod ) 
+				WHERE Reqcco = '(01)1082' 
+					AND   Reqtip = '13' 
+					AND   (Reqcla='42' OR Reqcla='43')
+					AND   Reqest='05'
+					AND   Reqccs !=''  
+					AND Ccosed = '".$selectsede."'";
+			$err3 = mysql_query($query,$conex);
+			$num3 = mysql_num_rows($err3);
+		}
+
+
 		$tpp=$pp;
 
 		if (isset($pp))
