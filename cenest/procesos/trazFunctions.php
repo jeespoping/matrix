@@ -1,5 +1,6 @@
 <?php
 
+include_once("root/comun.php");
 /**
  * Archivo de funciones PHP de TrazMaster.php
  * @author Julian Mejia - julian.mejia@lasamericas.com.co
@@ -8,6 +9,12 @@
 /*******
  * Funcion para construir un modal para agregar centro de costos
  * @return html
+ */
+/**
+ * ===============================================================
+ *                         MODIFICACIONES
+ * ===============================================================
+ * 17 DE FEBRERO DE 2022 - Sebastian Alvarez Barona     Se adiciona en la funcion createSelectCco() el filtro por sede.
  */
 function construirModalAddCco(){
     global $wemp_pmla;
@@ -646,16 +653,32 @@ function createSelectUsers(){
 
 /*******************************
  * Funcion que crea el select de los centros de costos asociados a la plataforma
+ * ===========================================================================
+ * Modificacion: Sebastian Alvarez B. Se adiciono el filtro por sede para que se meustren los centros de costos por sedes.
  */
-function createSelectCco(){
+function createSelectCco($sCodigoSede = NULL){
     global $conex;
     global $bdMovhos;
+    global $wemp_pmla;
+
+    $sFiltroSede='';
+   
+    if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on' && !$bIgnorarSede)
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
     $ccoBraquiterapia = '1202';
     $ccoNomBraquiterapia = 'RT-UNIDAD RADIOTERAPIA-BRAQUITERAPIA';
     $ccoCirugiaCardio = '10162';
     $ccoNomCirugiaCardio = 'CIRUGIA CARDIO';
     $braquiterapiaAux = false;
-    $queryCco = "SELECT Ccocod,Cconom FROM {$bdMovhos}_000011 WHERE Ccocen = 'on' ORDER BY Cconom ASC";
+    $queryCco = "SELECT Ccocod,Cconom FROM {$bdMovhos}_000011 WHERE Ccocen = 'on' {$sFiltroSede} ORDER BY Cconom ASC";
     $commitCco = mysql_query($queryCco, $conex) or die (mysql_errno()." - en el query: ".$queryCco." - ".mysql_error());
     while($datoempresa = mysql_fetch_assoc($commitCco))
     {
@@ -665,6 +688,49 @@ function createSelectCco(){
     }
     if (!$braquiterapiaAux)echo "<option value='".$ccoBraquiterapia."'>".$ccoBraquiterapia.' - '.$ccoNomBraquiterapia."</option>";
     echo "<option value='".$ccoCirugiaCardio."'>".$ccoCirugiaCardio.' - '.$ccoNomCirugiaCardio."</option>";
+}
+
+
+/**
+ * By: Sebastian Alvarez Barona
+ * Date: 17 de febrero de 2022
+ * Descripcion: Creo función para los centros de costos de la unidad
+ */
+function createSelectCcoUnidad($sCodigoSede = NULL){
+    global $conex;
+    global $bdMovhos;
+    global $wemp_pmla;
+
+    $sFiltroSede='';
+   
+    if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on' && !$bIgnorarSede)
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
+
+    $ccoBraquiterapia = '1202';
+    $ccoNomBraquiterapia = 'RT-UNIDAD RADIOTERAPIA-BRAQUITERAPIA';
+    $ccoCirugiaCardio = '10162';
+    $ccoNomCirugiaCardio = 'CIRUGIA CARDIO';
+    $braquiterapiaAux = false;
+    // Se consulta la movhos 11 con el campo ccocen para saber si ese CCo pertenece a la funcionalidad de central de est.
+    $queryCco = "SELECT Ccocod,Cconom FROM {$bdMovhos}_000011 WHERE Ccocen = 'on' {$sFiltroSede} ORDER BY Cconom ASC";
+    $commitCco = mysql_query($queryCco, $conex) or die (mysql_errno()." - en el query: ".$queryCco." - ".mysql_error());
+    while($datoempresa = mysql_fetch_assoc($commitCco))
+    {   
+        $codigoCco = $datoempresa['Ccocod'];    $nombreCco = $datoempresa['Cconom'];
+        echo "<option value='".$codigoCco."'>".$codigoCco.' - '.$nombreCco."</option>";
+        if ($codigoCco == $ccoBraquiterapia )$braquiterapiaAux = true;
+    }
+    if (!$braquiterapiaAux)echo "<option value='".$ccoBraquiterapia."'>".$ccoBraquiterapia.' - '.$ccoNomBraquiterapia."</option>";
+    echo "<option value='".$ccoCirugiaCardio."'>".$ccoCirugiaCardio.' - '.$ccoNomCirugiaCardio."</option>";
+                                                         
 }
 
 /*******************************
