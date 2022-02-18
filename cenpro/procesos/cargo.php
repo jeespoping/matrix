@@ -253,7 +253,7 @@ function buscarCodigoNombreCamillero(){
 	
 	// global $bdCencam;
 	
-	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camillero');
 	
 	$val = '';
 	
@@ -295,7 +295,7 @@ function crearPeticionCamillero( $origen, $motivo, $hab, $destino, $solicita, $c
 	global $bdCencam;
 	global $wemp_pmla;
 	
-	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camillero');
 	// $bdCencam = "cencam";
 	
 	$fecha = date( "Y-m-d" );
@@ -388,7 +388,7 @@ function nombreCcoCentralCamilleros( $codigo ){
 	global $bd;
 	global $wemp_pmla;
 
-	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camillero');
 	
 	$val = '';
 	
@@ -1567,7 +1567,7 @@ function pintarConfi($cod, $var, $nom, $sub)
 function pintarAlerta($mensaje)
 {
     echo "<form name='producto3' action='cargo.php' method=post>";
-
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
     echo "<table ALIGN=CENTER width='50%'>";
     echo "<tr><td class='titulo5'>" . $mensaje . "</td></tr>";
 } 
@@ -2275,7 +2275,7 @@ else
 	/******************************************************************/
 
     pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
-    //$bd = 'movhos'; 
+    $bd = 'movhos'; 
     // invoco la funcion connectOdbc del inlcude de ana, para saber si unix responde, en caso contrario,
     // este programa no debe usarse
     // include_once("pda/tablas.php");

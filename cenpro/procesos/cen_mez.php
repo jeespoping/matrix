@@ -6372,7 +6372,7 @@ else
 	pintarManuales($wusuario);
 	
 	pintarTitulo();  //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
-	$test = centroCostosCM();	echo $test;
+	//$test = centroCostosCM();	echo $test;
 	//se incializa el estado de las transaccion en 'inicio'
 	if (!isset($estado))
 	{

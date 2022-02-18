@@ -4050,7 +4050,7 @@ function encabezadoCM($wtitulo, $wversion, $wlogemp){
 	echo "<tr>";
     echo "<td width='10%' rowspan=3>&nbsp;";                        //160        102
 
-    echo "<img src='../../images/medical/root/".$wlogemp.".jpg' width=120 heigth=76>";
+    echo "<img src='../../images/medical/root/fmatrix.jpg' width=120 heigth=76>";
     echo "</td>";
     echo "<td width='90%' class='fila1'>";
     echo "<div class='titulopaginaCM' align='center'>";
@@ -4525,7 +4525,7 @@ else
 		if ((isset ($historia) and $historia != ''))
 		{
 			$ser['cod']=$servicio;
-			getCco($ser, 'C', '01');
+			getCco($ser, 'C', $wemp_pmla);
 			pintarFormulario($estado, $ccos, $historia, '', $fecha, $ingreso, $nombre, $habitacion, $tipo, $accion, 0, $numtra, $ser['apl'], $carro);
 		}
 		else
