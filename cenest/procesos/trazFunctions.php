@@ -667,7 +667,7 @@ function createSelectCco($sCodigoSede = NULL){
 	{
 		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
    
-		if($estadosede=='on' && !$bIgnorarSede)
+		if($estadosede=='on')
 		{
 			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
 			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
@@ -707,7 +707,7 @@ function createSelectCcoUnidad($sCodigoSede = NULL){
 	{
 		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
    
-		if($estadosede=='on' && !$bIgnorarSede)
+		if($estadosede=='on')
 		{
 			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
 			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";

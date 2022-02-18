@@ -76,7 +76,7 @@ include_once("conex.php");
     }
 
     $(document).on('change','#selectsede',function(){
-        window.location.href = "Consulta.php?wemp_pmla="+$('#wemp_pmla').val()+"&para="+$('#para').val()+"&orden="+$('#orden').val()+"&orden2="+$('#orden2').val()+"&selectsede="+$('#selectsede').val()
+        window.location.href = "consulta.php?wemp_pmla="+$('#wemp_pmla').val()+"&para="+$('#para').val()+"&orden="+$('#orden').val()+"&orden2="+$('#orden2').val()+"&selectsede="+$('#selectsede').val();
     });
     </script>
 
@@ -86,28 +86,61 @@ include_once("conex.php");
 
 <?php
 // ----------------------------------------------------------funciones de persitencia------------------------------------------------
-function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario)
+function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sCodigoSede = NULL)
 {
     global $conex;
     global $wbasedato;
 	global $wcostosyp;
 	global $wmovhos;
+    global $wemp_pmla;
+
+    $sFiltroSede='';
+   
+    if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on')
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
+
+    
+    echo $bdmovhos;
 
     if ($para == 'recibidos')
     {
-        $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
-                FROM    " . $wbasedato . "_000040 AS r40, usuarios
-                WHERE   (Requrc = '" . $codigo . "'
-                        OR  Reqpurs = '" . $codigo . "')
-                        AND
-                            (
-                                Reqsat = 'off'
-                                OR
-                                Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on')
-                            )
-                        AND Codigo = Reqpurs AND Reqest <> 6
-                ORDER   BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
 
+        // $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
+        //         FROM    " . $wbasedato . "_000040 AS r40, usuarios
+        //         WHERE   (Requrc = '" . $codigo . "' 
+        //                 OR  Reqpurs = '" . $codigo . "')
+        //                 AND
+        //                     (
+        //                         Reqsat = 'off'
+        //                         OR
+        //                         Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on')
+        //                     )
+        //                 AND Codigo = Reqpurs AND Reqest <> 6
+        //         ORDER   BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
+
+        $q = "SELECT Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, r40.Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs, mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)), m11.Cconom
+            FROM " . $wbasedato . "_000040 AS r40, usuarios, movhos_000011
+            WHERE   (Requrc = '" . $codigo . "' 
+                    OR Reqpurs = '" . $codigo . "')
+                    AND ( 
+                            Reqsat = 'off'
+                            OR 
+                            Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin = 'on') 
+                        )
+                    AND Codigo = Reqpurs AND Reqest <> 6
+                    AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede})
+                    ORDER   BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
+
+        // echo $q;
+         
        
           
 		// $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
@@ -395,10 +428,13 @@ function pintarVersion()
     echo "</table></br></br></br>" ;
 }
 
-function pintarTitulo($para,$wacutaliza, $titulo_requerimientos)
+function pintarTitulo($para,$wacutaliza, $titulo_requerimientos,$TablaValidacionSede = '')
 {
     global $wemp_pmla;
-    echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', TRUE);
+    
+    $incluirFiltroSede = ($TablaValidacionSede == '') ? FALSE : TRUE;
+    
+    echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', $incluirFiltroSede);
     echo "<form name='informatica' action='consulta.php?wemp_pmla=".$wemp_pmla."' method=post>";
     echo "<table ALIGN=CENTER width='50%'>";
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
@@ -551,21 +587,80 @@ function centroCostoUsuario($conex, $codigo_use)
     return $cco;
 }
 
-function obtenerTablaValidacionSede($conex)
+
+
+function obtenerTablaValidacionSede($cco_user)
 {
+    global $conex;
+    global $wemp_pmla;
 
-    $ccostoSede=explode(";",$row['Mtrtvs']);
-    
-    $QuerySede = "SELECT Mtrtvs FROM root_000041 ";
+    $bdMovhosCco = '';
 
-    $QueryCcoSede = " SELECT Cconom 
-                FROM ".$wmovhos."_000011 
-            WHERE Ccocod='".$ccostoSede['Mtrvs']."'
-            AND Ccoest='on'";
-    
-
-    $resSede = mysql_query($QueryCcoSede, $conex);
+	if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
    
+		if($estadosede=='on')
+		{
+			$QuerySede = "SELECT Mtrtvs FROM root_000041 WHERE Mtrcco = '".$cco_user."'";
+
+            $resSede = mysql_query($QuerySede, $conex);
+            if(mysql_num_rows($resSede) > 0)
+            {
+                $row = mysql_fetch_array($resSede);
+                $tvs = $row['Mtrtvs'];
+            }
+
+            if ($tvs != '' && !is_null($tvs)) 
+            {
+                $ccostoSede=explode(";",$tvs);
+
+                foreach ($ccostoSede as $empresa) {
+                    $empresacco=explode(",",$empresa);
+                    if ($empresacco[0] == 'wemp_pmla='.$wemp_pmla) {
+
+                        $bdMovhosCco = $empresacco[1];
+                        
+                    }
+                }
+            }
+
+		}
+	}
+   return $bdMovhosCco;
+
+}
+
+function obtenerEstadosRequerimientos()
+{
+    global $conex;
+    global $wemp_pmla;
+    global $wbasedato;
+
+    $QueryEstados = "SELECT 
+                        Estcod, Estnom 
+                    FROM ".$wbasedato."_000049
+                    WHERE Estest = 'on'";
+
+    $resEstados = mysql_query($QueryEstados,$conex);
+    $numEstados = mysql_num_rows($resEstados);
+
+    if ($numEstados > 0 )
+  	{
+  		for ($i=1;$i<=$numEstados;$i++)
+  		{
+  			$rowEstados = mysql_fetch_array($resEstados);
+
+  			$estados = $rowEstados['Estcod'];
+  			$estados = $rowEstados['Estnom'];
+
+			echo "<OPTION>".$rowEstados['Estcod']." - ".$rowEstados['Estnom']."</OPTION>";
+
+  		}
+  	}
+
+      return $estados;
+              
 }
 
 /**
@@ -610,8 +705,10 @@ else
       $titulo_requerimientos = $auditoria_corporativa_titulos;
     }
 
+    $TablaValidacionSede = obtenerTablaValidacionSede($cco_user);
+
     //pintarVersion();
-    pintarTitulo($para,$wacutaliza, $titulo_requerimientos);
+    pintarTitulo($para,$wacutaliza, $titulo_requerimientos,$TablaValidacionSede);
     // consulto los datos del usuario de la sesion
     $pos = strpos($user, "-");
     $wusuario = substr($user, $pos + 1, strlen($user));
@@ -626,7 +723,7 @@ else
         $orden2 = 10;
     }
 
-    $requerimientos = consultarRequerimientos($wusuario, $para, $orden, $orden2, $wusuario);
+    $requerimientos = consultarRequerimientos($wusuario, $para, $orden, $orden2, $wusuario, $selectsede);
     if (is_array($requerimientos))
     {
         pintarRequerimientos($requerimientos, $para, $orden, $orden2);
@@ -635,6 +732,7 @@ else
     {
         pintarAlert2('NO TIENE REQUERIMIENTOS PENDIENTES');
     }
+    $estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
 
     echo "<meta http-equiv='refresh' content='40;url=consulta.php?wemp_pmla=".$wemp_pmla."&para=".$para."&orden=".$orden."&orden2=".$orden2."&selectsede=".$selectsede."'>";
 }
