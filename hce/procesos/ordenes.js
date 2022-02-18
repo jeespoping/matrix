@@ -8147,7 +8147,7 @@ function utf8_decode(str_data) {
 
 function ver_ordenes_anteriores(fecha){
 
- $('#ordenes_anteriores_'+fecha).toggle("1000");
+ $('#ordenes_anteriores_'+fecha).toggle();
 
 }
 
