@@ -2035,6 +2035,69 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita ){
 	return $mensaje;
 }
 
+ function ccoCodNuclear($conex, $wmovhos)
+{
+	$val = [];
+	
+	//Consultando si es medicina nuclear
+	$sql = "SELECT Sedcco
+			  FROM ".$wmovhos."_000264
+			 WHERE Sedtor = 'A11'
+			   AND Sedest = 'on'
+			";
+
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $rows = mysql_fetch_array($res) )
+	{
+		$val = [ 'cco_sed' => $rows['Sedcco'] ];
+	}
+
+	return $val;
+}
+
+function esMedicinaNuclear($conex, $wmovhos, $wcliame, $cco_sede, $historia, $ingreso, $cup)
+{
+	$val = [];
+	
+	//Consultando si es medicina nuclear
+	$sql = "SELECT Sedtor
+			  FROM ".$wmovhos."_000264
+			 WHERE Sedcco = '".$cco_sede."'
+			   AND Sedest = 'on'
+			";
+
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $rows = mysql_fetch_array($res) ){
+
+		if ($rows['Sedtor'] == 'A11')
+		{
+			$sql = "SELECT *
+			  		  FROM ".$wcliame."_000106
+					 WHERE Fecha_data = '".date("Y-m-d")."'
+					   AND Tcarhis = '".$historia."'
+					   AND Tcaring = '".$ingreso."'
+					   AND Tcarser = '".$cco_sede."'
+					   AND Tcarprocod = '".$cup."'
+			";
+
+			$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+			$num = mysql_num_rows( $res );
+
+			if( $num > 1 )
+			{
+				$val = ['abrir_modal' => true];
+			}
+			else
+			{
+				$val = ['abrir_modal' => false];
+			}
+		}
+	}
+
+	return $val;
+}
 //Proceso de acuerdo al protocolo HL7
 if( $_POST ){
 	
@@ -2520,6 +2583,12 @@ if( $_GET ){
 				$result['indicaciones'] = consultarIndicacionesPorCup( $conex, $whce, $sede['tipoOrden'], $cup );
 				
 				$datosCita = consultarPacienteConCita( $conex, $wemp_pmla, $wmovhos, $historia, $ingreso, $paciente['tipoDocumento'], $paciente['nroDocumento'], $cup );
+
+				//Permite obtener el centro de costo de medicina nuclear si no existe cita
+				$ccoSede = isset( $datosCita['Mvcsed'] ) ? $datosCita['Mvcsed'] : ccoCodNuclear($conex, $wmovhos);
+
+				// Se valida si el estudio a realziar es de medicina nuclear
+				$es_medicina_nuclear = esMedicinaNuclear($conex, $wmovhos, $wcliame, $ccoSede, $historia, $ingreso, $cup);
 				
 				if( $datosCita )
 					$result['datosCita'] = $datosCita;
