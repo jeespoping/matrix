@@ -3229,10 +3229,9 @@ function realizarEnServicio( cmp, enServcio, externo, tipoOrden, numeroOrden, it
 	
 	var msg = "En donde se realizará el estudio <b>"+estudio+"</b>?";
 	
-	msg += "<br><br><b>Relizar en el servicio o en un servicio externo:</b> Indica que el estudio se realizará en el servicio dónde se encuentra el paciente o se remite a otra institución diferente a las sedes de AUNA";
-	// ya sea por qué el equipo requerido en la unidad interna (Cardiología, imagenlogía, laboratorio, etc ) no se encuentra disponible u otro motivo";
+	msg += "<br><br><b>Relizar en servicio o externo:</b> Indica que el estudio se realizará en el servicio dónde se encuentra el paciente o se realizará en una Institución externa ya sea por qué el equipo requerido en la unidad interna (Cardiología, imagenlogía, laboratorio, etc ) no se encuentra disponible u otro motivo";
 	
-	msg += "<br><br><b>Realizar en la unidad de Ayuda diagnóstica:</b> Indica que el estudio se realizará en una unidad interna de las sedes de la clínica (Cardiología, imagenología, etc )";
+	msg += "<br><br><b>Realizar en Ayuda diagnóstica:</b> Indica que el estudio se realizará en una unidad interna de la clínica (Cardiología, imagenlogía, laboratorio, etc )";
 	
 	function enviarRespuestaAOrdenes( resp ){
 		
@@ -3255,19 +3254,19 @@ function realizarEnServicio( cmp, enServcio, externo, tipoOrden, numeroOrden, it
 	}
 	
 	$( "<div style='color: black;font-size:12pt;height: 250px;' title='REALIZAR EN SERVICIO?' class='dvRealizarEnServicio'>"+msg+"</div>" ).dialog({
-		width		: 800,
+		width		: 700,
 		height		: 350,
 		modal		: true,
 		resizable	: false,
 		buttons	: {
-			"Relizar en el servicio o en un servicio externo": function() {
+			"Relizar en servicio o externo": function() {
 					cmp.checked = false;
 					cmp.value = 'on';
 					enviarRespuestaAOrdenes( 'on' );
 					$( this ).dialog( "close" );
 					$( cmp ).css({display:""});
 				},
-			"Realizar en la unidad de Ayuda diagnóstica": function() {
+			"Realizar en Ayuda diagnóstica": function() {
 					let __self = this;
 					jConfirm( "Esta decisión no puede ser modificada. Está seguro(a) que se realizará en la Unidad diagnóstica correspondiente?","ALERTA", function(r){
 						if(r){
@@ -15213,7 +15212,7 @@ function pintarDatosFila( $datos ){
 				echo "<td>Cantidad</td>";
 				echo "<td>Justificación</td>";
 				echo "<td>Estado</td>";
-				echo "<td>Realizar en Servicio?</td>"; // 
+				echo "<td>Realizar en Servicio?</td>";
 				echo "<td>Toma de Muestra</td>";
 				echo "<td style='display:none;'>Bitacora de Gestiones</td>";
 				echo "</tr>";
