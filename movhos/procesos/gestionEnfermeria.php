@@ -3258,6 +3258,7 @@ function realizarEnServicio( cmp, enServcio, externo, tipoOrden, numeroOrden, it
 		height		: 350,
 		modal		: true,
 		resizable	: false,
+		position	: 'center',
 		buttons	: {
 			"Relizar en servicio o externo": function() {
 					cmp.checked = false;
@@ -3287,8 +3288,8 @@ function realizarEnServicio( cmp, enServcio, externo, tipoOrden, numeroOrden, it
 	});
 	
 	$( ".dvRealizarEnServicio" ).parent().css({
-		left: ( $( window ).width() - 700 )/2,
-		top : ( $( window ).height() - 350 )/2,
+		// left: ( $( window ).width() - 700 )/2,
+		// top : ( $( window ).height() - 350 )/2,
 	});
 	
 	$( ".ui-dialog-titlebar-close" ).css({

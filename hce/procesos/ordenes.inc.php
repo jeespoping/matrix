@@ -10496,7 +10496,7 @@ function consultarCcoUrgencias(){
     );
 
     $string = str_replace(
-        array('ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
+        array('ò', 'ö', 'ô', 'Ó', 'ÿ', 'Ö', 'Ô'),
         array('o', 'o', 'o', 'O', 'O', 'O', 'O'),
         $string
     );
@@ -28106,6 +28106,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 					
 					if( $numConOferta == 0 ){
 						$detalle->descripcionEstadoExterno = "No ofertado";
+						$detalle->solicitaUsuarioTomaMuestra = !$detalle->esCupOfertado ? true : $detalle->solicitaUsuarioTomaMuestra;
 					}
 					else{
 						$detalle->esCupOfertado = true;
@@ -28120,7 +28121,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			}
 
 			// $detalle->solicitaUsuarioTomaMuestra = $detalle->esCupOfertado ? true : $detalle->solicitaUsuarioTomaMuestra;
-			$detalle->solicitaUsuarioTomaMuestra = !$detalle->esCupOfertado ? true : $detalle->solicitaUsuarioTomaMuestra;
+			//$detalle->solicitaUsuarioTomaMuestra = !$detalle->esCupOfertado ? true : $detalle->solicitaUsuarioTomaMuestra;
 
 			
 			//Si es ayuda hospitalaria el centro de costos es hospitalario
