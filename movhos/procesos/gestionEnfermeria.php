@@ -15882,7 +15882,7 @@ function pintarDatosFila( $datos ){
 						$preuntaPorRealizarEnServicio = false;
 						if( $puedeMarcarRealizarServicio )
 						{
-							if( $wpreguntarRealizaEnservicio || $wrealizadoEnPiso )
+							if( $wpreguntarRealizaEnservicio && !$wrealizadoEnPiso )
 							{	
 								$preuntaPorRealizarEnServicio = true;
 								echo "<input type='checkbox' value='' onclick='realizarEnServicio( this, ".( $wrealizarEnServicio ? 'true' : 'false' ).",".( $wrealizarExterno ? 'true' : 'false' ).",\"".$wexam."\",\"".$wordennro."\",\"".$wordite."\",\"".$valueDatos->historia."\",\"".$valueDatos->ingreso."\",\"".$valueProcedimientos[ 'Descripcion' ]."\" )'>";

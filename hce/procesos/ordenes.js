@@ -148,15 +148,17 @@ function marcarCambioRealizarEnServicio( cmp, enServcio, externo, indice, contex
 	
 	var msg = "En donde se realizará el estudio <b>"+$( "#wnmexamen"+contexamen ).val()+"</b>?";
 	
-	msg += "<br><br><b>Relizar en servicio o externo:</b> Indica que el estudio se realizará en el servicio dónde se encuentra el paciente o se realizará en una Institución externa ya sea por qué el equipo requerido en la unidad interna (Cardiología, imagenlogía, laboratorio, etc ) no se encuentra disponible u otro motivo";
+	msg += "<br><br><b>Relizar en el servicio o en un servicio externo:</b> Indica que el estudio se realizará en el servicio dónde se encuentra el paciente o se remite a otra institución diferente a las sedes de AUNA";
+	// ya sea por qué el equipo requerido en la unidad interna (Cardiología, imagenlogía, laboratorio, etc ) no se encuentra disponible u otro motivo";
 	
-	msg += "<br><br><b>Realizar en Ayuda diagnóstica:</b> Indica que el estudio se realizará en una unidad interna de la clínica (Cardiología, imagenlogía, laboratorio, etc )";
+	msg += "<br><br><b>Realizar en la unidad de Ayuda diagnóstica:</b> Indica que el estudio se realizará en una unidad interna de las sedes de la clínica (Cardiología, imagenología, etc )";
 	
-	$( "<div style='color: black;font-size:12pt;height: 250px;' title='REALIZAR EN SERVICIO?' class='dvRealizarEnServicio'>"+msg+"</div>" ).dialog({
-		width		: 600,
-		height		: 400,
+	$( "<div style='color: black;height: 250px;' title='REALIZAR EN SERVICIO?' class='dvRealizarEnServicio'>"+msg+"</div>" ).dialog({
+		width		: 800,
+		height		: 350,
 		modal		: true,
 		resizable	: false,
+		position	: 'center',
 		buttons	: {
 			"Relizar en servicio o externo": function() {
 					cmp.checked = true;
@@ -164,9 +166,14 @@ function marcarCambioRealizarEnServicio( cmp, enServcio, externo, indice, contex
 					$( this ).dialog( "close" );
 				},
 			"Realizar en Ayuda diagnóstica": function() {
-					cmp.checked = true;
-					cmp.value = 'off';
-					$( this ).dialog( "close" );
+					let __self = this;
+					jConfirm( "Esta decisión no puede ser modificada. Está seguro(a) que se realizará en la Unidad diagnóstica correspondiente?","ALERTA", function(r){
+						if(r){
+							cmp.checked = true;
+							cmp.value = 'off';
+							$( __self ).dialog( "close" );
+						}
+					});
 				},
 			"Cancelar": function() {
 					cmp.checked = false;

@@ -2082,6 +2082,7 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 				 WHERE a.id in(".implode( ",", $ids ).")
 				   AND b.Dettor = a.Ordtor
 				   AND b.Detnro = a.Ordnro
+				   AND b.Detnof = 'off'
 			";
 	
 		$resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -2093,6 +2094,7 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 				 WHERE a.id in(".implode( ",", $ids ).")
 				   AND b.Dettor = a.Ordtor
 				   AND b.Detnro = a.Ordnro
+				   AND b.Detnof = 'off'
 			";
 	
 		$resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -27847,7 +27849,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			
 			if( !$permiteModEst ){
 				$info['Ordurl'] = '';
-				$info['Deteex'] = '';
+				//$info['Deteex'] = '';
 				$info['Detjoc'] = '';
 				$info['Detfme'] = '0000-00-00';
 				$info['Dethme'] = '00:00:00';
@@ -27940,7 +27942,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			//Si el esado externo (Estado que viene por interoperabilidad) es diferente a vacio significa que ya se ha enviado los mensajes hl7 correspondientes y por tanto
 			//no requiere autorizacion ni preguntar a la enfermera si se realiza en piso o no
 			//por que ya se ha enviado el estudio a realizarse
-			if( !empty( $detalle->estadoExterno ) || ( !$wdetalleEstado['esEstadoPendiente'] && !$wdetalleEstado['esEstadoAutorizado'] ) ){
+			if( !empty( $detalle->estadoExterno ) || ( !$wdetalleEstado['esEstadoPendiente'] && !$wdetalleEstado['permiteInteroperabilidad'] ) ){
 				$detalle->wrealizarEnServicio 	= false;
 				$detalle->wrealizarExterno 		= false;
 				$detalle->wrequiereAutorizacion = false;
@@ -34971,6 +34973,48 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 	// - $consecutivoExamen corresponde al codigo del examen de la 17
 	//echo ".......consecutivoExamen: \n".$consecutivoExamen." .... consecutivoOrden:".$consecutivoOrden." \n ........ codigoExamen: ".$codigoExamen;
 	datosHL7( $conexion, $wbasedato, $whce, $historia, $ingreso, $consecutivoExamen, $consecutivoOrden, $codigoExamen, $numeroItem, $estadoExamen, $usuario );
+
+	/************************************************************************************
+	 * Febrero 19 de 2022
+	 * Env?a mensaje HL7
+	 ************************************************************************************/
+	if( !empty( $enviarMsgHL7 ) && $enviarMsgHL7 ){
+		
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
+
+		$auditoria->historia 	= $historia;
+		$auditoria->ingreso 	= $ingreso;
+		$auditoria->descripcion = $codigoExamen."-".$consecutivoOrden."-".$numeroItem.",".$consecutivoExamen.",".str_replace( "_", " ", $nombreExamen ).",".$usuario;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= obtenerMensaje( "NO_REALIZA_EN_SERVICIO" );
+		$auditoria->seguridad 	= $usuario;
+		$auditoria->idOriginal 	= '';
+
+		registrarAuditoriaKardex( $conexion, $wbasedato, $auditoria );
+	}
+	/************************************************************************************/
+	
+	/************************************************************************************
+	 * Febrero 19 de 2022
+	 * Realiza en externo
+	 ************************************************************************************/
+	if( !empty( $respuestaRealizarEnServicio ) && $respuestaRealizarEnServicio == 'on' ){
+		
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
+
+		$auditoria->historia 	= $historia;
+		$auditoria->ingreso 	= $ingreso;
+		$auditoria->descripcion = $codigoExamen."-".$consecutivoOrden."-".$numeroItem.",".$consecutivoExamen.",".str_replace( "_", " ", $nombreExamen ).",".$usuario;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= obtenerMensaje( "REALIZA_EN_PISO" );
+		$auditoria->seguridad 	= $usuario;
+		$auditoria->idOriginal 	= '';
+
+		registrarAuditoriaKardex( $conexion, $wbasedato, $auditoria );
+	}
+	/************************************************************************************/
 	
 	liberarConexionBD($conexion);
 
