@@ -58,7 +58,7 @@ $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 $wbasedato = $institucion->baseDeDatos;
 $wentidad = $institucion->nombre;
 
-$wactualiz = "Octubre 26 de 2009";
+$wactualiz = "Febrero 21 de 2022";
 encabezado("REPORTE DE OPORTUNIDAD EN DISPENSACION", $wactualiz, "clinica");
 
 $wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
@@ -174,7 +174,9 @@ else{
 		$historias = 0;
 		$ccos = array();
 		
-		if( $ccoorigen == '1050' ){
+		$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+
+		if( $ccoorigen == $ccoSF ){
 			$origen = 'SF';
 		}
 		else{
@@ -280,6 +282,8 @@ else{
 		}
 		else{
 					
+			$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+
 			$sql = "SELECT 
 						e.hora_data, 
 						MIN( kadhdi ) , 
@@ -315,7 +319,7 @@ else{
 						AND kauing = kading
 						AND kaumen IN ( 'Articulo creado', 'Articulo actualizado' )
 						AND SUBSTRING( e.seguridad FROM INSTR( e.seguridad, '-' ) +1 ) = f.empleado
-						AND f.cc = '1051'
+						AND f.cc = '{$ccoCM}'
 						AND e.fecha_data = a.kadfec
 					GROUP BY habcco, a.kadfec, kadhis";
 		}

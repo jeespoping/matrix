@@ -620,7 +620,7 @@ function validarHistoria( $conex, $wbasedato, $historia, &$ingreso, &$datosPacie
  * [][]				datos individuales articulos
  ************************************************************************************************************/
 function generarKardex( $conex, $wbasedato, $wcenmez, $historia, $datosArticulos ){
-
+	global $wemp_pmla;
 	global $usuario;
 	
 	if( empty( $usuario->codigo ) ){ 
@@ -713,8 +713,9 @@ function generarKardex( $conex, $wbasedato, $wcenmez, $historia, $datosArticulos
 				//Si el articulo no existe lo creo
 				if( !$existeArticulo ){
 					
+					$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 					//Consulto el medicamento en el kardex
-					$resArticulo = consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$datosArticulos[ $i ][ 'Conart' ],'','%','1050','*',$tipoProtocolo, '');
+					$resArticulo = consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$datosArticulos[ $i ][ 'Conart' ],'','%', $ccoSF,'*',$tipoProtocolo, '');
 				
 					if( !empty( $resArticulo ) ){
 						
@@ -1090,7 +1091,7 @@ function cargarArticulos( $conex, $wbasedato, $historia, $articulo, $fechaKardex
 	
 	validarHistoria( $conex, $wbasedato, $historia, &$ingreso, &$datosPacientes, &$activo );
 	
-	$ccoOrigen = '1050';
+	$ccoOrigen = $ccoSF;
 	$fecha = date( "Y-m-d" );
 	
 	if( $activo ){

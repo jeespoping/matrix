@@ -145,12 +145,16 @@ else
       {
 	   global $conex;
 	   global $wbasedato;
+	   global $wemp_pmla;
+
+	   $ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+	   $ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 	        
 	   $wdos_apl=0;    //Dosis
 	   
 	   $q = " SELECT deffra, deffru "
 	       ."   FROM ".$wbasedato."_000059 "
-	       ."  WHERE defcco in ('1050','1051')"
+	       ."  WHERE defcco in ('{$ccoSF}','{$ccoCM}')"
 	       ."    AND defart = '".$wart."'"
 	       ."    AND defest = 'on' ";
 	   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -597,4 +601,12 @@ else
 	   echo "</table></center>";
 }
 include_once("free.php");
+
+/**
+ * Se parametriza el centro de costos 1050 y 1051
+ * @by: Marlon Osorio
+ * @date: 2022/02/21
+ * 
+*/
+
 ?>

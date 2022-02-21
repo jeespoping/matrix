@@ -35,7 +35,7 @@ else
   $conex = obtenerConexionBD("matrix");
   
                                                    // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Octubre 4 de 2012";                   // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="Febrero 21 de 2022";                   // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                               // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
             
 //=========================================================================================================================================\\
@@ -1739,7 +1739,7 @@ else
 											echo "<td class=".$walta_tras." align=center><A href='cargos.php?emp=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&cco[cod]=".$ccoDisSF."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
 										else
 										    if ($wopcion!="6" and $wopcion!="7")  //Con Antibioticos SIN Confirmar no debe salir Cargar
-											  echo "<td class=".$walta_tras." align=center><A href='../../".$wcenmez."/procesos/cargos.php?wbasedato=lotes.php&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
+											  echo "<td class=".$walta_tras." align=center><A href='../../".$wcenmez."/procesos/cargos.php?wbasedato=lotes.php&emp=".$wemp_pmla."&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
 											else
 												echo "<td align='center' bgcolor='#ffffff'>&nbsp;</td>"; 
 									}

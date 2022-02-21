@@ -2624,8 +2624,10 @@ function pintarTitulo($tipo)
  */
 function pintarBusqueda($consultas, $forcon, $tipo)
 {
+	global $emp;
 	echo "<table border=0 ALIGN=CENTER width=90%>";
 	echo "<form name='producto2' action='cargos.php' method=post>";
+	echo "<input type='hidden' name='emp' id='emp' value='".$emp."'>";
 	echo "<tr><td class='titulo3' colspan='3' align='center'>Consulta: ";
 	echo "<select name='forcon' class='texto5' onchange='enter7()'>";
 	echo "<option>".$forcon."</option>";
@@ -2725,7 +2727,9 @@ function pintarBusqueda($consultas, $forcon, $tipo)
  */
 function pintarFormulario($estado, $ccos, $numtra, $tipo, $historia, $destinos, $fecha, $ingreso, $nombre, $habitacion, $crear, $numcan)
 {
+	global $emp;
 	echo "<form name='producto3' action='cargos.php' method=post>";
+	echo "<input type='hidden' name='emp' id='emp' value='".$emp."'>";
 	echo "<input type='hidden' name='tipo' value='".$tipo."'>";
 	echo "<tr><td colspan=3 class='titulo3' align='center'><INPUT TYPE='submit' NAME='NUEVO' VALUE='Nuevo' class='texto5' ></td></tr>";
 	echo "</table></form>";

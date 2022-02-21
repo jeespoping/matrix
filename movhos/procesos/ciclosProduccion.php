@@ -59,6 +59,7 @@ include_once("conex.php");
  /************************************************************************************************************************************************************************
   * Modificaciones:
   * 
+  * Febrero 21 de 2022 Marlon Osorio. - Se parametriza el centro de costos 1051.
   * Julio 11 de 2012 Viviana Rodas.  Se agrega el llamado a las funciones 
   * consultaCentrosCostos que hace la consulta de los centros de costos 
   * de un grupo seleccionado y dibujarSelect que dibuja el select con los 
@@ -235,7 +236,7 @@ function registrarTipoProducto( $conex, $wcenmez, $codigo, $descripcion, $codifi
  * @return unknown_type
  */
 function crearInsumo( $conex, $wcenmez, $wbasedato, $articulo, $nombreComercial, $nombreGenerico, $unidad, $conversion ){
-	
+	global $wemp_pmla;
 	$val = true;
 	
 	//Consulto si presentacion del aritculo
@@ -271,8 +272,10 @@ function crearInsumo( $conex, $wcenmez, $wbasedato, $articulo, $nombreComercial,
 		$existencias = 0;
 		$tiempoVencimiento = 24*60;
 		$costo = 0;
-		
-		registrarPresentacion( $conex, $wcenmez, $insumo, $articulo, '1051', $conversion, $existencias, $tiempoVencimiento, $unidad, $costo );
+
+		$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+
+		registrarPresentacion( $conex, $wcenmez, $insumo, $articulo, $ccoCM, $conversion, $existencias, $tiempoVencimiento, $unidad, $costo );
 		
 		$via = '';
 		$fechaCreacion = date( "Y-m-d" );
@@ -2443,6 +2446,7 @@ function grabarMovimientoArticulo( campo ){
 
 				var wbasedato = document.getElementById( "wbasedato" ).value;
 				var fecha = tablaPrincipal.rows[ tipoArticuloSelecconado ].cells[ tablaPrincipal.rows[ tipoArticuloSelecconado ].cells.length-1 ].innerHTML;	//La fecha por tipo de articulos
+				var wemp_pmla = $("#wemp_pmla").val();
 
 				//creando arrya de cco
 				/******************************************************************************
@@ -2464,6 +2468,7 @@ function grabarMovimientoArticulo( campo ){
 							 +"&canSinAprovechamiento="+canSinAprovechamiento
 							 +"&cantidad="+cantidad
 							 +"&ccos="+ccos
+							 +"&wemp_pmla="+wemp_pmla
 							;
 
 				var resultado = consultasAjax( "POST", "ciclosProduccion.php", parametros, false, '' );
@@ -2584,10 +2589,11 @@ function grabarEncabezadoTipo( campo ){
 		var fecha = tablaPrincipal.rows[ tipoArticuloSelecconado ].cells[ tablaPrincipal.rows[ tipoArticuloSelecconado ].cells.length-1 ].innerHTML;
 //		var modalidad = document.getElementById( "slModalidad" ).options[ document.getElementById( "slModalidad" ).selectedIndex ].text.substr( 0, 1 )
 		var modalidad = document.getElementById( "slModalidadInicial" ).value;
+		var wemp_pmla = $("#wemp_pmla").val();
 	
 		//$fecha, $ronda, $tipoArticulo
 		
-		parametros = "opcionAjax=2&fecha="+fecha+"&ronda="+ronda+"&tipoArticulo="+tipoArticulo+"&wbasedato="+wbasedato+"&modalidad="+modalidad;
+		parametros = "opcionAjax=2&fecha="+fecha+"&ronda="+ronda+"&tipoArticulo="+tipoArticulo+"&wbasedato="+wbasedato+"&modalidad="+modalidad+"&wemp_pmla="+wemp_pmla;
 
 		var resultado = consultasAjax( "POST", "ciclosProduccion.php", parametros, false, '' );
 
@@ -2653,7 +2659,7 @@ window.onload = function(){
 //echo date("Y-m-d H:i:s");
 echo "<form method=post>";
 	
-	$wactualiz = " Julio 11 de 2012";
+	$wactualiz = " Febrero 21 de 2022 ";
 
 	include_once("root/comun.php");
 

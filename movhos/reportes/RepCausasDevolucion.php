@@ -137,13 +137,17 @@ function consultarCentrosCostos(){
 function consultarUsuariosQueRecibenDevoluciones(){
 	global $wbasedato;
 	global $conex;
+	global $wemp_pmla;
+
+	$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+	$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 	
 	$q = "SELECT 
 			Codigo, Descripcion 
 		FROM 
 			usuarios
 		WHERE 
-			Ccostos IN ('1050','1051')
+			Ccostos IN ('{$ccoSF}','{$ccoCM}')
 			AND Activo = 'A'
 		ORDER BY Descripcion";
 	
@@ -374,6 +378,13 @@ if (!isset($_SESSION['user'])){
 	}
 	liberarConexionBD($conex);
 }
+/**
+ * Se parametrizo el centro de costos 1050 y 1051
+ * @by: Marlon Osorio
+ * @date: 2022/02/21
+ * 
+*/
+
 ?>
 </body>
 </html>

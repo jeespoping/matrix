@@ -1561,8 +1561,11 @@ include_once("root/comun.php");
 
 
 
-$serviciofarmaceutico = '1050';
-$centraldemezclas = '1051';
+$serviciofarmaceutico = ccoUnificadoSF();
+$centraldemezclas = ccoUnificadoCM();
+
+
+
 
 echo "<center><table border='0' width='270'>";
 

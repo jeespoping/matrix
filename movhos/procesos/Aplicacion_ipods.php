@@ -279,6 +279,8 @@ include_once("conex.php");
 //=============================================================================================================================================\\
 //M O D I F I C A C I O N E S                                                                                                                  \\
 //=============================================================================================================================================\\
+// Enero 11 del 2022 Marlon Osorio	 -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico
+//=============================================================================================================================================\\
 // Diciembre 29 del 2021  - Se le adiciona una consulta a la función query_articulos_entrega() para que cuando un articulo sea entregado aparezca 
 //							en aplicación, de lo contrario que no aparezca.
 //=============================================================================================================================================\\
@@ -502,7 +504,7 @@ else
   $wusuario=trim($wuser1[1]);
 
      	                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Diciembre 29 de 2021";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="Febrero 20 de 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
   encabezado("APLICACION DE MEDICAMENTOS",$wactualiz, "clinica");
@@ -2571,6 +2573,9 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
     {
 	 global $conex;
 	 global $wbasedato;
+	 global $wemp_pmla;
+
+	 $ccoSF = ccoUnificadoSF();
 
 	 //=======================================================================================================
 	 //Busco si el articulo hace parte del stock     Febrero 8 de 2011
@@ -2578,7 +2583,7 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 	 $q = " SELECT COUNT(*) "
 	     ."   FROM ".$wbasedato."_000059 "
 	     ."  WHERE (defcco = '".trim($wcco)."' "
-		 ."     OR  defcco = '1050') "
+		 ."     OR  defcco = '{$ccoSF}') "
 	     ."    AND  defart = '".$wart."'"
 	     ."    AND  defest = 'on' "
 		 ."    AND  defipo = 'on' ";
@@ -3717,8 +3722,9 @@ function esLactarioEntregado( $conex, $wbasedato, $codart, $wfecha_actual, $whis
 
 					$wcco1=explode("-",$wcco);
 
+					$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
-					$dosVar = consultarDosisVariable( $conex, $wbasedato, $row[1], '1050', $wcco1 );
+					$dosVar = consultarDosisVariable( $conex, $wbasedato, $row[1], $ccoSF, $wcco1 );
 
 					//===============================================================
 					//Paso la hora a formato de 12 horas
