@@ -5281,7 +5281,7 @@ else
 		if ((isset ($historia) and $historia != ''))
 		{
 			$ser['cod']=$servicio;
-			getCco($ser, 'C', '01');
+			getCco($ser, 'C', $wemp_pmla);
 			pintarFormulario($estado, $ccos, $historia, '', $fecha, $ingreso, $nombre, $habitacion, $tipo, $accion, 0, $numtra, $ser['apl'], $carro);
 		}
 		else

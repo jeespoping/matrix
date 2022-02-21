@@ -2303,7 +2303,7 @@ else
         $exp = explode('-', $cco);
         $centro['cod'] = $exp[0];
         $centro['neg'] = false;
-        getCco($centro, $tipTrans, '01');
+        getCco($centro, $tipTrans, $wemp_pmla);
         $pac['his'] = $historia;
         $pac['ing'] = $ingreso;
         $cns = 0;
@@ -2312,7 +2312,7 @@ else
         $art['ubi'] = 'US';
         $serv['cod'] = $servicio;
         $art['ser'] = $servicio;
-        getCco($serv, $tipTrans, '01');
+        getCco($serv, $tipTrans, $wemp_pmla);
         
         $hab = $nom = '';
         

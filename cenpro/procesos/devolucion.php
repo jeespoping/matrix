@@ -865,7 +865,7 @@ else
     if (true || $conex_o != 0)
     {
         $tipTrans = 'D'; //segun ana es una transaccion de devolucion
-        $emp = '01';
+        //$emp = '01';
         $aprov = true; //siempre es por aprovechamiento;
         $exp = explode('-', $cco);
         $centro['cod'] = $exp[0];
