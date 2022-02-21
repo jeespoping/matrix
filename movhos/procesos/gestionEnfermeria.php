@@ -15736,8 +15736,8 @@ function pintarDatosFila( $datos ){
 							//Solo ocurre si el tipo de la orden es ofertado por Laboratorio
 							$permiteModificarEstado = true;
 
-							if( !$permiteModEst  )
-							{
+							//if( !$permiteModEst  )
+							//{
 								$sql = "SELECT Valtoc, Valcoc, Valeoc
 										  FROM ".$wbasedato."_000267 a
 										 WHERE Valtor = '".$wexam."'
@@ -15772,7 +15772,7 @@ function pintarDatosFila( $datos ){
 										}
 									}
 								}
-							}
+							//}
 							
 							// if( empty( $westado_externo ) ){
 							if( strlen( $westado_externo ) == 0 ){
