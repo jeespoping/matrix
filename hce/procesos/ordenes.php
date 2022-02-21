@@ -4371,8 +4371,8 @@ if (!$usuarioValidado){
 								/****************************************************************************************************
 								 * Si no permite cancelar examen, se impide modificar el estado cancelar
 								 ****************************************************************************************************/
-								$permiteModificarEstado = $examen->permiteModificarEstado( $conex, $wbasedato );
-								$permiteCancelar 		= $examen->permiteCancelarExamen( $conex, $wbasedato );
+								$permiteModificarEstado = $examen->permiteModificarEstado( $conex, $wbasedato, $wbasedatohce );
+								$permiteCancelar 		= $examen->permiteCancelarExamen( $conex, $wbasedato, $wbasedatohce );
 								
 								if( $examen->esCupOfertado ){
 									$permiteModificarEstado = false;

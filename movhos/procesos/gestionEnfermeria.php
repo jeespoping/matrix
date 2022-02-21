@@ -15740,8 +15740,10 @@ function pintarDatosFila( $datos ){
 							//{
 								$sql = "SELECT Valtoc, Valcoc, Valeoc
 										  FROM ".$wbasedato."_000267 a
+										  INNER JOIN ".$whce."_000015 b ON (a.Valtor = b.Codigo)
 										 WHERE Valtor = '".$wexam."'
 										   AND Valest = 'on'
+										   AND b.Tipiws = 'on'
 										";
 
 								$resPME = mysql_query( $sql, $conex )  or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );

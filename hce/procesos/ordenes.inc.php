@@ -934,7 +934,7 @@ class ExamenHCEDTO{
 	 * la interoperabilidad con laboratorio según el estado en que se encuentre 
 	 * en laboratorio (estado externo)
 	 ************************************************************************************/
-	public function permiteCancelarExamen( $conex, $wbasedato ){
+	public function permiteCancelarExamen( $conex, $wbasedato, $wbasedatohce = ''){
 		
 		$val = false;
 		
@@ -956,7 +956,7 @@ class ExamenHCEDTO{
 		
 		// if( $num > 0 ){
 			
-		$permiteModificarEstado = $this->permiteModificarEstado( $conex, $wbasedato );
+		$permiteModificarEstado = $this->permiteModificarEstado( $conex, $wbasedato, $wbasedatohce);
 		
 		if( !$permiteModificarEstado ){
 			
@@ -981,12 +981,17 @@ class ExamenHCEDTO{
 	 * Este método indica si a un examen se le puede modificar el estado una vez comience
 	 * la interoperabilidad con laboratorio
 	 ************************************************************************************/
-	public function permiteModificarEstado( $conex, $wbasedato ){
+	public function permiteModificarEstado( $conex, $wbasedato, $wbasedatohce = ''){
 		
 		global $wemp_pmla;
 		
 		if( empty($wemp_pmla) )
 			$wemp_pmla = '01';
+
+		if($wbasedatohce == '')
+		{
+			$wbasedatohce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+		}
 		
 		$val = true;
 		
@@ -996,8 +1001,10 @@ class ExamenHCEDTO{
 			//o en la tabla de tipos ofertados (movhos_000267 para laboratorio)
 			$sql = "SELECT Valtor
 					  FROM ".$wbasedato."_000267 a
+					  INNER JOIN ".$wbasedatohce."_000015 b ON (a.Valtor = b.Codigo)
 					 WHERE Valtor = '".$this->tipoDeOrden."'
 					   AND Valest = 'on'
+					   AND b.Tipiws = 'on'
 					";
 					
 			$res = mysql_query( $sql, $conex )  or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
