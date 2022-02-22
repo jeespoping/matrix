@@ -160,6 +160,12 @@
 		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
 
+		$estados_excluidos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "estadosExcepcionFactura" );
+
+		$estados_excluidos_string = "'";
+		$estados_excluidos_string .= implode("','", explode('-', $estados_excluidos));
+		$estados_excluidos_string .= "'";
+
 		$array_respuesta = array();
 		$respuesta = array();
 		$historia = '';
@@ -188,8 +194,6 @@
 			$responsable = isset( $paciente['responsable'] ) && !empty( $paciente['responsable'] ) ? $paciente['responsable'] : null;
 
 			$respuesta_validacion = validarResponsablePAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $responsable);
-			echo "\nrespuesta_validacion: ";
-			print_r( $respuesta_validacion );die();
 
 			if( $respuesta_validacion['esPaf'] )
 			{
@@ -218,21 +222,10 @@
 					];
 				}
 
-				$query_historia_ingreso = "
-					SELECT root_000037.Orihis AS Historia, root_000037.Oriing AS Ingreso
-					FROM root_000037
-					WHERE root_000037.Oriced = " . $paciente['documento'] . "
-						AND root_000037.Oritid = '" . $paciente['tipoDocumento'] . "'
-							AND root_000037.Oriori = " . $wemp_pmla;
+				$historia_ingreso = consultarHistoriaIngreso($conex, $wemp_pmla, $paciente['documento'], $paciente['tipoDocumento']);
 
-				$resultado_query = mysqli_query($conex, $query_historia_ingreso) or die(mysqli_error($conex));
-				if( !$resultado_query || mysqli_num_rows($resultado_query) > 0 ) {
-					
-					while($fila = mysqli_fetch_array($resultado_query)) {
-						$historia = $fila[0];
-						$ingreso = $fila[1];
-					}
-				}
+				$historia = $historia_ingreso['historia'];
+				$ingreso = $historia_ingreso['ingreso'];
 			}
 			else
 			{
@@ -261,7 +254,7 @@
 		{
 			foreach( $pacientes_paf as $paciente )
 			{
-				$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $paciente['codigo_responsable'], $paciente['fecha_inicio'], $paciente['fecha_corte']);
+				$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $paciente['codigo_responsable'], $paciente['fecha_inicio'], $paciente['fecha_corte'], $estados_excluidos_string);
 
 				if( count($respuesta) == 0 ) {
 					$respuesta = [
@@ -284,7 +277,32 @@
 			];
 	}
 
-	function consultarEstadoFacturaPacientesPAF($conex_unix, $historia, $ingreso, $codigo_responsable = null, $fecha_inicio, $fecha_corte)
+	function consultarHistoriaIngreso($conex, $wemp_pmla, $documento, $tipoDocumento)
+	{
+		$response = array();
+
+		$query_historia_ingreso = "
+				  SELECT	root_000037.Orihis AS Historia,
+							root_000037.Oriing AS Ingreso
+					FROM	root_000037
+				   WHERE	root_000037.Oriced = " . $documento . "
+					 AND	root_000037.Oritid = '" . $tipoDocumento . "'
+					 AND	root_000037.Oriori = " . $wemp_pmla;
+
+		$resultado_query = mysqli_query($conex, $query_historia_ingreso) or die(mysqli_error($conex));
+
+		if( $resultado_query ) {
+			
+			while($fila = mysqli_fetch_array($resultado_query)) {
+				$response['historia'] = $fila[0];
+				$response['ingreso'] = $fila[1];
+			}
+		}
+
+		return $response;
+	}
+
+	function consultarEstadoFacturaPacientesPAF($conex_unix, $historia, $ingreso, $codigo_responsable = null, $fecha_inicio, $fecha_corte,$estados_excluidos)
 	{
 		$sql = "
 			  SELECT	cardethis as historia,
@@ -299,6 +317,7 @@
 				 AND	envencfec <= '{$fecha_corte}'
 			     AND	envencfue = envdetfue
 			     AND	envencdoc = envdetdoc
+				 AND	envdetest NOT IN ({$estados_excluidos})
 			     AND	carfacfue = envdetfan
 			     AND	carfacdoc = envdetdan
 			     AND	carfacanu = '0'
@@ -445,7 +464,12 @@
 							envdetnit as responsable
 					FROM 	caenvdet, caenvenc, famov
 				   WHERE	envdetdoc = {$cuenta}
-					 AND    envdetfue = '80'
+					 AND    envdetfue =  = (
+								SELECT fuecod
+								FROM cafue
+								WHERE fuetip = 'EV'
+								GROUP BY fuecod
+							)
 					 AND	envdetdoc = envencden
 					 AND	envdetfue = envencfen
 					 AND	movfue = envdetfan
@@ -635,8 +659,7 @@
 
 		$respuesta = array();
 		$responsablesPAF = responsablesPAF($conex, $_REQUEST['wemp_pmla']);
-		echo "\nresponsablesPAF: ";
-		var_dump( $responsablesPAF );die();
+
 		if( $responsable == null )
 		{
 			$sql = "
