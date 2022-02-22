@@ -1,4 +1,18 @@
 <?php
+
+
+
+/************************************************************************************************************************
+
+PROGRAMA: cargos_automaticos_funciones.php
+Fecha de liberación: 04 Mayo 2021
+Autor: Cidenet S.A - Iniciativa Cargos Automáticos
+Versión Actual: 2022-02-22
+
+OBJETIVO GENERAL: Este archivo contiene algunas funciones necesarias para el correcto funcionamiento del programa de configuración de cargos automáticos.
+
+************************************************************************************************************************/
+
 /**********************************************************************************************************************  
 * INICIO FUNCIONES 
 * Sami Arevalo - Cristhian Barros - Manuel Garcia (Equipo Iniciativa Cargos Automáticos)

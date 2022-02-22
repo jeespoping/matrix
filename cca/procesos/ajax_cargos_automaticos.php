@@ -10,7 +10,21 @@ include_once("hce/funcionesHCE.php");
 include_once('cargos_automaticos_funciones.php');
 
 /************************************************************************************************************************
+
+PROGRAMA: ajax_cargos_automaticos.php
+Fecha de liberación: 04 Mayo 2021
+Autor: Cidenet S.A - Iniciativa Cargos Automáticos
+Versión Actual: 2022-02-22
+
+OBJETIVO GENERAL: Este es el archivo de end-points asociados al programa de cargos automáticos, en este archivo
+se encuentran toda la lógica, funciones y regla de negocio asociada con el proceso de cargos automáticos.
+
+************************************************************************************************************************/
+
+/************************************************************************************************************************
  * Modificaciones
+ * Febrero 22 de 2022 (Cidenet S.A) Cristhian Barros               - Se añaden comentarios de acuerdo a las recomendaciones de buenas prácticas, se corrige error en la creación de cca de tipo orden
+                                                                     se corrige error en el listado de especialidades y se modifica número de registros default por el log.
  * Febrero 15 de 2022 (Cidenet S.A) Cristhian Barros, Andrés Gallo - Se añaden todo el código relacionado con el tipo empresa, empresa, facturable, especialidad y tercero comodín
  * Febrero 04 de 2022 (Cidenet S.A) Cristhian Barros, Andrés Gallo - Se añade la validacion cuando el tercero no tiene porcentaje de participación, en este caso el sistema almacena un log y envía
 																		la notificación vía correo, esta modificación se realiza en la funcion guardarCargoAutomaticoFacturacionERP y guardarCargoAutomaticoPreescripcion
@@ -2339,7 +2353,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 	$condicion_Logtip = $Logtip != '' ? " AND Logtip = '".$Logtip."' " : '';
 	$condicion_Fecha_data = $fecha != '' ? " AND Fecha_data = '".$Fecha_data."' " : '';
 	
-	$condicion_limit = $esCCA == '' && $fecha == '' ? ' LIMIT 100 ' : '';
+	$condicion_limit = $esCCA == '' && $fecha == '' ? ' LIMIT 5 ' : '';
 	
 	$query_logs = "SELECT Medico as medico, Fecha_data as fecha, Hora_data as hora, Logusu as usuario, Logdes, Logdes2, Logtip, Logerr, Logins, Logupd, Logdel, Seguridad 
 					FROM ".$wbasedato_cliame."_000342 
