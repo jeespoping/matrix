@@ -127,7 +127,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sC
         //         ORDER   BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
 
         $q = "SELECT Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, r40.Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs, mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)), m11.Cconom
-            FROM " . $wbasedato . "_000040 AS r40, usuarios, movhos_000011
+            FROM " . $wbasedato . "_000040 AS r40, usuarios, movhos_000011 m11
             WHERE   (Requrc = '" . $codigo . "' 
                     OR Reqpurs = '" . $codigo . "')
                     AND ( 
