@@ -253,7 +253,7 @@ function buscarCodigoNombreCamillero(){
 	
 	// global $bdCencam;
 	
-	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camillero');
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
 	
 	$val = '';
 	
@@ -295,7 +295,7 @@ function crearPeticionCamillero( $origen, $motivo, $hab, $destino, $solicita, $c
 	global $bdCencam;
 	global $wemp_pmla;
 	
-	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camillero');
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
 	// $bdCencam = "cencam";
 	
 	$fecha = date( "Y-m-d" );
@@ -388,7 +388,7 @@ function nombreCcoCentralCamilleros( $codigo ){
 	global $bd;
 	global $wemp_pmla;
 
-	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camillero');
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
 	
 	$val = '';
 	
