@@ -955,7 +955,7 @@ if (isset($accion)) {
             $alias1 = "hce";
             $aplicacionHce = consultarAplicacion($conex, $wemp_pmla, $alias1);
             $wbasedato_tcx = consultarAplicacion($conex, $wemp_pmla, "tcx");
-            $aplicacionHce = consultarAplicacion($conex, $wemp_pmla, $alias1);
+            // $aplicacionHce = consultarAplicacion($conex, $wemp_pmla, $alias1);
             $ccoIngresoCir = consultarAplicacion($conex, $wemp_pmla, "ccoIngresoCirugia");
             $ccosProcsCirugia = array();
             $ccoAyuda = consultarCcoAyuda($cco_egreso);
@@ -1395,14 +1395,14 @@ if (isset($accion)) {
                                                         $n = 0;
                                                         for ($l = 0; $rowsconf1 = mysql_fetch_array($resconf1); $l++) {
                                                             $sqlpro = "select movpro,movcon,movhis,moving,movtip,movdat,movusu
-                                                                            from " . $alias1 . "_" . $rowsconf1['Coefor'] . "
+                                                                            from " . $aplicacionHce . "_" . $rowsconf1['Coefor'] . "
                                                                             where movcon = " . $rowsconf1['Coecon'] . "
                                                                             and movhis = '" . $historia . "'
                                                                             and moving = '" . $ingreso . "'
                                                                             ";
                                                             //echo $sqlpro;
 
-                                                            $respro = mysql_query($sqlpro, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $alias1 . "_" . $rowsconf1['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
+                                                            $respro = mysql_query($sqlpro, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $aplicacionHce . "_" . $rowsconf1['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
                                                             if ($respro) {
                                                                 $numpro = mysql_num_rows($respro);
                                                                 if ($numpro > 0) {
@@ -1705,7 +1705,7 @@ if (isset($accion)) {
                                                     }
                                                 } else {
                                                     $data['error'] = 1;
-                                                    $data['mensaje'] = "No se ejecuto la consulta a la tabla de formularios firmados " . $alias1 . "_000036";
+                                                    $data['mensaje'] = "No se ejecuto la consulta a la tabla de formularios firmados " . $aplicacionHce . "_000036";
                                                 }
 
                                                 $array_formularios_sin_firmar = array();
@@ -1719,7 +1719,7 @@ if (isset($accion)) {
                                                 if ($b == 0) {
                                                     $nombres_formularios = ":";
                                                     $sqlpro = "SELECT Encdes
-                                                                     FROM " . $alias1 . "_000001
+                                                                     FROM " . $aplicacionHce . "_000001
                                                                     WHERE Encpro IN (" . implode(",", $array_formularios_sin_firmar) . ")
                                                                     GROUP BY Encpro ORDER BY Encdes";
 
@@ -1768,7 +1768,7 @@ if (isset($accion)) {
                                                                                             where Medcod = '" . $codMed . "'
                                                                                             and Medest = 'on'";
 
-                                                                                $resMedEsp = mysql_query($sqlMedEsp, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $alias1 . "_" . $rowsconf2['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
+                                                                                $resMedEsp = mysql_query($sqlMedEsp, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $aplicacionHce . "_" . $rowsconf2['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
                                                                                 if ($resMedEsp) {
                                                                                     $numMedEsp = mysql_num_rows($resMedEsp);
                                                                                     if ($numMedEsp > 0) {
@@ -1781,7 +1781,7 @@ if (isset($accion)) {
                                                                                             from " . $wbasedato . "_000053
                                                                                             where Espcod = '" . $codEsp . "'";
 
-                                                                                        $resEsp1 = mysql_query($sqlEsp1, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $alias1 . "_" . $rowsconf2['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
+                                                                                        $resEsp1 = mysql_query($sqlEsp1, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $aplicacionHce . "_" . $rowsconf2['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
                                                                                         if ($resEsp1) {
                                                                                             $numEsp1 = mysql_num_rows($resEsp1);
                                                                                             if ($numEsp1 > 0) {
@@ -1829,7 +1829,7 @@ if (isset($accion)) {
                                                                                             where Medcod = " . $codMed . "
                                                                                             and Medest = 'on'";
 
-                                                                                $resMedEsp = mysql_query($sqlMedEsp, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $alias1 . "_" . $rowsconf2['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
+                                                                                $resMedEsp = mysql_query($sqlMedEsp, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $aplicacionHce . "_" . $rowsconf2['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
                                                                                 if ($resMedEsp) {
                                                                                     $numMedEsp = mysql_num_rows($resMedEsp);
                                                                                     if ($numMedEsp > 0) {
@@ -1842,7 +1842,7 @@ if (isset($accion)) {
                                                                                             from " . $wbasedato . "_000053
                                                                                             where Espcod = '" . $codEsp . "'";
 
-                                                                                        $resEsp1 = mysql_query($sqlEsp1, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $alias1 . "_" . $rowsconf2['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
+                                                                                        $resEsp1 = mysql_query($sqlEsp1, $conex) or ($data['mensaje'] = utf8_encode("Error consultando la tabla " . $aplicacionHce . "_" . $rowsconf2['Coefor'] . "" . mysql_errno() . " - Error en el query $sqldia - " . mysql_error()));
                                                                                         if ($resEsp1) {
                                                                                             $numEsp1 = mysql_num_rows($resEsp1);
                                                                                             if ($numEsp1 > 0) {

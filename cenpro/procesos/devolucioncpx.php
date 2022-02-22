@@ -36,6 +36,9 @@ include_once("root/comun.php");
 	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 /***
  * Modificación.
+ * Diciembre 14 de 2021 (Juan Rodriguez): Se modifica parámetro wemp_pmla quemado, se rectifica que desde donde se llama al archivo, exista wemp_pmla
+ * 
+ * Octubre 20 de 2021 (Daniel Corredor ) Se realiza la actualización de datos quemados y se agrega el global wemp_pmla en la funcion anular cargo
  * 
  * Agosto 14 de 2013  (Edwin MG)	Se valida que halla conexión unix en inventario desde matrix, si no hay conexión
  *									con unix se activa la contigencia de dispensación.
@@ -791,6 +794,7 @@ function anularCargo($cco, $destino, $insumo, $dato, $lote)
 {
     global $conex;
     global $wbasedato;
+	global $wemp_pmla;
 
     $q = " SELECT Concod"
      . "       FROM " . $wbasedato . "_000008  "
@@ -868,7 +872,7 @@ else
     //$wbasedato = 'cenpro';
 //    $conex = mysql_connect('localhost', 'root', '')
 //    or die("No se ralizo Conexion");
-    
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
     include_once( "conex.php" );
     include_once( "cenpro/cargos.inc.php" );
     
@@ -902,12 +906,12 @@ else
     if( true || $conex_o != 0 )
     {
         $tipTrans = 'D'; //segun ana es una transaccion de devolucion
-        $emp = '01';
+        //$emp = $wemp_pmla;
         $aprov = true; //siempre es por aprovechamiento;
         $exp = explode('-', $cco);
         $centro['cod'] = $exp[0];
         $centro['neg'] = false;
-        getCco($centro, $tipTrans, '01');
+        getCco($centro, $tipTrans, $wemp_pmla);
         $pac['his'] = $historia;
         $pac['ing'] = $ingreso;
         $cns = 0;
@@ -915,7 +919,7 @@ else
         $art['ini'] = $cod;
         $art['ubi'] = 'US';
         $serv['cod'] = $servicio;
-        getCco($serv, $tipTrans, '01');
+        getCco($serv, $tipTrans, $wemp_pmla);
         if (isset($serv['apl']) and $serv['apl'])
         {
             $centro['apl'] = true;
@@ -1023,7 +1027,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script >
+										 </script>
 										<?php
 									} 
 									else
@@ -1288,7 +1292,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script >
+										 </script>
 										<?php
 								} 
 								else
@@ -1402,7 +1406,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script >
+										 </script>
 										<?php
 									} 
 									else
@@ -1687,7 +1691,7 @@ else
 										<script>
 											window . opener . document . producto . submit();
 											window . close();
-										 </script >
+										 </script>
 									<?php
 								}
 								else
@@ -1721,7 +1725,7 @@ else
  */
 function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $numCargoInv, $linCargoInv, $cCentroCosto )
 {
-	global $emp;
+	global $wemp_pmla;
 	global $wbasedato;
 	global $wusuario;
 	global $wuse;
@@ -1744,7 +1748,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 	}
 	
 	//Si el cco no maneja cargo ERP o no está activo los cargos ERP no se ejecuta esta acción
-	$cargarEnErp = consultarAliasPorAplicacion( $conex, $emp, "cargosPDA_ERP" );
+	$cargarEnErp = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cargosPDA_ERP" );
 	if( !$CcoErp || $cargarEnErp != 'on' ){
 		return;
 	}
@@ -1772,7 +1776,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 		if( $rowsIng = mysql_fetch_array( $resIng) ){
 		
 			
-			$codEmpParticular = consultarAliasPorAplicacion($conex, $emp, 'codigoempresaparticular');
+			$codEmpParticular = consultarAliasPorAplicacion($conex, $wemp_pmla, 'codigoempresaparticular');
 		
 			if( $rowsIng[ 'Ingtpa' ] == 'P' ){
 				$empresa = $codEmpParticular;
@@ -1808,9 +1812,9 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 				$infoPacienteCargos = consultarNombresPaciente( $conex, $pac['his'], $emp );
 				
 				//Conceptos de grabación
-				$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_medicamentos_mueven_inv" );
+				$wcodcon = consultarAliasPorAplicacion( $conex, $wemp_pmla, "concepto_medicamentos_mueven_inv" );
 				if( esMMQServicioFarmaceutico($art['cod']) )
-					$wcodcon = consultarAliasPorAplicacion( $conex, $emp, "concepto_materiales_mueven_inv" );
+					$wcodcon = consultarAliasPorAplicacion( $conex, $wemp_pmla, "concepto_materiales_mueven_inv" );
 				
 				$wnomcon = consultarNombreConceptos( $conex, $wcliame, $wcodcon );
 				
@@ -1902,7 +1906,7 @@ function CargarCargosErp($conex, $pac, $wmovhos, $wcliame, $art, $tipTrans, $num
 				$datos['desde_CargosPDA']			= true;
 
 				//$codEmpParticular = consultarAliasPorAplicacion($conex, $wemp_pmla, 'codigoempresaparticular');
-				$codEmpParticular = consultarAliasPorAplicacion($conex, $emp, 'codigoempresaparticular');
+				$codEmpParticular = consultarAliasPorAplicacion($conex, $wemp_pmla, 'codigoempresaparticular');
 
 				// --> Si la empresa es particular esto se graba como excedente
 				if($wcodemp == $codEmpParticular)
@@ -1972,7 +1976,7 @@ function llamarFacturacionInteligente($pac, $cCentroCosto, $sCodigo, $sNombre, $
  * @date: 2021-06-11
  * @return: array
  */
-function consultarNombresPaciente( $conex, $his, $emp ){
+function consultarNombresPaciente( $conex, $his, $wemp_pmla ){
 
 	$val = false;
 
@@ -1981,7 +1985,7 @@ function consultarNombresPaciente( $conex, $his, $emp ){
 			 WHERE orihis = '".$his."'
 			   AND pacced = oriced
 			   AND pactid = oritid
-			   AND oriori = '".$emp."'
+			   AND oriori = '".$wemp_pmla."'
 		";
 		
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );

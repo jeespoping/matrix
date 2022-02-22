@@ -152,6 +152,7 @@
 <?php
 include_once("conex.php");
 include_once("root/comun.php");
+// Actualización: Diciembre 14 de 2021 (Juan Rodriguez): Se modifica parámetro wemp_pmla sobre escrito, se rectifica que desde donde se llama al archivo, exista wemp_pmla
 //actualizacion: Agosto 09 de 2018	(Edwin)		Se corrige query en la función consultarLotes
 //actualizacion: Noviembre 02 de 2017	(Edwin)		Entre el tiempo de dispensación por defecto de CM(10 horas al momento de la publicación) y el tiempo de dispensacion de cco del paciente se toma la de mayor valor.
 //													Ejemplo: UCI tiene 8 horas y CM tiene 10 horas de tiempo de dispensación, se toma la de CM por ser mayor
@@ -1172,14 +1173,14 @@ function pintarCargosPDA( $insumos, $unidades, $lotes, $tipo, $escogidos, $accio
 												}
 											}
 											
-//											if( $val && ArticulosXPacienteSinSaldo( $historia, $ingreso, true ) && $solCamillero != 'on' ){
-//
-//												$nomCcoDestino = nombreCcoCentralCamilleros( $servicio );
-//												$motivo = 'DESPACHO DE MEDICAMENTOS';
-//												crearPeticionCamillero( nombreCcoCentralCamilleros( $cco['cod'] ), $motivo, "<b>Hab: ".$habitacion."</b><br>".$nombre, $nomCcoDestino, $wusuario, $nomCcoDestino, buscarCodigoNombreCamillero() );
-//												
-//												echo "<INPUT type='hidden' name='solCamillero' value='on'>";
-//											}
+											// if( $val && ArticulosXPacienteSinSaldo( $historia, $ingreso, true ) && $solCamillero != 'on' ){
+
+											// 	$nomCcoDestino = nombreCcoCentralCamilleros( $servicio );
+											// 	$motivo = 'DESPACHO DE MEDICAMENTOS';
+											// 	crearPeticionCamillero( nombreCcoCentralCamilleros( $cco['cod'] ), $motivo, "<b>Hab: ".$habitacion."</b><br>".$nombre, $nomCcoDestino, $wusuario, $nomCcoDestino, buscarCodigoNombreCamillero() );
+												
+											// 	echo "<INPUT type='hidden' name='solCamillero' value='on'>";
+											// }
 										}
 										else{
 											$error['ok'] = 'EL ARTICULO YA FUE DISPENSADO';
@@ -1245,7 +1246,7 @@ function pintarCargosPDA( $insumos, $unidades, $lotes, $tipo, $escogidos, $accio
 							$tag = true;
 						}
 						
-	//					echo "Lote: ".$insumos[0]['lot']; echo "No. Lote: ".$lotes[0]; exit;
+						// echo "Lote: ".$insumos[0]['lot']; echo "No. Lote: ".$lotes[0]; exit;
 						if( !$packe['ke'] || ($packe['ke'] && $val) ){
 							echo "<input type='hidden' name='confm' value='SE HA REALIZADO EL CARGO EXITOSAMENTE'></td>";
 							echo "<input type='hidden' name='confc' value='#DDDDDD'></td>";
@@ -1266,7 +1267,7 @@ function pintarCargosPDA( $insumos, $unidades, $lotes, $tipo, $escogidos, $accio
 			<script>
 				document . producto . insumo.options[document.producto.insumo.selectedIndex].value='';
 				document . producto . submit();
-            </script >
+            </script>
             <?php
 			}
 			else
@@ -1647,8 +1648,8 @@ function ArticulosXPaciente( $his, $ing ){
 	
 	$diasDispensacion = consultarDiasDispensacionPorHistoriaIngreso( $conex, $bd, $his, $ing );
 	
-	if( empty( $wemp_pmla ) )
-		$wemp_pmla = "01";
+	// if( empty( $wemp_pmla ) )
+	// 	$wemp_pmla = "01";
 	
 	$horaCorteDispensacion 	= consultarAliasPorAplicacionCM( $conex, $wemp_pmla, "horaCorteDispensacion" );
 	
@@ -3661,10 +3662,11 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 	global $conex;
 	global $wbasedato;
 	global $bd;
+	global $wemp_pmla;
 
-	if( empty($wemp_pmla) ){
-		$wemp_pmla = '01';
-	}
+	// if( empty($wemp_pmla) ){
+	// 	$wemp_pmla = '01';
+	// }
 	
 	if ($historia == '0')
 	{
@@ -3694,7 +3696,7 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 		$q = "SELECT Oriing, Pacno1, Pacno2, Pacap1, Pacap2 "
 		. "      FROM root_000037, root_000036 "
 		. "     WHERE Orihis = '" . $historia . "' "
-		. "       AND Oriori = '01' "
+		. "       AND Oriori = '".$wemp_pmla."' "
 		. "       AND Oriced = Pacced ";
 
 		$err = mysql_query($q, $conex) or die(mysql_errno()." - en el query: ".$q." - ".mysql_error());;;;
@@ -3805,6 +3807,11 @@ function pintarTitulo($tipo)
 		return;
 	}
 	
+	$wactualiz = '2022-02-16';
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
+	encabezado("PRODUCCI&Oacute;N CENTRAL DE MEZCLAS	 ",$wactualiz, $wbasedato1);
+
 	echo "<table ALIGN=CENTER width='50%'>";
 	// echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 	echo "<tr><td class='titulo1'>PRODUCCION CENTRAL DE MEZCLAS</td></tr>";
@@ -4286,9 +4293,9 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 	
 										?>
 										<script>
-										document . producto . insumo.options[document.producto.insumo.selectedIndex].value='';
-										document . producto . submit();
-	                                     </script >
+											document.producto.insumo.options[document.producto.insumo.selectedIndex].value='';
+											document.producto.submit();
+										</script>
 	                                    <?php
 			}
 			else
@@ -4298,12 +4305,12 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 						echo "<tr><td colspan='8' align='center' class='texto1'><b>Cantidad a cargar: </b><INPUT type='text' name='txCanMMQ' id='txCanMMQ' class='texto5'></td></tr>";
 						echo "<tr><td colspan='8' align='center' class='texto1'><INPUT type='button' class='texto5' value='Cargar' onClick='cargarMultiMMQ( \"cargocpx.php?wemp_pmla=".$wemp_pmla."&cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "\" )'></td></tr>";
 					}
-//					else{
-//						echo "<script>";
-//						echo "window.open('cargo.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&canMMQ=$txCanMMQ');";
-//						echo "docuemnt.producto.submit();";
-//						echo "</script>";
-//					}
+					//	else{
+					//		echo "<script>";
+					//		echo "window.open('cargo.php?cod=" . $insumos[0]['cod'] . "&cco=" . $cco . "&var=" . $var . "&historia=" . $historia . "&ingreso=" . $ingreso . "&servicio=" . $servicio . "&carro=" . $carro . "&canMMQ=$txCanMMQ');";
+					//		echo "docuemnt.producto.submit();";
+					//		echo "</script>";
+					//	}
 				}
 				else{
 					if($accion == 'Cargo' )
@@ -4552,7 +4559,7 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 							$tag = true;
 						}
 						
-	//					echo "Lote: ".$insumos[0]['lot']; echo "No. Lote: ".$lotes[0]; exit;
+						//	echo "Lote: ".$insumos[0]['lot']; echo "No. Lote: ".$lotes[0]; exit;
 						if( !$packe['ke'] || ($packe['ke'] && $val) ){
 							echo "<input type='hidden' name='confm' value='SE HA REALIZADO EL CARGO EXITOSAMENTE'></td>";
 							echo "<input type='hidden' name='confc' value='#DDDDDD'></td>";
@@ -4573,7 +4580,7 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 										<script>
 										document . producto . insumo.options[document.producto.insumo.selectedIndex].value='';
 										document . producto . submit();
-	                                     </script >
+	                                     </script>
 	                                    <?php 
 	                                    return;
 			}
@@ -4656,7 +4663,7 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 			$motivo = 'DESPACHO DE MEDICAMENTOS';
 			crearPeticionCamillero( nombreCcoCentralCamilleros( $exp[0] ), $motivo, "<b>Hab: ".$habitacion."</b><br>".$nombre, $nomCcoDestino, $wusuario, $nomCcoDestino, buscarCodigoNombreCamillero() );
 
-//			echo "<INPUT type='hidden' value='on' name='solCamilleroPedidoOn'>";
+			//	echo "<INPUT type='hidden' value='on' name='solCamilleroPedidoOn'>";
 			
 			$solCamilleroPedidoOn = 'on';
 		}
@@ -4679,7 +4686,7 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 			echo "<a href='./cargoscpxcm.php?wemp_pmla=".$wemp_pmla."&user=".@$user."&solicitarCamillero=on&his=$historia&ing=$ingreso&ccoCencam={$exp[0]}&hab=$habitacion&nom=$nombre&usu=$wusuario&des=$servicio'><b>Solicitar camillero</b></a>";
 			echo "</td></tr>";
 			
-//			echo "<INPUT type='hidden' value='on' name='solicitarCamillero'>";
+			//	echo "<INPUT type='hidden' value='on' name='solicitarCamillero'>";
 			echo "<INPUT type='hidden' value='$historia' name='his'>";
 			echo "<INPUT type='hidden' value='$ingreso' name='ing'>";
 			echo "<INPUT type='hidden' value='{$cco['cod']}' name='ccoCencam'>";
@@ -4741,7 +4748,7 @@ function pintarInsumos($insumos, $unidades, $lotes, $tipo, $escogidos, $accion, 
 		// }
 		// $rondaActual = $tempRonda;
 		/************************************************************************************************************/
-		$horaCorteDispensacion = consultarAliasPorAplicacionCM( $conex, "01", "horaCorteDispensacion" );
+		$horaCorteDispensacion = consultarAliasPorAplicacionCM( $conex, $wemp_pmla, "horaCorteDispensacion" );
 		// echo "<tr><td colspan=8 align='center' class='titulo3'><font size='3'>RONDA PARA LAS $rondaActual</font></td></tr>";
 		echo "<tr><td colspan=8 align='center' class='titulo3'><font size='3'>RONDA PARA LAS ".gmdate( "H:i:s", min( ($horaCorteDispensacion+24)*3600,$tempRonda*3600 ) )."</font></td></tr>";
 		
@@ -4860,7 +4867,7 @@ if ( !isset($user) || $user == "" )
 			
 			if(  @$user != '' && @validarUsuario( $user )  ){
 				$user = "1-".$user;
-//				session_register("user");
+				//	session_register("user");
 			}
 			else{
 				echo "<form name='producto' action='cargoscpxcm.php?wemp_pmla=".$wemp_pmla."' method=post>";
@@ -4872,7 +4879,7 @@ if ( !isset($user) || $user == "" )
 		}
 	}
 	else if (!isset($_SESSION['user'])){
-//		session_register("user");
+		//		session_register("user");
 	}
 }
 else{
@@ -4891,26 +4898,26 @@ else
 {
 	if( !isset($cantidad) )
 		$cantidad = 0;
-		
+
+	global $wemp_pmla;	
 	include_once( "conex.php" );
 	include_once( "cenpro/cargos.inc.php" );
 	
 	//$wbasedato = 'cenpro';
-	global $wemp_pmla;
+	
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 //	$conex = mysql_connect('localhost', 'root', '')
 //	or die("No se ralizo Conexion");
 	
 	
 
-	
 	/******************************************************************
 	 * Abril 23 de 2012
 	 ******************************************************************/
 	contingencia( $conex );
 	/******************************************************************/
 	
-	$tmpDispensacion = consultarTiempoDispensacionIncCM( $conex, '01' );
+	$tmpDispensacion = consultarTiempoDispensacionIncCM( $conex, $wemp_pmla );
 	
 	if (!isset($tipo))
 	{
@@ -5247,9 +5254,9 @@ else
 		{
 			$insumos = array();
 			// $insumos = '';
-//			$insumos[0]['cdo'] = '';
-//			$insumos[0]['lot'] = '';
-//			$insumos[0]['cod'] = ''; 
+			//	$insumos[0]['cdo'] = '';
+			//	$insumos[0]['lot'] = '';
+			//	$insumos[0]['cod'] = ''; 
 		}
 		if (!isset($lotes))
 		{
@@ -5274,7 +5281,7 @@ else
 		if ((isset ($historia) and $historia != ''))
 		{
 			$ser['cod']=$servicio;
-			getCco($ser, 'C', '01');
+			getCco($ser, 'C', $wemp_pmla);
 			pintarFormulario($estado, $ccos, $historia, '', $fecha, $ingreso, $nombre, $habitacion, $tipo, $accion, 0, $numtra, $ser['apl'], $carro);
 		}
 		else
@@ -5310,7 +5317,7 @@ else
 			if( !empty($historia) ){
 				pintarCargosPDA( $insumos, $unidades, $lotes, $tipo, $escogidos, $accion, $ccos[0], $historia, $ingreso, @$servicio, $confm, $confc, $carro );
 			}
-//			pintarCargos($mart, $mlot, $mpre, $mcan, $mpaj, $mcaj, $mmov1, $mmov2, '');
+			//	pintarCargos($mart, $mlot, $mpre, $mcan, $mpaj, $mcaj, $mmov1, $mmov2, '');
 		}
 	}
 	else
