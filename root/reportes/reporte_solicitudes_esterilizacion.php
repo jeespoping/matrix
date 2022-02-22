@@ -20,7 +20,7 @@ include_once("conex.php");
 // 						  costosyp_000072
 // 2016-09-20			Se corrige warning array vacio por cantidades
 	
-	$wactualiz='2019-11-12';
+	$wactualiz='Febrero 22 de 2022';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                     
 
 if(!isset($_SESSION['user']))
@@ -52,17 +52,31 @@ else
 //		F U N C I O N E S	 G E N E R A L E S    P H P
 //=====================================================================================================================================================================
 	
-	function consultarCentroCostos($cco,$wemp_pmla)
+	function consultarCentroCostos($cco,$wemp_pmla, $sCodigoSede = NULL)
 	{
 		global $wbasedato;
 		global $conex;
 		global $wcostosyp;
 		global $wmovhos;
+
+		$sFiltroSede='';
+   
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	   
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 		
 		$ccosto = explode(")",$cco);
-		$query = " SELECT Cconom 
+		$query = " SELECT Cconom
 					FROM ".$wmovhos."_000011 
-				   WHERE Ccocod='".$ccosto[1]."';";
+				   WHERE Ccocod='".$ccosto[1]."'
+				   ".$sFiltroSede."";
 
 		$resultado = mysql_query($query, $conex);
 		$numres = mysql_num_rows($resultado);
@@ -1009,6 +1023,11 @@ else
 				}
 		});
 	}
+
+	
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "reporte_solicitudes_esterilizacion.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+    });
 	
 //=======================================================================================================================================================	
 //	F I N  F U N C I O N E S  J A V A S C R I P T 
@@ -1069,11 +1088,12 @@ else
 	<body>
 	<?php
 	// -->	ENCABEZADO
-	encabezado("Reporte despachos central de esterilizacion", $wactualiz, 'clinica');
+	encabezado("Reporte despachos central de esterilizacion", $wactualiz, 'clinica', TRUE);
 	pintarDivConsulta();
 	
 	?>
 	<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='<?php echo $wemp_pmla ?>'>
+	<input type='hidden' id='sede' name='sede' value='<?php echo $selectsede ?>'>
 	
 	<?php
 	
