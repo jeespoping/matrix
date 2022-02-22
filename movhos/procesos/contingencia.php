@@ -1083,6 +1083,8 @@ function cargarArticulos( $conex, $wbasedato, $historia, $articulo, $fechaKardex
 	global $wbasedato;
 	global $wcenmez;
 	global $conex;
+
+
 	
 	$mensajes = "";
 	
@@ -1091,7 +1093,7 @@ function cargarArticulos( $conex, $wbasedato, $historia, $articulo, $fechaKardex
 	
 	validarHistoria( $conex, $wbasedato, $historia, &$ingreso, &$datosPacientes, &$activo );
 	
-	$ccoOrigen = $ccoSF;
+	$ccoOrigen = ccoUnificadoSF();
 	$fecha = date( "Y-m-d" );
 	
 	if( $activo ){
