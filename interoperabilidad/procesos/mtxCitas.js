@@ -115,10 +115,11 @@
 			function habilitarBotonAceptar(){
 				
 				tieneDatosValidos = true;
+				var codigoMedico = $( inMedicoRemitente ).data( "idmedico" );
 				
 				$( "select:visible,input:visible", objModal ).each(function(){
 					
-					if(  !$( this ).val() ||  $( this ).val() == "" ){
+					if(  !$( this ).val() ||  $( this ).val() == "" || codigoMedico == '' ){
 						tieneDatosValidos = false;
 					}
 				});
@@ -306,8 +307,19 @@
 				minLength: 	3,
 				source: 	"../../interoperabilidad/procesos/IoImagenologia.php?consultaAjax=&accion=consultarMedicosRemitentes&tipoOrden="+sede.tipoOrden+"&wemp_pmla="+__self.wemp_pmla,
 				select: 	function( event, ui ){
+
+					$( inMedicoRemitente ).data( 'idmedico', ui.item.codigo );
 					
-					$( inMedicoRemitente ).data( 'idmedico', ui.item );
+					habilitarBotonAceptar();
+				},
+				change: function ( event, ui ){
+					if (ui.item === null || ui.item === undefined)
+					{
+						$( inMedicoRemitente ).data( 'idmedico', '' );
+						
+						habilitarBotonAceptar();
+					}
+					
 				},
 			});
 		}

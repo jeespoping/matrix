@@ -2086,6 +2086,7 @@ function esMedicinaNuclear($conex, $wmovhos, $wcliame, $cco_sede, $historia, $in
 					   AND Tcaring = '".$ingreso."'
 					   AND Tcarser = '".$cco_sede."'
 					   AND Tcarprocod = '".$cup."'
+					   AND Tcarest = 'on'
 			";
 
 			$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
