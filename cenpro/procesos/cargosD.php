@@ -98,6 +98,7 @@ Aplicacion:cenpro
 Fecha de creacion: 2007-05-30
 Autor: Carolina Castano P
 Ultima actualizacion:
+2022-02-22   Marlon Osorio       Este Script no tiene Origen, ni ningun llamado por parte de otro script (No esta en la root_21 ni otro archivo)
 2007-07-18   Carolina Castano P  Se despliega cada vez lo que se ha cargado en el dia
 2007-07-13   Carolina Castano P  Se permite realiza una secuencia de cargos para varias dosis de un producto
 2007-07-06   Carolina Castano P  Publicacion a produccion
