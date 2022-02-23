@@ -222,10 +222,11 @@ function obtenerDatosCCAxOrden($conex, $origen, $wprocedimiento, $tipoOrdAdmComo
 		// Se setea por defecto el valor de la condicion tipo empresa para que busque la condición de tipo empresa comodín
 		$con_tipo_empresa_empresa = " AND ccatem = '*' ";
 		$con_tipo_orden_comodin = $tipoOrdAdmComodin == 'on' ? " AND (FIND_IN_SET('".$wprocedimiento."', ccacup) OR (ccacup = '*' AND NOT FIND_IN_SET('".$wprocedimiento."', ccapex)))" : " AND FIND_IN_SET('".$wprocedimiento."', ccacup) ";
-		
+		$con_ccator = $tipoOrdAdmComodin == 'on' ? " ccator= '".$tor."'" : " ccator = '' ";
+
 		$sql_temp_especifica_comodin = "SELECT id 
 										FROM ".$wbasedato_facturacion."_000341 
-										WHERE ccator = '".$tor."' ".$con_tipo_orden_comodin." AND  ccatem <> '*' AND ccatem = '".$tipoEmpresa."' AND ccaemp = '*'";
+										WHERE ".$con_ccator." ".$con_tipo_orden_comodin." AND ccaord='on' AND  ccatem <> '*' AND ccatem = '".$tipoEmpresa."' AND ccaemp = '*'";
 								
 		$exec_query_temp_especifica_comodin = mysql_query($sql_temp_especifica_comodin, $conex) or die( mysql_errno()." - Error en el query CCA Tipo Empresa Especifica - ".mysql_error() );
 		$num_reg_temp_especifica_comodin = mysql_num_rows($exec_query_temp_especifica_comodin);
@@ -236,7 +237,7 @@ function obtenerDatosCCAxOrden($conex, $origen, $wprocedimiento, $tipoOrdAdmComo
 		
 		$sql_temp_especifica_especifica = "SELECT id 
 											FROM ".$wbasedato_facturacion."_000341 
-											WHERE ccator = '".$tor."' ".$con_tipo_orden_comodin." AND  ccatem <> '*' AND ccatem = '".$tipoEmpresa."' AND ccaemp = '".$wcodemp."'";
+											WHERE ".$con_ccator." ".$con_tipo_orden_comodin." AND ccaord='on' AND  ccatem <> '*' AND ccatem = '".$tipoEmpresa."' AND ccaemp = '".$wcodemp."'";
 								
 		$exec_query_temp_especifica_especifica = mysql_query($sql_temp_especifica_especifica, $conex) or die( mysql_errno()." - Error en el query CCA Tipo Empresa Especifica, Empresa Especifica - ".mysql_error() );
 		$num_reg_temp_especifica_especifica = mysql_num_rows($exec_query_temp_especifica_especifica);
@@ -270,7 +271,7 @@ function obtenerDatosCCAxOrden($conex, $origen, $wprocedimiento, $tipoOrdAdmComo
 					LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
 					LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> ''
 					LEFT JOIN ".$wbasedato_facturacion."_000103 ON Procod = ".$wprocedimiento."
-					WHERE ccator = '".$tor."' AND ccaord='on' ".$con_tipo_orden_comodin." ".$con_tipo_empresa_empresa;
+					WHERE ".$con_ccator." AND ccaord='on' ".$con_tipo_orden_comodin." ".$con_tipo_empresa_empresa;
 						
 		$exec_query = mysql_query( $query, $conex) or die( mysql_errno()." - Error en el query - ".mysql_error() );
 		while( $row = mysql_fetch_assoc($exec_query)) {
