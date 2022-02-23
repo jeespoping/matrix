@@ -40,7 +40,7 @@ else
 	if (strpos($user,"-") > 0)
           $wuser = substr($user,(strpos($user,"-")+1),strlen($user)); 
     
-    $wactualiz="(Abril 5 de 2011)";      
+    $wactualiz="(Febrero 21 de 2022)";      
      
     //=======================================================================================================
 	//FUNCIONES

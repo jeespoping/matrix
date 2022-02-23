@@ -208,7 +208,7 @@ function consultarJustificacionesDevolucion(){
  */
 include_once("root/comun.php");
 
-$wactualiz = " 25-06-2012";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
+$wactualiz = "Febrero 21 de 2022";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
 
 if (!isset($user)){
 	if (!isset($_SESSION['user'])){

@@ -3272,7 +3272,7 @@ echo "<form method=post>";
 //								@$datosTipo[ $tipo ][ $rows[ 'Kadart' ] ]['dosisTotales'][ "".$rows['Kadcfr']."" ]['modificado'] = $detalleCco[ $tipo ][ $rows[ 'Kadart' ] ][ $rows['Kadcfr'] ][ $rows['Kadufr'] ][ $rows[ 'Ubisac' ] ]['unidadesTotales']-$detalleCco[ $tipo ][ $rows[ 'Kadart' ] ][ $rows['Kadcfr'] ][ $rows['Kadufr'] ][ $rows[ 'Ubisac' ] ]['grabado'];
 								
 								if( isset( $productosCM[ strtolower($tipo) ] ) ){
-									creandoInsumos( $conex, $wbasedato, $wcenmez, $tipo, $rows[ 'Kadart' ], $totalAplicaciones, &$insumos );
+									creandoInsumos( $conex, $wbasedato, $wcenmez, $tipo, $rows[ 'Kadart' ], $totalAplicaciones, $insumos );
 								}
 								/****************************************************************************************************************/
 							}

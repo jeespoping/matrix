@@ -635,7 +635,7 @@ function generarKardex( $conex, $wbasedato, $wcenmez, $historia, $datosArticulos
 	$fechaKardex = date( "Y-m-d" );
 	
 	//verifico si el paciente esta activo
-	validarHistoria( $conex, $wbasedato, $historia, &$ingreso, &$datosPacientes, &$activo );
+	validarHistoria( $conex, $wbasedato, $historia, $ingreso, $datosPacientes, $activo );
 	
 	$mensajes .= "<br>Ingreso: $ingreso";
 	
@@ -1091,7 +1091,7 @@ function cargarArticulos( $conex, $wbasedato, $historia, $articulo, $fechaKardex
 	$wuser = substr($user, (strpos($user, "-") + 1), strlen($user));
 	@$usuario = consultarUsuarioKardex($wuser);
 	
-	validarHistoria( $conex, $wbasedato, $historia, &$ingreso, &$datosPacientes, &$activo );
+	validarHistoria( $conex, $wbasedato, $historia, $ingreso, $datosPacientes, $activo );
 	
 	$ccoOrigen = ccoUnificadoSF();
 	$fecha = date( "Y-m-d" );
@@ -1314,7 +1314,7 @@ include_once( "root/comun.php" );
 
 // $conex = obtenerConexionBD("matrix");
 
-encabezado( "CONTINGENCIA KARDEX", "1.0 Abril 25 de 2012" ,"clinica" );
+encabezado( "CONTINGENCIA KARDEX", "Febrero 22 del 2022" ,"clinica" );
 
 if( !isset($mostrar) or empty($mostrar) ){
 	$mostrar = 'off';
