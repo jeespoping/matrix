@@ -120,9 +120,71 @@ function consultarCostosInsumos( $arrayInsumos )
 	return $arrayCostos;
 }
 
+/** 
+ * By: Sebastian Alvarez Barona
+ * Date: 22-02-2022
+ * Descripcion: Se crea funcion para obtener los centros de costos de cada sede
+ */
+function obtenerCentrosCostos($sCodigoSede = NULL)
+{
+	global $wemp_pmla;
+	global $conex;
+	global $bdMovhos;
+
+	$sFiltroSede='';
+	
+
+	if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+
+		if($estadosede=='on')
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
+
+	$query = "SELECT DISTINCT r40.Reqccs,c5.Cconom,SUBSTRING(r40.Reqccs,5,8) 
+	FROM   root_000040 r40
+				left join 
+				costosyp_000005 c5 on (SUBSTRING(r40.Reqccs,5,8) = c5.Ccocod ) 
+				left join ".$bdMovhos."_000011 c6 on (SUBSTRING(r40.Reqccs, 5, 8) = c6.Ccocod )
+	WHERE Reqcco = '(01)1082' 
+		AND   Reqtip = '13' 
+		AND   (Reqcla='42' OR Reqcla='43')
+		AND   Reqest='05'
+		AND   Reqccs !=''
+		".$sFiltroSede.";";
+
+	$err3 = mysql_query($query,$conex);
+	$num3 = mysql_num_rows($err3);
+
+	echo "<select name='pp' id='searchinput'>";
+		echo "<option>TODOS</option>";
+
+			$tpp=$pp;
+
+			if (isset($pp))
+			{
+				echo "<option>".$tpp[0]."-".$tpp[1]."</option>";
+			} 
+
+			for ($i=1;$i<=$num3;$i++)
+			{
+				$row3 = mysql_fetch_array($err3);
+				echo "<option>".$row3[0]."-".$row3[1]."</option>";
+			}
+
+		echo "</select></td>";
+
+}
+
 include_once("root/comun.php");
 
 $conex = obtenerConexionBD("matrix");
+
+$bdMovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
 $wactualiz="Febrero 16 de 2022";
 
@@ -159,6 +221,7 @@ else
 	echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
 	echo "<input type='HIDDEN' NAME= 'tabla' value='".$tabla."'/>";
 	echo "<input type='HIDDEN' NAME= 'wemp_pmla' id= 'wemp_pmla' value='".$wemp_pmla."'/>";
+	echo "<input type='HIDDEN' NAME= 'sede' id='sede' value='".$selectsede."'/>";
 
 	encabezado("REGISTRO DE PEDIDOS A LA CENTRAL DE ESTERILIZACION", $wactualiz, "clinica", TRUE);
 	
@@ -201,62 +264,11 @@ else
 		echo "</td></tr>";
 	
 		// seleccion para los Responsables
-		echo "<td align='CENTER' colspan='2' class='fila1'><b><font text color=#003366 size=3><B>Ccostos Solicita:</B><br></font></b><select name='pp' id='searchinput'>";
-		echo "<option>TODOS</option>";
+		echo "<td align='CENTER' colspan='2' class='fila1'><b><font text color=#003366 size=3><B>Ccostos Solicita:</B><br></font></b>";
 
-		$sFiltrarSede='off';
+		/** Llamamos la función para mostrar el select con los centros de costos */
+		obtenerCentrosCostos($selectsede);
 
-		if(isset($wemp_pmla) && !empty($wemp_pmla))
-		{
-			$sFiltrarSede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
-		}
-
-		if ($sFiltrarSede == 'off' || $selectsede == ''){
-
-			$query = "SELECT DISTINCT r40.Reqccs,c5.Cconom,SUBSTRING(r40.Reqccs,5,8) 
-				FROM   root_000040 r40
-							left join 
-							costosyp_000005 c5 on (SUBSTRING(r40.Reqccs,5,8) = c5.Ccocod ) 
-				WHERE Reqcco = '(01)1082' 
-					AND   Reqtip = '13' 
-					AND   (Reqcla='42' OR Reqcla='43')
-					AND   Reqest='05'
-					AND   Reqccs !='' ";
-			$err3 = mysql_query($query,$conex);
-			$num3 = mysql_num_rows($err3);
-		}else{
-			$query = "SELECT DISTINCT r40.Reqccs,c5.Cconom,SUBSTRING(r40.Reqccs,5,8) 
-				FROM   root_000040 r40
-							left join 
-							costosyp_000005 c5 on (SUBSTRING(r40.Reqccs,5,8) = c5.Ccocod ) 
-							left join 
-							movhos_000011 c6 on (SUBSTRING(r40.Reqccs,5,8) = c6.Ccocod ) 
-				WHERE Reqcco = '(01)1082' 
-					AND   Reqtip = '13' 
-					AND   (Reqcla='42' OR Reqcla='43')
-					AND   Reqest='05'
-					AND   Reqccs !=''  
-					AND Ccosed = '".$selectsede."'";
-			$err3 = mysql_query($query,$conex);
-			$num3 = mysql_num_rows($err3);
-		}
-
-
-		$tpp=$pp;
-
-		if (isset($pp))
-		{
-			echo "<option>".$tpp[0]."-".$tpp[1]."</option>";
-		} 
-	
-		for ($i=1;$i<=$num3;$i++)
-		{
-			$row3 = mysql_fetch_array($err3);
-			echo "<option>".$row3[0]."-".$row3[1]."</option>";
-		}
-
-		echo "</select></td>";
-		
 		echo "<tr><td align=center colspan=4><input type='submit' id='searchsubmit' value='OK'></td></tr>";          //submit osea el boton de OK o Aceptar
 		echo "</table>";
 		echo '</div>';

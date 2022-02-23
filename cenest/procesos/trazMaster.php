@@ -258,7 +258,7 @@ function llenarSelectReu(jsonCodes, codItCriterio,ccoUnidadCriterio){
                     encabezado("Trazabilidad de Dispositivos",$wactualiz,"clinica", TRUE); 
                 ?>
                 <input type="hidden" id="wemp_pmla" name="wemp_pmla" value="<?php echo $wemp_pmla ?>">
-                <input type="hidden" id="selectsede" name="selectsede" value="<?php echo $selectsede ?>">
+                <input type="hidden" id="sede" name="sede" value="<?php echo $selectsede ?>">
                 <table class="tblParametros" style="width: 60%" border="0">
                     <tr>
                         <td>
