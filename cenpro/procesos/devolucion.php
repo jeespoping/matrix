@@ -529,7 +529,7 @@ function devolverAjuste($total, $presentacion, $cantidad, $historia, $cco, $usua
 * @param caracter $usuario usuario que graba
 * @param caracter $tipo A averia o C cargos a paciente
 */
-function grabarEncabezadoEntradaMatrix(&$codigo, &$consecutivo, $cco2, $cco, $usuario, $tipo, $anexo)
+function grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $cco2, $cco, $usuario, $tipo, $anexo)
 {
     global $conex;
     global $wbasedato;
@@ -629,7 +629,7 @@ function grabarDetalleEntradaMatrix($codpro, $codigo, $consecutivo, $usuario, $p
 * @param caracter $cco2 si es averia el centro de costos al que va, si es cargo historia-ingreso
 * @param caracter $tipo C cargo A o Averia, segun eso se busca en concepto para el movmiento
 */
-function grabarEncabezadoSalidaMatrix(&$codigo, &$consecutivo, $cco, $usuario, $cco2, $anexo)
+function grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $usuario, $cco2, $anexo)
 {
     global $conex;
     global $wbasedato;
@@ -852,7 +852,7 @@ else
     include_once("movhos/registro_tablas.php");
     include_once("movhos/otros.php");
     include_once("cenpro/funciones.php");
-    connectOdbc(&$conex_o, 'facturacion');
+    connectOdbc($conex_o, 'facturacion');
 	
 	/**********************************************************************
 	 * Agosto 14 de 2013
@@ -870,7 +870,7 @@ else
         $exp = explode('-', $cco);
         $centro['cod'] = $exp[0];
         $centro['neg'] = false;
-        getCco(&$centro, $tipTrans, $wemp_pmla);
+        getCco($centro, $tipTrans, $wemp_pmla);
         $pac['his'] = $historia;
         $pac['ing'] = $ingreso;
         $cns = 0;
@@ -878,7 +878,7 @@ else
         $art['ini'] = $cod;
         $art['ubi'] = 'US';
         $serv['cod'] = $servicio;
-        getCco(&$serv, $tipTrans, $wemp_pmla);
+        getCco($serv, $tipTrans, $wemp_pmla);
         if (isset($serv['apl']) and $serv['apl'])
         {
             $centro['apl'] = true;
@@ -928,46 +928,46 @@ else
 							$art['cod'] = $cod;
 							$art['neg'] = false;
 							$art['can'] = 1;
-							$res = ArticuloExiste (&$art, &$error); 
+							$res = ArticuloExiste ($art, $error); 
 							// echo $cod;
 							if ($res)
 							{
-								$res = TarifaSaldo($art, $centro, $tipTrans, $aprov, &$error);
+								$res = TarifaSaldo($art, $centro, $tipTrans, $aprov, $error);
 								if ($res)
 								{
 									$centro['apl'] = false;
-									$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+									$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 									if (!$res)
 									{
 										$centro['apl'] = true;
-										$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+										$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 									} 
 
 									if ($res)
 									{
-										Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, &$date, $cns, &$dronum, &$drolin, true, $usu, &$error);
-										grabarEncabezadoEntradaMatrix(&$codigo, &$consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
+										Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
+										grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
 										$dato = $var . "-" . $cod;
 										grabarDetalleEntradaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $dato, '', '');
 										sumarArticuloMatrix($cod, $cco, 'on', $var);
 										anularCargo($cco, $historia . '-' . $ingreso, $cod, $var, 'on');
-										grabarEncabezadoSalidaMatrix(&$codigo, &$consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
+										grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
 										grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $var . '-' . $cod, '', '', 1, 1);
-										$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
+										$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, $error);
 										if (!$res)
 										{
 											pintarAlerta('EL ARTICULO NO HA PODIDO SER CARGADO A ITDRO');
 											$art['ubi'] = 'M';
 										} 
-										registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, &$error);
+										registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, $error);
 
 										if (!$centro['apl'])
 										{
-											registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+											registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 										} 
 										else
 										{
-											registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+											registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 											$trans['num'] = $dronum;
 											if ($drolin == 1)
 											{
@@ -977,7 +977,7 @@ else
 											{
 												$trans['lin'] = '';
 											} 
-											registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, &$error);
+											registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
 										}
 
 										descargarCarro2( $art['cod'], $art['ini'], $pac['his'], $pac['ing'], $cco );
@@ -1017,11 +1017,11 @@ else
 							$art['can'] = 1;
 
 							$centro['apl'] = false;
-							$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+							$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 							if (!$res)
 							{
 								$centro['apl'] = true;
-								$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+								$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 							} 
 
 							if ($res)
@@ -1032,10 +1032,10 @@ else
 									{
 										$art['cod'] = $inslis[$i]['prese']['cod'];
 										$art['can'] = $inslis[$i]['prese']['can'];
-										$res = ArticuloExiste (&$art, &$error);
+										$res = ArticuloExiste ($art, $error);
 										if ($res)
 										{
-											$res = TarifaSaldo($art, $centro, $tipTrans, $aprov, &$error);
+											$res = TarifaSaldo($art, $centro, $tipTrans, $aprov, $error);
 											if ($res)
 											{
 												$fin = 1;
@@ -1054,14 +1054,14 @@ else
 
 								if (isset($fin))
 								{
-									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, &$date, $cns, &$dronum, &$drolin, true, $usu, &$error);
+									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
 									$ind = 1;
-									grabarEncabezadoEntradaMatrix(&$codigo, &$consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
+									grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
 									$dato = $var . "-" . $cod;
 									grabarDetalleEntradaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $dato, '', '');
 									sumarArticuloMatrix($cod, $cco, 'on', $var);
 									anularCargo($cco, $historia . '-' . $ingreso, $cod, $var, 'on');
-									grabarEncabezadoSalidaMatrix(&$codigo, &$consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
+									grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
 									for ($i = 0; $i < count($inslis); $i++)
 									{
 										if ($inslis[$i]['prese']['can'] > 0 and $inslis[$i]['aju']['can'] > 0) // No hay ajuste de presentacion
@@ -1090,16 +1090,16 @@ else
 											} 
 											else
 											{
-												Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, &$date, $cns, &$dronum, &$drolin, false, $usu, &$error);
+												Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, false, $usu, $error);
 											} 
 
-											$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
+											$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, $error);
 											if (!$res)
 											{
 												pintarAlerta('EL ARTICULO ' . $presen[$i][$j]['cod'] . ' NO HA PODIDO SER CARGADO A ITDRO');
 												$art['ubi'] = 'M';
 											} 
-											registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, &$error);
+											registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, $error);
 										} 
 									} 
 									// grabamos ahora el saldo de producto
@@ -1109,11 +1109,11 @@ else
 
 									if (!$centro['apl'])
 									{
-										registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+										registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 									} 
 									else
 									{
-										registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+										registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 										$trans['num'] = $dronum;
 										if ($drolin == 1)
 										{
@@ -1123,7 +1123,7 @@ else
 										{
 											$trans['lin'] = '';
 										} 
-										registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, &$error);
+										registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
 									}
 
 									descargarCarro( $art['cod'], $pac['his'], $pac['ing'], $cco );
@@ -1159,44 +1159,44 @@ else
 						$art['cod'] = $exp[0];
 						$art['neg'] = false;
 						$art['can'] = 1;
-						$res = ArticuloExiste (&$art, &$error);
+						$res = ArticuloExiste ($art, $error);
 						if ($res)
 						{
-							$res = true or TarifaSaldo($art, $centro, $tipTrans, $aprov, &$error);
+							$res = true or TarifaSaldo($art, $centro, $tipTrans, $aprov, $error);
 							if ($res)
 							{
 								$centro['apl'] = false;
-								$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+								$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 								if (!$res)
 								{
 									$centro['apl'] = true;
-									$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+									$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 								} 
 
 								if ($res)
 								{
-									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, &$date, $cns, &$dronum, &$drolin, true, $usu, &$error);
-									grabarEncabezadoEntradaMatrix(&$codigo, &$consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
+									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
+									grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
 									grabarDetalleEntradaMatrix($cod, $codigo, $consecutivo, $wusuario, $var, '', '', '');
 									sumarArticuloMatrix($cod, $cco, '', $exp[0]);
 									anularCargo($cco, $historia . '-' . $ingreso, $cod, $var, '');
-									grabarEncabezadoSalidaMatrix(&$codigo, &$consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
+									grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
 									grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, $var, '', '', '', 1, 1);
-									$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
+									$res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, $error);
 									if (!$res)
 									{
 										pintarAlerta('EL ARTICULO NO HA PODIDO SER CARGADO A ITDRO');
 										$art['ubi'] = 'M';
 									} 
-									registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, &$error); 
+									registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, $error); 
 
 									if (!$centro['apl'])
 									{
-										registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+										registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 									} 
 									else
 									{
-										registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+										registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 										$trans['num'] = $dronum;
 										if ($drolin == 1)
 										{
@@ -1206,7 +1206,7 @@ else
 										{
 											$trans['lin'] = '';
 										} 
-										registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, &$error);
+										registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
 									}
 
 									descargarCarro2( $art['cod'], $art['ini'], $pac['his'], $pac['ing'], $cco );
@@ -1263,30 +1263,30 @@ else
 							$art['cod'] = $cod;
 							$art['neg'] = false;
 							$art['can'] = 1;
-							$res = ArticuloExiste (&$art, &$error); 
+							$res = ArticuloExiste ($art, $error); 
 							// echo $cod;
 							if ($res)
 							{
-								$res = TarifaSaldoMatrix($art, $centro, $tipTrans, $aprov, &$error);
+								$res = TarifaSaldoMatrix($art, $centro, $tipTrans, $aprov, $error);
 								if ($res)
 								{
 									$centro['apl'] = false;
-									$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+									$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 									if (!$res)
 									{
 										$centro['apl'] = true;
-										$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+										$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 									} 
 
 									if ($res)
 									{
-										Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, &$date, $cns, &$dronum, &$drolin, true, $usu, &$error);
-										grabarEncabezadoEntradaMatrix(&$codigo, &$consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
+										Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
+										grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
 										$dato = $var . "-" . $cod;
 										grabarDetalleEntradaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $dato, '', '');
 										sumarArticuloMatrix($cod, $cco, 'on', $var);
 										anularCargo($cco, $historia . '-' . $ingreso, $cod, $var, 'on');
-										grabarEncabezadoSalidaMatrix(&$codigo, &$consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
+										grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
 										grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $var . '-' . $cod, '', '', 1, 1);
 										// $res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
 										// if (!$res)
@@ -1294,7 +1294,7 @@ else
 											// pintarAlerta('EL ARTICULO NO HA PODIDO SER CARGADO A ITDRO');
 											// $art['ubi'] = 'M';
 										// } 
-										$validar = registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, &$error, "000143" );
+										$validar = registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, $error, "000143" );
 										
 										if( $validar ){
 											/***************************************************************************
@@ -1308,11 +1308,11 @@ else
 
 										if (!$centro['apl'])
 										{
-											registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+											registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 										} 
 										else
 										{
-											registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+											registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 											$trans['num'] = $dronum;
 											if ($drolin == 1)
 											{
@@ -1322,7 +1322,7 @@ else
 											{
 												$trans['lin'] = '';
 											} 
-											registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, &$error);
+											registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
 										}
 
 										descargarCarro2( $art['cod'], $art['ini'], $pac['his'], $pac['ing'], $cco );
@@ -1362,11 +1362,11 @@ else
 							$art['can'] = 1;
 
 							$centro['apl'] = false;
-							$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+							$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 							if (!$res)
 							{
 								$centro['apl'] = true;
-								$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+								$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 							} 
 
 							if ($res)
@@ -1377,10 +1377,10 @@ else
 									{
 										$art['cod'] = $inslis[$i]['prese']['cod'];
 										$art['can'] = $inslis[$i]['prese']['can'];
-										$res = ArticuloExiste (&$art, &$error);
+										$res = ArticuloExiste ($art, $error);
 										if ($res)
 										{
-											$res = TarifaSaldoMatrix($art, $centro, $tipTrans, $aprov, &$error);
+											$res = TarifaSaldoMatrix($art, $centro, $tipTrans, $aprov, $error);
 											if ($res)
 											{
 												$fin = 1;
@@ -1399,14 +1399,14 @@ else
 
 								if (isset($fin))
 								{
-									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, &$date, $cns, &$dronum, &$drolin, true, $usu, &$error);
+									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
 									$ind = 1;
-									grabarEncabezadoEntradaMatrix(&$codigo, &$consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
+									grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
 									$dato = $var . "-" . $cod;
 									grabarDetalleEntradaMatrix($cod, $codigo, $consecutivo, $wusuario, '', $dato, '', '');
 									sumarArticuloMatrix($cod, $cco, 'on', $var);
 									anularCargo($cco, $historia . '-' . $ingreso, $cod, $var, 'on');
-									grabarEncabezadoSalidaMatrix(&$codigo, &$consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
+									grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
 									for ($i = 0; $i < count($inslis); $i++)
 									{
 										if ($inslis[$i]['prese']['can'] > 0 and $inslis[$i]['aju']['can'] > 0) // No hay ajuste de presentacion
@@ -1435,7 +1435,7 @@ else
 											} 
 											else
 											{
-												Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, &$date, $cns, &$dronum, &$drolin, false, $usu, &$error);
+												Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, false, $usu, $error);
 											} 
 
 											// $res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
@@ -1444,7 +1444,7 @@ else
 												// pintarAlerta('EL ARTICULO ' . $presen[$i][$j]['cod'] . ' NO HA PODIDO SER CARGADO A ITDRO');
 												// $art['ubi'] = 'M';
 											// } 
-											$validar = registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, &$error, "000143" );
+											$validar = registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, $error, "000143" );
 											
 											if( $validar ){
 												/***************************************************************************
@@ -1464,11 +1464,11 @@ else
 
 									if (!$centro['apl'])
 									{
-										registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+										registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 									} 
 									else
 									{
-										registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+										registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 										$trans['num'] = $dronum;
 										if ($drolin == 1)
 										{
@@ -1478,7 +1478,7 @@ else
 										{
 											$trans['lin'] = '';
 										} 
-										registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, &$error);
+										registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
 									}
 
 									descargarCarro( $art['cod'], $pac['his'], $pac['ing'], $cco );
@@ -1514,28 +1514,28 @@ else
 						$art['cod'] = $exp[0];
 						$art['neg'] = false;
 						$art['can'] = 1;
-						$res = ArticuloExiste (&$art, &$error);
+						$res = ArticuloExiste ($art, $error);
 						if ($res)
 						{
-							$res = true or TarifaSaldoMatrix($art, $centro, $tipTrans, $aprov, &$error);
+							$res = true or TarifaSaldoMatrix($art, $centro, $tipTrans, $aprov, $error);
 							if ($res)
 							{
 								$centro['apl'] = false;
-								$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+								$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 								if (!$res)
 								{
 									$centro['apl'] = true;
-									$res = validacionDevolucion($centro, $pac, $art, $aprov, false, &$error);
+									$res = validacionDevolucion($centro, $pac, $art, $aprov, false, $error);
 								} 
 
 								if ($res)
 								{
-									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, &$date, $cns, &$dronum, &$drolin, true, $usu, &$error);
-									grabarEncabezadoEntradaMatrix(&$codigo, &$consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
+									Numeracion($pac, $centro['fap'], $tipTrans, $aprov, $centro, $date, $cns, $dronum, $drolin, true, $usu, $error);
+									grabarEncabezadoEntradaMatrix($codigo, $consecutivo, $historia . '-' . $ingreso, $centro['cod'], $wusuario, 'C', $dronum);
 									grabarDetalleEntradaMatrix($cod, $codigo, $consecutivo, $wusuario, $var, '', '', '');
 									sumarArticuloMatrix($cod, $cco, '', $exp[0]);
 									anularCargo($cco, $historia . '-' . $ingreso, $cod, $var, '');
-									grabarEncabezadoSalidaMatrix(&$codigo, &$consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
+									grabarEncabezadoSalidaMatrix($codigo, $consecutivo, $cco, $wusuario, $historia . '-' . $ingreso, $codigo . '-' . $consecutivo);
 									grabarDetalleSalidaMatrix($cod, $codigo, $consecutivo, $wusuario, $var, '', '', '', 1, 1);
 									// $res = registrarItdro($dronum, $drolin, $centro['fap'], date('Y-m-d'), $centro, $pac, $art, &$error);
 									// if (!$res)
@@ -1543,7 +1543,7 @@ else
 										// pintarAlerta('EL ARTICULO NO HA PODIDO SER CARGADO A ITDRO');
 										// $art['ubi'] = 'M';
 									// } 
-									$validar = registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, &$error, "000143" );
+									$validar = registrarDetalleCargo (date('Y-m-d'), $dronum, $drolin, $art, $usu, $error, "000143" );
 									
 									if( $validar ){
 										/***************************************************************************
@@ -1557,11 +1557,11 @@ else
 
 									if (!$centro['apl'])
 									{
-										registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+										registrarSaldosNoApl($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 									} 
 									else
 									{
-										registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, &$error);
+										registrarSaldosAplicacion($pac, $art, $centro, $aprov, $usu, $tipTrans, false, $error);
 										$trans['num'] = $dronum;
 										if ($drolin == 1)
 										{
@@ -1571,7 +1571,7 @@ else
 										{
 											$trans['lin'] = '';
 										} 
-										registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, &$error);
+										registrarAplicacion($pac, $art, $centro, $aprov, date('Y-m-d'), $ronApl, $usu, $tipTrans, $dronum, $drolin, $error);
 									}
 
 									descargarCarro2( $art['cod'], $art['ini'], $pac['his'], $pac['ing'], $cco );

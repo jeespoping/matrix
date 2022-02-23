@@ -4152,8 +4152,13 @@ else
 	
 
 	
-	$wactualiz = "Noviembre 04 del 2021";
-	encabezadoCM("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica");
+	// $wactualiz = "Noviembre 04 del 2021";
+	// encabezadoCM("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica");
+
+	$wactualiz = '2022-02-16';
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
+	encabezado("PRODUCCI&Oacute;N CENTRAL DE MEZCLAS	 ",$wactualiz, $wbasedato1);
 	
 	if (!isset($tipo))
 	{

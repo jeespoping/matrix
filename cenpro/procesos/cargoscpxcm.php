@@ -3807,14 +3807,10 @@ function pintarTitulo($tipo)
 		return;
 	}
 	
-	$wactualiz = '2022-02-16';
-	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-	$wbasedato1 = strtolower( $institucion->baseDeDatos );
-	encabezado("PRODUCCI&Oacute;N CENTRAL DE MEZCLAS	 ",$wactualiz, $wbasedato1);
 
 	echo "<table ALIGN=CENTER width='50%'>";
 	// echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-	echo "<tr><td class='titulo1'>PRODUCCION CENTRAL DE MEZCLAS</td></tr>";
+	// echo "<tr><td class='titulo1'>PRODUCCION CENTRAL DE MEZCLAS</td></tr>";
 	echo "<tr><td class='titulo2'>Fecha: " . date('Y-m-d') . "&nbsp Hora: " . (string)date("H:i:s") . "</td></tr></table></br>";
 
 	if ($tipo == 'C')
@@ -4852,6 +4848,11 @@ if(  isset($pda) && $pda == 'on' ){
 	}
 }
 
+$wactualiz = '2022-02-16';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("PRODUCCI&Oacute;N CENTRAL DE MEZCLAS	 ",$wactualiz, $wbasedato1);
+
 session_start();
 if ( !isset($user) || $user == "" )
 {
@@ -4900,7 +4901,7 @@ else
 		$cantidad = 0;
 
 	global $wemp_pmla;	
-	include_once( "conex.php" );
+	// include_once( "conex.php" );
 	include_once( "cenpro/cargos.inc.php" );
 	
 	//$wbasedato = 'cenpro';
