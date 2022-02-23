@@ -441,7 +441,9 @@ if(isset($artcod))
  * La función registrarError() se llama enviando como parámetro el arreglo, con esto se registra el error en la tabla 000005 y seeobtiene la clase "class" que se mostrara en la pantalla. 
  * Es decir, cuando hay un error la tabla debe cambiar de color para indicarselo al usuario, ese cambio de color esta dictado por el class del <td>, lo que se obtiene
  * es el valor de class para el <td>
+ *
  * 
+ * @modified Enero 11 de 2022 (Marlon Osorio)  - Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico y Central de Mezclas 
  * @modified Agosto 28 de 2019  (Edwin)   	   - Si se están actualizando tarifas no se permite dispensar
  * @modified Agosto 06 de 2018  (Edwin)   	   - Las validaciones de paciente activo se hacen con respecto a matrix
  * @modified Marzo 01 de 2018  (Edwin)   	   - Se modifica script para que se inserte el cco de donde se dispenda y el nombre del médico tratante en la tabla de lotes(cliame 000240) 
@@ -1052,6 +1054,9 @@ function consultarRegistroKardexPorArticulo( $art, $pac, &$rowsConsulta ){
 	global $conex;
 	global $fecDispensacion;
 	global $serviciofarmaceutico;
+	global $wemp_pmla;
+
+	$ccoSF = ccoUnificadoSF();
 	
 	$sql = "SELECT
 				Kadart, Kadido, Kadess, Kadcfr, Kadcma, Kadper, Pertip, Defcas
@@ -1066,7 +1071,7 @@ function consultarRegistroKardexPorArticulo( $art, $pac, &$rowsConsulta ){
 				AND Kadest = 'on'
 				AND Kadper = Percod
 				AND Defart = Kadart
-				AND Defcco = '".$serviciofarmaceutico."'
+				AND Defcco = '{$ccoSF}'
 				";
 				
 	$res = mysql_query( $sql, $conex ) or die( mysql_error()." - Error en el query $sql - ".mysql_error() );
@@ -2186,6 +2191,7 @@ function ArticulosXPaciente( $pac ){
 	global $centraldemezclas;
 	global $fecDispensacion;
 	global $emp;
+	global $wemp_pmla;
 //	global $wcenmez;
 	
 	$datos = array();		//Guarda los articulos con saldo positivos
@@ -2957,14 +2963,17 @@ include_once("movhos/cargosSF.inc.php");
 include_once("ips/funciones_facturacionERP.php");
 
 $wtitulo = "DISPENSACION ARTICULOS";
-$wactualiz = "Octbure 10 de 2016";
+$wactualiz = "Febrero 21 de 2022";
 encabezado($wtitulo, $wactualiz, 'clinica');
 
 if( !$existeFacturacionERP )
 	unset($facturacionErp);
 
-$serviciofarmaceutico = '1050';
-$centraldemezclas = '1051';
+$serviciofarmaceutico = ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+$centraldemezclas = ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+
+$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
 echo "<center><table border='0'>";
 
@@ -4397,7 +4406,7 @@ else{
 													// $ronApl=date("G:i - A");
 													$ronApl2=gmdate("H:00 - A", floor( date( "H" )/2 )*2*3600 );
 													registrarAplicacion($pac, $art2, $cco,$aprov,$fecApl2,$ronApl2, $usuario, $tipTrans, $dronum,$ardrolin2[ $art2['cod'] ], $error);
-													actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art2, $dronum, $ardrolin2[ $art2['cod'] ], 1050 );
+													actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art2, $dronum, $ardrolin2[ $art2['cod'] ], $ccoSF );
 												}
 												
 												mysql_data_seek( $resAut, 0 );	//reseteo nuevamente la consulta por si toca hacer la aplicación automática
@@ -4453,7 +4462,7 @@ else{
 												$artValido = registrarAplicacion($pac, $art, $cco,$aprov,$fecApl,$ronApl, $usuario, $tipTrans, $dronum, $drolin, $error);
 												$registroAplicacion = true;	//Mayo 6 de 2011
 												
-												actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, 1050 );	//Noviembre 8 de 2011
+												actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, $ccoSF );	//Noviembre 8 de 2011
 											}
 										}
 										else
@@ -4520,7 +4529,7 @@ else{
 														$artValido = registrarAplicacion($pac, $art, $cco,$aprov,$fecApl,$ronApl, $usuario, $tipTrans,$dronum,$drolin, $error);
 														$registroAplicacion = true;	//Mayo 6 de 2011
 														
-														actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, 1050 );	//Noviembre 8 de 2011												
+														actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, $ccoSF );	//Noviembre 8 de 2011												
 													}
 												}
 												// else{

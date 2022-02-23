@@ -280,6 +280,8 @@ include_once("conex.php");
 //=============================================================================================================================================\\
 //M O D I F I C A C I O N E S                                                                                                                  \\
 //=============================================================================================================================================\\
+// Febrero 20 de 2022 Marlon Osorio: -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico                                   \\
+//=============================================================================================================================================\\
 // Enero 08 de 2021	Edwin MG:		- Se corrige mensaje de rondas anteriores pendientes para la aplicación de medicamentos.
 //=============================================================================================================================================\\
 // Diciembre 10 de 219	Edwin MG:	- Si es un cco de ayuda dx, no se valida el saldo en carro debido a que un cco de ayuda dx no tiene saldo  \\
@@ -500,7 +502,7 @@ else
   $wusuario=trim($wuser1[1]);
 
      	                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Octubre 27 de 2021";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="Febrero 20 de 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 	$wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
@@ -2333,14 +2335,16 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
     {
 	 global $conex;
 	 global $wbasedato;
+	 global $wemp_pmla;
 
+	 $ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 	 //=======================================================================================================
 	 //Busco si el articulo hace parte del stock     Febrero 8 de 2011
 	 //=======================================================================================================
 	 $q = " SELECT COUNT(*) "
 	     ."   FROM ".$wbasedato."_000059 "
 	     ."  WHERE (defcco = '".trim($wcco)."' "
-		 ."     OR  defcco = '1050') "
+		 ."     OR  defcco = '{$ccoSF}') "
 	     ."    AND  defart = '".$wart."'"
 	     ."    AND  defest = 'on' "
 		 ."    AND  defipo = 'on' ";
@@ -3451,8 +3455,9 @@ function validar_ipods($wcco)
 
 					$wcco1=explode("-",$wcco);
 
+					$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
-					$dosVar = consultarDosisVariable( $conex, $wbasedato, $row[1], '1050', $wcco1 );
+					$dosVar = consultarDosisVariable( $conex, $wbasedato, $row[1], $ccoSF, $wcco1 );
 
 					//===============================================================
 					//Paso la hora a formato de 12 horas

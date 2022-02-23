@@ -876,9 +876,11 @@ else
 
         $wusuario=$wuser;
 
-        $wactualiz="2019-09-26";
+        $wactualiz="Febrero 21 de 2022";
 		
 		$horasPares = 12;
+        //=========================================================================================================================
+        // 2022-02-21 Marlon Osorio         Se parametriza los centros de costos 1050 y 1051
         //=========================================================================================================================
         // 2021-05-12 Juan David Rodriguez. Se agrega validación para que se haga consulta a las tablas backup de movhos_000015
         //                                  ubicadas en la base de datos matrixp, se agrega configuración en root_000051 (Detapl = 'hoja_medicamentos_historica'), 
@@ -1165,12 +1167,16 @@ else
           {
            global $conex;
            global $wbasedato;
+           global $wemp_pmla;
+
+           $ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+           $ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
            $wdos_apl=$wcan_apl;    //Dosis
 
            $q = " SELECT deffra, deffru "
                ."   FROM ".$wbasedato."_000059 "
-               ."  WHERE defcco in ('1050','1051')"
+               ."  WHERE defcco in ('{$ccoSF}','{$ccoCM}')"
                ."    AND defart = '".$wart."'"
                ."    AND defest = 'on' ";
            $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());

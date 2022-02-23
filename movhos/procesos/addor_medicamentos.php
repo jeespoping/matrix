@@ -1,6 +1,6 @@
 <?php
 include_once("conex.php");
-$wactualiz = "2013-04-09";
+$wactualiz = "Febrero 20 de 2022";
 /*
  PROGRAMA                   : addor_medicamentos.php
  AUTOR                      : Edwar Jaramillo.
@@ -84,11 +84,12 @@ elseif(!isset($_SESSION['user']) && !isset($accion))
 }
 $user_session = explode('-',$_SESSION['user']);
 $user_session = $user_session[1];
+$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
 /** DICCIONARIO **/
 define("LATIN1_UC_CHARS", "ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝ");
 define("LATIN1_LC_CHARS", "àáâãäåæçèéêëìíîïðñòóôõöøùúûüý");
-define("CENTRO_COSTO_FIJO", "1050");
+define("CENTRO_COSTO_FIJO", $ccoSF);
 define("MSJ1_CODIGO_CUM", "Ej. 123456789-01.");
 define("MSJ1_CONVERSION_CUM", "Este n&uacute;mero permite convertir la presentaci&oacute;n interna (Unidad interna) de un articulo a la presentaci&oacute;n CUM (Unidad nacional).");
 define("MSJ2_CONVERSION_CUM", "(Debe ser un n&uacute;mero entre cero y uno Ej. 0, 0.001, 0.5, 1, 1.00)");

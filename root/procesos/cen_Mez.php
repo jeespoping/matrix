@@ -1625,6 +1625,7 @@ function eliminarInsumo($lista, $index)
 function pintarTitulo()
 {
 
+	global $wemp_pmla;
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 	echo "<tr><td class='titulo1'>PRODUCCION CENTRAL DE MEZCLAS</td></tr>";
@@ -1635,6 +1636,7 @@ function pintarTitulo()
 	echo "<tr><a href='cen_Mez.php?wbasedato=cen_mez'><td class='texto6' width='15%'>PRODUCTOS</td></a>";
 	echo "<a href='lotes.php?wbasedato=lotes.php'><td class='texto5' width='15%'>LOTES</td></a>";
 	echo "<a href='cargos.php?wbasedato=lotes.php&tipo=C'><td class='texto5' width='15%'>CARGOS A PACIENTES</td></a>";
+	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<a href='pos.php?wbasedato=lotes.php&tipo=A'><td class='texto5' width='15%'>VENTA EXTERNA</td></TR></a>";
 	//echo "<a href='cargos.php?wbasedato=lotes.php&tipo=A'><td class='texto5' width='15%'>AVERIAS</td></a>";
 	//echo "<a href='descarte.php?wbasedato=cenmez'><td class='texto5' width='15%'>DESCARTES</td></TR></a>";

@@ -11,6 +11,7 @@ include_once("conex.php");
  *********************************************************************************************************
  
  Actualizaciones:
+ 2022-02-21 (Marlon Osorio) Se Parametrizan el centro de costos 1050 de Dispensacion Servicio Farmaceutico
  2018-09-06 (Edwin MG)	Se modfican los queries con UNIX_TIMESTAMP y las columnas entrega camillero-pedido y Promedio entrega camillero-dispensación se comentan
  2013-11-07 (Jonatan Lopez)
 			Se agrega la mismo consulta con "UNION" de la tabla movhos_000143 donde se use la tabla 000003 de movhos, 
@@ -301,6 +302,7 @@ function ejecutarConsulta($wcco_origen, $wcco_destino, $wfecha_inicio, $wfecha_f
 		global $tablaTemporal000093;
 		global $tablaTemporal000053;
 		global $tablaTemporalcencam03;
+		global $wemp_pmla;
 		
 		//$SALIDA="";
 		
@@ -342,7 +344,9 @@ function ejecutarConsulta($wcco_origen, $wcco_destino, $wfecha_inicio, $wfecha_f
 		 $exp = explode( "-", $wcco_origen );
 		 $wcco_origen =  $exp[0];
 		 
-		if( $wcco_origen == '1050' ){
+		$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+		
+		if( $wcco_origen == $ccoSF ){
 			$origen = 'SF';
 		}
 		else{

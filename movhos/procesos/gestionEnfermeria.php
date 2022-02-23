@@ -7261,7 +7261,9 @@ class habitacion{
 		$info[ 'msgSaldo' ] = $wmensaje;
 		$info[ 'idOriginal' ] = $idOriginal;
 
-		$info[ 'dosisVariable' ] = consultarDosisVariable( $conex, $wbasedato, $codigoArticulo, '1050', $this->cco );
+		$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+
+		$info[ 'dosisVariable' ] = consultarDosisVariable( $conex, $wbasedato, $codigoArticulo, $ccoSF, $this->cco );
 
 		$info[ 'indexMed' ] = $this->numMedicamentos[ $ronda ];
 

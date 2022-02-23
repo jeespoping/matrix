@@ -98,6 +98,7 @@ Aplicacion:cenpro
 Fecha de creacion: 2007-05-30
 Autor: Carolina Castano P
 Ultima actualizacion:
+2022-02-22   Marlon Osorio       Este Script no tiene Origen, ni ningun llamado por parte de otro script (No esta en la root_21 ni otro archivo)
 2007-07-18   Carolina Castano P  Se despliega cada vez lo que se ha cargado en el dia
 2007-07-13   Carolina Castano P  Se permite realiza una secuencia de cargos para varias dosis de un producto
 2007-07-06   Carolina Castano P  Publicacion a produccion
@@ -2624,8 +2625,10 @@ function pintarTitulo($tipo)
  */
 function pintarBusqueda($consultas, $forcon, $tipo)
 {
+	global $emp;
 	echo "<table border=0 ALIGN=CENTER width=90%>";
 	echo "<form name='producto2' action='cargos.php' method=post>";
+	echo "<input type='hidden' name='emp' id='emp' value='".$emp."'>";
 	echo "<tr><td class='titulo3' colspan='3' align='center'>Consulta: ";
 	echo "<select name='forcon' class='texto5' onchange='enter7()'>";
 	echo "<option>".$forcon."</option>";
@@ -2725,7 +2728,9 @@ function pintarBusqueda($consultas, $forcon, $tipo)
  */
 function pintarFormulario($estado, $ccos, $numtra, $tipo, $historia, $destinos, $fecha, $ingreso, $nombre, $habitacion, $crear, $numcan)
 {
+	global $emp;
 	echo "<form name='producto3' action='cargos.php' method=post>";
+	echo "<input type='hidden' name='emp' id='emp' value='".$emp."'>";
 	echo "<input type='hidden' name='tipo' value='".$tipo."'>";
 	echo "<tr><td colspan=3 class='titulo3' align='center'><INPUT TYPE='submit' NAME='NUEVO' VALUE='Nuevo' class='texto5' ></td></tr>";
 	echo "</table></form>";

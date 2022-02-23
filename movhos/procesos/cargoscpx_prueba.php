@@ -4583,8 +4583,11 @@ function ArticulosXPacienteCM( $pac ){
 //	global $wcenmez;
 
 	global $idsArtsConSaldo;
-	
+
 	global $emp;
+
+	$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+
 
 	if( $tipTrans == "C" ){
 
@@ -4913,7 +4916,7 @@ function ArticulosXPacienteCM( $pac ){
 							$canAplicadaRepAan = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $aanArt, max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 ), '', $fechorTrasladoRep );
 							
 							//Es la cantidad aplicada con el medicamento anterior, debo traducirlo al actual
-							$aanFracc = consultarFraccionPorArticulo( $conex, $bd, $aanArt, '1050' );
+							$aanFracc = consultarFraccionPorArticulo( $conex, $bd, $aanArt, $ccoSF );
 							
 							if( $aanFracc['unidad'] == $r['Kadcfr'] ){
 								$canAplicadaRepAan = $canAplicadaRepAan*$aanFracc['fraccion']/$r[ 'Kadcma' ];
@@ -5329,6 +5332,9 @@ function ArticulosXPaciente( $pac ){
 	global $idsArtsConSaldo;
 	
 	global $emp;
+
+	$ccoSF = ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+
 
 	if( $tipTrans == "C" ){
 
@@ -5789,7 +5795,7 @@ function ArticulosXPaciente( $pac ){
 							$canAplicadaRepAan = consultarCantidadAplicaciones( $conex, $bd, $pac['his'], $pac['ing'], $aanArt, max( strtotime( $r[ 'Kadfin' ]." ".$r[ 'Kadhin' ] ), time()-$antHoras*3600 ), min( time()+$corteDispensacion, strtotime( date( "Y-m-d" )." $horaCorteDispensacion:00:00" )+24*3600 ), '', $fechorTrasladoRep );
 							
 							//Es la cantidad aplicada con el medicamento anterior, debo traducirlo al actual
-							$aanFracc = consultarFraccionPorArticulo( $conex, $bd, $aanArt, '1050' );
+							$aanFracc = consultarFraccionPorArticulo( $conex, $bd, $aanArt, $ccoSF );
 							
 							if( $aanFracc['unidad'] == $r['Kadcfr'] ){
 								$canAplicadaRepAan = $canAplicadaRepAan*$aanFracc['fraccion']/$r[ 'Kadcma' ];
@@ -7021,8 +7027,12 @@ if( !$existeFacturacionERP )
 if( !isset($facturacionErp) ){
 encabezado($wtitulo, $wactualiz, 'clinica');
 
-$serviciofarmaceutico = '1050';
-$centraldemezclas = '1051';
+$serviciofarmaceutico = ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
+$centraldemezclas = ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+
+
+$ccoCM=ccoUnificadoCM(); //Se obtiene el Codigo de Central de Mezclas
+$ccoSF=ccoUnificadoSF(); //Se obtiene el Codigo de Dispensacion
 
 $tempRonda = "";
 $huboReemplazo = false;
@@ -8071,7 +8081,7 @@ else{
 												AND kadart = '".$artEq[ 'Areces' ]."'
 												AND defart = kadart
 												AND defest = 'on'
-												AND defcco = '1050'
+												AND defcco = '{$ccoSF}'
 												AND kadsus != 'on'
 												AND kadare = 'on'
 												AND kadest = 'on'
@@ -8405,7 +8415,7 @@ else{
 											// $ronApl=date("G:i - A");
 											$ronApl2=gmdate("H:00 - A", floor( date( "H" )/2 )*2*3600 );
 											registrarAplicacion($pac, $art2, $cco,$aprov,$fecApl2,$ronApl2, $usuario, $tipTrans, $dronum,$ardrolin2[ $art2['cod'] ], &$error);
-											actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art2, $dronum, $ardrolin2[ $art2['cod'] ], 1050 );
+											actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art2, $dronum, $ardrolin2[ $art2['cod'] ], $ccoSF );
 										}
 
 										mysql_data_seek( $resAut, 0 );	//reseteo nuevamente la consulta por si toca hacer la aplicación automática
@@ -8471,7 +8481,7 @@ else{
 										$artValido = registrarAplicacion($pac, $art, $cco,$aprov,$fecApl,$ronApl, $usuario, $tipTrans, $dronum, $drolin, &$error);
 										$registroAplicacion = true;	//Mayo 6 de 2011
 
-										actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, 1050 );	//Noviembre 8 de 2011
+										actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, $ccoSF );	//Noviembre 8 de 2011
 									}
 								}
 								else
@@ -8531,7 +8541,7 @@ else{
 												$artValido = registrarAplicacion($pac, $art, $cco,$aprov,$fecApl,$ronApl, $usuario, $tipTrans,$dronum,$drolin, &$error);
 												$registroAplicacion = true;	//Mayo 6 de 2011
 
-												actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, 1050 );	//Noviembre 8 de 2011
+												actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, $ccoSF );	//Noviembre 8 de 2011
 											}
 										}
 									}
@@ -8765,7 +8775,7 @@ else{
 												AND kadart = '".$artEq[ 'Areces' ]."'
 												AND defart = kadart
 												AND defest = 'on'
-												AND defcco = '1050'
+												AND defcco = '{$ccoSF}'
 												AND kadsus != 'on'
 												AND kadare = 'on'
 												AND kadest = 'on'
@@ -9060,7 +9070,7 @@ else{
 										// $ronApl=date("G:i - A");
 										$ronApl2=gmdate("H:00 - A", floor( date( "H" )/2 )*2*3600 );
 										registrarAplicacion($pac, $art2, $cco,$aprov,$fecApl2,$ronApl2, $usuario, $tipTrans, $dronum,$ardrolin2[ $art2['cod'] ], &$error);
-										actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art2, $dronum, $ardrolin2[ $art2['cod'] ], 1050 );
+										actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art2, $dronum, $ardrolin2[ $art2['cod'] ], $ccoSF );
 									}
 
 									mysql_data_seek( $resAut, 0 );	//reseteo nuevamente la consulta por si toca hacer la aplicación automática
@@ -9138,7 +9148,7 @@ else{
 									$artValido = registrarAplicacion($pac, $art, $cco,$aprov,$fecApl,$ronApl, $usuario, $tipTrans, $dronum,$drolin, &$error);
 									$registroAplicacion = true;	//Mayo 6 de 2011
 
-									actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, 1050 );	//Noviembre 8 de 2011
+									actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, $ccoSF );	//Noviembre 8 de 2011
 								}
 							}
 							else
@@ -9203,7 +9213,7 @@ else{
 											$artValido = registrarAplicacion($pac, $art, $cco,$aprov,$fecApl,$ronApl, $usuario, $tipTrans, $dronum, $drolin, &$error);
 											$registroAplicacion = true;	//Mayo 6 de 2011
 
-											actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, 1050 );	//Noviembre 8 de 2011
+											actualizandoAplicacionFraccion( $pac['his'], $pac['ing'], $cco, $art, $dronum, $drolin, $ccoSF );	//Noviembre 8 de 2011
 
 										}
 									}
