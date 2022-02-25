@@ -27,7 +27,7 @@
 	if(!isset($_SESSION['user']))
 		exit( "<b>Usuario no registrado" );
 
-    $wactualiz = '2021-11-24';
+    $wactualiz = '2021-12-26';
     date_default_timezone_set("America/Bogota");
     // include('./config/db_connect.php');
     include_once("conex.php");
