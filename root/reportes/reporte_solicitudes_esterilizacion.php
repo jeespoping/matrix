@@ -102,19 +102,36 @@ else
 	}
 
 	//Consulta los centros de costos de las solicitudes despachadas para mostrar en los datos de consulta del reporte
-	function centroCostosSolicitudesDespachadas($wemp_pmla,$tipo)
+	function centroCostosSolicitudesDespachadas($wemp_pmla,$tipo, $sCodigoSede = NULL)
 	{
 		global $wbasedato;
 		global $conex;
+		global $wmovhos;
+
+		$sFiltroSede='';
+   
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 					
-		$query = "SELECT DISTINCT Reqccs 
-					FROM root_000040 
+		$query = "SELECT DISTINCT Reqccs
+					FROM root_000040, ".$wmovhos."_000011
 					WHERE Reqcco='(01)1082' 
 					  AND Reqtip='".$tipo."' 
 					  AND (Reqcla='42' OR Reqcla='43')
 					  AND Reqest='05'
 					  AND Reqccs !=''
+					  AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede}) 
 				 ORDER BY Reqccs;";
+
+		echo $query;
 		
 		$resultado = mysql_query($query,$conex) or die("Error: " . mysql_errno() . " - en el query: ".$query." - ".mysql_error());
 		$num_rows = mysql_num_rows($resultado);
@@ -176,6 +193,7 @@ else
 		global $wbasedato;
 		global $conex;	
 		global $wfecha;
+		global $selectsede;
 		
 		$fechaactual = strtotime(date('Y-m-d'));
 		$datePrimerDia = strtotime("first day of this month", $fechaactual);
@@ -187,7 +205,7 @@ else
 		
 		$tipoRequerimiento = consultarAliasPorAplicacion($conex, $wemp_pmla, 'ReqCentralEsterilizacion');
 		
-		$CentrosCosto=centroCostosSolicitudesDespachadas($wemp_pmla,$tipoRequerimiento); // Mostrar los centros de costos con solicitudes despachadas
+		$CentrosCosto=centroCostosSolicitudesDespachadas($wemp_pmla,$tipoRequerimiento, $selectsede); // Mostrar los centros de costos con solicitudes despachadas
 		
 		if(count($CentrosCosto)>0)
 		{
@@ -1093,7 +1111,7 @@ else
 	
 	?>
 	<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='<?php echo $wemp_pmla ?>'>
-	<input type='hidden' id='sede' name='sede' value='<?php echo $selectsede ?>'>
+	<input type='' id='sede' name='sede' value='<?php echo $selectsede ?>'>
 	
 	<?php
 	
