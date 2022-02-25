@@ -9,9 +9,10 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2016-07-18';
+			$wactualiz='2021-11-12';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-//                
+// MODIFICAICONES
+// 2021-11-12 - Juan David Rodriguez: Modificación de tilde en encabezado.             
 //
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -263,7 +264,7 @@ else
 	?>
 	<html>
 	<head>
-	  <title>Reporte resolución 0256 de 2016</title>
+	<title>Reporte resoluci&oacute;n 0256 de 2016</title>
 	</head>
 	
 		<meta charset="UTF-8">
@@ -450,7 +451,7 @@ else
 	<BODY>
 	<?php
 	// -->	ENCABEZADO
-	encabezado("Reporte resolución 0256 de 2016", $wactualiz, 'clinica');
+	encabezado("Reporte resoluci&oacute;n 0256 de 2016", $wactualiz, 'clinica');
 	echo "
 	<input type='hidden' id='wemp_pmla' value='".$wemp_pmla."'>
 	<div align='center'>

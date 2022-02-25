@@ -874,6 +874,8 @@ include_once( "root/comun.php" );
 
 include_once( "./funcionesGenerales.php" );
 	
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+
 $conex = obtenerConexionBD( "matrix" );
 
 $key = substr($user, 2, strlen($user));
@@ -883,8 +885,8 @@ if( @$consultaAjax ){
 	switch( $consultaAjax ){
 		
 		case 10:
-//			registrarIngreso( $his, $ing, $tin, $emp, $doc, $idc, utf8_decode( $aco ), utf8_decode( $mre ), utf8_decode( $cex ), utf8_decode( $dia ) );
-			registrarIngreso( $his, $ing, $tin, $emp, $doc, $idc, $aco, $mre, $cex, $dia, $eps, $nre, $tre, $par, $tvi, $tac );
+		//	registrarIngreso( $his, $ing, $tin, $emp, $doc, $idc, utf8_decode( $aco ), utf8_decode( $mre ), utf8_decode( $cex ), utf8_decode( $dia ) );
+		registrarIngreso( $his, $ing, $tin, $emp, $doc, $idc, $aco, $mre, $cex, $dia, $eps, $nre, $tre, $par, $tvi, $tac );			
 			break;
 			
 		case 11:
@@ -935,22 +937,22 @@ else{
 		
 		if( $numrows > 1 ){
 			
-//			encabezado( "AGENDAS MEDICAS", "2010-01-13", "fmatrix" );
-//			
-//			echo "<br><br>";
-//			
-//			echo "<center><b>AGENDAS MEDICAS</b></center><br>";
-			
-			for( $i = 0; $rows=mysql_fetch_array( $res ); $i++ ){
-				
-				$doc = $rows['Medusu'];
-				
-//				echo "<center>";
-//				echo "<br><br>";
-//				echo "<a href='agendaMedicaConsultorio.php?doc={$rows['Medusu']}'>";
-//				echo "Agenda Médicas del Dr. ".strtoupper( $rows['Mednom'] );
-//				echo "</a>";
-//				echo "</center>";
+			//			encabezado( "AGENDAS MEDICAS", "2010-01-13", "fmatrix" );
+			//			
+			//			echo "<br><br>";
+			//			
+			//			echo "<center><b>AGENDAS MEDICAS</b></center><br>";
+						
+						for( $i = 0; $rows=mysql_fetch_array( $res ); $i++ ){
+							
+							$doc = $rows['Medusu'];
+							
+			//				echo "<center>";
+			//				echo "<br><br>";
+			//				echo "<a href='agendaMedicaConsultorio.php?doc={$rows['Medusu']}'>";
+			//				echo "Agenda Médicas del Dr. ".strtoupper( $rows['Mednom'] );
+			//				echo "</a>";
+			//				echo "</center>";
 				
 			}
 		}
@@ -970,7 +972,7 @@ else{
 		$wbasedato = $infoMedico->bdHC;
 		$wbasecitas = $infoMedico->bdCitas;
 		
-		$wemp_pmla = '01';
+		//$wemp_pmla = '01';
 		
 		if(!isset($wemp_pmla)){
 			terminarEjecucion($MSJ_ERROR_FALTA_PARAMETRO."wemp_pmla");
@@ -1014,7 +1016,7 @@ else{
 	
 			if( this.asc ){
 				var xajax = this.ajax;
-	//			this.ajax.onreadystatechange = this.fnchange;
+				//	this.ajax.onreadystatechange = this.fnchange;
 				this.ajax.onreadystatechange = function(){ fn( xajax ) };
 				
 				if ( !estaEnProceso(this.ajax) ) {
@@ -1057,7 +1059,7 @@ else{
 		if( XMLHttpRequestObject ){
 	
 			XMLHttpRequestObject.open( "GET", pagina+"?consultaAjax="+optajax+add, asc );
-	//		XMLHttpRequestObject.onreadystatechange = cambioEstadoAjax;
+			//		XMLHttpRequestObject.onreadystatechange = cambioEstadoAjax;
 			XMLHttpRequestObject.send( null );
 	
 			if( asc == false ){
@@ -1258,7 +1260,7 @@ else{
 
 			document.getElementById( 'dvPiePagina' ).style.display = 'none';
 
-//			clearInterval( idInterval );
+			//			clearInterval( idInterval );
 
 			var tbAdmision = document.getElementById( "tbAdmision" );
 			tbAdmision.style.display = "";
@@ -1340,7 +1342,7 @@ else{
 			document.forms[0].elements['txCex'].value = '';
 			
 
-//			idInterval = setTimeout( "actualizarDatos()", 60000 );
+			//			idInterval = setTimeout( "actualizarDatos()", 60000 );
 		}
 	}
 
@@ -1362,7 +1364,7 @@ else{
 				cuadroDeDialogo( "Debe seleccionar una EPS" );
 			}
 			else if( slTin.options[ slTin.selectedIndex ].text != "01-CONSULTA" && info[ info.selectedIndex ].ing == 0 ){
-//				alert( "Debe elegir la opcion de CONSULTA" );
+					//				alert( "Debe elegir la opcion de CONSULTA" );
 				cuadroDeDialogo( "Debe elegir la opcion de CONSULTA" );
 			}
 			// Se quita esta validación ya que el profesional de la salud puede no hacer la HCE
@@ -1560,7 +1562,7 @@ else{
 			
 			echo "<div id='dvPacientes'>";
 			generarTablaPacientes( strtoupper( $doctorName ), $infoMedico->codigo );
-//			
+
 			admisionPacientes( $infoMedico->codigo );
 			echo "</div>";
 			
@@ -1578,7 +1580,7 @@ else{
 			echo "<center>"; 
 			echo "<a id='lkCita' href='../../citas/procesos/000001_prx5.php?empresa=$wbasecitas&wemp_pmla=$wemp_pmla' target='_blank'>Asignar cita</a>";
 			echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-//			echo "<a id='lkImpresion' href='impresion.php?doc={$infoMedico->codigo}' target='_blank'>Consultar e imprimir</a>";
+				//			echo "<a id='lkImpresion' href='impresion.php?doc={$infoMedico->codigo}' target='_blank'>Consultar e imprimir</a>";
 			echo "<a id='lkImpresion' href='../../{$infoMedico->grupoSolucion}/procesos/impresion.php?doc={$infoMedico->codigo}' target='_blank'>Consultar e imprimir</a>";
 			echo "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			echo "<a href='javascript: document.forms[0].submit();'>Recargar Página</a>";
@@ -1589,7 +1591,7 @@ else{
 			echo "<center><INPUT type='button' value='Cerrar ventana' style='width:150' onClick='javascript: cerrarVentana();'></center>";
 			echo "</div>";
 			
-//			echo "<meta http-equiv='refresh' content='10;url=agendaMedicaConsultorio.php?doc={$infoMedico->codigo}'>";
+				//			echo "<meta http-equiv='refresh' content='10;url=agendaMedicaConsultorio.php?doc={$infoMedico->codigo}'>";
 	
 			echo "<INPUT type='hidden' name='wbasedato' value='$wbasedato'>";
 			echo "<INPUT type='hidden' name='wbasecitas' value='$wbasecitas'>";
