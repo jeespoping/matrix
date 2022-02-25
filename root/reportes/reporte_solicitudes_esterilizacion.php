@@ -20,7 +20,7 @@ include_once("conex.php");
 // 						  costosyp_000072
 // 2016-09-20			Se corrige warning array vacio por cantidades
 	
-	$wactualiz='Febrero 22 de 2022';
+	$wactualiz='Febrero 25 de 2022';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                     
 
 if(!isset($_SESSION['user']))
@@ -131,7 +131,6 @@ else
 					  AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede}) 
 				 ORDER BY Reqccs;";
 
-		echo $query;
 		
 		$resultado = mysql_query($query,$conex) or die("Error: " . mysql_errno() . " - en el query: ".$query." - ".mysql_error());
 		$num_rows = mysql_num_rows($resultado);
@@ -1111,7 +1110,7 @@ else
 	
 	?>
 	<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='<?php echo $wemp_pmla ?>'>
-	<input type='' id='sede' name='sede' value='<?php echo $selectsede ?>'>
+	<input type='hidden' id='sede' name='sede' value='<?php echo $selectsede ?>'>
 	
 	<?php
 	
