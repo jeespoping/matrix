@@ -93,6 +93,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sC
 	global $wcostosyp;
 	global $wmovhos;
     global $wemp_pmla;
+    global $TablaValidacionSede;
 
     $sFiltroSede='';
    
@@ -107,11 +108,38 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sC
 		}
 	}
 
-    
-    echo $bdmovhos;
-
     if ($para == 'recibidos')
     {
+
+        if ($estadosede == 'off')
+        {
+            $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
+            FROM    " . $wbasedato . "_000040 AS r40, usuarios
+            WHERE   (Requrc = '" . $codigo . "' 
+                    OR  Reqpurs = '" . $codigo . "')
+                    AND
+                        (
+                            Reqsat = 'off'
+                            OR
+                            Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on')
+                        )
+                    AND Codigo = Reqpurs AND Reqest <> 6
+            ORDER   BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
+
+        }else{
+            $q = "SELECT Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, r40.Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs, mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)), m11.Cconom
+            FROM " . $wbasedato . "_000040 AS r40, usuarios, ".$TablaValidacionSede." m11
+            WHERE   (Requrc = '" . $codigo . "' 
+                    OR Reqpurs = '" . $codigo . "')
+                    AND ( 
+                            Reqsat = 'off'
+                            OR 
+                            Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin = 'on') 
+                        )
+                    AND Codigo = Reqpurs AND Reqest <> 6
+                    AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede})
+                    ORDER   BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
+        }
 
         // $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
         //         FROM    " . $wbasedato . "_000040 AS r40, usuarios
@@ -125,24 +153,8 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sC
         //                     )
         //                 AND Codigo = Reqpurs AND Reqest <> 6
         //         ORDER   BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
-
-        $q = "SELECT Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, r40.Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs, mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)), m11.Cconom
-            FROM " . $wbasedato . "_000040 AS r40, usuarios, movhos_000011 m11
-            WHERE   (Requrc = '" . $codigo . "' 
-                    OR Reqpurs = '" . $codigo . "')
-                    AND ( 
-                            Reqsat = 'off'
-                            OR 
-                            Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin = 'on') 
-                        )
-                    AND Codigo = Reqpurs AND Reqest <> 6
-                    AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede})
-                    ORDER   BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
-
-        // echo $q;
-         
-       
-          
+                        
+      
 		// $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
                 // FROM    " . $wbasedato . "_000040 AS r40, usuarios
                 // WHERE   (Requrc = '" . $codigo . "'
@@ -557,11 +569,11 @@ function pintarRequerimientos($requerimientos, $para, $orden, $orden2)
         echo "</tr>";
     }
     echo "</table>";
-    echo "<input type='hidden' name='para' id='para' value='" . $para. "'></td>";
-    echo "<input type='hidden' name='orden' id='orden' value='" . $orden . "'></td>";
-    echo "<input type='hidden' name='orden2' id='orden2' value='" . $orden2 . "'></td>";
-    echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";    
-    echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+    // echo "<input type='hidden' name='para' id='para' value='" . $para. "'></td>";
+    // echo "<input type='hidden' name='orden' id='orden' value='" . $orden . "'></td>";
+    // echo "<input type='hidden' name='orden2' id='orden2' value='" . $orden2 . "'></td>";
+    // echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";    
+    // echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
 }
 
 /**
@@ -678,7 +690,7 @@ if (!isset($_SESSION["user"]))
     echo "error";
 else
 {
-    $wacutaliza = "14 de febrero de 2022";
+    $wacutaliza = "25 de febrero de 2022";
     if (!isset ($para))
     {
         $para = 'recibidos';
@@ -732,7 +744,12 @@ else
     {
         pintarAlert2('NO TIENE REQUERIMIENTOS PENDIENTES');
     }
-    $estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+
+    echo "<input type='hidden' name='para' id='para' value='" . $para. "'></td>";
+    echo "<input type='hidden' name='orden' id='orden' value='" . $orden . "'></td>";
+    echo "<input type='hidden' name='orden2' id='orden2' value='" . $orden2 . "'></td>";
+    echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";    
+    echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
 
     echo "<meta http-equiv='refresh' content='40;url=consulta.php?wemp_pmla=".$wemp_pmla."&para=".$para."&orden=".$orden."&orden2=".$orden2."&selectsede=".$selectsede."'>";
 }
