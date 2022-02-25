@@ -3,7 +3,6 @@ include_once("root/comun.php");
 /**
  * Modificaciones
  * =============================================================================================================================================
- * Febrero 24 de 2022		Joel PH		- Se adiciona metodo para obtener la cedula del usuario que grabo el cargo en matrix para enviarlo a hiruko.
  * Octubre 21 de 2020		Edwin MG	- Se cambia el campo de correo electrónico de Correo electrónico del responsalbe(Paccre) por correo de usuario (Paccor)
  * Junio 19 de 2020			Edwin MG	- Se crea función estadoPorInteroperabilidadEsCancelado para indicar si un estado recibido por interoperabilidad
  *										  es cancelado o no
@@ -850,36 +849,6 @@ function interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos,
 		
 	}//hasta aca llega Ordenes cargos automaticos
 }
-
-/**
- * Metodo que permite obtener toda la información del usuario que realizó
- * el proceso de grabación del cargo para enviar sus datos por la interoperabilidad
- * 
- * @author Joel David Payares Hernández
- * @since 2022-02-24
- */
-function informacionUsuarioGrabaCargos($conex, $wemp_pmla, $usuarioGC)
-{
-	$response = null;
-
-	$sql = "
-		  SELECT	Documento 
-			FROM	usuarios 
-		   WHERE	Codigo = '{$usuarioGC}'
-			 AND	Activo = 'A';";
-		//	 AND	Empresa = '{$wemp_pmla}'
-		//;";
-		
-	$res = mysql_query($sql, $conex);
-
-	while($row = mysql_fetch_array($res) )
-	{
-		$response = $row['Documento'];
-	}
-
-	return $response;
-}
-
  switch($_GET['accion']) {
     case 'consultarInteroperabilidades':
 		$wemp_pmla=$_GET['wemp_pmla'];
