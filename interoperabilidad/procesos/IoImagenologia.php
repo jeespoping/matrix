@@ -1974,8 +1974,7 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita )
 					."\nPV1||||||".$procedencia['descripcion']."^".$procedencia['codigo']."||".$medicoNombres."^".$medicoApellidos."^".$medicoNroDocumento."^".$medicoTipoDocumento."||".$sede['descripcion']."^".$sede['codigo']."||"
 					."\nIN1|||".$paciente['codigoResponsable']."|".$paciente['nombreResponsable']."|||".$usuarioGC."||";
 					// ."\nOBR||||".$cup."^".$modalidad."^".$sala."^".$descripcionCUP."|".$prioridad."|";
-echo "\nDocumento: ";
-print_r( $paciente['nroDocumento'] );die();
+
 		if( count($procedimientosCargados) > 0 ){
 			
 			foreach( $procedimientosCargados as $proc ){
