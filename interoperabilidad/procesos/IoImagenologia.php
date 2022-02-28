@@ -1760,7 +1760,7 @@ function agregarMovimiento( $conex, $wemp_pmla, $wmvohos, $datos = [] ){
 	$mvcind 	= empty( $datos['indicaciones'] ) ? '' : $datos['indicaciones'];
 	$mvcmre 	= empty( $datos['medicoRemitente'] ) ? '' : $datos['medicoRemitente'];
 	$seguridad	= 'C-'.$wmvohos;
-
+	
 	//Consultando modalidades y salas
 	$sql = "INSERT INTO 
 				".$wmvohos."_000268( Medico, Fecha_data, Hora_data, Mvcidm, Mvcidh, Mvcida, Mvctdo, Mvcdoc, Mvchis, Mvcing, Mvccco, Mvcfec, Mvchor, Mvcesc, Mvcmod, Mvcsal, Mvcpri, Mvcest, Mvcrec, Mvccci, Mvccup, Mvcsed, Mvctor, Mvcnro, Mvcite, Mvcere, Mvcurl, Mvcurp, Mvcind, Mvcmre, Seguridad )
@@ -1917,8 +1917,8 @@ function crearMensajesHL7ORMAgenda( $conex, $wemp_pmla, $paciente, $datosCita ){
 }
 
 
-function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita )
-{
+function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita ){
+	
 	$whce 	 = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce' );
 	$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
 	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );	
@@ -1932,15 +1932,12 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita )
 	$modalidad	= empty( $datosCita['modalidad'] ) ? '': $datosCita['modalidad'];
 	$prioridad	= empty( $datosCita['prioridad'] ) ? '':  $datosCita['prioridad'];
 	$orden		= empty( $datosCita['tipoOrden'] ) ? '':  $datosCita['tipoOrden'];
-	$usuarioGC	= $datosCita['usuarioGraboCargo'];
 	
 	$procedimientosCargados = consultarProcedimiento( $conex, $wcliame, $datosCita['cup'] );
 	
 	$indicacion	= !empty( $datosCita['indicacion'] ) ? $datosCita['indicacion'] : '';
 	
-	$paciente['direccion'] = str_replace("#", "n", $paciente['direccion']);
-	$paciente['telefono'] = str_replace(" ", "", explode("-", $paciente['telefono'])[0]);
-
+	
 	$medicoNombres			= utf8_decode( trim( $datosCita['medico']->nombre1." ". $datosCita['medico']->nombre2 ) );
 	$medicoApellidos		= utf8_decode( trim( $datosCita['medico']->apellido1." ". $datosCita['medico']->apellido2 ) );
 	$medicoNroDocumento		= $datosCita['medico']->numeroDocumento;
@@ -1972,9 +1969,9 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita )
 					."\nPID||".$paciente['tipoDocumento']."^".$paciente['nroDocumento']."|||".$paciente['nombre1']."^".$paciente['nombre2']."^".$paciente['apellido1']."^".$paciente['apellido2']."||".$paciente['fechaNacimiento']."|".$paciente['genero']."|||".$paciente['direccion']."^^".$paciente['codigomMunicipio']."^".$paciente['codigomDepartamento']."^^CO||".$paciente['celular']."^^^".$paciente['correoElectronico']."^^^".$paciente['telefono']."|"
 					."\nAIS|".$idMatrix."^".$idHiruko."^".$idAgenda."|||".$fechaCita.$horaCita."||||||".$estado."|"
 					."\nPV1||||||".$procedencia['descripcion']."^".$procedencia['codigo']."||".$medicoNombres."^".$medicoApellidos."^".$medicoNroDocumento."^".$medicoTipoDocumento."||".$sede['descripcion']."^".$sede['codigo']."||"
-					."\nIN1|||".$paciente['codigoResponsable']."|".$paciente['nombreResponsable']."|||".$usuarioGC."||";
+					."\nIN1|||".$paciente['codigoResponsable']."|".$paciente['nombreResponsable']."|||||";
 					// ."\nOBR||||".$cup."^".$modalidad."^".$sala."^".$descripcionCUP."|".$prioridad."|";
-
+					
 		if( count($procedimientosCargados) > 0 ){
 			
 			foreach( $procedimientosCargados as $proc ){
@@ -2158,7 +2155,6 @@ if( $_POST ){
 					$idCita 	= $_POST['idCita'];
 					$cco_sede 	= $_POST['cco_sede'];
 					$indicacion	= $_POST['indicacion'] ? $_POST['indicacion'] : '';
-					$usuarioGC = $_POST['ndoUsuarioGC'];
 					
 					$paciente = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 					
@@ -2239,15 +2235,12 @@ if( $_POST ){
 							cambiarEstadoExamen( $conex, $wemp_pmla, $rows['Mvctor'],$rows['Mvcnro'], $rows['Mvcite'], 'PR', date("Y-m-d"), date("H:m:s"), '', $historia, $ingreso );
 					}
 
-					if( !$esHospitalario )
-					{
-						$datosCita['usuarioGraboCargo'] = $usuarioGC;
-
+					if( !$esHospitalario ){
 						// Si es ambulatario
 						$datosCita['sede'] 			= $sede;
 						$datosCita['recepcionado']  = 'on';
 						$datosCita['indicacion']	= $indicacion;
-
+						
 						$medico = new medicoDTO();
 						
 						if( $_POST['medico'] ){
@@ -2257,9 +2250,9 @@ if( $_POST ){
 							$medico->nombre2		= $_POST['medico']['nombre2'];
 							$medico->apellido1		= $_POST['medico']['apellido1'];
 							$medico->apellido2		= $_POST['medico']['apellido2'];
-
-							$datosCita['medico'] = $medico;
 						}
+						
+						$datosCita['medico'] 		= $medico;
 						
 						echo $mensaje = crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita );
 						
@@ -2545,7 +2538,7 @@ if( $_GET ){
 				echo json_encode( $result );
 			break;
 			
-			case 'consultarMaestros':
+			case 'consultarMaestros': 
 				
 				$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
 				$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
@@ -2553,12 +2546,6 @@ if( $_GET ){
 				
 				//Cco desde donde se carga el procedimiento
 				$cco_sede = $_GET['cco_sede'];
-
-				// Código matrix del usuario que grabó el cargo
-				$usuarioGC = $_GET['usuarioGC'];
-
-				// Consulto la información del usuario que graba el cargo del procedimiento
-				$usuario_gc	= informacionUsuarioGrabaCargos( $conex, $wemp_pmla, $usuarioGC );	//función en funcionesGeneralesEnvioHL7
 			
 				//Consulto la información básica del paciente
 				$paciente 	= informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );	//función en funcionesGeneralesEnvioHL7
@@ -2583,7 +2570,6 @@ if( $_GET ){
 				
 				//Consulto todos los maestros respectivos para la sede y los cuales se mostraran en la modal
 				$result = consultarMaestros( $conex, $wemp_pmla, $sede['codigo'] );
-				
 				$result['paciente'] = $paciente;
 				
 				//Solo se muestra la modal si se encuentra una sede para el cco que carga y el cup cargado
@@ -2638,8 +2624,6 @@ if( $_GET ){
 						}
 					}
 				}
-
-				$result['user_gc'] = $usuario_gc;
 				
 				echo json_encode($result);
 			break;

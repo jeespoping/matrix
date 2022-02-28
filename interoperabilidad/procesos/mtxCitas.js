@@ -5,8 +5,6 @@
 		this.ingreso 	= options.ingreso || null;
 		this.wemp_pmla 	= options.wemp_pmla || "01";
 		this.cco_sede 	= options.cco_sede || "";
-		this.user_gc 	= options.usuarioGC || "";
-
 		var fnAccpt		= options.accept || null;
 		
 		var paciente 	= null;
@@ -26,7 +24,6 @@
 			historia			: __self.historia,
 			ingreso				: __self.ingreso,
 			cco_sede			: __self.cco_sede,
-			usuarioGC			: __self.user_gc
 		}, 
 		function(data){
 
@@ -46,7 +43,6 @@
 						datos.indicaciones	= data.indicaciones;
 						paciente 			= data.paciente;
 						sede 				= data.sede;
-						usuarioGC			= data.user_gc;
 						
 						modal += "<div class='mtx-ct' title='RECEPCION HIRUKO'>";
 						modal += "<div class='mtx-ct-title' style='display:none;'>AGENDA</div>";
@@ -192,10 +188,9 @@
 						sala				: slSala.val(),
 						prioridad			: slPrioridad.val(),
 						cco_sede			: __self.cco_sede,
-						medico				: $( inMedicoRemitente ).data( "medico" ),
+						medico				: $( inMedicoRemitente ).data( "idmedico" ),
 						indicacion			: $( slIndicaciones ).val(),
 						idCita				: datos && datos.cita && datos.cita.id ? datos.cita.id : '',
-						ndoUsuarioGC		: usuarioGC,
 					}, 
 					function(data){
 						
@@ -314,7 +309,6 @@
 				select: 	function( event, ui ){
 
 					$( inMedicoRemitente ).data( 'idmedico', ui.item.codigo );
-					$( inMedicoRemitente ).data( 'medico', ui.item );
 					
 					habilitarBotonAceptar();
 				},
@@ -322,7 +316,6 @@
 					if (ui.item === null || ui.item === undefined)
 					{
 						$( inMedicoRemitente ).data( 'idmedico', '' );
-						$( inMedicoRemitente ).data( 'medico', '' );
 						
 						habilitarBotonAceptar();
 					}
