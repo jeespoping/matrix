@@ -97,8 +97,8 @@
 </script>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 $wemp_pmla = $_REQUEST['wemp_pmla'];
-
 /**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : Eveane.php
@@ -111,9 +111,7 @@ $wemp_pmla = $_REQUEST['wemp_pmla'];
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
-	    .2021-12-07   Daniel CB. Se realiza correccion de parametro 01 quemado.
-		
-		.2010-02-24
+	   .2010-02-24
 	   		Release de Versión Beta.
 [*DOC]   		
 ***********************************************************************************************************************/
@@ -407,7 +405,8 @@ if(!isset($_SESSION['user']))
 else
 {
 	//$key = substr($user,2,strlen($user));
-	$key = "tcx";
+	//$key = "tcx";
+	//$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tcx');
 	echo "<form name='Eveane' action='Eveane.php' method=post>";
 	
 
@@ -424,9 +423,9 @@ else
 	{
 		$werr=array();
 		$e=-1;
-		if(valgen($ok,$conex,$wtdo,$wdoc,$wfes,$wnom,$wap1,$wap2,&$DATA,&$werr,&$e))
+		if(valgen($ok,$conex,$wtdo,$wdoc,$wfes,$wnom,$wap1,$wap2,$DATA,$werr,$e))
 		{
-			if(GRABAR($key,$conex,$wtdo,$wdoc,$wfes,&$DATA,&$werr,&$e))
+			if(GRABAR($key,$conex,$wtdo,$wdoc,$wfes,$DATA,$werr,$e))
 			{
 				$ok=0;
 			}
@@ -560,7 +559,7 @@ else
 				$DATA[(integer)substr($split[$i],0,strpos($split[$i],":"))]=substr($split[$i],strpos($split[$i],":")+1);
 			$DATA[count($split)+1]=$row[4];
 			//                  0       1       2       3      4       5       6       7       8       9   
-			$query = "SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pactid='".$wtdo."' and Pacced='".$wdoc."' and Pacced=Oriced and Pactid=Oritid and Oriori='".$wemp_pmla;
+			$query = "SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pactid='".$wtdo."' and Pacced='".$wdoc."' and Pacced=Oriced and Pactid=Oritid and Oriori='".$wemp_pmla."' ";
 			$err = mysql_query($query,$conex);
 			$num = mysql_num_rows($err);
 			if ($num > 0)
@@ -631,11 +630,15 @@ else
 	$color4="#99CCFF";
 	$color5="#999999";
 	
-	echo "<table border=0 id=tipoT00>";
-	echo "<tr><td align=center id=tipoT01 rowspan=2><IMG SRC='/matrix/images/medical/root/lmatrix.jpg'></td>";
-	echo "<td id=tipoT02>CLINICA LAS AMERICAS<BR>REPORTE DE EVENTOS EN ANESTESIA</td></tr>";
-	echo "<tr><td id=tipoT03><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../INTERFACES/procesos/Mamografia.php' target='_blank'>Version 2010-05-24</A></td></tr>";
-	echo "</table><br><br>";
+	$wactualiz = '2022-02-28';
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
+	encabezado("REPORTE DE EVENTOS EN ANESTESIA ",$wactualiz, $wbasedato1);
+	//echo "<table border=0 id=tipoT00>";
+	//echo "<tr><td align=center id=tipoT01 rowspan=2><IMG SRC='/matrix/images/medical/root/lmatrix.jpg'></td>";
+	//echo "<td id=tipoT02>CLINICA LAS AMERICAS<BR>REPORTE DE EVENTOS EN ANESTESIA</td></tr>";
+	//echo "<tr><td id=tipoT03><A HREF='/MATRIX/root/Reportes/DOC.php?files=../../INTERFACES/procesos/Mamografia.php' target='_blank'>Version 2010-05-24</A></td></tr>";
+	//echo "</table><br><br>";
 	if(isset($werr) and isset($e) and $e > -1)
 	{
 		echo "<br><br><center><table border=0 aling=center id=tipo2>";
@@ -704,7 +707,7 @@ else
 	if($wdoc != "")
 	{
 		//                  0       1       2       3      4       5       6       7       8       9   
-		$query = "SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pactid='".$wtdo."' and Pacced='".$wdoc."' and Pacced=Oriced and Pactid=Oritid and Oriori='".$wemp_pmla;
+		$query = "SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Orihis, Oriing  from root_000036, root_000037 where Pactid='".$wtdo."' and Pacced='".$wdoc."' and Pacced=Oriced and Pactid=Oritid and Oriori='".$wemp_pmla."' ";
 		$err = mysql_query($query,$conex);
 		$num = mysql_num_rows($err);
 		if ($num > 0)
@@ -771,7 +774,7 @@ else
 	echo "<td id='TipoG03' align=left>Sexo : </td><td id='TipoG03'><b>".$wsex."</b></td>";
 	echo "<td id='TipoG03' align=left>Historia : </td><td id='TipoG03'><b>".$whis."</b></td>";
 	echo "<td id='TipoG03' align=left>Ingreso : </td><td id='TipoG03'><b>".$wnin."</b></td>";
-	echos(1,0,"",2,"TipoG03",&$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
@@ -803,23 +806,23 @@ else
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(1,0,"DIAGNOSTICOS RELACIONADOS",8,"TipoG05",&$DATA);
+	echos(1,0,"DIAGNOSTICOS RELACIONADOS",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(0,2,"Diabetes",1,"TipoG03",&$DATA);
-	echos(0,3,"HTA",1,"TipoG03",&$DATA);
-	echos(0,4,"Enfermedad Coronaria",1,"TipoG03",&$DATA);
-	echos(0,5,"Insuficiencia Renal",1,"TipoG03",&$DATA);
+	echos(0,2,"Diabetes",1,"TipoG03",$DATA);
+	echos(0,3,"HTA",1,"TipoG03",$DATA);
+	echos(0,4,"Enfermedad Coronaria",1,"TipoG03",$DATA);
+	echos(0,5,"Insuficiencia Renal",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(0,6,"EPOC",1,"TipoG03",&$DATA);
-	echos(1,0,"",6,"TipoG03",&$DATA);
+	echos(0,6,"EPOC",1,"TipoG03",$DATA);
+	echos(1,0,"",6,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(1,0,"OTROS DATOS DE IDENTIFICACION",8,"TipoG05",&$DATA);
+	echos(1,0,"OTROS DATOS DE IDENTIFICACION",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
@@ -878,7 +881,8 @@ else
 	echo "<tr>";
 	$i=9;
 	echo "<td id=TipoG03 align=left>Procedimiento<br>Quirurgico : </td><td id=TipoG03 colspan=3 align=left>";
-	$query = "SELECT Circod, Cirdes from TCX_000002 where Cirdes like '%".$wprox."%' order by Cirdes";
+	$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tcx');
+	$query = "SELECT Circod, Cirdes from ".$wtcx."_000002 where Cirdes like '%".$wprox."%' order by Cirdes";
 	$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 	$num = mysql_num_rows($err);
 	echo "<input type='TEXT' name='wprox' value='".$wprox."' size=30 maxlength=30  class=tipo3 OnBlur='enter()'><br><select name='DATA[".$i."]' id=tipo1>";
@@ -899,7 +903,8 @@ else
 	echo "</td>";
 	$i=10;
 	echo "<td id=TipoG03 align=left>Especialidad<br>Quirurgica : </td><td id=TipoG03 colspan=3 align=left>";
-	$query = "SELECT Espcod, Espdet  from TCX_000005 where Espdet like '%".$wespx."%' order by Espdet";
+	
+	$query = "SELECT Espcod, Espdet  from ".$wtcx."_000005 where Espdet like '%".$wespx."%' order by Espdet";
 	$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 	$num = mysql_num_rows($err);
 	echo "<input type='TEXT' name='wespx' value='".$wespx."' size=30 maxlength=30  class=tipo3 OnBlur='enter()'><br><select name='DATA[".$i."]' id=tipo1>";
@@ -985,19 +990,19 @@ else
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(1,0,"TECNICA ANESTESICA",8,"TipoG05",&$DATA);
+	echos(1,0,"TECNICA ANESTESICA",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(0,15,"General",1,"TipoG03",&$DATA);
-	echos(0,16,"Epidural",1,"TipoG03",&$DATA);
-	echos(0,17,"Espinal",1,"TipoG03",&$DATA);
-	echos(0,18,"Bloqueo",1,"TipoG03",&$DATA);
+	echos(0,15,"General",1,"TipoG03",$DATA);
+	echos(0,16,"Epidural",1,"TipoG03",$DATA);
+	echos(0,17,"Espinal",1,"TipoG03",$DATA);
+	echos(0,18,"Bloqueo",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(0,19,"Local Asistida",1,"TipoG03",&$DATA);
-	echos(1,0,"",6,"TipoG03",&$DATA);
+	echos(0,19,"Local Asistida",1,"TipoG03",$DATA);
+	echos(1,0,"",6,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
@@ -1005,150 +1010,150 @@ else
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(1,0,"Via Aerea",8,"TipoG05",&$DATA);
+	echos(1,0,"Via Aerea",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,20,"Intubacion Dificil",1,"TipoG03",&$DATA);
-	echos(2,21,"Laringoespasmo Severo",1,"TipoG03",&$DATA);
-	echos(2,22,"Trauma Dental",1,"TipoG03",&$DATA);
-	echos(2,23,"Trauma de Tejidos Blandos",1,"TipoG03",&$DATA);
+	echos(2,20,"Intubacion Dificil",1,"TipoG03",$DATA);
+	echos(2,21,"Laringoespasmo Severo",1,"TipoG03",$DATA);
+	echos(2,22,"Trauma Dental",1,"TipoG03",$DATA);
+	echos(2,23,"Trauma de Tejidos Blandos",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(1,0,"Pulmonar",8,"TipoG05",&$DATA);
+	echos(1,0,"Pulmonar",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,24,"Broncoaspiracion",1,"TipoG03",&$DATA);
-	echos(2,25,"Broncoespasmo Severo",1,"TipoG03",&$DATA);
-	echos(2,26,"Drepesion Respiratoria",1,"TipoG03",&$DATA);
-	echos(2,27,"Edema Pulmonar",1,"TipoG03",&$DATA);
+	echos(2,24,"Broncoaspiracion",1,"TipoG03",$DATA);
+	echos(2,25,"Broncoespasmo Severo",1,"TipoG03",$DATA);
+	echos(2,26,"Drepesion Respiratoria",1,"TipoG03",$DATA);
+	echos(2,27,"Edema Pulmonar",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,28,"Embolia Pulmonar",1,"TipoG03",&$DATA);
-	echos(2,29,"Falla Respiratoria Tipo I",1,"TipoG03",&$DATA);
-	echos(2,30,"Falla Respiratoria Tipo II",1,"TipoG03",&$DATA);
-	echos(2,31,"Hemotorax",1,"TipoG03",&$DATA);
+	echos(2,28,"Embolia Pulmonar",1,"TipoG03",$DATA);
+	echos(2,29,"Falla Respiratoria Tipo I",1,"TipoG03",$DATA);
+	echos(2,30,"Falla Respiratoria Tipo II",1,"TipoG03",$DATA);
+	echos(2,31,"Hemotorax",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,32,"Neumotorax",1,"TipoG03",&$DATA);
-	echos(2,33,"Relajacion Residual",1,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
+	echos(2,32,"Neumotorax",1,"TipoG03",$DATA);
+	echos(2,33,"Relajacion Residual",1,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(1,0,"Cardiovasculares",8,"TipoG05",&$DATA);
+	echos(1,0,"Cardiovasculares",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,34,"Arritmias (TV con Pulso, TSV)",1,"TipoG03",&$DATA);
-	echos(2,35,"Bradicardia Severa<br>o Refractaria",1,"TipoG03",&$DATA);
-	echos(2,36,"Choque Anafilactico",1,"TipoG03",&$DATA);
-	echos(2,37,"Choque Hipovolemico",1,"TipoG03",&$DATA);
+	echos(2,34,"Arritmias (TV con Pulso, TSV)",1,"TipoG03",$DATA);
+	echos(2,35,"Bradicardia Severa<br>o Refractaria",1,"TipoG03",$DATA);
+	echos(2,36,"Choque Anafilactico",1,"TipoG03",$DATA);
+	echos(2,37,"Choque Hipovolemico",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,38,"Choque Cardiogenico",1,"TipoG03",&$DATA);
-	echos(2,39,"Hematoma en Sitio<br>de Punsion",1,"TipoG03",&$DATA);
-	echos(2,40,"Hipertension Sostenica<br>o Refractaria",1,"TipoG03",&$DATA);
-	echos(2,41,"Isquemia Miocardica<br>o IAM",1,"TipoG03",&$DATA);
+	echos(2,38,"Choque Cardiogenico",1,"TipoG03",$DATA);
+	echos(2,39,"Hematoma en Sitio<br>de Punsion",1,"TipoG03",$DATA);
+	echos(2,40,"Hipertension Sostenica<br>o Refractaria",1,"TipoG03",$DATA);
+	echos(2,41,"Isquemia Miocardica<br>o IAM",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,42,"Paro Cardiorespiratorio<br>(Asistolia,AESP,TV,FV)",1,"TipoG03",&$DATA);
-	echos(2,43,"Puncion Arterial",1,"TipoG03",&$DATA);
-	echos(2,44,"Taquicardia Severa",1,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
+	echos(2,42,"Paro Cardiorespiratorio<br>(Asistolia,AESP,TV,FV)",1,"TipoG03",$DATA);
+	echos(2,43,"Puncion Arterial",1,"TipoG03",$DATA);
+	echos(2,44,"Taquicardia Severa",1,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(1,0,"SNC",8,"TipoG05",&$DATA);
+	echos(1,0,"SNC",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,45,"Convulsion Perioperatoria",1,"TipoG03",&$DATA);
-	echos(2,46,"ECV-ICT",1,"TipoG03",&$DATA);
-	echos(2,47,"Ecefalopatia Hipoxica",1,"TipoG03",&$DATA);
-	echos(2,48,"Edema Cerebral<br>Hernacion Perioperatoria",1,"TipoG03",&$DATA);
+	echos(2,45,"Convulsion Perioperatoria",1,"TipoG03",$DATA);
+	echos(2,46,"ECV-ICT",1,"TipoG03",$DATA);
+	echos(2,47,"Ecefalopatia Hipoxica",1,"TipoG03",$DATA);
+	echos(2,48,"Edema Cerebral<br>Hernacion Perioperatoria",1,"TipoG03",$DATA);
 	echo "</tr>";
 		
 	echo "<tr>";
-	echos(1,0,"Renales",8,"TipoG05",&$DATA);
+	echos(1,0,"Renales",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,49,"Anuria",1,"TipoG03",&$DATA);
-	echos(2,50,"Oliguria",1,"TipoG03",&$DATA);
-	echos(2,51,"Trastorno<br>Hidroelectrolitico",1,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
+	echos(2,49,"Anuria",1,"TipoG03",$DATA);
+	echos(2,50,"Oliguria",1,"TipoG03",$DATA);
+	echos(2,51,"Trastorno<br>Hidroelectrolitico",1,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
 	echo "</tr>";
 		
 	echo "<tr>";
-	echos(1,0,"Eventos Por Tecnica Anestesica",8,"TipoG05",&$DATA);
+	echos(1,0,"Eventos Por Tecnica Anestesica",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,52,"Bloqueo Fallido",1,"TipoG03",&$DATA);
-	echos(2,53,"Conductiva Fallida",1,"TipoG03",&$DATA);
-	echos(2,54,"Inyeccion Subdural",1,"TipoG03",&$DATA);
-	echos(2,55,"Raquidea Total",1,"TipoG03",&$DATA);
+	echos(2,52,"Bloqueo Fallido",1,"TipoG03",$DATA);
+	echos(2,53,"Conductiva Fallida",1,"TipoG03",$DATA);
+	echos(2,54,"Inyeccion Subdural",1,"TipoG03",$DATA);
+	echos(2,55,"Raquidea Total",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,56,"Ruptura de Duramadre",1,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
+	echos(2,56,"Ruptura de Duramadre",1,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
 	echo "</tr>";
 		
 	echo "<tr>";
-	echos(1,0,"Eventos Por Posicion",8,"TipoG05",&$DATA);
+	echos(1,0,"Eventos Por Posicion",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,57,"Lesion Nervio<br>Periferico (Neuropraxia)",1,"TipoG03",&$DATA);
-	echos(2,58,"Quemadura",1,"TipoG03",&$DATA);
-	echos(2,59,"Ulcera de Cornea",1,"TipoG03",&$DATA);
-	echos(2,60,"Ulcera de Presion",1,"TipoG03",&$DATA);
+	echos(2,57,"Lesion Nervio<br>Periferico (Neuropraxia)",1,"TipoG03",$DATA);
+	echos(2,58,"Quemadura",1,"TipoG03",$DATA);
+	echos(2,59,"Ulcera de Cornea",1,"TipoG03",$DATA);
+	echos(2,60,"Ulcera de Presion",1,"TipoG03",$DATA);
 	echo "</tr>";
 		
 	echo "<tr>";
-	echos(1,0,"Errores Identidad - Procedimiento",8,"TipoG05",&$DATA);
+	echos(1,0,"Errores Identidad - Procedimiento",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,61,"Medicamento Equivocado",1,"TipoG03",&$DATA);
-	echos(2,62,"Medicamento por Via,Velocidad,<br>Concentracion Eqivocadas",1,"TipoG03",&$DATA);
-	echos(2,63,"Paciente Equivocado",1,"TipoG03",&$DATA);
-	echos(2,64,"Procedimiento Equivocado",1,"TipoG03",&$DATA);
+	echos(2,61,"Medicamento Equivocado",1,"TipoG03",$DATA);
+	echos(2,62,"Medicamento por Via,Velocidad,<br>Concentracion Eqivocadas",1,"TipoG03",$DATA);
+	echos(2,63,"Paciente Equivocado",1,"TipoG03",$DATA);
+	echos(2,64,"Procedimiento Equivocado",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,65,"Sitio Anatomico<br>Equivocado",1,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
-	echos(1,0,"",2,"TipoG03",&$DATA);
+	echos(2,65,"Sitio Anatomico<br>Equivocado",1,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
+	echos(1,0,"",2,"TipoG03",$DATA);
 	echo "</tr>";
 		
 	echo "<tr>";
-	echos(1,0,"Otros Eventos",8,"TipoG05",&$DATA);
+	echos(1,0,"Otros Eventos",8,"TipoG05",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,66,"Caida de Camilla",1,"TipoG03",&$DATA);
-	echos(2,67,"Hipertermia Maligna",1,"TipoG03",&$DATA);
-	echos(2,68,"Hipoglicemia",1,"TipoG03",&$DATA);
-	echos(3,69,"Muerte Intraoperatoria",1,"TipoG03",&$DATA);
+	echos(2,66,"Caida de Camilla",1,"TipoG03",$DATA);
+	echos(2,67,"Hipertermia Maligna",1,"TipoG03",$DATA);
+	echos(2,68,"Hipoglicemia",1,"TipoG03",$DATA);
+	echos(3,69,"Muerte Intraoperatoria",1,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
-	echos(2,70,"Pseudocolinesterasa Atipica",1,"TipoG03",&$DATA);
-	echos(2,71,"Reacciones Alergicas",1,"TipoG03",&$DATA);
-	echos(2,72,"Otro Cual",3,"TipoG03",&$DATA);
+	echos(2,70,"Pseudocolinesterasa Atipica",1,"TipoG03",$DATA);
+	echos(2,71,"Reacciones Alergicas",1,"TipoG03",$DATA);
+	echos(2,72,"Otro Cual",3,"TipoG03",$DATA);
 	echo "</tr>";
 	
 	echo "<tr>";
