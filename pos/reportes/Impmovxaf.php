@@ -4,14 +4,21 @@
 </head>
 <body  BGCOLOR="FFFFFF">
 <BODY TEXT="#000066">
-<center>
+<!--<center>
 <table border=0 align=center>
 <tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size=5>Movimiento De Inventarios X Articulo y Tarifa</font></a></tr></td>
 <tr><td align=center bgcolor="#cccccc"><font size=2> <b> impmovxaf.php Ver. 2010-01-26</b></font></tr></td></table>
-</center>
+</center>-->
 
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
+include_once("root/comun.php");
+
+$wactualiz = '2022-02-25';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("Movimiento De Inventarios X Articulo y Tarifa ",$wactualiz, $wbasedato1);
 
 //2010-01-26: se manda por parametros el cc de la empresa $ccemp
 function bi($d,$n,$k,$i)
@@ -51,9 +58,10 @@ else
 	
 
 	
-
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'ccemp' value='".$ccemp."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
+	
 	if(!isset($wper1) or !isset($wper2) or !isset($wcon))
 	{
 		echo "<center><table border=0>";
@@ -62,9 +70,9 @@ else
 		echo "<tr><td bgcolor=#cccccc align=center>Articulo</td>";
 		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wart' size=20 maxlength=20></td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Fecha Inicial de Proceso</td>";
-		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wper1' size=10 maxlength=10 value=".date("Y-m-d")."></td></tr>";
+		echo "<td bgcolor=#cccccc align=center><input type='date' name='wper1' size=10 maxlength=10 value=".date("Y-m-d")."></td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Fecha Final de Proceso</td>";
-		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wper2' size=10 maxlength=10 value=".date("Y-m-d")."></td></tr>";
+		echo "<td bgcolor=#cccccc align=center><input type='date' name='wper2' size=10 maxlength=10 value=".date("Y-m-d")."></td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Concepto</td><td bgcolor=#cccccc align=center>";
 		$query = "SELECT Concod, Condes   from ".$empresa."_000008 order by Concod";
 		$err = mysql_query($query,$conex);
@@ -117,8 +125,8 @@ else
 		}
 		$tot1=$num-1;
 		echo "<table border=0 align=center>";
-		echo "<tr><td align=center><IMG SRC='/matrix/images/medical/Pos/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=center bgcolor=#999999><font size=6 face='tahoma'><b>MOVIMIENTO DE INVENTARIOS X ARTICULO Y TARIFA</font></b></font></td></tr>";
+		//echo "<tr><td align=center><IMG SRC='/matrix/images/medical/Pos/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=center bgcolor=#999999><font size=6 face='tahoma'><b>MOVIMIENTO DE INVENTARIOS X ARTICULO Y TARIFA</font></b></font></td></tr>";
 		$color="#dddddd";
 		if(isset($wart) and $wart != "")
 		{

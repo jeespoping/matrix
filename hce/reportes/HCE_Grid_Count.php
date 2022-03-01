@@ -10,7 +10,16 @@
 <body BGCOLOR="FFFFFF" oncontextmenu = "return true" onselectstart = "return true" ondragstart = "return false">
 <BODY TEXT="#000066">
 <?php
+
 include_once("conex.php");
+include_once("root/comun.php");
+
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+$wactualiz = '2022-02-25';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("CONTEO DE ITEMS INCLUIDOS EN UN CAMPO GRID ",$wactualiz, $wbasedato1);
+
 function count_grid($data,&$info)
 {
 	$wsgrid="";
@@ -65,15 +74,15 @@ else
 	
 
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 	echo "<input type='HIDDEN' name= 'wformulario' value='".$wformulario."'>";
 	echo "<input type='HIDDEN' name= 'wdbfac' value='".$wdbfac."'>";
 	if(!isset($whis) or !isset($wing))
 	{
 		echo  "<center><table border=0>";
-		echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-		echo "<tr><td colspan=2 align=center><b>CONTEO DE ITEMS INCLUIDOS EN UN CAMPO GRID</b></td></tr>";
+		//echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+		//echo "<tr><td colspan=2 align=center><b>CONTEO DE ITEMS INCLUIDOS EN UN CAMPO GRID</b></td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Historia</td>";
 		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='whis' size=12 maxlength=12></td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Nro. Ingreso</td>";
@@ -84,7 +93,7 @@ else
 	{
 		$query = "select Oriced, Oritid from root_000037 ";
 		$query .= " where Orihis = '".$whis."' ";
-		$query .= "   and Oriori = '02' ";
+		$query .= "   and Oriori = '".$wemp_pmla."' ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$row = mysql_fetch_array($err);
 		$wcedula = $row[0];
@@ -96,7 +105,7 @@ else
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and pacced = oriced ";
 		$query .= "   and pactid = oritid ";
-		$query .= "   and oriori = '".$origen."'";
+		$query .= "   and oriori = '".$wemp_pmla."'";
 		$query .= "   and inghis = orihis ";
 		$query .= "   and inging = '".$wing."' ";
 		$query .= "   and ubihis = inghis "; 
@@ -165,7 +174,7 @@ else
 		echo "<input type='HIDDEN' name= 'wcedula' value=".$wcedula.">";
 		echo "<input type='HIDDEN' name= 'wtipodoc' value=".$wtipodoc.">";
 		echo "<center><table border=1 width='712' class=tipoTABLE1>";
-		echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$origen.".jpg' id='logo'></td>";	
+		echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg' id='logo'></td>";	
 		echo "<td id=tipoL01C>Paciente</td><td colspan=4 id=tipoL04>".$wpac."</td><td id=tipoL04A>P&aacute;gina 1</td></tr>";
 		echo "<tr><td id=tipoL01C>Historia Clinica</td><td id=tipoL02C>".$whis."-".$wing."</td><td id=tipoL01>Edad</td><td id=tipoL02C>".$wedad."</td><td id=tipoL01C>Sexo</td><td id=tipoL02C>".$sexo."</td></tr>";
 		echo "<tr><td id=tipoL01C>Servicio</td><td id=tipoL02C>".$row[11]."</td><td id=tipoL01C>Habitacion</td><td id=tipoL02C>".$row[10]."</td><td id=tipoL01C>Entidad</td><td id=tipoL02C>".$row[8]."</td></tr>";

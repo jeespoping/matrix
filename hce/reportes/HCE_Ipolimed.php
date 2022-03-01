@@ -20,12 +20,19 @@
 			document.forms.Infact.submit();
 		}
 	</script>
-<center>
+<!--<center>
 <table border=0 align=center>
 <tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size=5>Informe de Pacientes Polimedicados 2014-08-05</font></a></tr></td>
-</center>
+</center>-->
+
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+$wactualiz = '2022-02-25';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("INFORME DE PACIENTES POLIMEDICADOS ",$wactualiz, $wbasedato1);
+
 function pintar_grid($data,$struc)
 {
 	$wsgrid="";
@@ -84,12 +91,12 @@ function pintar_grid($data,$struc)
 	echo "<form name='Infact' action='HCE_Ipolimed.php' method=post>";
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
-	echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 
 	echo "<center><table border=0>";
-	echo "<tr><td colspan=9 id='tipo4'>PROMOTORA MEDICA LAS AMERICAS S.A.</td></tr>";
-	echo "<tr><td colspan=9 id='tipo4'>DIRECCION DE INFORMATICA</td></tr>";
-	echo "<tr><td colspan=9 id='tipo4'>INFORME DEPACIENTES POLIMEDICADOS</td></tr>";
+	//echo "<tr><td colspan=9 id='tipo4'>PROMOTORA MEDICA LAS AMERICAS S.A.</td></tr>";
+	//echo "<tr><td colspan=9 id='tipo4'>DIRECCION DE INFORMATICA</td></tr>";
+	//echo "<tr><td colspan=9 id='tipo4'>INFORME DEPACIENTES POLIMEDICADOS</td></tr>";
 
 	//                  0      1     2      3      4      5      6      7      8      9
 	$query = "select movhis,moving,Pactid,Pacced,Pacno1,Pacno2,Pacap1,Pacap2,Pacnac,Pacsex from ".$wdbmhos."_000018,".$empresa."_000051,root_000037,root_000036 ";
@@ -100,7 +107,7 @@ function pintar_grid($data,$struc)
 	$query .= "   and movdat = 'CHECKED'";
 	$query .= "   and Ubihis = Orihis";
 	$query .= "   and Ubiing = Oriing";
-	$query .= "   and Oriori = '".$origen."' "; 
+	$query .= "   and Oriori = '".$wemp_pmla."' "; 
 	$query .= "   and Oritid = Pactid";
 	$query .= "   and Oriced = Pacced";
 	$err = mysql_query($query ,$conex);

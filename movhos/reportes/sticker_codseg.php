@@ -5,7 +5,15 @@
 <body BGCOLOR="">
 <BODY TEXT="#000000">
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
+include_once("root/comun.php");
+
+$wactualiz = '2022-02-24';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("STICKER CODIGO DE SEGURIDAD DE PACIENTES ",$wactualiz, $wbasedato1);
+
 @session_start();
 if(!isset($_SESSION['user']))
 	echo "error";
@@ -14,15 +22,15 @@ else
 	$key = substr($user,2,strlen($user));
 	echo "<form action='sticker_codseg.php' method=post>";
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
-	
+	//echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
+	echo "<input type='hidden' name='wemp_pmla' value='".$wemp_pmla."'>";
 
 	
 
 	if(!isset($whis) or !isset($wip))
 	{
 		echo "<center><table border=0>";
-		echo "<tr><td align=center colspan=2><b>STICKER CODIGO DE SEGURIDAD DE PACIENTES Ver. 2013-09-16</b></td></tr>";
+		//echo "<tr><td align=center colspan=2><b>STICKER CODIGO DE SEGURIDAD DE PACIENTES Ver. 2013-09-16</b></td></tr>";
 		echo "<tr><td bgcolor=#cccccc>Numero de Historia</td><td bgcolor=#cccccc align=center><input type='TEXT' name='whis' size=20 maxlength=20></td></tr>";
 		echo "<tr><td bgcolor=#cccccc>IP Impresora</td><td bgcolor=#cccccc align=center>";
 		$query = "SELECT Impnip, Impnom  from root_000053 where Impest='on'  and Impseg='on' order by Impnip";
@@ -53,7 +61,7 @@ else
 			$query .= " and ubihis = '".$whis."' ";
 			$query .= " and ubihis = orihis  ";
 			$query .= " and ubiing = oriing  ";
-			$query .= " and  oriori = '".$codemp."'  ";
+			$query .= " and  oriori = '".$wemp_pmla."'  ";
 			$query .= " and oriced = pacced  ";
 			$query .= " and oritid = pactid  ";
 			$err = mysql_query($query,$conex);

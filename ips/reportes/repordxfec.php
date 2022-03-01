@@ -8,9 +8,9 @@
 	}
 
 	//Redirecciona a la pagina inicial
-	function inicioReporte(wemp,wfecini,wfecfin,wsede,wordent,wordcan)
+	function inicioReporte(wemp_pmla,wfecini,wfecfin,wsede,wordent,wordcan)
 	{
-	 	document.location.href='repordxfec.php?wemp='+wemp+'&wfecini='+wfecini+'&wfecfin='+wfecfin+'&wsede='+wsede+'&wordent='+wordent+'&wordcan='+wordcan+'&bandera=1';
+	 	document.location.href='repordxfec.php?wemp_pmla='+wemp_pmla+'&wfecini='+wfecini+'&wfecfin='+wfecfin+'&wsede='+wsede+'&wordent='+wordent+'&wordcan='+wordcan+'&bandera=1';
 	}
 </script>
 
@@ -47,7 +47,7 @@ if(empty($wuser) || $wuser == ""){
 
 session_start();
 
-$institucion = consultarInstitucionPorCodigo($conex, $wemp);
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 $wbasedato = $institucion->baseDeDatos;
 $wentidad = $institucion->nombre;
 $wactualiz = 'Sept. 19 de 2011';
@@ -67,7 +67,7 @@ if (!$usuarioValidado)
 else //Si el usuario es válido comenzamos con el reporte
 {  //Inicio ELSE reporte
 
-	$institucion = consultarInstitucionPorCodigo($conex, $wemp);
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 
 	$wbasedato = $institucion->baseDeDatos;
 	$wentidad = $institucion->nombre;
@@ -78,7 +78,7 @@ else //Si el usuario es válido comenzamos con el reporte
   	
   	echo "<br>";
   	echo "<form action='repordxfec.php' method=post name='forma'>";
-  	echo "<input type='HIDDEN' NAME= 'wemp' value='".$wemp."'>";
+  	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
   	echo "<input type='HIDDEN' NAME= 'wbasedato' value='".$wbasedato."'>";
 
     if (!isset($wfecini) or !isset($wfecfin) or !isset($wsede) or !isset($resultado))
@@ -233,7 +233,7 @@ else //Si el usuario es válido comenzamos con el reporte
 			$wordcan = '%';
 
 		//Botones "Retornar" y "Cerrar ventana"
-		echo "<br /><p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wemp\",\"$wfecini\",\"$wfecfin\",\"$wsede\",\"$wordent\",\"$wordcan\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
+		echo "<br /><p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wemp_pmla\",\"$wfecini\",\"$wfecfin\",\"$wsede\",\"$wordent\",\"$wordcan\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
 
 		if(isset($wordent) && $wordent=='1')
 			$sqlordent = " AND ordfen != '0000-00-00' ";
@@ -262,6 +262,7 @@ else //Si el usuario es válido comenzamos con el reporte
 				  ." ORDER BY ordcco,ordfen,ordnro";
 		$err1 = mysql_query($query1,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $query1 . " - " . mysql_error());
 		$num1 = mysql_num_rows($err1);
+		print_r($query1);
 		//echo $query1."<br>";
 		
 		$swtitulo='SI';
@@ -327,7 +328,7 @@ else //Si el usuario es válido comenzamos con el reporte
 		}		
 
 		//Botones "Retornar" y "Cerrar ventana"
-		echo "<br /><p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wemp\",\"$wfecini\",\"$wfecfin\",\"$wsede\",\"$wordent\",\"$wordcan\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
+		echo "<br /><p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wemp_pmla\",\"$wfecini\",\"$wfecfin\",\"$wsede\",\"$wordent\",\"$wordcan\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
 
 	}
 }

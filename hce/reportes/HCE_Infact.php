@@ -19,12 +19,20 @@
 			document.forms.Infact.submit();
 		}
 	</script>
-<center>
-<table border=0 align=center>
+<!--<center>
+/<table border=0 align=center>
 <tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size=2>Informe de Actividades de HCE 2017-10-30</font></a></tr></td>
-</center>
+</center>-->
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
+include_once("root/comun.php");
+
+$wactualiz = '2022-02-25';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("INFORME DE ACTIVIDADES DE HCE",$wactualiz,$wbasedato1);
+
  @session_start();
  if(!isset($_SESSION['user']))
  echo "error";
@@ -38,12 +46,12 @@ include_once("conex.php");
 	echo "<form name='Infact' action='HCE_Infact.php' method=post>";
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
-	echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	if(!isset($v0) or !isset($v1) or !isset($wesp) or !isset($wmed))
 	{
 		echo "<center><table border=0>";
-		echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-		echo "<tr><td colspan=2 align=center><b>INFORME DE ACTIVIDADES DE HCE</b></td></tr>";
+		//echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+		//echo "<tr><td colspan=2 align=center><b>INFORME DE ACTIVIDADES DE HCE</b></td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Especialidad</td><td bgcolor=#cccccc align=center>";
 		$query = "SELECT Espcod,Espnom from ".$wdbmhos."_000044 order by 2 ";
 		$err = mysql_query($query,$conex);
@@ -84,9 +92,9 @@ include_once("conex.php");
 		}
 		echo "</td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Fecha Inicial Inicial</td>";
-		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='v0' size=10 maxlength=10></td></tr>";
+		echo "<td bgcolor=#cccccc align=center><input type='date' name='v0' size=10 maxlength=10></td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Fecha Inicial Final</td>";
-		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='v1' size=10 maxlength=10></td></tr>";
+		echo "<td bgcolor=#cccccc align=center><input type='date' name='v1' size=10 maxlength=10></td></tr>";
 		echo "<tr><td bgcolor=#cccccc  colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
 	}
 	else
@@ -96,9 +104,9 @@ include_once("conex.php");
 			$ncol = 7;
 		else
 			$ncol = 8;
-		echo "<tr><td colspan=".$ncol." id='tipo4'>PROMOTORA MEDICA LAS AMERICAS S.A.</td></tr>";
-		echo "<tr><td colspan=".$ncol." id='tipo4'>DIRECCION DE INFORMATICA</td></tr>";
-		echo "<tr><td colspan=".$ncol." id='tipo4'>INFORME DE ACTIVIDADES DE HCE</td></tr>";
+		//echo "<tr><td colspan=".$ncol." id='tipo4'>PROMOTORA MEDICA LAS AMERICAS S.A.</td></tr>";
+		//echo "<tr><td colspan=".$ncol." id='tipo4'>DIRECCION DE INFORMATICA</td></tr>";
+		//echo "<tr><td colspan=".$ncol." id='tipo4'>INFORME DE ACTIVIDADES DE HCE</td></tr>";
 		echo "<tr><td colspan=".$ncol." id='tipo4'>Medico : ".$wmed."</td></tr>";
 		echo "<tr><td colspan=".$ncol." id='tipo4'>Desde : ".$v0." Hasta ".$v1."</td></tr>";
 		if($wmed != "*-Todos")
@@ -122,7 +130,7 @@ include_once("conex.php");
 		if($wmed == "*-Todos")
 			$query .= "    and ".$empresa."_000036.firrol = '".substr($wesp,0,strpos($wesp,"-"))."'";
 		$query .= "    and ".$empresa."_000036.firhis = root_000037.orihis ";
-		$query .= "    and root_000037.oriori  = '".$origen."' "; 
+		$query .= "    and root_000037.oriori  = '".$wemp_pmla."' "; 
 		$query .= "    and root_000037.Oritid  = root_000036.Pactid  "; 
 		$query .= "    and root_000037.Oriced  = root_000036.Pacced "; 
 		if($wmed == "*-Todos")
