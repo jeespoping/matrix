@@ -502,6 +502,7 @@ if (!isset($consultaAjax))
 					wemp_pmla 			: $("#wemp_pmla").val(),
 					whce 				: $("#whce").val(),
 					wbasedato 			: $("#wbasedato").val(),
+                    selectsede          : $("#sede").val(),
 					whis				: his,
 					wing				: ing,
 					wusuario			: $("#wusuario").val(),
@@ -529,7 +530,7 @@ if (!isset($consultaAjax))
 						
 
 					}
-				}
+            }
 
 			});
 		
@@ -1519,6 +1520,7 @@ function reasignarCubiculo($whce, $wbasedato, $whis, $wing, $wusuario, $wcubicul
     global $conex;
 	global $wbasedato;
     global $wemp_pmla;
+    global $selectsede;
 
 	$wfecha=date("Y-m-d");
     $whora = (string)date("H:i:s");
@@ -1578,7 +1580,8 @@ function reasignarCubiculo($whce, $wbasedato, $whis, $wing, $wusuario, $wcubicul
 				if($row_con_pac['contra'] == 'on'){
 					
 					$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato, $selectsede);
-					$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
+					$CcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
+                    $codCcoUrgencias = $CcoUrgencias->codigo;
 					
 					//====================================
 					// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
@@ -2046,6 +2049,7 @@ function ponerConducta($whce, $wbasedato, $whis, $wing, $wusuario, $wconducta, $
     global $conex;
 	global $wbasedato;
     global $wemp_pmla;
+    global $selectsede;
 	
 	$datamensaje = array('mensaje'=>'', 'error'=>0, 'cambiar_tr'=>'');
 	$datamensaje['cambiar_tr'] = "fila1";
@@ -2505,7 +2509,8 @@ function ponerConducta($whce, $wbasedato, $whis, $wing, $wusuario, $wconducta, $
 		if($cond_nueva_traslado == 'on'){
 			
 			$codCcoCirugia = consultarCcoCirugiaUnificada($wbasedato, $selectsede);
-			$codCcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
+            $CcoUrgencias = consultarCentrocoUrgencias($wbasedato, $selectsede);
+            $codCcoUrgencias = $CcoUrgencias->codigo;
 			
 			//====================================
 			// Aca grabo el movimiento -- INGRESO -- del *** CENSO DIARIO ***					
