@@ -555,6 +555,7 @@ else
     }
 
     echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+    echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='" . $wemp_pmla. "'></td>";
 }
 /**
 * ===========================================================================================================================================
