@@ -515,6 +515,7 @@ else
 	{
 		global $wbasedato;
 		global $conex;
+		global $selectsede;
 		
 		$fecha=strtotime($pFechafinal);
 		
@@ -526,7 +527,7 @@ else
 		
 		$arrayDespachos = array();
 		$arrayCcostos = array();
-		consultarDespachos($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla,$arrayDespachos,$arrayCcostos,$maestroInsumos,$tablaDespachos,$tipoRequerimiento,$estadoSolicitud);
+		consultarDespachos($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla,$arrayDespachos,$arrayCcostos,$maestroInsumos,$tablaDespachos,$tipoRequerimiento,$estadoSolicitud,$selectsede);
 		
 		$arrayInsumos = array_keys ($arrayDespachos);
 		
@@ -890,6 +891,7 @@ else
 		var fecini 	 = $("#fecha_inicial").val();
 		var fecfin 	 = $("#fecha_final").val();
 		var wemp_pmla 	 = $("#wemp_pmla").val();
+		var selectsede 	 = $("#selectsede").val();
 		
 		var fechaI = fecini.split("-");
 		var fechaF = fecfin.split("-");
@@ -926,7 +928,8 @@ else
 						clasereq:         		clasereq,
 						fechainicial:  			fecini,
 						fechafinal:    			fecfin,
-						wemp_pmla:    			wemp_pmla
+						wemp_pmla:    			wemp_pmla,
+						selectsede:				selectsede
 					}, function(respuesta){
 						
 						$("#reporteDespachados").html(respuesta);
