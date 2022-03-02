@@ -236,9 +236,7 @@ $strPendientesCTC="";
  
  $grupoControl = "CTR";
 
-$centroCostosServicioFarmaceutico = consultarCcoSF( $conex, $wemp_pmla );
 
-$centroCostosCentralMezclas = consultarCcoCM( $conex, $wemp_pmla );
 
 $codigoServicioFarmaceutico = "SF";
 $codigoCentralMezclas = "CM";
@@ -270,6 +268,12 @@ $codigoAyudaHospitalaria="H";
 
 //Consulta de la información del usuario
 @$usuario = consultarUsuarioOrdenes($wuser);
+
+$centroCostosServicioFarmaceutico = consultarCcoSF( $conex, $wemp_pmla );
+
+$centroCostosCentralMezclas = consultarCcoCM( $conex, $wemp_pmla );
+
+
 
 /**********************************
  * PARAMETROS DE LA BASE DE DATOS *
@@ -1100,13 +1104,15 @@ class AccionPestanaDTO{
  ***********************************/
  
 function consultarCcoLactario( $conex, $wbasedato ){
+    global $usuario;
 	
 	$val = false;
 	
 	//Consultando el nombre del estudio
 	$sql = "SELECT Ccocod 
 			  FROM ".$wbasedato."_000011 
-			 WHERE ccolac = 'on'";
+			 WHERE ccolac = 'on'
+			 And Ccosed = '".$usuario->sede."'";
 
 	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
 	
@@ -1172,7 +1178,7 @@ function articuloTieneTarifa( $conex, $wcliame, $wmovhos, $codigo, $tarifa ){
 
 
 function consultarCcoSF( $conex, $wemp_pmla ){
-	
+	global $usuario;
 	$val = '';
 	
 	if( empty($wemp_pmla) )
@@ -1188,6 +1194,7 @@ function consultarCcoSF( $conex, $wemp_pmla ){
 			   AND a.ccoima != 'on' 
 			   AND a.ccofac  = 'on' 
 			   AND a.ccodom != 'on'
+			   AND a.Ccosed = '".$usuario->sede."'
 			 ";
 
 	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
@@ -37042,7 +37049,7 @@ function consultarUsuarioOrdenes($codigo)
 	$row_rol = mysql_fetch_array($res_opc_ord);	
 	
 	//Buscar la informacion del centro de costos, segun el ultimo centro de costos del paciente.
-	$q = "SELECT Ccocod,Cconom,Ccohos,Ccogka,Ccopek,Ccouct,Ccolac,Ccocir,Ccoing,Ccourg,Ccoior   
+	$q = "SELECT Ccocod,Cconom,Ccohos,Ccogka,Ccopek,Ccouct,Ccolac,Ccocir,Ccoing,Ccourg,Ccoior,Ccosed
 			FROM ".$wbasedato."_000011
 		   WHERE Ccocod = '".$paciente->servicioActual."'";
 	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
@@ -37074,6 +37081,7 @@ function consultarUsuarioOrdenes($codigo)
 		$consulta->descripcion = $row_user['Descripcion'];
 		$consulta->empresa = $row_user['Empresa'];
 		$consulta->centroCostos = $rs['Ccocod'];
+		$consulta->sede = $rs['Ccosed'];
 
 		//Nombre del centro de costos
 		if(isset($rs['Cconom']) && !empty($rs['Cconom'])){
