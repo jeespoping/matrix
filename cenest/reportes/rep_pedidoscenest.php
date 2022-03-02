@@ -334,9 +334,12 @@ else
 
 		if ($tpp[0]=="TODOS")
 		{
-			$query = " select r40.Reqfec,r40.Reqnum,r40.Reqdes,r40.Reqobe,r40.Reqsat,r40.Reqccs,r40.Reqcla,c4.Reqpro,c1.Prodes,
+
+			if($sFiltroSede == 'off' || $selectsede == '')
+			{
+				$query = " select r40.Reqfec,r40.Reqnum,r40.Reqdes,r40.Reqobe,r40.Reqsat,r40.Reqccs,r40.Reqcla,c4.Reqpro,c1.Prodes,
 							c4.Reqcas,c4.Reqcad,c4.Reqmet,c2.Metdes  
-					from   root_000040 r40,cenmat_000004 c4,cenmat_000001 c1,cenmat_000002 c2  
+					from   root_000040 r40,cenmat_000004 c4,cenmat_000001 c1,cenmat_000002 c2
 					where  r40.Reqcco = '(01)1082' 
 						and  r40.Reqfec between '".$fec1."' and '".$fec2."' 
 						and  r40.Reqcla like '".$clas1."' 
@@ -347,6 +350,26 @@ else
 						and  c4.Reqpro = c1.Procod 
 						and  c4.Reqmet = c2.Metcod 
 						order by r40.Reqccs,r40.Reqnum ";
+
+				echo $query;
+			}else{
+				$query = " select r40.Reqfec,r40.Reqnum,r40.Reqdes,r40.Reqobe,r40.Reqsat,r40.Reqccs,r40.Reqcla,c4.Reqpro,c1.Prodes,
+							c4.Reqcas,c4.Reqcad,c4.Reqmet,c2.Metdes  
+					from   root_000040 r40,cenmat_000004 c4,cenmat_000001 c1,cenmat_000002 c2, ".$bdMovhos."_000011
+					where  r40.Reqcco = '(01)1082' 
+						and  r40.Reqfec between '".$fec1."' and '".$fec2."' 
+						and  r40.Reqcla like '".$clas1."' 
+						and  r40.Reqest = '05' 
+						and  r40.Reqnum = c4.Reqnum 
+						and  r40.Reqcla = c4.Reqcla 
+						and  c4.Reqcla = c1.Procla 
+						and  c4.Reqpro = c1.Procod 
+						and  c4.Reqmet = c2.Metcod 
+						and (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod AND Ccosed = '".$selectsede."')
+						order by r40.Reqccs,r40.Reqnum ";
+
+				echo $query;
+			}
 		}
 		else
 		{

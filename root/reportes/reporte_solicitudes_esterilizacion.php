@@ -296,10 +296,24 @@ else
 		return $rowResultado[0];
 	}
 	
-	function consultarDespachos($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla,&$arrayDespachos,&$arrayCcostos,$maestroInsumos,$tablaDespachos,$tipoRequerimiento,$estadoSolicitud)
+	function consultarDespachos($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla,&$arrayDespachos,&$arrayCcostos,$maestroInsumos,$tablaDespachos,$tipoRequerimiento,$estadoSolicitud,$sCodigoSede = NULL)
 	{
 		global $wbasedato;
 		global $conex;	
+		global $wmovhos;
+
+		$sFiltroSede='';
+   
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	   
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 		
 		$condicionCco = "";
 		if($pCco!="")
@@ -308,7 +322,7 @@ else
 		}
 		
 		$queryDespachos = "SELECT b.Reqmet,b.Reqpro,a.Reqccs,SUM(b.Reqcad) AS Cantidad,c.Prodes
-							 FROM root_000040 a, ".$tablaDespachos." b, ".$maestroInsumos." c 
+							 FROM root_000040 a, ".$tablaDespachos." b, ".$maestroInsumos." c, ".$wmovhos."_000011
 							WHERE a.Reqcco='(01)1082'
 							  AND a.Reqtip='".$tipoRequerimiento."' 
 							  AND a.Reqcla='".$pClasereq."' 
@@ -319,9 +333,12 @@ else
 							  AND b.Reqnum=a.Reqnum
 							  AND b.Reqdes='on'
 							  AND c.Procla=b.Reqcla
+							  AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede})
 							  AND c.Procod=b.Reqpro
 						 GROUP BY b.Reqmet,b.Reqpro,a.Reqccs
 						 ORDER BY c.Prodes,b.Reqmet,b.Reqpro,a.Reqccs;";
+		
+		// echo $queryDespachos;
 		
 		$resDespachos = mysql_query($queryDespachos,$conex) or die("Error: " . mysql_errno() . " - en el query: ".$queryDespachos." - ".mysql_error());
 		$numDespachos = mysql_num_rows($resDespachos);
@@ -497,7 +514,7 @@ else
 	function generarReporteSolicitudesDespachadas($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla)
 	{
 		global $wbasedato;
-		global $conex;	
+		global $conex;
 		
 		$fecha=strtotime($pFechafinal);
 		
