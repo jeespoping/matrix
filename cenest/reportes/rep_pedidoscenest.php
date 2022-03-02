@@ -351,7 +351,6 @@ else
 						and  c4.Reqmet = c2.Metcod 
 						order by r40.Reqccs,r40.Reqnum ";
 
-				echo $query;
 			}else{
 				$query = " select r40.Reqfec,r40.Reqnum,r40.Reqdes,r40.Reqobe,r40.Reqsat,r40.Reqccs,r40.Reqcla,c4.Reqpro,c1.Prodes,
 							c4.Reqcas,c4.Reqcad,c4.Reqmet,c2.Metdes  
@@ -368,7 +367,6 @@ else
 						and (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod AND Ccosed = '".$selectsede."')
 						order by r40.Reqccs,r40.Reqnum ";
 
-				echo $query;
 			}
 		}
 		else
