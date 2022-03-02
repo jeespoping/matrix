@@ -2,6 +2,7 @@
 include_once("conex.php");
 /******************************************************************************************************************************
  * Actualizaciones:
+ * 2022-02-24				Juan R.		Se comenta configuración en root_51 para que el case 5minsTramos no se apague
  * 2021-10-11.				Julian M.   Se agrega el case 5minsTramos para desatrasar el cron de cargos de laboratorio y ejecutarlo
  * 										por tramos.
  * Octubre 28 de 2020		Edwin MG. 	Se comenta cron copiaDeCxDelDia ya que se manda a hacer por aparte
@@ -280,13 +281,13 @@ if($hay_unix)
 			case '5minTramos': 
 			{
 				// Esta funcion se crea para desatrasar los cargos del laboratorio de acuerdo a las fechas de inicio y de fin en la root 51
-				$pasarCargosLaboratorio	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'pasarCargosLaboratorio');
-				if($pasarCargosLaboratorio == 'on')
-				{
+				// $pasarCargosLaboratorio	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'pasarCargosLaboratorio');
+				// if($pasarCargosLaboratorio == 'on')
+				// {
 					$ejCron->pasar_examenes_labTramos();
 					include_once("ips/funciones_facturacionERP.php");
 					grabacionCargosLaboratorioTramos();
-				}
+				// }
 				break;
 			}
 			case 'laboratorio':
