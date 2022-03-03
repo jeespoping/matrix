@@ -8,6 +8,9 @@ include_once("conex.php");
  DESCRIPCION:
 
  ACTUALIZACIONES:
+
+  * 25 de febrero de 2022 - Sebastian Alvarez Barona - Se realiza filtro por sede a la información que nos arroja el sistema, esta información se filtra de acuerdo a la sede 80 o sur.
+
  2015-10-13:
     Jessica Madrid:     * Se modifica la funcion consultarRequerimientos() para traer el centro de costos del usuario solicitante de root_000040 y si no existe lo consulta en root_000039.
  2013-10-17

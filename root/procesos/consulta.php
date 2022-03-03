@@ -8,6 +8,9 @@ include_once("conex.php");
  DESCRIPCION:
 
  ACTUALIZACIONES:
+
+ * 25 de febrero de 2022 - Sebastian Alvarez Barona - Se realiza filtro por sede a la información que nos arroja el sistema, esta información se filtra de acuerdo a la sede 80 o sur.
+
  2015-10-13:
     Jessica Madrid:     * Se modifica la funcion consultarRequerimientos() para traer el centro de costos del usuario solicitante de root_000040 y si no existe lo consulta en root_000039.
  2014-06-25
@@ -24,7 +27,7 @@ include_once("conex.php");
   2019-10-10
     Andres Alvarez: * Se crea class para aplicarle un color verde a los requirimiento revisados.
                     * Se filtran los requerimiento recibidos para que no aparezcan los requerimientos con estado rechazados.   
-                    * Se crea estilo para que se aplique en los requerimientos revisados en el archivo include/root/matrix.css                   
+                    * Se crea estilo para que se aplique en los requerimientos revisados en el archivo include/root/matrix.css     
 
  */
 ?>

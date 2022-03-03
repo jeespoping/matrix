@@ -18,6 +18,9 @@
 //==========================================================================================================================================|
 //                  ACTUALIZACIONES
 //==========================================================================================================================================|
+// Febrero 16 de 2022 - Sebastian Alvarez Barona - Se realiza filtro por sedes al selector de centros de costos, cuando se selecciona alguna sede
+//						nos muestra los centros de costos que corresponde a cada una.
+//==========================================================================================================================================|
 // 2022-02-16		- Se realiza validacion para que cuando se escoja la sede se filtren los centros de costos correspondientes.
 //					se agrego un onchange, un script src para traernos una version de jquery en especifico para que nos sirviera el onchange
 //					posteriormente creamos dos input oculto uno con el del wemp_pmla y el otro con el valor del selector de sede

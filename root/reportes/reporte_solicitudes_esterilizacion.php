@@ -11,6 +11,9 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //-------------------------------------------------------------------------------------------------------------------------------------------- \\
+// Febrero 25 de 2022 - Sebastian Alvarez Barona - Se realiza modificación para hacer que se filtren los centros de costos de acuerdo a cada sede.
+//						por otro lado cuando se selecciona la opcion "todos" en select de los centros de costos se nos debe de filtrar la información de acuerdo a cada sede.
+//-------------------------------------------------------------------------------------------------------------------------------------------- \\
 // 2019-11-12			- Se modifica el reporte para que consulte todos los costos de los insumos en un solo query y así evitar 
 // 						  múltiples conexiones a Matrix Financiero
 // 2019-11-06			- Se agrega filtro a root_000040 para que el query tome el indice y la consulta sea más rápida
