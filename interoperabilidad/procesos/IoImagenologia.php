@@ -1937,7 +1937,12 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita ){
 	
 	$indicacion	= !empty( $datosCita['indicacion'] ) ? $datosCita['indicacion'] : '';
 	
-	
+	// Se reemplaza el simbolo # de la dirección por la letra n
+	$paciente['direccion'] = str_replace("#", "n", $paciente['direccion']);
+
+	// Se manipulan los telefonos como si fuere un array y se envia solo el primer telefono
+	$paciente['telefono'] = str_replace(" ", "", explode("-", $paciente['telefono'])[0]);
+
 	$medicoNombres			= utf8_decode( trim( $datosCita['medico']->nombre1." ". $datosCita['medico']->nombre2 ) );
 	$medicoApellidos		= utf8_decode( trim( $datosCita['medico']->apellido1." ". $datosCita['medico']->apellido2 ) );
 	$medicoNroDocumento		= $datosCita['medico']->numeroDocumento;
@@ -2142,7 +2147,7 @@ if( $_POST ){
 				break;
 				
 				case 'crearMensaje': 
-				
+				print_r( $_POST['medico'] );die();
 					$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
 					$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
 					$whce 	 = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce' );
