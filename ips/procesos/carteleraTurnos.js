@@ -1,4 +1,7 @@
-var audio = new Audio('../../images/medical/root/alertaMensaje.mp3');
+//AUTOR:				TAITO
+//FECHA DE MODIFICACION:	2022-02-01
+// var audio = new Audio('../../images/medical/root/alertaMensaje.mp3');
+var audio = new Audio('alertaMensaje.mp3');
 audio.autoplay=true;
 new Vue({
 	
@@ -44,10 +47,7 @@ new Vue({
 		{
 			this.turnospantalla = Array();
 			var lineainicial = this.lineactual;
-			var lineactualpantalla = this.lineactual;
-			// this.turnospantalla = this.turnos;
-			// return;
-						
+			var lineactualpantalla = this.lineactual;		
 			// console.log('Carga pagina');
 			// console.log('TipoTurnero: ' + this.tipoTur)
 			while ((this.lineactual < this.turnos.length) && (lineactualpantalla < lineainicial + 12))
@@ -82,14 +82,12 @@ new Vue({
 			if (this.lineactual == this.turnos.length) 
 			{
 				this.lineactual = 0;
-				//var res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaTurnos',
 				this.parametros="wemp_pmla=0"+wemp_pmla+"&tema="+tema+"&funcion=listaTurnos&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
 				this.turnos = await (await fetch(this.wsTurnero + this.parametros)).json();
 				//console.log('leyo turnos');
 				//console.log('datos recibidos')
 				//console.log(this.turnos);
 				this.parametros="wemp_pmla=0"+wemp_pmla+"&tema="+tema+"&funcion=listaAlertas&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
-				//res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaAlertas',
 				this.turnosAlerta = await (await fetch(this.wsTurnero + this.parametros)).json();
 				//console.log('Alertas recibidas')
 				//console.log(this.turnosAlerta);
@@ -102,7 +100,6 @@ new Vue({
 			this.turnosAlerta = Array();
 			// console.log("control llamar turno")
 			// console.log(this.parametros);
-			// var res = await fetch('http://10.17.2.35/matrix/admisiones/procesos/wbsturnero.php?wemp_pmla=01&tema=01&funcion=listaAlertas',
 			this.parametros="wemp_pmla=0"+wemp_pmla+"&tema="+tema+"&funcion=listaAlertas&solucionCitas="+solucionCitas+"&tipoTur="+tipoTur;
 			this.turnosAlerta = await (await fetch(this.wsTurnero + this.parametros)).json();
 				if (this.turnosAlerta.length > 0) 
@@ -141,9 +138,3 @@ new Vue({
 		//console.log('timer inicializado');		  
 	}	
 	})
-	
-    
-	
-	
-        
-

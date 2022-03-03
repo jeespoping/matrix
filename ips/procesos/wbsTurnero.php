@@ -3,14 +3,16 @@
     //       	WEBSERVICE PARA TURNEROS PAP, ENDOSCOPIA
     //=========================================================================================================================================\\
     //DESCRIPCION:  Minimo 3 parametros:
-    //              wemp_pmla, tema, FUNCION: listarTurnos ó listarAlertas
+    //              wemp_pmla, tema, FUNCION: listarTurnos o listarAlertas, solucionCitas, tipoTur: ESTANDAR o ENDOSCOPIA o URGENCIAS
+    // 
     //                      
-    //AUTOR:				TAITO
-    //FECHA DE CREACION:	2021-11-01
+    //AUTOR:				    TAITO
+    //FECHA DE CREACION:	2022-01-31
+    //2022-03-02 - Carlos Lora - Se agrega el cierre de la conexion a la base de datos.
     include_once("conex.php");
     include("root/comun.php");
     include_once("citas/funcionesAgendaCitas.php");
-
+    $conexcar;
     ob_end_clean();
     if ($_SERVER['REQUEST_METHOD'] == 'GET')
     {
@@ -20,6 +22,7 @@
         $funcion = $_GET['funcion'];
         $solucionCitas = $_GET['solucionCitas'];
         $tipoTurnero = $_GET['tipoTur'];
+        $conexcar = obtenerConexionBD("matrix");
         switch($tipoTurnero)
         {
             case 'ESTANDAR':          // SALA DE ATENCION, PAP
@@ -36,6 +39,7 @@
                     header("HTTP/1.1 200 OK");
                     echo json_encode($objAlertas->arrAlerta);
                 }
+                liberarConexionBD($conexcar);
                 exit();
             case 'ENDOSCOPIA':      //ENDOSCOPIA
                 // ENDOSCOPIA RECIBE UN PARAMETRO ADICIONAL solucionCitas
@@ -51,6 +55,7 @@
                     header("HTTP/1.1 200 OK");
                     echo json_encode($objAlertas->arrAlerta);
                 }
+                liberarConexionBD($conexcar);
                 exit();
             case 'URGENCIAS':      // URGENCIAS 
                 if ($funcion == 'listaTurnos')
@@ -65,6 +70,7 @@
                     header("HTTP/1.1 200 OK");
                     echo json_encode($objAlertas->arrAlerta);
                 }
+                liberarConexionBD($conexcar);
                 exit();
         }
     } 
@@ -100,9 +106,8 @@
             // 		1 SELECT: Alerta de llamado para el triage
             // 		2 SELECT: Alerta de rellamado para el triage
             // 		3 SELECT: Alerta de llamado para la admisión
-            // 		4 SELECT: Alerta de llamado para la consulta
-            $conex = obtenerConexionBD("matrix");	
-            $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+            // 		4 SELECT: Alerta de llamado para la consulta	
+            $wbasedato = consultarAliasPorAplicacion($conexcar, $wemp_pmla, 'movhos');
             $sqlAlertas = "
             SELECT A.Fecha_data, A.Hora_data, Atutur, Puenom
               FROM ".$wbasedato."_000178 AS A, ".$wbasedato."_000180
@@ -140,7 +145,7 @@
            "./*AND (Atusea = '".$monitorSala."' OR Atusea = '*')*/"
                AND Atucon = Puecod"; 
             // echo($sqlAlertas);
-            $resAlertas = mysql_query($sqlAlertas, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlAlertas):</b><br>".mysql_error());
+            $resAlertas = mysql_query($sqlAlertas, $conexcar) or die("<b>ERROR EN QUERY MATRIX(sqlAlertas):</b><br>".mysql_error());
             while($rowAlertas = mysql_fetch_array($resAlertas))
             {
                 $objAlerta = new alertas();
@@ -148,8 +153,8 @@
                 $objAlerta->moduloAlerta = "";
                 $objAlerta->prioridadAlerta = "";
                 $objAlerta->Estado = "";
-                // --> Solo mostrar turnos de maximo 12 horas atras // OJO HABILITAR ANTES DE PONER EN PRODUCCION
-                if(strtotime($rowAlertas['Fecha_data']." ".$rowAlertas['Hora_data']) < strtotime('-12 hours'))
+                // --> Solo mostrar turnos de maximo 6 horas atras 
+                if(strtotime($rowAlertas['Fecha_data']." ".$rowAlertas['Hora_data']) < strtotime('-6 hours'))
                 continue;   
                 $objAlerta->turnoAlerta = substr($rowAlertas['Atutur'], 7);
                 $objAlerta->moduloAlerta = $rowAlertas['Puenom'];
@@ -168,22 +173,19 @@
         public function __construct ($wemp_pmla, $tema)
         {
             // AND (Atusea = '".$monitorSala."' OR Atusea = '*') REVISAR ESTO EN LA CONDICION ORIGINAL
-            $conex = obtenerConexionBD("matrix");	
-            $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
-            // CONDICION ORIGINAL DE FECHA ".date("Y-m-d",strtotime("-1 day"))."
-            // CONDICION QUE TRAE DATOS Fecha_data >= '2021/12/01'
+            $wbasedato = consultarAliasPorAplicacion($conexcar, $wemp_pmla, 'movhos');
+            // OJO Condicion original Fecha_data >= '".date("Y-m-d",strtotime("-1 day"))."'
             $sqlTurnos = "SELECT Atutur, Atuetr, Atucta, Atupad, Atuadm, Fecha_data, Hora_data
-            FROM ".$wbasedato."_000178 WHERE ".date("Y-m-d",strtotime("-1 day"))."
-            AND Atuest = 'on'
-            AND Atuaor != 'on'
-            AND Atutem = '".$tema."'
-            ORDER BY REPLACE(Atutur, '-', '')*1 ASC"; 
-            $resTurnos = mysql_query($sqlTurnos, $conex ) or die("<b>ERROR EN QUERY MATRIX(sqlturnos):</b><br>".mysql_error());
-            //echo ($sqlTurnos);
+            FROM ".$wbasedato."_000178 WHERE Fecha_data >= '".date("Y-m-d",strtotime("-1 day"))."'
+             AND Atuest = 'on'
+             AND Atuaor != 'on'
+             AND Atutem = '".$tema."'
+             ORDER BY REPLACE(Atutur, '-', '')*1 ASC"; 
+            $resTurnos = mysql_query($sqlTurnos, $conexcar ) or die("<b>ERROR EN QUERY MATRIX(sqlturnos):</b><br>".mysql_error());
             while($rowTurnos = mysql_fetch_array($resTurnos))
             {
-                // --> Solo mostrar turnos de maximo 12 horas atras. HABILITAR ANTES DE PASO PRODUCCION **OJO**
-			    if(strtotime($rowTurnos['Fecha_data']." ".$rowTurnos['Hora_data']) < strtotime('-12 hours'))
+                // --> Solo mostrar turnos de maximo 6 horas atras. 
+			    if(strtotime($rowTurnos['Fecha_data']." ".$rowTurnos['Hora_data']) < strtotime('-6 hours'))
                      continue;
                 $objTurno = new turno();
                 $objTurno->Turno = substr($rowTurnos['Atutur'], 7);
@@ -222,7 +224,7 @@
                             $objTurno->Estado = "En sala de espera";
                             // Obtener el estado de un paciente
                             $infoTurnoHce22	= array();
-                            $basedatoshce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
+                            $basedatoshce = consultarAliasPorAplicacion($conexcar, $wemp_pmla, 'hce');
                             $sqlInfo22 = "SELECT A.*, B.Medtri
                             FROM ".$basedatoshce."_000022 AS A 
                             LEFT JOIN ".$wbasedato."_000048 AS B ON A.Mtrmed = Meduma
@@ -230,7 +232,7 @@
                             WHERE Mtrtur = '".$rowTurnos['Atutur']."'
                             AND Mtrest = 'on'";
                             //echo($sqlInfo22);
-                            $resInfo22 = mysql_query($sqlInfo22, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlInfo22):</b><br>".mysql_error());
+                            $resInfo22 = mysql_query($sqlInfo22, $conexcar) or die("<b>ERROR EN QUERY MATRIX(sqlInfo22):</b><br>".mysql_error());
                             if (mysql_num_rows($resInfo22) > 0)
                             {
                                 $rowInfo22 = mysql_fetch_array($resInfo22, MYSQL_ASSOC);
@@ -244,7 +246,7 @@
                                 AND Eyrest = 'on'";
                                 //echo($sqlEntrega);
                                 $objTurno->Estado = "En sala de espera";
-                                $resEntrega = mysql_query($sqlEntrega, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlEntrega):</b><br>".mysql_error());
+                                $resEntrega = mysql_query($sqlEntrega, $conexcar) or die("<b>ERROR EN QUERY MATRIX(sqlEntrega):</b><br>".mysql_error());
                                 if (mysql_num_rows($resEntrega) == 0)
                                 {
                                     // --> Cosultar si el turno tiene muerte o alta definitiva.
@@ -253,7 +255,7 @@
                                     AND Ubiing  = '".$infoTurnoHce22['Mtring']."'
                                     AND (Ubiald = 'on' OR Ubimue = 'on')";
                                     //echo($sqlMuerteAlta);
-                                    $resMuerteAlta = mysql_query($sqlMuerteAlta, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlMuerteAlta):</b><br>".mysql_error());
+                                    $resMuerteAlta = mysql_query($sqlMuerteAlta, $conexcar) or die("<b>ERROR EN QUERY MATRIX(sqlMuerteAlta):</b><br>".mysql_error());
                                     if (mysql_num_rows($resEntrega) == 0)
                                     {
                                         // --> Si el turno tiene una conducta asociada
@@ -261,7 +263,7 @@
                                         {
                                             $sqlConducta = "SELECT Condes, Conmue, Conalt FROM ".$basedatoshce."_000035
                                             WHERE Concod = '".$infoTurnoHce22['Mtrcon']."'";
-                                            $resConducta = mysql_query($sqlConducta, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlConducta):</b><br>".mysql_error());
+                                            $resConducta = mysql_query($sqlConducta, $conexcar) or die("<b>ERROR EN QUERY MATRIX(sqlConducta):</b><br>".mysql_error());
                                             if($rowConducta = mysql_fetch_array($resConducta))
                                             {
                                                 if($rowConducta['Conmue'] != 'on')
@@ -273,7 +275,7 @@
                                                     $sqlUbicacion = "SELECT Habcpa, Habzon FROM ".$wbasedato."_000020
                                                     WHERE Habhis = '".$infoTurnoHce22['Mtrhis']."'
                                                     AND Habing = '".$infoTurnoHce22['Mtring']."'AND Habcub = 'on'";
-                                                    $resUbicacion = mysql_query($sqlUbicacion, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlUbicacion):</b><br>".mysql_error());
+                                                    $resUbicacion = mysql_query($sqlUbicacion, $conexcar) or die("<b>ERROR EN QUERY MATRIX(sqlUbicacion):</b><br>".mysql_error());
                                                     if($rowUbicacion = mysql_fetch_array($resUbicacion))
                                                     {
                                                         $objTurno->Sala = ucfirst(strtolower($rowUbicacion['Habzon']));
@@ -295,7 +297,7 @@
                                                 // --> obtengo el puesto de trabajo del medico que lo esta atendiendo
                                                 $sqlEnConsulta = "SELECT Puenom FROM ".$wbasedato."_000180
                                                 WHERE Pueusu = '".$infoTurnoHce22['Mtrmed']."'";
-                                                $resEnConsulta = mysql_query($sqlEnConsulta, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlEnConsulta):</b><br>".mysql_error());
+                                                $resEnConsulta = mysql_query($sqlEnConsulta, $conexcar) or die("<b>ERROR EN QUERY MATRIX(sqlEnConsulta):</b><br>".mysql_error());
                                                 if($rowEnConsulta = mysql_fetch_array($resEnConsulta))
                                                     $objTurno->Ubicacion = ucfirst(strtolower(utf8_encode($rowEnConsulta['Puenom'])));
                                             }
@@ -341,17 +343,18 @@
         public $arrAlerta = Array();
         public function __construct ($wemp_pmla, $tema)
         {
-            $conex = obtenerConexionBD("matrix");	
-            $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+            $wbasedato = consultarAliasPorAplicacion($conexcar, $wemp_pmla, 'cliame');
+            // condicion original A.Fecha_data >= '".date("Y-m-d",strtotime("-1 day"))."'
             $sqlAlertas = "SELECT A.Fecha_data, A.Hora_data, Turtur, Puenom, Conpri, Puetem, Turllv
             FROM ".$wbasedato."_000304 AS A INNER JOIN ".$wbasedato."_000301 ON(Turtem = Puetem AND Turven = Puecod)
 			INNER JOIN ".$wbasedato."_000299 ON(Turupr = Concod) 
-            WHERE A.Fecha_data >= '".date("Y-m-d",strtotime("-1 day"))."'
+            WHERE A.Fecha_data >= '2022-01-01'
             AND Turtem = '".$tema."'
             AND Turest = 'on'
             AND Turllv = 'on'";
-            $resAlertas = mysql_query($sqlAlertas, $conex ) or die("<b>ERROR EN QUERY MATRIX(sqlAlertas):</b><br>".mysql_error());
-            // echo ($sqlAlertas);
+            $resAlertas = mysql_query($sqlAlertas, $conexcar ) or die("<b>ERROR EN QUERY MATRIX(sqlAlertas):</b><br>".mysql_error());
+            //echo ($sqlAlertas);
+            //return;
             while ($rowAlerta = mysql_fetch_array($resAlertas))
             {
                 // --> Solo mostrar turnos de maximo 12 horas atras
@@ -376,25 +379,24 @@
         public $arrFilasTur = Array();
         public function __construct ($wemp_pmla, $tema) 
         {
-            $conex = obtenerConexionBD("matrix");	
-            $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+            $wbasedato = consultarAliasPorAplicacion($conexcar, $wemp_pmla, 'cliame');
             // original ojo A.Fecha_data >= '".date("Y-m-d",strtotime("-1 day"))."'
             $sqlTurnos = "SELECT A.Fecha_data, A.Hora_data, Turtur, Conpri, Puenom
             FROM ".$wbasedato."_000304 AS A INNER JOIN ".$wbasedato."_000299 ON(Turupr = Concod)
                    INNER JOIN ".$wbasedato."_000301 ON(Turtem = Puetem AND Turven = Puecod)
             WHERE A.Fecha_data >= '".date("Y-m-d",strtotime("-1 day"))."'
-            AND Turtem = '".$tema."'
-            AND Turest = 'on'
-            AND Turpat = 'on'
-            ORDER BY REPLACE(Turtur, '-', '')*1 ASC";
-            $resTurnos = mysql_query($sqlTurnos, $conex ) or die("<b>ERROR EN QUERY MATRIX(sqlturnos):</b><br>".mysql_error());
+             AND Turtem = '".$tema."'
+             AND Turest = 'on'
+             AND Turpat = 'on'
+             ORDER BY REPLACE(Turtur, '-', '')*1 ASC";
+            $resTurnos = mysql_query($sqlTurnos, $conexcar ) or die("<b>ERROR EN QUERY MATRIX(sqlturnos):</b><br>".mysql_error());
             // echo ($sqlTurnos);
+            // return;
             while ($rowTurnos = mysql_fetch_array($resTurnos))
             {
                 // --> Solo mostrar turnos de maximo 12 horas atras
 			    if(strtotime($rowTurnos['Fecha_data']." ".$rowTurnos['Hora_data']) < strtotime('-12 hours'))
                     continue;
-                // echo ($sqlTurnos);
                 $objTurno = new turno();
                 $tmpturno = substr($rowTurnos['Turtur'], 7);
                 $tmpturno = substr($tmpturno, 0, 2)." ".substr($tmpturno, 2, 5);
@@ -419,30 +421,28 @@
         public $arrFilasTur = Array(); 
         public function __construct ($wemp_pmla, $tema, $solucionCitas)
         {
-            $conex = obtenerConexionBD("matrix");	
             $wbasedato = $solucionCitas;
-            $wcencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "camilleros");
+            $wcencam = consultarAliasPorAplicacion($conexcar, $wemp_pmla, "camilleros");
             $newPrefix = getPrefixTables($wbasedato);  
             $fecha_actual = date('Y-m-d');
             $infoMaxTimeAcc = getConfigurationCcpTiempoMaximo($wbasedato);
-            //Se consultan los turnos del dia 
-            // OJO ESTA CONDICION TRAE DATOS  cts23.Fecha_data > '2021-10-01'
             // condicion original cts23.Fecha_data = '{$fecha_actual}' 
             $sqlTurnos = "SELECT {$newPrefix}acp, cts23.{$newPrefix}tur, cts23.{$newPrefix}doc, c.RacNam, c.Raclis,
             c.Ractex, c.Raccod, c.Racact,  cts23.idSolcam, cts23.".$newPrefix."acp as ultimaAccion, 
             cts23.".$newPrefix."hua as horaUltimaAccion
-            FROM   {$wbasedato}_000023 cts23
+            FROM {$wbasedato}_000023 cts23
                 LEFT JOIN {$wbasedato}_000032 c ON c.Raccod = cts23.{$newPrefix}acp
                 INNER JOIN {$wbasedato}_000009 CE09 ON (cts23.".$newPrefix."doc = replace( replace( CE09.cedula, '\t', '' ) , ' ', '' )  AND cts23.fecha_data = CE09.Fecha)
-            WHERE cts23.Fecha_data = '{$fecha_actual}'
+            WHERE cts23.Fecha_data = '{$fecha_actual}' 
                 AND cts23.{$newPrefix}fpr = 'off'                         
                 AND cts23.{$newPrefix}est = 'on' 
                 AND CE09.Activo = 'A'
                 AND c.Raclis = 'off' 
             GROUP BY  cts23.{$newPrefix}tur 
             ORDER by cts23.".$newPrefix."hua desc  ";
-            $resTurnos  = mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
-            //echo($sqlTurnos);
+            $resTurnos  = mysql_query($sqlTurnos, $conexcar) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
+            // echo($sqlTurnos);
+            // return;
             while($rowTurnos = mysql_fetch_array($resTurnos))
             {
                 $mostrarEnListado = true;
@@ -510,7 +510,7 @@
             AND CE09.Activo = 'A'
             AND l.".$newPrefix."fpr = 'off'
             AND l.".$newPrefix."est = 'on' ";
-            $resTurnosAlertas  = mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());  
+            $resTurnosAlertas  = mysql_query($sqlTurnos, $conexcar) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());  
             // echo($sqlTurnos);
             while($rowTurnosAlertas = mysql_fetch_array($resTurnosAlertas))
             {
