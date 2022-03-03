@@ -58,6 +58,9 @@
     <script type='text/javascript' src='../../../include/root/jquery-1.3.2.min.js'></script>
 	<script type='text/javascript' src='../../../include/root/ui.core.min.js'></script>
 
+	<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+
+
     <script type="text/javascript">
 	<!--
 	function ejecutar(path,wpar)
@@ -213,6 +216,11 @@
 */
 
 	//-->
+
+	$(document).on('change','#selectsede',function(){
+        window.location.href = "Tablero.php?empresa="+$('#empresa').val()+"&codemp="+$('#codemp').val()+"&wdbhce="+$('#wdbhce').val()+"&wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+    });
+
 </script>
  
 </head>
@@ -556,17 +564,18 @@ else
 
 	include_once("root/comun.php");
 	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-	$wactualiz = "2021/08/13";
-	encabezado( "TABLERO DE PACIENTES HCE", $wactualiz, $institucion->baseDeDatos );
+	$wactualiz = "03 de marzo de 2022";
 
 	echo "<form name='Tablero' action='Tablero.php' method=post>";
-	
+	encabezado( "TABLERO DE PACIENTES HCE", $wactualiz, $institucion->baseDeDatos, TRUE );
 
 	$key = substr($user,2,strlen($user));
 	//
-	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
-	echo "<input type='HIDDEN' name= 'wdbhce' value='".$wdbhce."'>";
+	echo "<center><input type='HIDDEN' name= 'empresa' id='empresa' value='".$empresa."'>";
+	echo "<input type='HIDDEN' name= 'codemp' id='codemp' value='".$codemp."'>";
+	echo "<input type='HIDDEN' name= 'wdbhce' id='wdbhce' value='".$wdbhce."'>";
+	echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+	echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
 	
 	// echo "<table border=0 CELLSPACING=0>";
 	// echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$codemp.".jpg'></td>";
