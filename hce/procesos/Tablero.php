@@ -568,7 +568,7 @@ else
 
 	include_once("root/comun.php");
 	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-	$wactualiz = "03 de marzo de 2022";
+	$wactualiz = "04 de marzo de 2022";
 
 	echo "<form name='Tablero' action='Tablero.php' method=post>";
 	encabezado( "TABLERO DE PACIENTES HCE", $wactualiz, $institucion->baseDeDatos, TRUE );
