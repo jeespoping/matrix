@@ -576,6 +576,15 @@ else
 	echo "<input type='HIDDEN' name= 'wdbhce' id='wdbhce' value='".$wdbhce."'>";
 	echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
 	echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
+
+	$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+	$sFiltroSede="";
+	$codigoSede = '';
+	if($estadosede=='on')
+	{	  
+		$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+		$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+	}	
 	
 	// echo "<table border=0 CELLSPACING=0>";
 	// echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$codemp.".jpg'></td>";
@@ -795,6 +804,7 @@ else
 				$query .= " and orihis = inghis "; 
 				$query .= " and oriing = inging  ";
 				$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+				$query .= " {$sFiltroSede} ";
 				$query .= "  order by 11,19,17 ";
 			}
 			else
@@ -818,6 +828,7 @@ else
 					$query .= " and orihis = inghis "; 
 					$query .= " and oriing = inging  ";
 					$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+					$query .= " {$sFiltroSede} ";
 					$query .= "  UNION ALL ";
 					$query .= " select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Habcpa, ".$empresa."_000016.fecha_data, Habord  ";
 					$query .= "  from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016,".$empresa."_000020  ";
@@ -834,6 +845,7 @@ else
 					$query .= "    and orihis = inghis  ";
 					$query .= "    and oriing = inging "; 
 					$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+					$query .= " {$sFiltroSede} ";
 					$query .= "  UNION ALL ";
 					$query .= " select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cconom, ".$empresa."_000016.fecha_data, 0  ";
 					$query .= "  from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016  ";
@@ -849,6 +861,7 @@ else
 					$query .= "    and orihis = inghis  ";
 					$query .= "    and oriing = inging "; 
 					$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+					$query .= " {$sFiltroSede} ";
 					$query .= "  UNION ALL ";
 					$query .= " select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cconom, ".$empresa."_000016.fecha_data, 0  ";
 					$query .= "  from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016  ";
@@ -866,6 +879,7 @@ else
 					$query .= "    and orihis = inghis  ";
 					$query .= "    and oriing = inging "; 
 					$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+					$query .= " {$sFiltroSede} ";
 					$query .= "  UNION ALL ";
 					$query .= " select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, Cconom, ".$empresa."_000016.fecha_data, 0  ";
 					$query .= "  from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016  ";
@@ -882,6 +896,7 @@ else
 					$query .= "    and orihis = inghis  ";
 					$query .= "    and oriing = inging "; 
 					$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+					$query .= " {$sFiltroSede} ";
 					$query .= "  UNION ALL ";
 					$query .= " select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'ALTA DEFINITIVA HACE MENOS DE 6 HORAS', ".$empresa."_000016.fecha_data,0  ";
 					$query .= "  from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016  ";
@@ -898,6 +913,7 @@ else
 					$query .= "    and orihis = inghis  ";
 					$query .= "    and oriing = inging "; 
 					$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+					$query .= " {$sFiltroSede} ";
 					$query .= "  UNION ALL ";
 					$query .= " select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'ALTA DEFINITIVA HACE MENOS DE 6 HORAS', ".$empresa."_000016.fecha_data,0  ";
 					$query .= "  from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016  ";
@@ -914,6 +930,7 @@ else
 					$query .= "    and orihis = inghis  ";
 					$query .= "    and oriing = inging "; 
 					$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+					$query .= " {$sFiltroSede} ";
 					$query .= "  UNION ALL ";
 					$query .= " select Ubihis, Ubiing, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ubisac, Cconom, Ingres, Ingnre, Ubialp, Ubiptr, 'FALLECIDO', ".$empresa."_000016.fecha_data, 0  ";
 					$query .= " from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016 ";
@@ -930,6 +947,7 @@ else
 					$query .= " and orihis = inghis "; 
 					$query .= " and oriing = inging  ";
 					$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+					$query .= " {$sFiltroSede} ";
 					$query .= "  order by 11,19,17 ";
 				}
 				elseif(isset($x) and $x == 1)
@@ -951,6 +969,7 @@ else
 						$query .= " and orihis = inghis "; 
 						$query .= " and oriing = inging  ";
 						$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+						$query .= " {$sFiltroSede} ";
 						$query .= "  order by 11,19,17 ";
 					}
 					elseif(isset($x) and $x == 2)
@@ -968,6 +987,7 @@ else
 							$query .= "    and orihis = inghis  ";
 							$query .= "    and oriing = inging ";
 							$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+							$query .= " {$sFiltroSede} ";
 							$query .= "  order by 11,19,17 "; 
 						}
 						elseif(isset($x) and $x == 3)
@@ -986,6 +1006,7 @@ else
 								$query .= "    and orihis = inghis  ";
 								$query .= "    and oriing = inging "; 
 								$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+								$query .= " {$sFiltroSede} ";
 								$query .= "  order by 11,19,17 ";
 							}
 							elseif(isset($x) and $x == 4)
@@ -1005,6 +1026,7 @@ else
 								$query .= " and orihis = inghis "; 
 								$query .= " and oriing = inging  ";
 								$query .= " and ccodom != 'on'  ";	//Se agrega filtro para que no muestre los pacientes de servicio domiciliario
+								$query .= " {$sFiltroSede} ";
 								$query .= "  order by 11,19,17 ";
 							}
 				
