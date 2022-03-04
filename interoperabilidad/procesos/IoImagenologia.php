@@ -1917,8 +1917,8 @@ function crearMensajesHL7ORMAgenda( $conex, $wemp_pmla, $paciente, $datosCita ){
 }
 
 
-function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita ){
-	
+function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita )
+{
 	$whce 	 = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce' );
 	$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
 	$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );	
@@ -1947,8 +1947,7 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita ){
 	$medicoApellidos		= utf8_decode( trim( $datosCita['medico']->apellido1." ". $datosCita['medico']->apellido2 ) );
 	$medicoNroDocumento		= $datosCita['medico']->numeroDocumento;
 	$medicoTipoDocumento	= $datosCita['medico']->tipoDocumento;
-	
-	
+
 	if( !empty( $orden ) && !empty( $datosCita['nroOrden'] ) && !empty( $datosCita['item'] ) )
 		$orden		= $orden."-".$datosCita['nroOrden']."-".$datosCita['item'];
 	
@@ -1991,7 +1990,7 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita ){
 			}
 		}
 	}
-	
+
 	//Conectando vía socket
 	$direccion = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'ipHL7HirukoPacienteAmbulatorio' );
 	// $direccion = "181.143.71.154";
@@ -2147,7 +2146,7 @@ if( $_POST ){
 				break;
 				
 				case 'crearMensaje': 
-				print_r( $_POST['medico'] );die();
+
 					$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos' );
 					$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
 					$whce 	 = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce' );
@@ -2247,7 +2246,7 @@ if( $_POST ){
 						$datosCita['indicacion']	= $indicacion;
 						
 						$medico = new medicoDTO();
-						
+
 						if( $_POST['medico'] ){
 							$medico->tipoDocumento 	= $_POST['medico']['tipoDocumento'];
 							$medico->numeroDocumento= $_POST['medico']['numeroDocumento'];
@@ -2256,7 +2255,7 @@ if( $_POST ){
 							$medico->apellido1		= $_POST['medico']['apellido1'];
 							$medico->apellido2		= $_POST['medico']['apellido2'];
 						}
-						
+
 						$datosCita['medico'] 		= $medico;
 						
 						echo $mensaje = crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita );

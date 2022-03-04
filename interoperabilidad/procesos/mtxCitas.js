@@ -188,7 +188,7 @@
 						sala				: slSala.val(),
 						prioridad			: slPrioridad.val(),
 						cco_sede			: __self.cco_sede,
-						medico				: $( inMedicoRemitente ).data( "idmedico" ),
+						medico				: $( inMedicoRemitente ).data( "medico" ),
 						indicacion			: $( slIndicaciones ).val(),
 						idCita				: datos && datos.cita && datos.cita.id ? datos.cita.id : '',
 					}, 
@@ -309,12 +309,14 @@
 				select: 	function( event, ui ){
 
 					$( inMedicoRemitente ).data( 'idmedico', ui.item.codigo );
+					$( inMedicoRemitente ).data( 'medico', ui.item );
 					
 					habilitarBotonAceptar();
 				},
 				change: function ( event, ui ){
 					if (ui.item === null || ui.item === undefined)
 					{
+						$( inMedicoRemitente ).data( 'medico', '' );
 						$( inMedicoRemitente ).data( 'idmedico', '' );
 						
 						habilitarBotonAceptar();
