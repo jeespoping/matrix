@@ -119,6 +119,15 @@ if (!isset($consultaAjax))
 	
 		$('#buscarTabla').quicksearch('#tbInformacion .find');
 	
+		if($('#wselectsede').val() === ''){
+			$('#wselectsede').val($('#selectsede').val());
+
+			var wselectsede = $('#selectsede').val();
+
+		}
+		
+		
+
 
     });
 
@@ -493,13 +502,13 @@ if (!isset($consultaAjax))
        $.unblockUI();
        $('#central').submit();
     }
-	
-	/**
-	 * Seleccion de sede filtra habitacion
-	 *
-	 * @autor Esteban Villa
-	 * @date 04/01/2022
-	 */
+
+/**
+ * Seleccion de sede filtra habitacion
+ *
+ * @autor Esteban Villa
+ * @date 04/01/2022
+ */
 
 
 	function colocarCamilleroSede(wid, wusuario, campo, historia, i, esUrgencias)
@@ -509,12 +518,12 @@ if (!isset($consultaAjax))
 	}
 
 
-	/**
-	 * Validacion sede de encabezado con sede fila habitacion paciente
-	 *
-	 * @autor Esteban Villa
-	 * @date 04/01/2022
-	 */
+/**
+ * Validacion sede de encabezado con sede fila habitacion paciente
+ *
+ * @autor Esteban Villa
+ * @date 04/01/2022
+ */
 
 	function validaSedeSeleccionada(sedeEncabezado,sedeDestino){
 		var sedeEncabezadoSeleccionada = (sedeEncabezado === null) ? '' : sedeEncabezado.value;
@@ -526,7 +535,6 @@ if (!isset($consultaAjax))
 
 		return sedeEncabezado;
 	}
-
 
 	function colocarCamillero(wid, wusuario, campo, historia, i, esUrgencias)
 	 {
@@ -542,9 +550,9 @@ if (!isset($consultaAjax))
         } 
 		
 	 }
-
+	 
 		var selectorSede = document.getElementById("selectsede");
-		var sedeDestino  = document.getElementById("wcamillerosede["+i+"]");
+	 	var sedeDestino  = document.getElementById("wcamillerosede["+i+"]");
 		 
 		selectorSede = validaSedeSeleccionada(selectorSede, sedeDestino);
 		
@@ -867,7 +875,6 @@ function validarSedeDestino($wid,$sedeDes,$opt,$sCodigoSede){
 
 }
 
-
 function traer_pacientes_remision_urgencias($sCodigoSede = ''){
 	
 	global $wcencam;
@@ -907,7 +914,6 @@ function traer_pacientes_remision_urgencias($sCodigoSede = ''){
 			{$sFiltroSede} 
 		  GROUP BY 1, 2, 3, 4, 5 
 		  ORDER BY CONCAT(Mtrftc,' ',Mtrhtc)";
-
 		  
 	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 	$num = mysql_num_rows($res);
@@ -2148,10 +2154,26 @@ function actualizar_operador($wcentral, $wcodope, $whorope, $selectsede = '')
 
 
 	   //Traigo el operario que tiene actualmente y la hora hasta la que se queda en turno
-	   $q = " SELECT cenope, cenhop "
-	       ."   FROM ".$wcencam."_000006 "
-	       ."  WHERE codcen = '".$wcentral."'"
-	       ."    AND cenest = 'on' ";
+	   if(isset($_GET['selectsede']) && !empty($_GET['selectsede']) ){
+			$q = " SELECT ce.cenope, ce.cenhop "
+			."   FROM ".$wcencam."_000006 ce"
+			."   INNER JOIN cencam_000003 cs"
+			."  ON ce.codcen = cs.Central"
+			."  WHERE codcen = '".$wcentral."'"
+			."    AND cenest = 'on' "
+			."  AND cs.SedeDestino='".$_GET['selectsede']."'";
+			
+
+	   
+	   }
+	   else {
+			$q = " SELECT cenope, cenhop "
+			."   FROM ".$wcencam."_000006 "
+			."  WHERE codcen = '".$wcentral."'"
+			."    AND cenest = 'on' ";
+	   }
+	 
+		
 	   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	   $row = mysql_fetch_array($res);
 
@@ -2159,7 +2181,7 @@ function actualizar_operador($wcentral, $wcodope, $whorope, $selectsede = '')
 	   $whor_reg=$row[1];
 
 	   $whora=explode(":",$hora);
-	   
+		
 	   $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
 	   $sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
 	   $sCodigoSede = (isset($selectsede)) ? $selectsede : $sCodigoSede;
@@ -2171,9 +2193,9 @@ function actualizar_operador($wcentral, $wcodope, $whorope, $selectsede = '')
 	   $q = " SELECT COUNT(*) "
 	       ."   FROM ".$wcencam."_000002 "
 	       ."  WHERE codced  = '".$wusuario."'"
-	       ."    AND central = '".$wcentral."' "
+		   ."    AND central = '".$wcentral."' "
 		   .$sWhereCodigoSede;
-		   
+
 	   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	   $row = mysql_fetch_array($res);
 
@@ -2275,9 +2297,28 @@ function actualizar_operador($wcentral, $wcodope, $whorope, $selectsede = '')
 if (!isset($consultaAjax))
 {
 
-	$q = " SELECT nomcen, centre, cenvig, cenest, cenope, cenhop "
-	    ."   FROM ".$wcencam."_000006 "
-	    ."  WHERE codcen = '".$wcentral."'";
+	
+
+		$wselectsede = '';
+		
+		if(isset($_GET['selectsede']) && !empty($_GET['selectsede']) ){
+			$q = " SELECT nomcen, centre, cenvig, cenest, cenope, cenhop "
+			."   FROM ".$wcencam."_000006 ce"
+			."  INNER JOIN cencam_000003 cs "
+			."  ON ce.codcen = cs.Central"
+			."  WHERE codcen = '".$wcentral."'"
+			."  AND cs.SedeDestino='".$_GET['selectsede']."'";
+			$wselectsede = $_GET['selectsede'];
+		
+		}
+		else {
+			
+			$q = " SELECT nomcen, centre, cenvig, cenest, cenope, cenhop "
+			."   FROM ".$wcencam."_000006 "
+			."  WHERE codcen = '".$wcentral."'";
+
+		}
+	
 	$res = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 	$num = mysql_num_rows($res);
 	if ($num > 0)
@@ -2300,14 +2341,15 @@ if (!isset($consultaAjax))
 	    //====================================================================================================================================
 	    //COMIENZA LA FORMA
 	    //echo "<form name=central action='central_de_camilleros_AJAX.php' method=post>";
-		echo "<form name=central id=central method=post>";
+		echo "<form action=# name=central id=central method=get>";
 		
 		encabezado("CENTRAL ".$wnomcen,$wactualiz, "clinica", TRUE);
 		actualizar_operador($wcentral, $wcodope, $whorope, $selectsede);
 		
-	    echo "<input type='HIDDEN' ID='wemp_pmla' value='".$wemp_pmla."'>";
-		echo "<input type='HIDDEN' ID='wcentral' value='".$wcentral."'>";
-		echo "<input type='HIDDEN' ID='wtiempo_refresh' value='".$wtiempo_refresh."'>";
+	    echo "<input type='HIDDEN' name='wemp_pmla' ID='wemp_pmla' value='".$wemp_pmla."'>";
+		echo "<input type='HIDDEN' name='wcentral' ID='wcentral' value='".$wcentral."'>";
+		echo "<input type='HIDDEN' name='wtiempo_refresh' ID='wtiempo_refresh' value='".$wtiempo_refresh."'>";
+		echo "<input type='HIDDEN' name='wselectsede' ID='wselectsede' value='".$wselectsede."'>";
 		$wdatos_habitaciones = todaslashab();
 		echo "<input type='HIDDEN' ID='whabitaciones' value='".json_encode($wdatos_habitaciones)."'>";
 		
@@ -2346,7 +2388,7 @@ if (!isset($consultaAjax))
 		$sWhereFiltroSedeCamilleros = (($sFiltrarSede == 'on') && ($sCodigoSede != '')) ? " AND C.codigoSede = '{$sCodigoSede}'  " : '';
 		
 	   $q = "  SELECT A.Hora_data, Origen, Motivo, Observacion, Destino, Solicito, Camillero, "
-	        ."         Hora_llegada, Hora_Cumplimiento, A.Id, Habitacion, Observ_central, A.fecha_data, A.Historia, A.Hab_asignada,A.Fecha_data, Fechatramiteok, Horatramiteok, tramiteok, A.SedeDestino  "
+	        ."         Hora_llegada, Hora_Cumplimiento, A.Id, Habitacion, Observ_central, A.fecha_data, A.Historia, A.Hab_asignada,A.Fecha_data, Fechatramiteok, Horatramiteok, tramiteok,A.SedeDestino  "
 		    ."    FROM ".$wcencam."_000003 A, ".$wcencam."_000001 B"
 			.$sFromFiltroSedeCamilleros
 		    ."   WHERE Anulada           = 'No' "
@@ -2390,13 +2432,13 @@ if (!isset($consultaAjax))
 	    echo "<th><font size=1>Cum</font></th>";
 	    echo "<th><font size=1>Anu</font></th>";
 		
-		if (($sFiltrarSede == 'on') && centralesConColumnaSedeDestino($wcentral))
+        if (($sFiltrarSede == 'on') && centralesConColumnaSedeDestino($wcentral))
         {
 			/* Agregar sede de destino */
 			echo "<th class='sedeth'><font size='1'>Sede de destino</font></th>";
         }
 		
-        if ($wcentral == 'CAMAS')
+		if ($wcentral == 'CAMAS')
         {
 			echo "<th><font size=1>Habitación destino</font></th>";
         }
