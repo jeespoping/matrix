@@ -241,6 +241,10 @@ include_once("conex.php");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   ==================================================================================================================================================
+	   04 de marzo de 2022. Sebastian Alvarez Barona. Se realiza filtro de sede para que nos muestre información del paciente correspondiente a cada una.
+	   												  por otro lado en los criterios de busqueda tambien se realiza filtro de sede a los centros de costos.
+	   ==================================================================================================================================================
 	   .2020-10-20
 				Se agrega filtro para que no se muestre pacientes de servicio domiciliario
 		.2019-11-18
