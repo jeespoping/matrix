@@ -477,7 +477,7 @@ else
 			</table>
 		</fieldset>
 		<fieldset id='fieldsetInf' align='center' style='padding:15px;width:100%;display:none'>
-			<legend class='fieldset'>Información cx:</legend>
+			<legend class='fieldset'>Informaci&oacuten cx:</legend>
 			<div id='datosReporte' align='center'>
 			</div>
 		</fieldset>

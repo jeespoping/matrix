@@ -546,6 +546,7 @@ $infoMedico = new classMedico( substr($user, 2, strlen($user)) );
 
 $wbasedato = $infoMedico->bdHC;
 
+
 //$key = substr($user, 2, strlen($user));
 
 $wemp_pmla = $_REQUEST['wemp_pmla'];
@@ -778,9 +779,10 @@ else{
 
 <?php
 
-	$doctorName = $infoMedico->nombre;
-	$titulo = "SALA DE ESPERA DEL DR. ".strtoupper( $doctorName );
-	encabezado( $titulo, "2010-01-13", "fmatrix" );
+	$wactualiz = '2022-03-01';
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
+	encabezado("SALA DE ESPERA DEL DR. ",$wactualiz, $wbasedato1);
 	
 	desbloqueandoRegistros( $key );
 	

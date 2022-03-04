@@ -115,7 +115,7 @@ $wemp_pmla = $_REQUEST['wemp_pmla'];
 	   		Release de Versión Beta.
 [*DOC]   		
 ***********************************************************************************************************************/
-function echos($tip,$i,$lit,$span,$color,&$DATA)
+function echos($tip,$i,$lit,$span,$color,$DATA)
 {
 	switch ($tip)
 	{
@@ -295,7 +295,7 @@ function validar7($chain)
 		return false;
 }
 
-function valgen($ok,$conex,$wtdo,$wdoc,$wfes,$wnom,$wap1,$wap2,&$DATA,&$werr,&$e)
+function valgen($ok,$conex,$wtdo,$wdoc,$wfes,$wnom,$wap1,$wap2,$DATA,$werr,$e)
 {
 	global $empresa;
 	//VALIDACION DE DATOS GENERALES
@@ -338,7 +338,7 @@ function valgen($ok,$conex,$wtdo,$wdoc,$wfes,$wnom,$wap1,$wap2,&$DATA,&$werr,&$e
 
 
 //FUNCION DE INGRESO DE ESTUDIOS
-function GRABAR($key,$conex,$wtdo,$wdoc,$wfes,&$DATA,&$werr,&$e)
+function GRABAR($key,$conex,$wtdo,$wdoc,$wfes,$DATA,$werr,$e)
 {
 	global $empresa;
 	$split=array();
@@ -407,7 +407,7 @@ else
 	//$key = substr($user,2,strlen($user));
 	//$key = "tcx";
 	//$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tcx');
-	echo "<form name='Eveane' action='Eveane.php' method=post>";
+	echo "<form name='Eveane' action='Eveane.php?wemp_pmla=".$wemp_pmla."'' method=post>";
 	
 
 	

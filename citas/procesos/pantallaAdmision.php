@@ -1339,16 +1339,16 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 
 
 	//------------------------------------------------------------ENCABEZADO--------------------------------------------------------------------------
+	$wactualiz = '2022-03-04';
 	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-	$wbasedato = strtolower( $institucion->baseDeDatos );
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
+	encabezado("AGENDA MEDICA ",$wactualiz, $wbasedato1);
 
-	$wentidad = $institucion->nombre;
-
-	if ($wemp_pmla == 01) {
-		encabezado("AGENDA MEDICA", "2021-11-18", $wbasedato );
-	} else {
-		encabezado("AGENDA MEDICA", "2021-11-18", "logo_".$wbasedato );
-	}
+	//if ($wemp_pmla == 01) {
+	//	encabezado("AGENDA MEDICA", "2021-11-18", $wbasedato );
+	//} else {
+	//	encabezado("AGENDA MEDICA", "2021-11-18", "logo_".$wbasedato );
+	//}
 		//---------------------------------------------------------FIN ENCABEZADO-----------------------------------------------------------------------------
 
 
