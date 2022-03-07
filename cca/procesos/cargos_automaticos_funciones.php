@@ -124,17 +124,32 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 			$condicion_temp_emp = " AND ccatem = '".$tipoEmpresa."' AND ccaemp = '".$wcodemp."' ";
 		}
 
+		$sql_rol_usuario = "SELECT hce19.rolcod 
+							  FROM ".$wbasedato_hce."_000020 hce20
+							  JOIN ".$wbasedato_hce."_000019 hce19 ON Rolcod = Usurol AND Rolest = 'on' AND Rolmed = 'on'
+							 WHERE usucod = '".$mov_usu."'";
+
+		$exec_query_rol_usuario = mysql_query($sql_rol_usuario, $conex) or die(mysql_errno()." - Error en el query rol usuario - ".mysql_error());
+		$num_reg_rol_usuario = mysql_num_rows($exec_query_rol_usuario);
+
+		$case_ccater = "ccater";
+
 		$condicion_espec = "";
 		$condicion_esp_movhos_48 = "";
-		if($wespecialidad != '' ) {
-			$condicion_espec = " AND ((ccater = '*' AND ccaesp = '".$wespecialidad."') OR ccaesp = '') ";
-			$condicion_esp_movhos_48 = " AND Medesp = '".$wespecialidad."' ";
-		}
 
-		$condicion_meddoc = "";
+		if($num_reg_rol_usuario > 0) {
+			if($wespecialidad != '' ) {
+				$condicion_espec = " AND ((ccater = '*' AND ccaesp = '".$wespecialidad."') OR ccaesp = '') ";
+				$condicion_esp_movhos_48 = " AND Medesp = '".$wespecialidad."' ";
+			}
+	
+			$condicion_meddoc = "";
+	
+			if ($wmeddoc != "") {
+				$condicion_meddoc = $wmeddoc;
+			}
 
-		if ($wmeddoc != "") {
-			$condicion_meddoc = $wmeddoc;
+			$case_ccater = $condicion_meddoc." ccater";
 		}
 		
 		$sql_cca_temp_especifica = "
@@ -154,7 +169,7 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 					, (CASE WHEN ccadat = 'on' OR ccaeve = 'on' THEN '".$wformulario."' ELSE NULL END) as wformulario
 					, movdat
 					, COALESCE(ccatcco,'H,D,A,U,Cx') ccatcco
-					, ".$condicion_meddoc." ccater
+					, ".$case_ccater."
 					, CASE WHEN ccater IS NOT NULL THEN TRIM(CONCAT(Medno1, ' ', Medno2, ' ' ,Medap1, ' ' ,Medap2)) ELSE '' END tercero
 					, Medesp tercero_esp
 					, ccafac
@@ -165,7 +180,7 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 			LEFT JOIN ".$wbasedato_hce."_000002 as hce ON (cca.ccafhce = hce.Detpro AND cca.ccachce = hce.Detcon) 
 			LEFT JOIN ".$wbasedato_movhos."_000026 ON Artcod = ccaart 
 			LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
-			LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = '".$condicion_meddoc."' AND Medest = 'on' AND Meddoc <> '' ".$condicion_esp_movhos_48." 
+			LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> '' ".$condicion_esp_movhos_48." 
 			LEFT JOIN ".$wbasedato_facturacion."_000103 ON Procod = ccacup
 			LEFT JOIN ".$wbasedato_hce."_".$wformulario." as fhce ON ( cca.ccachce = movcon AND Dettip = movtip AND ccadat = 'on' AND movusu = '".$mov_usu."' AND fhce.Fecha_data = '".$fecha."' AND fhce.id = (SELECT MAX(id) FROM ".$wbasedato_hce."_".$wformulario." WHERE movusu = '".$mov_usu."' AND Fecha_data = '".$fecha."' AND movhis = '".$movhis."' AND moving = '".$moving."' AND cca.ccachce = movcon AND Dettip = movtip) ) 
 			WHERE ccafhce = '".$wformulario."' ".$condicion_temp_emp." ".$condicion_espec;
