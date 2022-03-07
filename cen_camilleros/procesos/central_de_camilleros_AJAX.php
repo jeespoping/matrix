@@ -2147,7 +2147,7 @@ function actualizar_operador($wcentral, $wcodope, $whorope, $selectsede = '')
 	   if(isset($_GET['selectsede']) && !empty($_GET['selectsede']) ){
 			$q = " SELECT ce.cenope, ce.cenhop "
 			."   FROM ".$wcencam."_000006 ce"
-			."   INNER JOIN cencam_000003 cs"
+			."   INNER JOIN ".$wcencam."_000003 cs"
 			."  ON ce.codcen = cs.Central"
 			."  WHERE codcen = '".$wcentral."'"
 			."    AND cenest = 'on' "
@@ -2294,7 +2294,7 @@ if (!isset($consultaAjax))
 		if(isset($_GET['selectsede']) && !empty($_GET['selectsede']) ){
 			$q = " SELECT nomcen, centre, cenvig, cenest, cenope, cenhop "
 			."   FROM ".$wcencam."_000006 ce"
-			."  INNER JOIN cencam_000003 cs "
+			."  INNER JOIN ".$wcencam."_000003 cs "
 			."  ON ce.codcen = cs.Central"
 			."  WHERE codcen = '".$wcentral."'"
 			."  AND cs.SedeDestino='".$_GET['selectsede']."'";
