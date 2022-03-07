@@ -119,15 +119,6 @@ if (!isset($consultaAjax))
 	
 		$('#buscarTabla').quicksearch('#tbInformacion .find');
 	
-		if($('#wselectsede').val() === ''){
-			$('#wselectsede').val($('#selectsede').val());
-
-			var wselectsede = $('#selectsede').val();
-
-		}
-		
-		
-
 
     });
 
@@ -555,9 +546,8 @@ if (!isset($consultaAjax))
 	 	var sedeDestino  = document.getElementById("wcamillerosede["+i+"]");
 		 
 		selectorSede = validaSedeSeleccionada(selectorSede, sedeDestino);
-		
-		var valorSelectorSede = (selectorSede === null) ? '' : selectorSede.value;
 
+		var valorSelectorSede = (selectorSede === null) ? '' : selectorSede.value;
 	  var parametros = "consultaAjax=camillero&wemp_pmla="+document.getElementById("wemp_pmla").value+"&wid="+wid+"&wcentral="+document.getElementById("wcentral").value+"&wusuario="+wusuario+"&wcamillero="+opcionSeleccionada+"&whis="+historia+"&tramitesok="+marcado+"&codigoSede="+valorSelectorSede;
 
       try
@@ -2341,15 +2331,16 @@ if (!isset($consultaAjax))
 	    //====================================================================================================================================
 	    //COMIENZA LA FORMA
 	    //echo "<form name=central action='central_de_camilleros_AJAX.php' method=post>";
-		echo "<form action=# name=central id=central method=get>";
+		echo "<form name=central id=central method=post>";
 		
 		encabezado("CENTRAL ".$wnomcen,$wactualiz, "clinica", TRUE);
 		actualizar_operador($wcentral, $wcodope, $whorope, $selectsede);
 		
-	    echo "<input type='HIDDEN' name='wemp_pmla' ID='wemp_pmla' value='".$wemp_pmla."'>";
-		echo "<input type='HIDDEN' name='wcentral' ID='wcentral' value='".$wcentral."'>";
-		echo "<input type='HIDDEN' name='wtiempo_refresh' ID='wtiempo_refresh' value='".$wtiempo_refresh."'>";
-		echo "<input type='HIDDEN' name='wselectsede' ID='wselectsede' value='".$wselectsede."'>";
+	    echo "<input type='HIDDEN' ID='wemp_pmla' value='".$wemp_pmla."'>";
+		echo "<input type='HIDDEN' ID='wcentral' value='".$wcentral."'>";
+		echo "<input type='HIDDEN' ID='wtiempo_refresh' value='".$wtiempo_refresh."'>";
+		// echo "<input type='HIDDEN' ID='wselectsede' value='".$wselectsede."'>";
+		echo "<input type='HIDDEN' ID='selectsede' value='".$wselectsede."'>";
 		$wdatos_habitaciones = todaslashab();
 		echo "<input type='HIDDEN' ID='whabitaciones' value='".json_encode($wdatos_habitaciones)."'>";
 		
@@ -2659,8 +2650,10 @@ if (!isset($consultaAjax))
                     echo "<td align=center><INPUT TYPE=CHECKBOX   title='ANULAR' ID='wanulada[".$i."]' onclick=\"marcarAnular( '$wid', 'Si', '$i', '$whis')\" id_check='chkSol_" . $wid . "'></td>";
 			     else	                      //Tiene llegada NO dejo anular
 				     echo "<td align=center><INPUT TYPE=CHECKBOX   title='ANULAR' ID='wanulada[".$i."]' onclick=\"marcarAnular( '$wid', 'No', '$i', '$whis')\" id_check='chkSol_" . $wid . "'></td>";
-			
-			/* Sede */
+
+
+
+  			/* Sede */
 		  	if (($sFiltrarSede == 'on') && centralesConColumnaSedeDestino($wcentral))
 		  	{
   
