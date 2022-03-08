@@ -19,7 +19,25 @@ if(!isset($_SESSION['user']) && !isset($accion))
 
 $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 $wlogoempresa = strtolower( $institucion->baseDeDatos );
-$wactualiz = "(Febrero 15 de 2022)";
+$wactualiz = "(Febrero 22 de 2022)";
+
+/************************************************************************************************************************
+
+PROGRAMA: cargos_automaticos.php
+Fecha de liberación: 04 Mayo 2021
+Autor: Cidenet S.A - Iniciativa Cargos Automáticos
+Versión Actual: 2022-02-22
+
+OBJETIVO GENERAL: Este programa corresponde a la interfaz de configuración de cargos automáticos, el usuario puede listar
+las configuraciones almacenadas, crear, editar o eliminar configuraciones de cargo automático, listado de registros del log.
+
+************************************************************************************************************************/
+
+/************************************************************************************************************************
+ * Modificaciones
+ * Febrero 22 de 2022 (Cidenet S.A) Cristhian Barros               - Se añaden comentarios de acuerdo a las recomendaciones de buenas prácticas, se corrige error en la función de guardar_cca y se modifica 
+ * Febrero 15 de 2022 (Cidenet S.A) Cristhian Barros, Andrés Gallo - Se añaden los campos de tipo empresa, empresa, facturable, especialidad y tercero comodín para permitir la parametrización de cargos automáticos para honorarios.
+ ************************************************************************************************************************/
 
 ?>
 <html>
@@ -791,8 +809,7 @@ $wactualiz = "(Febrero 15 de 2022)";
 		if(tipo_cco == '') {
 			msjErrores += 'Debe seleccionar al menos un tipo de centro de costo. \n';
 		}
-			
-		procExc = '';
+		
 		if(tipo_cargo == 'orden') {
 			tipoOrden = document.getElementById('tipo_orden').value;			
 			if(tipoOrden != '') {
@@ -802,7 +819,8 @@ $wactualiz = "(Febrero 15 de 2022)";
 				}
 				procExc = procExc.join();				
 			}
-			
+		} else {
+			procExc = '';
 		}
 		
 		if(tipoConcepto == 'C'){				
@@ -1593,7 +1611,7 @@ $wactualiz = "(Febrero 15 de 2022)";
 		{
 			$.post(_URL_AJAX,
 			{
-				name_hce:        $('#wesp').val(),
+				parametro:        $('#wesp').val(),
 				consultaAjax:     '',
 				accion:           'traer_especialidades',
 			}, function (data) {

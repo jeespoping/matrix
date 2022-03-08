@@ -10,7 +10,21 @@ include_once("hce/funcionesHCE.php");
 include_once('cargos_automaticos_funciones.php');
 
 /************************************************************************************************************************
+
+PROGRAMA: ajax_cargos_automaticos.php
+Fecha de liberación: 04 Mayo 2021
+Autor: Cidenet S.A - Iniciativa Cargos Automáticos
+Versión Actual: 2022-02-22
+
+OBJETIVO GENERAL: Este es el archivo de end-points asociados al programa de cargos automáticos, en este archivo
+se encuentran toda la lógica, funciones y regla de negocio asociada con el proceso de cargos automáticos.
+
+************************************************************************************************************************/
+
+/************************************************************************************************************************
  * Modificaciones
+ * Febrero 22 de 2022 (Cidenet S.A) Cristhian Barros               - Se añaden comentarios de acuerdo a las recomendaciones de buenas prácticas, se corrige error en la creación de cca de tipo orden
+                                                                     se corrige error en el listado de especialidades y se modifica número de registros default por el log.
  * Febrero 15 de 2022 (Cidenet S.A) Cristhian Barros, Andrés Gallo - Se añaden todo el código relacionado con el tipo empresa, empresa, facturable, especialidad y tercero comodín
  * Febrero 04 de 2022 (Cidenet S.A) Cristhian Barros, Andrés Gallo - Se añade la validacion cuando el tercero no tiene porcentaje de participación, en este caso el sistema almacena un log y envía
 																		la notificación vía correo, esta modificación se realiza en la funcion guardarCargoAutomaticoFacturacionERP y guardarCargoAutomaticoPreescripcion
@@ -1488,7 +1502,7 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					$datos['numCargoInv']			= '';
 					$datos['linCargoInv']			= '';
 					
-					if($configCCA['ccaord'] == 'on') {
+					if(isset($configCCA['ccaord']) && $configCCA['ccaord'] == 'on') {
 						$datos['wEstadoExamen']			= $datosAdic['wEstadoExamen'];
 						$datos['wite']			        = $datosAdic['wite'];
 						$datos['wdettor']				= $datosAdic['wdettor'];
@@ -1539,7 +1553,7 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					$datos['ccatem'] = $configCCA['ccatem'];
 					$datos['ccaemp'] = $configCCA['ccaemp'];
 															
-					if($datosAdic['wanulacion_cca'] == 'on' && !empty($datosAdic['wdeticg'])) {
+					if((!empty($datosAdic['wanulacion_cca']) && $datosAdic['wanulacion_cca'] == 'on') && !empty($datosAdic['wdeticg'])) {
 						
 						$sql_cod_causa_anulacion = "SELECT Caucod FROM ".$wbasedato_cliame."_000268 WHERE Caudes LIKE '%OTROS%' AND Cauest = 'on'";
 						$query_cod_causa_anulacion = mysql_query($sql_cod_causa_anulacion);
@@ -1577,6 +1591,7 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 							$row_ccaord_log = mysql_fetch_array($query_log_ccaord);
 							$array_ccaord_log = json_decode($row_ccaord_log['Logdes'], true);	
 							
+							$array_ccaord_log['wEstadoExamen'] = $datosAdic['wEstadoExamen'];
 							$datos_log = array_merge($array_ccaord_log, array());
 							
 						}
@@ -1654,7 +1669,7 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					// Validamos la cantidad y la tarifa para que no se hagan cargos que tengan cantidades en 0 y tarifas en 0				
 					if( $datos['wcantidad'] != null && $datos['wcantidad'] != 0 && $datos['wcantidad'] != '' && $wvaltar > 0) {
 						
-						if($configCCA['ccaord'] == 'on'){							
+						if(isset($configCCA['ccaord']) && $configCCA['ccaord'] == 'on'){							
 							$sql = 'SELECT id FROM '.$wbasedato_hce.'_000028
 									 WHERE Detnro = "'.$datosAdic['worden'].'"
 										AND Detcod = "'.$datosAdic['wdetcod'].'"
@@ -1679,7 +1694,7 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 						
 						$idCargo = $respuesta['Mensajes']['idCargo'];
 						$errorValidarGrabar = $respuesta['Mensajes']['error'];					
-						if($configCCA['ccaord'] == 'on' && $errorValidarGrabar == 0){
+						if((isset($configCCA['ccaord']) && $configCCA['ccaord'] == 'on') && $errorValidarGrabar == 0){
 							$datosAdic['cargo'] = $idCargo;	
 							actualizar_id_cargo($conex, $wemp_pmla, $datosAdic);						
 						}
@@ -2339,7 +2354,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 	$condicion_Logtip = $Logtip != '' ? " AND Logtip = '".$Logtip."' " : '';
 	$condicion_Fecha_data = $fecha != '' ? " AND Fecha_data = '".$Fecha_data."' " : '';
 	
-	$condicion_limit = $esCCA == '' && $fecha == '' ? ' LIMIT 100 ' : '';
+	$condicion_limit = $esCCA == '' && $fecha == '' ? ' LIMIT 5 ' : '';
 	
 	$query_logs = "SELECT Medico as medico, Fecha_data as fecha, Hora_data as hora, Logusu as usuario, Logdes, Logdes2, Logtip, Logerr, Logins, Logupd, Logdel, Seguridad 
 					FROM ".$wbasedato_cliame."_000342 
@@ -2385,9 +2400,9 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 				
 				$detalle = !empty($Logdes['ccator'])  ? '<strong>Tipo Orden:</strong> '.$Logdes['ccator'].'<br>'   : '';
 				$detalle .= '<strong>Concepto:</strong> '.$Logdes['ccacon'].'<br>';
-				$detalle .= '<strong>Tipo Empresa:</strong> '.$Logdes['ccatem'].'<br>';
-				$detalle .= '<strong>Empresa:</strong> '.$Logdes['ccaemp'].'<br>';
-				$detalle .= '<strong>Facturable:</strong> '.($Logdes['ccafac'] == 'on' ? 'Si' : 'No').'<br>';
+				$detalle .= !empty($Logdes['ccatem']) ? '<strong>Tipo Empresa:</strong> '.$Logdes['ccatem'].'<br>' : '';
+				$detalle .= !empty($Logdes['ccaemp']) ? '<strong>Empresa:</strong> '.$Logdes['ccaemp'].'<br>' : '';
+				$detalle .= !empty($Logdes['ccafac']) ? '<strong>Facturable:</strong> '.($Logdes['ccafac'] == 'on' ? 'Si' : 'No').'<br>' : '';
 				$detalle .= '<strong>C. Costos:</strong> '.$Logdes['ccacco'].'<br>';
 				$detalle .= '<strong>Tipo Cen. Costos:</strong> '.$Logdes['tcco'].'<br>';
 				$detalle .= !empty($Logdes['articulo'])? '<strong>Medicamento/Insumo:</strong> '.$Logdes['articulo'].'<br>'   : '';
@@ -2400,12 +2415,12 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 				$detalle .= !empty($Logdes['ccaesp'])  ? '<strong>Especialidad :</strong> '.$Logdes['ccaesp'].'<br>'   : '';
 				
 				$detalle2 = !empty($Logdes2['ccator'])  ? '<strong>Tipo Orden:</strong> '.$Logdes2['ccator'].'<br>'   : '';
-				$detalle2 .= '<strong>Concepto:</strong> '.$Logdes2['ccacon'].'<br>';
-				$detalle2 .= '<strong>Tipo Empresa:</strong> '.$Logdes2['ccatem'].'<br>';
-				$detalle2 .= '<strong>Empresa:</strong> '.$Logdes2['ccaemp'].'<br>';
-				$detalle2 .= '<strong>Facturable:</strong> '.($Logdes2['ccafac'] == 'on' ? 'Si' : 'No').'<br>';
-				$detalle2 .= '<strong>C. Costos:</strong> '.$Logdes2['ccacco'].'<br>';
-				$detalle2 .= '<strong>Tipo Cen. Costos:</strong> '.$Logdes2['tcco'].'<br>';
+				$detalle2 .= !empty($Logdes2['ccacon']) ? '<strong>Concepto:</strong> '.$Logdes2['ccacon'].'<br>' : '';
+				$detalle2 .= !empty($Logdes2['ccatem']) ? '<strong>Tipo Empresa:</strong> '.$Logdes2['ccatem'].'<br>' : '';
+				$detalle2 .= !empty($Logdes2['ccaemp']) ? '<strong>Empresa:</strong> '.$Logdes2['ccaemp'].'<br>' : '';
+				$detalle2 .= !empty($Logdes2['ccafac']) ? '<strong>Facturable:</strong> '.($Logdes2['ccafac'] == 'on' ? 'Si' : 'No').'<br>' : '';
+				$detalle2 .= !empty($Logdes2['ccacco']) ? '<strong>C. Costos:</strong> '.$Logdes2['ccacco'].'<br>' : '';
+				$detalle2 .= !empty($Logdes2['tcco'])   ? '<strong>Tipo Cen. Costos:</strong> '.$Logdes2['tcco'].'<br>' : '';
 				$detalle2 .= !empty($Logdes2['articulo'])  ? '<strong>Medicamento/Insumo:</strong> '.$Logdes2['articulo'].'<br>'   : '';
 				$detalle2 .= !empty($Logdes2['ccacup'])  ? '<strong>Procedimiento(s):</strong> '.$Logdes2['ccacup'].'<br>'   : '';
 				$detalle2 .= !empty($Logdes2['ccapex'])  ? '<strong>Procedimiento(s) Excluido(s):</strong> '.$Logdes2['ccapex'].'<br>'   : '';
@@ -2521,7 +2536,7 @@ function obtenerLogTransaccionHTML($conex, $wbasedato_cliame, $esCCA, $fecha) {
 					$notas.= !empty($Logerr['estancia'.$i]) && $Logerr['estancia'.$i]['idcargo'] != 0 ? '<strong>id Cargo</strong> '.$Logerr['estancia'.$i]['idcargo'].' - '.$Logerr['estancia'.$i]['respuesta'].'<br>' : '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['estancia'.$i]['respuesta'].'</p><br>';
 				}
 				
-				$notas.= !is_null($Logerr['error'])  && $Logerr['error'] == 1 ? '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p><br>' : '';
+				$notas.= isset($Logerr['error']) && !is_null($Logerr['error'])  && $Logerr['error'] == 1 ? '<p style="color:red"><strong>Advertencia: </strong> '.$Logerr['mensaje'].'</p><br>' : '';
 			}
 			
 			$tipo_transaccion = '';
