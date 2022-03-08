@@ -108,6 +108,7 @@ function ver_historias(info_historias, hab){
   function consultar()
   { 
 	var wemp_pmla = document.forms.indhosp.wemp_pmla.value;
+	var selectsede = document.forms.indhosp.selectsede.value;
 	//var servicio = document.forms.indhosp.wservicio.value;
 	var servicio = document.forms.indhosp.wservicio.options[document.forms.indhosp.wservicio.selectedIndex].text;
 	var fInicial = document.forms.indhosp.wfec_i.value;
@@ -118,7 +119,7 @@ function ver_historias(info_historias, hab){
 	servicio = n[0]; 
     
  	if(esFechaMenorIgual(fInicial,fFinal)){
- 		document.location.href = 'indicadores_hospitalarios_dia2.php?wemp_pmla='+wemp_pmla+'&waccion=a'+'&wservicio='+servicio+'&wfechaInicial='+fInicial+'&wfechaFinal='+fFinal;	
+ 		document.location.href = 'indicadores_hospitalarios_dia2.php?wemp_pmla='+wemp_pmla+'&waccion=a'+'&wservicio='+servicio+'&wfechaInicial='+fInicial+'&wfechaFinal='+fFinal+'&selectsede='+selectsede;	
  	} else {
  		alert("La fecha inicial debe ser menor a la fecha final de consulta.");
  	}	  
@@ -130,7 +131,7 @@ function ver_historias(info_historias, hab){
   //Redirecciona a la pagina inicial
   function inicio(wfec_i,wfec_f,wservicio)
   {
-	document.location.href='indicadores_hospitalarios_dia2.php?wemp_pmla='+document.forms.indhosp.wemp_pmla.value+'&wfec_i='+wfec_i+'&wfec_f='+wfec_f+'&wservicio='+wservicio+'&bandera=1';	 		
+	document.location.href='indicadores_hospitalarios_dia2.php?wemp_pmla='+document.forms.indhosp.wemp_pmla.value+'&selectsede='+document.forms.indhosp.selectsede.value+'&wfec_i='+wfec_i+'&wfec_f='+wfec_f+'&wservicio='+wservicio+'&bandera=1';	 		
   }
   
   function consultarDetalleDiaCamaOcupada(ele, servicio, wfechaInicial, wfechaFinal){
@@ -186,6 +187,11 @@ function ver_historias(info_historias, hab){
 	$( "#aux_respuesta" ).dialog( "close" );
 	$( "#detalle_dias_cama_ocupada" ).dialog( "close" );
   }
+
+ 	 $(document).on('change','#selectsede',function(){
+        window.location.href = "indicadores_hospitalarios_dia2.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+    });
+
 </script>
 
 <?php
@@ -195,6 +201,8 @@ function ver_historias(info_historias, hab){
  2019-08-02, Jerson trujillo :
 	Se modifica el calculo de dias cama ocupado, por definicion de registros medicos. Esto se hizo porque
 	cuando se daba click en el detalle eran distintos los valores del total detallado con el general.
+
+ * Actualizado: 08 de marzo de 2022 (Sebastian Alvarez Barona): - Se realiza filtro de sede al select de servicio que nos lista los centros de costos.
 	
  * Actualizado: 09-Ene-2019 (Edwin MG): - El caculo de días de estancia por altas y muertes institucionales se hace de 
  *										  acuerdo a la tablas de de egresos (cliame_000108)
@@ -341,7 +349,7 @@ function consultarDiasEstanciaInstitucionales( $conex, $wbasedato, $wcliame, $fe
 /******************************************************************************************************************************
  *Consulta los indicadores dados los parametros
  ******************************************************************************************************************************/
-function consultarIndicadoresHospitalarios($wservicio,$wfechaInicial,$wfechaFinal,$diasFechasConsulta)
+function consultarIndicadoresHospitalarios($wservicio,$wfechaInicial,$wfechaFinal,$diasFechasConsulta,$sCodigoSede = NULL)
 {
 
 	global $wbasedato;
@@ -349,6 +357,19 @@ function consultarIndicadoresHospitalarios($wservicio,$wfechaInicial,$wfechaFina
 	global $conex;
 	global $wemp_pmla;
 	global $wcliame;
+
+	$sFiltroSede='';
+   
+    if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on')
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
 	
 	$coleccion = array();
 
@@ -366,6 +387,7 @@ function consultarIndicadoresHospitalarios($wservicio,$wfechaInicial,$wfechaFina
 				     AND 	cieser = ".$wbasedato."_000011.ccocod
 				     AND 	Ccourg != 'on'
 				     AND    ".$wtabcco.".Ccoemp = '".$wemp_pmla."'  
+					 {$sFiltroSede}
 			    ORDER BY   	cieser,A.fecha_data";  
 
 	}
@@ -382,6 +404,7 @@ function consultarIndicadoresHospitalarios($wservicio,$wfechaInicial,$wfechaFina
 				     AND 	cieser = ".$wtabcco.".ccocod
 				     AND 	cieser = ".$wbasedato."_000011.ccocod
 				     AND 	Ccourg != 'on'
+					 {$sFiltroSede}
 			    ORDER BY   	cieser,A.fecha_data";
 	}	    
 
@@ -829,7 +852,7 @@ function consultarDetalle( $wfecha, $wcco, $wcconom, $wtipo ){
  */
 include_once("root/comun.php");
 
-$wactualiz = "2020-02-05";
+$wactualiz = "08 de marzo de 2022";
 
 if (!isset($user))
 	if(!isset($_SESSION['user']))
@@ -869,11 +892,13 @@ else
 		return;
 	}
 	//Encabezado 
-	encabezado("INDICADORES HOSPITALARIOS DIA POR DIA",$wactualiz,"clinica");
 	
 	echo "<form name='indhosp' action='indicadores_hospitalarios_dia2.php' method=post>";
 
+	encabezado("INDICADORES HOSPITALARIOS DIA POR DIA",$wactualiz,"clinica", TRUE);
+
 	echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
+	echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
 	echo "<div style='display:none' id='aux_respuesta'></div>";
 	echo "<div style='display:none;' id='detalle_dias_cama_ocupada'></div>";
 	
@@ -928,7 +953,7 @@ else
 				$diasFechasConsulta = ROUND(($calcDiaFinal-$calcDiaInicial)/(60*60*24)) + 1;
 			
 				//Consulta de los indicadores
-				$colIndicadoresHospitalarios = consultarIndicadoresHospitalarios($wservicio,$wfechaInicial,$wfechaFinal,$diasFechasConsulta);
+				$colIndicadoresHospitalarios = consultarIndicadoresHospitalarios($wservicio,$wfechaInicial,$wfechaFinal,$diasFechasConsulta, $selectsede);
 				//echo $colIndicadoresHospitalarios."<br>";
 				//echo count($colIndicadoresHospitalarios);
 				
@@ -1501,7 +1526,9 @@ else
 			$tod="Todos";
 			$ipod="off";
 			//$cco=" ";
-			$centrosCostos = consultaCentrosCostos($cco);
+			// $centrosCostos = consultaCentrosCostos($cco); /** Este llamado es el que estaba antes de hacerse los filtros por sedes */
+			$centrosCostos = consultaCentrosCostos($cco, FALSE, '', $selectsede);
+
 					
 			echo "<table align='center' border=0>";		
 			$dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod, "wservicio");
