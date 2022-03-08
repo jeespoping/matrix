@@ -9,7 +9,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2020-06-08';
+			$wactualiz='2021-03-08';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //	2020-06-08: Jerson Trujillo: Se corrige warning de division por cero.
 //	2020-02-12: Jerson Trujillo: Se agrega cuadro resumen de ocupación dependiendo de parametros en la movhos_11
@@ -41,6 +41,10 @@ else
 	
 
 	include_once("root/comun.php");
+
+    if (is_null($selectsede)){
+        $selectsede = consultarsedeFiltro();
+    }
 	
 
 	$conex 			= obtenerConexionBD("matrix");
@@ -63,6 +67,8 @@ else
 		global $wbasedato;
 		
 		$respuesta = array();
+
+        $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
 		
 		// --> Ocupacion del dia
 		if($fechaBuscar1 == date("Y-m-d")){
@@ -118,7 +124,7 @@ else
 		}
 		// --> Historico
 		else{
-			
+
 			$arrInfoOcu = array();
 			$sqlOcupacion = "
 			SELECT 	A.Cieser, SUM(Ciedis) AS Ciedis, SUM(Cieocu) AS Cieocu, Cconoc AS Nombre, Ccodtp AS tipoPac, Ccotor AS Torre, Ccopis AS Piso, 0 AS Alistamiento,
@@ -1637,6 +1643,10 @@ else
 //=====================================================================================================================================================================
 	var blinkPor;
 	var relojTemp;
+
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "indicadoresDireccionMedica.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+    });
 	
 	$(function(){
 		// --> Parametrizaci&oacute;n del datapicker
@@ -1704,6 +1714,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'ocupacionGeneral',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			
@@ -1771,6 +1782,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'verOcupacion',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			
@@ -1831,7 +1843,8 @@ else
 		{
 			consultaAjax	:   '',
 			accion			:   'verUrgencias',
-			wemp_pmla		:	$('#wemp_pmla').val()
+			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val()
 		}, function(respuesta){
 			$("#retornar").show();
 			$("#tituloMenu").html("<table width='100%' style='font-family:verdana;font-size:18pt;color:#109DDC;font-weight:bold'><tr><td width='20%'><img id='atras' title='Retornar' src='../../images/medical/sgc/atras.png' onclick='verOcupacion()' width='25px' height='27px' style='cursor:pointer;'></td><td width='50%' align='center'>Ocupaci&oacute;n Urgencias "+respuesta.ocupacionGen+" %</td><td width='30%' style='font-size:8pt;font-weight:normal;'>Pr&oacute;xima actualizaci&oacute;n:&nbsp;<span id='relojTemp' cincoMinTem='86400000'></span>&nbsp;<img width='15px' height='15px' src='../../images/medical/sgc/Clock-32.png'>&nbsp;<img title='Actualizar' src='../../images/medical/sgc/Refresh-128.png' onclick='verUrgencias(\""+fechaBuscar1+"\")' width='15px' height='15px' style='cursor:pointer;'></td></tr></table>");
@@ -2009,6 +2022,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'verCx',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			$("#retornar").show();
@@ -2032,6 +2046,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'verEspecialidades',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			
@@ -2065,6 +2080,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'verDiagnosticos',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			if($("#imgClinica").attr("id") != undefined)
@@ -2216,11 +2232,12 @@ else
 	<BODY>
 	<?php
 	// -->	ENCABEZADO
-	encabezado("Indicadores Direcci&oacute;n Medica", $wactualiz, 'clinica');
+	encabezado("Indicadores Direcci&oacute;n Medica", $wactualiz, 'clinica', true);
 	//<table id='tableContenedor' width='70%' height='50%' class='bordeRedondo' style='border-radius:8px;border:1px solid #AFAFAF;padding:10px;z-index:-2;background:#eeeeee url(../../../include/root/jqueryui_1_9_2/cupertino/images/ui-bg_diagonals-thick_90_eeeeee_40x40.png) 50% 50% repeat;'>
 		
 	echo "
 	<input type='hidden' value='".$wemp_pmla."' id='wemp_pmla'>
+	<input type='hidden' value='".$selectsede."' id='sede'>
 	<div align='center' >
 		<table  width='70%'>
 			<tr>
