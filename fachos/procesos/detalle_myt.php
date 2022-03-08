@@ -403,8 +403,9 @@ else
                     //$fecrafa = date("d-m-Y", strtotime($fecrad));
                     //$porsema = odbc_result($err_o3, 26);//Porcentaje de semanas
                     //$numite2 = odbc_result($err_o3, 37);//Numero del item 2
-
-                    $query = mysql_queryV("SELECT a.Pacfna FROM cliame_000100 a WHERE a.Pacdoc = '$cep'");
+                    
+                    $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+                    $query = mysql_queryV("SELECT a.Pacfna FROM ".$wcliame."_000100 a WHERE a.Pacdoc = '$cep'");
                     while($dato = mysql_fetch_array($query))
                     {
                         $fechaN = $dato[0];
