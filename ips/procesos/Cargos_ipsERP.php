@@ -4583,6 +4583,8 @@ else
 	//----------------------------
 	function grabar(Boton)
 	{
+		let usuarioGraba = ($("#wuse_tal").val()).split('-')[0];
+
 		var PermitirGrabar 			= true;
 		var graba_varios_terceros 	= 0;
 		var porcentajeParticipacion = '';
@@ -4876,6 +4878,7 @@ else
 						ingreso 	: $("#wing").val(),
 						wemp_pmla 	: $('#wemp_pmla').val(),
 						cco_sede 	: $( "#wccogra_1" ).val(),
+						usuarioGC	: usuarioGraba,
 						accept		: function(){
 							
 							PintarDetalleCuentaResumido($("#whistoria").val(), $("#wing").val());
