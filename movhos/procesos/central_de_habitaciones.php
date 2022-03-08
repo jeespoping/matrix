@@ -442,7 +442,8 @@ return;
     $sedeTabla = '';
     if(isset($_GET['selectsede']) && !empty($_GET['selectsede']) ){
         $sedeTabla = " ,".$wcencam."_000004 ";
-        $wselectsede = "habcco = mid(cco,1,instr(cco,'-')-1)"; 
+        $wselectsede = "habcco = mid(cco,1,instr(cco,'-')-1)";
+        $whereselectsede = " AND codigoSede = 'SedeSur' "; 
     }
     /**  **///---> se omiten los cubiculos habcub
     /**
@@ -457,6 +458,7 @@ return;
         ."                           FROM ".$wbasedato."_000025 "
         ."                          WHERE movhdi = '00:00:00' ) "
         ."     AND habcub != 'on' "
+        ." ".$whereselectsede
         ."   UNION "
         ."  SELECT movhab habitacion, movemp, movobs observacion, Fecha_data fechaAltaDef, Hora_data horaAltaDef, '', id, movhem horaAsignado "
         ."    FROM ".$wbasedato."_000025 "
