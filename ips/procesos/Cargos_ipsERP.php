@@ -4872,7 +4872,6 @@ else
 				// --> Si no hay ningun error
 				if(!data.Mensajes.error)
 				{
-					
 					$.mtxCitas({
 						historia 	: $("#whistoria").val(),
 						ingreso 	: $("#wing").val(),

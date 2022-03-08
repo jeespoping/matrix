@@ -6,7 +6,7 @@
 		this.wemp_pmla 	= options.wemp_pmla || "01";
 		this.cco_sede 	= options.cco_sede || "";
 		var fnAccpt		= options.accept || null;
-		var user_gc		= options.usuarioGC || null;
+		this.user_gc		= options.usuarioGC || null;
 		
 		var paciente 	= null;
 		var sede 		= null;
