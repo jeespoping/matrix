@@ -1932,6 +1932,7 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita )
 	$modalidad	= empty( $datosCita['modalidad'] ) ? '': $datosCita['modalidad'];
 	$prioridad	= empty( $datosCita['prioridad'] ) ? '':  $datosCita['prioridad'];
 	$orden		= empty( $datosCita['tipoOrden'] ) ? '':  $datosCita['tipoOrden'];
+	$usuarioGC	= empty( $datosCita['usuarioGraboCargo'] ) ? '' : $datosCita['usuarioGraboCargo'];
 	
 	$procedimientosCargados = consultarProcedimiento( $conex, $wcliame, $datosCita['cup'] );
 	
@@ -1973,7 +1974,7 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita )
 					."\nPID||".$paciente['tipoDocumento']."^".$paciente['nroDocumento']."|||".$paciente['nombre1']."^".$paciente['nombre2']."^".$paciente['apellido1']."^".$paciente['apellido2']."||".$paciente['fechaNacimiento']."|".$paciente['genero']."|||".$paciente['direccion']."^^".$paciente['codigomMunicipio']."^".$paciente['codigomDepartamento']."^^CO||".$paciente['celular']."^^^".$paciente['correoElectronico']."^^^".$paciente['telefono']."|"
 					."\nAIS|".$idMatrix."^".$idHiruko."^".$idAgenda."|||".$fechaCita.$horaCita."||||||".$estado."|"
 					."\nPV1||||||".$procedencia['descripcion']."^".$procedencia['codigo']."||".$medicoNombres."^".$medicoApellidos."^".$medicoNroDocumento."^".$medicoTipoDocumento."||".$sede['descripcion']."^".$sede['codigo']."||"
-					."\nIN1|||".$paciente['codigoResponsable']."|".$paciente['nombreResponsable']."|||||";
+					."\nIN1|||".$paciente['codigoResponsable']."|".$paciente['nombreResponsable']."|||".$usuarioGC."||";
 					// ."\nOBR||||".$cup."^".$modalidad."^".$sala."^".$descripcionCUP."|".$prioridad."|";
 					
 		if( count($procedimientosCargados) > 0 ){
@@ -2106,6 +2107,33 @@ function esMedicinaNuclear($conex, $wmovhos, $wcliame, $cco_sede, $historia, $in
 	return $val;
 }
 
+/**
+ * Metodo que permite obtener toda la información del usuario que realizó
+ * el proceso de grabación del cargo para enviar sus datos por la interoperabilidad
+ * 
+ * @author Joel David Payares Hernández
+ * @since 2022-02-24
+ */
+function informacionUsuarioGrabaCargos($conex, $wemp_pmla, $usuarioGC)
+{
+	$response = null;
+
+	$sql = "
+		  SELECT	Documento 
+			FROM	usuarios 
+		   WHERE	Codigo = '{$usuarioGC}'
+			 AND	Activo = 'A';";
+	
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query ".mysql_error() );
+
+	while($row = mysql_fetch_array($res) )
+	{
+		$response = $row['Documento'];
+	}
+
+	return $response;
+}
+
 //Proceso de acuerdo al protocolo HL7
 if( $_POST ){
 	
@@ -2159,6 +2187,7 @@ if( $_POST ){
 					$idCita 	= $_POST['idCita'];
 					$cco_sede 	= $_POST['cco_sede'];
 					$indicacion	= $_POST['indicacion'] ? $_POST['indicacion'] : '';
+					$usuarioGC	= $_POST['ndoUsuarioGC'] ? $_POST['ndoUsuarioGC'] : '';
 					
 					$paciente = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 					
@@ -2240,6 +2269,9 @@ if( $_POST ){
 					}
 
 					if( !$esHospitalario ){
+
+						$datosCita['usuarioGraboCargo'] = $usuarioGC;
+
 						// Si es ambulatario
 						$datosCita['sede'] 			= $sede;
 						$datosCita['recepcionado']  = 'on';
@@ -2550,6 +2582,11 @@ if( $_GET ){
 				
 				//Cco desde donde se carga el procedimiento
 				$cco_sede = $_GET['cco_sede'];
+
+				//Código de matrix del usuario que grabo el cargo
+				$usuarioGC = $_GET['usuarioGC'];
+
+				$usuario_gc	= informacionUsuarioGrabaCargos( $conex, $wemp_pmla, $usuarioGC );
 			
 				//Consulto la información básica del paciente
 				$paciente 	= informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );	//función en funcionesGeneralesEnvioHL7
@@ -2628,6 +2665,8 @@ if( $_GET ){
 						}
 					}
 				}
+
+				$result['user_gc'] = $usuario_gc;
 				
 				echo json_encode($result);
 			break;

@@ -4583,6 +4583,8 @@ else
 	//----------------------------
 	function grabar(Boton)
 	{
+		let usuarioGraba = ($("#wuse_tal").val()).split('-')[0];
+
 		var PermitirGrabar 			= true;
 		var graba_varios_terceros 	= 0;
 		var porcentajeParticipacion = '';
@@ -4870,12 +4872,12 @@ else
 				// --> Si no hay ningun error
 				if(!data.Mensajes.error)
 				{
-					
 					$.mtxCitas({
 						historia 	: $("#whistoria").val(),
 						ingreso 	: $("#wing").val(),
 						wemp_pmla 	: $('#wemp_pmla').val(),
 						cco_sede 	: $( "#wccogra_1" ).val(),
+						usuarioGC	: usuarioGraba,
 						accept		: function(){
 							
 							PintarDetalleCuentaResumido($("#whistoria").val(), $("#wing").val());
