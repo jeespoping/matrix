@@ -718,7 +718,11 @@
         global $wcliame;
         $historias = array();
 
-        $query = "SELECT * FROM {$wcliame}_000101 WHERE Inghis = '{$historiaIngreso[0]}' AND Ingnin = '{$historiaIngreso[1][0]}'";
+        $query = "SELECT * FROM {$wcliame}_000101 
+                    INNER JOIN {$wcliame}_000100 ON Pachis = Inghis
+                    WHERE Inghis = '{$historiaIngreso[0]}' 
+                    AND Ingnin = '{$historiaIngreso[1][0]}'
+                    ";
         $res = mysql_query($query, $conex);
         $num = mysql_num_rows($res);
         if ($num > 0){
@@ -739,12 +743,12 @@
         $res = mysql_query($query, $conex);
         $num = mysql_num_rows($res);
         if ($num > 0){
-            while ($row = mysql_fetch_assoc($res)) {
-                array_push($result, $row);
+			while ($row = mysql_fetch_assoc($res)) {
+				array_push($result, $row['Ubisac']);
             }
         }
-
-        return $result['Ubisac'];
+		
+        return $result[0];
     }
 
 	function obtenerCodidoTipoUsuario($historiaIngreso){
@@ -757,11 +761,11 @@
         $num = mysql_num_rows($res);
         if ($num > 0){
             while ($row = mysql_fetch_assoc($res)) {
-                array_push($result, $row);
+                array_push($result, $row['Pactus']);
             }
         }
 
-        return $result['Pactus'];
+        return $result[0];
     }
 
 	function obtenerPacser($cod){
@@ -774,11 +778,11 @@
         $num = mysql_num_rows($res);
         if ($num > 0){
             while ($row = mysql_fetch_assoc($res)) {
-                array_push($result, $row);
+                array_push($result, $row['Ccoseu']);
             }
         }
 
-        return $result['Ccoseu'];
+        return $result[0];
     }
 
     function InsertarDatosUnixInpac($historia){
@@ -814,7 +818,7 @@
 				$datos['pacemp']= trim($dataMatrix['Ingtpa']);
 				$datos['paccer']= trim($dataMatrix['Ingcem']); 
 				$datos['pacres']= trim($dataMatrix['Ingent']); 
-				$datos['pacdre']= trim($dataMatrix['Ingdie']); 
+				$datos['pacdre']= trim($dataMatrix['Pacdir']);
 				$datos['pactre']= trim($dataMatrix['Ingtee']); 
 				$datos['pactar']= trim($dataMatrix['Ingtar']); 
 				$anno = date('Y');
@@ -836,7 +840,7 @@
 				$datos['pacdin']= trim($dataMatrix['Ingdig']); 
 				$datos['pacein']= ''; 
 				$datos['paccin']= trim($dataMatrix['Ingcai']);
-				empty($dataMatrix['Ingdig'])?$poliza = '.':$poliza = $dataMatrix['Ingdig'];
+				empty($dataMatrix['Ingpol'])?$poliza = '.':$poliza = $dataMatrix['Ingpol'];
 				$datos['pacpol']= trim($poliza);
 				
 				$_POST['datos'] = $datos;
