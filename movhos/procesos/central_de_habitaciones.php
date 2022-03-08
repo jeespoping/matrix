@@ -1,5 +1,6 @@
 ﻿<?php
 include_once("conex.php");
+include_once("root/comun.php");
    /**************************************************
     *            CENTRAL DE HABITACIONES             *
     *               CONEX, FREE => OK                *
@@ -52,6 +53,16 @@ $wayer1 = date('Y-m-d', $wayerfecha);
 $whora     = (string)date("H:i:s");
 $wusuario  = substr($user,(strpos($user,"-")+1),strlen($user));
 $wactualiz = "2017-09-06";
+
+
+// sede
+// $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+// $sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
+
+if(isset($_GET['selectsede']) && !empty($_GET['selectsede'])){
+    $selectsede = $_GET['selectsede'];
+}
+
 
 if( isset( $peticionAjax ) ){
 
@@ -334,6 +345,7 @@ return;
         function actualizarMovimiento( obj, habitacion, fechaAltaDef, horaAltaDef ){
 
           wconsulta  = $("#wconsulta").val();
+          selectsede = $("#wselectsede").val();
           habitacion = $.trim(habitacion);
           if( wconsulta == "S" ){
 			alert("No puede realizar esta accion el sistema esta en solo lectura.");
@@ -350,7 +362,7 @@ return;
               id         = $("#id_registro_"+habitacion).val();
               $.ajax({
 
-                  url: "central_de_habitaciones.php?wbasedato="+wbasedato,
+                  url: "central_de_habitaciones.php?wbasedato="+wbasedato+"&selectsede="+selectsede,
                   type: "POST",
                   data: {
                           peticionAjax: "actualizarMovimiento",
@@ -367,7 +379,7 @@ return;
                       data = data.split("-")
                       if( data[0] == "error" ){
                         alert( data[1] );
-                        window.location="central_de_habitaciones.php?wbasedato="+wbasedato+"&wconsulta="+wconsulta;
+                        window.location="central_de_habitaciones.php?wbasedato="+wbasedato+"&wconsulta="+wconsulta+"&selectsede="+selectsede;
                       }
                       if( data[0] != "actualizado" ){
                         if( actualizar == "empleado" ){
@@ -401,7 +413,7 @@ return;
     </script>
 </head>
 <?php
-    include_once("root/comun.php");
+
 
     encabezado("CENTRAL DE HABITACIONES",$wactualiz, "clinica");
 
@@ -424,14 +436,23 @@ return;
     // ACA TRAIGO TODAS LAS HABITACIONES PARA ALISTAR
     //===================================================================================================================================================
 
+
+    /** Sede */
+    $wselectsede = '';
+    $sedeTabla = '';
+    if(isset($_GET['selectsede']) && !empty($_GET['selectsede']) ){
+        $sedeTabla = " ,".$wcencam."_000004 ";
+        $wselectsede = "habcco = mid(cco,1,instr(cco,'-')-1)"; 
+    }
     /**  **///---> se omiten los cubiculos habcub
     /**
      * Se cambia en la consulta fecha y hora de alta por fecha data y hora data para obtener el tiempo de llegada
      */
     $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
-        ."    FROM ".$wbasedato."_000020 "
+        ."    FROM ".$wbasedato."_000020 ".$sedeTabla
         ."   WHERE habali = 'on' "
         ."     AND habest = 'on' "
+        ."    ".$wselectsede
         ."     AND habcod not in ( SELECT movhab "
         ."                           FROM ".$wbasedato."_000025 "
         ."                          WHERE movhdi = '00:00:00' ) "
@@ -449,6 +470,7 @@ return;
 
         <input type='HIDDEN' name='wbasedato' id='wbasedato' value='<?php echo $wbasedato ?>'>
         <input type='HIDDEN' name='wconsulta' id='wconsulta' value='<?php echo $wconsulta ?>'>
+        <input type='HIDDEN' name='wselectsede' id='wselectsede' value='<?php echo $selectsede ?>'>
 
         <center><table>
             <tr class='encabezadotabla'>
@@ -601,7 +623,7 @@ return;
         </table>
         </form>
 
-        <meta http-equiv='refresh' content='60;url=central_de_habitaciones.php?wbasedato=<?php echo $wbasedato ?>&wconsulta=<?php echo $wconsulta ?>'>
+        <meta http-equiv='refresh' content='60;url=central_de_habitaciones.php?wbasedato=<?php echo $wbasedato ?>&wconsulta=<?php echo $wconsulta ?>&selectsede=<?php echo $selectsede ?>'>
         <br>
         <center><table>
         <tr><td align='center' colspan='9'><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>
