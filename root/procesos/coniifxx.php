@@ -22,6 +22,11 @@ include_once("root/comun.php");
 		 wemp=3 es usuario de CLINICA DEL SUR
 		 wemp=4 es usuario de PATOLOGIA
 		 wemp=5 es usuario de FARMASTORE
+----------------------------------------------------------------
+  ACTUALIZACIÓN
+----------------------------------------------------------------
+->08/03/2022-Brigith Lagares : Se estandariza wemp_pmla  
+
 ****************************************************************/
 $wactualiz = '2022-02-24';
 $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);

@@ -60,6 +60,10 @@ function comparacion($vec1,$vec2)
 	   REGISTRO DE MODIFICACIONES 
 	   	.2015-01-07
 	   		Release de Versión Beta. 
+	--------------------------------------------------
+	ACTUALIZACIÓN
+	-------------------------------------------------
+	08/03/2022-Brigith Lagares : Se estandariza wemp_pmla  
 	   
 ***************************************************************************************************************************/
 @session_start();

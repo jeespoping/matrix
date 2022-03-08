@@ -24,6 +24,12 @@
 <tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size=2>Informe de Actividades de HCE 2017-10-30</font></a></tr></td>
 </center>-->
 <?php
+/****************************************************************************
+ ACTUALIZACIÓN
+ --------------------------------------------------------------------------
+ 08/03/2022-Brigith Lagares : Se estandariza wemp_pmla  
+
+*****************************************************************************/
 $wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
 include_once("root/comun.php");

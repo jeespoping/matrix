@@ -83,7 +83,7 @@ if (!isset($_SESSION['user']))
 //PROGRAMA				      :ameniif01  permite actualizar el maestro de homologacion de ctas                                                            
 //AUTOR				          :Jair Saldarriaga Orozco.                                                                        
 //FECHA CREACION			  :Enero 22 de 2016
-                                                                       
+//08/03/2022 - Brigith Lagares : Se estandariza wemp_pmla                                                                        
 $wactualiz="Enero 22 de 2016  JairS";
 
 $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );

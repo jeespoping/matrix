@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Reporte de las Ordenes Entregadas</title>
-<link href="/matrix/root/tavo.css" rel="stylesheet" type="text/css" />
+<!--<link href="/matrix/root/tavo.css" rel="stylesheet" type="text/css" />-->
  <!-- UTF-8 is the recommended encoding for your pages -->
   <!--   <meta http-equiv="content-type" content="text/xml; charset=utf-8" />  -->
     <title>Zapatec DHTML Calendar</title>
@@ -17,7 +17,7 @@
   <!-- Loading language definition file -->
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
 </head>
-<font face='arial'>
+<!--<font face='arial'>
 <BODY TEXT="#000066">
 
 <script type="text/javascript">
@@ -34,8 +34,9 @@
 		document.forms.rep_uvglobal01.submit();
 	}
 </script>
-
+-->
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
 include_once("root/comun.php");
 /*******************************************************************************************************************************************
@@ -51,7 +52,9 @@ include_once("root/comun.php");
 //                                                                                                                                          |
 //TABLAS UTILIZADAS :                                                                                                                       |
 //uvglobal_000133   : Tabla de ordenes.                                                                                                     |
-//uvglobal_000041   : Tabla de Pacientes.                                                                                                   |
+//uvglobal_000041   : Tabla de Pacientes. 
+
+//08/03/2022 - Brigith Lagares : Se estandariza wemp_pmla                                                                                              |
 //==========================================================================================================================================
 //$wactualiz="Ver. 2008-09-29";
 $wactualiz = '2022-02-25';
@@ -64,7 +67,7 @@ if(!isset($_SESSION['user']))
 else
 {
 	
- $empresa='root';
+ //$empresa='root';
 
  $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
  $wbasedato1 = strtolower( $institucion->baseDeDatos );
@@ -81,24 +84,27 @@ else
  
 /////////////////////////////////////////////////////////////////////////////////////// seleccion para saber la Base de Datos
 echo "<center><table border=0 width=300>";
-$query = " SELECT empbda"
-	    ."   FROM ".$empresa."_000050"
-	    ."  WHERE empcod='".$wemp_pmla."'";
+//$query = " SELECT empbda"
+//	    ."   FROM ".$empresa."_000050"
+//	    ."  WHERE empcod='".$wemp_pmla."'";
 	 
-$err = mysql_query($query,$conex);
-$num = mysql_num_rows($err);
-   
-$empre1="";
+//$err = mysql_query($query,$conex);
+//$num = mysql_num_rows($err);
 
-for ($i=1;$i<=$num;$i++)
- { 
-  $row = mysql_fetch_array($err);
+//$empre1="";
+
+//for ($i=1;$i<=$num;$i++)
+// { 
+//  $row = mysql_fetch_array($err);
      
-  IF ($row[0] == 'UVGLOBAL')
-   {
-    $empre1='uvglobal';
-   }	
- }
+//  IF ($row[0] == 'UVGLOBAL')
+//   {
+//    $empre1='uvglobal';
+//  }	
+//}
+
+$empre1 =  $wbasedato1;
+
 
  if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($cco) or $cco=='-' or $cco=='' )
   {

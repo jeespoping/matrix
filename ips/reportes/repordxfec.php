@@ -27,7 +27,8 @@ include_once("conex.php");
 //PROGRAMA				      : Reporte para ver por rango de fecha las ordenes entregadas, sin entregar y canceladas y sin cancelar 	    |
 //AUTOR				          : Mario Cadavid.                                                                       						|
 //FECHA CREACION			  : SEPTIEMBRE 19 DE 2011.                                                                                      |
-//FECHA ULTIMA ACTUALIZACION  : SEPTIEMBRE 19 DE 2011.                                                                                      |
+//FECHA ULTIMA ACTUALIZACION  : SEPTIEMBRE 19 DE 2011.
+//08/03/2022-Brigith Lagares : Se estandariza wemp_pmla                                                                                      |
 //==========================================================================================================================================
 include_once("root/comun.php");
 
@@ -50,7 +51,7 @@ session_start();
 $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 $wbasedato = $institucion->baseDeDatos;
 $wentidad = $institucion->nombre;
-$wactualiz = 'Sept. 19 de 2011';
+$wactualiz = '2022-03-08';
 
 //Llamo a la función para formar el encabezado del reporte llevándole Título, Fecha e Imagen o logo
 encabezado("REPORTE DE ORDENES POR FECHA",$wactualiz,"logo_".$wbasedato);
@@ -67,10 +68,10 @@ if (!$usuarioValidado)
 else //Si el usuario es válido comenzamos con el reporte
 {  //Inicio ELSE reporte
 
-	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	//$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 
-	$wbasedato = $institucion->baseDeDatos;
-	$wentidad = $institucion->nombre;
+	//$wbasedato = $institucion->baseDeDatos;
+	//$wentidad = $institucion->nombre;
 	
   	$wfecha=date("Y-m-d");
   	$hora = (string)date("H:i:s");
@@ -262,7 +263,6 @@ else //Si el usuario es válido comenzamos con el reporte
 				  ." ORDER BY ordcco,ordfen,ordnro";
 		$err1 = mysql_query($query1,$conex) or die ("Error: " . mysql_errno() . " - en el query: " . $query1 . " - " . mysql_error());
 		$num1 = mysql_num_rows($err1);
-		print_r($query1);
 		//echo $query1."<br>";
 		
 		$swtitulo='SI';

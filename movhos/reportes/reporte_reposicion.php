@@ -34,6 +34,7 @@ include_once("conex.php");
  //	Jerson trujillo: 2013-07-11
  //	Descripcion: Se modifican los turnos de 6 am a 6 pm	y 6 pm a 6 am.			
  //---------------------------------------
+ //08/03/2022 - Brigith Lagares : Se estandariza wemp_pmla  
 
 /****************************************************************************************************************
  *						 								FUNCIONES
