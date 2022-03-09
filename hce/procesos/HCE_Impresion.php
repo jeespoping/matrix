@@ -680,7 +680,7 @@ else
 	
 
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 	echo "<input type='HIDDEN' name= 'protocolos' value='".$protocolos."'>";
 	echo "<input type='HIDDEN' name= 'CLASE' value='".$CLASE."'>";
@@ -700,7 +700,7 @@ else
 	$query = "select count(*) from root_000037 ";
 	$query .= " where oriced = '".$wcedula."'";
 	$query .= "   and oritid = '".$wtipodoc."'";
-	$query .= "   and oriori = '".$origen."'";
+	$query .= "   and oriori = '".$wemp_pmla."'";
 	$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 	$row = mysql_fetch_array($err);
 	if($row[0] == 0)
@@ -717,7 +717,7 @@ else
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and pacced = oriced ";
 		$query .= "   and pactid = oritid ";
-		$query .= "   and oriori = '".$origen."'";
+		$query .= "   and oriori = '".$wemp_pmla."'";
 		$query .= "   and inghis = orihis ";
 		if(!isset($wing))
 			$query .= "   and inging = oriing ";
@@ -761,7 +761,7 @@ else
 		if(isset($BC))
 			echo "<IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'><br><br>";
 		echo "<center><table border=1 width='712' class=tipoTABLE1>";
-		echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$origen.".jpg' id='logo'></td>";	
+		echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg' id='logo'></td>";	
 		echo "<td id=tipoL01C>Paciente</td><td colspan=5 id=tipoL04>".$wpac."</td></tr>";
 		if($CLASE == "I")
 		{
@@ -960,7 +960,7 @@ else
 				
 				// si el usuario es medico o enfermera en donde se está realizando la consulta no es necesario tener en cuenta el rol (query anterior)
 				$usuarioHabilitado = false;
-				if(isset($origenConsulta) && ($origenConsulta != $origen))
+				if(isset($origenConsulta) && ($origenConsulta != $wemp_pmla))
 				{
 					// Consulta en donde si el usuario es médico o enfermera en hce_000019 para determinar si esta habilitado para consultar la historia clínica
 					$usuarioHabilitado = consultarUsuarioHabilitado($conex,$origenConsulta,$key);
@@ -1145,7 +1145,7 @@ else
 				echo "<input type='HIDDEN' id= 'cadenaPosicionesProgramasAnexos' name= 'cadenaPosicionesProgramasAnexos' value=".$cadenaPosicionesProgramasAnexos.">";
 				echo "<input type='HIDDEN' id= 'whistoriaPac' name= 'whistoriaPac' value=".$whis.">";
 				echo "<input type='HIDDEN' id= 'wingresoPac' name= 'wingresoPac' value=".$wing.">";
-				echo "<input type='HIDDEN' id= 'wemp_pmla' name= 'wemp_pmla' value=".$origen.">";
+				echo "<input type='HIDDEN' id= 'wemp_pmla' name= 'wemp_pmla' value=".$wemp_pmla.">";
 				echo "<input type='HIDDEN' id= 'htmlProgramasAnexos' name= 'htmlProgramasAnexos' value=''>";
 				echo "<tr><td class=tipo3GRID colspan=8>CONSULTAR<input type='checkbox' id='ok' name='ok'></font></td></tr>";
 				echo "<tr><td id=tipoTI01 colspan=8><IMG SRC='/matrix/images/medical/hce/consultar.png' id='logook' style='vertical-align:middle;' OnClick='enterOK()'></td>";
@@ -1227,7 +1227,7 @@ else
 			$query .= "   and pactid = '".$wtipodoc."'";
 			$query .= "   and pacced = oriced ";
 			$query .= "   and pactid = oritid ";
-			$query .= "   and oriori = '".$origen."'";
+			$query .= "   and oriori = '".$wemp_pmla."'";
 			$query .= "   and inghis = orihis ";
 			if(!isset($wing))
 				$query .= "   and inging = oriing ";
@@ -1307,7 +1307,7 @@ else
 				echo "<center>";
 			}
 			echo "<table border=1 width='712' class=tipoTABLE1>";
-			echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$origen.".jpg' id='logo'></td>";	
+			echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg' id='logo'></td>";	
 			echo "<td id=tipoL01C>Paciente</td><td colspan=4 id=tipoL04>".$wpac."</td><td id=tipoL04A>P&aacute;gina 1</td></tr>";
 			echo "<tr><td id=tipoL01C>Historia Clinica</td><td id=tipoL02C>".$whis."-".$wing."</td><td id=tipoL01>Edad actual</td><td id=tipoL02C>".$wedad."</td><td id=tipoL01C>Sexo</td><td id=tipoL02C>".$sexo."</td></tr>";
 			echo "<tr><td id=tipoL01C>Servicio</td><td id=tipoL02C>".$row[11]."</td><td id=tipoL01C>Habitacion</td><td id=tipoL02C>".$row[10]."</td><td id=tipoL01C>Entidad</td><td id=tipoL02C>".$row[8]."</td></tr>";
@@ -1405,16 +1405,16 @@ else
 				
 				if($cadenaProgramasAnexos!="" && $nrofor==-1)
 				{
-					imprimirProgramasAnexos($cadenaProgramasAnexos,$whis,$wing,$origen);
+					imprimirProgramasAnexos($cadenaProgramasAnexos,$whis,$wing,$wemp_pmla);
 				}
 				elseif($cadenaProgramasAnexos!="")
 				{
-					imprimir($conex,$empresa,$wdbmhos,$origen,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,0);
-					imprimirProgramasAnexos($cadenaProgramasAnexos,$whis,$wing,$origen);
+					imprimir($conex,$empresa,$wdbmhos,$wemp_pmla,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,0);
+					imprimirProgramasAnexos($cadenaProgramasAnexos,$whis,$wing,$wemp_pmla);
 				}
 				else
 				{
-					imprimir($conex,$empresa,$wdbmhos,$origen,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,0);
+					imprimir($conex,$empresa,$wdbmhos,$wemp_pmla,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,0);
 				}
 			}
 			else
@@ -1429,7 +1429,7 @@ else
 				
 				if(isset($enviarCorreo) && $enviarCorreo=="on")
 				{
-					$nombreEmpresa = consultarAliasPorAplicacionHCE($conex,$origen,"nombreEmpresa");
+					$nombreEmpresa = consultarAliasPorAplicacionHCE($conex,$wemp_pmla,"nombreEmpresa");
 					$dir = "../reportes/cenimp";
 					$archivoPdf = $dir."/".$wnombrePDF.".pdf";
 					
@@ -1440,7 +1440,7 @@ else
 				}
 				
 				// $respuesta = construirPDF($conex,&$empresa,&$wdbmhos,&$origen,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo,&$Hgraficas,&$CLASE,&$wsex,$whtml,$wnombrePDF, $wllevaTapa, $wllevaLogo,$mostrarObjectPdf);
-				$respuesta = construirPDF($conex,$empresa,$wdbmhos,$origen,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,$whtml,$wnombrePDF, $wllevaTapa, $wllevaLogo,$mostrarObjectPdf,$wseparaFormularios,"","",$htmlProgramasAnexos);
+				$respuesta = construirPDF($conex,$empresa,$wdbmhos,$wemp_pmla,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,$whtml,$wnombrePDF, $wllevaTapa, $wllevaLogo,$mostrarObjectPdf,$wseparaFormularios,"","",$htmlProgramasAnexos);
 			}
 			$query = "DROP TABLE IF EXISTS TESPECIAL".$key.";";
 			$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
@@ -1456,7 +1456,7 @@ else
 				$query .= "   and pactid = '".$wtipodoc."'";
 				$query .= "   and  pacced = oriced ";
 				$query .= "   and  pactid = oritid ";
-				$query .= "   and oriori = '".$origen."'";
+				$query .= "   and oriori = '".$wemp_pmla."'";
 				$query .= "   and inghis = orihis ";
 				$query .= "   and  inging = oriing ";
 				$query .= "   and ubihis = inghis "; 
@@ -1534,7 +1534,7 @@ else
 				if($row1[0] > 0)
 				{
 					echo "<table border=1 width='712' class=tipoTABLE1>";
-					echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$origen.".jpg' id='logo'></td>";	
+					echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg' id='logo'></td>";	
 					echo "<td id=tipoL01C>Paciente</td><td colspan=4 id=tipoL04>".$wpac."</td><td id=tipoL04A>P&aacute;gina 1</td></tr>";
 					echo "<tr><td id=tipoL01C>Historia Clinica</td><td id=tipoL02C>".$whis."-".$wing."</td><td id=tipoL01>Edad actual</td><td id=tipoL02C>".$wedad."</td><td id=tipoL01C>Sexo</td><td id=tipoL02C>".$sexo."</td></tr>";
 					echo "<tr><td id=tipoL01C>Servicio</td><td id=tipoL02C>".$row[11]."</td><td id=tipoL01C>Habitacion</td><td id=tipoL02C>".$row[10]."</td><td id=tipoL01C>Entidad</td><td id=tipoL02C>".$row[8]."</td></tr>";
@@ -1555,7 +1555,7 @@ else
 					$queryI .= "   and ".$empresa."_000002.Dettip != 'Titulo' "; 
 					$queryI .= "   and ".$empresa."_000002.Detpro = ".$empresa."_000001.Encpro "; 
 					
-					imprimir($conex,$empresa,$wdbmhos,$origen,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,0);
+					imprimir($conex,$empresa,$wdbmhos,$wemp_pmla,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,0);
 					echo "<div class='saltopagina'></div>";
 				}
 			}

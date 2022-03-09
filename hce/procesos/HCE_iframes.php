@@ -86,9 +86,9 @@ function ocultarFlotante(numdiv)
 // 											restricción y de ser así si el usuario esta habilitado para acceder 
 // 											a los pacientes de dicho centro de costos.
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
-$wemp_pmla=$origen;
+//$wemp_pmla=$origen;
 function GetIP()
 {
 	$IP_REAL = " ";
@@ -166,7 +166,7 @@ function consultarUsuarioPermitido($conex, $wdbmhos, $ccoPaciente, $usuario)
 	return $usuarioHabilitado;
 }
 
-function consultarUsuarioHabilitado($conex, $origen, $wdbmhos, $usuario, $wcedula, $wtipodoc, $whisa, $winga)
+function consultarUsuarioHabilitado($conex, $wemp_pmla, $wdbmhos, $usuario, $wcedula, $wtipodoc, $whisa, $winga)
 {
 	$historia = "";
 	$ingreso = "";
@@ -182,7 +182,7 @@ function consultarUsuarioHabilitado($conex, $origen, $wdbmhos, $usuario, $wcedul
 							FROM root_000037 
 						   WHERE Oriced='".$wcedula."' 
 							 AND Oritid='".$wtipodoc."' 
-							 AND Oriori='".$origen."';";
+							 AND Oriori='".$wemp_pmla."';";
 		
 		$resPaciente = mysqli_query($conex,$queryPaciente) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$numPaciente = mysql_num_rows($resPaciente);
@@ -238,7 +238,7 @@ if(isset($sess))
 {
 	$key = substr($user,2,strlen($user));
 	
-	$usuarioHabilitado = consultarUsuarioHabilitado($conex, $origen, $wdbmhos, $key, $wcedula, $wtipodoc, $whisa, $winga);
+	$usuarioHabilitado = consultarUsuarioHabilitado($conex, $wemp_pmla, $wdbmhos, $key, $wcedula, $wtipodoc, $whisa, $winga);
 	
 	if($usuarioHabilitado)
 	{	

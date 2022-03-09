@@ -413,7 +413,7 @@ else
 	
 
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'historia' value='".$historia."'>";
 	echo "<input type='HIDDEN' name= 'wcco' value='".$wcco."'>";
 	
@@ -541,7 +541,7 @@ else
 			if(isset($wcit) && $wcit != ""){
 		
 				//Con el parametro se consulta el prefijo de tabla de citas y el número
-				$arrInfoTabla = consultarPrefijoNumeroTabla($wcit, $codemp, $conex);
+				$arrInfoTabla = consultarPrefijoNumeroTabla($wcit, $wemp_pmla, $conex);
 				
 				if(isset($arrInfoTabla["nombreTabla"]) && count($arrInfoTabla["nombreTabla"]) >= 1){		
 					
@@ -560,7 +560,7 @@ else
 								AND ubisac   = Ccocod 
 								AND ubihis   = orihis 
 								AND ubiing   = oriing 
-								AND oriori   = '".$codemp."' 
+								AND oriori   = '".$wemp_pmla."' 
 								AND oriced   = pacced  
 								AND oritid   = pactid 
 								AND orihis   = inghis 
@@ -587,7 +587,7 @@ else
 							AND ubisac   = Ccocod 
 							AND ubihis   = orihis 
 							AND ubiing   = oriing 
-							AND oriori   = '".$codemp."' 
+							AND oriori   = '".$wemp_pmla."' 
 							AND oriced   = pacced  
 							AND oritid   = pactid 
 							AND orihis   = inghis 
@@ -612,7 +612,7 @@ else
 				$query .= " and ubisac = Ccocod  ";
 				$query .= " and ubihis = orihis  ";
 				$query .= " and ubiing = oriing  ";
-				$query .= " and oriori = '".$codemp."'  ";
+				$query .= " and oriori = '".$wemp_pmla."'  ";
 				$query .= " and oriced = pacced  ";
 				$query .= " and oritid = pactid  ";
 				$query .= " and orihis = inghis "; 
@@ -914,7 +914,7 @@ else
 										$tipo="tipo18";
 									else
 										$tipo="tipo19";
-									$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$historia."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&wservicio=".$wservicio."";
+									$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$historia."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&wservicio=".$wservicio."";
 									echo "<tr style='cursor: hand;cursor: pointer;' onclick='ejecutar(".chr(34).$path.chr(34).")'><td id=".$tipo."A>".$row[17]."</td><td id=".$tipo."A>".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[0]."-".$row[1]."</td><td id=".$tipo."A>".$nombre."</td><td id=".$tipo."A>".$row[12]."-".$row[13]."</td><td id=".$tipo."A>".$wmed."</td><td id=".$tipo."A>".$wesp."</td></tr>";
 								}
 							}
@@ -925,7 +925,7 @@ else
 									$tipo="tipo18";
 								else
 									$tipo="tipo19";
-								$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$historia."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&wservicio=".$wservicio."";
+								$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$historia."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&wservicio=".$wservicio."";
 								echo "<tr style='cursor: hand;cursor: pointer;' onclick='ejecutar(".chr(34).$path.chr(34).")'><td id=".$tipo."A>".$row[17]."</td><td id=".$tipo."A>".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[0]."-".$row[1]."</td><td id=".$tipo."A>".$nombre."</td><td id=".$tipo."A>".$row[12]."-".$row[13]."</td><td id=".$tipo."A>".$wmed."</td><td id=".$tipo."A>".$wesp."</td></tr>";
 							}
 						}
@@ -937,7 +937,7 @@ else
 							$tipo="tipo18";
 						else
 							$tipo="tipo19";
-						$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$historia."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&wservicio=".$wservicio."";
+						$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$historia."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&wservicio=".$wservicio."";
 						echo "<tr style='cursor: hand;cursor: pointer;' onclick='ejecutar(".chr(34).$path.chr(34).")'><td id=".$tipo."A>".$row[17]."</td><td id=".$tipo."A>".$row[10]."-".$row[11]."</td><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[0]."-".$row[1]."</td><td id=".$tipo."A>".$nombre."</td><td id=".$tipo."A>".$row[12]."-".$row[13]."</td><td id=".$tipo."A>".$wmed."</td><td id=".$tipo."A>".$wesp."</td></tr>";
 					}
 				}

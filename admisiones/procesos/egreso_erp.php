@@ -4439,7 +4439,7 @@ else {
     echo "</table></center>";
     echo "</div>";//div botones navegacion
 
-    $path = "/matrix/hce/procesos/TableroAnt.php?empresa=" . $aplicacion . "&codemp=" . $wemp_pmla . "&historia=" . $aplicacionhce . "&accion=I&whis=<HIS>";
+    $path = "/matrix/hce/procesos/TableroAnt.php?empresa=" . $aplicacion . "&wemp_pmla=" . $wemp_pmla . "&historia=" . $aplicacionhce . "&accion=I&whis=<HIS>";
 //$path = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$aplicacionhce."&wcedula=<DOC>&wtipodoc=<TDOC>";
     echo "<span style='float:right;' id='enlace_hce'><A style='cursor:pointer; color: blue;' url='" . $path . "' onClick='ejecutar2(this)'><b>Ir a la HCE</b></A></span><br>";
     //DATOS INGRESO - DATOS EGRESO
