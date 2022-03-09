@@ -3,14 +3,21 @@ include_once("conex.php");
 
 include_once("root/comun.php");
 
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 
 $wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
 $bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
 
 
-if( empty( $wemp_pmla ) )
-	$wemp_pmla = "01";
+$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+$bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
+
+
+//if( empty( $wemp_pmla ) )
+//	$wemp_pmla = "01";
+//
 
 include_once( "movhos/kardex.inc.php" );
 
@@ -537,7 +544,7 @@ function aprobarDA($historia,$ingreso,$codArticulo,$ido,$codDA,$cco,$wbasedato,$
 		else
 		{
 			$data['error'] = "1";
-			$data['mensaje'] = "La ".$codDA." esta inactiva en el MAESTRO DE FRACCIONES POR ARTICULO (movhos_000059)";
+			$data['mensaje'] = "La ".$codDA." esta inactiva en el MAESTRO DE FRACCIONES POR ARTICULO (".$bdMovhos."_000059)";
 		}
 	}
 	else
@@ -3209,7 +3216,7 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 						
 				$bdMovhos = consultarAliasPorAplicacion($conex,$wemp_pmla, 'movhos');
 						
-				$ingreso_paciente 	= consultarUltimoIngresoHistoria( $conex, $txHistoria, "01" );
+				$ingreso_paciente 	= consultarUltimoIngresoHistoria( $conex, $txHistoria, $wemp_pmla );
 				$paciente 			= consultarUbicacionPaciente($conex, $bdMovhos, $txHistoria, $ingreso_paciente );
 		
 				$tablaHabitaciones = consultarTablaHabitaciones( $conex, $bdMovhos, $paciente->servicioActual );
@@ -3539,7 +3546,7 @@ function imprimirStickerPaciente(historia,ronda,codCco)
 	$.post("../../movhos/reportes/stickers_Dispensacion.php",
 		{
 			consultaAjax:   	'stick_historia',
-			wemp_pmla:      	"01",
+			wemp_pmla:      	$('#wemp_pmla').val(),
 			wbasedato:          "movhos",
 			whis:       		historia,
 			whora_par_actual:   ronda,

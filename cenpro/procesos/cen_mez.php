@@ -2125,13 +2125,14 @@ function validarHistoria($cco, $historia, &$ingreso, &$mensaje, &$nombre, &$habi
 	global $wbasedato;
 	global $bd;
 	global $wfarstore;
+	global $wemp_pmla;
 
 	if(is_numeric($historia))
 	{
 		$q = "SELECT Oriing, Pacno1, Pacno2, Pacap1, Pacap2 
 		       FROM root_000037, root_000036 
 			  WHERE Orihis = '".$historia."' 
-				AND Oriori = '01' 
+				AND Oriori = '".$wemp_pmla."' 
 				AND Oriced = Pacced 
 				AND Oritid = Pactid";
 
@@ -2765,7 +2766,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 									 AND Kadcon = 'on'
 									 AND Kadhis = Orihis
 									 AND Kading = Oriing
-									 AND Oriori = '01'
+									 AND Oriori = '".$wemp_pmla."'
 									 AND Oriced = Pacced
 									 AND Oritid = Pactid
 									 AND Kadhis = Ubihis
@@ -2788,7 +2789,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 									 AND Kading = Oriing
 									 AND Kadcon = 'on'
 									 AND Kadart = Arkcod
-									 AND Oriori = '01' 
+									 AND Oriori = '".$wemp_pmla."' 
 									 AND Oriced = Pacced 
 									 AND Oritid = Pactid 
 									 AND Kadhis = Ubihis 
@@ -4638,7 +4639,7 @@ function queryDA($wemp_pmla,$wbasedatocm,$bd)
 								 ".$cadenaGruposAntibioticos."
 								 AND Orihis = Kadhis
 								 AND Oriing = Kading
-								 AND Oriori = '01'
+								 AND Oriori = '".$wemp_pmla."'
 								 AND Oriced = Pacced
 								 AND Oritid = Pactid
 								 AND Kadhis = Ubihis
@@ -4659,7 +4660,7 @@ function queryDA($wemp_pmla,$wbasedatocm,$bd)
 								 AND Artest='on'
 								 AND Orihis = Kadhis
 								 AND Oriing = Kading
-								 AND Oriori = '01'
+								 AND Oriori = '".$wemp_pmla."'
 								 AND Oriced = Pacced
 								 AND Oritid = Pactid
 								 AND Kadhis = Ubihis
@@ -4677,7 +4678,7 @@ function queryDA($wemp_pmla,$wbasedatocm,$bd)
 								 AND Kadest='on'
 								 AND Orihis = Kadhis
 								 AND Oriing = Kading
-								 AND Oriori = '01'
+								 AND Oriori = '".$wemp_pmla."'
 								 AND Oriced = Pacced
 								 AND Oritid = Pactid
 								 AND Kadhis = Ubihis
@@ -6371,7 +6372,7 @@ else
 	pintarManuales($wusuario);
 	
 	pintarTitulo();  //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
-	$test = centroCostosCM();	echo $test;
+	//$test = centroCostosCM();	echo $test;
 	//se incializa el estado de las transaccion en 'inicio'
 	if (!isset($estado))
 	{
