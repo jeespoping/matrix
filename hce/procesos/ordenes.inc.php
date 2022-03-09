@@ -7592,21 +7592,10 @@ function consultarInfoPacienteOrdenHCEPorHistoriaIngreso( $conex, $wbasedato, $h
 		$paciente->enUrgencias = isset($info['Ccourg']) && $info['Ccourg'] == "on" ? true : false;
 
 		//Edad
-		$ann=(integer)substr($paciente->fechaNacimiento,0,4)*360 +(integer)substr($paciente->fechaNacimiento,5,2)*30 + (integer)substr($paciente->fechaNacimiento,8,2);
-		$aa=(integer)date("Y")*360 +(integer)date("m")*30 + (integer)date("d");
-		$ann1=($aa - $ann)/360;
-		$meses=(($aa - $ann) % 360)/30;
-		if ($ann1<1){
-			$dias1=(($aa - $ann) % 360) % 30;
-			$wedad=(string)(integer)$meses." mes(es) ".(string)$dias1." dia(s)";
-			$anos = 0;
-		} else {
-			$dias1=(($aa - $ann) % 360) % 30;
-			$wedad=(string)(integer)$ann1." a&ntilde;o(s) ".(string)(integer)$meses." mes(es) ".(string)$dias1." dia(s)";
-			$anos = (integer)$ann1;
-		}
-		$paciente->edadPaciente = $wedad; 
-		$paciente->anosPaciente = $anos; 
+		//Modificación 2022-03-08: Sebastián Nevado - Se llama función que calcula la edad
+		$oEdad = calcularEdadPacienteOrdenes($paciente->fechaNacimiento);
+		$paciente->edadPaciente = $oEdad->edad;
+		$paciente->anosPaciente = $oEdad->anios;
 	}
 	return $paciente;
 }
@@ -15071,21 +15060,10 @@ function consultarInfoPacienteOrdenHCEPorHistoria( $conex, $wbasedato, $historia
 		$paciente->enUrgencias = isset($info['Ccourg']) && $info['Ccourg'] == "on" ? true : false;
 
 		//Edad
-		$ann=(integer)substr($paciente->fechaNacimiento,0,4)*360 +(integer)substr($paciente->fechaNacimiento,5,2)*30 + (integer)substr($paciente->fechaNacimiento,8,2);
-		$aa=(integer)date("Y")*360 +(integer)date("m")*30 + (integer)date("d");
-		$ann1=($aa - $ann)/360;
-		$meses=(($aa - $ann) % 360)/30;
-		if ($ann1<1){
-			$dias1=(($aa - $ann) % 360) % 30;
-			$wedad=(string)(integer)$meses." mes(es) ".(string)$dias1." dia(s)";
-			$anos = 0;
-		} else {
-			$dias1=(($aa - $ann) % 360) % 30;
-			$wedad=(string)(integer)$ann1." a&ntilde;o(s) ".(string)(integer)$meses." mes(es) ".(string)$dias1." dia(s)";
-			$anos = (integer)$ann1;
-		}
-		$paciente->edadPaciente = $wedad;
-		$paciente->anosPaciente = $anos;  		
+		//Modificación 2022-03-08: Sebastián Nevado - Se llama función que calcula la edad
+		$oEdad = calcularEdadPacienteOrdenes($paciente->fechaNacimiento);
+		$paciente->edadPaciente = $oEdad->edad;
+		$paciente->anosPaciente = $oEdad->anios;
 	}
 	return $paciente;
 }
@@ -21118,21 +21096,10 @@ function consultarInfoPacienteOrdenHCE($tipoDocumento,$nroDocumento){
 		}		
 
 		//Edad
-		$ann=(integer)substr($paciente->fechaNacimiento,0,4)*360 +(integer)substr($paciente->fechaNacimiento,5,2)*30 + (integer)substr($paciente->fechaNacimiento,8,2);
-		$aa=(integer)date("Y")*360 +(integer)date("m")*30 + (integer)date("d");
-		$ann1=($aa - $ann)/360;
-		$meses=(($aa - $ann) % 360)/30;
-		if ($ann1<1){
-			$dias1=(($aa - $ann) % 360) % 30;
-			$wedad=(string)(integer)$meses." mes(es) ".(string)$dias1." dia(s)";
-			$anos = 0;
-		} else {
-			$dias1=(($aa - $ann) % 360) % 30;
-			$wedad=(string)(integer)$ann1." año(s) ".(string)(integer)$meses." mes(es) ".(string)$dias1." dia(s)";
-			$anos = (integer)$ann1;
-		}
-		$paciente->edadPaciente = $wedad;
-		$paciente->anosPaciente = $anos; 		
+		//Modificación 2022-03-08: Sebastián Nevado - Se llama función que calcula la edad
+		$oEdad = calcularEdadPacienteOrdenes($paciente->fechaNacimiento);
+		$paciente->edadPaciente = $oEdad->edad;
+		$paciente->anosPaciente = $oEdad->anios;
 	}
 	return $paciente;
 }
@@ -21246,21 +21213,10 @@ function consultarInfoPacienteKardex($whistoria, $ingresoAnterior){
 		$paciente->enUrgencias = isset($info['Ccourg']) && $info['Ccourg'] == "on" ? true : false;
 
 		//Edad
-		$ann=(integer)substr($paciente->fechaNacimiento,0,4)*360 +(integer)substr($paciente->fechaNacimiento,5,2)*30 + (integer)substr($paciente->fechaNacimiento,8,2);
-		$aa=(integer)date("Y")*360 +(integer)date("m")*30 + (integer)date("d");
-		$ann1=($aa - $ann)/360;
-		$meses=(($aa - $ann) % 360)/30;
-		if ($ann1<1){
-			$dias1=(($aa - $ann) % 360) % 30;
-			$wedad=(string)(integer)$meses." mes(es) ".(string)$dias1." dia(s)";
-			$anos = 0;
-		} else {
-			$dias1=(($aa - $ann) % 360) % 30;
-			$wedad=(string)(integer)$ann1." año(s) ".(string)(integer)$meses." mes(es) ".(string)$dias1." dia(s)";
-			$anos = (integer)$ann1;
-		}
-		$paciente->edadPaciente = $wedad;
-		$paciente->anosPaciente = $anos; 
+		//Modificación 2022-03-08: Sebastián Nevado - Se llama función que calcula la edad
+		$oEdad = calcularEdadPacienteOrdenes($paciente->fechaNacimiento);
+		$paciente->edadPaciente = $oEdad->edad;
+		$paciente->anosPaciente = $oEdad->anios;
 	}
 	return $paciente;
 }
