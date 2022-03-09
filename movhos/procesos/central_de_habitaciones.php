@@ -56,11 +56,14 @@ $wactualiz = "2017-09-06";
 
 
 // sede
-// $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
-// $sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
 
-if(isset($_GET['selectsede']) && !empty($_GET['selectsede'])){
-    $selectsede = $_GET['selectsede'];
+$sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+$sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
+
+
+
+if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) && !empty($sCodigoSede) ){
+    $selectsede = $_POST['selectsede'];
 }
 
 
@@ -342,11 +345,31 @@ return;
     <script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
     <script type="text/javascript">
 
+        // Selecciona sede
+        jQuery(document).ready(function($){
+
+            $(document).on('change','#selectsede',function(e){
+                e.preventDefault();
+                var selectsede =  $("#selectsede").val();
+                var wbasedato =  $("#wbasedato").val();
+                var wemp_pmla =  $("#wemp_pmla").val();
+                $("#wselectsede").val(selectsede);
+                selectorSede(wbasedato,wemp_pmla,selectsede);
+            });
+        });
+
+        function selectorSede(wbasedato,wemp_pmla,selectsede){
+                   $("#wselectsede").val(selectsede);
+                   $('#central').submit();
+
+        }
+
         function actualizarMovimiento( obj, habitacion, fechaAltaDef, horaAltaDef ){
 
           wconsulta  = $("#wconsulta").val();
           selectsede = $("#wselectsede").val();
           habitacion = $.trim(habitacion);
+          wemp_pmla = $("#wemp_pmla").val();
           if( wconsulta == "S" ){
 			alert("No puede realizar esta accion el sistema esta en solo lectura.");
 			location.reload();
@@ -362,7 +385,7 @@ return;
               id         = $("#id_registro_"+habitacion).val();
               $.ajax({
 
-                  url: "central_de_habitaciones.php?wbasedato="+wbasedato+"&selectsede="+selectsede,
+                  url: "central_de_habitaciones.php?wbasedato="+wbasedato+"&wemp_pmla="+wemp_pmla+"&selectsede="+selectsede,
                   type: "POST",
                   data: {
                           peticionAjax: "actualizarMovimiento",
@@ -379,7 +402,7 @@ return;
                       data = data.split("-")
                       if( data[0] == "error" ){
                         alert( data[1] );
-                        window.location="central_de_habitaciones.php?wbasedato="+wbasedato+"&wconsulta="+wconsulta+"&selectsede="+selectsede;
+                        window.location="central_de_habitaciones.php?wbasedato="+wbasedato+"&wemp_pmla="+wemp_pmla+"&wconsulta="+wconsulta+"&selectsede="+selectsede;
                       }
                       if( data[0] != "actualizado" ){
                         if( actualizar == "empleado" ){
@@ -415,7 +438,7 @@ return;
 <?php
 
 
-    encabezado("CENTRAL DE HABITACIONES",$wactualiz, "clinica");
+    encabezado("CENTRAL DE HABITACIONES",$wactualiz, "clinica",true);
 
     /** esto se hace siempre al ingresar **/
     //Esto lo hago para que al mostrar los datos de la central y solo es de consulta salga como ReadOnly, sin poder modificar nada
@@ -437,42 +460,59 @@ return;
     //===================================================================================================================================================
 
 
-    /** Sede */
+    /** Filtro Sede */
     $wselectsede = '';
     $sedeTabla = '';
-    if(isset($_GET['selectsede']) && !empty($_GET['selectsede']) ){
-        $sedeTabla = " ,".$wcencam."_000004 ";
-        $wselectsede = "habcco = mid(cco,1,instr(cco,'-')-1)";
-        $whereselectsede = " AND codigoSede = 'SedeSur' "; 
+    $joinSede = '';
+    if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) ){
+        $wselectsede = "Habcco = Ccocod";
+        $joinSede = "INNER JOIN ".$wbasedato."_000011 on Habcco = Ccocod";
+        $whereselectsede = " AND  Ccosed =  '".$_POST['selectsede']."'"; 
+
+        $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
+        ."    FROM ".$wbasedato."_000020 "
+       .$joinSede
+       ."   WHERE habali = 'on' "
+       ."     AND habest = 'on' "
+       .$whereselectsede
+       ."   UNION  ALL"
+       ."  SELECT movhab habitacion, movemp, movobs observacion, Fecha_data fechaAltaDef, Hora_data horaAltaDef, '', id, movhem horaAsignado "
+       ."    FROM ".$wbasedato."_000025 "
+       ."   WHERE movhdi = '00:00:00' "
+       ."   ORDER BY 4, 5, 1 ";
     }
-    /**  **///---> se omiten los cubiculos habcub
-    /**
-     * Se cambia en la consulta fecha y hora de alta por fecha data y hora data para obtener el tiempo de llegada
-     */
-    $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
-        ."    FROM ".$wbasedato."_000020 ".$sedeTabla
-        ."   WHERE habali = 'on' "
-        ."     AND habest = 'on' "
-        ."    ".$wselectsede
-        ."     AND habcod not in ( SELECT movhab "
-        ."                           FROM ".$wbasedato."_000025 "
-        ."                          WHERE movhdi = '00:00:00' ) "
-        ."     AND habcub != 'on' "
-        ." ".$whereselectsede
-        ."   UNION "
-        ."  SELECT movhab habitacion, movemp, movobs observacion, Fecha_data fechaAltaDef, Hora_data horaAltaDef, '', id, movhem horaAsignado "
-        ."    FROM ".$wbasedato."_000025 "
-        ."   WHERE movhdi = '00:00:00' "
-        ."   ORDER BY 4, 5, 1 ";
+    else {
+
+        /**  **///---> se omiten los cubiculos habcub
+        /**
+         * Se cambia en la consulta fecha y hora de alta por fecha data y hora data para obtener el tiempo de llegada
+         */
+        $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
+             ."    FROM ".$wbasedato."_000020 "
+            ."   WHERE habali = 'on' "
+            ."     AND habest = 'on' "
+            ."     AND habcod not in ( SELECT movhab "
+            ."                           FROM ".$wbasedato."_000025 "
+            ."                          WHERE movhdi = '00:00:00' ) "
+            ."     AND habcub != 'on' "
+            ."   UNION "
+            ."  SELECT movhab habitacion, movemp, movobs observacion, Fecha_data fechaAltaDef, Hora_data horaAltaDef, '', id, movhem horaAsignado "
+            ."    FROM ".$wbasedato."_000025 "
+            ."   WHERE movhdi = '00:00:00' "
+            ."   ORDER BY 4, 5, 1 ";
+    }
+
     $res = mysql_query($q,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
     $num = mysql_num_rows($res);
 ?>
 <body width=100%>
-    <form name='central' action='central_de_habitaciones.php' method='post'>
+    <!-- <form name='central' action='central_de_habitaciones.php' method='post' id="central"> -->
+    <form name='central' action='#' method='post' id="central">
 
         <input type='HIDDEN' name='wbasedato' id='wbasedato' value='<?php echo $wbasedato ?>'>
         <input type='HIDDEN' name='wconsulta' id='wconsulta' value='<?php echo $wconsulta ?>'>
-        <input type='HIDDEN' name='wselectsede' id='wselectsede' value='<?php echo $selectsede ?>'>
+        <input type='HIDDEN' name='selectsede' id='wselectsede' value='<?php echo $selectsede ?>'>
+        <input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='<?php echo $wemp_pmla ?>'>
 
         <center><table>
             <tr class='encabezadotabla'>
@@ -625,7 +665,7 @@ return;
         </table>
         </form>
 
-        <meta http-equiv='refresh' content='60;url=central_de_habitaciones.php?wbasedato=<?php echo $wbasedato ?>&wconsulta=<?php echo $wconsulta ?>&selectsede=<?php echo $selectsede ?>'>
+        <meta http-equiv='refresh' content='60;url=central_de_habitaciones.php?wbasedato=<?php echo $wbasedato ?>&wemp_pmla=<?php echo $wemp_pmla ?>&wconsulta=<?php echo $wconsulta ?>&selectsede=<?php echo $selectsede ?>'>
         <br>
         <center><table>
         <tr><td align='center' colspan='9'><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>

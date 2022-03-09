@@ -167,7 +167,6 @@ $sedeDestino = $_GET['selectsede'];
 
 	var anuncioParam = urlParams.get('selectSede');
 	
-debugger;
 
 			location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede='+sede+'&caso=pantallasinicial';
 			// location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede='+sede+'&caso='+caso;

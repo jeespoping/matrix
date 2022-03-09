@@ -2287,28 +2287,26 @@ function actualizar_operador($wcentral, $wcodope, $whorope, $selectsede = '')
 if (!isset($consultaAjax))
 {
 
+	$wselectsede = '';
 	
-
-		$wselectsede = '';
-		
-		if(isset($_GET['selectsede']) && !empty($_GET['selectsede']) ){
-			$q = " SELECT nomcen, centre, cenvig, cenest, cenope, cenhop "
-			."   FROM ".$wcencam."_000006 ce"
-			."  INNER JOIN ".$wcencam."_000003 cs "
-			."  ON ce.codcen = cs.Central"
-			."  WHERE codcen = '".$wcentral."'"
-			."  AND cs.SedeDestino='".$_GET['selectsede']."'";
-			$wselectsede = $_GET['selectsede'];
-		
-		}
-		else {
-			
-			$q = " SELECT nomcen, centre, cenvig, cenest, cenope, cenhop "
-			."   FROM ".$wcencam."_000006 "
-			."  WHERE codcen = '".$wcentral."'";
-
-		}
+	if(isset($_GET['selectsede']) && !empty($_GET['selectsede']) ){
+		$q = " SELECT nomcen, centre, cenvig, cenest, cenope, cenhop "
+		."   FROM ".$wcencam."_000006 ce"
+		."  INNER JOIN ".$wcencam."_000003 cs "
+		."  ON ce.codcen = cs.Central"
+		."  WHERE codcen = '".$wcentral."'"
+		."  AND cs.SedeDestino='".$_GET['selectsede']."'";
+		$wselectsede = $_GET['selectsede'];
 	
+	}
+	else {
+		
+		$q = " SELECT nomcen, centre, cenvig, cenest, cenope, cenhop "
+		."   FROM ".$wcencam."_000006 "
+		."  WHERE codcen = '".$wcentral."'";
+
+	}
+
 	$res = mysql_query($q,$conex) or die (mysql_errno()." - ".mysql_error());
 	$num = mysql_num_rows($res);
 	if ($num > 0)
@@ -2339,7 +2337,6 @@ if (!isset($consultaAjax))
 	    echo "<input type='HIDDEN' ID='wemp_pmla' value='".$wemp_pmla."'>";
 		echo "<input type='HIDDEN' ID='wcentral' value='".$wcentral."'>";
 		echo "<input type='HIDDEN' ID='wtiempo_refresh' value='".$wtiempo_refresh."'>";
-		// echo "<input type='HIDDEN' ID='wselectsede' value='".$wselectsede."'>";
 		echo "<input type='HIDDEN' ID='selectsede' value='".$wselectsede."'>";
 		$wdatos_habitaciones = todaslashab();
 		echo "<input type='HIDDEN' ID='whabitaciones' value='".json_encode($wdatos_habitaciones)."'>";
