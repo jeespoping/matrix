@@ -108,7 +108,7 @@ function ver_historias(info_historias, hab){
   function consultar()
   { 
 	var wemp_pmla = document.forms.indhosp.wemp_pmla.value;
-	var selectsede = document.forms.indhosp.selectsede.value;
+	
 	//var servicio = document.forms.indhosp.wservicio.value;
 	var servicio = document.forms.indhosp.wservicio.options[document.forms.indhosp.wservicio.selectedIndex].text;
 	var fInicial = document.forms.indhosp.wfec_i.value;
@@ -117,9 +117,12 @@ function ver_historias(info_historias, hab){
 	var n=servicio.split("-"); ;
 	//alert(n[0]);
 	servicio = n[0]; 
+
+	var selectorSede = document.getElementById("selectsede");
+	var valorSelectorSede = (selectorSede === null) ? '' : '&selectsede='+selectorSede.value;
     
  	if(esFechaMenorIgual(fInicial,fFinal)){
- 		document.location.href = 'indicadores_hospitalarios_dia2.php?wemp_pmla='+wemp_pmla+'&waccion=a'+'&wservicio='+servicio+'&wfechaInicial='+fInicial+'&wfechaFinal='+fFinal+'&selectsede='+selectsede;	
+ 		document.location.href = 'indicadores_hospitalarios_dia2.php?wemp_pmla='+wemp_pmla+'&waccion=a'+'&wservicio='+servicio+'&wfechaInicial='+fInicial+'&wfechaFinal='+fFinal+valorSelectorSede;	
  	} else {
  		alert("La fecha inicial debe ser menor a la fecha final de consulta.");
  	}	  
@@ -131,7 +134,11 @@ function ver_historias(info_historias, hab){
   //Redirecciona a la pagina inicial
   function inicio(wfec_i,wfec_f,wservicio)
   {
-	document.location.href='indicadores_hospitalarios_dia2.php?wemp_pmla='+document.forms.indhosp.wemp_pmla.value+'&selectsede='+document.forms.indhosp.selectsede.value+'&wfec_i='+wfec_i+'&wfec_f='+wfec_f+'&wservicio='+wservicio+'&bandera=1';	 		
+
+	var selectorSede = document.getElementById("selectsede");
+	var valorSelectorSede = (selectorSede === null) ? '' : '&selectsede='+selectorSede.value;
+
+	document.location.href='indicadores_hospitalarios_dia2.php?wemp_pmla='+document.forms.indhosp.wemp_pmla.value+valorSelectorSede+'&wfec_i='+wfec_i+'&wfec_f='+wfec_f+'&wservicio='+wservicio+'&bandera=1';	 		
   }
   
   function consultarDetalleDiaCamaOcupada(ele, servicio, wfechaInicial, wfechaFinal){
