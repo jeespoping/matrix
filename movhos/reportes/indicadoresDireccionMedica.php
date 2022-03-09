@@ -65,11 +65,18 @@ else
 	{
 		global $conex;
 		global $wbasedato;
+		global $wemp_pmla;
+		global $selectsede;
 		
 		$respuesta = array();
 
-        $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
-		
+        $sFiltroSede = '';
+        $estadosede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+        if($estadosede=='on')
+        {
+            $sFiltroSede=isset($selectsede) && $selectsede != '' ? " AND Ccosed = '{$selectsede}' " : "";
+        }
+
 		// --> Ocupacion del dia
 		if($fechaBuscar1 == date("Y-m-d")){
 			
@@ -81,7 +88,7 @@ else
 					Ccoioh AS EsHos, Ccouci AS EsUci, Ccouce AS EsUce 
 			  FROM ".$wbasedato."_000020 INNER JOIN ".$wbasedato."_000011 ON(Habcco = Ccocod)
 			 WHERE Habest = 'on'
-			   AND Ccourg != 'on'
+			   AND Ccourg != 'on' ".$sFiltroSede."
 			 GROUP BY Habcco
 			";
 			$resHabTot = mysql_query($sqlHabTot, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlHabTot):</b><br>".mysql_error());
@@ -94,7 +101,7 @@ else
 			SELECT COUNT(*) as t, Habcco
 			  FROM ".$wbasedato."_000020 INNER JOIN ".$wbasedato."_000011 ON(Habcco = Ccocod)
 			 WHERE Habest = 'on'
-			   AND Habdis = 'on'
+			   AND Habdis = 'on' ".$sFiltroSede."
 			   AND Ccourg != 'on'
 			 GROUP BY Habcco
 			";
@@ -108,7 +115,7 @@ else
 			  FROM ".$wbasedato."_000020 INNER JOIN ".$wbasedato."_000011 ON(Habcco = Ccocod)
 			 WHERE Habest = 'on'
 			   AND Habali = 'on'
-			   AND Habdis != 'on'
+			   AND Habdis != 'on' ".$sFiltroSede."
 			   AND Ccourg != 'on'
 			 GROUP BY Habcco
 			";
@@ -130,7 +137,7 @@ else
 			SELECT 	A.Cieser, SUM(Ciedis) AS Ciedis, SUM(Cieocu) AS Cieocu, Cconoc AS Nombre, Ccodtp AS tipoPac, Ccotor AS Torre, Ccopis AS Piso, 0 AS Alistamiento,
 					Ccoioh AS EsHos, Ccouci AS EsUci, Ccouce AS EsUce 
 			  FROM ".$wbasedato."_000038 AS A INNER JOIN ".$wbasedato."_000011 AS B ON(A.Cieser = B.Ccocod AND Ccoest = 'on')
-			 WHERE A.Fecha_data = '".$fechaBuscar1."'
+			 WHERE A.Fecha_data = '".$fechaBuscar1."' ".$sFiltroSede."
 			 GROUP BY A.Cieser
 			 ORDER BY Ccotor, Ccopis DESC
 			";
