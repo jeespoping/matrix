@@ -526,6 +526,8 @@
 			return "El tipo de proceso no es válido debe ser '0 <> RD' ó '1 = RD'";
 		}
 
+		$cuentas['responsables'] = str_replace('"', '', $cuentas['responsables']);
+
 		$cuentaCobro = [];
 
 		$sql = "
