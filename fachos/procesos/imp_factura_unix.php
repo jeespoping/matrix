@@ -2445,7 +2445,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 
     //$htmlFactura .= "</div>";
    // $htmlFactura .= "</div>";
-    $wactualiz=" 2016-09-22 ";
+    $wactualiz=" 2022-03-09 ";
     echo "<div align='center'>";
     encabezado("Imprimir Factura Unix",$wactualiz, "clinica");
     echo "<br>";
@@ -2546,7 +2546,7 @@ else
     global $entidadNoDiscriminaTerceros;
 
                                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-    $wactualiz=" 2016-09-22 ";                          // Aca se coloca la ultima fecha de actualizacion de este programa //
+    $wactualiz=" 2022-03-09 ";                          // Aca se coloca la ultima fecha de actualizacion de este programa //
                                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 

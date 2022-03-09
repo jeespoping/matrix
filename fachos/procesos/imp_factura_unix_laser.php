@@ -352,7 +352,7 @@ if( $consultaAjax == "on" ){
 <?php
 
                                                     // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-    $wactualiz=" 2016-04-20 ";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
+    $wactualiz=" 2022-03-09 ";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
                                                     // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 /***************************************************
