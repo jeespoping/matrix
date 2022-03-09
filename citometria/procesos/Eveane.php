@@ -115,7 +115,7 @@ $wemp_pmla = $_REQUEST['wemp_pmla'];
 	   		Release de Versión Beta.
 [*DOC]   		
 ***********************************************************************************************************************/
-function echos($tip,$i,$lit,$span,$color,$DATA)
+function echos($tip,$i,$lit,$span,$color,&$DATA)
 {
 	switch ($tip)
 	{
@@ -295,7 +295,7 @@ function validar7($chain)
 		return false;
 }
 
-function valgen($ok,$conex,$wtdo,$wdoc,$wfes,$wnom,$wap1,$wap2,$DATA,$werr,$e)
+function valgen($ok,$conex,$wtdo,$wdoc,$wfes,$wnom,$wap1,$wap2,&$DATA,&$werr,&$e)
 {
 	global $empresa;
 	//VALIDACION DE DATOS GENERALES
@@ -338,7 +338,7 @@ function valgen($ok,$conex,$wtdo,$wdoc,$wfes,$wnom,$wap1,$wap2,$DATA,$werr,$e)
 
 
 //FUNCION DE INGRESO DE ESTUDIOS
-function GRABAR($key,$conex,$wtdo,$wdoc,$wfes,$DATA,$werr,$e)
+function GRABAR($key,$conex,$wtdo,$wdoc,$wfes,&$DATA,&$werr,&$e)
 {
 	global $empresa;
 	$split=array();
@@ -407,12 +407,17 @@ else
 	//$key = substr($user,2,strlen($user));
 	//$key = "tcx";
 	//$wtcx = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tcx');
-	echo "<form name='Eveane' action='Eveane.php?wemp_pmla=".$wemp_pmla."'' method=post>";
+	echo "<form name='Eveane' action='Eveane.php' method=post>";
+	echo  "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
+	echo  "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+	echo  "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
 	
 
 	
 
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+	echo "<center><input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
+
 	
 	//******* INICIALIZACION DEL SISTEMA *********
 	if(isset($ok) and $ok == 9)
@@ -666,9 +671,22 @@ else
 		case 1:
 			echo "<tr><td bgcolor=#cccccc align=center colspan=8>";
 			echo "<input type='RADIO' name=ok value=0 onclick='enter()'>INICIAR&nbsp";
+			echo  "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
+			echo  "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+			echo  "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
 			echo "<input type='RADIO' name=ok value=1 checked onclick='enter()'>PROCESO&nbsp";
+			echo  "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
+			echo  "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+			echo  "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+
 			echo "<input type='RADIO' name=ok value=3 onclick='enter()'>CONSULTAR&nbsp";
+			echo  "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
+			echo  "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+			echo  "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
 			echo "<input type='RADIO' name=ok value=2 onclick='enter()'>GRABAR</td></tr>";
+			echo  "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
+			echo  "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
+			echo  "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
 		break;
 		case 3:
 			echo "<tr><td bgcolor=#cccccc align=center colspan=8>";
