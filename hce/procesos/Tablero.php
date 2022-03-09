@@ -1334,10 +1334,10 @@ else
 						else
 							$tipo="tipo19";
 						if(isset($IPTIP) and $IPTIP == "off")
-							$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
+							$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
 						else
 						{
-							$path="/matrix/HCE/procesos/HCE_iFrames.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&origen=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
+							$path="/matrix/HCE/procesos/HCE_iFrames.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
 							$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 						}
 						echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";
