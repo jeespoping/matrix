@@ -57,8 +57,12 @@
 <BODY TEXT="#000066">
 <script type="text/javascript">
 <!--
-	function enter()
+	function enter(target)
 	{
+		const okValue = target.value;
+		const queryInput = document.querySelector("input[name='ok']");
+		if(!okValue || !queryInput) return; 
+		queryInput.value = okValue;
 		document.forms.Eveane.submit();
 	}
 	function ejecutar(path,tipo)
@@ -424,7 +428,7 @@ else
 		$ok=0;
 	
 	//******* GRABACION DE INFORMACION *********
-	if(isset($ok) and $ok == 2)
+ 	if(isset($ok) and $ok == 2)
 	{
 		$werr=array();
 		$e=-1;
@@ -436,7 +440,7 @@ else
 			}
 			if($ok != 0)
 				$ok = 1;
-		}
+		} 
 		else
 			$ok=1;
 	}
@@ -670,31 +674,31 @@ else
 	{
 		case 1:
 			echo "<tr><td bgcolor=#cccccc align=center colspan=8>";
-			echo "<input type='RADIO' name=ok value=0 onclick='enter()'>INICIAR&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=0 onclick='enter(this)'>INICIAR&nbsp";
 			echo  "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 			echo  "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-			echo  "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
-			echo "<input type='RADIO' name=ok value=1 checked onclick='enter()'>PROCESO&nbsp";
+			echo  "<input type='HIDDEN' name='valor_ok' value='".$ok."'>";
+			echo "<input type='RADIO' name=valor_ok value=1 checked onclick='enter(this)'>PROCESO&nbsp";
 			echo  "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 			echo  "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-			echo  "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+			echo  "<input type='HIDDEN' name= 'valor_ok' value='".$ok."'>";
 
-			echo "<input type='RADIO' name=ok value=3 onclick='enter()'>CONSULTAR&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=1 onclick='enter(this)'>CONSULTAR&nbsp";
 			echo  "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 			echo  "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-			echo  "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
-			echo "<input type='RADIO' name=ok value=2 onclick='enter()'>GRABAR</td></tr>";
+			echo  "<input type='HIDDEN' name= 'valor_ok' value='".$ok."'>";
+			echo "<input type='RADIO' name=valor_ok value=2 onclick='enter(this)'>GRABAR</td></tr>";
 			echo  "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 			echo  "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-			echo  "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+			echo  "<input type='HIDDEN' name= 'valor_ok' value='".$ok."'>";
 		break;
 		case 3:
 			echo "<tr><td bgcolor=#cccccc align=center colspan=8>";
-			echo "<input type='RADIO' name=ok value=0 onclick='enter()'>INICIAR&nbsp";
-			echo "<input type='RADIO' name=ok value=1 onclick='enter()'>PROCESO&nbsp";
-			echo "<input type='RADIO' name=ok value=3 checked onclick='enter()'>CONSULTAR&nbsp";
-			echo "<input type='RADIO' name=wb value=1  onclick='enter()'> Adelante <input type='RADIO' name=wb value=2 onclick='enter()'> Atras&nbsp";
-			echo "<input type='RADIO' name=ok value=2 onclick='enter()'>GRABAR</td></tr>";
+			echo "<input type='RADIO' name=valor_ok value=0 onclick='enter(this)'>INICIAR&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=1 onclick='enter(this)'>PROCESO&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=1 checked onclick='enter(this)'>CONSULTAR&nbsp";
+			echo "<input type='RADIO' name=wb value=1  onclick='enter(this)'> Adelante <input type='RADIO' name=wb value=2 onclick='enter(this)'> Atras&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=2 onclick='enter(this)'>GRABAR</td></tr>";
 		break;
 	}
 	
@@ -721,7 +725,7 @@ else
 	echo "</td>";
 	
 	echo "<td id='TipoG02' align=left>Documento : </td><td id='TipoG02'>";
-	echo "<input type='TEXT' name='wdoc' size=15 maxlength=15  value='".$wdoc."' class=tipo3 onkeypress='teclado5()' Onblur='enter()'></td>";
+	echo "<input type='TEXT' name='wdoc' size=15 maxlength=15  value='".$wdoc."' class=tipo3 onkeypress='teclado5()' ></td>";
 	if($wdoc != "")
 	{
 		//                  0       1       2       3      4       5       6       7       8       9   
@@ -772,7 +776,7 @@ else
 	echo "<td id='TipoG02' valign=center>Fecha Estudio : </td><td id='TipoG02'><input type='TEXT' name='wfes' size=10 maxlength=21 id='wfes' value='".$wfes."' class=tipo3>&nbsp&nbsp<IMG SRC='/matrix/images/medical/INTERFACES/calendario.jpg' id='trigger1'></td>";
 	?>
 	<script type="text/javascript">//<![CDATA[
-		Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'wfes',button:'trigger1',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});	
+		//Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'wfes',button:'trigger1',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});	
 	//]]></script>
 	<?php
 	echo "</tr>";
@@ -805,7 +809,7 @@ else
 	$query = "SELECT Codigo, Descripcion  from root_000011 where Descripcion like '%".$wdiax."%' order by Descripcion";
 	$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 	$num = mysql_num_rows($err);
-	echo "<input type='TEXT' name='wdiax' value='".$wdiax."' size=50 maxlength=50  class=tipo3 OnBlur='enter()'>&nbsp;&nbsp;&nbsp;&nbsp&nbsp&nbsp<select name='DATA[".$i."]' id=tipo1>";
+	echo "<input type='TEXT' name='wdiax' value='".$wdiax."' size=50 maxlength=50  class=tipo3>&nbsp;&nbsp;&nbsp;&nbsp&nbsp&nbsp<select name='DATA[".$i."]' id=tipo1>";
 	echo "<option>0-SELECCIONE</option>";
 	if ($num>0)
 	{
@@ -903,7 +907,7 @@ else
 	$query = "SELECT Circod, Cirdes from ".$wtcx."_000002 where Cirdes like '%".$wprox."%' order by Cirdes";
 	$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 	$num = mysql_num_rows($err);
-	echo "<input type='TEXT' name='wprox' value='".$wprox."' size=30 maxlength=30  class=tipo3 OnBlur='enter()'><br><select name='DATA[".$i."]' id=tipo1>";
+	echo "<input type='TEXT' name='wprox' value='".$wprox."' size=30 maxlength=30  class=tipo3><br><select name='DATA[".$i."]' id=tipo1>";
 	echo "<option>0-SELECCIONE</option>";
 	if ($num>0)
 	{
@@ -925,7 +929,7 @@ else
 	$query = "SELECT Espcod, Espdet  from ".$wtcx."_000005 where Espdet like '%".$wespx."%' order by Espdet";
 	$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 	$num = mysql_num_rows($err);
-	echo "<input type='TEXT' name='wespx' value='".$wespx."' size=30 maxlength=30  class=tipo3 OnBlur='enter()'><br><select name='DATA[".$i."]' id=tipo1>";
+	echo "<input type='TEXT' name='wespx' value='".$wespx."' size=30 maxlength=30  class=tipo3><br><select name='DATA[".$i."]' id=tipo1>";
 	echo "<option>0-SELECCIONE</option>";
 	if ($num>0)
 	{
@@ -1232,18 +1236,18 @@ else
 	{
 		case 1:
 			echo "<tr><td bgcolor=#cccccc align=center colspan=8>";
-			echo "<input type='RADIO' name=ok value=0 onclick='enter()'>INICIAR&nbsp";
-			echo "<input type='RADIO' name=ok value=1 checked onclick='enter()'>PROCESO&nbsp";
-			echo "<input type='RADIO' name=ok value=3 onclick='enter()'>CONSULTAR&nbsp";
-			echo "<input type='RADIO' name=ok value=2 onclick='enter()'>GRABAR</td></tr>";
+			echo "<input type='RADIO' name=valor_ok value=0 onclick='enter(this)'>INICIAR&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=1 checked onclick='enter(this)'>PROCESO&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=3 onclick='enter(this)'>CONSULTAR&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=2 onclick='enter(this)'>GRABAR</td></tr>";
 		break;
 		case 3:
 			echo "<tr><td bgcolor=#cccccc align=center colspan=8>";
-			echo "<input type='RADIO' name=ok value=0 onclick='enter()'>INICIAR&nbsp";
-			echo "<input type='RADIO' name=ok value=1 onclick='enter()'>PROCESO&nbsp";
-			echo "<input type='RADIO' name=ok value=3 checked onclick='enter()'>CONSULTAR&nbsp";
-			echo "<input type='RADIO' name=wb value=1  onclick='enter()'> Adelante <input type='RADIO' name=wb value=2 onclick='enter()'> Atras&nbsp";
-			echo "<input type='RADIO' name=ok value=2 onclick='enter()'>GRABAR</td></tr>";
+			echo "<input type='RADIO' name=valor_ok value=0 onclick='enter(this)'>INICIAR&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=1 onclick='enter(this)'>PROCESO&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=3 checked onclick='enter(this)'>CONSULTAR&nbsp";
+			echo "<input type='RADIO' name=wb value=1  onclick='enter(this)'> Adelante <input type='RADIO' name=wb value=2 onclick='enter(this)'> Atras&nbsp";
+			echo "<input type='RADIO' name=valor_ok value=2 onclick='enter(this)'>GRABAR</td></tr>";
 		break;
 	}
 	echo "<tr><td bgcolor=#999999 colspan=8 align=center><input type='submit' value='OK'></td></tr></table><br><br></center>";
