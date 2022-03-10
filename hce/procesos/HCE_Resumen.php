@@ -119,7 +119,7 @@ if((!isset($CI) and $wsession == 0) or isset($CI))
 	 	
 	echo "<form name='HCE_Resumen' action='HCE_Resumen.php' method=post>";
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 	$cadena_html = "";
 	if(!isset($CI))
@@ -129,7 +129,7 @@ if((!isset($CI) and $wsession == 0) or isset($CI))
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and pacced = oriced ";
 		$query .= "   and pactid = oritid ";
-		$query .= "   and oriori = '".$origen."' ";
+		$query .= "   and oriori = '".$wemp_pmla."' ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$row = mysql_fetch_array($err);
 		$wpac = strtoupper($row[2])." ".strtoupper($row[3])." ".ucfirst(strtolower($row[0]))." ".ucfirst(strtolower($row[1]));
@@ -243,7 +243,7 @@ if((!isset($CI) and $wsession == 0) or isset($CI))
 	$query .= "   and pactid = '".$wtipodoc."'";
 	$query .= "   and pacced = oriced ";
 	$query .= "   and pactid = oritid ";
-	$query .= "   and oriori = '".$origen."' ";
+	$query .= "   and oriori = '".$wemp_pmla."' ";
 	$query .= "   and inghis = orihis ";
 	$query .= "   and inging = '".$wing."' ";
 	$query .= "   and ubihis = inghis "; 

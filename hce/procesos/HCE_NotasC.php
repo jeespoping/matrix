@@ -258,6 +258,15 @@
 </script>
 <BODY TEXT="#000066">
 <?php
+if(isset($_REQUEST['origen']) && !isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla=$_REQUEST['origen'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+	die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
 include_once("hce/HCE_print_function.php");
 include_once("hce/funcionesHCE.php");

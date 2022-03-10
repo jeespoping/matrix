@@ -192,6 +192,15 @@
 <BODY TEXT="#000066">
 
 <?php
+if(isset($_REQUEST['codemp']) && !isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla=$_REQUEST['codemp'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+	die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
 /**********************************************************************************************************************  
 [DOC]
@@ -682,10 +691,10 @@ else
 						$path2="/matrix/hce/procesos/envioCorreoHCEOrdenes.php?wemp_pmla=".$wemp_pmla."&historia=".$whis."&ingreso=".$row[1]."&esIframe=off";
 					break;
 					case "R":
-						$path="/matrix/HCE/procesos/HCE_Resumen.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&origen=".$wemp_pmla."&wing=".$wnin;
+						$path="/matrix/HCE/procesos/HCE_Resumen.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wing=".$wnin;
 					break;
 					case "S":
-						$path="/matrix/movhos/procesos/bitacora.php?ok=0&ctc=1&empresa=".$empresa."&codemp=".$wemp_pmla."&whis=".$whis."&wnin=".$wnin."";
+						$path="/matrix/movhos/procesos/bitacora.php?ok=0&ctc=1&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&whis=".$whis."&wnin=".$wnin."";
 					break;
 					case "H":
 						$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&whisa=".$whis."&winga=".$wnin."";
