@@ -730,6 +730,11 @@
                     $("#fechaOrden").html(res.resultado.fechaOrden);
                     $("#fechaRes").html(res.resultado.fechaRes);
                     $("#nomDescripcion").html(res.resultado.info.examen.descripcion);
+					if(Object.prototype.hasOwnProperty.call(res.resultado.info.examen, 'observacion')){
+						   $("#observacion").html(res.resultado.info.examen.observacion);
+					}else{
+						 $("#observacion").html("OBSERVACIONES:");
+					}
                     var html = '';
                     if(!$.isArray(res.resultado.info.detallesResultado)){
                     var element = res.resultado.info.detallesResultado;
@@ -741,9 +746,13 @@
                                     '</td>'+
                                     '<td width="100" colspan="2">';
                                         if(element.resultadoValor!=""){
-                                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
+                                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>'; 
+											html +=' ';
+											 html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
                                         }else{
-                                            html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
+                                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
+												html +=' ';
+										  html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
                                             
                                         }
                                         
@@ -768,8 +777,12 @@
                                     '<td width="100" colspan="2">';
                                         if(element.resultadoValor!=""){
                                             html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
+											html +=' ';
+											html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
                                         }else{
-                                            html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
+										    html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
+											html +=' ';
+										   html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
                                             
                                         }                                        
                                     html += '</td>'+
@@ -825,9 +838,12 @@
                                             '</table>';
                                         
                                 //TABLA DE ANTIBIOTICOS
-                                if(!$.isArray(res.resultado.info.microorganismos.MicroorganismoDTO.antibioticos.AntibioticoDTO)){
+								
+							   var dato=res.resultado.info.microorganismos.MicroorganismoDTO.antibioticos.length;
+								console.log(dato);
+                                if(dato>0){
                                     var element = res.resultado.info.microorganismos.MicroorganismoDTO.antibioticos.AntibioticoDTO;
-                                        '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
+                                      '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
                                                     '<tr>'+
                                                     '<td width="5"></td>'+
                                                         '<td width="130" colspan="2">'+
@@ -858,8 +874,9 @@
 
 
                                                 '</table>';
-                                }else{
-                                    contentAntibioticos += 
+								 }else{
+									  if(dato>0 || dato  === undefined){
+								   contentAntibioticos += 
                                             '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
                                                     '<tr>'+
                                                     '<td width="5"></td>'+
@@ -893,9 +910,10 @@
                                     });
                                     contentAntibioticos +=  '</table>';
                                 }
-                            
-                            //NOTAS
-                                if("notas" in res.resultado.info.microorganismos.MicroorganismoDTO &&  res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO != ""){
+								 }
+                            console.log(res.resultado.info.microorganismos.MicroorganismoDTO.notas);
+							if(Object.prototype.hasOwnProperty.call(res.resultado.info.microorganismos.MicroorganismoDTO.notas, 'NotaMicroorganismoDTO')){
+									     if("notas" in res.resultado.info.microorganismos.MicroorganismoDTO &&  res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO != ""){
                                     contentNotas += '<dt class="col-sm-2 table-sm">Notas: </dt>';
                                         if(!$.isArray(res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO)){
                                             var element = res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO;
@@ -930,6 +948,8 @@
                                     
                                 
                                 }
+					        }
+                          
                                 $("#microorganismos").append(contentMicroorganismo+contentAntibioticos+contentNotas); 
                             }else{
                             
@@ -1031,6 +1051,7 @@
                                 
                                 
                                 //NOTAS
+								
                                     if("notas" in element &&  (element.notas.NotaMicroorganismoDTO != "" && element.notas !="")){
                                         contentNotas += '<dt class="col-sm-2 table-sm">Notas: </dt>';
                                             if(!$.isArray(element.notas.NotaMicroorganismoDTO)){
@@ -1494,11 +1515,38 @@
 
 
                     <a class="linkstabla6"><font color="white"><b id="nomDescripcion"></b></font></a></div>
-
+					
 
 
                 </td>
+				
+             
 
+
+            </tr>
+             <table class="table">
+
+
+
+            <tr>
+
+
+
+                <td height="20" bgcolor="#C1CE0D" colspan="8">
+
+
+
+                    <div align="center">
+
+
+
+                   <a class="linkstabla6"><font color="white"><b id="observacion"></b></font></a></div>	
+					
+
+
+                </td>
+				
+               
 
 
             </tr>

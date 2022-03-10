@@ -311,16 +311,10 @@ function consultarHistoriaPaciente( $conex, $wemp_pmla, $tipoDocumento, $nroDocu
 function consultarProcedimiento( $conex, $wcliame, $cup ){
 	
 	$val = [];
-
+	
 	$sql = "SELECT Procup, Pronom
 			  FROM ".$wcliame."_000103
 			 WHERE Procup = '".$cup."'
-			";
-	
-	// 2022/01/28: Sebastián Nevado - Cambio la consulta para traer el código de procedimiento y no código cups
-	$sql = "SELECT Procod AS Procup, Pronom
-			  FROM ".$wcliame."_000103
-			 WHERE Procod = '".$cup."'
 			";
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -340,12 +334,6 @@ function consultarProcedimientoPorCodigo( $conex, $wcliame, $cod ){
 	$val = [];
 	
 	$sql = "SELECT Procup, Pronom
-			  FROM ".$wcliame."_000103
-			 WHERE Procod = '".$cod."'
-			";
-	
-	// 2022/01/28: Sebastián Nevado - Cambio la consulta para traer el código de procedimiento y no código cups
-	$sql = "SELECT Procod AS Procup, Pronom
 			  FROM ".$wcliame."_000103
 			 WHERE Procod = '".$cod."'
 			";
@@ -760,6 +748,7 @@ function consultarTipoOrdenenviarPoringreso($conex,$whce,$historia,$ingreso){
 			}
 			return $val;
 }
+
 function interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tor, $estGeneraCca) {
 	
 	$anulacion_cca = 'off';
@@ -781,7 +770,7 @@ function interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos,
 	
 	$eexcca = $datos['Eexcca'];
 	$tiptnf = $datos['Tiptnf'];
-	$wEstadoExamen = $datos['Eexdes'];
+	$wEstadoExamen = $datos['Eexdes'];							   
 	
 	//$sql_auditorio = "INSERT INTO cliame_000351 (Medico, Fecha_data, Hora_data, Descripcion, Proceso, Seguridad) VALUES ('cliame', CURRENT_DATE, CURRENT_TIME, 'interoperabilidadCargosAutomaticos $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tor, $estGeneraCca', 'interoperabilidad cca', 'C-root');";
 	//mysql_query($sql_auditorio, $conex);
@@ -849,6 +838,7 @@ function interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos,
 		
 	}//hasta aca llega Ordenes cargos automaticos
 }
+
  switch($_GET['accion']) {
     case 'consultarInteroperabilidades':
 		$wemp_pmla=$_GET['wemp_pmla'];
