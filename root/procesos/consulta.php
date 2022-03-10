@@ -200,16 +200,31 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sC
                 )
                 ORDER BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";*/
 
-        $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
-                FROM    " . $wbasedato . "_000040 AS r40, usuarios
-                WHERE   Requso = '" . $codigo . "'
-                        AND (
-                                Reqsat = 'off'
-                                OR
-                                Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on')
-                            )
-                        AND Codigo = Reqpurs
-               ORDER BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
+        if ($estadosede == 'off')
+        {
+            $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
+            FROM    " . $wbasedato . "_000040 AS r40, usuarios
+            WHERE   Requso = '" . $codigo . "'
+                    AND (
+                            Reqsat = 'off'
+                            OR
+                            Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on')
+                        )
+                    AND Codigo = Reqpurs
+           ORDER BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
+        }else{
+            $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, r40.Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
+            FROM    " . $wbasedato . "_000040 AS r40, usuarios, ".$TablaValidacionSede." m11
+            WHERE   Requso = '" . $codigo . "'
+                    AND (
+                            Reqsat = 'off'
+                            OR
+                            Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on')
+                        )
+                    AND Codigo = Reqpurs
+                    AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede})
+           ORDER BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
+        }
 		
 		 // $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
                 // FROM    " . $wbasedato . "_000040 AS r40, usuarios
@@ -446,8 +461,20 @@ function pintarVersion()
 function pintarTitulo($para,$wacutaliza, $titulo_requerimientos,$TablaValidacionSede = '')
 {
     global $wemp_pmla;
+    global $selectsede;
     
     $incluirFiltroSede = ($TablaValidacionSede == '') ? FALSE : TRUE;
+
+    $estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+    $sFiltroSede="";
+    $codigoSede = '';
+    if($estadosede=='on')
+    {	  
+        $codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+        $sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+    }
+
+    $sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
     
     echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', $incluirFiltroSede);
     echo "<form name='informatica' action='consulta.php?wemp_pmla=".$wemp_pmla."' method=post>";
@@ -458,18 +485,18 @@ function pintarTitulo($para,$wacutaliza, $titulo_requerimientos,$TablaValidacion
 
     echo "<table ALIGN=CENTER width='96%' >";
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-    echo "<tr><td class='texto5' width='20%'><a href='informatica.php?wemp_pmla=".$wemp_pmla."'>INGRESO DE REQUERIMIENTO</a></td>";
+    echo "<tr><td class='texto5' width='20%'><a href='informatica.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."'>INGRESO DE REQUERIMIENTO</a></td>";
     if ($para == 'recibidos')
     {
         echo "<a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=recibidos'><td class='encabezadoTabla' width='20%'>REQUERIMIENTOS RECIBIDOS</td></a>";
-        echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=enviados'>REQUERIMIENTOS ENVIADOS</a></td>";
+        echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&para=enviados'".$sUrlCodigoSede.">REQUERIMIENTOS ENVIADOS</a></td>";
     }
     else
     {
-        echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
+        echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
         echo "<a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=enviados'><td class='encabezadoTabla' width='20%'>REQUERIMIENTOS ENVIADOS</td></a>";
     }
-    echo "<td class='texto5' width='20%'><a href='enviado.php?wemp_pmla=".$wemp_pmla."'>REQUERIMIENTOS ANT.</a></td></tr>";
+    echo "<td class='texto5' width='20%'><a href='enviado.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."'>REQUERIMIENTOS ANT.</a></td></tr>";
     echo "<tr class='fila1'><td class='' >&nbsp;</td>";
     echo "<td class='' >&nbsp;</td>";
     echo "<td class='' >&nbsp;</td>";

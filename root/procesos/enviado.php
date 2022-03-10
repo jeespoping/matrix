@@ -303,6 +303,16 @@ function pintarTitulo($wacutaliza, $TablaValidacionSede = '')
     global $wemp_pmla;
     global $selectsede;
 
+    $estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+    $sFiltroSede="";
+    $codigoSede = '';
+    if($estadosede=='on')
+    {	  
+        $codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+        $sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+    }
+
+    $sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
 
     $incluirFiltroSede = ($TablaValidacionSede == '') ? FALSE : TRUE;
 
@@ -315,9 +325,9 @@ function pintarTitulo($wacutaliza, $TablaValidacionSede = '')
 
     echo "<table ALIGN=CENTER width='90%' >";
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-    echo "<tr><td class='texto5' width='20%'><a href='informatica.php?wemp_pmla=".$wemp_pmla."'>INGRESO DE REQUERIMIENTO</a></td>";
-    echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
-    echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=enviados'>REQUERIMIENTOS ENVIADOS</a></td></a>";
+    echo "<tr><td class='texto5' width='20%'><a href='informatica.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."'>INGRESO DE REQUERIMIENTO</a></td>";
+    echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
+    echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&para=enviados'>REQUERIMIENTOS ENVIADOS</a></td></a>";
     echo "<a href='enviado.php?wemp_pmla=".$wemp_pmla."'><td class='encabezadoTabla' width='20%'>REQUERIMIENTOS ANT.</td></tr></a>";
     echo "<tr class='fila1'><td class='' >&nbsp;</td>";
     echo "<td class='' >&nbsp;</td>";

@@ -167,6 +167,11 @@ include_once("../../webservices/procesos/ws_cliente_mantenimiento.php");
 
    		return true;
    }
+
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "informatica.php?wemp_pmla="+$('#wemp_pmla').val()+"&wbasedato="+$('#wbasedato').val()+"&selectsede="+$('#selectsede').val();
+    });
+
     </script>
 
 </head>
@@ -309,6 +314,9 @@ Fecha de creacion: 2007-04-30
 Autor: Carolina Castano P
 
 Ultima actualizacion:
+09 de marzo de 2022:
+    Sebastian Alvarez Barona: Se realiza filtro de sede a las opciones de centros de costos.
+
 2020-08-06:
     Arleyda Insignares: se adicion campo sede para el formulario y la tabla root_000039
 
@@ -697,12 +705,25 @@ function consultarUsuarioXNombre($nombre, &$personas)
  * 		   $cco=centro de costos inicial para el usuario
  * retorna: $centros, tipo array con lista de centros para el usuario (codigo-nombre, si no encuentra centros retorna false
  */
-function consultarCentros($usuario, $cco)
+function consultarCentros($usuario, $cco, $sCodigoSede = NULL)
 {
 	global $conex;
 	global $wbasedato;
 	global $wmovhos;
+	global $wemp_pmla;
 	
+	$sFiltroSede='';
+   
+    if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on')
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
 	
 	if ($cco!='') //cargo las opciones de fuente con ella como principal, consulto consecutivo y si requiere forma de pago
 	{
@@ -745,7 +766,8 @@ function consultarCentros($usuario, $cco)
 			      OR  Ccourg = 'on' 
 				  OR  Ccocir = 'on' 
 				  OR  Ccoayu = 'on') 
-				 AND Ccoest='on';";
+				 AND Ccoest='on'
+				 {$sFiltroSede};";
 				 
 	$resultado = mysql_query($query,$conex);
 	$cantCcos = mysql_num_rows($resultado);
@@ -2513,10 +2535,29 @@ function pintarVersion()
  *
  * No necesita ningun parametro ni devuelve
  */
-function pintarTitulo($wacutaliza, $titulo_requerimientos)
+function pintarTitulo($wacutaliza, $titulo_requerimientos,$TablaValidacionSede = '')
 {
+
 	global $wemp_pmla;
-	echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica');
+    global $selectsede;
+    
+    $incluirFiltroSede = ($TablaValidacionSede == '') ? FALSE : TRUE;
+
+    $estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+    $sFiltroSede="";
+    $codigoSede = '';
+    if($estadosede=='on')
+    {	  
+        $codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+        $sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+    }
+
+    $sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
+
+	$incluirFiltroSede = ($TablaValidacionSede == '') ? FALSE : TRUE;
+
+	global $wemp_pmla;
+	echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', $incluirFiltroSede);
 	echo "<form id='informatica' name='informatica' action='informatica.php?wemp_pmla=".$wemp_pmla."' method=post >";
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
@@ -2526,9 +2567,9 @@ function pintarTitulo($wacutaliza, $titulo_requerimientos)
 	echo "<table ALIGN=CENTER width='90%' >";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 	echo "<tr><a href='informatica.php?wemp_pmla=".$wemp_pmla."'><td style='font-weight:bold; ' class='encabezadoTabla' width='20%'>INGRESO DE REQUERIMIENTO</td></a>";
-	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
-	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=enviados'>REQUERIMIENTOS ENVIADOS</a></td>";
-	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='enviado.php?wemp_pmla=".$wemp_pmla."'>REQUERIMIENTOS ANT.</a></td></tr></a>";
+	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
+	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&para=enviados'>REQUERIMIENTOS ENVIADOS</a></td>";
+	echo "<td style='font-weight:bold; ' class='texto5' width='20%'><a href='enviado.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."'>REQUERIMIENTOS ANT.</a></td></tr></a>";
 	echo "<tr class='fila1'><td style='font-weight:bold; ' class='' >&nbsp;</td>";
 	echo "<td style='font-weight:bold; ' class='' >&nbsp;</td>";
 	echo "<td style='font-weight:bold; ' class='' >&nbsp;</td>";
@@ -3111,8 +3152,80 @@ function consultarHorariosValidos($conex, $clases)
 	// echo "<pre>".print_r($arrayHorarios,true)."</pre>";
 	return $arrayHorarios;
 }
+
+/**
+ * [centroCostoUsuario Consultar el centro de costo del usuario que está en el programa, esto valída por ejemplo si el usuario es del centro de costo de auditoría,
+ * si es así entonces cambia el título del programa]
+ * @return [type] [description]
+ */
+function centroCostoUsuario($conex, $codigo_use)
+{
+    $exp = explode("-", $codigo_use);
+    $usuario_codigo = $exp[1];
+    $cco = "";
+    $q = "  SELECT  Ccostos AS cco_user, Empresa
+            FROM    usuarios
+            WHERE   Codigo = '{$usuario_codigo}'";
+                    // AND ACTIVO='A'";
+    $result = mysql_query($q, $conex);
+    if(mysql_num_rows($result) > 0)
+    {
+        $row = mysql_fetch_array($result);
+        $cco = "({$row['Empresa']}){$row['cco_user']}";
+    }
+    return $cco;
+}
+
+function obtenerTablaValidacionSede($cco_user)
+{
+    global $conex;
+    global $wemp_pmla;
+
+    $bdMovhosCco = '';
+
+	if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on')
+		{
+			$QuerySede = "SELECT Mtrtvs FROM root_000041 WHERE Mtrcco = '".$cco_user."'";
+
+            $resSede = mysql_query($QuerySede, $conex);
+            if(mysql_num_rows($resSede) > 0)
+            {
+                $row = mysql_fetch_array($resSede);
+                $tvs = $row['Mtrtvs'];
+            }
+
+            if ($tvs != '' && !is_null($tvs)) 
+            {
+                $ccostoSede=explode(";",$tvs);
+
+                foreach ($ccostoSede as $empresa) {
+                    $empresacco=explode(",",$empresa);
+                    if ($empresacco[0] == 'wemp_pmla='.$wemp_pmla) {
+
+                        $bdMovhosCco = $empresacco[1];
+                        
+                    }
+                }
+            }
+
+		}
+	}
+   return $bdMovhosCco;
+
+}
+
 /*===========================================================================================================================================*/
 /*=========================================================PROGRAMA==========================================================================*/
+
+echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";    
+echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+echo "<input type='hidden' id='wbasedato' name= 'wbasedato' value='".$wbasedato."'>";
+
+
 if (!isset($user))
 {
 	if(!isset($_SESSION["user"]))
@@ -3123,7 +3236,7 @@ if(!isset($_SESSION["user"]))
 echo "error";
 else
 {
-	$wacutaliza = "2019-09-30";
+	$wacutaliza = "09 de marzo de 2022";
 	$wbasedato='root';
 	
 	include_once("root/comun.php");
@@ -3210,6 +3323,10 @@ else
 
 	}
 
+	$cco_user = centroCostoUsuario($conex, $user);
+
+	$TablaValidacionSede = obtenerTablaValidacionSede($cco_user);
+
   $titulo_requerimientos = "SISTEMA DE REQUERIMIENTOS";
   $expl_cco = explode("-",$usuario["cco"]);
 
@@ -3220,7 +3337,7 @@ else
   }
 
   //pintarVersion(); //Escribe en el programa el autor y la version del Script.
-  pintarTitulo($wacutaliza, $titulo_requerimientos);  //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a los scripts consulta.php, seguimiento.php
+  pintarTitulo($wacutaliza, $titulo_requerimientos, $TablaValidacionSede);  //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a los scripts consulta.php, seguimiento.php
   //Adicionalmente esta funcione se encarga de abrir la forma del Script que se llama informatica
   //
 	/***********************************despliegue incial de los datos del requerimiento********************/
@@ -3249,7 +3366,7 @@ else
 		//si el usuario de Matrix tiene autorizado grabar requerimientos por otras personas
 		//el formulario le da la opcion de buscar a la persona por codigo o por nombre
 		//en caso contrario el proceso es mucho mas sencillo
-		$centros=consultarCentros($usuario['cod'], $usuario['cco']);
+		$centros=consultarCentros($usuario['cod'], $usuario['cco'], $selectsede);
 		$sedes  =consultarSedes();
 
 		if ($usuario['sup']=='on')
@@ -3324,12 +3441,12 @@ else
 						if (isset($cco))
 						{
 							$persona=consultarUsuarioReq($exp[0], $cco);
-							$centros=consultarCentros($exp[0], $persona['cco']);
+							$centros=consultarCentros($exp[0], $persona['cco'], $selectsede);
 						}
 						else
 						{
 							$persona=consultarUsuarioReq($exp[0], '');
-							$centros=consultarCentros($exp[0], '');
+							$centros=consultarCentros($exp[0], '', $selectsede);
 						}
 						$personas=consultarPersonas($exp[0], $exp[1]);
 
@@ -3359,7 +3476,7 @@ else
 					else
 					{
 						$personas=consultarPersonas($usuario['cod'], $usuario['nom']);
-						$centros=consultarCentros($usuario['cod'], $usuario['cco']);
+						$centros=consultarCentros($usuario['cod'], $usuario['cco'], $selectsede);
 						if(!$centros)
 						{
 							pintarAlert2('EL USUARIO NO ESTA RELACIONADO CON NINGUN CENTRO DE COSTOS, POR FAVOR COMUNICARSE CON SISTEMAS');
@@ -3374,7 +3491,7 @@ else
 		}
 		else
 		{
-			$centros=consultarCentros($usuario['cod'], $usuario['cco']);
+			$centros=consultarCentros($usuario['cod'], $usuario['cco'], $selectsede);
 			if(!$centros)
 			{
 				pintarAlert2('EL USUARIO NO ESTA RELACIONADO CON NINGUN CENTRO DE COSTOS, POR FAVOR COMUNICARSE CON SISTEMAS');
