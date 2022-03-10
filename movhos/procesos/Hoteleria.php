@@ -792,10 +792,12 @@ function obtenerRegistrosFila($qlog)
 /* Filtro sede */
 $selectsede = '';
 $wmovhos = consultarAliasPorAplicacion($conex, "01", "movhos");
-
+$join_pacient_alt = "";
 // if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) && !empty($sCodigoSede) ){
 if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) ){
 	$selectsede = $_POST['selectsede'];
+	$join_pacient_alt = " AND Ccosed = '".$selectsede."' ";
+
 }
 echo "<input type='HIDDEN' name='selectsede' id='wselectsede' value='".$selectsede."'>";
 
@@ -1150,8 +1152,9 @@ echo "<input type='HIDDEN' name='selectsede' id='wselectsede' value='".$selectse
          }
 
   //Aca trae los pacientes que esten en proceso de alta en cualquier estado
-  $q = " SELECT Ubihac, Ubihis, Ubiing, ".$wbasedato."_000018.id, Ubihot, Ubihap, Ubimue, Ubihan, Ubisac "
-      ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000011 "
+
+	$q = " SELECT Ubihac, Ubihis, Ubiing, ".$wbasedato."_000018.id, Ubihot, Ubihap, Ubimue, Ubihan, Ubisac "
+	."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000011 "
       ."  WHERE Ubiptr != 'on' "             //Solo los pacientes que no esten siendo trasladados
       ."    AND Ubialp  = 'on' "
       ."    AND Ubiald != 'on' "			 //Que no este en Alta Definitiva
@@ -1162,6 +1165,7 @@ echo "<input type='HIDDEN' name='selectsede' id='wselectsede' value='".$selectse
       ."    AND Ccourg != 'on' "             //Que no se de Urgencias
       ."    AND Ccocir != 'on' "             //Que no se de Cirugia
       ."    AND Ccohot  = 'on' "             //Que tenga servicio de hoteleria
+	  .$join_pacient_alt
 	  ."  GROUP BY 1,2,3,4,5,6 ";
   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
   $num = mysql_num_rows($res);
