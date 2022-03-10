@@ -385,7 +385,7 @@ return;
               id         = $("#id_registro_"+habitacion).val();
               $.ajax({
 
-                  url: "central_de_habitaciones.php?wbasedato="+wbasedato+"&wemp_pmla="+wemp_pmla+"&selectsede="+selectsede,
+                  url: "central_de_habitaciones.php?wbasedato="+wbasedato+"&wemp_pmla="+wemp_pmla,
                   type: "POST",
                   data: {
                           peticionAjax: "actualizarMovimiento",
@@ -402,7 +402,7 @@ return;
                       data = data.split("-")
                       if( data[0] == "error" ){
                         alert( data[1] );
-                        window.location="central_de_habitaciones.php?wbasedato="+wbasedato+"&wemp_pmla="+wemp_pmla+"&wconsulta="+wconsulta+"&selectsede="+selectsede;
+                        window.location="central_de_habitaciones.php?wbasedato="+wbasedato+"&wemp_pmla="+wemp_pmla+"&wconsulta="+wconsulta;
                       }
                       if( data[0] != "actualizado" ){
                         if( actualizar == "empleado" ){
@@ -469,17 +469,28 @@ return;
         $joinSede = "INNER JOIN ".$wbasedato."_000011 on Habcco = Ccocod";
         $whereselectsede = " AND  Ccosed =  '".$_POST['selectsede']."'"; 
 
-        $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
-        ."    FROM ".$wbasedato."_000020 "
-       .$joinSede
-       ."   WHERE habali = 'on' "
-       ."     AND habest = 'on' "
-       .$whereselectsede
-       ."   UNION  ALL"
-       ."  SELECT movhab habitacion, movemp, movobs observacion, Fecha_data fechaAltaDef, Hora_data horaAltaDef, '', id, movhem horaAsignado "
-       ."    FROM ".$wbasedato."_000025 "
-       ."   WHERE movhdi = '00:00:00' "
-       ."   ORDER BY 4, 5, 1 ";
+
+        $q = "
+        SELECT 
+        Habcod habitacion, 
+        '',
+        '' observacion,
+        Habfal fechaAltaDef, 
+        Habhal horaAltaDef,
+        Habprg, '' id,
+        '' horaAsignado
+
+        FROM ".$wbasedato."_000020 
+        LEFT JOIN ".$wbasedato."_000011 on Habcco = Ccocod
+        LEFT JOIN ".$wbasedato."_000025 on Movhab = Habcco
+        WHERE habali = 'on' AND habest = 'on'
+        "
+        .$whereselectsede.
+        "
+        OR  movhdi = '00:00:00'
+
+        ";
+
     }
     else {
 
