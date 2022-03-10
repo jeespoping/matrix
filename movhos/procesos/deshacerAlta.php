@@ -26,14 +26,22 @@
 </head>
 <body>
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+
 include_once("conex.php");
+include_once("root/comun.php");
 
 include_once("movhos/validacion_hist.php");
 include_once("movhos/fxValidacionArticulo.php");
 include_once("movhos/registro_tablas.php");
 include_once("movhos/otros.php");
 
+$db = $_REQUEST['db'];
 
+$wactualiz = '2022-02-16';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("DEVOLVER EL ALTA A UN PACIENTE ",$wactualiz, $wbasedato1);
 
 
 
@@ -42,8 +50,8 @@ echo "<center><table border=0 width=300>";
 if(!isset($historia))
 {
 	echo "<form action='' method='POST'>";
-	echo "<td class='titulo1' colspan='2'>DEVOLVER EL ALTA A UN PACIENTE</td></tr>";
-	echo "<tr><td align=center class='tituloSup' colspan='2'><b>CLÍNICA LAS AMÉRICAS </b></td></tr>";
+	//echo "<td class='titulo1' colspan='2'>DEVOLVER EL ALTA A UN PACIENTE</td></tr>";
+	//echo "<tr><td align=center class='tituloSup' colspan='2'><b>CLÍNICA LAS AMÉRICAS </b></td></tr>";
 	echo "<tr>";
 	echo "<td class='titulo2' ><b>N° HISTORIA: </font>";
 	?>	<input type='text' cols='10' name='historia'>	<?php
@@ -61,7 +69,7 @@ else
 	$pac['his']=$historia;
 	$pac['ing']=$ing;
 
-	$pac['act'] =infoPaciente(&$pac,$emp);//paciente existio
+	$pac['act'] =infoPaciente($pac,$wemp_pmla);//paciente existio
 
 
 	/**

@@ -28,7 +28,10 @@
 </head>
 <body>
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+
 include_once("conex.php");
+include_once("root/comun.php");
 /**
  * @wvar $pac 	
  * 				[nom]: Nom
@@ -101,7 +104,7 @@ function registrosPaciente($pac, $ues)
 {
 	global $bd;
 	global $conex;
-	global $emp;
+	global $wemp_pmla;
 
 	$q = "SELECT Fecha_data, Fennum, Fendoc, Fenfue, Fencco, Fentip "
 	."      FROM ".$bd."_000002 "
@@ -125,7 +128,7 @@ function registrosPaciente($pac, $ues)
 					echo "</table>";
 				}
 				$cco['cod'] = $row['Fencco'];
-				getCco(&$cco,substr($row['Fentip'],0,1), $emp);
+				getCco($cco,substr($row['Fentip'],0,1), $wemp_pmla);
 
 				echo "</br><table align='center' >";
 				echo "<tr>";
@@ -160,7 +163,7 @@ function registrosPaciente($pac, $ues)
  */
 function MostrarSTMI($pac,$datos)
 {
-	global $emp;
+	global $wemp_pmla;
 
 	/**
 	 * Numero de dronums o encabezados que componen el arreglo
@@ -188,7 +191,7 @@ function MostrarSTMI($pac,$datos)
 						echo "</table>";
 					}
 					$cco['cod'] = $datos[$k]['cco'];
-					getCco(&$cco,'C', $emp);//2007-06-12
+					getCco($cco,'C', $wemp_pmla);//2007-06-12
 
 					echo "<table align='center' BORDER='0'>";
 					echo "<tr>";
@@ -330,14 +333,18 @@ else
 	include_once("movhos/registro_tablas.php");
 	include_once("movhos/otros.php");
 	
-
+	$db = $_REQUEST['db'];
 	
 
-	connectOdbc(&$conex_o, 'inventarios');
-	echo "</br></br><table align='center' border='0'>";
-	echo "<tr><td align=center class='tituloSup' colspan='2'><b>ESTADO DOCUMENTOS DEL PACIENTE</b></td></tr>";
-	echo "<tr><td align=center class='tituloSup' colspan='2'>estadoDocumentosPaciente.php Versión 2007-07-05</td></tr>";
-	echo "<tr>";
+	connectOdbc($conex_o, 'inventarios');
+	//echo "</br></br><table align='center' border='0'>";
+	//echo "<tr><td align=center class='tituloSup' colspan='2'><b>ESTADO DOCUMENTOS DEL PACIENTE</b></td></tr>";
+	//echo "<tr><td align=center class='tituloSup' colspan='2'>estadoDocumentosPaciente.php Versión 2007-07-05</td></tr>";
+	//echo "<tr>";
+	$wactualiz = '2022-02-18';
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
+	encabezado("ESTADO DOCUMENTOS DEL PACIENTE",$wactualiz, $wbasedato1);
 	if($conex_o != 0)
 	{
 
@@ -364,7 +371,7 @@ else
 
 					//Valida que este activo
 					$conex_f = odbc_connect('facturacion','','');
-					$pac['unx'] = ValidacionHistoriaUnix(&$pac, &$warning, &$error);
+					$pac['unx'] = ValidacionHistoriaUnix($pac, $warning, $error);
 					odbc_close($conex_f);
 
 					if(isset($pac['ing']) and $pac['ing'] != $ing)
@@ -380,9 +387,9 @@ else
 
 					if(!$pac['unx'])
 					{
-						infoPaciente(&$pac,$emp);
+						infoPaciente($pac,$wemp_pmla);
 						echo "<td class='titulo1' colspan='6'>".$pac['nom']."</td></tr>";
-						echo "<tr><td class='titulo2' colspan='6'>HISTORIA INACTIVA EN UNIX </td>";
+						echo "<tr><td class='titulo2' colspan='6'> HISTORIA INACTIVA EN UNIX </td>";
 						echo "</tr>";
 					}
 
@@ -390,7 +397,7 @@ else
 		 * Si el paciente ya tiene el alta es por que todos los registros estan en P.
 		 * Entonces no se hace la actualización de registros.
 		 */
-					$pac['act'] = !pacienteDeAlta(&$pac, "");
+					$pac['act'] = !pacienteDeAlta($pac, "");
 
 
 					if($pac['act'] )
@@ -417,7 +424,7 @@ else
 			 * los que pertenescan a la fecha actual.
 			 * Además pone $pac['permisoAlta'] en true si todos los registros activos estan procesados. En false en otro caso.
 			 */
-						$tit=actualizacionDetalleRegistros($pac, &$datos);
+						$tit=actualizacionDetalleRegistros($pac, $datos);
 
 						if($datos)
 						{
@@ -437,12 +444,12 @@ else
 					}
 					else
 					{
-						$ok=infoPaciente(&$pac,$emp);
+						$ok=infoPaciente($pac,$wemp_pmla);
 						if($ok)
 						{
 							echo "<td class='titulo1' colspan='6'>".$pac['nom']."</td></tr>";
-							echo "<tr><td class='titulo1' colspan='6'>HISTORIA:".$pac['his']."&nbsp;&nbsp;INGRESO:".$ing."</td>";
-							echo "<tr><td class='titulo2' colspan='6'>ESTE PACIENTE YA FUE DADO DE ALTA </td>";
+							echo "<tr><td class='titulo1' colspan='6'> HISTORIA:".$pac['his']."&nbsp;&nbsp;INGRESO:".$ing."</td>";
+							echo "<tr><td class='titulo2' colspan='6'> ESTE PACIENTE YA FUE DADO DE ALTA </td>";
 							echo "</tr>";
 						}
 						else
