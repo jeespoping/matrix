@@ -316,7 +316,11 @@ function consultarProcedimiento( $conex, $wcliame, $cup ){
 			  FROM ".$wcliame."_000103
 			 WHERE Procup = '".$cup."'
 			";
-	
+		// 2022/01/28: Sebastián Nevado - Cambio la consulta para traer el código de procedimiento y no código cups
+		$sql = "SELECT Procod AS Procup, Pronom
+				FROM ".$wcliame."_000103
+				WHERE Procod = '".$cup."'
+		";	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	
 	while( $row = mysql_fetch_array( $res ) ){
