@@ -100,6 +100,7 @@
 </head>
 <body>
 <?php
+include_once("root/comun.php");
 include_once("conex.php");
 $wemp_pmla = $_REQUEST['wemp_pmla'];
 $whce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
@@ -1386,7 +1387,7 @@ function generarMostrarArchivoPDF(){
 						."</a>"
 					  ."</p>"
 					."</object>";
-	$wactualiz=" 2015-06-16 ";
+	$wactualiz=" 2022-03-10 ";
     echo "<div align='center'>";
     encabezado("Imprimir Factura Unix",$wactualiz, "clinica");
     echo "<br>";
@@ -1413,7 +1414,7 @@ else
 {
     
 
-    include_once("root/comun.php");
+    
     include_once("root/montoescrito.php");
 
     
@@ -1432,7 +1433,7 @@ else
     global $entidadNoDiscriminaTerceros;
 
                                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-    $wactualiz=" 2014-06-05 ";                          // Aca se coloca la ultima fecha de actualizacion de este programa //
+    $wactualiz=" 2022-03-10 ";                          // Aca se coloca la ultima fecha de actualizacion de este programa //
                                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
     echo "<form name=impfacunix action='imp_factura_bloque_unix.php' method=post>";
@@ -1450,7 +1451,7 @@ else
         encabezado("Imprimir Factura Unix",$wactualiz, "clinica");
 
         if($wparam!="1")
-        seleccionarPaquete(&$wpaq);
+        seleccionarPaquete($wpaq);
 
         echo "<br>";
         echo "<center><table>";
