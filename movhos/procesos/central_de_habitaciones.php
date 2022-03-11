@@ -568,6 +568,25 @@ return;
                        $wcolor="FFFF99";
                     //================================================================================================================
 
+                   /**filtro sede**/
+                   $andselectsede = '';
+                   if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) ){
+
+
+                    $qcountsede     = "SELECT * FROM ".$wbasedato."_000024 WHERE sgeest = 'on' AND codigoSede='".$_POST['selectsede']."'";
+                    $countsede      = mysql_query($qcountsede,$conex) or die (mysql_errno()." - en el query: ".$qcountsede." - ".mysql_error());
+                    $numcountsede   = mysql_num_rows($countsede);
+
+                    if($numcountsede > 0){
+                        $andselectsede = " AND codigoSede='".$_POST['selectsede']."'";
+                    }
+                    else {
+                        $andselectsede = " OR codigoSede='".$_POST['selectsede']."'";
+
+                    }
+
+                   }
+
                    /**construcción del select de empleados**/
                    if (trim($row[1])!=""){
 
@@ -581,26 +600,31 @@ return;
                             ."   FROM ".$wbasedato."_000024 "
                             ."  WHERE sgeest = 'on' "
                             ."    AND id = 1 "
+                            .$andselectsede
                             ."  UNION "
                             ." SELECT sgecod, sgenom, '1' as tip "
                             ."   FROM ".$wbasedato."_000024 "
                             ."  WHERE sgecod = '".$wcodigo[0]."'"
                             ."    AND sgeest = 'on' "
+                            .$andselectsede
                             ."  UNION "
                             ." SELECT sgecod, sgenom, '2' as tip"
                             ."   FROM ".$wbasedato."_000024 "
                             ."  WHERE sgecod != '".$wcodigo[0]."'"
                             ."    AND sgeest  = 'on' "
+                            .$andselectsede
                             ."  ORDER BY 3,2 ";
                         }else{
                             $q= "  SELECT '', '' "
                                ."    FROM ".$wbasedato."_000024 "
                                ."   WHERE sgeest = 'on' "
                                ."     AND id = 1 "
+                               .$andselectsede
                                ."   UNION "
                                ."  SELECT sgecod, sgenom "
                                ."    FROM ".$wbasedato."_000024 "
                                ."   WHERE sgeest = 'on' "
+                               .$andselectsede
                                ."   ORDER BY 2 ";
                     }
                     $ressge = mysql_query($q,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
