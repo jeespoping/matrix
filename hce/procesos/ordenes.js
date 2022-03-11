@@ -2,30 +2,30 @@
  *
  * MODIFICACIONES
  *
- * Octubre 8 de 2021	Sebastián Nevado	Se agrega funcionalidad de mipres obligatorio basado en parámetro mipresEnListaMedicamentosOrdenes. Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
+ * Octubre 8 de 2021	Sebastiï¿½n Nevado	Se agrega funcionalidad de mipres obligatorio basado en parï¿½metro mipresEnListaMedicamentosOrdenes. Valida que antes de ordenar el medicamento, tenga cï¿½digo mipres si es nopos, contributivo, paciente de eps y ordenador sea mï¿½dico. Valida por Webservice la existencia del mipres para permitir guardar.
  * Mayo 4 de 2020		Edwin		Se hacen cambios varios para la interoperabilidad con laboratorio por centro de costos y POCT
  *									En la modal de al seleccionar el tipo de muestra(Sitio anatomico y tipo de muestra) se muestra la opcion Seleccione
- *									y debe haber por lo menos un sitio anatómico y tipo de muestra seleccionados
- * Enero 22 de 2020		Edwin MG	Una vez guardado las ordenes después de firmar se deja todos los examenes como viejos
+ *									y debe haber por lo menos un sitio anatï¿½mico y tipo de muestra seleccionados
+ * Enero 22 de 2020		Edwin MG	Una vez guardado las ordenes despuï¿½s de firmar se deja todos los examenes como viejos
  * Octubre 30 de 2019	Edwin 		Se hacen modificaciones varias para interoperabilidad con ordenes (LABORATORIO, HIRUKO)
- * Junio 5 de 2019		Edwin MG	Se valida el tiempo de recarga de la mensajería kardex
- * Noviembre 15 de 2018	Edwin 		Se agrega validación de alergias de medicamentos al prescribir los medicamentos, es decir, 
+ * Junio 5 de 2019		Edwin MG	Se valida el tiempo de recarga de la mensajerï¿½a kardex
+ * Noviembre 15 de 2018	Edwin 		Se agrega validaciï¿½n de alergias de medicamentos al prescribir los medicamentos, es decir, 
  *									si el paciente tiene una alergia activa para el principio activo no debe permitir ordenarlo.
  * Julio 30 de 2018		Edwin 		Todos los ajax.responseText se le agrega un trim
- * Julio 9 de 2018 		Edwin 		Se busca los articulos anteriores por ajax para que la carga inicial sea más liviana
- * Julio 3 de 2018 		Edwin 		Al dar clic sobre la pestaña auditoría se consulta la auditoría correspondiente para le paciente
- * Febrero 13 de 2018 	Edwin 		Los medicamentos ordenados desde una ayuda diagnóstica o por protocolo comienzan desde la ronda actual
+ * Julio 9 de 2018 		Edwin 		Se busca los articulos anteriores por ajax para que la carga inicial sea mï¿½s liviana
+ * Julio 3 de 2018 		Edwin 		Al dar clic sobre la pestaï¿½a auditorï¿½a se consulta la auditorï¿½a correspondiente para le paciente
+ * Febrero 13 de 2018 	Edwin 		Los medicamentos ordenados desde una ayuda diagnï¿½stica o por protocolo comienzan desde la ronda actual
  * Febrero 8 de 2018 	Edwin 		No se tienen en cuenta la frecuencia para cambiar la fecha y hora de inicio del medicamento
- * Noviembre 28 de 2017 Jessica 	Se envía el usuario como parámetro al ajax 37 ya que la función consultarProtocolo() de 
+ * Noviembre 28 de 2017 Jessica 	Se envï¿½a el usuario como parï¿½metro al ajax 37 ya que la funciï¿½n consultarProtocolo() de 
  *									ordenes.inc.php quedaba sin este.
- * Noviembre 27 de 2017 Jessica 	Se agrega el numero de la pestaña como parámetro a la funcion mostrar_mensaje() para que guarde 
- *									en el campo oculto pestanasVistas cuando haga clic en las pestañas y así enviarlo en las funciones 
+ * Noviembre 27 de 2017 Jessica 	Se agrega el numero de la pestaï¿½a como parï¿½metro a la funcion mostrar_mensaje() para que guarde 
+ *									en el campo oculto pestanasVistas cuando haga clic en las pestaï¿½as y asï¿½ enviarlo en las funciones 
  *									salir_sin_grabar() y grabarKardex().
  * Agosto 14 de 2017 Jessica Para los ctc de responsables contributivos, al cerrar la modal de las prescripciones en mipres
  *							 se consume el web service del ministerio, se relaciona el consecutivo en movhos_000134 o movhos_000135
  *							 y se guarda la prescripcion en las tablas del grupo mipres.
- * Abril 27 de 2017 		Se muestra el formato de control a los médicos una vez grabe la orden.
- * Marzo 7 de 2017 			Para los CTC de responsables contributivos se modifica el tamaño del iframe del ministerio para que no se salga de la modal cuando la pagina tiene zoom.
+ * Abril 27 de 2017 		Se muestra el formato de control a los mï¿½dicos una vez grabe la orden.
+ * Marzo 7 de 2017 			Para los CTC de responsables contributivos se modifica el tamaï¿½o del iframe del ministerio para que no se salga de la modal cuando la pagina tiene zoom.
  * Diciembre 5 de 2016		Se agrega validacion para abrir y guardar los CTC de responsables contributivos al grabar la orden
  * Septiembre 20 de 2016	Se posiciona en la primera posicion del select de procedimientos cuando despues de haber seleccionado un tipo de orden agrupada
  * Septiembre 19 de 2016	No se deja usar el programa de ordenes si el browser del usuario es Mozilla y su version es inferior a la registrada en el parametro versionMozilla
@@ -33,38 +33,38 @@
  * Septiembre 07 de 2016	El filtro de profilaxis no se valida si el medicamento ya ha sido grabado previamente
  * Agosto 23 de 2016	Se valdida los eventos change del articulo perteneciente al dextrometer para que no guarde sin necesidad cambios en la auditoria del articulo. 
  * Agosto 05 de 2016	Se corrige error para que no se grabe las observaciones del dextrometer sin necesidad al grabar las ordenes por una enfermera. 
- * Agosto 3 de 2016 	Se modifica la modal de prescripción de NPT para que solo se permita ordenar NPT seguras teniendo en cuenta ciertas condiciones.
+ * Agosto 3 de 2016 	Se modifica la modal de prescripciï¿½n de NPT para que solo se permita ordenar NPT seguras teniendo en cuenta ciertas condiciones.
  * Junio 29 de 2016		Se corrige para que las observaciones del dextrometer no se guarden cada vez que se entre a ordenes a menos que hallan sido cambiadas. Para ello se agrega 
- *						un campo que dice cual era las observaciones iniciales del dextrometer en la función inicializarJquery.
- * Junio 16 de 2016		Al cambiar la frecuencia de dosis unica se borra la dosis máxima 
+ *						un campo que dice cual era las observaciones iniciales del dextrometer en la funciï¿½n inicializarJquery.
+ * Junio 16 de 2016		Al cambiar la frecuencia de dosis unica se borra la dosis mï¿½xima 
  * Junio 10 de 2016		Se corrige horario especial que guarda 24:00:00 en vez de 00:00:00 
- * Mayo 20 de 2016		Los articulos pueden tener configurado en Base de datos días de tratamiento por defecto y dosis máxima (movhos_000059). Se corrige error
- *						en que tenía prevalencia la configuración por defecto de los medicamentos y no lo ordenado por el medico.
- * Marzo 23 de 2016		- Se añade la funcionalidad de procedimientos agrupados, modal que permite seleccionar varios procedimientos a la vez, las acciones
+ * Mayo 20 de 2016		Los articulos pueden tener configurado en Base de datos dï¿½as de tratamiento por defecto y dosis mï¿½xima (movhos_000059). Se corrige error
+ *						en que tenï¿½a prevalencia la configuraciï¿½n por defecto de los medicamentos y no lo ordenado por el medico.
+ * Marzo 23 de 2016		- Se aï¿½ade la funcionalidad de procedimientos agrupados, modal que permite seleccionar varios procedimientos a la vez, las acciones
  *						que toma la orden general deben aplicarse para cada uno de los procedimientos que internamente continuan funcionando como siempre.
- * Mayo 16 de 2016 		Se añade la funcionalidad de procedimientos agrupados, modal que permite seleccionar varios procedimientos a la vez, 
+ * Mayo 16 de 2016 		Se aï¿½ade la funcionalidad de procedimientos agrupados, modal que permite seleccionar varios procedimientos a la vez, 
  *						las acciones que toma la orden general deben aplicarse para cada uno de los procedimientos que internamente continuan 
  *						funcionando como siempre.
- *						Por cada procedimiento se pueden adicionar medicamentos y son obligatorios de acuerdo a la configuración de cada procedimiento.
+ *						Por cada procedimiento se pueden adicionar medicamentos y son obligatorios de acuerdo a la configuraciï¿½n de cada procedimiento.
  *						Cuando se cambia el estado a realizado, pendiente de resultado o cancelado se suspenden los medicamentos asociados.
- *						Si uno de los medicamentos tiene como minimo una aplicación el procedimiento no podrá ser cancelado.
- * Mayo 13 de 2016		Se corrige error cuando no se llena ctc de medicamentos y se ordena nuevamente el medicamento no pedía ctc.
- * Mayo 10 de 2016		Al cargar un protocolo (funcion eleccionMedicamento), si un procedimiento no trae información por ajax no se muestra en la orden.
- * Mayo 5 de 2016		Se cambia el campo oculto entidad_responsable por el nit de la empresa(cliame_000024) para evitar hacer split por guión que puede generar errores.
+ *						Si uno de los medicamentos tiene como minimo una aplicaciï¿½n el procedimiento no podrï¿½ ser cancelado.
+ * Mayo 13 de 2016		Se corrige error cuando no se llena ctc de medicamentos y se ordena nuevamente el medicamento no pedï¿½a ctc.
+ * Mayo 10 de 2016		Al cargar un protocolo (funcion eleccionMedicamento), si un procedimiento no trae informaciï¿½n por ajax no se muestra en la orden.
+ * Mayo 5 de 2016		Se cambia el campo oculto entidad_responsable por el nit de la empresa(cliame_000024) para evitar hacer split por guiï¿½n que puede generar errores.
  *						Se agregan las descripciones de medicamentos y procedimientos cuando se pide el ctc por cambio de responsable.
  * Febrero 29 de 2016	Cuando un procedimiento tiene CTC y en el formulario se le daba salir sin guardar, no se cerraba el ctc, esto se corrige.
  * Febrero 12 de 2016	Se corrigen errores varios al momento de quitar y actualizar un dextrometer.
  * Enero 21 de 2015		Se agregan funciones para mostrar los ctc de medicamentos y procedimientos con cambio de responsable, se muestra el ctc una vez se firma la orden y se
  *						hace clic en grabar la orden
- * Diciembre 04 de 2015	Para los insumos de infusiones se revisa que tenga la via de administración que trae por defecto el articulo genérico o si no se deja por defecto la vía
- *						la primera vía que tenga el medicamento.
- * Noviembre 11 de 2015	Si en el buscador de medicamentos se cambia la unidad de medida o de presentación no se borra la dosis ingresada, el cambio se encuentra en
- *						la función filtrarMedicamentosPorCampo.
- * Octubre 04 de 2015	Se inicializa variale conctc que estaba causando un error cuando se elegía un medicamento NO POS en horario especial
- * Junio 02 de 2015	Si se cambia la frecuencia de un medicamento de días anteriores, se actualiza la fecha y hora de inicio como corresponde.
+ * Diciembre 04 de 2015	Para los insumos de infusiones se revisa que tenga la via de administraciï¿½n que trae por defecto el articulo genï¿½rico o si no se deja por defecto la vï¿½a
+ *						la primera vï¿½a que tenga el medicamento.
+ * Noviembre 11 de 2015	Si en el buscador de medicamentos se cambia la unidad de medida o de presentaciï¿½n no se borra la dosis ingresada, el cambio se encuentra en
+ *						la funciï¿½n filtrarMedicamentosPorCampo.
+ * Octubre 04 de 2015	Se inicializa variale conctc que estaba causando un error cuando se elegï¿½a un medicamento NO POS en horario especial
+ * Junio 02 de 2015	Si se cambia la frecuencia de un medicamento de dï¿½as anteriores, se actualiza la fecha y hora de inicio como corresponde.
  * Mayo 15 de 2015 Se repara la eliminacion de varios examenes al mismo tiempo.
- * Abril 15 de 2014	Se agrega validación para cuando la pestaña de altas está inactiva
- * Marzo 25 de 2015	Se valida que no se permite poner 0 en días de tratamiento ni en dosis máxima
+ * Abril 15 de 2014	Se agrega validaciï¿½n para cuando la pestaï¿½a de altas estï¿½ inactiva
+ * Marzo 25 de 2015	Se valida que no se permite poner 0 en dï¿½as de tratamiento ni en dosis mï¿½xima
  * Mayo 5 de 2011	Al agregar un examen o procedimiento, todos los examenes son colapsados
  */
 
@@ -72,7 +72,7 @@ var preguntarPorVisaulizarMedControl = false;
  
 var cadenaCTCcontributivo = "" ;
  
-//contiene una cadena con todos los articulos que deberían tener CTC después de grabar los articulos
+//contiene una cadena con todos los articulos que deberï¿½an tener CTC despuï¿½s de grabar los articulos
 var artsGrabadosCTC = "";
 
 var insumosNPT = {}; 
@@ -132,7 +132,103 @@ $.datepicker.setDefaults($.datepicker.regional['esp']);
 
 consultarAuditoria = true;
 
+function marcarCambioRealizarEnServicio( cmp, enServcio, externo, indice, contexamen ){
+	
+	marcarCambio( indice, contexamen );
+	
+	// var msg = "En donde se realizarï¿½ el estudio <b>"+$( "#wnmexamen"+contexamen ).val()+"</b>?<br><br>En el servicio dï¿½nde se encuentra el paciente puede realizarse por uno de los siguientes motivos: ";
+	
+	// if( enServcio ){
+		// msg += "<br><br>- Por que se realizarï¿½ en la unidad hospitalaria ";
+	// }
+	
+	// if( externo ){
+		// msg += "<br><br>- Por que el equipo requerido no se encuentra disponible ";
+	// }
+	
+	var msg = "En donde se realizarï¿½ el estudio <b>"+$( "#wnmexamen"+contexamen ).val()+"</b>?";
+	
+	msg += "<br><br><b>Relizar en el servicio o en un servicio externo:</b> Indica que el estudio se realizarï¿½ en el servicio dï¿½nde se encuentra el paciente o se remite a otra instituciï¿½n diferente a las sedes de AUNA";
+	// ya sea por quï¿½ el equipo requerido en la unidad interna (Cardiologï¿½a, imagenlogï¿½a, laboratorio, etc ) no se encuentra disponible u otro motivo";
+	
+	msg += "<br><br><b>Realizar en la unidad de Ayuda diagnï¿½stica:</b> Indica que el estudio se realizarï¿½ en una unidad interna de las sedes de la clï¿½nica (Cardiologï¿½a, imagenologï¿½a, etc )";
+	
+	$( "<div style='color: black;height: 250px;' title='REALIZAR EN SERVICIO?' class='dvRealizarEnServicio'>"+msg+"</div>" ).dialog({
+		width		: 850,
+		height		: 350,
+		modal		: true,
+		resizable	: false,
+		position	: 'center',
+		buttons	: {
+			"Relizar en el servicio o en un servicio externo": function() {
+					cmp.checked = true;
+					cmp.value = 'on';
+					$( this ).dialog( "close" );
+					$( cmp ).css({display:"none"});
+				},
+			"Realizar en la unidad de Ayuda diagnï¿½stica": function() {
+					let __self = this;
+					jConfirm( "Esta decisiï¿½n no puede ser modificada. Estï¿½ seguro(a) que se realizarï¿½ en la Unidad diagnï¿½stica correspondiente?","ALERTA", function(r){
+						if(r){
+							cmp.checked = true;
+							cmp.value = 'off';
+							$( __self ).dialog( "close" );
+							$( cmp ).css({display:"none"});
+						}
+					});
+				},
+			"Cancelar": function() {
+					cmp.checked = false;
+					cmp.value = '';
+					$( this ).dialog( "close" );
+				},
+		},
+	});
+	
+	$( ".ui-dialog-titlebar" ).css({
+		background: "#C3D9FF",
+	})
+	
+	$( ".ui-widget-overlay" ).css({
+		background: "black",
+	});
+	
+	$( ".ui-dialog-buttonpane > button" ).css({
+		padding		: "10px",
+		margin		: "0 5px",
+		fontWeight	: "bold",
+		color		: "black",
+	});
+	
+	$( ".ui-dialog-titlebar-close" ).css({
+		display : "none",
+	});
+	
+	// jConfirm( msg, 'REALIZAR ESTUDIO EN AYUDA DIAGNOSTICA', function(r) {
 
+		// // if( r ){
+
+			// $.post("../../hce/procesos/ordenes.inc.php",
+            // {
+                // consultaAjax		: '',
+                // consultaAjaxKardex	: 'seRealizaEnUnidadAmbulatoria',
+                // wemp_pmla			: $("#wemp_pmla").val(),
+                // whistoria			: historia,
+                // wingreso			: ingreso,
+                // tipoOrden			: tipoOrden,
+				// numeroOrden			: numeroOrden,
+				// item				: item,
+				// realizarEnPiso		: r ? 'on' : 'off',
+				// wusuario		  	: $('#user').val(),
+            // }
+            // ,function(data) {
+				// console.log(data);
+            // },"json" );
+
+		// // }
+	// });
+
+}
 
 
 
@@ -723,7 +819,7 @@ function mostrarMedicamentoControlAImprimir( index ){
 							$( "span", dvMeds ).removeClass( "selected" );
 							$( this ).addClass( 'selected' );
 							
-							//Creo un iframe que mostrará la información
+							//Creo un iframe que mostrarï¿½ la informaciï¿½n
 							dvImpresion.append( "<iframe src='"+url+"' style='width:100%;height:100%;'></iframe>" );
 						}
 					})
@@ -899,7 +995,7 @@ function validarEntradaDecimalSoloUnPuntoNPT(id,e) {
 	
 	if(e.keyCode == 13 || e.keyCode == 9 || e.keyCode == 40)
 	{
-		// Obtenemos el número del atributo tabindex al que se le dio enter y le sumamos 1
+		// Obtenemos el nï¿½mero del atributo tabindex al que se le dio enter y le sumamos 1
 		var TabIndexActual = $(id).attr('tabIndex');
 		var TabIndexSiguiente = parseInt(TabIndexActual) + 1;
 		
@@ -915,7 +1011,7 @@ function validarEntradaDecimalSoloUnPuntoNPT(id,e) {
 		}
 		else
 		{
-			// Si no se encontro ningún elemento, se retorna false
+			// Si no se encontro ningï¿½n elemento, se retorna false
 			return false;
 		}
 		
@@ -924,7 +1020,7 @@ function validarEntradaDecimalSoloUnPuntoNPT(id,e) {
 	//38: Flecha arriba
 	if(e.keyCode == 38)
 	{
-		// Obtenemos el número del atributo tabindex al que se le dio enter y le sumamos 1
+		// Obtenemos el nï¿½mero del atributo tabindex al que se le dio enter y le sumamos 1
 		var TabIndexActual = $(id).attr('tabIndex');
 		var TabIndexAnterior = parseInt(TabIndexActual) - 1;
 		
@@ -939,7 +1035,7 @@ function validarEntradaDecimalSoloUnPuntoNPT(id,e) {
 			return false; // retornamos false para detener alguna otra ejecucion en el campo
 		}
 		else
-		{// Si no se encontro ningún elemento, se retorna false
+		{// Si no se encontro ningï¿½n elemento, se retorna false
 			return false;
 		}
 		
@@ -1199,12 +1295,12 @@ function validarEleccionInsumosNPT(indice,tipoProtocolo){
 	
 	if( parseInt(tiempoInfusionNPT)<10)
 	{
-		mensajeValidacion += "- El tiempo de infusión debe ser mayor o igual a 10 horas \n";
+		mensajeValidacion += "- El tiempo de infusiï¿½n debe ser mayor o igual a 10 horas \n";
 	}
 	
 	if( parseInt(tiempoInfusionNPT)>24)
 	{
-		mensajeValidacion += "- El tiempo de infusión debe ser menor o igual a 24 horas \n";
+		mensajeValidacion += "- El tiempo de infusiï¿½n debe ser menor o igual a 24 horas \n";
 	}
 	
 	if( parseInt(volumenTotal)>4000)
@@ -1366,7 +1462,7 @@ function grabarModalNPT(indice,tipoProtocolo){
 
 function salirSinGrabarModalNPT(indice,tipoProtocolo){
 	
-	jConfirm( "No se grabará el medicamento en la ordenes. Desea continuar?", "ALERTA", function( resp ){
+	jConfirm( "No se grabarï¿½ el medicamento en la ordenes. Desea continuar?", "ALERTA", function( resp ){
 		if( resp ){
 			quitarArticulo( indice,tipoProtocolo, '', 'detKardexAddU', true );
 			$.unblockUI();
@@ -1447,7 +1543,7 @@ function recalcularValoresNPT()
 				}
 			}
 			catch(err) {
-				jAlert("Error en la configuración de las formulas","ALERTA");
+				jAlert("Error en la configuraciï¿½n de las formulas","ALERTA");
 				$("#btnGrabarNPT").attr('disabled', 'disabled');
 			}
 			
@@ -1457,7 +1553,7 @@ function recalcularValoresNPT()
 	
 	
 	// // ========================================================================
-	// //					PARÁMETROS NUTRICIONALES Y FARMACÉUTICOS
+	// //					PARï¿½METROS NUTRICIONALES Y FARMACï¿½UTICOS
 	// // ========================================================================
 	
 	$('table[id=tablaNutricionesNPT] input[id^=NPT_F]').each(function(){
@@ -1533,7 +1629,7 @@ function recalcularValoresNPT()
 					}
 				}
 				catch(err) {
-					jAlert("Error en la configuración de las formulas de parámetros nutricionales y farmacéuticos","ALERTA");
+					jAlert("Error en la configuraciï¿½n de las formulas de parï¿½metros nutricionales y farmacï¿½uticos","ALERTA");
 					$("#btnGrabarNPT").attr('disabled', 'disabled');
 				}
 			}
@@ -1865,7 +1961,7 @@ function recalcularVolumenyPurgaModalNPT()
 				}
 			}
 			catch(err) {
-				jAlert("Error en la configuración de las formulas del volumen","ALERTA");
+				jAlert("Error en la configuraciï¿½n de las formulas del volumen","ALERTA");
 				$("#btnGrabarNPT").attr('disabled', 'disabled');
 			}
 		}
@@ -1944,7 +2040,7 @@ function recalcularVolumenyPurgaModalNPT()
 				}
 			}
 			catch(err) {
-				jAlert("Error en la configuración de las formulas de la corrección purga","ALERTA");
+				jAlert("Error en la configuraciï¿½n de las formulas de la correcciï¿½n purga","ALERTA");
 				$("#btnGrabarNPT").attr('disabled', 'disabled');
 			}
 		}
@@ -2199,8 +2295,8 @@ function quitarMedArrayProcAgrupados(tipoProtocolo,idxElemento,procAgrup)
 					
 					if(procAgrup!="procAgrupEliminado")
 					{
-						// jAlert("No se agregó el medicamento: "+descMedi+" porque no llenó el CTC de medicamentos");
-						// alert("No se agregó el medicamento: "+descMedi+" porque no llenó el CTC de medicamentos");
+						// jAlert("No se agregï¿½ el medicamento: "+descMedi+" porque no llenï¿½ el CTC de medicamentos");
+						// alert("No se agregï¿½ el medicamento: "+descMedi+" porque no llenï¿½ el CTC de medicamentos");
 						
 						medObligatorio = $("#medObligatorio"+procAgrupados[ x ][i].codigo).val();
 						
@@ -2219,7 +2315,7 @@ function quitarMedArrayProcAgrupados(tipoProtocolo,idxElemento,procAgrup)
 			{
 				procAgrupados[ x ].splice(i,1);
 				$('#trExAgru'+x).remove();
-				// alert("No se agregó el procedimiento y el medicamento: "+descMedi+" porque no llenó el CTC de medicamentos");
+				// alert("No se agregï¿½ el procedimiento y el medicamento: "+descMedi+" porque no llenï¿½ el CTC de medicamentos");
 			}
 			
 		}
@@ -2491,17 +2587,17 @@ function agregarMedicamentoPorProcAgrupado(codArt,frec,via,dosisArt,tipoOrdenAgr
 {
 	articulo = codArt;				// Codigo del articulo
 	periodo = frec;					// Frecuencias
-	administracion = via;			// Vías de administración
+	administracion = via;			// Vï¿½as de administraciï¿½n
 	condicion = "";				// Condiciones de suministro
 	var dosis = dosisArt;				// Dosis
 	var observaciones = "";		// Observaciones
 
-	presentacion = '';			// Presentaciones o formas farmacéuticas
+	presentacion = '';			// Presentaciones o formas farmacï¿½uticas
 	medida = '';				// Unidades de medida
-	// var fechaInicio = '';		// Fecha y hora de inicio de aplicación
-	var fechaInicio = $("#whfinicioN999").val();		// Fecha y hora de inicio de aplicación
+	// var fechaInicio = '';		// Fecha y hora de inicio de aplicaciï¿½n
+	var fechaInicio = $("#whfinicioN999").val();		// Fecha y hora de inicio de aplicaciï¿½n
 	var dosisMax = '';			// Dosis a aplicar
-	var diasTto = '';			// Días de tratamiento
+	var diasTto = '';			// Dï¿½as de tratamiento
 
 	parametros = "consultaAjaxKardex=36&wemp_pmla="+document.forms.forma.wemp_pmla.value
 				 +"&basedatos="+document.forms.forma.wbasedato.value
@@ -2534,7 +2630,7 @@ function agregarMedicamentoPorProcAgrupado(codArt,frec,via,dosisArt,tipoOrdenAgr
 				 * 0: Como se muestra en el autocomplete
 				 * 1: Codigo del articulo
 				 * 2: Nombre comercial del articulo
-				 * 3: Nombre genérico del articulo
+				 * 3: Nombre genï¿½rico del articulo
 				 * 4: Tipo protocolo
 				 * 5: (M)edicamento o (L)iquido
 				 * 6: Es generico
@@ -3423,7 +3519,7 @@ function AgregarProcedimientosAgrupado(tipoOrden){
 									procAgrupados[x][i].medicamentos[z].dosis = arrMedicamentos[z].dosis;
 									procAgrupados[x][i].medicamentos[z].frecuencia = arrMedicamentos[z].frecuencia;
 									
-									//modificar campos en la pestaña medicamentos
+									//modificar campos en la pestaï¿½a medicamentos
 									$("#wdosis"+procAgrupados[x][i].medicamentos[z].tipoProtocolo+procAgrupados[x][i].medicamentos[z].posicionActual).val(procAgrupados[x][i].medicamentos[z].dosis);
 									$("#wperiod"+procAgrupados[x][i].medicamentos[z].tipoProtocolo+procAgrupados[x][i].medicamentos[z].posicionActual).val(procAgrupados[x][i].medicamentos[z].frecuencia);
 								}
@@ -3649,13 +3745,13 @@ function AgregarProcedimientosAgrupado(tipoOrden){
 						quitar = arrMedQuitar[h].split("|");
 						quitarArticulo(procAgrupados[quitar[0]][quitar[1]].medicamentos[quitar[2]].posicionActual,procAgrupados[quitar[0]][quitar[1]].medicamentos[quitar[2]].tipoProtocolo,'','detKardexAddN','LQ','','procAgrupEliminado');
 					}
-					// cadenaMensajeProcAgrupados += "Se eliminó el medicamento: "+$.trim(medEliminados.substr(0,medEliminados.length-1))+"\n";
+					// cadenaMensajeProcAgrupados += "Se eliminï¿½ el medicamento: "+$.trim(medEliminados.substr(0,medEliminados.length-1))+"\n";
 					
-					// buscElim = cadenaMensajeProcAgrupados.search("Se eliminó el medicamento: "+$.trim(medEliminados.substr(0,medEliminados.length-1))+"\n");
+					// buscElim = cadenaMensajeProcAgrupados.search("Se eliminï¿½ el medicamento: "+$.trim(medEliminados.substr(0,medEliminados.length-1))+"\n");
 					// if(buscElim == -1)
 					// {
 						
-						// cadenaMensajeProcAgrupados += "Se eliminó el medicamento: "+$.trim(medEliminados.substr(0,medEliminados.length-1))+"\n";
+						// cadenaMensajeProcAgrupados += "Se eliminï¿½ el medicamento: "+$.trim(medEliminados.substr(0,medEliminados.length-1))+"\n";
 					// }
 				}
 				
@@ -3763,7 +3859,7 @@ function ModificarProcedimientosAgrupado(tipoOrden,contadorActual){
 										medReactivados += descMedi+",";
 									}
 									
-									//modificar campos en la pestaña medicamentos
+									//modificar campos en la pestaï¿½a medicamentos
 									$("#wdosis"+procAgrupados[x][i].medicamentos[z].tipoProtocolo+procAgrupados[x][i].medicamentos[z].posicionActual).val(procAgrupados[x][i].medicamentos[z].dosis);
 									$("#wperiod"+procAgrupados[x][i].medicamentos[z].tipoProtocolo+procAgrupados[x][i].medicamentos[z].posicionActual).val(procAgrupados[x][i].medicamentos[z].frecuencia);
 									
@@ -3777,7 +3873,7 @@ function ModificarProcedimientosAgrupado(tipoOrden,contadorActual){
 
 									AgregarMed = true;	
 									
-									// campos en la pestaña medicamentos de solo lectura
+									// campos en la pestaï¿½a medicamentos de solo lectura
 									$("#wdosis"+procAgrupados[x][i].medicamentos[z].tipoProtocolo+procAgrupados[x][i].medicamentos[z].posicionActual).attr('readonly', true);
 									$("#wperiod"+procAgrupados[x][i].medicamentos[z].tipoProtocolo+procAgrupados[x][i].medicamentos[z].posicionActual).attr('disabled', true);
 									$("#wviadmon"+procAgrupados[x][i].medicamentos[z].tipoProtocolo+procAgrupados[x][i].medicamentos[z].posicionActual).attr('disabled', true);
@@ -3935,7 +4031,7 @@ function ModificarProcedimientosAgrupado(tipoOrden,contadorActual){
 	
 	if(mensajeFinal!="")
 	{
-		// jAlert("Se eliminó el medicamento: "+medEliminados.substr(0,medEliminados.length-1), "ALERTA" );
+		// jAlert("Se eliminï¿½ el medicamento: "+medEliminados.substr(0,medEliminados.length-1), "ALERTA" );
 		
 		if(AgregarMed == false)
 		{
@@ -4212,12 +4308,12 @@ function borrarEsquemaDextrometer(){
 }
 
 /********************************************************************************************************************************************
- *Esta función se llama cada vez que se elimina un articulo o no se desea agregar el articulo a la orden medica
+ *Esta funciï¿½n se llama cada vez que se elimina un articulo o no se desea agregar el articulo a la orden medica
  ********************************************************************************************************************************************/
 function quitarArticuloDextrometer( frecuencia, codigoArticulo ){
 	/****************************************************************************************
 	 * Si el articulo es del dextrometer
-	 * No se deja poner la opción del dextrometer
+	 * No se deja poner la opciï¿½n del dextrometer
 	 *****************************************************************************************/
 	//Es del dextrometer si es el mismo articulo del dextrometer y tiene la misma frecuencia
 	if( $( "#wdexins" ).val() == codigoArticulo && $( "#wdexfrecuencia" ).val() == frecuencia ){
@@ -4272,7 +4368,7 @@ function adicionarArticuloInsulina(){
 	}
 
 	//Busco si existe una insulina ya agregada
-	//De ser así la suspendido si ya ha sido grabado con anterioridad
+	//De ser asï¿½ la suspendido si ya ha sido grabado con anterioridad
 	//o eliminado si no ha sido grabado
 	var frecs = [];
 	$( "option", dexFrecuencia ).filter("[value]").each(function(){
@@ -4323,7 +4419,7 @@ function adicionarArticuloInsulina(){
 
 					susperderArtInsulina = false;
 
-					//Si el articulo está suspendido, lo activo
+					//Si el articulo estï¿½ suspendido, lo activo
 					if( clase_asociada == 'suspendido' ){
 						suspenderArticulo(idx, protocolo,false);
 					}
@@ -4421,7 +4517,7 @@ function adicionarArticuloInsulina(){
 
 	if( agregarInsulina ){
 
-		//variable global para saber si se está agregando por dextrometer
+		//variable global para saber si se estï¿½ agregando por dextrometer
 		articuloPorDextrometer = true;
 
 		//Se agrega el articulo
@@ -4433,7 +4529,7 @@ function adicionarArticuloInsulina(){
 		//Se busca por codigo de familia
 		$("#wnombrefamilia").search();
 
-		//La función continua en la función result del campo con id wnombrefamilia del buscador de familia
+		//La funciï¿½n continua en la funciï¿½n result del campo con id wnombrefamilia del buscador de familia
 		//cuando la variable global articuloPorDextrometer es true
 	}
 	
@@ -4460,7 +4556,7 @@ function seleccionarInsulina( cmp ){
 		//Si el option tiene data-vias se continua
 		if( opSelected.data( "vias") ){
 			//Obtengo las vias por defecto que puedan tener
-			//Las vias por defecto están como atributos data
+			//Las vias por defecto estï¿½n como atributos data
 			var viasPorDefecto = opSelected.data( "vias").split( "," );
 
 			if( viasPorDefecto ){
@@ -4507,7 +4603,7 @@ function seleccionarInsulina( cmp ){
 		//Si el option tiene data-unidad se continua
 		if( opSelected.data( "unidad") ){
 			//Obtengo las unidades por defecto que puedan tener
-			//Las unidades por defecto que están como atributos data
+			//Las unidades por defecto que estï¿½n como atributos data
 			var unidadPorDefecto = opSelected.data( "unidad").split( "," );
 
 			if( unidadPorDefecto ){
@@ -4564,7 +4660,7 @@ function changeRangoDextrometer( cmp ){
 	//Obtengo la posicion del campo del dextrometer que se va a cambiar
 	var indexCmp = $( "[id^=wdexRan]", tbEsquemaDextromter ).index( cmp );
 
-	// Si es un rango minimo siempre será par
+	// Si es un rango minimo siempre serï¿½ par
 	var esRangoMin = indexCmp % 2 == 0 ? true: false;
 
 	if( cmp.value > indexCmp-2 ){
@@ -4648,7 +4744,7 @@ function agergarFilaDextormeter(){
 
 	var tbEsquemaDextromter = $( "#cntEsquema" );
 
-	//Consulto los últimos campos minimo y máximo qué habían
+	//Consulto los ï¿½ltimos campos minimo y mï¿½ximo quï¿½ habï¿½an
 	//ESto para colocar el rango correcto al insertar una fila
 	var lastMin = $( "[id^=wdexRanMin]:last", tbEsquemaDextromter );
 	var lastMax = $( "[id^=wdexRanMax]:last", tbEsquemaDextromter );
@@ -4680,8 +4776,8 @@ function agergarFilaDextormeter(){
 	var newMin = $( "[id^=wdexRanMin]", filaNuevaDextrometer );
 	var newMax = $( "[id^=wdexRanMax]", filaNuevaDextrometer );
 
-	//Por defecto se colo un rango igual al último rango que se tenía
-	//comenzando con un rango mínimo que sería el último rango mayor + 1
+	//Por defecto se colo un rango igual al ï¿½ltimo rango que se tenï¿½a
+	//comenzando con un rango mï¿½nimo que serï¿½a el ï¿½ltimo rango mayor + 1
 	newMin.val( lastMax.val()*1+1 );
 	newMax.val( newMin.val()*1+lastMax.val()*1-lastMin.val() );
 
@@ -4701,14 +4797,14 @@ function eliminarFilaDextrometer( cmp ){
 
 	//Se reacomodan todos los rangos mayores a la posicion de la fila a elminar
 	//mantiendo el rango por fila pero cambiando sus valores minimos
-	//según el último rango mayor
+	//segï¿½n el ï¿½ltimo rango mayor
 
 	var tbEsquemaDextromter = $( "#cntEsquema" );
 
 	//Busco el rango minimo
 	var delMin = $( "[id^=wdexRanMin]", fila );
 
-	//Consulto cuál es el valor para el rango mínimo
+	//Consulto cuï¿½l es el valor para el rango mï¿½nimo
 	var rangoMin = delMin.val()*1-1;
 
 	//Consulto la posicion del elemento en todos los rangominimos que halla
@@ -4781,7 +4877,7 @@ function mostrarCtcProcedimientos2( codExamen, cuentaExamenes, cadenaExamSinCTC,
 
 		if( $.trim( ajax.responseText ) != '' ){
 
-			//Creo el div que contendrá todos los ctc de procedimientos
+			//Creo el div que contendrï¿½ todos los ctc de procedimientos
 			if( !document.getElementById('ctcProcedimientos') ){
 				var divAux = document.createElement( "div" );
 
@@ -4836,7 +4932,7 @@ function traeJustificacionHCE2(campoChk,campoDestino,historia,ingreso,wemp_pmla,
 
 	if(campoChk.checked == false)
 	{
-		if(confirm('Desea borrar el texto de la justificación?'))
+		if(confirm('Desea borrar el texto de la justificaciï¿½n?'))
 		{
 			campoJustificacion.value = '';
 		}
@@ -4874,7 +4970,7 @@ function traeJustificacionHCE2(campoChk,campoDestino,historia,ingreso,wemp_pmla,
 				}
 				else
 				{
-					// jAlert('No se encontró resumen de historía clínica para el paciente','ALERTA');
+					// jAlert('No se encontrï¿½ resumen de historï¿½a clï¿½nica para el paciente','ALERTA');
 					alert('No se encontr\u00F3 resumen de histor\u00EDa cl\u00EDnica para el paciente');
 					campoChk.checked = false;
 				}
@@ -4932,7 +5028,7 @@ function traerDiagnosticoHCE2(campoChk,campoDestino,historia,ingreso,wemp_pmla,w
 				}
 				else
 				{
-					// jAlert('No se encontró diagnostico de historía clínica para el paciente','ALERTA');
+					// jAlert('No se encontrï¿½ diagnostico de historï¿½a clï¿½nica para el paciente','ALERTA');
 					alert('No se encontr\u00F3 diagnostico de histor\u00EDa cl\u00EDnica para el paciente');
 					campoChk.checked = false;
 				}
@@ -4977,7 +5073,7 @@ function mostrarCtcArticulos3( codArticulo, protocolo, id, idFamilia, deAlta, ca
 		var txtImp = "";
 
 	//Se verfica si tiene horario especial, si tiene horario especial solo se muestra
-	//el ctc si es el último medicamento
+	//el ctc si es el ï¿½ltimo medicamento
 	var hayMasHE = 0;
 
 	for( var i = 2; i <= 24; i += 2 ){
@@ -4988,7 +5084,7 @@ function mostrarCtcArticulos3( codArticulo, protocolo, id, idFamilia, deAlta, ca
 		}
 	}
 
-	//Si es uno significa que es el ultimo y si es 0 significa que no tenía horario especial
+	//Si es uno significa que es el ultimo y si es 0 significa que no tenï¿½a horario especial
 	if( hayMasHE == 1 || hayMasHE == 0 ){
 
 		//Creo un objeto con todas las propiedades necesarias
@@ -5005,7 +5101,7 @@ function mostrarCtcArticulos3( codArticulo, protocolo, id, idFamilia, deAlta, ca
 
 		for( var x = 0; x < tbsContenedores.length; x++ ){
 
-			//Buscar todos los medicamentos que tengan el mismo código
+			//Buscar todos los medicamentos que tengan el mismo cï¿½digo
 			// var tbContenedor = $( "#"+tbsContenedores[x] )[0];	//Busco la tabla que contiene los medicamentos
 			var tbContenedor = tbsContenedores[x];	//Busco la tabla que contiene los medicamentos
 
@@ -5110,7 +5206,7 @@ function mostrarCtcArticulos3( codArticulo, protocolo, id, idFamilia, deAlta, ca
 					document.getElementById( "dv"+codArticulo+"-"+idx+"Mostrar" ).parentNode.removeChild( document.getElementById( "dv"+codArticulo+"-"+idx+"Mostrar" ) );
 				}
 
-				//Creo el div que contendrá todos los ctc de procedimientos
+				//Creo el div que contendrï¿½ todos los ctc de procedimientos
 				if( !document.getElementById('ctcArticulos') ){
 					var divAux = document.createElement( "div" );
 
@@ -5137,7 +5233,7 @@ function mostrarCtcArticulos3( codArticulo, protocolo, id, idFamilia, deAlta, ca
 
 				divAux.innerHTML = $.trim( ajax.responseText );
 
-				//Si ya había un CTC igualo todos los campos al Ctc encontrado
+				//Si ya habï¿½a un CTC igualo todos los campos al Ctc encontrado
 				if( divEncontrado ){
 
 					//Campos que necesito igualar
@@ -5153,8 +5249,8 @@ function mostrarCtcArticulos3( codArticulo, protocolo, id, idFamilia, deAlta, ca
 						for( var j = 0; j < varCmps.length; j++ ){
 
 							//Si el campo tiene un name
-							//Significa que lo debo igualar al CTC que ya había encontrado
-							//A excepción de posología y dosis por día
+							//Significa que lo debo igualar al CTC que ya habï¿½a encontrado
+							//A excepciï¿½n de posologï¿½a y dosis por dï¿½a
 							if( varCmps[j].name != '' && varCmps[j].name != "posologiaNoPos" && varCmps[j].name != "ddNoPos" ){
 
 								if( camposBuscar[i] != 'input'
@@ -5209,7 +5305,7 @@ function mostrarCtcArticulos3( codArticulo, protocolo, id, idFamilia, deAlta, ca
 				//agrego el medicamento que tiene CTC a la variable global
 				// arCTCArticulos[ codArticulo ] = inCodArtsCTC.idxs.length;	//lo igualo con el total de articulos a grabar
 
-				//Si ya había un CTC igualo todos los campos al Ctc encontrado
+				//Si ya habï¿½a un CTC igualo todos los campos al Ctc encontrado
 				if( divEncontrado ){
 
 					//Recalculo la cantidad
@@ -5258,7 +5354,7 @@ function existeInsumoParaLEVIC( codLev, insCod ){
 
 function inhabilitarDiasTratamientoModalLEV( cmp ){
 
-	if( $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ){	//Días de tratamiento
+	if( $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ){	//Dï¿½as de tratamiento
 		$( "#inDmaxLEV", $( "#listaComponentesLEV" ) )[0].readOnly = true;
 		$( "#inDmaxLEV", $( "#listaComponentesLEV" ) ).val('');
 		return;
@@ -5274,7 +5370,7 @@ function inhabilitarDiasTratamientoModalLEV( cmp ){
 
 function inhabilitarDosisMaximaModalLEV( cmp ){
 
-	if( $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ){	//Días de tratamiento
+	if( $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ){	//Dï¿½as de tratamiento
 		$( "#inDttoLEV", $( "#listaComponentesLEV" ) )[0].readOnly = true;
 		$( "#inDttoLEV", $( "#listaComponentesLEV" ) ).val('');
 		return;
@@ -5290,7 +5386,7 @@ function inhabilitarDosisMaximaModalLEV( cmp ){
 
 function inhabilitarDiasTratamientoModalIC( cmp ){
 
-	if( $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ){	//Dosis máxima
+	if( $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ){	//Dosis mï¿½xima
 		$( "#inDmaxIC", $( "#listaComponentesIC" ) )[0].readOnly = true;
 		$( "#inDmaxIC", $( "#listaComponentesIC" ) ).val( '' );
 		return;
@@ -5306,7 +5402,7 @@ function inhabilitarDiasTratamientoModalIC( cmp ){
 
 function inhabilitarDosisMaximaModalIC( cmp ){
 
-	if( $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ){	//Días de tratamiento
+	if( $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ){	//Dï¿½as de tratamiento
 		$( "#inDttoIC", $( "#listaComponentesIC" ) )[0].readOnly = true;
 		$( "#inDttoIC", $( "#listaComponentesIC" ) ).val('');
 		return;
@@ -5354,7 +5450,7 @@ function eliminarArtIgualesMultiples( codigoArticulo, familia, pActivo ){
 
 		//Miro si el articulo es el que se va a eliminar
 		if( multiplesMedicamentos[x][0] == codigoArticulo ){
-			//Cómo es el articulo a elminar lo quito de la lista
+			//Cï¿½mo es el articulo a elminar lo quito de la lista
 			multiplesMedicamentos.splice( x, 1 );
 			x--;
 		}
@@ -5384,7 +5480,7 @@ function terminarAccionesMultiplesArticulos( faltantesPorAgregar ){
 
 					$( "#wnombrefamilia" ).val( datosFinales.nombreFamilia );
 
-					//Si no se agrega el último medicamento se borra todo el articulo LEV o IC
+					//Si no se agrega el ï¿½ltimo medicamento se borra todo el articulo LEV o IC
 					if( $( "#wnmmed"+tipPro+(elementosLev-1) ).length == 0 ){
 						quitarArticulo( indice,tipPro,'', "detKardexAdd" + tipPro, 'LQ' );
 						// quitarArticulo( indice, tipoProtocolo,'','detKardexAdd'+tipoProtocolo, 'LQ');
@@ -5418,13 +5514,13 @@ function terminarAccionesMultiplesArticulos( faltantesPorAgregar ){
 						// $( "#trFil"+tipoProtocolo+(elementosLev-1) ).css( { display: "none" } );
 						$( "[idtr="+"trFil"+tipoProtocolo+(elementosLev-1)+"]" ).css( { display: "none" } );
 
-						//Dejo la condición correspondiente de acuerdo al tipo para el articulo con codigo IC0000 o LV0000
+						//Dejo la condiciï¿½n correspondiente de acuerdo al tipo para el articulo con codigo IC0000 o LV0000
 						$( "#wcondicion"+tipPro+indice ).val( datosFinales[26] );
 
-						//Días de tratamiento
+						//Dï¿½as de tratamiento
 						$( "#wdiastto"+tipPro+indice ).val( datosFinales[28] );
 
-						//Dosis máxima
+						//Dosis mï¿½xima
 						$( "#wdosmax"+tipPro+indice ).val( datosFinales[29] );
 
 						//Marco el cambio
@@ -5435,7 +5531,7 @@ function terminarAccionesMultiplesArticulos( faltantesPorAgregar ){
 
 
 						/************************************************************************************************
-						 * No permite que se pueda modificar el Lev o la infusion en ningún campo una vez creado
+						 * No permite que se pueda modificar el Lev o la infusion en ningï¿½n campo una vez creado
 						 ************************************************************************************************/
 						$( "select", $( "[idtr=trFil"+tipPro+indice+"]" ) ).each(function(x){
 							$( "option[value="+$( this ).val()+"]", $( this ) ).attr({selected:true});
@@ -5511,7 +5607,7 @@ function agregarMultiplesArticulos(){
 	//Verifico si hay acciones que ejecutar antes de seguir con la el siguiente articulo a insertar
 	terminarAccionesMultiplesArticulos( totalMultiplesArticulos );
 
-	//verifico si hay más articulos en lista
+	//verifico si hay mï¿½s articulos en lista
 	if( multiplesMedicamentos && multiplesMedicamentos.length > 0 ){
 
 		switch( multiplesMedicamentos[0].tipoArt ){
@@ -5522,7 +5618,7 @@ function agregarMultiplesArticulos(){
 				//Se deja todo el array en una variable
 				var datos = multiplesMedicamentos[0];
 
-				//Creo variable global con los datos de la última carga para hacer operaciones posteriores
+				//Creo variable global con los datos de la ï¿½ltima carga para hacer operaciones posteriores
 				fechaInicioFija = datos.fechaInicioFija;
 
 				//Quito la posicion que se va a grabar
@@ -5686,7 +5782,7 @@ function agregarMultiplesArticulos(){
 				// //Se deja todo el array en una variable
 				// var datos = multiplesMedicamentos[0];
 
-				//Creo variable global con los datos de la última carga para hacer operaciones posteriores
+				//Creo variable global con los datos de la ï¿½ltima carga para hacer operaciones posteriores
 				fechaInicioFija = datos.fechaInicioFija;
 
 				//Quito la posicion que se va a grabar
@@ -5759,10 +5855,10 @@ function modificarCambiosLEV(){
 
 
 	/************************************************************************************************************************
-	 * Valido que sea valido la selección de insumos
+	 * Valido que sea valido la selecciï¿½n de insumos
 	 * - Se puede escoger un electrolito pero no debe haber nada escrito en en los campos vol/diligencia
-	 * - Si se escoge un electrólito con vol/dil tiene que haber una solución elegida por lo menos
-	 * - Si se escoge una solución esta debe tener una frecuencia
+	 * - Si se escoge un electrï¿½lito con vol/dil tiene que haber una soluciï¿½n elegida por lo menos
+	 * - Si se escoge una soluciï¿½n esta debe tener una frecuencia
 	 ************************************************************************************************************************/
 	$( "[id^=frecsol]", $( "#listaComponentesLEV" ) ).each(function(x){
 
@@ -5773,7 +5869,7 @@ function modificarCambiosLEV(){
 
 				var volxdil = $( "#volxdil"+idx );
 
-				//Se valida que halla una solución elegida si hay algo escrito en vol/dil
+				//Se valida que halla una soluciï¿½n elegida si hay algo escrito en vol/dil
 				// if( volxdil.length > 0 && volxdil.val()*1 > 0 ){
 				if( volxdil.length > 0 ){
 					var valSol = false;
@@ -5800,7 +5896,7 @@ function modificarCambiosLEV(){
 				if( $( "#tdCbSol"+idx ).length == 0 )
 					msgError = "Ingrese un valor valido para los <b>ELECTROLITOS</b>";
 				else
-					msgError = "Ingrese un valor para <b>VOL/TOTAL</b> de la solución";
+					msgError = "Ingrese un valor para <b>VOL/TOTAL</b> de la soluciï¿½n";
 			}
 		}
 	});
@@ -5819,20 +5915,20 @@ function modificarCambiosLEV(){
 
 	var frecDi = $( "#slFrecDilLev", $( "#listaComponentesLEV" ) ).val();
 	if( frecDi == "" ){
-		msgError = "Debe seleccionar una <b>UNIDAD</b> para <b>VELOCIDAD DE INFUSIÓN</b>.";
+		msgError = "Debe seleccionar una <b>UNIDAD</b> para <b>VELOCIDAD DE INFUSIï¿½N</b>.";
 		todoOk = false;
 	}
 
 	if( todoOk ){
 		var frecDi = $( "#txFrecDilLev", $( "#listaComponentesLEV" ) ).val();
 		if( frecDi == "" ){
-			msgError = "Debe ingresar un valor para <b>VELOCIDAD DE INFUSIÓN</b>.";
+			msgError = "Debe ingresar un valor para <b>VELOCIDAD DE INFUSIï¿½N</b>.";
 			todoOk = false;
 		}
 	}
 
 	/************************************************************************************************************************************************
-	 * Para levs, si se está modificando y hay electrolito seleccionado se debe obligar a que se ingrese un valor para el electrolito
+	 * Para levs, si se estï¿½ modificando y hay electrolito seleccionado se debe obligar a que se ingrese un valor para el electrolito
 	 ************************************************************************************************************************************************/
 	if( tieneElectrolito ){
 		if( $( "[id^=tdCbEle]" ).find(":checked").length == 0 ){
@@ -5956,7 +6052,7 @@ function modificarCambiosLEV(){
 		var nombre  = $.trim( nombre1 )+"+"+$.trim( nombre2 );
 		// var nombre  = $.trim( nombre1 )+"+"+$.trim( nombre2 )+"para <b>"+$("#wperiod"+tipoProtocolo+indice+" option[value="+$("#wperiod"+tipoProtocolo+indice).val()+"]" ).html()
 		    // nombre +="</b> a <b>"+$( "#slFrecDilLev option[value='"+$( "#slFrecDilLev", $( "#listaComponentesLEV" ) ).val()+"']", $( "#listaComponentesLEV" ) ).html();
-		// var nombre = "Aquí va el nombre";
+		// var nombre = "Aquï¿½ va el nombre";
 
 
 		if( parseInt(valLevIdo) ){
@@ -6028,9 +6124,9 @@ function modificarCambiosIC(){
 	var msgError = "";
 
 	/************************************************************************************************************************
-	 * Valido que sea valido la selección de insumos
+	 * Valido que sea valido la selecciï¿½n de insumos
 	 * - Se puede escoger un electrolito
-	 * - Se debe escoger una solución
+	 * - Se debe escoger una soluciï¿½n
 	 ************************************************************************************************************************/
 	var valSol = false;
 	var totSol = 0;
@@ -6339,10 +6435,10 @@ function modificarCambiosIC(){
 			//Inserto el articulo nuevo
 			var indice 			= $( "[id^=widoriginal][value="+valLevIdo+"]" )[0].id.substr(13);
 			var tipoProtocolo 	= $( "[id^=widoriginal][value="+valLevIdo+"]" )[0].id.substr(11,2);
-			administracionLQ 	= $( "#wviadmon"+tipoProtocolo+indice ).val();		// Vías de administración
+			administracionLQ 	= $( "#wviadmon"+tipoProtocolo+indice ).val();		// Vï¿½as de administraciï¿½n
 			condicionLQ 		= $( "#wcondicion"+tipoProtocolo+indice ).val();
 			observacionesLQ 	= $( "#wtxtobsadd"+tipoProtocolo+indice ).val();
-			fechaInicioLQ 		= $( "#wfinicio"+tipoProtocolo+indice ).val();	// Fecha y hora de inicio de aplicación
+			fechaInicioLQ 		= $( "#wfinicio"+tipoProtocolo+indice ).val();	// Fecha y hora de inicio de aplicaciï¿½n
 			dosisMaxLQ 			= $( "#wdosmax"+tipoProtocolo+indice ).val();				// Dosis a aplicar
 			diasTtoLQ 			= $( "#wdiastto"+tipoProtocolo+indice ).val();
 			periodoLQ 			= $( "#wperiod"+tipoProtocolo+indice ).val();
@@ -6374,7 +6470,7 @@ function modificarCambiosIC(){
 }
 
 /******************************************************************************************
- * Cambia la velocidad de infusión, ya sea para los LEVs o las IC
+ * Cambia la velocidad de infusiï¿½n, ya sea para los LEVs o las IC
  ******************************************************************************************/
 function cambiarDosisCalculadaModalIC( cmp, valLevIdo ){
 
@@ -6395,7 +6491,7 @@ function cambiarDosisCalculadaModalIC( cmp, valLevIdo ){
 
 
 /************************************************************************************
- * Valida que el campo cmp tenga un valor mínimo
+ * Valida que el campo cmp tenga un valor mï¿½nimo
  ************************************************************************************/
 function validarEntradaDecimalMinDca( cmp, icIdo ){
 
@@ -6446,7 +6542,7 @@ function validarEntradaDecimalMaxDca( cmp, icIdo, e ){
 	}
 
 	// return validarEntradaDecimal(event);
-	var patron = /^\d+(\.\d{0,2})?$/	//expresión regular de decimal
+	var patron = /^\d+(\.\d{0,2})?$/	//expresiï¿½n regular de decimal
 
 	var validar = cmp.value+String.fromCharCode(tecla);
 	var esDecimal = patron.test( validar );					//Valido que lo digitado si sea un decimal
@@ -6471,7 +6567,7 @@ function validarEntradaDecimalMaxDca( cmp, icIdo, e ){
 }
 
 /******************************************************************************************
- * Cambia la velocidad de infusión, ya sea para los LEVs o las IC
+ * Cambia la velocidad de infusiï¿½n, ya sea para los LEVs o las IC
  ******************************************************************************************/
 function cambiarDosisCalculada( cmp, valLevIdo ){
 
@@ -6528,7 +6624,7 @@ function cambiarDosisCalculada( cmp, valLevIdo ){
 /********************************************************************************************************************
  * Esto se hace si se cambi la fecha de un articulo LEV o IC
  * Lo que se hace es cambiar la fecha y hora de inicio de todos los articulos pertenecientes al LEV o la IC
- * Si es un LEV o IC tipo será LQ e indice traerá el ido del articulo
+ * Si es un LEV o IC tipo serï¿½ LQ e indice traerï¿½ el ido del articulo
  ********************************************************************************************************************/
 function marcarCambioFecLEVIC( tipo, idx, campo ){
 
@@ -6597,7 +6693,7 @@ function marcarCambioLEV( cmp, ido ){
 }
 
 /****************************************************************************************************************
- * Está función  busca todos los articulos que componen la Infusión continua y coloca la misma observación
+ * Estï¿½ funciï¿½n  busca todos los articulos que componen la Infusiï¿½n continua y coloca la misma observaciï¿½n
  * a cada uno de los que componen el articulo
  *************************************************************************************************************/
 function marcarCambioIC( cmp, ido ){
@@ -6657,13 +6753,13 @@ function actualizarInsumoLev( idxLev ){
 	// artLevs[ "LQ"+parseInt(elementosLev) ] = {
 		// codLev: ultimoTipoProtocolo+ultimoIndice,
 		// idoLev: '',												//Ido del LEV
-		// insCod: arrInsumo[0],									//Códio del insumo
+		// insCod: arrInsumo[0],									//Cï¿½dio del insumo
 		// insIdi: '',												//Ido del insumo
 		// insEle: arrInsumo[5] == 'ele' ? 'on': 'off',			//Es electrolito?
 		// insVel: arrInsumo[5] == 'ele' ? arrInsumo[1]: '',		//Volumen del electrolito
 		// insVdi: arrInsumo[5] == 'ele' ? arrInsumo[3]: '',		//Volumen por dilucion
 		// insFso: arrInsumo[5] == 'ele' ? '': arrInsumo[4],		//Frecuencia de la solucion
-		// insVto: arrInsumo[5] == 'ele' ? '': arrInsumo[1],		//Volumen total de la solución
+		// insVto: arrInsumo[5] == 'ele' ? '': arrInsumo[1],		//Volumen total de la soluciï¿½n
 		// insEst: 'new',											//Estado (new, mod, gra)
 	// }
 
@@ -6693,7 +6789,7 @@ function actualizarInsumoLev( idxLev ){
 				valFdi: 			artLevs[ idxLev ].insVfd,
 				esInf: 				artLevs[ idxLev ].insInf,
 				insDca:				artLevs[ idxLev ].insDca,	//Dosis calculada
-				insCdc:				artLevs[ idxLev ].insCdc,	//Código de dosis calculada
+				insCdc:				artLevs[ idxLev ].insCdc,	//Cï¿½digo de dosis calculada
 				est: 				artLevs[ idxLev ].insEst
 			},
 			async: false,
@@ -6705,7 +6801,7 @@ function actualizarInsumoLev( idxLev ){
 }
 
 /******************************************************************************************
- * Cambia la velocidad de infusión, ya sea para los LEVs o las IC
+ * Cambia la velocidad de infusiï¿½n, ya sea para los LEVs o las IC
  ******************************************************************************************/
 function cambiarVelocidadInfusionLevInf( valLevIdo ){
 
@@ -6742,7 +6838,7 @@ function cambiarVelocidadInfusionLevInf( valLevIdo ){
 
 
 /************************************************************************************
- * Muestra los datos guardados para una infusión
+ * Muestra los datos guardados para una infusiï¿½n
  ************************************************************************************/
 function mostrarIC( valLevIdo ){
 
@@ -6787,7 +6883,7 @@ function mostrarIC( valLevIdo ){
 
 			var checkProtocolo = true;
 
-			//Busco si es un electrolito o una solución
+			//Busco si es un electrolito o una soluciï¿½n
 			var tipo = 'sol';
 			if( objAux[x].insEle == 'on' ){
 				tipo = 'ele';
@@ -6811,7 +6907,7 @@ function mostrarIC( valLevIdo ){
 			$( "#txFrecDilLev", $( "#listaComponentesIC" ) ).val( objAux[x].insVfd );
 
 			//Muestro la frecuencia, fecha y hora de inicio del medicamento
-			//El dato se coge de cualquier solución o electrolito por que es igual para todos lo medicamentos
+			//El dato se coge de cualquier soluciï¿½n o electrolito por que es igual para todos lo medicamentos
 			// $("#bICFre", $( "#listaComponentesIC" ) ).text( $( "option[value="+objAux[x].insFre+"]", $( "#wmperiodicidades" ) ).text() );
 			$("#bICFin", $( "#listaComponentesIC" ) ).text( objAux[x].insFin );
 			$("#bICHin", $( "#listaComponentesIC" ) ).text( objAux[x].insHin );
@@ -6830,7 +6926,7 @@ function mostrarIC( valLevIdo ){
 		//Dejo las observaciones anteriores visible de antemano
 		$("#dvObservacionesIC", $( "#listaComponentesIC" ) ).parent().parent().css({display:""});
 
-		//Se deja el Ido del articulo LEV que se está mostrando
+		//Se deja el Ido del articulo LEV que se estï¿½ mostrando
 		$( "#idoMostrado", $('#listaComponentesIC') ).val( valLevIdo );
 
 		//Muestro botones correspondientes
@@ -6900,19 +6996,19 @@ function mostrarIC( valLevIdo ){
 			$( "#inDmaxIC", $( "#listaComponentesIC" ) ).keyup();
 
 			/********************************************************************************
-			 * Valido si se permite dosis máxima o no
+			 * Valido si se permite dosis mï¿½xima o no
 			 ********************************************************************************/
-			//Dejo por defecto días de tratamiento y dosis máximos como editables
+			//Dejo por defecto dï¿½as de tratamiento y dosis mï¿½ximos como editables
 
-			//Debo validar los permisos para los días máximos y días de tratamiento
+			//Debo validar los permisos para los dï¿½as mï¿½ximos y dï¿½as de tratamiento
 			var perDtto = $( "#waccN\\.12" ).val().split( "," )[0] == 'S' ? true: false;
 			var perDmax = $( "#waccN\\.13" ).val().split( "," )[0] == 'S' ? true: false;
 
-			//Miro si por condicioón se permite
+			//Miro si por condicioï¿½n se permite
 			var condicion = $( "#wcondicion"+codLev ).val();
 			if( condicion != "" ){
-				perDtto = dmaPorCondicionesSuministro[ condicion ].pdt;	//permite días de tratamiento
-				perDmax = dmaPorCondicionesSuministro[ condicion ].pdm;	//permite dosis máxima
+				perDtto = dmaPorCondicionesSuministro[ condicion ].pdt;	//permite dï¿½as de tratamiento
+				perDmax = dmaPorCondicionesSuministro[ condicion ].pdm;	//permite dosis mï¿½xima
 			}
 			else{
 				perDtto = false;
@@ -6966,7 +7062,7 @@ function mostrarIC( valLevIdo ){
 
 
 /*****************************************************************
- * Función llamada desde cerrarModalArticulos
+ * Funciï¿½n llamada desde cerrarModalArticulos
  *
  * Se usa para validar todas las acciones de la modal para LEVS
  *****************************************************************/
@@ -6976,9 +7072,9 @@ function cerrarModalArticulosIC( indice, tipoProtocolo ){
 	var msgError = "";
 
 	/************************************************************************************************************************
-	 * Valido que sea valido la selección de insumos
+	 * Valido que sea valido la selecciï¿½n de insumos
 	 * - Se puede escoger un electrolito
-	 * - Se debe escoger una solución
+	 * - Se debe escoger una soluciï¿½n
 	 ************************************************************************************************************************/
 	var valSol = false;
 	var totSol = 0;
@@ -7172,7 +7268,7 @@ function eliminarArtsLevPorIdx( codLev ){
 
 	try{
 		var j = $( "[id^=widoriginal][value="+codLev+"]" )[0].id.substr(11)
-		objAux[j] = "";	//Solo se requiere el indice y se crea para borrar los del código tipo LQ0000
+		objAux[j] = "";	//Solo se requiere el indice y se crea para borrar los del cï¿½digo tipo LQ0000
 	}
 	catch(e){
 	}
@@ -7210,7 +7306,7 @@ function suspenderArtsLev( codLev, esLev ){
 
 	}
 
-	jConfirm( "¿Desea "+accion+" el articulo "+( esLev ? "LEV" : "de INFUSION" )+"?", 'Suspender '+tipo, function(r){
+	jConfirm( "ï¿½Desea "+accion+" el articulo "+( esLev ? "LEV" : "de INFUSION" )+"?", 'Suspender '+tipo, function(r){
 
 		if(r){
 
@@ -7226,7 +7322,7 @@ function suspenderArtsLev( codLev, esLev ){
 
 			try{
 				var j = $( "[id^=widoriginal][value="+codLev+"]" )[0].id.substr(11)
-				objAux[j] = "";	//Solo se requiere el indice y se crea para borrar los del código tipo LQ0000
+				objAux[j] = "";	//Solo se requiere el indice y se crea para borrar los del cï¿½digo tipo LQ0000
 			}
 			catch(e){}
 
@@ -7265,7 +7361,7 @@ function eliminarArtsLev( esLev ){
 		tipo = 'INF';
 	}
 
-	jConfirm( "¿Desea eliminar el articulo "+( esLev ? "LEV" : "de INFUSION" )+"?", 'Eliminar '+tipo, function(r){
+	jConfirm( "ï¿½Desea eliminar el articulo "+( esLev ? "LEV" : "de INFUSION" )+"?", 'Eliminar '+tipo, function(r){
 
 		if(r){
 
@@ -7281,7 +7377,7 @@ function eliminarArtsLev( esLev ){
 
 			try{
 				var j = $( "[id^=widoriginal][value="+codLev+"]" )[0].id.substr(11)
-				objAux[j] = "";	//Solo se requiere el indice y se crea para borrar los del código tipo LQ0000
+				objAux[j] = "";	//Solo se requiere el indice y se crea para borrar los del cï¿½digo tipo LQ0000
 			}
 			catch(e){
 			}
@@ -7306,7 +7402,7 @@ function eliminarArtsLev( esLev ){
 
 
 /************************************************************************************
- * Muestra los datos guardados para una infusión
+ * Muestra los datos guardados para una infusiï¿½n
  ************************************************************************************/
 function mostrarLEV( valLevIdo ){
 
@@ -7345,7 +7441,7 @@ function mostrarLEV( valLevIdo ){
 		//Recorro cada campo para ir llenando los datos
 		for( var x in objAux ){
 
-			//Busco si es un electrolito o una solución
+			//Busco si es un electrolito o una soluciï¿½n
 			var tipo = 'sol';
 			if( objAux[x].insEle == 'on' ){
 				tipo = 'ele';
@@ -7368,7 +7464,7 @@ function mostrarLEV( valLevIdo ){
 			$( "#txFrecDilLev", $( "#listaComponentesLEV" ) ).val( objAux[x].insVfd );
 
 			//Muestro la frecuencia, fecha y hora de inicio del medicamento
-			//El dato se coge de cualquier solución o electrolito por que es igual para todos lo medicamentos
+			//El dato se coge de cualquier soluciï¿½n o electrolito por que es igual para todos lo medicamentos
 			//$("#bLevFre", $( "#listaComponentesLEV" ) ).text( $( "option[value="+objAux[x].insFre+"]", $( "#wmperiodicidades" ) ).text() );
 			$("#bLevFin", $( "#listaComponentesLEV" ) ).text( objAux[x].insFin );
 			$("#bLevHin", $( "#listaComponentesLEV" ) ).text( objAux[x].insHin );
@@ -7379,7 +7475,7 @@ function mostrarLEV( valLevIdo ){
 		//Dejo las observaciones anteriores visibles
 		$("#dvObservacionesLEV", $( "#listaComponentesLEV" ) ).parent().parent().css({display:""});
 
-		//Se deja el Ido del articulo LEV que se está mostrando
+		//Se deja el Ido del articulo LEV que se estï¿½ mostrando
 		$( "#idoMostrado", $('#listaComponentesLEV') ).val( valLevIdo );
 
 		//Muestro botones correspondientes
@@ -7440,19 +7536,19 @@ function mostrarLEV( valLevIdo ){
 			$( "#txObservacionesLEV", $( "#listaComponentesLEV" ) ).val( $( "#txICObservaciones"+valLevIdo ).val() );
 
 			/********************************************************************************
-			 * Valido si se permite dosis máxima o no
+			 * Valido si se permite dosis mï¿½xima o no
 			 ********************************************************************************/
-			//Dejo por defecto días de tratamiento y dosis máximos como editables
+			//Dejo por defecto dï¿½as de tratamiento y dosis mï¿½ximos como editables
 
-			//Debo validar los permisos para los días máximos y días de tratamiento
+			//Debo validar los permisos para los dï¿½as mï¿½ximos y dï¿½as de tratamiento
 			var perDtto = $( "#waccN\\.12" ).val().split( "," )[0] == 'S' ? true: false;
 			var perDmax = $( "#waccN\\.13" ).val().split( "," )[0] == 'S' ? true: false;
 
-			//Miro si por condicioón se permite
+			//Miro si por condicioï¿½n se permite
 			var condicion = $( "#wcondicion"+codLev ).val();
 			if( condicion != "" ){
-				perDtto = dmaPorCondicionesSuministro[ condicion ].pdt;	//permite días de tratamiento
-				perDmax = dmaPorCondicionesSuministro[ condicion ].pdm;	//permite dosis máxima
+				perDtto = dmaPorCondicionesSuministro[ condicion ].pdt;	//permite dï¿½as de tratamiento
+				perDmax = dmaPorCondicionesSuministro[ condicion ].pdm;	//permite dosis mï¿½xima
 			}
 			else{
 				perDtto = false;
@@ -7576,13 +7672,13 @@ function registrarInsumoLev( idxLev ){
 	// artLevs[ "LQ"+parseInt(elementosLev) ] = {
 		// codLev: ultimoTipoProtocolo+ultimoIndice,
 		// idoLev: '',												//Ido del LEV
-		// insCod: arrInsumo[0],									//Códio del insumo
+		// insCod: arrInsumo[0],									//Cï¿½dio del insumo
 		// insIdi: '',												//Ido del insumo
 		// insEle: arrInsumo[5] == 'ele' ? 'on': 'off',			//Es electrolito?
 		// insVel: arrInsumo[5] == 'ele' ? arrInsumo[1]: '',		//Volumen del electrolito
 		// insVdi: arrInsumo[5] == 'ele' ? arrInsumo[3]: '',		//Volumen por dilucion
 		// insFso: arrInsumo[5] == 'ele' ? '': arrInsumo[4],		//Frecuencia de la solucion
-		// insVto: arrInsumo[5] == 'ele' ? '': arrInsumo[1],		//Volumen total de la solución
+		// insVto: arrInsumo[5] == 'ele' ? '': arrInsumo[1],		//Volumen total de la soluciï¿½n
 		// insEst: 'new',											//Estado (new, mod, gra)
 	// }
 
@@ -7637,13 +7733,13 @@ function grabarListaInsumosLev(){
 	// artLevs[ "LQ"+parseInt(elementosLev) ] = {
 		// codLev: ultimoTipoProtocolo+ultimoIndice,
 		// idoLev: '',												//Ido del LEV
-		// insCod: arrInsumo[0],									//Códio del insumo
+		// insCod: arrInsumo[0],									//Cï¿½dio del insumo
 		// insIdi: '',												//Ido del insumo
 		// insEle: arrInsumo[5] == 'ele' ? 'on': 'off',			//Es electrolito?
 		// insVel: arrInsumo[5] == 'ele' ? arrInsumo[1]: '',		//Volumen del electrolito
 		// insVdi: arrInsumo[5] == 'ele' ? arrInsumo[3]: '',		//Volumen por dilucion
 		// insFso: arrInsumo[5] == 'ele' ? '': arrInsumo[4],		//Frecuencia de la solucion
-		// insVto: arrInsumo[5] == 'ele' ? '': arrInsumo[1],		//Volumen total de la solución
+		// insVto: arrInsumo[5] == 'ele' ? '': arrInsumo[1],		//Volumen total de la soluciï¿½n
 		// insEst: 'new',											//Estado (new, mod, gra)
 	// }
 
@@ -8123,7 +8219,7 @@ function imprimirOrdenAlta(historia,ingreso,tipoDeOrden,numeroDeOrden,nroItem,wc
 
 }
 
-//Marca como impreso un articulo en la pestaña de alta.
+//Marca como impreso un articulo en la pestaï¿½a de alta.
 function imprimirArtAlta(historia,ingreso,codigoArticulo, tipoProtocolo, contArticulos){
 
 	var wemp_pmla = document.forms.forma.wemp_pmla.value;
@@ -8311,7 +8407,7 @@ function ver_articulos_anteriores( cmp, tipoProtocolo){
 }
 
 /*****************************************************************************************************************************
- * Agrega un nuevo registro al Maestro de Estudios y Ayudas Diagnóstcas por medio de AJAX
+ * Agrega un nuevo registro al Maestro de Estudios y Ayudas Diagnï¿½stcas por medio de AJAX
  ******************************************************************************************************************************/
 function agregarNuevoExamenAlta()
 {
@@ -8326,7 +8422,7 @@ function agregarNuevoExamenAlta()
 
 	if(nonmbreExamen=='' || nonmbreExamen==' ')
 	{
-		alert('El nombre de la ayuda o procedimiento no puede estar vacío');
+		alert('El nombre de la ayuda o procedimiento no puede estar vacï¿½o');
 		return false;
 	}
 
@@ -8379,7 +8475,7 @@ function agregarNuevoExamenAlta()
  * Este objeto guardara las acciones de eliminar articulo, suspender articulo y elminar articulo
  * Esto para poder ejecutar dichas acciones al momento de presionar el boton grabar
  * Las acciones que se ejecutan son en realidad el ajax que se realizan al ejecutar las acciones correspondientes
- * El objeto estará formado de la siguiente forma:
+ * El objeto estarï¿½ formado de la siguiente forma:
  *
  * accionesOrdenes: [
  *		{	tipoProtocolo-Idx1:[
@@ -8406,7 +8502,7 @@ function agregarNuevoExamenAlta()
  * 		}
  * ]
  *
- * Las acciones eliminaran serán
+ * Las acciones eliminaran serï¿½n
  * 	0: Suspender articulo
  * 	1: Eliminar Articulo
  * 	2: Eliminar examen o procedimiento
@@ -8425,7 +8521,7 @@ var ELIMINAR_ESQUEMA_DEXTROMETER = 4;
 var accionesOrdenes = new Array();
 
 /************************************************************************************************************************
- * Esta función ejecuta las acciones de Suspender Articulo, eliminar Articulo o eliminar procedimiento según el caso
+ * Esta funciï¿½n ejecuta las acciones de Suspender Articulo, eliminar Articulo o eliminar procedimiento segï¿½n el caso
  ************************************************************************************************************************/
 function ejecutarAccionesOrdenes(){
 
@@ -8678,7 +8774,7 @@ function cerrarFormHCE(contExamen,basedatohce,formTipoOrden,historia,ingreso,alt
 	if(alta == 'alta'){
 		prefijoalta = "Imp";
 	}
-	// Consulto si el formulario ha sido diligenciado en la historia clínica electrónica
+	// Consulto si el formulario ha sido diligenciado en la historia clï¿½nica electrï¿½nica
 	parametros = "consultaAjaxKardex=50&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatoshce="+basedatohce+"&formTipoOrden="+formTipoOrden+"&historia="+historia+"&ingreso="+ingreso;
 
 	try{
@@ -8697,7 +8793,7 @@ function cerrarFormHCE(contExamen,basedatohce,formTipoOrden,historia,ingreso,alt
 				// if(formDiligenciado!='ok')
 				if( totalExamenesDespuesGrabar == totalExamenesAntesGrabar )
 				{
-					if(confirm("Si sale de este formulario sin grabar, el examen será eliminado de la orden?"))
+					if(confirm("Si sale de este formulario sin grabar, el examen serï¿½ eliminado de la orden?"))
 					{
 						$.unblockUI();
 						quitarExamen(contExamen,prefijoalta,'on','hce',hce);
@@ -8736,7 +8832,7 @@ function traeJustificacionHCE(campoChk,campoDestino){
 
 	if(campoChk.checked == false)
 	{
-		if(confirm('Desea borrar el texto de la justificación?'))
+		if(confirm('Desea borrar el texto de la justificaciï¿½n?'))
 		{
 			campoJustificacion.value = '';
 		}
@@ -8775,7 +8871,7 @@ function traeJustificacionHCE(campoChk,campoDestino){
 				}
 				else
 				{
-					// jAlert('No se encontró resumen de historía clínica para el paciente','ALERTA');
+					// jAlert('No se encontrï¿½ resumen de historï¿½a clï¿½nica para el paciente','ALERTA');
 					jAlert('No se encontr\u00F3 resumen de histor\u00EDa cl\u00EDnica para el paciente','ALERTA');
 					campoChk.checked = false;
 				}
@@ -8837,7 +8933,7 @@ function traerDiagnosticoHCE(campoChk,campoDestino){
 				}
 				else
 				{
-					// jAlert('No se encontró diagnostico de historía clínica para el paciente','ALERTA');
+					// jAlert('No se encontrï¿½ diagnostico de historï¿½a clï¿½nica para el paciente','ALERTA');
 					jAlert('No se encontr\u00F3 diagnostico de histor\u00EDa cl\u00EDnica para el paciente','ALERTA');
 					campoChk.checked = false;
 				}
@@ -8949,8 +9045,8 @@ function mostrarDialogDiv( campo ){
 	divTitle.parentNode.style.height = divTitle.offsetHeight+5;
 }
 
-// Cuando es adición múltiple de medicamentos esta función se encarga de abrir los formatos CTC
-// de los medicamentos NO POS que puedan haber en esta adición múltiple
+// Cuando es adiciï¿½n mï¿½ltiple de medicamentos esta funciï¿½n se encarga de abrir los formatos CTC
+// de los medicamentos NO POS que puedan haber en esta adiciï¿½n mï¿½ltiple
 // Enero 30 de 2012
 function abrirCTCMultiple()
 {
@@ -8971,7 +9067,7 @@ function abrirCTCMultiple()
 	}
 }
 
-// Cuando es adición por Horario Especial esta función se encarga de abrir la modal de artículos
+// Cuando es adiciï¿½n por Horario Especial esta funciï¿½n se encarga de abrir la modal de artï¿½culos
 // tantas veces como medicamentos que requieren insumos se detecten
 // Abril 9 de 2013
 function abrirModalMultiple()
@@ -8996,7 +9092,7 @@ function abrirModalMultiple()
 /*****************************************************************************************************
  * Marzo 12 de 2013
  *
- * Busco los cambios que hallan del CTC y en caso de algún cambio se muestra nuevamente la información
+ * Busco los cambios que hallan del CTC y en caso de algï¿½n cambio se muestra nuevamente la informaciï¿½n
  * del CTC para que el medico visualice los cambios
  *****************************************************************************************************/
 function buscarCambiosCTC( dvCodArt ){
@@ -9017,7 +9113,7 @@ function buscarCambiosCTC( dvCodArt ){
 
 			//var contenedorInfoNoPos = document.getElementById( "dv" + codArt + "-" +  protocolo + idx + "Mostrar" );
 
-			//Busco el div que contiene toda la información
+			//Busco el div que contiene toda la informaciï¿½n
 			var dvs = document.getElementById( "ctcArticulos" ).getElementsByTagName( "div" );
 
 			for( var x = 0; x < dvs.length; x++ ){
@@ -9027,7 +9123,7 @@ function buscarCambiosCTC( dvCodArt ){
 				}
 			}
 
-			//Aquí debo buscar el campo que contiene los objetos para compara cambios
+			//Aquï¿½ debo buscar el campo que contiene los objetos para compara cambios
 			if( contenedorInfoNoPos ){
 
 				var objs = $( "[name=tiempoTratamientoNoPos]", contenedorInfoNoPos )[0].objArts;
@@ -9135,7 +9231,7 @@ function mostrarCtcArticulos2( codArticulo, protocolo, id, deAlta  ){
 		var txtImp = "";
 
 	//Se verfica si tiene horario especial, si tiene horario especial solo se muestra
-	//el ctc si es el último medicamento
+	//el ctc si es el ï¿½ltimo medicamento
 	var hayMasHE = 0;
 
 	for( var i = 2; i <= 24; i += 2 ){
@@ -9146,7 +9242,7 @@ function mostrarCtcArticulos2( codArticulo, protocolo, id, deAlta  ){
 		}
 	}
 
-	//Si es uno significa que es el ultimo y si es 0 significa que no tenía horario especial
+	//Si es uno significa que es el ultimo y si es 0 significa que no tenï¿½a horario especial
 	if( hayMasHE == 1 || hayMasHE == 0 ){
 
 		//Creo un objeto con todas las propiedades necesarias
@@ -9159,7 +9255,7 @@ function mostrarCtcArticulos2( codArticulo, protocolo, id, deAlta  ){
 
 		for( var x = 0; x < tbsContenedores.length; x++ ){
 
-			//Buscar todos los medicamentos que tengan el mismo código
+			//Buscar todos los medicamentos que tengan el mismo cï¿½digo
 			var tbContenedor = $( "#"+tbsContenedores[x] )[0];	//Busco la tabla que contiene los medicamentos
 
 			if( tbContenedor ){		//Abril 15 de 2014
@@ -9266,7 +9362,7 @@ function mostrarCtcArticulos2( codArticulo, protocolo, id, deAlta  ){
 					document.getElementById( "dv"+codArticulo+"-"+idx+"Mostrar" ).parentNode.removeChild( document.getElementById( "dv"+codArticulo+"-"+idx+"Mostrar" ) );
 				}
 
-				//Creo el div que contendrá todos los ctc de procedimientos
+				//Creo el div que contendrï¿½ todos los ctc de procedimientos
 				if( !document.getElementById('ctcArticulos') ){
 					var divAux = document.createElement( "div" );
 
@@ -9293,7 +9389,7 @@ function mostrarCtcArticulos2( codArticulo, protocolo, id, deAlta  ){
 
 				divAux.innerHTML = $.trim( ajax.responseText );
 
-				//Si ya había un CTC igualo todos los campos al Ctc encontrado
+				//Si ya habï¿½a un CTC igualo todos los campos al Ctc encontrado
 				if( divEncontrado ){
 
 					//Campos que necesito igualar
@@ -9309,8 +9405,8 @@ function mostrarCtcArticulos2( codArticulo, protocolo, id, deAlta  ){
 						for( var j = 0; j < varCmps.length; j++ ){
 
 							//Si el campo tiene un name
-							//Significa que lo debo igualar al CTC que ya había encontrado
-							//A excepción de posología y dosis por día
+							//Significa que lo debo igualar al CTC que ya habï¿½a encontrado
+							//A excepciï¿½n de posologï¿½a y dosis por dï¿½a
 							if( varCmps[j].name != '' && varCmps[j].name != "posologiaNoPos" && varCmps[j].name != "ddNoPos" ){
 
 								if( camposBuscar[i] != 'input'
@@ -9366,7 +9462,7 @@ function mostrarCtcArticulos2( codArticulo, protocolo, id, deAlta  ){
 				//agrego el medicamento que tiene CTC a la variable global
 				arCTCArticulos[ codArticulo ] = inCodArtsCTC.idxs.length;	//lo igualo con el total de articulos a grabar
 
-				//Si ya había un CTC igualo todos los campos al Ctc encontrado
+				//Si ya habï¿½a un CTC igualo todos los campos al Ctc encontrado
 				if( divEncontrado ){
 
 					//Recalculo la cantidad
@@ -9445,7 +9541,7 @@ function mostrarCtcArticulos( codArticulo, protocolo, id  ){
 				document.getElementById( "dv"+codArticulo+"-"+idx+"Mostrar" ).parentNode.removeChild( document.getElementById( "dv"+codArticulo+"-"+idx+"Mostrar" ) );
 			}
 
-			//Creo el div que contendrá todos los ctc de procedimientos
+			//Creo el div que contendrï¿½ todos los ctc de procedimientos
 			if( !document.getElementById('ctcArticulos') ){
 				var divAux = document.createElement( "div" );
 
@@ -9516,7 +9612,7 @@ function mostrarCtcProcedimientos( codExamen, cuentaExamenes ){
 
 		if( $.trim( ajax.responseText ) != '' ){
 
-			//Creo el div que contendrá todos los ctc de procedimientos
+			//Creo el div que contendrï¿½ todos los ctc de procedimientos
 			if( !document.getElementById('ctcProcedimientos') ){
 				var divAux = document.createElement( "div" );
 
@@ -9589,7 +9685,7 @@ function mostrarCtcProcedimientos( codExamen, cuentaExamenes ){
  * Junio 27 de 2012
  *
  * Determina si una variable ha sido declarada
- * Cumple la misma función que isset en PHP
+ * Cumple la misma funciï¿½n que isset en PHP
  **********************************************************************/
 function isset(variable_name)
 {
@@ -9606,7 +9702,7 @@ function isset(variable_name)
  * Octubre 17 de 2012
  *
  * Quita espacios en blanco al principio y final de una cadena
- * Cumple la misma función que trim en PHP
+ * Cumple la misma funciï¿½n que trim en PHP
  **********************************************************************/
 function trim (myString)
 {
@@ -9629,7 +9725,7 @@ function abrir_ventana ( pagina, wemp_pmla, historia, ingreso, tipoimp ) {
 /**********************************************************************
  * Junio 19 de 2012
  *
- * Carga articulos del kardex del día anterior no suspendidos
+ * Carga articulos del kardex del dï¿½a anterior no suspendidos
  **********************************************************************/
 function cargarMedicamentosAnteriores(historia,ingreso,fecha,cco){
 
@@ -9699,7 +9795,7 @@ function cargarMedicamentosAnteriores(historia,ingreso,fecha,cco){
 						document.getElementById( "wdiastto"+tipoProtocolo+indice ).value = datosArticulo[ 24 ];
 						document.getElementById( "wdosmax"+tipoProtocolo+indice ).value = datosArticulo[ 25 ];
 
-						//Oculto el boton para traer los medicamentos del día anterior
+						//Oculto el boton para traer los medicamentos del dï¿½a anterior
 						var auxTb = document.getElementById( "tbCargarMedicamentosAnteriores" );
 						auxTb.style.display = 'none';
 
@@ -9720,7 +9816,7 @@ function cargarMedicamentosAnteriores(historia,ingreso,fecha,cco){
 
 function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 
-	//Si no existe campo no se ejecuta la función
+	//Si no existe campo no se ejecuta la funciï¿½n
 	if( !campo ){
 		return;
 	}
@@ -9743,8 +9839,8 @@ function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 				return;
 			}
 
-			//Si tiene una condición que no permita dosis máximas
-			//no se deja poner dosis máxima
+			//Si tiene una condiciï¿½n que no permita dosis mï¿½ximas
+			//no se deja poner dosis mï¿½xima
 			if( $( "#wcondicionsum" ).val() )
 				var valCondicion = $( "#wcondicionsum" ).val();
 			else
@@ -9763,8 +9859,8 @@ function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 
 			if( condicion != '' ){
 				var valDma = dmaPorCondicionesSuministro[ condicion ].dma;	//Dosis maxima
-				var valPdm = dmaPorCondicionesSuministro[ condicion ].pdm;	//Permite dosis máxima
-				var valPdt = dmaPorCondicionesSuministro[ condicion ].pdt;	//Permite días de tratamiento
+				var valPdm = dmaPorCondicionesSuministro[ condicion ].pdm;	//Permite dosis mï¿½xima
+				var valPdt = dmaPorCondicionesSuministro[ condicion ].pdt;	//Permite dï¿½as de tratamiento
 
 				if( !valPdm ){
 					$( "#wdosismaxima" )[0].readOnly = true;
@@ -9773,7 +9869,7 @@ function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 				else{
 					$( "#wdosismaxima" )[0].readOnly = false;
 
-					//Verificó si hay dosis máxima por frecuencia
+					//Verificï¿½ si hay dosis mï¿½xima por frecuencia
 					if( !valDma || valDma == 0 || valDma == '' ){
 						try{
 							var valDma = dmaPorFrecuencia[ $( "#wfrecuencia" ).val() ].dma;	//Dosis maxima
@@ -9794,7 +9890,7 @@ function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 			}
 			else{
 
-				//Verificó si hay dosis máxima por frecuencia
+				//Verificï¿½ si hay dosis mï¿½xima por frecuencia
 				if( !valDma || valDma == 0 || valDma == '' ){
 					try{
 						var valDma = dmaPorFrecuencia[ $( "#wfrecuencia" ).val() ].dma;	//Dosis maxima
@@ -9838,7 +9934,7 @@ function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 
 		if( campo.value == "" ){
 
-			if( $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ){	//Dosis máxima
+			if( $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ){	//Dosis mï¿½xima
 				$( "#wdosmax"+tipo+indice )[0].readOnly = true;
 			}
 			else{
@@ -9860,8 +9956,8 @@ function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 			try{
 				var valDma = dmaPorFrecuencia[ condicion ].dma;	//Dosis maxima
 
-				//Si tiene una condición que no permita dosis máximas
-				//no se deja poner dosis máxima
+				//Si tiene una condiciï¿½n que no permita dosis mï¿½ximas
+				//no se deja poner dosis mï¿½xima
 				if( $( "#wcondicion"+tipo+indice ).val() != '' ){
 					var valPdm = dmaPorCondicionesSuministro[ $( "#wcondicion"+tipo+indice ).val() ].pdm;
 
@@ -9896,23 +9992,23 @@ function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 
 			if( condicion != '' ){
 				var valDma = dmaPorCondicionesSuministro[ condicion ].dma;	//Dosis maxima
-				var valPdm = dmaPorCondicionesSuministro[ condicion ].pdm;	//Permite dosis máxima
-				var valPdt = dmaPorCondicionesSuministro[ condicion ].pdt;	//Permite días de tratamiento
+				var valPdm = dmaPorCondicionesSuministro[ condicion ].pdm;	//Permite dosis mï¿½xima
+				var valPdt = dmaPorCondicionesSuministro[ condicion ].pdt;	//Permite dï¿½as de tratamiento
 
-				//Predomina el perfil que tenga el médico, si no puede modificar dosis máximas o días de tratamiento no se puede modificar
-				//así la condición tenga la opción de modificarlo
-				//var valPdm = $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ? false: valPdm;	//Dosis máxima
+				//Predomina el perfil que tenga el mï¿½dico, si no puede modificar dosis mï¿½ximas o dï¿½as de tratamiento no se puede modificar
+				//asï¿½ la condiciï¿½n tenga la opciï¿½n de modificarlo
+				//var valPdm = $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ? false: valPdm;	//Dosis mï¿½xima
 
-				//Si la condición permite dosis máxima se revisa
-				//que el usuario pueda modificar dosis máxima
+				//Si la condiciï¿½n permite dosis mï¿½xima se revisa
+				//que el usuario pueda modificar dosis mï¿½xima
 				if( valPdm ){
-					var valPdm = $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ? false: valPdm;	//Dosis máxima
+					var valPdm = $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ? false: valPdm;	//Dosis mï¿½xima
 				}
 
-				//Si la condición permite días de tratamiento se revisa
-				//que el usuario pueda modificar dosis máxima
+				//Si la condiciï¿½n permite dï¿½as de tratamiento se revisa
+				//que el usuario pueda modificar dosis mï¿½xima
 				if( valPdt ){
-					var valPdt = $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ? false: valPdt;		//Días de tto
+					var valPdt = $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ? false: valPdt;		//Dï¿½as de tto
 				}
 
 
@@ -9924,7 +10020,7 @@ function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 				else{
 					$( "#wdosmax"+tipo+indice )[0].readOnly = false;
 
-					//Verificó si hay dosis máxima por frecuencia
+					//Verificï¿½ si hay dosis mï¿½xima por frecuencia
 					if( !valDma || valDma == 0 || valDma == '' ){
 						try{
 							var valDma = dmaPorFrecuencia[ $( "#wperiod"+tipo+indice ).val() ].dma;	//Dosis maxima
@@ -9944,7 +10040,7 @@ function agregarDosisMaxPorCondicion( tipo, indice, campo ){
 				}
 			}
 			else{
-				//Verificó si hay dosis máxima por frecuencia
+				//Verificï¿½ si hay dosis mï¿½xima por frecuencia
 				if( !valDma || valDma == 0 || valDma == '' ){
 					try{
 						var valDma = dmaPorFrecuencia[ $( "#wperiod"+tipo+indice ).val() ].dma;	//Dosis maxima
@@ -10128,7 +10224,7 @@ function cambiarClase(contenedor,clase1,clase2)
  ********************************************************************************/
 function inhabilitarDiasTratamiento( campo, tipo, id ){
 
-	if( $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ){	//Dosis máxima		
+	if( $( "#waccN\\.13" ).eq(0).val().split(",")[0] == 'N' ){	//Dosis mï¿½xima		
 		
 		var dmaDef = false;
 		try{
@@ -10182,7 +10278,7 @@ function inhabilitarDiasTratamiento( campo, tipo, id ){
  ********************************************************************************/
 function inhabilitarDosisMaxima( campo, tipo, id ){
 
-	if( $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ){	//Días de tratamiento
+	if( $( "#waccN\\.12" ).eq(0).val().split(",")[0] == 'N' ){	//Dï¿½as de tratamiento
 		$( "#wdiastto"+tipo+id )[0].readOnly = true;
 		$( "#wdiastto"+tipo+id ).val('');
 		return;
@@ -10286,29 +10382,29 @@ function calcularFechaInicio(fechaInicioFija,cont2)
 }
 
 
-// Esta variable definía si se mostraba los mensajes de validación de datos
+// Esta variable definï¿½a si se mostraba los mensajes de validaciï¿½n de datos
 // Estaba condicionada para no mostrar el mensaje la segunda vez que ocurriera
-// Se comenta porque si no se cumple la condición siempre se debe mostrar el mensje de validación
+// Se comenta porque si no se cumple la condiciï¿½n siempre se debe mostrar el mensje de validaciï¿½n
 // var mostrarAviso = 1;
 
-// Determina si la adición del medicamento es por horario especial
+// Determina si la adiciï¿½n del medicamento es por horario especial
 var horarioEspecial = false;
-// Si contHorarioEspecial = 1; asi sea adición por horario especial
+// Si contHorarioEspecial = 1; asi sea adiciï¿½n por horario especial
 // se saca mensaje 'El medicamento ya existe. Desea agregarlo?'
 var contHorarioEspecial = 0;
 
-// Cadena que contendrá los artículos de los que ya se ha mostrado el mensaje que son NO POS
+// Cadena que contendrï¿½ los artï¿½culos de los que ya se ha mostrado el mensaje que son NO POS
 var msjNoPos = '';
 
-// Guardará los datos de artículos y procedimientos NO POS cuando se ingresan por adición múltiple, de modo
-// que se pueda llamar al final la ventana modal del formulario CTC para cada artículo o procedimiento NO POS
+// Guardarï¿½ los datos de artï¿½culos y procedimientos NO POS cuando se ingresan por adiciï¿½n mï¿½ltiple, de modo
+// que se pueda llamar al final la ventana modal del formulario CTC para cada artï¿½culo o procedimiento NO POS
 strPendientesCTC = "";
 
-// Guardará los datos de artículos DA cuando se ingresan por horario especial
+// Guardarï¿½ los datos de artï¿½culos DA cuando se ingresan por horario especial
 strPendientesModal = "";
 
 
-// Determina si la adición de medicamentos es múltiple (por ejemplo: Importar protocolo o Insumos Liquidos Endovenosos)
+// Determina si la adiciï¿½n de medicamentos es mï¿½ltiple (por ejemplo: Importar protocolo o Insumos Liquidos Endovenosos)
 var adicionMultiple = false;
 
 function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
@@ -10363,20 +10459,20 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 	}
 	// --------------------------------
 	
-	// Si no es adición de medicamentos por protocolo haga la validación de datos
+	// Si no es adiciï¿½n de medicamentos por protocolo haga la validaciï¿½n de datos
 	if(porProtocolo!=1)
 	{
 		//////////////////////////////////////////////////////////////////////
-		//////// ASIGNACIÓN DE VARIABLES PARA LOS DATOS INGRESADOS ///////////
+		//////// ASIGNACIï¿½N DE VARIABLES PARA LOS DATOS INGRESADOS ///////////
 
 		// Asigno variables dadas en el formulario de ingreso
 		var nombreFamilia = document.getElementById( "wnombrefamilia" ).value;		// Familia de medicamentos
-		var presentaciones = document.getElementById( "wpresentacion" );			// Presentaciones o formas farmacéuticas
+		var presentaciones = document.getElementById( "wpresentacion" );			// Presentaciones o formas farmacï¿½uticas
 		var unidades = document.getElementById( "wunidad" );						// Unidades de medida
 		var dosis = document.getElementById( "wdosisfamilia" ).value;				// Dosis a aplicar
 
 		/*
-		* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo
+		* Modificaciï¿½n: se agrega columna "# Mipres" en caso de tener parï¿½metro activo
 		* Autor: sebastian.nevado
 		* Fecha: 2021-10-04
 		*/
@@ -10384,17 +10480,17 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		var tipoNumPrescripcionMipres = "";
 		if(mipresEnListaMedicamentos!=0)
 		{
-			numPrescripcionMipres = (document.getElementById( "wnumprescripcionmipres" )) ? document.getElementById( "wnumprescripcionmipres" ).value : '';				// Número de prescripción de mipres
+			numPrescripcionMipres = (document.getElementById( "wnumprescripcionmipres" )) ? document.getElementById( "wnumprescripcionmipres" ).value : '';				// Nï¿½mero de prescripciï¿½n de mipres
 			tipoNumPrescripcionMipres = (document.getElementById( "wnumprescripcionmipres")) ? document.getElementById( "wnumprescripcionmipres" ).type : '';				// Tipo de campo
 		}
 		//FIN MODIFICACION
 
 		var frecuencias = document.getElementById( "wfrecuencia" );					// Frecuencias
-		var viasAdministracion = document.getElementById( "wadministracion" );		// Vías de administración
-		var fechaInicio = document.getElementById( "wfinicioaplicacion" ).value;	// Fecha y hora de inicio de aplicación
+		var viasAdministracion = document.getElementById( "wadministracion" );		// Vï¿½as de administraciï¿½n
+		var fechaInicio = document.getElementById( "wfinicioaplicacion" ).value;	// Fecha y hora de inicio de aplicaciï¿½n
 		var condiciones = document.getElementById( "wcondicionsum" );				// Condiciones de suministro
-		var diasTto = document.getElementById( "wdiastratamiento" ).value;			// Días de tratamiento
-		var dosisMax = document.getElementById( "wdosismaxima" ).value;				// Dosis máxima
+		var diasTto = document.getElementById( "wdiastratamiento" ).value;			// Dï¿½as de tratamiento
+		var dosisMax = document.getElementById( "wdosismaxima" ).value;				// Dosis mï¿½xima
 		var observaciones = document.getElementById( "wtxtobservasiones" ).value;	// Observaciones
 
 		// Obtengo los indices seleccionados en los campos desplegables (select's)
@@ -10404,7 +10500,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		var selViaAdministracion = viasAdministracion.selectedIndex;
 		var selCondicion = condiciones.selectedIndex;
 
-		// Se asigna el valor a la variable para la presentación o forma farmacéutica
+		// Se asigna el valor a la variable para la presentaciï¿½n o forma farmacï¿½utica
 		if(selPresentacion!=-1)
 			presentacion = document.getElementById('wpresentacion').options[selPresentacion].value;
 		else
@@ -10423,19 +10519,19 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 			periodo = "";
 
 
-		// Se asigna el valor a la variable para la vía de administración
+		// Se asigna el valor a la variable para la vï¿½a de administraciï¿½n
 		if(selViaAdministracion!=-1)
 			administracion = document.getElementById('wadministracion').options[selViaAdministracion].value;
 		else
 			administracion = "";
 
-		// Se asigna el valor a la variable para la condición de suministro
+		// Se asigna el valor a la variable para la condiciï¿½n de suministro
 		if(selCondicion!=-1)
 			condicion = document.getElementById('wcondicionsum').options[selCondicion].value;
 		else
 			condicion = "";
 
-		// Se usarán si el medicamento es líquido endovenoso
+		// Se usarï¿½n si el medicamento es lï¿½quido endovenoso
 		periodoLQ = periodo;
 		administracionLQ = administracion;
 		fechaInicioLQ = fechaInicio;
@@ -10444,7 +10540,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		dosisMaxLQ = dosisMax;
 		observacionesLQ = observaciones;
 
-		////// FIN ASIGNACIÓN DE VARIABLES PARA LOS DATOS INGRESADOS /////////
+		////// FIN ASIGNACIï¿½N DE VARIABLES PARA LOS DATOS INGRESADOS /////////
 		//////////////////////////////////////////////////////////////////////
 
 
@@ -10452,24 +10548,24 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		// arArticulosSeleccionados = arArticulos;
 
 		//////////////////////////////////////////////////////////////////////
-		///////// VALIDACIÓN DE LOS DATOS INGRESADOS /////////////////////////
+		///////// VALIDACIï¿½N DE LOS DATOS INGRESADOS /////////////////////////
 
-		// Si no se ha ingresado el nombre de la familia o artículo, muestre el mensaje correspondiente
+		// Si no se ha ingresado el nombre de la familia o artï¿½culo, muestre el mensaje correspondiente
 		if( document.getElementById( "wnombrefamilia" ).value == "" || document.getElementById( "wnombrefamilia" ).value == " " )
 		{
-			jAlert("Debe ingresar el nombre del artículo","ALERTA");
+			jAlert("Debe ingresar el nombre del artï¿½culo","ALERTA");
 			document.getElementById( "wnombrefamilia" ).focus();
 			return;
 		}
 		
 		/*
-		* Modificación: alerta en caso de que el número de prescripción de mipres sea obligatorio, es paciente de EPS, y contributivo, y medicamento no pos
+		* Modificaciï¿½n: alerta en caso de que el nï¿½mero de prescripciï¿½n de mipres sea obligatorio, es paciente de EPS, y contributivo, y medicamento no pos
 		* Autor: sebastian.nevado
 		* Fecha: 2021-10-04
 		*/
 		if(mipresEnListaMedicamentos == 2 && tipoNumPrescripcionMipres != 'P' && numPrescripcionMipres == '' && tipoNumPrescripcionMipres != '' && tipoNumPrescripcionMipres != 'hidden' && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
 		{
-			jAlert("Debe ingresar el Número de Prescripción Mipres","ALERTA");
+			jAlert("Debe ingresar el Nï¿½mero de Prescripciï¿½n Mipres","ALERTA");
 			document.getElementById( "wnumprescripcionmipres" ).focus();
 			return;
 		}
@@ -10484,15 +10580,15 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 				return;
 			}
 		}
-		//FIN MODIFICACIÓN
+		//FIN MODIFICACIï¿½N
 
-		// Validación presentación o forma farmacéutica
+		// Validaciï¿½n presentaciï¿½n o forma farmacï¿½utica
 		if(selPresentacion>-1)
 		{
 			var presentacionMed = presentaciones.options[selPresentacion].text;
 			if(presentacionMed=="" || presentacionMed==" ")
 			{
-				jAlert("Debe seleccionar una presentación","ALERTA");
+				jAlert("Debe seleccionar una presentaciï¿½n","ALERTA");
 				document.getElementById( "wpresentacion" ).focus();
 				document.getElementById( "wpresentacion" ).select();
 				return false;
@@ -10500,13 +10596,13 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		}
 		else
 		{
-			jAlert("Debe seleccionar una presentación","ALERTA");
+			jAlert("Debe seleccionar una presentaciï¿½n","ALERTA");
 			document.getElementById( "wpresentacion" ).focus();
 			document.getElementById( "wpresentacion" ).select();
 			return false;
 		}
 
-		// Validación unidad de medida
+		// Validaciï¿½n unidad de medida
 		if(selUnidad>-1)
 		{
 			var unidMedida = unidades.options[selUnidad].text;
@@ -10532,7 +10628,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 			return;
 		}
 
-		// Validación de frecuencia
+		// Validaciï¿½n de frecuencia
 		if(selFrecuencia>-1)
 		{
 			var frecuencia = frecuencias.options[selFrecuencia].text;
@@ -10552,13 +10648,13 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 			return false;
 		}
 
-		// Validación de la vía de administración
+		// Validaciï¿½n de la vï¿½a de administraciï¿½n
 		if(selViaAdministracion>-1)
 		{
 			var viaAdministracion = viasAdministracion.options[selViaAdministracion].text;
 			if(viaAdministracion=="" || viaAdministracion==" ")
 			{
-				jAlert("Debe seleccionar una vía de administración","ALERTA");
+				jAlert("Debe seleccionar una vï¿½a de administraciï¿½n","ALERTA");
 				document.getElementById( "wadministracion" ).focus();
 				document.getElementById( "wadministracion" ).select();
 				return false;
@@ -10566,13 +10662,13 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		}
 		else
 		{
-			jAlert("Debe seleccionar una vía de administración","ALERTA");
+			jAlert("Debe seleccionar una vï¿½a de administraciï¿½n","ALERTA");
 			document.getElementById( "wadministracion" ).focus();
 			document.getElementById( "wadministracion" ).select();
 			return false;
 		}
 
-		///////// FIN VALIDACIÓN DE LOS DATOS INGRESADOS /////////////////////
+		///////// FIN VALIDACIï¿½N DE LOS DATOS INGRESADOS /////////////////////
 		//////////////////////////////////////////////////////////////////////
 
 		//Se declaran las variables globales
@@ -10599,7 +10695,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 
 		// 2012-12-14
 		/*
-		// Se comenta porque ya esta validación se va a hacer en PHP por medio de AJAX
+		// Se comenta porque ya esta validaciï¿½n se va a hacer en PHP por medio de AJAX
 		for( var i = 0; i < arRelacionesUnidad[ selUnidad ].length; i++ )
 		{
 
@@ -10623,12 +10719,12 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		*/
 	}
 	// 2013-01-14
-	// Si es adición de medicamentos por protocolo
+	// Si es adiciï¿½n de medicamentos por protocolo
 	else
 	{
 
 		/*
-		// Ya no es necesario usarlas como array porque el ciclo se hace abajo cuando se agrega cada artículo
+		// Ya no es necesario usarlas como array porque el ciclo se hace abajo cuando se agrega cada artï¿½culo
 		var articulo = new Array();
 		var periodo = new Array();
 		var administracion = new Array();
@@ -10674,17 +10770,17 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 						var protocolo = protocolos[ipro].split( "|" );
 						articulo[ipro] = protocolo[0];				// Dosis a aplicar
 						periodo[ipro] = protocolo[1];				// Frecuencias
-						administracion[ipro] = protocolo[2];		// Vías de administración
+						administracion[ipro] = protocolo[2];		// Vï¿½as de administraciï¿½n
 						condicion[ipro] = protocolo[3];				// Condiciones de suministro
-						dosisMax[ipro] = protocolo[4];				// Dosis máxima
+						dosisMax[ipro] = protocolo[4];				// Dosis mï¿½xima
 						observaciones[ipro] = protocolo[5];			// Observaciones
 
 						nombreFamilia = '';		// Familia de medicamentos
-						presentacion = '';			// Presentaciones o formas farmacéuticas
+						presentacion = '';			// Presentaciones o formas farmacï¿½uticas
 						medida = '';						// Unidades de medida
 						dosis = '';				// Dosis a aplicar
-						fechaInicio = '';	// Fecha y hora de inicio de aplicación
-						diasTto = '';			// Días de tratamiento
+						fechaInicio = '';	// Fecha y hora de inicio de aplicaciï¿½n
+						diasTto = '';			// Dï¿½as de tratamiento
 					}
 					*/
 				}
@@ -10702,7 +10798,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 
 
 	// 2013-01-14
-	// Si no es adición de medicamentos por protocolo
+	// Si no es adiciï¿½n de medicamentos por protocolo
 	if(porProtocolo!=1)
 	{
 		var medicamentoPorProtocolo = false;
@@ -10747,7 +10843,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 						 * 0: Como se muestra en el autocomplete
 						 * 1: Codigo del articulo
 						 * 2: Nombre comercial del articulo
-						 * 3: Nombre genérico del articulo
+						 * 3: Nombre genï¿½rico del articulo
 						 * 4: Tipo protocolo
 						 * 5: (M)edicamento o (L)iquido
 						 * 6: Es generico
@@ -10796,7 +10892,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 						var origen = item[7];
 						var grupoMedicamento = item[8];
 						// 2012-08-02
-						// Se cambia para que tome el valor seleccionado en la adición del medicamento y no el de la tabla de articulos
+						// Se cambia para que tome el valor seleccionado en la adiciï¿½n del medicamento y no el de la tabla de articulos
 						var formaFarmaceutica = presentacion; //item[9];
 						var unidadMedida = item[10];
 						var pos = item[11];
@@ -10871,7 +10967,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 					}
 					else if($.trim( ajax.responseText ) == "SinArticulosConTarifas"){
 						funcInternaLimpiarBuscador();
-						jAlert("No se encuentran artículos con tarifas", "ALERTA");
+						jAlert("No se encuentran artï¿½culos con tarifas", "ALERTA");
 					}
 				}
 
@@ -10889,7 +10985,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 			var frecuenciaFija = 'C24';
 			$("#frecuencia_elegida").val(periodo);
 
-			//cambioFecha = false;	// Me indica si en la función calcularFechaInicio ya se paso a las rondas del día siguiente
+			//cambioFecha = false;	// Me indica si en la funciï¿½n calcularFechaInicio ya se paso a las rondas del dï¿½a siguiente
 
 			var horaArranque = document.getElementById('horaArranque').value;
 			var auxFechaInicioFija;
@@ -10946,7 +11042,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 								 * 0: Como se muestra en el autocomplete
 								 * 1: Codigo del articulo
 								 * 2: Nombre comercial del articulo
-								 * 3: Nombre genérico del articulo
+								 * 3: Nombre genï¿½rico del articulo
 								 * 4: Tipo protocolo
 								 * 5: (M)edicamento o (L)iquido
 								 * 6: Es generico
@@ -10978,7 +11074,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 								 * 32:Componentes del tipo
 								 * 33:Nombre personalizado del articulo
 								 * 43:ConTarifa
-								 * 44:Número Prescrición Mipres
+								 * 44:Nï¿½mero Prescriciï¿½n Mipres
 								 */
 
 								var codigoArticulo = item[1];
@@ -10990,7 +11086,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 								var origen = item[7];
 								var grupoMedicamento = item[8];
 								// 2012-08-02
-								// Se cambia para que tome el valor seleccionado en la adición del medicamento y no el de la tabla de articulos
+								// Se cambia para que tome el valor seleccionado en la adiciï¿½n del medicamento y no el de la tabla de articulos
 								var formaFarmaceutica = presentacion; //item[9];
 								var unidadMedida = item[10];
 								var pos = item[11];
@@ -11182,7 +11278,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 			// funcInternaLimpiarBuscador();
 		}
 	}
-	// Si es adición de medicamentos por protocolo
+	// Si es adiciï¿½n de medicamentos por protocolo
 	else
 	{
 		var medicamentoPorProtocolo = true;
@@ -11201,17 +11297,17 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 				{
 					articulo = protocolo[0];				// Codigo del articulo
 					periodo = protocolo[1];					// Frecuencias
-					administracion = protocolo[2];			// Vías de administración
+					administracion = protocolo[2];			// Vï¿½as de administraciï¿½n
 					condicion = protocolo[3];				// Condiciones de suministro
 					var dosis = protocolo[4];				// Dosis
 					var observaciones = protocolo[5];		// Observaciones
 					medicamentoPorProtocolo = protocolo[10] == 'on' ? true: false;		// No dispensable
 
-					presentacion = '';			// Presentaciones o formas farmacéuticas
+					presentacion = '';			// Presentaciones o formas farmacï¿½uticas
 					medida = '';				// Unidades de medida
-					var fechaInicio = '';		// Fecha y hora de inicio de aplicación
+					var fechaInicio = '';		// Fecha y hora de inicio de aplicaciï¿½n
 					var dosisMax = '';			// Dosis a aplicar
-					var diasTto = '';			// Días de tratamiento
+					var diasTto = '';			// Dï¿½as de tratamiento
 					
 					if( medicamentoPorProtocolo ){
 						dosisMax = 1;
@@ -11248,7 +11344,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 								 * 0: Como se muestra en el autocomplete
 								 * 1: Codigo del articulo
 								 * 2: Nombre comercial del articulo
-								 * 3: Nombre genérico del articulo
+								 * 3: Nombre genï¿½rico del articulo
 								 * 4: Tipo protocolo
 								 * 5: (M)edicamento o (L)iquido
 								 * 6: Es generico
@@ -11483,12 +11579,12 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		//Una vez agregado el medicamento borro los datos de la consulta
 		var tbNuevoBuscador = document.getElementById( "nuevoBuscador" );
 
-		document.getElementById( "regletaGrabacion" ).style.display = 'none';	//Oculto la regleta de grabación si está activa
-		document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si está inactivo
+		document.getElementById( "regletaGrabacion" ).style.display = 'none';	//Oculto la regleta de grabaciï¿½n si estï¿½ activa
+		document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si estï¿½ inactivo
 
 		/* 2012-11-02
 		// Se comenta porque se va a obtener el elemento por el nombre
-		// ya que la nueva estructura no permite obtenerlo por posición en la tabla
+		// ya que la nueva estructura no permite obtenerlo por posiciï¿½n en la tabla
 		tbNuevoBuscador.rows[1].cells[0].firstChild.value = '';				//Borro el valor de Nombre articulo
 		tbNuevoBuscador.rows[1].cells[1].firstChild.selectedIndex = -1;		//Quito el valor seleccionado de la presentacion
 		tbNuevoBuscador.rows[1].cells[2].firstChild.selectedIndex = -1;		//Quito el valor seleccionado de las unidades
@@ -11501,7 +11597,7 @@ function eleccionMedicamento(porProtocolo, mipresEnListaMedicamentos)
 		tbNuevoBuscador.rows[1].cells[10].firstChild.value = '';			//Quito el valor escrito de las observaciones
 		*/
 
-		//Quito los valores de los campos de busqueda y adición de medicamentos
+		//Quito los valores de los campos de busqueda y adiciï¿½n de medicamentos
 		document.getElementById('wnombrefamilia').value = '';
 		document.getElementById('wpresentacion').selectedIndex = -1;
 		document.getElementById('wunidad').selectedIndex = -1;
@@ -11573,19 +11669,19 @@ function eleccionMedicamentoAlta()
 	// ocultarDetalleFliaAnterior();
 
 	//////////////////////////////////////////////////////////////////////
-	//////// ASIGNACIÓN DE VARIABLES PARA LOS DATOS INGRESADOS ///////////
+	//////// ASIGNACIï¿½N DE VARIABLES PARA LOS DATOS INGRESADOS ///////////
 
 	// Asigno variables dadas en el formulario de ingreso
 	var nombreFamilia = document.getElementById( "wnombrefamiliaimp" ).value;		// Familia de medicamentos
-	var presentaciones = document.getElementById( "wpresentacionimp" );			// Presentaciones o formas farmacéuticas
+	var presentaciones = document.getElementById( "wpresentacionimp" );			// Presentaciones o formas farmacï¿½uticas
 	var unidades = document.getElementById( "wunidadimp" );						// Unidades de medida
 	var dosis = document.getElementById( "wdosisfamiliaimp" ).value;				// Dosis a aplicar
 	var frecuencias = document.getElementById( "wfrecuenciaimp" );					// Frecuencias
-	var viasAdministracion = document.getElementById( "wadministracionimp" );		// Vías de administración
-	var fechaInicio = document.getElementById( "wfinicioaplicacionimp" ).value;	// Fecha y hora de inicio de aplicación
+	var viasAdministracion = document.getElementById( "wadministracionimp" );		// Vï¿½as de administraciï¿½n
+	var fechaInicio = document.getElementById( "wfinicioaplicacionimp" ).value;	// Fecha y hora de inicio de aplicaciï¿½n
 	var condiciones = document.getElementById( "wcondicionsumimp" );				// Condiciones de suministro
-	var diasTto = document.getElementById( "wdiastratamientoimp" ).value;			// Días de tratamiento
-	var dosisMax = document.getElementById( "wdosismaximaimp" ).value;				// Dosis máxima
+	var diasTto = document.getElementById( "wdiastratamientoimp" ).value;			// Dï¿½as de tratamiento
+	var dosisMax = document.getElementById( "wdosismaximaimp" ).value;				// Dosis mï¿½xima
 	var cantidadAlta = document.getElementById( "wcantidadaltaimp" ).value;				// Cantidad ordenada para el alta
 
 
@@ -11598,7 +11694,7 @@ function eleccionMedicamentoAlta()
 	// var selViaAdministracion = viasAdministracion.selectedIndex;
 	// var selCondicion = condiciones.selectedIndex;
 
-	// Se asigna el valor a la variable para la presentación o forma farmacéutica
+	// Se asigna el valor a la variable para la presentaciï¿½n o forma farmacï¿½utica
 	if(selPresentacion!=-1)
 		presentacion = document.getElementById('wpresentacionimp').options[selPresentacion].value;
 	else
@@ -11617,16 +11713,16 @@ function eleccionMedicamentoAlta()
 		periodo = "";
 
 
-	// Se asigna el valor a la variable para la vía de administración
+	// Se asigna el valor a la variable para la vï¿½a de administraciï¿½n
 	// if(selViaAdministracion!=-1)
 		// administracion = document.getElementById('wadministracionimp').options[selViaAdministracion].value;
 	// else
 		// administracion = "";
 
-	administracion = document.getElementById( "wadministracionimp" ).value;		// Vías de administración
+	administracion = document.getElementById( "wadministracionimp" ).value;		// Vï¿½as de administraciï¿½n
 
 
-	// // Se asigna el valor a la variable para la condición de suministro
+	// // Se asigna el valor a la variable para la condiciï¿½n de suministro
 	// if(selCondicion!=-1)
 		// condicion = document.getElementById('wcondicionsumimp').options[selCondicion].value;
 	// else
@@ -11635,7 +11731,7 @@ function eleccionMedicamentoAlta()
 	condicion = document.getElementById( "wcondicionsumimp" ).value;				// Condiciones de suministro
 
 
-	// Se usarán si el medicamento es líquido endovenoso
+	// Se usarï¿½n si el medicamento es lï¿½quido endovenoso
 	periodoLQ = periodo;
 	administracionLQ = administracion;
 	fechaInicioLQ = fechaInicio;
@@ -11645,7 +11741,7 @@ function eleccionMedicamentoAlta()
 	cantidadAltaLQ = cantidadAlta;
 	observacionesLQ = observaciones;
 
-	////// FIN ASIGNACIÓN DE VARIABLES PARA LOS DATOS INGRESADOS /////////
+	////// FIN ASIGNACIï¿½N DE VARIABLES PARA LOS DATOS INGRESADOS /////////
 	//////////////////////////////////////////////////////////////////////
 
 
@@ -11653,23 +11749,23 @@ function eleccionMedicamentoAlta()
 	// arArticulosSeleccionados = arArticulos;
 
 	//////////////////////////////////////////////////////////////////////
-	///////// VALIDACIÓN DE LOS DATOS INGRESADOS /////////////////////////
+	///////// VALIDACIï¿½N DE LOS DATOS INGRESADOS /////////////////////////
 
-	// Si no se ha ingresado el nombre de la familia o artículo, muestre el mensaje correspondiente
+	// Si no se ha ingresado el nombre de la familia o artï¿½culo, muestre el mensaje correspondiente
 	if( document.getElementById( "wnombrefamiliaimp" ).value == "" || document.getElementById( "wnombrefamiliaimp" ).value == " " )
 	{
-		alert("Debe ingresar el nombre del artículo");
+		alert("Debe ingresar el nombre del artï¿½culo");
 		document.getElementById( "wnombrefamiliaimp" ).focus();
 		return;
 	}
 
-	// Validación presentación o forma farmacéutica
+	// Validaciï¿½n presentaciï¿½n o forma farmacï¿½utica
 	if(selPresentacion>-1)
 	{
 		var presentacionMed = presentaciones.options[selPresentacion].text;
 		if(presentacionMed=="" || presentacionMed==" ")
 		{
-			alert("Debe seleccionar una presentación");
+			alert("Debe seleccionar una presentaciï¿½n");
 			document.getElementById( "wpresentacionimp" ).focus();
 			document.getElementById( "wpresentacionimp" ).select();
 			return false;
@@ -11677,13 +11773,13 @@ function eleccionMedicamentoAlta()
 	}
 	else
 	{
-		alert("Debe seleccionar una presentación");
+		alert("Debe seleccionar una presentaciï¿½n");
 		document.getElementById( "wpresentacionimp" ).focus();
 		document.getElementById( "wpresentacionimp" ).select();
 		return false;
 	}
 
-	// Validación unidad de medida
+	// Validaciï¿½n unidad de medida
 	if(selUnidad>-1)
 	{
 		var unidMedida = unidades.options[selUnidad].text;
@@ -11709,7 +11805,7 @@ function eleccionMedicamentoAlta()
 		return;
 	}
 
-	// Validación de frecuencia
+	// Validaciï¿½n de frecuencia
 	if(selFrecuencia>-1)
 	{
 		var frecuencia = frecuencias.options[selFrecuencia].text;
@@ -11729,14 +11825,14 @@ function eleccionMedicamentoAlta()
 		return false;
 	}
 
-	// Validación de la vía de administración
+	// Validaciï¿½n de la vï¿½a de administraciï¿½n
 	/*
 	if(selViaAdministracion>-1)
 	{
 		var viaAdministracion = viasAdministracion.options[selViaAdministracion].text;
 		if(viaAdministracion=="" || viaAdministracion==" ")
 		{
-			alert("Debe seleccionar una vía de administración");
+			alert("Debe seleccionar una vï¿½a de administraciï¿½n");
 			document.getElementById( "wadministracionimp" ).focus();
 			document.getElementById( "wadministracionimp" ).select();
 			return false;
@@ -11744,14 +11840,14 @@ function eleccionMedicamentoAlta()
 	}
 	else
 	{
-		alert("Debe seleccionar una vía de administración");
+		alert("Debe seleccionar una vï¿½a de administraciï¿½n");
 		document.getElementById( "wadministracionimp" ).focus();
 		document.getElementById( "wadministracionimp" ).select();
 		return false;
 	}
 	*/
 
-	///////// FIN VALIDACIÓN DE LOS DATOS INGRESADOS /////////////////////
+	///////// FIN VALIDACIï¿½N DE LOS DATOS INGRESADOS /////////////////////
 	//////////////////////////////////////////////////////////////////////
 
 	//Se declaran las variables globales
@@ -11778,7 +11874,7 @@ function eleccionMedicamentoAlta()
 
 	// 2012-12-14
 	/*
-	// Se comenta porque ya esta validación se va a hacer en PHP por medio de AJAX
+	// Se comenta porque ya esta validaciï¿½n se va a hacer en PHP por medio de AJAX
 	for( var i = 0; i < arRelacionesUnidad[ selUnidad ].length; i++ )
 	{
 
@@ -11842,7 +11938,7 @@ function eleccionMedicamentoAlta()
 				 * 0: Como se muestra en el autocomplete
 				 * 1: Codigo del articulo
 				 * 2: Nombre comercial del articulo
-				 * 3: Nombre genérico del articulo
+				 * 3: Nombre genï¿½rico del articulo
 				 * 4: Tipo protocolo
 				 * 5: (M)edicamento o (L)iquido
 				 * 6: Es generico
@@ -11889,7 +11985,7 @@ function eleccionMedicamentoAlta()
 				var origen = item[7];
 				var grupoMedicamento = item[8];
 				// 2012-08-02
-				// Se cambia para que tome el valor seleccionado en la adición del medicamento y no el de la tabla de articulos
+				// Se cambia para que tome el valor seleccionado en la adiciï¿½n del medicamento y no el de la tabla de articulos
 				var formaFarmaceutica = presentacion; //item[9];
 				var unidadMedida = item[10];
 				var pos = item[11];
@@ -11971,12 +12067,12 @@ function eleccionMedicamentoAlta()
 	//Una vez agregado el medicamento borro los datos de la consulta
 	var tbNuevoBuscador = document.getElementById( "nuevoBuscadorImp" );
 
-	// document.getElementById( "regletaGrabacion" ).style.display = 'none';	//Oculto la regleta de grabación si está activa
-	// document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si está inactivo
+	// document.getElementById( "regletaGrabacion" ).style.display = 'none';	//Oculto la regleta de grabaciï¿½n si estï¿½ activa
+	// document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si estï¿½ inactivo
 
 	/* 2012-11-02
 	// Se comenta porque se va a obtener el elemento por el nombre
-	// ya que la nueva estructura no permite obtenerlo por posición en la tabla
+	// ya que la nueva estructura no permite obtenerlo por posiciï¿½n en la tabla
 	tbNuevoBuscador.rows[1].cells[0].firstChild.value = '';				//Borro el valor de Nombre articulo
 	tbNuevoBuscador.rows[1].cells[1].firstChild.selectedIndex = -1;		//Quito el valor seleccionado de la presentacion
 	tbNuevoBuscador.rows[1].cells[2].firstChild.selectedIndex = -1;		//Quito el valor seleccionado de las unidades
@@ -11989,7 +12085,7 @@ function eleccionMedicamentoAlta()
 	tbNuevoBuscador.rows[1].cells[10].firstChild.value = '';			//Quito el valor escrito de las observaciones
 	*/
 
-	//Quito los valores de los campos de busqueda y adición de medicamentos
+	//Quito los valores de los campos de busqueda y adiciï¿½n de medicamentos
 	document.getElementById('wnombrefamiliaimp').value = '';
 	document.getElementById('wpresentacionimp').selectedIndex = -1;
 	document.getElementById('wunidadimp').selectedIndex = -1;
@@ -12043,19 +12139,19 @@ function eleccionMedicamentoAlta()
  * Junio 02 de 2015
  * Nota: Para los LEV (liquidos endovenosos e INF infuciones
  *
- * Se crea un objeto JSON para manejar los articulos. Este objeto solo contendrá el tipo de protocolo
+ * Se crea un objeto JSON para manejar los articulos. Este objeto solo contendrï¿½ el tipo de protocolo
  * e indice de cada insumo agregado. Esto se hace ya que los articulos se encuentran en el script
- * y toda su información se sabe de acuerdo a estos datos. A continuación se explica el objeto JSON
+ * y toda su informaciï¿½n se sabe de acuerdo a estos datos. A continuaciï¿½n se explica el objeto JSON
  * que se crea:
- * Nivel 1: [INF] ó [LEV] 				: Indica que tipo de articulo.
+ * Nivel 1: [INF] ï¿½ [LEV] 				: Indica que tipo de articulo.
  * Nivel 2: [ tipPro+Indice ]	: Indica el el articulo generico lev o inf que contiene los insumos
- * Nivel 3: []							: Contiene toda la inforamción faltante de los insumos LEV o INF
+ * Nivel 3: []							: Contiene toda la inforamciï¿½n faltante de los insumos LEV o INF
  *
  * El detalle del nivel 3 es:
  * ins									: Insumo
  * ele									: Indica si es electrolito o no
  * vel									: Volumen del electrolito
- * vdi									: Volumen de dilución
+ * vdi									: Volumen de diluciï¿½n
  * vto									: Volumen total
  * tip 									: tipo, puede ser LEV o INF
  * idx									: Indice
@@ -12116,33 +12212,33 @@ function eleccionMedicamentosInsumos( strInsumos, indice, tipPro, tipo )
 
 		articulo = arrInsumo[0];				// Dosis a aplicar
 		periodo = periodoLQ;				// Frecuencias
-		administracion = administracionLQ;		// Vías de administración
+		administracion = administracionLQ;		// Vï¿½as de administraciï¿½n
 		condicion = condicionLQ;				// Condiciones de suministro
 		if( $.trim( condicion ) == "" )
-			condicion = ( tipo == "IC" ) ? $( "#condicionIC" ).val(): $( "#condicionLEV" ).val();					// Condiciones de suministro Siempre se deja está condición por defecto
+			condicion = ( tipo == "IC" ) ? $( "#condicionIC" ).val(): $( "#condicionLEV" ).val();					// Condiciones de suministro Siempre se deja estï¿½ condiciï¿½n por defecto
 		dosis = arrInsumo[1];				// Dosis
 		observaciones = observacionesLQ;			// Observaciones
 		insumoDispensable = arrInsumo[2];
-		presentacion = '';			// Presentaciones o formas farmacéuticas
+		presentacion = '';			// Presentaciones o formas farmacï¿½uticas
 		medida = '';						// Unidades de medida
-		fechaInicio = fechaInicioLQ;	// Fecha y hora de inicio de aplicación
+		fechaInicio = fechaInicioLQ;	// Fecha y hora de inicio de aplicaciï¿½n
 		dosisMax = dosisMaxLQ;				// Dosis a aplicar
-		diasTto = diasTtoLQ;			// Días de tratamiento
+		diasTto = diasTtoLQ;			// Dï¿½as de tratamiento
 
 		if( tipo == "IC" ){
 			observaciones = $( "#txObservacionesIC", $( "#"+contLEV ) ).val();
 			dosisMax = $( "#inDmaxIC", $( "#"+contLEV ) ).val();			// Dosis a aplicar
-			diasTto  = $( "#inDttoIC", $( "#"+contLEV ) ).val();			// Días de tratamiento
+			diasTto  = $( "#inDttoIC", $( "#"+contLEV ) ).val();			// Dï¿½as de tratamiento
 		}
 		else{
 			observaciones = $( "#txObservacionesLEV", $( "#"+contLEV ) ).val();
 			dosisMax = $( "#inDmaxLEV", $( "#"+contLEV ) ).val();			// Dosis a aplicar
-			diasTto  = $( "#inDttoLEV", $( "#"+contLEV ) ).val();			// Días de tratamiento
+			diasTto  = $( "#inDttoLEV", $( "#"+contLEV ) ).val();			// Dï¿½as de tratamiento
 		}
 
 		/************************************************************************************************************
-		 * Si el articulo tiene volumen por dilución significa que hay que recalcular la dosis
-		 * La dosis es la requerida por día
+		 * Si el articulo tiene volumen por diluciï¿½n significa que hay que recalcular la dosis
+		 * La dosis es la requerida por dï¿½a
 		 ************************************************************************************************************/
 		var sumDosis = 0;
 		if( arrInsumo[3] != "" ){
@@ -12186,15 +12282,15 @@ function eleccionMedicamentosInsumos( strInsumos, indice, tipPro, tipo )
 		artLevs[ "LQ"+parseInt(elementosLev*1+ipro*1) ] = {
 			codLev: tipPro+indice,
 			idoLev: valIdoLev,												//Ido del LEV
-			insCod: arrInsumo[0],									//Códio del insumo
+			insCod: arrInsumo[0],									//Cï¿½dio del insumo
 			insIdi: '',												//Ido del insumo
 			insEle: arrInsumo[5] == 'ele' ? 'on': 'off',			//Es Electrolito/Medicamento?
 			insVel: arrInsumo[5] == 'ele' ? arrInsumo[1]: '',		//Volumen del electrolito
 			insVdi: arrInsumo[5] == 'ele' ? arrInsumo[3]: '',		//Volumen por dilucion
 			insFso: arrInsumo[5] == 'ele' ? '': arrInsumo[4],		//Frecuencia de la solucion
-			insVto: arrInsumo[5] == 'ele' ? '': arrInsumo[1],		//Volumen total de la solución
+			insVto: arrInsumo[5] == 'ele' ? '': arrInsumo[1],		//Volumen total de la soluciï¿½n
 			insFdi: $( "#slFrecDilLev", $( "#"+contLEV ) ).val(),	//Frecuencia de dilucion
-			insVfd: $( "#txFrecDilLev", $( "#"+contLEV ) ).val(),	//Valor de la frecuencia de dilución
+			insVfd: $( "#txFrecDilLev", $( "#"+contLEV ) ).val(),	//Valor de la frecuencia de diluciï¿½n
 			insInf: ( tipo == "IC" ) ? "on" : "off",				//Indica si es infusion o lev
 
 			insFre: periodoLQ,										//Frecuencia
@@ -12208,7 +12304,7 @@ function eleccionMedicamentosInsumos( strInsumos, indice, tipPro, tipo )
 
 			insEst: 'new',											//Estado ( new, mod, gra, del )
 
-			sinSol:	( filasInsumo.length-1 == 1 && tipo == 'IC' ) ? 'on' : 'off'	//Sin solución
+			sinSol:	( filasInsumo.length-1 == 1 && tipo == 'IC' ) ? 'on' : 'off'	//Sin soluciï¿½n
 		}
 		/*************************************************************************************************/
 
@@ -12245,7 +12341,7 @@ function eleccionMedicamentosInsumos( strInsumos, indice, tipPro, tipo )
 					 * 0: Como se muestra en el autocomplete
 					 * 1: Codigo del articulo
 					 * 2: Nombre comercial del articulo
-					 * 3: Nombre genérico del articulo
+					 * 3: Nombre genï¿½rico del articulo
 					 * 4: Tipo protocolo
 					 * 5: (M)edicamento o (L)iquido
 					 * 6: Es generico
@@ -12411,12 +12507,12 @@ function eleccionMedicamentosInsumos( strInsumos, indice, tipPro, tipo )
 	//Una vez agregado el medicamento borro los datos de la consulta
 	var tbNuevoBuscador = document.getElementById( "nuevoBuscador" );
 
-	document.getElementById( "regletaGrabacion" ).style.display = 'none';	//Oculto la regleta de grabación si está activa
-	document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si está inactivo
+	document.getElementById( "regletaGrabacion" ).style.display = 'none';	//Oculto la regleta de grabaciï¿½n si estï¿½ activa
+	document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si estï¿½ inactivo
 
 	/* 2012-11-02
 	// Se comenta porque se va a obtener el elemento por el nombre
-	// ya que la nueva estructura no permite obtenerlo por posición en la tabla
+	// ya que la nueva estructura no permite obtenerlo por posiciï¿½n en la tabla
 	tbNuevoBuscador.rows[1].cells[0].firstChild.value = '';				//Borro el valor de Nombre articulo
 	tbNuevoBuscador.rows[1].cells[1].firstChild.selectedIndex = -1;		//Quito el valor seleccionado de la presentacion
 	tbNuevoBuscador.rows[1].cells[2].firstChild.selectedIndex = -1;		//Quito el valor seleccionado de las unidades
@@ -12429,7 +12525,7 @@ function eleccionMedicamentosInsumos( strInsumos, indice, tipPro, tipo )
 	tbNuevoBuscador.rows[1].cells[10].firstChild.value = '';			//Quito el valor escrito de las observaciones
 	*/
 
-	//Quito los valores de los campos de busqueda y adición de medicamentos
+	//Quito los valores de los campos de busqueda y adiciï¿½n de medicamentos
 	document.getElementById('wnombrefamilia').value = '';
 	document.getElementById('wpresentacion').selectedIndex = -1;
 	document.getElementById('wunidad').selectedIndex = -1;
@@ -12472,7 +12568,7 @@ try{
 
 
 
-// Variables globales que ayudará a llevar la sección anterior desplegada
+// Variables globales que ayudarï¿½ a llevar la secciï¿½n anterior desplegada
 var filaIdAnt = "";
 var divIdAnt = "";
 var filaTituloIdAnt = "";
@@ -12480,7 +12576,7 @@ var claseFilaAnt = "";
 
 // 2012-11-08
 /*************************************************************************
-* Función que permite desplegar el detalle de la familia de medicamentos *
+* Funciï¿½n que permite desplegar el detalle de la familia de medicamentos *
 **************************************************************************/
 function mostrarDetalleFlia( campo, filaId, divId, filaTituloId, claseFila )
 {
@@ -12508,7 +12604,7 @@ function mostrarDetalleFlia( campo, filaId, divId, filaTituloId, claseFila )
 			}
 
 			// Se le asigna una clase especial a la fila del titulo de la familia de medicamentos
-			// Esto para que cambie de color cuando el detalle de la familia está desplegado
+			// Esto para que cambie de color cuando el detalle de la familia estï¿½ desplegado
 			document.getElementById(filaTituloId).className = 'tituloFamilia';
 
 			// Despliega el detalle de la familia de medicamentos
@@ -12553,7 +12649,7 @@ function mostrarDetalleFlia( campo, filaId, divId, filaTituloId, claseFila )
 
 // 2012-11-16
 /*************************************************************
-* Función que oculta el último detalle de familia desplegado *
+* Funciï¿½n que oculta el ï¿½ltimo detalle de familia desplegado *
 **************************************************************/
 function ocultarDetalleFliaAnterior( )
 {
@@ -12649,7 +12745,7 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 	$("#wnombrefamilia").flushCache();
 	$("#wnombrefamilia").unbind("result");
 
-	// Se hace el llamado AJAX para traer los resultados a la función autocomplete
+	// Se hace el llamado AJAX para traer los resultados a la funciï¿½n autocomplete
 	$("#wnombrefamilia").setOptions({url:"ordenes.inc.php?consultaAjaxKardex=31&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&wcenmez="+document.getElementById('wcenmez').value+"&historia="+document.forms.forma.whistoria.value+"&ingreso="+document.forms.forma.wingreso.value });
 
 	$("#wnombrefamilia").autocomplete("ordenes.inc.php?consultaAjaxKardex=31&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&wcenmez="+document.getElementById('wcenmez').value+"&historia="+document.forms.forma.whistoria.value+"&ingreso="+document.forms.forma.wingreso.value, {
@@ -12685,7 +12781,7 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 		var q = -1;
 		var r = 0;
 
-		// Arrays de relación con los articulos
+		// Arrays de relaciï¿½n con los articulos
 		var arRelDosis = new Array();
 		var arRelUnidad = new Array();
 		var arRelPresentacion = new Array();
@@ -12733,7 +12829,7 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 				r = 0;
 			}
 
-			// Si viene precedido de - es artículo, comienza la asignación de los arreglos de relación y del arreglo arArticulos
+			// Si viene precedido de - es artï¿½culo, comienza la asignaciï¿½n de los arreglos de relaciï¿½n y del arreglo arArticulos
 			if( item[i].substr(0,1) == "-" ){
 
 				var pos = arArticulos.length;
@@ -12782,7 +12878,7 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 
 			//Esto fue lo que se escribio para la busqueda de la familia
 			// Se guarda en una variable para buscar el medicamento correcto de acuerdo
-			//al nombre generico o comercial según corresponda
+			//al nombre generico o comercial segï¿½n corresponda
 			if( item[i].substr(0,1) == "<" ){
 				bsqFamilia = item[i].substr(1);
 				esAlergico = bsqFamilia.split("--")[1];
@@ -12813,16 +12909,16 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 		// alert(arArticulos.toSource());
 
 		// 2012-07-09
-		// Se adiciona seleccione al select de presentación de medicamentos
+		// Se adiciona seleccione al select de presentaciï¿½n de medicamentos
 		//arUnidades[ arUnidades.length ] = "-seleccione-";
 
 		/////////////////////////////////////////////////////////////////////////////////////////
 		// Se reestablece valores vacio para los campos que hayan sido llenados
-		document.getElementById( "regletaGrabacion" ).style.display = 'none';	//Oculto la regleta de grabación si está activa
+		document.getElementById( "regletaGrabacion" ).style.display = 'none';	//Oculto la regleta de grabaciï¿½n si estï¿½ activa
 
 		// if(!esLiquidoEndovenoso)
 		// {
-			// document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si está inactivo
+			// document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si estï¿½ inactivo
 			// document.getElementById( "wdosisfamilia" ).value = '';
 		// }
 		// else
@@ -12844,11 +12940,11 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 		}
 		else
 		{
-			document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si está inactivo
+			document.getElementById( "wdosisfamilia" ).disabled = false;			//Activo el campo de dosis si estï¿½ inactivo
 			document.getElementById( "wdosisfamilia" ).value = '';
 		}
 
-		//Quito los valores de los campos de busqueda y adición de medicamentos
+		//Quito los valores de los campos de busqueda y adiciï¿½n de medicamentos
 		document.getElementById('wpresentacion').selectedIndex = -1;
 		document.getElementById('wunidad').selectedIndex = -1;
 		document.getElementById('wfrecuencia').selectedIndex = -1;
@@ -12873,7 +12969,7 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 		document.getElementById('dosisRonda24').value = '';
 		/////////////////////////////////////////////////////////////////////////////////////////
 
-		// Quedan definidos los arrays derelación y de artículos que también se usaran en otras funciones
+		// Quedan definidos los arrays derelaciï¿½n y de artï¿½culos que tambiï¿½n se usaran en otras funciones
 		arRelacionesUnidad = arRelUnidad;
 		arRelacionesPresentacion = arRelPresentacion;
 		arRelacionesViaAdmon = arRelViaAdmon;
@@ -12882,7 +12978,7 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 		// 2012-12-14
 		// alert("autocompletarParaBusqueMedicamentosPorFamilia: arRelacionesUnidad="+arRelacionesUnidad.toSource());
 
-		// Se asigna dinámicamente las opciones a los selects wunidad, wpresentacion, wadministracion
+		// Se asigna dinï¿½micamente las opciones a los selects wunidad, wpresentacion, wadministracion
 		creandoOptionsValue( document.getElementById( "wunidad" ), arUnidades.reverse() );
 		creandoOptionsValue( document.getElementById( "wpresentacion" ), arPresentaciones.reverse() );
 		creandoOptionsValue( document.getElementById( "wadministracion" ), arViasAdmon.reverse() );
@@ -12898,7 +12994,7 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 		if(arViasAdmon.length>1)
 			document.getElementById( "wadministracion" ).options.selectedIndex = -1;
 
-		//Si solo hay una presentación para escoger ejecuto la función
+		//Si solo hay una presentaciï¿½n para escoger ejecuto la funciï¿½n
 		if(arPresentaciones.length == 1){
 			filtrarMedicamentosPorCampo('presentacion');
 		}
@@ -13002,7 +13098,7 @@ function autocompletarParaBusqueMedicamentosPorFamilia(){
 
 
 /************************************************************************************************************************
- * Autocompletar para la busqueda de medicamentos por familias en la pestaña Alta
+ * Autocompletar para la busqueda de medicamentos por familias en la pestaï¿½a Alta
  * @return
  ************************************************************************************************************************/
 function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
@@ -13012,7 +13108,7 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 	$("#wnombrefamiliaimp").flushCache();
 	$("#wnombrefamiliaimp").unbind("result");
 
-	// Se hace el llamado AJAX para traer los resultados a la función autocomplete
+	// Se hace el llamado AJAX para traer los resultados a la funciï¿½n autocomplete
 	$("#wnombrefamiliaimp").setOptions({url:"ordenes.inc.php?consultaAjaxKardex=31&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&wcenmez="+document.getElementById('wcenmez').value+"&historia="+document.forms.forma.whistoria.value+"&ingreso="+document.forms.forma.wingreso.value });
 
 	$("#wnombrefamiliaimp").autocomplete("ordenes.inc.php?consultaAjaxKardex=31&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&wcenmez="+document.getElementById('wcenmez').value+"&historia="+document.forms.forma.whistoria.value+"&ingreso="+document.forms.forma.wingreso.value, {
@@ -13048,7 +13144,7 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 		var q = -1;
 		var r = 0;
 
-		// Arrays de relación con los articulos
+		// Arrays de relaciï¿½n con los articulos
 		var arRelDosis = new Array();
 		var arRelUnidad = new Array();
 		var arRelPresentacion = new Array();
@@ -13090,7 +13186,7 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 				r = 0;
 			}
 
-			// Si viene precedido de - es artículo, comienza la asignación de los arreglos de relación y del arreglo arArticulos
+			// Si viene precedido de - es artï¿½culo, comienza la asignaciï¿½n de los arreglos de relaciï¿½n y del arreglo arArticulos
 			if( item[i].substr(0,1) == "-" ){
 
 				var pos = arArticulos.length;
@@ -13134,7 +13230,7 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 
 			//Esto fue lo que se escribio para la busqueda de la familia
 			// Se guarda en una variable para buscar el medicamento correcto de acuerdo
-			//al nombre generico o comercial según corresponda
+			//al nombre generico o comercial segï¿½n corresponda
 			if( item[i].substr(0,1) == "<" ){
 				bsqFamilia = item[i].substr(1);
 			}
@@ -13150,16 +13246,16 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 		// alert(arArticulos.toSource());
 
 		// 2012-07-09
-		// Se adiciona seleccione al select de presentación de medicamentos
+		// Se adiciona seleccione al select de presentaciï¿½n de medicamentos
 		//arUnidades[ arUnidades.length ] = "-seleccione-";
 
 		/////////////////////////////////////////////////////////////////////////////////////////
 		// Se reestablece valores vacio para los campos que hayan sido llenados
-		//document.getElementById( "regletaGrabacionimp" ).style.display = 'none';	//Oculto la regleta de grabación si está activa
+		//document.getElementById( "regletaGrabacionimp" ).style.display = 'none';	//Oculto la regleta de grabaciï¿½n si estï¿½ activa
 
 		if(!esLiquidoEndovenoso)
 		{
-			document.getElementById( "wdosisfamiliaimp" ).disabled = false;			//Activo el campo de dosis si está inactivo
+			document.getElementById( "wdosisfamiliaimp" ).disabled = false;			//Activo el campo de dosis si estï¿½ inactivo
 			document.getElementById( "wdosisfamiliaimp" ).value = '';
 		}
 		else
@@ -13168,7 +13264,7 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 			document.getElementById( "wdosisfamiliaimp" ).disabled = true;			//Desactivo el campo de dosis
 		}
 
-		//Quito los valores de los campos de busqueda y adición de medicamentos
+		//Quito los valores de los campos de busqueda y adiciï¿½n de medicamentos
 		document.getElementById('wpresentacionimp').selectedIndex = -1;
 		document.getElementById('wunidadimp').selectedIndex = -1;
 		document.getElementById('wfrecuenciaimp').selectedIndex = -1;
@@ -13193,7 +13289,7 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 		document.getElementById('dosisRonda24').value = '';
 		/////////////////////////////////////////////////////////////////////////////////////////
 
-		// Quedan definidos los arrays derelación y de artículos que también se usaran en otras funciones
+		// Quedan definidos los arrays derelaciï¿½n y de artï¿½culos que tambiï¿½n se usaran en otras funciones
 		arRelacionesUnidad = arRelUnidad;
 		arRelacionesPresentacion = arRelPresentacion;
 		arRelacionesViaAdmon = arRelViaAdmon;
@@ -13202,7 +13298,7 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 		// 2012-12-14
 		// alert("autocompletarParaBusqueMedicamentosPorFamilia: arRelacionesUnidad="+arRelacionesUnidad.toSource());
 
-		// Se asigna dinámicamente las opciones a los selects wunidad, wpresentacion, wadministracion
+		// Se asigna dinï¿½micamente las opciones a los selects wunidad, wpresentacion, wadministracion
 		creandoOptionsValue( document.getElementById( "wunidadimp" ), arUnidades.reverse() );
 		creandoOptionsValue( document.getElementById( "wpresentacionimp" ), arPresentaciones.reverse() );
 		creandoOptionsValue( document.getElementById( "wadministracionimp" ), arViasAdmon.reverse() );
@@ -13221,7 +13317,7 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 		// Se reviza si hay algun detalle de fmailia desplegado y se oculta
 		// ocultarDetalleFliaAnterior();
 
-		//Si solo hay una presentación para escoger ejecuto la función
+		//Si solo hay una presentaciï¿½n para escoger ejecuto la funciï¿½n
 		if(arPresentaciones.length == 1){
 			filtrarMedicamentosPorCampo('presentacion', 'imp');
 		}
@@ -13234,7 +13330,7 @@ function autocompletarParaBusqueMedicamentosPorFamiliaAlta(){
 
 /************************************************************************************************************************
  * Filtrar medicamentos por familia
- * tipoConsulta: define si se va a filtrar con base en presentación o con base en presntacion y unidad
+ * tipoConsulta: define si se va a filtrar con base en presentaciï¿½n o con base en presntacion y unidad
  * @return
  ************************************************************************************************************************/
 function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
@@ -13247,7 +13343,7 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 	// Vaiable que va a tener los datos del resultado AJAX
 	var item = "";
 
-	// Si se ha seleccinado alguna presentación
+	// Si se ha seleccinado alguna presentaciï¿½n
 	if(document.getElementById('wpresentacion'+posnombre).selectedIndex!='-1')
 	{
 		// Asigno la presentacion seleccionada
@@ -13259,7 +13355,7 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 		else
 			var unidad = '%';
 
-		// definición de parámetros para el llamado AJAX
+		// definiciï¿½n de parï¿½metros para el llamado AJAX
 		var parametros = "consultaAjaxKardex=34&wemp_pmla="+document.forms.forma.wemp_pmla.value
 						 +"&basedatos="+document.forms.forma.wbasedato.value
 						 +"&wcenmez="+document.getElementById('wcenmez').value
@@ -13271,8 +13367,8 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 
 		var mensaje = "";
 
-		// Llamado AJAX para obtener los datos de búsqueda de medicamentos
-		// Con los nuevos filtros de presentación y/o unidad
+		// Llamado AJAX para obtener los datos de bï¿½squeda de medicamentos
+		// Con los nuevos filtros de presentaciï¿½n y/o unidad
 		try{
 			ajax=nuevoAjax();
 
@@ -13310,7 +13406,7 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 		var q = -1;
 		var r = 0;
 
-		// Arrays de relación con los articulos
+		// Arrays de relaciï¿½n con los articulos
 		var arRelDosis = new Array();
 		var arRelUnidad = new Array();
 		var arRelPresentacion = new Array();
@@ -13350,15 +13446,15 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 				r = 0;
 			}
 
-			// Si viene precedido de ¬ es pos y se define si se habilita el campo
-			if( item[i].substr(0,1) == "¬" ){
+			// Si viene precedido de ï¿½ es pos y se define si se habilita el campo
+			if( item[i].substr(0,1) == "ï¿½" ){
 				valorPos = trim(item[i].substr(1));
 				var numPrescripcionMipres = document.getElementById( "wnumprescripcionmipres"+posnombre );
 				var mipresEnListaMedicamentosOrdenes = document.getElementById( "mipresEnListaMedicamentosOrdenes");
 				var tipoPos = document.getElementById( "wtipopos"+posnombre );
 				if(numPrescripcionMipres && mipresEnListaMedicamentosOrdenes && mipresEnListaMedicamentosOrdenes.value != 0)
 				{
-					//Si es no pos, es contributivo, es un médico, y el paciente es de EPS, debe registrar Mipres
+					//Si es no pos, es contributivo, es un mï¿½dico, y el paciente es de EPS, debe registrar Mipres
 					if(valorPos != 'P' && numPrescripcionMipres && $( "#pacEPS" ).val() == 'on' && $( "#esMedico" ).val() == 'on' && $( "#esContributivo" ).val())
 					{
 						//Habilito campo
@@ -13367,7 +13463,7 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 						numPrescripcionMipres.disabled = false;
 						numPrescripcionMipres.type = "text";
 
-						jAlert("El medicamento \"" + item[0] + "\" es NO POS, debe llenar el MIPRES en la plataforma del Ministerio de Salud antes de grabar el medicamento. A continuación, se abrirá una nueva ventana para realizar registro en MIPRES. Luego, usted deberá volver a esta ventana a continuar el registro.","ALERTA",function(){
+						jAlert("El medicamento \"" + item[0] + "\" es NO POS, debe llenar el MIPRES en la plataforma del Ministerio de Salud antes de grabar el medicamento. A continuaciï¿½n, se abrirï¿½ una nueva ventana para realizar registro en MIPRES. Luego, usted deberï¿½ volver a esta ventana a continuar el registro.","ALERTA",function(){
 							var urlMipres = document.getElementById( "urlCTCministerio").value;
 							var win = window.open(urlMipres, '_blank');
 							if (win) {
@@ -13390,7 +13486,7 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 				}
 			}
 
-			// Si viene precedido de - es artículo, comienza la asignación de los arreglos de relación y del arreglo arArticulos
+			// Si viene precedido de - es artï¿½culo, comienza la asignaciï¿½n de los arreglos de relaciï¿½n y del arreglo arArticulos
 			if( item[i].substr(0,1) == "-" ){
 
 				var pos = arArticulos.length;
@@ -13462,7 +13558,7 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 				});
 
 			}
-			// Se comenta, la dosis siempre viene vacía
+			// Se comenta, la dosis siempre viene vacï¿½a
 			// else if(arDosis.length==1)
 			// {
 				// document.getElementById('wdosisfamilia'+posnombre).value = arDosis[ arDosis.length - 1 ];
@@ -13499,11 +13595,11 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 
 
 		// 2012-07-09
-		// Se adiciona seleccione al select de presentación de medicamentos
+		// Se adiciona seleccione al select de presentaciï¿½n de medicamentos
 		//arUnidades[ arUnidades.length ] = "-seleccione-";
 
 
-		// Quedan definidos los arrays de relación y de artículos que también se usaran en otras funciones
+		// Quedan definidos los arrays de relaciï¿½n y de artï¿½culos que tambiï¿½n se usaran en otras funciones
 		//arRelacionesPresentacion = arRelPresentacion;		// Las presentaciones solo se definen en la seleccion de la familia
 		if(tipoConsulta=='presentacion')	// Se filtra unidades solo si lo que se selecciono fue presentacion
 			arRelacionesUnidad = arRelUnidad;
@@ -13513,7 +13609,7 @@ function filtrarMedicamentosPorCampo(tipoConsulta,posnombre){
 		// 2012-12-14
 		// alert("filtrarMedicamentosPorCampo: arRelacionesUnidad="+arRelacionesUnidad.toSource());
 
-		// Se asigna dinámicamente las opciones a los selects wunidad, wpresentacion, wadministracion
+		// Se asigna dinï¿½micamente las opciones a los selects wunidad, wpresentacion, wadministracion
 		//creandoOptionsValue( document.getElementById( "wpresentacion" ), arPresentaciones.reverse() );		// Las presentaciones solo se definen en la seleccion de la familia
 		if(tipoConsulta=='presentacion')		// Se filtra unidades solo si lo que se selecciono fue presentacion
 			creandoOptionsValue( document.getElementById( "wunidad"+posnombre ), arUnidades.reverse() );
@@ -13975,13 +14071,13 @@ function inicializarJquery(){
 		},
 	});
 	
-	//Función para cerrar la modal al preguntar por el diagnóstico para articulos de control
+	//Funciï¿½n para cerrar la modal al preguntar por el diagnï¿½stico para articulos de control
 	$( "#btCerrarDx" ).click(function(){
 		if( $("#inCopyCIE10" ).val() != '' ){
 			$.unblockUI();
 		}
 		else{
-			jAlert( "Debe ingresar un <b>diagnóstico</b>.", "ALERTA" );
+			jAlert( "Debe ingresar un <b>diagnï¿½stico</b>.", "ALERTA" );
 		}
 	}).attr({
 		disabled: true,
@@ -14257,7 +14353,7 @@ function inicializarJquery(){
 				 * 0: Como se muestra en el autocomplete
 				 * 1: Codigo del articulo
 				 * 2: Nombre comercial del articulo
-				 * 3: Nombre genérico del articulo
+				 * 3: Nombre genï¿½rico del articulo
 				 * 4: Tipo protocolo
 				 * 5: (M)edicamento o (L)iquido
 				 * 6: Es generico
@@ -14358,7 +14454,7 @@ function inicializarJquery(){
     }
 
 	// 2012-07-03
-	// Inicializa accordion para los exámenes realizados
+	// Inicializa accordion para los exï¿½menes realizados
 	$("#acExamenes").accordion({ collapsible: true });
 	$("#null").accordion({ collapsible: true });
 
@@ -14392,7 +14488,7 @@ function inicializarJquery(){
 }
 
 /****************************************************************************************************************************************************************
- * Inicializa el autocompletar de jquery para procedimientos y ayudas diangosticos segun el filttro seleccionado, esta función se llama cada vez que
+ * Inicializa el autocompletar de jquery para procedimientos y ayudas diangosticos segun el filttro seleccionado, esta funciï¿½n se llama cada vez que
  * se cambia el filtro de tipo de servicio
  * @return
  *
@@ -14424,7 +14520,7 @@ function autocompletarParaConsultaDiagnosticas(){
 
 					//////////////////////////////////////////////////////////
 
-					// Consulto si el formulario ha sido diligenciado en la historia clínica electrónica
+					// Consulto si el formulario ha sido diligenciado en la historia clï¿½nica electrï¿½nica
 					parametros = "consultaAjaxKardex=50&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatoshce="+document.forms.forma.wbasedatohce.value+"&formTipoOrden="+formTipoOrden+"&historia="+historia+"&ingreso="+ingreso;
 
 					try{
@@ -14446,7 +14542,7 @@ function autocompletarParaConsultaDiagnosticas(){
 								var descripcion = $("#wselTipoServicio option:selected").text();
 
 								if(formDiligenciado == 'ok'){
-								var r = confirm("¿La "+descripcion+" ya ha sido ingresada el dia de hoy, desea agregarla?");
+								var r = confirm("ï¿½La "+descripcion+" ya ha sido ingresada el dia de hoy, desea agregarla?");
 								}else{
 
 								totalExamenesAntesGrabar = formDiligenciado;
@@ -14586,8 +14682,8 @@ function autocompletarParaConsultaDiagnosticas(){
     	$("#wnomproc").unbind("result");
 
 		// 2012-06-27
-		// Se comenta y se reemplaza por la siguiente línea debido a que estaba trayende 2 valores por cada selección que se hacia
-		// Cuando se desplegaba las opciones y se seleccionaba y daba 'Enter' en una, se agregaba ésta y la anterior a las ordenes
+		// Se comenta y se reemplaza por la siguiente lï¿½nea debido a que estaba trayende 2 valores por cada selecciï¿½n que se hacia
+		// Cuando se desplegaba las opciones y se seleccionaba y daba 'Enter' en una, se agregaba ï¿½sta y la anterior a las ordenes
 		// Esto pasaba cuando se daba 'Enter', no pasaba si se hacia clic
 		// $("#wnomproc").setOptions({url:"ordenes.inc.php?consultaAjaxKardex=27&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&tipoServicio="+document.getElementById('wselTipoServicio').options[ document.getElementById('wselTipoServicio').selectedIndex ].value});
     	$("#wnomproc").setOptions({url:"ordenes.inc.php?consultaAjaxKardex=27&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&ccoPaciente="+document.forms.forma.wservicio.value});
@@ -14653,7 +14749,7 @@ function autocompletarParaConsultaDiagnosticasAlta(){
 
 					//////////////////////////////////////////////////////////
 
-					// Consulto si el formulario ha sido diligenciado en la historia clínica electrónica
+					// Consulto si el formulario ha sido diligenciado en la historia clï¿½nica electrï¿½nica
 					parametros = "consultaAjaxKardex=50&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatoshce="+document.forms.forma.wbasedatohce.value+"&formTipoOrden="+formTipoOrden+"&historia="+historia+"&ingreso="+ingreso;
 
 					try{
@@ -14674,7 +14770,7 @@ function autocompletarParaConsultaDiagnosticasAlta(){
 								var descripcion = $("#wselTipoServicioImp option:selected").text();
 
 								if(formDiligenciado == 'ok'){
-								var r = confirm("¿La "+descripcion+" ya ha sido ingresada el dia de hoy, desea agregarla?");
+								var r = confirm("ï¿½La "+descripcion+" ya ha sido ingresada el dia de hoy, desea agregarla?");
 								}else{
 
 									totalExamenesAntesGrabar = formDiligenciado;
@@ -14818,8 +14914,8 @@ function autocompletarParaConsultaDiagnosticasAlta(){
     	$("#wnomprocimp").unbind("result");
 
 		// 2012-06-27
-		// Se comenta y se reemplaza por la siguiente línea debido a que estaba trayende 2 valores por cada selección que se hacia
-		// Cuando se desplegaba las opciones y se seleccionaba y daba 'Enter' en una, se agregaba ésta y la anterior a las ordenes
+		// Se comenta y se reemplaza por la siguiente lï¿½nea debido a que estaba trayende 2 valores por cada selecciï¿½n que se hacia
+		// Cuando se desplegaba las opciones y se seleccionaba y daba 'Enter' en una, se agregaba ï¿½sta y la anterior a las ordenes
 		// Esto pasaba cuando se daba 'Enter', no pasaba si se hacia clic
 		// $("#wnomprocimp").setOptions({url:"ordenes.inc.php?consultaAjaxKardex=27&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&tipoServicio="+document.getElementById('wselTipoServicio').options[ document.getElementById('wselTipoServicio').selectedIndex ].value});
     	$("#wnomprocimp").setOptions({url:"ordenes.inc.php?consultaAjaxKardex=27&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatos="+document.forms.forma.wbasedato.value+"&ccoPaciente="+document.forms.forma.wservicio.value});
@@ -14899,7 +14995,7 @@ function agregarSeccionAcordeon(idAcordeon){
 
 }
 /*****************************************************************************************************************************
- * Confirma y redirecciona a la creación del kardex
+ * Confirma y redirecciona a la creaciï¿½n del kardex
  ******************************************************************************************************************************/
 function abrirModalHCE(){
 	var titulo = "Vistas asociadas";
@@ -15039,13 +15135,13 @@ function consultarAyudasDiagnosticas(){
 	//posiciones	0	            ,   1   ,    2   ,                3                    ,   4  ,  5    ,     6   , 7,  8 ,   9  ,  10,     11
 				//["BIOPSIA DE MAMA CON AGU... ", "A01", "851102", "BIOPSIA_DE_MAMA_CON_AGUJA_TRU_-CUT", "A01", "A064", "851102", "", "", "off", "off", "off"]
 							          //item[1]  , item[2] ,   item[3]  ,  item[4]  , item[5], item[6]  ,     item[7]    ,    item[8]       ,      item[9]      ,        item[10]      ,item[11]
-// funcInternas es una funcion que se ejecuta una vez termine el llamado al funcion agregarExamen y es opcional. Esta función no tiene parametros.
+// funcInternas es una funcion que se ejecuta una vez termine el llamado al funcion agregarExamen y es opcional. Esta funciï¿½n no tiene parametros.
 function seleccionarAyudaDiagnostica(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,codigoCups,consecutivoOrden,nombreCentroCostos,esAyudaHospitalaria, requiereJustificacion, noPos, generaOrdenIndividual, aydJustificacion, funcInternas, datosAdicionales, esOfertado, realizaUnidad ){
 
 	var datosAdicionales = datosAdicionales || {};
 	var esOfertado 		 = esOfertado || false;
 	
-	//Indica si debe mostrar modal al médico para que indique si el estudio se realiza en la unidad del paciente o en laboratorio
+	//Indica si debe mostrar modal al mï¿½dico para que indique si el estudio se realiza en la unidad del paciente o en laboratorio
 	var realizaUnidad 	 = realizaUnidad || false;	
 	
 	if( realizaUnidad == 'on' ){
@@ -15180,7 +15276,7 @@ function seleccionarAyudaDiagnostica(centroCostos,codExamen,nombreExamen,tipoEst
 	
 	
 	// /**************************************************************************************************
-	 // * Aquí muestro la modal con los datos adicionales del examen
+	 // * Aquï¿½ muestro la modal con los datos adicionales del examen
 	 // **************************************************************************************************/
 	// //Muestro la modal para mostrar los datos adicionales
 
@@ -15503,7 +15599,7 @@ function cancelarOrden(centroCostos,consecutivoOrden){
 	jConfirm( "Esta seguro de cancelar la orden "+consecutivoOrden+"?", 'Cancelar orden', function(r) {
 		 if(r){
 			/****************************************************************************************************************
-			 * Creo la acción para ejecutarla al momento de guardar
+			 * Creo la acciï¿½n para ejecutarla al momento de guardar
 			 ****************************************************************************************************************/
 			if( !accionesOrdenes[ ELIMINAR_ORDEN_EXAMEN ] ){
 				accionesOrdenes[ ELIMINAR_ORDEN_EXAMEN ] = {};
@@ -15599,13 +15695,13 @@ function intercalarElemento(idElemento){
 	$("#"+idElemento).toggle("normal");
 }
 /*****************************************************************************************************************************
- * Confirma y redirecciona a la creación del kardex
+ * Confirma y redirecciona a la creaciï¿½n del kardex
  ******************************************************************************************************************************/
 function intercalarExamenAnterior(idElemento){
     $("#ex"+idElemento).toggle("normal");
 }
 /*****************************************************************************************************************************
- * Confirma y redirecciona a la creación del kardex
+ * Confirma y redirecciona a la creaciï¿½n del kardex
  ******************************************************************************************************************************/
 function intercalarMedicamentoAnterior(idElemento,tipoProtocolo){
 			if(filaIdAnt != "" && document.getElementById(filaIdAnt).display != 'none')
@@ -15627,7 +15723,7 @@ function intercalarMedicamentoAnterior(idElemento,tipoProtocolo){
 	$("#medAnt"+tipoProtocolo+idElemento).toggle("normal");
 }
 /*****************************************************************************************************************************
- * Confirma y redirecciona a la creación del kardex
+ * Confirma y redirecciona a la creaciï¿½n del kardex
  ******************************************************************************************************************************/
 function confirmarGeneracion(){
 	var historia = document.forms.forma.whistoria.value;
@@ -15650,7 +15746,7 @@ function confirmarGeneracion(){
 			document.location.href = 'ordenes.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b'+'&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha;
 		}
 	} else {
-		alert("No se encontró historia, ingreso y fecha en los parametros de entrada.");
+		alert("No se encontrï¿½ historia, ingreso y fecha en los parametros de entrada.");
 	}
 }
 /******************************************************************************************************************************
@@ -15692,7 +15788,7 @@ function validarFechayHoraLocal(strFechaServidor,strHoraServidor){
 }
 
 /*****************************************************************************************************************************
- * Este metodo encapsula la creación dinámica de cada campo, segun las acciones asociadas y su tipo.
+ * Este metodo encapsula la creaciï¿½n dinï¿½mica de cada campo, segun las acciones asociadas y su tipo.
  *
  * Orden de la serializacion de acciones:
  *
@@ -15701,7 +15797,7 @@ function validarFechayHoraLocal(strFechaServidor,strHoraServidor){
  * 3. Borrar
  * 4. Crear
  *
- * ::::::::::::::Parámetros::::::::::::::
+ * ::::::::::::::Parï¿½metros::::::::::::::
  * String Tipo		: Permite evaluar el tipo de campo se va a generar
  * String Id		: Id y name especificos del campo
  * String idAcion	: Id del campo hidden que contiene la secuencia del CRUD
@@ -15962,9 +16058,9 @@ function consultarKardex(){
 	var esFechaValida = esFechaMenorIgualAActual(document.forms.forma.wfecha.value);
 	var whgrabado = document.getElementById("whgrabado");
 
-	//Digitó historia
+	//Digitï¿½ historia
 	if(!nroDocumento || nroDocumento == ''){
-		alert("Debe especificar un número de documento de paciente válido.");
+		alert("Debe especificar un nï¿½mero de documento de paciente vï¿½lido.");
 		return;
 	}
 
@@ -15991,7 +16087,7 @@ function consultarKardex(){
 function salida(){
 	if(true || document.getElementById("fixeddiv2")){
 		if(true || !document.getElementById( "wcconf" ).checked){
-//			alert( "Se grabará y cerrará la orden, tenga en cuenta que este NO HA SIDO confirmada." );
+//			alert( "Se grabarï¿½ y cerrarï¿½ la orden, tenga en cuenta que este NO HA SIDO confirmada." );
 		}
 
 		grabarKardex();
@@ -16056,7 +16152,7 @@ function marcarKardexConfirmado(){
  * FUNCIONES Y METODOS
  ******************************************************************************************************************************/
  /*****************************************************************************************************************************
- * Invocación generica del calendario para fecha inicial de suministro
+ * Invocaciï¿½n generica del calendario para fecha inicial de suministro
  ******************************************************************************************************************************/
 function calendario(idx,tipoProtocolo){
 	Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'24',electric:false,inputField:'wfinicio'+tipoProtocolo+idx,button:'btnFecha'+tipoProtocolo+idx,ifFormat:'%Y-%m-%d a las:%H:00',daFormat:'%Y/%m/%d',timeInterval:120,dateStatusFunc:fechasDeshabilitadas,onSelect:alSeleccionarFecha});
@@ -16083,13 +16179,13 @@ function calendarioLevIC(idx){
 }
 
 /*****************************************************************************************************************************
- * Invocación generica del calendario para fecha final de suministro
+ * Invocaciï¿½n generica del calendario para fecha final de suministro
  ******************************************************************************************************************************/
 function calendario2(idx){
 	Zapatec.Calendar.setup({weekNumbers:false,showsTime:false,timeFormat:'24',electric:false,inputField:'wffinal'+idx,button:'btnFechaFin'+idx,ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});
 }
 /*****************************************************************************************************************************
- * Invocacion generica del calendario para la fecha de realización examen
+ * Invocacion generica del calendario para la fecha de realizaciï¿½n examen
  ******************************************************************************************************************************/
 
 function calendario3imp(idx){
@@ -16099,7 +16195,7 @@ function calendario3imp(idx){
 }
 
 /*****************************************************************************************************************************
- * Invocacion generica del calendario para la fecha de realización examen
+ * Invocacion generica del calendario para la fecha de realizaciï¿½n examen
  ******************************************************************************************************************************/
 function calendario4(idx){
 	Zapatec.Calendar.setup({weekNumbers:false,showsTime:false,timeFormat:'12',electric:false,inputField:'wfliq'+idx,button:'btnFechaLiq'+idx,ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d',dateStatusFunc:fechasDeshabilitadas});
@@ -16151,7 +16247,7 @@ function stopEvent(e){
     }catch(e){}
 }
 /*****************************************************************************************************************************
-  * Invocacion generica del calendario para la fecha de realización examen
+  * Invocacion generica del calendario para la fecha de realizaciï¿½n examen
   ******************************************************************************************************************************/
 function fechasDeshabilitadas(date, year, month, day, hours, minutes){
 	var now = new Date();
@@ -16242,14 +16338,14 @@ function teclaEnterEntero(e,accion){
  	return respuesta;
  }
 /*****************************************************************************************************************************
- * Seleccion de un componente para adicionarse a la infusión
+ * Seleccion de un componente para adicionarse a la infusiï¿½n
  ******************************************************************************************************************************/
 function seleccionReemplazo(valor){
 	if(valor != null){
 		elementosDetalle = valor.toString();
 		fixedMenu.show();
 	}else {
-		alert("No se capturó identificador de medicamento a modificar");
+		alert("No se capturï¿½ identificador de medicamento a modificar");
 	}
 }
 /*****************************************************************************************************************************
@@ -16387,7 +16483,7 @@ function seleccionHojaAccionesComplementarias(codigo,descripcion,objArbol){
 	}
 }
 /*****************************************************************************************************************************
- * Seleccion de un componente para adicionarse a la infusión
+ * Seleccion de un componente para adicionarse a la infusiï¿½n
  ******************************************************************************************************************************/
 function expandirRama(objeto,codigo){
 
@@ -16431,7 +16527,7 @@ function movimientoExamenes(){
 	return movExamenes.show();
 }
 /*****************************************************************************************************************************
- * Seleccion de un componente para adicionarse a la infusión
+ * Seleccion de un componente para adicionarse a la infusiï¿½n
  ******************************************************************************************************************************/
 function seleccionarComponente(codigo, nombre){
 //	debugger;
@@ -16682,7 +16778,7 @@ function quitarEsquemaDextrometer(){
 	// }
 
 	/**********************************************************************
-	 * Creo la acción para ejecutarla al momento de guardar
+	 * Creo la acciï¿½n para ejecutarla al momento de guardar
 	 **********************************************************************/
 	if( !accionesOrdenes[ ELIMINAR_ESQUEMA_DEXTROMETER ] ){
 		accionesOrdenes[ ELIMINAR_ESQUEMA_DEXTROMETER ] = {};
@@ -16827,7 +16923,7 @@ function seleccionarMedicamento(codigo, nombre, origen, grupo, forma, unidad, po
 
 						//Verifica si se genera la formula de control de forma automatica.
 						if($("#medicamentosControlAuto").val() == 'on'){
-							alert("Este medicamento se encuentra en el grupo de control.  La fórmula de control se generará automaticamente al grabar.");
+							alert("Este medicamento se encuentra en el grupo de control.  La fï¿½rmula de control se generarï¿½ automaticamente al grabar.");
 						}else{
 							alert("Este medicamento se encuentra en el grupo de control.  Recuerde diligencia el formato manual de medicamentos de control.");
 						}
@@ -16838,7 +16934,7 @@ function seleccionarMedicamento(codigo, nombre, origen, grupo, forma, unidad, po
 					}
 
 
-					// Se establece si la cadena msjNoPos ya tiene el codigo del artículo actual
+					// Se establece si la cadena msjNoPos ya tiene el codigo del artï¿½culo actual
 					var avisoNoPos = msjNoPos.indexOf(codigo)
 					msjNoPos += codigo+',';
 
@@ -17004,7 +17100,7 @@ function seleccionarMedicamento(codigo, nombre, origen, grupo, forma, unidad, po
 }
 
 /*****************************************************************************************************************************
- *Punto de entrada de la generación del kardex
+ *Punto de entrada de la generaciï¿½n del kardex
  ******************************************************************************************************************************/
 function enter() {
 	var historia = document.forms.forma.whistoria.value;
@@ -17021,7 +17117,7 @@ function enter() {
 	}
 }
 /*****************************************************************************************************************************
- *Invoca acción de grabación del kardex, del encabezado y paso de las temporales a las tablas definitivas.
+ *Invoca acciï¿½n de grabaciï¿½n del kardex, del encabezado y paso de las temporales a las tablas definitivas.
  ******************************************************************************************************************************/
 function grabarKardex(wimprimir){
 	
@@ -17044,7 +17140,7 @@ function grabarKardex(wimprimir){
 		var contNPTSuspendidas = 0;
 		if(cantNPTAgregadas>0)
 		{
-			//Suspender las nutriciones pendientes en cada pestaña
+			//Suspender las nutriciones pendientes en cada pestaï¿½a
 			$('table[id^=tbDetalle] input[id^=wesnpt]').each(function(){
 				
 				protocoloContador = $(this).attr('id'); 
@@ -17108,7 +17204,7 @@ function grabarKardex(wimprimir){
 					// //Obtengo el tiempo actual
 					// var tmActual = new Date();
 
-					// //El medicamento por tanto debe comenzar mínimo 30 minutos despues del tiempo actual
+					// //El medicamento por tanto debe comenzar mï¿½nimo 30 minutos despues del tiempo actual
 					// var tmTiempoMinimoInicio = tmActual.getTime() + tmAntes;
 
 					// //Creo la fecha y hora actual en milisegundos para poder comparar las fechaServidor
@@ -17157,7 +17253,7 @@ function grabarKardex(wimprimir){
 		   //document.getElementById("wnmmed"+tipoProtocolo+cont1).value
 		   //document.getElementById("wnmmed"+tipoProtocolo+cont1).value.split( "-" )[0]
 		   if( buscarCambiosCTC( x ) ){
-			   //Se deja quemado los ultimos dos campo, ya que con los últimos cambios no se requieren
+			   //Se deja quemado los ultimos dos campo, ya que con los ï¿½ltimos cambios no se requieren
 			   strPendientesCTC += 'articulo|'+x+'|N|0\r\n';
 			   mostrarCTC = true;
 		   }
@@ -17353,7 +17449,7 @@ function grabarKardex(wimprimir){
 		if(valido){
 
 			/****************************************************************************************************
-			 * Valido que no se pueda grabar el kardex con velocidad de dilución vació
+			 * Valido que no se pueda grabar el kardex con velocidad de diluciï¿½n vaciï¿½
 			 ***************************************************************************************************/
 			var valVelocidadDilucion = true;
 			 //Busco en el objeto artLevs cuales son los articulos que se deben eliminar
@@ -17383,7 +17479,7 @@ function grabarKardex(wimprimir){
 				}
 			}
 
-			//El encabezado del kardex se encuentra dividido en las pestañas
+			//El encabezado del kardex se encuentra dividido en las pestaï¿½as
 			var pestanasActivas = document.getElementById("hpestanas").value;
 			
 			try{
@@ -17572,7 +17668,7 @@ function grabarKardex(wimprimir){
 				
 				
 				if( $.trim( artsGrabadosCTC ) != '' ){
-					//Se graban los datos que no han sido leídos cómo leidos
+					//Se graban los datos que no han sido leï¿½dos cï¿½mo leidos
 					$.ajax({
 						url: "ordenes.inc.php",
 						type: "POST",
@@ -17799,8 +17895,8 @@ function grabarKardex(wimprimir){
 						cadenaCTCcontributivo = cadenaCTCcontributivo.replace(arrayEliminados[i]+"***","")
 					}
 				}
-				var mipresEnListaMedicamentosOrdenes = $("#mipresEnListaMedicamentosOrdenes").val(); //Valor del parámetro.
-				//Si es enfermera, muestra el popup, si es médico, solo procede como si cerraran el popup
+				var mipresEnListaMedicamentosOrdenes = $("#mipresEnListaMedicamentosOrdenes").val(); //Valor del parï¿½metro.
+				//Si es enfermera, muestra el popup, si es mï¿½dico, solo procede como si cerraran el popup
 				if( cadenaCTCcontributivo != "" && (mipresEnListaMedicamentosOrdenes == 0 || $( "#esMedico" ).val() != 'on')){
 				   mostrarCTCcontributivo();
 				   return;
@@ -17845,7 +17941,7 @@ function grabarKardex(wimprimir){
 			}
 
 
-			//Se graban los datos que no han sido leídos cómo leidos
+			//Se graban los datos que no han sido leï¿½dos cï¿½mo leidos
 			$.ajax({
 					url: "ordenes.inc.php",
 					type: "POST",
@@ -17873,7 +17969,7 @@ function grabarKardex(wimprimir){
 				}
 			);
 
-			//Se graban los datos que no han sido leídos cómo leidos
+			//Se graban los datos que no han sido leï¿½dos cï¿½mo leidos
 			$.ajax({
 					url: "ordenes.inc.php",
 					type: "POST",
@@ -18104,7 +18200,7 @@ function grabarKardex(wimprimir){
 		filtroAcciones("6.5","grabarEsquemaDextrometer()");
 //		grabarEsquemaDextrometer();
 
-		// Llamo a la ventana de impresión de la orden
+		// Llamo a la ventana de impresiï¿½n de la orden
 		if(wimprimir=='imp' || wimprimir=='impexa'|| wimprimir=='imppro' || wimprimir=='cenimp' || wimprimir=='cenimpexa' || wimprimir=='cenimppro')
 		{
 			if(valido)
@@ -18188,7 +18284,7 @@ function grabarKardex(wimprimir){
 			}
 			else
 			{
-				alert("Debe firmar digitalmente para poder realizar la impresión de a orden");
+				alert("Debe firmar digitalmente para poder realizar la impresiï¿½n de a orden");
 			}
 		}
 		else
@@ -18215,7 +18311,7 @@ function grabarKardex(wimprimir){
 
 }
 /*****************************************************************************************************************************
- * Tipo de cambio en la pestaña y seccion
+ * Tipo de cambio en la pestaï¿½a y seccion
  ******************************************************************************************************************************/
 function marcarCambio(tipo,indice, campo ){
 	/*se remueve el div en el cambio de div que contiene los radios*/
@@ -18300,7 +18396,7 @@ function actualizaImpresion( historia,ingreso,fecha )
 			if (ajax.readyState==4 && ajax.status==200){
 				var respuesta=$.trim( ajax.responseText );
 				if(respuesta!='1'){
-					//alert("No se pudo actualizar el artículo");
+					//alert("No se pudo actualizar el artï¿½culo");
 				}
 			}
 		}
@@ -18340,7 +18436,7 @@ function marcarImpresion( campo,historia,ingreso,articulo,fecha,finicio,hinicio 
 			if (ajax.readyState==4 && ajax.status==200){
 				var respuesta=$.trim( ajax.responseText );
 				if(respuesta!='1'){
-					alert("No se pudo actualizar el artículo");
+					alert("No se pudo actualizar el artï¿½culo");
 					if(campo.checked == true)
 						campo.checked = false;
 					else
@@ -18466,7 +18562,7 @@ function consultarEsquemaInsulinaElemento(codEsquema){
 	}
 }
  /*****************************************************************************************************************************
- * Confirma y redirecciona a la creación del kardex
+ * Confirma y redirecciona a la creaciï¿½n del kardex
  ******************************************************************************************************************************/
 function confirmarGeneracion(){
 	var historia = document.forms.forma.whistoria.value;
@@ -18476,7 +18572,7 @@ function confirmarGeneracion(){
 	if(historia && ingreso){
 		document.location.href = 'ordenes.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b'+'&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha;
 	} else {
-		alert("No se encontró historia, ingreso y fecha en los parametros de entrada.");
+		alert("No se encontrï¿½ historia, ingreso y fecha en los parametros de entrada.");
 	}
 }
 /*****************************************************************************************************************************
@@ -18527,9 +18623,9 @@ function consultarServicioExamen(){
 }
 
 /*****************************************************************************************************************************
- * Crea dinámicamente una fila en el detalle de medicamentos
+ * Crea dinï¿½micamente una fila en el detalle de medicamentos
  *
- * Dependiendo del tipo de protocolo se agregará a una lista u otra, los protocolos actuales son:
+ * Dependiendo del tipo de protocolo se agregarï¿½ a una lista u otra, los protocolos actuales son:
  *
  * 1. Normal, se agrega en la lista convencional
  * 2. Analgesia: Contenedor detAnalgesia
@@ -18741,7 +18837,7 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		var columna2 = document.createElement("td");		//Articulo
 		var columna3 = document.createElement("td");		//Dosis
 		var columna4 = document.createElement("td");		//Periodicidad
-		var columna5 = document.createElement("td");		//Condición de suministro
+		var columna5 = document.createElement("td");		//Condiciï¿½n de suministro
 		var columna6 = document.createElement("td");		//Forma farmaceutica
 		var columna7 = document.createElement("td");		//Fecha y hora de inicio
 		var columna8 = document.createElement("td");		//Dosis maxima
@@ -18756,7 +18852,7 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 
 		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
 		{
-			var colNumMipres = document.createElement("td");		//Número de prescripción MIPRES
+			var colNumMipres = document.createElement("td");		//Nï¿½mero de prescripciï¿½n MIPRES
 		}
 		
 
@@ -18817,7 +18913,7 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 
 		var dosis = crearCampo("1",idCampoDosis,tipoProtocolo+".5",atr,"");
 
-		//Número mipres
+		//Nï¿½mero mipres
 		if(document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2')
 		{
 			var numeroMipres = document.createElement("input");
@@ -19374,11 +19470,11 @@ function agregarArticulo( detKardexContenedor, deAlta ){
 		cntDetalleKardex.insertBefore(fila, cntDetalleKardex.firstChild);
 	}
 	else {
-		//alert("Debe ingresar la información del articulo actual antes de adicionar uno nuevo");
+		//alert("Debe ingresar la informaciï¿½n del articulo actual antes de adicionar uno nuevo");
 	}
 }
 /*****************************************************************************************************************************
- * Crea dinámicamente una fila nueva para agregar una infusión
+ * Crea dinï¿½micamente una fila nueva para agregar una infusiï¿½n
  ******************************************************************************************************************************/
 function agregarInfusion(){
 	var puedeAgregar = true;
@@ -19425,8 +19521,8 @@ function agregarInfusion(){
 	//Columnas nuevas
 	var columna1 = document.createElement("td");		//Acciones
 	var columna2 = document.createElement("td");		//Fecha de solicitud
-	var columna3 = document.createElement("td");		//Componentes de la infusión
-	var columna4 = document.createElement("td");		//Observaciones infusión
+	var columna3 = document.createElement("td");		//Componentes de la infusiï¿½n
+	var columna4 = document.createElement("td");		//Observaciones infusiï¿½n
 
 	columna2.setAttribute('align','center');
 
@@ -19615,7 +19711,7 @@ function compare_dates(fecha, fecha2)
 
 
 /*****************************************************************************************************************************
- * Agrega un nuevo registro al Maestro de Estudios y Ayudas Diagnóstcas por medio de AJAX
+ * Agrega un nuevo registro al Maestro de Estudios y Ayudas Diagnï¿½stcas por medio de AJAX
  ******************************************************************************************************************************/
 function agregarNuevoExamen()
 {
@@ -19630,7 +19726,7 @@ function agregarNuevoExamen()
 
 	if(nonmbreExamen=='' || nonmbreExamen==' ')
 	{
-		alert('El nombre de la ayuda o procedimiento no puede estar vacío');
+		alert('El nombre de la ayuda o procedimiento no puede estar vacï¿½o');
 		return false;
 	}
 
@@ -19685,7 +19781,7 @@ function agregarNuevoExamen()
 
 
 /*****************************************************************************************************************************
- * Agrega dinámicamente una nueva fila para un examen de laboratorio nuevo
+ * Agrega dinï¿½micamente una nueva fila para un examen de laboratorio nuevo
  ******************************************************************************************************************************/
 function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,codigoCups,consecutivoOrden,nombreCentroCostos, nroItem, crearOrden, requiereJustificacion, noPos, aydJustificacion, funcInternas, datosAdicionales, esOfertado, realizaUnidad ){
 
@@ -19751,7 +19847,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 		var fechaActualOrden = anioActual+"-"+mesActual+"-"+diaActual;
 
 		/*******************************************************************************************
-		 * verificando si hay un examen igual para el mismo día
+		 * verificando si hay un examen igual para el mismo dï¿½a
 		 *******************************************************************************************/
 		 permitir_registro = false;
 
@@ -19775,7 +19871,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 
 			nombExamen = nombreExamen.toUpperCase();
 			
-			// if( !confirm( "El examen "+nombExamen+" ya existe para el mismo día. ¿Desea agregarlo?" ) ){
+			// if( !confirm( "El examen "+nombExamen+" ya existe para el mismo dï¿½a. ï¿½Desea agregarlo?" ) ){
 
 				// if( !funcInternas ){
 					// funcInternas();
@@ -19783,7 +19879,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 				// return false;
 			// }
 
-			jConfirm( "El examen "+nombExamen+" ya existe para el mismo día. ¿Desea agregarlo?", "Alerta", function( resp ){
+			jConfirm( "El examen "+nombExamen+" ya existe para el mismo dï¿½a. ï¿½Desea agregarlo?", "Alerta", function( resp ){
 				if( resp ){
 
 					mostrarModalAdicionesExamen();
@@ -19804,7 +19900,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 
 	}
 	else {
-		alert('Por favor ingrese la información del examen antes de agregar uno nuevo.');
+		alert('Por favor ingrese la informaciï¿½n del examen antes de agregar uno nuevo.');
 
 		if( funcInternas ){
 			funcInternas();
@@ -19831,7 +19927,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 		console.log(datosAdicionales);
 
 		/**************************************************************************************************
-		 * Aquí muestro la modal con los datos adicionales del examen
+		 * Aquï¿½ muestro la modal con los datos adicionales del examen
 		 **************************************************************************************************/
 		//Muestro la modal para mostrar los datos adicionales
 
@@ -19891,7 +19987,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 
 
 		/**
-		 * Se le pregunta al médico si el estudio se realiza en la unidad en que se encuentra al paciente o no
+		 * Se le pregunta al mï¿½dico si el estudio se realiza en la unidad en que se encuentra al paciente o no
 		 */
 		function funcInternaAgregarExamen(){
 			
@@ -19900,7 +19996,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 			// if( realizaUnidad ){
 				// $.alerts.okButton 		= "SI";
 				// $.alerts.cancelButton 	= "NO";
-				// jConfirm( "El estudio <b>" + reemplazarTodo(nombreExamen,"_"," ") + "</b> se realizará en el centro de costos <b>" + $( "#nombreServicioActual" ).val() + "</b>?", "ALERTA", function( resp ){
+				// jConfirm( "El estudio <b>" + reemplazarTodo(nombreExamen,"_"," ") + "</b> se realizarï¿½ en el centro de costos <b>" + $( "#nombreServicioActual" ).val() + "</b>?", "ALERTA", function( resp ){
 					// if( resp ){
 						// esOfertado = false;
 						// jConfirm( "Desea imprimir el sticker para el estudio <b>" + reemplazarTodo(nombreExamen,"_"," ") + "</b>?", "ALERTA", function( resp ){
@@ -20256,7 +20352,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 
 				encabezadoOrden.rowSpan = encabezadoOrden.rowSpan+1;
 
-				// Muestra el numero de orden si se ocultó al agregar procedimientos agrupados
+				// Muestra el numero de orden si se ocultï¿½ al agregar procedimientos agrupados
 				existeEnAgrupados = false;
 				for( var x in procAgrupados ){
 					if( procAgrupados[x].estado != 'grabado' ){
@@ -20349,7 +20445,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 					grabarExamen( cuentaExamenes-1, false );
 					oculto6.value = requiereJustificacion;
 
-					// var confirmaCTCproc = confirm("¿Desea realizar el CTC del procedimiento para el paciente?");
+					// var confirmaCTCproc = confirm("ï¿½Desea realizar el CTC del procedimiento para el paciente?");
 
 					// if(confirmaCTCproc){
 						// if(!adicionMultiple)
@@ -20373,7 +20469,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 
 
 					// nombExamen
-					jConfirm( "¿Desea realizar el CTC del procedimiento "+""+" para el paciente?", "Alerta", function( resp ){
+					jConfirm( "ï¿½Desea realizar el CTC del procedimiento "+""+" para el paciente?", "Alerta", function( resp ){
 						if( resp )
 						{
 							if(!adicionMultiple)
@@ -20469,7 +20565,7 @@ function agregarExamen(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,
 }
 
 /*****************************************************************************************************************************
- * Agrega dinámicamente una nueva fila para un examen de laboratorio nuevo
+ * Agrega dinï¿½micamente una nueva fila para un examen de laboratorio nuevo
  ******************************************************************************************************************************/
 function agregarExamenAlta(centroCostos,codExamen,nombreExamen,tipoEstudio,anatomia,codigoCups,consecutivoOrden,nombreCentroCostos, nroItem, crearOrden, requiereJustificacion, noPos, aydJustificacion ){
 
@@ -20532,10 +20628,10 @@ function agregarExamenAlta(centroCostos,codExamen,nombreExamen,tipoEstudio,anato
 		var fechaActualOrden = anioActual+"-"+mesActual+"-"+diaActual;
 
 		/*******************************************************************************************
-		 * verificando si hay un examen igual para el mismo día
+		 * verificando si hay un examen igual para el mismo dï¿½a
 		 *******************************************************************************************/
 		/*******************************************************************************************
-		 * verificando si hay un examen igual para el mismo día
+		 * verificando si hay un examen igual para el mismo dï¿½a
 		 *******************************************************************************************/
 		 permitir_registro = false;
 
@@ -20557,7 +20653,7 @@ function agregarExamenAlta(centroCostos,codExamen,nombreExamen,tipoEstudio,anato
 		//Se valida si el examen existe para el mismo dia con la variable permitir_registro == true, si el false permite hacer el registro. Jonatan Lopez 7 Mayo 2014
 		if( permitir_registro == true){
 
-			if( !confirm( "El examen ya existe para el mismo día. ¿Desea agregarlo?" ) )
+			if( !confirm( "El examen ya existe para el mismo dï¿½a. ï¿½Desea agregarlo?" ) )
 				return false;
 
 		}
@@ -20914,7 +21010,7 @@ function agregarExamenAlta(centroCostos,codExamen,nombreExamen,tipoEstudio,anato
 			//Si la respuesta es 0(cero) entonces el nit si s encuentra en las entidades que confirman CTC, entonces muestra un alert para llenarlo o no.
 			if(validar_entidad != -1){
 
-				var confirmaCTC = confirm("¿Desea realizar el CTC del procedimiento para el paciente?");
+				var confirmaCTC = confirm("ï¿½Desea realizar el CTC del procedimiento para el paciente?");
 
 				if(confirmaCTC){
 					if(!adicionMultiple)
@@ -20940,7 +21036,7 @@ function agregarExamenAlta(centroCostos,codExamen,nombreExamen,tipoEstudio,anato
 		oculto6.value = requiereJustificacion;
 
 	} else {
-		alert('Por favor ingrese la información del examen antes de agregar uno nuevo.');
+		alert('Por favor ingrese la informaciï¿½n del examen antes de agregar uno nuevo.');
 	}
 }
 
@@ -20953,7 +21049,7 @@ function consultarOrdenesPendientes(wemp_pmla,wempresa,wbasedato,whis,wing)
 
 		var tabla = document.getElementById( "examPendientes" );
 		//var totalExamenes = tabla.rows[1].cells[0].rowSpan;
-		var totalExamenes = tabla.rows.length - 3;	// se resta 3 porque se omiten las filas de busqueda rápida y encabezado
+		var totalExamenes = tabla.rows.length - 3;	// se resta 3 porque se omiten las filas de busqueda rï¿½pida y encabezado
 		var countRowSpan = 1;
 
 		// Datos a buscar
@@ -21066,11 +21162,11 @@ function adicionarMedico(){
 
 		insertarMedicoTratante(idMedico, tipoDocumento, nroDocumento, historia, ingreso, fechaKardex, tratante, usuario, codigoEspecialidad, nombreMedico, codigoMatrix);
 	} else {
-		alert("Debe seleccionar un médico para poder agregarlo.");
+		alert("Debe seleccionar un mï¿½dico para poder agregarlo.");
 	}
 }
 /*****************************************************************************************************************************
- * Validación de la grabación de una nueva dieta
+ * Validaciï¿½n de la grabaciï¿½n de una nueva dieta
  ******************************************************************************************************************************/
 function adicionarDieta(){
 	if(document.forms.forma.wseldieta && document.forms.forma.wseldieta.value != ''){
@@ -21103,7 +21199,7 @@ function adicionarDieta(){
 	}
 }
  /*****************************************************************************************************************************
- * Validación de la eliminación de una dieta
+ * Validaciï¿½n de la eliminaciï¿½n de una dieta
  ******************************************************************************************************************************/
  function quitarDieta(codigo){
 	var fecha = document.forms.forma.wfecha.value;
@@ -21119,7 +21215,7 @@ function adicionarDieta(){
 	return false;
 }
 /*****************************************************************************************************************************
- * Valida la grabación de una infusión
+ * Valida la grabaciï¿½n de una infusiï¿½n
  ******************************************************************************************************************************/
 function grabarInfusion(idxElemento){
 	//Variables de la fila a guardar o actualizar
@@ -21160,7 +21256,7 @@ function grabarInfusion(idxElemento){
 }
 
 /*****************************************************************************************************************************
- * Validación antes de quitar un articulo de la lista de medicamentos
+ * Validaciï¿½n antes de quitar un articulo de la lista de medicamentos
  ******************************************************************************************************************************/
 function quitarArticulo(idxElemento, tipoProtocolo, celdafila, contenedorArticulo, ctc, eliminaInsumoLQ,procAgrup ){
 //	debugger;
@@ -21264,7 +21360,7 @@ function quitarArticulo(idxElemento, tipoProtocolo, celdafila, contenedorArticul
 		}
 		else
 		{
-			var msg = "Si sale del CTC el medicamento no será tenido en cuenta";
+			var msg = "Si sale del CTC el medicamento no serï¿½ tenido en cuenta";
 		}
 
 		var confQuitar = false;
@@ -21299,7 +21395,7 @@ function quitarArticulo(idxElemento, tipoProtocolo, celdafila, contenedorArticul
 
 					if( $( "#widoriginal" +tipoProtocolo+idxElemento  ).val()*1 > 0 ){
 						/**********************************************************************
-						 * Creo la acción para ejecutarla al momento de guardar
+						 * Creo la acciï¿½n para ejecutarla al momento de guardar
 						 **********************************************************************/
 						if( !accionesOrdenes[ ELIMINAR_ARTICULO ] ){
 							accionesOrdenes[ ELIMINAR_ARTICULO ] = {};
@@ -21349,7 +21445,7 @@ function quitarArticulo(idxElemento, tipoProtocolo, celdafila, contenedorArticul
 					
 					/****************************************************************************************
 					 * Si el articulo es del dextrometer
-					 * No se deja poner la opción del dextrometer
+					 * No se deja poner la opciï¿½n del dextrometer
 					 *****************************************************************************************/
 					quitarArticuloDextrometer( frecuencia, codigoArticulo );
 					/*****************************************************************************************/
@@ -21391,7 +21487,7 @@ function quitarArticulo(idxElemento, tipoProtocolo, celdafila, contenedorArticul
 			msjNoPos= msjNoPos.replace(codigoArticulo+',', "");
 
 			/**********************************************************************
-			 * Creo la acción para ejecutarla al momento de guardar
+			 * Creo la acciï¿½n para ejecutarla al momento de guardar
 			 **********************************************************************/
 			if( !accionesOrdenes[ ELIMINAR_ARTICULO ] ){
 				accionesOrdenes[ ELIMINAR_ARTICULO ] = {};
@@ -21440,7 +21536,7 @@ function quitarArticulo(idxElemento, tipoProtocolo, celdafila, contenedorArticul
 			
 			/****************************************************************************************
 			 * Si el articulo es del dextrometer
-			 * No se deja poner la opción del dextrometer
+			 * No se deja poner la opciï¿½n del dextrometer
 			 *****************************************************************************************/
 			//Es del dextrometer si es el mismo articulo del dextrometer y tiene la misma frecuencia
 			quitarArticuloDextrometer( frecuencia, codigoArticulo );
@@ -21451,7 +21547,7 @@ function quitarArticulo(idxElemento, tipoProtocolo, celdafila, contenedorArticul
 	}
 }
 /*****************************************************************************************************************************
- * Validación antes de quitar una infusión
+ * Validaciï¿½n antes de quitar una infusiï¿½n
  ******************************************************************************************************************************/
 function quitarInfusion(idxElemento){
 	var historia = document.forms.forma.whistoria.value;
@@ -21464,7 +21560,7 @@ function quitarInfusion(idxElemento){
 	}
 }
 /*****************************************************************************************************************************
- * Validación antes de quitar un examen de laboratorio
+ * Validaciï¿½n antes de quitar un examen de laboratorio
  ******************************************************************************************************************************/
 function quitarExamen( idxElemento, prefijoAlta, nuevoExamen, ctc, hce ){
 //	var codigoExamen = document.getElementById('wexamenlab'+idxElemento).value;
@@ -21492,18 +21588,18 @@ function quitarExamen( idxElemento, prefijoAlta, nuevoExamen, ctc, hce ){
 		//Si el cierre de la interfaz es desde un fomrulario hce no mostrara este mensaje.
 		if(hce != 'on'){
 
-			var msg = "Si no llena el CTC el examen no será tenido en cuenta para la orden. ¿Seguro desea cerrar?";
+			var msg = "Si no llena el CTC el examen no serï¿½ tenido en cuenta para la orden. ï¿½Seguro desea cerrar?";
 
 		}
 	}
 
-	//Si el cierre es desde hce no mostrara el mensaje de confirmacion: "Si no llena el CTC el examen no será tenido en cuenta para la orden. ¿Seguro desea cerrar?"
+	//Si el cierre es desde hce no mostrara el mensaje de confirmacion: "Si no llena el CTC el examen no serï¿½ tenido en cuenta para la orden. ï¿½Seguro desea cerrar?"
 	//y eliminara la orden de la interfaz.
 	if(hce != 'on'){
 
 		jConfirm( msg, 'Eliminar Examen', function(r) {
 			 // /**********************************************************************
-			 // * Creo la acción para ejecutarla al momento de guardar
+			 // * Creo la acciï¿½n para ejecutarla al momento de guardar
 			 // **********************************************************************/
 
 			if(r){
@@ -21604,7 +21700,7 @@ function quitarExamen( idxElemento, prefijoAlta, nuevoExamen, ctc, hce ){
 
 
 		/**********************************************************************
-			 * Creo la acción para ejecutarla al momento de guardar
+			 * Creo la acciï¿½n para ejecutarla al momento de guardar
 			 **********************************************************************/
 			if( !accionesOrdenes[ ELIMINAR_EXAMEN ] ){
 				accionesOrdenes[ ELIMINAR_EXAMEN ] = {};
@@ -21675,7 +21771,7 @@ function quitarExamen( idxElemento, prefijoAlta, nuevoExamen, ctc, hce ){
 }
 
 /*****************************************************************************************************************************
- * Define que valor toma el campo a grabar según el campo que se haya modificado
+ * Define que valor toma el campo a grabar segï¿½n el campo que se haya modificado
  *****************************************************************************************************************************/
 function definirValorCampo(campo0,campo1,campo2)
 {
@@ -21699,9 +21795,9 @@ function definirValorCampo(campo0,campo1,campo2)
 }
 
 /*****************************************************************************************************************************
- * Debido que para la pestaña de alta se usaron campos que estan en otras pestañas
- * Se crea esta función que determina cual cambió y graba según este cambio
- * Si cambian los dos prevalece el valor del campo de la pestaña original, no la de alta
+ * Debido que para la pestaï¿½a de alta se usaron campos que estan en otras pestaï¿½as
+ * Se crea esta funciï¿½n que determina cual cambiï¿½ y graba segï¿½n este cambio
+ * Si cambian los dos prevalece el valor del campo de la pestaï¿½a original, no la de alta
  *****************************************************************************************************************************/
 function unificarCamposArticulos(idxElemento,tipoProtocolo){
 
@@ -21720,9 +21816,9 @@ function unificarCamposArticulos(idxElemento,tipoProtocolo){
 }
 
 /*****************************************************************************************************************************
- * Debido que para la pestaña de alta se usaron campos que estan en otras pestañas
- * Se crea esta función que determina cual cambio y graba según este cambio
- * Si cambian los dos prevalece el valor del campo de la pestaña original, no la de alta
+ * Debido que para la pestaï¿½a de alta se usaron campos que estan en otras pestaï¿½as
+ * Se crea esta funciï¿½n que determina cual cambio y graba segï¿½n este cambio
+ * Si cambian los dos prevalece el valor del campo de la pestaï¿½a original, no la de alta
  *****************************************************************************************************************************/
 function unificarCamposExamenes(idxElemento){
 
@@ -21735,13 +21831,13 @@ function unificarCamposExamenes(idxElemento){
 }
 
 /*****************************************************************************************************************************
- * Validación de la grabación de un medicamento
+ * Validaciï¿½n de la grabaciï¿½n de un medicamento
  *****************************************************************************************************************************/
 function grabarArticulo(idxElemento,tipoProtocolo){
 
-	// Debido que para la pestaña de alta se usaron campos que estan en otras pestañas
-	// Se crea esta función que determina cual cambio y graba según este cambio
-	// Si cambian los dos prevalece el valor del campo de la pestaña original, no la de alta
+	// Debido que para la pestaï¿½a de alta se usaron campos que estan en otras pestaï¿½as
+	// Se crea esta funciï¿½n que determina cual cambio y graba segï¿½n este cambio
+	// Si cambian los dos prevalece el valor del campo de la pestaï¿½a original, no la de alta
 	unificarCamposArticulos(idxElemento,tipoProtocolo);
 
 	//Variables de la fila a guardar o actualizar
@@ -21937,25 +22033,25 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 	if(deAlta!='on')
 	{
 		if(valido && (!via || via.value == '')){
-			alert('Debe seleccionar la vía de administración: '+ datosArticulos);
+			alert('Debe seleccionar la vï¿½a de administraciï¿½n: '+ datosArticulos);
 			valido = false;
 		}
 	}
 
 	//La fecha de inicio debe ser mayor o igual a la del kardex
 	// 2013-02-06
-	// Esta validación salía al grabar aún estando las fechas bien en el formulario
-	// Se comenta porque mas abajo se hace la validación correcta de estos datos
+	// Esta validaciï¿½n salï¿½a al grabar aï¿½n estando las fechas bien en el formulario
+	// Se comenta porque mas abajo se hace la validaciï¿½n correcta de estos datos
 	/*
 	if(valido && (!esFechaMayorIgual(fechaInicio,fechaKardex))){
-		alert('La fecha de inicio de administración del artículo debe ser mayor o igual a la fecha actual: '+ datosArticulos);
+		alert('La fecha de inicio de administraciï¿½n del artï¿½culo debe ser mayor o igual a la fecha actual: '+ datosArticulos);
 		valido = false;
 	}
 	*/
 
 
-	/*Si la hora actual de validación está entre las cero horas y las cuatro horas, todas las horas son permitidas
-	 * Quiere decir esto que desde las seis de la mañana empiezan a haber restricciones de horario
+	/*Si la hora actual de validaciï¿½n estï¿½ entre las cero horas y las cuatro horas, todas las horas son permitidas
+	 * Quiere decir esto que desde las seis de la maï¿½ana empiezan a haber restricciones de horario
 	 */
 	var horaValidacion = new Date().getHours();
 
@@ -21986,7 +22082,7 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 
 	if(valido && (parseInt(valDiaInicio)-parseInt(new Date().getDate())==0)){
 		if(parseInt(valHoraInicio) == 0 && parseInt(new Date().getHours()) != 0){
-			alert('La fecha de inicio de administración del artículo debe ser mayor o igual a la fecha actual: '+ datosArticulos);
+			alert('La fecha de inicio de administraciï¿½n del artï¿½culo debe ser mayor o igual a la fecha actual: '+ datosArticulos);
 			valido = false;
 		}
 	}
@@ -22090,27 +22186,27 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 			obsmerge = '<div class="'+claseobs+'" style="border-bottom:4px #fff solid;">'+observaciontxt+'<br><span style="font-size:7pt;">'+usuario+' - '+usuariodes+'<br>Origen:Ordenes | '+fecha+'</span></div>';
 	}
 	
-	//Si tiene permisos para dosis máxima
+	//Si tiene permisos para dosis mï¿½xima
 	var perDmax = $( "#waccN\\.13" ).val().split( "," )[0] == 'S' ? true: false;
 	
 	if( !articulosGrabadoAnteriormente && valido && $( "#wesantibiotico"+tipoProtocolo+idxElemento ).val() == "on" ){
 		if( !$( "#wprofilaxis"+tipoProtocolo+idxElemento )[0].checked && !$( "#wtratamiento"+tipoProtocolo+idxElemento )[0].checked ){
 			/*if( $( "#wdiastto"+tipoProtocolo+idxElemento ).val()*1 == 0  && $( "#wdosmax"+tipoProtocolo+idxElemento ).val()*1 == 0 )
-				jAlert( "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> y <br>Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento o dosis m&aacute;xima<br>para el antibiótico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );
+				jAlert( "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> y <br>Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento o dosis m&aacute;xima<br>para el antibiï¿½tico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );
 			else
-				jAlert( "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> para el antibiótico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );*/
+				jAlert( "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> para el antibiï¿½tico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );*/
 				
 			
 			
 			var msg = "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> ";
 			if( $( "#wdiastto"+tipoProtocolo+idxElemento ).val()*1 == 0  && $( "#wdosmax"+tipoProtocolo+idxElemento ).val()*1 == 0 ){
-				//Si permite dosis máxima
+				//Si permite dosis mï¿½xima
 				if( perDmax )
 					msg += " y <br>Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento o dosis m&aacute;xima<br>";
 				else
 					msg += " y <br>Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento<br>";
 			}
-			msg += "para el antibiótico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>";
+			msg += "para el antibiï¿½tico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>";
 			
 			jAlert( msg, "ALERTA" );
 			valido = false;
@@ -22122,7 +22218,7 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 			if( ( $( "#wtratamiento"+tipoProtocolo+idxElemento )[0].checked || $( "#wprofilaxis"+tipoProtocolo+idxElemento )[0].checked ) && $( "#wdiastto"+tipoProtocolo+idxElemento ).val()*1 == 0  && $( "#wdosmax"+tipoProtocolo+idxElemento ).val()*1 == 0 ){
 				// jAlert( "Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento o dosis m&aacute;xima para el antibi&oacute;tico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );
 				var msg = "Debe ingresar un valor mayor a 0 ";
-				//Si permite dosis máxima
+				//Si permite dosis mï¿½xima
 				if(perDmax)
 					msg += "en d&iacute;as de tratamiento o dosis m&aacute;xima ";
 				else
@@ -22195,13 +22291,13 @@ function grabarArticulo(idxElemento,tipoProtocolo){
 
 
  /*****************************************************************************************************************************
-  * Validación de la grabación de un medicamento para evitar validacion del dia actual contra inicio del tratamiento
+  * Validaciï¿½n de la grabaciï¿½n de un medicamento para evitar validacion del dia actual contra inicio del tratamiento
   ******************************************************************************************************************************/
 function grabarArticuloSinValidacion(idxElemento,tipoProtocolo){
 
-	// Debido que para la pestaña de alta se usaron campos que estan en otras pestañas
-	// Se crea esta función que determina cual cambio y graba según este cambio
-	// Si cambian los dos prevalece el valor del campo de la pestaña original, no la de alta
+	// Debido que para la pestaï¿½a de alta se usaron campos que estan en otras pestaï¿½as
+	// Se crea esta funciï¿½n que determina cual cambio y graba segï¿½n este cambio
+	// Si cambian los dos prevalece el valor del campo de la pestaï¿½a original, no la de alta
 	unificarCamposArticulos(idxElemento,tipoProtocolo);
 
 	//Variables de la fila a guardar o actualizar
@@ -22401,7 +22497,7 @@ function grabarArticuloSinValidacion(idxElemento,tipoProtocolo){
 	if(deAlta!='on' )
 	{
 		if(valido && (!via || via.value == '')){
-			alert('Debe seleccionar la vía de administración: '+ datosArticulos);
+			alert('Debe seleccionar la vï¿½a de administraciï¿½n: '+ datosArticulos);
 			valido = false;
 		}
 	}
@@ -22509,27 +22605,27 @@ function grabarArticuloSinValidacion(idxElemento,tipoProtocolo){
 			obsmerge = '<div class="'+claseobs+'" style="border-bottom:4px #fff solid;">'+observaciontxt+'<br><span style="font-size:7pt;">'+usuario+' - '+usuariodes+'<br>Origen:Ordenes | '+fecha+'</span></div>';
 	}
 	
-	//Si tiene permisos para dosis máxima
+	//Si tiene permisos para dosis mï¿½xima
 	var perDmax = $( "#waccN\\.13" ).val().split( "," )[0] == 'S' ? true: false;
 	
 	if( !articulosGrabadoAnteriormente && valido && $( "#wesantibiotico"+tipoProtocolo+idxElemento ).val() == "on" ){
 		if( !$( "#wprofilaxis"+tipoProtocolo+idxElemento )[0].checked && !$( "#wtratamiento"+tipoProtocolo+idxElemento )[0].checked ){
 			/*if( $( "#wdiastto"+tipoProtocolo+idxElemento ).val()*1 == 0  && $( "#wdosmax"+tipoProtocolo+idxElemento ).val()*1 == 0 )
-				jAlert( "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> y <br>Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento o dosis m&aacute;xima<br>para el antibiótico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );
+				jAlert( "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> y <br>Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento o dosis m&aacute;xima<br>para el antibiï¿½tico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );
 			else
-				jAlert( "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> para el antibiótico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );*/
+				jAlert( "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> para el antibiï¿½tico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );*/
 				
 			
 			
 			var msg = "Debe seleccionar si el antibiotico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b> ";
 			if( $( "#wdiastto"+tipoProtocolo+idxElemento ).val()*1 == 0  && $( "#wdosmax"+tipoProtocolo+idxElemento ).val()*1 == 0 ){
-				//Si permite dosis máxima
+				//Si permite dosis mï¿½xima
 				if( perDmax )
 					msg += " y <br>Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento o dosis m&aacute;xima<br>";
 				else
 					msg += " y <br>Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento<br>";
 			}
-			msg += "para el antibiótico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>";
+			msg += "para el antibiï¿½tico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>";
 			
 			jAlert( msg, "ALERTA" );
 			valido = false;
@@ -22541,7 +22637,7 @@ function grabarArticuloSinValidacion(idxElemento,tipoProtocolo){
 			if( ( $( "#wtratamiento"+tipoProtocolo+idxElemento )[0].checked || $( "#wprofilaxis"+tipoProtocolo+idxElemento )[0].checked ) && $( "#wdiastto"+tipoProtocolo+idxElemento ).val()*1 == 0  && $( "#wdosmax"+tipoProtocolo+idxElemento ).val()*1 == 0 ){
 				// jAlert( "Debe ingresar un valor mayor a 0 en d&iacute;as de tratamiento o dosis m&aacute;xima para el antibi&oacute;tico <b>"+codigoArticulo+"-"+nombreArticulo+"</b>", "ALERTA" );
 				var msg = "Debe ingresar un valor mayor a 0 ";
-				//Si permite dosis máxima
+				//Si permite dosis mï¿½xima
 				if(perDmax)
 					msg += "en d&iacute;as de tratamiento o dosis m&aacute;xima ";
 				else
@@ -22608,7 +22704,7 @@ function grabarArticuloSinValidacion(idxElemento,tipoProtocolo){
 	return valido;
 }
  /*****************************************************************************************************************************
-  * Validación de la grabación de un medicamento unicamente para uso del perfil
+  * Validaciï¿½n de la grabaciï¿½n de un medicamento unicamente para uso del perfil
   ******************************************************************************************************************************/
  function grabarArticuloPerfil(idxElemento){
  	//Variables de la fila a actualizar
@@ -22677,13 +22773,13 @@ function grabarArticuloSinValidacion(idxElemento,tipoProtocolo){
 
  	//Codigo articulo actual
  	if(!codigoArticulo || codigoArticulo == ''){
- 		alert('No se capturó el codigo del articulo actual');
+ 		alert('No se capturï¿½ el codigo del articulo actual');
  		valido = false;
  	}
 
  	//Si se va a reemplazar el articulo se debe avisar
 	if(valido && (codigoArticuloNuevo && codigoArticuloNuevo != '')){
-		if(confirm('Esta seguro de reemplazar el artículo ' + codigoArticulo+'-'+cd[2]+ ' con ' + document.getElementById('wnmmed'+idxElemento).value + '?')){
+		if(confirm('Esta seguro de reemplazar el artï¿½culo ' + codigoArticulo+'-'+cd[2]+ ' con ' + document.getElementById('wnmmed'+idxElemento).value + '?')){
 			//Valido que el articulo que voy a reemplazar no este en la lista de articulos actual
 
 			var temp = "";
@@ -22696,7 +22792,7 @@ function grabarArticuloSinValidacion(idxElemento,tipoProtocolo){
 					temp = elemento.innerHTML.split("-");
 					/*
 					if(temp[0] == codigoArticuloNuevo){
-						alert("No se puede reemplazar el articulo " + cd[2] + " por el articulo " + cdNuevo[2] + " este ya se encuentra en la lista de artículos.");
+						alert("No se puede reemplazar el articulo " + cd[2] + " por el articulo " + cdNuevo[2] + " este ya se encuentra en la lista de artï¿½culos.");
 						valido = false;
 						break;
 					}
@@ -22755,7 +22851,7 @@ function grabarArticuloSinValidacion(idxElemento,tipoProtocolo){
  	}
  }
 /*****************************************************************************************************************************
- * Validación para realizar la grabación de un examen
+ * Validaciï¿½n para realizar la grabaciï¿½n de un examen
  ******************************************************************************************************************************/
 function grabarExamen(idxElemento, grbAut ){
 
@@ -22778,13 +22874,14 @@ function grabarExamen(idxElemento, grbAut ){
 	var datoOrdenAnexa = "";
 	var esOfertado = "";
 	var usuarioTomaMuestra = "";
+	var realizarEnServicio = "";
 
 	if(altExamen!="on")
 	{
 		if(isset(document.getElementById('hexcco'+idxElemento)) && document.getElementById('hexcco'+idxElemento))
 		{
 
-			// Permite unificar el valor de los campos de la pestaña Alta y la pestaña Otras Ordenes
+			// Permite unificar el valor de los campos de la pestaï¿½a Alta y la pestaï¿½a Otras Ordenes
 			unificarCamposExamenes(idxElemento);
 
 			var claseImprimir = $('#imgImprimir'+idxElemento).attr('class');
@@ -22804,7 +22901,7 @@ function grabarExamen(idxElemento, grbAut ){
 			}
 
 			try{
-				//Busco si el examen está chequeado o no
+				//Busco si el examen estï¿½ chequeado o no
 				if( $( "#imprimir_examen",document.getElementById('wtxtjustexamen'+idxElemento).parentNode.parentNode )[0].checked ){
 					var impExamen = "on";
 				}
@@ -22845,7 +22942,16 @@ function grabarExamen(idxElemento, grbAut ){
 			catch(e){
 				usuarioTomaMuestra = '';
 			}
-
+			try{
+				realizarEnServicio = document.getElementById("wrealizarEnServicio"+idxElemento).value;
+				console.log("uno");
+				console.log(realizarEnServicio);
+			}
+			catch(e){
+				console.log("dos");
+				console.log(realizarEnServicio);
+				realizarEnServicio = '';
+			}
 			// 2012-06-27
 			// Se verifica primero si existe el campo para que la variable sea asignada correctamente
 			if(isset(document.getElementById("hiReqJus"+idxElemento)))
@@ -22875,7 +22981,7 @@ function grabarExamen(idxElemento, grbAut ){
 
 			//	if( justificacion == "" && codExamen != "2251" && codExamen != "3081" ){
 			if( (justificacion == "" || justificacion == " " || justificacion == "." ) && reqJus == "on" ){
-				alert( "Especificar una justificación para la ayuda o procedimiento: "+nomExamen );
+				alert( "Especificar una justificaciï¿½n para la ayuda o procedimiento: "+nomExamen );
 				valido = false;
 			}
 		}
@@ -22888,7 +22994,7 @@ function grabarExamen(idxElemento, grbAut ){
 	{
 		if(isset(document.getElementById('hexccoimp'+idxElemento)) && document.getElementById('hexccoimp'+idxElemento))
 		{
-			// Permite unificar el valor de los campos de la pestaña Alta y la pestaña Otras Ordenes
+			// Permite unificar el valor de los campos de la pestaï¿½a Alta y la pestaï¿½a Otras Ordenes
 			unificarCamposExamenes(idxElemento);
 
 			var claseImprimir = $('#imgImprimir'+idxElemento).attr('class');
@@ -22948,7 +23054,7 @@ function grabarExamen(idxElemento, grbAut ){
 
 			//	if( justificacion == "" && codExamen != "2251" && codExamen != "3081" ){
 			if( (justificacion == "" || justificacion == " " || justificacion == "." ) && reqJus == "on" ){
-				alert( "Especificar una justificación para la ayuda o procedimiento: "+nomExamen );
+				alert( "Especificar una justificaciï¿½n para la ayuda o procedimiento: "+nomExamen );
 				valido = false;
 			}
 
@@ -22966,7 +23072,7 @@ function grabarExamen(idxElemento, grbAut ){
 	***/
 	if(valido){
 		if(!existe){
-			grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idxElemento,numeroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra);
+			grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idxElemento,numeroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra,realizarEnServicio);
 		} else {
 			alert('El examen ya se encuentra en la lista.  Por favor seleccione otro');
 		}
@@ -23157,7 +23263,7 @@ function consultarComponente(){
  * ----------OPERACIONES DE INSERCION Y MODIFICACION-----------
  ******************************************************************************************************************************/
 /*****************************************************************************************************************************
- * Llamada ajax para inserción del esquema dextrometer
+ * Llamada ajax para inserciï¿½n del esquema dextrometer
  ******************************************************************************************************************************/
 function grabarEsquemaDextrometerElemento(historia, ingreso, fechaKardex, codInsulina, frec, codEsquema, dosis, uDosis, via, obs, usuario, actualizaIntervalos, min, max ){
 
@@ -23330,9 +23436,9 @@ function consultarOrdenes(wemp_pmla,wempresa,wbasedato,whis,wing,wfecini,wfecfin
 					$( auxtb2.firstChild.rows[ 3 ] ).remove();
 				}
 
-				//Las filas que contienen la información son las filas con posición 3 o más
+				//Las filas que contienen la informaciï¿½n son las filas con posiciï¿½n 3 o mï¿½s
 				if( auxtb.rows.length > 3 ){
-					//Se añade las filas con posicion 3 o más a la tabla
+					//Se aï¿½ade las filas con posicion 3 o mï¿½s a la tabla
 					for( ;auxtb.rows.length > 3; ){
 						contenedorDetOrdenes.firstChild.firstChild.firstChild.appendChild( auxtb.rows[ auxtb.rows.length-1 ] );
 					}
@@ -23389,7 +23495,7 @@ function grabarOrdenElemento(historia,ingreso,fecha,usuario,centroCostos,consecu
 	}catch(e){	}
 }
 /*****************************************************************************************************************************
- * Llamada ajax para inserción del medico tratante
+ * Llamada ajax para inserciï¿½n del medico tratante
  ******************************************************************************************************************************/
 function insertarMedicoTratante(idRegistro, tipoDocumento, nroDocumento, historia, ingreso, fechaKardex, tratante, usuario, codigoEspecialidad, nombreMedico, codigoMatrix){
 	var contenedor = document.getElementById('cntMedicos');
@@ -23480,7 +23586,7 @@ function insertarMedicoTratante(idRegistro, tipoDocumento, nroDocumento, histori
 	}catch(e){	}
 }
  /*****************************************************************************************************************************
- * Llamada de inserción de dieta nueva en el kardex
+ * Llamada de inserciï¿½n de dieta nueva en el kardex
  ******************************************************************************************************************************/
 function insertarDietaKardex(idRegistro, historia, ingreso, fechaKardex, usuario){
 	var contenedor = document.getElementById('cntMedicamento');
@@ -23509,7 +23615,7 @@ function insertarDietaKardex(idRegistro, historia, ingreso, fechaKardex, usuario
 	}catch(e){	}
 }
  /*****************************************************************************************************************************
- * Llamada ajax para la grabación de una nueva infusión
+ * Llamada ajax para la grabaciï¿½n de una nueva infusiï¿½n
  ******************************************************************************************************************************/
  function grabarInfusionElemento(historia,ingreso,fecha,strComponentes,consecutivo,obsComponentes,usuario,idElemento,fechaSolicitud){
 	var parametros = "";
@@ -23644,7 +23750,7 @@ function cambiarDisplay(id) {
 }
 
 /*****************************************************************************************************************************
- * Llamada ajax para la inserción o modificación de un articulo
+ * Llamada ajax para la inserciï¿½n o modificaciï¿½n de un articulo
  ******************************************************************************************************************************/
 function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDosis,per,fftica,fini,hini,via,conf,dtto,obs,origenArticulo,usuario,condicion,dosMax,cantGrabar,unidadManejo,cantidadManejo,primerKardex,horasFrecuencia,fechaInicioAnt,horaInicioAnt,noDispensar,tipoProtocolo,centroCostosGrabacion,prioridad,idElemento,nombreArticulo,cantidadAlta,impresion,deAlta,firma,artdosisAdaptada,idoriginal,noEsteril,profilaxis,tratamiento,esPediatrico,conInsumo1,conInsumo2,porProtocolo,wdrautorizado,wjusparaautorizar, numMipres){
 	var parametros = "";
@@ -23683,7 +23789,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 
 				/******************************************************************
 				 * Si un articulo es modificado y el usuario puede cambiar el estado
-				 * de confirmación, se cambia su estado a off
+				 * de confirmaciï¿½n, se cambia su estado a off
 				 ******************************************************************/
 				if( articuloNewMod ){
 					if( $( "#hiCambiaConfimado" ).val() == "on" ){
@@ -23729,7 +23835,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 
 				$( "#widoriginal"+tipoProtocolo+idElemento ).val( respuesta[1] );
 
-				$( "#wmodificado"+tipoProtocolo+idElemento ).val( "N" );	//Se deja marcado cómo no modificado
+				$( "#wmodificado"+tipoProtocolo+idElemento ).val( "N" );	//Se deja marcado cï¿½mo no modificado
 				
 				try{
 					//Esto solo debe salir para articulos de control
@@ -23761,7 +23867,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 				 * Mayo 26 de 2015
 				 *
 				 * Si el sistema hace cambio de fecha y hora de inicio actualizo la fecha y hora de inicio de acuerdo
-				 * a cómo se cambió en el sistema
+				 * a cï¿½mo se cambiï¿½ en el sistema
 				 ****************************************************************************************************/
 				if( respuesta[2] == '1' ){		//Indica que si hubo cambio de fecha y hora de inicio en el sitema
 					$( "#whfinicio"+tipoProtocolo+idElemento ).val( respuesta[3]+" a las:"+respuesta[4] );
@@ -23776,7 +23882,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 					hini = respuesta[4];
 				}
 
-				$( "#wmodificado"+tipoProtocolo+idElemento ).val( "N" );	//Se deja marcado cómo no modificado
+				$( "#wmodificado"+tipoProtocolo+idElemento ).val( "N" );	//Se deja marcado cï¿½mo no modificado
 				/****************************************************************************************************/
 
 				var col = document.getElementById("wcolmed"+tipoProtocolo+idElemento);
@@ -23794,7 +23900,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 				break;
 			case '4':
 				articuloNewMod = true;
-				mensaje = "El articulo se modificó correctamente, tenga en cuenta que ya estaba dispensado completamente.";
+				mensaje = "El articulo se modificï¿½ correctamente, tenga en cuenta que ya estaba dispensado completamente.";
 				var diferencia = (respuesta[1] ? respuesta[1] : 0) - (respuesta[2] ? respuesta[2] : 0);
 				mensaje += "\n-Se genero un ";
 				mensaje += (diferencia >= 0) ? "sobrante de " : "faltante de ";
@@ -23809,7 +23915,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 
 		/******************************************************************
 		 * Si un articulo es modificado y el usuario puede cambiar el estado
-		 * de confirmación, se cambia su estado a off
+		 * de confirmaciï¿½n, se cambia su estado a off
 		 ******************************************************************/
 		if( articuloNewMod ){
 			if( $( "#hiCambiaConfimado" ).val() == "on" ){
@@ -23834,7 +23940,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 	}
 }
  /*****************************************************************************************************************************
-  * Llamada ajax para la modificación de un articulo en el perfil farmacologico
+  * Llamada ajax para la modificaciï¿½n de un articulo en el perfil farmacologico
   ******************************************************************************************************************************/
  function grabarArticuloPerfilElemento(historia,ingreso,fechaKardex,cdArt,cdArtNuevo,dtto,obs,usuario,idElemento,unidadDosis,formaFarm,origen,via,dosmax,prioridad,fechaInicio,horaInicio,autorizadoCtc){
  	var parametros = "";
@@ -23866,7 +23972,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 
  				switch(respuesta[0]){
  					case '0':
- 						mensaje = "No se pudo modificar el artículo.";
+ 						mensaje = "No se pudo modificar el artï¿½culo.";
  						break;
  					case '1':
  						var elemento = document.getElementById("wnmmed"+idElemento);
@@ -23909,7 +24015,7 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
 						}
 
 						elemento.value = "";
-						mensaje = "El artículo se ha reemplazado correctamente.";
+						mensaje = "El artï¿½culo se ha reemplazado correctamente.";
  						break;
  					case '2':
  						//Calculo de la diferencia de ctc
@@ -23929,10 +24035,10 @@ function grabarArticuloElemento(historia,ingreso,fechaKardex,cdArt,cntDosis,unDo
  							}
  						}
 
- 						mensaje = "El artículo se ha modificado correctamente.";
+ 						mensaje = "El artï¿½culo se ha modificado correctamente.";
  						break;
  					case '3':
- 						mensaje = "El artículo no se puede modificar si se encuentra suspendido.";
+ 						mensaje = "El artï¿½culo no se puede modificar si se encuentra suspendido.";
  						break;
  					default:
  						mensaje = "No especificado: "+$.trim( ajax.responseText );
@@ -23996,8 +24102,8 @@ function suspenderArticulo(idxElemento,tipoProtocolo,confirmar){
 
 	if( confirmar ){
 		//Confirmacion de suspension
-		//if(confirm("¿Desea "+accion+" la administración del medicamento?")){
-		 jConfirm( "¿Desea "+accion+" la administración del medicamento?", accion+' medicamento', function(r) {
+		//if(confirm("ï¿½Desea "+accion+" la administraciï¿½n del medicamento?")){
+		 jConfirm( "ï¿½Desea "+accion+" la administraciï¿½n del medicamento?", accion+' medicamento', function(r) {
 			 if(r){
 				//Alterno la suspension del medicamento
 				if(fila.className == 'suspendido'){
@@ -24009,7 +24115,7 @@ function suspenderArticulo(idxElemento,tipoProtocolo,confirmar){
 				}
 
 				/**********************************************************************
-				 * Creo la acción para ejecutarla al momento de guardar
+				 * Creo la acciï¿½n para ejecutarla al momento de guardar
 				 **********************************************************************/
 				if( !accionesOrdenes[ SUSPENDER_ARTICULO ] ){
 					accionesOrdenes[ SUSPENDER_ARTICULO ] = {};
@@ -24040,7 +24146,7 @@ function suspenderArticulo(idxElemento,tipoProtocolo,confirmar){
 		}
 
 		/**********************************************************************
-		 * Creo la acción para ejecutarla al momento de guardar
+		 * Creo la acciï¿½n para ejecutarla al momento de guardar
 		 **********************************************************************/
 		if( !accionesOrdenes[ SUSPENDER_ARTICULO ] ){
 			accionesOrdenes[ SUSPENDER_ARTICULO ] = {};
@@ -24097,7 +24203,7 @@ function suspenderArticulo(idxElemento,tipoProtocolo,confirmar){
 	// codigoArticulo = cd[0];
 
 	// //Confirmacion de suspension
-	// if(confirm("¿Desea cambiar la suspensión/activación de la administración del medicamento?")){
+	// if(confirm("ï¿½Desea cambiar la suspensiï¿½n/activaciï¿½n de la administraciï¿½n del medicamento?")){
 
 	// //Llamada AJAX
 	// var parametros = "";
@@ -24141,9 +24247,9 @@ function suspenderArticulo(idxElemento,tipoProtocolo,confirmar){
 	// }
 // }
 /*****************************************************************************************************************************
- * Llamada a ajax para realizar la grabación de un examen nuevo
+ * Llamada a ajax para realizar la grabaciï¿½n de un examen nuevo
  ******************************************************************************************************************************/
-function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idElemento, nroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra,horaDeSolicitado){
+function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idElemento, nroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra,realizarEnServicio,horaDeSolicitado){
 	var parametros = "";
 	var mensaje = "";
 	var ccoSeleccionado = '';
@@ -24156,7 +24262,7 @@ function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observa
 		+"&fecha="+fecha+"&codigoExamen="+codExamen+"&observaciones="+observaciones+"&estado="+estadoExamen+"&codUsuario="+usuario+"&nombreExamen="+nomExamen
 		+"&fechaDeSolicitado="+fechaDeSolicitado+"&consecutivoOrden="+consecutivoOrden+"&firma="+firma+"&observacionesOrden="+observacionesOrden+"&consecutivoExamen="+cod_procedi
 		+"&justificacion="+justificacion+"&numeroItem="+nroItem+"&impExamen="+impExamen+"&altExamen="+altExamen+"&firmHCE="+firmHCE+"&datosAdicionales="+datosAdicionales
-		+"&ordenAnexa="+datoOrdenAnexa+"&esOfertado="+esOfertado+"&usuarioTomaMuestra="+usuarioTomaMuestra+"&cco="+$("#wservicio").val()+"&ccoTipoOrd="+ccoSeleccionado+"&wEstadoExamen="+wEstadoExamen;
+	    +"&ordenAnexa="+datoOrdenAnexa+"&esOfertado="+esOfertado+"&usuarioTomaMuestra="+usuarioTomaMuestra+"&realizarEnServicio="+realizarEnServicio+"&cco="+$("#wservicio").val()+"&ccoTipoOrd="+ccoSeleccionado+"&wEstadoExamen="+wEstadoExamen;
 
 	try{
 
@@ -24213,7 +24319,7 @@ function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observa
 		//Noviembre 08 de 2012
 		if( grabado ){
 
-			//Si es agragado desde la pestaña de examenes
+			//Si es agragado desde la pestaï¿½a de examenes
 			if( fila.id.substr(0,7) != 'trExImp' ){
 
 				//Si queda grabado y el examen es nuevo (nro de item == 0 ) le asigno el nro de item
@@ -24234,7 +24340,7 @@ function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observa
 				}
 			}
 			else{
-				//Si es agregado desde la pestaña alta
+				//Si es agregado desde la pestaï¿½a alta
 
 				//Si queda grabado y el examen es nuevo (nro de item == 0 ) le asigno el nro de item
 				if( document.getElementById("hexnroitemimp"+idElemento).value == 0 ){
@@ -24250,7 +24356,7 @@ function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observa
 
 			}
 
-			if( grbAut ){	//Es verdadero si se llama desde los botones de impresión o grabar
+			if( grbAut ){	//Es verdadero si se llama desde los botones de impresiï¿½n o grabar
 				grabarAjaxProcedimiento( codExamen, rpAjax[1], rpAjax[2], idElemento, document.forms.forma.wemp_pmla.value  );
 			}
 
@@ -24269,7 +24375,7 @@ function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observa
 }
 
 /*****************************************************************************************************************************
- * Llamada a ajax para realizar la grabación la aprobación del regente
+ * Llamada a ajax para realizar la grabaciï¿½n la aprobaciï¿½n del regente
  ******************************************************************************************************************************/
 function grabarAprobacionRegente11(idElemento){
 	var parametros = "";
@@ -24299,13 +24405,13 @@ function grabarAprobacionRegente11(idElemento){
  			{
  				switch($.trim( ajax.responseText )){
  					case '0':
- 						mensaje = "No se pudo grabar la aprobación del regente";
+ 						mensaje = "No se pudo grabar la aprobaciï¿½n del regente";
  						break;
  					case '1':
  						if(document.getElementById('wchkapr').checked){
- 							mensaje = "El perfil se aprobó por el regente.";
+ 							mensaje = "El perfil se aprobï¿½ por el regente.";
  						} else {
- 							mensaje = "El perfil NO se aprobó por el regente.";
+ 							mensaje = "El perfil NO se aprobï¿½ por el regente.";
  						}
 						break;
 	 				default:
@@ -24348,7 +24454,7 @@ function quitarAlergia(fecha){
 	}
 }
  /*****************************************************************************************************************************
- * Llamado a ajax para la eliminación de un medico tratante
+ * Llamado a ajax para la eliminaciï¿½n de un medico tratante
  ******************************************************************************************************************************/
 function eliminarMedicoElemento(historia,ingreso,fecha,usuario,cedula_medico){
 	var parametros = "";
@@ -24391,7 +24497,7 @@ function eliminarMedicoElemento(historia,ingreso,fecha,usuario,cedula_medico){
 	}catch(e){	}
 }
 /*****************************************************************************************************************************
- * Llamado a ajax para la eliminación de una alergia
+ * Llamado a ajax para la eliminaciï¿½n de una alergia
  ******************************************************************************************************************************/
 function eliminarAlergiaElemento(historia,ingreso,fecha,usuario){
 	var parametros = "";
@@ -24433,7 +24539,7 @@ function eliminarAlergiaElemento(historia,ingreso,fecha,usuario){
 	}catch(e){	}
 }
 /*****************************************************************************************************************************
- * Llamado ajax para función de eliminación de dieta
+ * Llamado ajax para funciï¿½n de eliminaciï¿½n de dieta
  ******************************************************************************************************************************/
 function eliminarDietaElemento(historia,ingreso,fecha,usuario,codigoDieta){
 	var parametros = "";
@@ -24478,7 +24584,7 @@ function eliminarDietaElemento(historia,ingreso,fecha,usuario,codigoDieta){
 	}catch(e){	}
 }
 /*****************************************************************************************************************************
- * Llamada ajax para eliminación del articulo
+ * Llamada ajax para eliminaciï¿½n del articulo
  ******************************************************************************************************************************/
 function eliminarArticuloElemento(historia,ingreso,fecha,cdArt,usuario,idx,fini,hini,tipoProtocolo,contenedorArticulo,altaArticulo,idOriginal){
 //	debugger;
@@ -24521,7 +24627,7 @@ function eliminarArticuloElemento(historia,ingreso,fecha,cdArt,usuario,idx,fini,
 		}catch(e){	}
 }
 /*****************************************************************************************************************************
- * Llamada ajax para eliminación de una infusión
+ * Llamada ajax para eliminaciï¿½n de una infusiï¿½n
  ******************************************************************************************************************************/
 function eliminarInfusionElemento(historia,ingreso,fecha,usuario,idx){
 	var parametros = "";
@@ -24768,7 +24874,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 	var tipoProtocoloAux = "";
 	var i = 0, idx = 0;
 
-	$.alerts.okButton = "Sí";		//Dejo por defecto el valor sí para el boton de aceptar
+	$.alerts.okButton = "Sï¿½";		//Dejo por defecto el valor sï¿½ para el boton de aceptar
 	$.alerts.cancelButton = "No";	//Dejo por defecto el valor no para el boton cancelar
 
 	tipoProtocoloAux = tipoProtocolo;
@@ -24815,8 +24921,8 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 	}
 	
 	//Mayo 20 de 2016
-	//Si el médico seteo dosis máxima o un día de tratamiento
-	//los campos de dosis máxima preconfigurados y días de tratamientos se dejan vacíos
+	//Si el mï¿½dico seteo dosis mï¿½xima o un dï¿½a de tratamiento
+	//los campos de dosis mï¿½xima preconfigurados y dï¿½as de tratamientos se dejan vacï¿½os
 	if( $.trim( diasMaximosFija ) != '' || $.trim( dosisMaximasFija ) != '' ){
 		diasMaximos = '';
 		dosisMaximas = '';
@@ -24826,7 +24932,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 
 	var elementoAnteriorDetalle = document.getElementById("wnmmed"+tipoProtocoloAux+idx);
 	// var cntDetalleKardex = document.getElementById("detKardexAdd" + tipoProtocoloAux);
-	var cntDetalleKardex = document.getElementById("detKardexAddN");	//Al agregar un medicamento nuevo siempre está en este contenedor
+	var cntDetalleKardex = document.getElementById("detKardexAddN");	//Al agregar un medicamento nuevo siempre estï¿½ en este contenedor
 
 	var idTabla = "tbDetalle" + tipoProtocoloAux;
 
@@ -24840,7 +24946,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 
 
 			/************************************************************************************************************************************
-			 * Si el articulo es generico (DA0000, DD0000, DC0000, ... ) se busca en la lista de articulos y si está con la misma fecha y
+			 * Si el articulo es generico (DA0000, DD0000, DC0000, ... ) se busca en la lista de articulos y si estï¿½ con la misma fecha y
 			 * hora de inicio del articulo generico a grabar se cambia el codigo del articulo generico a otro que no se encuentre
 			 ************************************************************************************************************************************/
 			//Siempre se trae la DA000 si es generico
@@ -24861,7 +24967,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 
 					cambioArticulo = false;
 
-					//Se busca todos los articulos con el mismo código
+					//Se busca todos los articulos con el mismo cï¿½digo
 					$( "[id^=wnmmed][value^="+codigo.toUpperCase()+"],[id^=wnmmed][innerHTML^="+codigo.toUpperCase()+"]", $( "[id^=fragment]" ) ).each(function(x){
 
 						//Articulo que se encuentra en la lista de agregados o grabados
@@ -25047,14 +25153,14 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 						/********************************************************************************
 						 * Para LEV sale el mensaje de que existe el articulo si:
 						 *	1. Es un electrolito
-						 *	2. Si solo se ha elegido solución y ningún electrolito para el lev
+						 *	2. Si solo se ha elegido soluciï¿½n y ningï¿½n electrolito para el lev
 						 ********************************************************************************/
 						var esLevInsPregunta = false;	//Indica si debe preguntar si existe el articulo
 
 						//Si es electrolito se pregunta si desea agregar
 						esLevInsPregunta = (artLevs[ tipoProtocoloAux+idx ].insEle == 'on')? true: false;
 
-						//Si es una solución pregunto solo si desea agregar solo si no hay un electrolito para el lev
+						//Si es una soluciï¿½n pregunto solo si desea agregar solo si no hay un electrolito para el lev
 						if( !esLevInsPregunta ){
 							esLevInsPregunta = true;
 							//Busco todos los articulos, si encuentra un electrolito lo pongo en false
@@ -25112,7 +25218,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 							// }
 						}
 					}
-					else if( artLevs[ tipoProtocoloAux+idx ].insInf == 'on' && artLevs[ tipoProtocoloAux+idx ].insEle == 'on' ){	//Si es una infusión
+					else if( artLevs[ tipoProtocoloAux+idx ].insInf == 'on' && artLevs[ tipoProtocoloAux+idx ].insEle == 'on' ){	//Si es una infusiï¿½n
 
 						var objDfr = $.Deferred();
 
@@ -25326,7 +25432,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 
 							objDfr = $.Deferred();
 
-							$.alerts.okButton = "Sí";		//Dejo por defecto el valor sí para el boton de aceptar
+							$.alerts.okButton = "Sï¿½";		//Dejo por defecto el valor sï¿½ para el boton de aceptar
 							$.alerts.cancelButton = "No";	//Dejo por defecto el valor no para el boton cancelar
 							jConfirm(msgPActivos+"Desea agregarlo?",'ALERTA',function(x){
 
@@ -25388,7 +25494,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 							txtArtsFamsATC = "<table class='clfamatctab'>"+txtArtsFamsATC+"</table>"
 						}
 						
-						jConfirm( "El paciente ya tiene ordenado al menos un medicamento del mismo grupo terapeútico <b>("+txtFamsATC+")</b><br>"+txtArtsFamsATC+"Desea agregar el medicamento?","ALERTA DUPLICIDAD TERAPEUTICA",function(x){
+						jConfirm( "El paciente ya tiene ordenado al menos un medicamento del mismo grupo terapeï¿½tico <b>("+txtFamsATC+")</b><br>"+txtArtsFamsATC+"Desea agregar el medicamento?","ALERTA DUPLICIDAD TERAPEUTICA",function(x){
 							if(!x){
 								var trEliminar = document.getElementById("trFil"+idx);
 								cntDetalleKardex.removeChild(trEliminar);
@@ -25417,7 +25523,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 						
 						if(x)
 						{
-							/*Modificación: Se agrega para validar parámetro de tarifas
+							/*Modificaciï¿½n: Se agrega para validar parï¿½metro de tarifas
 							Autor: sebastian.nevado
 							Fecha: 04/08/2021
 							*/
@@ -25503,9 +25609,9 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 
 								var informacion = " - <div style='font-family:verdana;font-size:10pt'><b>"+nombreComercial+"</b>";
 								informacion += "<br><br><b>Nombre Comercial:</b> " + nombreGenerico;
-								//Número Mipres
+								//Nï¿½mero Mipres
 								if((document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2') && document.getElementById('wnumprescripcionmipres')){
-									informacion += "<br><br><b>Número prescipción Mipres:</b> " + numPresMipres;
+									informacion += "<br><br><b>Nï¿½mero prescipciï¿½n Mipres:</b> " + numPresMipres;
 								}
 								// informacion += "<br><br>"+ cantidadDosisFija +" "+ $( "[value="+unidadFraccion+"]", $( "#wmfftica" ) ).text() + " POR " + $( "[value="+unidad+"]", $( "#wmfftica" ) ).text();
 								informacion += "</div>";
@@ -25572,7 +25678,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 									document.getElementById("wcondicion"+tipoProtocoloAux+idx).value = mCondicion;
 								}
 
-								//Confirma preparación
+								//Confirma preparaciï¿½n
 								if( $( "#enUrgencias" ).val() == 'on' ){
 									document.getElementById("wchkconf"+tipoProtocoloAux+idx).checked = true;
 								}
@@ -25651,7 +25757,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 									if(grupo == 'CTR'){
 										//Verifica si se genera la formula de control de forma automatica.
 										if($("#medicamentosControlAuto").val() == 'on'){
-											jAlert("Este medicamento se encuentra en el grupo de control.  La fórmula de control se generará automaticamente al grabar.","ALERTA",function(){
+											jAlert("Este medicamento se encuentra en el grupo de control.  La fï¿½rmula de control se generarï¿½ automaticamente al grabar.","ALERTA",function(){
 												preguntarPorVisaulizarMedControl = true;
 												if( $( "#inCIE10" ).val() == '' )
 													$.blockUI({ message: $( "#dvCIE10" ) });
@@ -25674,7 +25780,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 									//Se agrega atributo value al input para que se pueda comparar con otros en acciones posteriores.
 									$( elemento ).attr("value", codigo + "-" + origen + "-" + nombreArticuloGrabar );
 
-									// Se establece si la cadena msjNoPos ya tiene el codigo del artículo actual
+									// Se establece si la cadena msjNoPos ya tiene el codigo del artï¿½culo actual
 									var avisoNoPos = msjNoPos.indexOf(codigo)
 									msjNoPos += codigo+',';
 
@@ -25692,7 +25798,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 											document.getElementById("wchkconf"+tipoProtocoloAux+idx).disabled = false;
 									}
 
-									//Número Mipres
+									//Nï¿½mero Mipres
 									if((document.getElementById('mipresEnListaMedicamentosOrdenes').value == '1' || document.getElementById('mipresEnListaMedicamentosOrdenes').value == '2') && document.getElementById("wnummipres"+tipoProtocoloAux+idx)){
 										document.getElementById("wnummipres"+tipoProtocoloAux+idx).value = (numPresMipres) ? numPresMipres : '';
 									}
@@ -25800,7 +25906,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 										$( "#watc"+tipoProtocoloAux+idx ).val( elemento.value );
 									})
 									
-									//Dosis máxima por profilaxis
+									//Dosis mï¿½xima por profilaxis
 									//var dmaxProfilaxis = 24/valFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ];
 									
 									if( esAntibiotico ){
@@ -25814,19 +25920,19 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 										$( "#wdosmax"+tipoProtocoloAux+idx ).attr({readOnly:true});
 										$( "#wdosmax"+tipoProtocoloAux+idx ).val('');
 										
-										//No permito que la dosis máxima sea superior a la 24/frecuencia
+										//No permito que la dosis mï¿½xima sea superior a la 24/frecuencia
 										$( "#wdosmax"+tipoProtocoloAux+idx ).change(function(){
 											if( $( "#wprofilaxis"+tipoProtocoloAux+idx )[0].checked ){
 												var dmaxSup = 24/valFrecuencia[ $( "#wperiod"+tipoProtocoloAux+idx ).val() ];
 												if( dmaxSup <= 1 ) dmaxSup = 1;
 												if( $( this ).val() > dmaxSup ){
-													jAlert( "La dosis máxima no debe ser superior a "+dmaxSup, "ALERTA" );
+													jAlert( "La dosis mï¿½xima no debe ser superior a "+dmaxSup, "ALERTA" );
 													$( this ).val( dmaxSup );
 												}
 											}
 										});
 										
-										//No permito que la dosis máxima sea superior a la 24/frecuencia
+										//No permito que la dosis mï¿½xima sea superior a la 24/frecuencia
 										$( "#wdiastto"+tipoProtocoloAux+idx ).change(function(){
 											if( $( "#wprofilaxis"+tipoProtocoloAux+idx )[0].checked ){
 												var dmaxSup = 1;
@@ -25990,11 +26096,11 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 											}
 										});
 										
-										//Asigno función al boton cerrar
+										//Asigno funciï¿½n al boton cerrar
 										btnCerrar.click(function(){
 											// $.unblockUI();
 											// setTimeout( function(){ fnInternaCTC() }, 500 );
-											jConfirm( "Está seguro que desea eliminar el artículo","ALERTA",function(x){
+											jConfirm( "Estï¿½ seguro que desea eliminar el artï¿½culo","ALERTA",function(x){
 												if(x){
 												$.unblockUI();
 													setTimeout( function(){ agregarMultiplesArticulos(); }, 500 );
@@ -26011,7 +26117,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 											$( "label", $( "#wckpediatrico"+ tipoProtocoloAux + idx ).parent() ).css({display: ''});
 										}
 										
-										//Asigno función al boton Grabar
+										//Asigno funciï¿½n al boton Grabar
 										btnGrabar.click(function(){
 											
 											$( "#wprofilaxis"+tipoProtocoloAux+idx )[0].checked = radioProfilaxis[0].checked;
@@ -26029,14 +26135,14 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 													if( inFiltroDtto.val()*1 <= 0 && inFiltroDmax.val()*1 <= 0 && perDmax )
 														filtroMsg = "Debe ingresar un valor mayor a 0 para <b>DOSIS M&Aacute;XIMA</b> o <b>D&Iacute;AS DE TRATAMIENTO</b>";
 													else if( perDmax && inFiltroDmax.val()*1 <= 0 )
-														//Muestra el mensaje solo si tiene permiso para dosis máxima
+														//Muestra el mensaje solo si tiene permiso para dosis mï¿½xima
 														filtroMsg = "Debe ingresar un valor mayor a 0 para <b>DOSIS M&Aacute;XIMA</b>";
 													else if( inFiltroDtto.val()*1 <= 0 )
 														filtroMsg = "Debe ingresar un valor mayor a 0 para <b>D&Iacute;AS DE TRATAMIENTO</b>";
 												}
 											}
 											else{
-												filtroMsg = "Debe seleccionar si el antibiótico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b>";
+												filtroMsg = "Debe seleccionar si el antibiï¿½tico es por <b>PROFILAXIS</b> o <b>TRATAMIENTO</b>";
 											}
 											
 											if( $( "#trPrescripcionPediatrica" ).css( "display" ) != 'none' ){
@@ -26081,15 +26187,15 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 											}
 										});
 										
-										//Si tiene permisos para dosis máxima, permito escribir las dosis máxima
+										//Si tiene permisos para dosis mï¿½xima, permito escribir las dosis mï¿½xima
 										if( !perDmax ){
 											inFiltroDmax.attr({
 												disabled:true,
 												readOnly:true,
 											});
 										}
-										//No permito que la dosis máxima sea superior a la 24/frecuencia
-										//Asigno el evento change al filtro de Dosis máxima
+										//No permito que la dosis mï¿½xima sea superior a la 24/frecuencia
+										//Asigno el evento change al filtro de Dosis mï¿½xima
 										inFiltroDmax.change(function(){
 											
 											$( this ).css({ disabled: false });
@@ -26123,7 +26229,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 													dmaxSup = Math.min(dmaDef*1,dmaxSup);
 												}
 												if( $( this ).val() > dmaxSup ){
-													jAlert( "La dosis máxima no debe ser superior a "+dmaxSup, "ALERTA" );
+													jAlert( "La dosis mï¿½xima no debe ser superior a "+dmaxSup, "ALERTA" );
 													$( this ).val( dmaxSup );
 												}
 											}
@@ -26136,8 +26242,8 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 											}
 										});
 										
-										//No permito que la dosis máxima sea superior a la 24/frecuencia
-										//Asigno el evento change al filtro de Días de tratamiento
+										//No permito que la dosis mï¿½xima sea superior a la 24/frecuencia
+										//Asigno el evento change al filtro de Dï¿½as de tratamiento
 										inFiltroDtto.change(function(){
 											
 											$( this ).attr({ readOnly: false });
@@ -26196,7 +26302,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 									 */
 									function fnInternaCTC(){
 										var conctc = false;
-										var mipresEnListaMedicamentosOrdenes = $("#mipresEnListaMedicamentosOrdenes").val(); //Valor del parámetro.
+										var mipresEnListaMedicamentosOrdenes = $("#mipresEnListaMedicamentosOrdenes").val(); //Valor del parï¿½metro.
 										//Paciente No pos
 										if( $( "#pacEPS" ).val() == 'on' ){
 
@@ -26218,7 +26324,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 													//Si la respuesta es 0(cero) entonces el nit si s encuentra en las entidades que confirman CTC, entonces muestra un alert para llenarlo o no.
 													if(validar_entidad != -1){
 
-														var confirmaCTC = confirm("¿Desea realizar el CTC del medicamento para el paciente?");
+														var confirmaCTC = confirm("ï¿½Desea realizar el CTC del medicamento para el paciente?");
 
 														if(!confirmaCTC){
 															$( "#wnmmed"+tipoProtocoloAux+idx ).attr( "pos", "P" );
@@ -26228,7 +26334,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 														}
 													}
 													else{
-														//Solo motrará mensaje si el parámetro está apagado.
+														//Solo motrarï¿½ mensaje si el parï¿½metro estï¿½ apagado.
 														if(mipresEnListaMedicamentosOrdenes == 0)
 														{
 															// alert("El medicamento " + nombreArticuloAlert + " es NO POS");
@@ -26296,7 +26402,7 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 								}
 							}
 							else {
-								$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sí para el boton de aceptar
+								$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sï¿½ para el boton de aceptar
 								$.alerts.cancelButton = "Cancelar";	//Dejo por defecto el valor no para el boton cancelar
 								jAlert('El articulo ya se encuentra en la lista.  No se puede agregar porque esta configurado como no duplicable.', 'ALERTA');
 								$( "#trFil"+idx ).remove();
@@ -26308,18 +26414,18 @@ function seleccionarArticulo(codigo, nombreComercial, nombreGenerico, origen, gr
 			});
 		}
 		else{
-			$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sí para el boton de aceptar
+			$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sï¿½ para el boton de aceptar
 			$.alerts.cancelButton = "Cancelar";	//Dejo por defecto el valor no para el boton cancelar
 			jAlert('No se encontro elemento a agregar.','Alerta');
 		}
 	}else{
-		$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sí para el boton de aceptar
+		$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sï¿½ para el boton de aceptar
 		$.alerts.cancelButton = "Cancelar";	//Dejo por defecto el valor no para el boton cancelar
 		jAlert('Aun no ha agregado el primer articulo','Alerta');
 	}
 
 	//Se deja por defecto el nombre de los botones como aceptar y cancelar respectivamente para los confirms y alertas
-	$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sí para el boton de aceptar
+	$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sï¿½ para el boton de aceptar
 	$.alerts.cancelButton = "Cancelar";	//Dejo por defecto el valor no para el boton cancelar
 }
 
@@ -26687,7 +26793,7 @@ function salirSinGrabarModalArticulosNPT(){
 	var indice = document.getElementById('indiceArticuloComponentes').value;
 	var tipoProtocolo = document.getElementById('protocoloArticuloComponentes').value;
 	
-	jConfirm( "No se grabará el medicamento en la ordenes. Desea continuar?", "ALERTA", function( resp ){
+	jConfirm( "No se grabarï¿½ el medicamento en la ordenes. Desea continuar?", "ALERTA", function( resp ){
 		if( resp ){
 			quitarArticulo( indice,tipoProtocolo, '', 'detKardexAddU', true );
 			$.unblockUI();
@@ -26711,7 +26817,7 @@ function cerrarModalArticulos( tipo ){
 		var cerrarModal = $( "[id^=check_insumo]:checked", $( "#modalArticulos" ) ).length > 0 ? true: false;
 		cerrarModal = $( "[id^=check_insumo]", $( "#modalArticulos" ) ).length == 0 ? true: cerrarModal;
 		
-		if( cerrarModal ){	//aquí.......
+		if( cerrarModal ){	//aquï¿½.......
 			document.getElementById("wtxtobs"+tipoProtocolo+indice).value += document.getElementById("wcomponentesarticulo").value;
 			document.getElementById("wtxtobs"+tipoProtocolo+indice).value = $.trim( document.getElementById("wtxtobs"+tipoProtocolo+indice).value );
 			document.getElementById("wtxtobs"+tipoProtocolo+indice).style.width = "100%";
@@ -26741,7 +26847,7 @@ function cerrarModalArticulos( tipo ){
 }
 
 /*****************************************************************
- * Función llamada desde cerrarModalArticulos
+ * Funciï¿½n llamada desde cerrarModalArticulos
  *
  * Se usa para validar todas las acciones de la modal para LEVS
  *****************************************************************/
@@ -26751,10 +26857,10 @@ function cerrarModalArticulosLEV( indice, tipoProtocolo ){
 	var msgError = "";
 
 	/************************************************************************************************************************
-	 * Valido que sea valido la selección de insumos
+	 * Valido que sea valido la selecciï¿½n de insumos
 	 * - Se puede escoger un electrolito pero no debe haber nada escrito en en los campos vol/diligencia
-	 * - Si se escoge un electrólito con vol/dil tiene que haber una solución elegida por lo menos
-	 * - Si se escoge una solución esta debe tener una frecuencia
+	 * - Si se escoge un electrï¿½lito con vol/dil tiene que haber una soluciï¿½n elegida por lo menos
+	 * - Si se escoge una soluciï¿½n esta debe tener una frecuencia
 	 ************************************************************************************************************************/
 	$( "[id^=frecsol]", $( "#listaComponentesLEV" ) ).each(function(x){
 
@@ -26765,7 +26871,7 @@ function cerrarModalArticulosLEV( indice, tipoProtocolo ){
 
 				var volxdil = $( "#volxdil"+idx );
 
-				//Se valida que halla una solución elegida si hay algo escrito en vol/dil
+				//Se valida que halla una soluciï¿½n elegida si hay algo escrito en vol/dil
 				// if( volxdil.length > 0 && volxdil.val()*1 > 0 ){
 				if( volxdil.length > 0 ){
 					var valSol = false;
@@ -26792,7 +26898,7 @@ function cerrarModalArticulosLEV( indice, tipoProtocolo ){
 				if( $( "#tdCbSol"+idx ).length == 0 )
 					msgError = "Ingrese un valor valido para los <b>ELECTROLITOS</b>";
 				else
-					msgError = "Ingrese un valor para <b>VOL/TOTAL</b> de la solución";
+					msgError = "Ingrese un valor para <b>VOL/TOTAL</b> de la soluciï¿½n";
 			}
 		}
 	});
@@ -26811,14 +26917,14 @@ function cerrarModalArticulosLEV( indice, tipoProtocolo ){
 
 	var frecDi = $( "#slFrecDilLev", $( "#listaComponentesLEV" ) ).val();
 	if( frecDi == "" ){
-		msgError = "Debe seleccionar una <b>UNIDAD</b> para <b>VELOCIDAD DE INFUSIÓN</b>.";
+		msgError = "Debe seleccionar una <b>UNIDAD</b> para <b>VELOCIDAD DE INFUSIï¿½N</b>.";
 		todoOk = false;
 	}
 
 	if( todoOk ){
 		var frecDi = $( "#txFrecDilLev", $( "#listaComponentesLEV" ) ).val();
 		if( frecDi == "" ){
-			msgError = "Debe ingresar un valor para <b>VELOCIDAD DE INFUSIÓN</b>.";
+			msgError = "Debe ingresar un valor para <b>VELOCIDAD DE INFUSIï¿½N</b>.";
 			todoOk = false;
 		}
 	}
@@ -26849,7 +26955,7 @@ function cerrarModalArticulosLEV( indice, tipoProtocolo ){
 		// var nombre  = $.trim( nombre1 )+"+"+$.trim( nombre2 )+"para <b>"+$("#wperiod"+tipoProtocolo+indice+" option[value="+$("#wperiod"+tipoProtocolo+indice).val()+"]" ).html()
 		var nombre  = $.trim( nombre1 )+"+"+$.trim( nombre2 );//+"para <b>"+$("#wperiod"+tipoProtocolo+indice+" option[value="+$("#wperiod"+tipoProtocolo+indice).val()+"]" ).html()
 		    nombre +="</b> a <b>"+$( "#txFrecDilLev", $( "#listaComponentesLEV" ) ).val()+" "+$( "#slFrecDilLev option[value='"+$( "#slFrecDilLev", $( "#listaComponentesLEV" ) ).val()+"']", $( "#listaComponentesLEV" ) ).html();
-		// var nombre = "Aquí va el nombre";
+		// var nombre = "Aquï¿½ va el nombre";
 
 		var newDiv = document.createElement( "div" );
 
@@ -26993,7 +27099,7 @@ function borrarDatosDosisCalculada( cmp ){
 function verificarVelocidadInfusion(){
 
 	var habilitar = true;
-	//Si no hay nada seleccionado en dosis calculada se puede seleccionar velocidad de infusión
+	//Si no hay nada seleccionado en dosis calculada se puede seleccionar velocidad de infusiï¿½n
 	$( "[id^=inICDca]", $( "#listaComponentesIC" ) ).each(function(x){
 		if( $( "#check_insumo"+this.id.substr(7) )[0].checked && $( this ).val() > 0 ){
 			var sl = $( "#slFrecDilLev option[value='']", $( "#listaComponentesIC" ) );
@@ -27090,7 +27196,7 @@ function adicionarComponenteArticuloIC(codigo,nombre,i,esDispensable,cantidadFra
 
 		var voldil = $('#volxdil'+i);
 
-		var tipMed = voldil.length > 0 ? 'ele': 'sol' ;	//Indico si es solucióno electrolito
+		var tipMed = voldil.length > 0 ? 'ele': 'sol' ;	//Indico si es soluciï¿½no electrolito
 
 		voldil = voldil.length > 0 ? voldil.val() : "";
 
@@ -27143,7 +27249,7 @@ function adicionarComponenteArticuloIC(codigo,nombre,i,esDispensable,cantidadFra
 
 		var voldil = $('#volxdil'+i);
 
-		var tipMed = voldil.length > 0 ? 'ele': 'sol' ;	//Indico si es solucióno electrolito
+		var tipMed = voldil.length > 0 ? 'ele': 'sol' ;	//Indico si es soluciï¿½no electrolito
 
 		voldil = voldil.length > 0 ? voldil.val() : "";
 
@@ -27164,7 +27270,7 @@ function adicionarComponenteArticuloIC(codigo,nombre,i,esDispensable,cantidadFra
 
 		$( "#inICDca"+i+",#slICUdca"+i, $("#listaComponentesIC") ).attr({disabled:true});
 
-		//Esto solo aplica para la Infusión contiuna
+		//Esto solo aplica para la Infusiï¿½n contiuna
 		if( $( "#inICDca"+i ).length > 0 ){
 			$( "#inICDca"+i ).val("");
 			$( "#slICUdca"+i ).val("");
@@ -27198,7 +27304,7 @@ function adicionarComponenteArticuloLEV(codigo,nombre,i,esDispensable,cantidadFr
 
 		var voldil = $('#volxdil'+i);
 
-		var tipMed = voldil.length > 0 ? 'ele': 'sol' ;	//Indico si es solucióno electrolito
+		var tipMed = voldil.length > 0 ? 'ele': 'sol' ;	//Indico si es soluciï¿½no electrolito
 
 		voldil = voldil.length > 0 ? voldil.val() : "";
 
@@ -27248,7 +27354,7 @@ function adicionarComponenteArticuloLEV(codigo,nombre,i,esDispensable,cantidadFr
 
 		var voldil = $('#volxdil'+i);
 
-		var tipMed = voldil.length > 0 ? 'ele': 'sol' ;	//Indico si es solucióno electrolito
+		var tipMed = voldil.length > 0 ? 'ele': 'sol' ;	//Indico si es soluciï¿½no electrolito
 
 		voldil = voldil.length > 0 ? voldil.val() : "";
 
@@ -27269,7 +27375,7 @@ function adicionarComponenteArticuloLEV(codigo,nombre,i,esDispensable,cantidadFr
 
 		$( "#volxdil"+i, $( "#listaComponentesLEV" ) ).attr({disabled:true});
 
-		//Esto solo aplica para la Infusión contiuna
+		//Esto solo aplica para la Infusiï¿½n contiuna
 		if( $( "#inICDca"+i ).length > 0 ){
 			$( "#inICDca"+i ).val("");
 			$( "#slICUdca"+i ).val("");
@@ -27307,7 +27413,7 @@ function grabarEstadoAprobacionArticulos(historia,ingreso,fecha,codigosArticulos
 			if (ajax.readyState==4 && ajax.status==200){
 				if($.trim( ajax.responseText ) == "1"){
 					$.unblockUI();
-					$.growlUI('','Aprobación/desaprobación realizada exitosamente');
+					$.growlUI('','Aprobaciï¿½n/desaprobaciï¿½n realizada exitosamente');
 				}
 			}
 		}
@@ -27374,7 +27480,7 @@ $(document).ready(function () {
 
 
 	//Se deja por defecto el nombre de los botones como aceptar y cancelar respectivamente para los confirms y alertas
-	$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sí para el boton de aceptar
+	$.alerts.okButton = "Aceptar";		//Dejo por defecto el valor sï¿½ para el boton de aceptar
 	$.alerts.cancelButton = "Cancelar";	//Dejo por defecto el valor no para el boton cancelar
 
    //Controla le mensaje emergente para avisar que no se puede ingresar mas examenes por el boton + de lenguaje americas.
@@ -27441,7 +27547,7 @@ function borrarDosisMaximaPorFrecuencia( cmp ){
 				this.borrarDosisMaxima = false;
 				
 				var cmpDma = $( "[id^=wdosmax]", fila );
-				var cnd = $( "[id^=wcondicion]", fila ); //Condición
+				var cnd = $( "[id^=wcondicion]", fila ); //Condiciï¿½n
 				
 				var dmaFrec = this.ultimaFrecuencia;
 				
@@ -27475,7 +27581,7 @@ function borrarDosisMaximaPorFrecuencia( cmp ){
 }
 
 /**
- * Función para búsqueda de prescripción de mipres por número, vía webservice
+ * Funciï¿½n para bï¿½squeda de prescripciï¿½n de mipres por nï¿½mero, vï¿½a webservice
  * @by: sebastian.nevado
  * @date: 2021/10/08
  */
@@ -27495,7 +27601,7 @@ function validarNumeroMipres(nroPrescripcionMipres)
 }
 
 /**
- * Función para búsqueda de prescripción de mipres por número, vía webservice
+ * Funciï¿½n para bï¿½squeda de prescripciï¿½n de mipres por nï¿½mero, vï¿½a webservice
  * @by: sebastian.nevado
  * @date: 2021/10/08
  */
@@ -27517,7 +27623,7 @@ function validarNumeroMipres(nroPrescripcionMipres)
 		 async: false,
 		 success:function(respuesta) {
  
-			 //Si el tamaño es menor a 1 es porque no encontró resultado
+			 //Si el tamaï¿½o es menor a 1 es porque no encontrï¿½ resultado
 			 if(respuesta.mensaje)
 			 {
 				 aRespuesta['exito'] = false;
@@ -27526,12 +27632,12 @@ function validarNumeroMipres(nroPrescripcionMipres)
 			 else if(respuesta.length < 1)
 			 {
 				 aRespuesta['exito'] = false;
-				 aRespuesta['mensaje'] = 'El número de prescripción Mipres ingresado no existe.';
+				 aRespuesta['mensaje'] = 'El nï¿½mero de prescripciï¿½n Mipres ingresado no existe.';
 			 }
 			 else
 			 {
 				 aRespuesta['exito'] = true;
-				 aRespuesta['mensaje'] = 'El número de prescripción Mipres ingresado existe.';
+				 aRespuesta['mensaje'] = 'El nï¿½mero de prescripciï¿½n Mipres ingresado existe.';
 			 }
 			 //$.unblockUI();
 		 }
@@ -27541,7 +27647,7 @@ function validarNumeroMipres(nroPrescripcionMipres)
  }
 
  /**
- * Función para búsqueda de prescripción de mipres por número en medicamentos del día
+ * Funciï¿½n para bï¿½squeda de prescripciï¿½n de mipres por nï¿½mero en medicamentos del dï¿½a
  * @by: sebastian.nevado
  * @date: 2021/10/08
  */
@@ -27561,16 +27667,16 @@ function validarNumeroMipresUsado(nroPrescripcionMipres)
 		async: false,
 		success:function(respuesta) {
 
-			//Si el tamaño es menor a 1 es porque no encontró resultado
+			//Si el tamaï¿½o es menor a 1 es porque no encontrï¿½ resultado
 			if(respuesta == '1')
 			{
 				aRespuesta['exito'] = false;
-				aRespuesta['mensaje'] = 'El número de prescripción Mipres fue ingresado para otro medicamento..';
+				aRespuesta['mensaje'] = 'El nï¿½mero de prescripciï¿½n Mipres fue ingresado para otro medicamento..';
 			}
 			else
 			{
 				aRespuesta['exito'] = true;
-				aRespuesta['mensaje'] = 'El número de prescripción Mipres ingresado no ha sido registrado.';
+				aRespuesta['mensaje'] = 'El nï¿½mero de prescripciï¿½n Mipres ingresado no ha sido registrado.';
 			}
 			//$.unblockUI();
 		}
