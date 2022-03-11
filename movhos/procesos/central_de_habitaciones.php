@@ -61,7 +61,7 @@ $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
 $sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
 
 
-
+// $selectsede = '';
 if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) && !empty($sCodigoSede) ){
     $selectsede = $_POST['selectsede'];
 }
