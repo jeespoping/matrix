@@ -3,7 +3,7 @@ include_once("conex.php");
 //ORDENES PARA HCE a
 //BSD
 //Creado JUNIO 1 DE 2010
-//Mauricio Sanchez Castaño
+//Mauricio Sanchez Castaï¿½o
 
 /************************************************************************************************************************
  * A tener en cuenta
@@ -12,64 +12,66 @@ include_once("conex.php");
  *  - Para abrir ordenes sin que se vea la pantalla de consultar ordenes, en la tabla 000009 de HCE, el link que se crea
  *    para el programa de ordenes debe tener &hce=on
  *  - Un medico no debe estar registrado con el centro de costos 1050 o 1051, ya que da el efecto de que no se guarda los articulos.
- *    Esto debido a que los articulos son guardados con cco * y su encabezado como 1051, por tanto no se vería los articulos al
+ *    Esto debido a que los articulos son guardados con cco * y su encabezado como 1051, por tanto no se verï¿½a los articulos al
  *    abrir el kardex
  *  - Para mostrar los componentes de un articulo generico, sus componentes deben estar en la tabla 000098 de movhos
  *  - Los consecutivos de la orden se encuentran en movhos_000011
- *  - El examen de la orden médica, para mensajes HL7 se guarda en tabla indicada segun HCE_000017
+ *  - El examen de la orden mï¿½dica, para mensajes HL7 se guarda en tabla indicada segun HCE_000017
  *	- Solo los examenes cuyo tipo tengan justificacion, indicado en la tabla 000015, campo reqjus, obliga a ingresar una 
  *	  justificacion para el examen.
  ************************************************************************************************************************/
 
 /************************************************************************************************************************
  * Modificaciones
- * Octubre 8 de 2021	Sebastián Nevado	-  Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
+ * Noviembre 11 de 2021	Sebastiï¿½n Nevado	- Se agregan filtros de interoperabilidad con la tabla de tipos de exï¿½menes (hce15) con interoperabilidad encendido (Tipiws en on).
+ * Octubre 27 de 2021   Sebastian Alvarez B    - Se aï¿½adieron campos Kadfpv y Kadhpv para registrar la fecha y hora en la que se ve un artiuclo
+ * Octubre 8 de 2021	Sebastiï¿½n Nevado	-  Valida que antes de ordenar el medicamento, tenga cï¿½digo mipres si es nopos, contributivo, paciente de eps y ordenador sea mï¿½dico. Valida por Webservice la existencia del mipres para permitir guardar.
  * Agosto 13 de 2020	Edwin 		- Se permite ordenar cups buscando por codigo CUP
- * Agosto 05 de 2020	Edwin 		- Si un paciente está con traslado temporal en hemodinamia, en el mensaje HL7 enviado a laboratorio se manda la habitación dónde se encuentra
+ * Agosto 05 de 2020	Edwin 		- Si un paciente estï¿½ con traslado temporal en hemodinamia, en el mensaje HL7 enviado a laboratorio se manda la habitaciï¿½n dï¿½nde se encuentra
  *									- Se cambia el nombre del archivo que se crea en el ftp para los mensajes hl7 con la interoperabilidad de laboratorio, agregando a la fecha, 
- *									  la hora el minuto y segundo de creación del archivo
- * Junio 30 de 2020		Edwin 		- Se guarda la fecha y hora de toma de muestra y se registra en la auditoría y se impide que dos usuarios diferentes tomen la muestra a la misma fecha y hora
- * Junio 17 de 2020		Edwin 		- Se crea función enviarALaboratorioHL7Faltantes para que cree los mensajes hl7 faltantes por enviar de los estudios
+ *									  la hora el minuto y segundo de creaciï¿½n del archivo
+ * Junio 30 de 2020		Edwin 		- Se guarda la fecha y hora de toma de muestra y se registra en la auditorï¿½a y se impide que dos usuarios diferentes tomen la muestra a la misma fecha y hora
+ * Junio 17 de 2020		Edwin 		- Se crea funciï¿½n enviarALaboratorioHL7Faltantes para que cree los mensajes hl7 faltantes por enviar de los estudios
  *									  que tengan interoperabilidad
- * Junio 05 de 2020		Edwin 		- En el mensaje hl7 a laboratorio se manda el médico quién realizo la orden
- * Mayo 21 de 2020		Edwin 		- Se permite toma de muestra por cco según interoperabilidad (movhos 11 campo Ccotio)
- * Mayo 13 de 2020		Edwin 		- Los estudios no ofertados al tomar la muestra desde gestión no se envían a laboratorio
- * Mayo 12 de 2020		Edwin 		- Se hacen cambios para toma de muestra desde gestion de enfermería
+ * Junio 05 de 2020		Edwin 		- En el mensaje hl7 a laboratorio se manda el mï¿½dico quiï¿½n realizo la orden
+ * Mayo 21 de 2020		Edwin 		- Se permite toma de muestra por cco segï¿½n interoperabilidad (movhos 11 campo Ccotio)
+ * Mayo 13 de 2020		Edwin 		- Los estudios no ofertados al tomar la muestra desde gestiï¿½n no se envï¿½an a laboratorio
+ * Mayo 12 de 2020		Edwin 		- Se hacen cambios para toma de muestra desde gestion de enfermerï¿½a
  * Mayo 4 de 2020		Edwin 		- Se hacen cambios varios para la interoperabilidad con laboratorio por centro de costos y POCT
  * Febrero 14 de 2020	Edwin 		- Si un tipo de orden tiene interoperabilidad y el estudio es ofertado, no se permite mover los estados del estudio
- * Febrero 13 de 2020	Edwin 		- Cuando una orden de estudios tiene interoperabilidad, no se muestran resultados a ningún usuario.
- * Febrero 03 de 2020	Edwin 		- Se envía el tipo de documento en el mensaje HL7 enviado a Laboratorio
- * Enero 23 de 2020		Edwin 		- Se crea función tieneKardex, para identificar si en un día especifico las ordenes eran kardex u ordenes según el encabezado
+ * Febrero 13 de 2020	Edwin 		- Cuando una orden de estudios tiene interoperabilidad, no se muestran resultados a ningï¿½n usuario.
+ * Febrero 03 de 2020	Edwin 		- Se envï¿½a el tipo de documento en el mensaje HL7 enviado a Laboratorio
+ * Enero 23 de 2020		Edwin 		- Se crea funciï¿½n tieneKardex, para identificar si en un dï¿½a especifico las ordenes eran kardex u ordenes segï¿½n el encabezado
  *									  del kardex (movhos_000053)
- * Diciembre 17 de 2019	Edwin 		- Se borran espacios al final del número de documento en el mensaje HL7 que se envía a laboratorio
+ * Diciembre 17 de 2019	Edwin 		- Se borran espacios al final del nï¿½mero de documento en el mensaje HL7 que se envï¿½a a laboratorio
  * Diciembre 10 de 2019	Edwin 		- Para antecedentes personales se corrige guardado de caracteres especiales
- * Noviembre 20 de 2019	Edwin 		- Si en el parámetro permitirCambiarEstadoInteroperabilidadPorTipoOrden se encuentra el tipo de la orden no se muestra
- *									  información en la pestaña de ordenes realizadas
- * Noviembre 19 de 2019	Edwin 		- Si en el parámetro permitirCambiarEstadoInteroperabilidadPorTipoOrden se encuentra el tipo de la orden no se muestra
+ * Noviembre 20 de 2019	Edwin 		- Si en el parï¿½metro permitirCambiarEstadoInteroperabilidadPorTipoOrden se encuentra el tipo de la orden no se muestra
+ *									  informaciï¿½n en la pestaï¿½a de ordenes realizadas
+ * Noviembre 19 de 2019	Edwin 		- Si en el parï¿½metro permitirCambiarEstadoInteroperabilidadPorTipoOrden se encuentra el tipo de la orden no se muestra
  *									  mensaje "NO OFERTADO" para estudios no ofertados
- * Noviembre 18 de 2019	Edwin 		- Si en el parámetro permitirCambiarEstadoInteroperabilidadPorTipoOrden se encuentra el tipo de la orden, la 
+ * Noviembre 18 de 2019	Edwin 		- Si en el parï¿½metro permitirCambiarEstadoInteroperabilidadPorTipoOrden se encuentra el tipo de la orden, la 
  *									  interoperabilidad con los sistemas de laboratorio o HIRUKO no se ven reflejados en el programa de ordenes
- * Noviembre 13 de 2019	Edwin 		- Si no hay interoperabilidad no habilita el campo enviar mensaje hl7(Detval = on) para que luego no se envíe
+ * Noviembre 13 de 2019	Edwin 		- Si no hay interoperabilidad no habilita el campo enviar mensaje hl7(Detval = on) para que luego no se envï¿½e
  *									  el mensaje HL7 a laboratorio al iniciar nuevamente el proceso
  * Noviembre 07 de 2019	Edwin 		- Al enviar un mensaje HL7 a Hiruko, se deshabilita en campo Detval (Detval = off) en la tabla temporal de
- *									  procedimientos y examenes (movhos_000159) para que no se envíe nuevamente.
+ *									  procedimientos y examenes (movhos_000159) para que no se envï¿½e nuevamente.
  * Octubre 30 de 2019	Edwin 		- Se hacen modificaciones varias para interoperabilidad con ordenes (LABORATORIO, HIRUKO)
  * Julio 29 de 2019	Edwin 			- Se puede marcar no enviar para medicamentos ordenados en ayudas dx
- * Mayo 27 de 2019	Edwin 			- Se corrige división por cero en la línea 34105 al momento de modificar el escript 
+ * Mayo 27 de 2019	Edwin 			- Se corrige divisiï¿½n por cero en la lï¿½nea 34105 al momento de modificar el escript 
  *									  (se multiplica denominador y numerador por 1000 para corregirlo)
- *									- A la función consultarFamiliaMedicamentos, el valor retornado se le queta el utf8_encode
- * Abril 24 de 2019	Edwin 			- Se corrige filtro en la consulta del where en la función pintarModalIC
- * Febrero 7 de 2019	Edwin 		- Se comenta el funcionamiento de la función seguimiento
- * Febrero 4 de 2019	Edwin 		- Se muestra la información más reciente de medicamentos de consumo habitual, para ello en 
- *									  la función consultarMedConsuHabitual se agrega ORDER BY por fecha y hora en forma descendente
+ *									- A la funciï¿½n consultarFamiliaMedicamentos, el valor retornado se le queta el utf8_encode
+ * Abril 24 de 2019	Edwin 			- Se corrige filtro en la consulta del where en la funciï¿½n pintarModalIC
+ * Febrero 7 de 2019	Edwin 		- Se comenta el funcionamiento de la funciï¿½n seguimiento
+ * Febrero 4 de 2019	Edwin 		- Se muestra la informaciï¿½n mï¿½s reciente de medicamentos de consumo habitual, para ello en 
+ *									  la funciï¿½n consultarMedConsuHabitual se agrega ORDER BY por fecha y hora en forma descendente
  *									  en el query principal
- * Enero 29 de 2019	Edwin 			- En la función generarListaProtocolos se agrega filtro de estado en la consulta principal
- * Noviembre 15 de 2018	Jessica 	- En la función consultarAlergiasPorPrincipioActivo() se agrega el filtro Daaest='on' para 
+ * Enero 29 de 2019	Edwin 			- En la funciï¿½n generarListaProtocolos se agrega filtro de estado en la consulta principal
+ * Noviembre 15 de 2018	Jessica 	- En la funciï¿½n consultarAlergiasPorPrincipioActivo() se agrega el filtro Daaest='on' para 
  *									  que valide solo las alergias de medicamentos activas.
- * Noviembre 15 de 2018	Edwin 		- Se agrega validación de alergias de medicamentos al prescribir los medicamentos, es decir, 
+ * Noviembre 15 de 2018	Edwin 		- Se agrega validaciï¿½n de alergias de medicamentos al prescribir los medicamentos, es decir, 
  *									  si el paciente tiene una alergia activa para el principio activo no debe permitir ordenarlo.
- * Julio 9 de 2018 Edwin 			- Se crea opción ajax para buscar los articulos anteriores
- * Julio 3 de 2018 Edwin			- Se crea ajax para consultar la auditoría
+ * Julio 9 de 2018 Edwin 			- Se crea opciï¿½n ajax para buscar los articulos anteriores
+ * Julio 3 de 2018 Edwin			- Se crea ajax para consultar la auditorï¿½a
  * Julio 1 de 2018 Edwin			- Se evita que aparezcan los tres cifras decimales al consultar el medicamento
  * Mayo 15 de 2018 Jessica			- Para las dosis adaptadas con purga se agrega la unidad del medicamento prescrito por el medico
  * Mayo 8 de 2018 Jessica			- Para las dosis adaptadas con purga, se muestra en el campo DOSIS la dosis sin purga 
@@ -78,51 +80,51 @@ include_once("conex.php");
  *									  de la dosis Kadcfr por la dosis sin purga.
  * Mayo 7 de 2018 Jessica			- Los articulos E00 se marcan como no enviar para cualquier paciente en un cco diferente a urgencias
  * Mayo 4 de 2018 Jessica			- Se mueve la funcion consultarSiProductoDA() al script cargos.inc.php en cenpro para que pueda 
- *									  ser consulta desde el programa Contingencia Kardex de enfermería, por tal motivo se agrega el 
+ *									  ser consulta desde el programa Contingencia Kardex de enfermerï¿½a, por tal motivo se agrega el 
  *									  include a ese script; tambien se agrega la funcion consultarDosisSinPurgaDA() en ese script ya 
  *									  que se valida si las dosis adaptadas fueron creadas con purga, si es el caso se muestra la dosis 
  * 									  ordenada por el medico en vez de la dosis real del producto (dosis con purga) para evitar 
- * 									  confusiones, en el tooltip se detalla la dosis con purga y sin purga. En la regleta también 
+ * 									  confusiones, en el tooltip se detalla la dosis con purga y sin purga. En la regleta tambiï¿½n 
  * 									  se muestra la dosis ordenada por el medico (sin purga).
  * Febrero 13 de 2018 Edwin			- Se cambia campo ubiste por el valor del cco correspondiente
- * 									- Lo médicos y enfermeras en hemodinamia ven todo lo ordenado en piso
+ * 									- Lo mï¿½dicos y enfermeras en hemodinamia ven todo lo ordenado en piso
  * Febrero 5 de 2018 Edwin			- Se modifica para que los protocolos realizados en una ayuda dx(Hemodinamia) no aparezcan en pisos
- * Febrero 02 de 2018 Jessica		- Se corrige update en la función grabarExamenKardex() ya que en algunos casos quedaba con una 
+ * Febrero 02 de 2018 Jessica		- Se corrige update en la funciï¿½n grabarExamenKardex() ya que en algunos casos quedaba con una 
  *									  coma extra que generaba error 
- * Diciembre 18 de 2017 Jessica		- Se agrega un echo al ajax 61 ya que no se estaba mostrando el diagnóstico en la respuesta ajax
- * Noviembre 28 de 2017 Jessica		- Se modifican las funciones ya que las especialidades por médico se deben consultar en movhos_000065
+ * Diciembre 18 de 2017 Jessica		- Se agrega un echo al ajax 61 ya que no se estaba mostrando el diagnï¿½stico en la respuesta ajax
+ * Noviembre 28 de 2017 Jessica		- Se modifican las funciones ya que las especialidades por mï¿½dico se deben consultar en movhos_000065
  *										- consultaInformacionMedico() - Solo se agrega el estado de la consulta a movhos_000048
- *										- generarListaProtocolos() - Se tienen en cuenta todas las especialiades (movhos_000065) del médico para traer la lista de protocolos que aplican para el médico.
- *										- consultarMedicos() - Se agrega movhos_000065 a la consulta de especialidades por médico (pinta la lista de médicos cuando no se ha seleccionado una especialidad - toma la especialidad principal, es decir, Medesp de movhos_000048)
- *										- consultarEspecialidadesUsuarios() - Se agrega movhos_000065 a la consulta de especialidades por médico
+ *										- generarListaProtocolos() - Se tienen en cuenta todas las especialiades (movhos_000065) del mï¿½dico para traer la lista de protocolos que aplican para el mï¿½dico.
+ *										- consultarMedicos() - Se agrega movhos_000065 a la consulta de especialidades por mï¿½dico (pinta la lista de mï¿½dicos cuando no se ha seleccionado una especialidad - toma la especialidad principal, es decir, Medesp de movhos_000048)
+ *										- consultarEspecialidadesUsuarios() - Se agrega movhos_000065 a la consulta de especialidades por mï¿½dico
  *										- consultarMedicosTratantesHCE() - Se agrega movhos_000065 a la consulta de medicos tratantes
  *										- consultarMedicosTratantesTemporalKardex() - Se agrega movhos_000065 a la consulta de medicos tratantes
  *										- consultarMedicosTratantesDefinitivoKardex() - Se agrega movhos_000065 a la consulta de medicos tratantes
  *										- consultarMedicosPorEspecialidad() - Se agrega movhos_000065 a la consulta de medicos por especialidad
- *										- consultarProtocolo() - Se tienen en cuenta todas las especialiades (movhos_000065) del médico 
+ *										- consultarProtocolo() - Se tienen en cuenta todas las especialiades (movhos_000065) del mï¿½dico 
  *										  para traer el protocolo, se corrigen las condiciones ya que estaban repetidas y se recibe el 
- *										  código del usuario como parámetro ya que estaba quedando vacio.
- * Noviembre 27 de 2017 Jessica		- Se modifica la función marcarRegistrosLeidos() para que marque como leidos los medicamentos, 
- *									  procedimientos, dietas e informacion general solo si hizo clic en la pestaña. Además se le 
+ *										  cï¿½digo del usuario como parï¿½metro ya que estaba quedando vacio.
+ * Noviembre 27 de 2017 Jessica		- Se modifica la funciï¿½n marcarRegistrosLeidos() para que marque como leidos los medicamentos, 
+ *									  procedimientos, dietas e informacion general solo si hizo clic en la pestaï¿½a. Ademï¿½s se le 
  *									  agrega al ajax 58 la asignacion de las variables $historia e $ingreso ya que como quedaban 
  *									  vacias no se estaba ejecutando la funcion marcarRegistrosLeidos().
- *									- Se habilita el llamado a marcarRegistrosLeidos() en la función salirsigrabar().
+ *									- Se habilita el llamado a marcarRegistrosLeidos() en la funciï¿½n salirsigrabar().
  *									- Se agrega el campo Detlog en hce_000028 y movhos_000159 para identificar si la ordenen es nueva o modificada.
- *									- Si en la pestaña Ordenes hay procedimientos pendientes de lectura (Detpen=on) se muestran de otro color. 
+ *									- Si en la pestaï¿½a Ordenes hay procedimientos pendientes de lectura (Detpen=on) se muestran de otro color. 
  * Septiembre 26 de 2017 Jessica	- Si el centro de costos tiene purga para las dosis adaptadas y el articulo es una DA muestra, se 
  *									  agrega un tooltip con el detalle de la dosis con purga y sin purga.
  *									- Se agrega validacion al insertar el detalle de las NPT para evitar que el detalle quede duplicado.
  * Agosto 14 de 2017 Jessica		- Para los ctc de responsables contributivos, al cerrar la modal de las prescripciones en mipres
  *								  	  se consume el web service del ministerio, se relaciona el consecutivo en movhos_000134 o movhos_000135
  *								  	  y se guarda la prescripcion en las tablas del grupo mipres.
- * Junio 6 de 2017: Edwin MG		- Los examenes y procedimientos quedan con la hora de la auditoría
+ * Junio 6 de 2017: Edwin MG		- Los examenes y procedimientos quedan con la hora de la auditorï¿½a
  * Junio 6 de 2017: Jonatan			- Se agrega el campo Detpri al registro de respaldo de la tabla movhos_000159.
- * Abril 27 de 2017 				- Se muestra el formato de control a los médicos una vez grabe la orden.
+ * Abril 27 de 2017 				- Se muestra el formato de control a los mï¿½dicos una vez grabe la orden.
  * Abril 5 de 2017 					- Se busca el dx desde la funcion consultarUltimoDiagnosticoHCE que se encuentra en comun.php
- * Marzo 7 de 2017 					- Se agrega la justificación a los procedimientos realizados.
+ * Marzo 7 de 2017 					- Se agrega la justificaciï¿½n a los procedimientos realizados.
  * Febrero 06 de 2017 				- Se valida que las tablas de extension del kardex (movhos_000208, movhos_000209) antes de insertar los registros no existan en dicha tabla.
  * Enero 24 de 2017					- Todo articulo ordenado desde urgencias siempre queda como ENVIAR, esto se hace para que se pueda dispensar desde urgencias.
- *									- Los articulos que pertenecen a LEV o IC ordenados desde urgencias y están como ENVIAR cambian a NO ENVIAR una vez se traslade a piso.
+ *									- Los articulos que pertenecen a LEV o IC ordenados desde urgencias y estï¿½n como ENVIAR cambian a NO ENVIAR una vez se traslade a piso.
  *									  El cambio de ENVIAR a NO ENVIAR va de acuerdo a las configuraciones de la tabla movhos_000098. El proceso es realizado 
  * 									  desde cargos PDA(movhos/procesos/cargoscpx.ph), perfil farmacoterapeutico (movhos/procesos/perfilFarmacoterapeutico.php) 
  *									  u ordenes (hce/procesos/ordenes.php) una vez se abra el programa.
@@ -133,63 +135,63 @@ include_once("conex.php");
  *									  activa con el parametro de root_000051 CTCcontributivo en ON y la url de la plataforma del ministerio en urlCTCministerio
  * Noviembre 17 de 2016				- Se agrega validacion de centros de costos al importar protocolos para evitar cargar varias veces el mismo protocolo
  * Noviembre 9 de 2016				- Se modifica el receptor del correo para actualizacion del navegador por cambio en el valor del parametro emailpmla
- * Octubre 04 de 2016				- Cuando se ordena un medicamento No POS y no se hace el CTC se envía un correo a soporte para actualizar el navegador
+ * Octubre 04 de 2016				- Cuando se ordena un medicamento No POS y no se hace el CTC se envï¿½a un correo a soporte para actualizar el navegador
  * Septiembre 20 de 2016			- Se agrega orden a mostrar en la modal por tipo de orden agrupada
- * Septiembre 19 de 2016			- Se envía email cuando se requiere actualizar el browser Mozilla del cliente a soporte(informatica.clnica@lasamericas.com.co)
- * 									- Se actualiza parametro versionMozilla en root_000051 cuando un usuario tiene una version Superior del browser Mozilla según el parametro
- * Septiembre 13 de 2016			- Se hace registro en aud_cierre_kardex cuando un CTC no se realiza por que la versión del navegador(mozzila) está desactualizado
+ * Septiembre 19 de 2016			- Se envï¿½a email cuando se requiere actualizar el browser Mozilla del cliente a soporte(informatica.clnica@lasamericas.com.co)
+ * 									- Se actualiza parametro versionMozilla en root_000051 cuando un usuario tiene una version Superior del browser Mozilla segï¿½n el parametro
+ * Septiembre 13 de 2016			- Se hace registro en aud_cierre_kardex cuando un CTC no se realiza por que la versiï¿½n del navegador(mozzila) estï¿½ desactualizado
  * Agosto 26 de 2016				- Se agrega estado para cada uno de los procedimientos de las ordenes agrupadas y se crea indicador de procedimiento imprimiblen
  *										en movhos_000186. 
- * Agosto 3 de 2016 Jessica			- Se modifica la modal de prescripción de NPT para que solo se permita ordenar NPT seguras teniendo en cuenta ciertas condiciones.
+ * Agosto 3 de 2016 Jessica			- Se modifica la modal de prescripciï¿½n de NPT para que solo se permita ordenar NPT seguras teniendo en cuenta ciertas condiciones.
  * Junio 17 de 2016. Edwin			- Se corrige para que en la funcion cargarArticulosADefinitivo las horas por frecuencia tengan por defecto una hora inicial
- * Junio 02 de 2016. Edwin			- Se evita que los medicamentos de tipo liquido, indicados en movhos_000066 no les salga la pestaña de NPT.
- * Mayo 11 de 2016 					- Se añade la funcionalidad de procedimientos agrupados, modal que permite seleccionar varios procedimientos a la vez, 
+ * Junio 02 de 2016. Edwin			- Se evita que los medicamentos de tipo liquido, indicados en movhos_000066 no les salga la pestaï¿½a de NPT.
+ * Mayo 11 de 2016 					- Se aï¿½ade la funcionalidad de procedimientos agrupados, modal que permite seleccionar varios procedimientos a la vez, 
  *										las acciones que toma la orden general deben aplicarse para cada uno de los procedimientos que internamente continuan 
  *										funcionando como siempre.
- *										Por cada procedimiento se pueden adicionar medicamentos y son obligatorios de acuerdo a la configuración de cada procedimiento.
+ *										Por cada procedimiento se pueden adicionar medicamentos y son obligatorios de acuerdo a la configuraciï¿½n de cada procedimiento.
  *										Cuando se cambia el estado a realizado, pendiente de resultado o cancelado se suspenden los medicamentos asociados.
- *										Si uno de los medicamentos tiene como minimo una aplicación el procedimiento no podrá ser cancelado.
+ *										Si uno de los medicamentos tiene como minimo una aplicaciï¿½n el procedimiento no podrï¿½ ser cancelado.
  * Mayo 05 de 2016					- Al momento de insertar un medicamento en la tabla temporal del kardex (2016-05-06) se registar el valor del campo Kadlog
  * Mayo 04 de 2016					- Para pedir los ctc por cambio de responsable se valida que no sea una empresa definida en empresasConfirmanCTC de root_000051
- * Abril 19 de 2016					- Las nutriciones se puede confirmar por parte de la enfermera o el médico y siempre pasan desconfirmadas para el día siguiente
- * Marzo 18 de 2016					- Al consultar una orden la primera vez del día se crea el encabezado del kardex
- * Marzo 03 de 2016					- Se cambia query en la función consultarAyudasDiagnosticasPorCodigo para que los procedimientos por protocolos se traigan correctamente
+ * Abril 19 de 2016					- Las nutriciones se puede confirmar por parte de la enfermera o el mï¿½dico y siempre pasan desconfirmadas para el dï¿½a siguiente
+ * Marzo 18 de 2016					- Al consultar una orden la primera vez del dï¿½a se crea el encabezado del kardex
+ * Marzo 03 de 2016					- Se cambia query en la funciï¿½n consultarAyudasDiagnosticasPorCodigo para que los procedimientos por protocolos se traigan correctamente
  * Febrero 18 de 2016 				- Si es un articulo de lactario el articulo se registra como no pendiente
- * Febrero 12 de 2016 				- Cualquier centro de costos que maneje ordenes tendra el cco en el encabezado del kardex como * a excepción de lactario
- *									- Se corrige actualización de la enfermera al momento de cambiar un dextrometer
+ * Febrero 12 de 2016 				- Cualquier centro de costos que maneje ordenes tendra el cco en el encabezado del kardex como * a excepciï¿½n de lactario
+ *									- Se corrige actualizaciï¿½n de la enfermera al momento de cambiar un dextrometer
  * Enero 21 de 2015 				- Se consultan los medicamentos y procedimientos sin CTC por cambio de responsable.
  * Septiembre 1 de 20145 Jonatan	- Se valida para los medicos y las dietas que no se dupliquen los registros en la tabla temporal para el primer registro de datos.
  * Agosto 3 de 2015 Jonatan			- Se comenta la la X roja el 3 de agosto de 2015 para que no puedan eliminar articulos, solamente suspender.
- * Julio 31 de 2015 Jonatan			- Se corrige la busque da procedimientos con la ñ, para que la muestre correctamente.
+ * Julio 31 de 2015 Jonatan			- Se corrige la busque da procedimientos con la ï¿½, para que la muestre correctamente.
  * Julio 22 de 2015 Jonatan			- Cuando un articulo tipo nutricion parenteral generica es solicitado por primera vez, quedara confirmado y leido, para que se muestre en el perfil.
  * Julio 15 de 2015 Edwin			- Se organizan filtros de estado de familias activas en las cosultas correspondientes al buscar de medicamentos( ajax 31,34 y 35 )
- * Julio 13 de 2015 Edwin			- Se permite buqueda de familias con caracteres especiales (áéíóúñ).
+ * Julio 13 de 2015 Edwin			- Se permite buqueda de familias con caracteres especiales (ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½).
  * Junio 30 de 2015 Edwin			- Se realizan los siguientes cambios
- *									  1. Ordenar medicamentos LEVS(liquidos endovensoso) y de IC(Infusión continua) con una modal nueva
+ *									  1. Ordenar medicamentos LEVS(liquidos endovensoso) y de IC(Infusiï¿½n continua) con una modal nueva
  *									  2. Permite ordenar medicamentos con la misma fecha y hora de inicio.
  * Julio 2 de 2015 Jonatan			- Se agrega la funcion para buscarlo estados activos en el seleccionador de estados de ayudas diagnosticas.
  * Junio 26 de 2015 Jonatan			- Se valida que antes de actualizar un medicamento, el registro no se encuentra en la tabla definitiva del kardex, en caso de encontrar el medicamento
  *									  en la tabla definitiva del kardex se borra el medicamento de la tabla definitiva. Esto para evitar un duplicado de articulo.
  * Junio 25 de 2015 Jonatan			- Se controla para que el esquema de dextromenter no se traslade del dia anterior al actual si esta inactivo el dia anterior.
 									- Se registra log para los medicamentos en el campo kadlog, este campo tendra 4 estados incialmente (N=Nuevo, M=Modificado, S=Suspendido, A=Activo),
-									  los cuales se mostrarán en el programa de gestion de enfermeria.
+									  los cuales se mostrarï¿½n en el programa de gestion de enfermeria.
  * Junio 05 de 2015 Jonatan			- En el historial de medicamentos no se tendra en cuenta la cantidad de aplicacion cuando un articulo esta suspendido.
  * Junio 02 de 2015 Edwin			- Se valida que cuando a un medicamento se le cambia la frecuencia, devuelva la fecha y hora de inicio nueva con que queda el medicamento.
- *									  Esto se hace para tenerlo en cuenta en el javascript. El cambio se encuentra en la función grabarArticuloDetalle. 
+ *									  Esto se hace para tenerlo en cuenta en el javascript. El cambio se encuentra en la funciï¿½n grabarArticuloDetalle. 
  * Mayo 21 de 2015 Jonatan			- Se agrega funcion de seguimiento que genera un archivo txt, en ese archivo se guaradaran inicialmente los querys de suspendido y 
 									  creacion o modificacion de articulos.
- * Abril 07 de 2015 Edwin			- Los articulos que no han sido aplicados y tienen dosis única y no han sido aplicados o no tienen saldo pasan al día siguiente
- * Marzo 31 de 2015 Edwin			- Se añade log cuando los medicamentos no pasan de una tabla a otra al abrir o guardar kardex (movhos 54 a movhos 60 y viceversa)
- * Marzo 11 de 2015 Jonatan			- Se permite eliminar articulos de la pestaña de alta por cualquier especialidad.
+ * Abril 07 de 2015 Edwin			- Los articulos que no han sido aplicados y tienen dosis ï¿½nica y no han sido aplicados o no tienen saldo pasan al dï¿½a siguiente
+ * Marzo 31 de 2015 Edwin			- Se aï¿½ade log cuando los medicamentos no pasan de una tabla a otra al abrir o guardar kardex (movhos 54 a movhos 60 y viceversa)
+ * Marzo 11 de 2015 Jonatan			- Se permite eliminar articulos de la pestaï¿½a de alta por cualquier especialidad.
 									- No permite que el calendario de fecha de inicio del articulo se devuelva a la ronda actual. (Edwin).
 									- La DA no se deja marcar si la fecha y hora de inicio es la ronda actual, debe ser la posterior. (Edwin)
- * Marzo 09 de 2015		Edwin MG.	- Se corrige la función vista_desplegarListaArticulosHistorial, no se mostraba bien cuando la familia era igual a la del día siguiente
+ * Marzo 09 de 2015		Edwin MG.	- Se corrige la funciï¿½n vista_desplegarListaArticulosHistorial, no se mostraba bien cuando la familia era igual a la del dï¿½a siguiente
  * Febrero 26 de 2015 Edwin MG.		- Se hace control al momento de guardar teniendo en cuenta el campo kadido, esto con el fin de poder guardar dos medicamentos
- *									  a la misma fecha y hora cuando el medicamento está suspendido.
- * Febrero 21 de 2015 Jonatan.		- Se muestran los examenes generados desde kardex en la pestaña de ordenes, los cuals pueden ser cambiados de estado.
+ *									  a la misma fecha y hora cuando el medicamento estï¿½ suspendido.
+ * Febrero 21 de 2015 Jonatan.		- Se muestran los examenes generados desde kardex en la pestaï¿½a de ordenes, los cuals pueden ser cambiados de estado.
 									- Se genera regleta para articulos creados desde urgencias.
- * Febrero 9 de 2015 Jonatan.		- Se hace control sobre las areas de texto de la pestaña de medidas generales para que segun el rol se puedan ver
-									  o  no, ademas se utilizara el campo Rrpnpe para el control de los nombres de las pestañas por rol.
+ * Febrero 9 de 2015 Jonatan.		- Se hace control sobre las areas de texto de la pestaï¿½a de medidas generales para que segun el rol se puedan ver
+									  o  no, ademas se utilizara el campo Rrpnpe para el control de los nombres de las pestaï¿½as por rol.
  * Febrero 5 de 2015 Jonatan.		- Se valida por rol si se muestra el medico tratante.
 									- Se valida por rol si se muestra la mensajeria.
 									- Se valida el lenguaje americas para que no permita repetir exmenes con el mismo nombre.
@@ -200,13 +202,13 @@ include_once("conex.php");
 									- Se corrige error al agregar medicamento.
 									- Se corrige el Kadido.
 									- El parpadeo de los med de central de mezclas se muestran con parpadeo violeta si no estan confirmados.
- * Enero 26 de 2015		Edwin MG.	- Se actualiza los articulos NE de forma similar como las DA en la función actualizarFamiliaProductos
+ * Enero 26 de 2015		Edwin MG.	- Se actualiza los articulos NE de forma similar como las DA en la funciï¿½n actualizarFamiliaProductos
  * Diciembre 30 de 2014 Jonatan. 	- En el buscador de articulos se podra buscar tambien por codigo del articulo, segun la necesidad.
  * Diciembre 04 de 2014 Jonatan.	- Se corrige el registro de medicos tratantes para un paciente, estaban siendo registrados en la tabla hce_000022, 
 									  ahora se insertaran en la tabla 47 y 63(temporal). 
  * Diciembre 04 de 2014 Edwin MG.	- Mientras este activo el indicador de ordenes, los medicamentos siempre quedan aprobados para dispensar
- *									- Se agrega la ubiación de paciente cuando este está en urgencias
- *									- Se corrige query ya que al selecccionar una familia permitía elegir una familia desactivada (ajax 31)
+ *									- Se agrega la ubiaciï¿½n de paciente cuando este estï¿½ en urgencias
+ *									- Se corrige query ya que al selecccionar una familia permitï¿½a elegir una familia desactivada (ajax 31)
  * Noviembre 18 de 2014 Jonatan	  	Se agrega a la consulta de ordenes del paciente las que estan en estado diferente de pendiente solo si el paciente
 									se encuentra en urgencias, se mostraran los pendientes arriba y los realizadas abajo en la misma lista.
  *************************************************************************************************************************
@@ -241,7 +243,7 @@ $centroCostosCentralMezclas = consultarCcoCM( $conex, $wemp_pmla );
 $codigoServicioFarmaceutico = "SF";
 $codigoCentralMezclas = "CM";
 
-$descripcionServicioFarmaceutico = "Servicio farmacéutico";
+$descripcionServicioFarmaceutico = "Servicio farmacï¿½utico";
 $descripcionCentralMezclas = "Central de mezclas";
 $descripcionOtroServicio = "Otro servicio";
 
@@ -266,7 +268,7 @@ $codigoAplicacion = "ordenes";
 $codigoAyudaHospitalaria="H";
 
 
-//Consulta de la información del usuario
+//Consulta de la informaciï¿½n del usuario
 @$usuario = consultarUsuarioOrdenes($wuser);
 
 /**********************************
@@ -510,7 +512,7 @@ class detalleKardexDTO {
 		global $wbasedato;
 		global $wemp_pmla;
 		
-		//Consulto los datos de la extensión del kardex
+		//Consulto los datos de la extensiï¿½n del kardex
 		$datos = $this->consultarDatosExtensionDetalleKardexPorArticulo( $conex, $wbasedato, "000208", $this->historia, $this->ingreso, $this->fechaKardex, $this->consultarCodigoArticulo(), $this->idOriginal );
 		if( $datos === false ){
 			$datos = $this->consultarDatosExtensionDetalleKardexPorArticulo( $conex, $wbasedato, "000209", $this->historia, $this->ingreso, $this->fechaKardex, $this->consultarCodigoArticulo(), $this->idOriginal );
@@ -528,7 +530,7 @@ class detalleKardexDTO {
 			$this->esAntibioticoCompuesto=$datos['Defcmp'] == 'on' ? true: false;	//concentracion insumo 2
 			$this->porProtocolo			= $datos['Ekxayu'] != '' ? true: false;	//concentracion insumo 2
 
-			/*Modificación: Se agrega para validar parámetro de tarifas
+			/*Modificaciï¿½n: Se agrega para validar parï¿½metro de tarifas
 			Autor: sebastian.nevado
 			Fecha: 04/08/2021
 			*/
@@ -536,19 +538,12 @@ class detalleKardexDTO {
 			$this->validarTarifa = $validarTarifa;
 			
 			$this->autorizadoPorDirector= (($datos['Ekxaut'] == 'on') && ($validarTarifa == 'on'))? true: false;	//Articulo con tarifa
-			
-			//MODIFICADO POR LEANDRO MENESES 2021/08/09 PARA QUE TOME COMO AUTORIZADOS LOS MEDICAMENTOS CON Ekxaut = ''
-			/*if ($datos['Ekxaut'] == 'off')
-				$this->autorizadoPorDirector = false;
-			else
-				$this->autorizadoPorDirector = true;
-			//$this->autorizadoPorDirector= $datos['Ekxaut'] == 'on' ? true: false;*/	//Articulo con tarifa
-			$this->jusParaAutorizar		= $datos['Ekxjus'];	//Justificación parar odenar el medicamento sin tarifa
-			$this->fechaAutorizado		= $datos['Ekxfau'];	//Fecha de aprobación del articulo por director Médico
-			$this->horaAutorizado		= $datos['Ekxhau'];	//Hora de aprobacion del articulo por director médico
-			$this->directorMedico		= $datos['Ekxmau'];	//Director médico que autoriza el medicamento
-			$this->justificacionDM		= $datos['Ekxjau'];	//Justificación del director médico
-			$this->noPrescripcionMipres	= $datos['Ekxmip'];	//Número prescripción MiPres
+			$this->jusParaAutorizar		= $datos['Ekxjus'];	//Justificaciï¿½n parar odenar el medicamento sin tarifa
+			$this->fechaAutorizado		= $datos['Ekxfau'];	//Fecha de aprobaciï¿½n del articulo por director Mï¿½dico
+			$this->horaAutorizado		= $datos['Ekxhau'];	//Hora de aprobacion del articulo por director mï¿½dico
+			$this->directorMedico		= $datos['Ekxmau'];	//Director mï¿½dico que autoriza el medicamento
+			$this->justificacionDM		= $datos['Ekxjau'];	//Justificaciï¿½n del director mï¿½dico
+			$this->noPrescripcionMipres	= $datos['Ekxmip'];	//Nï¿½mero prescripciï¿½n MiPres
 		}
 	}
 	
@@ -874,8 +869,8 @@ class ExamenHCEDTO{
 	
 	// Agosto 21 de 2019. 
 	// Este estado indica que fue modificado externamente
-	// Al momento de crear este campo es el estado de laboratorio, el cuál se modifica
-	// de acuerdo a los mensajes HL7 que envía el laboratorio con respecto a cada examen 
+	// Al momento de crear este campo es el estado de laboratorio, el cuï¿½l se modifica
+	// de acuerdo a los mensajes HL7 que envï¿½a el laboratorio con respecto a cada examen 
 	// que procesan.
 	// Por este motivo, el usuario no puede modificar este estado
 	var $estadoExterno = "";
@@ -883,7 +878,7 @@ class ExamenHCEDTO{
 	//Indica si se le permite anexar una nueva orden
 	var $anexarOrden = false;
 	
-	//Contiene la descripción del estado externo (Estado de homologación HL7)
+	//Contiene la descripciï¿½n del estado externo (Estado de homologaciï¿½n HL7)
 	var $descripcionEstadoExterno = "";
 	
 	//Mostrar estado externo
@@ -893,7 +888,7 @@ class ExamenHCEDTO{
 	var $solicitaUsuarioTomaMuestra = false;
 	
 	/************************************************************************************
-	 * Si el estudio tiene estado externo (Deteex de hce 28) verifica si puede al enfermera
+    * Si el estudio tiene estado externo (Deteex de hce 28) verifica si puede la enfermera
 	 * puede tomar muestra
 	 ************************************************************************************/
 	public function permiteTomarMuestra( $conex, $wbasedato, $permitePorCco ){
@@ -909,11 +904,14 @@ class ExamenHCEDTO{
 		if( $row = mysql_fetch_array($res) ){
 			$this->solicitaUsuarioTomaMuestra = strtolower( $permitePorCco && $row['Estptm'] == 'on' ) || !empty( $this->usuarioTomaMuestra ) ? $this->solicitaUsuarioTomaMuestra : false;
 		}
+		else{
+			$this->solicitaUsuarioTomaMuestra = false;
+		}
 	}
 	
 	/************************************************************************************
-	 * Este método indica si un examen se puede modificar la fecha del examen una vez comience
-	 * la interoperabilidad con laboratorio según el estado en que se encuentre 
+	 * Este mï¿½todo indica si un examen se puede modificar la fecha del examen una vez comience
+	 * la interoperabilidad con laboratorio segï¿½n el estado en que se encuentre 
 	 * en laboratorio (estado externo)
 	 ************************************************************************************/
 	public function permiteModificarFecha( $conex, $wbasedato ){
@@ -936,11 +934,11 @@ class ExamenHCEDTO{
 	}
 	
 	/************************************************************************************
-	 * Este método indica si un examen se puede cancelar una vez comience
-	 * la interoperabilidad con laboratorio según el estado en que se encuentre 
+	 * Este mï¿½todo indica si un examen se puede cancelar una vez comience
+	 * la interoperabilidad con laboratorio segï¿½n el estado en que se encuentre 
 	 * en laboratorio (estado externo)
 	 ************************************************************************************/
-	public function permiteCancelarExamen( $conex, $wbasedato ){
+	public function permiteCancelarExamen( $conex, $wbasedato, $wbasedatohce = ''){
 		
 		$val = false;
 		
@@ -962,7 +960,7 @@ class ExamenHCEDTO{
 		
 		// if( $num > 0 ){
 			
-		$permiteModificarEstado = $this->permiteModificarEstado( $conex, $wbasedato );
+			$permiteModificarEstado = $this->permiteModificarEstado( $conex, $wbasedato, $wbasedatohce);
 		
 		if( !$permiteModificarEstado ){
 			
@@ -984,7 +982,7 @@ class ExamenHCEDTO{
 	}
 	
 	/************************************************************************************
-	 * Este método indica si a un examen se le puede modificar el estado una vez comience
+	 * Este mï¿½todo indica si a un examen se le puede modificar el estado una vez comience
 	 * la interoperabilidad con laboratorio
 	 ************************************************************************************/
 	public function permiteModificarEstado( $conex, $wbasedato ){
@@ -993,7 +991,11 @@ class ExamenHCEDTO{
 		
 		if( empty($wemp_pmla) )
 			$wemp_pmla = '01';
-		
+			if($wbasedatohce == '')
+			{
+				$wbasedatohce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+			}
+					
 		$val = true;
 		
 		if( !empty($this->estadoExterno) )
@@ -1002,8 +1004,10 @@ class ExamenHCEDTO{
 			//o en la tabla de tipos ofertados (movhos_000267 para laboratorio)
 			$sql = "SELECT Valtor
 					  FROM ".$wbasedato."_000267 a
+					  INNER JOIN ".$wbasedatohce."_000015 b ON (a.Valtor = b.Codigo)
 					 WHERE Valtor = '".$this->tipoDeOrden."'
 					   AND Valest = 'on'
+					   AND b.Tipiws = 'on'
 					";
 					
 			$res = mysql_query( $sql, $conex )  or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -1018,7 +1022,7 @@ class ExamenHCEDTO{
 	}
 	
 	/************************************************************************************
-	 * Este método indica si a un examen se le puede modificar el estado una vez comience
+	 * Este mï¿½todo indica si a un examen se le puede modificar el estado una vez comience
 	 * la interoperabilidad con laboratorio
 	 ************************************************************************************/
 	public function consultarDescripcionEstadoExterno( $conex, $wbasedato ){
@@ -1223,7 +1227,7 @@ function consultarCcoCM( $conex, $wemp_pmla ){
 }
 
 /**
- * Consulta los dias de dispensación por centro de costos donde se encuentra ubicado el paciente
+ * Consulta los dias de dispensaciï¿½n por centro de costos donde se encuentra ubicado el paciente
  * 
  */
 function consultarDiasDispensacion( $conex, $wmovhos, $his, $ing ){
@@ -1248,6 +1252,680 @@ function consultarDiasDispensacion( $conex, $wmovhos, $his, $ing ){
 	
 	return $val;
 } 
+ 
+
+ 
+function enviarHL7FaltantesPorHistoria( $conex, $wemp_pmla, $wmovhos, $whce, $usuario, $his, $ing ){
+	
+	$val = '';
+	
+	//Consulto los tipo de orden para Hiruko
+	$sql = "SELECT Sedtor
+			  FROM ".$wmovhos."_000264 a
+			 WHERE Sedest = 'on'
+			 ";
+	
+	$resH 	= mysql_query( $sql, $conex ) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	
+	$tipoOrdenHiruko = [];
+	
+	while( $rowsH = mysql_fetch_array( $resH ) ){
+		$tipoOrdenHiruko[] = $rowsH['Sedtor'];
+	}
+	
+	//Agregar inner join con hce15, y filtro Tipiws en on
+	//Consulto si existe cups ofertados por tipo de orden
+	$sql = "SELECT a.habcod, a.habhis, a.habing, c.Dettor
+			  FROM ".$wmovhos."_000020 a, ".$whce."_000027 b, ".$whce."_000028 c, ".$whce."_000047 d, ".$whce."_000015 e
+			 WHERE a.habhis  = b.ordhis
+			   AND a.habing  = b.ording
+			   AND c.dettor  = b.ordtor
+			   AND c.detnro  = b.ordnro
+			   AND c.detest  = 'on'
+			   AND b.ordest  = 'on'
+			   AND c.detenv  = 'on'
+			   AND c.deteex  = ''
+			   AND d.codigo  = c.detcod
+			   AND d.codcups!= ''
+			   AND a.habhis = '".$his."'
+			   AND a.habing = '".$ing."'
+			   AND c.Dettor = e.Codigo
+			   AND e.Tipiws = 'on'
+		  GROUP BY 1,2,3,4
+			 ";
+	
+	$res 	= mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	
+	while( $rows = mysql_fetch_array( $res ) ){
+		
+		if( in_array( $rows['Dettor'], $tipoOrdenHiruko ) ){
+			//Esta funciï¿½n se encarga de enviar las ordenes al sistema Hiruko, validando por tipo de orden en la tabla de sedes de Hiruko
+			enviarOrdenesAAgendar( $conex, $whce, $wmovhos, $rows['habhis'], $rows['habing'] );
+		}
+		else{
+			//Esta funciï¿½n envï¿½a las ordenes a laboratorio
+			crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $rows['habhis'], $rows['habing'], $usuario );
+		}
+	}
+	
+	return $val;
+}
+ 
+/************************************************************************************************
+ * Consulto el estado detallado (perteneciente a un estudio) por codigo
+ ************************************************************************************************/
+function detalleEstadoOrdenes( $conex, $wbasedato, $codigo ){
+	
+	$val = [];
+	
+	$sql = "SELECT Eexcod, Eexdes, Eexord, Eexaut, Eexest, Eexmeh, Eexpen, Eexenf, Eexcpe, Eexpnd, Eexrea, Eexcan, Eexgen, Eexapa, Eexepe, Eexrpe, Eexere, Eexeau, Eexrno, Eexhor, Eexpin
+			  FROM ".$wbasedato."_000045
+		     WHERE Eexcod = '".$codigo."'";
+	
+	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
+	if( $row = mysql_fetch_array($res) ){
+	
+		$val = [
+				'codigo' 					=> $row['Eexcod'],
+				'descripcion' 				=> $row['Eexdes'],
+				'estado' 					=> $row['Eexest'] == 'on',
+				'esPendiente' 				=> $row['Eexpnd'] == 'on',
+				'esRealizado' 				=> $row['Eexrea'] == 'on',
+				'esCancelado' 				=> $row['Eexcan'] == 'on',
+				'esEstadoPendiente' 		=> $row['Eexepe'] == 'on',
+				'esEstadoResultadoPendiente'=> $row['Eexrpe'] == 'on',
+				'esEstadoRealizado' 		=> $row['Eexere'] == 'on',
+				'esEstadoAutorizado' 		=> $row['Eexeau'] == 'on',
+				'esEstadoReazliadoNocturno' => $row['Eexrno'] == 'on',
+				'permiteInteroperabilidad' 	=> $row['Eexpin'] == 'on',
+			];
+	}
+	
+	return $val;
+}
+ 
+function cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario, $estado ){
+	
+	$val = [	
+			'fecha'=> '',
+			'hora' => '',
+			'user' => '',
+			'error'=> true,	//Indica si hay un error(Por defecto 'hay error' = true )
+		];
+		
+	$detEstado  = detalleEstadoOrdenes( $conex, $wmovhos, $estado );
+	
+	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
+	
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
+	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
+	
+	if( $hayInteroperabilidad && $cupOfertado )
+	{
+		//Solo se hace si el estado es Autorizado
+		if( $detEstado['permiteInteroperabilidad'] )
+		{
+			$fecha 	= date( "Y-m-d" );
+			$hora 	= date("H:i:s");
+			
+			
+			$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
+			
+			//Consulto encabezado de kardex del dia
+			$sql = "UPDATE ".$wmovhos."_000159 b
+					   SET Detenv  = '".$detval."',
+						   Detesi  = '".$estado."',
+						   Detlog  = 'M'
+					 WHERE Dettor  = '".$tor."'
+					   AND Detnro  = '".$nro."'
+					   AND Detite  = '".$item."'
+					   AND Deteex  = ''
+					   AND Detrse != 'on'
+					   AND Detrex != 'on'
+					   ";
+
+			$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+			
+			//Consulto encabezado de kardex del dia
+			$sql = "UPDATE ".$whce."_000028 b
+					   SET Detenv  = '".$detval."',
+						   Detesi  = '".$estado."',
+						   Detlog  = 'M'
+					 WHERE Dettor  = '".$tor."'
+					   AND Detnro  = '".$nro."'
+					   AND Detite  = '".$item."'
+					   AND Deteex  = ''
+					   AND Detrse != 'on'
+					   AND Detrex != 'on'
+					   ";
+
+			$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+			
+			if( mysql_affected_rows() > 0 ){
+				
+				$val = [
+						'fecha' => $fecha,
+						'hora' 	=> $hora,
+						'user' 	=> $usuario,
+						'error' => false,
+					];
+				
+				/************************************************************************************
+				 * Mayo 20 de 2020
+				 * Se agrega auditoria para toma de muestras desde gestiï¿½n
+				 ************************************************************************************/
+				
+				//Consulto la historia del paciente
+				$sql = "SELECT Ordhis, Ording, Detcod, Descripcion
+						  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$whce."_000047 c
+						 WHERE Ordtor = '".$tor."'
+						   AND Ordnro = '".$nro."' 
+						   AND Dettor = ordtor
+						   AND Detnro = ordnro
+						   AND Detite = '".$item."'
+						   AND Detcod = c.codigo
+						   ";
+
+				$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+				
+				$rows = mysql_fetch_array( $res );
+				
+				
+				//Registro de auditoria
+				$auditoria = new AuditoriaDTO();
+
+				$auditoria->historia 	= $rows['Ordhis'];
+				$auditoria->ingreso 	= $rows['Ording'];
+				$auditoria->descripcion = $tor."-".$nro."-".$item.",".$rows['Detcod'].",".$rows['Descripcion'].",".$usuario;
+				$auditoria->fechaKardex = $fecha;
+				$auditoria->mensaje 	= obtenerMensaje( "NO_REALIZA_EN_SERVICIO" );
+				$auditoria->seguridad 	= $usuario;
+				$auditoria->idOriginal 	= '';
+
+				registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
+				
+				// crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
+				enviarHL7FaltantesPorHistoria( $conex, $wemp_pmla, $wmovhos, $whce, $usuario, $rows['Ordhis'], $rows['Ording'] );
+				/************************************************************************************/
+			}
+		}
+	}
+	
+	return $val;
+}  
+ 
+ 
+function marcarRealizadoEnPiso( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario ){
+	
+	$val = [	
+			'fecha'=> '',
+			'hora' => '',
+			'user' => '',
+			'error'=> true,	//Indica si hay un error(Por defecto 'hay error' = true )
+		];
+	
+	$fecha 	= date( "Y-m-d" );
+	$hora 	= date("H:i:s");
+	
+	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
+	
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
+	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
+	
+	// $detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
+	$detval = 'on';
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$wmovhos."_000159 b
+			   SET Detnof  = '".$detval."'
+			 WHERE Dettor  = '".$tor."'
+			   AND Detnro  = '".$nro."'
+			   AND Detite  = '".$item."'
+			   AND Detnof != 'on'
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$whce."_000028 b
+			   SET Detnof  = '".$detval."'
+			 WHERE Dettor  = '".$tor."'
+			   AND Detnro  = '".$nro."'
+			   AND Detite  = '".$item."'
+			   AND Detnof != 'on'
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	if( mysql_affected_rows() > 0 ){
+		
+		$val = [
+				'fecha' => $fecha,
+				'hora' 	=> $hora,
+				'user' 	=> $usuario,
+				'error' => false,
+			];
+		
+		/************************************************************************************
+		 * Mayo 20 de 2020
+		 * Se agrega auditoria para toma de muestras desde gestiï¿½n
+		 ************************************************************************************/
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Ordhis, Ording, Detcod, Descripcion
+				  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$whce."_000047 c
+				 WHERE Ordtor = '".$tor."'
+				   AND Ordnro = '".$nro."' 
+				   AND Dettor = ordtor
+				   AND Detnro = ordnro
+				   AND Detite = '".$item."'
+				   AND Detcod = c.codigo
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		$rows = mysql_fetch_array( $res );
+		
+		
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
+
+		$auditoria->historia 	= $rows['Ordhis'];
+		$auditoria->ingreso 	= $rows['Ording'];
+		$auditoria->descripcion = $tor."-".$nro."-".$item.",".$rows['Detcod'].",".$rows['Descripcion'].",".$usuario;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= obtenerMensaje( "REALIZA_EN_PISO" );
+		$auditoria->seguridad 	= $usuario;
+		$auditoria->idOriginal 	= '';
+
+		registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
+		/************************************************************************************/
+	}
+	else{
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Detutm, Detftm, Dethtm
+				  FROM ".$whce."_000028
+				 WHERE Dettor = '".$tor."'
+				   AND Detnro = '".$nro."' 
+				   AND Detite = '".$item."'
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			$val = [
+				'fecha' => $rows['Detftm'],
+				'hora' 	=> $rows['Dethtm'],
+				'user' 	=> $rows['Detutm'],
+				'error' => false,
+			];
+		}
+	}
+	
+	return $val;
+}
+
+
+function enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro, $item, $usuario ){
+	
+	$val = [	
+			'fecha'=> '',
+			'hora' => '',
+			'user' => '',
+			'error'=> true,	//Indica si hay un error(Por defecto 'hay error' = true )
+		];
+	
+	$fecha 	= date( "Y-m-d" );
+	$hora 	= date("H:i:s");
+	
+	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
+	
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
+	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
+	
+	$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$wmovhos."_000159 b
+			   SET Detenv = '".$detval."',
+				   Detlog = 'M',
+				   Detnof = 'off'
+			 WHERE Dettor = '".$tor."'
+			   AND Detnro = '".$nro."'
+			   AND Detite = '".$item."'
+			   AND Deteex = ''
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	//Consulto encabezado de kardex del dia
+	$sql = "UPDATE ".$whce."_000028 b
+			   SET Detenv = '".$detval."',
+				   Detlog = 'M',
+				   Detnof = 'off'
+			 WHERE Dettor = '".$tor."'
+			   AND Detnro = '".$nro."'
+			   AND Detite = '".$item."'
+			   AND Deteex = ''
+			   ";
+
+	$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+	
+	if( mysql_affected_rows() > 0 ){
+		
+		$val = [
+				'fecha' => $fecha,
+				'hora' 	=> $hora,
+				'user' 	=> $usuario,
+				'error' => false,
+			];
+		
+		/************************************************************************************
+		 * Mayo 20 de 2020
+		 * Se agrega auditoria para toma de muestras desde gestiï¿½n
+		 ************************************************************************************/
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Ordhis, Ording, Detcod, Descripcion
+				  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$whce."_000047 c
+				 WHERE Ordtor = '".$tor."'
+				   AND Ordnro = '".$nro."' 
+				   AND Dettor = ordtor
+				   AND Detnro = ordnro
+				   AND Detite = '".$item."'
+				   AND Detcod = c.codigo
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		$rows = mysql_fetch_array( $res );
+		
+		
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
+
+		$auditoria->historia 	= $rows['Ordhis'];
+		$auditoria->ingreso 	= $rows['Ording'];
+		$auditoria->descripcion = $tor."-".$nro."-".$item.",".$rows['Detcod'].",".$rows['Descripcion'].",".$usuario;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= obtenerMensaje( "NO_REALIZA_EN_SERVICIO" );
+		$auditoria->seguridad 	= $usuario;
+		$auditoria->idOriginal 	= '';
+
+		registrarAuditoriaKardex( $conex, $wmovhos, $auditoria );
+		
+		// crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $auditoria->historia, $auditoria->ingreso, $usuario );
+		enviarHL7FaltantesPorHistoria( $conex, $wemp_pmla, $wmovhos, $whce, $usuario, $rows['Ordhis'], $rows['Ording'] );
+		/************************************************************************************/
+	}
+	else{
+		
+		//Consulto la historia del paciente
+		$sql = "SELECT Detutm, Detftm, Dethtm
+				  FROM ".$whce."_000028
+				 WHERE Dettor = '".$tor."'
+				   AND Detnro = '".$nro."' 
+				   AND Detite = '".$item."'
+				   ";
+
+		$res = mysql_query($sql, $conex) or die ("Error: ".mysql_errno()." - en el query: $sql - " . mysql_error());
+		
+		if( $rows = mysql_fetch_array( $res ) ){
+			$val = [
+				'fecha' => $rows['Detftm'],
+				'hora' 	=> $rows['Dethtm'],
+				'user' 	=> $rows['Detutm'],
+				'error' => false,
+			];
+		}
+	}
+	
+	return $val;
+} 
+ 
+
+/******************************************************************************************
+ * Consulto la clasificaciï¿½n de un estudio
+ ******************************************************************************************/
+function consultarPlanEmpresaPorHistoria( $conex, $wcliame, $historia, $ingreso ){
+	
+	$val = false;
+	
+	//Consulto si se debe preguntar si es estudio se realizarï¿½ en la instituciï¿½n o no
+	$sql = "SELECT Ingpla
+			  FROM ".$wcliame."_000101
+			 WHERE Inghis = '".$historia."'
+			   AND Ingnin = '".$ingreso."'
+			 ";
+			 
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $rows = mysql_fetch_array($res) ){
+		$val = $rows['Ingpla'];
+	}
+	
+	return $val;
+}
+
+
+/******************************************************************************************
+ * Consulto la clasificaciï¿½n de un estudio
+ ******************************************************************************************/
+function consultarClasificacionPorEstudio( $conex, $wcliame, $cup ){
+	
+	$val = false;
+	
+	//Consulto si se debe preguntar si es estudio se realizarï¿½ en la instituciï¿½n o no
+	$sql = "SELECT Procpg
+			  FROM ".$wcliame."_000103
+			 WHERE Procod = '".$cup."'
+			   AND Proest = 'on'
+			 ";
+			 
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $rows = mysql_fetch_array($res) ){
+		$val = $rows['Procpg'];
+	}
+	
+	return $val;
+}
+
+/******************************************************************************************
+ * Consulto el tipo de empresa para un pacientes por historia e ingrseo
+ ******************************************************************************************/
+function consultarTipoEmpresaPorHistoria( $conex, $wmovhos, $historia, $ingreso ){
+	
+	$val = false;
+	
+	//Consulto si se debe preguntar si es estudio se realizarï¿½ en la instituciï¿½n o no
+	$sql = "SELECT Ingtip
+			  FROM ".$wmovhos."_000016
+			 WHERE Inghis = '".$historia."'
+			   AND Inging = '".$ingreso."'
+			 ";
+			 
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $rows = mysql_fetch_array($res) ){
+		$val = $rows['Ingtip'];
+	}
+	
+	return $val;
+}
+
+/******************************************************************************************
+ * Consulta si al ordenar un estudio, la enfermera debe indicar si el estudio
+ * se realiza en una instituciï¿½n externa o no
+ ******************************************************************************************/
+function consultarCupPorCodigoEstudio( $conex, $whce, $codigo ){
+	
+	$val = false;
+	
+	//Consulto si se debe preguntar si es estudio se realizarï¿½ en la instituciï¿½n o no
+	$sql = "SELECT Codcups
+			  FROM ".$whce."_000047
+			 WHERE codigo = '".$codigo."'
+			 ";
+			 
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $rows = mysql_fetch_array($res) ){
+		$val = $rows['Codcups'];
+	}
+	
+	return $val;
+}
+
+/******************************************************************************************
+ * Consulta si al ordenar un estudio, la enfermera debe indicar si el estudio
+ * se realiza en una instituciï¿½n externa o no
+ ******************************************************************************************/
+function requiereRealizacionExterna( $conex, $whce, $tipoOrden ){
+	
+	$val = false;
+	
+	//Consulto si se debe preguntar si es estudio se realizarï¿½ en la instituciï¿½n o no
+	$sql = "SELECT Tiprex
+			  FROM ".$whce."_000015
+			 WHERE codigo = '".$tipoOrden."'
+			   AND estado = 'on'
+			   AND Tiprex = 'on'
+			 ";
+			 
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $rows = mysql_fetch_array($res) ){
+		$val = true;
+	}
+	
+	return $val;
+}
+
+/******************************************************************************************
+ * Consulta si al ordenar un estudio, la enfermera debe indicar si el estudio
+ * se realiza en el servicio en que se encuetran el paciente o no
+ ******************************************************************************************/
+function requierePreguntarServicioRealizacion( $conex, $wcliame, $cup ){
+	
+	$val = false;
+	
+	//Consulto si se debe preguntar si es estudio se realiza en servicio
+	$sql = "SELECT Procod, Pronom, Prores
+			  FROM ".$wcliame."_000103
+			 WHERE procod = '".$cup."'
+			   AND Prores = 'on'
+			   AND proest = 'on'
+			 ";
+			 
+	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	
+	if( $rows = mysql_fetch_array($res) ){
+		$val = true;
+	}
+	
+	return $val;
+}
+ 
+/***************************************************************************************************
+ * Indica is un procedimiento requiere autorizacion o no
+ *
+ * @param $conex
+ * @param $wcliame
+ * @param $wemp_pmla
+ * @param $datos 		tipo array, con los datos de busqueda
+ *		[
+ *			tipoEmpresa 	=> valor,
+ *			nit				=> valor,
+ *			codigoEmpresa	=> valor,
+ *			planEmpresa		=> valor,
+ *			tarifa			=> valor,
+ *			clasificacion	=> valor,
+ *			cup				=> valor,
+ *		]
+ ***************************************************************************************************/
+ 
+// echo requiereAutorizacion( $conex, "cliame", "01", [
+				// 'tipoEmpresa' 	=> '01',
+				// 'nit'			=> '9999',
+				// 'codigoEmpresa'	=> '805009741',
+				// 'planEmpresa'	=> '85',
+				// 'tarifa'		=> '03',
+				// 'clasificacion'	=> '72',
+				// 'cup'			=> '903706-99',
+			// ]) ? '<br>true' : '<br>false';
+
+function requiereAutorizacion( $conex, $wcliame, $wemp_pmla, $datos ){
+	
+	$val = false;
+	
+	$consultarAliasPorAplicacion = consultarAliasPorAplicacion($conex, $wemp_pmla, "requiereAutorizacionPorCup" );
+	
+	//Se verifica si se debe consultar si un estudio requiere autorizaciï¿½n o no por configuraciï¿½n
+	//De lo contrario no se requiere autorizaciï¿½n
+	if( $consultarAliasPorAplicacion == 'on' ){
+		
+		//Esto es para que la combinaciï¿½n de dos nï¿½meros sea ï¿½nica
+		$puntajeExtra = [
+					'tipoEmpresa' 	=> 1,
+					'nit'			=> 2,
+					'codigoEmpresa'	=> 4,
+					'planEmpresa'	=> 8,
+					'tarifa'		=> 16,
+					'clasificacion'	=> 32,
+					'cup'			=> 64,
+				];
+		
+		//Consulto los registros que pueden indicar si requiere autorizacion o no
+		$sql = "SELECT Pautem as tipoEmpresa, Paunit as nit, Paucem as codigoEmpresa, Paupla as planEmpresa, Pautar as tarifa, Paucla as clasificacion, Paucop as cup, Paupau as requiereAutorizacion, id
+				  FROM ".$wcliame."_000260 
+				 WHERE Pauest = 'on'
+				   AND ( Paucop = '*'
+					OR Paucop = '".$datos['cup']."' )
+				";
+		
+		$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		
+		$registro 		= [];
+		$puntajeActual 	= -1;	//contiene el valor mï¿½s alto
+		
+		//Se busca el registro que indique si el estudio requiere autorizaciï¿½n o no
+		//Solo sirve aquellos que tienen el valor exacto o *
+		//Por cada registro que se asigne se darï¿½ un puntaje
+		while( $rows = mysql_fetch_array($res) )
+		{
+			$agregar = true;
+			$puntaje = 0;
+			foreach( $datos as $key => $value )
+			{
+				if( isset($rows[ $key ]) && $key != 'requiereAutorizacion' )
+				{
+					//Si el registro es diferente a * o al valor especifico por parametro ($value)
+					if( $rows[ $key ] != '*' && $rows[ $key ] != $value )
+					{
+						$agregar = false;
+						break;
+					}
+					
+					//Se asigna un millon por concordancia exacta y segï¿½n el campo un puntaje extra
+					if( $rows[ $key ] == $value )
+						$puntaje += 1000000 + $puntajeExtra[ $key ];
+				}
+			}
+			
+			if( $agregar ){
+				//Si el puntaje actual es mayor al puntaje recien calculado, entonces reviso con el puntaje actual si tiene autorizaciï¿½n o no
+				if( $puntajeActual < $puntaje ){
+					$puntajeActual = $puntaje;
+					$val = $rows['requiereAutorizacion'] == 'on';
+				}
+			}
+		}
+	}
+	
+	return $val;
+}
  
 function consultarEstudioPorOrdenClinica( $conex, $whce, $wtor, $wnro, $wite ){
 				
@@ -1294,7 +1972,7 @@ function enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $u
 	
 	//Consulto si existe cups ofertados por tipo de orden
 	$sql = "SELECT a.habcod, a.habhis, a.habing, c.Dettor
-			  FROM ".$wmovhos."_000020 a, ".$whce."_000027 b, ".$whce."_000028 c, ".$whce."_000047 d
+			  FROM ".$wmovhos."_000020 a, ".$whce."_000027 b, ".$whce."_000028 c, ".$whce."_000047 d, ".$whce."_000015 e
 			 WHERE a.habhis  = b.ordhis
 			   AND a.habing  = b.ording
 			   AND c.dettor  = b.ordtor
@@ -1306,6 +1984,8 @@ function enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $u
 			   AND d.codcups!= ''
 			   AND ( c.fecha_data < '".date("Y-m-d")."' 
 			    OR ( c.fecha_data = '".date("Y-m-d")."' AND c.hora_data <= '".date("H:i:s", time()-10*60 )."') )
+				AND c.Dettor = e.Codigo 
+				AND e.Tipiws = 'on'
 		  GROUP BY 1,2,3,4
 			 ";
 	
@@ -1319,11 +1999,11 @@ function enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $u
 		
 		if( in_array( $rows['Dettor'], $tipoOrdenHiruko ) )
 		{
-			//Esta función se encarga de enviar las ordenes al sistema Hiruko, validando por tipo de orden en la tabla de sedes de Hiruko
+			//Esta funciï¿½n se encarga de enviar las ordenes al sistema Hiruko, validando por tipo de orden en la tabla de sedes de Hiruko
 			enviarOrdenesAAgendar( $conex, $whce, $wmovhos, $rows['habhis'], $rows['habing'] );
 		}
 		else{
-			//Esta función envía las ordenes a laboratorio
+			//Esta funciï¿½n envï¿½a las ordenes a laboratorio
 			if( $interoperabilidadLis == 'Dinamica' ){
                 insertarOrdenWs( $conex, $wemp_pmla, $rows['habhis'], $rows['habing'] );
 				
@@ -1344,7 +2024,7 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 	// AND a.Ordfec = '".date("Y-m-d")."'
 	//En este caso se debe procesar las ordenes cuyo tipo de orden se encuentran en las sedes de Hiruko (movhos 264)
 	$sql = "SELECT a.*
-			  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$wbasedato."_000264 c
+			  FROM ".$whce."_000027 a, ".$whce."_000028 b, ".$wbasedato."_000264 c, ".$whce."_000015 e
 			 WHERE a.Ordhis = '".$historia."'
 			   AND a.Ording = '".$ingreso."'
 			   AND a.Ordest = 'on'
@@ -1352,6 +2032,8 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 			   AND a.Ordnro = b.Detnro
 			   AND b.Detenv = 'on'
 			   AND c.Sedtor = a.Ordtor
+			   AND b.Dettor = e.Codigo
+			   AND e.Tipiws = 'on'
 		 GROUP BY Ordtor, Ordnro
 			   ";
 	
@@ -1401,30 +2083,33 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 		curl_close($ch);
 	}
 	
-	// if( count( $ids ) > 0 ){
+
+	if( count( $ids ) > 0 ){
 		
-		// $sql = "UPDATE ".$whce."_000027 a, ".$whce."_000028 b
-				   // SET Detenv = 'off',
-					   // Deteex = 'E'
-				 // WHERE a.id in(".implode( ",", $ids ).")
-				   // AND b.Dettor = a.Ordtor
-				   // AND b.Detnro = a.Ordnro
-			// ";
+		$sql = "UPDATE ".$whce."_000027 a, ".$whce."_000028 b
+				   SET Detenv = 'off',
+					   Deteex = 'E'
+				 WHERE a.id in(".implode( ",", $ids ).")
+				   AND b.Dettor = a.Ordtor
+				   AND b.Detnro = a.Ordnro
+				   AND b.Detnof = 'off'
+			";
 	
-		// $resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+		$resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 		
 		
-		// $sql = "UPDATE ".$whce."_000027 a, ".$wbasedato."_000159 b
-				   // SET Detenv = 'off',
-					   // Deteex = 'E'
-				 // WHERE a.id in(".implode( ",", $ids ).")
-				   // AND b.Dettor = a.Ordtor
-				   // AND b.Detnro = a.Ordnro
-			// ";
+		$sql = "UPDATE ".$whce."_000027 a, ".$wbasedato."_000159 b
+				   SET Detenv = 'off',
+					   Deteex = 'E'
+				 WHERE a.id in(".implode( ",", $ids ).")
+				   AND b.Dettor = a.Ordtor
+				   AND b.Detnro = a.Ordnro
+				   AND b.Detnof = 'off'
+			";
 	
-		// $resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-	// }
-	
+		$resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
+	}
+
 }
  
  
@@ -1513,7 +2198,7 @@ function tomarMuestrasDesdeGestion( $conex, $whce, $wmovhos, $tor, $nro, $item, 
 	
 	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 	
-	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor );
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
@@ -1559,7 +2244,7 @@ function tomarMuestrasDesdeGestion( $conex, $whce, $wmovhos, $tor, $nro, $item, 
 		
 		/************************************************************************************
 		 * Mayo 20 de 2020
-		 * Se agrega auditoria para toma de muestras desde gestión
+		 * Se agrega auditoria para toma de muestras desde gestiï¿½n
 		 ************************************************************************************/
 		
 		//Consulto la historia del paciente
@@ -1705,7 +2390,7 @@ function ccoRealizaEstudios( $conex, $wbasedato, $cco ){
 	return $val;
 }
  
-function hayInteroperabilidadPorTipoDeOrden( $conex, $wbasedato, $tor ){
+function hayInteroperabilidadPorTipoDeOrden( $conex, $wbasedato, $tor, $whce ){
 		
 	$val = false;
 	
@@ -1713,8 +2398,10 @@ function hayInteroperabilidadPorTipoDeOrden( $conex, $wbasedato, $tor ){
 	//o en la tabla de tipos ofertados (movhos_000267 para laboratorio)
 	$sql = "SELECT Valtor
 			  FROM ".$wbasedato."_000267 a
-			 WHERE Valtor = '".$tor."'
-			   AND Valest = 'on'
+			  INNER JOIN ".$whce."_000015 b ON (a.Valtor = b.Codigo)
+			 WHERE a.Valtor = '".$tor."'
+			   AND a.Valest = 'on'
+			   AND b.Tipiws = 'on'
 			";
 			
 	$res = mysql_query( $sql, $conex )  or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -1793,7 +2480,7 @@ function actualizarEstudioLeido( $conex, $whce, $wbasedato, $wusuario, $tipoOrde
 	
 	$resp = false;
 	
-	//Se consulta si es médico el usuario
+	//Se consulta si es mï¿½dico el usuario
 	$sql = "SELECT Meduma, Espcod, Espnom 
 			 FROM ".$wbasedato."_000044,".$wbasedato."_000065,".$wbasedato."_000048
 			WHERE Esmcod=Espcod
@@ -1834,7 +2521,7 @@ function actualizarOrdenLeida( $conex, $whce, $wbasedato, $historia, $ingreso, $
 	
 	$resp = false;
 	
-	//Se consulta si es médico el usuario
+	//Se consulta si es mï¿½dico el usuario
 	$sql = "SELECT Meduma, Espcod, Espnom 
 			 FROM ".$wbasedato."_000044,".$wbasedato."_000065,".$wbasedato."_000048
 			WHERE Esmcod=Espcod
@@ -1993,7 +2680,7 @@ function consultarAlergiasPorPrincipioActivo( $conex, $wbasedato, $historia, $in
 				'descripcionPrincipioActivo'=> $rows[ 'Pacdes' ],
 				'limiteTiempo'				=> $rows[ 'Daalim' ] == 'on' ? true: false,
 				'fechaLimite'				=> $rows[ 'Daafli' ],
-				'fechaLimiteUnix'			=> strtotime( $rows[ 'Daafli' ]." 00:00:00" )+24*3600,	//Sumo un día para que se tenga en cuenta el día en curso
+				'fechaLimiteUnix'			=> strtotime( $rows[ 'Daafli' ]." 00:00:00" )+24*3600,	//Sumo un dï¿½a para que se tenga en cuenta el dï¿½a en curso
 			);
 		}
 	}
@@ -2211,7 +2898,7 @@ function consultarArticuloControlAImprimir( $conex, $wbasedato, $cenmez, $wemp_p
  * Busca los articulos ordenados que sean por LEV o IC que se encuentren para enviar y los cambia a NO Enviar
  * Esto se debe hacer solo para pacientes que no sean de urgencias.
  *
- * NOTA: Está función es llamada desde cargoscpx.php y perfilfarmacoterapeutico, ambos en movhos/procesos/
+ * NOTA: Estï¿½ funciï¿½n es llamada desde cargoscpx.php y perfilfarmacoterapeutico, ambos en movhos/procesos/
  ************************************************************************************************************************/
 function cambiarEstadoDeDispensacionParaLEVIC( $conex, $wbasedato, $his, $ing ){
 	
@@ -2560,28 +3247,28 @@ function guardarCTCcontributivo($wemp_pmla,$historia,$ingreso,$codMedico,$cadena
 		{
 			// guardar registro del ctc y nota medica
 			guardarCTCMedicamentosContributivo($historia,$ingreso,$elementoPendienteCTC[1],$codMedico,$elementoPendienteCTC[5],"E",$consecutivoMipres);
-			$notaMedica = "JUSTIFICACIÓN TECNOLOGÍA NO POS: ".$elementoPendienteCTC[2].". Posología: ".$elementoPendienteCTC[6]." ".$elementoPendienteCTC[8]."."; 
+			$notaMedica = "JUSTIFICACIï¿½N TECNOLOGï¿½A NO POS: ".$elementoPendienteCTC[2].". Posologï¿½a: ".$elementoPendienteCTC[6]." ".$elementoPendienteCTC[8]."."; 
 			guardarNotaMedicaCtcContributivo($historia,$ingreso,date("Y-m-d"),date("H:i:s"),$codMedico,$notaMedica);
 		}
 		else if($elementoPendienteCTC[0]=="procedimiento")
 		{
 			// guardar registro del ctc y nota medica
 			$idCTC = guardarCTCProcedimientosContributivo($historia,$ingreso,$elementoPendienteCTC[4],$elementoPendienteCTC[5],$elementoPendienteCTC[6],$codMedico,"E",$consecutivoMipres);
-			$notaMedica = "NOTA MÉDICA CTC PROCEDIMIENTOS [".$idCTC."]: ".$elementoPendienteCTC[2]; 
+			$notaMedica = "NOTA Mï¿½DICA CTC PROCEDIMIENTOS [".$idCTC."]: ".$elementoPendienteCTC[2]; 
 			guardarNotaMedicaCtcContributivo($historia,$ingreso,date("Y-m-d"),date("H:i:s"),$codMedico,$notaMedica);
 		}
 		else if($elementoPendienteCTC[0]=="medicamentoCR")
 		{
 			// guardar registro del ctc y nota medica
 			guardarCTCMedicamentosContributivo($historia,$ingreso,$elementoPendienteCTC[1],$codMedico,$elementoPendienteCTC[5],"EM",$consecutivoMipres);
-			$notaMedica = "JUSTIFICACIÓN TECNOLOGÍA NO POS: ".$elementoPendienteCTC[2].". Posología: ".$elementoPendienteCTC[6]." ".$elementoPendienteCTC[8]."."; 
+			$notaMedica = "JUSTIFICACIï¿½N TECNOLOGï¿½A NO POS: ".$elementoPendienteCTC[2].". Posologï¿½a: ".$elementoPendienteCTC[6]." ".$elementoPendienteCTC[8]."."; 
 			guardarNotaMedicaCtcContributivo($historia,$ingreso,date("Y-m-d"),date("H:i:s"),$codMedico,$notaMedica);
 		}
 		else if($elementoPendienteCTC[0]=="procedimientoCR")
 		{
 			// guardar registro del ctc y nota medica
 			$idCTC = guardarCTCProcedimientosContributivo($historia,$ingreso,$elementoPendienteCTC[4],$elementoPendienteCTC[5],$elementoPendienteCTC[6],$codMedico,"EM",$consecutivoMipres);
-			$notaMedica = "NOTA MÉDICA CTC PROCEDIMIENTOS [".$idCTC."]: ".$elementoPendienteCTC[2]; 
+			$notaMedica = "NOTA Mï¿½DICA CTC PROCEDIMIENTOS [".$idCTC."]: ".$elementoPendienteCTC[2]; 
 			guardarNotaMedicaCtcContributivo($historia,$ingreso,date("Y-m-d"),date("H:i:s"),$codMedico,$notaMedica);
 		}
 	}
@@ -2777,7 +3464,7 @@ function consultarSiAdulto($fechaNacimiento)
  // * $wasunto				Asunto del correo
  // * $mensaje				Mensaje del correo
  // * $altbody
- // * $wremitente			Email de quién envía el correo. Debe ser de la forma [email]--[clave]
+ // * $wremitente			Email de quiï¿½n envï¿½a el correo. Debe ser de la forma [email]--[clave]
  // * $wdestinatarios		Array de correos de quienes reciben el correo
  // ************************************************************************************************************/
 // function enviarEmail($wasunto,$mensaje,$altbody, $wremitente, $wpassword, $wdestinatarios ){
@@ -2806,7 +3493,7 @@ function consultarSiAdulto($fechaNacimiento)
 	// $mail->From = $wremitente;
 	// $mail->FromName = "Clinica las Americas";
 	// $mail->Subject = $wasunto; 	//O un asunto fijo => Historia Clinica del paciente xxx
-	// //$msghtml = "Cordial saludo,<br> \n\n El cron que actualiza los cargos de laboratorio presento una falla. El parametro pasarCargosLaboratorio se ha puesto en off, para que no genere más errores.Es necesario revisar este proceso y monitorearlo";
+	// //$msghtml = "Cordial saludo,<br> \n\n El cron que actualiza los cargos de laboratorio presento una falla. El parametro pasarCargosLaboratorio se ha puesto en off, para que no genere mï¿½s errores.Es necesario revisar este proceso y monitorearlo";
 	// $msghtml = $mensaje;
 	// $mail->AltBody = $altbody;
 	// $mail->MsgHTML( $msghtml );
@@ -2821,7 +3508,7 @@ function consultarSiAdulto($fechaNacimiento)
 	// $mail->IsHTML(true);
 	// if(!$mail->Send()) {
 		// $data[ 'Error' ] =  "0";
-		// $data[ 'mensError' ] =  "No se envió el correo";
+		// $data[ 'mensError' ] =  "No se enviï¿½ el correo";
 	// }
 	// else {
 		// $accion 	    = "envio email";
@@ -2871,7 +3558,7 @@ function verificarCTCs( $conex, $wbasedato, $his, $ing, $datos, $usuario, $naveg
 	
 	$val = true;
 	
-	//Parametro que indica si debe enviar correo por que no se realizó un CTC para un articulo
+	//Parametro que indica si debe enviar correo por que no se realizï¿½ un CTC para un articulo
 	$realizarVerificacion = consultarAliasPorAplicacion( $conex, $wemp_pmla, "validarBrowserPorCTC" );
 	$realizarVerificacion = trim( strtolower( $realizarVerificacion ) ) == 'on' ? true: false;
 	
@@ -2933,7 +3620,7 @@ function verificarCTCs( $conex, $wbasedato, $his, $ing, $datos, $usuario, $naveg
 }
  
 /********************************************************************************************************************************
- * Esta función toma un arreglo de detalle de articulos y elimina del arreglo original los articulo que son lev y los pasa
+ * Esta funciï¿½n toma un arreglo de detalle de articulos y elimina del arreglo original los articulo que son lev y los pasa
  * a otro arreglo con los artiulos lev
  ********************************************************************************************************************************/
 function consultarArticulosPestana( &$colDetalleLTR, &$colDetArt, $arTipos ){
@@ -3075,7 +3762,7 @@ function pintarFormulasModalNutricionesParenteralesNPT($volumenTotal,$observacio
 		$contadorTabIndex++;
 	}
 	
-	// VELOCIDAD DE INFUSIÓN
+	// VELOCIDAD DE INFUSIï¿½N
 	foreach($arrayFormulas as $tipoFormula => $codFormula)
 	{
 		if($tipoFormula=="VELOCIDAD_INFUSION")
@@ -3093,7 +3780,7 @@ function pintarFormulasModalNutricionesParenteralesNPT($volumenTotal,$observacio
 		}
 	}
 	
-	// REQUERIMIENTO LÍQUIDOS
+	// REQUERIMIENTO Lï¿½QUIDOS
 	foreach($arrayFormulas as $tipoFormula => $codFormula)
 	{
 		if($tipoFormula=="REQUERIMIENTOS_LIQUIDOS")
@@ -3244,7 +3931,7 @@ function pintarFormulasModalNutricionesParenteralesNPT($volumenTotal,$observacio
 			$fila_lista = "Fila2";
 	
 
-	// PARÁMETROS NUTRICIONALES Y FARMACÉUTICOS		
+	// PARï¿½METROS NUTRICIONALES Y FARMACï¿½UTICOS		
 	echo "<tr>
 			<td colspan=6 class='encabezadoTabla' align='center'>PAR&Aacute;METROS NUTRICIONALES Y FARMAC&Eacute;UTICOS</td>
 		</tr>";
@@ -3315,7 +4002,7 @@ function pintarFormulasModalNutricionesParenteralesNPT($volumenTotal,$observacio
 	echo"<input type='hidden' id='tooltipFormulas' value='".$cadenaTooltipFormulas."'>";
 
 	
-	// VÍA DE ADMINISTRACIÓN
+	// Vï¿½A DE ADMINISTRACIï¿½N
 	foreach($arrayFormulas as $tipoFormula => $codFormula)
 	{
 		if($tipoFormula=="VIA_ADMINISTRACION")
@@ -3350,7 +4037,7 @@ function abrirModalNutricionesParenteralesNPT($wemp_pmla,$wcenmez,$historia,$ing
 	global $wbasedato;
 	global $conex;
 	
-	//Nutrición realizada
+	//Nutriciï¿½n realizada
 	$mostrarRotulo = "";
 	$codigoRealNPT = "";
 	if($codigoReal != "" && $realizada == "on" && $reemplazada == "on")
@@ -5093,7 +5780,7 @@ function pintarModalProcedimientosAgrupados($wemp_pmla, $wbasedatohce,$agrupados
 	$accionesPestana = array_merge($accionesPestanaMedicamentos,$accionesPestanaProcedimientos);
 	
 	//-------------------------------------------------
-	//				Acciones por pestaña
+	//				Acciones por pestaï¿½a
 	//-------------------------------------------------
 	
 		//Agregar procedimientos
@@ -6105,7 +6792,7 @@ function replicarEncabezadoKardexAnterior($historia,$ingreso,$fecha){
 	global $wbasedato;
 	global $conex;
 
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	$creado = false;
 
@@ -6182,7 +6869,7 @@ function consultarTotalAplicacionesEfectivasIncOrdenesINC( $conex, $wbasedato, $
 }
 
 /**
- * Consulta la última fecha y hora del medicamento en formato Unix en que fue aplicado el medicamento
+ * Consulta la ï¿½ltima fecha y hora del medicamento en formato Unix en que fue aplicado el medicamento
  */ 
 function ultimaAplicacion( $conex, $wbasedato, $his, $ing, $art, $ido ){
 	
@@ -6219,9 +6906,9 @@ function ultimaAplicacion( $conex, $wbasedato, $his, $ing, $art, $ido ){
  *
  * Parametros opcionales:
  * $fecha:	Si este parametro no se manda calculo todas las aplicaciones que tiene el articulo
- * $hora:	Este parametro debe ir acompañado de $fecha. La hora de aplicación a partir de la 
+ * $hora:	Este parametro debe ir acompaï¿½ado de $fecha. La hora de aplicaciï¿½n a partir de la 
  *			cual se quiere calcular lad dosis calculada. La fecha debe ir en formato de 24 horas y dos cifras.
- * Nota: Si solo se manda la fecha sin hora, el caculo será a partir de la fecha a medica noche
+ * Nota: Si solo se manda la fecha sin hora, el caculo serï¿½ a partir de la fecha a medica noche
  **************************************************************************************************************/
 function cantidadAplicadoPorArticulo( $conex, $wbasedato, $historia, $ingreso, $articulo, $ido, &$cantidadAplicada, $fecha = '', $hora = '' ){
 
@@ -6342,7 +7029,7 @@ function consultarInfoFamiliaPorCodigo( $conex, $wbasedato, $familia ){
 }
 
 /********************************************************************************************************
- * Consulta la informacion de la familia para un articulo según el código
+ * Consulta la informacion de la familia para un articulo segï¿½n el cï¿½digo
  ********************************************************************************************************/
 function consultarInfoFamiliaPorArticulo( $conex, $wbasedato, $familia ){
 
@@ -6525,7 +7212,7 @@ function artTieneCTC( $conex, $wbasedato, $his, $ing, $art, $ido ){
 }
  
  /************************************************************************
- * Indica si el articulo es genérico o LEV
+ * Indica si el articulo es genï¿½rico o LEV
  ************************************************************************/
 function esArticuloGenericoLevICOrdenes( $conex, $wbasedato, $art, $ido, $his, $ing ){
 
@@ -6567,10 +7254,10 @@ function mostrarMensajeAlertaDmax( $conex, $wbasedato, $his, $ing, $art, $ido, &
 	
 	if( $rows = mysql_fetch_array($res) ){
 		
-		//Si es una infusión continua siempre debo mostrar el medicamento
+		//Si es una infusiï¿½n continua siempre debo mostrar el medicamento
 		if( $rows['Levinf'] == 'on' ){
 		
-			//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+			//Si tiene componentes asociados en la tabla de componentes por tipo, mostrarï¿½ los tipos
 			$qComp = "SELECT Carnal, Artgen, Carpna
 						FROM {$wbasedato}_000098, {$wbasedato}_000026
 					   WHERE Cartip = 'IC'
@@ -6595,9 +7282,9 @@ function mostrarMensajeAlertaDmax( $conex, $wbasedato, $his, $ing, $art, $ido, &
 		}
 		else{
 			//Si es un LQ debo mostrar el electrolito, en caso de no tenerlo debo mostrar
-			//la solución
+			//la soluciï¿½n
 			
-			//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+			//Si tiene componentes asociados en la tabla de componentes por tipo, mostrarï¿½ los tipos
 			$qComp = "SELECT Carnal
 						FROM {$wbasedato}_000098, {$wbasedato}_000026
 					   WHERE Cartip = 'LQ'
@@ -6619,7 +7306,7 @@ function mostrarMensajeAlertaDmax( $conex, $wbasedato, $his, $ing, $art, $ido, &
 				}
 			}
 			
-			//Si es LQ miro si tiene más de un articulo
+			//Si es LQ miro si tiene mï¿½s de un articulo
 			$sql = "SELECT *
 					  FROM ".$wbasedato."_000171
 					 WHERE levhis = '".$his."'
@@ -6900,7 +7587,7 @@ function consultarInfoPacienteOrdenHCEPorHistoriaIngreso( $conex, $wbasedato, $h
 		$paciente->enUrgencias = isset($info['Ccourg']) && $info['Ccourg'] == "on" ? true : false;
 
 		//Edad
-		//Modificación 2022-03-08: Sebastián Nevado - Se llama función que calcula la edad
+		//Modificaciï¿½n 2022-03-08: Sebastiï¿½n Nevado - Se llama funciï¿½n que calcula la edad
 		$oEdad = calcularEdadPacienteOrdenes($paciente->fechaNacimiento);
 		$paciente->edadPaciente = $oEdad->edad;
 		$paciente->anosPaciente = $oEdad->anios;
@@ -7148,7 +7835,7 @@ function vista_desplegarListaArticulosLEVHistorial( $conex, $wmovhos, $whce, $we
 	
 	$editable = false;
 	
-	//Busco todos los articulos de levs sobre la temporal por que en está instancia todos los articulos están en la temporal
+	//Busco todos los articulos de levs sobre la temporal por que en estï¿½ instancia todos los articulos estï¿½n en la temporal
 	$sql = "SELECT * 
 			  FROM ".$wmovhos."_000184 a, ".$wmovhos."_000026 b, ".$wmovhos."_000054 c, ".$wmovhos."_000059 d, ".$wmovhos."_000011 f
 			 WHERE levhis = '".$his."'
@@ -7186,7 +7873,7 @@ function vista_desplegarListaArticulosLEVHistorial( $conex, $wmovhos, $whce, $we
 		// echo "</span><br><br>";
 		// echo "<div id='lista_articulos_anterioresLQ' style='display:none'>";
 	
-		//Se busca la frecuencia de dilución
+		//Se busca la frecuencia de diluciï¿½n
 		$sql = "SELECT *
 				  FROM ".$wmovhos."_000173 a
 				 WHERE freest = 'on'
@@ -7223,7 +7910,7 @@ function vista_desplegarListaArticulosLEVHistorial( $conex, $wmovhos, $whce, $we
 				echo "<td align='center' style='width:80'>Vel. de Inf.</td>";
 				echo "<td align='center' style='width:80'>Fecha y hora<br>Inicio</td>";
 				echo "<td align='center' style='width:60;display:none'>Dias tto.</td>";
-				echo "<td align='center' style='width:60'>Dosis máx</td>";
+				echo "<td align='center' style='width:60'>Dosis mï¿½x</td>";
 				echo "<td align='center' style='width:100'>Observaciones</td>";
 				for( $i =2; $i<=24; $i+=2){
 					echo "<td align='center' style='width:50;'>".($i < 10 ? "0".$i : $i )."</td>";
@@ -7372,12 +8059,12 @@ function vista_desplegarListaArticulosLEVHistorial( $conex, $wmovhos, $whce, $we
 					// echo "<input type='hidden' name='wfinicioori$articulo->tipoProtocolo$contArticulos' id='wfinicioori$articulo->tipoProtocolo$contArticulos' value='$articulo->fechaInicioAdministracion a las:$articulo->horaInicioAdministracion' />";
 					echo "</td>";
 					
-					//Días de tratamiento
+					//Dï¿½as de tratamiento
 					echo "<td align='center' style='display:none'>";
 					echo $rowsUlt[ 'Kaddia' ];
 					echo "</td>";
 					
-					//Dosis Máxima
+					//Dosis Mï¿½xima
 					echo "<td align='center'>";
 					echo $rowsUlt[ 'Kaddma' ];
 					echo "</td>";
@@ -7448,7 +8135,7 @@ function vista_desplegarListaArticulosLEVHistorial( $conex, $wmovhos, $whce, $we
 						while( $rowsDca = mysql_fetch_array( $resDca ) ){
 						
 							/********************************************************************************************************************************************
-							 * Deja en el option los atributos de minimo y máximo cómo vMin y vMax por que ya hay propiedades de min y max en html 5
+							 * Deja en el option los atributos de minimo y mï¿½ximo cï¿½mo vMin y vMax por que ya hay propiedades de min y max en html 5
 							 ********************************************************************************************************************************************/
 							
 							if( $rowsDca[ 'Dcacod' ] == $codigoDosisCalculada ){
@@ -7496,12 +8183,12 @@ function vista_desplegarListaArticulosLEVHistorial( $conex, $wmovhos, $whce, $we
 					// echo "<input type='hidden' name='wfinicioori$articulo->tipoProtocolo$contArticulos' id='wfinicioori$articulo->tipoProtocolo$contArticulos' value='$articulo->fechaInicioAdministracion a las:$articulo->horaInicioAdministracion' />";
 					echo "</td>";
 					
-					//Días de tratamiento
+					//Dï¿½as de tratamiento
 					echo "<td align='center' style='display:none'>";
 					echo $rowsUlt[ 'Kaddia' ];
 					echo "</td>";
 					
-					//Dosis máxima
+					//Dosis mï¿½xima
 					echo "<td align='center'>";
 					echo $rowsUlt[ 'Kaddma' ];
 					echo "</td>";
@@ -7519,7 +8206,7 @@ function vista_desplegarListaArticulosLEVHistorial( $conex, $wmovhos, $whce, $we
 					// }
 					// echo "</td>";
 					
-					//Busco la diferencia en horas entre la hora de inicio y la media noche del día actual
+					//Busco la diferencia en horas entre la hora de inicio y la media noche del dï¿½a actual
 					$difHoras = ( strtotime( date( "Y-m-d 00:00:00" ) ) - strtotime( $rowsUlt['Kadfin']." ".$rowsUlt['Kadhin'] ) )/3600;
 					
 					for( $i =2; $i<=24; $i+=2){
@@ -7565,7 +8252,7 @@ function vista_desplegarListaArticulosLEV( $conex, $wmovhos, $whce, $wemp_pmla, 
 	$clase_pendientes = "";
 	
 	if( $editable){
-	//Busco todos los articulos de levs sobre la temporal por que en está instancia todos los articulos están en la temporal
+	//Busco todos los articulos de levs sobre la temporal por que en estï¿½ instancia todos los articulos estï¿½n en la temporal
 	$sql = "SELECT * 
 			  FROM ".$wmovhos."_000171 a, ".$wmovhos."_000026 b, ".$wmovhos."_000060 c, ".$wmovhos."_000059 d, ".$wmovhos."_000011 f
 			 WHERE levhis = '".$his."'
@@ -7585,7 +8272,7 @@ function vista_desplegarListaArticulosLEV( $conex, $wmovhos, $whce, $wemp_pmla, 
 			   AND levest = 'on'
 		  ORDER BY levlev, levido, levinf, levele DESC";
 	}else{
-	//Busco todos los articulos de levs sobre la temporal por que en está instancia todos los articulos están en la temporal
+	//Busco todos los articulos de levs sobre la temporal por que en estï¿½ instancia todos los articulos estï¿½n en la temporal
 	$sql ="SELECT * 
 			  FROM ".$wmovhos."_000171 a, ".$wmovhos."_000026 b, ".$wmovhos."_000054 c, ".$wmovhos."_000059 d, ".$wmovhos."_000011 f
 			 WHERE levhis = '".$his."'
@@ -7618,7 +8305,7 @@ function vista_desplegarListaArticulosLEV( $conex, $wmovhos, $whce, $wemp_pmla, 
 	$codigoDosisCalculada = "";
 	if( $num > 0 ){
 	
-		//Se busca la frecuencia de dilución
+		//Se busca la frecuencia de diluciï¿½n
 		$sql = "SELECT *
 				  FROM ".$wmovhos."_000173 a
 				 WHERE freest = 'on'
@@ -7655,7 +8342,7 @@ function vista_desplegarListaArticulosLEV( $conex, $wmovhos, $whce, $wemp_pmla, 
 		echo "<td align='center' style='width:80'>Vel. de Inf.</td>";
 		echo "<td align='center' style='width:80'>Fecha y hora<br>Inicio</td>";
 		echo "<td align='center' style='width:60;'>Dias tto.</td>";
-		echo "<td align='center' style='width:60'>Dosis máx.</td>";
+		echo "<td align='center' style='width:60'>Dosis mï¿½x.</td>";
 		echo "<td align='center' style='width:100' colspan=2>Observaciones</td>";
 		for( $i =2; $i<=24; $i+=2){
 			echo "<td align='center' style='width:50;'>".($i < 10 ? "0".$i : $i )."</td>";
@@ -7823,12 +8510,12 @@ function vista_desplegarListaArticulosLEV( $conex, $wmovhos, $whce, $wemp_pmla, 
 					}
 					echo "</td>";
 					
-					//Días de tratamiento
+					//Dï¿½as de tratamiento
 					echo "<td align='center' id='tdDttoLEV".$levIdoAnt."'>";
 					echo $rowsUlt[ 'Kaddia' ];
 					echo "</td>";
 					
-					//Dosis Máxima
+					//Dosis Mï¿½xima
 					echo "<td align='center' id='tdDmaxLEV".$levIdoAnt."'>";
 					echo $rowsUlt[ 'Kaddma' ];
 					echo "</td>";
@@ -7906,7 +8593,7 @@ function vista_desplegarListaArticulosLEV( $conex, $wmovhos, $whce, $wemp_pmla, 
 						while( $rowsDca = mysql_fetch_array( $resDca ) ){
 						
 							/********************************************************************************************************************************************
-							 * Deja en el option los atributos de minimo y máximo cómo vMin y vMax por que ya hay propiedades de min y max en html 5
+							 * Deja en el option los atributos de minimo y mï¿½ximo cï¿½mo vMin y vMax por que ya hay propiedades de min y max en html 5
 							 ********************************************************************************************************************************************/
 							
 							if( $rowsDca[ 'Dcacod' ] == $codigoDosisCalculada ){
@@ -7971,12 +8658,12 @@ function vista_desplegarListaArticulosLEV( $conex, $wmovhos, $whce, $wemp_pmla, 
 					}
 					echo "</td>";
 					
-					//Días de tratamiento
+					//Dï¿½as de tratamiento
 					echo "<td align='center' id='tdDttoIC".$levIdoAnt."'>";
 					echo $rowsUlt[ 'Kaddia' ];
 					echo "</td>";
 					
-					//Dosis máxima
+					//Dosis mï¿½xima
 					echo "<td align='center' id='tdDmaxIC".$levIdoAnt."'>";
 					echo $rowsUlt[ 'Kaddma' ];
 					echo "</td>";
@@ -8025,9 +8712,9 @@ function vista_desplegarListaArticulosLEV( $conex, $wmovhos, $whce, $wemp_pmla, 
 		echo "</table>";
 				
 		/****************************************************************************************************
-		 * Creo el objeto JSON para javascript, se requiere esto para la grabación y modificación
+		 * Creo el objeto JSON para javascript, se requiere esto para la grabaciï¿½n y modificaciï¿½n
 		 * En el ready hay que volver a recorrer este objeto para colocar los valores faltantes
-		 * Faltarían el protocolo y código correpondiente de cada uno de los LEV
+		 * Faltarï¿½an el protocolo y cï¿½digo correpondiente de cada uno de los LEV
 		 **************************************************************************************************/
 		mysql_data_seek( $res, 0 );
 		
@@ -8084,11 +8771,11 @@ function registrarLiquidosEndovenosos( $conex, $wbasedato, $his, $ing, $codlev, 
 		$val = false;
 	}
 	
-	//Si está sin solución y es IC lo agrego al articulo LEv correspondiente de la auditoria
+	//Si estï¿½ sin soluciï¿½n y es IC lo agrego al articulo LEv correspondiente de la auditoria
 	if( $inf == 'on' && $sinSol == 'on' ){
 		
 		$sql = "UPDATE ".$wbasedato."_000055
-				   SET kaudes = CONCAT( kaudes,',Sin dilución' )
+				   SET kaudes = CONCAT( kaudes,',Sin diluciï¿½n' )
 				 WHERE kauhis = '".$his."'
 				   AND kauing = '".$ing."'
 				   AND kaumen = 'Articulo creado'
@@ -8110,7 +8797,7 @@ function registrarLiquidosEndovenosos( $conex, $wbasedato, $his, $ing, $codlev, 
 function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $ccoPaciente, $historia, $ingreso ){
 	
 	/*
-	* Modificación: se agrega validación de parámetro para mostrar solo insumos con tarifa
+	* Modificaciï¿½n: se agrega validaciï¿½n de parï¿½metro para mostrar solo insumos con tarifa
 	* autor: sebastian.nevado
 	* fecha: 2021-08-31
 	*/
@@ -8130,10 +8817,10 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 	}
 	
 	/*
-	* FIN MODIFICACIÓN
+	* FIN MODIFICACIï¿½N
 	*/
 
-	//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+	//Si tiene componentes asociados en la tabla de componentes por tipo, mostrarï¿½ los tipos
 	$qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Carnal as Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
 				FROM {$wbasedato}_000098, {$wbasedato}_000026, {$wbasedato}_000059 {$sTablaTarifas}
 			   WHERE Cartip = '{$tipoGenerico}' 
@@ -8163,7 +8850,7 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 	$resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
 	$numrows = mysql_num_rows( $resComp );
 
-	//Se dejan todos los campos en una fila 1 - 10 sería
+	//Se dejan todos los campos en una fila 1 - 10 serï¿½a
 	//i indica las filas leidas
 	//j indica el indice de los electrolitos
 	//k indica el indice de las soluciones
@@ -8195,9 +8882,9 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 	
 	if($num == 0 && $bMostrarSoloConTarifa)
 	{
-		//mensajeEmergente("No hay artículos configurados con tarifas para los LEVS");
+		//mensajeEmergente("No hay artï¿½culos configurados con tarifas para los LEVS");
 		echo "<div style='display:none;' id='listaComponentesLEV'>";
-		echo "<br>No hay artículos configurados con tarifas para los LEVS<br>";
+		echo "<br>No hay artï¿½culos configurados con tarifas para los LEVS<br>";
 		echo "</div>";
 	}
 	
@@ -8230,7 +8917,7 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 		if( !empty( $componentes[ 'ele' ][$i] ) ){
 			
 			//checkbox
-			echo "<td id='tdCbEle".$j."' ele".$componentes[ 'ele' ][$i]['Carcod']."='".$j."' >";	//Dejo el codigo cómo atributo para poder buscar el indice en el javascript cuando se requiera
+			echo "<td id='tdCbEle".$j."' ele".$componentes[ 'ele' ][$i]['Carcod']."='".$j."' >";	//Dejo el codigo cï¿½mo atributo para poder buscar el indice en el javascript cuando se requiera
 			echo "<INPUT type='checkbox' name='check_insumo".$j."' id='check_insumo".$j."' value=''  onChange=\"adicionarComponenteArticuloIC('".$componentes[ 'ele' ][$i]['Carcod']."','".$componentes[ 'ele' ][$i]['Artgen']."','".$j."','".$componentes[ 'ele' ][$i]['Cardis']."','".$componentes[ 'ele' ][$i]['Deffra']."',this,true)\">";
 			echo "</td>";
 			
@@ -8308,7 +8995,7 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 			echo "<INPUT type='checkbox' name='check_insumo' id='check_insumo".$j."' value='' onChange=\"adicionarComponenteArticuloIC('".$componentes[ 'sol' ][$i]['Carcod']."','".$componentes[ 'sol' ][$i]['Artgen']."','".$j."','".$componentes[ 'sol' ][$i]['Cardis']."','".$componentes[ 'sol' ][$i]['Deffra']."',this,false)\">";
 			echo "</td>";
 			
-			//Nombre de la solución
+			//Nombre de la soluciï¿½n
 			echo "<td tdSolGen".$j.">";
 			echo $componentes[ 'sol' ][$i][ 'Artgen' ];
 			echo "</td>";
@@ -8360,9 +9047,9 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 		if( $i == $num-1 ){
 		
 			/****************************************************************
-			 * Se muestra la frecuencia de dilución
+			 * Se muestra la frecuencia de diluciï¿½n
 			 ****************************************************************/
-			//Se busca la frecuencia de dilución
+			//Se busca la frecuencia de diluciï¿½n
 			$sql = "SELECT *
 					  FROM {$wbasedato}_000173 a
 					 WHERE freest = 'on'
@@ -8400,7 +9087,7 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 			echo "<b>D. tto:</b> <input type='text' name='inDttoIC' id='inDttoIC' style='width:70px' onKeyUp='inhabilitarDosisMaximaModalIC(this);' onkeypress='return validarEntradaEntera(event);'>";
 			echo "</td>";
 			echo "<td>";
-			echo "<b>D. máx:</b> <input type='text' name='inDmaxIC' id='inDmaxIC' style='width:70px' onKeyUp='inhabilitarDiasTratamientoModalIC(this);' onkeypress='return validarEntradaEntera(event);'>";
+			echo "<b>D. mï¿½x:</b> <input type='text' name='inDmaxIC' id='inDmaxIC' style='width:70px' onKeyUp='inhabilitarDiasTratamientoModalIC(this);' onkeypress='return validarEntradaEntera(event);'>";
 			echo "</td>";
 			echo "</tr>";
 			echo "</table>";
@@ -8462,7 +9149,7 @@ function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $cco
 function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $pacEnUrgencias, $historia, $ingreso ){
 	
 	/*
-	* Modificación: se agrega validación de parámetro para mostrar solo insumos con tarifa
+	* Modificaciï¿½n: se agrega validaciï¿½n de parï¿½metro para mostrar solo insumos con tarifa
 	* autor: sebastian.nevado
 	* fecha: 2021-08-31
 	*/
@@ -8482,10 +9169,10 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 	}
 	
 	/*
-	* FIN MODIFICACIÓN
+	* FIN MODIFICACIï¿½N
 	*/
 
-	//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+	//Si tiene componentes asociados en la tabla de componentes por tipo, mostrarï¿½ los tipos
 	$qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Carnal as Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
 				FROM {$wbasedato}_000098, {$wbasedato}_000026, {$wbasedato}_000059 {$sTablaTarifas}
 			   WHERE Cartip = '{$tipoGenerico}' 
@@ -8515,7 +9202,7 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 	$resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
 	$numrows = mysql_num_rows( $resComp );
 
-	//Se dejan todos los campos en una fila 1 - 10 sería
+	//Se dejan todos los campos en una fila 1 - 10 serï¿½a
 	//i indica las filas leidas
 	//j indica el indice de los electrolitos
 	//k indica el indice de las soluciones
@@ -8547,9 +9234,9 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 	$num = max( $k, $j );
 	if($num == 0 && $bMostrarSoloConTarifa)
 	{
-		//mensajeEmergente("No hay artículos configurados con tarifas para los LEVS");
+		//mensajeEmergente("No hay artï¿½culos configurados con tarifas para los LEVS");
 		echo "<div style='display:none;' id='listaComponentesLEV'>";
-		echo "<br>No hay artículos configurados con tarifas para los LEVS<br>";
+		echo "<br>No hay artï¿½culos configurados con tarifas para los LEVS<br>";
 		echo "</div>";
 	}
 	
@@ -8581,7 +9268,7 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 		if( !empty( $componentes[ 'ele' ][$i] ) ){
 			
 			//checkbox
-			echo "<td id='tdCbEle".$j."' ele".$componentes[ 'ele' ][$i]['Carcod']."='".$j."' >";	//Dejo el codigo cómo atributo para poder buscar el indice en el javascript cuando se requiera
+			echo "<td id='tdCbEle".$j."' ele".$componentes[ 'ele' ][$i]['Carcod']."='".$j."' >";	//Dejo el codigo cï¿½mo atributo para poder buscar el indice en el javascript cuando se requiera
 			echo "<INPUT type='checkbox' name='check_insumo".$j."' id='check_insumo".$j."' value=''  onChange=\"adicionarComponenteArticuloLEV('".$componentes[ 'ele' ][$i]['Carcod']."','".$componentes[ 'ele' ][$i]['Artgen']."','".$j."','".$componentes[ 'ele' ][$i]['Cardis']."','".$componentes[ 'ele' ][$i]['Deffra']."',this)\">";
 			echo "</td>";
 			
@@ -8637,7 +9324,7 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 			echo "<INPUT type='checkbox' name='check_insumo' id='check_insumo".$j."' value='' onChange=\"adicionarComponenteArticuloLEV('".$componentes[ 'sol' ][$i]['Carcod']."','".$componentes[ 'sol' ][$i]['Artgen']."','".$j."','".$componentes[ 'sol' ][$i]['Cardis']."','".$componentes[ 'sol' ][$i]['Deffra']."',this)\">";
 			echo "</td>";
 			
-			//Nombre de la solución
+			//Nombre de la soluciï¿½n
 			echo "<td tdSolGen".$j.">";
 			echo $componentes[ 'sol' ][$i][ 'Artgen' ];
 			echo "</td>";
@@ -8690,9 +9377,9 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 		if( $i == $num-1 ){
 		
 			/****************************************************************
-			 * Se muestra la frecuencia de dilución
+			 * Se muestra la frecuencia de diluciï¿½n
 			 ****************************************************************/
-			//Se busca la frecuencia de dilución
+			//Se busca la frecuencia de diluciï¿½n
 			$sql = "SELECT *
 					  FROM {$wbasedato}_000173 a
 					 WHERE freest = 'on'
@@ -8726,7 +9413,7 @@ function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $p
 			echo "<b>D. tto:</b> <input type='text' name='inDttoLEV' id='inDttoLEV' style='width:70px' onKeyUp='inhabilitarDosisMaximaModalLEV(this);' onkeypress='return validarEntradaEntera(event);'>";
 			echo "</td>";
 			echo "<td>";
-			echo "<b>D. máx:</b> <input type='text' name='inDmaxLEV' id='inDmaxLEV' style='width:70px' onKeyUp='inhabilitarDiasTratamientoModalLEV(this);' onkeypress='return validarEntradaEntera(event);'>";
+			echo "<b>D. mï¿½x:</b> <input type='text' name='inDmaxLEV' id='inDmaxLEV' style='width:70px' onKeyUp='inhabilitarDiasTratamientoModalLEV(this);' onkeypress='return validarEntradaEntera(event);'>";
 			echo "</td>";
 			// echo "</td>";
 			
@@ -8824,11 +9511,11 @@ function consultarPrincipiosActivosPorFamilia( $conex, $wbasedato, $familia ){
 }
 
 /**************************************************************************************************
- * Recibe un resulset devuelto por la función consultarPrincipiosActivosPorFamilia y separa por un 
+ * Recibe un resulset devuelto por la funciï¿½n consultarPrincipiosActivosPorFamilia y separa por un 
  * caracter todos los codigos o descripciones de principios activos
  * Por defecto siempre separa los codigos
  * Si no se envia caracter por defecto separa por ','
- * La función deja de nuevo el puntero en el inicio del resulset
+ * La funciï¿½n deja de nuevo el puntero en el inicio del resulset
  **************************************************************************************************/
 function codigosPrincipiosActivos( $res, $codigo = true, $sep = ',' ){
 
@@ -8872,7 +9559,7 @@ function seguimiento($seguir)
     /*if (file_exists("seguimiento.txt")) {
         unlink("seguimiento.txt");
     }*/
-	//Se coemtna esta función 2019-02-07
+	//Se coemtna esta funciï¿½n 2019-02-07
     // $fp = fopen("seguimiento_ordenes.txt","a+");
     // fwrite($fp, "[".date("Y-m-d H:i:s")."]".PHP_EOL.$seguir);
     // fclose($fp);
@@ -9123,7 +9810,7 @@ function buscar_familias_suspendidas($historia, $ingreso, $cod_familia){
 
 /************************************************************************
  * Agosto 6 de 2015 
- * Indica si una presentación permite no esteril
+ * Indica si una presentaciï¿½n permite no esteril
  ************************************************************************/
 function presentacionPermiteNE( $conex, $wbasedato, $codigo ){
 
@@ -9147,7 +9834,7 @@ function presentacionPermiteNE( $conex, $wbasedato, $codigo ){
 
 /************************************************************************
  * Marzo 02 de 2015
- * Indica si una presentación permite dosis adaptada
+ * Indica si una presentaciï¿½n permite dosis adaptada
  ************************************************************************/
 function presentacionPermiteDA( $conex, $wbasedato, $codigo ){
 
@@ -9328,7 +10015,7 @@ function mostrar_examenes_kardex($conex, $wbasedato, $whis, $wing, $wuser){
  
  
 /******************************************************************************************
- * Marca como leído la Bitacora de procedimientos
+ * Marca como leï¿½do la Bitacora de procedimientos
  *
  * Enero 26 de 2012
  ******************************************************************************************/
@@ -9375,7 +10062,7 @@ function traer_protocolo_examen($wbasedatohce, $codcups){
  
  
 /************************************************************************************************************************
- * actualiza el tipo de protocolo (campo Kadpro de la tabla movhos_000054) de acuerdo a la configuración de pestañas
+ * actualiza el tipo de protocolo (campo Kadpro de la tabla movhos_000054) de acuerdo a la configuraciï¿½n de pestaï¿½as
  * para ordenes
  ************************************************************************************************************************/
 function actualizarTipoProtocolo( $conex, $wemp_pmla, $wbasedato, $his, $ing, $fecha ){
@@ -9404,10 +10091,10 @@ function actualizarTipoProtocolo( $conex, $wemp_pmla, $wbasedato, $his, $ing, $f
 				
 				$datPestanas = explode( "-", $value );
 				
-				//Reviso si el protocolo es diferente a la pestaña a la que le corresponde
+				//Reviso si el protocolo es diferente a la pestaï¿½a a la que le corresponde
 				if( $datPestanas[1] != $rows[ 'Kadpro' ] ){
 				
-					//Se revisa que el protocolo pertenezca a al pestañas
+					//Se revisa que el protocolo pertenezca a al pestaï¿½as
 					$tipProtocolos = explode( ",", $datPestanas[2] );
 					
 					if( in_array( $rows['Kadpro'], $tipProtocolos ) ){
@@ -9432,7 +10119,7 @@ function actualizarTipoProtocolo( $conex, $wemp_pmla, $wbasedato, $his, $ing, $f
 
 
 /********************************************************************************************************************************
- * Esta función toma un arreglo de detalle de articulos y elimina del arreglo original los articulo que son lev y los pasa
+ * Esta funciï¿½n toma un arreglo de detalle de articulos y elimina del arreglo original los articulo que son lev y los pasa
  * a otro arreglo con los artiulos lev
  ********************************************************************************************************************************/
 function consultarLactario( &$colDetalleLTR, &$colDetArt ){
@@ -9464,7 +10151,7 @@ function grabarAuditoriaProcSinCTC( $wemp_pmla, $whistoria, $wingreso, $wfechagr
 
 	$auditoria->historia = $whistoria;
 	$auditoria->ingreso = $wingreso;
-	$auditoria->descripcion = "Codigo: {$codigo_procedimiento} - {$nombreExamen} , no generó CTC.";
+	$auditoria->descripcion = "Codigo: {$codigo_procedimiento} - {$nombreExamen} , no generï¿½ CTC.";
 	$auditoria->fechaKardex = $wfechagrabacion;
 	$auditoria->mensaje = $mensajeAuditoria;
 	$auditoria->seguridad = $wusuario;
@@ -9485,7 +10172,7 @@ function grabarAuditoriaArtSinCTC( $wemp_pmla, $whistoria, $wingreso, $wfechagra
 
 	$auditoria->historia = $whistoria;
 	$auditoria->ingreso = $wingreso;
-	$auditoria->descripcion = "Articulo: {$codigo_articulo}, no generó CTC.";
+	$auditoria->descripcion = "Articulo: {$codigo_articulo}, no generï¿½ CTC.";
 	$auditoria->fechaKardex = $wfechagrabacion;
 	$auditoria->mensaje = $mensajeAuditoria;
 	$auditoria->seguridad = $wusuario;
@@ -9708,7 +10395,7 @@ function actualizarFamiliaProductos( $conex, $wmovhos, $wcenpro, $his, $ing, $fe
 }
 
 /******************************************************************************************
- * Consulta la hubicación del paciente en urgencias
+ * Consulta la hubicaciï¿½n del paciente en urgencias
  ******************************************************************************************/
 function consultaUbicacionPacienteUrgencias( $conex, $wbasedato, $historia, $ingreso, $cco ){
 	
@@ -9768,7 +10455,7 @@ function puedeFirmarPorCodigo( $conex, $whce, $codigo ){
 	return $val."-".$wfirma;
 }
  
- // Función que permite consultar el código actual de el centro de costos de Urgencias
+ // Funciï¿½n que permite consultar el cï¿½digo actual de el centro de costos de Urgencias
 function consultarCcoUrgencias(){
 	global $wbasedato;
 	global $conex;
@@ -9803,47 +10490,47 @@ function consultarCcoUrgencias(){
     $string = trim($string);
 
     $string = str_replace(
-        array('à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä'),
+        array('ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½'),
         array('a', 'a', 'a', 'a', 'A', 'A', 'A', 'A'),
         $string
     );
 
     $string = str_replace(
-        array('è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë'),
+        array('ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½'),
         array('e', 'e', 'e', 'E', 'E', 'E', 'E'),
         $string
     );
 
     $string = str_replace(
-        array('ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î'),
+        array('ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½'),
         array('i', 'i', 'i', 'I', 'I', 'I', 'I'),
         $string
     );
 
     $string = str_replace(
-        array('ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô'),
+        array('ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½'),
         array('o', 'o', 'o', 'O', 'O', 'O', 'O'),
         $string
     );
 
     $string = str_replace(
-        array('ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü'),
+        array('ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½', 'ï¿½'),
         array('u', 'u', 'u', 'U', 'U', 'U', 'U'),
         $string
     );
 
     $string = str_replace(
-        array('Ñ', 'ç', 'Ç'),
+        array('ï¿½', 'ï¿½', 'ï¿½'),
         array('N', 'c', 'C',),
         $string
     );
 
-    //Esta parte se encarga de eliminar cualquier caracter extraño
+    //Esta parte se encarga de eliminar cualquier caracter extraï¿½o
     $string = str_replace(
-        array("\\", "¨", "º", "~",
-             "#", "@", "|", "·", "&", "/",
-             "(", ")", "'", "¡", "[", "^", "`", "]",
-             "}", "{", "¨", ">", "< "),'', $string);
+        array("\\", "ï¿½", "ï¿½", "~",
+             "#", "@", "|", "ï¿½", "&", "/",
+             "(", ")", "'", "ï¿½", "[", "^", "`", "]",
+             "}", "{", "ï¿½", ">", "< "),'', $string);
 
 
     return $string;
@@ -10001,7 +10688,7 @@ function consultarBitacora( $conex, $wbasedato, $historia, $ingreso, $nro_orden,
 function consultarResumenHistoria($wemp_pmla,$basedatoshce,$historia,$ingreso){
 	$conexion = obtenerConexionBD("matrix");
 
-	// Se comenta porque se necesita saber si trajo resultados sin que saque el mensaje que saca esta función
+	// Se comenta porque se necesita saber si trajo resultados sin que saque el mensaje que saca esta funciï¿½n
 	//$resumenHCE = consultarAliasPorAplicacion($conexion, $wemp_pmla, 'resumenHCE');
 	
 	$sql = " SELECT Detval
@@ -10087,7 +10774,7 @@ function registrarAuditoriaCierreKardex( $his, $ing, $usu, $texto = '' ){
 }
  
 /********************************************************************************************************************************
- * Esta función toma un arreglo de detalle de articulos y elimina del arreglo original los articulo que son lev y los pasa
+ * Esta funciï¿½n toma un arreglo de detalle de articulos y elimina del arreglo original los articulo que son lev y los pasa
  * a otro arreglo con los artiulos lev
  ********************************************************************************************************************************/
 function consultarLEV( &$colDetLEV, &$colDetArt ){
@@ -10128,8 +10815,8 @@ function permiteLecturaOrdenesPendientes( $conex, $wemp_pmla, $rol ){
 }
  
 /**
- * Esta función marca los registros que se han creado y el usuario de ser enfermera
- * quedan como leídos
+ * Esta funciï¿½n marca los registros que se han creado y el usuario de ser enfermera
+ * quedan como leï¿½dos
  */
 function marcarRegistrosLeidos( $conex, $wbasedato, $whce, $codigo, $his, $ing, $pestanasVistas ){
 	
@@ -10145,7 +10832,7 @@ function marcarRegistrosLeidos( $conex, $wbasedato, $whce, $codigo, $his, $ing, 
 		
 		if(in_array("4",$pestanas))
 		{
-			//Marco los campos como leídos de examenes
+			//Marco los campos como leï¿½dos de examenes
 			$sql = "UPDATE 
 						".$whce."_000027, ".$wbasedato."_000159
 					SET
@@ -10169,7 +10856,7 @@ function marcarRegistrosLeidos( $conex, $wbasedato, $whce, $codigo, $his, $ing, 
 		
 		if(in_array("3",$pestanas))
 		{
-			//Marco los campos como leídos de medicamentos
+			//Marco los campos como leï¿½dos de medicamentos
 			$sql = "UPDATE 
 						".$wbasedato."_000060
 					SET
@@ -10192,7 +10879,7 @@ function marcarRegistrosLeidos( $conex, $wbasedato, $whce, $codigo, $his, $ing, 
 		
 		if(in_array("10",$pestanas))
 		{
-			//Marco los campos como leídos de dietas
+			//Marco los campos como leï¿½dos de dietas
 			$sql = "UPDATE 
 						".$wbasedato."_000064
 					SET			
@@ -10312,10 +10999,10 @@ function esProductoControl( $conex, $wbasedato, $wcenmez, $art ){
 			$res = mysql_query( $q, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
 		}
 		
-		//marca los registros cómo leídos según el usuario
+		//marca los registros cï¿½mo leï¿½dos segï¿½n el usuario
 		//marcarRegistrosLeidos( $conex, $wbasedato, $wbasedatohce, $usuario->codigo, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica );
 		
-		//Se habilita nuevamente esta funcion para que guarde las pestañas leidas sin necesidad de hacer clic en grabar
+		//Se habilita nuevamente esta funcion para que guarde las pestaï¿½as leidas sin necesidad de hacer clic en grabar
 		marcarRegistrosLeidos( $conex, $wbasedato, $wbasedatohce, $usuario->codigo, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica, $pestanasVistas); 
 		
 		cargarInfusionesADefinitivo($paciente->historiaClinica,$paciente->ingresoHistoriaClinica,$wfechagrabacion);
@@ -10337,7 +11024,7 @@ function esProductoControl( $conex, $wbasedato, $wcenmez, $art ){
  
  
 /**
- * Valida si la contraseña escrita conincide con el usuario que esta realizando la orden. Jonatan Lopez / Mayo 8 2014.
+ * Valida si la contraseï¿½a escrita conincide con el usuario que esta realizando la orden. Jonatan Lopez / Mayo 8 2014.
  */ 
 function validarusuarioycontrasena( $wemp_pmla, $wusuario_aux, $wpassword_aux ){
 
@@ -10379,7 +11066,7 @@ function eliminarDatoTemporalProcedimiento( $wbasedato, $whce, $his, $ing ){
 	global $conex;
 		
 	//Elimino todos los examenes sin firmar de la temporal
-	//No se elimina del detalle por que en el detalle están todos los registros firmados
+	//No se elimina del detalle por que en el detalle estï¿½n todos los registros firmados
 	$sql = "DELETE b FROM ".$whce."_000027 a, ".$wbasedato."_000159 b
 			 WHERE a.ordhis = '".$his."'
 			   AND a.ording = '".$ing."'
@@ -10542,7 +11229,11 @@ function cargarProcedimientosTemporalADetalleItem( $tipoOrden, $nroOrden, $numer
 					   a.Detenv = b.Detenv,
 					   a.Detutm = b.Detutm,
 					   a.Detftm = b.Detftm,
-					   a.Dethtm = b.Dethtm
+					   a.Dethtm = b.Dethtm,
+					   a.Detrse = b.Detrse,
+					   a.Detrex = b.Detrex,
+					   a.Detaut = b.Detaut,
+					   a.Detnof = b.Detnof
 				 WHERE a.dettor = '".$tipoOrden."'
 				   AND a.detnro = '".$nroOrden."'
 				   AND a.detite = '".$numeroItem."'
@@ -10568,7 +11259,7 @@ function cargarProcedimientosTemporalADetalleItem( $tipoOrden, $nroOrden, $numer
 function cargarProcedimientosDetalleATemporal( $conex, $wbasedato, $wmovhos, $his, $ing, $fecha ){
 
 	//Elimino todos los examenes sin firmar de la temporal
-	//No se elimina del detalle por que en el detalle están todos los registros firmados
+	//No se elimina del detalle por que en el detalle estï¿½n todos los registros firmados
 	$sql = "DELETE b FROM ".$wbasedato."_000027 a, ".$wmovhos."_000159 b
 			 WHERE a.ordhis = '".$his."'
 			   AND a.ording = '".$ing."'
@@ -10625,7 +11316,7 @@ function cargarProcedimientosDetalleATemporal( $conex, $wbasedato, $wmovhos, $hi
 	
 	if($num == 0){
 		
-		//Si la temporal está vacía se llena la temporal
+		//Si la temporal estï¿½ vacï¿½a se llena la temporal
 		$sql = "INSERT INTO ".$wmovhos."_000159( Medico, Fecha_data, Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh,Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detpri, Detlog, Detenv, Detutm, Detcco, Detftm, Dethtm, Seguridad )
 				SELECT '$wmovhos' as Medico,         b.Fecha_data, b.Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh,Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detpri, Detlog, Detenv, Detutm, Detcco, Detftm, Dethtm, 'C-$wmovhos' as Seguridad
 				  FROM ".$wbasedato."_000027 a, ".$wbasedato."_000028 b
@@ -10689,16 +11380,16 @@ function crearEncabezadoKardexCerrar( $his, $ing, $firmaDigital, $confirmado, $f
 	
 	if(!existeEncabezadoKardex($his,$ing,$wfecha)){
 		crearKardex( $kardexGrabar, 'off' );	
-		$mensaje = "El kardex ha sido creado con éxito";
+		$mensaje = "El kardex ha sido creado con ï¿½xito";
 	} else {
 		//Actualiza SOLO encabezado
 		@actualizarKardex($kardexGrabar,$vecPestanaGrabacion, 'off' );
-		$mensaje = "El kardex ha sido actualizado con éxito";
+		$mensaje = "El kardex ha sido actualizado con ï¿½xito";
 	}
 }
 
 /************************************************************************************************
- * Consulta Dxs según el CIE 10
+ * Consulta Dxs segï¿½n el CIE 10
  ************************************************************************************************/
 function consultarDxCie10( $imp ){
 
@@ -10898,7 +11589,7 @@ function consultarCamposHCE( $wemp_pmla, $conex, $wmovhos, $whce, $aplicacion, $
 }
  
 /****************************************************************************************************************
- * Consulta datos de la historica Clínica y devuelve el label asociado al campo que se desea consultar
+ * Consulta datos de la historica Clï¿½nica y devuelve el label asociado al campo que se desea consultar
  ****************************************************************************************************************/
 function consultarCampoHCELabelValor( $wemp_pmla, $conex, $wmovhos, $whce, $aplicacion, $his, $ing ){
 
@@ -10998,8 +11689,8 @@ function consultarDxs( $conex, $wemp_pmla, $whce, $his, $ing ){
 		// $i = 0;
 		// if( $rows = mysql_fetch_array( $res ) ){
 			
-			// //Se hace de está manera por que el campo dxs de HCE puede ser tipo tabla
-			// //El tipo tabla es un campo SELECT de HTML con selección multiple.
+			// //Se hace de estï¿½ manera por que el campo dxs de HCE puede ser tipo tabla
+			// //El tipo tabla es un campo SELECT de HTML con selecciï¿½n multiple.
 			// //Por tanto en el campo movdat puede haber varios options
 			// //En el caso de que el campo sea tipo seleccion solo hay un option
 			// $str = explode( "<option", trim( $rows[ 'movdat' ] ) );
@@ -11177,7 +11868,7 @@ function consultarAyudasDiagnosticasPorTipo($basedatos,$tipoServicio = '%',$espe
 	//	return $consulta;
 }
  
-//Consulta si el tipo de orden tiene asociado u formulario de historia clínica electrónica
+//Consulta si el tipo de orden tiene asociado u formulario de historia clï¿½nica electrï¿½nica
 function consultarFormularioTipoOrden($basedatoshce,$wtipo)
 {
 	$conexion = obtenerConexionBD("matrix");
@@ -11307,14 +11998,14 @@ function tieneMedicamentosActivos( $conex, $wbasedato, $wcenmez, $historia, $ing
 /************************************************************************
  * Junio 15 de 2012
  *
- * Trae del día anterior medicamentos que quedaron activos el día 
- * anterior( No fueron suspendidos, para el día actual )
+ * Trae del dï¿½a anterior medicamentos que quedaron activos el dï¿½a 
+ * anterior( No fueron suspendidos, para el dï¿½a actual )
  ************************************************************************/
 function cargarMedicamentosActivosAnterior( $conex, $wbasedato, $wcenmez, $historia, $ingreo, $cco, $fechaKardex )
 {
 	$val = "";
 
-	//Consulto los medicamentos del día anterior
+	//Consulto los medicamentos del dï¿½a anterior
 	$sql = "SELECT Artcod, Artcom, Kadori,Artgru,Kadffa,Artuni,Artpos,Kadufr,Kadcma,Defven,Defdie,Defdis,Defdup,Defdim,Defdom,Defvia,Kadpro,Kadess,Kadfin,Kadhin,Kadcfr,Kadper,Kadcnd,Kadcon,Kaddia,Kaddma,Kadvia 
 			FROM 
 				{$wbasedato}_000054 a, {$wbasedato}_000011 d, {$wbasedato}_000059 b, {$wbasedato}_000026 c
@@ -11480,7 +12171,7 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 
 
 				/****
-				 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+				 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 				 */
 				if($esCM){
 					$q = $subConsulta;
@@ -11532,7 +12223,7 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 							."	AND Defcco = '$centroCostosCentralMezclas'";
 
 			/****
-			 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+			 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 			 */
 			if($esCM){
 				$q = $subConsulta;
@@ -11581,7 +12272,7 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 							."	AND Defcco = '$centroCostosCentralMezclas'";
 
 			/****
-			 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+			 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 			 */
 			if($esCM){
 				$q = $q." UNION ".$subConsulta;
@@ -11878,9 +12569,9 @@ function recalcularKardex( $conex, $wbasedato, $historia, $ingreso, $fecha ){
  ************************************************************************************************/
 function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $historia, $ingreso, $wemp_pmla)
 {
-	//Para dejar ordenar ya se hace es por el monitor de autorización del director médico
+	//Para dejar ordenar ya se hace es por el monitor de autorizaciï¿½n del director mï¿½dico
 	/* 
-	* Modificación: se parametriza vptarifa, y se permite mostrar NPT, LEV e IC independiente de que tenga o no tarifa
+	* Modificaciï¿½n: se parametriza vptarifa, y se permite mostrar NPT, LEV e IC independiente de que tenga o no tarifa
 	* autor: sebastian.nevado
 	* fecha: 2021-08-26
 	*/
@@ -11889,7 +12580,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 	$aFamiliasNptLevIc[] = consultarAliasPorAplicacion( $conex, $wemp_pmla, "famNPT" );
 	$aFamiliasNptLevIc = array_merge(explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "famLEVIC" )), $aFamiliasNptLevIc);
 	
-	//Convierto todo a minúscula
+	//Convierto todo a minï¿½scula
 	$aFamiliasNptLevIc = array_map('strtolower', $aFamiliasNptLevIc);
 	$bEsNptLevIc = in_array($familia, $aFamiliasNptLevIc);
 	
@@ -11897,21 +12588,21 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 	$vptarifa = ((consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mostrarSoloConTarfia' ) == 'on') && !$bEsNptLevIc) ? 'on' : 'off';
 	
 	/*
-	* FIN MODIFICACIÓN
+	* FIN MODIFICACIï¿½N
 	*/
 	
 	$wcliame  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
-	// Esta es la variable que contendrá todos los datos de los artículos 
-	// que correspondan con la búsqueda de la familia
+	// Esta es la variable que contendrï¿½ todos los datos de los artï¿½culos 
+	// que correspondan con la bï¿½squeda de la familia
 	$val = "";
 	
 	//Principios activos por los que es alergico el paciente
-	//La función siempre devuelve un array con toda la información
+	//La funciï¿½n siempre devuelve un array con toda la informaciï¿½n
 	$paAlergicosPacientes 	= consultarAlergiasPorPrincipioActivo( $conex, $wbasedato, $historia, $ingreso );
 	$paAlergicos = array();
 	
-	//Convierto el arrray devuevlo en uno que solo contenga los códigos de los principios activos
-	//por los que es alérgico el paciente
+	//Convierto el arrray devuevlo en uno que solo contenga los cï¿½digos de los principios activos
+	//por los que es alï¿½rgico el paciente
 	if( is_array( $paAlergicosPacientes ) ){
 		
 		foreach( $paAlergicosPacientes as $key => $value ){
@@ -11923,16 +12614,16 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 	----------- DESCRIPCION DE LAS TABLAS PARA LA SIGUIENTE CONSULTA ---------------
 	{$wbasedato}_000114 -> Maestro de familias de medicamentos (Fam)
 	{$wbasedato}_000027 -> Maestro de unidades (Uni)
-	{$wbasedato}_000115 -> Relación familias de medicamentos con unidades (Rel)
-	{$wbasedato}_000026 -> Maestro de artículos (Art)
-	{$wbasedato}_000059 -> Definición fracciones artículos (Def)
-	{$wbasedato}_000046 -> Formas farmacéuticas (Ffa)
+	{$wbasedato}_000115 -> Relaciï¿½n familias de medicamentos con unidades (Rel)
+	{$wbasedato}_000026 -> Maestro de artï¿½culos (Art)
+	{$wbasedato}_000059 -> Definiciï¿½n fracciones artï¿½culos (Def)
+	{$wbasedato}_000046 -> Formas farmacï¿½uticas (Ffa)
 	---------------------------------------------------------------------------------
 	*/
 			
 	//Busco las familias que tengan en su nombre la familia buscada	
 	
-	$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
+
 		
 	if($vptarifa == "off"){		
 		$sql = "SELECT
@@ -12213,7 +12904,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 	}
 			
 	//Verificar si es un articulo el que se esta buscando.
-	//Este query se usa más adelante
+	//Este query se usa mï¿½s adelante
 	
 	
 	$sql_art = " SELECT Artest, Artuni
@@ -12224,7 +12915,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 	$num_art = mysql_num_rows($res_art);
 			
 	// 2012-07-09
-	// Se agregó ORDER BY Famund DESC para poder ordenar según la unidad destacada para la familia de medicamentos
+	// Se agregï¿½ ORDER BY Famund DESC para poder ordenar segï¿½n la unidad destacada para la familia de medicamentos
 
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	$num = mysql_num_rows( $res );
@@ -12253,7 +12944,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 			
 			
 			////////////////////// FAMILIA //////////////////////
-			// Si es diferente a la familia de la iteracción anterior
+			// Si es diferente a la familia de la iteracciï¿½n anterior
 			if( $famAnt != $famcod )
 			{
 				$textfind = trim($rows[ 'Famnom' ])."|".$famcod."";
@@ -12303,7 +12994,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 			
 			
 			////////////////////// ARTICULO //////////////////////
-			// Incluyo en la variable $val el código y la concentración o dosis del artículo
+			// Incluyo en la variable $val el cï¿½digo y la concentraciï¿½n o dosis del artï¿½culo
 			if( !isset( $arrFamilias[ $famcod ][ $artcod ] ) )
 			{
 				$arrFamilias[ $famcod ][ $artcod ] = 1;
@@ -12313,7 +13004,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 
 			
 			////////////////// UNIDAD DE MEDIDA //////////////////
-			// Incluyo en la variable $val las unidades de medida para el artículo
+			// Incluyo en la variable $val las unidades de medida para el artï¿½culo
 			if( !isset( $arrFamilias[ $famcod ][ $unicod ] ) )
 			{
 				$arrFamilias[ $famcod ][ $unicod ] = 1;
@@ -12323,7 +13014,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 			
 			
 			///////////////// FORMA FARMACEUTICA //////////////////
-			// Incluyo en la variable $val la presentación o forma farmacéutica para el artículo
+			// Incluyo en la variable $val la presentaciï¿½n o forma farmacï¿½utica para el artï¿½culo
 			if( !isset( $arrFamiliasFfa[ $famcod ][ $ffacod ] ) )
 			{
 				$arrFamiliasFfa[ $famcod ][ $ffacod ] = 1;
@@ -12333,17 +13024,17 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 
 
 			/////////////// VIA DE ADMINISTRACION /////////////////
-			// Si el campo via de administración no está vacio
+			// Si el campo via de administraciï¿½n no estï¿½ vacio
 			// Si se busco un articulo la via debe ser igual a la del articulo
 			if( ( $num_art > 0 && strtoupper( $familia ) == strtoupper( $rows['Defart'] ) ) 
 				|| $num_art == 0
 			){
 				if($rows['Defvia'] && $rows['Defvia']!="" && $rows['Defvia']!=" ")
 				{
-					// Se da formato a las vías para la sentencia IN del query
+					// Se da formato a las vï¿½as para la sentencia IN del query
 					$defvia_arr = str_replace(",","','",$rows['Defvia']);
 					
-					// Consulto descripcion de la via o vías de administracion
+					// Consulto descripcion de la via o vï¿½as de administracion
 					$sql = " SELECT
 								Viacod,Viades
 							FROM
@@ -12352,7 +13043,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 								Viacod IN ('".$defvia_arr."')
 							";
 				}
-				// Si no existen vías de administración asociadas se hace una consulta vacía
+				// Si no existen vï¿½as de administraciï¿½n asociadas se hace una consulta vacï¿½a
 				else
 				{
 					// Consulto descripcion via de administracion
@@ -12368,7 +13059,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 			
 			$resvia = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 			
-			// Incluyo en la variable $val las vías de administración para el artículo
+			// Incluyo en la variable $val las vï¿½as de administraciï¿½n para el artï¿½culo
 			while($rowsvia = mysql_fetch_array( $resvia ))
 			{
 				$viacod = trim($rowsvia[ 'Viacod' ]);
@@ -12381,8 +13072,8 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 			///////////////////////////////////////////////////////
 			
 			
-			// Defino los valores para la iteración actual que servirán para comprarar
-			// como valor anterior en la siguiente iteración, si la hay
+			// Defino los valores para la iteraciï¿½n actual que servirï¿½n para comprarar
+			// como valor anterior en la siguiente iteraciï¿½n, si la hay
 			$famAnt = $famcod;
 		}
 
@@ -12482,15 +13173,15 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 }
 
 /************************************************************************************************
- * Consulta la presentación unidad de medida y vias de administración de la familia de medicamentos
- * según las selecciones hechas en el formulario de adición de medicamentos
+ * Consulta la presentaciï¿½n unidad de medida y vias de administraciï¿½n de la familia de medicamentos
+ * segï¿½n las selecciones hechas en el formulario de adiciï¿½n de medicamentos
  *
  * @return unknown_type
  ************************************************************************************************/
 function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $presentacion, $unidad, $bsq )
 {
 	//Verificar si es un articulo el que se esta buscando.
-	//Este query se usa más adelante
+	//Este query se usa mï¿½s adelante
 	$sql_art = " SELECT Artest, Artuni
 			       FROM	{$wbasedato}_000026
 			      WHERE Artcod = '".$bsq."'";
@@ -12503,20 +13194,20 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 	}
 
 	$familia = utf8_decode( trim($familia) );
-	// Esta es la variable que contendrá todos los datos de los artículos 
-	// que correspondan con la búsqueda de la familia
+	// Esta es la variable que contendrï¿½ todos los datos de los artï¿½culos 
+	// que correspondan con la bï¿½squeda de la familia
 	$val = "";
 
 	/*
 	----------- DESCRIPCION DE LAS TABLAS PARA LA SIGUIENTE CONSULTA ---------------
 	{$wbasedato}_000114 -> Maestro de familias de medicamentos (Fam)
 	{$wbasedato}_000027 -> Maestro de unidades (Uni)
-	{$wbasedato}_000115 -> Relación familias de medicamentos con unidades (Rel)
-	{$wbasedato}_000026 -> Maestro de artículos (Art)
-	{$wbasedato}_000059 -> Definición fracciones artículos (Def)
-	{$wbasedato}_000046 -> Formas farmacéuticas (Ffa)
-	{$wbasedato}_000040 -> Vías de administración (Ffa)
-	{$wcenmez}_000002 -> Maestro de artículos de Central de Mezclas (Art)
+	{$wbasedato}_000115 -> Relaciï¿½n familias de medicamentos con unidades (Rel)
+	{$wbasedato}_000026 -> Maestro de artï¿½culos (Art)
+	{$wbasedato}_000059 -> Definiciï¿½n fracciones artï¿½culos (Def)
+	{$wbasedato}_000046 -> Formas farmacï¿½uticas (Ffa)
+	{$wbasedato}_000040 -> Vï¿½as de administraciï¿½n (Ffa)
+	{$wcenmez}_000002 -> Maestro de artï¿½culos de Central de Mezclas (Art)
 	---------------------------------------------------------------------------------
 	*/
 			
@@ -12583,7 +13274,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 	
 	
 	// 2012-07-09
-	// Se agregó ORDER BY Famund DESC para poder ordenar según la unidad destacada para la familia de medicamentos
+	// Se agregï¿½ ORDER BY Famund DESC para poder ordenar segï¿½n la unidad destacada para la familia de medicamentos
 
 
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -12603,7 +13294,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			
 			
 			////////////////////// FAMILIA //////////////////////
-			// Si es diferente a la familia de la iteracción anterior
+			// Si es diferente a la familia de la iteracciï¿½n anterior
 			if( $famAnt != $famcod )
 			{
 				$textfind = trim($rows[ 'Famnom' ])."|".$famcod."";
@@ -12621,14 +13312,14 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			
 			
 			////////////////////// ARTICULO //////////////////////
-			// Incluyo en la variable $val el código y la concentración o dosis del artículo
-			// Incluyo en la variable $val el código y la concentración o dosis del artículo
+			// Incluyo en la variable $val el cï¿½digo y la concentraciï¿½n o dosis del artï¿½culo
+			// Incluyo en la variable $val el cï¿½digo y la concentraciï¿½n o dosis del artï¿½culo
 			$val .= "|-".$artcod."|".$rows[ 'Relcon' ];
 			//////////////////////////////////////////////////////
 			
 			
 			////////////////// UNIDAD DE MEDIDA //////////////////
-			// Incluyo en la variable $val las unidades de medida para el artículo
+			// Incluyo en la variable $val las unidades de medida para el artï¿½culo
 			$textfind2 = "|@".$unicod."|".trim($rows[ 'Unides' ])."";
 			$pos2 = strpos($val, $textfind2);
 			if($pos2 === false)
@@ -12637,7 +13328,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 
 			
 			///////////////// FORMA FARMACEUTICA //////////////////
-			// Incluyo en la variable $val la presentación o forma farmacéutica para el artículo
+			// Incluyo en la variable $val la presentaciï¿½n o forma farmacï¿½utica para el artï¿½culo
 			$textfind3 = "|&".$ffacod."|".trim($rows[ 'Ffanom' ])."";
 			$pos3 = strpos($val, $textfind3);
 			if($pos3 === false)
@@ -12646,7 +13337,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			
 
 			/////////////// VIA DE ADMINISTRACION /////////////////
-			// Si existe vía o vías de administración asociadas se consultan
+			// Si existe vï¿½a o vï¿½as de administraciï¿½n asociadas se consultan
 			if( ( $num_art > 0 && strtoupper( $bsq ) == strtoupper( $rows['Defart'] ) ) 
 				|| $num_art == 0
 			){
@@ -12663,7 +13354,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 								Viacod IN ('".$defvia_arr."')
 							";
 				}
-				// Si no existen vías de administración asociadas se hace una consulta vacía
+				// Si no existen vï¿½as de administraciï¿½n asociadas se hace una consulta vacï¿½a
 				else
 				{
 					// Consulto descripcion via de administracion
@@ -12676,10 +13367,10 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 							";
 				}
 
-				// Incluyo en la variable $val las unidades de medida para el artículo
+				// Incluyo en la variable $val las unidades de medida para el artï¿½culo
 				$resvia = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 
-				// Incluyo en la variable $val las vías de administración para el artículo
+				// Incluyo en la variable $val las vï¿½as de administraciï¿½n para el artï¿½culo
 				while($rowsvia = mysql_fetch_array( $resvia ))
 				{
 					$viacod = trim($rowsvia[ 'Viacod' ]);
@@ -12691,7 +13382,7 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 			}
 			///////////////////////////////////////////////////////
 			
-			/////////////// CONCENTRACIÓN O DOSIS /////////////////
+			/////////////// CONCENTRACIï¿½N O DOSIS /////////////////
 			$textfind5 = "|$".$rows[ 'Relcon' ]."|";
 			$pos5 = strpos($val, $textfind5);
 			if($pos5 === false)
@@ -12700,15 +13391,15 @@ function filtrarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $pr
 
 
 			/////////////// ES POS /////////////////
-			$textfind5 = "|¬".$rows[ 'Artpos' ]."|";
+			$textfind5 = "|ï¿½".$rows[ 'Artpos' ]."|";
 			$pos5 = strpos($val, $textfind5);
 			if($pos5 === false)
-				$val .= "|¬".$rows[ 'Artpos' ];
+				$val .= "|ï¿½".$rows[ 'Artpos' ];
 			///////////////////////////////////////////////////////
 
 			
-			// Defino los valores para la iteración actual que servirán para comprarar
-			// como valor anterior en la siguiente iteración, si la hay
+			// Defino los valores para la iteraciï¿½n actual que servirï¿½n para comprarar
+			// como valor anterior en la siguiente iteraciï¿½n, si la hay
 			$famAnt = $rows[ 'Relfam' ];
 		}
 	}
@@ -13096,7 +13787,7 @@ function nuevaDosis( $unidadArticulo, $regleta ){
 /*********************************************************************************************************************
  * Devuelve la hora de traslado de un paciente desde cualquier centro de costos que no se maneje ciclos de produccion
  * 
- * Nota: La primera del día
+ * Nota: La primera del dï¿½a
  * 
  * @param $conexion
  * @param $wbasedato
@@ -13182,7 +13873,7 @@ function consultarUltimaRondaDispensadaKardex( $vectorAplicaciones ){
 }
 
 /************************************************************************************************************
- * Indica si un centro de costos comenzo ya con el ciclo de producción
+ * Indica si un centro de costos comenzo ya con el ciclo de producciï¿½n
  * 
  * @param $cco
  * @return unknown_type
@@ -13480,7 +14171,7 @@ function crearVectorAplicaciones( $horasAplicar, $frecuencia, $can, $tiempoDispe
 	$apl = 0;
 	
 	// 2012-09-04
-	// Se aumenta hora máxima a 30
+	// Se aumenta hora mï¿½xima a 30
 	if( $tiempoDispensacion > 2 ){
 		$horaMaxima = ($diasDispensacion*24+6) + ceil( $tiempoDispensacion/2 )*2-2;
 	}
@@ -13562,7 +14253,7 @@ function consultarUltimaRondaKardex( $conex, $wbasedato, $tipo ){
 	
 	
 	//Consulto la ultima ronda que se hizo para un tipo de articulo
-	//desde el día anterior, esto por que la siguiente ronda puede ser a la medianoche
+	//desde el dï¿½a anterior, esto por que la siguiente ronda puede ser a la medianoche
 
 	$sql = "SELECT
 				*
@@ -13908,7 +14599,7 @@ function consultarinfotipoarticulosKardex( $conex, $wbasedato ){
 }
 
 /************************************************************************************************
- * Verifica que un usuario tenga permiso de usar el kardex de enfermería editable.
+ * Verifica que un usuario tenga permiso de usar el kardex de enfermerï¿½a editable.
  * @return unknown_type
  ************************************************************************************************/
 function verficacionKardexEditable(){
@@ -14029,7 +14720,7 @@ function verificacionArticulosGuardados( $conex, $wbasedato, $tabla, $articulos,
 		
 			$malos[$i] = $i;
 		
-			//Si es 0 significa que el registro no se insertó en la nueva tabla
+			//Si es 0 significa que el registro no se insertï¿½ en la nueva tabla
 			//Creo un array con toda la informacion del articulo
 			$datos = "";
 			foreach( $articulos[$i] as $keyDatos => $valueDatos ){
@@ -14136,7 +14827,7 @@ function suministroAntesFechaCorte( $fechaActual, $horaCorte, $fechaIncio, $hora
 		
 			$horaIncioActual = $horaInicio;
 			
-			//Sumo la frecuencia hasta el día en que comience el medicamento
+			//Sumo la frecuencia hasta el dï¿½a en que comience el medicamento
 			for( $i = 0 ; $fechorInicio <= $fechorActual; $i++ ){
 
 				$fechorInicio += $frecuencia*3600;
@@ -14364,7 +15055,7 @@ function consultarInfoPacienteOrdenHCEPorHistoria( $conex, $wbasedato, $historia
 		$paciente->enUrgencias = isset($info['Ccourg']) && $info['Ccourg'] == "on" ? true : false;
 
 		//Edad
-		//Modificación 2022-03-08: Sebastián Nevado - Se llama función que calcula la edad
+		//Modificaciï¿½n 2022-03-08: Sebastiï¿½n Nevado - Se llama funciï¿½n que calcula la edad
 		$oEdad = calcularEdadPacienteOrdenes($paciente->fechaNacimiento);
 		$paciente->edadPaciente = $oEdad->edad;
 		$paciente->anosPaciente = $oEdad->anios;
@@ -14418,7 +15109,7 @@ function ConectarFTP( $server, $port, $user, $password, $modo ){
 		$login = ftp_login( $id_ftp, $user, $password ); //Se loguea al Servidor FTP
 		
 		if( $login ){
-			$pasv = ftp_pasv( $id_ftp, $modo ); //Establece el modo de conexión
+			$pasv = ftp_pasv( $id_ftp, $modo ); //Establece el modo de conexiï¿½n
 			
 			if( !$pasv ){
 				$id_ftp = false;
@@ -14429,7 +15120,7 @@ function ConectarFTP( $server, $port, $user, $password, $modo ){
 		}
 	}
 	
-	return $id_ftp; //Devuelve el manejador a la función
+	return $id_ftp; //Devuelve el manejador a la funciï¿½n
 }
 
 function subirArchivosFtp( $archivo_remoto, $archivo_local, $wemp_pmla = '01' ){
@@ -14481,6 +15172,7 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 			
 	$sql = "SELECT *
 			  FROM ".$whce."_000027 a
+			  INNER JOIN ".$whce."_000015 e ON (e.Codigo = a.Ordtor)
 			 WHERE Ordhis = '".$historia."'
 			   AND Ording = '".$ingreso."'
 			   AND Ordest = 'on'
@@ -14490,13 +15182,14 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 								  AND b.Detnro = a.Ordnro 
 								  AND Detenv = 'on' 
 								  AND b.Detest = 'on' )
+				AND e.Tipiws = 'on'
 			";
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	
 	$paciente	= consultarInfoPacienteOrdenHCEPorHistoria( $conex, $wbasedato, $historia );
 	
-	//Está función se encuentra en el script interoperabilidad/procesos/funcionesGeneralesEnvioHL7.php
+	//Estï¿½ funciï¿½n se encuentra en el script interoperabilidad/procesos/funcionesGeneralesEnvioHL7.php
 	$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 	
 	$idstm = [];
@@ -14507,13 +15200,16 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 		$campoOferta	= "";
 		$campoEstado	= "";
 				
-		
+		//Agregar inner join con hce15, y filtro Tipiws en on
 		//Consulto si existe cups ofertados por tipo de orden
-		$sql = "SELECT Valtoc, Valcoc, Valeoc
-				  FROM ".$wbasedato."_000267
-				 WHERE valtor = '".$rows['Ordtor']."'
-				   AND valest = 'on'
+		$sql = "SELECT a.Valtoc, a.Valcoc, a.Valeoc
+				  FROM ".$wbasedato."_000267 a
+				  INNER JOIN ".$whce."_000015 b ON (b.Codigo = a.Valtor)
+				 WHERE a.valtor = '".$rows['Ordtor']."'
+				   AND a.valest = 'on'
+				   AND b.Tipiws = 'on'
 			  GROUP BY 1,2,3";
+
 		
 		$resToOfertado 	= mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
 		$numToOfertado	= mysql_num_rows($resToOfertado);
@@ -14587,11 +15283,11 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 			$mensajes 		= [];
 			// $mensaje_tm		= "";
 			$estadoPorOrden = '';
-			$conEstudios	= false;	//Indica si la orden tiene uno o más estudios para enviar por HL7
+			$conEstudios	= false;	//Indica si la orden tiene uno o mï¿½s estudios para enviar por HL7
 						
 			while( $rowOrden = mysql_fetch_array( $resOrden ) )
 			{
-				//Consulto si el examen está ofertado
+				//Consulto si el examen estï¿½ ofertado
 				$sql = "SELECT *
 						  FROM ".$tablaOfertas."
 						 WHERE ".$campoOferta." = '".$rowOrden['Codcups']."'
@@ -14600,7 +15296,7 @@ function crearMensajesHL7OLM( $conex, $wemp_pmla, $wbasedato, $historia, $ingres
 				$resHasOffert = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
 				$numHasOffert = mysql_num_rows($resHasOffert);
 				
-				//Si el examen no está ofertado, continuo con el siguiente item
+				//Si el examen no estï¿½ ofertado, continuo con el siguiente item
 				if( $numHasOffert == 0 ){
 					continue;
 				}
@@ -14929,7 +15625,7 @@ function horaInicioMedicamento( $fechaActual, $fechaIncio, $horaInicio, $frecuen
 		
 		$horaIncioActual = $horaInicio;
 		
-		//Sumo la frecuencia hasta el día en que comience el medicamento
+		//Sumo la frecuencia hasta el dï¿½a en que comience el medicamento
 		for( $i = 0 ; date( "Y-m-d", $fechorInicio ) < date( "Y-m-d", $fechorActual ); $i++ ){
 
 			$fechorInicio += $frecuencia*3600;
@@ -15199,7 +15895,7 @@ function datosHL7( $conex, $bdMH, $wbasedato, $historia, $ingreso, $examen, $nro
 }
 
 /******************************************************************************************************************************
- * Devuelve todos los tipos diangositocs en un string, con forma codigo1-descripción,codigo2-descripción2
+ * Devuelve todos los tipos diangositocs en un string, con forma codigo1-descripciï¿½n,codigo2-descripciï¿½n2
  * 
  * @param $conexion
  * @param $wbasedato
@@ -15318,7 +16014,7 @@ function tiposAyudasDiagnosticas( $conexion, $wbasedatohce, $ccoPaciente ){
 /********************************************************************************************************
  * Devuelve la hora de traslado de un paciente desde urgencia o cirugia.
  * 
- * Nota: La primera del día
+ * Nota: La primera del dï¿½a
  * 
  * @param $conexion
  * @param $wbasedato
@@ -15363,9 +16059,9 @@ function consultarHoraTrasladoUrgencias( $conexion, $wbasedato, $historia, $ingr
 
 
 /******************************************************************************************
- * Inidca si un articulo es un génerico o no
+ * Inidca si un articulo es un gï¿½nerico o no
  * 
- * @param $conexion			Conexión a la BD
+ * @param $conexion			Conexiï¿½n a la BD
  * @param $wbasedatoMH		Base de datos de movimiento hospitalario
  * @param $wbasedatoCM		Base de datos de Central de Mezclas
  * @param $codArticulo		Codigo del articulo
@@ -15405,7 +16101,7 @@ function esArticuloGenerico( $conexion, $wbasedatoMH, $wbasedatoCM, $codArticulo
 
 /************************************************************************************************************
  * Diciembre 17 de 2010
- * Determina si un articulo es creado por primera vez en el kardex, basandose en el kardex del día anterior
+ * Determina si un articulo es creado por primera vez en el kardex, basandose en el kardex del dï¿½a anterior
  * 
  * @param $conexion
  * @param $wbasedato
@@ -15418,12 +16114,12 @@ function esArticuloGenerico( $conexion, $wbasedatoMH, $wbasedatoCM, $codArticulo
  * @return unknown_type
  * 
  * Modificacion:  Enero 14 de 2011
- * - Se agrega campo FechaUsar en la función
- * - Se agrega condición: si el paciente fue trasladado de urgencias o cirugía antes de que el kardex sea
- * 	 sea creado, los medicamentos se toman como primera vez.  Además si esto ocurre, al día siguiente se tomo
- * 	 como segunda vez, esto último debido a que habría conflicto al día siguiente con la regla de que si viene
- *   del día anterior y no fue dispensado, se calcula el medicamento como si fuera primera vez
- * - Se agrega condición: Si el medicamento comienza al día siguiente antes de la hora de dispensación,
+ * - Se agrega campo FechaUsar en la funciï¿½n
+ * - Se agrega condiciï¿½n: si el paciente fue trasladado de urgencias o cirugï¿½a antes de que el kardex sea
+ * 	 sea creado, los medicamentos se toman como primera vez.  Ademï¿½s si esto ocurre, al dï¿½a siguiente se tomo
+ * 	 como segunda vez, esto ï¿½ltimo debido a que habrï¿½a conflicto al dï¿½a siguiente con la regla de que si viene
+ *   del dï¿½a anterior y no fue dispensado, se calcula el medicamento como si fuera primera vez
+ * - Se agrega condiciï¿½n: Si el medicamento comienza al dï¿½a siguiente antes de la hora de dispensaciï¿½n,
  *   calcular como si fuera primera vez. 
  * 
  ************************************************************************************************************/
@@ -15460,8 +16156,8 @@ function esPrimeraVez( $conexion, $wbasedato, $historia, $ingreso, $codArticulo,
 			$fila = mysql_fetch_array($res);
 			
 			//Un articulo no puede ser creado dias posteriores a la fecha del kardex
-			//Si ocurre significa que el se comenzo a crear el kardex el día anterior pero se terminó de crear al día siguiente (Despues de las 23:59:59)
-			//Por tal motivo se deja con la fecha y hora máxima para los calculos de la creacion del kardex
+			//Si ocurre significa que el se comenzo a crear el kardex el dï¿½a anterior pero se terminï¿½ de crear al dï¿½a siguiente (Despues de las 23:59:59)
+			//Por tal motivo se deja con la fecha y hora mï¿½xima para los calculos de la creacion del kardex
 			if( $fila['Fecha_data'] > $fila['Kadfec'] ){
 				
 				$fila['Fecha_data'] = $fila['Kadfec'];
@@ -15483,7 +16179,7 @@ function esPrimeraVez( $conexion, $wbasedato, $historia, $ingreso, $codArticulo,
 				$esTrasladadoUrgenciaCirugiaHoy = $esTrasladadoUrgenciaCirugia;	//Marzo 31 de 2011
 				$horaTrasladoHoy = false;										//Marzo 31 de 2011
 				
-				//si hubo recibo de pacientes en el piso, miro la hora de creación del kardex
+				//si hubo recibo de pacientes en el piso, miro la hora de creaciï¿½n del kardex
 				//si la hora de recibo de kardex es menor a la hora traslado significa que los medicamentos son tratados como primera vez 
 				if( $esTrasladadoUrgenciaCirugia ){
 					
@@ -15498,13 +16194,13 @@ function esPrimeraVez( $conexion, $wbasedato, $historia, $ingreso, $codArticulo,
 				}
 				/***********************************************************************/
 
-				if( !$esTrasladadoUrgenciaCirugia ){	//Enero 14 de 2010.  Si fue trasladado a piso desde urgencia y no se le ha hecho kardex ni el articulo ha sido dispensado el día anterior se calcula como primera vez
+				if( !$esTrasladadoUrgenciaCirugia ){	//Enero 14 de 2010.  Si fue trasladado a piso desde urgencia y no se le ha hecho kardex ni el articulo ha sido dispensado el dï¿½a anterior se calcula como primera vez
 					
 					/**********************************************************************
 				 	 * Enero 14 de 2011
 				 	 **********************************************************************/
 					//verifico que el dia anterior no haya sido cosiderado como primera vez por el caso de
-					//que si el paciente fue recibido desde urgencias a piso y no se había hecho el kardex al paciente
+					//que si el paciente fue recibido desde urgencias a piso y no se habï¿½a hecho el kardex al paciente
 					$antesCrearKardex = false;
 					
 					$esTrasladadoUrgenciaCirugia = esTrasladoDeUregnciasDiaAnterior( $conexion, $wbasedato, $fila['Kadhis'], $fila['Kading'], $fechaKardex );
@@ -15526,7 +16222,7 @@ function esPrimeraVez( $conexion, $wbasedato, $historia, $ingreso, $codArticulo,
 						 || !esTrasladoDeUregnciasDiaAnterior( $conexion, $wbasedato, $fila['Kadhis'], $fila['Kading'], $fechaKardex )
 						 || $antesCrearKardex
 						 || true
-					  ){	//Evaluo si viene de Urgencias o Cirugía del día anterior
+					  ){	//Evaluo si viene de Urgencias o Cirugï¿½a del dï¿½a anterior
 						
 					   	if( !( trim( $fechaInicio ) == date( "Y-m-d", strtotime( date("Y-m-d") )+24*3600 ) && trim( $horaInicio ) <= $horaCorteDispensacion ) ){
 					   		
@@ -15569,7 +16265,7 @@ function esPrimeraVez( $conexion, $wbasedato, $historia, $ingreso, $codArticulo,
 					   			/****************************************************************************************************************
 					   			 * Marzo 31 de 2011
 					   			 * 
-					   			 * Si un paciente es traslado desde urgencia a piso y se modifica el medicamento y no fue dispensado el día anterior
+					   			 * Si un paciente es traslado desde urgencia a piso y se modifica el medicamento y no fue dispensado el dï¿½a anterior
 					   			 * el calculo de la cantidad a dispensar se hace como si fuera primera vez
 					   			 ****************************************************************************************************************/
 								if( $esTrasladadoUrgenciaCirugiaHoy && $horaTrasladoHoy && $horaTrasladoHoy < date("H:i:s")
@@ -15661,7 +16357,7 @@ function esPrimeraVez( $conexion, $wbasedato, $historia, $ingreso, $codArticulo,
 		/************************************************************************************************************
 		 * Abril 23 de 2012
 		 *
-		 * Si el paciente es trasladado a piso el día actual el kardex se recalcula a partir de la ronda siguiente
+		 * Si el paciente es trasladado a piso el dï¿½a actual el kardex se recalcula a partir de la ronda siguiente
 		 * de la fecha y hora de traslado
 		 ************************************************************************************************************/
 		$esTrasladadoUrgenciaCirugia = esTrasladoDeUregnciasDiaAnterior( $conexion, $wbasedato, $historia, $ingreso, date( "Y-m-d", strtotime( $fechaKardex )+24*3600 ) );
@@ -15879,7 +16575,7 @@ function obtenerMensaje($clave){
 			$texto = "No se pudo crear el examen";
 			break;
 		case 'MSJ_INFUSION_CREADA':
-			$texto = "Líquido endovenoso creado";
+			$texto = "Lï¿½quido endovenoso creado";
 			break;
 		case 'MSJ_INFUSION_ACTUALIZADA':
 			$texto = "Liquido endovenoso actualizado";
@@ -15987,28 +16683,36 @@ function obtenerMensaje($clave){
 			$texto = "Electrolito de LEV modificado";
 			break;
 		case 'MSJ_LEV_SOLUCION':
-			$texto = "Solución de LEV modificado";
+			$texto = "Soluciï¿½n de LEV modificado";
 			break;
 		case 'MSJ_IC_SOLUCION_ELIMINADO':
-			$texto = "Solución de IC eliminado";
+			$texto = "Soluciï¿½n de IC eliminado";
 			break;
 		case 'MSJ_IC_MEDICAMENTO_ELIMINADO':
 			$texto = "Medicamento de IC eliminado";
 			break;
 		case 'MSJ_LEV_SOLUCION_ELIMINADO':
-			$texto = "Solución de LEV eliminado";
+			$texto = "Soluciï¿½n de LEV eliminado";
 			break;
 		case 'MSJ_LEV_ELECTROLITO_ELIMINADO':
 			$texto = "Electrolito de LEV eliminado";
 			break;
 		
 		case 'TOMA_MUESTRAS_GESTION':
-			$texto = "Toma de muestras desde Gestión de enfermería";
+			$texto = "Toma de muestras desde Gestiï¿½n de enfermerï¿½a";
 			break;
 			
 		case 'TOMA_MUESTRAS_ORDENES':
 			$texto = "Toma de muestras desde ordenes Ordenes";
 			break;
+		case 'NO_REALIZA_EN_SERVICIO':
+			$texto = "El estudio se realizarï¿½ en la ayuda diagnï¿½stica";
+			break;
+				
+		case 'REALIZA_EN_PISO':
+			$texto = "El estudio se realiza en servcio del paciente";
+			break;
+
 			
 		default:
 			$texto = "Mensaje no especificado";
@@ -16049,7 +16753,7 @@ function generarListaProtocolos($nombreCampo,$codigoUsuario,$codigoCco,$filtro =
 	global $conex;
 	global $wbasedato;
 
-	// Se consulta la especialidad del médico
+	// Se consulta la especialidad del mï¿½dico
 	$sql =  " SELECT Esmcod
 				FROM ".$wbasedato."_000048,".$wbasedato."_000065
 			   WHERE Meduma = '".$codigoUsuario."'
@@ -16102,7 +16806,7 @@ function generarListaProtocolos($nombreCampo,$codigoUsuario,$codigoCco,$filtro =
 	$numrows = mysql_num_rows( $res );
 	$Pestanas = array();
 	
-	//Agrupo todo en una pestaña
+	//Agrupo todo en una pestaï¿½a
 	if( $numrows > 0 )
 	{
 		while($rows = mysql_fetch_array($res))
@@ -16193,7 +16897,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 
 	global $conex;
 	global $wbasedato;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 	
 	global $codigoServicioFarmaceutico;
 	
@@ -16215,7 +16919,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 	
 	$gruposNoVisibles = array();
 	if( !$paciente->enUrgencias ){
-		$gruposNoVisibles = consultarAliasPorAplicacion( $conex, "01", "gruposNoVisiblesPerfil" );
+		$gruposNoVisibles = consultarAliasPorAplicacion( $conex, $wemp_pmla, "gruposNoVisiblesPerfil" );
 		$gruposNoVisibles = explode( ',', $gruposNoVisibles );
 	}
 	
@@ -16267,7 +16971,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 	
 	
 	
-	//Si no hay articulos agrego todas las acciones correspondientes a la pestaña
+	//Si no hay articulos agrego todas las acciones correspondientes a la pestaï¿½a
 	// if( count($colDetalle) == 0 ){
 		$auxtipoProtocolo="N";
 		echo "<INPUT TYPE='hidden' name='wacc$auxtipoProtocolo.2' id='wacc$auxtipoProtocolo.2' value='".accionesATexto(@$accionesPestana[$indicePestana.".$auxtipoProtocolo"."2"])."'>";
@@ -16295,7 +16999,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 	/******************************************************************************************
 	 * Esta tabla se comenta, puede haber una por cada tipo de protocolo
 	 * En caso de requerirse descomentar y organizar en el javascript la tabla de agregado
-	 * según el protocolo
+	 * segï¿½n el protocolo
 	 ******************************************************************************************/
 	// /////////////////////////////////////////
 	// // Encabezado articulos agregados
@@ -16312,7 +17016,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 	// echo "<td>Condici&oacute;n</td>";
 	// echo "<td>Cnf.</td>";
 	// echo "<td>Dias tto.</td>";
-	// echo "<td>Dosis máx.</td>";
+	// echo "<td>Dosis mï¿½x.</td>";
 	// echo "<td>Observaciones</td>";
 	// echo "</tr>";
 	// /////////////////////////////////////////
@@ -16547,7 +17251,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 				// echo "<INPUT TYPE='hidden' name='wacc$tipoProtocolo.12' id='wacc$tipoProtocolo.12' value='".accionesATexto(@$accionesPestana[$indicePestana.".$tipoProtocolo"."12"])."'>";
 				echo "</td>";
 				echo "<td>";
-				echo "Dosis máx.</td>";
+				echo "Dosis mï¿½x.</td>";
 				// echo "<INPUT TYPE='hidden' name='wacc$tipoProtocolo.13' id='wacc$tipoProtocolo.13' value='".accionesATexto(@$accionesPestana[$indicePestana.".$tipoProtocolo"."13"])."'>";
 				echo "<td>";
 				echo "Observaciones";
@@ -16580,7 +17284,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 				echo "<td>NE.</td>";
 				echo "<td>Filtro<br>antibi&oacute;ticos</td>";
 				echo "<td>Dias tto.</td>";
-				echo "<td>Dosis máx.</td>";
+				echo "<td>Dosis mï¿½x.</td>";
 				echo "<td>Observaciones</td>";
 				echo "<td>02</td>";
 				echo "<td>04</td>";
@@ -16678,8 +17382,8 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 				//Alerta si se llega al tope
 				if($porcentajeUsoCtc >= $topePorcentualCtc){
 					$miniClase = "fondoRojo";
-					// mensajeEmergente("El articulo ".trim($articulo->codigoArticulo)." está a punto de agotarse o se agotó por CTC.  Utilización: ".intval($porcentajeUsoCtc)."%");
-					$msg = "El articulo ".trim($articulo->codigoArticulo)." está a punto de agotarse o se agotó por CTC.  Utilización: ".intval($porcentajeUsoCtc)."%";
+					// mensajeEmergente("El articulo ".trim($articulo->codigoArticulo)." estï¿½ a punto de agotarse o se agotï¿½ por CTC.  Utilizaciï¿½n: ".intval($porcentajeUsoCtc)."%");
+					$msg = "El articulo ".trim($articulo->codigoArticulo)." estï¿½ a punto de agotarse o se agotï¿½ por CTC.  Utilizaciï¿½n: ".intval($porcentajeUsoCtc)."%";
 					echo "<script>";
 					echo "alertsIniciales[alertsIniciales.length] = '$msg';";
 					echo "</script>";
@@ -16754,15 +17458,15 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			$informacion .= " - Justificaci&oacute;n para actualizar: ".$articulo->jusParaAutorizar;
 
 			/*
-			* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+			* Modificaciï¿½n: se agrega columna "# Mipres" en caso de tener parï¿½metro activo. Se modifica tamaï¿½o de tabla
 			* Autor: sebastian.nevado
 			* Fecha: 2021-10-04
 			*/
 			if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
 			{
-				$informacion .= "<br> - N&uacute;mero prescripción Mipres: ".$articulo->noPrescripcionMipres;
+				$informacion .= "<br> - N&uacute;mero prescripciï¿½n Mipres: ".$articulo->noPrescripcionMipres;
 			}
-			//FIN MODIFICACIÓN
+			//FIN MODIFICACIï¿½N
 			
 			echo "<tr id='trFil".$contArticulos."' idtr=trFil".$tipoProtocolo.$contArticulos." title=' - ".$informacion."' class='".$clase."'".$filaVisible." style='$mostrarFila'>";
 			
@@ -16847,7 +17551,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			} else {
 				echo $articulo->codigoArticulo;
 			}
-			//Número Prescripción Mipres
+			//Nï¿½mero Prescripciï¿½n Mipres
 			if($sMipresEnListaMedicamentosOrdenes == '2' || $sMipresEnListaMedicamentosOrdenes == '1')
 			{
 				echo "<div id='wnummipres$articulo->tipoProtocolo$contArticulos' style='display: none' >$articulo->noPrescripcionMipres</div>";
@@ -16871,8 +17575,8 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 					$disableNoEnviar = "disabled";
 				}
 				
-				//Julio 17 de 2019. Se comenta está condición
-				//Aclaración: Si el articulo es de ayuda dx y se deja como no enviar, el medicamento no se ve en las ordenes y tampoco en el perfil
+				//Julio 17 de 2019. Se comenta estï¿½ condiciï¿½n
+				//Aclaraciï¿½n: Si el articulo es de ayuda dx y se deja como no enviar, el medicamento no se ve en las ordenes y tampoco en el perfil
 				// if( $articulo->porProtocolo ){
 					// $disableNoEnviar = "disabled";
 				// }
@@ -16993,7 +17697,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			echo "<INPUT TYPE='hidden' name='wfftica$articulo->tipoProtocolo$contArticulos' id='wfftica$articulo->tipoProtocolo$contArticulos' value='$articulo->formaFarmaceutica'>";
 			echo "<INPUT TYPE='hidden' name='wcundmanejo$articulo->tipoProtocolo$contArticulos' id='wcundmanejo$articulo->tipoProtocolo$contArticulos' value='$articulo->unidadManejo'>";
 			echo "<INPUT TYPE='hidden' name='widoriginal$articulo->tipoProtocolo$contArticulos' id='widoriginal$articulo->tipoProtocolo$contArticulos' value='$articulo->idOriginal'>";
-			//Indica si el articulo está pendiente de leer por la enfermera
+			//Indica si el articulo estï¿½ pendiente de leer por la enfermera
 			echo "<INPUT TYPE='hidden' name='wpendiente$articulo->tipoProtocolo$contArticulos' id='wpendiente$articulo->tipoProtocolo$contArticulos' value='".$articulo->pendiente_leer."'>";
 			echo "<INPUT TYPE='hidden' name='wesantibiotico$articulo->tipoProtocolo$contArticulos' id='wesantibiotico$articulo->tipoProtocolo$contArticulos' value='".($articulo->esAntibiotico ? 'on': 'off')."'>";
 			echo "<INPUT TYPE='hidden' name='wesnpt$articulo->tipoProtocolo$contArticulos' id='wesnpt$articulo->tipoProtocolo$contArticulos' value='".$esNPT."'>";
@@ -17004,14 +17708,14 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			echo "<INPUT TYPE='hidden' name='wconmed2$articulo->tipoProtocolo$contArticulos' id='wconmed2$articulo->tipoProtocolo$contArticulos' value='".$articulo->conInsumo2."'>";
 			echo "<INPUT TYPE='hidden' name='wporprotocolo$articulo->tipoProtocolo$contArticulos' id='wporprotocolo$articulo->tipoProtocolo$contArticulos' value='".( $articulo->porProtocolo ? 'on' : 'off' )."'>";
 			
-			//Campo que indica si es requerido para que el director médico lo autorice
+			//Campo que indica si es requerido para que el director mï¿½dico lo autorice
 			echo "<INPUT TYPE='hidden' name='wdrautorizado$articulo->tipoProtocolo$contArticulos' id='wdrautorizado$articulo->tipoProtocolo$contArticulos' value='".( $articulo->autorizadoPorDirector ? 'on' : 'off' )."'>";
 			
 			//Campo de justificacion para autorizar
 			echo "<INPUT TYPE='hidden' name='wjusparaautorizar$articulo->tipoProtocolo$contArticulos' id='wjusparaautorizar$articulo->tipoProtocolo$contArticulos' value='".( $articulo->jusParaAutorizar ? 'on' : 'off' )."'>";
 			
-			//Busco la última aplicación del articulo y cuanto tiempo de acuerdo a la frecuencia
-			//Este cambio se hace para saber a partir de que momento se puede cambiar la fecha y hora de inicio en caso de tener ya una aplicación
+			//Busco la ï¿½ltima aplicaciï¿½n del articulo y cuanto tiempo de acuerdo a la frecuencia
+			//Este cambio se hace para saber a partir de que momento se puede cambiar la fecha y hora de inicio en caso de tener ya una aplicaciï¿½n
 			$unixUltimaAplicacion = $articulo->consultarUltimaAplicacion();
 			$unixUltimaAplicacion = $unixUltimaAplicacion['unix']*1000+( $articulo->objPeriocidad->equivalencia-2 )*3600*1000;
 			echo "<INPUT TYPE='hidden' name='wtimeultimaaplicacion$articulo->tipoProtocolo$contArticulos' id='wtimeultimaaplicacion$articulo->tipoProtocolo$contArticulos' value='".$unixUltimaAplicacion."'>";
@@ -17175,8 +17879,8 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			}
 			echo "</td>";
 			
-			$permiteDma = false;	//Verifica si permite Dma por condición
-			$permiteDtt = false;	//Verifica si permite Dtt por condición
+			$permiteDma = false;	//Verifica si permite Dma por condiciï¿½n
+			$permiteDtt = false;	//Verifica si permite Dtt por condiciï¿½n
 			//Condicion de suministro
 			echo "<td onMouseOver='quitarTooltip( this )' onMouseOut='reestablecerTooltip( this );'>";
 			if($esEditable){
@@ -17352,7 +18056,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			echo "</td>";
 
 			$articulo->diasTratamiento = trim( $articulo->diasTratamiento );
-			//Dias tratamiento, debe mostrarse en un alt la fecha de terminación y los dias restantes
+			//Dias tratamiento, debe mostrarse en un alt la fecha de terminaciï¿½n y los dias restantes
 			if($articulo->diasTratamiento != ''){
 				$vecFechaKardex = explode("-",$wfecha);
 
@@ -17367,7 +18071,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			echo "<td $eventosQuitarTooltip>";
 			if($esEditable){
 				if( empty( $articulo->dosisMaxima ) ){
-					//Verifica si permite Dtt por condición
+					//Verifica si permite Dtt por condiciï¿½n
 					$valDttxCon = !$permiteDtt ? 'readOnly': '';	
 					crearCampo("1","wdiastto$articulo->tipoProtocolo$contArticulos",@$accionesPestana[$indicePestana.".$tipoProtocolo"."12"],array("size"=>"3","maxlength"=>"3","class"=>"campo2","onKeyPress"=>"return validarEntradaEntera(event);","onChange"=>"marcarCambio('$articulo->tipoProtocolo','$contArticulos');","onKeyUp"=>"inhabilitarDosisMaxima( this,'$articulo->tipoProtocolo', $contArticulos );", "$valDttxCon"=>""),"$articulo->diasTratamiento");
 				}
@@ -17388,10 +18092,10 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			}
 			echo "&nbsp;</td>";
 
-			//Dosis máximas
+			//Dosis mï¿½ximas
 			echo "<td $eventosQuitarTooltip>";
 			if($esEditable){
-				$permiteDma = false;	//Verifica si permite Dma por condición
+				$permiteDma = false;	//Verifica si permite Dma por condiciï¿½n
 				$valDttxCon = !$permiteDtt ? 'readOnly': '';	
 				if( empty( $articulo->diasTratamiento ) ){
 					crearCampo("1","wdosmax$articulo->tipoProtocolo$contArticulos",@$accionesPestana[$indicePestana.".$tipoProtocolo"."13"],array("size"=>"6","maxlength"=>"6","class"=>"campo2","onKeyPress"=>"return validarEntradaEntera(event);","onChange"=>"marcarCambio('$articulo->tipoProtocolo','$contArticulos');","onKeyUp"=>"inhabilitarDiasTratamiento( this,'$articulo->tipoProtocolo', $contArticulos);","$valDttxCon"=>""),"$articulo->dosisMaxima");
@@ -17424,7 +18128,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			else {
 				crearCampo("2","wtxtobsadd$articulo->tipoProtocolo$contArticulos",@$accionesPestana[$indicePestana.".$tipoProtocolo"."14"],array("cols"=>"30","rows"=>"2","readonly"=>""),"");
 			}
-			// ~ENT_COMPAT en la función htmlspecialchars indica que solo convertíra las comillas simples en html
+			// ~ENT_COMPAT en la funciï¿½n htmlspecialchars indica que solo convertï¿½ra las comillas simples en html
 			echo "<input type='hidden' name='wtxtobsori$articulo->tipoProtocolo$contArticulos' id='wtxtobsori$articulo->tipoProtocolo$contArticulos' value='".htmlspecialchars( $articulo->observaciones, ~ENT_COMPAT )."' />";
 			echo "</table>";
 			echo "</td>";
@@ -17448,7 +18152,7 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			/**********************************************************************************************************************************************************
 			 * Diciembre 15 de 2011
 			 *
-			 * Si falta un 80% o menos de los días de tratamiento, sale un mensaje
+			 * Si falta un 80% o menos de los dï¿½as de tratamiento, sale un mensaje
 			 * diciendo cuanto falta para terminar el medicamento por dias de tratamiento
 			 **********************************************************************************************************************************************************/
 			if( $articulo->diasTratamiento != '' && $articulo->diasTratamiento > 0 && !$paciente->enUrgencias ){
@@ -17458,8 +18162,8 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 					$tiempoTranscurrido = intval( ( strtotime( date( "Y-m-d" )." 00:00:00" ) - strtotime( $articulo->fechaInicioAdministracion." 00:00:00" ) )/(24*3600) )+1;
 
 					if( $tiempoTranscurrido >= intval( intval($articulo->diasTratamiento)*$topePorcentualCtc/100 ) ){
-						// mensajeEmergente( "El articulo ".trim($articulo->codigoArticulo)." le faltan ".intval( intval( intval($articulo->diasTratamiento) ) - $tiempoTranscurrido )." día(s) más tratamiento ");
-						$msg = "El articulo ".trim($articulo->codigoArticulo)." le faltan ".intval( intval( intval($articulo->diasTratamiento) ) - $tiempoTranscurrido )." día(s) más tratamiento ";
+						// mensajeEmergente( "El articulo ".trim($articulo->codigoArticulo)." le faltan ".intval( intval( intval($articulo->diasTratamiento) ) - $tiempoTranscurrido )." dï¿½a(s) mï¿½s tratamiento ");
+						$msg = "El articulo ".trim($articulo->codigoArticulo)." le faltan ".intval( intval( intval($articulo->diasTratamiento) ) - $tiempoTranscurrido )." dï¿½a(s) mï¿½s tratamiento ";
 						echo "<script>";
 						echo "alertsIniciales[alertsIniciales.length] = '$msg';";
 						echo "</script>";
@@ -17468,16 +18172,16 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 			}
 			/**********************************************************************************************************************************************************/
 			
-			//Esta se deja como terminación del aritculo en caso de que no tenga dosis maxima
+			//Esta se deja como terminaciï¿½n del aritculo en caso de que no tenga dosis maxima
 			$fecHorPorDosis = time()+48*3600;
 			
 			/**********************************************************************************************************************************************************
 			 * Junio 04 de 2014
 			 **********************************************************************************************************************************************************/
 			//Se saca mensaje si se va a terminar la dosis maxima
-			//No se hace con días de tto por que los días de tto se convierten a dosis máxima internamente por el programa
+			//No se hace con dï¿½as de tto por que los dï¿½as de tto se convierten a dosis mï¿½xima internamente por el programa
 			if( $articulo->dosisMaxima > 0 && !$paciente->enUrgencias ){
-				if( !esArticuloGenerico( $conex, $wbasedato, $wcenmez, $articulo->consultarCodigoArticulo() ) ){	//Si no es articulo genérico
+				if( !esArticuloGenerico( $conex, $wbasedato, $wcenmez, $articulo->consultarCodigoArticulo() ) ){	//Si no es articulo genï¿½rico
 				
 					$nombreAlterno = $articulo->codigoArticulo;
 					$mostrarMensajeAlertaDmax = mostrarMensajeAlertaDmax( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica, $articulo->consultarCodigoArticulo(), $articulo->idOriginal, $nombreAlterno );
@@ -17490,18 +18194,18 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 						$cantidadAplicaciones = cantidadAplicadoPorArticulo( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica, $articulo->consultarCodigoArticulo(), $articulo->idOriginal, $cantidadAplicada, $articulo->fechaInicioAdministracion, $articulo->horaInicioAdministracion );
 
 						if( $cantidadAplicaciones < $articulo->dosisMaxima ){
-							//Si no se ha terminado de aplicar el medicamento por dosis máxima se busca cuando termina el medicamento
+							//Si no se ha terminado de aplicar el medicamento por dosis mï¿½xima se busca cuando termina el medicamento
 							
-							//Calculo cuanta es la diferencia Entre lo que debería estar aplicada a la actualidad
-							//Para ello calculo primero cuanta es la cantidad que puede ser aplicada hasta la actualidad sin tener en cuenta las últimas 4 horas 
+							//Calculo cuanta es la diferencia Entre lo que deberï¿½a estar aplicada a la actualidad
+							//Para ello calculo primero cuanta es la cantidad que puede ser aplicada hasta la actualidad sin tener en cuenta las ï¿½ltimas 4 horas 
 							//ya que en este tiempo puede ser aplicado
 							$cantidadMaximaAplicadaActual = floor( ( time() - strtotime( $articulo->fechaInicioAdministracion." ".$articulo->horaInicioAdministracion ) )/($horasPeriodicidad*3600) )+1;
 							
-							//las dosis faltantes son por tanto es la diferencia de lo que debería estar aplicado con la cantidad de aplicaciones que hay hasta el momento
+							//las dosis faltantes son por tanto es la diferencia de lo que deberï¿½a estar aplicado con la cantidad de aplicaciones que hay hasta el momento
 							$dosisMaximasFaltantes = 0;
 							$dosisMaximasFaltantes = $cantidadMaximaAplicadaActual - $cantidadAplicaciones;
 							
-							//Las dosis máximas nunca son menores a 0
+							//Las dosis mï¿½ximas nunca son menores a 0
 							if( $dosisMaximasFaltantes < 0 )
 								$dosisMaximasFaltantes = 0;
 						
@@ -17509,8 +18213,8 @@ function vista_desplegarListaArticulos($colDetalle,$cantidadElementos,$tipoProto
 							$fecHorPorDosis = strtotime( $articulo->fechaInicioAdministracion." ".$articulo->horaInicioAdministracion ) + $horasPeriodicidad*3600*( $articulo->dosisMaxima-1 + $dosisMaximasFaltantes );
 						}
 						else{
-							//Cómo las dosis aplicadas ya terminaron se busca cuando termíno el medicamento, esto es la última vez que fue aplicado
-							//Consulta la última aplicación del medicamento
+							//Cï¿½mo las dosis aplicadas ya terminaron se busca cuando termï¿½no el medicamento, esto es la ï¿½ltima vez que fue aplicado
+							//Consulta la ï¿½ltima aplicaciï¿½n del medicamento
 							$ultimaAplicacion = ultimaAplicacion( $conex, $wbasedato, $paciente->historiaClinica, $paciente->ingresoHistoriaClinica, $articulo->consultarCodigoArticulo(), $articulo->idOriginal );
 							$fecHorPorDosis = $ultimaAplicacion;
 						}
@@ -17610,7 +18314,7 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 
 	global $conex;
 	global $wbasedato;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 	
 	global $codigoServicioFarmaceutico;
 	
@@ -17666,7 +18370,7 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 	echo "<td style='display:none'>Condici&oacute;n</td>";
 	echo "<td style='display:none'>Cnf.</td>";
 	echo "<td style='display:none'>Dias tto.</td>";
-	echo "<td style='display:none'>Dosis máx.</td>";
+	echo "<td style='display:none'>Dosis mï¿½x.</td>";
 	echo "<td>Observaciones</td>";
 	echo "</tr>";
 	/////////////////////////////////////////
@@ -17732,7 +18436,7 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 		echo "<INPUT TYPE='hidden' name='waccimp$tipoProtocolo.12' id='waccimp$tipoProtocolo.12' value='".accionesATexto(@$accionesPestana[$indicePestana.".$tipoProtocolo"."12"])."'>";
 		echo "</td>";
 		echo "<td style='display:none'>";
-		echo "Dosis máx.</td>";
+		echo "Dosis mï¿½x.</td>";
 		echo "<INPUT TYPE='hidden' name='waccimp$tipoProtocolo.13' id='waccimp$tipoProtocolo.13' value='".accionesATexto(@$accionesPestana[$indicePestana.".$tipoProtocolo"."13"])."'>";
 		echo "<td>";
 		echo "Observaciones";
@@ -17756,7 +18460,7 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 		echo "<td style='display:none'>Condici&oacute;n</td>";
 		echo "<td style='display:none'>Cnf.</td>";
 		echo "<td style='display:none'>Dias tto.</td>";
-		echo "<td style='display:none'>Dosis máx.</td>";
+		echo "<td style='display:none'>Dosis mï¿½x.</td>";
 		echo "<td>Observaciones</td>";
 		echo "<td>Especialidad</td>";
 	}
@@ -17845,8 +18549,8 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 				//Alerta si se llega al tope
 				if($porcentajeUsoCtc >= $topePorcentualCtc){
 					$miniClase = "fondoRojo";
-					// mensajeEmergente("El articulo ".trim($articulo->codigoArticulo)." está a punto de agotarse o se agotó por CTC.  Utilización: ".intval($porcentajeUsoCtc)."%");
-					$msg = "El articulo ".trim($articulo->codigoArticulo)." está a punto de agotarse o se agotó por CTC.  Utilización: ".intval($porcentajeUsoCtc)."%";
+					// mensajeEmergente("El articulo ".trim($articulo->codigoArticulo)." estï¿½ a punto de agotarse o se agotï¿½ por CTC.  Utilizaciï¿½n: ".intval($porcentajeUsoCtc)."%");
+					$msg = "El articulo ".trim($articulo->codigoArticulo)." estï¿½ a punto de agotarse o se agotï¿½ por CTC.  Utilizaciï¿½n: ".intval($porcentajeUsoCtc)."%";
 					echo "<script>";
 					echo "alertsIniciales[alertsIniciales.length] = '$msg';";
 					echo "</script>";
@@ -17912,7 +18616,7 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 				
 				//echo "<div id='trFilImp".$examen->numeroDeOrden."' style='display:inline' title='Click para no imprimir este medicamento'><img onClick='quitarArticulo($contArticulos,\"$articulo->tipoProtocolo\",this);' src='../../images/medical/root/borrar.png' width='17' height='17' border='0'/> &nbsp;&nbsp; </div>";
 				
-				// Si la especialidad del usuario actual es igual a la del médico que grabó el medicamento se permite borrar el medicamento de alta
+				// Si la especialidad del usuario actual es igual a la del mï¿½dico que grabï¿½ el medicamento se permite borrar el medicamento de alta
 				//if($arrEspecialidades[$articulo->codigoCreador] == $arrEspecialidades[$usuario->codigo]){
 					//Se comenta esta parte del codigo para que no muestre la x de eliminar articulo.
 					//crearCampo("4","",@$accionesPestana[$indicePestana.".$tipoProtocolo"."2"],array("onClick"=>"quitarArticulo($contArticulos,'$articulo->tipoProtocolo',this,'imp');"),"<img src='../../images/medical/root/borrar.png' border='0' width='17' height='17' />");
@@ -18173,7 +18877,7 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 			}
 			echo "</td>";
 
-			//Dias tratamiento, debe mostrarse en un alt la fecha de terminación y los dias restantes
+			//Dias tratamiento, debe mostrarse en un alt la fecha de terminaciï¿½n y los dias restantes
 			if($articulo->diasTratamiento != ''){
 				$vecFechaKardex = explode("-",$wfecha);
 
@@ -18205,7 +18909,7 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 			}
 			echo "&nbsp;</td>";
 
-			//Dosis máximas
+			//Dosis mï¿½ximas
 			echo "<td $eventosQuitarTooltip style='display:none'>";
 			if($esEditable){
 				if( empty( $articulo->diasTratamiento ) ){
@@ -18258,7 +18962,7 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 			/**********************************************************************************************************************************************************
 			 * Diciembre 15 de 2011
 			 *
-			 * Si falta un 80% o menos de los días de tratamiento, sale un mensaje
+			 * Si falta un 80% o menos de los dï¿½as de tratamiento, sale un mensaje
 			 * diciendo cuanto falta para terminar el medicamento por dias de tratamiento
 			 **********************************************************************************************************************************************************/
 			if( $articulo->diasTratamiento != '' && $articulo->diasTratamiento > 0 ){
@@ -18268,8 +18972,8 @@ function vista_desplegarListaArticulosAlta($colDetalle,$cantidadElementos,$tipoP
 					$tiempoTranscurrido = intval( ( strtotime( date( "Y-m-d" )." 00:00:00" ) - strtotime( $articulo->fechaInicioAdministracion." 00:00:00" ) )/(24*3600) )+1;
 
 					if( $tiempoTranscurrido >= intval( intval($articulo->diasTratamiento)*$topePorcentualCtc/100 ) ){
-						// mensajeEmergente( "El articulo ".trim($articulo->codigoArticulo)." le faltan ".intval( intval( intval($articulo->diasTratamiento) ) - $tiempoTranscurrido )." día(s) más tratamiento ");
-						$msg = "El articulo ".trim($articulo->codigoArticulo)." le faltan ".intval( intval( intval($articulo->diasTratamiento) ) - $tiempoTranscurrido )." día(s) más tratamiento ";
+						// mensajeEmergente( "El articulo ".trim($articulo->codigoArticulo)." le faltan ".intval( intval( intval($articulo->diasTratamiento) ) - $tiempoTranscurrido )." dï¿½a(s) mï¿½s tratamiento ");
+						$msg = "El articulo ".trim($articulo->codigoArticulo)." le faltan ".intval( intval( intval($articulo->diasTratamiento) ) - $tiempoTranscurrido )." dï¿½a(s) mï¿½s tratamiento ";
 						echo "<script>";
 						echo "alertsIniciales[alertsIniciales.length] = '$msg';";
 						echo "</script>";
@@ -18298,7 +19002,7 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
 
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 	
 	global $topePorcentualCtc;
 
@@ -18478,7 +19182,7 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 				echo "<td nowrap> $auxEspacios $auxEspacios $auxEspacios Articulo $auxEspacios $auxEspacios $auxEspacios </td>";
 				
 				/*
-				* Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+				* Modificaciï¿½n: se agrega columna "# Mipres" en caso de tener parï¿½metro activo. Se modifica tamaï¿½o de tabla
 				* Autor: sebastian.nevado
 				* Fecha: 2021-10-04
 				*/
@@ -18486,7 +19190,7 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 				// {
 				// 	echo "<td># Prescripci&oacute;n Mipres</td>";
 				// }
-				//FIN MODIFICACIÓN
+				//FIN MODIFICACIï¿½N
 
 				echo "<td style='display:none'>Protocolo</td>";
 				echo "<td>Dosis</td>";
@@ -18547,9 +19251,9 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 				echo "<td ".$funcionOnclickAbrirNPT.">".utf8_encode( $articulo->codigoArticulo )."</td>";
 			}
 
-			// //# Prescripción Mipres
+			// //# Prescripciï¿½n Mipres
 			// /*
-			// * Modificación: se agrega columna "# Mipres" en caso de tener parámetro activo. Se modifica tamaño de tabla
+			// * Modificaciï¿½n: se agrega columna "# Mipres" en caso de tener parï¿½metro activo. Se modifica tamaï¿½o de tabla
 			// * Autor: sebastian.nevado
 			// * Fecha: 2021-10-04
 			// */
@@ -18557,7 +19261,7 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 			// {
 			// 	echo "<td>".$articulo->noPrescripcionMipres."</td>";
 			// }
-			// //FIN MODIFICACIÓN
+			// //FIN MODIFICACIï¿½N
 			
 			//Nombre protocolo
 			echo "<td style='display:none'>".utf8_encode( $articulo->nombreProtocolo )."</td>";
@@ -18755,7 +19459,7 @@ function vista_desplegarListaArticulosHistorial($colDetalle,$tipoProtocolo,$colU
 
 
 //Realiza los movimientos necesarios de definitivo a temporal al abrir el kardex
-/* Bajo el esquema de tablas temporales se trabajará asi:
+/* Bajo el esquema de tablas temporales se trabajarï¿½ asi:
  * APLICA PARA:
  * a. Articulos
  * b. Examenes
@@ -18906,7 +19610,7 @@ function realizarMovimientosArticulosAlta($kardexActual, $paciente, $esFechaActu
 
 
 /************************************************************************************************************************
- * CONSULTA DE ACCIONES POR CADA CAMPO DE UNA PESTAÑA
+ * CONSULTA DE ACCIONES POR CADA CAMPO DE UNA PESTAï¿½A
  *
  * Precedencia de operaciones:
  *
@@ -19999,7 +20703,7 @@ function consultarCondicionesSuministroMedicamentos($tipo){
 		$reg->esANEC = ( strtoupper( $info['Contip'] ) == "AN" )? true: false;	//Febrero 17 de 2015
 		$reg->permiteDva = ( $info['Conpdv'] == "on" )? true: false;	//Febrero 17 de 2015
 
-		//Si no permite dosis máxima, entonces si la condición tiene por defecto dosis máxima se desactiva
+		//Si no permite dosis mï¿½xima, entonces si la condiciï¿½n tiene por defecto dosis mï¿½xima se desactiva
 		if( !$reg->permiteDma ){
 			$reg->valDefecto = '';
 		}
@@ -20256,7 +20960,7 @@ function consultarMaestroEsquemasInsulina(){
 }
 
 /*
- * CONSULTA DE DATOS DEMOGRAFICOS DEL PACIENTE A TRAVÉS DE SU DOCUMENTO Y TIPO DE DOCUMENTO DE IDENTIDAD
+ * CONSULTA DE DATOS DEMOGRAFICOS DEL PACIENTE A TRAVï¿½S DE SU DOCUMENTO Y TIPO DE DOCUMENTO DE IDENTIDAD
  */
 function consultarInfoPacienteOrdenHCE($tipoDocumento,$nroDocumento){
 	global $wbasedato;
@@ -20389,7 +21093,7 @@ function consultarInfoPacienteOrdenHCE($tipoDocumento,$nroDocumento){
 		}		
 
 		//Edad
-		//Modificación 2022-03-08: Sebastián Nevado - Se llama función que calcula la edad
+		//Modificaciï¿½n 2022-03-08: Sebastiï¿½n Nevado - Se llama funciï¿½n que calcula la edad
 		$oEdad = calcularEdadPacienteOrdenes($paciente->fechaNacimiento);
 		$paciente->edadPaciente = $oEdad->edad;
 		$paciente->anosPaciente = $oEdad->anios;
@@ -20506,7 +21210,7 @@ function consultarInfoPacienteKardex($whistoria, $ingresoAnterior){
 		$paciente->enUrgencias = isset($info['Ccourg']) && $info['Ccourg'] == "on" ? true : false;
 
 		//Edad
-		//Modificación 2022-03-08: Sebastián Nevado - Se llama función que calcula la edad
+		//Modificaciï¿½n 2022-03-08: Sebastiï¿½n Nevado - Se llama funciï¿½n que calcula la edad
 		$oEdad = calcularEdadPacienteOrdenes($paciente->fechaNacimiento);
 		$paciente->edadPaciente = $oEdad->edad;
 		$paciente->anosPaciente = $oEdad->anios;
@@ -20908,8 +21612,8 @@ function existeEncabezadoKardex($historia,$ingreso,$fecha){
 }
 
 /************************************************************************************
- * Busco la hora de creación del kardex y devuelvo los datos del encabezado, el mas 
- * antiguo de los encabezado en caso de tener varios.  Si tiene encabezado la función
+ * Busco la hora de creaciï¿½n del kardex y devuelvo los datos del encabezado, el mas 
+ * antiguo de los encabezado en caso de tener varios.  Si tiene encabezado la funciï¿½n
  * retorna verdadero, de lo contrario retorna falso
  *
  * @param unknown_type $conex
@@ -20948,7 +21652,7 @@ function marcarGrabacionKardex($historia,$ingresoHistoria,$wfecha,$estado){
 	global $wbasedato;
 	global $conex;
 
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	$marcado = false;
 	$q = "UPDATE ".$wbasedato."_000053 SET
@@ -21004,7 +21708,7 @@ function crearEncabezadoKardexAnterior($historia,$ingreso,$fecha){
 	global $wbasedato;
 	global $conex;
 
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	$creado = false;
 
@@ -21032,7 +21736,7 @@ function crearEncabezadoKardexAnterior($historia,$ingreso,$fecha){
 function grabadoEncabezadoKardexFecha($historia,$ingreso,$fecha){
 	global $wbasedato;
 	global $conex;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	$grabado = false;
 
@@ -21059,14 +21763,14 @@ function grabadoEncabezadoKardexFecha($historia,$ingreso,$fecha){
 }
 
 /**
- * Consulta el kardex para su modificacion (actual) o si no se encuentra el actual para su creación .
+ * Consulta el kardex para su modificacion (actual) o si no se encuentra el actual para su creaciï¿½n .
  *
  * Reglas:
  *
  * 1. Si se ingresa una fecha de consulta diferente a la fecha presente y ademas antes del dia anterior a la fecha actual, el kardex
- * será solo de consulta.
- * 2. Si se ingresa una fecha de consulta del dia actual, se consultará el kardex del dia y si no se encuentra se traerá el del dia anterior
- * para modificación.
+ * serï¿½ solo de consulta.
+ * 2. Si se ingresa una fecha de consulta del dia actual, se consultarï¿½ el kardex del dia y si no se encuentra se traerï¿½ el del dia anterior
+ * para modificaciï¿½n.
  *
  * (2010-06-03):> 3. El kardex ahora diferencia los centros de costos, se discrimina el centro de costos de acuerdo a root_000025
  *
@@ -21248,10 +21952,10 @@ function consultarKardexPorFechaPaciente($wfecha, $paciente){
 	if($paciente->enCirugia || $paciente->enUrgencias){
 		$kardex->noAcumulaSaldoDispensacion = true;
 	} else {
-		/* El Paciente no esta en urgencias ni en cirugia (Los demás servicios acumulan de saldos de dispensación).
+		/* El Paciente no esta en urgencias ni en cirugia (Los demï¿½s servicios acumulan de saldos de dispensaciï¿½n).
 		 * 1. Consulta del traslado del dia anterior.
 		 * 2. Consulta si el servicio anterior es de urgencias o cirugia
-		 * 3. Consulta de la fecha y hora del ultimo traslado para compararlo con la creación de encabezado de kardex
+		 * 3. Consulta de la fecha y hora del ultimo traslado para compararlo con la creaciï¿½n de encabezado de kardex
 		 */
 		$qMv = "SELECT
 						".$wbasedato."_000017.Fecha_data,".$wbasedato."_000017.hora_data,Eyrsor,Eyrsde,Eyrhor,Ccourg,Ccocir,Ccoing 
@@ -21389,17 +22093,17 @@ function crearKardex($kardex){
 					   AND Fecha_data = '".date( "Y-m-d", strtotime( $kardex->fechaCreacion." 00:00:00" ) - 24*3600 )."';";
 	
 	$resInfAnt = mysql_query( $sqlInfAnt, $conex ) or die( mysql_errno()." - Error en el query $sqlInfAnt - ".mysql_error() );
-	$rowsInf = mysql_fetch_array( $resInfAnt );	//Guara la información anterior del kardex
+	$rowsInf = mysql_fetch_array( $resInfAnt );	//Guara la informaciï¿½n anterior del kardex
 	
 	
 	//Un array para compara los datos anteriores con el actual
 	//La clave del array corresponde al campo a actualizar en el programa de ordenes
-	//El valor corresponde a un array donde la primer posición es el nombre del campo en la base de datos y la segunda
+	//El valor corresponde a un array donde la primer posiciï¿½n es el nombre del campo en la base de datos y la segunda
 	//correspende al valor en la base de datos a actualizar
 	$arCompararDatosInf = Array(  "Talla" 					=> Array( "Kartal", $kardex->talla ),
 								  "Peso" 					=> Array( "Karpes", $kardex->peso ),
 								  "Diagnostico" 			=> Array( "Kardia", $kardex->diagnostico ),
-								  "Antecedentes alérgicos" 	=> Array( "Karale", $kardex->antecedentesAlergicos ),
+								  "Antecedentes alï¿½rgicos" 	=> Array( "Karale", $kardex->antecedentesAlergicos ),
 								  "Antecedentes personales" => Array( "Karanp", $kardex->antecedentesPersonales )
 								);
 	
@@ -21415,21 +22119,21 @@ function crearKardex($kardex){
 								  "Preparacion alta" 			=> Array( "Karpal", $kardex->preparacionAlta ),
 								  "Observaciones de dietas"		=> Array( "Kardie", $kardex->obsDietas ),
 								  "Mezclas" 					=> Array( "Karmez", $kardex->mezclas ),
-								  "Cirugías pendientes" 		=> Array( "Karcip", $kardex->cirugiasPendientes ),
-								  "Terapia física" 				=> Array( "Kartef", $kardex->terapiaFisica ),
-								  "Rehablitación cardiaca" 		=> Array( "Karrec", $kardex->rehabilitacionCardiaca ),
+								  "Cirugï¿½as pendientes" 		=> Array( "Karcip", $kardex->cirugiasPendientes ),
+								  "Terapia fï¿½sica" 				=> Array( "Kartef", $kardex->terapiaFisica ),
+								  "Rehablitaciï¿½n cardiaca" 		=> Array( "Karrec", $kardex->rehabilitacionCardiaca ),
 								  "Aislamientos" 				=> Array( "Karais", $kardex->aislamientos ),
-								  "Cuidados de enfermería" 		=> Array( "Karcui", $kardex->cuidadosEnfermeria )
+								  "Cuidados de enfermerï¿½a" 		=> Array( "Karcui", $kardex->cuidadosEnfermeria )
 								);
 	
 	
-	//Auditoria para información demográfica
+	//Auditoria para informaciï¿½n demogrï¿½fica
 	foreach( $arCompararDatosInf as $key => $value ){
 		
 		//Solo se guarda si hay alguna diferencia en los campos
 		// echo "<br> ".$value[0].": ".$rowsInf[ $value[0] ]." - ".$value[1];
-		if( $rowsInf[ $value[0] ] != $value[1] ){	//la comparación es el valor anterior en la base de datos con el valor recien guardado
-			// Registro auditoria información demográfica
+		if( $rowsInf[ $value[0] ] != $value[1] ){	//la comparaciï¿½n es el valor anterior en la base de datos con el valor recien guardado
+			// Registro auditoria informaciï¿½n demogrï¿½fica
 			$auditoria->mensaje = "Informacion demografica - ".obtenerMensaje('MSJ_KARDEX_ACTUALIZADO');
 			$auditoria->descripcion = $key.": ".$value[1];	//Esto es nombre del campo en el programa de ordnes: Valor actualizado
 			registrarAuditoriaKardex($conex,$wbasedato,$auditoria);
@@ -21437,13 +22141,13 @@ function crearKardex($kardex){
 	}
 	
 	
-	//Auditoria para información demográfica
+	//Auditoria para informaciï¿½n demogrï¿½fica
 	foreach( $arCompararDatosMG as $key => $value ){
 			
 		//Solo se guarda si hay alguna diferencia en los campos
 		// echo "<br> ".$value[0].": ".$rowsInf[ $value[0] ]." - ".$value[1];
-		if( $rowsInf[ $value[0] ] != $value[1] ){	//la comparación es el valor anterior en la base de datos con el valor recien guardado
-			// Registro auditoria información demográfica
+		if( $rowsInf[ $value[0] ] != $value[1] ){	//la comparaciï¿½n es el valor anterior en la base de datos con el valor recien guardado
+			// Registro auditoria informaciï¿½n demogrï¿½fica
 			$auditoria->mensaje = "Medidas generales - ".obtenerMensaje('MSJ_KARDEX_ACTUALIZADO');
 			$auditoria->descripcion = $key.": ".$value[1];	//Esto es nombre del campo en el programa de ordnes: Valor actualizado
 			registrarAuditoriaKardex($conex,$wbasedato,$auditoria);
@@ -21455,7 +22159,7 @@ function actualizarKardex($kardexGrabar,$vecPestanas){
 	global $wbasedato;
 	global $conex;
 
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 	$indicePestana = 1;
 	
 	$sqlInfAnt = "  SELECT * 
@@ -21466,16 +22170,16 @@ function actualizarKardex($kardexGrabar,$vecPestanas){
 					   AND Fecha_data = '$kardexGrabar->fechaCreacion';";
 	
 	$resInfAnt = mysql_query( $sqlInfAnt, $conex ) or die( mysql_errno()." - Error en el query $sqlInfAnt - ".mysql_error() );
-	$rowsInf = mysql_fetch_array( $resInfAnt );	//Guara la información anterior del kardex
+	$rowsInf = mysql_fetch_array( $resInfAnt );	//Guara la informaciï¿½n anterior del kardex
 	
 	//Un array para compara los datos anteriores con el actual
 	//La clave del array corresponde al campo a actualizar en el programa de ordenes
-	//El valor corresponde a un array donde la primer posición es el nombre del campo en la base de datos y la segunda
+	//El valor corresponde a un array donde la primer posiciï¿½n es el nombre del campo en la base de datos y la segunda
 	//correspende al valor en la base de datos a actualizar
 	$arCompararDatosInf = Array(  "Talla" 					=> Array( "Kartal", $kardexGrabar->talla ),
 								  "Peso" 					=> Array( "Karpes", $kardexGrabar->peso ),
 								  "Diagnostico" 			=> Array( "Kardia", $kardexGrabar->diagnostico ),
-								  "Antecedentes alérgicos" 	=> Array( "Karale", $kardexGrabar->antecedentesAlergicos ),
+								  "Antecedentes alï¿½rgicos" 	=> Array( "Karale", $kardexGrabar->antecedentesAlergicos ),
 								  "Antecedentes personales" => Array( "Karanp", $kardexGrabar->antecedentesPersonales )
 								);
 	
@@ -21491,11 +22195,11 @@ function actualizarKardex($kardexGrabar,$vecPestanas){
 								  "Preparacion alta" 			=> Array( "Karpal", $kardexGrabar->preparacionAlta ),
 								  "Observaciones de dietas"		=> Array( "Kardie", $kardexGrabar->obsDietas ),
 								  "Mezclas" 					=> Array( "Karmez", $kardexGrabar->mezclas ),
-								  "Cirugías pendientes" 		=> Array( "Karcip", $kardexGrabar->cirugiasPendientes ),
-								  "Terapia física" 				=> Array( "Kartef", $kardexGrabar->terapiaFisica ),
-								  "Rehablitación cardiaca" 		=> Array( "Karrec", $kardexGrabar->rehabilitacionCardiaca ),
+								  "Cirugï¿½as pendientes" 		=> Array( "Karcip", $kardexGrabar->cirugiasPendientes ),
+								  "Terapia fï¿½sica" 				=> Array( "Kartef", $kardexGrabar->terapiaFisica ),
+								  "Rehablitaciï¿½n cardiaca" 		=> Array( "Karrec", $kardexGrabar->rehabilitacionCardiaca ),
 								  "Aislamientos" 				=> Array( "Karais", $kardexGrabar->aislamientos ),
-								  "Cuidados de enfermería" 		=> Array( "Karcui", $kardexGrabar->cuidadosEnfermeria )
+								  "Cuidados de enfermerï¿½a" 		=> Array( "Karcui", $kardexGrabar->cuidadosEnfermeria )
 								);
 
 	//Verificacion de la fecha actual del sistema
@@ -21556,7 +22260,7 @@ function actualizarKardex($kardexGrabar,$vecPestanas){
 			//Verifico si cambio algo de las medidas generales
 			if( true ){
 				
-				//Consulto si va a ver algún cambio para estos campos
+				//Consulto si va a ver algï¿½n cambio para estos campos
 				$sql = "SELECT *
 						FROM ".$wbasedato."_000053
 						WHERE
@@ -21643,14 +22347,14 @@ function actualizarKardex($kardexGrabar,$vecPestanas){
 
 	registrarAuditoriaKardex($conex,$wbasedato,$auditoria);
 
-	//Auditoria para información demográfica
+	//Auditoria para informaciï¿½n demogrï¿½fica
 	if(isset($vecPestanas[1]) && $vecPestanas[1]){
 		foreach( $arCompararDatosInf as $key => $value ){
 			
 			//Solo se guarda si hay alguna diferencia en los campos
 			// echo "<br> ".$value[0].": ".$rowsInf[ $value[0] ]." - ".$value[1];
-			if( $rowsInf[ $value[0] ] != $value[1] ){	//la comparación es el valor anterior en la base de datos con el valor recien guardado
-				// Registro auditoria información demográfica
+			if( $rowsInf[ $value[0] ] != $value[1] ){	//la comparaciï¿½n es el valor anterior en la base de datos con el valor recien guardado
+				// Registro auditoria informaciï¿½n demogrï¿½fica
 				$auditoria->mensaje = "Informacion demografica - ".obtenerMensaje('MSJ_KARDEX_ACTUALIZADO');
 				$auditoria->descripcion = $key.": ".$value[1];	//Esto es nombre del campo en el programa de ordnes: Valor actualizado
 				registrarAuditoriaKardex($conex,$wbasedato,$auditoria);
@@ -21659,14 +22363,14 @@ function actualizarKardex($kardexGrabar,$vecPestanas){
 	}
 	
 	
-	//Auditoria para información demográfica
+	//Auditoria para informaciï¿½n demogrï¿½fica
 	if(isset($vecPestanas[10]) && $vecPestanas[10]){
 		foreach( $arCompararDatosMG as $key => $value ){
 			
 			//Solo se guarda si hay alguna diferencia en los campos
 			// echo "<br> ".$value[0].": ".$rowsInf[ $value[0] ]." - ".$value[1];
-			if( $rowsInf[ $value[0] ] != $value[1] ){	//la comparación es el valor anterior en la base de datos con el valor recien guardado
-				// Registro auditoria información demográfica
+			if( $rowsInf[ $value[0] ] != $value[1] ){	//la comparaciï¿½n es el valor anterior en la base de datos con el valor recien guardado
+				// Registro auditoria informaciï¿½n demogrï¿½fica
 				$auditoria->mensaje = "Medidas generales - ".obtenerMensaje('MSJ_KARDEX_ACTUALIZADO');
 				$auditoria->descripcion = $key.": ".$value[1];	//Esto es nombre del campo en el programa de ordnes: Valor actualizado
 				registrarAuditoriaKardex($conex,$wbasedato,$auditoria);
@@ -21674,7 +22378,7 @@ function actualizarKardex($kardexGrabar,$vecPestanas){
 		}
 	}
 	
-	// // Registro auditoria información demográfica
+	// // Registro auditoria informaciï¿½n demogrï¿½fica
 	// $auditoria->mensaje = "Informacion demografica - ".obtenerMensaje('MSJ_KARDEX_ACTUALIZADO');
 	// $auditoria->descripcion = $kardexGrabar->diagnostico.",".$kardexGrabar->antecedentesAlergicos.",".$kardexGrabar->antecedentesPersonales;
 	// registrarAuditoriaKardex($conex,$wbasedato,$auditoria);
@@ -21823,7 +22527,7 @@ function consultarDetalleTemporalKardexAlta($historia,$ingreso,$fecha,$tipoProto
 	global $codigoCentralMezclas;
 	global $centroCostosServicioFarmaceutico;
 	global $centroCostosCentralMezclas;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	//Protocolos
 	global $protocoloNormal;
@@ -22016,7 +22720,7 @@ function consultarDetalleTemporalKardexAlta($historia,$ingreso,$fecha,$tipoProto
 						if(!isset($regletaFamilia[$codFamilia][$cont2]['tooltip']) || $regletaFamilia[$codFamilia][$cont2]['tooltip']=="")
 						{
 							$regletaFamilia[$codFamilia][$cont2]['tooltip'] = '<table cellspacing=4>';
-							$regletaFamilia[$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Código </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vía </td><td align=center> Inicio </td><td align=center> Condición </td></tr>';
+							$regletaFamilia[$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Cï¿½digo </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vï¿½a </td><td align=center> Inicio </td><td align=center> Condiciï¿½n </td></tr>';
 						}
 						
 						if(isset($regletaFamilia[$codFamilia][$cont2]['tooltip']))
@@ -22201,7 +22905,7 @@ function consultarDetalleTemporalKardex($historia,$ingreso,$fecha,$tipoProtocolo
 	global $codigoCentralMezclas;
 	global $centroCostosServicioFarmaceutico;
 	global $centroCostosCentralMezclas;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	//Protocolos
 	global $protocoloNormal;
@@ -22476,7 +23180,7 @@ function consultarDetalleTemporalKardex($historia,$ingreso,$fecha,$tipoProtocolo
 						if(!isset($regletaFamilia[$codFamilia][$cont2]['tooltip']) || $regletaFamilia[$codFamilia][$cont2]['tooltip']=="")
 						{
 							$regletaFamilia[$codFamilia][$cont2]['tooltip'] = '<table cellspacing=4>';
-							$regletaFamilia[$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Código </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vía </td><td align=center> Inicio </td><td align=center> Condición </td></tr>';
+							$regletaFamilia[$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Cï¿½digo </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vï¿½a </td><td align=center> Inicio </td><td align=center> Condiciï¿½n </td></tr>';
 						}
 						
 						if(isset($regletaFamilia[$codFamilia][$cont2]['tooltip']))
@@ -22671,7 +23375,7 @@ function consultarDetalleDefinitivoKardex($paciente,$historia,$ingreso,$fecha,$t
 	global $nombreProtocoloAnalgesia;
 	global $nombreProtocoloQuimioterapia;
 
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 	
 	global $regletaFamilia;
 	global $wcenmez;
@@ -22987,7 +23691,7 @@ function consultarDetalleDefinitivoKardex($paciente,$historia,$ingreso,$fecha,$t
 						if(!isset($regletaFamilia[$codFamilia][$cont2]['tooltip']) || $regletaFamilia[$codFamilia][$cont2]['tooltip']=="")
 						{
 							$regletaFamilia[$codFamilia][$cont2]['tooltip'] = '<table cellspacing=4>';
-							$regletaFamilia[$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Código </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vía </td><td align=center> Inicio </td><td align=center> Condición </td></tr>';
+							$regletaFamilia[$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Cï¿½digo </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vï¿½a </td><td align=center> Inicio </td><td align=center> Condiciï¿½n </td></tr>';
 						}
 						
 						if(isset($regletaFamilia[$codFamilia][$cont2]['tooltip']) and $info['Kadsus'] != 'on')
@@ -23176,7 +23880,7 @@ function consultarDetalleKardexAlta($historia,$ingreso,$fecha,$tipoProtocolo,$pe
 	global $codigoCentralMezclas;
 	global $centroCostosServicioFarmaceutico;
 	global $centroCostosCentralMezclas;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	//Protocolos
 	global $protocoloNormal;
@@ -23400,7 +24104,7 @@ function consultarDetalleKardexAlta($historia,$ingreso,$fecha,$tipoProtocolo,$pe
 						if(!isset($regletaFamilia[$codFamilia][$cont2]['tooltip']) || $regletaFamilia[$codFamilia][$cont2]['tooltip']=="")
 						{
 							$regletaFamilia[$codFamilia][$cont2]['tooltip'] = '<table cellspacing=4>';
-							$regletaFamilia[$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Código </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vía </td><td align=center> Inicio </td><td align=center> Condición </td></tr>';
+							$regletaFamilia[$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Cï¿½digo </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vï¿½a </td><td align=center> Inicio </td><td align=center> Condiciï¿½n </td></tr>';
 						}
 						
 						if(isset($regletaFamilia[$codFamilia][$cont2]['tooltip']))
@@ -23595,7 +24299,7 @@ function consultarArticulosCMParaSF($historia,$ingreso,$fecha,$tipoProtocolo){
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
 
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	$coleccion = array();
 
@@ -23764,7 +24468,7 @@ function consultarArticulosLactario($historia,$ingreso,$fecha,$tipoProtocolo){
 	global $nombreProtocoloAnalgesia;
 	global $nombreProtocoloQuimioterapia;
 
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	$coleccion = array();
 
@@ -23911,12 +24615,12 @@ function consultarArticulosLactario($historia,$ingreso,$fecha,$tipoProtocolo){
  *
  * NOTAS:
  *
- * 20-Sep-10:  La consulta de los articulos se hará por la fracción que tenga en el registro no en la 59, el kardex tendra la responsabilidad de asignar la fracción adecuada.
+ * 20-Sep-10:  La consulta de los articulos se harï¿½ por la fracciï¿½n que tenga en el registro no en la 59, el kardex tendra la responsabilidad de asignar la fracciï¿½n adecuada.
  */
 function consultarDetalleDefinitivoPerfil($historia,$ingreso,$fecha){
 	global $wbasedato;
 	global $conex;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 	global $wemp_pmla;
 
 	global $centroCostosServicioFarmaceutico;
@@ -24095,12 +24799,12 @@ function consultarDetalleDefinitivoPerfil($historia,$ingreso,$fecha){
  * 
  * NOTAS:
  * 
- * 20-Sep-10:  La consulta de los articulos se hará por la fracción que tenga en el registro no en la 59, el kardex tendra la responsabilidad de asignar la fracción adecuada.
+ * 20-Sep-10:  La consulta de los articulos se harï¿½ por la fracciï¿½n que tenga en el registro no en la 59, el kardex tendra la responsabilidad de asignar la fracciï¿½n adecuada.
  */
 function consultarDetallePerfilKardex($historia,$ingreso,$fecha){
 	global $wbasedato;
 	global $conex;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 	global $wemp_pmla;
 
 	$coleccion = array();
@@ -24305,7 +25009,7 @@ function consultarDetalleMedicamentosAnterioresKardex($historia,$ingreso,$fecha,
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
 
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	//Protocolos
 	global $protocoloNormal;
@@ -24556,7 +25260,7 @@ function consultarDetalleMedicamentosAnterioresKardex($historia,$ingreso,$fecha,
 								if(!isset($regletaFamiliaHist[$fecha_ciclo][$codFamilia][$cont2]['tooltip']) || $regletaFamiliaHist[$fecha_ciclo][$codFamilia][$cont2]['tooltip']=="")
 								{
 									$regletaFamiliaHist[$fecha_ciclo][$codFamilia][$cont2]['tooltip'] = '<table cellspacing=4>';
-									$regletaFamiliaHist[$fecha_ciclo][$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Código </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vía </td><td align=center> Inicio </td><td align=center>Condición</td></tr>';
+									$regletaFamiliaHist[$fecha_ciclo][$codFamilia][$cont2]['tooltip'] .= '<tr style=background-color:#2A5DB0;color:#ffffff><td align=center> Cï¿½digo </td><td align=center> Nombre </td><td align=center> Dosis </td><td align=center> Unidad </td><td align=center> Frecuencia </td><td align=center> Vï¿½a </td><td align=center> Inicio </td><td align=center>Condiciï¿½n</td></tr>';
 								}
 								
 								if(isset($regletaFamiliaHist[$fecha_ciclo][$codFamilia][$cont2]['tooltip']))
@@ -25395,8 +26099,8 @@ function consultarKardexModificadosFecha($wservicio, $fecha){
  * @return unknown
  * 
  * Modificaciones:
- * Febrero 22 de 2011.	(Edwin MG)	Si un medicamento comienza al día siguiente a 00:00, 
- * 									no se muestra para el día actual en la regleta
+ * Febrero 22 de 2011.	(Edwin MG)	Si un medicamento comienza al dï¿½a siguiente a 00:00, 
+ * 									no se muestra para el dï¿½a actual en la regleta
  ************************************************************************************************************************************************/
 function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministro, $horaInicioSuministro, $horasPeriodicidad, $caracterMarca = "*"){
 	$arrAplicacion = array();
@@ -25493,7 +26197,7 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tipoProtocolo, $paciente, $esDePiso ){
 	global $wbasedato;
 	global $conex;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	//$centroCostosMovimiento,$gruposMedicamentosMovimiento
 	global $centroCostosServicioFarmaceutico;
@@ -25571,7 +26275,7 @@ function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tip
 
 	
 
-	//Parte 1:  Parametros de inserción en la tabla temporal
+	//Parte 1:  Parametros de inserciï¿½n en la tabla temporal
 	$q = "INSERT INTO ".$wbasedato."_000060
 			(Medico,Fecha_data,hora_data,Kadhis,Kading,Kadart,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadhdi,Kadsal,Kadcdi,Kadpri,Kadpro,Kadcco,Kadare,Kadsad,Kadnar,Kadreg,Kadusu,Kadfir,Kadcpx,Kadron,Kadfro,Kadaan,Kadcda,Kadcdt,Kaddan,Kadfum,Kadhum,Kadido,Kadfra,Kadfcf,Kadhcf,Kadimp,Kadalt,Kadcal,Kadusp,Kadpen,Kadule,Kadfle,Kadhle,Kadctr,Kadlev,Kaddoa,Kadlog,Kadnes, Kadfpv, Kadhpv, seguridad) ";
 
@@ -25628,7 +26332,7 @@ function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tip
 // echo "<pre>$q</pre>";
 	$res = mysql_query($q, $conex) or die ( "Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error() );
 	
-	//Busco si hay un articulo a elminar por inactivación en el sistema
+	//Busco si hay un articulo a elminar por inactivaciï¿½n en el sistema
 	articulosBorradosInactivos( $conex, $wbasedato, $historia, $ingreso, $fecha, $usuario, $tieneGruposIncluidos, $tipoProtocolo );	//Abril 5 de 2011
 	
 	/************************************************************************************************************************************
@@ -25703,7 +26407,7 @@ function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tip
 	/************************************************************************************************************************************/
 	
 	
-	//Carga los articulos del la extensión del detalle del kardex a la temporal
+	//Carga los articulos del la extensiï¿½n del detalle del kardex a la temporal
 	$sql = "INSERT INTO ".$wbasedato."_000209
 					(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, Seguridad  )
 				SELECT
@@ -25753,8 +26457,8 @@ function cargarArticulosATemporal($historia,$ingreso,$fecha,$fechaGrabacion,$tip
 }
  
 /********************************************************************************************************************************
- * Consulta la cantidad de aplicaciones dado un artículo por paciente.  Basado unicamente en la cantidad dispensada del articulo 
- * de días anteriores
+ * Consulta la cantidad de aplicaciones dado un artï¿½culo por paciente.  Basado unicamente en la cantidad dispensada del articulo 
+ * de dï¿½as anteriores
  * 
  * @param $historia
  * @param $ingreso
@@ -25836,9 +26540,9 @@ function arreglarVectorKardex( $array ){
 /**
  * Consulta el detalle de articulos del dia anterior a la fecha introducida que no se encuentren suspendidos
  *
- *Se seleccionan los articulos anteriores y se insertarán en la tabla temporal solo los que cumplan las siguientes condiciones:
+ *Se seleccionan los articulos anteriores y se insertarï¿½n en la tabla temporal solo los que cumplan las siguientes condiciones:
 	-Si no se encuentra suspendido (Hecho en query)
-	-Si el articulo tiene dias de tratamiento pendientes, deberá compararse asi:  (Dias tratamiento - (FechaActual - FechaInicioAdministracion) (Logica php)
+	-Si el articulo tiene dias de tratamiento pendientes, deberï¿½ compararse asi:  (Dias tratamiento - (FechaActual - FechaInicioAdministracion) (Logica php)
 
  * @param unknown_type $conexion
  * @param unknown_type $historia
@@ -25850,7 +26554,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 	global $wbasedato;
 	global $wcenmez;
 	global $conex;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	global $centroCostosServicioFarmaceutico;
 	global $codigoServicioFarmaceutico;
@@ -25887,7 +26591,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 	 * Septiembre 15 de 2011
 	 *
 	 * Si el centro de costos donde se encuentra el paciente manejan ciclos de produccion, la aprobacion del 
-	 * articulo es tal como viene del día anterior
+	 * articulo es tal como viene del dï¿½a anterior
 	 ****************************************************************************************************************/
 	if( !$usuario->esUsuarioLactario && $tieneCpx ){
 		$aprobado = '';
@@ -25964,11 +26668,11 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				}
 			}
 
-			//Control de aplicaciones máximas
+			//Control de aplicaciones mï¿½ximas
 			/************************************************************************
 			* Enero 05 de 2011 
 			* 
-			* Modificación: Enero 24 de 2011
+			* Modificaciï¿½n: Enero 24 de 2011
 			************************************************************************/
 			if( isset($info['Kaddma']) && $info['Kaddma'] != "" ){
 				//Consulta el numero de aplicaciones realizadas entre la fecha de inicio del tratamiento y la fecha del kardex
@@ -25985,15 +26689,15 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 					/********************************************************************************
 					 * Septiembre 20 de 2012
 					 *
-					 * Verifico cuando termina el medicamento por dosis máxima y que la fecha actual
-					 * de generación de kardex, sea menor a la fecha de terminación del medicamento.
+					 * Verifico cuando termina el medicamento por dosis mï¿½xima y que la fecha actual
+					 * de generaciï¿½n de kardex, sea menor a la fecha de terminaciï¿½n del medicamento.
 					 * Al medicamento se le dan 2 horas de gracia, esto para que los medicamentos
-					 * que tengan aplicación a las 22 no desaparezcan para que despues de media noche
+					 * que tengan aplicaciï¿½n a las 22 no desaparezcan para que despues de media noche
 					 * puedan ser cargados.
 					 *
 					 * Diciembre 28 de 2015
-					 * Cuento el total aplicada por medicamento que tenga dosis máxima. Si ya fueron
-					 * aplicados todas las dosis el medicamento no pasa al día siguiente
+					 * Cuento el total aplicada por medicamento que tenga dosis mï¿½xima. Si ya fueron
+					 * aplicados todas las dosis el medicamento no pasa al dï¿½a siguiente
 					 ********************************************************************************/
 					if( $info['Kadlev'] != 'on' ){
 						$cantidadAplicada = '';
@@ -26105,12 +26809,12 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				}
 			}
 
-			//Cálculo de las cantidades SIN DISPENSAR del dia anterior.
+			//Cï¿½lculo de las cantidades SIN DISPENSAR del dia anterior.
 			if(isset($info['Kadcdi']) && $info['Kadcdi'] != "" && isset($info['Kaddis']) && $info['Kaddis'] != ""){
 				$saldoDispensacion = $info['Kadcdi'] - $info['Kaddis'];
 			}
 
-			/* El saldo de dispensación es cero si:
+			/* El saldo de dispensaciï¿½n es cero si:
 			 *
 			 *	-Es medicamento de control.
 			 *	-El servicio actual es urgencias.
@@ -26121,7 +26825,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 			}
 
 			//*************************
-			if( $descontarDispensaciones ){	//$descontarDispensaciones es verdadero si el día anterior estaba en un cco de urgencias o cirugia
+			if( $descontarDispensaciones ){	//$descontarDispensaciones es verdadero si el dï¿½a anterior estaba en un cco de urgencias o cirugia
 				
 				$dosisUsadasServicioAnterior = 0;
 
@@ -26139,8 +26843,8 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 
 				/* Contabilizar las dosis totales del dia, esto se hace con la cantidad de horas del dia / frecuencia.
 				 * Esto se puede hacer con base en 24 horas por lo siguiente:
-				 * -La dispensación se basa en 24 horas, si el articulo esta siendo analizado aqui es por que no es primera vez (dosis: 24/frec)
-				 * -Lo que se dejó de usar de esas dosis debe pasar al dia siguiente
+				 * -La dispensaciï¿½n se basa en 24 horas, si el articulo esta siendo analizado aqui es por que no es primera vez (dosis: 24/frec)
+				 * -Lo que se dejï¿½ de usar de esas dosis debe pasar al dia siguiente
 				 * -La fecha y hora del traslado no afecta los calculos de dosis que pasan, esto debido a las dos premisas anteriores
 				 */
 				foreach ($arrAplicacion as $apl){
@@ -26164,7 +26868,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				//Calculo de las cantidades por articulo
 				calcularSaldoActual($conex,$wbasedato,$info['Kadhis'],$info['Kading'],$fecha,$info['Kadart'],$info['Kadfin'],$info['Kadhin'],$info['Kadcfr'],$info['periodicidad'],$dosisACargarDiaSiguiente,$info['Kadori'],$diasTtoAcumulados+1,$cantGrabar,$saldo,$cantDispensar,$cantidadManejo,0,$tipoProtocolo,$horasAplicacionDia, $info['Kaddia'], '');
 				
-				//Si ya hay dispensación, el sistema no deberá realizar calculos de dias anteriores
+				//Si ya hay dispensaciï¿½n, el sistema no deberï¿½ realizar calculos de dias anteriores
 				if($info['Kaddis'] != 0 || $info['Kadcdi'] == 0){
 					$cantDispensar = 0;
 				}
@@ -26200,7 +26904,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 			}
 
 			
-			//*************************Si el paciente se encuentra en urgencias o cirugia no deberá acumularse saldo bajo ninguna circunstancia
+			//*************************Si el paciente se encuentra en urgencias o cirugia no deberï¿½ acumularse saldo bajo ninguna circunstancia
 			$qCco = "SELECT Ubisac,Ccourg,Ccocir,Ccoing FROM ".$wbasedato."_000018, ".$wbasedato."_000011 WHERE Ubihis = '$historia' AND Ubiing = '$ingreso' AND Ccocod = Ubisac;";
 			$resCco = mysql_query($qCco,$conex) or die ("Error: " . mysql_errno() . " - en el querys: " . $qCco . " - " . mysql_error());
 
@@ -26242,7 +26946,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 			//================================================================================================================================================
 			//Diciembre 17 de 2010
 			//================================================================================================================================================
-			// Si el paciente es trasaldo de urgencias a cirugia en el día actual y no se ha creado kardex (No tiene encabezado)
+			// Si el paciente es trasaldo de urgencias a cirugia en el dï¿½a actual y no se ha creado kardex (No tiene encabezado)
 			// el saldo del dia anterior debe ser 0
 			if( !existeEncabezadoKardex( $historia, $ingreso, $fecha ) && esTrasladoDeUregnciasDiaAnterior( $conex, $wbasedato, $historia, $ingreso, date( "Y-m-d", strtotime( $fecha )+24*3600 ) ) ){
 				$saldoDispensacion = 0;
@@ -26316,7 +27020,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 			$noEnviar = $info['Kadess'];
 			$diasTratamiento = $info['Kaddia'];
 
-			/* Si no adiciona del dia anterior por dosis deberá hacerse lo siguiente:
+			/* Si no adiciona del dia anterior por dosis deberï¿½ hacerse lo siguiente:
 			 * -No enviar activo
 			 * -Sin cantidad a dispensar
 			 * -Sin dosis a aplicar
@@ -26326,7 +27030,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				$noEnviar = "on";
 				$cantidadADispensar = "0";
 
-				/*Los dias de tratamiento se asignarán asi:
+				/*Los dias de tratamiento se asignarï¿½n asi:
 				 * El calculo es el siguiente:
 				 * Cantidades diarias = 24 / Frecuencia
 				 * Cantidad dias que cumbre esa dosis maximas = dosis maximas articulo / cantidades diarias
@@ -26405,7 +27109,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				/****************************************************************************************************************************************************************
 				 * Julio 14 de 2011
 				 * 
-				 * Busco el sobrante de la cantidad cargada del diá anterior para sumarla a la actual
+				 * Busco el sobrante de la cantidad cargada del diï¿½ anterior para sumarla a la actual
 				 * 
 				 ****************************************************************************************************************************************************************/
 				$info['Kadron'] = '';
@@ -26417,7 +27121,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				
 				$auxTieneCpx = $tieneCpx;
 				
-				//Si hay traslado el día actual no creo regleta, esto para que lo genere la PDA
+				//Si hay traslado el dï¿½a actual no creo regleta, esto para que lo genere la PDA
 				if( $horaTrasladoHoyAux ){
 					$tieneCpx = false;
 				}
@@ -26567,7 +27271,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 						}
 						/**************************************************************************************************************/
 						
-						if( !$esArticuloNecesidad && !$esDeControl && $noEnviar != 'on' ){	//Septiembre 02 de 2011. Si es a necesidad o de control no debe crearse los saldo pendientes del dia anterior	//Mayo 23 de 2012, si el medicamento esta como no enviar no se generea saldo pendiente del dìa anterior
+						if( !$esArticuloNecesidad && !$esDeControl && $noEnviar != 'on' ){	//Septiembre 02 de 2011. Si es a necesidad o de control no debe crearse los saldo pendientes del dia anterior	//Mayo 23 de 2012, si el medicamento esta como no enviar no se generea saldo pendiente del dï¿½a anterior
 							if( $canADispensarAyer - ceil( $canCargadaAyer2 ) > 0 ){
 								$info['Kadcpx'] = "Ant-".( ($canTotalACargar - $canCargadaAyer2)-($canTotalDispensada - $canCargadaAyer3)-($canTotalACargar-$canADispensarAyer) )."-0,".$info['Kadcpx'];
 							}
@@ -26663,7 +27367,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 								//Calculo cuanto se debe dispensar hasta la hora par mas cercana
 								$canADispensarAntesRecibo = cantidadTotalADispensarRonda( $horasAplicacionDia, $horaTraslado );
 								
-								//Calculo la cantidad que no se dispensó el día anterior
+								//Calculo la cantidad que no se dispensï¿½ el dï¿½a anterior
 								$cantidadFaltante = $canADispensarTemp1 - $canADispensarAntesRecibo;
 								
 								//Creo string que indica cuanto se dejo de dispensar el dia anterior
@@ -26802,7 +27506,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 				if( $tieneCpx ){
 					$esArticuloNutricion = esArticuloNutricion( $conex, $wcenmez, $info['Kadart'] );
 					
-					//Si es un articulo de nutrición y comienza antes del día actual se desconfirma
+					//Si es un articulo de nutriciï¿½n y comienza antes del dï¿½a actual se desconfirma
 					if( $esArticuloNutricion && strtotime( $info['Kadfin']." ".$info['Kadhin'] ) < strtotime( $fecha." 00:00:00" ) ){
 						$confirmacionPreparacion = 'off';
 					}
@@ -26849,7 +27553,7 @@ function cargarArticulosAnteriorATemporal($historia,$ingreso,$fecha,$fechaGrabac
 
 				$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 				
-				//Carga los articulos del la extensión del detalle del kardex a la temporal
+				//Carga los articulos del la extensiï¿½n del detalle del kardex a la temporal
 				$sqlExt = "INSERT INTO ".$wbasedato."_000209
 							(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing,   Ekxfec    , Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, Seguridad  )
 						SELECT
@@ -27041,7 +27745,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 	if(esUrgenciasUnificado($ccoPaciente)){
 	
 		$q_realizados = " UNION SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm
+				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 			FROM 
 				{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000047 c, {$wbasedatohce}_000015 d,".$wbasedato."_000045
 			WHERE 
@@ -27059,7 +27763,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 				AND timestamp(DATE_SUB( NOW() , INTERVAL 24 HOUR ) ) < timestamp(concat(Detfmo,' ', Dethmo ))
 			UNION
 			SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm
+				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 			FROM 
 				{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000017 c,  {$wbasedatohce}_000015 d, ".$wbasedato."_000045
 			WHERE 
@@ -27081,7 +27785,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 	
 	//Consulta las ordenes asociadas al paciente que tengan estado pendiente, autorizado o pendiente de realizar.
 	$q = "SELECT
-			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,'' as Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm
+			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,'' as Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 		FROM 
 			{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000047 c, {$wbasedatohce}_000015 d,".$wbasedato."_000045
 		WHERE 
@@ -27098,7 +27802,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			AND Eexmeh != 'on'
 		UNION
 		SELECT
-			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm
+			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 		FROM 
 			{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000017 c,  {$wbasedatohce}_000015 d, ".$wbasedato."_000045
 		WHERE 
@@ -27139,7 +27843,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 	// $num = mysql_num_rows($res);
 
 	//Si un tipo de orden no deja mover el estado, dejo todos los campos que intervienen en la 
-	//interoperabilidad en vacio, esto para que no se vea reflejado a la enfermera ningún cambio
+	//interoperabilidad en vacio, esto para que no se vea reflejado a la enfermera ningï¿½n cambio
 	//y permite a la enfermera modificar los estados sin problemas
 	// $estadoPorTipoOrden = consultarAliasPorAplicacion( $conex, $wemp_pmla, "permitirCambiarEstadoInteroperabilidadPorTipoOrden" );
 
@@ -27173,7 +27877,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			
 			if( !$permiteModEst ){
 				$info['Ordurl'] = '';
-				$info['Deteex'] = '';
+			  //$info['Deteex'] = '';
 				$info['Detjoc'] = '';
 				$info['Detfme'] = '0000-00-00';
 				$info['Dethme'] = '00:00:00';
@@ -27244,14 +27948,43 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			
 			$detalle->justificacionOrdenCancelada = trim( $info['Detjoc'] );
 			
-			//Indica si el médico no ha leído el resultado del examen
+			//Indica si el mï¿½dico no ha leï¿½do el resultado del examen
 			$detalle->pendienteLecturaMedico = strtolower( $info['Ordple'] ) == 'on';
 			
-			//Indica si el médico no ha leído una orden cancelada por parte de laboratorio
+			//Indica si el mï¿½dico no ha leï¿½do una orden cancelada por parte de laboratorio
 			$detalle->pendienteLecturaEstudioCancelado = strtolower( $info['Detplc'] ) == 'on'; // && strtolower( $info['Eexcan'] ) == 'on';
-			
-			//Indica si el tipo de orden solicita que usuario tomó la muestra
+			//Indica si el tipo de orden solicita que usuario tomï¿½ la muestra
 			$detalle->solicitaUsuarioTomaMuestra = strtolower( $info['Tiputm'] ) == 'on';
+			
+			/******************************************************************************************************************************************
+			 * Esto es para preguntar si se debe  preguntar si el estado se realiza en servicio o no
+			 ******************************************************************************************************************************************/
+			$detalle->wrealizadoEnPiso 		= $info['Detnof'] == 'on' ? true : false;
+			$detalle->wrealizarEnServicio 	= $info['Detrse'] == 'on' ? true : false;
+			$detalle->wrealizarExterno 		= $info['Detrex'] == 'on' ? true : false;
+			$detalle->wrequiereAutorizacion	= $info['Detaut'] == 'on' ? true : false;
+			 
+			$wdetalleEstado = detalleEstadoOrdenes( $conex, $wbasedato, $detalle->estadoExamen );
+						
+			//Si el esado externo (Estado que viene por interoperabilidad) es diferente a vacio significa que ya se ha enviado los mensajes hl7 correspondientes y por tanto
+			//no requiere autorizacion ni preguntar a la enfermera si se realiza en piso o no
+			//por que ya se ha enviado el estudio a realizarse
+			if( !empty( $detalle->estadoExterno ) || ( !$wdetalleEstado['esEstadoPendiente'] && !$wdetalleEstado['permiteInteroperabilidad'] ) ){
+				$detalle->wrealizarEnServicio 	= false;
+				$detalle->wrealizarExterno 		= false;
+				$detalle->wrequiereAutorizacion = false;
+			}
+			
+			if( empty( $detalle->estadoExterno ) && $wdetalleEstado['esEstadoAutorizado'] ){
+				$detalle->wrequiereAutorizacion 	= false;
+			}
+			
+			$detalle->wpreguntarRealizaEnservicio = false;
+			if( !$detalle->wrequiereAutorizacion && ( $detalle->wrealizarEnServicio || $detalle->wrealizarExterno ) ){
+				$detalle->wpreguntarRealizaEnservicio = true;
+			}
+			/*************************************************************************************************************************************/
+			
 			
 			
 			$usuarioTomaMuestra = '';
@@ -27307,7 +28040,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 				
 				$sala = '';
 				
-				//Consultando la sala en que se realizará la cita
+				//Consultando la sala en que se realizarï¿½ la cita
 				//Buscar en la tabla de usuario que cco le pertenece al usuario.
 				$sql = "SELECT b.Saldes
 							 FROM ".$wbasedato."_000268 a, ".$wbasedato."_000263 b
@@ -27403,6 +28136,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 					
 					if( $numConOferta == 0 ){
 						$detalle->descripcionEstadoExterno = "No ofertado";
+						$detalle->solicitaUsuarioTomaMuestra = !$detalle->esCupOfertado ? true : $detalle->solicitaUsuarioTomaMuestra;
 					}
 					else{
 						$detalle->esCupOfertado = true;
@@ -27560,7 +28294,7 @@ function cargarInfusionesAnteriorATemporal($historia,$ingreso,$fecha,$fechaGraba
 function cargarArticulosADefinitivo( $historia, $ingreso, $fecha, $esPrimerKardex ){
 	global $wbasedato;
 	global $conex;
-	global $usuario;		//Información de usuario
+	global $usuario;		//Informaciï¿½n de usuario
 
 	global $centroCostosServicioFarmaceutico;
 	global $codigoServicioFarmaceutico;
@@ -27613,13 +28347,13 @@ function cargarArticulosADefinitivo( $historia, $ingreso, $fecha, $esPrimerKarde
 	
 				$info = mysql_fetch_array($res1);
 				
-				//Si el articulo es de central de mezclas se confirma su preparación
+				//Si el articulo es de central de mezclas se confirma su preparaciï¿½n
 				$conf = false;
 				if( $artAprobado && $info['Kadori'] != $codigoServicioFarmaceutico ){
 					$conf = true;
 				}
 	
-				//La solución a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
+				//La soluciï¿½n a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
 				$tarti = $centroCostosCentralMezclas;
 				if($info['Kadori'] == $codigoServicioFarmaceutico){
 					$tarti = $centroCostosServicioFarmaceutico;
@@ -27769,7 +28503,7 @@ function cargarArticulosADefinitivo( $historia, $ingreso, $fecha, $esPrimerKarde
 	}
 	/************************************************************************************************************************************/
 	
-	//Carga los articulos del la extensión del detalle del kardex a la temporal
+	//Carga los articulos del la extensiï¿½n del detalle del kardex a la temporal
 	$sql = "INSERT INTO ".$wbasedato."_000208
 				(Medico  , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest, Ekxpro, Ekxtra, Ekxped, Ekxin1, Ekxin2, Ekxayu, Ekxaut, Ekxjus, Ekxfau, Ekxhau, Ekxmau, Ekxjau, Ekxmip, Seguridad  )
 			SELECT
@@ -28430,7 +29164,7 @@ function consultarMedicamentosPorCodigo($wbasedato,$codigo,$tipoMedicamento,$uni
 
 
 				/****
-				 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+				 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 				 */
 				if($esCM){
 					$q = $subConsulta;
@@ -28480,7 +29214,7 @@ function consultarMedicamentosPorCodigo($wbasedato,$codigo,$tipoMedicamento,$uni
 							."	AND Defcco = '$centroCostosCentralMezclas'";
 
 			/****
-			 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+			 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 			 */
 			if($esCM){
 				$q = $subConsulta;
@@ -28529,7 +29263,7 @@ function consultarMedicamentosPorCodigo($wbasedato,$codigo,$tipoMedicamento,$uni
 							."	AND Defcco = '$centroCostosCentralMezclas'";
 
 			/****
-			 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+			 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 			 */
 			if($esCM){
 				$q = $q." UNION ".$subConsulta;
@@ -28750,7 +29484,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 								AND artest = 'on'
 								AND Defart = Artcod	";
 							/****
-							 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+							 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 							 */
 							if($esCM){
 								$q = $subConsulta;
@@ -28800,7 +29534,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 									AND Defart = Artcod";				
 
 						/****
-						 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+						 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 						 */
 						if($esCM){
 							$q = $subConsulta;
@@ -28847,7 +29581,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 									AND artest = 'on'
 									AND Defart = Artcod";
 						/****
-						 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+						 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 						 */
 						if($esCM){
 							$q = $subConsulta;
@@ -28896,7 +29630,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 									AND Defart = Artcod";
 
 				/****
-				 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+				 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 				 */
 				if($esCM){
 					$q = $subConsulta;
@@ -28941,7 +29675,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 								AND artest = 'on'
 								AND Defart = Artcod"; 
 			/****
-			 * Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+			 * Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 			 */
 			if($esCM){
 				$q = $subConsulta;
@@ -29105,8 +29839,8 @@ function consultarArchivosDia($historia,$ingreso,$fecha){
  * REGLAS:
  *
  * 1. Solamente se permite un medico responsable a la vez por ingreso un solo Mtrtra en on por ingreso
- * 2. Inicialmente el medico se asociará a través de la admision
- * 3. La asociacion/desasociacion se realiza a través de la marca Mtrest
+ * 2. Inicialmente el medico se asociarï¿½ a travï¿½s de la admision
+ * 3. La asociacion/desasociacion se realiza a travï¿½s de la marca Mtrest
  * 4. Los medicos asociados que no tengan Mtrtra en on SON TODOS interconsultantes
  *
  * @param unknown_type $wbasedato
@@ -29567,10 +30301,10 @@ function grabarNuevoExamen($wemp_pmla,$basedatos,$nombre,$tipoServicio,$especial
 }
 
 /***
- * función que verifica si tiene oferta para realizar examen
- * Si el tipo de orden no está configurado para realizar examen se dejar ordenar(tiene oferta)
- * Si el tipo de orden está configurado para realizar examen y el examen (cup) no está ofertado no se puede ordenar(no tiene oferta)
- * Si el tipo de orden está configurado para realizar examen y el examen (cup) está ofertado se deja ordenar(tiene oferta)
+ * funciï¿½n que verifica si tiene oferta para realizar examen
+ * Si el tipo de orden no estï¿½ configurado para realizar examen se dejar ordenar(tiene oferta)
+ * Si el tipo de orden estï¿½ configurado para realizar examen y el examen (cup) no estï¿½ ofertado no se puede ordenar(no tiene oferta)
+ * Si el tipo de orden estï¿½ configurado para realizar examen y el examen (cup) estï¿½ ofertado se deja ordenar(tiene oferta)
  */
 function tieneOfertaAyudaDx($wemp_pmla, $conex, $whce, $tipoOrden, $cup, $cco )
 {
@@ -29578,7 +30312,7 @@ function tieneOfertaAyudaDx($wemp_pmla, $conex, $whce, $tipoOrden, $cup, $cco )
 				'result' 			=> true, 
 				'datosAdicionales' 	=> [], 
 				'esOfertado' 		=> false,
-				'realizaUnidad'		=> false,	//Indica si debe mostrar al médico una modal preguntando si el estudio lo realiza la unidad en que se encuentra el paciente o no
+				'realizaUnidad'		=> false,	//Indica si debe mostrar al mï¿½dico una modal preguntando si el estudio lo realiza la unidad en que se encuentra el paciente o no
 			];
 	
 	$wcliame = consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cliame" );	
@@ -29605,7 +30339,7 @@ function tieneOfertaAyudaDx($wemp_pmla, $conex, $whce, $tipoOrden, $cup, $cco )
 		}
 	}
 	
-	//Si el tipo de orden está configurado para ofertas se revisa si el cup está ofertado
+	//Si el tipo de orden estï¿½ configurado para ofertas se revisa si el cup estï¿½ ofertado
 	if( $num > 0 ){
 		
 		// $ofertasActivas 		= consultarAliasPorAplicacion( $conexion, $wemp_pmla, "ofertasActivas" );
@@ -29636,7 +30370,7 @@ function tieneOfertaAyudaDx($wemp_pmla, $conex, $whce, $tipoOrden, $cup, $cco )
 			$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
 			$num = mysql_num_rows($res);
 			
-			//Si el cup está ofertado se revisa si necesita datos adicionales
+			//Si el cup estï¿½ ofertado se revisa si necesita datos adicionales
 			if( $num > 0 ){
 				
 				$val['esOfertado'] 		= true;
@@ -29738,14 +30472,14 @@ function tieneOfertaAyudaDx($wemp_pmla, $conex, $whce, $tipoOrden, $cup, $cco )
 				$val['datosAdicionales']['nroMuestras'] = $nroMuestras;
 			}
 			// else{
-				// //Si el examen (cup )no está ofertado no se deja ordenar
+				// //Si el examen (cup )no estï¿½ ofertado no se deja ordenar
 				// $val['result'] = false;
 			// }
 		}
 		
 	}
 	
-	$val['result'] = true; //Todas las ordenes siempre se deben poder ordenar, siempre está ofertado
+	$val['result'] = true; //Todas las ordenes siempre se deben poder ordenar, siempre estï¿½ ofertado
 	
 	return $val;
 }
@@ -30048,7 +30782,7 @@ function grabarOrdenHCE($basedatos,$historia,$ingreso,$fecha,$codUsuario,$centro
 	
 	//Inactivar el encabezado de la orden
 	$q = "UPDATE ".$wbasedatohce."_000027 SET
-			 Ordobs = CONCAT(Ordobs,'\r\n','"."Observacion añadida el $fecha a las $hora:\r\n$observacionesOrden"."')
+			 Ordobs = CONCAT(Ordobs,'\r\n','"."Observacion aï¿½adida el $fecha a las $hora:\r\n$observacionesOrden"."')
 		WHERE
 			Ordhis = '$historia'  
 			AND Ording = '$ingreso' 
@@ -30295,7 +31029,7 @@ function mostrarDetalleOrdenes($wemp_pmla,$wempresa,$wbasedato,$whis,$wing,$wfec
 					  $mostrar = false;
 					 
 					 // 2012-06-26
-					 // Se concatena al final con la variable $i para asegurar que no coincida ningún nombre de los DIV's
+					 // Se concatena al final con la variable $i para asegurar que no coincida ningï¿½n nombre de los DIV's
 					 $wnomdiv = $row['ordfec']."-".$row['ordhor']."-".$row['detcod']."-".$i;   //Nombre del DIV
 						 
 					 echo "<td>";   
@@ -30305,9 +31039,9 @@ function mostrarDetalleOrdenes($wemp_pmla,$wempresa,$wbasedato,$whis,$wing,$wfec
 					 echo "<table align='center' border=0>";
 								
 					 //Formatos
-					 // 1: Descriptivo                  ej: Patologia, Mamografia, Endoscopia, Cardiología (hasta que no se tome por HL7), etc.
-					 // 2: Descriptivo con Imagen       ej: Imagenología (TAC, RX) con HL7, etc.
-					 // 3: Por valores y con referencia ej: Laboratorio Clínico
+					 // 1: Descriptivo                  ej: Patologia, Mamografia, Endoscopia, Cardiologï¿½a (hasta que no se tome por HL7), etc.
+					 // 2: Descriptivo con Imagen       ej: Imagenologï¿½a (TAC, RX) con HL7, etc.
+					 // 3: Por valores y con referencia ej: Laboratorio Clï¿½nico
 					 
 					 $wtabla = $row['Arc_HL7'];             //Archivo en el que se almacena el resultado, si tiene valor es porque es HL7, este valor esta en la tabla hce_000015
 					 $wformatoVista = $row['Formato'];      //Formato en que se ve el resultado, Viene de la tabla hce_000015
@@ -30420,7 +31154,7 @@ function mostrarDetalleOrdenes($wemp_pmla,$wempresa,$wbasedato,$whis,$wing,$wfec
 				
 					$sala = '';
 					
-					//Consultando la sala en que se realizará la cita
+					//Consultando la sala en que se realizarï¿½ la cita
 					//Buscar en la tabla de usuario que cco le pertenece al usuario.
 					$sql = "SELECT b.Saldes
 								 FROM ".$wbasedato."_000268 a, ".$wbasedato."_000263 b
@@ -30555,7 +31289,7 @@ function mostrarDetalleOrdenes($wemp_pmla,$wempresa,$wbasedato,$whis,$wing,$wfec
 			  // echo "<td>".$wtipord."</td>";
 			 
 			 // // 2012-06-26
-			 // // Se concatena al final con la variable $i para asegurar que no coincida ningún nombre de los DIV's
+			 // // Se concatena al final con la variable $i para asegurar que no coincida ningï¿½n nombre de los DIV's
 			 // $wnomdiv = $row['ordfec']."-".$row['ordhor']."-".$row['detcod']."-".$i;   //Nombre del DIV
 				 
 			 // echo "<td>";   
@@ -30565,9 +31299,9 @@ function mostrarDetalleOrdenes($wemp_pmla,$wempresa,$wbasedato,$whis,$wing,$wfec
 			 // echo "<table align='center' border=0>";
 						
 			 // //Formatos
-			 // // 1: Descriptivo                  ej: Patologia, Mamografia, Endoscopia, Cardiología (hasta que no se tome por HL7), etc.
-			 // // 2: Descriptivo con Imagen       ej: Imagenología (TAC, RX) con HL7, etc.
-			 // // 3: Por valores y con referencia ej: Laboratorio Clínico
+			 // // 1: Descriptivo                  ej: Patologia, Mamografia, Endoscopia, Cardiologï¿½a (hasta que no se tome por HL7), etc.
+			 // // 2: Descriptivo con Imagen       ej: Imagenologï¿½a (TAC, RX) con HL7, etc.
+			 // // 3: Por valores y con referencia ej: Laboratorio Clï¿½nico
 			 
 			 // $wtabla = $row['Arc_HL7'];             //Archivo en el que se almacena el resultado, si tiene valor es porque es HL7, este valor esta en la tabla hce_000015
 			 // $wformatoVista = $row['Formato'];      //Formato en que se ve el resultado, Viene de la tabla hce_000015
@@ -30726,8 +31460,8 @@ function consultarComponenteLEV($basedatos,$descripcion){
 function calcularCantidadGrabar( $fechaHoy,$fechaInicio,$horaInicioSuministro,$horasFrecuencia,$esPrimeraVez, $dosisMaximas, $aplicacionesAnteriores, $aplicacionesPorSaldo ){
 	
 	/************************************************************************************************************************
-	 * Se cambia está función por un calculo más sencillo y poder manejar tiempos de dispensación mayores a un día
-	 * ya que clínica del sur tiene un tiempo de dispensación de 7 días
+	 * Se cambia estï¿½ funciï¿½n por un calculo mï¿½s sencillo y poder manejar tiempos de dispensaciï¿½n mayores a un dï¿½a
+	 * ya que clï¿½nica del sur tiene un tiempo de dispensaciï¿½n de 7 dï¿½as
 	 ************************************************************************************************************************/
 	
 	global $horaCorteDispensacion;
@@ -30755,7 +31489,7 @@ function calcularCantidadGrabar( $fechaHoy,$fechaInicio,$horaInicioSuministro,$h
 		$fechaHoyUnix = strtotime( $fechaHoy." $horaCorteDispensacion:00:00" ) + ($diasDispensacion-1)*(24*60*60);
 	}
 	
-	//Sí hay dosis máximas reviso cuando dosis máximas faltan por aplicar
+	//Sï¿½ hay dosis mï¿½ximas reviso cuando dosis mï¿½ximas faltan por aplicar
 	if( $dosisMaximas != '' && $dosisMaximas != 0 ){
 		$dosisMaximas = $dosisMaximas - $aplicacionesAnteriores - $aplicacionesPorSaldo;
 		
@@ -30766,14 +31500,14 @@ function calcularCantidadGrabar( $fechaHoy,$fechaInicio,$horaInicioSuministro,$h
 		$dosisMaximas = false;
 	}
 	
-	//Recorro todas las horas de aplicación del articulo, desde fecha de inicio hasta la fecha final de acuerdo a la frecuencia
+	//Recorro todas las horas de aplicaciï¿½n del articulo, desde fecha de inicio hasta la fecha final de acuerdo a la frecuencia
 	for( $i = $fechaActualHoraInicio; $i <= $fechaTempDiaSiguiente; $i += $horasFrecuencia*3600 ){
 		
-		//Si la hora de aplicación es mayor a la fecha de inicio, significa que debe aplicar
+		//Si la hora de aplicaciï¿½n es mayor a la fecha de inicio, significa que debe aplicar
 		if( $i > $fechaHoyUnix ){
 			$cantidad++;
 			
-			//Si hay dosis máxima verifico que no supere la dosis máxima
+			//Si hay dosis mï¿½xima verifico que no supere la dosis mï¿½xima
 			if( $dosisMaximas ){
 				if( $dosisMaximas <= $cantidad ){
 					$cantidad = $dosisMaximas;
@@ -30991,7 +31725,7 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
 		$fila = mysql_fetch_array($res);
 	}
 
-	//La solución a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
+	//La soluciï¿½n a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
 	$tarti = $centroCostosCentralMezclas;
 	
 	if( $ccoOrigen == "SF" ){
@@ -31026,7 +31760,7 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
 	
 	/******************************************************************************
 	 * Marzo 26 de 2012
-	 * Calculo el total de dosis correspondientes por días de tratamiento
+	 * Calculo el total de dosis correspondientes por dï¿½as de tratamiento
 	 ******************************************************************************/
 	//Calculo cuantas dosis maximas son por dias de tratamiento en caso de tener
 	if( !empty( $diasTto ) ){
@@ -31092,7 +31826,7 @@ function calcularSaldoActual($conexion,$wbasedato,$historia,$ingreso,$fechaKarde
 	}
 	/****************************************************************************************************************/	  
 	
-	if( !$dejarSaldoArticulo ){	//Abril 27 de 2011. Si el paciente viene de urgencia o cirugia, el saldo del articulo del día anterior es 0
+	if( !$dejarSaldoArticulo ){	//Abril 27 de 2011. Si el paciente viene de urgencia o cirugia, el saldo del articulo del dï¿½a anterior es 0
 		$fila['Kadsal'] = 0;
 	}
 	
@@ -31202,7 +31936,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	$horasFrecuencia = consultarFrecuencia( $conexion, $wbasedato, $horasFrecuencia );
 	$fini = trim($fini);
 	$obs = utf8_decode($obs);
-	//Se encripta la contraseña y se guarda encriptada.
+	//Se encripta la contraseï¿½a y se guarda encriptada.
 	$firma = sha1($firma);
 	
 	
@@ -31213,8 +31947,8 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 		// return 1;
 	// }
 
-	//Consulto si el paciente está en urgencia
-	//si está en urgencia el medicamento queda automáticamente aprobado
+	//Consulto si el paciente estï¿½ en urgencia
+	//si estï¿½ en urgencia el medicamento queda automï¿½ticamente aprobado
 	$pacPaciente = consultarInfoPacienteOrdenHCEPorHistoria( $conexion, $wbasedato, $historia );
 	
 	$ccoAyudaDx = '';
@@ -31267,7 +32001,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	
 	$nombreArticulo = '';
 	
-	//Confirmada preparación.
+	//Confirmada preparaciï¿½n.
 	$conf == "true" ? $conf = 'on' : $conf = 'off';
 	$noDispensar == "true" ? $noDispensar = 'on' : $noDispensar = 'off';
 	$artdosisAdaptada == "true" ? $artdosisAdaptada = 'on' : $artdosisAdaptada = 'off'; //Si el articulo se marco como dosis adaptada se registra en on.
@@ -31316,13 +32050,13 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	if( $pacPaciente->enUrgencias ){
 		$artAprobado = "on";
 		
-		//Si el articulo es de central de mezclas se confirma su preparación
+		//Si el articulo es de central de mezclas se confirma su preparaciï¿½n
 		if($origenArticulo != "SF"){
 			$conf = 'on';
 		}
 	}
 	
-	//Modificación Abril 18 de 2016. Solo es confirmado una NPT si es articulo nuevo
+	//Modificaciï¿½n Abril 18 de 2016. Solo es confirmado una NPT si es articulo nuevo
 	//Si el articulo es una nutricion se confirma automaticamente.
 	// if($esArticuloNutricion){
 		// $conf = 'on';
@@ -31345,7 +32079,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	/**********************************************************************************
 	* Septiembre 20 de 2012
 	*
-	* Si hay días de tratamiento se convierten a dosis máxima. Los días de tratamiento deben
+	* Si hay dï¿½as de tratamiento se convierten a dosis mï¿½xima. Los dï¿½as de tratamiento deben
 	* contar desde la hora de inicio del medicamento
 	*
 	*
@@ -31353,7 +32087,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	**********************************************************************************/
    if( !empty( $dtto ) ){
 		   
-		//Convierto los días de tratamiento a dosis máxima
+		//Convierto los dï¿½as de tratamiento a dosis mï¿½xima
 		// $dosisMax = floor( ($dtto*24)/$horasFrecuencia ) + 1;        //El adicional de uno es debido a que debe contar la dosis inicial
 		// $dosisMax = floor( ($dtto*24)/$horasFrecuencia );        //Octubre 25 de 2012
 	   
@@ -31427,7 +32161,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	$guardar = "Creacion/modif de articulo $codArticulo - $id_original - $codUsuario - $control-$num = ".print_r($q,true).PHP_EOL;	
 	seguimiento($guardar);
 	
-	//La solución a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
+	//La soluciï¿½n a esto es consultar las fracciones, si no tiene fracciones se usan dias de estabilidad cero (no tiene)
 	$tarti = $centroCostosCentralMezclas;
 	if($origenArticulo == "SF"){
 		$tarti = $centroCostosServicioFarmaceutico;
@@ -31528,8 +32262,8 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 	/****************************************************************************************************************
 	 * Mayo 23 de 2012
 	 *
-	 * Si el medicamento estaba como no enviar y lo cambian a enviar, genero el saldo del día anterior 
-	 * y ademas venga de días anteriores y no se ha cambiado ni fecha ni hora de inicio ni frecuencia
+	 * Si el medicamento estaba como no enviar y lo cambian a enviar, genero el saldo del dï¿½a anterior 
+	 * y ademas venga de dï¿½as anteriores y no se ha cambiado ni fecha ni hora de inicio ni frecuencia
 	 ****************************************************************************************************************/
 	$activacionNoEnviar = false;
 	if($existe){
@@ -31551,7 +32285,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 					//Aumento una frecuencia, ya que no se puede pedir la ronda actual
 					$siguienteSuministro += $horasFrecuencia*3600;
 					
-					//Calculo el saldo del día anterior 
+					//Calculo el saldo del dï¿½a anterior 
 					//$fila[ 'Kadsad' ] = calcularCantidadGrabar( $fechaKardex, $fechaUsar, $horaUsar, $horasFrecuencia, $esPrimeraVez, $dosisMaximas, $aplicacionesAnteriores, intval( $saldoDispensacion/($cantDosis/$cantidadFracciones) ) );
 					$fila[ 'Kadsad' ] = calcularCantidadGrabar( date( "Y-m-d", strtotime( $fechaKardex." 00:00:00" )-24*3600 ), date( "Y-m-d", $siguienteSuministro ), date( "H:i:s", $siguienteSuministro ), $horasFrecuencia, true, '', '', '' );
 				
@@ -31701,20 +32435,20 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 						$pendientePorLactario = 'off';
 					}
 					
-					//Si es articulo de nutrición y apenas se va a agregar pasa confimrado
-					//Esto no ocurre para la actualización
+					//Si es articulo de nutriciï¿½n y apenas se va a agregar pasa confimrado
+					//Esto no ocurre para la actualizaciï¿½n
 					//Al momento de actualizar un articulo es como se halla dejado
 					if($esArticuloNutricion){
 						$conf = 'on';
 					}
 					
-					//Si el articulo no es aprobado por el director médico no puede quedar aprobado por el regente ni confirmado de preparación
+					//Si el articulo no es aprobado por el director mï¿½dico no puede quedar aprobado por el regente ni confirmado de preparaciï¿½n
 					if( $wdrautorizado == 'on' ){
 						$artAprobado = 'off';
 						$conf 		 = 'off';
 					}
 
-					//Si la pestaña no es de alta inserta en la tabla movhos_000060 y si el paciente es diferente de urgencias insertará en la movhos_000168.
+					//Si la pestaï¿½a no es de alta inserta en la tabla movhos_000060 y si el paciente es diferente de urgencias insertarï¿½ en la movhos_000168.
 					if($deAlta != 'on'){
 						
 						//Busco el codigo para articulo nuevo
@@ -31735,8 +32469,8 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 							VALUES
 								('movhos','".date("Y-m-d")."','".date("H:i:s")."','$historia','$ingreso','$codArticulo','$cantDosis','$unDosis','$dtto', 'on'  ,'$noDispensar',  '$per','$fmaFtica','$fini','$hini', '$via','".$fechaKardex."','$conf','$obs' ,'$origenArticulo',  'off','$condicion','$dosisMax','$cantGrabar','$unidadManejo','$cantidadManejo',  '0'  ,'00:00','$saldo','$cantDispensar','$prioridad','$tipoProtocolo','$centroCostosGrabacion','$artAprobado','$saldoDispensacion','$nombreArticulo',   ''  ,'$codUsuario','$horasAplicacionDia','$cantidadAlta','$impresion','$deAlta', '$codUsuario', '$pendientePorLactario' , '$famControl', '$esLQ','$firma','$artdosisAdaptada','$artnoEsteril','$cod_log_nuevo1','A-$codUsuario')";
 						
-						//Se crea query para insertar los datos en la extensión de la tabla temporal
-						//a este query le falta el filtro de kadido que se agrega más adelante
+						//Se crea query para insertar los datos en la extensiï¿½n de la tabla temporal
+						//a este query le falta el filtro de kadido que se agrega mï¿½s adelante
 						$sql_ext = "INSERT INTO ".$wbasedato."_000209
 										( Medico , Fecha_data  , Hora_data  , Ekxhis, Ekxing, Ekxfec, Ekxart, Ekxido, Ekxest,    Ekxpro    ,    Ekxtra     ,     Ekxped     ,   Ekxin1     ,   Ekxin2     ,    Ekxayu     ,     Ekxaut     ,        Ekxjus	,	Ekxmip       , Seguridad   )
 									SELECT
@@ -31808,7 +32542,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 				}
 				else{
 				
-					$des = "*No se encontró artículo a actualizar*";
+					$des = "*No se encontrï¿½ artï¿½culo a actualizar*";
 					$des .= "Kadart:$codArticulo,";
 					$des .= "Kadfec:$fechaKardex,";
 					$des .= "Kadhis:$historia,";
@@ -31952,9 +32686,9 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 				}
 				
 				
-				//Calculo la cantidad de aplicaciones hasta el día siguiente
+				//Calculo la cantidad de aplicaciones hasta el dï¿½a siguiente
 				$cantAplicacionesReal = 0;
-				if( $ultimoSuministroDiaSiguienteNuevo >= $ultimoSuministroDiaActualViejo ){	//Marzo 9 de 2012, no tenía el =, solo esta el >
+				if( $ultimoSuministroDiaSiguienteNuevo >= $ultimoSuministroDiaActualViejo ){	//Marzo 9 de 2012, no tenï¿½a el =, solo esta el >
 					$cantAplicacionesReal = ( $ultimoSuministroDiaSiguienteNuevo - $ultimoSuministroDiaActualViejo )/($horasFrecuencia*3600) + 1;
 					
 					// echo "\n\n....cantAplicacionesReal = ( ultimoSuministroDiaSiguienteNuevo - ultimoSuministroDiaActualViejo )/(horasFrecuencia*3600) + 1;";
@@ -32000,7 +32734,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 				/**
 				Lo forma de calculo es la siguiente:
 				
-				Calculo cuantas aplicaciones hay hasta el día siguiente a partir de la ronda actual hasta el día siguiente
+				Calculo cuantas aplicaciones hay hasta el dï¿½a siguiente a partir de la ronda actual hasta el dï¿½a siguiente
 				a este calculo le resto la cantidad calculada segun lo datos anteriores
 				La diferencia de los dos los resto al saldo que aparece del articulo
 				El resultado se tiene que dejar en el saldo, ya que el resultado indica cuanto saldo se debe dejar
@@ -32011,7 +32745,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 				
 				
 				//Consulto las aplicaciones hasta la fecha y hora final de aplicacion
-				//Esta es, hasta el día siguiente a la hora de cambio o segun la dosis maximas o dias de tratamiento
+				//Esta es, hasta el dï¿½a siguiente a la hora de cambio o segun la dosis maximas o dias de tratamiento
 				$fechaFinalizacionMedicamento = strtotime( "$fechaKardex $horaCorteDispensacion:00:00" ) + 24*3600;
 				
 				//Si hay dosis maximas
@@ -32070,7 +32804,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 				// echo "\n\n....auxSaldoCant = ceil( fila[ 'Kadsad' ] - totalArticulosAux )";
 				// echo "\n....$auxSaldoCant = ceil( {$fila[ 'Kadsad' ]} - $totalArticulosAux )";
 				
-				//Si este saldo es negativo significa que ya habían dispensado esa cantidad
+				//Si este saldo es negativo significa que ya habï¿½an dispensado esa cantidad
 				if( $auxSaldoCant < 0 ){
 				
 					$fila[ 'Kaddis' ] += abs($auxSaldoCant);
@@ -32337,7 +33071,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 			}
 			
 			//Verifico que el articulo a actualizar no exista en la tabla definitiva
-			//De ser así se elimina de la tabla definitiva y se deja en el log(tabla aud_cierre_kardex)
+			//De ser asï¿½ se elimina de la tabla definitiva y se deja en el log(tabla aud_cierre_kardex)
 			verificarRegistroEnDefinitiva( $conexion, $wbasedato, $historia, $ingreso, $codArticulo, $fechaKardex, $hInicioAnt, $fInicioAnt, $id_original, $codUsuario );
 			
 			//Busco el codigo para articulo modificado
@@ -32402,8 +33136,8 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 					AND Kadido = '$id_original'
 					";
 					
-			//Se crea query para insertar los datos en la extensión de la tabla temporal
-			//a este query le falta el filtro de kadido que se agrega más adelante
+			//Se crea query para insertar los datos en la extensiï¿½n de la tabla temporal
+			//a este query le falta el filtro de kadido que se agrega mï¿½s adelante
 			$sql_ext = "UPDATE ".$wbasedato."_000209
 						   SET Ekxpro = '".$profilaxis."',
 							   Ekxtra = '".$tratamiento."'
@@ -32474,7 +33208,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 		
 		$actTemporal = false;
 		$idOriginal = false;
-		//Si la pestaña no es de alta inserta el articulo, y si es paciente no es de urgencias inserta el medicamento en el detalle de alta.
+		//Si la pestaï¿½a no es de alta inserta el articulo, y si es paciente no es de urgencias inserta el medicamento en el detalle de alta.
 		if($deAlta != 'on'){
 						
 			$res = mysql_query($q, $conexion) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
@@ -32489,7 +33223,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 				$fecha = date( "Y-m-d" );
 				$hora = date( "H:i:s" );
 				
-				//Marco los campos como leídos ya que es un medicamento nutricion.
+				//Marco los campos como leï¿½dos ya que es un medicamento nutricion.
 				$sql = " UPDATE ".$wbasedato."_000060
 							SET Kadpen = 'off',
 								Kadule = '$codUsuario',
@@ -32520,7 +33254,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 			
 			}
 		
-		//Si la pestaña es de alta siempre se inserta.		
+		//Si la pestaï¿½a es de alta siempre se inserta.		
 		}
 		else{
 		
@@ -32558,7 +33292,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 				 * Julio 5 de 2016
 				 *************************************************************************************************************************************************/
 				//Inserto los datos necesario de la tabla extendida
-				//Agrego el filtro que hace falta para la extensión
+				//Agrego el filtro que hace falta para la extensiï¿½n
 				$sql_ext .= " AND Kadido = '".$idOriginal."' ";
 				$res = mysql_query ( $sql_ext, $conexion ) or die  ( "Error: " . mysql_errno() . " - en el query: " . $sql_ext . " - " . mysql_error() );
 				/************************************************************************************************************************************************/
@@ -32608,7 +33342,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 			 * Julio 5 de 2016
 			 *************************************************************************************************************************************************/
 			//Inserto los datos necesario de la tabla extendida
-			//Agrego el filtro que hace falta para la extensión
+			//Agrego el filtro que hace falta para la extensiï¿½n
 			$res = mysql_query ( $sql_ext, $conexion ) or die  ( "Error: " . mysql_errno() . " - en el query: " . $sql_ext . " - " . mysql_error() );
 			/************************************************************************************************************************************************/
 		}
@@ -32715,7 +33449,7 @@ function grabarArticuloDetallePerfil($wbasedato,$historia,$ingreso,$fechaKardex,
 	$audAnterior = "";
 	$audNuevo = "";
 
-	//Primero verifico si ya existe el artículo en el detalle del kardex para saber si es insert o update
+	//Primero verifico si ya existe el artï¿½culo en el detalle del kardex para saber si es insert o update
 	$q = "SELECT
 				Kadart, Kaddia, Kadobs, Kadvia, Kaddma, Kaduma, Kadcdi
 			FROM
@@ -32736,7 +33470,7 @@ function grabarArticuloDetallePerfil($wbasedato,$historia,$ingreso,$fechaKardex,
 		/**********************************************************************************
 		* Septiembre 20 de 2012
 		*
-		* Si hay días de tratamiento se convierten a dosis máxima. Los días de tratamiento deben
+		* Si hay dï¿½as de tratamiento se convierten a dosis mï¿½xima. Los dï¿½as de tratamiento deben
 		* contar desde la hora de inicio del medicamento
 		*
 		*
@@ -32744,7 +33478,7 @@ function grabarArticuloDetallePerfil($wbasedato,$historia,$ingreso,$fechaKardex,
 		**********************************************************************************/
 	   if( !empty( $dtto ) ){
 			   
-			   //Convierto los días de tratamiento a dosis máxima
+			   //Convierto los dï¿½as de tratamiento a dosis mï¿½xima
 			   // $dosisMax = floor( ($dtto*24)/$horasFrecuencia ) + 1;        //El adicional de uno es debido a que debe contar la dosis inicial
 			   $dosisMax = floor( ($dtto*24)/$horasFrecuencia );        //Octubre 25 de 2012
 			   
@@ -32782,7 +33516,7 @@ function grabarArticuloDetallePerfil($wbasedato,$historia,$ingreso,$fechaKardex,
 	}
 	$res = mysql_query($q, $conexion) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 
-	//Generación de auditoria cambio / creación
+	//Generaciï¿½n de auditoria cambio / creaciï¿½n
 	$audNuevo = "N:".$codArticulo.",".$dtto.",".$obs.",".$obs.",".$via.",".$dosisMaximas.",$autorizadoCtc";
 
 	$mensajeAuditoria = "";
@@ -32875,7 +33609,7 @@ function grabarArticuloDetallePerfil($wbasedato,$historia,$ingreso,$fechaKardex,
 /**
  * Condiciones del reemplazo:
  * 
- * 1.No se permitirá si el saldo de la tabla 4 es diferente de cero (Entradas != Salidas {Por aplicacion, descarte o devolucion})
+ * 1.No se permitirï¿½ si el saldo de la tabla 4 es diferente de cero (Entradas != Salidas {Por aplicacion, descarte o devolucion})
  * 2.Se debe comparar lo pedido por el kardex (P), lo despachado y el saldo.
  * 3.P=D=S Insert 
  * 4.P=0=0 Update
@@ -32964,7 +33698,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 
 	if($num2 > 0){
 		$fila2 = mysql_fetch_array($res2);
-		if( strlen( trim( $fila2['Arktip'] ) ) == 1 ){	//Para que sea visible en las pestañas del kardex, la longitud debe ser = 1
+		if( strlen( trim( $fila2['Arktip'] ) ) == 1 ){	//Para que sea visible en las pestaï¿½as del kardex, la longitud debe ser = 1
 			$tipoProtocolo = $fila2['Arktip'];
 		}
 	}
@@ -33038,8 +33772,8 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 	
 	$esGenerico = esArticuloGenerico( $conexion, $wbasedatos, "cenpro", $codArticulo );
 	
-	//Si el articulo que se va a reemplazar es generico se debe cambiar la cantidad de fracción
-	//según la definición de fracciones
+	//Si el articulo que se va a reemplazar es generico se debe cambiar la cantidad de fracciï¿½n
+	//segï¿½n la definiciï¿½n de fracciones
 	if( $puedeGrabar ){
 		if( $esGenerico && $num > 0 && $num3 > 0 ){
 			$cantidadFraccion = $fila['Kadcfr']/$fila['Kadcma']*$fila3['Deffra'];
@@ -33246,7 +33980,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 				
 				//calcularCantidadGrabar( $fechaHoy,$fechaInicio,$horaInicioSuministro,$horasFrecuencia,$esPrimeraVez );
 			}
-			else{	//Si el reemplazo es hecho antes de las 2 de la mañana del dia actual, significa que no hay que cargar nada nuevo
+			else{	//Si el reemplazo es hecho antes de las 2 de la maï¿½ana del dia actual, significa que no hay que cargar nada nuevo
 				$kadcpx = nuevaDosis( $cantidadFraccion/$fila3['Deffra'], $fila['Kadcpx'] );
 				
 				if( substr( $kadcpx, 0, 3 ) == "Ant" && $fila['Kaddis'] > 0 ){	//Quito el saldo del dia anterior
@@ -33283,14 +34017,14 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 		/****************************************************************************************************
 		 * Febrero 16 de 2012
 		 *
-		 * Calculo la cantidad a dispensar hasta el día siguiente
+		 * Calculo la cantidad a dispensar hasta el dï¿½a siguiente
 		 * El calculo general es el siguiente:
-		 * - Se calcula siempre la ultima ronda de aplicacion antes de la hora de corte del día siguiente
+		 * - Se calcula siempre la ultima ronda de aplicacion antes de la hora de corte del dï¿½a siguiente
 		 * - Calculo cuantas aplicaciones o suministros se le aplican al paciente desde la ronda de reemplazo
-		 *   hasta la última ronda de aplicacion
-		 * - Si la ronda de reemplazo es una ronda de aplicación, se busca si el medicamento fue dispensado
-		 *   para esa ronda segun el kardex, adicionar una aplicacion al calculo o no, esta adición cubre
-		 *   la primera aplicación.
+		 *   hasta la ï¿½ltima ronda de aplicacion
+		 * - Si la ronda de reemplazo es una ronda de aplicaciï¿½n, se busca si el medicamento fue dispensado
+		 *   para esa ronda segun el kardex, adicionar una aplicacion al calculo o no, esta adiciï¿½n cubre
+		 *   la primera aplicaciï¿½n.
 		 *
 		 * Fromula: aplicaciones: (Fecha y hora de cambio - Fecha y hora final)/frecuencia + adicional
 		 *					 	  0 >= adicional <= 1
@@ -33303,7 +34037,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 			$timeActual = strtotime( date( "Y-m-d 00:00:00" ) );
 		}
 		
-		//Calculo el tiempo hasta la hora de corete del día siguiente
+		//Calculo el tiempo hasta la hora de corete del dï¿½a siguiente
 		$tiempoHastaDiaSiguiente = strtotime( date( "Y-m-d", $timeActual+24*3600)." $horaCorteDispensacion:00:00" );
 		
 		//Busco la ulitma hora de dispensacion del dia siguiente
@@ -33321,7 +34055,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 		//Calculo cuantas dosis se dispensaron
 		$cantDosisDispensadas = intval( $cantidadDispensada/( $cantidadFraccion/$fila3['Deffra'] ) );
 		
-		//Calculo de la ultima aplicación según la dispensación
+		//Calculo de la ultima aplicaciï¿½n segï¿½n la dispensaciï¿½n
 		$comienzoDiaActual = $ultimoSuministroDiaSiguiente - ($cantidadDosis + $cantDosisSinDispensar - $cantDosisDispensadas)*$frecuencia*3600;
 		
 		if( $timeActual > $fechorIncioMedicamento ){
@@ -33359,7 +34093,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 		/************************************************************************************************
 		 * Febrero 16 de 2012
 		 *
-		 * Calculo cuanto es la cantidad a dispensar, la cantidad dispensada y el saldo del día anterior
+		 * Calculo cuanto es la cantidad a dispensar, la cantidad dispensada y el saldo del dï¿½a anterior
 		 ************************************************************************************************/
 		
 		//Calculo cuanto queda del saldo del dia anterior
@@ -33652,7 +34386,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 		}
 	}
 
-	//Generación de auditoria cambio / creación
+	//Generaciï¿½n de auditoria cambio / creaciï¿½n
 	$audNuevo = "N:".$codArticuloNuevo.",".$dtto.",".$unidadDosis.",".$formaFarm.",".$origen.",".$dtto.",".$obs;
 
 	$mensajeAuditoria = "";
@@ -33770,11 +34504,15 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 	global $whce;
 	global $wemp_pmla;
 
+	$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
+
+
+
 	$conexion = obtenerConexionBD("matrix");
 	$estado = "0";	
 	
 	//Indica si hay interoperabilidad por tipo de orden
-	$hayInteroperabilidad = hayInteroperabilidadPorTipoDeOrden( $conexion, $wbasedato, $codigoExamen );
+	$hayInteroperabilidad = hayInteroperabilidadPorTipoDeOrden( $conexion, $wbasedato, $codigoExamen, $whce );
 	
 	//Si hay interoperabilidad el estado de envio de mensaje es activo (on), caso contrario es off
 	$estadoEnvioMsgHL7 = 'on';
@@ -33783,7 +34521,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 		$esOfertado			= 'off';	//Este se usa al insertar registro nuevo
 	}
 
-	//Inserción en Ordenes de HCE
+	//Inserciï¿½n en Ordenes de HCE
 
 	//Verifico que exista EL ENCABEZADO DE LA orden
 	$q = "SELECT
@@ -33894,7 +34632,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 			$hora = date("H:i:s");
 				
 			$q = "UPDATE {$whce}_000027 SET
-					Ordobs = CONCAT(Ordobs,'\r\n','"."Observacion añadida el $fecha a las $hora:\r\n$observacionesOrden"."'),
+					Ordobs = CONCAT(Ordobs,'\r\n','"."Observacion aï¿½adida el $fecha a las $hora:\r\n$observacionesOrden"."'),
 					Ordest = 'on'
 					$updateOrdenAnexa
 				WHERE
@@ -33919,7 +34657,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 	
 	//Verifico que exista EL DETALLE de la orden (el examen en particular)
 	$q = "SELECT
-				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm
+				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm, Detrse, Detrex, Detaut, Deteex, Detnof
 			FROM	
 				{$wbasedato}_000159 a, {$whce}_000047 b
 			WHERE 
@@ -33930,7 +34668,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 				AND Detcod = codigo
 			UNION
 		  SELECT
-				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm
+				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm, Detrse, Detrex, Detaut, Deteex, Detnof
 			FROM	
 				{$wbasedato}_000159 a, {$whce}_000017 b
 			WHERE 
@@ -33998,7 +34736,46 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 		if($num == 0){
 			$audNuevo = "N:".$codigoExamen.",".$consecutivoOrden.",".$item.",".str_replace( "_", " ", $nombreExamen ).",".$estadoExamen.",".utf8_decode( $justificacion ).",".$fechaDeSolicitado;
 			$audNuevo = "";
+		
+			$realizarEnServicio 	= 'off';
+			$realizacionExterna 	= 'off';
+			$requiereAutorizacion 	= 'off';
+
+			$cup = consultarCupPorCodigoEstudio( $conex, $whce, $consecutivoExamen );
+				
+			$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 			
+			$clasificacionEstudio = consultarClasificacionPorEstudio( $conex, $wcliame, $cup );
+			
+			$requiereAut = requiereAutorizacion( $conex, $wcliame, $wemp_pmla, [
+									'tipoEmpresa' 	=> consultarTipoEmpresaPorHistoria( $conex, $wbasedato, $historia, $ingreso ),
+									'nit'			=> $pac['nitResponsable'],
+									'codigoEmpresa'	=> $pac['codigoResponsable'],
+									'planEmpresa'	=> consultarPlanEmpresaPorHistoria( $conex, $wcliame, $historia, $ingreso ),
+									'tarifa'		=> $pac['tarifa'],
+									'clasificacion'	=> $clasificacionEstudio == '*' ? '' : $clasificacionEstudio,
+									'cup'			=> $cup,
+								]);
+										
+			if( $requiereAut ){
+				$requiereAutorizacion = 'on';
+				$esOfertado = 'off';
+			}
+			
+			if( $hayInteroperabilidad )
+			{
+				$requierePreguntarServicioRealizacion = requierePreguntarServicioRealizacion( $conex, $wcliame, $cup );
+				if( $requierePreguntarServicioRealizacion ){
+					$realizarEnServicio = 'on';
+					$esOfertado = 'off';
+				}
+				
+				$requiereRealizacionExterna = requiereRealizacionExterna( $conex, $whce, $codigoExamen );
+				if( $requiereRealizacionExterna ){
+					$realizacionExterna = 'on';
+					$esOfertado = 'off';
+				}
+			}	
 			$numeroItem = $item;
 			
 			$estado = "1";
@@ -34012,12 +34789,11 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 			$row_log_n1 = mysql_fetch_array($res_log_n1);
 			$cod_log_nuevo1 = $row_log_n1['Logcod'];
 			
-			
 			$q = "INSERT INTO {$wbasedato}_000159
-					(Medico,Fecha_data,Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detfec,Detest,Detjus,Detite,Detusu,Detfir,Detimp,Detalt,Detifh,Detusp, Detpen,Detlog,Detenv,Detutm,Detcco,Seguridad)
-				VALUES 
-					('$wbasedato','".date("Y-m-d")."','".date("H:i:s")."','$codigoExamen','$consecutivoOrden','$consecutivoExamen','$estadoExamen','','$fechaDeSolicitado','on','".utf8_decode( $justificacion )."','$item','$usuario','','$impExamen','$altExamen','$firmHCE','$usuario','on','".$cod_log_nuevo1."','".$esOfertado."','".$usuarioTomaMuestra."','".$cco."','C-$wbasedato')";
-					
+			(   Medico   ,    Fecha_data     ,    Hora_data      ,     Dettor    ,     Detnro        ,      Detcod        ,    Detesi     , Detrdo,       Detfec        , Detest,          Detjus                    , Detite ,  Detusu  , Detfir,     Detimp  ,   Detalt   ,   Detifh  ,  Detusp  , Detpen,        Detlog        ,     Detenv       ,        Detutm            ,   Detcco  ,          Detrse         ,         Detrex           ,             Detaut        ,  Seguridad   )
+		VALUES 
+			('$wbasedato','".date("Y-m-d")."','".date("H:i:s")."','$codigoExamen','$consecutivoOrden','$consecutivoExamen','$estadoExamen',   ''  , '$fechaDeSolicitado',  'on' , '".utf8_decode( $justificacion )."', '$item','$usuario',   ''  , '$impExamen','$altExamen', '$firmHCE','$usuario',  'on' , '".$cod_log_nuevo1."', '".$esOfertado."', '".$usuarioTomaMuestra."', '".$cco."','".$realizarEnServicio."', '".$realizacionExterna."','".$requiereAutorizacion."','C-$wbasedato')";
+
 			$res = mysql_query($q, $conexion) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 			
 				// var_dump( $datosAdicionales );
@@ -34058,6 +34834,20 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 					$firma = $fila['Detfir'];
 				}
 			}
+			//Si $respuestaRealizarEnServicio es on significa que la enfermera respondiï¿½ que se realizarï¿½a en el servicio	
+			//Si $respuestaRealizarEnServicio es off significa que la enfermera respondiï¿½ que se realizarï¿½a en unidad externa	
+			if( $respuestaRealizarEnServicio == 'off' && $fila['Deteex'] == '' ){
+				$enviarMsgHL7 		= true;
+				$estadoEnvioMsgHL7 	= 'on';
+			}
+			// echo "-".$fila['Detaut'],"-".$fila['Deteex'],"-".$fila['Detesi'];
+			else if( $fila['Detaut'] == 'on' && $fila['Deteex'] == '' && ( $fila['Detesi'] == 'P' || $fila['Detesi'] == 'A' ) ){
+				$enviarMsgHL7 		= true;
+				$estadoEnvioMsgHL7 	= 'off';
+			}
+			else{
+				$enviarMsgHL7 = ( !empty( $usuarioTomaMuestra ) || $fechaDeSolicitado != $fila['Detfec'] || ( $estadoExamen == 'C' && $estadoExamen != $fila['Detesi'] ) ) ? true : false;
+			}
 			
 			$q = "UPDATE {$wbasedato}_000159 SET
 					Detfec = '$fechaDeSolicitado',
@@ -34071,10 +34861,11 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 					Detifh = '$firmHCE',
 					Detfmo = '".date("Y-m-d")."',
 					Dethmo = '".date("H:i:s")."',
-					Detenv = ".( !empty( $usuarioTomaMuestra ) || $fechaDeSolicitado != $fila['Detfec'] || ( $estadoExamen == 'C' && $estadoExamen != $fila['Detesi'] ) ? "'".$estadoEnvioMsgHL7."'" : 'Detenv' ).",
+					Detenv = ".( $enviarMsgHL7 ? "'".$estadoEnvioMsgHL7."'" : 'Detenv' ).",
 					Detutm = ".( !empty( $usuarioTomaMuestra && empty( $fila['Detutm'] ) ) ? "'".$usuarioTomaMuestra."'" : 'Detutm' ).",
 					Detftm = ".( !empty( $usuarioTomaMuestra && empty( $fila['Detutm'] ) ) ? "'".$fecha."'" : 'Detftm' ).", 
-					Dethtm = ".( !empty( $usuarioTomaMuestra && empty( $fila['Detutm'] ) ) ? "'".date("H:i:s")."'" : 'Dethtm' )." 
+					Dethtm = ".( !empty( $usuarioTomaMuestra && empty( $fila['Detutm'] ) ) ? "'".date("H:i:s")."'" : 'Dethtm' ).",
+					Detnof = ".( empty( $respuestaRealizarEnServicio ) ? "'".$fila['Detnof']."'" : "'".$respuestaRealizarEnServicio."'" )."
 					$updateExtra
 				WHERE
 					Dettor = '$codigoExamen'
@@ -34235,7 +35026,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 	//	echo "Detalle::".$q;
 	}
 	
-	//Generación de auditoria cambio / creación
+	//Generaciï¿½n de auditoria cambio / creaciï¿½n
 //	$audNuevo = "N:".$codigoExamen.",".$estadoExamen.",".$observaciones.",".$fechaDeSolicitado;
 
 	$mensajeAuditoria = "";
@@ -34274,7 +35065,49 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 	// - $consecutivoExamen corresponde al codigo del examen de la 17
 	//echo ".......consecutivoExamen: \n".$consecutivoExamen." .... consecutivoOrden:".$consecutivoOrden." \n ........ codigoExamen: ".$codigoExamen;
 	datosHL7( $conexion, $wbasedato, $whce, $historia, $ingreso, $consecutivoExamen, $consecutivoOrden, $codigoExamen, $numeroItem, $estadoExamen, $usuario );
+
+	/************************************************************************************
+	 * Febrero 19 de 2022
+	 * Envï¿½a mensaje HL7
+	 ************************************************************************************/
+	if( !empty( $enviarMsgHL7 ) && $enviarMsgHL7 ){
+		
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
+
+		$auditoria->historia 	= $historia;
+		$auditoria->ingreso 	= $ingreso;
+		$auditoria->descripcion = $codigoExamen."-".$consecutivoOrden."-".$numeroItem.",".$consecutivoExamen.",".str_replace( "_", " ", $nombreExamen ).",".$usuario;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= obtenerMensaje( "NO_REALIZA_EN_SERVICIO" );
+		$auditoria->seguridad 	= $usuario;
+		$auditoria->idOriginal 	= '';
+
+		registrarAuditoriaKardex( $conexion, $wbasedato, $auditoria );
+	}
+	/************************************************************************************/
 	
+	/************************************************************************************
+	 * Febrero 19 de 2022
+	 * Realiza en externo
+	 ************************************************************************************/
+	if( !empty( $respuestaRealizarEnServicio ) && $respuestaRealizarEnServicio == 'on' ){
+		
+		//Registro de auditoria
+		$auditoria = new AuditoriaDTO();
+
+		$auditoria->historia 	= $historia;
+		$auditoria->ingreso 	= $ingreso;
+		$auditoria->descripcion = $codigoExamen."-".$consecutivoOrden."-".$numeroItem.",".$consecutivoExamen.",".str_replace( "_", " ", $nombreExamen ).",".$usuario;
+		$auditoria->fechaKardex = $fecha;
+		$auditoria->mensaje 	= obtenerMensaje( "REALIZA_EN_PISO" );
+		$auditoria->seguridad 	= $usuario;
+		$auditoria->idOriginal 	= '';
+
+		registrarAuditoriaKardex( $conexion, $wbasedato, $auditoria );
+	}
+	/************************************************************************************/
+		
 	liberarConexionBD($conexion);
 
 	return $estado."|$consecutivoOrden|$numeroItem";	//Noviembre 08 de 2012
@@ -34285,7 +35118,7 @@ function eliminarArticuloDetalle($wbasedato,$historia,$ingreso,$fecha,$codArticu
 
 	$estado = "0";
 
-	//Primero verifico si ya existe el artículo en el detalle del kardex para saber si es INSERT o UPDATE
+	//Primero verifico si ya existe el artï¿½culo en el detalle del kardex para saber si es INSERT o UPDATE
 	$q = "SELECT
 				Kadart, Kadcfr, Kadufr, Kaddia, Kadest, Kadess, Kadper, Kadffa, Kadfin, Kadhin, Kadvia, Kadfec, Kadcon, Kadobs, Kadsus, Kadcnd, Kaddma, Kaddis, Kaduma, Kadcma, Defdup, Kadido, Kadimp, Kadalt
 			FROM
@@ -34395,7 +35228,7 @@ function consultarEsquemaInsulinaPorCodigo($basedatos,$codigo, $art ){
 	$res = mysql_query($q, $conexion) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 	$num = mysql_num_rows($res);
 	
-	//Consulto la información necesaria para el medicamento
+	//Consulto la informaciï¿½n necesaria para el medicamento
 	$sql = "SELECT Defvia, Deffru
 			  FROM ".$basedatos."_000059 a, ".$basedatos."_000011 b
 			 WHERE a.Defart = '".$art."'
@@ -34438,8 +35271,8 @@ function consultarEsquemaInsulinaPorCodigo($basedatos,$codigo, $art ){
 	{
 		$info = mysql_fetch_array($res2);
 
-		//Si no hay información adicional de medicamento o
-		//hay información del medicmaneto y existe la via
+		//Si no hay informaciï¿½n adicional de medicamento o
+		//hay informaciï¿½n del medicmaneto y existe la via
 		//agrego la unidad de fraccion
 		$unidad = new RegistroGenericoDTO();
 
@@ -34485,9 +35318,9 @@ function consultarEsquemaInsulinaPorCodigo($basedatos,$codigo, $art ){
 		//Esta variable la dejo para darle propiedades al mostrar el html
 		$via->style = "";
 		
-		//Si no hay información adicional de medicamento o
-		//hay información del medicmaneto y existe la via
-		//agrego la vía
+		//Si no hay informaciï¿½n adicional de medicamento o
+		//hay informaciï¿½n del medicmaneto y existe la via
+		//agrego la vï¿½a
 		// if( !$hayInfoArt || ( $hayInfoArt && in_array( strtoupper( $info['Viacod'] ), $viasDispArt ) ) ){
 		if( $hayInfoArt && !in_array( strtoupper( $info['Viacod'] ), $viasDispArt ) ){
 			$via->style = "style='display:none' disabled";
@@ -34664,7 +35497,7 @@ function eliminarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen
 
 	$estado = "0";
 
-	//Primero verifico si ya existe el artículo en el detalle del kardex para saber si es INSERT o UPDATE
+	//Primero verifico si ya existe el artï¿½culo en el detalle del kardex para saber si es INSERT o UPDATE
 	$q = "SELECT
 				Ekacod,Ekahis,Ekaing,Ekafec,Ekaest,Ekaobs,Ekafes
 			FROM
@@ -34792,7 +35625,7 @@ function eliminarInfusionKardex($wbasedato,$historia,$ingreso,$fecha,$componente
 
 	$estado = "0";
 
-	//Primero verifico si ya existe el artículo en el detalle del kardex para saber si es INSERT o UPDATE
+	//Primero verifico si ya existe el artï¿½culo en el detalle del kardex para saber si es INSERT o UPDATE
 	$q = "SELECT
 				Inkhis,Inking,Inkfec,Inkcon,Inkdes,Inkobs
 			FROM
@@ -35035,10 +35868,10 @@ function grabarEsquemaDextrometer($basedatos,$historia,$ingreso,$fecha,$codInsul
 // echo "<br>qIns: ".$qIns; exit( "099adsfasfasdf....1111...." );
 		$resIns = mysql_query($qIns, $conexion) or die ("Error: " . mysql_errno() . " - en el query: " . $qIns . " - " . mysql_error());
 		
-		//Si todo está vacío es por que va a insertar el día anterior
+		//Si todo estï¿½ vacï¿½o es por que va a insertar el dï¿½a anterior
 		if( !empty( $codInsulina ) && !empty( $frecuencia ) && !empty( $codEsquema ) ){
 		
-			//Comparo el registro con el del día anterior
+			//Comparo el registro con el del dï¿½a anterior
 			$slqC = "SELECT * 
 					FROM {$basedatos}_000070 a, {$basedatos}_000070 b
 					WHERE
@@ -35190,7 +36023,7 @@ function eliminarDietaKardex($wbasedato,$historia,$ingreso,$usuario,$idRegistro,
 
 	$estado = "0";
 
-	//Primero verifico si ya existe el artículo en el detalle del kardex para saber si es INSERT o UPDATE
+	//Primero verifico si ya existe el artï¿½culo en el detalle del kardex para saber si es INSERT o UPDATE
 	$q = "SELECT
 				Dikcod,Dikhis,Diking,Dikfec,Dikest
 			FROM
@@ -35549,7 +36382,7 @@ function grabarInfusionKardex($wbasedato,$historia,$ingreso,$fecha,$componentes,
 	}
 	$res = mysql_query($q, $conexion) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 
-	//Generación de auditoria cambio / creación
+	//Generaciï¿½n de auditoria cambio / creaciï¿½n
 	$audNuevo = "N:$consecutivo,$componentes,$observaciones";
 
 	$mensajeAuditoria = "";
@@ -35662,7 +36495,7 @@ function suspenderMedicamentoKardex($wbasedato,$historia,$ingreso,$codigoArticul
 	$audAnterior = "$codigoArticulo";
 	$audNuevo = "";
 
-	//Generación de auditoria cambio / creación
+	//Generaciï¿½n de auditoria cambio / creaciï¿½n
 	$mensajeAuditoria = "";
 
 	switch ($estadoSuspension){
@@ -36194,8 +37027,8 @@ function consultarUsuarioOrdenes($codigo)
 		}
 
 		//Es hospitalario o no
-		// if(isset($rs['Ccohos']) && !empty($rs['Ccohos']) && ($rs['Ccohos'] == 'on' || $rs['Ccocir'] == 'on'  || $rs['Ccourg'] == 'on' )){	//Abril 1 de 2013. Si el servicio es de urgencia también se debe grabar con *
-		if( !empty($rs['Ccolac']) && ($rs['Ccolac'] != 'on') ){	//Abril 1 de 2013. Si el servicio es de urgencia también se debe grabar con *
+		// if(isset($rs['Ccohos']) && !empty($rs['Ccohos']) && ($rs['Ccohos'] == 'on' || $rs['Ccocir'] == 'on'  || $rs['Ccourg'] == 'on' )){	//Abril 1 de 2013. Si el servicio es de urgencia tambiï¿½n se debe grabar con *
+		if( !empty($rs['Ccolac']) && ($rs['Ccolac'] != 'on') ){	//Abril 1 de 2013. Si el servicio es de urgencia tambiï¿½n se debe grabar con *
 			$consulta->centroCostosHospitalario = true;
 			$consulta->centroCostosGrabacion = "*";
 		}
@@ -36204,7 +37037,7 @@ function consultarUsuarioOrdenes($codigo)
 			$consulta->centroCostosGrabacion = $consulta->centroCostos;
 		}
 
-		//Pestañas
+		//Pestaï¿½as
 		if(isset($rs['Ccopek']) && !empty($rs['Ccopek']) && $rs['Ccopek'] != 'NO APLICA'){
 			$consulta->pestanasKardex = $rs['Ccopek'];
 		} else {
@@ -36326,11 +37159,11 @@ function consultarUsuarioOrdenes($codigo)
 			$res3 = mysql_query($q3, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q3 . " - " . mysql_error());
 			$num3 = mysql_num_rows($res3);
 
-			//			Pestañas ordenes HCE.  Nomenclatura:  CODIGO|NOMBRE|GRABA(on/off)
+			//			Pestaï¿½as ordenes HCE.  Nomenclatura:  CODIGO|NOMBRE|GRABA(on/off)
 			while($rs3 = mysql_fetch_array($res3)){
 				// 2012-08-03
-				// Se cambió $rs3['Rrpnpe'] por $rs3['Oprdop'] ya que se necesita que el nombre de las pestañas 
-				// esté definido por la tabla hce_000024 y no por hce_000026
+				// Se cambiï¿½ $rs3['Rrpnpe'] por $rs3['Oprdop'] ya que se necesita que el nombre de las pestaï¿½as 
+				// estï¿½ definido por la tabla hce_000024 y no por hce_000026
 				// 2015-02-09
 				//Se vuelve a utilizar el campo Rrpnpe por peticion de Juan Carlos
 				$consulta->pestanasHCE .= $rs3['Rrpopc']."|".$rs3['Rrpnpe']."|".$rs3['Rrpgra'].";";
@@ -36351,7 +37184,7 @@ function consultarUsuarioOrdenes($codigo)
 				$res4 = mysql_query($q4, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q4 . " - " . mysql_error());
 				$num4 = mysql_num_rows($res4);
 					
-				//Pestañas ordenes HCE.  Nomenclatura:  NITS SEPARADOS POR COMA
+				//Pestaï¿½as ordenes HCE.  Nomenclatura:  NITS SEPARADOS POR COMA
 				while($rs4 = mysql_fetch_array($res4)){
 					$consulta->empresasAgrupadas = $rs4['Empemp'];
 					$consulta->nombreEmpresaAgrupada = $rs4['Empdes'];
@@ -36373,7 +37206,7 @@ function consultarUsuarioOrdenes($codigo)
 			$res4 = mysql_query($q4, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q4 . " - " . mysql_error());
 			$num4 = mysql_num_rows($res4);
 
-			//Pestañas ordenes HCE.  Nomenclatura:  CODIGO|NOMBRE|GRABA(on/off)
+			//Pestaï¿½as ordenes HCE.  Nomenclatura:  CODIGO|NOMBRE|GRABA(on/off)
 			$consulta->firmaElectronicamente = false;
 			if($rs4 = mysql_fetch_array($res4)){
 				$consulta->firmaElectronicamente = $rs4['Profir'] == "on" ? true : false;
@@ -36529,7 +37362,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 	$q.= " UNION ".$qSfCom;
 	$q.= " UNION ".$qCmCom;
 	
-	//Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+	//Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 //	if($esCM){
 //		$q = $q." UNION ".$subConsulta;
 //	} else {
@@ -36575,7 +37408,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 //							."	AND Defest = 'on' "
 //							."	AND Defcco = '$centroCostosCentralMezclas'";
 //
-//			 //Si es usuario de central de mezclas SOLO se le permitirá ver lo de la central
+//			 //Si es usuario de central de mezclas SOLO se le permitirï¿½ ver lo de la central
 //			if($esCM){
 //				$q = $q." UNION ".$subConsulta;
 //			} else {
@@ -36635,7 +37468,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 			 * 3.  Articulos genericos NU,QT,DA dependiendo del tipo en la tabla 68 y la 2
 			 * 4.  
 			 */
-			if($rs['origen'] == $codigoServicioFarmaceutico){ 		//No tiene genéricos
+			if($rs['origen'] == $codigoServicioFarmaceutico){ 		//No tiene genï¿½ricos
 				$tipoGenerico = "";
 			}
 			
@@ -36647,7 +37480,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 					echo "tipo: ".$rs['Arttip']."<br>";
 					*/
 			
-			if($rs['origen'] == $codigoCentralMezclas){  			//Puede tener genéricos
+			if($rs['origen'] == $codigoCentralMezclas){  			//Puede tener genï¿½ricos
 				//Consulta del tipo al que pertenece
 				$tipoCentralMezclas = $rs['Arttip'];
 				
@@ -36695,7 +37528,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 				}
 			}
 			
-			//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+			//Si tiene componentes asociados en la tabla de componentes por tipo, mostrarï¿½ los tipos
 			$qComp = "SELECT Cartip,Carcod,Carcco,Cardis FROM {$wbasedato}_000098 WHERE Cartip = '{$tipoGenerico}';";
 			$resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
 			$componentesTipo = "";
@@ -36796,7 +37629,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 			 * 0: Como se muestra en el autocomplete
 			 * 1: Codigo del articulo
 			 * 2: Nombre comercial del articulo
-			 * 3: Nombre genérico del articulo
+			 * 3: Nombre genï¿½rico del articulo
 			 * 4: Tipo protocolo
 			 * 5: (M)edicamento o (L)iquido
 			 * 6: Es generico
@@ -36933,13 +37766,13 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			$arTiposProtocolos[] = explode( ",", $expDatos[1] );
 			$arTiposPertenecientes[] = explode( ",", $expDatos[2] );
 			$arPesMedicamentos[] = count($arPesMedicamentos) + 11;
-			$arNomPes[] = $expDatos[0];	//Nombre pestaña
+			$arNomPes[] = $expDatos[0];	//Nombre pestaï¿½a
 		}
 		else{
 			$arTiposProtocolos[] = Array( 0 => "N" );
 			$arTiposPertenecientes[] = explode( ",", $expDatos[2] );
 			$arPesMedicamentos[] = 3;
-			$arNomPes[] = "Medicamentos";	//Nombre pestaña
+			$arNomPes[] = "Medicamentos";	//Nombre pestaï¿½a
 		}
 		
 		$indexArPes++;
@@ -36974,7 +37807,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 
 	$observacionesDA = "";
 
-	// Variables para guardar el último artículo que mas se acerca a los criterios de búsqueda
+	// Variables para guardar el ï¿½ltimo artï¿½culo que mas se acerca a los criterios de bï¿½squeda
 	$articulo_encontrado = "";
 	$articulo_pos_encontrado = "";
 	$unidadesRequeridas_encontrado = -1;
@@ -37014,7 +37847,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 	
 	
 	/************************************************************************************************
-	 * Consulto el código de la familia
+	 * Consulto el cï¿½digo de la familia
 	 ************************************************************************************************/
 	$sqlFamCod = "SELECT Famcod 
 				  FROM {$wbasedato}_000114
@@ -37028,7 +37861,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 	/************************************************************************************************/
 	
 	/************************************************************************************************************************************************
-	 * Si el paciente tiene eps, su buscará los medicamentos POS que cumplan con los criterios de busqueda (familia, presentacion, unidad)
+	 * Si el paciente tiene eps, su buscarï¿½ los medicamentos POS que cumplan con los criterios de busqueda (familia, presentacion, unidad)
 	 * tiene como prioridad los medicamentos POS que en cuyo nombre generico o comercial tengan la busqueda escrita por el usuario
 	 *
 	 * Nota: No se toma en cuenta los de CM por que no se muestran en la busqueda para el usuario
@@ -37094,7 +37927,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 		
 		if( $numFiltro > 0 ){
 		
-			//Organizo un Array cómo un árbol, 
+			//Organizo un Array cï¿½mo un ï¿½rbol, 
 			//El primer nivel indica si un articulo es POS (P) o No Pos (N)
 			//El segundo nivel indica si tiene dosis exacta (D) o no (N)
 			//El tercer nivel indica si el articulo en su nombre generico o comercial contiene el nombre de la palabra en el buscador de medicamentos de ordenes (variabel $bsq)
@@ -37104,7 +37937,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			
 				if( $rowsFiltro[ 'Relcon' ] == $dosis || $dosis*1000%($rowsFiltro[ 'Relcon' ]*1000) == 0 ){
 					// $dosExacta = 'D';
-					$dosExacta = 'F';	//Indica que es una fracción
+					$dosExacta = 'F';	//Indica que es una fracciï¿½n
 					if( $rowsFiltro[ 'Relcon' ] == $dosis ){
 						$dosExacta = 'D';
 					}
@@ -37197,12 +38030,12 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 	----------- DESCRIPCION DE LAS TABLAS PARA LA SIGUIENTE CONSULTA ---------------
 	{$wbasedato}_000114 -> Maestro de familias de medicamentos (Fam)
 	{$wbasedato}_000027 -> Maestro de unidades (Uni)
-	{$wbasedato}_000115 -> Relación familias de medicamentos con unidades (Rel)
-	{$wbasedato}_000026 -> Maestro de artículos (Art)
-	{$wbasedato}_000059 -> Definición fracciones artículos (Def)
-	{$wbasedato}_000046 -> Formas farmacéuticas (Ffa)
-	{$wbasedato}_000040 -> Vías de administración (Ffa)
-	{$wcenmez}_000002 -> Maestro de artículos de Central de Mezclas (Art)
+	{$wbasedato}_000115 -> Relaciï¿½n familias de medicamentos con unidades (Rel)
+	{$wbasedato}_000026 -> Maestro de artï¿½culos (Art)
+	{$wbasedato}_000059 -> Definiciï¿½n fracciones artï¿½culos (Def)
+	{$wbasedato}_000046 -> Formas farmacï¿½uticas (Ffa)
+	{$wbasedato}_000040 -> Vï¿½as de administraciï¿½n (Ffa)
+	{$wcenmez}_000002 -> Maestro de artï¿½culos de Central de Mezclas (Art)
 	---------------------------------------------------------------------------------
 	*/
 	
@@ -37316,23 +38149,23 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			";	
 	
 	// 2012-07-09
-	// Se agregó ORDER BY Famund DESC para poder ordenar según la unidad destacada para la familia de medicamentos
+	// Se agregï¿½ ORDER BY Famund DESC para poder ordenar segï¿½n la unidad destacada para la familia de medicamentos
 
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	$num = mysql_num_rows( $res );
 
-	// Declaro valor inicial para el código del articulo que se busca
+	// Declaro valor inicial para el cï¿½digo del articulo que se busca
 	// Se pone -1 para que no arroje resgistros si no se encuentra en el query final 
 	$articulo_encontrado = -1;
 	
-	// Inicializó el array que va a contener los datos de los artículos candidatos a ser seleccionados
+	// Inicializï¿½ el array que va a contener los datos de los artï¿½culos candidatos a ser seleccionados
 	// $articulosEncontrados = array();
 	
-	// Declaro valor inicial para las variables que me dirá que artículo se acerca mas a la dosis pedida
+	// Declaro valor inicial para las variables que me dirï¿½ que artï¿½culo se acerca mas a la dosis pedida
 	$auxUnidadesRequeridas = -1;
 	$auxDosisCubiertas = -1;
 	$retornar = "";
-	// Si no se encontró articulos con dosis exacta, se pasa a consultar sin dosis ($sql2)
+	// Si no se encontrï¿½ articulos con dosis exacta, se pasa a consultar sin dosis ($sql2)
 	if($num == 0)
 	{
 		$res = mysql_query( $sql2, $conex ) or die( mysql_errno()." - Error en el query $sql2 - ".mysql_error() );
@@ -37345,44 +38178,44 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 	$cont = 0;
 	$esFamiliaControl = false;
 
-	// Si hay un articulo o más
+	// Si hay un articulo o mï¿½s
 	if($num > 0)
 	{
 		// while($rs = mysql_fetch_array($res))
 		for( $i = 0; $rs = mysql_fetch_array($res); $i++ )
 		{
-			//Si la familia es de control y el articulo es genérico, se asume que el artículo es de control
+			//Si la familia es de control y el articulo es genï¿½rico, se asume que el artï¿½culo es de control
 			if( $i == 0 && $rs['Famctr'] == 'on' ){
 				$esFamiliaControl = true;
 			}
 		
-			// Se asigna la cantidad de fracciones del artículo
+			// Se asigna la cantidad de fracciones del artï¿½culo
 			$fraccionArticulo = $rs['Deffra'];
 			
-			// Si la dosis no es exacta se definen variables para uso en la definición
-			// del artíclo con la dosis mas adecuada
+			// Si la dosis no es exacta se definen variables para uso en la definiciï¿½n
+			// del artï¿½clo con la dosis mas adecuada
 			if(!$dosis_exacta)
 			{
-				// Se define si las fracciones son múltiplo de la dosis
+				// Se define si las fracciones son mï¿½ltiplo de la dosis
 				// $multiploDosis = ($dosis*1)%prepararDivisor($fraccionArticulo);
-				// Es una división modular, se hace de está forma por que el operador % no funciona bien cuando se trabaja con fracciones
-				// El operador % es un operador binario y por tanto solo funciona bien con números enteros
+				// Es una divisiï¿½n modular, se hace de estï¿½ forma por que el operador % no funciona bien cuando se trabaja con fracciones
+				// El operador % es un operador binario y por tanto solo funciona bien con nï¿½meros enteros
 				$multiploDosis = ($dosis*1)-floor(($dosis*1)/prepararDivisor($fraccionArticulo));
 				
-				//Se saca fracción
+				//Se saca fracciï¿½n
 				//$multiploFraccion = ($fraccionArticulo*1)%prepararDivisor($dosis);
-				// Es una división modular, se hace de está forma por que el operador % no funciona bien cuando se trabaja con fracciones
-				// El operador % es un operador binario y por tanto solo funciona bien con números enteros
+				// Es una divisiï¿½n modular, se hace de estï¿½ forma por que el operador % no funciona bien cuando se trabaja con fracciones
+				// El operador % es un operador binario y por tanto solo funciona bien con nï¿½meros enteros
 				$multiploFraccion = ($fraccionArticulo*1)-floor(($fraccionArticulo*1)/prepararDivisor($dosis));
 				
 				// Se define las unidades requerida para cubir la dosis y
-				// las dosis cubiertas por la fracción del artículo
+				// las dosis cubiertas por la fracciï¿½n del artï¿½culo
 				$unidadesRequeridas = ($dosis*1)/prepararDivisor($fraccionArticulo);
 				$dosisCubiertas = ($fraccionArticulo*1)/prepararDivisor($dosis);
 				
 				//Junio 8 de 2014
 				//Se deja estos valores con saldo para que nunca busque articulos multiplos o divisires de una dosis
-				// Se define si las fracciones son múltiplo de la dosis
+				// Se define si las fracciones son mï¿½ltiplo de la dosis
 				if( $multiploFraccion == 0 ){
 					if( $rs['Unipda'] == 'on' ){
 						$multiploDosis = 1;
@@ -37394,8 +38227,8 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			// Si encontro una sola conincidencia
 			if($num == 1)
 			{
-				// Si se encuentra un solo registro y es dosis exacta no es necesario hacer evaluación de fracciones 
-				// y este se lleva como resultado de la búsqueda
+				// Si se encuentra un solo registro y es dosis exacta no es necesario hacer evaluaciï¿½n de fracciones 
+				// y este se lleva como resultado de la bï¿½squeda
 				if($dosis_exacta || $rs['Unipda'] != 'on')
 				{
 					$articulo_encontrado = $rs['Artcod'];
@@ -37410,10 +38243,10 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 						break;
 					}
 					
-					// Si la dosis es múltiplo de las fracciones o viceversa
+					// Si la dosis es mï¿½ltiplo de las fracciones o viceversa
 					if($multiploDosis==0 || $multiploFraccion==0)
 					{
-						// Si las unidades a pedir estan en el rango de máximo y mínimo
+						// Si las unidades a pedir estan en el rango de mï¿½ximo y mï¿½nimo
 						if(($dosis*1)>=($rs['Defmin']*1) && ($dosis)*1<=($rs['Defmax']*1))
 						{
 							// Si es primera vez que pasa o las unidades requeridas son menores a las anteriormente guardadas
@@ -37423,7 +38256,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 								$articulo_encontrado = $rs['Artcod'];
 							}
 						} 
-						// Si la fracción del artículo es superior a la dosis
+						// Si la fracciï¿½n del artï¿½culo es superior a la dosis
 						else if($dosisCubiertas>1)
 						{
 							// Si es primera vez que pasa o las unidades requeridas son menores a las anteriormente guardadas
@@ -37439,13 +38272,13 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			// Si se encontraron varias conincidencias
 			elseif($num > 1)
 			{
-				// comienza la evaluación de selección cuando son varios artículos los que coinciden
+				// comienza la evaluaciï¿½n de selecciï¿½n cuando son varios artï¿½culos los que coinciden
 
 				if($rs['Artpos']!='P')
 					$articulo_pos = false;
 					
-				// Si es dosis exacta y es POS no es necesario hacer evaluación de fracciones 
-				// y este se lleva como resultado de la búsqueda, se finaliza el ciclo
+				// Si es dosis exacta y es POS no es necesario hacer evaluaciï¿½n de fracciones 
+				// y este se lleva como resultado de la bï¿½squeda, se finaliza el ciclo
 				if($dosis_exacta && $articulo_pos)
 				{
 					$articulo_encontrado = $rs['Artcod'];
@@ -37470,11 +38303,11 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 					{
 						if(true ||$articulo_pos_encontrado!='P')
 						{
-							// Si la dosis es múltiplo de las fracciones o viceversa
+							// Si la dosis es mï¿½ltiplo de las fracciones o viceversa
 							// if($multiploDosis==0 || $multiploFraccion==0)
 							if($multiploDosis==0)
 							{
-								// Si las unidades a pedir estan en el rango de máximo y mínimo
+								// Si las unidades a pedir estan en el rango de mï¿½ximo y mï¿½nimo
 								if( ($dosis*1)>=($rs['Defmin']*1) && ($dosis)*1<=($rs['Defmax']*1))
 								{
 									// Si es primera vez que pasa o las unidades requeridas son menores a las anteriormente guardadas
@@ -37489,7 +38322,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 										$dosis_exacta_encontrado = false;
 									}
 								} 
-								// Si la fracción del artículo es superior a la dosis
+								// Si la fracciï¿½n del artï¿½culo es superior a la dosis
 								else if($dosisCubiertas>1)
 								{
 									// Si es primera vez que pasa o las unidades requeridas son menores a las anteriormente guardadas
@@ -37528,7 +38361,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 		
 		if($articulo_encontrado==-1)
 		{
-			// Si no se encontro artículo que cumpla con la dosis
+			// Si no se encontro artï¿½culo que cumpla con la dosis
 			// Se crea una dosis Adaptada
 			$articulo_encontrado = "DA0000";
 			$observacionesDA = $criterio." ".$dosis." ".$medida;
@@ -37632,7 +38465,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			 * 3.  Articulos genericos NU,QT,DA dependiendo del tipo en la tabla 68 y la 2
 			 * 4.  
 			 */
-			if($rs['origen'] == $codigoServicioFarmaceutico){ 		//No tiene genéricos
+			if($rs['origen'] == $codigoServicioFarmaceutico){ 		//No tiene genï¿½ricos
 				$tipoGenerico = "";
 			}
 			
@@ -37647,7 +38480,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			$esNutricion = false;
 	
 			if($rs['origen'] == $codigoCentralMezclas)
-			{  			//Puede tener genéricos
+			{  			//Puede tener genï¿½ricos
 				//Consulta del tipo al que pertenece
 				$tipoCentralMezclas = $rs['Arttip'];
 				
@@ -37710,7 +38543,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				}
 			}
 			
-			// //Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+			// //Si tiene componentes asociados en la tabla de componentes por tipo, mostrarï¿½ los tipos
 			// $qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artgen, Carnal, Carpna
 						// FROM {$wbasedato}_000098, {$wbasedato}_000026
 					   // WHERE Cartip = '{$tipoGenerico}' 
@@ -37753,14 +38586,14 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				// /*******************************************************************************************************************
 				 // * Se hace lo siguiente:
 				 // * Un articulo puede estar configurado para uno o dos cco en particular
-				 // * La prioridad la toma según el cco de la consulta inmeditamente anterior.
+				 // * La prioridad la toma segï¿½n el cco de la consulta inmeditamente anterior.
 				 // * Si solo se encuentra un registro se toma este por defecto, esto se puede hacer por ser
 				 // * el mismo articulo sin importar el cco  al que pertenezca. Los que cumplen que el articulo
 				 // * se encuentre en ambas tablas de maestro de articulos(movhos_000026, cenpro_000002), se llaman codificados.
 				 // ******************************************************************************************************************/
 				// $infoArt = false;
 				// if( $numArt > 0 ){
-					// //Si es el único registro se toma ese
+					// //Si es el ï¿½nico registro se toma ese
 					// if( $numArt == 1 ){
 						// $infoArt = mysql_fetch_array($resArt);
 					// }
@@ -37810,10 +38643,39 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			$tieneNutriciones = false;
 			
 			/*
-			* Modificación: se agrega validación de parámetro para mostrar solo insumos con tarifa
+			* Modificaciï¿½n: se agrega validaciï¿½n de parï¿½metro para mostrar solo insumos con tarifa
 			* autor: sebastian.nevado
 			* fecha: 2021-08-31
 			*/
+		        $bMostrarSoloConTarifa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'mostrarSoloConTarfia') == 'on';
+        		$sTablaTarifas = "";
+	        	$sWhereTarifas = "";
+	
+	        	if ($bMostrarSoloConTarifa) {
+		            $pac = informacionPaciente($conex, $wemp_pmla, $his, $ing);
+        		    $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+
+		            $sTablaTarifas = ", {$wcliame}_000026 ca ";
+		            $sWhereTarifas = " AND artcod = mtaart
+									AND mtatar = '{$pac['tarifa']}' ";
+        		}
+
+		        //Armo array con nombres de familias LEV e IC
+        		$aFamiliasLevIc = array();
+	        	$aFamiliasLevIc = explode("-", consultarAliasPorAplicacion($conex, $wemp_pmla, "famLEVIC"));
+
+	        	//Convierto todo a minï¿½scula
+		        $aFamiliasLevIc = array_map('strtolower', $aFamiliasLevIc);
+	      		$bEsLevIc = in_array($familia, $aFamiliasLevIc);
+
+        		/*
+			* FIN MODIFICACIï¿½N
+			*/
+
+        		// var_dump($esNutricion);
+		        if (!$esNutricion) {
+		            //Si tiene componentes asociados en la tabla de componentes por tipo, mostrarï¿½ los tipos
+		            $qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artgen, Carnal, Carpna
 			$bMostrarSoloConTarifa = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mostrarSoloConTarfia' ) == 'on';
 			$sTablaTarifas = "";
 			$sWhereTarifas = "";
@@ -37832,18 +38694,18 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			$aFamiliasLevIc = array();
 			$aFamiliasLevIc = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "famLEVIC" ));
 			
-			//Convierto todo a minúscula
+			//Convierto todo a minï¿½scula
 			$aFamiliasLevIc = array_map('strtolower', $aFamiliasLevIc);
 			$bEsLevIc = in_array($familia, $aFamiliasLevIc);
 			
 			/*
-			* FIN MODIFICACIÓN
+			* FIN MODIFICACIï¿½N
 			*/
 			
 			// var_dump($esNutricion);
 			if(!$esNutricion)
 			{
-				//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+				//Si tiene componentes asociados en la tabla de componentes por tipo, mostrarï¿½ los tipos
 				$qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artgen, Carnal, Carpna
 							FROM {$wbasedato}_000098, {$wbasedato}_000026 {$sTablaTarifas}
 						   WHERE Cartip = '{$tipoGenerico}' 
@@ -37893,14 +38755,14 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 					/*******************************************************************************************************************
 					 * Se hace lo siguiente:
 					 * Un articulo puede estar configurado para uno o dos cco en particular
-					 * La prioridad la toma según el cco de la consulta inmeditamente anterior.
+					 * La prioridad la toma segï¿½n el cco de la consulta inmeditamente anterior.
 					 * Si solo se encuentra un registro se toma este por defecto, esto se puede hacer por ser
 					 * el mismo articulo sin importar el cco  al que pertenezca. Los que cumplen que el articulo
 					 * se encuentre en ambas tablas de maestro de articulos(movhos_000026, cenpro_000002), se llaman codificados.
 					 ******************************************************************************************************************/
 					$infoArt = false;
 					if( $numArt > 0 ){
-						//Si es el único registro se toma ese
+						//Si es el ï¿½nico registro se toma ese
 						if( $numArt == 1 ){
 							$infoArt = mysql_fetch_array($resArt);
 						}
@@ -38065,7 +38927,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			 * 0: Como se muestra en el autocomplete
 			 * 1: Codigo del articulo
 			 * 2: Nombre comercial del articulo
-			 * 3: Nombre genérico del articulo
+			 * 3: Nombre genï¿½rico del articulo
 			 * 4: Tipo protocolo
 			 * 5: (M)edicamento o (L)iquido
 			 * 6: Es generico
@@ -38125,7 +38987,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				
 				/***************************************************************************************************
 				 * Cambios de tipo de protocolo
-				 * De acuerdo al tipo de protocolo se cambia para que aparezca en una pestaña
+				 * De acuerdo al tipo de protocolo se cambia para que aparezca en una pestaï¿½a
 				 ***************************************************************************************************/
 				// if( $rs['origen'] == "CM" ){
 					// $tipoProtocolo = "U";
@@ -38137,7 +38999,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 					$keyTipo = array_search( $tipoProtocolo, $valueTipos ) ;
 					
 					if( $keyTipo !== false ){
-						$tipoProtocolo = $arTiposProtocolos[ $keyTipos ][0];	//Siempre es la posición 0
+						$tipoProtocolo = $arTiposProtocolos[ $keyTipos ][0];	//Siempre es la posiciï¿½n 0
 						break;
 					}
 				}
@@ -38167,7 +39029,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 					$boolAtc = true;
 				}
 				
-				/*Modificación: Se agrega para validar parámetro de tarifas
+				/*Modificaciï¿½n: Se agrega para validar parï¿½metro de tarifas
 				Autor: sebastian.nevado
 				Fecha: 04/08/2021
 				*/
@@ -38278,13 +39140,13 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 			$arTiposProtocolos[] = explode( ",", $expDatos[1] );
 			$arTiposPertenecientes[] = explode( ",", $expDatos[2] );
 			$arPesMedicamentos[] = count($arPesMedicamentos) + 11;
-			$arNomPes[] = $expDatos[0];	//Nombre pestaña
+			$arNomPes[] = $expDatos[0];	//Nombre pestaï¿½a
 		}
 		else{
 			$arTiposProtocolos[] = Array( 0 => "N" );
 			$arTiposPertenecientes[] = explode( ",", $expDatos[2] );
 			$arPesMedicamentos[] = 3;
-			$arNomPes[] = "Medicamentos";	//Nombre pestaña
+			$arNomPes[] = "Medicamentos";	//Nombre pestaï¿½a
 		}
 		
 		$indexArPes++;
@@ -38315,7 +39177,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 
 	$observacionesDA = "";
 	
-	// Variables para guardar el último artículo que mas se acerca a los criterios de búsqueda
+	// Variables para guardar el ï¿½ltimo artï¿½culo que mas se acerca a los criterios de bï¿½squeda
 	$articulo_encontrado = "";
 
 	//*******************************Grupos que puede ver el centro de costos del usuario
@@ -38336,7 +39198,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 	//********************************
 	
 	/*
-	* Modificación: se agrega validación de parámetro para mostrar solo insumos con tarifa
+	* Modificaciï¿½n: se agrega validaciï¿½n de parï¿½metro para mostrar solo insumos con tarifa
 	* autor: sebastian.nevado
 	* fecha: 2021-08-31
 	*/
@@ -38355,7 +39217,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 	}
 	
 	/*
-	* FIN MODIFICACIÓN
+	* FIN MODIFICACIï¿½N
 	*/
 
 	 // Se consultan los medicamentos que cumplan con los criterios seleccionados, excepto la dosis
@@ -38421,31 +39283,31 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 			";
 
 	// 2012-07-09
-	// Se agregó ORDER BY Famund DESC para poder ordenar según la unidad destacada para la familia de medicamentos
+	// Se agregï¿½ ORDER BY Famund DESC para poder ordenar segï¿½n la unidad destacada para la familia de medicamentos
 
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	$num = mysql_num_rows( $res );
 
-	// Si hay un articulo o más
+	// Si hay un articulo o mï¿½s
 	if($num > 0)
 	{
 		$rs = mysql_fetch_array($res);
 		
-		// Se asigna la cantidad de fracciones del artículo
+		// Se asigna la cantidad de fracciones del artï¿½culo
 		$fraccionArticulo = $rs['Deffra'];
 		
-		// Si se encuentra un solo registro y es dosis exacta no es necesario hacer evaluación de fracciones 
-		// y este se lleva como resultado de la búsqueda
+		// Si se encuentra un solo registro y es dosis exacta no es necesario hacer evaluaciï¿½n de fracciones 
+		// y este se lleva como resultado de la bï¿½squeda
 		if($dosis_exacta)
 		{
 			$articulo_encontrado = $rs['Artcod'];
 		}
 		else
 		{
-			// Si la dosis es múltiplo de las fracciones o viceversa
+			// Si la dosis es mï¿½ltiplo de las fracciones o viceversa
 			if($multiploDosis==0 || $multiploFraccion==0)
 			{
-				// Si las unidades a pedir estan en el rango de máximo y mínimo
+				// Si las unidades a pedir estan en el rango de mï¿½ximo y mï¿½nimo
 				if(($dosis*1)>=($rs['Defmin']*1) && ($dosis)*1<=($rs['Defmax']*1))
 				{
 					// Si es primera vez que pasa o las unidades requeridas son menores a las anteriormente guardadas
@@ -38455,7 +39317,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 						$articulo_encontrado = $rs['Artcod'];
 					}
 				} 
-				// Si la fracción del artículo es superior a la dosis
+				// Si la fracciï¿½n del artï¿½culo es superior a la dosis
 				else if($dosisCubiertas>1)
 				{
 					// Si es primera vez que pasa o las unidades requeridas son menores a las anteriormente guardadas
@@ -38470,7 +39332,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 
 		if($articulo_encontrado==-1)
 		{
-			// Si no se encontro artículo que cumpla con la dosis
+			// Si no se encontro artï¿½culo que cumpla con la dosis
 			// Se crea una dosis Adaptada
 			$articulo_encontrado = "DA0000";
 		}
@@ -38592,7 +39454,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 			 * 3.  Articulos genericos NU,QT,DA dependiendo del tipo en la tabla 68 y la 2
 			 * 4.  
 			 */
-			if($rs['origen'] == $codigoServicioFarmaceutico){ 		//No tiene genéricos
+			if($rs['origen'] == $codigoServicioFarmaceutico){ 		//No tiene genï¿½ricos
 				$tipoGenerico = "";
 			}
 			
@@ -38605,7 +39467,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 			*/
 	
 			if($rs['origen'] == $codigoCentralMezclas)
-			{  			//Puede tener genéricos
+			{  			//Puede tener genï¿½ricos
 				//Consulta del tipo al que pertenece
 				$tipoCentralMezclas = $rs['Arttip'];
 				
@@ -38656,7 +39518,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 				}
 			}
 			
-			//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+			//Si tiene componentes asociados en la tabla de componentes por tipo, mostrarï¿½ los tipos
 			$qComp = "SELECT Cartip,Carcod,Carcco,Cardis FROM {$wbasedato}_000098 WHERE Cartip = '{$tipoGenerico}';";
 			$resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
 			$componentesTipo = "";
@@ -38731,7 +39593,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 			 * 0: Como se muestra en el autocomplete
 			 * 1: Codigo del articulo
 			 * 2: Nombre comercial del articulo
-			 * 3: Nombre genérico del articulo
+			 * 3: Nombre genï¿½rico del articulo
 			 * 4: Tipo protocolo
 			 * 5: (M)edicamento o (L)iquido
 			 * 6: Es generico
@@ -38783,13 +39645,13 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 				
 				/***************************************************************************************************
 				 * Cambios de tipo de protocolo
-				 * De acuerdo al tipo de protocolo se cambia para que aparezca en una pestaña
+				 * De acuerdo al tipo de protocolo se cambia para que aparezca en una pestaï¿½a
 				 ***************************************************************************************************/
 				foreach( $arTiposPertenecientes as $keyTipos => $valueTipos ){
 					$keyTipo = array_search( $tipoProtocolo, $valueTipos ) ;
 					
 					if( $keyTipo !== false ){
-						$tipoProtocolo = $arTiposProtocolos[ $keyTipos ][0];	//Siempre es la posición 0
+						$tipoProtocolo = $arTiposProtocolos[ $keyTipos ][0];	//Siempre es la posiciï¿½n 0
 						break;
 					}
 				}
@@ -38828,7 +39690,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 					$boolAtc = true;
 				}
 				
-				/*Modificación: Se agrega para validar parámetro de tarifas
+				/*Modificaciï¿½n: Se agrega para validar parï¿½metro de tarifas
 				Autor: sebastian.nevado
 				Fecha: 04/08/2021
 				*/
@@ -38915,7 +39777,7 @@ function consultarProtocolo($wbasedato,$protocolo,$cco,$codUsuario){
 	$coleccion = array();
 	$consulta = "";
 
-	// Se consulta la especialidad del médico
+	// Se consulta la especialidad del mï¿½dico
 	$sql =  " SELECT Esmcod
 				FROM ".$wbasedato."_000048,".$wbasedato."_000065
 			   WHERE Meduma = '".$codUsuario."'
@@ -38985,7 +39847,7 @@ function consultarProtocolo($wbasedato,$protocolo,$cco,$codUsuario){
 	
 	$arrayDetalleProtocolo = array();
 	
-	// Si se encontró protocolo
+	// Si se encontrï¿½ protocolo
 	if($num > 0)
 	{
 		while($rs = mysql_fetch_array($res))
@@ -39155,18 +40017,18 @@ function insertarOrdenWs( $conex, $wemp_pmla, $historia, $ingreso){
 		
 		$ch = curl_init();
 
-		// definimos la URL a la que hacemos la petición
+		// definimos la URL a la que hacemos la peticiï¿½n
 		curl_setopt($ch, CURLOPT_URL,"localhost/matrix/interoperabilidad/procesos/interoperabilidad_ws.php");
-		// indicamos el tipo de petición: POST
+		// indicamos el tipo de peticiï¿½n: POST
 		curl_setopt($ch, CURLOPT_POST, TRUE);
-		// definimos cada uno de los parámetros
+		// definimos cada uno de los parï¿½metros
 		curl_setopt($ch, CURLOPT_POSTFIELDS, "accion=insertarOrden&historia=".$historia."&ingreso=".$ingreso."&wemp_pmla=".$wemp_pmla."");
 
 		// recibimos la respuesta y la guardamos en una variable
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$remote_server_output = curl_exec ($ch);
 
-		// cerramos la sesión cURL
+		// cerramos la sesiï¿½n cURL
 		curl_close ($ch);
 
 		// hacemos lo que queramos con los datos recibidos
@@ -39179,7 +40041,7 @@ function insertarOrdenWs( $conex, $wemp_pmla, $historia, $ingreso){
 
 function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 		$sql="SELECT DISTINCT a.Detnro,a.dettor
-				  FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c
+				  FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c, ".$whce."_000015 e
 				 WHERE a.Dettor = 'A04'
 				   AND a.Detcod = b.codigo
 				   AND a.Detenv = 'on'
@@ -39190,6 +40052,8 @@ function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 				   AND d.Ordnro = a.Detnro
 				   AND d.Ordhis = '".$historia."'
 				   AND d.Ording = '".$ingreso."'";
+				   AND a.Dettor = e.Codigo
+				   AND e.Tipiws = 'on'";
 		$ordenes=[];
 	
 	$res 	= mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
@@ -39200,18 +40064,18 @@ function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 	foreach($ordenes as $orden){
 		$ch = curl_init();
 
-		// definimos la URL a la que hacemos la petición
+		// definimos la URL a la que hacemos la peticiï¿½n
 		curl_setopt($ch, CURLOPT_URL,"localhost/matrix/interoperabilidad/procesos/IoImagenologiaPa.php");
-		// indicamos el tipo de petición: POST
+		// indicamos el tipo de peticiï¿½n: POST
 		curl_setopt($ch, CURLOPT_POST, TRUE);
-		// definimos cada uno de los parámetros
+		// definimos cada uno de los parï¿½metros
 		curl_setopt($ch, CURLOPT_POSTFIELDS, "historia=".$historia."&ingreso=".$ingreso."&wemp_pmla=".$wemp_pmla."&tipoOrden=".$orden['tipoOrden']."&numeroOrden=".$orden['numeroOrden']."");
 		print_r($wemp_pmla);
 		// recibimos la respuesta y la guardamos en una variable
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$remote_server_output = curl_exec ($ch);
 
-		// cerramos la sesión cURL
+		// cerramos la sesiï¿½n cURL
 		curl_close ($ch);
 
 		// hacemos lo que queramos con los datos recibidos
@@ -39269,7 +40133,7 @@ function CcoPorTipoOrden($conex, $wemp_pmla, $tipo_orden, $indice, $codcups){
 
 
 /**
- * Función para buscar el código mipres para el día de hoy en los medicamentos
+ * Funciï¿½n para buscar el cï¿½digo mipres para el dï¿½a de hoy en los medicamentos
  * @by: sebastian.nevado
  * @date: 2021/10/10
  * @return: boolean
@@ -39307,7 +40171,7 @@ function encuentraCodigoMipresMedicamentoDia($sCodigoMipres, $basedatos)
 }
 
 /**
- * Función para buscar medicamentos no POS con su código mipres ingresado
+ * Funciï¿½n para buscar medicamentos no POS con su cï¿½digo mipres ingresado
  * @by: sebastian.nevado
  * @date: 2021/10/14
  * @return: array
@@ -39321,7 +40185,7 @@ function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = 
 	$aArticulos = array();
 	$aArticulosDefinitivos = array();
 	
-	//Si el wemm_pmla llega vacío, uso el global
+	//Si el wemm_pmla llega vacï¿½o, uso el global
 	$sWemp_pmla = is_null($sWemp_pmla) ? $wemp_pmla : $sWemp_pmla;
 	//Si la fecha llega nula, pongo la fecha actual
 	$sFechaBusqueda = is_null($sFechaBusqueda) ? date("Y-m-d") : $sFechaBusqueda;
@@ -39378,14 +40242,14 @@ function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = 
 	$aResultadoQuery = mysqli_query($conex, $sQueryInforme) or die ("Error: " . mysql_errno() . " - en el query - " . mysql_error());
 	$aArticulos = mysqli_fetch_all($aResultadoQuery, MYSQLI_ASSOC);
 	
-	//Recorro el array de artículos, buscando los registros repetidos, pero con diagnóstico diferente. Hacer la concatenación desde BD demora 10s.
+	//Recorro el array de artï¿½culos, buscando los registros repetidos, pero con diagnï¿½stico diferente. Hacer la concatenaciï¿½n desde BD demora 10s.
 	foreach ($aArticulos as $oArticulo)
 	{
 		$bEncontrado = false;
-		//Busco si el artículo actual está en los artículos definitivos
+		//Busco si el artï¿½culo actual estï¿½ en los artï¿½culos definitivos
 		foreach ($aArticulosDefinitivos as &$oArticuloDefinitivo)
 		{
-			//Si lo encuentro, agrego la descripción del diagnóstico
+			//Si lo encuentro, agrego la descripciï¿½n del diagnï¿½stico
 			if($oArticuloDefinitivo['historia'] == $oArticulo['historia'] && $oArticuloDefinitivo['ingreso'] == $oArticulo['ingreso'] && $oArticuloDefinitivo['codigoarticulo'] == $oArticulo['codigoarticulo'])
 			{
 				$oArticuloDefinitivo['diagnosticos'] .= $oArticulo['codigodiagnostico'] . ' - ' . $oArticulo['diagnostico'] . '; <br>';
@@ -39393,7 +40257,7 @@ function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = 
 			}
 		}
 		
-		//Si no lo encuentro, agrego el dianóstico por primera vez, y lo agrego al listado defintivo
+		//Si no lo encuentro, agrego el dianï¿½stico por primera vez, y lo agrego al listado defintivo
 		if(!$bEncontrado)
 		{
 			$oArticulo['diagnosticos'] = $oArticulo['codigodiagnostico'] . ' - ' . $oArticulo['diagnostico'] . '; <br>';
@@ -39409,7 +40273,7 @@ function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = 
 /*********************************************************************************************************************************
  * 						SECCION PARA INCLUIR EL USO DE CONSULTAR MEDIANTE AJAX
  * ****MODO DE USO
- * **1.  Hacer la invocación a este php cuando se haga la invocación asíncrona en el objeto xmlhttprequest
+ * **1.  Hacer la invocaciï¿½n a este php cuando se haga la invocaciï¿½n asï¿½ncrona en el objeto xmlhttprequest
  * **	Ej: ajax.open("POST", "../../../include/root/comun.php",true);
  * **2.  Enviar por parametro en esta invocacion
  * **	Ej: ajax.send("consultaAjax=01&basedatos="+document.forms.forma.wbasedato.value+"&parametro1=" + document.forms.forma.parametro1.value);
@@ -39934,7 +40798,7 @@ if(isset($consultaAjaxKardex)){
 								'desc' => '',
 								'fecha'=> '',
 								'hora' => '',
-								'msg'  => 'No se realizó la toma de muestra.',
+								'msg'  => 'No se realizï¿½ la toma de muestra.',
 								'error'=> 1,
 							];
 					}
@@ -39974,6 +40838,26 @@ if(isset($consultaAjaxKardex)){
 			$bEncuentraCodigo = encuentraCodigoMipresMedicamentoDia($nroPrescripcion, $basedatos);
 			echo $bEncuentraCodigo ? '1': '0';
 			break;
+			case 'seRealizaEnUnidadAmbulatoria':
+			
+			$wmovhos= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos');
+			$whce 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce');
+			
+			if( $realizarEnPiso != 'on' ){
+				enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $numeroOrden, $item, $wusuario ); // Realizar en Ayuda diagnï¿½stica
+			}
+			else{
+				marcarRealizadoEnPiso( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $numeroOrden, $item, $wusuario ); // Relizar en servicio o externo
+			}
+			
+		break;
+		
+		case 'cambioEstadoAutorizadoAutomatico':
+			$wmovhos= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos');
+			$whce 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce');
+			cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $nroOrden, $item, $wuser, $westado );
+		break;
+			
 		default :
 			break;
 	}
