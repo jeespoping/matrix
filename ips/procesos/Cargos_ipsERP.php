@@ -751,6 +751,40 @@ else
 		return $data;
 	}
 
+	/**
+	 * Este metodo permite validar que el concepto tenga el campo
+	 * Grutio marcado en 'on', lo cual indica que el concepto tiene
+	 * interoperabilidad
+	 * 
+	 * @author Joel David Payares Hernández
+	 * @since 2022-02-25
+	 */
+	function conceptoTieneInteroperabilidad($wcliame, $concepto, $ccocod)
+	{
+		global $conex;
+		$response = false;
+
+		// consulto la clasificacion del procedimiento
+		$q = "
+			  SELECT    Grutio
+				FROM    ".$wcliame."_000200, ".$wcliame."_000077
+			   WHERE    Grucod = '{$concepto}'
+				 AND    Gruest = 'on'
+				 AND    Grucod = Relconcon
+				 AND    Relconcco = '{$ccocod}'
+				 AND    Relconest = 'on'
+			GROUP BY    Relconcon
+			";
+
+		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query ".mysql_error());
+
+		if( $rows = mysql_fetch_array($res) ){
+			$response = ($rows['Grutio'] == 'on') ? true : false;
+		}
+		
+		return $response;
+	}
+
 	//------------------------------------------------------------------------------------
 	//	Funcion que trae toda la informacion relacionada a un concepto de facturacion
 	//------------------------------------------------------------------------------------
@@ -1858,6 +1892,18 @@ if(isset($accion))
 		case 'datos_desde_tercero':
 		{
 			$data = datos_desde_tercero($wcodter,$wcodesp,$wcodcon,$wtip_paciente,$whora_cargo, $wfecha_cargo, $wtipoempresa,$wtarifa,$wempresa,$wcco,$wcod_procedimiento,$cuadroTurno, $conDisponibilidad);
+			echo json_encode($data);
+			break;
+			return;
+		}
+		case 'ConceptoTieneInteroperabilidad':
+		{
+			$concepto = $_POST['concepto'];
+			$ccocod = $_POST['ccocod'];
+			$wcliame = consultarAliasPorAplicacion($conex, $_POST['wemp_pmla'], 'cliame');
+
+			$data['respuesta'] = conceptoTieneInteroperabilidad($wcliame, $concepto, $ccocod);
+
 			echo json_encode($data);
 			break;
 			return;
@@ -4583,7 +4629,7 @@ else
 	//----------------------------
 	function grabar(Boton)
 	{
-		let usuarioGraba = ($("#wuse_tal").val()).split('-')[0];
+        let tieneInteroperabilidad = false;
 
 		var PermitirGrabar 			= true;
 		var graba_varios_terceros 	= 0;
@@ -4784,6 +4830,18 @@ else
 				codigoRips = $("#codRips").attr("valor"); 
 		}
 
+		$.post("<?=$URL_AUTOLLAMADO?>?"+url_add_params,
+        {
+            consultaAjax:		'',
+            accion:				'ConceptoTieneInteroperabilidad',
+            wemp_pmla:			$('#wemp_pmla').val(),
+            concepto:			$("#busc_concepto_"+consecutivo).attr('valor' ),
+            ccocod:				$("#wccogra_"+consecutivo).val(),
+        }
+        ,function(data) {
+            tieneInteroperabilidad = data['respuesta'];
+        },'json' );
+
 		//---------------------------------------------------------------
 		// --> Envio de variables para relizar la grabacion del cargo
 		//---------------------------------------------------------------
@@ -4870,14 +4928,13 @@ else
 				mostrar_mensaje(data.Mensajes.mensaje);
 
 				// --> Si no hay ningun error
-				if(!data.Mensajes.error)
+				if(!data.Mensajes.error && tieneInteroperabilidad )
 				{
 					$.mtxCitas({
 						historia 	: $("#whistoria").val(),
 						ingreso 	: $("#wing").val(),
 						wemp_pmla 	: $('#wemp_pmla').val(),
 						cco_sede 	: $( "#wccogra_1" ).val(),
-						usuarioGC	: usuarioGraba,
 						accept		: function(){
 							
 							PintarDetalleCuentaResumido($("#whistoria").val(), $("#wing").val());
@@ -4909,6 +4966,35 @@ else
 					
 						}
 					});
+				}
+				else
+				{
+					PintarDetalleCuentaResumido($("#whistoria").val(), $("#wing").val());
+					// --> Limpiar el formulario
+					limpiar_campos();
+
+					// --> Actualizar informacion del responsable, ya que puede que esta haya cambiado al superar algun tope.
+					actualizarResposable();
+
+					cargar_datos('whistoria');
+
+					// --> Descongelar la cuenta del paciente.
+					congelarCuentaPaciente('off')
+
+					// --> Chequear reconocido, facturable SI y con honorarios.
+					$("#wrecexc_R").attr("CHECKED", "CHECKED");
+					$("#wfacturable_S").attr("CHECKED", "CHECKED");
+					$("#aplicarHonorarios").attr("CHECKED", "CHECKED");
+					$(".tdConHonorarios").hide(200);
+					$("#aplicarHonorarios").attr("manejaDobleTarHon", "NO");
+
+					// --> Imprimir soporte del cargo
+					if($("#permiteImprimirSoporteCargo").val() == "on")
+						imprimirSoporteCargo(data.Mensajes.idCargo, $("#whistoria").val(), $("#wing").val(), $("#hidden_responsable").val());
+					
+					
+					$(".tdPedirCodRips").hide();
+					$("#codRips").val("").attr("valor", "").hide();
 				}
 				// --> Activar boton grabar
 				boton.html('GRABAR').removeAttr("disabled");
