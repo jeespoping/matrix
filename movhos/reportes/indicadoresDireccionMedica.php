@@ -330,7 +330,7 @@ if(isset($accion))
 			$respuesta['Html'].= "
 			<br>
 			<table width='50%' style='border-collapse:collapse;font-size:12pt;font-family:verdana' class='bordeTabla'>
-				<tr><td align='center' colspan='4' class='encabezadoTabla'><b>Cuadro resumen (Torre 3 y 4)</b></td></tr>
+				<tr><td align='center' colspan='4' class='encabezadoTabla'><b>Cuadro resumen</b></td></tr>
 				<tr style='font-weight:bold'><td class='fondoAmarillo'>Area</td><td class='fondoAmarillo'>Ocupadas</td><td class='fondoAmarillo'>Total Camas</td><td class='fondoAmarillo'>Ocupación</td>
 				</tr>
 				<tr>
@@ -366,7 +366,7 @@ if(isset($accion))
 			break;
 		}
 		case 'verUrgencias':
-		{			
+		{
 			$respuesta['Html'] 	 = "<img id='planoUrgencias' width='100%' height='100%' src='../../images/medical/movhos/PLANOURGENCIAS.jpg' style='border-radius:8px;opacity:0.9'>";
 			$arrayOcupacion = array();
 			$ccoUrg 		= "1130";
@@ -1851,7 +1851,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'verUrgencias',
 			wemp_pmla		:	$('#wemp_pmla').val(),
-            selectsede      :   $('#sede').val()
+            selectsede      :   $('#sede').val(),
 		}, function(respuesta){
 			$("#retornar").show();
 			$("#tituloMenu").html("<table width='100%' style='font-family:verdana;font-size:18pt;color:#109DDC;font-weight:bold'><tr><td width='20%'><img id='atras' title='Retornar' src='../../images/medical/sgc/atras.png' onclick='verOcupacion()' width='25px' height='27px' style='cursor:pointer;'></td><td width='50%' align='center'>Ocupaci&oacute;n Urgencias "+respuesta.ocupacionGen+" %</td><td width='30%' style='font-size:8pt;font-weight:normal;'>Pr&oacute;xima actualizaci&oacute;n:&nbsp;<span id='relojTemp' cincoMinTem='86400000'></span>&nbsp;<img width='15px' height='15px' src='../../images/medical/sgc/Clock-32.png'>&nbsp;<img title='Actualizar' src='../../images/medical/sgc/Refresh-128.png' onclick='verUrgencias(\""+fechaBuscar1+"\")' width='15px' height='15px' style='cursor:pointer;'></td></tr></table>");
