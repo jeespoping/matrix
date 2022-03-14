@@ -5,13 +5,17 @@ Administración de la Conexión con UNIX
 </title>
 </head>
 <body>
-<center>
+	
+<!--<center>
 <table border=0 align=center>
 <tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size='4' face='Arial'>Administración de la Conexión con Unix</font></a></tr></td>
 <tr><td align=center bgcolor="#cccccc"><font size='2' face='arial'> <b> odbc.php Ver. 2006-09-18</b></font></tr></td></table>
-</center>
+</center> -->
 <?php
+$wemp_pmla= $_REQUEST['wemp_pmla'];
+
 include_once("conex.php");
+include_once("root/comun.php");
 
 /**
  * PROGRAMA MODIFICAR EL ESTADO DE UNA CONEXIÓN CON UNA BASE DE DATOS DE UNIX
@@ -50,6 +54,11 @@ include_once("conex.php");
  * 
  * @return Integer
  */
+$wactualiz = '2022-02-18';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("ADMINISTRACIÓN DE LA CONEXIÓN CON UNIX",$wactualiz, $wbasedato1);
+
 function EstadoDeConexion($puerto, $bdO, &$value, &$action){
 
 	global $conex;
@@ -93,7 +102,7 @@ else
 		 */
 		$value="";
 		$action=true;
-		$estado=EstadoDeConexion($puerto, $bdO, &$value, &$action);
+		$estado=EstadoDeConexion($puerto, $bdO, $value, $action);
 		if($estado == 1){
 			echo "<form action='' method='POST'>";
 
