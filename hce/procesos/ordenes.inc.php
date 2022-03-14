@@ -269,8 +269,7 @@ $codigoAyudaHospitalaria="H";
 //Consulta de la información del usuario
 @$usuario = consultarUsuarioOrdenes($wuser);
 
-$centroCostosServicioFarmaceutico = ccoUnificadoSF($usuario->sede);
-//$centroCostosServicioFarmaceutico = consultarCcoSF($conex, $wemp_pmla );
+$centroCostosServicioFarmaceutico = consultarCcoSF($conex, $wemp_pmla );
 $centroCostosCentralMezclas = consultarCcoCM( $conex, $wemp_pmla );
 
 var_dump($centroCostosServicioFarmaceutico);
