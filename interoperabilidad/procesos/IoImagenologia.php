@@ -1932,7 +1932,7 @@ function crearMensajesHL7ORM( $conex, $wemp_pmla, $paciente, $datosCita )
 	$modalidad	= empty( $datosCita['modalidad'] ) ? '': $datosCita['modalidad'];
 	$prioridad	= empty( $datosCita['prioridad'] ) ? '':  $datosCita['prioridad'];
 	$orden		= empty( $datosCita['tipoOrden'] ) ? '':  $datosCita['tipoOrden'];
-	$usuarioGC	= empty( $datosCita['usuarioGraboCargo'] ) ? '' : $datosCita['usuarioGraboCargo'];
+	$usuarioGC	= (!isset( $datosCita['usuarioGraboCargo'] ) && empty( $datosCita['usuarioGraboCargo'] )) ? '' : $datosCita['usuarioGraboCargo'];
 	
 	$procedimientosCargados = consultarProcedimiento( $conex, $wcliame, $datosCita['cup'] );
 	
@@ -2187,7 +2187,9 @@ if( $_POST ){
 					$idCita 	= $_POST['idCita'];
 					$cco_sede 	= $_POST['cco_sede'];
 					$indicacion	= $_POST['indicacion'] ? $_POST['indicacion'] : '';
-					$usuarioGC	= $_POST['ndoUsuarioGC'] ? $_POST['ndoUsuarioGC'] : '';
+
+					// Permite obtener la cedula del usuario que graba el cargo
+					$usuarioGC	= informacionUsuarioGrabaCargos( $conex, $wemp_pmla, $_SESSION['codigo'] );
 					
 					$paciente = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 					
@@ -2582,11 +2584,6 @@ if( $_GET ){
 				
 				//Cco desde donde se carga el procedimiento
 				$cco_sede = $_GET['cco_sede'];
-
-				//Código de matrix del usuario que grabo el cargo
-				$usuarioGC = $_GET['usuarioGC'];
-
-				$usuario_gc	= informacionUsuarioGrabaCargos( $conex, $wemp_pmla, $usuarioGC );
 			
 				//Consulto la información básica del paciente
 				$paciente 	= informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );	//función en funcionesGeneralesEnvioHL7
@@ -2665,8 +2662,6 @@ if( $_GET ){
 						}
 					}
 				}
-
-				$result['user_gc'] = $usuario_gc;
 				
 				echo json_encode($result);
 			break;

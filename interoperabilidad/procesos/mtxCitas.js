@@ -6,7 +6,6 @@
 		this.wemp_pmla 	= options.wemp_pmla || "01";
 		this.cco_sede 	= options.cco_sede || "";
 		var fnAccpt		= options.accept || null;
-		this.user_gc		= options.usuarioGC || null;
 		
 		var paciente 	= null;
 		var sede 		= null;
@@ -25,7 +24,6 @@
 			historia			: __self.historia,
 			ingreso				: __self.ingreso,
 			cco_sede			: __self.cco_sede,
-			usuarioGC			: __self.user_gc,
 		}, 
 		function(data){
 
@@ -45,7 +43,6 @@
 						datos.indicaciones	= data.indicaciones;
 						paciente 			= data.paciente;
 						sede 				= data.sede;
-						usuarioGC			= data.user_gc;
 						
 						modal += "<div class='mtx-ct' title='RECEPCION HIRUKO'>";
 						modal += "<div class='mtx-ct-title' style='display:none;'>AGENDA</div>";
@@ -193,8 +190,7 @@
 						cco_sede			: __self.cco_sede,
 						medico				: $( inMedicoRemitente ).data( "medico" ),
 						indicacion			: $( slIndicaciones ).val(),
-						idCita				: datos && datos.cita && datos.cita.id ? datos.cita.id : '',
-						ndoUsuarioGC		: usuarioGC,
+						idCita				: datos && datos.cita && datos.cita.id ? datos.cita.id : ''
 					}, 
 					function(data){
 						
