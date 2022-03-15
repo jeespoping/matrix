@@ -531,6 +531,8 @@ include_once("hce/HCE_print_function.php");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES 
+	     11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla y se actualiza encabezado
+	   	
 		.2020-10-29
 			Se cambia CREATE TABLE por CREATE TEMPORARY
 		.2020-05-04
@@ -853,9 +855,9 @@ else
 		{
 			echo "<table border=0 align=center>";
 			if($CLASE == "I")
-				echo "<tr><td id=tipoTI01 colspan=8>IMPRESION HISTORIA CLINICA ELECTRONICA Ver. 2013-12-12<td></tr>";
+				echo "<tr><td id=tipoTI01 colspan=8>IMPRESION HISTORIA CLINICA ELECTRONICA Ver. 2022-03-11<td></tr>";
 			else
-				echo "<tr><td id=tipoTI01 colspan=8>CONSULTA HISTORIA CLINICA ELECTRONICA Ver. 2013-12-12<td></tr>";
+				echo "<tr><td id=tipoTI01 colspan=8>CONSULTA HISTORIA CLINICA ELECTRONICA Ver. 2022-03-11<td></tr>";
 			echo "<tr><td id=tipoTI05 colspan=8>Fecha Inicial <input type='TEXT' name='wfechai' size=10 maxlength=10 id='wfechai' readonly='readonly' value=".$wfechai." class=tipo6>&nbsp;&nbsp;&nbsp;<IMG SRC='/matrix/images/medical/TCX/calendario.jpg' id='trigger1'>";
 			?>
 			<script type="text/javascript">//<![CDATA[
@@ -1175,7 +1177,7 @@ else
 			if ($num>0)
 			{
 				echo "<table border=0 align=center>";
-				echo "<tr><td id=tipoTI01 colspan=2>PAQUETES DE IMPRESION HISTORIA CLINICA ELECTRONICA Ver. 2013-12-12<td></tr>";
+				echo "<tr><td id=tipoTI01 colspan=2>PAQUETES DE IMPRESION HISTORIA CLINICA ELECTRONICA Ver. 2022-03-11<td></tr>";
 				echo "<tr><td id=tipoTI05 colspan=2>Fecha Inicial <input type='TEXT' name='wfechai' size=10 maxlength=10 id='wfechai' readonly='readonly' value=".$wfechai." class=tipo6>&nbsp;&nbsp;&nbsp;<IMG SRC='/matrix/images/medical/TCX/calendario.jpg' id='trigger1'>";
 				?>
 				<script type="text/javascript">//<![CDATA[

@@ -233,6 +233,9 @@ include_once("conex.php");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   
+	   11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla
+	 
 	   .2020-10-20
 				Se agrega filtro para que no se muestre pacientes de servicio domiciliario
 		.2019-11-18
@@ -320,7 +323,6 @@ include_once("conex.php");
 	   .2009-08-06
 	   		Release de Versi&oacute;n Beta.
 	   
-	   		
 [*DOC]
 ***********************************************************************************************************************/
 
@@ -556,7 +558,7 @@ else
 
 	include_once("root/comun.php");
 	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-	$wactualiz = "2021/08/13";
+	$wactualiz = "2022/03/11";
 	encabezado( "TABLERO DE PACIENTES HCE", $wactualiz, $institucion->baseDeDatos );
 
 	echo "<form name='Tablero' action='Tablero.php' method=post>";

@@ -204,6 +204,8 @@ $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla
+	   
 	   .2020-10-20 Edwin MG
 				Se agrega filtro de servicio domiciliario
 	   .2016-04-12 Verónica Arismendy Se modifica la consulta porque no se estaban teniendno en cuenta las citas de la tabla citasfi_000017 
@@ -224,7 +226,7 @@ $wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 			centro de costos de la unidad que llega por parametros.
 	   .2009-09-04
 	   		Release de Versión Beta.
-	   
+		
 	   		
 [*DOC]
 ***********************************************************************************************************************/
@@ -425,7 +427,7 @@ else
 	
 	echo "<table border=0 CELLSPACING=0>";
 	echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/lmatrix.jpg'></td>";
-	echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;TABLERO DE PACIENTES HCE UNIDADES AMBULATORIA&nbsp;&nbsp;<A HREF='/MATRIX/root/Reportes/DOC.php?files=/matrix/HCE/procesos/TableroAmb.php' target='_blank'>Version 2016-04-12</A></td></tr>";
+	echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;TABLERO DE PACIENTES HCE UNIDADES AMBULATORIA&nbsp;&nbsp;<A HREF='/MATRIX/root/Reportes/DOC.php?files=/matrix/HCE/procesos/TableroAmb.php' target='_blank'>Version 2022-03-11</A></td></tr>";
 	echo "<tr><td id=tipoT03 colspan=2></td></tr>";
 	echo "</table><br><br>";
 	echo "<center><IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'></IMG></center><br>";

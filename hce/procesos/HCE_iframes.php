@@ -82,9 +82,11 @@ function ocultarFlotante(numdiv)
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//	11/03/2022 - Brigith Lagares:  Se realiza estadarización del wemp_pmla
+//
 //	2020-05-20	-	Jessica Madrid Mejía:	Se valida si en la tabla movhos_000282 el centro de costos tiene 
 // 											restricción y de ser así si el usuario esta habilitado para acceder 
-// 											a los pacientes de dicho centro de costos.
+// 											a los pacientes de dicho centro de costos.	
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 if(isset($_REQUEST['origen']) && !isset($_REQUEST['wemp_pmla'])){
 	$wemp_pmla=$_REQUEST['origen'];

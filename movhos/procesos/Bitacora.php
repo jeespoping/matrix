@@ -101,7 +101,7 @@ else{
 }
 include_once("conex.php");
 
-	$wactualiz = "2018-05-24";
+	$wactualiz = "2022-03-11";
 
 /**********************************************************************************************************************
 	   PROGRAMA : bitacora.php
@@ -114,6 +114,8 @@ include_once("conex.php");
 
 	
 	   REGISTRO DE MODIFICACIONES :
+	   11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla y se actualiza encabezado
+	   	
 	   .2018-05-24 Jonatan Lopez
 			Se agrega el c?igo de autorizaci? proveniente de la admisi?, al ingresa en la edici? del paciente.
 	   
@@ -197,6 +199,7 @@ include_once("conex.php");
 
 	   .2007-05-03
 	   		Release de Versi? Beta.
+
 
 ***********************************************************************************************************************/
 function bi($d,$n,$k)
@@ -404,7 +407,7 @@ else
 
 	if($ok == 99)
 	{
-		$wemp_pmla = $codemp;
+		//$wemp_pmla = $codemp;
 		encabezado("BITACORA DE PACIENTES", $wactualiz, "clinica");
 
 		echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";

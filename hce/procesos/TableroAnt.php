@@ -202,6 +202,7 @@ else{
 	die('Falta parametro wemp_pmla...');
 }
 include_once("conex.php");
+include_once("root/comun.php");
 /**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : TableroAnt.php
@@ -214,6 +215,8 @@ include_once("conex.php");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES : 
+	   11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla 
+	   	
 	   .2020-06-09
 			  Se crea opcion para consultar pacientes tanto activos como egresados y permitir enviar por correo
 			  en formato pdf tanto la HCE como las ordenes, con parametro GET accion=COIDC
@@ -270,7 +273,7 @@ include_once("conex.php");
 	   .2011-02-28
 	   		Release de Versión Beta.
 	   
-	   		
+			
 [*DOC]
 ***********************************************************************************************************************/
 
@@ -466,15 +469,19 @@ else
 			}
 		}
 		$wcont=-1;
-		echo "<table border=0 CELLSPACING=0>";
-		echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$wemp_pmla.".jpg'></td>";
-		echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;TABLERO DE PACIENTES EGRESADOS HCE&nbsp;&nbsp;<A HREF='/MATRIX/root/Reportes/DOC.php?files=/matrix/HCE/procesos/TableroAnt.php' target='_blank'>Version 2014-12-23</A></td></tr>";
-		echo "<tr><td id=tipoT03 colspan=2></td></tr>";
-		echo "</table><br><br>";
-		echo "<center><IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'></IMG></center><br>";
+		$wactualiz = '2022-03-11';
+		$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+		$wbasedato1 = strtolower( $institucion->baseDeDatos );
+		encabezado("TABLERO DE PACIENTES EGRESADOS HCE",$wactualiz, $wbasedato1);
+		// echo "<table border=0 CELLSPACING=0>";
+		// echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$wemp_pmla.".jpg'></td>";
+		// echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;TABLERO DE PACIENTES EGRESADOS HCE&nbsp;&nbsp;<A HREF='/MATRIX/root/Reportes/DOC.php?files=/matrix/HCE/procesos/TableroAnt.php' target='_blank'>Version 2014-12-23</A></td></tr>";
+		// echo "<tr><td id=tipoT03 colspan=2></td></tr>";
+		// echo "</table><br><br>";
 		echo "<center><table border=0>";
 		echo "<tr><td align=center colspan=2>DATOS DEL PACIENTE</td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Numero de Historia</td>";
+		
 		if(!isset($whis))
 			$whis="";
 		if(!isset($wnin))
@@ -595,7 +602,8 @@ else
 		}
 		//echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wnin' size=10 maxlength=15 value='".$wnin."'></td></tr>";
 		echo "<tr><td bgcolor=#cccccc  colspan=2 align=center><input type='button' value='ENTER' onClick='enter()'></td></tr></table><br><br>";
-		
+		echo "<center><IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'></IMG></center><br>";
+
 		$numemp=0;
 		$query  = "select Empemp,Rolemp from ".$historia."_000020,".$historia."_000019,".$historia."_000025 ";
 		$query .= " where usucod = '".$key."' ";

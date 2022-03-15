@@ -2,6 +2,8 @@
 include_once("conex.php");
 /***********************************************************************************************************************************************
  * Actualizaciones
+ * 11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla 
+	   	
  * 2021-06-18 ( Joel Payares) - Se modifica el software, independizando segmento de formulario de autorización de acceso a historia clínica en un archivo
  *                            independiente, permitiendo centralizar el formulario para posibles cambios. Esta modificación se realizó en la linea de código 8151
  * 2021-04-27 - Johan Córdoba:
@@ -4255,7 +4257,7 @@ function validarProcedimientosFormulario($procedimientosPOST)
 
 $conex = obtenerConexionBD("matrix");
 
-$wactualiz = "2020-03-25";
+$wactualiz = "2022-03-11";
 
 if (!isset($wemp_pmla)) {
     terminarEjecucion($MSJ_ERROR_FALTA_PARAMETRO . "wemp_pmla");

@@ -313,6 +313,9 @@ function bi($d,$n,$k)
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
+
+	   11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla
+	   
 	    .2019-08-13
 	        Se agrega el include a funcionesHCE.php con la función calcularEdadPaciente() y se reemplaza en el script el 
 			cálculo de la edad del paciente por dicha función, ya que el cálculo se realizaba con 360 días, es decir, no se 
@@ -341,7 +344,8 @@ function bi($d,$n,$k)
               
 	   	.2012-08-09
 	   		Release de Versión Beta. 
-	   
+		
+			   
 ***********************************************************************************************************************/
 @session_start();
 if(!isset($_SESSION['user']))
