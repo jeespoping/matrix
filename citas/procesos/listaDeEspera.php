@@ -1,7 +1,8 @@
 <?php
 /****************************************************************************************
  * Modificaciones:
- *
+ * Diciembre 16 de 2021     Juan David Rodriguez: -Se comentan lineas con el wemp_pmla sobrescrito.
+ * Noviembre 24 de 2021     Daniel CB.  - Se realiza corrección de parametro 01 quemado. 
  * Actualizado: 18-Ene-2021 (Fernando Meneses): Creación de log en Guardar, descartar, guardar valor, verificar pago y admitir.
  * Actualizado: 21-Ene-2021 (Fernando Meneses): Se inhabilita Aseguradora al inicio de la carga para evitar error de carga en Plan.
  * Enero 15 de 2021 		Edwin MG:	- Se valida que el usuario este logueado.
@@ -26,7 +27,7 @@
 	if(!isset($_SESSION['user']))
 		exit( "<b>Usuario no registrado" );
 
-    $wactualiz = '2021-08-11';
+    $wactualiz = '2021-12-26';
     date_default_timezone_set("America/Bogota");
     // include('./config/db_connect.php');
     include_once("conex.php");
@@ -112,7 +113,7 @@
         c32.drvrtel,c32.drvrpar,c32.drvrpai,c32.drvrciu,c32.drvrdir, c33.drvanm, c35.drvser
         FROM ".$wbasedato."_000032 c32, ".$wbasedato."_000035 c35 , ".$wbasedato."_000033 c33
         WHERE drvord='' and c32.drvest='on'  AND c32.drvser=c35.drvcse AND c32.drvase=c33.drvnlb order by c32.Fecha_data DESC, c32.Hora_data DESC;";
-    $result = mysqli_query($conex, $sql);
+        $result = mysqli_query($conex, $sql);
     $registros = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
     //Consulta de tipos de servicios prestados :)
@@ -2923,7 +2924,7 @@
                     respuesta = response;
                     comentarios = respuesta.replace(/\s/g, "_")
                     let edad = getAge(fechaNacimiento)
-                    window.open(`/matrix/citas/procesos/calendar.php?empresa=citaslc&wemp_pmla=01&caso=2&wsw=&fest=off&consultaAjax=&id=${id}&cedula=${cedula}&paciente=${paciente}&telefono=${telefono}&email=${email}&url=${url}&edad=${edad}&comentarios=${comentarios}&aseguradora=${aseguradora}`, "_blank")
+                    window.open(`/matrix/citas/procesos/calendar.php?empresa=citaslc&wemp_pmla=${wemp_pmla}&caso=2&wsw=&fest=off&consultaAjax=&id=${id}&cedula=${cedula}&paciente=${paciente}&telefono=${telefono}&email=${email}&url=${url}&edad=${edad}&comentarios=${comentarios}&aseguradora=${aseguradora}`, "_blank")
 					//EscribirLog (id, 'Abrir agenda');		
                 },
                 error: function() {

@@ -3741,7 +3741,8 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 	{
 		var ancho=screen.width;
 		var alto=screen.availHeight;		
-		var path = "../../admisiones/procesos/admision_erp.php?wemp_pmla=01&TipoDocumentoPacAm=" + wtdo + "&DocumentoPacAm=" + wdoc + "&TurnoCsAm=''&AgendaMedica=" + wagendaMedica + "&solucionCitas=" + solucion;
+		var wemp_pmla = $('#wemp_pmla').val();
+		var path = "../../admisiones/procesos/admision_erp.php?wemp_pmla="+wemp_pmla+"&TipoDocumentoPacAm=" + wtdo + "&DocumentoPacAm=" + wdoc + "&TurnoCsAm=''&AgendaMedica=" + wagendaMedica + "&solucionCitas=" + solucion;
 		window.open(path,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes');
 
 	}
@@ -4474,6 +4475,7 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 	//admisiones_erp.php e inmediatamente se realiza la actualización del registro en la tabla de
 	//logs citasen_000023 de los campos del inicio de la admisión.
     function admision(idAdmision, tipoDocumentoPaciente, cedulaPaciente, nombrePaciente, solucionCitas, agendaMedica) {
+		var wemp_pmla = $('#wemp_pmla').val();
         $.post("pantallaAdmisionSala.php",
         {
             consultaAjax:           '',
@@ -4482,7 +4484,8 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
             cedulaPac:         		cedulaPaciente,
             nombrePac:         		nombrePaciente,
             solucionCitas:     		solucionCitas,
-            tipDocPaciente: 		tipoDocumentoPaciente
+            tipDocPaciente: 		tipoDocumentoPaciente,
+			wemp_pmla: 				wemp_pmla
         }, function(data){
 
             if(data.Error)
@@ -4490,7 +4493,7 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
                 jAlert(data.Mensaje, "Alerta");
                 $("#" + idAdmision).prop("checked", false);
             } else {
-            	var path = "../../admisiones/procesos/admision_erp.php?wemp_pmla=01&TipoDocumentoPacAm="+ "&DocumentoPacAm=" + cedulaPaciente + "&TurnoEnAm=" + data.Turno + "&AgendaMedica=" + agendaMedica + "&solucionCitas=" + solucionCitas;
+            	var path = "../../admisiones/procesos/admision_erp.php?wemp_pmla="+wemp_pmla+"&TipoDocumentoPacAm="+ "&DocumentoPacAm=" + cedulaPaciente + "&TurnoEnAm=" + data.Turno + "&AgendaMedica=" + agendaMedica + "&solucionCitas=" + solucionCitas;
             	window.open(path,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes');
                 $("#" + idAdmision).attr("disabled", "disabled");
                 var idTdAdmision = idAdmision.split("_", 2);
@@ -4572,7 +4575,8 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 					idFila: 				idFila,
 					cedulaPac:         		cedulaPaciente,
 					solucionCitas:     		solucionCitas,
-					empresa:     			$("#wemp_pmla").val()
+					empresa:     			$("#wemp_pmla").val(),
+					wemp_pmla: 				$('#wemp_pmla').val()
 				}, function(data){
 
 					if(data.Error)
@@ -5099,7 +5103,8 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 		            nombrePac:          	nombrePaciente,
 		            solucionCitas:     		solucionCitas,
 					centroCosto: 			$("#ccosto").val(),
-					empresa:				$("#wemp_pmla").val()
+					empresa:				$("#wemp_pmla").val(),
+					wemp_pmla: 				$('#wemp_pmla').val()
 		        }, function(data){
 
 		            if(data.Error)
@@ -5702,9 +5707,10 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 		var ccosto    = $("#ccosto").val();
 		var solucionCitas = $("#solucionCitas").val();
 		var caso = $("#caso").val();
+		var wemp_pmla = $('#wemp_pmla').val();
 		
 		if(solucionCitas === "citasen"){
-			location.href = "../../citas/procesos/pantallaAdmisionSala.php?wemp_pmla=01&caso="+caso+"&solucionCitas="+solucionCitas+"&ccosto="+ccosto+"&per="+monitores+"&ubn="+ubicacion;
+			location.href = "../../citas/procesos/pantallaAdmisionSala.php?wemp_pmla="+wemp_pmla+"&caso="+caso+"&solucionCitas="+solucionCitas+"&ccosto="+ccosto+"&per="+monitores+"&ubn="+ubicacion;
 		}
 	}
 	
@@ -5997,9 +6003,12 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 						var ingreso  = data.ingreso;
 						var tipoDoc  = data.tipoDoc;
 						var origen   = $("#wemp_pmla").val();
+						var wemp_pmla = $('#wemp_pmla').val();
+						var whce = $('#whce').val();
+						var wmovhos = $('#wmovhos').val();
 						
-						var url = "/matrix/hce/procesos/HCE_iframes.php?empresa=hce&origen="+origen+"&wcedula="+cedulaPac+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&accion=F&ok=0";
-						
+						var url = "/matrix/hce/procesos/HCE_iframes.php?wemp_pmla="+wemp_pmla+"&empresa="+whce+"&origen="+origen+"&wcedula="+cedulaPac+"&wtipodoc="+tipoDoc+"&wdbmhos="+wmovhos+"&whis="+historia+"&wing="+ingreso+"&accion=F&ok=0";
+
 						var ventanaHce = window.open(url,"miventana","width=auto,height=auto");		
 						$("#rdhistoria_clinica_"+cedulaPac).attr("checked", false);						
 					}
@@ -6960,8 +6969,8 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 					$sqlSolcitudCamillero = "INSERT INTO ".$tablaCencam."_000003
 												(Medico, Fecha_data, Hora_data, Origen, Motivo, Observacion, Destino, Solicito, Ccosto, Anulada, Central, Seguridad)
 											VALUES 
-												('cencam', '".$fecha."', '".$hora."', '".$origen."', '".$motivo."', '".$observacion."',
-												'".$destino."', '".$solicito."', '".$ccosto."', 'No', '".$central."', 'C-cencam')
+											('".$tablaCencam."', '".$fecha."', '".$hora."', '".$origen."', '".$motivo."', '".$observacion."',
+											'".$destino."', '".$solicito."', '".$ccosto."', 'No', '".$central."', 'C-".$tablaCencam."')
 					";
 				 
 					$respSolicitud = mysql_query($sqlSolcitudCamillero, $conex) or die("<b>ERROR EN QUERY MATRIX(".$sqlSolcitudCamillero."):</b><br>".mysql_error());
@@ -7033,10 +7042,12 @@ if($monitor != '')
 {
 	$verListaTurnos = TRUE;
 }
+$whce = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
+$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 
 echo "<input type='HIDDEN' name= 'wemp_pmla' id= 'wemp_pmla' value='".$wemp_pmla."'>";
-echo "<input type='HIDDEN' name= 'caso' id= 'caso' value='".$caso."'>";
-echo "<input type='HIDDEN' name= 'wsw' id= 'wsw' value='".@$wsw."'>";
+echo "<input type='HIDDEN' name= 'whce' id= 'whce' value='".$whce."'>";
+echo "<input type='HIDDEN' name= 'wmovhos' id= 'wmovhos' value='".$wmovhos."'>";
 echo "<input type='HIDDEN' name= 'solucionCitas' id= 'solucionCitas' value='".$solucionCitas."'>";
 echo "<input type='HIDDEN' name= 'valCitas' id= 'valCitas' value='".@$valCitas."'>";
 echo "<input type='HIDDEN' name= 'monitor' id= 'monitor' value='".$monitor."'>";
