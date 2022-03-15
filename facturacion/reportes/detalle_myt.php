@@ -32,7 +32,7 @@
 
         $conex = obtenerConexionBD("matrix");
         $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-        $wactualiz = "1.4 2-junio-2019";
+        $wactualiz = "Marzo 14 de 2022";
     }
     session_start();
     ?>
@@ -43,7 +43,7 @@
 encabezado("<font style='font-size: x-large; font-weight: bold'>"."DETALLE FACTURAS PARA MYT"."</font>",$wactualiz,"clinica");
 ?>
 <div style="padding-top:10px" class="panel-body">
-    <form class="form-horizontal" role="form" name="mty01" action="detalle_myt.php" method="post">
+<form class="form-horizontal" role="form" name="mty01" action="detalle_myt.php?wemp_pmla=<?php echo $_GET["wemp_pmla"] ?>" method="post">
         <table align="center">
             <tr align="center">
                 <td>&nbsp;</td>
@@ -109,10 +109,14 @@ else
 {
     $valorRadio = $_POST['radio'];
     $consecutivo = $_POST['consec'];
+    $wemp_pmla = $_REQUEST['wemp_pmla'];
+    $wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+    $wnit = $wbasedato1->nit;
+    $wnombre = $wbasedato1->nombre;
 
     $query_o1="SELECT '' numcosec,'' numconrec,'' numtiprad,'' numradant,'EPS010' codent,ateidetii,ateideide,ateideap1,ateideap2,ateideno1,
                         ateideno2,pacarsafi,'' nivcta,'' numacta,'' fechaact,'' fecsolmed,'' indperirec,'' mesper,'' anoper,'' numentre,movfue,
-                        movdoc,cardetfec,mdiadia,'' porsema,'800067065' nitprov,conarc,'PROMOTORA MEDICA LAS AMERICAS S.A.' nomprov,
+                        movdoc,cardetfec,mdiadia,'' porsema,'".$wnit."' nitprov,conarc,'PROMOTORA MEDICA LAS AMERICAS S.A.' nomprov,
                         cardetcon,cardetcod,cardetcan,cardetvun,cardettot * conmul val1,0 vlrctamod,carfacval * conmul val2,cardetfue,cardetdoc,cardetite,cardetreg"
         ."	FROM famov,facarfac,facardet,msate,msateide,inmegr,inmdia,facon,inpacars"
         ."	WHERE movfue='$fte'"

@@ -1377,16 +1377,10 @@ function generarMostrarArchivoPDF(){
 	$respuesta = shell_exec( "./generarPdf_facturas_bloque_unix.sh ".$wnombrePDF );
 
 	$htmlFactura = "<br><br><br><font size='5' color='#2A5DB0'>Facturas en bloque</font>"
-					  ."<br><br>"
-					."<object type='application/pdf' data='facturas/".$wnombrePDF.".pdf' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 width='900' height='700'>"
-					  ."<param name='src' value='facturas/".$wnombrePDF."' pdf#toolbar=1&amp;navpanes=0&amp;scrollbar=1 />"
-					  ."<p style='text-align:center; width: 60%;'>"
-						."Adobe Reader no se encuentra o la versión no es compatible, utiliza el icono para ir a la página de descarga <br />"
-						."<a href='http://get.adobe.com/es/reader/' onclick='this.target=\"_blank\">"
-						  ."<img src='../../images/medical/root/prohibido.gif' alt='Descargar Adobe Reader' width='32' height='32' style='border: none;' />"
-						."</a>"
-					  ."</p>"
-					."</object>";
+                  ."<br><br>"
+                    ."<iframe src='http://".$_SERVER['HTTP_HOST']."/matrix/fachos/procesos/facturas/".$wnombrePDF.".html' width='900' height='700'>
+                        Este navegador no es compatible con PDFs. haga click <a href='http://".$_SERVER['HTTP_HOST']."/matrix/fachos/procesos/facturas/".$wnombrePDF.".html' target='_blank'>aquí</a> para ver el archivo.
+                    </iframe>";
 	$wactualiz=" 2022-03-10 ";
     echo "<div align='center'>";
     encabezado("Imprimir Factura Unix",$wactualiz, "clinica");
@@ -1440,6 +1434,7 @@ else
 
     echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
     echo "<input type='HIDDEN' name='wmaximo_paginas' id='wmaximo_paginas' value='".$wmaximo_paginas."'>";
+    
 
     if(!isset($wparam))
     { $wparam = "0"; }
