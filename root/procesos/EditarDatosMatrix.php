@@ -30,7 +30,7 @@ include_once("conex.php");
  **********************************************************************************************************/
 
 $wactualiz = "2020-09-22";
-$wactualiz = "2021-01-21";
+$wactualiz = "2022-03-15";
 
 if(!isset($_SESSION['user'])){
 	echo "error";
@@ -1675,9 +1675,9 @@ if(isset($accion))
 			$arr_relacion_ne['*']['value']	= 'TODOS';
 			$arr_relacion_ne['*']['name']	= 'TODOS';
 			$arr_relacion_ne['*']['cod']	= '*';
-			$arr_relacion_ne['']['value']	= 'NO APLICA';
-			$arr_relacion_ne['']['name']	= 'NO APLICA';
-			$arr_relacion_ne['']['cod']	= '';
+//			$arr_relacion_ne['']['value']	= 'NO APLICA';
+//			$arr_relacion_ne['']['name']	= 'NO APLICA';
+//			$arr_relacion_ne['']['cod']	= '';
 			echo json_encode($arr_relacion_ne);
 			break;
 		}
@@ -1713,11 +1713,11 @@ if(isset($accion))
 			{
 				$nombrecompleto ='*-TODOS';
 			}
-			if($nombrecompleto =='')
-			{
-				$nombrecompleto ='NO APLICA';
-				
-			}
+//			if($nombrecompleto =='')
+//			{
+//				$nombrecompleto ='';
+//
+//			}
 			echo $nombrecompleto;
 			//echo json_encode($arr_relacion_ne);
 			break;
@@ -2259,7 +2259,7 @@ function traer_hidden_tipo9($comentario,$tabla,$valor,$wid,$wnombrecampo)
 		}
 		
 		$arr_relacion_ne['*']	= 'TODOS';
-		$arr_relacion_ne['']	= 'NO APLICA';
+//		$arr_relacion_ne['']	= 'NO APLICA';
 
 
 	}
@@ -2299,7 +2299,7 @@ function traer_hidden_tipo9($comentario,$tabla,$valor,$wid,$wnombrecampo)
 		}
 		
 		$arr_relacion_ne['*']	= 'TODOS';
-		$arr_relacion_ne['']	= 'NO APLICA';
+//		$arr_relacion_ne['']	= 'NO APLICA';
 
 
 	}
