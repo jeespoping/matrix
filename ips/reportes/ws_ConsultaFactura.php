@@ -69,6 +69,8 @@
 		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
 
 		$respuesta = array();
+		$response = array();
+		$flag = true;
 
 		if( !isset($conex) )
 		{
@@ -111,38 +113,58 @@
 			}
 			
 			$query_historia_ingreso = "
-			SELECT root_000037.Orihis AS Historia, root_000037.Oriing AS Ingreso
-				FROM root_000037
-				WHERE root_000037.Oriced = " . $documento_paciente . "
-					AND root_000037.Oritid = '" . $tipo_documento . "'
-					AND root_000037.Oriori = " . $wemp_pmla;
+				  SELECT	root_000037.Orihis AS Historia, root_000037.Oriing AS Ingreso
+					FROM	root_000037
+				   WHERE	root_000037.Oriced = " . $documento_paciente . "
+					 AND	root_000037.Oritid = '" . $tipo_documento . "'
+					 AND	root_000037.Oriori = " . $wemp_pmla;
 					
 			$resultado_query = mysqli_query($conex, $query_historia_ingreso) or die(mysqli_error($conex));
 
-			if( !$resultado_query || mysqli_num_rows($resultado_query) > 0 ) {
+			if( mysqli_num_rows($resultado_query) > 0 ) {
 				
 				while($fila = mysqli_fetch_array($resultado_query)) {
 					$historia = $fila[0];
 					$ingreso = $fila[1];
 				}
 			}
+			else
+			{
+				$historia = null;
+				$ingreso = null;
+			}
 		}
 		
-		$respuesta = consultarEstadoFacturaPorHistoriaIngreso($conex_unix, $historia, $ingreso, $codigo_responsable);
+		if( $historia != null && $ingreso != null )
+		{
+			$respuesta = consultarEstadoFacturaPorHistoriaIngreso($historia, $ingreso, $codigo_responsable);
+		}
+		else
+		{
+			$response = [
+				"state"			=>	200,
+				"description"	=>	"Error al realizar la consulta.",
+				"data"			=>	"La historia '$historia' e ingreso '$ingreso', no existen."
+			];
+		}
 		
 		if( count($respuesta) == 0 ) {
-			return [
+			$response = [
 				"state"			=>	200,
 				"description"	=>	"Consulta Satisfactoria.",
 				"data"			=>	"No existen registros para la historia '$historia' e ingreso '$ingreso'."
 			];
 		}
-
-		return [
+		else
+		{
+			$response = [
 				'state'			=>	200,
 				'description'	=>	'Consulta Satisfactoria.',
 				'data'			=>	$respuesta
 			];
+		}
+
+		return $response;
 	}
 
 	/**
@@ -211,14 +233,16 @@
 				if( !isset($paciente['documento']) ) {
 					return [
 						'state'			=>	404,
-						'description'	=>	'El número de documento del paciente es obligatorio.'
+						'description'	=>	"El número de documento del paciente es obligatorio.",
+						'data'			=>	[]
 					];
 				}
 
 				if( !isset($paciente['tipoDocumento']) ) {
 					return [
 						'state'			=>	404,
-						'description'	=>	'Falta el campo tipo de documento, es obligatorio.'
+						'description'	=>	"Falta el campo tipo de documento, es obligatorio.",
+						'data'			=>	[]
 					];
 				}
 
@@ -237,9 +261,9 @@
 
 			if( count($respuesta) == 0 ) {
 				$respuesta = [
-					"state"			=>	200,
-					"description"	=>	"Consulta Satisfactoria.",
-					"data"			=>	"No existen registros para la historia '$historia' e ingreso '$ingreso'."
+					'state'			=>	200,
+					'description'	=>	"No existen registros para la historia {$historia} e ingreso {$ingreso}.",
+					'data'			=>	[]
 				];
 			}
 			
@@ -256,11 +280,12 @@
 			{
 				$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $paciente['codigo_responsable'], $paciente['fecha_inicio'], $paciente['fecha_corte'], $estados_excluidos_string);
 
-				if( count($respuesta) == 0 ) {
-					$respuesta = [
-						"state"			=>	200,
-						"description"	=>	"Consulta Satisfactoria.",
-						"data"			=>	"No existen registros para la historia '$historia' e ingreso '$ingreso'."
+				if( count($respuesta) == 0 )
+				{
+					$response = [
+						'state'			=>	200,
+						'description'	=>	"No existen registros para la historia {$historia} e ingreso {$ingreso}.",
+						'data'			=>	[]
 					];
 				}
 				
@@ -272,7 +297,7 @@
 
 		return [
 				'state'			=>	200,
-				'description'	=>	'Consulta Satisfactoria.',
+				'description'	=>	"Consulta Satisfactoria.",
 				'data'			=>	$array_respuesta
 			];
 	}
@@ -291,12 +316,37 @@
 
 		$resultado_query = mysqli_query($conex, $query_historia_ingreso) or die(mysqli_error($conex));
 
-		if( $resultado_query ) {
-			
-			while($fila = mysqli_fetch_array($resultado_query)) {
-				$response['historia'] = $fila[0];
-				$response['ingreso'] = $fila[1];
+		if( $resultado_query )
+		{
+			$result_array_response = odbc_fetch_array($respuesta);
+
+			if( !empty( $result_array_response ) )
+			{
+				while($fila = mysqli_fetch_array($resultado_query)) {
+					$response['historia'] = $fila[0];
+					$response['ingreso'] = $fila[1];
+				}
 			}
+			else
+			{
+				$response = [
+					'state'			=>	404,
+					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
+					'data'			=>	[],
+					'error_code'	=>	odbc_error($conex_unix),
+					'error_msg'		=>	odbc_errormsg($conex_unix)
+				];
+			}
+		}
+		else
+		{
+			$response = [
+				'state'			=>	400,
+				'description'	=>	'Problemas de comunicación con Unix.',
+				'data'			=>	[],
+				'error_code'	=>	odbc_error($conex_unix),
+				'error_msg'		=>	odbc_errormsg($conex_unix)
+			];
 		}
 
 		return $response;
@@ -332,11 +382,36 @@
 		
 		if( $respuesta )
 		{
-			while ($fila = odbc_fetch_array($respuesta)) {
-				$response['historia']		= $fila['historia'];
-				$response['ingreso']		= $fila['ingreso'];
-				$response['valor_total']	= $fila['valor_total'];
+			$result_array_response = odbc_fetch_array($respuesta);
+
+			if( !empty( $result_array_response ) )
+			{
+				while ($fila = odbc_fetch_array($respuesta)) {
+					$response['historia']		= $fila['historia'];
+					$response['ingreso']		= $fila['ingreso'];
+					$response['valor_total']	= $fila['valor_total'];
+				}
 			}
+			else
+			{
+				$response = [
+					'state'			=>	404,
+					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
+					'data'			=>	[],
+					'error_code'	=>	odbc_error($conex_unix),
+					'error_msg'		=>	odbc_errormsg($conex_unix)
+				];
+			}
+		}
+		else
+		{
+			$response = [
+				'state'			=>	400,
+				'description'	=>	'Problemas de comunicación con Unix.',
+				'data'			=>	[],
+				'error_code'	=>	odbc_error($conex_unix),
+				'error_msg'		=>	odbc_errormsg($conex_unix)
+			];
 		}
 
 		return $response;
@@ -354,9 +429,12 @@
 	 *
 	 * @return [array] Respuesta de base de datos
 	*/
-	function consultarEstadoFacturaPorHistoriaIngreso($conex_unix, $historia, $ingreso, $codigo_responsable = null)
+	function consultarEstadoFacturaPorHistoriaIngreso($historia, $ingreso, $codigo_responsable = null)
 	{
+		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
+
 		$result = array();
+
 		$sql = "
 			  SELECT
 						carfca as prefijo,
@@ -382,16 +460,37 @@
 
 		if( $respuesta )
 		{
-			while ($fila = odbc_fetch_array($respuesta)) {
-				
-				$fila['cuenta_cobro'] = consultarCuentaCobro($conex_unix, $fila['prefijo'], $fila['numero_factura']);
+			$result_array_response = odbc_fetch_array($respuesta);
 
-				array_push($result, convertKeysToCamelCase( $fila ));
+			if( !empty( $result_array_response ) )
+			{
+				while ($fila = odbc_fetch_array($respuesta)) {
+					
+					$fila['cuenta_cobro'] = consultarCuentaCobro($conex_unix, $fila['prefijo'], $fila['numero_factura']);
+
+					array_push($result, convertKeysToCamelCase( $fila ));
+				}
+			}
+			else
+			{
+				$response = [
+					'state'			=>	404,
+					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
+					'data'			=>	[],
+					'error_code'	=>	odbc_error($conex_unix),
+					'error_msg'		=>	odbc_errormsg($conex_unix)
+				];
 			}
 		}
 		else
 		{
-			array_push($result, "Error al ejecutar consulta.");
+			$response = [
+				'state'			=>	400,
+				'description'	=>	'Problemas de comunicación con Unix.',
+				'data'			=>	[],
+				'error_code'	=>	odbc_error($conex_unix),
+				'error_msg'		=>	odbc_errormsg($conex_unix)
+			];
 		}
 
 		return $result;
@@ -422,12 +521,37 @@
 		
 		if( $respuesta )
 		{
-			while ($fila = odbc_fetch_array($respuesta)) {
-				if( isset( $fila['cuenta_cobro'] ) )
-				{
-					$response = $fila['cuenta_cobro'];
+			$result_array_response = odbc_fetch_array($respuesta);
+
+			if( !empty( $result_array_response ) )
+			{
+				while ($fila = odbc_fetch_array($respuesta)) {
+					if( isset( $fila['cuenta_cobro'] ) )
+					{
+						$response = $fila['cuenta_cobro'];
+					}
 				}
 			}
+			else
+			{
+				$response = [
+					'state'			=>	404,
+					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
+					'data'			=>	[],
+					'error_code'	=>	odbc_error($conex_unix),
+					'error_msg'		=>	odbc_errormsg($conex_unix)
+				];
+			}
+		}
+		else
+		{
+			$response = [
+				'state'			=>	400,
+				'description'	=>	'Problemas de comunicación con Unix.',
+				'data'			=>	[],
+				'error_code'	=>	odbc_error($conex_unix),
+				'error_msg'		=>	odbc_errormsg($conex_unix)
+			];
 		}
 
 		return $response;
@@ -477,15 +601,41 @@
 				";
 
 				$respuesta = odbc_exec($conex_unix, $sql);
+				$num_filas = odbc_num_rows($respuesta);
 
 				$response[ $key ]['responsable'] = odbc_fetch_array($respuesta)['responsable'];
 
 				if( $respuesta )
 				{
-					while ($fila = odbc_fetch_array($respuesta)) {
-						unset( $fila['responsable'] );
-						$facturas[] = $fila;
+					$result_array_response = odbc_fetch_array($respuesta);
+
+					if( !empty( $result_array_response ) )
+					{
+						while ($fila = odbc_fetch_array($respuesta)) {
+							unset( $fila['responsable'] );
+							$facturas[] = $fila;
+						}
 					}
+					else
+					{
+						$response = [
+							'state'			=>	404,
+							'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
+							'data'			=>	[],
+							'error_code'	=>	odbc_error($conex_unix),
+							'error_msg'		=>	odbc_errormsg($conex_unix)
+						];
+					}
+				}
+				else
+				{
+					return [
+						'state'			=>	400,
+						'description'	=>	'Problemas de comunicación con Unix.',
+						'data'			=>	[],
+						'error_code'	=>	odbc_error($conex_unix),
+						'error_msg'		=>	odbc_errormsg($conex_unix)
+					];
 				}
 
 				$response[ $key ][] = $facturas;
@@ -585,36 +735,62 @@
 				";
 		}
 
-		$respuesta = odbc_exec($conex_unix, $sql);
+		$respuesta = odbc_do($conex_unix, $sql);
 
 		if( $respuesta )
 		{
 			$cuentaCobroAux = 0;
 
-			while ($fila = odbc_fetch_array($respuesta)) {
+			$result_array_response = odbc_fetch_array($respuesta);
 
-				$factura = [
-					'historia'			=>		$fila['historia'],
-					'ingreso'			=>		$fila['ingreso'],
-					'prefijo'			=>		$fila['prefijo'],
-					'fuente'			=>		$fila['fuente_factura'],
-					'factura'			=>		$fila['factura'],
-					'estado_factura'	=>		$fila['estado_factura'],
-					'valor_total'		=>		$fila['valor_total'],
-					'nit_responsable'	=>		$fila['nit_responsable']
-				];
+			if( !empty( $result_array_response ) )
+			{
 
-				if( $cuentaCobroAux != $fila['cuenta_cobro'] )
-				{
-					$cuentaCobro[$fila['cuenta_cobro']] = [];
+				while ($fila = odbc_fetch_array($respuesta)) {
+
+					$factura = [
+						'historia'			=>		$fila['historia'],
+						'ingreso'			=>		$fila['ingreso'],
+						'prefijo'			=>		$fila['prefijo'],
+						'fuente'			=>		$fila['fuente_factura'],
+						'factura'			=>		$fila['factura'],
+						'estado_factura'	=>		$fila['estado_factura'],
+						'valor_total'		=>		$fila['valor_total'],
+						'nit_responsable'	=>		$fila['nit_responsable']
+					];
+
+					if( $cuentaCobroAux != $fila['cuenta_cobro'] )
+					{
+						$cuentaCobro[$fila['cuenta_cobro']] = [];
+					}
+
+					array_push( $cuentaCobro[$fila['cuenta_cobro']], (object) convertKeysToCamelCase( $factura ) );
+					
+					$cuentaCobroAux = $fila['cuenta_cobro'];
 				}
 
-				array_push( $cuentaCobro[$fila['cuenta_cobro']], (object) convertKeysToCamelCase( $factura ) );
-				
-				$cuentaCobroAux = $fila['cuenta_cobro'];
+				$response = (object) $cuentaCobro;
 			}
-
-			$response = (object) $cuentaCobro;
+			else
+			{
+				$response = [
+					'state'			=>	404,
+					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
+					'data'			=>	[],
+					'error_code'	=>	odbc_error($conex_unix),
+					'error_msg'		=>	odbc_errormsg($conex_unix)
+				];
+			}
+		}
+		else
+		{
+			$response = [
+				'state'			=>	400,
+				'description'	=>	'Problemas de comunicación con Unix.',
+				'data'			=>	[],
+				'error_code'	=>	odbc_error($conex_unix),
+				'error_msg'		=>	odbc_errormsg($conex_unix)
+			];
 		}
 
 		return $response;
@@ -655,9 +831,10 @@
 		return $esPAF;
 	}
 
-	function validarResponsablePAF( $conex_unix = null, $historia = null, $ingreso = null, $responsable = null)
+	function validarResponsablePAF( $historia = null, $ingreso = null, $responsable = null)
 	{
 		global $conex;
+		$conex_unix = odbc_connect('facturacion','informix','sco');
 
 		$respuesta = array();
 		$responsablesPAF = responsablesPAF($conex, $_REQUEST['wemp_pmla']);
@@ -695,7 +872,19 @@
 				}
 			}
 		}
-		//Falta validación si existe responsable en el request
+		else
+		{
+			if( in_array($responsable, $responsablesPAF) )
+			{
+				$respuesta['responsable'] = $responsable;
+				$respuesta['esPaf'] = true;
+			}
+			else
+			{
+				$respuesta['responsable'] = $responsable;
+				$respuesta['esPaf'] = null;
+			}
+		}
 
 		return $respuesta;
 	}
