@@ -4,6 +4,7 @@ define('MYSQL_ASSOC',MYSQLI_ASSOC);
 //header("Content-Type: text/html;charset=UTF8");
 /****************************************************************************
 * accion
+2021-03-15 Juan David Rodriguez: Se corrige la fecha de preadmision que había sido comentada en una publicación anterior
 2021-12-19 Sebastián Nevado: se cambia la función verificarCcoIngresoAyuda.
 2021-04-26 Juan David Rodriguez: Se separa codigo js y funciones de php en archivos por separados para una mejor comprensión del codigo (js_admisiones_erp.js y funciones_admsiones_erp.php)
 2021-04-26 Juan David Rodriguez: Se realiza modifición para que los datos demograficos de un paciente sean traidos desde la tabla root_000036 y no de la tabla 100 de cada empresa
@@ -9294,20 +9295,11 @@ if(!array_key_exists("user", $_SESSION))
     echo "error";
 else
 {
-	$wactualiz = '2022-02-14';
-	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-	$wbasedato1 = strtolower( $institucion->baseDeDatos );
+	$wactualiz = '2022-03-15';
 	encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, $wbasedato1);
-//$fechaAct=date("Y-m-d");
-//$horaAct=date("H:i:s");
-//if ($wemp_pmla == 01)
-//{
-//	encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, $wbasedato1);
-//}
-//else 
-//{
-//	encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, "logo_".$wbasedato1);
-//}
+
+	$fechaAct=date("Y-m-d");
+	$horaAct=date("H:i:s");
 
 $soportesautomaticos =  consultarAliasPorAplicacion( $conex, $wemp_pmla, 'soportesautomaticos' );
 $TableroDigitalizacionUrgencias = consultarAliasPorAplicacion($conex,$wemp_pmla,"TableroDigitalizacionUrgencias");

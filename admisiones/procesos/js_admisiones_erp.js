@@ -3667,7 +3667,7 @@ $(document).ready(function() {
 				key         : $('#key').val(),
 				wbasedato   :$('#wbasedato').val(),
 				wemp_pmla   :$('#wemp_pmla').val(),
-				tema: $('#tema').val,
+				tema: $('#tema').val(),
 			},
 			function(data){
 				if(data.error == 1)
