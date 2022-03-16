@@ -163,7 +163,7 @@ if( isset($_REQUEST['action'] )){
 		//echo '<div style="float:left; margin-left:10%;"><font size=3>Minuta '.$minutaElegida.'</font></div>';
 		//echo "<br>";
 		//Los div's para el acordion se imprimen dentro de la funcion
-		imprimirTablaPedidos($_REQUEST['wcco'], $_REQUEST['wser'], $_REQUEST['wfec_i'], $_REQUEST['sede']);
+		imprimirTablaPedidos($_REQUEST['wcco'], $_REQUEST['wser'], $_REQUEST['wfec_i']);
 
 		$cant = haySolicitudesCartaMenu($_REQUEST['wfec_i'], $_REQUEST['wser'],$_REQUEST['wcco']);
 		if( $cant > 0 ){
