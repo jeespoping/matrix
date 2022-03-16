@@ -214,13 +214,17 @@ if(isset($accion))
 		case 'verOcupacion':
 		{
 			$sqlTorres = "
-			SELECT Torcod, Tornom 
+			SELECT Torcod, Tornom, Torsed, Torurg 
 			  FROM ".$wbasedato."_000234
 			 WHERE Torest = 'on'
 			";
 			$resTorres = mysql_query($sqlTorres, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTorres):</b><br>".mysql_error());
-			while($rowTorres = mysql_fetch_array($resTorres, MYSQL_ASSOC))
+			while($rowTorres = mysql_fetch_array($resTorres, MYSQL_ASSOC)){
 				$arrayTorres[$rowTorres['Torcod']] = $rowTorres['Tornom'];
+				$arraySedes[$rowTorres['Torcod']]  = $rowTorres['Torsed'];
+				$arrayEsUrg[$rowTorres['Torcod']]  = $rowTorres['Torurg'];
+			}
+				
 			
 			$arrayOcupacion 		= ocupacionHospitalaria($fechaBuscar1, $ocupacionGeneral);
 			$respuesta['ocupacion']	= $ocupacionGeneral;
@@ -235,6 +239,7 @@ if(isset($accion))
 			{
 				if($torre == '')
 					continue;
+				
 				
 				$respuesta['Html'].= "
 				<td width='50%' align='center' style='padding:3px;color:#000000'>
@@ -310,11 +315,11 @@ if(isset($accion))
 						</tr>
 					</table>";
 				
-				if($torre == 'T4')
+				if($arrayEsUrg[$torre] == 'on')
 					$respuesta['Html'].= "
 						<br>
 						<table width='95%' class='fondoAmarillo bordeTabla' style='cursor:pointer;border-collapse:collapse;font-size:12pt;font-family:verdana'>
-							<tr align='center'><td colspan='2' onclick='verUrgencias(\"".$fechaBuscar1."\")'><b>Urgencias</b></td></tr>
+							<tr align='center'><td colspan='2' onclick='verUrgencias(\"".$fechaBuscar1."\",\"".$arraySedes[$torre]."\")'><b>Urgencias</b></td></tr>
 						</table>
 						<br>
 						<table width='95%' class='fondoAmarillo bordeTabla' style='cursor:pointer;border-collapse:collapse;font-size:12pt;font-family:verdana'>
@@ -369,7 +374,7 @@ if(isset($accion))
 		{
 			$respuesta['Html'] 	 = "<img id='planoUrgencias' width='100%' height='100%' src='../../images/medical/movhos/PLANOURGENCIAS.jpg' style='border-radius:8px;opacity:0.9'>";
 			$arrayOcupacion = array();
-			$ccoUrg 		= "1130";
+			$ccoUrg 		= consultarCentrocoUrgencias('',$sedeEnviada)->codigo;
 			$movhos 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 			$basedatoshce 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 			$cliame 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
@@ -465,6 +470,7 @@ if(isset($accion))
 			   AND Atuaor != 'on'
 			 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
 			";
+			
 			$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
 
 			while($rowTurnos = mysql_fetch_array($resTurnos))
@@ -1840,7 +1846,7 @@ else
 	//--------------------------------------------------------
 	//	--> Ver Urgencias
 	//---------------------------------------------------------
-	function verUrgencias(fechaBuscar1)
+	function verUrgencias(fechaBuscar1, sedeEnviada)
 	{
 		clearInterval(blinkPor);
 		$("#menu").hide();
@@ -1852,6 +1858,7 @@ else
 			accion			:   'verUrgencias',
 			wemp_pmla		:	$('#wemp_pmla').val(),
             selectsede      :   $('#sede').val(),
+			sedeEnviada		:   sedeEnviada,
 		}, function(respuesta){
 			$("#retornar").show();
 			$("#tituloMenu").html("<table width='100%' style='font-family:verdana;font-size:18pt;color:#109DDC;font-weight:bold'><tr><td width='20%'><img id='atras' title='Retornar' src='../../images/medical/sgc/atras.png' onclick='verOcupacion()' width='25px' height='27px' style='cursor:pointer;'></td><td width='50%' align='center'>Ocupaci&oacute;n Urgencias "+respuesta.ocupacionGen+" %</td><td width='30%' style='font-size:8pt;font-weight:normal;'>Pr&oacute;xima actualizaci&oacute;n:&nbsp;<span id='relojTemp' cincoMinTem='86400000'></span>&nbsp;<img width='15px' height='15px' src='../../images/medical/sgc/Clock-32.png'>&nbsp;<img title='Actualizar' src='../../images/medical/sgc/Refresh-128.png' onclick='verUrgencias(\""+fechaBuscar1+"\")' width='15px' height='15px' style='cursor:pointer;'></td></tr></table>");
