@@ -52,7 +52,7 @@
 encabezado("<font style='font-size: x-large; font-weight: bold'>"."FACTURAS PARA MYT"."</font>",$wactualiz,"clinica");
 ?>
 <div style="padding-top:10px" class="panel-body">
-    <form class="form-horizontal" role="form" name="mty01" action="mty01.php" method="post">
+    <form class="form-horizontal" role="form" name="mty01" action="mty01.php?wemp_pmla=<?php echo $_GET["wemp_pmla"] ?>" method="post">
         <table align="center" border="0">
             <tr style="text-align: center">
                 <td colspan="6">

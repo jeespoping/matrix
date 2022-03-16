@@ -61,7 +61,7 @@
 
     <!-- BUSCADOR: -->
     <div id="divSelector" class="divSelector">
-        <form class="form-horizontal" role="form" name="frmSelector" action="recIngreso_01.php" method="post">
+        <form class="form-horizontal" role="form" name="frmSelector" action="recIngreso_01.php?wemp_pmla=<?php echo $_GET["wemp_pmla"] ?>" method="post">
             <table align="center">
                 <tr>
                     <td>

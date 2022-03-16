@@ -47,7 +47,7 @@ include_once("conex.php");
 <?php encabezado("<font style='font-size: x-large; font-weight: bold'>"."IMPRESION DE ANTICIPOS Y ABONOS"."</font>",$wactualiz,"clinica"); ?>
 
     <div id="divSelector" class="divSelector">
-        <form class="form-horizontal" role="form" name="frmSelector" action="antyabo_01.php" method="post">
+        <form class="form-horizontal" role="form" name="frmSelector" action="antyabo_01.php?wemp_pmla=<?php echo $_GET["wemp_pmla"] ?>" method="post">
             <table align="center">
                 <tr>
                     <td>

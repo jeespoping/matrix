@@ -1379,7 +1379,7 @@ function generarMostrarArchivoPDF(){
 	$htmlFactura = "<br><br><br><font size='5' color='#2A5DB0'>Facturas en bloque</font>"
                   ."<br><br>"
                     ."<iframe src='http://".$_SERVER['HTTP_HOST']."/matrix/fachos/procesos/facturas/".$wnombrePDF.".html' width='900' height='700'>
-                        Este navegador no es compatible con PDFs. haga click <a href='http://".$_SERVER['HTTP_HOST']."/matrix/fachos/procesos/facturas/".$wnombrePDF.".html' target='_blank'>aquí</a> para ver el archivo.
+                        Este navegador no es compatible con PDFs. haga click <a href='http://get.adobe.com/es/reader/'".$wnombrePDF.".html' target='_blank'>aquí</a> para ver el archivo.
                     </iframe>";
 	$wactualiz=" 2022-03-10 ";
     echo "<div align='center'>";
