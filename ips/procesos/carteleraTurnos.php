@@ -5,8 +5,8 @@
 //DESCRIPCION:  parametros:
 //              wemp_pmla, tema, funcion: listarTurnos ó listarAlertas
 //                      
-//AUTOR:				TAITO
-//FECHA DE CREACION:	2021-11-01
+//AUTOR:					TAITO
+//FECHA DE MODIFICACION:	2022-02-01
     include_once("conex.php");
     include("root/comun.php");
 	$wemp_pmla = $_GET['wemp_pmla'];
@@ -193,7 +193,7 @@
 										</v-card>
 									</v-col>
 									<v-col cols="7">
-										<v-card v-if="tipoTur === 'ENDOSCOPIA'" light plain color="white" height="50px" elevation="0" width="280">
+										<v-card v-if="tipoTur === 'ENDOSCOPIA'" light plain color="white" height="90px" elevation="0" width="280">
 											<div class="text-centerAl textoTurno" >
 											<p v-text="turno.Estado" >Estado</p>
 											</div>                       
@@ -256,7 +256,7 @@
     vertical-align: middle;
 	}
     .textoTurno{
-     color:#00B0CA!important;
+     color:#3D3935!important;
      font-family: "Axiforma-Bold", Helvetica, Arial!important;
      font-size: 40px!important;
      line-height : 50px!important;
@@ -265,19 +265,19 @@
     }
 
     .textoTurno2{
-     color: #00B0CA!important;
+     color: #3D3935!important;
      font-family: "Axiforma-Bold", Helvetica, Arial!important;
      font-size: 40px!important;
      line-height : 50px!important;
     }
 	.textoTurno2A{
-     color: #00B0CA!important;
+     color: #3D3935!important;
      font-family: "Axiforma-Bold", Helvetica, Arial!important;
      font-size: 40px!important;
      line-height : 44px!important;
     }
     .textoTurno3{
-     color: #00B0CA!important;
+     color: #3D3935!important;
      font-family: "Axiforma-Bold", Helvetica, Arial!important;
      font-size: 35px!important;
      line-height : 50px!important;
