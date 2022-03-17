@@ -6,6 +6,7 @@
 <script>
 </script>
 <?php
+	ob_start();
 	include_once("conex.php");
     
     if(!isset($_SESSION['user']))
@@ -35,6 +36,8 @@
 		$wcupE = consultarAliasPorAplicacion($conex, $wemp_pmla, 'res2175_CodCupE'); // "735301"
 		$wcupI = consultarAliasPorAplicacion($conex, $wemp_pmla, 'res2175_CodCupI'); // "721003"
 		$wcupC = consultarAliasPorAplicacion($conex, $wemp_pmla, 'res2175_CodCupC'); // "740001"
+		$autorizacion = consultarAliasPorAplicacion($conex, $wemp_pmla, 'res2175_Autorizacion'); 
+		$codverif = consultarAliasPorAplicacion($conex, $wemp_pmla, 'res2175_CodigoVer'); 
 
 		// echo "<br>wcupE $wcupE, wcupI $wcupI, wcupC $wcupC";
 			  
@@ -320,8 +323,7 @@ echo "<form action='genres2175v2.php?wemp_pmla={$wemp_pmla}' method=post>";
 	  ." And diapard8 <> 'A' "      // No reporto los Abortos
       ." Order by 8,9";
 	  
-	  //echo "query $query";
-	  //die;
+	  //die ("query $query");
           $resultado = odbc_do($conexN,$query);               // Ejecuto el query
 
           // Genero los datos
@@ -389,7 +391,7 @@ echo "<form action='genres2175v2.php?wemp_pmla={$wemp_pmla}' method=post>";
           // Genero los datos
           while (odbc_fetch_row($resultado))
 	      {
-
+			// echo "<br>" . odbc_result($resultado,1);
 	  	   if ( strlen(odbc_result($resultado,4)) < 2 )       // Si no tiene 2do apellido   <2 por si tiene un punto o un espacio
 		     $wape2="";
 		   else
@@ -454,12 +456,13 @@ echo "<form action='genres2175v2.php?wemp_pmla={$wemp_pmla}' method=post>";
 	     $fcorte=$wfec2;
 	     $fcorte=substr($wfec2,0,4).substr($wfec2,5,2).substr($wfec2,8,2);
 
-		 $nomarc="REC165ATGE".$fcorte."NI000800067065.txt";
+		//die ("$wtotal");
+		 $nomarc="res2175fin.txt";  
 	     $archivo = fopen($nomarc,"w");
          /*  Abrimos el archivo plano temporal  */
          $file = fopen("res2175tmp.txt","r");
 
-		 $LineaDatos = "1|NI|800067065|050010212601|".$wfec1."|".$wfec2."|".$wtotal;    // Grabo el registro tipo 1 de Encabezado
+		 $LineaDatos = "1|NI|{$autorizacion}|{$codverif}|".$wfec1."|".$wfec2."|".$wtotal;    // Grabo el registro tipo 1 de Encabezado
          fwrite($archivo, $LineaDatos.chr(13).chr(10) );
 
          // Paso los registros
@@ -471,9 +474,11 @@ echo "<form action='genres2175v2.php?wemp_pmla={$wemp_pmla}' method=post>";
        	fclose($archivo);
        	fclose($file);
 	 
+
+	 ob_get_contents();
 	 ob_end_clean();
-	 
-	header("Content-Disposition: attachment; filename=r2175_{$wfec1}_{$wfec2}.txt");
+
+	header("Content-Disposition: attachment; filename=REC165ATGE".$fcorte."NI000{$autorizacion}.txt");
 	header("Content-Type: application/force-download");
 	header("Content-Length: " . filesize($nomarc));
 	header("Connection: close");
