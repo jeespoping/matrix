@@ -272,7 +272,7 @@ $codigoAyudaHospitalaria="H";
 $centroCostosServicioFarmaceutico = consultarCcoSF($conex, $wemp_pmla );
 $centroCostosCentralMezclas = consultarCcoCM( $conex, $wemp_pmla );
 
-var_dump($centroCostosServicioFarmaceutico);
+
 /**********************************
  * PARAMETROS DE LA BASE DE DATOS *
  **********************************/
