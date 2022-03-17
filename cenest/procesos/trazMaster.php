@@ -3,7 +3,13 @@
  * Vista principal de funcionalidad para la trazabilidad de dispositivos en la central de esterilización
  * Autor inicial: William Atehortua
  * @author final Julian Mejia - julian.mejia@lasamericas.com.co
+ * 
+ * ===========================================================================================
+ *                                          MODIFICACIONES
+ * ===========================================================================================
+ * 17 de febrero del 2022   Sebastian Alvarez Barona: Se agrega onchange para el filtro de sede
  */
+
 
     include_once("conex.php");
     include_once("root/comun.php");
@@ -138,6 +144,9 @@ function llenarSelectReu(jsonCodes, codItCriterio,ccoUnidadCriterio){
         });
 }
 
+        $(document).on('change','#selectsede',function(){
+                window.location.href = "trazMaster.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+        });
 
     </script> 
        <!-- CSS para los switches -->
@@ -240,13 +249,16 @@ function llenarSelectReu(jsonCodes, codItCriterio,ccoUnidadCriterio){
     <body>
     <div class="container">
         <div class="panel panel-info contenido">
-            <?php
-                $wactualiz = '2021-04-23';
-                encabezado("Trazabilidad de Dispositivos",$wactualiz,"clinica"); 
-            ?>
             <div align="center" class="panel panel-info contenido" style="border: none;margin-left: 0px;">
             <!-- Formulario para elegir el centro de costos al cual quiero acceder -->
-            <form method="post" action="trazMaster.php?wemp_pmla=<?=$wemp_pmla?>">
+            <form method="post"  action="trazMaster.php?wemp_pmla=<?=$wemp_pmla?>">
+                <?php
+                    
+                    $wactualiz = 'Febrero 17 de 2022';
+                    encabezado("Trazabilidad de Dispositivos",$wactualiz,"clinica", TRUE); 
+                ?>
+                <input type="hidden" id="wemp_pmla" name="wemp_pmla" value="<?php echo $wemp_pmla ?>">
+                <input type="hidden" id="sede" name="sede" value="<?php echo $selectsede ?>">
                 <table class="tblParametros" style="width: 60%" border="0">
                     <tr>
                         <td>
@@ -254,18 +266,7 @@ function llenarSelectReu(jsonCodes, codItCriterio,ccoUnidadCriterio){
                                 <span class="input-group-addon input-sm"><label for="unidad" style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;UNIDAD:&nbsp;&nbsp;&nbsp;</label></span>
                                 <select id="unidad" name="unidad" class="form-control form-sm">
                                     <?php
-                                        $braquiterapiaAux = false;
-                                        // Se consulta la movhos 11 con el campo ccocen para saber si ese CCo pertenece a la funcionalidad de central de est.
-                                        $queryCco = "SELECT Ccocod,Cconom FROM {$bdMovhos}_000011 WHERE Ccocen = 'on' ORDER BY Cconom ASC";
-                                        $commitCco = mysql_query($queryCco, $conex) or die (mysql_errno()." - en el query: ".$queryCco." - ".mysql_error());
-                                        while($datoempresa = mysql_fetch_assoc($commitCco))
-                                        {   
-                                            $codigoCco = $datoempresa['Ccocod'];    $nombreCco = $datoempresa['Cconom'];
-                                            echo "<option value='".$codigoCco."'>".$codigoCco.' - '.$nombreCco."</option>";
-                                            if ($codigoCco == $ccoBraquiterapia )$braquiterapiaAux = true;
-                                        }
-                                        if (!$braquiterapiaAux)echo "<option value='".$ccoBraquiterapia."'>".$ccoBraquiterapia.' - '.$ccoNomBraquiterapia."</option>";
-                                        echo "<option value='".$ccoCirugiaCardio."'>".$ccoCirugiaCardio.' - '.$ccoNomCirugiaCardio."</option>";
+                                         createSelectCcoUnidad($selectsede);
 
                                         if ($administradorMaster == '1')echo "<option value='adminMaster'>MAESTRO ADMINISTRADOR</option>";?>
                                     
@@ -1017,7 +1018,7 @@ function llenarSelectReu(jsonCodes, codItCriterio,ccoUnidadCriterio){
                                             <!-- <input type="text" id="funEntrega" name="funEntrega" class="form-control form-sm" style="width: 732px"> -->
                                             <select id="filtroCco" name="filtroCco" class="form-control form-sm" onchange="createSelectDispo()">
                                                 <?php
-                                                    createSelectCco();
+                                                    createSelectCco($selectsede);
                                                     echo "<option value='TODOSCCO'>TODOS LOS CENTROS DE COSTOS</option>";
                                                 ?>
                                                 <option selected value="<?=$resultado = ($filtroCco == '') ? $ccoUnidad:$filtroCco?>">

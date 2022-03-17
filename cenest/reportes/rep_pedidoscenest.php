@@ -18,6 +18,17 @@
 //==========================================================================================================================================|
 //                  ACTUALIZACIONES
 //==========================================================================================================================================|
+// Febrero 16 de 2022 - Sebastian Alvarez Barona - Se realiza filtro por sedes al selector de centros de costos, cuando se selecciona alguna sede
+//						nos muestra los centros de costos que corresponde a cada una.
+//==========================================================================================================================================|
+// 2022-02-16		- Se realiza validacion para que cuando se escoja la sede se filtren los centros de costos correspondientes.
+//					se agrego un onchange, un script src para traernos una version de jquery en especifico para que nos sirviera el onchange
+//					posteriormente creamos dos input oculto uno con el del wemp_pmla y el otro con el valor del selector de sede
+//          		luego se realizo validacion de que si el parametro esta encendido o no para llevarnos los cambios tambien para CPA
+//					por ultimo le pasamos a la consulta que trae los centros de costo la sede de cada una.
+//					Linea de codigo: 41(script src), 64-68(onchange), 126(fecha de actualizacion), 163(encabezado lo pusimos despues del <form>)
+//					207-239 (validacion de sede en la consulta que nos trae los centros de costo).
+//==========================================================================================================================================|
 // 2021-04-27		-	Se realiza modificación al código del reporte de central de esterilización, agregando a la tabla, una nueva columna
 //						con los totales de las cantidades despachadas y una nueva fila para totalizar las cantidades solicitadas y
 //						despachadas al igual que el total del costos.
@@ -31,6 +42,7 @@ $wemp_pmla = $_GET["wemp_pmla"];
 
 <html>
 <head>
+<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
 <title>MATRIX - [REPORTE PEDIDOS A LA CENTRAL DE ESTERILIZACION]</title>
 
 <script type="text/javascript">
@@ -53,6 +65,11 @@ $wemp_pmla = $_GET["wemp_pmla"];
 	{
 		history.back(1)
 	}
+
+	$(document).on('change','#selectsede',function(){
+        window.location.href = "rep_pedidoscenest.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+    });
+
 </script>
 
 <?php
@@ -106,11 +123,73 @@ function consultarCostosInsumos( $arrayInsumos )
 	return $arrayCostos;
 }
 
+/** 
+ * By: Sebastian Alvarez Barona
+ * Date: 22-02-2022
+ * Descripcion: Se crea funcion para obtener los centros de costos de cada sede
+ */
+function obtenerCentrosCostos($sCodigoSede = NULL)
+{
+	global $wemp_pmla;
+	global $conex;
+	global $bdMovhos;
+
+	$sFiltroSede='';
+	
+
+	if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+
+		if($estadosede=='on')
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
+
+	$query = "SELECT DISTINCT r40.Reqccs,c5.Cconom,SUBSTRING(r40.Reqccs,5,8) 
+	FROM   root_000040 r40
+				left join 
+				costosyp_000005 c5 on (SUBSTRING(r40.Reqccs,5,8) = c5.Ccocod ) 
+				left join ".$bdMovhos."_000011 c6 on (SUBSTRING(r40.Reqccs, 5, 8) = c6.Ccocod )
+	WHERE Reqcco = '(01)1082' 
+		AND   Reqtip = '13' 
+		AND   (Reqcla='42' OR Reqcla='43')
+		AND   Reqest='05'
+		AND   Reqccs !=''
+		".$sFiltroSede.";";
+
+	$err3 = mysql_query($query,$conex);
+	$num3 = mysql_num_rows($err3);
+
+	echo "<select name='pp' id='searchinput'>";
+		echo "<option>TODOS</option>";
+
+			$tpp=$pp;
+
+			if (isset($pp))
+			{
+				echo "<option>".$tpp[0]."-".$tpp[1]."</option>";
+			} 
+
+			for ($i=1;$i<=$num3;$i++)
+			{
+				$row3 = mysql_fetch_array($err3);
+				echo "<option>".$row3[0]."-".$row3[1]."</option>";
+			}
+
+		echo "</select></td>";
+
+}
+
 include_once("root/comun.php");
 
 $conex = obtenerConexionBD("matrix");
 
-$wactualiz="Noviembre 13 de 2019.";
+$bdMovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+
+$wactualiz="Febrero 16 de 2022";
 
 $usuarioValidado = true;
 
@@ -126,7 +205,6 @@ if(empty($wuser) || $wuser == ""){
 
 session_start();
 //Encabezado
-encabezado("REGISTRO DE PEDIDOS A LA CENTRAL DE ESTERILIZACION", $wactualiz, "clinica");
 
 if (!$usuarioValidado)
 {
@@ -145,7 +223,11 @@ else
 	echo "<form name='forma' action='rep_pedidoscenest.php?wemp_pmla={$wemp_pmla}' method='post'>";
 	echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
 	echo "<input type='HIDDEN' NAME= 'tabla' value='".$tabla."'/>";
- 
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' id= 'wemp_pmla' value='".$wemp_pmla."'/>";
+	echo "<input type='HIDDEN' NAME= 'sede' id='sede' value='".$selectsede."'/>";
+
+	encabezado("REGISTRO DE PEDIDOS A LA CENTRAL DE ESTERILIZACION", $wactualiz, "clinica", TRUE);
+	
 	if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '')
 	{
 		echo "<form name='rep_pedidoscenest' action='' method=post>";
@@ -185,36 +267,11 @@ else
 		echo "</td></tr>";
 	
 		// seleccion para los Responsables
-		echo "<td align='CENTER' colspan='2' class='fila1'><b><font text color=#003366 size=3><B>Ccostos Solicita:</B><br></font></b><select name='pp' id='searchinput'>";
-		echo "<option>TODOS</option>";
+		echo "<td align='CENTER' colspan='2' class='fila1'><b><font text color=#003366 size=3><B>Ccostos Solicita:</B><br></font></b>";
 
-		$query = "SELECT DISTINCT r40.Reqccs,c5.Cconom,SUBSTRING(r40.Reqccs,5,8) 
-				FROM   root_000040 r40
-							left join 
-							costosyp_000005 c5 on (SUBSTRING(r40.Reqccs,5,8) = c5.Ccocod ) 
-				WHERE Reqcco = '(01)1082' 
-					AND   Reqtip = '13' 
-					AND   (Reqcla='42' OR Reqcla='43')
-					AND   Reqest='05'
-					AND   Reqccs !=''  ";
-			
-		$err3 = mysql_query($query,$conex);
-		$num3 = mysql_num_rows($err3);
-		$tpp=$pp;
+		/** Llamamos la función para mostrar el select con los centros de costos */
+		obtenerCentrosCostos($selectsede);
 
-		if (isset($pp))
-		{
-			echo "<option>".$tpp[0]."-".$tpp[1]."</option>";
-		} 
-	
-		for ($i=1;$i<=$num3;$i++)
-		{
-			$row3 = mysql_fetch_array($err3);
-			echo "<option>".$row3[0]."-".$row3[1]."</option>";
-		}
-
-		echo "</select></td>";
-		
 		echo "<tr><td align=center colspan=4><input type='submit' id='searchsubmit' value='OK'></td></tr>";          //submit osea el boton de OK o Aceptar
 		echo "</table>";
 		echo '</div>';
@@ -280,9 +337,12 @@ else
 
 		if ($tpp[0]=="TODOS")
 		{
-			$query = " select r40.Reqfec,r40.Reqnum,r40.Reqdes,r40.Reqobe,r40.Reqsat,r40.Reqccs,r40.Reqcla,c4.Reqpro,c1.Prodes,
+
+			if($sFiltroSede == 'off' || $selectsede == '')
+			{
+				$query = " select r40.Reqfec,r40.Reqnum,r40.Reqdes,r40.Reqobe,r40.Reqsat,r40.Reqccs,r40.Reqcla,c4.Reqpro,c1.Prodes,
 							c4.Reqcas,c4.Reqcad,c4.Reqmet,c2.Metdes  
-					from   root_000040 r40,cenmat_000004 c4,cenmat_000001 c1,cenmat_000002 c2  
+					from   root_000040 r40,cenmat_000004 c4,cenmat_000001 c1,cenmat_000002 c2
 					where  r40.Reqcco = '(01)1082' 
 						and  r40.Reqfec between '".$fec1."' and '".$fec2."' 
 						and  r40.Reqcla like '".$clas1."' 
@@ -293,6 +353,24 @@ else
 						and  c4.Reqpro = c1.Procod 
 						and  c4.Reqmet = c2.Metcod 
 						order by r40.Reqccs,r40.Reqnum ";
+
+			}else{
+				$query = " select r40.Reqfec,r40.Reqnum,r40.Reqdes,r40.Reqobe,r40.Reqsat,r40.Reqccs,r40.Reqcla,c4.Reqpro,c1.Prodes,
+							c4.Reqcas,c4.Reqcad,c4.Reqmet,c2.Metdes  
+					from   root_000040 r40,cenmat_000004 c4,cenmat_000001 c1,cenmat_000002 c2, ".$bdMovhos."_000011
+					where  r40.Reqcco = '(01)1082' 
+						and  r40.Reqfec between '".$fec1."' and '".$fec2."' 
+						and  r40.Reqcla like '".$clas1."' 
+						and  r40.Reqest = '05' 
+						and  r40.Reqnum = c4.Reqnum 
+						and  r40.Reqcla = c4.Reqcla 
+						and  c4.Reqcla = c1.Procla 
+						and  c4.Reqpro = c1.Procod 
+						and  c4.Reqmet = c2.Metcod 
+						and (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod AND Ccosed = '".$selectsede."')
+						order by r40.Reqccs,r40.Reqnum ";
+
+			}
 		}
 		else
 		{

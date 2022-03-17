@@ -8,6 +8,9 @@ include_once("conex.php");
  DESCRIPCION:
 
  ACTUALIZACIONES:
+
+  * 25 de febrero de 2022 - Sebastian Alvarez Barona - Se realiza filtro por sede a la información que nos arroja el sistema, esta información se filtra de acuerdo a la sede 80 o sur.
+
  2015-10-13:
     Jessica Madrid:     * Se modifica la funcion consultarRequerimientos() para traer el centro de costos del usuario solicitante de root_000040 y si no existe lo consulta en root_000039.
  2013-10-17
@@ -21,6 +24,8 @@ include_once("conex.php");
  <html>
 <head><input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>
   <title>REQUERIMIENTOS</title>
+
+  <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
 
   <style type="text/css">
     	//body{background:white url(portal.gif) transparent center no-repeat scroll;}
@@ -50,6 +55,11 @@ include_once("conex.php");
    	document.informatica.orden2.value=val;
    	document.informatica.submit();
    }
+
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "enviado.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+    });
+
     </script>
 
 </head>
@@ -58,36 +68,84 @@ include_once("conex.php");
 
 <?php
 // ----------------------------------------------------------funciones de persitencia------------------------------------------------
-function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $orden2)
+function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $orden2, $sCodigoSede = NULL)
 {
     global $conex;
     global $wbasedato;
     global $wmovhos;
     global $wcostosyp;
+    global $wemp_pmla;
+    global $TablaValidacionSede;
+
+    
+    $sFiltroSede='';
+   
+    if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on')
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
 
     if ($para == 'recibidos')
     {
-        $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, Hora_data, Descripcion, r40.id AS id_req, Reqccs  "
-         . "       FROM " . $wbasedato . "_000040 AS r40, usuarios "
-         . "    WHERE (r40.Requrc = '" . $codigo . "' "
-         . "       OR  r40.Reqpurs = '" . $codigo . "') "
-         . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
-         . "       AND r40.Reqfec between '" . $confec1 . "' and '" . $confec2 . "' "
-        // ."       OR r40.Reqfec > '".date('Y')."-".date('m')."-01') "
-         . "       AND Codigo = r40.Reqpurs "
-         // . "       AND ACTIVO='A' "
-        . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc, 12 desc ";
+        if($estadosede == 'off')
+        {
+            $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, Hora_data, Descripcion, r40.id AS id_req, Reqccs  "
+            . "       FROM " . $wbasedato . "_000040 AS r40, usuarios "
+            . "    WHERE (r40.Requrc = '" . $codigo . "' "
+            . "       OR  r40.Reqpurs = '" . $codigo . "') "
+            . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
+            . "       AND r40.Reqfec between '" . $confec1 . "' and '" . $confec2 . "' "
+           // ."       OR r40.Reqfec > '".date('Y')."-".date('m')."-01') "
+            . "       AND Codigo = r40.Reqpurs "
+            // . "       AND ACTIVO='A' "
+           . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc, 12 desc ";
+        }else{
+            $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, r40.Hora_data, Descripcion, r40.id AS id_req, Reqccs, m11.Cconom  "
+            . "       FROM " . $wbasedato . "_000040 AS r40, usuarios, ".$TablaValidacionSede." m11 "
+            . "    WHERE (r40.Requrc = '" . $codigo . "' "
+            . "       OR  r40.Reqpurs = '" . $codigo . "') "
+            . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
+            . "       AND r40.Reqfec between '" . $confec1 . "' and '" . $confec2 . "' "
+           // ."       OR r40.Reqfec > '".date('Y')."-".date('m')."-01') "
+            . "       AND Codigo = r40.Reqpurs "
+            ."        AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede}) "
+            // . "       AND ACTIVO='A' "
+           . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc, 12 desc ";
+        }
+
     }
     else if ($para == 'enviados')
     {
-        $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, Hora_data, Descripcion, r40.id AS id_req "
-         . "       FROM " . $wbasedato . "_000040 AS r40, usuarios "
-         . "    WHERE r40.Requso = '" . $codigo . "' "
-         . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
-         . "       AND r40.Reqfec between '" . $confec1 . "' and '" . $confec2 . "' "
-          . "       AND Codigo = r40.Reqpurs "
-         // . "       AND ACTIVO='A' "
-         . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc , 12 desc ";
+
+        if ($estadosede == 'off')
+        {
+            
+            $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, Hora_data, Descripcion, r40.id AS id_req  "
+            . "       FROM " . $wbasedato . "_000040 AS r40, usuarios " 
+            . "    WHERE r40.Requso = '" . $codigo . "' "
+            . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
+            . "       AND r40.Reqfec between '" . $confec1 . "' and '" . $confec2 . "' "
+            . "       AND Codigo = r40.Reqpurs "
+            // . "       AND ACTIVO='A' "
+            . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc , 12 desc ";
+        }else{
+            
+            $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, r40.Hora_data, Descripcion, r40.id AS id_req, m11.Cconom  "
+            . "       FROM " . $wbasedato . "_000040 AS r40, usuarios, ".$TablaValidacionSede." m11 " 
+            . "    WHERE r40.Requso = '" . $codigo . "' "
+            . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
+            . "       AND r40.Reqfec between '" . $confec1 . "' and '" . $confec2 . "' "
+            . "       AND Codigo = r40.Reqpurs "
+            . " AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede}) "
+            // . "       AND ACTIVO='A' "
+            . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc , 12 desc ";
+        }
     }
 
     $res = mysql_query($q, $conex);
@@ -239,11 +297,27 @@ function pintarVersion()
     echo "</table></br></br></br>" ;
 }
 
-function pintarTitulo($wacutaliza)
+
+function pintarTitulo($wacutaliza, $TablaValidacionSede = '')
 {
     global $wemp_pmla;
-    echo encabezado("<div class='titulopagina2'>SISTEMA DE REQUERIMIENTOS</div>", $wacutaliza, 'clinica');
-    echo "<form name='informatica' action='enviado.php?wemp_pmla=".$wemp_pmla."' method=post>";
+    global $selectsede;
+
+    $estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+    $sFiltroSede="";
+    $codigoSede = '';
+    if($estadosede=='on')
+    {	  
+        $codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+        $sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+    }
+
+    $sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
+
+    $incluirFiltroSede = ($TablaValidacionSede == '') ? FALSE : TRUE;
+
+    echo encabezado("<div class='titulopagina2'>SISTEMA DE REQUERIMIENTOS</div>", $wacutaliza, 'clinica', $incluirFiltroSede);
+    echo "<form name='informatica' action='enviado.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' method=post>";
     echo "<table ALIGN=CENTER width='50%'>";
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
     //echo "<tr><td class='titulo1'>SISTEMA DE REQUERIMIENTOS</td></tr>";
@@ -251,9 +325,9 @@ function pintarTitulo($wacutaliza)
 
     echo "<table ALIGN=CENTER width='90%' >";
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-    echo "<tr><td class='texto5' width='20%'><a href='informatica.php?wemp_pmla=".$wemp_pmla."'>INGRESO DE REQUERIMIENTO</a></td>";
-    echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
-    echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla."&para=enviados'>REQUERIMIENTOS ENVIADOS</a></td></a>";
+    echo "<tr><td class='texto5' width='20%'><a href='informatica.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."'>INGRESO DE REQUERIMIENTO</a></td>";
+    echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&para=recibidos'>REQUERIMIENTOS RECIBIDOS</a></td>";
+    echo "<td class='texto5' width='20%'><a href='consulta.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&para=enviados'>REQUERIMIENTOS ENVIADOS</a></td></a>";
     echo "<a href='enviado.php?wemp_pmla=".$wemp_pmla."'><td class='encabezadoTabla' width='20%'>REQUERIMIENTOS ANT.</td></tr></a>";
     echo "<tr class='fila1'><td class='' >&nbsp;</td>";
     echo "<td class='' >&nbsp;</td>";
@@ -364,6 +438,72 @@ function pintarRequerimientos($requerimientos, $para, $orden, $orden2)
     echo "</table>";
     echo "<input type='hidden' name='orden' value='" . $orden . "'></td>";
     echo "<input type='hidden' name='orden2' value='" . $orden2 . "'></td>";
+    echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='" . $wemp_pmla. "'></td>";
+}
+
+/**
+ * [centroCostoUsuario Consultar el centro de costo del usuario que está en el programa, esto valída por ejemplo si el usuario es del centro de costo de auditoría,
+ * si es así entonces cambia el título del programa]
+ * @return [type] [description]
+ */
+function centroCostoUsuario($conex, $codigo_use)
+{
+    $exp = explode("-", $codigo_use);
+    $usuario_codigo = $exp[1];
+    $cco = "";
+    $q = "  SELECT  Ccostos AS cco_user, Empresa
+            FROM    usuarios
+            WHERE   Codigo = '{$usuario_codigo}'";
+                    // AND ACTIVO='A'";
+    $result = mysql_query($q, $conex);
+    if(mysql_num_rows($result) > 0)
+    {
+        $row = mysql_fetch_array($result);
+        $cco = "({$row['Empresa']}){$row['cco_user']}";
+    }
+    return $cco;
+}
+
+function obtenerTablaValidacionSede($cco_user)
+{
+    global $conex;
+    global $wemp_pmla;
+
+    $bdMovhosCco = '';
+
+	if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on')
+		{
+			$QuerySede = "SELECT Mtrtvs FROM root_000041 WHERE Mtrcco = '".$cco_user."'";
+
+            $resSede = mysql_query($QuerySede, $conex);
+            if(mysql_num_rows($resSede) > 0)
+            {
+                $row = mysql_fetch_array($resSede);
+                $tvs = $row['Mtrtvs'];
+            }
+
+            if ($tvs != '' && !is_null($tvs)) 
+            {
+                $ccostoSede=explode(";",$tvs);
+
+                foreach ($ccostoSede as $empresa) {
+                    $empresacco=explode(",",$empresa);
+                    if ($empresacco[0] == 'wemp_pmla='.$wemp_pmla) {
+
+                        $bdMovhosCco = $empresacco[1];
+                        
+                    }
+                }
+            }
+
+		}
+	}
+   return $bdMovhosCco;
+
 }
 /**
 * =========================================================PROGRAMA==========================================================================
@@ -384,17 +524,17 @@ if (!isset($_SESSION["user"]))
     echo "error";
 else
 {
-    $wacutaliza = "2013-07-19";
+    $wacutaliza = "25 de febrero de 2022";
     $wbasedato = 'root';
     
-
+    $cco_user = centroCostoUsuario($conex, $user);
     
 
-
+    $TablaValidacionSede = obtenerTablaValidacionSede($cco_user);
 
 
     //pintarVersion();
-    pintarTitulo($wacutaliza);
+    pintarTitulo($wacutaliza, $TablaValidacionSede);
     // consulto los datos del usuario de la sesion
     $pos = strpos($user, "-");
     $wusuario = substr($user, $pos + 1, strlen($user));
@@ -417,7 +557,7 @@ else
     }
 
     pintarFormulario($confec1, $confec2, $para);
-    $requerimientos = consultarRequerimientos($wusuario, $confec1, $confec2, $para, $orden, $orden2);
+    $requerimientos = consultarRequerimientos($wusuario, $confec1, $confec2, $para, $orden, $orden2, $selectsede);
     if (is_array($requerimientos))
     {
         pintarRequerimientos($requerimientos, $para, $orden, $orden2);
@@ -426,6 +566,9 @@ else
     {
         pintarAlert2('NO TIENE REQUERIMIENTOS PENDIENTES');
     }
+
+    echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+    echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='" . $wemp_pmla. "'></td>";
 }
 /**
 * ===========================================================================================================================================

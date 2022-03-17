@@ -11,6 +11,9 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //-------------------------------------------------------------------------------------------------------------------------------------------- \\
+// Febrero 25 de 2022 - Sebastian Alvarez Barona - Se realiza modificación para hacer que se filtren los centros de costos de acuerdo a cada sede.
+//						por otro lado cuando se selecciona la opcion "todos" en select de los centros de costos se nos debe de filtrar la información de acuerdo a cada sede.
+//-------------------------------------------------------------------------------------------------------------------------------------------- \\
 // 2019-11-12			- Se modifica el reporte para que consulte todos los costos de los insumos en un solo query y así evitar 
 // 						  múltiples conexiones a Matrix Financiero
 // 2019-11-06			- Se agrega filtro a root_000040 para que el query tome el indice y la consulta sea más rápida
@@ -20,7 +23,7 @@ include_once("conex.php");
 // 						  costosyp_000072
 // 2016-09-20			Se corrige warning array vacio por cantidades
 	
-	$wactualiz='2019-11-12';
+	$wactualiz='Febrero 25 de 2022';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                     
 
 if(!isset($_SESSION['user']))
@@ -52,17 +55,31 @@ else
 //		F U N C I O N E S	 G E N E R A L E S    P H P
 //=====================================================================================================================================================================
 	
-	function consultarCentroCostos($cco,$wemp_pmla)
+	function consultarCentroCostos($cco,$wemp_pmla, $sCodigoSede = NULL)
 	{
 		global $wbasedato;
 		global $conex;
 		global $wcostosyp;
 		global $wmovhos;
+
+		$sFiltroSede='';
+   
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	   
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 		
 		$ccosto = explode(")",$cco);
-		$query = " SELECT Cconom 
+		$query = " SELECT Cconom
 					FROM ".$wmovhos."_000011 
-				   WHERE Ccocod='".$ccosto[1]."';";
+				   WHERE Ccocod='".$ccosto[1]."'
+				   ".$sFiltroSede."";
 
 		$resultado = mysql_query($query, $conex);
 		$numres = mysql_num_rows($resultado);
@@ -88,19 +105,35 @@ else
 	}
 
 	//Consulta los centros de costos de las solicitudes despachadas para mostrar en los datos de consulta del reporte
-	function centroCostosSolicitudesDespachadas($wemp_pmla,$tipo)
+	function centroCostosSolicitudesDespachadas($wemp_pmla,$tipo, $sCodigoSede = NULL)
 	{
 		global $wbasedato;
 		global $conex;
+		global $wmovhos;
+
+		$sFiltroSede='';
+   
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 					
-		$query = "SELECT DISTINCT Reqccs 
-					FROM root_000040 
+		$query = "SELECT DISTINCT Reqccs
+					FROM root_000040, ".$wmovhos."_000011
 					WHERE Reqcco='(01)1082' 
 					  AND Reqtip='".$tipo."' 
 					  AND (Reqcla='42' OR Reqcla='43')
 					  AND Reqest='05'
 					  AND Reqccs !=''
+					  AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede}) 
 				 ORDER BY Reqccs;";
+
 		
 		$resultado = mysql_query($query,$conex) or die("Error: " . mysql_errno() . " - en el query: ".$query." - ".mysql_error());
 		$num_rows = mysql_num_rows($resultado);
@@ -162,6 +195,7 @@ else
 		global $wbasedato;
 		global $conex;	
 		global $wfecha;
+		global $selectsede;
 		
 		$fechaactual = strtotime(date('Y-m-d'));
 		$datePrimerDia = strtotime("first day of this month", $fechaactual);
@@ -173,7 +207,7 @@ else
 		
 		$tipoRequerimiento = consultarAliasPorAplicacion($conex, $wemp_pmla, 'ReqCentralEsterilizacion');
 		
-		$CentrosCosto=centroCostosSolicitudesDespachadas($wemp_pmla,$tipoRequerimiento); // Mostrar los centros de costos con solicitudes despachadas
+		$CentrosCosto=centroCostosSolicitudesDespachadas($wemp_pmla,$tipoRequerimiento, $selectsede); // Mostrar los centros de costos con solicitudes despachadas
 		
 		if(count($CentrosCosto)>0)
 		{
@@ -265,10 +299,24 @@ else
 		return $rowResultado[0];
 	}
 	
-	function consultarDespachos($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla,&$arrayDespachos,&$arrayCcostos,$maestroInsumos,$tablaDespachos,$tipoRequerimiento,$estadoSolicitud)
+	function consultarDespachos($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla,&$arrayDespachos,&$arrayCcostos,$maestroInsumos,$tablaDespachos,$tipoRequerimiento,$estadoSolicitud,$sCodigoSede = NULL)
 	{
 		global $wbasedato;
 		global $conex;	
+		global $wmovhos;
+
+		$sFiltroSede='';
+   
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	   
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 		
 		$condicionCco = "";
 		if($pCco!="")
@@ -277,7 +325,7 @@ else
 		}
 		
 		$queryDespachos = "SELECT b.Reqmet,b.Reqpro,a.Reqccs,SUM(b.Reqcad) AS Cantidad,c.Prodes
-							 FROM root_000040 a, ".$tablaDespachos." b, ".$maestroInsumos." c 
+							 FROM root_000040 a, ".$tablaDespachos." b, ".$maestroInsumos." c, ".$wmovhos."_000011
 							WHERE a.Reqcco='(01)1082'
 							  AND a.Reqtip='".$tipoRequerimiento."' 
 							  AND a.Reqcla='".$pClasereq."' 
@@ -288,9 +336,12 @@ else
 							  AND b.Reqnum=a.Reqnum
 							  AND b.Reqdes='on'
 							  AND c.Procla=b.Reqcla
+							  AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede})
 							  AND c.Procod=b.Reqpro
 						 GROUP BY b.Reqmet,b.Reqpro,a.Reqccs
 						 ORDER BY c.Prodes,b.Reqmet,b.Reqpro,a.Reqccs;";
+		
+		// echo $queryDespachos;
 		
 		$resDespachos = mysql_query($queryDespachos,$conex) or die("Error: " . mysql_errno() . " - en el query: ".$queryDespachos." - ".mysql_error());
 		$numDespachos = mysql_num_rows($resDespachos);
@@ -466,7 +517,8 @@ else
 	function generarReporteSolicitudesDespachadas($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla)
 	{
 		global $wbasedato;
-		global $conex;	
+		global $conex;
+		global $selectsede;
 		
 		$fecha=strtotime($pFechafinal);
 		
@@ -478,7 +530,7 @@ else
 		
 		$arrayDespachos = array();
 		$arrayCcostos = array();
-		consultarDespachos($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla,$arrayDespachos,$arrayCcostos,$maestroInsumos,$tablaDespachos,$tipoRequerimiento,$estadoSolicitud);
+		consultarDespachos($pCco,$pClasereq,$pFechainicial,$pFechafinal,$wemp_pmla,$arrayDespachos,$arrayCcostos,$maestroInsumos,$tablaDespachos,$tipoRequerimiento,$estadoSolicitud,$selectsede);
 		
 		$arrayInsumos = array_keys ($arrayDespachos);
 		
@@ -842,6 +894,7 @@ else
 		var fecini 	 = $("#fecha_inicial").val();
 		var fecfin 	 = $("#fecha_final").val();
 		var wemp_pmla 	 = $("#wemp_pmla").val();
+		var selectsede 	 = $("#selectsede").val();
 		
 		var fechaI = fecini.split("-");
 		var fechaF = fecfin.split("-");
@@ -878,7 +931,8 @@ else
 						clasereq:         		clasereq,
 						fechainicial:  			fecini,
 						fechafinal:    			fecfin,
-						wemp_pmla:    			wemp_pmla
+						wemp_pmla:    			wemp_pmla,
+						selectsede:				selectsede
 					}, function(respuesta){
 						
 						$("#reporteDespachados").html(respuesta);
@@ -1009,6 +1063,11 @@ else
 				}
 		});
 	}
+
+	
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "reporte_solicitudes_esterilizacion.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+    });
 	
 //=======================================================================================================================================================	
 //	F I N  F U N C I O N E S  J A V A S C R I P T 
@@ -1069,11 +1128,12 @@ else
 	<body>
 	<?php
 	// -->	ENCABEZADO
-	encabezado("Reporte despachos central de esterilizacion", $wactualiz, 'clinica');
+	encabezado("Reporte despachos central de esterilizacion", $wactualiz, 'clinica', TRUE);
 	pintarDivConsulta();
 	
 	?>
 	<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='<?php echo $wemp_pmla ?>'>
+	<input type='hidden' id='sede' name='sede' value='<?php echo $selectsede ?>'>
 	
 	<?php
 	

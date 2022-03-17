@@ -909,7 +909,7 @@ include_once("conex.php");
 					if($criterio[$i] == "") // inicialización  si el criterio de busqueda esta vacio y del registro
 						$criterio[$i]="@#$%^&*";
 					if( strlen($registro[$i]) == 0)
-						$registro[$i]="NO APLICA";	
+						$registro[$i]="";
 					
 					$query="select "; //empieza la construcción de la busqueda dado un criterio
 					for ($j=0;$j<$codsn;$j++)
@@ -1175,7 +1175,7 @@ include_once("conex.php");
 					if($criterio[$i] == "") // inicialización  si el criterio de busqueda esta vacio y del registro
 						$criterio[$i]="@#$%^&*";
 					if( strlen($registro[$i]) == 0)
-						$registro[$i]="NO APLICA";	
+						$registro[$i]="";
 					
 					$query="select "; //empieza la construcción de la busqueda dado un criterio
 					for ($j=0;$j<$codsn;$j++)
