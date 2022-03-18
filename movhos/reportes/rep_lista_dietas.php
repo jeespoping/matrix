@@ -43,7 +43,7 @@ if(!isset($_SESSION['user']))
 	include_once("root/comun.php");
 	include_once("root/magenta.php");
 	$conex = obtenerConexionBD("matrix");
-	$wactualiz="(2018-04-07)";                      // ultima fecha de actualizacion               
+	$wactualiz="(18 de marzo de 2022)";                      // ultima fecha de actualizacion               
 	$wfecha	=	date("Y-m-d");   
 	$whora 	= 	(string)date("H:i:s");                                                         
 
@@ -598,6 +598,10 @@ if(!isset($_SESSION['user']))
 			{
 				window.open(path,'','fullscreen=0,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=0,titlebar=0');
 			}
+
+			$(document).on('change','#selectsede',function(){
+				window.location.href = "rep_lista_dietas.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+			});
 			
 		</script>
 	</head>
@@ -614,14 +618,15 @@ if(!isset($_SESSION['user']))
 	echo "$.blockUI({ message: $('#msjEspere') });";
 	echo "</script>";
 	//================================================================
-	//	ENCABEZADO
-	//================================================================
-	encabezado("Reporte de Dietas por Piso", $wactualiz, 'clinica');
-	//================================================================
 	//	FORMA 
 	//================================================================
 	echo "<form name='listadietas' action='' method=post>";
-	echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";  
+	//================================================================
+	//	ENCABEZADO
+	//================================================================
+	encabezado("Reporte de Dietas por Piso", $wactualiz, 'clinica', TRUE);
+
+	echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>"; 
 	if (strpos($user,"-") > 0)
 		$wusuario = substr($user,(strpos($user,"-")+1),strlen($user));
 	//=================================================================
@@ -649,11 +654,24 @@ if(!isset($_SESSION['user']))
 			echo "<OPTION SELECTED>".$wcco."</OPTION>";
 		} 
 		echo "<option>% - TODOS</option>";
-		for ($i=1;$i<=$num;$i++)
-		{
-			$row = mysql_fetch_array($res); 
-			echo "<OPTION>".$row['Ccocod']." - ".$row['Cconom']."</OPTION>";
-		}
+		/** 
+		 * Sebastian Alvarez Barona
+		 * Date: 18-03-2022
+		 * Descripcion: Se comenta para traernos del comun.php una función que nos trae los mismos datos
+		 * esto para que sea mas eficiente y evitar centros de costos quemados.
+		 */
+		// for ($i=1;$i<=$num;$i++)
+		// {
+		// 	$row = mysql_fetch_array($res); 
+		// 	echo "<OPTION>".$row['Ccocod']." - ".$row['Cconom']."</OPTION>";
+		// }
+		
+		/** 
+		 * Sebastian Alvarez Barona
+		 * Date: 18-03-2022
+		 * Descripcion: Se llama a la función del comun.php para traer los centros de costos que sean hospitalarios */
+		centrosCostosHospitalariosTodos($selectsede);
+
 		echo "</SELECT></td></tr>";
 	//=================================
 	// SELECCIONAR EL SERVICIO
@@ -880,6 +898,20 @@ if(!isset($_SESSION['user']))
 	//====================================================================================
 	if (isset($wcco) && isset($wser) && isset($activo) && isset($wfec_i) && isset($wfec_f)&& isset($wtipo) && $wfec_f>=$wfec_i ) // si ya seleccionaron los parametros para consultar
 	{  
+
+		$sFiltroSede='';
+	
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+		
+			if($estadosede=='on' )
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$selectsede}' " : "";
+			}
+		}
+
 		//--------------------------
 		// Consulta de datos
 		//--------------------------
@@ -914,7 +946,8 @@ if(!isset($_SESSION['user']))
 						  ".$condicion_cco."
 						   ".$condicion_servicio."						   
 						   AND 	Movcco = Audcco
-						   AND  Movser = Sercod";
+						   AND  Movser = Sercod
+						   {$sFiltroSede}";
 						   
 						if ($impresas=='on'){
 		$q_principal.=	"  AND  Movimp != '".$impresas."'";		

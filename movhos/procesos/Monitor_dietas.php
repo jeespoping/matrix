@@ -96,6 +96,11 @@ if(isset($consultaAjax) && $consultaAjax=='actualizarLog')
 //=========================================================================================================================================\\
 //                  								ACTUALIZACIONES                                                                                                                          \\
 /*=========================================================================================================================================\\
+
+16 de marzo de 2022:	Sebastian Alvarez Barona - Se realiza modificación para que se filtren los centros de costos en el selector
+													y por otro lado se hace filtracion en la función query_principal modificando la consulta
+													que nos trae la información para que solo se vea información de acuerdo a la sede seleccionada.
+/*=========================================================================================================================================\\
 //Abril 17 de 2020: 	(Edwin MG)
 						Se muestra el diagnóstico en la función mostrar_detalle si el parametro mostrarDiagnósticoMonitorDietas en root_000051
 						Esta en on.
@@ -1718,6 +1723,17 @@ if( isset($_REQUEST['action'] )){
 				$wclass="fila1";
 				$total_todos_cco=0;
 				$increment=1;
+
+				$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+				$sFiltroSede="";
+				$codigoSede = '';
+				if($estadosede=='on')
+				{	  
+					$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+					$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+				}
+			
+				$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
 							
 				foreach($main_patrones as $pk_wccocod => $arr_patrones){ //recorre por centro de costos
 				
@@ -1747,7 +1763,7 @@ if( isset($_REQUEST['action'] )){
 								$posqx = "";
 								if( isset($array_alertas[$pk_wccocod]['']))  $posqx=$array_alertas[$pk_wccocod][''];
 								
-								echo "<td width='3%' align=center onClick='window.open(\"../reportes/Rep_lista_dietas.php?wemp_pmla=".$wemp_pmla."&wcco=".$pk_wccocod."-".$nom_cco[$pk_wccocod]."&wser=".$wser."&activo=on&wfec_i=".date("Y-m-d")."&wfec_f=".date("Y-m-d")."&impresas=on&wtipo=\", \"\", \"\")' style='cursor: pointer'><b><div id='impresion".$pk_wccocod."' class='blink'> &nbsp;".$array_alertas[$pk_wccocod]['impresiones']."</div></b></td>";//Impresiones
+								echo "<td width='3%' align=center onClick='window.open(\"../reportes/Rep_lista_dietas.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&wcco=".$pk_wccocod."-".$nom_cco[$pk_wccocod]."&wser=".$wser."&activo=on&wfec_i=".date("Y-m-d")."&wfec_f=".date("Y-m-d")."&impresas=on&wtipo=\", \"\", \"\")' style='cursor: pointer'><b><div id='impresion".$pk_wccocod."' class='blink'> &nbsp;".$array_alertas[$pk_wccocod]['impresiones']."</div></b></td>";//Impresiones
 								echo "<td width='3%' align=center><b><div class='blink' id='sinLeer2".$increment.$pk_wccocod."'></div></b></td>";//Mensajes sin leer
 								echo "<td width='3%' align=center><b><div class='blink' id='adicion".$pk_wccocod."'>".$adix."</div></b></td>";//Adiciones
 								echo "<td width='3%' align=center><b><div class='blink' id='modificacion".$pk_wccocod."'>".$modix."</div></b></td>";//Modificaciones
@@ -1755,7 +1771,7 @@ if( isset($_REQUEST['action'] )){
 								echo "<td width='3%' align=center><b><div class='blink' id='traslados".$pk_wccocod."'>".$trasl."</div></b></td>";//Traslados
 								echo "<td width='3%' align=center><b><div class='blink' id='posq".$pk_wccocod."'>".$posqx."</div></b></td>";//Pos quirurjicos
 							}else{
-								echo "<td width='3%' align=center onClick='window.open(\"../reportes/Rep_lista_dietas.php?wemp_pmla=".$wemp_pmla."&wcco=".$pk_wccocod."-".$nom_cco[$pk_wccocod]."&wser=".$wser."&activo=on&wfec_i=".date("Y-m-d")."&wfec_f=".date("Y-m-d")."&impresas=on&wtipo=\", \"\", \"\")' style='cursor: pointer'><b><div id='impresion".$pk_wccocod."' class='blink'> &nbsp;</div></b></td>";//Impresiones
+								echo "<td width='3%' align=center onClick='window.open(\"../reportes/Rep_lista_dietas.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&wcco=".$pk_wccocod."-".$nom_cco[$pk_wccocod]."&wser=".$wser."&activo=on&wfec_i=".date("Y-m-d")."&wfec_f=".date("Y-m-d")."&impresas=on&wtipo=\", \"\", \"\")' style='cursor: pointer'><b><div id='impresion".$pk_wccocod."' class='blink'> &nbsp;</div></b></td>";//Impresiones
 								echo "<td width='3%' align=center><b><div class='blink' id='sinLeer2".$increment.$pk_wccocod."'></div></b></td>";//Mensajes sin leer
 								echo "<td width='3%' align=center><b><div class='blink' id='adicion".$pk_wccocod."'>&nbsp;</div></b></td>";//Adiciones
 								echo "<td width='3%' align=center><b><div class='blink' id='modificacion".$pk_wccocod."'>&nbsp;</div></b></td>";//Modificaciones
