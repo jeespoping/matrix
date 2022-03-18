@@ -83,7 +83,7 @@ if (!isset($_SESSION['user']))
 //PROGRAMA				      :ameniif01  permite actualizar el maestro de homologacion de ctas                                                            
 //AUTOR				          :Jair Saldarriaga Orozco.                                                                        
 //FECHA CREACION			  :Enero 22 de 2016
-                                                                       
+//08/03/2022 - Brigith Lagares : Se estandariza wemp_pmla                                                                        
 $wactualiz="Enero 22 de 2016  JairS";
 
 $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
@@ -130,7 +130,7 @@ Function validar_datos($cac,$dac,$cni,$dni)
 
    
    
-  switch($wemp) 
+  switch($wemp_pmla) 
   {
    case 1:     //es usuario de PMLA
     $conex = odbc_connect(connif,'informix','sco') or die("No se realizo Conexion con la BD connif en Informix");  	
@@ -167,7 +167,7 @@ echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
     if ($wproceso=="Nuevo") 
 	{        
      $wcac = "";
-	 $wdac = "";
+	  $wdac = "";
      $wcni = "";
      $wdni = "";
     }
@@ -238,7 +238,7 @@ echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	   echo "<INPUT TYPE = 'hidden' NAME='wproceso' VALUE='".$wproceso."'></INPUT>";                   
 	   echo "<INPUT TYPE = 'hidden' NAME='windicador' VALUE='".$windicador."'></INPUT>"; 
 	   
-	   echo "<INPUT TYPE = 'hidden' NAME='wemp' VALUE='".$wemp."'></INPUT>"; 
+	   echo "<INPUT TYPE = 'hidden' NAME='wemp_pmla' VALUE='".$wemp_pmla."'></INPUT>"; 
 //**************************************************************************************************/	 
 
    echo "<tr><td align=center bgcolor=#6699CC colspan=6>";

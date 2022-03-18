@@ -34,6 +34,7 @@ include_once("conex.php");
  //	Jerson trujillo: 2013-07-11
  //	Descripcion: Se modifican los turnos de 6 am a 6 pm	y 6 pm a 6 am.			
  //---------------------------------------
+ //08/03/2022 - Brigith Lagares : Se estandariza wemp_pmla  
 
 /****************************************************************************************************************
  *						 								FUNCIONES
@@ -182,9 +183,15 @@ else
 		}
 		echo "<form action='' method=post>";
 		
-		$wactualiz='Noviembre 7 de 2013';
-		$wemp_pmla = $emp;
-		encabezado("REPOSICION DE MEDICAMENTOS Y MATERIAL",$wactualiz, "clinica");
+		//$wactualiz='Noviembre 7 de 2013';
+		$wactualiz = '2022-02-24';
+		//$wemp_pmla = $emp;
+		$wemp_pmla = $_REQUEST['wemp_pmla'];
+		
+		//encabezado("REPOSICION DE MEDICAMENTOS Y MATERIAL",$wactualiz, "clinica");
+		$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+		$wbasedato1 = strtolower( $institucion->baseDeDatos );
+		encabezado("REPOSICIÓN DE MEDICAMENTOS Y MATERIAL ",$wactualiz, $wbasedato1);
 		
 		echo "<center><table>";
 		
@@ -268,10 +275,10 @@ else
 		conexionOdbc($conex, $bd, $conex_unix, 'inventarios');
 		
 		$cco['cod']=$cc;
-		getCco($cco,"C", $emp);
+		getCco($cco,"C", $wemp_pmla);
 		$fuenteCarga=$cco['fue'];
 
-		getCco($cco,"D", $emp);
+		getCco($cco,"D", $wemp_pmla);
 		$fuenteDev=$cco['fue'];
 
 		$hora = rangoFechas( $bd, $fecini, $fecfin, $hora1, $hora2 );

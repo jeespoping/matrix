@@ -5,7 +5,9 @@
 <body BGCOLOR="">
 <BODY TEXT="#000066"> 
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php"); 	
+include_once("root/comun.php");
 
 /***************************************************************
 /* Programa que permite apuntar tablas en UNIX para generar los
@@ -20,7 +22,16 @@ include_once("conex.php");
 		 wemp=3 es usuario de CLINICA DEL SUR
 		 wemp=4 es usuario de PATOLOGIA
 		 wemp=5 es usuario de FARMASTORE
+----------------------------------------------------------------
+  ACTUALIZACIÓN
+----------------------------------------------------------------
+->08/03/2022-Brigith Lagares : Se estandariza wemp_pmla  
+
 ****************************************************************/
+$wactualiz = '2022-02-24';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("PROMOTORA MEDICA LAS AMERICAS S.A. ",$wactualiz, $wbasedato1);
 
 session_start();
 if(!isset($_SESSION['user']))
@@ -81,12 +92,12 @@ if(!isset($_SESSION['user']))
 
    mysql_select_db("matrix") or die("No se selecciono la base de datos");    
  
-   echo "<form action='coniifxx.php?wemp=".$wemp."' method=post>";
+   echo "<form action='coniifxx.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
 	if (!isset($wrec) )
 	{
 			echo "<center><table border=0>";
-			echo "<tr><td align=center><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+			//echo "<tr><td align=center><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 			echo "<tr><td align=center>Apuntar tablas a:</td></tr>";
 			echo "<tr>";
 			
@@ -113,7 +124,7 @@ if(!isset($_SESSION['user']))
             echo "<select name='wrec'>"; 
             echo "<option></option>"; 
 			
-			switch($wemp) 
+			switch($wemp_pmla) 
 		    {
             case 1:
 			  echo "<option>facturacion-Facturacion y cartera PMLA</option>"; 
@@ -145,7 +156,7 @@ if(!isset($_SESSION['user']))
             }
 			echo "</select></td>";
 			
-            echo "<INPUT TYPE = 'hidden' NAME='wemp' VALUE='".$wemp."'></INPUT>"; 
+            echo "<INPUT TYPE = 'hidden' NAME='wemp_pmla' VALUE='".$wemp_pmla."'></INPUT>"; 
 			
             echo "<tr><td bgcolor=#cccccc align=center><input type='submit' value='PROCESAR'></td></tr></table>";	  
     }
@@ -165,17 +176,17 @@ if(!isset($_SESSION['user']))
 	       echo "Apuntando ".$c1[1]." a contabilidad NIIF. ODBC de conexion utilizado ".$c1[0];   
 
            // cocue en NIFF que esta abierta x tercero
-           $query="UPDATE systables SET dirpath='".$aniff[$wemp][1]."' WHERE tabname='cocue' ";
+           $query="UPDATE systables SET dirpath='".$aniff[$wemp_pmla][1]."' WHERE tabname='cocue' ";
            $resultado = odbc_do($conexN,$query);            // Ejecuto el query  
            if ( !($resultado) )
             echo "<br><tr><td bgcolor=#33FFFF colspan=6 align=center>Error, La tabla cocue no se proceso</td></tr>";
             // comov 
-            $query="UPDATE systables SET dirpath='".$aniff[$wemp][2]."' WHERE tabname='comov' ";
+            $query="UPDATE systables SET dirpath='".$aniff[$wemp_pmla][2]."' WHERE tabname='comov' ";
             $resultado = odbc_do($conexN,$query);            // Ejecuto el query  
             if ( !($resultado) )
              echo "<br><tr><td bgcolor=#33FFFF colspan=6 align=center>Error, La tabla comov no se proceso</td></tr>";
              // comovenc
-             $query="UPDATE systables SET dirpath='".$aniff[$wemp][3]."' WHERE tabname='comovenc' ";
+             $query="UPDATE systables SET dirpath='".$aniff[$wemp_pmla][3]."' WHERE tabname='comovenc' ";
              $resultado = odbc_do($conexN,$query);            // Ejecuto el query  
              if ( !($resultado) )
               echo "<br><tr><td bgcolor=#33FFFF colspan=6 align=center>Error, La tabla comovenc no se proceso</td></tr>";
@@ -204,17 +215,17 @@ if(!isset($_SESSION['user']))
             echo "Apuntando ".$c1[1]." a contabilidad ACTUAL. ODBC de conexion utilizado ".$c1[0];         
 		  
             // cocue  
-            $query = "UPDATE systables SET dirpath='".$apuch[$wemp][1]."' WHERE tabname='cocue' ";
+            $query = "UPDATE systables SET dirpath='".$apuch[$wemp_pmla][1]."' WHERE tabname='cocue' ";
             $resultado = odbc_do($conexN,$query); 
             if ( !($resultado) )
              echo "<br><tr><td bgcolor=#33FFFF colspan=6 align=center>Error, La tabla cocue no se proceso</td></tr>";
             // comov 
-            $query = "UPDATE systables SET dirpath='".$apuch[$wemp][2]."' WHERE tabname='comov' ";
+            $query = "UPDATE systables SET dirpath='".$apuch[$wemp_pmla][2]."' WHERE tabname='comov' ";
             $resultado = odbc_do($conexN,$query); 
             if ( !($resultado) )
              echo "<br><tr><td bgcolor=#33FFFF colspan=6 align=center>Error, La tabla comov no se proceso</td></tr>";
             // comovenc 
-            $query = "UPDATE systables SET dirpath='".$apuch[$wemp][3]."' WHERE tabname='comovenc' ";
+            $query = "UPDATE systables SET dirpath='".$apuch[$wemp_pmla][3]."' WHERE tabname='comovenc' ";
             $resultado = odbc_do($conexN,$query); 
             if ( !($resultado) )
              echo "<br><tr><td bgcolor=#33FFFF colspan=6 align=center>Error, La tabla comovenc no se proceso</td></tr>";

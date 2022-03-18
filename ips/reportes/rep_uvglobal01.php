@@ -1,7 +1,7 @@
 <html>
 <head>
 <title>Reporte de las Ordenes Entregadas</title>
-<link href="/matrix/root/tavo.css" rel="stylesheet" type="text/css" />
+<!--<link href="/matrix/root/tavo.css" rel="stylesheet" type="text/css" />-->
  <!-- UTF-8 is the recommended encoding for your pages -->
   <!--   <meta http-equiv="content-type" content="text/xml; charset=utf-8" />  -->
     <title>Zapatec DHTML Calendar</title>
@@ -17,7 +17,7 @@
   <!-- Loading language definition file -->
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
 </head>
-<font face='arial'>
+<!--<font face='arial'>
 <BODY TEXT="#000066">
 
 <script type="text/javascript">
@@ -34,10 +34,11 @@
 		document.forms.rep_uvglobal01.submit();
 	}
 </script>
-
+-->
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
-
+include_once("root/comun.php");
 /*******************************************************************************************************************************************
 *                                             REPORTE POR RANGO DE FECHA DE ENTREGA DE ORDENES                                             *
 ********************************************************************************************************************************************/
@@ -51,9 +52,12 @@ include_once("conex.php");
 //                                                                                                                                          |
 //TABLAS UTILIZADAS :                                                                                                                       |
 //uvglobal_000133   : Tabla de ordenes.                                                                                                     |
-//uvglobal_000041   : Tabla de Pacientes.                                                                                                   |
+//uvglobal_000041   : Tabla de Pacientes. 
+
+//08/03/2022 - Brigith Lagares : Se estandariza wemp_pmla                                                                                              |
 //==========================================================================================================================================
-$wactualiz="Ver. 2008-09-29";
+//$wactualiz="Ver. 2008-09-29";
+$wactualiz = '2022-02-25';
 
 session_start();
 if(!isset($_SESSION['user']))
@@ -63,41 +67,44 @@ if(!isset($_SESSION['user']))
 else
 {
 	
- $empresa='root';
+ //$empresa='root';
 
+ $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+ $wbasedato1 = strtolower( $institucion->baseDeDatos );
+ encabezado("REPORTE DE ORDENES ENTREGADAS POR FECHA ",$wactualiz, $wbasedato1);
  
-
  
-
-
- echo '<div id="header">';
- echo '<div id="logo">';
- echo '<h1><a href="rep_diaincons.php">REPORTE DE ORDENES ENTREGADAS POR FECHA</a></h1>';
- echo '<h2>UNIDAD VISUAL <b>' . $wactualiz . '</h2>';
- echo '</div>';
- echo '</div></br></br></br></br></br>';
+ //echo '<div id="header">';
+ //echo '<div id="logo">';
+ //echo '<h1><a href="rep_diaincons.php">REPORTE DE ORDENES ENTREGADAS POR FECHA</a></h1>';
+ //echo '<h2>UNIDAD VISUAL <b>' . $wactualiz . '</h2>';
+ //echo '</div>';
+ //echo '</div></br></br></br></br></br>';
  
  
 /////////////////////////////////////////////////////////////////////////////////////// seleccion para saber la Base de Datos
-
-$query = " SELECT empbda"
-	    ."   FROM ".$empresa."_000050"
-	    ."  WHERE empcod='".$wemp."'";
+echo "<center><table border=0 width=300>";
+//$query = " SELECT empbda"
+//	    ."   FROM ".$empresa."_000050"
+//	    ."  WHERE empcod='".$wemp_pmla."'";
 	 
-$err = mysql_query($query,$conex);
-$num = mysql_num_rows($err);
-   
-$empre1="";
+//$err = mysql_query($query,$conex);
+//$num = mysql_num_rows($err);
 
-for ($i=1;$i<=$num;$i++)
- { 
-  $row = mysql_fetch_array($err);
+//$empre1="";
+
+//for ($i=1;$i<=$num;$i++)
+// { 
+//  $row = mysql_fetch_array($err);
      
-  IF ($row[0] == 'UVGLOBAL')
-   {
-    $empre1='uvglobal';
-   }	
- }
+//  IF ($row[0] == 'UVGLOBAL')
+//   {
+//    $empre1='uvglobal';
+//  }	
+//}
+
+$empre1 =  $wbasedato1;
+
 
  if (!isset($fec1) or $fec1 == '' or !isset($fec2) or $fec2 == '' or !isset($cco) or $cco=='-' or $cco=='' )
   {
@@ -136,7 +143,8 @@ for ($i=1;$i<=$num;$i++)
         $fec1=$hoy;
    	$cal="calendario('fec1','1')";
    	echo "<tr>";
-	echo "<td bgcolor='#dddddd' align=center><input type='TEXT' name='fec1' size=10 maxlength=10  id='fec1' readonly='readonly' value=".$fec1." class=tipo3><button id='trigger1' onclick=".$cal.">...</button></td>";
+	//echo "<td bgcolor='#dddddd' align=center><input type='TEXT' name='fec1' size=10 maxlength=10  id='fec1' readonly='readonly' value=".$fec1." class=tipo3><button id='trigger1' onclick=".$cal.">...</button></td>";
+	echo "<td bgcolor='#dddddd' align=center><input type='date' name='fec1' size=10 maxlength=10  id='fec1' value=".$fec1." class=tipo3></td>";
 	?>
 	  <script type="text/javascript">//<![CDATA[
 	   Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'fec1',button:'trigger1',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});	
@@ -147,7 +155,8 @@ for ($i=1;$i<=$num;$i++)
    if (!isset($fec2))
        $fec2=$hoy;
    	  $cal="calendario('fec2','1')";
-	  echo "<td bgcolor='#dddddd' align=center><input type='TEXT' name='fec2' size=10 maxlength=10  id='fec2' readonly='readonly' value=".$fec2." class=tipo3><button id='trigger2' onclick=".$cal.">...</button></td>";
+	  //echo "<td bgcolor='#dddddd' align=center><input type='TEXT' name='fec2' size=10 maxlength=10  id='fec2' readonly='readonly' value=".$fec2." class=tipo3><button id='trigger2' onclick=".$cal.">...</button></td>";
+	  echo "<td bgcolor='#dddddd' align=center><input type='date' name='fec2' size=10 maxlength=10  id='fec2' value=".$fec2." class=tipo3></td>";
 	  ?>
 	    <script type="text/javascript">//<![CDATA[
 	       Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'fec2',button:'trigger2',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});	

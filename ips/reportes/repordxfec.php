@@ -8,9 +8,9 @@
 	}
 
 	//Redirecciona a la pagina inicial
-	function inicioReporte(wemp,wfecini,wfecfin,wsede,wordent,wordcan)
+	function inicioReporte(wemp_pmla,wfecini,wfecfin,wsede,wordent,wordcan)
 	{
-	 	document.location.href='repordxfec.php?wemp='+wemp+'&wfecini='+wfecini+'&wfecfin='+wfecfin+'&wsede='+wsede+'&wordent='+wordent+'&wordcan='+wordcan+'&bandera=1';
+	 	document.location.href='repordxfec.php?wemp_pmla='+wemp_pmla+'&wfecini='+wfecini+'&wfecfin='+wfecfin+'&wsede='+wsede+'&wordent='+wordent+'&wordcan='+wordcan+'&bandera=1';
 	}
 </script>
 
@@ -27,7 +27,8 @@ include_once("conex.php");
 //PROGRAMA				      : Reporte para ver por rango de fecha las ordenes entregadas, sin entregar y canceladas y sin cancelar 	    |
 //AUTOR				          : Mario Cadavid.                                                                       						|
 //FECHA CREACION			  : SEPTIEMBRE 19 DE 2011.                                                                                      |
-//FECHA ULTIMA ACTUALIZACION  : SEPTIEMBRE 19 DE 2011.                                                                                      |
+//FECHA ULTIMA ACTUALIZACION  : SEPTIEMBRE 19 DE 2011.
+//08/03/2022-Brigith Lagares : Se estandariza wemp_pmla                                                                                      |
 //==========================================================================================================================================
 include_once("root/comun.php");
 
@@ -47,10 +48,10 @@ if(empty($wuser) || $wuser == ""){
 
 session_start();
 
-$institucion = consultarInstitucionPorCodigo($conex, $wemp);
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 $wbasedato = $institucion->baseDeDatos;
 $wentidad = $institucion->nombre;
-$wactualiz = 'Sept. 19 de 2011';
+$wactualiz = '2022-03-08';
 
 //Llamo a la función para formar el encabezado del reporte llevándole Título, Fecha e Imagen o logo
 encabezado("REPORTE DE ORDENES POR FECHA",$wactualiz,"logo_".$wbasedato);
@@ -67,10 +68,10 @@ if (!$usuarioValidado)
 else //Si el usuario es válido comenzamos con el reporte
 {  //Inicio ELSE reporte
 
-	$institucion = consultarInstitucionPorCodigo($conex, $wemp);
+	//$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 
-	$wbasedato = $institucion->baseDeDatos;
-	$wentidad = $institucion->nombre;
+	//$wbasedato = $institucion->baseDeDatos;
+	//$wentidad = $institucion->nombre;
 	
   	$wfecha=date("Y-m-d");
   	$hora = (string)date("H:i:s");
@@ -78,7 +79,7 @@ else //Si el usuario es válido comenzamos con el reporte
   	
   	echo "<br>";
   	echo "<form action='repordxfec.php' method=post name='forma'>";
-  	echo "<input type='HIDDEN' NAME= 'wemp' value='".$wemp."'>";
+  	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
   	echo "<input type='HIDDEN' NAME= 'wbasedato' value='".$wbasedato."'>";
 
     if (!isset($wfecini) or !isset($wfecfin) or !isset($wsede) or !isset($resultado))
@@ -233,7 +234,7 @@ else //Si el usuario es válido comenzamos con el reporte
 			$wordcan = '%';
 
 		//Botones "Retornar" y "Cerrar ventana"
-		echo "<br /><p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wemp\",\"$wfecini\",\"$wfecfin\",\"$wsede\",\"$wordent\",\"$wordcan\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
+		echo "<br /><p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wemp_pmla\",\"$wfecini\",\"$wfecfin\",\"$wsede\",\"$wordent\",\"$wordcan\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
 
 		if(isset($wordent) && $wordent=='1')
 			$sqlordent = " AND ordfen != '0000-00-00' ";
@@ -327,7 +328,7 @@ else //Si el usuario es válido comenzamos con el reporte
 		}		
 
 		//Botones "Retornar" y "Cerrar ventana"
-		echo "<br /><p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wemp\",\"$wfecini\",\"$wfecfin\",\"$wsede\",\"$wordent\",\"$wordcan\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
+		echo "<br /><p align='center'><input type='button' value='Retornar' onClick='javascript:inicioReporte(\"$wemp_pmla\",\"$wfecini\",\"$wfecfin\",\"$wsede\",\"$wordent\",\"$wordcan\");'>&nbsp;|&nbsp;<input type='button' value='Cerrar ventana' onclick='javascript:cerrarVentana();'></p>";          
 
 	}
 }
