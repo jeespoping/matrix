@@ -68,14 +68,13 @@ include_once("conex.php");
 
 <?php
 // ----------------------------------------------------------funciones de persitencia------------------------------------------------
-function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $orden2, $sCodigoSede = NULL)
+function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $orden2, $sCodigoSede = NULL, $TablaValidacionSede = NULL)
 {
     global $conex;
     global $wbasedato;
     global $wmovhos;
     global $wcostosyp;
     global $wemp_pmla;
-    global $TablaValidacionSede;
 
     
     $sFiltroSede='';
@@ -93,7 +92,7 @@ function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $or
 
     if ($para == 'recibidos')
     {
-        if($estadosede == 'off')
+        if($estadosede == 'off' || empty($TablaValidacionSede) || !isset($TablaValidacionSede))
         {
             $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, Hora_data, Descripcion, r40.id AS id_req, Reqccs  "
             . "       FROM " . $wbasedato . "_000040 AS r40, usuarios "
@@ -114,7 +113,7 @@ function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $or
             . "       AND r40.Reqfec between '" . $confec1 . "' and '" . $confec2 . "' "
            // ."       OR r40.Reqfec > '".date('Y')."-".date('m')."-01') "
             . "       AND Codigo = r40.Reqpurs "
-            ."        AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede}) "
+            ."        AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede}) "
             // . "       AND ACTIVO='A' "
            . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc, 12 desc ";
         }
@@ -123,7 +122,7 @@ function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $or
     else if ($para == 'enviados')
     {
 
-        if ($estadosede == 'off')
+        if ($estadosede == 'off' || empty($TablaValidacionSede) || !isset($TablaValidacionSede))
         {
             
             $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, Hora_data, Descripcion, r40.id AS id_req  "
@@ -142,7 +141,7 @@ function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $or
             . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
             . "       AND r40.Reqfec between '" . $confec1 . "' and '" . $confec2 . "' "
             . "       AND Codigo = r40.Reqpurs "
-            . " AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede}) "
+            . " AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede}) "
             // . "       AND ACTIVO='A' "
             . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc , 12 desc ";
         }
@@ -557,7 +556,7 @@ else
     }
 
     pintarFormulario($confec1, $confec2, $para);
-    $requerimientos = consultarRequerimientos($wusuario, $confec1, $confec2, $para, $orden, $orden2, $selectsede);
+    $requerimientos = consultarRequerimientos($wusuario, $confec1, $confec2, $para, $orden, $orden2, $selectsede, $TablaValidacionSede);
     if (is_array($requerimientos))
     {
         pintarRequerimientos($requerimientos, $para, $orden, $orden2);

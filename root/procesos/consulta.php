@@ -89,14 +89,13 @@ include_once("conex.php");
 
 <?php
 // ----------------------------------------------------------funciones de persitencia------------------------------------------------
-function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sCodigoSede = NULL)
+function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sCodigoSede = NULL, $TablaValidacionSede = NULL)
 {
     global $conex;
     global $wbasedato;
 	global $wcostosyp;
 	global $wmovhos;
     global $wemp_pmla;
-    global $TablaValidacionSede;
 
     $sFiltroSede='';
    
@@ -114,7 +113,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sC
     if ($para == 'recibidos')
     {
 
-        if ($estadosede == 'off')
+        if ($estadosede == 'off' || empty($TablaValidacionSede) || !isset($TablaValidacionSede))
         {
             $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
             FROM    " . $wbasedato . "_000040 AS r40, usuarios
@@ -140,7 +139,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sC
                             Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin = 'on') 
                         )
                     AND Codigo = Reqpurs AND Reqest <> 6
-                    AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede})
+                    AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede})
                     ORDER   BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
         }
 
@@ -200,7 +199,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sC
                 )
                 ORDER BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";*/
 
-        if ($estadosede == 'off')
+        if ($estadosede == 'off' || empty($TablaValidacionSede) || !isset($TablaValidacionSede))
         {
             $q = "  SELECT  Reqcco, Reqnum, Reqtip, Reqfec, Requso, Requrc, Reqdes, Reqpurs, Reqpri, Reqest, Reqcla, Hora_data, Descripcion, Reqtpn, Reqsat, r40.id AS id_req, Reqccs 
             FROM    " . $wbasedato . "_000040 AS r40, usuarios
@@ -222,7 +221,7 @@ function consultarRequerimientos($codigo, $para, $orden, $orden2, $wusuario, $sC
                             Reqest NOT IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on')
                         )
                     AND Codigo = Reqpurs
-                    AND (mid(Reqcco,(instr(Reqcco,')') + 1),length(Reqcco)) = Ccocod {$sFiltroSede})
+                    AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede})
            ORDER BY ".$orden2." ".$orden.", 10, 9, 4 desc, 12 desc";
         }
 		
@@ -765,7 +764,7 @@ else
         $orden2 = 10;
     }
 
-    $requerimientos = consultarRequerimientos($wusuario, $para, $orden, $orden2, $wusuario, $selectsede);
+    $requerimientos = consultarRequerimientos($wusuario, $para, $orden, $orden2, $wusuario, $selectsede, $TablaValidacionSede);
     if (is_array($requerimientos))
     {
         pintarRequerimientos($requerimientos, $para, $orden, $orden2);
