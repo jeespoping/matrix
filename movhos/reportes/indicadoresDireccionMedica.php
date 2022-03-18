@@ -323,7 +323,7 @@ if(isset($accion))
 						</table>
 						<br>
 						<table width='95%' class='fondoAmarillo bordeTabla' style='cursor:pointer;border-collapse:collapse;font-size:12pt;font-family:verdana'>
-							<tr align='center'><td colspan='2' onClick='verCx()'><b>Cirugía</b></td></tr>
+							<tr align='center'><td colspan='2' onClick='verCx(\"".$arraySedes[$torre]."\")'><b>Cirugía</b></td></tr>
 						</table>
 					</td>
 					";
@@ -789,6 +789,13 @@ if(isset($accion))
 			$arrayQx			= array();
 			$arrMedicosQx		= array();
 			$totalCx			= array("Rea" => 0, "Can" => 0, "Adi" => 0);
+
+            $sFiltroSede = '';
+            $estadosede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+            if($estadosede=='on')
+            {
+                $sFiltroSede=isset($sedeEnviada) && $sedeEnviada != '' ? " AND Ccosed = '{$sedeEnviada}' " : "";
+            }
 			
 			
 			$sqlQx = "
@@ -797,7 +804,7 @@ if(isset($accion))
 			       INNER JOIN ".$movhos."_000011 ON(Quicco = Ccocod)
 			 WHERE Turfec = '".$fechaBuscar1."'
 			   AND Turest = 'on'
-			   AND Quiest = 'on'
+			   AND Quiest = 'on' ".$sFiltroSede."
 			   AND Quivir != 'on'
 			 UNION
 			SELECT Mcafec, Mcatur, Mcahin, Mcahfi, Mcaqui as Qui, 'Can' as Tip, Quides, Quicco, Cconoc, '', '' Turmed
@@ -805,7 +812,7 @@ if(isset($accion))
 			       INNER JOIN ".$movhos."_000011 ON(Quicco = Ccocod) 
 			 WHERE A.Fecha_data = '".$fechaBuscar1."'
 			   AND Mcafec = '".$fechaBuscar1."'
-			   AND Quiest = 'on'
+			   AND Quiest = 'on' ".$sFiltroSede."
 			   AND Quivir != 'on'
 			 ORDER BY Qui
 			";
@@ -2026,7 +2033,7 @@ else
 	//--------------------------------------------------------
 	//	--> Ver Cx
 	//---------------------------------------------------------
-	function verCx()
+	function verCx(sedeEnviada)
 	{
 		$("#tableContenedor").attr("accion", "verCx");
 		$("#menu").hide();
@@ -2037,6 +2044,7 @@ else
 			accion			:   'verCx',
 			wemp_pmla		:	$('#wemp_pmla').val(),
             selectsede      :   $('#sede').val(),
+            sedeEnviada		:   sedeEnviada,
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			$("#retornar").show();
