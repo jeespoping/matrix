@@ -11,6 +11,10 @@ include_once("conex.php");
  *********************************************************************************************************
  Actualizaciones:
  **********************************************************************************************************/
+//===========================================================================================================//
+//22 de marzo de 2022: Sebastian Alvarez Barona - Se realiza filtro de sede (Sede80 y SedeSur) al selector que me muetsra los centros de costos
+//                                                  y a la información ofrecida luego de consultar.
+//===========================================================================================================//
  //2019-10-03: Camilo Zapata: Se adicionan las intolerancias al sticker.
  // 2019-06-26, Jerson Trujillo: Se modifica el tamaño del texto de la observacion
  //Enero 21 de 2014 Jonatan Lopez
@@ -18,7 +22,7 @@ include_once("conex.php");
  //de enfermeria imprimirá la observacion de DSN, ya que esta tiene prelacion.
  /**********************************************************************************************************/
 
-$wactualiz = "2019-10-03";
+$wactualiz = "22 de marzo de 2022";
 
 if(!isset($_SESSION['user'])){
 	echo "Reingresar a matrix";
@@ -60,7 +64,7 @@ $pdf = "";
 if( isset($_REQUEST['action'] )){
 	$action = $_REQUEST['action'];
 	if( $action == "mostrarLista"){
-		consultarTarjetas( $_REQUEST['servicio'], $_REQUEST['patron'], $_REQUEST['fecha'], $_REQUEST['piso'], $_REQUEST['habitacion'], $_REQUEST['historia']);
+		consultarTarjetas( $_REQUEST['servicio'], $_REQUEST['patron'], $_REQUEST['fecha'], $_REQUEST['piso'], $_REQUEST['habitacion'], $_REQUEST['historia'], $selectsede);
 	}
 	return;
 }
@@ -227,11 +231,24 @@ if( isset($_REQUEST['action'] )){
 	}
 
 	//Consulta e imprime las tarjetas con los parametros de busqueda
-	function consultarTarjetas($wser, $wpat, $wfecha, $wcco, $whab, $whis){
+	function consultarTarjetas($wser, $wpat, $wfecha, $wcco, $whab, $whis, $sCodigoSede = NULL){
 
 		global $wbasedato;
 		global $conex;
 		global $wemp_pmla;
+
+		$sFiltroSede='';
+	
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+		
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 
 		$codigos_patrones = array(); //Contiene los codigos de los patrones
 		$nombres_patrones = array(); //Contiene los nombres de los patrones
@@ -292,7 +309,8 @@ if( isset($_REQUEST['action'] )){
 			." AND moving = ubiing "
 			." AND movest = 'on'"
 			." AND movser = sercod "
-			." AND movdie != 'NVO' "; //Regla de negocio, no se muestra ni se imprime NVO
+			." AND movdie != 'NVO' " //Regla de negocio, no se muestra ni se imprime NVO
+			." {$sFiltroSede} " ;
 		$q.= " UNION ";
 		$q.= " SELECT Movhis as historia, Moving as ingreso, Movcco as piso, movdie as cod_patron, movdie as patron, '' as color, Movhab as habitacion, Sercod as cod_servicio, Sernom as servicio, movods, movdsn, "
 		    ." CONCAT(pacno1, ' ', pacno2,' ',pacap1,' ',pacap2) as nombre, pacnac, seraso as servicio_asociado, 'off' as tiene_productos, Movobs as observ_enferme, movint intolerancias"
@@ -313,6 +331,7 @@ if( isset($_REQUEST['action'] )){
 			." AND moving = ubiing "
 			." AND movest = 'on'"
 			." AND movser = sercod "
+			." {$sFiltroSede} "
 			." ORDER BY piso, habitacion";
 
 		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -850,22 +869,41 @@ if( isset($_REQUEST['action'] )){
 	}
 
 	//Funcion que imprime el formulario cuando se carga la pagina
-	function vistaInicial(){
+	function vistaInicial($sCodigoSede = NULL){
 
 		global $wemp_pmla;
 		global $wactualiz;
 		global $wtabcco;
 		global $wbasedato;
 		global $conex;
+		global $selectsede;
 
-		encabezado("IMPRESION TARJETAS DE DIETAS", $wactualiz, "clinica");
+		$sFiltroSede='';
+	
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+		
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
+
 		$width_sel = " width: 95%; ";
 		$u_agent = $_SERVER['HTTP_USER_AGENT'];
 		if(preg_match('/MSIE/i',$u_agent))
 			$width_sel = "";
 
 		echo "<form name='formtarjeta' action='' method=post>";
+
+		encabezado("IMPRESION TARJETAS DE DIETAS", $wactualiz, "clinica", TRUE);
+
+
 		echo "<input type='hidden' id ='wemp_pmla' name ='wemp_pmla' value='".$wemp_pmla."'/>";
+		echo "<input type='hidden' id='sede' name='sede' value='".$selectsede."' />";
+
 
 		echo "<center>";
 		echo "<table>";
@@ -873,7 +911,8 @@ if( isset($_REQUEST['action'] )){
 		$q = "SELECT ".$wtabcco.".ccocod, ".$wtabcco.".cconom
 				FROM ".$wtabcco.", ".$wbasedato."_000011
 			   WHERE ".$wtabcco.".ccocod = ".$wbasedato."_000011.ccocod
-				 AND ccohos  = 'on' ";
+				 AND ccohos  = 'on' 
+				 {$sFiltroSede}";
 
 		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 		$num = mysql_num_rows($res);
@@ -1089,6 +1128,7 @@ if( isset($_REQUEST['action'] )){
 		var piso = $("#wcco").val();
 		var habitacion = $("#whab").val();
 		var historia = $("#whis").val();
+		var selectsede = $("#selectsede").val();
 
 		habitacion = habitacion.toUpperCase();
 		//muestra el mensaje de cargando
@@ -1100,7 +1140,7 @@ if( isset($_REQUEST['action'] )){
 		var rango_inferior = 11;
 		var aleatorio = Math.floor(Math.random()*(rango_superior-(rango_inferior-1))) + rango_inferior;
 		//Realiza el llamado ajax con los parametros de busqueda
-		$.get('rep_tarjetaDietas.php', { wemp_pmla: wemp_pmla, action: "mostrarLista", habitacion: habitacion, historia: historia, servicio: servicio, patron: patron, fecha: fecha, piso: piso, consultaAjax: aleatorio} ,
+		$.get('rep_tarjetaDietas.php', { wemp_pmla: wemp_pmla, action: "mostrarLista", habitacion: habitacion, historia: historia, servicio: servicio, patron: patron, fecha: fecha, piso: piso, selectsede, consultaAjax: aleatorio} ,
 			function(data) {
 				$.unblockUI();
 				if( data.trim() == 'OK' ){
@@ -1137,12 +1177,17 @@ if( isset($_REQUEST['action'] )){
 							$.unblockUI();
 						}, 1600 );
 	}
+
+	$(document).on('change','#selectsede',function(){
+		window.location.href = "rep_tarjetaDietas.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+	});
+
 </script>
 </head>
     <body>
 		<!-- LO QUE SE MUESTRA AL INGRESAR POR PRIMERA VEZ -->
 			<?php
-					vistaInicial();
+					vistaInicial($selectsede);
 			?>
     </body>
 </html>
