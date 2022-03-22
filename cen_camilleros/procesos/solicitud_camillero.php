@@ -17,9 +17,10 @@ echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
 /*
 * Filtro sede
 */
-if(isset($_GET['selectsede'])  &&  !empty($_GET['selectsede']) )
-{
-	$sCodigoSede = $_GET['selectsede'];
+if(isset($_GET['selectsede'])  &&  !empty($_GET['selectsede']) ){
+	
+$sCodigoSede = $_GET['selectsede'];
+$sedeDestino = $_GET['selectsede'];
 }
 // if(isset($_GET['caso'])  &&  !empty($_GET['caso']) ){
 // 	$caso = $_GET['caso'];
@@ -38,7 +39,7 @@ if(isset($_GET['selectsede'])  &&  !empty($_GET['selectsede']) )
     {
         
 
-        
+
         // $wbasedato       = consultarAliasPorAplicacion($conex, $wemp_pmla, 'root');
 		$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
         $wbasedato = "root";
@@ -152,8 +153,8 @@ if(isset($_GET['selectsede'])  &&  !empty($_GET['selectsede']) )
 			});
 		}
 
-    });
-	
+    });  
+
 	function cambioSede(sede,event)  {
 		var wemp_pmla = $('#wemp_pmla').val();
 		var wuso = $('#wuso').val();
@@ -162,9 +163,45 @@ if(isset($_GET['selectsede'])  &&  !empty($_GET['selectsede']) )
 
 
 		var queryString = window.location.search;
-		var urlParams = new URLSearchParams(queryString);
+    var urlParams = new URLSearchParams(queryString);
 
-		var anuncioParam = urlParams.get('selectSede');
+	var anuncioParam = urlParams.get('selectSede');
+	
+
+			location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede='+sede+'&caso=pantallasinicial';
+			// location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede='+sede+'&caso='+caso;
+		
+		/*switch (localStorage.getItem('step')) {
+			case "1":
+			location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede='+sede;
+				
+			break;
+
+			case "2":
+			event.stopPropagation();
+				$.ajax({
+					url: '#',
+					method: 'GET',
+					data: {
+						wemp_pmla: wemp_pmla,
+						wuso:wuso,
+						selectSede: sede
+					}
+				});
+
+				
+
+
+			break;
+
+			default:
+			location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede=""';
+				break;
+		}*/
+
+
+		// localStorage.setItem('step',1);
+		//localStorage.removeItem('step');
 
 		location.href = 'solicitud_camillero.php?wemp_pmla='+wemp_pmla+'&wuso='+wuso+'&selectsede='+sede+'&caso=pantallasinicial';
 
@@ -209,6 +246,7 @@ if(isset($_GET['selectsede'])  &&  !empty($_GET['selectsede']) )
             else
                 {
                     $("form:solicitud_camillero").submit();
+				//	localStorage.setItem('step',1);
                 }
     }
 
@@ -577,7 +615,6 @@ else
 	$whora_atencion="LAS 24 HORAS DE LUNES A DOMINGO";
 	$WMENSAJE = "*** POR FAVOR HAGA SU SOLICITUD CON LA MAYOR CLARIDAD POSIBLE ***";
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 	echo "<form id='solicitud_camillero' action='solicitud_camillero.php?wemp_pmla=".$wemp_pmla."&wuso=".$wuso."&selectsede=".$sCodigoSede."&caso=pantallasolicitud' method=post>";
 
     $wunidestsolcamas1 = consultarAliasPorAplicacion($conex, $wemp_pmla, 'UnidadDestinoSolCamas');
@@ -597,7 +634,9 @@ else
     $wmotivo_solicitud = $row['Descripcion'];
 
     //Traigo el nombre del destino que se marcara automaticamente.
-    if(!empty($sCodigoSede)){
+
+
+	if(!empty($sCodigoSede)){
 		$q =     " SELECT c.nombre "
 		."   FROM ".$wcencam."_000004 c"
 		."  WHERE c.Estado = 'on' "
@@ -615,8 +654,9 @@ else
 		."     OR  Uso   = 'A') "      //A: Indica que puede ser Interno o Externo
 		."    AND id = ".$wdestinodb."";
 	}
-    $res = mysql_query($q,$conex)or die(mysql_errno().":".mysql_error());
-    $row = mysql_fetch_array($res);
+    
+	$res = mysql_query($q,$conex)or die(mysql_errno().":".mysql_error());
+	$row = mysql_fetch_array($res);
     $wunidestsolcamas = $row['nombre'];
 
 	echo "<input type='HIDDEN' id='wmotivo_solicitud' name='wmotivo_solicitud' value='".$wmotivo_solicitud."'>";
@@ -1635,9 +1675,11 @@ else
 
 
 
-						$q = "  INSERT INTO ".$wcencam."_000003 (   Medico  ,   Fecha_data,    Hora_data,      Origen  ,   Motivo     ,    Habitacion,   Observacion     ,    Destino     ,   Solicito    ,   Ccosto  , Camillero, Hora_respuesta, Hora_llegada, Hora_Cumplimiento, Anulada, Observ_central,    Central     ,    Historia,  Seguridad) "
-					        ."                           VALUES ('".$wcencam."','".$wfecha."','".$hora."'  ,'".$wser."','".$wmotivo."', '".$whab."','".$wobservacion."', '".$wdestino."','".$wusuario."','".$wser."', '".$wcamillero."'       , ''            , ''          , ''               , 'No'   , ''            , '".$wcentral."', '".$whis."', 'C-".$wusuario."')";
-					    $res2 = mysql_query($q,$conex) or die(mysql_errno().":".mysql_error());
+						$q = "  INSERT INTO ".$wcencam."_000003 (   Medico  ,   Fecha_data,    Hora_data,      Origen  ,   Motivo     ,    Habitacion,   Observacion     ,    Destino     ,   Solicito    ,   Ccosto  , Camillero, Hora_respuesta, Hora_llegada, Hora_Cumplimiento, Anulada, Observ_central,    Central     ,    Historia,  Seguridad,SedeDestino) "
+					        ."                           VALUES ('".$wcencam."','".$wfecha."','".$hora."'  ,'".$wser."','".$wmotivo."', '".$whab."','".$wobservacion."', '".$wdestino."','".$wusuario."','".$wser."', '".$wcamillero."'       , ''            , ''          , ''               , 'No'   , ''            , '".$wcentral."', '".$whis."', 'C-".$wusuario."','".$sedeDestino."')";
+					    
+						
+						$res2 = mysql_query($q,$conex) or die(mysql_errno().":".mysql_error());
                         $wid=mysql_insert_id(); // Ultimo id insertado.
 
                         $wcentral_camas = consultarAliasPorAplicacion($conex, $wemp_pmla, 'CentralCamas');
