@@ -1,7 +1,5 @@
 <?php
 
-
-
 /************************************************************************************************************************
 
 PROGRAMA: cargos_automaticos_funciones.php
@@ -22,6 +20,8 @@ OBJETIVO GENERAL: Este archivo contiene algunas funciones necesarias para el cor
 	   OBJETIVO GENERAL :
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   .2022-03-15
+			1. Se realiza un ajuste en la funcion obtenerDatosCCAxFormulario para corregir errores detectados en los cargos automáticos de Honorarios.
 	   .2022-01-13
 			1. Se agrega el parametro $wespecialidad en la funcion obtenerDatosCCAxFormulario ademas se agrega la condicion de especialidad (condicion_espec)
 [*DOC]
@@ -100,10 +100,11 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 	
 		// Se setea por defecto el valor de la condicion tipo empresa para que busque la condición de tipo empresa comodín
 		$condicion_temp_emp = " AND ccatem = '*' ";
+		$condicion_temp_emp_con_esp_sin_esp = " AND ((ccaesp = '".$wespecialidad."' AND ccater = '*') OR (ccaesp = '' AND ccater <> '*'))";
 		
 		$sql_temp_especifica_comodin = "SELECT id 
 										FROM ".$wbasedato_facturacion."_000341 
-										WHERE ccafhce = '".$wformulario."' AND ccaesp = '".$wespecialidad."' AND  ccatem <> '*' AND ccatem = '".$tipoEmpresa."' AND ccaemp = '*'";
+										WHERE ccafhce = '".$wformulario."' ".$condicion_temp_emp_con_esp_sin_esp." AND  ccatem <> '*' AND ccatem = '".$tipoEmpresa."' AND ccaemp = '*'";
 								
 		$exec_query_temp_especifica_comodin = mysql_query($sql_temp_especifica_comodin, $conex) or die( mysql_errno()." - Error en el query CCA Tipo Empresa Especifica - ".mysql_error() );
 		$num_reg_temp_especifica_comodin = mysql_num_rows($exec_query_temp_especifica_comodin);
@@ -115,7 +116,7 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 		
 		$sql_temp_especifica_especifica = "SELECT id 
 											FROM ".$wbasedato_facturacion."_000341 
-											WHERE ccafhce = '".$wformulario."' AND ccaesp = '".$wespecialidad."'  AND  ccatem <> '*' AND ccatem = '".$tipoEmpresa."' AND ccaemp = '".$wcodemp."'";
+											WHERE ccafhce = '".$wformulario."' ".$condicion_temp_emp_con_esp_sin_esp." AND  ccatem <> '*' AND ccatem = '".$tipoEmpresa."' AND ccaemp = '".$wcodemp."'";
 								
 		$exec_query_temp_especifica_especifica = mysql_query($sql_temp_especifica_especifica, $conex) or die( mysql_errno()." - Error en el query CCA Tipo Empresa Especifica, Empresa Especifica - ".mysql_error() );
 		$num_reg_temp_especifica_especifica = mysql_num_rows($exec_query_temp_especifica_especifica);
@@ -136,20 +137,31 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 
 		$condicion_espec = "";
 		$condicion_esp_movhos_48 = "";
+		$condicion_meddoc = "ccater";
 
 		if($num_reg_rol_usuario > 0) {
-			if($wespecialidad != '' ) {
-				$condicion_espec = " AND ((ccater = '*' AND ccaesp = '".$wespecialidad."') OR ccaesp = '') ";
-				$condicion_esp_movhos_48 = " AND Medesp = '".$wespecialidad."' ";
-			}
-	
-			$condicion_meddoc = "";
-	
-			if ($wmeddoc != "") {
-				$condicion_meddoc = $wmeddoc;
-			}
+			// Además que el usuario sea médico, válidamos que exista una configuración asociada a la especialidad del médico y tercero comodín
+			// de ser así se setean las variables necesarias
+			$sql_cca_tercero_comodin_con_esp = "SELECT id 
+			                                      FROM ".$wbasedato_facturacion."_000341 
+												 WHERE ccaeve='on' 
+												   AND ccafhce = '".$wformulario."' ".$condicion_temp_emp." AND (ccater = '*' AND ccaesp = '".$wespecialidad."')";
 
-			$case_ccater = $condicion_meddoc." ccater";
+			$exec_query_cca_tercero_comodin_con_esp = mysql_query($sql_cca_tercero_comodin_con_esp, $conex) or die(mysql_errno()." - Error en el query SQL CCA TERCERO COMODIN CON ESP - ".mysql_error());
+			$num_cca_tercero_comodin_con_esp = mysql_num_rows($exec_query_cca_tercero_comodin_con_esp);
+			
+			if($num_cca_tercero_comodin_con_esp > 0) {
+				if($wespecialidad != '' ) {
+					$condicion_espec = " AND (ccater = '*' AND ccaesp = '".$wespecialidad."')";
+					$condicion_esp_movhos_48 = " AND Medesp = '".$wespecialidad."' ";
+				}
+		
+				if ($wmeddoc != '') {
+					$condicion_meddoc = $wmeddoc;
+				}
+	
+				$case_ccater = $condicion_meddoc." ccater";
+			}
 		}
 		
 		$sql_cca_temp_especifica = "
@@ -180,7 +192,7 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 			LEFT JOIN ".$wbasedato_hce."_000002 as hce ON (cca.ccafhce = hce.Detpro AND cca.ccachce = hce.Detcon) 
 			LEFT JOIN ".$wbasedato_movhos."_000026 ON Artcod = ccaart 
 			LEFT JOIN ".$wbasedato_facturacion."_000200 ON ccacon = Grucod 
-			LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ccater AND Medest = 'on' AND Meddoc <> '' ".$condicion_esp_movhos_48." 
+			LEFT JOIN ".$wbasedato_movhos."_000048 ON Meddoc = ".$condicion_meddoc." AND Medest = 'on' AND Meddoc <> '' ".$condicion_esp_movhos_48." 
 			LEFT JOIN ".$wbasedato_facturacion."_000103 ON Procod = ccacup
 			LEFT JOIN ".$wbasedato_hce."_".$wformulario." as fhce ON ( cca.ccachce = movcon AND Dettip = movtip AND ccadat = 'on' AND movusu = '".$mov_usu."' AND fhce.Fecha_data = '".$fecha."' AND fhce.id = (SELECT MAX(id) FROM ".$wbasedato_hce."_".$wformulario." WHERE movusu = '".$mov_usu."' AND Fecha_data = '".$fecha."' AND movhis = '".$movhis."' AND moving = '".$moving."' AND cca.ccachce = movcon AND Dettip = movtip) ) 
 			WHERE ccafhce = '".$wformulario."' ".$condicion_temp_emp." ".$condicion_espec;
