@@ -16,7 +16,7 @@ else
 	include_once("root/magenta.php");
 	include_once("root/comun.php");
 	$conex = obtenerConexionBD("matrix");
-	$wactualiz="(Abril 25 de 2014)"; 
+	$wactualiz="(22 de marzo de 2022)"; 
 	$wfecha=date("Y-m-d");   
 	$whora = (string)date("H:i:s");                                                         
 	$wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tabcco');
@@ -35,6 +35,10 @@ else
 //==========================================================================================================================================\\	
 //ACTUALIZACIONES
 //=========================================================================================================================================\\
+//22 de marzo de 2022: Sebastian Alvarez Barona - Se realiza filtro de sede a los centros de costos que se encuentran en el selector
+//												  por otro lado la información ofrecida una vez se consulte debera corresponder
+//												  solo a la sede que se tiene seleccionada.
+//=========================================================================================================================================\\
 //2014-04-24: Jonatan 
 //Se excluyen de la estadistica los patrones que tengan el parametros diespf en off en la tabla movhos_000041. (NVO es uno de ellos)                                                                                                                     \\
 //=========================================================================================================================================\\
@@ -51,12 +55,26 @@ else
   // F U N C I O N E S
   //=====================================================================================================================================================================
   
-	function query_principal($wcco, $wser, $query)
+	function query_principal($wcco, $wser, $query, $sCodigoSede = NULL)
 	{
 		global $wfec_i;
 		global $wfec_f;
 		global $wbasedato;
 		global $conex;
+		global $wemp_pmla;
+
+		$sFiltroSede='';
+	
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+		
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 	
 		switch($query)
 		{
@@ -70,6 +88,7 @@ else
 						."   AND movpco!='' "
 						."   AND movpco = diecod "
 						."   AND movcco = Ccocod"
+						." {$sFiltroSede} "
 						." GROUP BY dieord, movcco, movser, diecod "
 						." ORDER BY dieord, movcco, movser "
 						."";
@@ -85,6 +104,7 @@ else
 						."	 AND Movpqu = 'on'"
 						."   AND movpco = diecod "
 						."   AND movcco = Ccocod "
+						." {$sFiltroSede} "
 						." ORDER BY dieord, movcco, movser "
 						."";
 					break;
@@ -604,19 +624,30 @@ else
 		};
 		
 		
+		var selectorSede = document.getElementById("selectsede");
+	
+		if(selectorSede !== null)
+		{
+			selectorSede.addEventListener('change', () => {
+				window.location.href = "Rep_facturacion_dietas.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+			});
+		}
+		
 	  });
-     //fin mostrar
-	 
+      //fin mostrar	 
+
 </script>	
 <?php	
-	encabezado("Reporte facturación de dietas", $wactualiz, 'clinica');
-	
-	echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
   //================================================================
   //	FORMA 
   //================================================================
   echo "<form name='mondietas' action='' method=post>";
-  echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";     
+
+  encabezado("Reporte facturación de dietas", $wactualiz, 'clinica', TRUE);
+
+  
+  echo "<input type='HIDDEN' name='wemp_pmla' id= 'wemp_pmla' value='".$wemp_pmla."'>";   
+  echo "<input type='HIDDEN' name='sede' id= 'sede' value='".$wemp_pmla."'>";     
   if (strpos($user,"-") > 0)
      $wusuario = substr($user,(strpos($user,"-")+1),strlen($user)); 
      
@@ -627,6 +658,16 @@ else
 	  //=================================
 	  // SELECCIONAR CENTRO DE COSTOS
 	  //=================================
+
+	  	$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+		$sFiltroSede="";
+		$codigoSede = '';
+		if($estadosede=='on')
+		{	  
+			$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+
 	  echo "<center><table>";
 	  //echo "<input type='HIDDEN' name='wcco' value='".$wcco."'>";
 	  echo "<tr class=titulo>";
@@ -634,7 +675,8 @@ else
       $q = " SELECT ".$wtabcco.".ccocod, ".$wtabcco.".cconom "
           ."   FROM ".$wtabcco.", ".$wbasedato."_000011"
           ."  WHERE ".$wtabcco.".ccocod = ".$wbasedato."_000011.ccocod "
-          ."    AND ccohos  = 'on' ";
+          ."    AND ccohos  = 'on' 
+		  {$sFiltroSede}";
 		  
 	  $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
       $num = mysql_num_rows($res);
@@ -727,7 +769,7 @@ else
 		global $wfec_i;
 		global $wfec_f;
 		
-		$res= query_principal($wcco[0], $wser, $query=1); //consultar informacion de la matriz principal
+		$res= query_principal($wcco[0], $wser, $query=1, $selectsede); //consultar informacion de la matriz principal
 		$num = mysql_num_rows($res);
 		$wpatrones_nopromedia = array();
 		if ($num > 0)
@@ -772,7 +814,7 @@ else
 			//=========================================================
 			// Agregar a las cantidades los Posquirurgicos que existan
 			//=========================================================
-			$res2= query_principal($wcco[0], $wser, $query=2);//dieord, movcco, movser, diecod, diedes, Cconom
+			$res2= query_principal($wcco[0], $wser, $query=2, $selectsede);//dieord, movcco, movser, diecod, diedes, Cconom
 			$num2 = mysql_num_rows($res2);
 			if ($num2 > 0)
 			{
