@@ -12,7 +12,10 @@ OBJETIVO GENERAL: Este archivo contiene algunas funciones necesarias para el cor
 ************************************************************************************************************************/
 
 /**********************************************************************************************************************  
- 
+* INICIO FUNCIONES 
+* Sami Arevalo - Cristhian Barros - Manuel Garcia (Equipo Iniciativa Cargos Automáticos)
+* Fecha Feb 2021
+
 [DOC]	   
 	   OBJETIVO GENERAL :
 	   
@@ -157,7 +160,6 @@ function obtenerDatosCCAxFormulario($conex, $origen, $wformulario, $mov_usu, $mo
 					$condicion_meddoc = $wmeddoc;
 				}
 	
-						
 				$case_ccater = $condicion_meddoc." ccater";
 			}
 		}
