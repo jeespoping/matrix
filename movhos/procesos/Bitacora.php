@@ -483,7 +483,7 @@ else
 		echo "</table><br>";
 		echo "<table border=0 align=center id=tipo2>";
 		echo "<tr><td bgcolor='#999999' rowspan=2><IMG SRC='/matrix/images/medical/root/procesos.ico'  alt='PROCESOS'><td align=center bgcolor='#999999'>Consulta a la Bitacora de Pacientes</td></tr>";
-		echo "<tr><td align=center bgcolor='#dddddd'><A HREF='/matrix/movhos/procesos/rbitacora.php?ok=99&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."' target='_blank'><IMG SRC='/matrix/images/medical/movhos/Consulta.png' alt='Consulta'></A></td></tr>";
+		echo "<tr><td align=center bgcolor='#dddddd'><A HREF='/matrix/movhos/procesos/rbitacora.php?ok=99&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."' target='_blank'><IMG SRC='/matrix/images/medical/movhos/Consulta.png' alt='Consulta'></A></td></tr>";
 		echo "<tr><td align=center colspan='2'><input type=button value='Cerrar ventana' onclick='javascript:window.close();'></td></tr></table><br>";
 
 		echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
