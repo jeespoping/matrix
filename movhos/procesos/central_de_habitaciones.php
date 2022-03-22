@@ -1,5 +1,6 @@
 ﻿<?php
 include_once("conex.php");
+include_once("root/comun.php");
    /**************************************************
     *            CENTRAL DE HABITACIONES             *
     *               CONEX, FREE => OK                *
@@ -52,6 +53,19 @@ $wayer1 = date('Y-m-d', $wayerfecha);
 $whora     = (string)date("H:i:s");
 $wusuario  = substr($user,(strpos($user,"-")+1),strlen($user));
 $wactualiz = "2017-09-06";
+
+
+// sede
+
+$sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+$sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
+
+
+// $selectsede = '';
+if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) && !empty($sCodigoSede) ){
+    $selectsede = $_POST['selectsede'];
+}
+
 
 if( isset( $peticionAjax ) ){
 
@@ -331,10 +345,31 @@ return;
     <script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
     <script type="text/javascript">
 
+        // Selecciona sede
+        jQuery(document).ready(function($){
+
+            $(document).on('change','#selectsede',function(e){
+                e.preventDefault();
+                var selectsede =  $("#selectsede").val();
+                var wbasedato =  $("#wbasedato").val();
+                var wemp_pmla =  $("#wemp_pmla").val();
+                $("#wselectsede").val(selectsede);
+                selectorSede(wbasedato,wemp_pmla,selectsede);
+            });
+        });
+
+        function selectorSede(wbasedato,wemp_pmla,selectsede){
+                   $("#wselectsede").val(selectsede);
+                   $('#central').submit();
+
+        }
+
         function actualizarMovimiento( obj, habitacion, fechaAltaDef, horaAltaDef ){
 
           wconsulta  = $("#wconsulta").val();
+          selectsede = $("#wselectsede").val();
           habitacion = $.trim(habitacion);
+          wemp_pmla = $("#wemp_pmla").val();
           if( wconsulta == "S" ){
 			alert("No puede realizar esta accion el sistema esta en solo lectura.");
 			location.reload();
@@ -350,7 +385,7 @@ return;
               id         = $("#id_registro_"+habitacion).val();
               $.ajax({
 
-                  url: "central_de_habitaciones.php?wbasedato="+wbasedato,
+                  url: "central_de_habitaciones.php?wbasedato="+wbasedato+"&wemp_pmla="+wemp_pmla,
                   type: "POST",
                   data: {
                           peticionAjax: "actualizarMovimiento",
@@ -367,7 +402,7 @@ return;
                       data = data.split("-")
                       if( data[0] == "error" ){
                         alert( data[1] );
-                        window.location="central_de_habitaciones.php?wbasedato="+wbasedato+"&wconsulta="+wconsulta;
+                        window.location="central_de_habitaciones.php?wbasedato="+wbasedato+"&wemp_pmla="+wemp_pmla+"&wconsulta="+wconsulta;
                       }
                       if( data[0] != "actualizado" ){
                         if( actualizar == "empleado" ){
@@ -401,9 +436,9 @@ return;
     </script>
 </head>
 <?php
-    include_once("root/comun.php");
 
-    encabezado("CENTRAL DE HABITACIONES",$wactualiz, "clinica");
+
+    encabezado("CENTRAL DE HABITACIONES",$wactualiz, "clinica",true);
 
     /** esto se hace siempre al ingresar **/
     //Esto lo hago para que al mostrar los datos de la central y solo es de consulta salga como ReadOnly, sin poder modificar nada
@@ -424,31 +459,71 @@ return;
     // ACA TRAIGO TODAS LAS HABITACIONES PARA ALISTAR
     //===================================================================================================================================================
 
-    /**  **///---> se omiten los cubiculos habcub
-    /**
-     * Se cambia en la consulta fecha y hora de alta por fecha data y hora data para obtener el tiempo de llegada
-     */
-    $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
-        ."    FROM ".$wbasedato."_000020 "
-        ."   WHERE habali = 'on' "
-        ."     AND habest = 'on' "
-        ."     AND habcod not in ( SELECT movhab "
-        ."                           FROM ".$wbasedato."_000025 "
-        ."                          WHERE movhdi = '00:00:00' ) "
-        ."     AND habcub != 'on' "
-        ."   UNION "
-        ."  SELECT movhab habitacion, movemp, movobs observacion, Fecha_data fechaAltaDef, Hora_data horaAltaDef, '', id, movhem horaAsignado "
-        ."    FROM ".$wbasedato."_000025 "
-        ."   WHERE movhdi = '00:00:00' "
-        ."   ORDER BY 4, 5, 1 ";
+
+    /** Filtro Sede */
+    $wselectsede = '';
+    $sedeTabla = '';
+    $joinSede = '';
+    if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) ){
+        $wselectsede = "Habcco = Ccocod";
+        $joinSede = "INNER JOIN ".$wbasedato."_000011 on Habcco = Ccocod";
+        $whereselectsede = " AND  Ccosed =  '".$_POST['selectsede']."'"; 
+
+
+        $q = "
+        SELECT 
+        Habcod habitacion, 
+        '',
+        '' observacion,
+        Habfal fechaAltaDef, 
+        Habhal horaAltaDef,
+        Habprg, '' id,
+        '' horaAsignado
+
+        FROM ".$wbasedato."_000020 
+        LEFT JOIN ".$wbasedato."_000011 on Habcco = Ccocod
+        LEFT JOIN ".$wbasedato."_000025 on Movhab = Habcco
+        WHERE habali = 'on' AND habest = 'on'
+        "
+        .$whereselectsede.
+        "
+        OR  movhdi = '00:00:00'
+
+        ";
+
+    }
+    else {
+
+        /**  **///---> se omiten los cubiculos habcub
+        /**
+         * Se cambia en la consulta fecha y hora de alta por fecha data y hora data para obtener el tiempo de llegada
+         */
+        $q = "  SELECT Habcod habitacion, '', '' observacion, Habfal fechaAltaDef, Habhal horaAltaDef, Habprg, '' id, '' horaAsignado "
+             ."    FROM ".$wbasedato."_000020 "
+            ."   WHERE habali = 'on' "
+            ."     AND habest = 'on' "
+            ."     AND habcod not in ( SELECT movhab "
+            ."                           FROM ".$wbasedato."_000025 "
+            ."                          WHERE movhdi = '00:00:00' ) "
+            ."     AND habcub != 'on' "
+            ."   UNION "
+            ."  SELECT movhab habitacion, movemp, movobs observacion, Fecha_data fechaAltaDef, Hora_data horaAltaDef, '', id, movhem horaAsignado "
+            ."    FROM ".$wbasedato."_000025 "
+            ."   WHERE movhdi = '00:00:00' "
+            ."   ORDER BY 4, 5, 1 ";
+    }
+
     $res = mysql_query($q,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
     $num = mysql_num_rows($res);
 ?>
 <body width=100%>
-    <form name='central' action='central_de_habitaciones.php' method='post'>
+    <!-- <form name='central' action='central_de_habitaciones.php' method='post' id="central"> -->
+    <form name='central' action='#' method='post' id="central">
 
         <input type='HIDDEN' name='wbasedato' id='wbasedato' value='<?php echo $wbasedato ?>'>
         <input type='HIDDEN' name='wconsulta' id='wconsulta' value='<?php echo $wconsulta ?>'>
+        <input type='HIDDEN' name='selectsede' id='wselectsede' value='<?php echo $selectsede ?>'>
+        <input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='<?php echo $wemp_pmla ?>'>
 
         <center><table>
             <tr class='encabezadotabla'>
@@ -493,6 +568,25 @@ return;
                        $wcolor="FFFF99";
                     //================================================================================================================
 
+                   /**filtro sede**/
+                   $andselectsede = '';
+                   if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) ){
+
+
+                    $qcountsede     = "SELECT * FROM ".$wbasedato."_000024 WHERE sgeest = 'on' AND codigoSede='".$_POST['selectsede']."'";
+                    $countsede      = mysql_query($qcountsede,$conex) or die (mysql_errno()." - en el query: ".$qcountsede." - ".mysql_error());
+                    $numcountsede   = mysql_num_rows($countsede);
+
+                    if($numcountsede > 0){
+                        $andselectsede = " AND codigoSede='".$_POST['selectsede']."'";
+                    }
+                    else {
+                        $andselectsede = " OR codigoSede='".$_POST['selectsede']."'";
+
+                    }
+
+                   }
+
                    /**construcción del select de empleados**/
                    if (trim($row[1])!=""){
 
@@ -506,26 +600,31 @@ return;
                             ."   FROM ".$wbasedato."_000024 "
                             ."  WHERE sgeest = 'on' "
                             ."    AND id = 1 "
+                            .$andselectsede
                             ."  UNION "
                             ." SELECT sgecod, sgenom, '1' as tip "
                             ."   FROM ".$wbasedato."_000024 "
                             ."  WHERE sgecod = '".$wcodigo[0]."'"
                             ."    AND sgeest = 'on' "
+                            .$andselectsede
                             ."  UNION "
                             ." SELECT sgecod, sgenom, '2' as tip"
                             ."   FROM ".$wbasedato."_000024 "
                             ."  WHERE sgecod != '".$wcodigo[0]."'"
                             ."    AND sgeest  = 'on' "
+                            .$andselectsede
                             ."  ORDER BY 3,2 ";
                         }else{
                             $q= "  SELECT '', '' "
                                ."    FROM ".$wbasedato."_000024 "
                                ."   WHERE sgeest = 'on' "
                                ."     AND id = 1 "
+                               .$andselectsede
                                ."   UNION "
                                ."  SELECT sgecod, sgenom "
                                ."    FROM ".$wbasedato."_000024 "
                                ."   WHERE sgeest = 'on' "
+                               .$andselectsede
                                ."   ORDER BY 2 ";
                     }
                     $ressge = mysql_query($q,$conex) or die (mysql_errno()." - en el query: ".$q." - ".mysql_error());
@@ -601,7 +700,7 @@ return;
         </table>
         </form>
 
-        <meta http-equiv='refresh' content='60;url=central_de_habitaciones.php?wbasedato=<?php echo $wbasedato ?>&wconsulta=<?php echo $wconsulta ?>'>
+        <meta http-equiv='refresh' content='60;url=central_de_habitaciones.php?wbasedato=<?php echo $wbasedato ?>&wemp_pmla=<?php echo $wemp_pmla ?>&wconsulta=<?php echo $wconsulta ?>&selectsede=<?php echo $selectsede ?>'>
         <br>
         <center><table>
         <tr><td align='center' colspan='9'><input type=button value='Cerrar Ventana' onclick='cerrarVentana()'></td></tr>

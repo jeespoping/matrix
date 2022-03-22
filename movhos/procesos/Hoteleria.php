@@ -10,6 +10,8 @@ if (!isset($consultaAjax))
 </head>
 <body>
 <script type="text/javascript" src="../../../include/root/jquery-1.3.2.min.js"></script>
+<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>	
+  
 <script type="text/javascript" src="../../../include/root/ui.core.min.js"></script>
 <script type="text/javascript" src="../../../include/root/ui.tabs.min.js"></script>
 <script type="text/javascript" src="../../../include/root/ui.draggable.min.js"></script>
@@ -20,6 +22,39 @@ if (!isset($consultaAjax))
 <script type="text/javascript" src="../../../include/root/jquery.simple.tree.js"></script>
 <link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
 <script type="text/javascript">
+
+
+
+	// Selecciona sede
+	jQuery(document).ready(function(){
+
+	jQuery(document).on('change','#selectsede',function(e){
+		// debugger;
+		e.preventDefault();
+		var selectsede =  jQuery("#selectsede").val();
+		var wbasedato =  jQuery("#wbasedato").val();
+		var wemp_pmla =  jQuery("#wemp_pmla").val();
+		jQuery("#wselectsede").val(selectsede);
+			selectorSede(wbasedato,wemp_pmla,selectsede);
+		});
+
+
+		
+	});
+
+	function selectorSede(wbasedato,wemp_pmla,selectsede){
+			jQuery("#wselectsede").val(selectsede);
+			// window.location.href =  "consultaAjax=cambiarusuario&wemp_pmla="+wemp_pmla+"&selectsede="+selectsede;
+			// debugger;
+
+			// jQuery.ajax({
+			// 	method: 'GET',
+			// 	url:  "consultaAjax=cambiarusuario&wemp_pmla="+wemp_pmla+"&selectsede="+selectsede
+			// });
+debugger;
+			$('#hoteleria').submit();
+	}
+
 	function enter()
 	{	 
 	  document.forms.hoteleria.submit();
@@ -245,6 +280,12 @@ else
 
   $wfecha=date("Y-m-d");
   $whora = (string)date("H:i:s");
+
+  //   Filtro Sede
+  
+  $sFiltrarSede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+  $sCodigoSede = ($sFiltrarSede == 'on') ? consultarsedeFiltro() : '';
+
 
 
   $q = " SELECT Empdes "
@@ -736,18 +777,29 @@ function obtenerRegistrosFila($qlog)
 	{
 
 
-  encabezado("Pacientes en Proceso de Alta", $wactualiz, 'clinica');
+  encabezado("Pacientes en Proceso de Alta", $wactualiz, 'clinica',true);
 
 
   //FORMA ================================================================
-  echo "<form name='hoteleria' id='hoteleria' action='Hoteleria.php' method=post>";
+  echo "<form name='hoteleria' id='hoteleria' action='#' method=post>";
 
   echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
   echo "<input type='HIDDEN' name='wbasedato' value='".$wbasedato."'>";
   echo "<input type='HIDDEN' name='wcencam' value='".$wcencam."'>";
   echo "<input type='HIDDEN' id='wconsulta' value='".$wconsulta."'>";
+  
+  
+/* Filtro sede */
+$selectsede = '';
+$wmovhos = consultarAliasPorAplicacion($conex, "01", "movhos");
+$join_pacient_alt = "";
+// if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) && !empty($sCodigoSede) ){
+if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) ){
+	$selectsede = $_POST['selectsede'];
+	$join_pacient_alt = " AND Ccosed = '".$selectsede."' ";
 
-
+}
+echo "<input type='HIDDEN' name='selectsede' id='wselectsede' value='".$selectsede."'>";
 
 
   //echo "<br>";
@@ -762,20 +814,45 @@ function obtenerRegistrosFila($qlog)
   //===============================================================================================================================================
 
 
-  $wmovhos = consultarAliasPorAplicacion($conex, "01", "movhos");
-  $q = " SELECT Ubihac, Ubihis, Ubiing, ".$wbasedato."_000018.id, Ubihot, Ubisac "
-      ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000011 "
-      ."  WHERE Ubiptr != 'on' "             //Solo los pacientes que no esten siendo trasladados
-      ."    AND Ubialp  = 'on' "
-      ."    AND Ubiald != 'on' "			 //Que no este en Alta Definitiva
-      ."    AND Ubisac  = ccocod "
-	  ."    AND Ubihis = Habhis "    		 //Valida que el paciente si este en la habitacion asignada
-	  ."    AND Ubiing = Habing "
-      ."    AND Ccohos  = 'on' "             //Que el CC sea hospitalario
-      ."    AND Ccourg != 'on' "             //Que no se de Urgencias
-      ."    AND Ccocir != 'on' "             //Que no se de Cirugia
-      ."    AND Ccohot  = 'on' "             //Que tenga servicio de hoteleria
-	  ."  GROUP BY 1,2,3,4,5 ";
+
+	if(isset($_POST['selectsede']) && !empty($_POST['selectsede']) && !empty($sCodigoSede) ){
+		$selectsede = $_POST['selectsede'];
+		$whereselectsede = " AND  Ccosed =  '".$_POST['selectsede']."'"; 
+	
+		$q = "SELECT Ubihac, Ubihis, Ubiing,  ".$wbasedato."_000018.id, Ubihot, Ubisac 
+		FROM  ".$wbasedato."_000018,  ".$wbasedato."_000020 
+		INNER JOIN  ".$wbasedato."_000011 on Habcco = Ccocod
+		WHERE Ubiptr != 'on'              
+		AND Ubialp  = 'on' 
+		AND Ubiald != 'on' 			 
+		AND Ubisac  = ccocod 
+		AND Ubihis = Habhis     		 
+		AND Ubiing = Habing 
+		AND Ccohos  = 'on'             
+		AND Ccourg != 'on'             
+		AND Ccocir != 'on'             
+		AND Ccohot  = 'on'             
+		".$whereselectsede."
+		GROUP BY 1,2,3,4,5 			 
+		";
+
+	}
+	else {
+
+		$q = " SELECT Ubihac, Ubihis, Ubiing, ".$wbasedato."_000018.id, Ubihot, Ubisac "
+		."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000011 "
+		."  WHERE Ubiptr != 'on' "             //Solo los pacientes que no esten siendo trasladados
+		."    AND Ubialp  = 'on' "
+		."    AND Ubiald != 'on' "			 //Que no este en Alta Definitiva
+		."    AND Ubisac  = ccocod "
+		."    AND Ubihis = Habhis "    		 //Valida que el paciente si este en la habitacion asignada
+		."    AND Ubiing = Habing "
+		."    AND Ccohos  = 'on' "             //Que el CC sea hospitalario
+		."    AND Ccourg != 'on' "             //Que no se de Urgencias
+		."    AND Ccocir != 'on' "             //Que no se de Cirugia
+		."    AND Ccohot  = 'on' "             //Que tenga servicio de hoteleria
+		."  GROUP BY 1,2,3,4,5 ";
+	}
 	  $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 	  $num = mysql_num_rows($res);
 
@@ -1075,8 +1152,9 @@ function obtenerRegistrosFila($qlog)
          }
 
   //Aca trae los pacientes que esten en proceso de alta en cualquier estado
-  $q = " SELECT Ubihac, Ubihis, Ubiing, ".$wbasedato."_000018.id, Ubihot, Ubihap, Ubimue, Ubihan, Ubisac "
-      ."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000011 "
+
+	$q = " SELECT Ubihac, Ubihis, Ubiing, ".$wbasedato."_000018.id, Ubihot, Ubihap, Ubimue, Ubihan, Ubisac "
+	."   FROM ".$wbasedato."_000018, ".$wbasedato."_000020, ".$wbasedato."_000011 "
       ."  WHERE Ubiptr != 'on' "             //Solo los pacientes que no esten siendo trasladados
       ."    AND Ubialp  = 'on' "
       ."    AND Ubiald != 'on' "			 //Que no este en Alta Definitiva
@@ -1087,6 +1165,7 @@ function obtenerRegistrosFila($qlog)
       ."    AND Ccourg != 'on' "             //Que no se de Urgencias
       ."    AND Ccocir != 'on' "             //Que no se de Cirugia
       ."    AND Ccohot  = 'on' "             //Que tenga servicio de hoteleria
+	  .$join_pacient_alt
 	  ."  GROUP BY 1,2,3,4,5,6 ";
   $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
   $num = mysql_num_rows($res);
@@ -1305,7 +1384,7 @@ function obtenerRegistrosFila($qlog)
   echo "<br>";
   echo "<br>";
 
-  echo "<meta http-equiv='refresh' content='20;url=Hoteleria.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wconsulta=".$wconsulta."'>";
+//   echo "<meta http-equiv='refresh' content='20;url=Hoteleria.php?wemp_pmla=".$wemp_pmla."&wuser=".$user."&wconsulta=".$wconsulta."&selectsede='>";
 
   echo "<input type='HIDDEN' name='wini' value='".$wini."'>";
 
