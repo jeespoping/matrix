@@ -899,18 +899,16 @@ if(!isset($_SESSION['user']))
 	if (isset($wcco) && isset($wser) && isset($activo) && isset($wfec_i) && isset($wfec_f)&& isset($wtipo) && $wfec_f>=$wfec_i ) // si ya seleccionaron los parametros para consultar
 	{  
 
-		$sFiltroSede='';
-	
-		if(isset($wemp_pmla) && !empty($wemp_pmla))
-		{
-			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+
+		$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+		$sFiltroSede="";
+		$codigoSede = '';
+		if($estadosede=='on')
+		{	  
+			$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}	
 		
-			if($estadosede=='on' )
-			{
-				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
-				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$selectsede}' " : "";
-			}
-		}
 
 		//--------------------------
 		// Consulta de datos
