@@ -88,13 +88,13 @@
 			];
 		}
 		
-		if( !isset($codigo_responsable) )
-		{
-			return [
-				'state'			=>	404,
-				'description'	=>	'Falta el campo código del responsable, es obligatorio.'
-			];
-		}
+		// if( !isset($codigo_responsable) )
+		// {
+		// 	return [
+		// 		'state'			=>	404,
+		// 		'description'	=>	'Falta el campo código del responsable, es obligatorio.'
+		// 	];
+		// }
 		
 		if( !isset($historia) && !isset($ingreso) )
 		{
@@ -137,7 +137,7 @@
 		
 		if( $historia != null && $ingreso != null )
 		{
-			$respuesta = consultarEstadoFacturaPorHistoriaIngreso($historia, $ingreso, $codigo_responsable);
+			$respuesta = consultarEstadoFacturaPorHistoriaIngreso($conex_unix, $historia, $ingreso, $codigo_responsable);
 		}
 		else
 		{
@@ -181,12 +181,17 @@
 	{
 		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
-
-		$estados_excluidos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "estadosExcepcionFactura" );
-
-		$estados_excluidos_string = "'";
-		$estados_excluidos_string .= implode("','", explode('-', $estados_excluidos));
-		$estados_excluidos_string .= "'";
+		
+		if( !$conex_unix )
+		{
+			return [
+				'state'			=>	400,
+				'description'	=>	'Problemas de comunicación con Unix.',
+				'data'			=>	[],
+				'error_code'	=>	odbc_error($conex_unix),
+				'error_msg'		=>	odbc_errormsg($conex_unix)
+			];
+		}
 
 		$array_respuesta = array();
 		$respuesta = array();
@@ -228,34 +233,8 @@
 		{
 			$codigo_responsable = $paciente['responsable'];
 
-			if( ($paciente['historia'] == '') && ($paciente['ingreso'] == '') )
-			{
-				if( !isset($paciente['documento']) ) {
-					return [
-						'state'			=>	404,
-						'description'	=>	"El número de documento del paciente es obligatorio.",
-						'data'			=>	[]
-					];
-				}
-
-				if( !isset($paciente['tipoDocumento']) ) {
-					return [
-						'state'			=>	404,
-						'description'	=>	"Falta el campo tipo de documento, es obligatorio.",
-						'data'			=>	[]
-					];
-				}
-
-				$historia_ingreso = consultarHistoriaIngreso($conex, $wemp_pmla, $paciente['documento'], $paciente['tipoDocumento']);
-
-				$historia = $historia_ingreso['historia'];
-				$ingreso = $historia_ingreso['ingreso'];
-			}
-			else
-			{
-				$historia = $paciente['historia'];
-				$ingreso = $paciente['ingreso'];
-			}
+			$historia = $paciente['historia'];
+			$ingreso = $paciente['ingreso'];
 
 			$respuesta = consultarEstadoFacturaPorHistoriaIngreso($conex_unix, $historia, $ingreso, $codigo_responsable);
 
@@ -273,6 +252,11 @@
 		}
 
 		$respuesta = array();
+		$estados_excluidos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "estadosExcepcionFactura" );
+
+		$estados_excluidos_string = "'";
+		$estados_excluidos_string .= implode("','", explode('-', $estados_excluidos));
+		$estados_excluidos_string .= "'";
 
 		if( count($pacientes_paf) > 0 )
 		{
@@ -429,10 +413,8 @@
 	 *
 	 * @return [array] Respuesta de base de datos
 	*/
-	function consultarEstadoFacturaPorHistoriaIngreso($historia, $ingreso, $codigo_responsable = null)
+	function consultarEstadoFacturaPorHistoriaIngreso($conex_unix, $historia, $ingreso, $codigo_responsable = null)
 	{
-		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
-
 		$result = array();
 
 		$sql = "
@@ -456,12 +438,13 @@
 			$sql .= " AND carced = '".$codigo_responsable."'";
 		}
 
-		$respuesta = odbc_exec($conex_unix, $sql); 
-
-		if( $respuesta )
+		$respuesta = odbc_exec($conex_unix, $sql);
+var_dump( $respuesta );
+echo "=====================\n\n";
+		if( $respuesta && isset($respuesta) )
 		{
 			$result_array_response = odbc_fetch_array($respuesta);
-
+			var_dump( $result_array_response );die();
 			if( !empty( $result_array_response ) )
 			{
 				while ($fila = odbc_fetch_array($respuesta)) {
@@ -685,7 +668,7 @@
 						envdetdan as factura,
 						fuecod as fuente_factura,
 						fuecse as prefijo,
-						envdetval as valor_total,
+						envdetval as valor_factura,
 						encest as estado_factura,
 						movhis as historia,
 						movnum as ingreso,
@@ -697,11 +680,19 @@
 							WHERE fuetip = 'EV'
 							GROUP BY fuecod
 						)
+				 AND	envdetfan IN (
+							SELECT fuecod
+							FROM cafue
+							WHERE fuetip = 'FA'
+							GROUP BY fuecod
+						)
 				 AND	envencnit IN ( {$cuentas['responsables']} )
 				 AND	envdetdoc = envencden
 				 AND	envdetfue = envencfen
 				 AND	envencfec >= '{$fechaInicio}'
 				 AND	envencfec <= '{$fechaCorte}'
+				 AND	envencfue = envdetfue
+				 AND	envencdoc = envdetdoc
 				 AND	envdetcco = fuecco
 				 AND	envdetfan = fuefue
 				 AND	movfue = envdetfan
@@ -745,9 +736,8 @@
 
 			if( !empty( $result_array_response ) )
 			{
-
-				while ($fila = odbc_fetch_array($respuesta)) {
-
+				while ($fila = odbc_fetch_array($respuesta))
+				{
 					$factura = [
 						'historia'			=>		$fila['historia'],
 						'ingreso'			=>		$fila['ingreso'],
@@ -755,7 +745,7 @@
 						'fuente'			=>		$fila['fuente_factura'],
 						'factura'			=>		$fila['factura'],
 						'estado_factura'	=>		$fila['estado_factura'],
-						'valor_total'		=>		$fila['valor_total'],
+						'valor_total'		=>		$fila['valor_factura'],
 						'nit_responsable'	=>		$fila['nit_responsable']
 					];
 
