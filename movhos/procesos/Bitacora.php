@@ -14,6 +14,9 @@
     <!--<script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>-->
     <!-- Loading language definition file -->
 
+	<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+
+
     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
     <style type="text/css">
     	//body{background:white url(portal.gif) transparent center no-repeat scroll;}
@@ -65,7 +68,11 @@
 <body onload=ira() BGCOLOR="FFFFFF" oncontextmenu = "return true" onselectstart = "return true" ondragstart = "return true">
 <BODY TEXT="#000066">
 <script type="text/javascript">
-<!--
+
+	$(document).on('change','#selectsede',function(){
+		window.location.href = "Bitacora.php?wemp_pmla="+$("#wemp_pmla").val()+"&empresa="+$('#empresa').val()+"&codemp="+$('#codemp').val()+"&ok="+$("#ok").val()+"&selectsede="+$("#selectsede").val();
+	});
+
 	function enter()
 	{
 		document.forms.bitacora.submit();
@@ -92,7 +99,7 @@
 <?php
 include_once("conex.php");
 
-	$wactualiz = "2018-05-24";
+	$wactualiz = "23 de marzo de 2022";
 
 /**********************************************************************************************************************
 	   PROGRAMA : bitacora.php
@@ -105,6 +112,9 @@ include_once("conex.php");
 
 	
 	   REGISTRO DE MODIFICACIONES :
+	   .23 de marzo de 2022 Sebastian Alvarez Barona
+			Se agrega el filtro de sedes (Sede80 y SedeSur) a la información ofrecida en pacientes activos
+	      
 	   .2018-05-24 Jonatan Lopez
 			Se agrega el c?igo de autorizaci? proveniente de la admisi?, al ingresa en la edici? del paciente.
 	   
@@ -388,17 +398,20 @@ else
 	include_once("root/magenta.php");  //para saber si el paciente es afin
 	include_once("root/comun.php");	
 
-	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
+	echo "<center><input type='HIDDEN' name= 'empresa' id='empresa' value='".$empresa."'>";
+	echo "<input type='HIDDEN' name= 'codemp' id='codemp' value='".$codemp."'>";
+	echo "<input type='HIDDEN' name= 'sede' id='sede' value='".$selectsede."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>"; 
+
 	if(isset($ctc))
 		echo "<input type='HIDDEN' name= 'ctc' value='".$ctc."'>";
 
 	if($ok == 99)
 	{
 		$wemp_pmla = $codemp;
-		encabezado("BITACORA DE PACIENTES", $wactualiz, "clinica");
+		encabezado("BITACORA DE PACIENTES", $wactualiz, "clinica", TRUE);
 
-		echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
+		echo "<input type='HIDDEN' name= 'ok' id='ok' value='".$ok."'>";
 		echo "<meta http-equiv='refresh' content='150;url=/matrix/movhos/procesos/bitacora.php?ok=99&empresa=".$empresa."&codemp=".$codemp."'>";
 		echo "<table border=0 align=center id=tipo5>";
 		?>
@@ -464,6 +477,14 @@ else
 		else
 			$numesp=-1;
 		
+			$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+			$sFiltroSede="";
+			$codigoSede = '';
+			if($estadosede=='on')
+			{	  
+				$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
 		
 		echo "<tr><td bgcolor='#cccccc' align=center><b>FECHA :</b></td>";
 		echo "<td bgcolor='#cccccc' align=center><b>".$diasem."</b></td>";
@@ -490,6 +511,8 @@ else
 		$query .= " and oritid = pactid  ";
 		$query .= " and orihis = inghis ";
 		$query .= " and oriing = inging  ";
+		$query .= " {$sFiltroSede}  ";
+
 		//$query .= " order by Ubialp DESC, Ubiptr DESC, Ubisac, Pacced ";
 		$query .= " order by Ubialp DESC, Ubiptr DESC, Habcod ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
@@ -611,6 +634,7 @@ else
 		$query .= "   and oritid = pactid  ";
 		$query .= "   and orihis = inghis ";
  		$query .= "   and oriing = inging ";
+		$query .= " {$sFiltroSede}  ";
 		$query .= " order by Ubihis  ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$num = mysql_num_rows($err);
@@ -684,6 +708,7 @@ else
 		$query .= "   and oritid = pactid  ";
 		$query .= "   and orihis = inghis ";
  		$query .= "   and oriing = inging ";
+		$query .= " {$sFiltroSede}  ";
  		$query .= " UNION ALL ";
  		$query .= "select Ubihis, Ubiing, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ingres, Ingnre, Pacced, Pactid ";
 		$query .= " from ".$empresa."_000018,".$empresa."_000011,root_000037,root_000036,".$empresa."_000016 ";
@@ -698,6 +723,7 @@ else
 		$query .= "   and oritid = pactid  ";
 		$query .= "   and orihis = inghis ";
  		$query .= "   and oriing = inging ";
+		$query .= " {$sFiltroSede}  ";
 		$query .= " order by Ubihis  ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$num = mysql_num_rows($err);
@@ -754,9 +780,10 @@ else
 		//PACIENTES EN FALLECIDOS
 		//                   0      1        2      3       4        5      6       7       8       9           10          11      12
 		$query  = "select Ubihis, Ubiing, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac, Pacsex, Ingres, Ingnre, Tipo_egre_serv, Pacced, Pactid  ";
-		$query .= "  from ".$empresa."_000018,root_000037,root_000036,".$empresa."_000016,".$empresa."_000033 ";
+		$query .= "  from ".$empresa."_000018,root_000037,root_000036,".$empresa."_000016,".$empresa."_000033, ".$empresa."_000011 ";
 		$query .= "  where ubiald = 'off'   ";
 		$query .= "    and Ubimue = 'on'   ";
+		$query .= "    and Ubisac = Ccocod   ";
 		$query .= "    and ubihis = orihis  ";
 		$query .= "    and ubiing = oriing  ";
 		$query .= "    and oriori = '".$codemp."' ";
@@ -767,6 +794,7 @@ else
 		$query .= "    and inghis = Historia_clinica  ";
 		$query .= "    and inging = Num_ingreso  ";
 		$query .= "    and Tipo_egre_serv like 'MUERTE%'  ";
+		$query .= " {$sFiltroSede}  ";
 		$query .= "  order by Ubihis  ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$num = mysql_num_rows($err);
