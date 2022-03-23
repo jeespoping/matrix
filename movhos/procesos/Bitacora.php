@@ -411,8 +411,19 @@ else
 		$wemp_pmla = $codemp;
 		encabezado("BITACORA DE PACIENTES", $wactualiz, "clinica", TRUE);
 
+			$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+			$sFiltroSede="";
+			$codigoSede = '';
+			if($estadosede=='on')
+			{	  
+				$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+
+		$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
+
 		echo "<input type='HIDDEN' name= 'ok' id='ok' value='".$ok."'>";
-		echo "<meta http-equiv='refresh' content='150;url=/matrix/movhos/procesos/bitacora.php?ok=99&empresa=".$empresa."&codemp=".$codemp."'>";
+		echo "<meta http-equiv='refresh' content='20;url=/matrix/movhos/procesos/bitacora.php?ok=99&empresa=".$empresa."&codemp=".$codemp.$sUrlCodigoSede."'>";
 		echo "<table border=0 align=center id=tipo5>";
 		?>
 		<script>
@@ -477,14 +488,6 @@ else
 		else
 			$numesp=-1;
 		
-			$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
-			$sFiltroSede="";
-			$codigoSede = '';
-			if($estadosede=='on')
-			{	  
-				$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
-				$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
-			}
 		
 		echo "<tr><td bgcolor='#cccccc' align=center><b>FECHA :</b></td>";
 		echo "<td bgcolor='#cccccc' align=center><b>".$diasem."</b></td>";
