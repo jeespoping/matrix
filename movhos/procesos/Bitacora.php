@@ -592,7 +592,7 @@ else
 				}
 				$nombre=$row[4]." ".$row[5]." ".$row[6]." ".$row[7];
                 $wfecha_ingreso = fecha_ingreso($row[0], $row[1], $conex);
-				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."&wemp_pmla=".$wemp_pmla."";
 				echo "<tr><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$wfecha_ingreso."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[10]."</td><td id=".$tipo.">".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td>";
 
 				$wdpa=$row[17];
@@ -666,7 +666,7 @@ else
 						$tipo="tipo21";
 				$nombre=$row[2]." ".$row[3]." ".$row[4]." ".$row[5];
                 $wfecha_ingreso = fecha_ingreso($row[0], $row[1], $conex);
-				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."&wemp_pmla=".$wemp_pmla."";
 				echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$wfecha_ingreso."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[8]."</td><td id=".$tipo.">".$row[9]."</td>";
 
 				$wdpa=$row[10];
@@ -755,7 +755,7 @@ else
 						$tipo="tipo21";
 				$nombre=$row[2]." ".$row[3]." ".$row[4]." ".$row[5];
                 $wfecha_ingreso = fecha_ingreso($row[0], $row[1], $conex);
-				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."&wemp_pmla=".$wemp_pmla."";
 				echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$wfecha_ingreso."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[8]."</td><td id=".$tipo.">".$row[9]."</td>";
 
 				$wdpa=$row[10];
@@ -832,7 +832,7 @@ else
 					$row[10]="off";
 					$row[11]="on";
 				}
-				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."&wemp_pmla=".$wemp_pmla."";
 				echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$wfecha_ingreso."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[8]."</td><td id=".$tipo.">".$row[9]."</td><td id=".$tipo.">".$row[11]."</td><td id=".$tipo.">".$row[10]."</td>";
 
 				$wdpa=$row[11];
