@@ -424,6 +424,8 @@
 			return "El tipo de proceso no es válido debe ser '0 <> RD' ó '1 = RD'";
 		}
 
+		$cuentas['responsables'] = str_replace('"', '', $cuentas['responsables']);
+
 		$cuentaCobro = [];
 
 		$sql = "
@@ -431,7 +433,7 @@
 						envdetdan as factura,
 						fuecod as fuente_factura,
 						fuecse as prefijo,
-						envdetval as valor_total,
+						envdetval as valor_factura,
 						encest as estado_factura,
 						movhis as historia,
 						movnum as ingreso,
@@ -443,11 +445,19 @@
 							WHERE fuetip = 'EV'
 							GROUP BY fuecod
 						)
+				 AND	envdetfan IN (
+							SELECT fuecod
+							FROM cafue
+							WHERE fuetip = 'FA'
+							GROUP BY fuecod
+						)
 				 AND	envencnit IN ( {$cuentas['responsables']} )
 				 AND	envdetdoc = envencden
 				 AND	envdetfue = envencfen
 				 AND	envencfec >= '{$fechaInicio}'
 				 AND	envencfec <= '{$fechaCorte}'
+				 AND	envencfue = envdetfue
+				 AND	envencdoc = envdetdoc
 				 AND	envdetcco = fuecco
 				 AND	envdetfan = fuefue
 				 AND	movfue = envdetfan
@@ -481,36 +491,61 @@
 				";
 		}
 
-		$respuesta = odbc_exec($conex_unix, $sql);
+		$respuesta = odbc_do($conex_unix, $sql);
 
 		if( $respuesta )
 		{
 			$cuentaCobroAux = 0;
 
-			while ($fila = odbc_fetch_array($respuesta)) {
+			$result_array_response = odbc_fetch_array($respuesta);
 
-				$factura = [
-					'historia'			=>		$fila['historia'],
-					'ingreso'			=>		$fila['ingreso'],
-					'prefijo'			=>		$fila['prefijo'],
-					'fuente'			=>		$fila['fuente_factura'],
-					'factura'			=>		$fila['factura'],
-					'estado_factura'	=>		$fila['estado_factura'],
-					'valor_total'		=>		$fila['valor_total'],
-					'nit_responsable'	=>		$fila['nit_responsable']
-				];
-
-				if( $cuentaCobroAux != $fila['cuenta_cobro'] )
+			if( !empty( $result_array_response ) )
+			{
+				while ($fila = odbc_fetch_array($respuesta))
 				{
-					$cuentaCobro[$fila['cuenta_cobro']] = [];
+					$factura = [
+						'historia'			=>		$fila['historia'],
+						'ingreso'			=>		$fila['ingreso'],
+						'prefijo'			=>		$fila['prefijo'],
+						'fuente'			=>		$fila['fuente_factura'],
+						'factura'			=>		$fila['factura'],
+						'estado_factura'	=>		$fila['estado_factura'],
+						'valor_total'		=>		$fila['valor_factura'],
+						'nit_responsable'	=>		$fila['nit_responsable']
+					];
+
+					if( $cuentaCobroAux != $fila['cuenta_cobro'] )
+					{
+						$cuentaCobro[$fila['cuenta_cobro']] = [];
+					}
+
+					array_push( $cuentaCobro[$fila['cuenta_cobro']], (object) convertKeysToCamelCase( $factura ) );
+					
+					$cuentaCobroAux = $fila['cuenta_cobro'];
 				}
 
-				array_push( $cuentaCobro[$fila['cuenta_cobro']], (object) convertKeysToCamelCase( $factura ) );
-				
-				$cuentaCobroAux = $fila['cuenta_cobro'];
+				$response = (object) $cuentaCobro;
 			}
-
-			$response = (object) $cuentaCobro;
+			else
+			{
+				$response = [
+					'state'			=>	404,
+					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
+					'data'			=>	[],
+					'error_code'	=>	odbc_error($conex_unix),
+					'error_msg'		=>	odbc_errormsg($conex_unix)
+				];
+			}
+		}
+		else
+		{
+			$response = [
+				'state'			=>	400,
+				'description'	=>	'Problemas de comunicación con Unix.',
+				'data'			=>	[],
+				'error_code'	=>	odbc_error($conex_unix),
+				'error_msg'		=>	odbc_errormsg($conex_unix)
+			];
 		}
 
 		return $response;
