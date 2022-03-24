@@ -220,6 +220,15 @@
 <BODY TEXT="#000066">
 
 <?php
+if(isset($_REQUEST['codemp']) && !isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla=$_REQUEST['codemp'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+	die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
 /**********************************************************************************************************************  
 [DOC]
@@ -554,7 +563,7 @@ else
 	if(!isset($_SESSION["HCEON"]))
 		$_SESSION["HCEON"] = 0;
 		
-	$wemp_pmla = $codemp;
+	//$wemp_pmla = $codemp;
 
 	include_once("root/comun.php");
 	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
@@ -569,7 +578,7 @@ else
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbhce' value='".$wdbhce."'>";
-	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
+	//echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
 	// echo "<table border=0 CELLSPACING=0>";
 	// echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$codemp.".jpg'></td>";
 	// echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;TABLERO DE PACIENTES HCE&nbsp;&nbsp;<A HREF='/matrix/root/reportes/DOC.php?files=/var/www/matrix/hce/procesos/Tablero.php' target='_blank'>Version 2018-07-23</A></td></tr>";
