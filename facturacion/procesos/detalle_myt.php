@@ -11,6 +11,10 @@
         .alternar:hover{ background-color:#CADCFF;}
     </style>
     <?php
+    /** 
+     * Modificaciones:
+     * 2021-11-16 - Juan David Rodriguez: Se modifica variables quemadas (nit y nombre de empresa)
+    */
 include_once("conex.php");
     if(!isset($_SESSION['user']))
     {
@@ -33,7 +37,7 @@ include_once("conex.php");
 
         $conex = obtenerConexionBD("matrix");
         $conex_o = odbc_connect('facturacion','','')  or die("No se realizo conexión con la BD de Facturación");
-        $wactualiz = "1.1 16-Mayo-2017";
+        $wactualiz = "2021-11-16";
     }
     session_start();
     ?>
@@ -100,10 +104,14 @@ if(!isset($fte) or $fte=='' or !isset($fac) or $fac == '')
 else
 {
     $valorRadio = $_POST['radio'];
+    $wemp_pmla = $_REQUEST['wemp_pmla'];
+    $wbasedato1 = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+    $wnit = $wbasedato1->nit;
+    $wnombre = $wbasedato1->nombre;
 
     $query_o1="SELECT '' numcosec,'' numconrec,'' numtiprad,'' numradant,'EPS010' codent,ateidetii,ateideide,ateideap1,ateideap2,ateideno1,
                         ateideno2,pacarsafi,'' nivcta,'' numacta,'' fechaact,'' fecsolmed,'' indperirec,'' mesper,'' anoper,'' numentre,movfue,
-                        movdoc,cardetfec,mdiadia,'' porsema,'800067065' nitprov,conarc,'PROMOTORA MEDICA LAS AMERICAS S.A.' nomprov,
+                        movdoc,cardetfec,mdiadia,'' porsema,'".$wnit."' nitprov,conarc,'".$wnombre."' nomprov,
                         cardetcon,cardetcod,cardetcan,cardetvun,cardettot,0 vlrctamod,carfacval,cardetfue,cardetdoc,cardetite,cardetreg"
         ."	FROM famov,facarfac,facardet,msate,msateide,inmegr,inmdia,facon,inpacars"
         ."	WHERE movfue='$fte'"
@@ -451,7 +459,8 @@ else
                     //$valfire = odbc_result($err_o3, 36);//Valor final recobrado
                     //$valcumo = odbc_result($err_o3, 35);//Valor cuota moderadora o copago
 
-                    $query = mysql_queryV("SELECT a.Pacfna FROM cliame_000100 a WHERE a.Pacdoc = '$cep'");
+                    $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+                    $query = mysql_queryV("SELECT a.Pacfna FROM ".$wcliame."_000100 a WHERE a.Pacdoc = '$cep'");
                     while($dato = mysql_fetch_array($query))
                     {
                         $fechaN = $dato[0];
