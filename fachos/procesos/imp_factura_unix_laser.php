@@ -1858,7 +1858,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 		$ruta = '/var/www/matrix/fachos/procesos/facturas';
         $nombre = 'fac_unix_'.$wfactura;
         generarcodigodebarras($wfactura,170,40,70,"JPEG", $ruta, $nombre);
-        $img_codigo_barras_tar = "<img width='80%' height='80%' src='fac_unix_".$wfactura.".jpg'>";
+        //$img_codigo_barras_tar = "<img width='80%' height='80%' src='fac_unix_".$wfactura.".jpg'>";
 
        $htmlFactura   = "<style>
                             .monoespaciado{
