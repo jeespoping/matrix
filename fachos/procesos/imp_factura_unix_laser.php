@@ -210,7 +210,8 @@ if( $consultaAjax == "on" ){
       document.body.style.height = '185mm';
     }
     function regresar(){
-       window.location = "imp_factura_unix_laser.php?wemp_pmla=01&wparam=1";
+      var wemp_pmla = $("#wemp_pmla").val();
+      window.location = "imp_factura_unix_laser.php?wemp_pmla="+wemp_pmla+"&wparam=1";
     }
 
     function cerrarPagina(){
@@ -351,7 +352,7 @@ if( $consultaAjax == "on" ){
 <?php
 
                                                     // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-    $wactualiz=" 2016-04-20 ";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
+    $wactualiz=" 2022-03-09 ";                      // Aca se coloca la ultima fecha de actualizacion de este programa //
                                                     // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 /***************************************************
@@ -1857,7 +1858,7 @@ function imprimir_factura_detalle($wfactura, $wparam, $wnopos, $wimpresora, $wff
 		$ruta = '/var/www/matrix/fachos/procesos/facturas';
         $nombre = 'fac_unix_'.$wfactura;
         generarcodigodebarras($wfactura,170,40,70,"JPEG", $ruta, $nombre);
-        $img_codigo_barras_tar = "<img width='80%' height='80%' src='fac_unix_".$wfactura.".jpg'>";
+        //$img_codigo_barras_tar = "<img width='80%' height='80%' src='fac_unix_".$wfactura.".jpg'>";
 
        $htmlFactura   = "<style>
                             .monoespaciado{
