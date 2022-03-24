@@ -1422,6 +1422,7 @@ function guardarDatos2($pacienteEgresar){
                                     }
                                 }
                             }
+                            $x++;
                         } //foreach
                     }
                     /**Fin Diagnosticos**/
@@ -1452,6 +1453,7 @@ function guardarDatos2($pacienteEgresar){
                                     $data['error'] = 1;
                                 }
                             }
+                            $x++;
                         } //foreach
                     }
                     /**Fin Procedimientos**/
@@ -1499,6 +1501,7 @@ function guardarDatos2($pacienteEgresar){
                                         $data['error'] = 1;
                                     }
                                 }
+                                $x++;
                             }
                         } //foreach
                     }
@@ -1667,6 +1670,7 @@ function guardarDatos2($pacienteEgresar){
                                     }
                                 }
                             }
+                            $x++;
                         } //foreach
                     }
                 }
@@ -1709,6 +1713,7 @@ function guardarDatos2($pacienteEgresar){
                                     $data['error'] = 1;
                                 }
                             }
+                            $x++;
                         } //foreach
                     }
                 }
@@ -1771,6 +1776,7 @@ function guardarDatos2($pacienteEgresar){
                                         $data['error'] = 1;
                                     }
                                 }
+                                $x++;
                             }
                         } //foreach
                     }
