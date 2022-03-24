@@ -192,7 +192,17 @@
 <BODY TEXT="#000066">
 
 <?php
+if(isset($_REQUEST['codemp']) && !isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla=$_REQUEST['codemp'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+	die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
+include_once("root/comun.php");
 /**********************************************************************************************************************  
 [DOC]
 	   PROGRAMA : TableroAnt.php
@@ -205,6 +215,8 @@ include_once("conex.php");
 	   
 	   
 	   REGISTRO DE MODIFICACIONES : 
+	   11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla 
+	   	
 	   .2020-06-09
 			  Se crea opcion para consultar pacientes tanto activos como egresados y permitir enviar por correo
 			  en formato pdf tanto la HCE como las ordenes, con parametro GET accion=COIDC
@@ -261,7 +273,7 @@ include_once("conex.php");
 	   .2011-02-28
 	   		Release de Versión Beta.
 	   
-	   		
+			
 [*DOC]
 ***********************************************************************************************************************/
 
@@ -415,7 +427,7 @@ else
 	
 
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'historia' value='".$historia."'>";
 	echo "<input type='HIDDEN' name= 'accion' value='".$accion."'>";
 	if(isset($wcco))
@@ -457,15 +469,19 @@ else
 			}
 		}
 		$wcont=-1;
-		echo "<table border=0 CELLSPACING=0>";
-		echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$codemp.".jpg'></td>";
-		echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;TABLERO DE PACIENTES EGRESADOS HCE&nbsp;&nbsp;<A HREF='/MATRIX/root/Reportes/DOC.php?files=/matrix/HCE/procesos/TableroAnt.php' target='_blank'>Version 2014-12-23</A></td></tr>";
-		echo "<tr><td id=tipoT03 colspan=2></td></tr>";
-		echo "</table><br><br>";
-		echo "<center><IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'></IMG></center><br>";
+		$wactualiz = '2022-03-11';
+		$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+		$wbasedato1 = strtolower( $institucion->baseDeDatos );
+		encabezado("TABLERO DE PACIENTES EGRESADOS HCE",$wactualiz, $wbasedato1);
+		// echo "<table border=0 CELLSPACING=0>";
+		// echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$wemp_pmla.".jpg'></td>";
+		// echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;TABLERO DE PACIENTES EGRESADOS HCE&nbsp;&nbsp;<A HREF='/MATRIX/root/Reportes/DOC.php?files=/matrix/HCE/procesos/TableroAnt.php' target='_blank'>Version 2014-12-23</A></td></tr>";
+		// echo "<tr><td id=tipoT03 colspan=2></td></tr>";
+		// echo "</table><br><br>";
 		echo "<center><table border=0>";
 		echo "<tr><td align=center colspan=2>DATOS DEL PACIENTE</td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Numero de Historia</td>";
+		
 		if(!isset($whis))
 			$whis="";
 		if(!isset($wnin))
@@ -498,7 +514,7 @@ else
 		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wced' size=15 maxlength=15 value='".$wced."' onBlur='enter()'></td></tr>";
 		if($wced != "" and $wtdo != "")
 		{
-			$query  = "select Orihis from root_000037 where Oritid = '".$wtdo."' and Oriced = '".$wced."'  and oriori = '".$codemp."'";
+			$query  = "select Orihis from root_000037 where Oritid = '".$wtdo."' and Oriced = '".$wced."'  and oriori = '".$wemp_pmla."'";
 			$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 			$num = mysql_num_rows($err);
 			if ($num>0)
@@ -586,7 +602,8 @@ else
 		}
 		//echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wnin' size=10 maxlength=15 value='".$wnin."'></td></tr>";
 		echo "<tr><td bgcolor=#cccccc  colspan=2 align=center><input type='button' value='ENTER' onClick='enter()'></td></tr></table><br><br>";
-		
+		echo "<center><IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'></IMG></center><br>";
+
 		$numemp=0;
 		$query  = "select Empemp,Rolemp from ".$historia."_000020,".$historia."_000019,".$historia."_000025 ";
 		$query .= " where usucod = '".$key."' ";
@@ -622,7 +639,7 @@ else
 			if( (isset($accion) and $accion != "R" and $accion != "H" ) )
 				$query .= "   and ubiald = 'on'  ";
 		$query .= "   and orihis = ubihis  "; 
-		$query .= "   and oriori = '".$codemp."' ";  
+		$query .= "   and oriori = '".$wemp_pmla."' ";  
 		$query .= "   and oriced = pacced ";  
 		$query .= "   and oritid = pactid ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
@@ -633,7 +650,7 @@ else
 			if($numemp == 0 or $wsel == "*" or $wsel == "NO APLICA" or buscarC($SempT,$numemp,$row[10]))
 			{
 				echo "<table border=0 align=center id=tipo5>";
-				if($codemp == "10")
+				if($wemp_pmla == "10")
 				{
 					$pathIDC = "http://www.idclasamericas.co/MxB/mx.php?doc=".$row[2]."&tdoc=".$row[3]." ";
 					echo "<tr><td id=tipoT07 align=right colspan=6><A HREF='".$pathIDC."' target='_blank'><IMG SRC='/matrix/images/medical/HCE/IDC.png'></A></td></tr>";
@@ -660,38 +677,38 @@ else
 				switch($accion)
 				{
 					case "I":
-						$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$row[1]."&wservicio=".$wservicio."&protocolos=0&CLASE=I&BC=1";
+						$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$row[1]."&wservicio=".$wservicio."&protocolos=0&CLASE=I&BC=1";
 					break;
 					case "A":
-						$path="/matrix/HCE/procesos/HCE_Notas.php?empresa=".$historia."&origen=".$codemp."&wdbmhos=".$empresa."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$wnin."&wservicio=".$wservicio;
+						$path="/matrix/HCE/procesos/HCE_Notas.php?empresa=".$historia."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$empresa."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$wnin."&wservicio=".$wservicio;
 					break;
 					case "C":
-						$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$row[1]."&wservicio=".$wservicio."&protocolos=0&CLASE=C&BC=1";
+						$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$row[1]."&wservicio=".$wservicio."&protocolos=0&CLASE=C&BC=1";
 					break;
 					case "CO":
-						$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$row[1]."&wservicio=".$wservicio."&protocolos=0&CLASE=C&BC=1";
+						$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$row[1]."&wservicio=".$wservicio."&protocolos=0&CLASE=C&BC=1";
 						// $path1="/matrix/hce/procesos/ordenes.php?wemp_pmla=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&hce=on&editable=off&et=on&historia=".$whis."&ingreso=".$row[1]."&programa=TableroAnt";
 						$fecha = consultarUltimaFechaKardex( $conex, $empresa, $whis, $row[1] );
-						$path1="/matrix/hce/procesos/ordenes.php?wemp_pmla=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&editable=off&et=on&historia=".$whis."&ingreso=".$row[1]."&programa=TableroAnt&wfecha=".$fecha."&waccion=b";
+						$path1="/matrix/hce/procesos/ordenes.php?wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&editable=off&et=on&historia=".$whis."&ingreso=".$row[1]."&programa=TableroAnt&wfecha=".$fecha."&waccion=b";
 					break;
 					case "COIDC":
-						$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$row[1]."&wservicio=".$wservicio."&protocolos=0&CLASE=C&BC=1";
+						$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wing=".$row[1]."&wservicio=".$wservicio."&protocolos=0&CLASE=C&BC=1";
 						// $path1="/matrix/hce/procesos/ordenes.php?wemp_pmla=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&hce=on&editable=off&et=on&historia=".$whis."&ingreso=".$row[1]."&programa=TableroAnt";
 						$fecha = consultarUltimaFechaKardex( $conex, $empresa, $whis, $row[1] );
-						$path1="/matrix/hce/procesos/ordenesidc.php?wemp_pmla=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&editable=off&et=on&historia=".$whis."&ingreso=".$row[1]."&programa=TableroAnt&wfecha=".$fecha."&waccion=b";
-						$path2="/matrix/hce/procesos/envioCorreoHCEOrdenes.php?wemp_pmla=".$codemp."&historia=".$whis."&ingreso=".$row[1]."&esIframe=off";
+						$path1="/matrix/hce/procesos/ordenesidc.php?wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&editable=off&et=on&historia=".$whis."&ingreso=".$row[1]."&programa=TableroAnt&wfecha=".$fecha."&waccion=b";
+						$path2="/matrix/hce/procesos/envioCorreoHCEOrdenes.php?wemp_pmla=".$wemp_pmla."&historia=".$whis."&ingreso=".$row[1]."&esIframe=off";
 					break;
 					case "R":
-						$path="/matrix/HCE/procesos/HCE_Resumen.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&origen=".$codemp."&wing=".$wnin;
+						$path="/matrix/HCE/procesos/HCE_Resumen.php?empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wing=".$wnin;
 					break;
 					case "S":
-						$path="/matrix/movhos/procesos/bitacora.php?ok=0&ctc=1&empresa=".$empresa."&codemp=".$codemp."&whis=".$whis."&wnin=".$wnin."";
+						$path="/matrix/movhos/procesos/bitacora.php?ok=0&ctc=1&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&whis=".$whis."&wnin=".$wnin."";
 					break;
 					case "H":
-						$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&whisa=".$whis."&winga=".$wnin."";
+						$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&whisa=".$whis."&winga=".$wnin."";
 					break;
 					case "E":
-						$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&whisa=".$whis."&winga=".$wnin."";
+						$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&whisa=".$whis."&winga=".$wnin."";
 					break;
 				}
 				echo "<tr style='cursor: hand;cursor: pointer;'><td id=".$tipo."A onclick='ejecutar(".chr(34).$path.chr(34).")'>".$row[0]."-".$row[1]."</td><td id=".$tipo."A onclick='ejecutar(".chr(34).$path.chr(34).")'>".$row[12]."</td><td id=".$tipo."A onclick='ejecutar(".chr(34).$path.chr(34).")'>".$nombre."</td><td id=".$tipo."A onclick='ejecutar(".chr(34).$path.chr(34).")'>".$row[8]."</td><td id=".$tipo."A onclick='ejecutar(".chr(34).$path.chr(34).")'>".$sexo."</td><td id=".$tipo."A onclick='ejecutar(".chr(34).$path.chr(34).")'>".$row[10]."-".$row[11]."</td>";
@@ -725,7 +742,7 @@ else
 			$query .= " and ubisac = '".$wcco."' ";
 			$query .= " and ubihis = orihis  ";
 			$query .= " and ubiing = oriing  ";
-			$query .= " and oriori = '".$codemp."'  ";
+			$query .= " and oriori = '".$wemp_pmla."'  ";
 			$query .= " and oriced = pacced  ";
 			$query .= " and oritid = pactid  ";
 			$query .= " and orihis = inghis "; 
@@ -749,7 +766,7 @@ else
 						$sexo="MASCULINO";
 					if(!isset($wdbhce))
 						$wdbhce = $historia;
-					$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&whisa=".$row[0]."&winga=".$row[1]."";
+					$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."&whisa=".$row[0]."&winga=".$row[1]."";
 					echo "<tr style='cursor: hand;cursor: pointer;' onclick='ejecutar(".chr(34).$path.chr(34).")'><td id=".$tipo."A>".$row[0]."-".$row[1]."</td><td id=".$tipo."A>".$row[12]."</td><td id=".$tipo."A>".$nombre."</td><td id=".$tipo."A>".$row[8]."</td><td id=".$tipo."A>".$sexo."</td><td id=".$tipo."A>".$row[10]."-".$row[11]."</td></tr>";
 				}
 			}

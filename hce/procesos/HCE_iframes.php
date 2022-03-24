@@ -82,13 +82,23 @@ function ocultarFlotante(numdiv)
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//	11/03/2022 - Brigith Lagares:  Se realiza estadarización del wemp_pmla
+//
 //	2020-05-20	-	Jessica Madrid Mejía:	Se valida si en la tabla movhos_000282 el centro de costos tiene 
 // 											restricción y de ser así si el usuario esta habilitado para acceder 
-// 											a los pacientes de dicho centro de costos.
+// 											a los pacientes de dicho centro de costos.	
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-
+if(isset($_REQUEST['origen']) && !isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla=$_REQUEST['origen'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+	die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
-$wemp_pmla=$origen;
+//$wemp_pmla=$origen;
 function GetIP()
 {
 	$IP_REAL = " ";
@@ -166,7 +176,7 @@ function consultarUsuarioPermitido($conex, $wdbmhos, $ccoPaciente, $usuario)
 	return $usuarioHabilitado;
 }
 
-function consultarUsuarioHabilitado($conex, $origen, $wdbmhos, $usuario, $wcedula, $wtipodoc, $whisa, $winga)
+function consultarUsuarioHabilitado($conex, $wemp_pmla, $wdbmhos, $usuario, $wcedula, $wtipodoc, $whisa, $winga)
 {
 	$historia = "";
 	$ingreso = "";
@@ -182,7 +192,7 @@ function consultarUsuarioHabilitado($conex, $origen, $wdbmhos, $usuario, $wcedul
 							FROM root_000037 
 						   WHERE Oriced='".$wcedula."' 
 							 AND Oritid='".$wtipodoc."' 
-							 AND Oriori='".$origen."';";
+							 AND Oriori='".$wemp_pmla."';";
 		
 		$resPaciente = mysqli_query($conex,$queryPaciente) or die ("Error: " . mysqli_errno($conex) . " - en el query:  - " . mysqli_error($conex));
 		$numPaciente = mysql_num_rows($resPaciente);
@@ -238,7 +248,7 @@ if(isset($sess))
 {
 	$key = substr($user,2,strlen($user));
 	
-	$usuarioHabilitado = consultarUsuarioHabilitado($conex, $origen, $wdbmhos, $key, $wcedula, $wtipodoc, $whisa, $winga);
+	$usuarioHabilitado = consultarUsuarioHabilitado($conex, $wemp_pmla, $wdbmhos, $key, $wcedula, $wtipodoc, $whisa, $winga);
 	
 	if($usuarioHabilitado)
 	{	
@@ -267,21 +277,21 @@ if(isset($sess))
 				
 			echo "<div class='north'>";
 			if(isset($whisa))
-				echo "<iframe id='fd' name='fd' src='HCE.php?accion=T&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' scrolling=no frameborder=0 style='width:100%;height:80;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -4px;' allowTransparency='true'></iframe>";
+				echo "<iframe id='fd' name='fd' src='HCE.php?accion=T&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' scrolling=no frameborder=0 style='width:100%;height:80;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -4px;' allowTransparency='true'></iframe>";
 			else
-				echo "<iframe id='fd' name='fd' src='HCE.php?accion=T&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."' scrolling=no frameborder=0 style='width:100%;height:80;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -4px;' allowTransparency='true'></iframe>";
+				echo "<iframe id='fd' name='fd' src='HCE.php?accion=T&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."' scrolling=no frameborder=0 style='width:100%;height:80;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -4px;' allowTransparency='true'></iframe>";
 			echo "</div>";
 
 			echo "<div class='center'>";
 			if(isset($whisa))
 			{
-				echo "<iframe id='fd1' src='HCE.php?accion=D&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' name='demograficos' scrolling=no frameborder=0 style='width:100%;height:25%;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -0px;' allowTransparency='true'></iframe>";
-				echo "<iframe id='fd2' src='HCE.php?accion=M&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' name='principal' frameborder=0 style='width:100%;height:75%;border:0px;dotted #FFFFFF;margin-top: -0px;' allowTransparency='true'></iframe>";
+				echo "<iframe id='fd1' src='HCE.php?accion=D&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' name='demograficos' scrolling=no frameborder=0 style='width:100%;height:25%;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -0px;' allowTransparency='true'></iframe>";
+				echo "<iframe id='fd2' src='HCE.php?accion=M&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' name='principal' frameborder=0 style='width:100%;height:75%;border:0px;dotted #FFFFFF;margin-top: -0px;' allowTransparency='true'></iframe>";
 			}
 			else
 			{
-				echo "<iframe id='fd1' src='HCE.php?accion=D&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."' name='demograficos' scrolling=no frameborder=0 style='width:100%;height:25%;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -0px;' allowTransparency='true'></iframe>";
-				echo "<iframe id='fd2' src='HCE.php?accion=M&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wdbmhos=".$wdbmhos."' name='principal' frameborder=0 style='width:100%;height:75%;border:0px;dotted #FFFFFF;margin-top: -0px;' allowTransparency='true'></iframe>";
+				echo "<iframe id='fd1' src='HCE.php?accion=D&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."' name='demograficos' scrolling=no frameborder=0 style='width:100%;height:25%;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -0px;' allowTransparency='true'></iframe>";
+				echo "<iframe id='fd2' src='HCE.php?accion=M&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wdbmhos=".$wdbmhos."' name='principal' frameborder=0 style='width:100%;height:75%;border:0px;dotted #FFFFFF;margin-top: -0px;' allowTransparency='true'></iframe>";
 			}
 			//echo "<iframe id='fd3' src='HCE.php?accion=H&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' name='vistas' frameborder=0 marginheight=2 style='width:100%;height:9%;border:0px;dotted #FFFFFF;margin-top: 0px;' allowTransparency='true' scrolling=no></iframe>";
 			echo "</div>";
@@ -290,15 +300,15 @@ if(isset($sess))
 			echo "<div class='panel' align='center'>";
 			if(isset($whisa))
 			{
-				echo "<iframe id='f1' name='f1' src='HCE.php?accion=U&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' scrolling=no frameborder=0 style='width:100%;height:11%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
-				echo "<iframe id='f2' name='f2' src='HCE.php?accion=A&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' frameborder=0 scrolling=yes  style='width:100%;height:20%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
-				echo "<iframe id='f3' name='f3' src='HCE.php?accion=F&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' frameborder=0 style='width:100%;height:69%;border:0px;dotted #FFFFFF;'allowTransparency='true';scrolling=auto></iframe>";
+				echo "<iframe id='f1' name='f1' src='HCE.php?accion=U&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' scrolling=no frameborder=0 style='width:100%;height:11%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
+				echo "<iframe id='f2' name='f2' src='HCE.php?accion=A&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' frameborder=0 scrolling=yes  style='width:100%;height:20%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
+				echo "<iframe id='f3' name='f3' src='HCE.php?accion=F&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' frameborder=0 style='width:100%;height:69%;border:0px;dotted #FFFFFF;'allowTransparency='true';scrolling=auto></iframe>";
 			}
 			else
 			{
-				echo "<iframe id='f1' name='f1' src='HCE.php?accion=U&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."' scrolling=no frameborder=0 style='width:100%;height:11%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
-				echo "<iframe id='f2' name='f2' src='HCE.php?accion=A&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wdbmhos=".$wdbmhos."' frameborder=0 scrolling=yes  style='width:100%;height:20%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
-				echo "<iframe id='f3' name='f3' src='HCE.php?accion=F&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."' frameborder=0 style='width:100%;height:69%;border:0px;dotted #FFFFFF;'allowTransparency='true';scrolling=auto></iframe>";
+				echo "<iframe id='f1' name='f1' src='HCE.php?accion=U&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."' scrolling=no frameborder=0 style='width:100%;height:11%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
+				echo "<iframe id='f2' name='f2' src='HCE.php?accion=A&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wdbmhos=".$wdbmhos."' frameborder=0 scrolling=yes  style='width:100%;height:20%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
+				echo "<iframe id='f3' name='f3' src='HCE.php?accion=F&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."' frameborder=0 style='width:100%;height:69%;border:0px;dotted #FFFFFF;'allowTransparency='true';scrolling=auto></iframe>";
 			}
 			echo "</div>";
 			echo "</div>";
@@ -307,9 +317,9 @@ if(isset($sess))
 			echo "<div class='east'>";
 			//echo "<iframe id='f2' name='f2' src='HCE.php?accion=UT&ok=0&empresa=".$empresa."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' frameborder=0 scrolling=no  style='position: absolute;width:100%;height:100%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
 			if(isset($whisa))
-				echo "<iframe id='f2' name='f2' src='HCE.php?accion=UT&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' frameborder=0 scrolling=no  style='width:100%;height:100%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
+				echo "<iframe id='f2' name='f2' src='HCE.php?accion=UT&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' frameborder=0 scrolling=no  style='width:100%;height:100%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
 			else
-				echo "<iframe id='f2' name='f2' src='HCE.php?accion=UT&ok=0&empresa=".$empresa."&origen=".$origen."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."' frameborder=0 scrolling=no  style='width:100%;height:100%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
+				echo "<iframe id='f2' name='f2' src='HCE.php?accion=UT&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&wdbmhos=".$wdbmhos."' frameborder=0 scrolling=no  style='width:100%;height:100%;border:0px;dotted #FFFFFF;'allowTransparency='true'></iframe>";
 			echo "</div>";
 		}
 	}
