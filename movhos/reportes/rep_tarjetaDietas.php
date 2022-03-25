@@ -414,7 +414,7 @@ if( isset($_REQUEST['action'] )){
 				$existe_al_menos_uno = true;
 				$wedad = traerEdad($row['pacnac']);
 
-				$datos['imagen'] = "clinica.JPG";
+				$datos['imagen'] = "cliame.jpg";
 				$datos['color'] = $row['color'];
 				$datos['fecha'] = $wfecha;
 				$datos['habitacion'] = $row['habitacion'];
