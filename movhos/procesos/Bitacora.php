@@ -90,9 +90,18 @@
 //-->
 </script>
 <?php
+if(isset($_REQUEST['codemp']) && !isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla=$_REQUEST['codemp'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+	die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
 
-	$wactualiz = "2018-05-24";
+	$wactualiz = "2022-03-11";
 
 /**********************************************************************************************************************
 	   PROGRAMA : bitacora.php
@@ -105,6 +114,8 @@ include_once("conex.php");
 
 	
 	   REGISTRO DE MODIFICACIONES :
+	   11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla y se actualiza encabezado
+	   	
 	   .2018-05-24 Jonatan Lopez
 			Se agrega el c?igo de autorizaci? proveniente de la admisi?, al ingresa en la edici? del paciente.
 	   
@@ -188,6 +199,7 @@ include_once("conex.php");
 
 	   .2007-05-03
 	   		Release de Versi? Beta.
+
 
 ***********************************************************************************************************************/
 function bi($d,$n,$k)
@@ -389,17 +401,17 @@ else
 	include_once("root/comun.php");	
 
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	if(isset($ctc))
 		echo "<input type='HIDDEN' name= 'ctc' value='".$ctc."'>";
 
 	if($ok == 99)
 	{
-		$wemp_pmla = $codemp;
+		//$wemp_pmla = $codemp;
 		encabezado("BITACORA DE PACIENTES", $wactualiz, "clinica");
 
 		echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
-		echo "<meta http-equiv='refresh' content='150;url=/matrix/movhos/procesos/bitacora.php?ok=99&empresa=".$empresa."&codemp=".$codemp."'>";
+		echo "<meta http-equiv='refresh' content='150;url=/matrix/movhos/procesos/bitacora.php?ok=99&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."'>";
 		echo "<table border=0 align=center id=tipo5>";
 		?>
 		<script>
@@ -471,7 +483,7 @@ else
 		echo "</table><br>";
 		echo "<table border=0 align=center id=tipo2>";
 		echo "<tr><td bgcolor='#999999' rowspan=2><IMG SRC='/matrix/images/medical/root/procesos.ico'  alt='PROCESOS'><td align=center bgcolor='#999999'>Consulta a la Bitacora de Pacientes</td></tr>";
-		echo "<tr><td align=center bgcolor='#dddddd'><A HREF='/matrix/movhos/procesos/rbitacora.php?ok=99&empresa=".$empresa."&codemp=".$codemp."' target='_blank'><IMG SRC='/matrix/images/medical/movhos/Consulta.png' alt='Consulta'></A></td></tr>";
+		echo "<tr><td align=center bgcolor='#dddddd'><A HREF='/matrix/movhos/procesos/rbitacora.php?ok=99&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&codemp=".$wemp_pmla."' target='_blank'><IMG SRC='/matrix/images/medical/movhos/Consulta.png' alt='Consulta'></A></td></tr>";
 		echo "<tr><td align=center colspan='2'><input type=button value='Cerrar ventana' onclick='javascript:window.close();'></td></tr></table><br>";
 
 		echo "<input type='HIDDEN' name= 'ok' value='".$ok."'>";
@@ -485,7 +497,7 @@ else
  		$query .= " and ubiing = Habing ";
 		$query .= " and ubihis = orihis  ";
 		$query .= " and ubiing = oriing  ";
-		$query .= " and oriori = '".$codemp."'  ";
+		$query .= " and oriori = '".$wemp_pmla."'  ";
 		$query .= " and oriced = pacced  ";
 		$query .= " and oritid = pactid  ";
 		$query .= " and orihis = inghis ";
@@ -566,7 +578,7 @@ else
 				}
 				$nombre=$row[4]." ".$row[5]." ".$row[6]." ".$row[7];
                 $wfecha_ingreso = fecha_ingreso($row[0], $row[1], $conex);
-				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&whis=".$row[0]."&wnin=".$row[1]."";
 				echo "<tr><td id=".$tipo.">".$row[16]."</td><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$wfecha_ingreso."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[10]."</td><td id=".$tipo.">".$row[11]."</td><td id=".$tipo.">".$row[12]."</td><td id=".$tipo.">".$row[13]."</td>";
 
 				$wdpa=$row[17];
@@ -606,7 +618,7 @@ else
 		$query .= "   and ubihis = orihis ";
 		$query .= "   and ubiing = oriing ";
 		//$query .= "   and Ubiptr = 'on'  "; Se comenta esta linea para que muestre todos los pacientes activos de cirugia.
-		$query .= "   and oriori = '".$codemp."' ";
+		$query .= "   and oriori = '".$wemp_pmla."' ";
 		$query .= "   and oriced = pacced ";
 		$query .= "   and oritid = pactid  ";
 		$query .= "   and orihis = inghis ";
@@ -639,7 +651,7 @@ else
 						$tipo="tipo21";
 				$nombre=$row[2]." ".$row[3]." ".$row[4]." ".$row[5];
                 $wfecha_ingreso = fecha_ingreso($row[0], $row[1], $conex);
-				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&whis=".$row[0]."&wnin=".$row[1]."";
 				echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$wfecha_ingreso."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[8]."</td><td id=".$tipo.">".$row[9]."</td>";
 
 				$wdpa=$row[10];
@@ -679,7 +691,7 @@ else
 		$query .= "   and Ccourg = 'on'  ";
 		$query .= "   and ubihis = orihis ";
 		$query .= "   and ubiing = oriing ";
-		$query .= "   and oriori = '".$codemp."' ";
+		$query .= "   and oriori = '".$wemp_pmla."' ";
 		$query .= "   and oriced = pacced ";
 		$query .= "   and oritid = pactid  ";
 		$query .= "   and orihis = inghis ";
@@ -693,7 +705,7 @@ else
 		$query .= "   and Ccoadm = 'on'  ";
 		$query .= "   and ubihis = orihis ";
 		$query .= "   and ubiing = oriing ";
-		$query .= "   and oriori = '".$codemp."' ";
+		$query .= "   and oriori = '".$wemp_pmla."' ";
 		$query .= "   and oriced = pacced ";
 		$query .= "   and oritid = pactid  ";
 		$query .= "   and orihis = inghis ";
@@ -726,7 +738,7 @@ else
 						$tipo="tipo21";
 				$nombre=$row[2]." ".$row[3]." ".$row[4]." ".$row[5];
                 $wfecha_ingreso = fecha_ingreso($row[0], $row[1], $conex);
-				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&whis=".$row[0]."&wnin=".$row[1]."";
 				echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$wfecha_ingreso."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[8]."</td><td id=".$tipo.">".$row[9]."</td>";
 
 				$wdpa=$row[10];
@@ -759,7 +771,7 @@ else
 		$query .= "    and Ubimue = 'on'   ";
 		$query .= "    and ubihis = orihis  ";
 		$query .= "    and ubiing = oriing  ";
-		$query .= "    and oriori = '".$codemp."' ";
+		$query .= "    and oriori = '".$wemp_pmla."' ";
 		$query .= "    and oriced = pacced  ";
 		$query .= "    and oritid = pactid  ";
 		$query .= "    and orihis = inghis  ";
@@ -801,7 +813,7 @@ else
 					$row[10]="off";
 					$row[11]="on";
 				}
-				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&wnin=".$row[1]."";
+				$path="/matrix/movhos/procesos/bitacora.php?ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&whis=".$row[0]."&wnin=".$row[1]."";
 				echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$wfecha_ingreso."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[8]."</td><td id=".$tipo.">".$row[9]."</td><td id=".$tipo.">".$row[11]."</td><td id=".$tipo.">".$row[10]."</td>";
 
 				$wdpa=$row[11];
@@ -878,7 +890,7 @@ else
 		//********************************************************************************************************
 		//*                                         DATOS DEL PACIENTE                                             *
 		//********************************************************************************************************
-		$wbasedatoCliame = consultarAliasPorAplicacion($conex, $codemp, 'facturacion');
+		$wbasedatoCliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'facturacion');
 		$query_aut =  " SELECT Ingord 
 						  FROM ".$wbasedatoCliame."_000101 
 						 WHERE Inghis = '".$whis."'
@@ -898,7 +910,7 @@ else
 		$query .= " and ubiing = '".$wnin."' ";
 		$query .= " and ubihis = orihis  ";
 		$query .= " and ubiing = oriing  ";
-		$query .= " and  oriori = '".$codemp."'  ";
+		$query .= " and  oriori = '".$wemp_pmla."'  ";
 		$query .= " and oriced = pacced  ";
 		$query .= " and oritid = pactid  ";
 		$query .= " and  ubisac = ccocod  ";
@@ -985,7 +997,7 @@ else
 		if(isset($ctc))
 			echo "<tr><td bgcolor=#ffffff colspan=7 align=center><IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'></td></tr></table><br><br></center>";
 		else
-			echo "<tr><td bgcolor=#ffffff colspan=7 align=center><A HREF='/MATRIX/movhos/Procesos/bitacora.php?ok=99&empresa=".$empresa."&codemp=".$codemp."'><IMG SRC='/matrix/images/medical/movhos/pac.png' alt='Lista'><br>Lista</A></td></tr></table><br><br></center>";
+			echo "<tr><td bgcolor=#ffffff colspan=7 align=center><A HREF='/MATRIX/movhos/Procesos/bitacora.php?ok=99&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."'><IMG SRC='/matrix/images/medical/movhos/pac.png' alt='Lista'><br>Lista</A></td></tr></table><br><br></center>";
 		if(isset($werr) and isset($e) and $e > -1)
 		{
 			echo "<br><br><center><table border=0 aling=center id=tipo2>";

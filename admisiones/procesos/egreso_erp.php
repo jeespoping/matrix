@@ -2,6 +2,8 @@
 include_once("conex.php");
 /***********************************************************************************************************************************************
  * Actualizaciones
+ * 11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla 
+	   	
  * 2021-06-18 ( Joel Payares) - Se modifica el software, independizando segmento de formulario de autorización de acceso a historia clínica en un archivo
  *                            independiente, permitiendo centralizar el formulario para posibles cambios. Esta modificación se realizó en la linea de código 8151
  * 2021-04-27 - Johan Córdoba:
@@ -4255,7 +4257,7 @@ function validarProcedimientosFormulario($procedimientosPOST)
 
 $conex = obtenerConexionBD("matrix");
 
-$wactualiz = "2020-03-25";
+$wactualiz = "2022-03-11";
 
 if (!isset($wemp_pmla)) {
     terminarEjecucion($MSJ_ERROR_FALTA_PARAMETRO . "wemp_pmla");
@@ -4439,7 +4441,7 @@ else {
     echo "</table></center>";
     echo "</div>";//div botones navegacion
 
-    $path = "/matrix/hce/procesos/TableroAnt.php?empresa=" . $aplicacion . "&codemp=" . $wemp_pmla . "&historia=" . $aplicacionhce . "&accion=I&whis=<HIS>";
+    $path = "/matrix/hce/procesos/TableroAnt.php?empresa=" . $aplicacion . "&wemp_pmla=" . $wemp_pmla . "&historia=" . $aplicacionhce . "&accion=I&whis=<HIS>";
 //$path = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$aplicacionhce."&wcedula=<DOC>&wtipodoc=<TDOC>";
     echo "<span style='float:right;' id='enlace_hce'><A style='cursor:pointer; color: blue;' url='" . $path . "' onClick='ejecutar2(this)'><b>Ir a la HCE</b></A></span><br>";
     //DATOS INGRESO - DATOS EGRESO

@@ -228,6 +228,15 @@
 <BODY TEXT="#000066">
 
 <?php
+if(isset($_REQUEST['codemp']) && !isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla=$_REQUEST['codemp'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+	die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
 /**********************************************************************************************************************  
 [DOC]
@@ -245,6 +254,9 @@ include_once("conex.php");
 	   04 de marzo de 2022. Sebastian Alvarez Barona. Se realiza filtro de sede para que nos muestre información del paciente correspondiente a cada una.
 	   												  por otro lado en los criterios de busqueda tambien se realiza filtro de sede a los centros de costos.
 	   ==================================================================================================================================================
+	   
+	   11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla
+	 
 	   .2020-10-20
 				Se agrega filtro para que no se muestre pacientes de servicio domiciliario
 		.2019-11-18
@@ -332,7 +344,6 @@ include_once("conex.php");
 	   .2009-08-06
 	   		Release de Versi&oacute;n Beta.
 	   
-	   		
 [*DOC]
 ***********************************************************************************************************************/
 
@@ -564,11 +575,11 @@ else
 	if(!isset($_SESSION["HCEON"]))
 		$_SESSION["HCEON"] = 0;
 		
-	$wemp_pmla = $codemp;
+	//$wemp_pmla = $codemp;
 
 	include_once("root/comun.php");
 	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-	$wactualiz = "04 de marzo de 2022";
+	$wactualiz = "2022/03/11";
 
 	echo "<form name='Tablero' action='Tablero.php' method=post>";
 	encabezado( "TABLERO DE PACIENTES HCE", $wactualiz, $institucion->baseDeDatos, TRUE );
@@ -802,7 +813,7 @@ else
 				$query .= " and ubiing = Habing ";
 				$query .= " and ubihis = orihis  ";
 				$query .= " and ubiing = oriing  ";
-				$query .= " and oriori = '".$codemp."'  ";
+				$query .= " and oriori = '".$wemp_pmla."'  ";
 				$query .= " and oriced = pacced  ";
 				$query .= " and oritid = pactid  ";
 				$query .= " and orihis = inghis "; 
@@ -826,7 +837,7 @@ else
 					$query .= " and ubiing = Habing ";
 					$query .= " and ubihis = orihis  ";
 					$query .= " and ubiing = oriing  ";
-					$query .= " and oriori = '".$codemp."'  ";
+					$query .= " and oriori = '".$wemp_pmla."'  ";
 					$query .= " and oriced = pacced  ";
 					$query .= " and oritid = pactid  ";
 					$query .= " and orihis = inghis "; 
@@ -843,7 +854,7 @@ else
 					$query .= "    and Ccourg = 'on'  ";
 					$query .= "    and ubihis = orihis "; 
 					$query .= "    and ubiing = oriing ";
-					$query .= "    and oriori = '".$codemp."'  "; 
+					$query .= "    and oriori = '".$wemp_pmla."'  "; 
 					$query .= "    and oriced = pacced  ";
 					$query .= "    and oritid = pactid  "; 
 					$query .= "    and orihis = inghis  ";
@@ -859,7 +870,7 @@ else
 					$query .= "    and Ccourg = 'on'  ";
 					$query .= "    and ubihis = orihis "; 
 					$query .= "    and ubiing = oriing ";
-					$query .= "    and oriori = '".$codemp."'  "; 
+					$query .= "    and oriori = '".$wemp_pmla."'  "; 
 					$query .= "    and oriced = pacced  ";
 					$query .= "    and oritid = pactid  "; 
 					$query .= "    and orihis = inghis  ";
@@ -877,7 +888,7 @@ else
 					$query .= "    and Ccoayu != 'on'  ";
 					$query .= "    and ubihis = orihis "; 
 					$query .= "    and ubiing = oriing ";
-					$query .= "    and oriori = '".$codemp."'  "; 
+					$query .= "    and oriori = '".$wemp_pmla."'  "; 
 					$query .= "    and oriced = pacced  ";
 					$query .= "    and oritid = pactid  "; 
 					$query .= "    and orihis = inghis  ";
@@ -894,7 +905,7 @@ else
 					$query .= "    and Ccohos != 'on'  ";
 					$query .= "    and ubihis = orihis "; 
 					$query .= "    and ubiing = oriing ";
-					$query .= "    and oriori = '".$codemp."'  "; 
+					$query .= "    and oriori = '".$wemp_pmla."'  "; 
 					$query .= "    and oriced = pacced  ";
 					$query .= "    and oritid = pactid  "; 
 					$query .= "    and orihis = inghis  ";
@@ -911,7 +922,7 @@ else
 					$query .= "    and ubisac = Ccocod  "; 
 					$query .= "    and ubihis = orihis "; 
 					$query .= "    and ubiing = oriing ";
-					$query .= "    and oriori = '".$codemp."'  "; 
+					$query .= "    and oriori = '".$wemp_pmla."'  "; 
 					$query .= "    and oriced = pacced  ";
 					$query .= "    and oritid = pactid  "; 
 					$query .= "    and orihis = inghis  ";
@@ -928,7 +939,7 @@ else
 					$query .= "    and ubisac = Ccocod  "; 
 					$query .= "    and ubihis = orihis "; 
 					$query .= "    and ubiing = oriing ";
-					$query .= "    and oriori = '".$codemp."'  "; 
+					$query .= "    and oriori = '".$wemp_pmla."'  "; 
 					$query .= "    and oriced = pacced  ";
 					$query .= "    and oritid = pactid  "; 
 					$query .= "    and orihis = inghis  ";
@@ -945,7 +956,7 @@ else
 					$query .= " and Ccourg != 'on'  ";
 					$query .= " and ubihis = orihis  ";
 					$query .= " and ubiing = oriing  ";
-					$query .= " and oriori = '".$codemp."'  ";
+					$query .= " and oriori = '".$wemp_pmla."'  ";
 					$query .= " and oriced = pacced  ";
 					$query .= " and oritid = pactid  ";
 					$query .= " and orihis = inghis "; 
@@ -967,7 +978,7 @@ else
 						$query .= " and ubiing = Habing ";
 						$query .= " and ubihis = orihis  ";
 						$query .= " and ubiing = oriing  ";
-						$query .= " and oriori = '".$codemp."'  ";
+						$query .= " and oriori = '".$wemp_pmla."'  ";
 						$query .= " and oriced = pacced  ";
 						$query .= " and oritid = pactid  ";
 						$query .= " and orihis = inghis "; 
@@ -985,7 +996,7 @@ else
 							$query .= "    and Ccoing = 'on'  ";
 							$query .= "    and ubihis = orihis "; 
 							$query .= "    and ubiing = oriing ";
-							$query .= "    and oriori = '".$codemp."'  "; 
+							$query .= "    and oriori = '".$wemp_pmla."'  "; 
 							$query .= "    and oriced = pacced  ";
 							$query .= "    and oritid = pactid  "; 
 							$query .= "    and orihis = inghis  ";
@@ -1004,7 +1015,7 @@ else
 								$query .= "    and ubisac = Ccocod  "; 
 								$query .= "    and ubihis = orihis "; 
 								$query .= "    and ubiing = oriing ";
-								$query .= "    and oriori = '".$codemp."'  "; 
+								$query .= "    and oriori = '".$wemp_pmla."'  "; 
 								$query .= "    and oriced = pacced  ";
 								$query .= "    and oritid = pactid  "; 
 								$query .= "    and orihis = inghis  ";
@@ -1024,7 +1035,7 @@ else
 								$query .= " and Ccourg != 'on'  ";
 								$query .= " and ubihis = orihis  ";
 								$query .= " and ubiing = oriing  ";
-								$query .= " and oriori = '".$codemp."'  ";
+								$query .= " and oriori = '".$wemp_pmla."'  ";
 								$query .= " and oriced = pacced  ";
 								$query .= " and oritid = pactid  ";
 								$query .= " and orihis = inghis "; 
@@ -1334,10 +1345,10 @@ else
 									else
 										$tipo="tipo19";
 									if(isset($IPTIP) and $IPTIP == "off")
-										$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
+										$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
 									else
 									{
-										$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
+										$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
 										$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 									}
 									echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";
@@ -1351,10 +1362,10 @@ else
 								else
 									$tipo="tipo19";
 								if(isset($IPTIP) and $IPTIP == "off")
-									$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
+									$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
 								else
 								{
-									$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
+									$path="/matrix/HCE/procesos/HCE_iFrames.php?empresa=".$wdbhce."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
 									$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 								}
 								echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";
@@ -1369,10 +1380,10 @@ else
 						else
 							$tipo="tipo19";
 						if(isset($IPTIP) and $IPTIP == "off")
-							$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
+							$path="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$wdbhce."&wdbmhos=".$empresa."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wservicio=*&protocolos=0&CLASE=C";
 						else
 						{
-							$path="/matrix/HCE/procesos/HCE_iFrames.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&origen=".$codemp."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
+							$path="/matrix/HCE/procesos/HCE_iFrames.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wemp_pmla=".$wemp_pmla."&wcedula=".$row[2]."&wtipodoc=".$row[3]."&wdbmhos=".$empresa."";
 							$path1="/matrix/HCE/procesos/HCE_IGP.php?wemp_pmla=".$wemp_pmla."&empresa=".$wdbhce."&wcedula=".$row[2]."&wtipodoc=".$row[3];
 						}
 						echo "<tr style='cursor: hand;cursor: pointer;'><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[17]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[10]."-".$row[11]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[16]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo.">".$row[0]."-".$row[1]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$nombre."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$row[12]."-".$row[13]."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wmed."</td><td onclick='ejecutar(".chr(34).$path.chr(34).",".$wparurg.")' id=".$tipo."A>".$wesp."</td><td onclick='IGP(".chr(34).$path1.chr(34).")' id=".$tipo."A><IMG SRC='/matrix/images/medical/hce/Man.png'></td></tr>";

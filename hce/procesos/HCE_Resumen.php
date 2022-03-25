@@ -59,6 +59,9 @@ if(!isset($CI))
 	   de la Epicrisis.
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   
+	   11/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla y se actualiza encabezado
+
 	   .2020-02-20
 			Se crean las tablas movhos_000278 - Encabezado configuracion Resumen HCE y movhos_000279 - Detalle configuracion Resumen HCE 
 			con los formularios y consecutivos de cada uno de los items a consultar en el resumen de egreso y se modifica este script 
@@ -73,6 +76,8 @@ if(!isset($CI))
 	   		Se adiciona el Plan de Egreso a la informacion de la Epicrisis. 
 	   .2013-09-17
 	   		Release de Version Beta.
+		
+	
 [*DOC]   		
 ***********************************************************************************************************************/
 
@@ -119,7 +124,7 @@ if((!isset($CI) and $wsession == 0) or isset($CI))
 	 	
 	echo "<form name='HCE_Resumen' action='HCE_Resumen.php' method=post>";
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 	$cadena_html = "";
 	if(!isset($CI))
@@ -129,7 +134,7 @@ if((!isset($CI) and $wsession == 0) or isset($CI))
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and pacced = oriced ";
 		$query .= "   and pactid = oritid ";
-		$query .= "   and oriori = '".$origen."' ";
+		$query .= "   and oriori = '".$wemp_pmla."' ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 		$row = mysql_fetch_array($err);
 		$wpac = strtoupper($row[2])." ".strtoupper($row[3])." ".ucfirst(strtolower($row[0]))." ".ucfirst(strtolower($row[1]));
@@ -243,7 +248,7 @@ if((!isset($CI) and $wsession == 0) or isset($CI))
 	$query .= "   and pactid = '".$wtipodoc."'";
 	$query .= "   and pacced = oriced ";
 	$query .= "   and pactid = oritid ";
-	$query .= "   and oriori = '".$origen."' ";
+	$query .= "   and oriori = '".$wemp_pmla."' ";
 	$query .= "   and inghis = orihis ";
 	$query .= "   and inging = '".$wing."' ";
 	$query .= "   and ubihis = inghis "; 
@@ -285,7 +290,7 @@ if((!isset($CI) and $wsession == 0) or isset($CI))
 	if(!isset($CI))
 	{
 		$cadena_html .="<tr><td align=center id=tipoT01 colspan=3><div class='nobreak'><IMG SRC='/matrix/images/medical/root/lmatrix.jpg'></div></td>";
-		$cadena_html .="<td id=tipoT02><div class='nobreak'>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;HCE - HISTORIA CLINICA ELECTRONICA&nbsp;&nbsp;Version 2017-06-22</A></div></td></tr></table><br>";
+		$cadena_html .="<td id=tipoT02><div class='nobreak'>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;HCE - HISTORIA CLINICA ELECTRONICA&nbsp;&nbsp;Version 2022-03-11</A></div></td></tr></table><br>";
 		$cadena_html .="<table align=center border=1 class=tipoTABLEGRID CELLPADDING=3>";
 		$cadena_html .="<tr><td id=tipoL01GRID colspan=3><div class='nobreak'>INFORMACION DEMOGRAFICA</div></td></tr>";
 		$cadena_html .="<tr><td class=".$gridcolor1." colspan=2><div class='nobreak'>Nombre Paciente : ".$wpac."</div></td><td class=".$gridcolor1."><div class='nobreak'>Identificacion : ".$widen."</div></td></tr>";
