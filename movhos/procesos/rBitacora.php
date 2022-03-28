@@ -89,7 +89,15 @@
 
 
 <?php
-$wemp_pmla = $_REQUEST['wemp_pmla'];
+if(isset($_REQUEST['origen']) && !isset($_REQUEST['wemp_pmla'])){
+    $wemp_pmla=$_REQUEST['origen'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+    $wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+    die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
 
 include_once("root/comun.php");
@@ -174,7 +182,7 @@ else
 			function ira(){document.rBitacora.whis.focus();}
 		</script>
 		<?php
-		$wemp_pmla = $codemp;
+		//$wemp_pmla = $codemp;
 		encabezado("CONSULTA A LA BITACORA DE PACIENTES", $wactualiz, "clinica");
 
 		echo "</table>";
