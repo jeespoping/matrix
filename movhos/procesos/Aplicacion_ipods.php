@@ -510,7 +510,7 @@ else
   $wusuario=trim($wuser1[1]);
 
      	                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Febrero 20 de 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="Enero 20 de 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
   encabezado("APLICACION DE MEDICAMENTOS",$wactualiz, "clinica");
