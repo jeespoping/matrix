@@ -14,7 +14,9 @@ include_once("conex.php");
 //            servicios que tengan habilitado el campo Serbus en la tabla cliame_000298.
 //            Se adiciona la acción redireccionar turno, la cual toma el turno del paciente y lo encola 
 //            en otro servicio.
-			$wactualiz='2020-01-13';
+// 2022-03-15 	Taito.
+//	|			Se agregan a los campos devueltos en el json, la conversin a UTF-8 para resolver problemas con caracteres acentuados y eñes
+			$wactualiz='2022-03-15';
 //-----------------------------------------------------------------------------------------------------  
 //--------------------------------------------------------------------------------------------------------
 // 	EJECUCION DEL SCRIPT
@@ -244,7 +246,7 @@ else
 			{
 			   $redireccion = "
 			   			<td align='center' >
-					       <img id='botonRedireccionar".$rowTurnos['Turtur']."' style='cursor:pointer;' tooltip='si' 	class='botonRedireccionar' title='Redireccionar turno' src='../../images/medical/root/flecha_agregar.jpg' onclick='redireccionarTurno(\"".$rowTurnos['Turtur']."\",\"".$rowTurnos['Turtdo']."\",\"".$rowTurnos['Turdoc']."\",\"".$rowTurnos['Turnom']."\")'> 
+					       <img id='botonRedireccionar".$rowTurnos['Turtur']."' style='cursor:pointer;' tooltip='si' 	class='botonRedireccionar' title='Redireccionar turno' src='../../images/medical/root/flecha_agregar.jpg' onclick='redireccionarTurno(\"".$rowTurnos['Turtur']."\",\"".utf8_encode($rowTurnos['Turtdo'])."\",\"".utf8_encode($rowTurnos['Turdoc'])."\",\"".utf8_encode($rowTurnos['Turnom'])."\")'> 
 						</td>
 			   ";	
 			}
@@ -262,8 +264,8 @@ else
 				<td>
 					<table width='100%' class='".$coloFila."' id='tablaEditarDocumento_".$rowTurnos['Turtur']."'>
 						<tr>
-							<td>".$rowTurnos['Turtdo']."-".$rowTurnos['Turdoc']."</td>
-							<td align='right'><img class='botonEditarDocumento' style='cursor:pointer' tipoDocAnt='".$rowTurnos['Turtdo']."' docAnt='".$rowTurnos['Turdoc']."' tooltip='si' ondblclick='editarDocumento(this, \"".$rowTurnos['Turtur']."\")' title='Doble click para editar documento' src='../../images/medical/hce/mod.PNG'></td>
+							<td>".utf8_encode($rowTurnos['Turtdo'])."-".utf8_encode($rowTurnos['Turdoc'])."</td>
+							<td align='right'><img class='botonEditarDocumento' style='cursor:pointer' tipoDocAnt='".utf8_encode($rowTurnos['Turtdo'])."' docAnt='".utf8_encode($rowTurnos['Turdoc'])."' tooltip='si' ondblclick='editarDocumento(this, \"".$rowTurnos['Turtur']."\")' title='Doble click para editar documento' src='../../images/medical/hce/mod.PNG'></td>
 						</tr>
 					</table>
 				</td>
@@ -281,7 +283,7 @@ else
 				</td>
 				<td align='center' >
 					<img id='botonIniciar".$rowTurnos['Turtur']."' 		style='cursor:pointer;display:none'  width='20' height='20' tooltip='si' title='Iniciar atenci&oacute;n' 	src='../../images/medical/sgc/play2.png' 	onclick='iniciarAtencion(\"".$rowTurnos['Turtur']."\")'>
-					<img id='botonFinalizar".$rowTurnos['Turtur']."' 	style='cursor:pointer;display:none'  width='20' height='20' tooltip='si' title='Finalizar atenci&oacute;n ".(($infoCampAdi[$serCod]['enlazarConAdmision']) ? "e iniciar admisi&oacute;n" : "")."' src='../../images/medical/sgc/stop2.png' onclick='finalizarAtencion(\"".$rowTurnos['Turtur']."\", \"".$infoCampAdi[$serCod]['enlazarConAdmision']."\", \"".$rowTurnos['Turtdo']."\", \"".$rowTurnos['Turdoc']."\")'>
+					<img id='botonFinalizar".$rowTurnos['Turtur']."' 	style='cursor:pointer;display:none'  width='20' height='20' tooltip='si' title='Finalizar atenci&oacute;n ".(($infoCampAdi[$serCod]['enlazarConAdmision']) ? "e iniciar admisi&oacute;n" : "")."' src='../../images/medical/sgc/stop2.png' onclick='finalizarAtencion(\"".$rowTurnos['Turtur']."\", \"".$infoCampAdi[$serCod]['enlazarConAdmision']."\", \"".utf8_encode($rowTurnos['Turtdo'])."\", \"".utf8_encode($rowTurnos['Turdoc'])."\")'>
 				</td>
 				<td align='center' >
 					<img id='botonCancelar".$rowTurnos['Turtur']."' style='cursor:pointer;' tooltip='si' 	class='botonCancelarTurno' title='Cancelar turno' src='../../images/medical/eliminar1.png' onclick='cancelarTurno(\"".$rowTurnos['Turtur']."\")'>
@@ -358,7 +360,7 @@ else
         }
 
         if ($SelCitas == 1)
-			$campoCita = "<td class='encabezadoTabla' rowspan='2'>Información Citas</td>";
+			$campoCita = "<td class='encabezadoTabla' rowspan='2'>Informacion Citas</td>";
 		else
 			$campoCita = "";
 
@@ -423,7 +425,7 @@ else
 			$respuesta['html'].= "
 			<tr class='".$coloFila." find' id='trTurno_".$rowTurnos['Turtur']."'>			
 				<td align='center'><b>".$turno."</b></td>
-				<td>".$rowTurnos['Turtdo']."-".$rowTurnos['Turdoc']."</td>
+				<td>".utf8_encode($rowTurnos['Turtdo'])."-".utf8_encode($rowTurnos['Turdoc'])."</td>
 				<td nowrap>".utf8_encode($rowTurnos['Turnom'])."</td>
 				<td>".utf8_encode(strtoupper($rowTurnos['Sernom']))."</td>
 				".$resCitas."
@@ -431,8 +433,8 @@ else
 				<td>".utf8_encode(strtoupper($rowTurnos['Connom']))."</td>
 				<td align='center'>".$fhTomoTurno->format('h:i:s a')."</td>
 				<td align='center'>".$fechaAtencion->format('h:i:s a')."</td>				
-				<td align='center'>".$rowTurnos['Puenom']."</td>				
-				<td align='center'>".$rowTurnos['Descripcion']."</td>	
+				<td align='center'>".utf8_encode($rowTurnos['Puenom'])."</td>				
+				<td align='center'>".utf8_encode($rowTurnos['Descripcion'])."</td>	
 				<td align='center'>".gmdate("H:i:s", $tiempoEspera)."</td>
 			</tr>
 			";
@@ -538,7 +540,7 @@ else
 			$respuesta['html'].= "
 			<tr class='".$coloFila." find' id='trTurno_".$rowTurnos['Turtur']."'>			
 				<td align='center'><b>".$turno."</b></td>
-				<td>".$rowTurnos['Turtdo']."-".$rowTurnos['Turdoc']."</td>
+				<td>".utf8_encode($rowTurnos['Turtdo'])."-".utf8_encode($rowTurnos['Turdoc'])."</td>
 				<td nowrap>".utf8_encode($rowTurnos['Turnom'])."</td>
 				<td>".utf8_encode(strtoupper($rowTurnos['Sernom']))."</td>
 				<td>".utf8_encode(strtoupper($rowTurnos['Connom']))."</td>
@@ -715,7 +717,7 @@ else
 				<td style='padding-bottom:3px;' colspan='2'>".ucwords(strtolower($nombrePaciente))."</td>
 			</tr>
 			<tr>
-				<td style='padding-bottom:3px;' colspan='2'>Servicio: ".ucwords(strtolower($nomServicio))." ".ucwords(strtolower($nomServicioSecundario))."</td>
+				<td style='padding-bottom:3px;' colspan='2'>Servicio: ".ucwords(strtolower(utf8_encode($nomServicio)))." ".ucwords(strtolower(utf8_encode($nomServicioSecundario)))."</td>
 			</tr>
 			".$nomPiso."
 			<tr>
