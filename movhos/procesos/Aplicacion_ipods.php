@@ -280,7 +280,7 @@ include_once("conex.php");
 //M O D I F I C A C I O N E S                                                                                                                  \\
 //=============================================================================================================================================\\
 //=============================================================================================================================================\\
-// Enero 20 del 2022  - Sebastian Alvarez Barona  
+// Marzo 14 del 2022  - Sebastian Alvarez Barona  
 // Se elimina la función query_articulos_entrega esto porque la que aplicara nutriciones sera la enfermera ya no sera el personal de lactario,
 // una vez borrada esa función se modifico la funcion query_articulos() del archivo movhos.inc.php haciendo que no se aplique alguna nutricion
 // sino se ha entregado y tambien haciendole una union de la misma consulta pero con la validación de que sea que nos traiga articulos de lactario.
@@ -510,7 +510,7 @@ else
   $wusuario=trim($wuser1[1]);
 
      	                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Enero 20 de 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="Marzo 14 de 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
   encabezado("APLICACION DE MEDICAMENTOS",$wactualiz, "clinica");
