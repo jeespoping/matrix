@@ -9,9 +9,10 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2019-10-08';
+			$wactualiz='2022-03-16';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-/**
+/*
+	16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla
 	2019-10-08, Jerson Trujillo:
 		Se coloca utf8_encode en la observacion de la nota al consultarla desde de unix. ya que estaba generando un error a pintar.
  Enero 12 2017 Edwar Jaramillo:
@@ -4174,7 +4175,7 @@ else
 	//-------------------------------------------------------------------------
 	function abrirHce(documento, tipoDoc, historia, ingreso)
 	{
-		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa=hce&origen="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=I&BC=1";
+		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa=hce&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=I&BC=1";
 		window.open(url,'','fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes');
 	}
 	

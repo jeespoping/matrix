@@ -9,6 +9,7 @@ include_once("conex.php");
 //FUNCIONAMIENTO:  consulta principal que trae la estancia de un paciente. movimientos en la  tabla 17 con el campo Eyrtipo ='Recibo'
 //--------------------------------------------------------------------------------------------------------------------------------------------
 // ACTUALIZACIONES
+//	16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
 // --> 2020-03-16: 	Jerson Trujillo, cambian todas la variables ejem datoauxfinal_clave por datoauxfinal_clave2
 //					ya que generaba un error js que decia que las variables no existian
 //2020-01-22, Jerson: Mostrar mensaje de ventana de mantenimiento dependiendo de variables en la root_51
@@ -22,7 +23,7 @@ include_once("conex.php");
 //    cuando se pase a no facturables por la politica y luego se anulen quedaran denuevo en no facturables )
 //
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-$wactualiz='2020-03-16';
+$wactualiz='2022-03-16';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //
 //
@@ -3660,7 +3661,7 @@ else
 		
 		if($("#wdoc").val() != '' && $("#wtip_doc").val() != '')
 		{
-			var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa=hce&origen="+$("#wemp_pmla").val()+"&wcedula="+$("#wdoc").val()+"&wtipodoc="+$("#wtip_doc").val()+"&wdbmhos="+$("#wbasedato_movhos").val()+"&whis="+$("#whistoria").val()+"&wing="+$("#wing").val()+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
+			var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa=hce&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+$("#wdoc").val()+"&wtipodoc="+$("#wtip_doc").val()+"&wdbmhos="+$("#wbasedato_movhos").val()+"&whis="+$("#whistoria").val()+"&wing="+$("#wing").val()+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
 			alto		= screen.availHeight;
 			ventana 	= window.open('','','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
 			ventana.document.open();

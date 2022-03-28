@@ -12,9 +12,10 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2020-05-04';
+			$wactualiz='2022-03-16';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-//  2020-05-04 - Jessica Madrid Mejía:	- Se modifica la función consultarPaciente(), si no encuentra los datos del paciente en cliame,
+//  16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
+//	2020-05-04 - Jessica Madrid Mejía:	- Se modifica la función consultarPaciente(), si no encuentra los datos del paciente en cliame,
 // 										  clisur o idc 000100 busca los datos del paciente en root_000037
 // 										- Para determinar el correo de origen (desde donde se envía la HCE y Ordenes) se modificó la función 
 // 										  consultarEmailEnvio(), si en el maestro de empresas (cliame_000024) no hay un correo de origen 
@@ -611,7 +612,7 @@ else
 			{
 				envioPaciente = "on";
 			}
-			var urlIframe = "HCE_Impresion.php?empresa="+$("#wbasedatoHce").val()+"&wdbmhos="+$("#wbasedatoMovhos").val()+"&origen="+$("#wemp_pmla").val()+"&wcedula="+$("#documento").val()+"&wtipodoc="+$("#tipoDocumento").val()+"&wing="+$("#ingreso").val()+"&wservicio=*&protocolos=0&CLASE=I&enviarCorreo=on&emailEnviarCorreo="+$("#email").val()+"&envioPaciente="+envioPaciente;
+			var urlIframe = "HCE_Impresion.php?empresa="+$("#wbasedatoHce").val()+"&wdbmhos="+$("#wbasedatoMovhos").val()+"&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+$("#documento").val()+"&wtipodoc="+$("#tipoDocumento").val()+"&wing="+$("#ingreso").val()+"&wservicio=*&protocolos=0&CLASE=I&enviarCorreo=on&emailEnviarCorreo="+$("#email").val()+"&envioPaciente="+envioPaciente;
 			var html = "<iframe id='iframeConsultaHCE' src='"+urlIframe+"' style='width:100%;height:80%'></iframe>";
 			
 			$("#divConsulta").html(html);

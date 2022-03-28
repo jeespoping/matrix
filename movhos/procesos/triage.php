@@ -9,9 +9,10 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2022-02-04';
+			$wactualiz='2022-03-16';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-//  2019-06-26 Jerson Trujillo: Se adapta el programa para que soporte dos campos del formulario de triage de la hce, para definir si se da de alta al paciente.              
+//		16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.  
+//		2019-06-26 Jerson Trujillo: Se adapta el programa para que soporte dos campos del formulario de triage de la hce, para definir si se da de alta al paciente.              
 //
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1958,7 +1959,7 @@ else
 			
 			var formTipoOrden 	= '000152'; 
 			var numHistoriaTemp = 'TEMP'+$.trim(respuesta.Historia);		
-			var urlform 		= '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa=hce&origen='+$('#wemp_pmla').val()+'&wdbmhos=movhos&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDoc+'&whis='+numHistoriaTemp+'&wing=1';
+			var urlform 		= '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa=hce&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos=movhos&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDoc+'&whis='+numHistoriaTemp+'&wing=1';
 			
 			turnoTemp = turno.split("-");
 			
@@ -2102,7 +2103,7 @@ else
 			+"</fieldset>";
 			
 			var formTipoOrden 	= '000152';
-			var urlform 		= '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa=hce&origen='+$('#wemp_pmla').val()+'&wdbmhos=movhos&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDoc+'&whis='+historia+'&wing='+ingreso+'';
+			var urlform 		= '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa=hce&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos=movhos&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDoc+'&whis='+historia+'&wing='+ingreso+'';
 			
 			// --> Cargar el iframe
 			$("#divFormularioHce").html("<div align=center>"+infoPaciente+"</div><iframe id='frameFormularioTriage' name='frameFormularioTriage' src='"+urlform+"' height='600px' width='950px' scrolling=yes frameborder='0'><span id='prueba'>Prueba</span></iframe>");
@@ -2394,7 +2395,7 @@ else
 	//----------------------------------------------------------------------------------
 	function imprimirTriage(documento, tipoDoc, historia, ingreso, nombrePaciente, fechaTriage)
 	{
-		var url 	= "/matrix/movhos/procesos/impresionTriage.php?empresa=hce&origen="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&nombrePaciente="+nombrePaciente+"&wfechai="+fechaTriage+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
+		var url 	= "/matrix/movhos/procesos/impresionTriage.php?empresa=hce&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&nombrePaciente="+nombrePaciente+"&wfechai="+fechaTriage+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
 		
 		$("#divImpresionTriage").html("<iframe src='"+url+"' width='750px' height='1200px' scrolling=yes frameborder='0'></iframe>");
 		
@@ -2444,7 +2445,7 @@ else
 		wdbmhos	= (empresa == 01) ? "movhos" : "mhosidc";
 		emp		= (empresa == 01) ? "hce" : "hceidc";
 		
-		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa="+emp+"&origen="+empresa+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos="+wdbmhos+"&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
+		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa="+emp+"&wemp_pmla="+empresa+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos="+wdbmhos+"&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
 		// alto		= screen.availHeight;
 		// ventana 	= window.open('','','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
 		// ventana.document.open();

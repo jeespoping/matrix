@@ -1,14 +1,15 @@
 <?php
 include_once("conex.php");
 
-/**
+/***
 DESCRIPCION:
 AUTOR:				Felipe Alvarez
 FECHA DE CREACION:
 
  --------------------------------------------------------------------------------------------------------------------------------------------
- */$wactualiza='Marzo 10 de 2020';/*
+ **/$wactualiza='(2022-03-16)';/*
  ACTUALIZACIONES
+ 16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla
 Enero 21 2020: Jerson, mostrar codigo propio en el tooltip de los procedimientos de la cx
 Enero 21 2020: Jerson, En el monitor de auditoria/autorizaciones cuando una cx requiere que se autoricen los procedimientos para el segundo
 				responsable por superación de topes, todos estos deben quedar como confirmados para que el usuario de autorizaciones solo le corresponsa ingresar el numero
@@ -13823,7 +13824,7 @@ else
 	//----------------------------------------------------------------------------------
 	function abrirBitacora(historia, ingreso)
 	{
-		var url 	= "/matrix/movhos/procesos/rBitacora.php?ok=0&empresa=movhos&codemp="+$("#wemp_pmla").val()+"&whis="+historia+"&wnin="+ingreso;
+		var url 	= "/matrix/movhos/procesos/rBitacora.php?ok=0&empresa=movhos&wemp_pmla="+$("#wemp_pmla").val()+"&whis="+historia+"&wnin="+ingreso;
 		alto		= screen.availHeight;
 		ventana 	= window.open('','','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
 		ventana.document.open();
@@ -13835,7 +13836,7 @@ else
 	function abrirHce(documento, tipoDoc, historia, ingreso, desde)
 	{
 
-		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa=hce&origen="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
+		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa=hce&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
 		alto		= screen.availHeight;
 		ventana 	= window.open('','','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
 		ventana.document.open();

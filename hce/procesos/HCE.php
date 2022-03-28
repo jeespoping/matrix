@@ -1,4 +1,14 @@
 ﻿<?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+if(isset($_REQUEST['origen']) && !isset($_REQUEST['wemp_pmla'])){
+    $wemp_pmla=$_REQUEST['origen'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+    $wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+    die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
 /**********************************************************************************************************************  
 [DOC]
@@ -12,6 +22,7 @@ include_once("conex.php");
 	   de un paciente, en distintos formularios segun la estructura logica definida en la metadata de la HCE.
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   .16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla
 	   .2022-01-13
 			1. Se cambia de posicion la condicion de if ($tieneCCA) y se agrega el parametro wespecialidad para verificar si la Configuracion Cargo Automatico tiene 
 			asignado una especialidad
@@ -996,7 +1007,7 @@ else
 				echo "<form name='HCE1' action='HCE.php' method=post>";
 				
 				echo "<table border=0 CELLSPACING=0>";
-				echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$origen.".jpg'></td>";
+				echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$wemp_pmla.".jpg'></td>";
 				echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;HISTORIA CLINICA ELECTRONICA HCE&nbsp;&nbsp;<A HREF='/matrix/root/Reportes/DOC.php?files=/var/www/matrix/hce/procesos/HCE.php' target='_blank'>Version 2018-04-05</A></td></tr>";
 				echo "<tr><td id=tipoT03 colspan=2></td></tr>";
 				echo "</table>";
@@ -1014,7 +1025,7 @@ else
 				$row = mysql_fetch_array($err);
 				$wuser=$row[0];
 				echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-				echo "<center><input type='HIDDEN' name= 'origen' value='".$origen."'>";
+				echo "<center><input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 				echo "<center><input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 				echo "<center><input type='HIDDEN' name= 'accion' value='".$accion."'>";
 				$color="#dddddd";
@@ -1040,9 +1051,9 @@ else
 	  			echo "<div id='29'>";
 				$key = substr($user,2,strlen($user));
 				echo "<form name='HCE3' action='HCE.php' method=post>";
-				echo "<meta http-equiv='refresh' content='240;url=/matrix/HCE/procesos/HCE.php?accion=A&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' target='alergias'>";
+				echo "<meta http-equiv='refresh' content='240;url=/matrix/HCE/procesos/HCE.php?accion=A&ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."' target='alergias'>";
 				echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-				echo "<center><input type='HIDDEN' name= 'origen' value='".$origen."'>";
+				echo "<center><input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 				echo "<center><input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 				echo "<center><input type='HIDDEN' name= 'accion' value='".$accion."'>";
 				echo "<center><input type='HIDDEN' name= 'wcedula' value='".$wcedula."'>";
@@ -1089,7 +1100,7 @@ else
 				$query .= "   and pactid = '".$wtipodoc."'";
 				$query .= "   and  pacced = oriced ";
 				$query .= "   and  pactid = oritid ";
-				$query .= "   and oriori = '".$origen."' ";
+				$query .= "   and oriori = '".$wemp_pmla."' ";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$row = mysql_fetch_array($err);
 				if(isset($whisa))
@@ -1233,7 +1244,7 @@ else
 				echo "<script type='text/javascript' src='../../../include/movhos/alertas.js?v=<?=md5_file('../../../include/movhos/alertas.js');?>'></script>";
 				echo "<body style='background-color:#FFDDDD' FACE='ARIAL'>";
 				echo "<script>";
-				echo "llamarIframeAlerta('".$whis."','".$wing."','".$origen."','".$estilosFrame."',false,false,2)";
+				echo "llamarIframeAlerta('".$whis."','".$wing."','".$wemp_pmla."','".$estilosFrame."',false,false,2)";
 				echo "</script>";
 				echo"</form>";
 			break;
@@ -1245,7 +1256,7 @@ else
 	  			$key = substr($user,2,strlen($user));
 				echo "<form name='HCE4' action='HCE.php' method=post>";
 				echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-				echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
+				echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 				echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 				echo "<input type='HIDDEN' name= 'accion' value='".$accion."'>";
 				echo "<input type='HIDDEN' name= 'wcedula' value='".$wcedula."'>";
@@ -1254,7 +1265,7 @@ else
 				$query = "select Orihis,Oriing from root_000037 ";
 				$query .= " where oriced = '".$wcedula."'";
 				$query .= "   and oritid = '".$wtipodoc."'";
-				$query .= "   and oriori = '".$origen."' ";
+				$query .= "   and oriori = '".$wemp_pmla."' ";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$num = mysql_num_rows($err);
 				if ($num>0)
@@ -1350,7 +1361,7 @@ else
 								$wpostit = 99;
 								if(strpos($MENU[$numM][3],"-") !== false)
 									$wpostit = substr($MENU[$numM][3],strpos($MENU[$numM][3],"-")+1);
-								$MENU[$numM][3]="/matrix/hce/Procesos/HCE.php?accion=M&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wformulario=".substr($MENU[$numM][3],2,6)."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wpostit=".$wpostit."";
+								$MENU[$numM][3]="/matrix/hce/Procesos/HCE.php?accion=M&ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wformulario=".substr($MENU[$numM][3],2,6)."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wpostit=".$wpostit."";
 							}
 							else
 							{
@@ -1509,7 +1520,7 @@ else
 				echo "<form name='HCE5' action='HCE.php' method=post>";
 				echo "<body style='background-color:#FFFFFF'  onload='mueveReloj()' FACE='ARIAL'>";
 				echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-				echo "<center><input type='HIDDEN' name= 'origen' value='".$origen."'>";
+				echo "<center><input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 				echo "<center><input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 				echo "<center><input type='HIDDEN' name= 'accion' value='".$accion."'>";
 				//                 0      1      2      3      4      5      6      7      8      9      10     11                12                             13
@@ -1518,7 +1529,7 @@ else
 				$query .= "   and pactid = '".$wtipodoc."'";
 				$query .= "   and pacced = oriced ";
 				$query .= "   and pactid = oritid ";
-				$query .= "   and oriori = '".$origen."' ";
+				$query .= "   and oriori = '".$wemp_pmla."' ";
 				$query .= "   and inghis = orihis ";
 				if(!isset($winga))
 					$query .= "   and inging = oriing ";
@@ -1612,22 +1623,22 @@ else
 				if(!isset($wservicio))
 					$wservicio = "*";
 				
-				$path0="/matrix/HCE/Procesos/HCE.php?accion=W2&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing;
+				$path0="/matrix/HCE/Procesos/HCE.php?accion=W2&ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing;
 				// CENTRO DE IMPRESION
-				$path1="/matrix/HCE/procesos/solimp.php?wemp_pmla=".$origen."&whis=".$whis."&wing=".$wing."&wservicio=".$wservicio;
-				$path2="/matrix/HCE/procesos/HCE_Notas.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wservicio=".$wservicio;
-				$path3="/matrix/HCE/procesos/HCE_Historico.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing;
-				$path4="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing."&protocolos=0&CLASE=C&noCentrar=true";
-				$path5="/matrix/HCE/procesos/HCE_NotasC.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing;
-				$path6="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing."&protocolos=1&CLASE=I";
-				$path7="/matrix/HCE/procesos/envioCorreoHCEOrdenes.php?wemp_pmla=".$origen."&historia=".$whis."&ingreso=".$wing."&esIframe=on";
-				$path8="/matrix/HCE/procesos/visorOrdenes.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing;
+				$path1="/matrix/HCE/procesos/solimp.php?wemp_pmla=".$wemp_pmla."&whis=".$whis."&wing=".$wing."&wservicio=".$wservicio;
+				$path2="/matrix/HCE/procesos/HCE_Notas.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wservicio=".$wservicio;
+				$path3="/matrix/HCE/procesos/HCE_Historico.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing;
+				$path4="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing."&protocolos=0&CLASE=C&noCentrar=true";
+				$path5="/matrix/HCE/procesos/HCE_NotasC.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing;
+				$path6="/matrix/HCE/procesos/HCE_Impresion.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing."&protocolos=1&CLASE=I";
+				$path7="/matrix/HCE/procesos/envioCorreoHCEOrdenes.php?wemp_pmla=".$wemp_pmla."&historia=".$whis."&ingreso=".$wing."&esIframe=on";
+				$path8="/matrix/HCE/procesos/visorOrdenes.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wservicio=".$wservicio."&whis=".$whis."&wing=".$wing;
 				
-				$mostrarVisorResultados = consultarAliasPorAplicacionHCE($conex,$origen,"mostrarVisorResultadosHCE");
+				$mostrarVisorResultados = consultarAliasPorAplicacionHCE($conex,$wemp_pmla,"mostrarVisorResultadosHCE");
 				$visorResultados = "";
 				if($mostrarVisorResultados=="on")
 				{
-					$usuariosHabilitadosVisorResultadosHCE = consultarAliasPorAplicacionHCE($conex,$origen,"usuariosHabilitadosVisorResultadosHCE");
+					$usuariosHabilitadosVisorResultadosHCE = consultarAliasPorAplicacionHCE($conex,$wemp_pmla,"usuariosHabilitadosVisorResultadosHCE");
 					
 					$mostrarVisorUsuario = false;
 					if($usuariosHabilitadosVisorResultadosHCE=="*")
@@ -1651,7 +1662,7 @@ else
 					}
 				}
 				
-				$mostrarEnvioCorreo = consultarAliasPorAplicacionHCE($conex,$origen,"mostrarIconoEnvioHCEyOrdenes");
+				$mostrarEnvioCorreo = consultarAliasPorAplicacionHCE($conex,$wemp_pmla,"mostrarIconoEnvioHCEyOrdenes");
 				$envioCorreo = "";
 				if($mostrarEnvioCorreo=="on")
 				{
@@ -1659,7 +1670,7 @@ else
 				}
 				
 				echo "<tr><td colspan=4 id=tipoL04C><input type='TEXT' name='txtformulario' id='txtformulario' size=1 value='' readonly='readonly' class=tipo3TW><input type='TEXT' name='txttitulo' id='txttitulo' size=45 value='".$wtitulo."' readonly='readonly' class=tipo3T></td><td colspan=2 id=tipoL03C>";
-				echo "<A HREF='#' id='btnModal".$index."' name='btnModal".$index."'  onClick='javascript:mostrarFlotante(\"\",\"nombreIframe\",\"/matrix/HCE/Procesos/HCE.php?accion=W2&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wtitframe=no\",\"".$alto."\",\"".$ancho."\");'><IMG SRC='/matrix/images/medical/HCE/hceR.png' id='ICONOS[1]' title='Otros Registros Asociados'  onMouseMove='tooltipIconos(1)' style='width:40px;'></A>&nbsp;";
+				echo "<A HREF='#' id='btnModal".$index."' name='btnModal".$index."'  onClick='javascript:mostrarFlotante(\"\",\"nombreIframe\",\"/matrix/HCE/Procesos/HCE.php?accion=W2&ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wtitframe=no\",\"".$alto."\",\"".$ancho."\");'><IMG SRC='/matrix/images/medical/HCE/hceR.png' id='ICONOS[1]' title='Otros Registros Asociados'  onMouseMove='tooltipIconos(1)' style='width:40px;'></A>&nbsp;";
 				//echo "<A HREF='#' id='REGISTROS ASOCIADOS' onclick='javascript:activarModalIframe(\"REGISTROS ASOCIADOS\",\"nombreIframe\",\"".$path0."\",\"0\",\"0\");'><IMG SRC='/matrix/images/medical/HCE/hceR.png' id='ICONOS[1]' title='Otros Registros Asociados'  onMouseMove='tooltipIconos(1)'></A>&nbsp;&nbsp;";
 				echo "<A HREF='#' id='VISTA PRELIMINAR' onclick='javascript:activarModalIframe(\"VISTA PRELIMINAR\",\"nombreIframe\",\"".$path1."\",\"0\",\"0\");'><IMG SRC='/matrix/images/medical/HCE/hceP.png' id='ICONOS[2]' title='Vista Preliminar'  onMouseMove='tooltipIconos(2)' style='width:40px;'></A>&nbsp;";
 				echo "<A HREF='#' id='NOTAS' onclick='javascript:activarModalIframe(\"NOTAS\",\"nombreIframe\",\"".$path2."\",\"0\",\"0\");'><IMG SRC='/matrix/images/medical/HCE/hceN.png' id='ICONOS[3]' title='Notas Complementarias'  onMouseMove='tooltipIconos(3)' style='width:40px;'></A>&nbsp;";
@@ -1685,9 +1696,10 @@ else
 					$query .= "   and pactid = '".$wtipodoc."'";
 					$query .= "   and pacced = oriced ";
 					$query .= "   and pactid = oritid ";
-					$query .= "   and oriori = '".$origen."' ";
+					$query .= "   and oriori = '".$wemp_pmla."' ";
 					$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 					$row = mysql_fetch_array($err);
+					print_r($wemp_pmla);
 					if(isset($whis))
 					{
 						$whis=$whis;
@@ -1708,9 +1720,9 @@ else
 					$span1=$row[2];
 					$span2=$row[1];
 					if(isset($LABELSMART))
-						echo "<iframe src='HCE.php?accion=W1&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$wformulario."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wpostit=".$wpostit."&width=".$span1."&LABELSMART=".$LABELSMART."' name='titulos' marginwidth=0 scrolling='no' framespacing='0' frameborder='0' border='0'  border='0' height='".$span2."' width='".$span1."'  marginheiht=0>";
+						echo "<iframe src='HCE.php?accion=W1&ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$wformulario."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wpostit=".$wpostit."&width=".$span1."&LABELSMART=".$LABELSMART."' name='titulos' marginwidth=0 scrolling='no' framespacing='0' frameborder='0' border='0'  border='0' height='".$span2."' width='".$span1."'  marginheiht=0>";
 					else
-						echo "<iframe src='HCE.php?accion=W1&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$wformulario."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wpostit=".$wpostit."&width=".$span1."' name='titulos' marginwidth=0 scrolling='no' framespacing='0' frameborder='0' border='0'  border='0' height='".$span2."' width='".$span1."'  marginheiht=0>";
+						echo "<iframe src='HCE.php?accion=W1&ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$wformulario."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wpostit=".$wpostit."&width=".$span1."' name='titulos' marginwidth=0 scrolling='no' framespacing='0' frameborder='0' border='0'  border='0' height='".$span2."' width='".$span1."'  marginheiht=0>";
 					echo "</iframe>";
 				}
 				else
@@ -1733,11 +1745,11 @@ else
 						echo "<tr><td align=center><br><IMG SRC='/matrix/images/medical/hce/banner".$origen.".png'></td></tr>";*/
 					
 					//este de aca se coloca cuando la imagen tiene un link  y se activa este y se comenta el anterior		
-					if(file_exists("/var/www/matrix/images/medical/hce/banner".$origen.".png"))
+					if(file_exists("/var/www/matrix/images/medical/hce/banner".$wemp_pmla.".png"))
 						{//echo "<tr><td align=center><br><IMG SRC='/matrix/images/medical/hce/banner".$origen.".png'></td></tr>";
-							echo "<tr><td align=center><br><IMG SRC='/matrix/images/medical/hce/bannerotro".$origen.".png'></td></tr>";
+							echo "<tr><td align=center><br><IMG SRC='/matrix/images/medical/hce/bannerotro".$wemp_pmla.".png'></td></tr>";
 							echo "<tr><td align=center><br>
-						    <a href = 'https://forms.gle/6hgxRidfk7xH2xef7' target='_blank'><IMG SRC='/matrix/images/medical/hce/banner".$origen.".png'></a>
+						    <a href = 'https://forms.gle/6hgxRidfk7xH2xef7' target='_blank'><IMG SRC='/matrix/images/medical/hce/banner".$wemp_pmla.".png'></a>
 						   </td></tr>";
 						}
 					echo "</table>";
@@ -1762,14 +1774,14 @@ else
 				echo "<body style='background-color:#E8EEF7;color:#000000;' FACE='ARIAL'>";
 				echo "<div id='1'>";
 				echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-				echo "<center><input type='HIDDEN' name= 'origen' value='".$origen."'>";
+				echo "<center><input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 				echo "<center><input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 				$query = "select Orihis,Oriing from root_000036,root_000037 ";
 				$query .= " where pacced = '".$wcedula."'";
 				$query .= "   and pactid = '".$wtipodoc."'";
 				$query .= "   and  pacced = oriced ";
 				$query .= "   and  pactid = oritid ";
-				$query .= "   and oriori = '".$origen."' ";
+				$query .= "   and oriori = '".$wemp_pmla."' ";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$row = mysql_fetch_array($err);
 				if(isset($whisa))
@@ -1841,7 +1853,7 @@ else
 				echo "<script type='text/javascript' src='../../../include/root/jquery.jTPS.js'></script>";
 				
 				include_once("hce/AlertasFormulariosHCE.php");
-				mostrarAlertaHCE($conex,$origen,$wformulario,$wdbmhos,$whis,$wing,$key);
+				mostrarAlertaHCE($conex,$wemp_pmla,$wformulario,$wdbmhos,$whis,$wing,$key);
 				
 				
 				echo "<script type='text/javascript'>";
@@ -1859,7 +1871,7 @@ else
 				echo "<form name='HCE6' action='HCE.php' method=post>";
 				echo "<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />";
 				echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-				echo "<center><input type='HIDDEN' name= 'origen' value='".$origen."'>";
+				echo "<center><input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 				echo "<center><input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 				echo "<center><input type='HIDDEN' name= 'accion' value='".$accion."'>";
 				echo "<center><input type='HIDDEN' name= 'wformulario' value='".$wformulario."'>";
@@ -2088,7 +2100,7 @@ else
 					echo "<tr><td rowspan=4 align=center><IMG SRC='/MATRIX/images/medical/hce/Recovery.jpg'></IMG></td><td id=tipoL06REC>RECUPERACI&Oacute;N DE INFORMACI&Oacute;N</td></tr>";
 					echo "<tr><td id=tipoL02REC>Usted Ha Digitado Informaci&oacute;n En Este Formulario Que Aun No Ha Grabado</td></tr>";
 					echo "<tr><td id=tipoL02REC>Desea Recuperarla ??</td></tr>";
-					$id="ajaxrecov('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."')";
+					$id="ajaxrecov('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."')";
 					echo "<tr><td id=tipoL06REC><input type='RADIO' name='RECOV' id='RECOV1' value=1 OnClick=".$id.">SI<input type='RADIO' name='RECOV' id='RECOV1' value=2 OnClick=".$id.">NO</td></tr>";
 				}
 				else
@@ -2246,7 +2258,7 @@ else
 
 									include_once("../../cca/procesos/cargos_automaticos_funciones.php");
 									// Validamos si el formulario tiene configuracion de cargo automatico
-									$tieneCCA = validarTieneCca($conex, $origen, $wformulario,"hce");
+									$tieneCCA = validarTieneCca($conex, $wemp_pmla, $wformulario,"hce");
 									$str_consecutivos_formulario = '';
 									$str_consecutivos_formulario_todos = '';
 									
@@ -2279,7 +2291,7 @@ else
 											if($DATA[$i][1] == "Tabla")
 											{
 												$permitirRepetidos = false;
-												$permitiRepetirCodigoCampoTablaHCE = consultarAliasPorAplicacionHCE($conex,$origen,"permitiRepetirCodigoCampoTablaHCE");
+												$permitiRepetirCodigoCampoTablaHCE = consultarAliasPorAplicacionHCE($conex,$wemp_pmla,"permitiRepetirCodigoCampoTablaHCE");
 												if($permitiRepetirCodigoCampoTablaHCE!="")
 												{
 													$permitenRepetidos = explode(",",$permitiRepetirCodigoCampoTablaHCE);
@@ -2433,7 +2445,7 @@ else
 												'movusu'							=> $key,
 												'whis' 								=> $whis,
 												'wing' 								=> $wing,
-												'wemp_pmla'							=> $origen,
+												'wemp_pmla'							=> $wemp_pmla,
 												'wformulario'						=> $wformulario,
 												'wespecialidad'						=> $HCEROL,
 												'wmeddoc'							=> $meddoc,
@@ -2503,7 +2515,7 @@ else
 									
 									
 									include_once("hce/AlertasHCE.php");
-									alertasHCE($conex,$origen,$empresa,$wdbmhos,$wformulario,$whis,$wing,$fecha,$hora,$key);
+									alertasHCE($conex,$wemp_pmla,$empresa,$wdbmhos,$wformulario,$whis,$wing,$fecha,$hora,$key);
 									
 									if($HCECCO!="")
 									{
@@ -2515,7 +2527,7 @@ else
 									}
 									
 									// función definida en include/hce/funcionesHCE.php 
-									actualizarDiagnosticosPaciente($conex,$origen,$empresa,$wdbmhos,$wformulario,$whis,$wing,$fecha,$hora,$key,$cco);
+									actualizarDiagnosticosPaciente($conex,$wemp_pmla,$empresa,$wdbmhos,$wformulario,$whis,$wing,$fecha,$hora,$key,$cco);
 								}
 								elseif($wswfirma == 2)
 									{
@@ -3630,10 +3642,10 @@ else
 											}
 										}
 										//echo $i." ".$items."<br>";
-										$id1="if(grabagrid(".$i.")){ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','".$okGrid."');}";
-										$id2="if(modificagrid(".$i.")){ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','".$okGrid."');}";
-										$id3="borragrid(".$i.");ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','".$okGrid."');";
-										$path="/matrix/hce/reportes/HCE_Grid_History.php?empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wformulario=".$wformulario."&wcons=".$registro[$i][2];
+										$id1="if(grabagrid(".$i.")){ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','".$okGrid."');}";
+										$id2="if(modificagrid(".$i.")){ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','".$okGrid."');}";
+										$id3="borragrid(".$i.");ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','".$okGrid."');";
+										$path="/matrix/hce/reportes/HCE_Grid_History.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&whis=".$whis."&wing=".$wing."&wformulario=".$wformulario."&wcons=".$registro[$i][2];
 										//echo "<td id=tipoL02GRID2><IMG SRC='/matrix/images/medical/HCE/gra.png' onClick=".$id1." /></td><td id=tipoL02GRID2><IMG SRC='/matrix/images/medical/HCE/mod.png' onClick=".$id2." /></td><td id=tipoL02GRID2><IMG SRC='/matrix/images/medical/HCE/del.png' onClick=".$id3." /></td><td id=tipoL02GRID2><IMG SRC='/matrix/images/medical/HCE/lim.png' onClick='limpiagrid(".$i.")' /></td></tr>";
 										echo "<td id='GRIDTT[1]' title='GRABAR' class=tipoL02GRID2 onMouseMove='tooltipGrid(1)' onClick=".$id1."><IMG SRC='/matrix/images/medical/HCE/gra.png'></td><td id='GRIDTT[2]' title='MODIFICAR' class=tipoL02GRID2 onMouseMove='tooltipGrid(2)' onClick=".$id2."><IMG SRC='/matrix/images/medical/HCE/mod.png'></td><td id='GRIDTT[3]' title='BORRAR' class=tipoL02GRID2 onMouseMove='tooltipGrid(3)' onClick=".$id3."><IMG SRC='/matrix/images/medical/HCE/del.png'></td><td id='GRIDTT[4]' title='LIMPIAR' class=tipoL02GRID2 onMouseMove='tooltipGrid(4)' onClick='limpiagrid(".$i.")'><IMG SRC='/matrix/images/medical/HCE/lim.png'><td id='GRIDTT[5]' title='HISTORICO' class=tipoL02GRID2 onMouseMove='tooltipGrid(5)' onclick='javascript:activarModalIframe(\"HISTORICO\",\"nombreIframe\",\"".$path."\",\"0\",\"0\");'><IMG SRC='/matrix/images/medical/HCE/History.png'></td></tr>";
 										$Gdataseg=explode("*",$registro[$i][0]);
@@ -3788,7 +3800,7 @@ else
 											$estado="disabled";
 										else
 											$estado="";
-										$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
+										$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
 										if(isset($RECOVERY) or $registro[$i][0] != $registro[$i][8] and $num1 == 0)
 											echo "<td colspan=".$span." width=".$rwidth." id=tipoL02>".htmlentities($registro[$i][9]).$salto."<textarea name='registro[".$i."][0]' cols=".$ancho." rows=".$alto." ".$estado." id='W".$i."' class=tipo3".$OBL." onDblClick=".$id.">".$registro[$i][0]."</textarea>".$UDM."</td>";
 										else
@@ -3846,7 +3858,7 @@ else
 										$rwidth=(integer)(($width * $span)/$Span);
 										$col=($span * 120) / ($n * 2);
 										$position="T".$i;
-										$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
+										$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
 										echo "<td colspan=".$span." width=".$rwidth." id=tipoL02 align=center>".htmlentities($registro[$i][9]).$salto."<input type='TEXT' name='registro[".$i."][0]' size=".$ancho." maxlength=80 id='T".$i."' value='".htmlentities($registro[$i][0])."'  class=tipo3".$OBL." onClick=".$id.">".$UDM."</td>";
 										$campos += $registro[$i][32];
 										if(isset($completo) and $completo == 1)
@@ -3867,7 +3879,7 @@ else
 										$rwidth=(integer)(($width * $span)/$Span);
 										$col=($span * 120) / ($n * 2);
 										$position="T".$i;
-										$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
+										$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
 										echo "<td colspan=".$span." width=".$rwidth." id=tipoL02 align=center><IMG SRC='/matrix/images/medical/HCE/LUPA.png' alt='BUSQUEDA' onClick=".$id."></td>";
 										$campos += $registro[$i][32];
 										if(isset($completo) and $completo == 1)
@@ -3899,7 +3911,7 @@ else
 											$registro[$i][32]=$n;
 										$faltan=$n - $campos;
 										$position="TIT".$i;
-										$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','2')";
+										$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','2')";
 										if($registro[$i][32] <= $faltan and $faltan > 0)
 										{
 											$span=$registro[$i][32];
@@ -4277,7 +4289,7 @@ else
 										
 										$rwidth=(integer)(($width * $span)/$Span);
 										if(is_numeric($registro[$i][25]))
-											echo "<td colspan=".$span." width=".$rwidth." id=tipoL02 align=center>".$salto."<input type='button' id='btnModal".$i."' name='btnModal".$i."' value='".htmlentities($registro[$i][9])."' onClick='javascript:activarModalIframe(\"".htmlentities($registro[$i][9])."\",\"nombreIframe\",\"/matrix/HCE/Procesos/HCE.php?accion=W1&ok=0&empresa=".$empresa."&origen=".$origen."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$registro[$i][25]."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wtitframe=no&width=".$width."\",\"".$alto."\",\"".$ancho."\");'></td>";
+											echo "<td colspan=".$span." width=".$rwidth." id=tipoL02 align=center>".$salto."<input type='button' id='btnModal".$i."' name='btnModal".$i."' value='".htmlentities($registro[$i][9])."' onClick='javascript:activarModalIframe(\"".htmlentities($registro[$i][9])."\",\"nombreIframe\",\"/matrix/HCE/Procesos/HCE.php?accion=W1&ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wcedula=".$wcedula."&wtipodoc=".$wtipodoc."&wformulario=".$registro[$i][25]."&whis=".$whis."&wing=".$wing."&wsex=".$wsex."&wtitframe=no&width=".$width."\",\"".$alto."\",\"".$ancho."\");'></td>";
 										else
 										{
 											$registro[$i][25]=str_replace("HIS",$whis,$registro[$i][25]);
@@ -4286,7 +4298,7 @@ else
 											$registro[$i][25]=str_replace("TDO",$wtipodoc,$registro[$i][25]);
 											$registro[$i][25]=str_replace("EMP",$empresa,$registro[$i][25]);
 											$registro[$i][25]=str_replace("HOS",$wdbmhos,$registro[$i][25]);
-											$registro[$i][25]=str_replace("ORG",$origen,$registro[$i][25]);
+											$registro[$i][25]=str_replace("ORG",$wemp_pmla,$registro[$i][25]);
 											if($registro[$i][49] == "SMART")
 												@eval($registro[$i][26]);
 											echo "<td colspan=".$span." width=".$rwidth." id=tipoL02 align=center>".$salto."<input type='button' id='btnModal".$i."' name='btnModal".$i."' value='".htmlentities($registro[$i][9])."' onClick='javascript:activarModalIframe(\"".htmlentities($registro[$i][9])."\",\"nombreIframe\",\"".$registro[$i][25]."\",\"".$alto."\",\"".$ancho."\");'></td>";
@@ -4318,7 +4330,7 @@ else
 										$ancho=$registro[$i][36];
 										$span=$registro[$i][32];
 										$rwidth=(integer)(($width * $span)/$Span);
-										$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
+										$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
 										echo "<td bgcolor=#E8EEF7 colspan=".$span." width=".$rwidth." id=tipoL02 align=center>".htmlentities($registro[$i][9]).$salto."<input type='password' name='registro[".$i."][0]' size=".$ancho." maxlength=80 id='T".$i."' value='".htmlentities($registro[$i][0])."' class=tipo3".$OBL." onBlur=".$id.">&nbsp;&nbsp;<div id='TipoL02PMSG'>".$wpassmsg."</div></td>";
 										$campos += $registro[$i][32];	
 										if(isset($completo) and $completo == 1)
@@ -4382,7 +4394,7 @@ else
 										$rwidth=(integer)(($width * $span)/$Span);
 										echo "<td id=tipoL02 colspan=".$span." width=".$rwidth.">".htmlentities($registro[$i][9]).$salto."";
 										$position="M".$i;
-										$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
+										$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
 										if($registro[$i][45] != "on")
 										{
 											echo "<select name='Tselect[".$i."]' id='TS".$i."' OnChange=".$id." class=tipo3>";
@@ -4575,7 +4587,7 @@ else
 													@eval($registro[$i][26]);
 													$err1 = mysql_query($query,$conex);
 													$num1 = mysql_num_rows($err1);
-													$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
+													$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
 													echo "<select name='registro[".$i."][0]' id='S".$i."' class=tipo3".$OBL." onChange=".$id.">";
 													echo "<option value='Seleccione'>Seleccione</option>";
 													if ($num1>0)
@@ -4842,7 +4854,7 @@ else
 										$query .= "   and Usuest = 'on' ";
 										$err2 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 										$row2 = mysql_fetch_array($err2);
-										$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
+										$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','')";
 										if($row2[0] == "off")
 											echo "<tr><td id=tipoL06 colspan=".$span.">Firma Digital : <input type='password' name='firma' size=40 maxlength=80 id='firma' value='".$firma."' class=tipo3 OnBlur=".$id."></td></tr>";
 										else
@@ -4863,14 +4875,14 @@ else
 								{
 									if(!isset($GOK))
 									{
-										$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','2')";
+										$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','2')";
 										echo "<tr><td id=tipoL02 colspan=".$span."><IMG SRC='/matrix/images/medical/HCE/grabar.png' id='gravar' style='vertical-align:middle;' OnClick=".$id." title='RESPALDAR INFORMACI&Oacute;N'><br>RESPALDAR INFORMACI&Oacute;N</td>";
 									}
 									if(!isset($wtipo2cerrado))
 									{
 										if(!isset($configuracionE) or (isset($configuracionE) and strlen($configuracionE) == 0))
 										{
-											$id="ajaxview('19','".$empresa."','".$origen."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','1')";
+											$id="ajaxview('19','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W1','".$items."','".$wsa."','".$wformulario."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$position."','".$wfechaT."','".$whoraT."','".$width."','".$num."','".$WSF."','".$wsinfirma."','".$wfechareg."','".$whorareg."','".$WTIPO."','".$WSS."','1')";
 											//echo "<tr><td id=tipoL09 colspan=".$span."><IMG SRC='/matrix/images/medical/HCE/ok.png' id='logook' style='vertical-align:middle;' OnClick=".$id.">&nbsp;&nbsp;<input type='checkbox' name='ok' id='ok' OnClick=".$id."></td>";
 											echo "<tr><td id=tipoL09 colspan=".$span."><IMG SRC='/matrix/images/medical/HCE/ok.png' id='logook' style='vertical-align:middle;' OnClick=".$id."></td>";
 										}
@@ -5016,7 +5028,7 @@ else
 					$FF[$nfor1]=$wfechaf;
 					echo "<div id='fragment-".$nfor1."' style='overflow:scroll;height:315px' >";
 					echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-					echo "<center><input type='HIDDEN' name= 'origen' value='".$origen."'>";
+					echo "<center><input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 					echo "<center><input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 					echo "<center><input type='HIDDEN' name= 'accion' value='".$accion."'>";
 					echo "<center><input type='HIDDEN' name= 'wformulario' value='".$wformulario."'>";
@@ -5030,7 +5042,7 @@ else
 					$final="F".$nfor1;
 					echo "<tr><td align=left id=tipoL02>Fecha Inicial : </td><td align=center id=tipoL02><input id='FI".$nfor1."' type='text' size='12' maxlength='12' NAME='FI[".$nfor1."]' value='".$FI[$nfor1]."'></td></tr>";
 					echo "<tr><td align=left id=tipoL02>Fecha Final : </td><td align=center id=tipoL02><input id='FF".$nfor1."' type='text' size='12' maxlength='12' NAME='FF[".$nfor1."]' value='".$FF[$nfor1]."'></td></tr>";				
-					$id="ajaxtable('".$nfor2."','".$empresa."','".$origen."','".$wdbmhos."','W3','".$formularios[$i][0]."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$FI[$nfor1]."','".$FF[$nfor1]."','".$nfor1."')";
+					$id="ajaxtable('".$nfor2."','".$empresa."','".$wemp_pmla."','".$wdbmhos."','W3','".$formularios[$i][0]."','".$wcedula."','".$wtipodoc."','".$whis."','".$wing."','".$FI[$nfor1]."','".$FF[$nfor1]."','".$nfor1."')";
 					echo "<tr><td  id=tipoL08 colspan=2><input type='button' name='ENTER' value='CONSULTAR' class=tipo3A id='SQL".$nfor1."' OnClick=".$id."></td></tr>";
 					echo "<tr><td align=center colspan=2>";
 					echo "<div id='".$nfor2."'>";
@@ -5049,7 +5061,7 @@ else
 				$query .= "   and pactid = '".$wtipodoc."'";
 				$query .= "   and  pacced = oriced ";
 				$query .= "   and  pactid = oritid ";
-				$query .= "   and oriori = '".$origen."' ";
+				$query .= "   and oriori = '".$wemp_pmla."' ";
 				$query .= "   and inghis = orihis ";
 				$query .= "   and  inging = oriing ";
 				$query .= "   and ubihis = inghis "; 
@@ -5077,7 +5089,7 @@ else
 				//$queryI .= "   and ".$empresa."_000002.detest='on' "; 
 				$queryI .= "   and ".$empresa."_000002.Dettip != 'Titulo' "; 
 				$queryI .= "   and ".$empresa."_000002.Detpro = ".$empresa."_000001.Encpro "; 
-				imprimir($conex,$empresa,$wdbmhos,$origen,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,1);				
+				imprimir($conex,$empresa,$wdbmhos,$wemp_pmla,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,1);				
 			
 			break;	
 			

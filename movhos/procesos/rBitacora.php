@@ -89,11 +89,12 @@
 
 
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
 
 include_once("root/comun.php");
 
-	$wactualiz = '2014-03-17';
+	$wactualiz = '2022-03-16';
 /**********************************************************************************************************************
 	   PROGRAMA : rbitacora.php
 	   Fecha de Liberación : 2007-11-21
@@ -105,6 +106,8 @@ include_once("root/comun.php");
 
 
 	   REGISTRO DE MODIFICACIONES :
+
+	   16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla
 
 	    .2019-05-27
 			Se comentan ECHOS de queries
@@ -148,7 +151,7 @@ else
 	
 
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'codemp' value='".$codemp."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 
 	//==============================================================================================
 	//para cambiar el fondo de la fila aleatoriamente y asi poder saber cuando responde la consulta,
@@ -322,7 +325,7 @@ else
 					else
 						$tipo="tipo13";
 					$nombre=$row[4]." ".$row[5]." ".$row[6]." ".$row[7];
-					$path="/matrix/movhos/procesos/rBitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&whis=".$row[0]."&whis1=".$whis."&wnin=".$row[1]."&wced=".$wced."&wno1=".$wno1."&wno2=".$wno2."&wap1=".$wap1."&wap2=".$wap2."&wtema=".$wtema."&wfec_i=".$wfec_i."&wfec_f=".$wfec_f;
+					$path="/matrix/movhos/procesos/rBitacora.php?ok=0&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&whis=".$row[0]."&whis1=".$whis."&wnin=".$row[1]."&wced=".$wced."&wno1=".$wno1."&wno2=".$wno2."&wap1=".$wap1."&wap2=".$wap2."&wtema=".$wtema."&wfec_i=".$wfec_i."&wfec_f=".$wfec_f;
 					echo "<tr><td id=".$tipo.">".$row[0]."</td><td id=".$tipo.">".$row[1]."</td><td id=".$tipo.">".$row[2]."</td><td id=".$tipo.">".$row[3]."</td><td id=".$tipo.">".$nombre."</td><td id=".$tipo.">".$row[8]."</td><td id=".$tipo."><A HREF='".$path."'>Editar</A></td></tr>";
 				}
 			}
@@ -383,7 +386,7 @@ else
 		$query .= "   and Inging = '".$wnin."' ";
 		$query .= "   and Inghis = orihis  ";
 		$query .= "   and Inging = oriing  ";
-		$query .= "   and oriori = '".$codemp."'  ";
+		$query .= "   and oriori = '".$wemp_pmla."'  ";
 		$query .= "   and Oriced = Pacced ";
 
 		// .2019-05-27
@@ -430,7 +433,7 @@ else
 		//PARTE CENTRAL DE LA PANTALLA
 		//"/matrix/movhos/procesos/rBitacora.php?ok=0&empresa=".$empresa."&codemp=".$codemp."&wtema=".$wtema;
 		echo "<tr><td bgcolor=#999999 colspan=6 align=center><input type='submit' value='OK'></td></tr>";
-		echo "<tr><td bgcolor=#ffffff colspan=6 align=center><A HREF='/matrix/movhos/procesos/rBitacora.php?ok=99&empresa=".$empresa."&codemp=".$codemp."&wtema=".$wtema."&wfec_i=".$wfec_i."&wfec_f=".$wfec_f."&whis=".$whis."&wced=".$wced."&wno1=".$wno1."&wno2=".$wno2."&wap1=".$wap1."&wap2=".$wap2."'><IMG SRC='/matrix/images/medical/movhos/pac.png' alt='Lista'><br>Retornar a la Lista</A></td></tr></table><br><br></center>";
+		echo "<tr><td bgcolor=#ffffff colspan=6 align=center><A HREF='/matrix/movhos/procesos/rBitacora.php?ok=99&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wtema=".$wtema."&wfec_i=".$wfec_i."&wfec_f=".$wfec_f."&whis=".$whis."&wced=".$wced."&wno1=".$wno1."&wno2=".$wno2."&wap1=".$wap1."&wap2=".$wap2."'><IMG SRC='/matrix/images/medical/movhos/pac.png' alt='Lista'><br>Retornar a la Lista</A></td></tr></table><br><br></center>";
 
 
 		//********************************************************************************************************
