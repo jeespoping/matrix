@@ -1699,7 +1699,7 @@ else
 					$query .= "   and oriori = '".$wemp_pmla."' ";
 					$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 					$row = mysql_fetch_array($err);
-					print_r($wemp_pmla);
+					
 					if(isset($whis))
 					{
 						$whis=$whis;
