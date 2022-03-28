@@ -84,6 +84,11 @@ include_once("conex.php");
 /****************************************************************************************************************************************
  *
  * Modificaciones.
+ * ========================================================================================================================================
+ * 14 de marzo de 2022 - Sebastian alvarez Barona: Se realizan dos funciones, obtenerRonda y updateArtNutricion, cuya funcion es actualizarme
+ * el estado a off de cada articulo seleccionado en dado caso que se haga una devolcion, esto para que el personal de lactario no tenga que ir
+ * a anular manualmente la nutricion sino que cuando se haga devolucion se anule automaticamente.
+ * ========================================================================================================================================
  * Julio 4 de 2019. 	(Edwin MG)  Se hace redondeo de la cantidad del saldo
  * Febrero 12 de 2019 	(Edwin MG)  Cuando no hay conexión a Unix y se carga una minibolsa no se mueve el número de línea del medicamento a devolver
  * Diciembre 12 de 2018 (Jessica) 	Se comenta la validación de pacientes particulares que evita que los productos codificados o minibolsas se desglosen (se facturan sus insumos)
@@ -2467,6 +2472,67 @@ function centroCostosCM()
 		}
 	}
 
+	/** 
+	 * By: Sebastian Alvarez Barona
+	 * Date: 2022-03-14
+	 * Descripcion: Se crea función obtenerRonda para que me traiga la ronda que esta asociada a cada paciente
+	 * en la movhos_000298, esto para llevar control de la anulación automatica.
+	 */
+	function obtenerRonda($historia, $ingreso, $art){
+		global $conex;
+		global $wmovhos;
+
+		$QueryObtenerRonda = 
+				"SELECT 
+					Entron 
+				FROM 
+					{$wmovhos}_000298 
+				WHERE Enthis = '".$historia."' 
+				AND Enting = '".$ingreso."'
+				AND Entart = '".$art['cod']."' 
+				AND Entest = 'on'";
+
+		$resLactario = mysql_query($QueryObtenerRonda,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$QueryObtenerRonda." - ".mysql_error());
+		$wentrega = mysql_num_rows($resLactario);
+
+		if( $wentrega >= 1 ){
+			$rowsEnt = mysql_fetch_array( $resLactario);
+			$valEnt = $rowsEnt['Entron'];
+		}
+
+		return $valEnt;
+	}
+
+	/**
+	 * By: Sebastian Alvarez Barona
+	 * Date: 2022-03-14
+	 * Descripcion: Se crea funcion uodateArtNutricion para hacer que cuando se de en el boton aceptar cuando se va a procesar la devolucion
+	 * haga un update a la tabla movhos_000298 buscando por historia, ingreso, ronda, fecha actual y articulo que si el estado esta en on lo cambie por off
+	 * que quiere decir que esta anulado.  
+	 */
+	function updateArtNutricion($historia, $ingreso, $art)
+	{
+		global $conex;
+		global $wmovhos;
+
+		$ronda = obtenerRonda($historia, $ingreso, $art);
+
+		$queryEntregaNutricionUpdate = 
+				"UPDATE
+					{$wmovhos}_000054, {$wmovhos}_000298 E
+				SET 
+					E.Entest = 'off'
+				WHERE E.Enthis = '".$historia."'
+				AND E.Enting = '".$ingreso."'
+				AND E.Entart = '".$art['cod']."'
+				AND E.Entido = Kadido
+				AND E.Entron = '".$ronda."'
+				AND E.Entest = 'on'";
+
+	$resanu = mysql_query($queryEntregaNutricionUpdate,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$queryEntregaNutricionUpdate." - ".mysql_error());
+
+	}
+
 /**
  * PROGRAMA DE DEVOLUCIÓN DE ARTÍCULOS DE UN PACIENTE
  *
@@ -2566,6 +2632,9 @@ $wmovhos 	= consultarAliasPorAplicacion( $conex, $emp, "movhos" );
 
 $serviciofarmaceutico = centroCostosSF();
 $centraldemezclas	  = centroCostosCM();
+
+$wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
+
 //echo $serviciofarmaceutico; echo $centraldemezclas;
 
 if(!isset($_SESSION['user']))
@@ -2578,7 +2647,7 @@ else
 	//modificacion 2007-11-21 pregunto si se puede utilizar el programa, se restringen unas horas en la tabla 50 de root
 
 	$horario='';
-	$wactualiz =  "2018-12-12";
+	$wactualiz =  "14 de marzo de 2022";
 	if (ConsultarHorario($horario, $emp))
 	{
 
@@ -3101,6 +3170,12 @@ else
 											}
 											else
 											{
+
+												if($wactivolactario == 'on')
+												{
+													$art_nutricion = updateArtNutricion($historia, $pac['ing'], $array[$i]['art']);	
+												}
+
 												$array[$i]['cco'][$j]['fueA']['msg']="LA DEVOLUCIÓN FUE REALIZADA CON EXITO.<br><IMG SRC='/matrix/images/medical/root/feliz.ico'>";
 												$array[$i]['cco'][$j]['fueA']['class'] = "exito";
 											}
@@ -3310,6 +3385,11 @@ else
 											}
 											else
 											{
+												if($wactivolactario == 'on')
+												{
+													$art_nutricion = updateArtNutricion($historia, $pac['ing'], $array[$i]['art']);	
+												}
+												
 												$array[$i]['cco'][$j]['fueS']['msg']="LA DEVOLUCIÓN FUE REALIZADA CON EXITO <br><IMG SRC='/matrix/images/medical/root/feliz.ico'>";
 												$array[$i]['cco'][$j]['fueS']['class'] = "exito";
 											}
@@ -4078,6 +4158,11 @@ else
 											}
 											else
 											{
+												if($wactivolactario == 'on')
+												{
+													$art_nutricion = updateArtNutricion($historia, $pac['ing'], $array[$i]['art']);	
+												}
+
 												$array[$i]['cco'][$j]['fueA']['msg']="LA DEVOLUCIÓN FUE REALIZADA CON EXITO.<br><IMG SRC='/matrix/images/medical/root/feliz.ico'>";
 												$array[$i]['cco'][$j]['fueA']['class'] = "exito";
 											}
@@ -4288,6 +4373,11 @@ else
 											}
 											else
 											{
+												if($wactivolactario == 'on')
+												{
+													$art_nutricion = updateArtNutricion($historia, $pac['ing'], $array[$i]['art']);	
+												}
+
 												$array[$i]['cco'][$j]['fueS']['msg']="LA DEVOLUCIÓN FUE REALIZADA CON EXITO <br><IMG SRC='/matrix/images/medical/root/feliz.ico'>";
 												$array[$i]['cco'][$j]['fueS']['class'] = "exito";
 											}

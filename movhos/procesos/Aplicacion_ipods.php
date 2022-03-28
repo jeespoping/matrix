@@ -279,6 +279,12 @@ include_once("conex.php");
 //=============================================================================================================================================\\
 //M O D I F I C A C I O N E S                                                                                                                  \\
 //=============================================================================================================================================\\
+//=============================================================================================================================================\\
+// Enero 20 del 2022  - Sebastian Alvarez Barona  
+// Se elimina la función query_articulos_entrega esto porque la que aplicara nutriciones sera la enfermera ya no sera el personal de lactario,
+// una vez borrada esa función se modifico la funcion query_articulos() del archivo movhos.inc.php haciendo que no se aplique alguna nutricion
+// sino se ha entregado y tambien haciendole una union de la misma consulta pero con la validación de que sea que nos traiga articulos de lactario.
+//=============================================================================================================================================\\
 // Enero 11 del 2022 Marlon Osorio	 -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico
 //=============================================================================================================================================\\
 // Diciembre 29 del 2021  - Se le adiciona una consulta a la función query_articulos_entrega() para que cuando un articulo sea entregado aparezca 
@@ -1534,342 +1540,6 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 
 	//Se modifico la consulta para validar que el articulo fue entragado
 
-	function query_articulos_entrega($whis, $wing, $wfecha, &$res, $cco = '%' )
-     {
-	  global $conex;
-	  global $wbasedato;
-	  global $wcenmez;
-	  global $wemp_pmla;
-	  global $whora_par_actual;
-	  global $wfecha_a_buscar;
-	  global $wactivolactario;
-
-	  $whora_a_buscar  = $whora_par_actual;
-
-	  if( empty( $wfecha_a_buscar ) ){
-		$wfecha_a_buscar = $wfecha;
-	  }
-
-	  if ($whora_par_actual=="24")
-	     {
-		  $whora_a_buscar="00";
-		  //$dia = time()+(1*24*60*60);   //Resta un dia; (2*24*60*60) te resta dos y //asi...
-          //$wfecha_a_buscar = date('Y-m-d', $dia); //Formatea dia
-		 }
-
-
-	  //            Fecha Kardex| Articulo y Nom| Unidad|Fecha  |Hora               |Equiva - |Dosis a|Unidad   |Suspendido|Condicion| Via de |Catidad de   |Observa|Alertas|       | Enviar
-	  //                        |               |   de  |  de   | de                |lencia en|Aplicar|de Dosis |          |         | Admon  |Fracciones X |ciones |       |       |
-	  //                        |               | Manejo|Inicio |Inicio             | Horas   |       |a Aplicar|          |         |        |Uni.de Manejo|       |       |       |
-
-	  // DE LA MISMA *** RONDA ***
-	  //Traigo los Kardex GENERADOS con articulos de DISPENSACION que NO sean del LACTARIO y que sean de la RONDA especificada
-	  // $q = " SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco "
-	      // ."   FROM ".$wbasedato."_000054 A, ".$wbasedato."_000026 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D,".$wbasedato."_000011 E "
-	      // ."  WHERE kadhis  = '".$whis."'"
-	      // ."    AND kading  = '".$wing."'"
-	      // ."    AND kadfec  = '".$wfecha_a_buscar."'"
-	      // ."    AND kadest  = 'on' "
-	      // ."    AND kadart  = artcod "
-	      // ."    AND kadori  = 'SF' "
-	      // ."    AND kadper  = percod "
-	      // ."    AND kadhis  = karhis "
-	      // ."    AND kading  = karing "
-	      // ."    AND karcon  = 'on' "
-	      // ."    AND karcco  = kadcco "
-	      // ."    AND D.fecha_data = kadfec "
-	      // ."    AND karcco  = ccocod "
-          // ."    AND ccolac != 'on' "           //Diferente del Lactario
-		  // ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_a_buscar',':00:00')),perequ) = 0 "
-		  // ." UNION "
-		  //Traigo los Kardex GENERADOS con articulos de DISPENSACION que sean del CCo="*" y que sean de la RONDA especificada
-	 $q = " SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco,Kadfcn,Kadhcn,Kaducn "
-	      ."   FROM ".$wbasedato."_000054 A, ".$wbasedato."_000026 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D "
-	      ."  WHERE kadhis  = '".$whis."'"
-	      ."    AND kading  = '".$wing."'"
-	      ."    AND kadfec  = '".$wfecha."'"
-	      ."    AND kadest  = 'on' "
-	      ."    AND kadart  = artcod "
-	      ."    AND kadori  = 'SF' "
-	      ."    AND kadper  = percod "
-	      ."    AND kadhis  = karhis "
-	      ."    AND kading  = karing "
-	      ."    AND karcon  = 'on' "
-	      ."    AND karcco  = kadcco "
-	      ."    AND D.fecha_data = kadfec "
-	      ."    AND karcco  LIKE '$cco' "
-		  ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) = 0 ";
-		  		if( $wactivolactario == 'on' )
-		  		{
-					$q .= "	AND A.Kadart = (SELECT 
-								Entart
-							FROM
-								movhos_000298
-							WHERE
-								A.Kadhis = Enthis AND A.Kading = Enting
-									AND A.Kadart = Entart
-									AND Entest = 'on') ";
-		  		}
-			$q .= " UNION "
-	      //Traigo los Kardex GENERADOS con articulos de CENTRAL DE MEZCLAS y que sean de la RONDA especificada
-		  ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco,Kadfcn,Kadhcn,Kaducn  "
-	      ."   FROM ".$wbasedato."_000054 A, ".$wcenmez."_000002 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D "
-	      ."  WHERE kadhis  = '".$whis."'"
-	      ."    AND kading  = '".$wing."'"
-	      ."    AND kadfec  = '".$wfecha."'"
-	      ."    AND kadest  = 'on' "
-	      ."    AND kadart  = artcod "
-	      ."    AND kadori  = 'CM' "
-	      ."    AND kadper  = percod "
-	      ."    AND kadhis  = karhis "
-	      ."    AND kading  = karing "
-	      ."    AND karcon  = 'on' "
-	      ."    AND karcco  = kadcco "
-		  ."    AND karcco  LIKE '$cco' "
-	      ."    AND D.fecha_data = kadfec "
-	      ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) = 0 "
-		  ." UNION "
-		  //Traigo los Kardex en TEMPORAL (000060) con articulos de DISPENSACION que NO sean del LACTARIO y que sean de la RONDA especificada
-		  // ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia,  Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco "
-	      // ."   FROM ".$wbasedato."_000060 A, ".$wbasedato."_000026 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D,".$wbasedato."_000011 E "
-	      // ."  WHERE kadhis  = '".$whis."'"
-	      // ."    AND kading  = '".$wing."'"
-	      // ."    AND kadfec  = '".$wfecha."'"
-	      // ."    AND kadest  = 'on' "
-	      // ."    AND kadart  = artcod "
-	      // ."    AND kadori  = 'SF' "
-	      // ."    AND kadper  = percod "
-	      // ."    AND kadhis  = karhis "
-	      // ."    AND kading  = karing "
-	      // ."    AND karcon  = 'on' "
-	      // ."    AND karcco  = kadcco "
-	      // ."    AND D.fecha_data = kadfec "
-	      // ."    AND karcco  = ccocod "
-          // ."    AND ccolac != 'on' "
-		  // ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_a_buscar',':00:00')),perequ) = 0 "
-		  // ." UNION "
-		  //Traigo los Kardex en TEMPORAL (000060) con articulos de DISPENSACION que SEAN del CCO="*" y que sean de la RONDA especificada
-	      ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco,Kadfcn,Kadhcn,Kaducn  "
-	      ."   FROM ".$wbasedato."_000060 A, ".$wbasedato."_000026 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D "
-	      ."  WHERE kadhis  = '".$whis."'"
-	      ."    AND kading  = '".$wing."'"
-	      ."    AND kadfec  = '".$wfecha."'"
-	      ."    AND kadest  = 'on' "
-	      ."    AND kadart  = artcod "
-	      ."    AND kadori  = 'SF' "
-	      ."    AND kadper  = percod "
-	      ."    AND kadhis  = karhis "
-	      ."    AND kading  = karing "
-	      ."    AND karcon  = 'on' "
-	      ."    AND karcco  = kadcco "
-	      ."    AND D.fecha_data = kadfec "
-	      ."    AND karcco  LIKE '$cco' "
-		  ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) = 0 "
-		  ." UNION "
-		  //Traigo los Kardex en TEMPORAL (000060) con articulos de CENTRAL DE MEZCLAS y que sean de la RONDA especificada
-	      ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco,Kadfcn,Kadhcn,Kaducn  "
-	      ."   FROM ".$wbasedato."_000060 A, ".$wcenmez."_000002 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D "
-	      ."  WHERE kadhis  = '".$whis."'"
-	      ."    AND kading  = '".$wing."'"
-	      ."    AND kadfec  = '".$wfecha."'"
-	      ."    AND kadest  = 'on' "
-	      ."    AND kadart  = artcod "
-	      ."    AND kadori  = 'CM' "
-	      ."    AND kadper  = percod "
-	      ."    AND kadhis  = karhis "
-	      ."    AND kading  = karing "
-	      ."    AND karcon  = 'on' "
-	      ."    AND karcco  = kadcco "
-		  ."    AND karcco  LIKE '$cco' "
-	      ."    AND D.fecha_data = kadfec "
-	      ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) = 0 "
-
-		  ."  UNION "
-
-		  // ****** A   N E C E S I D A D ******
-		  //Traigo los Kardex GENERADOS con articulos de DISPENSACION que NO sean del LACTARIO y que sean A NECESIDAD
-		  // ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ  , Kadcfr, Kadufr  , Kadsus   , Kadcnd  , Kadvia , Kadcma      , Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco "
-	      // ."   FROM ".$wbasedato."_000054 A, ".$wbasedato."_000026 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D,".$wbasedato."_000011 E,".$wbasedato."_000042 F "
-	      // ."  WHERE kadhis  = '".$whis."'"
-	      // ."    AND kading  = '".$wing."'"
-	      // ."    AND kadfec  = '".$wfecha."'"
-	      // ."    AND kadest  = 'on' "
-	      // ."    AND kadart  = artcod "
-	      // ."    AND kadori  = 'SF' "
-	      // ."    AND kadper  = percod "
-	      // ."    AND kadhis  = karhis "
-	      // ."    AND kading  = karing "
-	      // ."    AND karcon  = 'on' "
-	      // ."    AND karcco  = kadcco "
-	      // ."    AND D.fecha_data = kadfec "
-	      // ."    AND karcco  = ccocod "
-          // ."    AND ccolac != 'on' "
-		  // ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_a_buscar',':00:00')),perequ) <> 0 "
-		  // ."    AND kadcnd  = concod "
-		  // ."    AND contip  = 'AN' "
-		  // ."    AND kadart  NOT IN ( SELECT kadart  "                               //2011-09-14
-	                              // ."   FROM ".$wbasedato."_000054 G"                //    ""
-	                              // ."  WHERE kadhis   = '".$whis."'"                 //    ""
-                         	      // ."    AND kading   = '".$wing."'"                 //    ""
-	                              // ."    AND kadfec   = '".$wfecha."'"               //    ""
-	                              // ."    AND kadest   = 'on' "                       //    ""
-	                              // ."    AND kadsus  != 'on' "                       //    ""
-								  // ."    AND A.kadart = G.kadart "                   //    ""
-	                              // ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_a_buscar',':00:00')),perequ) = 0 ) "
-		// ." UNION "
-		  //Traigo los Kardex GENERADOS con articulos de DISPENSACION que SEAN del CCO="*" y que sean A NECESIDAD
-	      ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco,Kadfcn,Kadhcn,Kaducn "
-	      ."   FROM ".$wbasedato."_000054 A, ".$wbasedato."_000026 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D, ".$wbasedato."_000042 F "
-	      ."  WHERE kadhis  = '".$whis."'"
-	      ."    AND kading  = '".$wing."'"
-	      ."    AND kadfec  = '".$wfecha."'"
-	      ."    AND kadest  = 'on' "
-	      ."    AND kadart  = artcod "
-	      ."    AND kadori  = 'SF' "
-	      ."    AND kadper  = percod "
-	      ."    AND kadhis  = karhis "
-	      ."    AND kading  = karing "
-	      ."    AND karcon  = 'on' "
-	      ."    AND karcco  = kadcco "
-	      ."    AND D.fecha_data = kadfec "
-	      ."    AND karcco  LIKE '$cco' "
-		  ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) <> 0 "
-		  ."    AND kadcnd = concod "
-		  ."    AND contip = 'AN' "
-		  ."    AND kadart  NOT IN ( SELECT kadart  "                               //2011-09-14
-	                              ."   FROM ".$wbasedato."_000054 G"
-	                              ."  WHERE kadhis   = '".$whis."'"
-                         	      ."    AND kading   = '".$wing."'"
-	                              ."    AND kadfec   = '".$wfecha."'"
-	                              ."    AND kadest   = 'on' "
-	                              ."    AND kadsus  != 'on' "
-								  ."    AND A.kadart = G.kadart "
-	                              ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) = 0 ) "
-		  ." UNION "
-	      //Traigo los Kardex GENERADOS con articulos de CENTRAL DE MEZCLAS y que sean A NECESIDAD
-	      ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco,Kadfcn,Kadhcn,Kaducn  "
-	      ."   FROM ".$wbasedato."_000054 A, ".$wcenmez."_000002 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D,".$wbasedato."_000042 E "
-	      ."  WHERE kadhis  = '".$whis."'"
-	      ."    AND kading  = '".$wing."'"
-	      ."    AND kadfec  = '".$wfecha."'"
-	      ."    AND kadest  = 'on' "
-	      ."    AND kadart  = artcod "
-	      ."    AND kadori  = 'CM' "
-	      ."    AND kadper  = percod "
-	      ."    AND kadhis  = karhis "
-	      ."    AND kading  = karing "
-	      ."    AND karcon  = 'on' "
-	      ."    AND karcco  = kadcco "
-		  ."    AND karcco  LIKE '$cco' "
-	      ."    AND D.fecha_data = kadfec "
-	      ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_a_buscar',':00:00')),perequ) <> 0 "
-		  ."    AND kadcnd = concod "
-		  ."    AND contip = 'AN' "
-		  ."    AND kadart  NOT IN ( SELECT kadart  "                               //2011-09-14
-	                              ."   FROM ".$wbasedato."_000054 G"
-	                              ."  WHERE kadhis   = '".$whis."'"
-                         	      ."    AND kading   = '".$wing."'"
-	                              ."    AND kadfec   = '".$wfecha."'"
-	                              ."    AND kadest   = 'on' "
-	                              ."    AND kadsus  != 'on' "
-								  ."    AND A.kadart = G.kadart "
-	                              ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) = 0 ) "
-		  ."  UNION "
-		  //Traigo los Kardex en TEMPORAL (000060) con articulos de DISPENSACION que NO sean del LACTARIO y que sean A NECESIDAD
-	      // ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco  "
-	      // ."   FROM ".$wbasedato."_000060 A, ".$wbasedato."_000026 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D,".$wbasedato."_000011 E, ".$wbasedato."_000042 F "
-	      // ."  WHERE kadhis  = '".$whis."'"
-	      // ."    AND kading  = '".$wing."'"
-	      // ."    AND kadfec  = '".$wfecha."'"
-	      // ."    AND kadest  = 'on' "
-	      // ."    AND kadart  = artcod "
-	      // ."    AND kadori  = 'SF' "
-	      // ."    AND kadper  = percod "
-	      // ."    AND kadhis  = karhis "
-	      // ."    AND kading  = karing "
-	      // ."    AND karcon  = 'on' "
-	      // ."    AND karcco  = kadcco "
-	      // ."    AND D.fecha_data = kadfec "
-	      // ."    AND karcco  = ccocod "
-          // ."    AND ccolac != 'on' "
-		  // ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_a_buscar',':00:00')),perequ) <> 0 "
-		  // ."    AND kadcnd = concod "
-		  // ."    AND contip = 'AN' "
-		  // ."    AND kadart  NOT IN ( SELECT kadart  "                               //2011-09-14
-	                              // ."   FROM ".$wbasedato."_000054 G"
-	                              // ."  WHERE kadhis   = '".$whis."'"
-                         	      // ."    AND kading   = '".$wing."'"
-	                              // ."    AND kadfec   = '".$wfecha."'"
-	                              // ."    AND kadest   = 'on' "
-	                              // ."    AND kadsus  != 'on' "
-								  // ."    AND A.kadart = G.kadart "
-	                              // ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha',' ','$whora_a_buscar',':00:00')),perequ) = 0 ) "
-		  // ." UNION "
-		  //Traigo los Kardex en TEMPORAL (000060) con articulos de DISPENSACION que SEAN del CCO="*" y que sean A NECESIDAD
-		  ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco,Kadfcn,Kadhcn,Kaducn  "
-	      ."   FROM ".$wbasedato."_000060 A, ".$wbasedato."_000026 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D, ".$wbasedato."_000042 F "
-	      ."  WHERE kadhis  = '".$whis."'"
-	      ."    AND kading  = '".$wing."'"
-	      ."    AND kadfec  = '".$wfecha."'"
-	      ."    AND kadest  = 'on' "
-	      ."    AND kadart  = artcod "
-	      ."    AND kadori  = 'SF' "
-	      ."    AND kadper  = percod "
-	      ."    AND kadhis  = karhis "
-	      ."    AND kading  = karing "
-	      ."    AND karcon  = 'on' "
-	      ."    AND karcco  = kadcco "
-	      ."    AND D.fecha_data = kadfec "
-	      ."    AND karcco  LIKE '$cco' "
-		  ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) <> 0 "
-		  ."    AND kadcnd = concod "
-		  ."    AND contip = 'AN' "
-		  ."    AND kadart  NOT IN ( SELECT kadart  "                                 //2011-09-14
-	                              ."   FROM ".$wbasedato."_000054 G"
-	                              ."  WHERE kadhis   = '".$whis."'"
-                         	      ."    AND kading   = '".$wing."'"
-	                              ."    AND kadfec   = '".$wfecha."'"
-	                              ."    AND kadest   = 'on' "
-	                              ."    AND kadsus  != 'on' "
-								  ."    AND A.kadart = G.kadart "
-	                              ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) = 0 ) "
-		  ." UNION "
-		  //Traigo los Kardex en TEMPORAL (000060) con articulos de CENTRAL DE MEZCLAS y que sean A NECESIDAD
-	      ." SELECT A.fecha_data, kadart, artcom, kaduma, kadfin, substr(kadhin,1,2), perequ, Kadcfr, Kadufr, Kadsus, Kadcnd, Kadvia, Kadcma, Kadobs, Karale, Kadper, Kadess, Kaddma, Kaddia, Kaddan, Kadfum, Kadhum, Kadido, Kadfra, Kadfcf, Kadhcf, Karhco,Kadfcn,Kadhcn,Kaducn  "
-	      ."   FROM ".$wbasedato."_000060 A, ".$wcenmez."_000002 B, ".$wbasedato."_000043 C,".$wbasedato."_000053 D,".$wbasedato."_000042 E "
-	      ."  WHERE kadhis  = '".$whis."'"
-	      ."    AND kading  = '".$wing."'"
-	      ."    AND kadfec  = '".$wfecha."'"
-	      ."    AND kadest  = 'on' "
-	      ."    AND kadart  = artcod "
-	      ."    AND kadori  = 'CM' "
-	      ."    AND kadper  = percod "
-	      ."    AND kadhis  = karhis "
-	      ."    AND kading  = karing "
-	      ."    AND karcon  = 'on' "
-	      ."    AND karcco  = kadcco "
-		  ."    AND karcco  LIKE '$cco' "
-	      ."    AND D.fecha_data = kadfec "
-	      ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) <> 0 "
-		  ."    AND kadcnd  = concod "
-		  ."    AND contip  = 'AN' "
-		  ."    AND kadart  NOT IN ( SELECT kadart  "                                  //2011-09-14
-	                              ."   FROM ".$wbasedato."_000054 G"
-	                              ."  WHERE kadhis   = '".$whis."'"
-                         	      ."    AND kading   = '".$wing."'"
-	                              ."    AND kadfec   = '".$wfecha."'"
-	                              ."    AND kadest   = 'on' "
-	                              ."    AND kadsus  != 'on' "
-								  ."    AND A.kadart = G.kadart "
-	                              ."    AND MOD(TIMESTAMPDIFF(HOUR,CONCAT(kadfin,' ',kadhin),CONCAT('$wfecha_a_buscar',' ','$whora_a_buscar',':00:00')),perequ) = 0 ) "
-		  ."  ORDER BY 6 ";
-
-		  //On
-		//   echo $q."<br>";
-		//   die();
-	
-	  $res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-	}
 
   //============================================================================================================================
   //Termina la modificacion del Mayo 26 de 2011
@@ -1983,23 +1653,17 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 				}
 				else{
 					// $ccoQueryArts = '1120';
-					$ccoQueryArts = consultarCcoLactario( $conex, $wbasedato );
+					$ccoQueryArts = consultarCcoLactarioUnificado( $conex, $wbasedato );
 				}
 
-				if( esUsuarioLactario( $conex, $wbasedato, $wusuario ) )
-				{
-					query_articulos_entrega($whis, $wing, $wfecha_actual, $res1, $ccoQueryArts );
-				}
-				else
-				{
+				
 					query_articulos($whis, $wing, $wfecha_actual, $res1, $ccoQueryArts );
-				}
+				
 
 
 			   $hoyNoConfirmado = false;	//Hoy no confimado
 
 			   //Valido si tiene medicamentos para la RONDA o A NECESIDAD
-			   //query_articulos_entrega($whis, $wing, $wfecha_actual, $res1, $ccoQueryArts );
 			   $num1 = mysql_num_rows($res1);
 			   $wreg[0]=0;
 			   $wkardex_Actualizado="Hoy";                             //Julio 21 de 2011
@@ -2071,16 +1735,9 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 				   $dia = 1*24*60*60;   //Te resta un dia. (2*24*60*60) te resta dos y //asi...
 				   $wayer = date('Y-m-d', strtotime( $wfecha_actual." 00:00:00" )- $dia ); //Formatea dia
 
-				   	// if( esUsuarioLactario( $conex, $wbasedato, $wusuario ) )
-					// {
-					// 	query_articulos_entrega($whis, $wing, $wfecha_actual, $res, $ccoQueryArts );
-					// }
-					// else
-					// {
-					// 	query_articulos($whis, $wing, $wfecha_actual, $res, $ccoQueryArts );
-					// }
+				   	
 
-				   query_articulos_entrega($whis, $wing, $wayer, $res1, $ccoQueryArts );
+					query_articulos($whis, $wing, $wayer, $res1, $ccoQueryArts );
 				   $num1 = mysql_num_rows($res1);
 
 				   /********************************************************************************
@@ -3254,7 +2911,7 @@ function validar_ipods($wcco)
 			$ccoQueryArts = '*';
 		}
 		else{
-			$ccoQueryArts = consultarCcoLactario( $conex, $wbasedato );
+			$ccoQueryArts = consultarCcoLactarioUnificado( $conex, $wbasedato );
 		}
 
 		$wok=estaAplicadoCcoPorRonda( trim($wcc[0]), $wfec_act, $wrondaAnterior, $habitacionesFaltantes, $ccoQueryArts );
@@ -3283,28 +2940,79 @@ function validar_ipods($wcco)
 //=========================================================================================================
 
 //===========================================================================================================================================
-function esLactarioEntregado( $conex, $wbasedato, $codart, $wfecha_actual, $whis, $wing )
-{
-	/**
-	 * Primero se identifican los articulos y se decide hacia donde va
-	 */
-	$q = "
-		  SELECT	c.Entest entregado
-			FROM	{$wbasedato}_000054 a, {$wbasedato}_000053 b, {$wbasedato}_000298 c, {$wbasedato}_000068 d
-		   WHERE	a.Kadhis = '{$whis}'
-			 AND	a.Kading = '{$wing}'
-			 AND	a.Kadart = '{$codart}'
-			 AND	a.Kadfec = '{$wfecha_actual}'
-			 AND	a.Kadhis = b.Karhis
-			 AND	a.Kading = b.Karing
-			 AND	a.Kadart = d.Arkcod
-			 AND	d.Arktip = 'LC'
-			 AND	a.Kadart = c.Entart
-			";
-	$res1 = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
-	$wreg = mysql_fetch_array($res1);
 
-	return ($wreg == 'on' ? true : false);
+/** 
+ * By: Sebastian Alvarez Barona
+ * Date: 2022-02-10
+ * Descripcion : Se crea función para preguntar si un articulo es de lactario 
+*/
+function articuloLactario($CodigoArticulo)
+{
+	global $conex;
+	global $wbasedato;
+	global $wemp_pmla;
+
+
+	$QueryArticuloLactario = "SELECT  
+				Arktip 
+			FROM 
+				".$wbasedato."_000068 
+			WHERE 
+				Arkcod = '".$CodigoArticulo."'
+				AND Arktip = 'LC'";
+	
+	$resArticuloLactario = mysql_query($QueryArticuloLactario,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$QueryArticuloLactario." - ".mysql_error());
+	$wLactarioArticulo = mysql_num_rows($resArticuloLactario);
+
+	return $wLactarioArticulo;
+	
+}
+
+
+/**
+ * By: Sebastian Alvarez Barona
+ * Date: 2022-02-10
+ * Descripcion: Se valida si la nutricion no ha sido entregada saldra un mensaje
+ * que diga pendiente por entregar
+ */
+function esLactarioEntregado($CodigoArticulo, $whis, $wing)
+{
+	global $conex;
+	global $wbasedato;
+	global $wemp_pmla;
+	global $whora_par_actual;
+	global $whora_a_grabar;
+
+	/** le pasamos la ronda actual a la variabe $whora_a_grabar para luego darle un formato especifico de la movhos_000298 16:00 - PM
+	 * Se hizo para poder diferenciar el mensaje de pendiente de entrega cuando existe el mismo articulo a un mismo paciente.
+	 */
+	$whora_a_grabar = gmdate( "H:00 - A", $whora_par_actual*3600 );
+
+	$QueryLactarioEntregado = "SELECT 
+			Entest
+		FROM
+			".$wbasedato."_000298, ".$wbasedato."_000054 A, ".$wbasedato."_000068
+		WHERE
+		Enthis = '".$whis."' 
+				AND	Arkcod = '".$CodigoArticulo."'
+				AND A.Kadart = Arkcod
+				AND Enting = '".$wing."'
+				AND A.Kadart = Entart
+				AND Entfec = '".date("y-m-d")."'
+				AND Entido = A.Kadido
+				AND Entron = '".$whora_a_grabar."'
+				AND Entest = 'on'";
+
+	$resLactario = mysql_query($QueryLactarioEntregado,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$QueryLactarioEntregado." - ".mysql_error());
+	$wentrega = mysql_num_rows($resLactario);
+
+	if( $wentrega >= 1 ){
+		$rowsEnt = mysql_fetch_array( $resLactario);
+		$valEnt = $rowsEnt['Entest'];
+	}
+
+	return $valEnt;
+
 }
 //*******************************************************************************************************************************************
 
@@ -3425,17 +3133,11 @@ function esLactarioEntregado( $conex, $wbasedato, $codart, $wfecha_actual, $whis
 				}
 				else{
 					// $ccoQueryArts = '1120';
-					$ccoQueryArts = consultarCcoLactario( $conex, $wbasedato );
+					$ccoQueryArts = consultarCcoLactarioUnificado( $conex, $wbasedato );
 				}
 
-				if( esUsuarioLactario( $conex, $wbasedato, $wusuario ) )
-				{
-					query_articulos_entrega($whis, $wing, $wfecha_actual, $res, $ccoQueryArts );
-				}
-				else
-				{
 					query_articulos($whis, $wing, $wfecha_actual, $res, $ccoQueryArts );
-				}
+				
 
 				$num = mysql_num_rows($res);
 
@@ -3454,7 +3156,7 @@ function esLactarioEntregado( $conex, $wbasedato, $codart, $wfecha_actual, $whis
 						$fechaKardex = $wayer;
 						
 
-						query_articulos_entrega($whis, $wing, $wayer, $res, $ccoQueryArts );
+						query_articulos($whis, $wing, $wayer, $res, $ccoQueryArts );
 						$num = mysql_num_rows($res);
 
 						/************************************************************************************************
@@ -3603,12 +3305,12 @@ function esLactarioEntregado( $conex, $wbasedato, $codart, $wfecha_actual, $whis
 						continue;
 					}
 
-					$lactarioEntregado = esLactarioEntregado( $conex, $wbasedato, $row[1], $wfecha_actual , $whis, $wing );
+					// $lactarioEntregado = esLactarioEntregado( $conex, $wbasedato, $row[1], $wfecha_actual , $whis, $wing );
 
 					//Si es una nutrición y no se ha entregado no se muestra
-					if( $lactarioEntregado ){
-						continue;
-					}
+					// if( $lactarioEntregado ){
+					// 	continue;
+					// }
 					
 					 //Febrero 15 de 2018
 					 $esArticuloAyudaDx = false;
@@ -3702,7 +3404,7 @@ function esLactarioEntregado( $conex, $wbasedato, $codart, $wfecha_actual, $whis
 					$row1 = mysql_fetch_array($res1);
 
 					if ($row1[0] > 1)
-					   $wfrec="Cada ".$row1[0]."&nbsp;".$row1[1]."S";   //Descripcion de la FRECUENCIA
+					   $wfrec="Cada ".$row1[0]."&nbsp;".$row1[1];   //Descripcion de la FRECUENCIA
 					  else
 						 $wfrec="Cada ".$row1[0]."&nbsp;".$row1[1];     //Descripcion de la FRECUENCIA
 					 
@@ -4058,22 +3760,68 @@ function esLactarioEntregado( $conex, $wbasedato, $codart, $wfecha_actual, $whis
 											  echo "</select>";
 											  echo "</td>";
 											}
-										else
-										   if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
-										      echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar</A></td>";
-										   else
-										    {
-										      echo "<td align=center rowspan=4 colspan=2>";
-											  echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' ).$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
-											  echo "<option></option>";
 
-											  for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
-											   {
-												 echo "<option>$inc</option>";
-											   }
+											if ($wactivolactario == 'on')
+											{
+												/** Llamamos a la función pasandole como parametro el codigo del articulo $row[1] */
+												$articuloLactario = articuloLactario($row[1]);
+												if($articuloLactario > 0){ /** Preguntamos si el articulo marcado como LC es mayor a 0 */
+													$articuloNutricion = esLactarioEntregado($row[1], $whis, $wing); /** Llamamos a la función pasandole como parametro el codigo del articulo $row[1] */
+													if($articuloNutricion == '' || $articuloNutricion !== 'on'){ /** Preguntamos si no esta vacio y es diferente de estado on el articulo en la movhos_000298 */
+														echo "<td align=center rowspan=4 bgcolor='00FF00' colspan=2><font size=4 color='ffffff'><strong>Pendiente entrega</strong></font></td>"; /** Pintamos el mensaje */
+													}else{
+														if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
+														echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar</A></td>";
+														else
+														{
+															echo "<td align=center rowspan=4 colspan=2>";
+															echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' ).$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
+															echo "<option></option>";
 
-											  echo "</select>";
-											  echo "</td>";
+															for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
+															{
+																echo "<option>$inc</option>";
+															}
+
+															echo "</select>";
+															echo "</td>";
+														}
+													}
+												}else{
+													if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
+													echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar</A></td>";
+													else
+													{
+														echo "<td align=center rowspan=4 colspan=2>";
+														echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' ).$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
+														echo "<option></option>";
+
+														for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
+														{
+															echo "<option>$inc</option>";
+														}
+
+														echo "</select>";
+														echo "</td>";
+													}
+												}
+											}else{
+												if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
+												echo "<td align=center rowspan=4 colspan=2><A HREF='Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Aplicar</A></td>";
+											else
+												{
+												echo "<td align=center rowspan=4 colspan=2>";
+												echo "<select class=tipo3V name='dosisIpd[$i]' onChange='cambiarUrl( this, \"Aplicacion_ipods.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' ).$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on\", $i )'>";
+												echo "<option></option>";
+
+												for( $inc = $dosVar[ 'Defcai' ]; $inc <= $dosVar[ 'Defcas' ]; $inc += $dosVar[ 'Defesc' ] )
+												{
+													echo "<option>$inc</option>";
+												}
+
+												echo "</select>";
+												echo "</td>";
+												}
 											}
 									 }
 									else
