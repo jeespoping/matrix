@@ -3,10 +3,10 @@
 //       	webservice para sistema de wicalling y enfermeri. Trae las camas de todos los pisos.
 //=========================================================================================================================================\\
 //DESCRIPCION:  parametros:
-//              wemp_pmla, codigoseguridad
+//              wemp_pmla
 //                      
 //AUTOR:				TAITO
-//FECHA DE CREACION:	2021-12-01
+//FECHA DE CREACION:	2021-03-29
     include_once("conex.php");
     include("root/comun.php");
     ob_end_clean();
@@ -67,34 +67,37 @@
         public $Zonas = Array();
         public function poblarZonas($tmpPiso)
         {
-            $qyzonaspiso = "Select Ccocod,Cconom,Ccohos,Ccoest,Ccopis,Ccotor,Ccozon
-            from ".$GLOBALS['wbasedatomovhos']."_000011 where  Ccocod = '".$tmpPiso."' and Ccohos='on' and Ccoest='on'";
+            $qyzonaspiso = "Select Ccocod,Cconom,Ccohos,Ccoest,Ccopis,Ccotor,Ccozon,Ccourg
+            from ".$GLOBALS['wbasedatomovhos']."_000011 where  Ccocod = '".$tmpPiso."' and Ccohos='on' and (Ccoest='on' or Ccourg='on')";
             // echo($qyzonaspiso."</b><br>");
             $reg1 = mysql_query($qyzonaspiso, $conex ) or die("<b>ERROR EN QUERY MATRIX(qyzonaspiso):</b><br>".mysql_error()); 
             $regzon = mysql_fetch_array($reg1);
-            $nomZonas = explode(",",$regzon["Ccozon"]);
-            // echo($tmpPiso." #zonas".$num."</b><br>");
-            if (sizeof($nomZonas) == 1) 
+            $nomZonas = NULL;
+            $nomZonas = explode(",",$regzon["Ccozon"]);                 
+            // echo("PISO:".$tmpPiso." Zona:".$regzon["Cconom"]." LONG:".strlen(trim($regzon["Ccozon"]))."</b><br>");
+            if (strlen(trim( $regzon["Ccozon"])) == 0) 
             {
                 // echo("Piso sin Zonas:".$tmpPiso."</b><br>");
                 $objZonas = new zona();
-                $tmpZona = "Unica";
+                $tmpZona = "Unica P".$tmpPiso;
                 $objZonas->idZona = "0";
                 $objZonas->NombreZona = $tmpZona;
                 $objZonas->poblarCamas($tmpPiso,$tmpZona);
                 $this->Zonas[] = $objZonas;
                 return;
             }
-            // esto no esta funciponando. VALIDAR SI ES ASI
-            $num = count($nomZonas);
-            for ($i = 0; $i < $num; ++$i)
+            else
             {
-                $objZonas = new zona();
-                $objZonas->idZona = $i;
-                $objZonas->NombreZona = $nomZonas[$i];
-                $tmpZona = $nomZonas[$i];
-                $objZonas->poblarCamas($tmpPiso,$tmpZona);
-                $this->Zonas[] = $objZonas;
+                $num = count($nomZonas);
+                for ($i = 0; $i < $num; ++$i)
+                {
+                    $objZonas = new zona();
+                    $objZonas->idZona = $i;
+                    $objZonas->NombreZona = $nomZonas[$i];
+                    $tmpZona = $nomZonas[$i];
+                    $objZonas->poblarCamas($tmpPiso,$tmpZona);
+                    $this->Zonas[] = $objZonas;
+                }    
             }
         }
     }
@@ -150,7 +153,8 @@
                         $estCam = "No habilitada";
                     }
                 $objdatoscama->EstadoCama = $estCam;
-                if (intval($regcam["Habhis"]) != 0)
+                //if (intval($regcam["Habhis"]) != 0)
+                if ($estCam == "Ocupada")
                 {
                     $nroHistoria = $regcam["Habhis"];
                     $nroIngreso = $regcam["Habing"];
