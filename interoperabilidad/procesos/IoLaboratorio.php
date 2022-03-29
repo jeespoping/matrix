@@ -589,7 +589,7 @@ function ConectarFTP( $server, $port, $user, $password, $modo ){
 	return $id_ftp; //Devuelve el manejador a la función
 }
 
-function subirArchivosFtp( $archivo_remoto, $archivo_local, $wemp_pmla = '01' ){
+function subirArchivosFtp( $archivo_remoto, $archivo_local, $wemp_pmla  ){
 	
 	$val = false;
 	
