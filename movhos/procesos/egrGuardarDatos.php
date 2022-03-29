@@ -1343,8 +1343,17 @@ function guardarDatos2($pacienteEgresar){
         $_POST['ing_hintxtHorIng'] = $infoing['ing_hin'];
         $_POST['_ux_infmed'] = $infoing['ing_mei'];
         $_POST['_ux_mepides'] = "";
-        $_POST['egr_esttxtestan'] = '0.0';
 
+        // Caclular fecha de dias de instancia para guardar en unix
+        $date1 = new DateTime($infoing['ing_fei']);
+        $date2 = new DateTime($fechaActual);
+        $diff = $date1->diff($date2);
+
+        if ($diff->days > 0){
+            $_POST['dias_extancia'] = (string)$diff->days;
+        }else{
+            $_POST['dias_extancia'] = '0';
+        }
 
         $tieneConexionUnix = consultarAliasPorAplicacion($conex, $wemp_pmla, 'conexionUnix');
         //$tieneConexionUnix  = "off";
