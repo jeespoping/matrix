@@ -3695,7 +3695,7 @@ function traer_observaciones_examen($whis, $wing, $wexam, $wfechadataexamen, $wh
             document.forms[0].submit();
         }
 
-        setTimeout( "recargar()", 1000*60*5 );
+        setTimeout( "recargar()", 1000*60*30 );
 
         //Vuelve a poner la pagina en el ultimo lugar antes de ser recargada
         window.onload=function(){
@@ -3705,7 +3705,7 @@ function traer_observaciones_examen($whis, $wing, $wexam, $wfechadataexamen, $wh
 
 			//Se reemplaza la accion blink por esta jquery.
 			setInterval(function() {
-	     
+
 			$('.blink').effect("pulsate", {}, 5000);
 
 			}, 1000);
