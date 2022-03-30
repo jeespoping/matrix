@@ -4,6 +4,7 @@ define('MYSQL_ASSOC',MYSQLI_ASSOC);
 //header("Content-Type: text/html;charset=UTF8");
 /****************************************************************************
 * accion
+2022-03-30 Luis F Meneses: No utilizar el dato fecha de expedición en la acción 'mostrarDatosAlmacenados'
 2021-03-15 Juan David Rodriguez: Se corrige la fecha de preadmision que había sido comentada en una publicación anterior
 2021-12-19 Sebastián Nevado: se cambia la función verificarCcoIngresoAyuda.
 2021-04-26 Juan David Rodriguez: Se separa codigo js y funciones de php en archivos por separados para una mejor comprensión del codigo (js_admisiones_erp.js y funciones_admsiones_erp.php)
@@ -2930,6 +2931,7 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 	unset($_POST['ing_lugselLugAte']);
 	unset($_POST['ing_feitxtFecIng']);
 	unset($_POST['ing_hintxtHorIng']);
+	unset($_POST['pac_fedtxtFecExpDoc']); // No utilizar fecha de expedición documento como filtro.
 	//--mirar
 	unset($_POST['ing_tutradiotutela']);
 	unset($_POST['ing_claselClausu']);
