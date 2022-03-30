@@ -47,7 +47,6 @@
             where Ccohos = 'on' or Ccourg='on' and Ccoest = 'on' order by ccocod";
             $reg0 = mysql_query($qycentrocostos, $conex ) or die("<b>ERROR EN QUERY MATRIX(qycentrocostos):</b><br>".mysql_error()); 
             //echo($qycentrocostos);
-            //return;
             //recorrer cada piso para ir y poblar las zonas
             while ($regcco = mysqli_fetch_array($reg0))
             {
@@ -69,13 +68,13 @@
         public function poblarZonas($tmpPiso)
         {
             $qyzonaspiso = "Select Ccocod,Cconom,Ccohos,Ccoest,Ccopis,Ccotor,Ccozon,Ccourg
-            from ".$GLOBALS['wbasedatomovhos']."_000011 where  Ccocod = '".$tmpPiso."'  Ccohos='on' or Ccourg='on' and Ccoest='on'";
+            from ".$GLOBALS['wbasedatomovhos']."_000011 where  Ccocod = '".$tmpPiso."' and Ccoest='on' and Ccohos='on' or Ccourg='on' ";
             // echo($qyzonaspiso."</b><br>");
             $reg1 = mysql_query($qyzonaspiso, $conex ) or die("<b>ERROR EN QUERY MATRIX(qyzonaspiso):</b><br>".mysql_error()); 
             $regzon = mysql_fetch_array($reg1);
             $nomZonas = NULL;
             $nomZonas = explode(",",$regzon["Ccozon"]);                 
-            echo("PISO:".$tmpPiso." Zona:".$regzon["Cconom"]." LONG:".strlen(trim($regzon["Ccozon"]))."</b><br>");
+            //echo("PISO:".$tmpPiso." Zona:".$regzon["Cconom"]." LONG:".strlen(trim($regzon["Ccozon"]))."</b><br>");
             if (strlen(trim( $regzon["Ccozon"])) == 0) 
             {
                 // echo("Piso sin Zonas:".$tmpPiso."</b><br>");
