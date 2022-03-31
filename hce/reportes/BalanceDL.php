@@ -126,6 +126,10 @@
 include_once("conex.php");
 include_once("root/comun.php");
 $wbasedatomovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+$wactualiz = '2022-03-23';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("INFORME DE BALANCE DE LIQUIDOS ",$wactualiz, $wbasedato1);
 
 /*
 *********************************************************************************************************************  
@@ -198,15 +202,15 @@ else
 			$wfechaf=date("Y-m-d");
 		}
 		echo "<center><table border=0>";
-		echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-		echo "<tr><td align=center colspan=2><b>CLINICA LAS AMERICAS<b></td></tr>";
-		echo "<tr><td align=center colspan=2>INFORME DE BALANCE DE LIQUIDOS</td></tr>";
+		//echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+		//echo "<tr><td align=center colspan=2><b>CLINICA LAS AMERICAS<b></td></tr>";
+		//echo "<tr><td align=center colspan=2>INFORME DE BALANCE DE LIQUIDOS</td></tr>";
 		if(isset($wcedula) and isset($wtipodoc) and $wtipodoc != "" and $wcedula != "")
 		{
 			$query = "select Orihis,Oriing from root_000037 ";
 			$query .= " where oriced = '".$wcedula."'";
 			$query .= "   and oritid = '".$wtipodoc."'";
-			$query .= "   and oriori = '01' ";
+			$query .= "   and oriori = '".$wemp_pmla."' ";
 			$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 			$num = mysql_num_rows($err);
 			if($num > 0)
@@ -240,7 +244,7 @@ else
 				$query = "select oriced,oritid from root_000037 ";
 				$query .= " where Orihis = '".$whis."'";
 				$query .= "   and Oriing = '".$wing."'";
-				$query .= "   and oriori = '01' ";
+				$query .= "   and oriori = '".$wemp_pmla."' ";
 				$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				$num = mysql_num_rows($err);
 				if($num > 0)
@@ -301,7 +305,7 @@ else
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and  pacced = oriced ";
 		$query .= "   and  pactid = oritid ";
-		$query .= "   and oriori = '01' ";
+		$query .= "   and oriori = '".$wemp_pmla."' ";
 		$query .= "   and inghis = orihis ";
 		$query .= "   and  inging = oriing ";
 		$query .= "   and ubihis = inghis "; 
