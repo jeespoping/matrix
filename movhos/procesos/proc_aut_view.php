@@ -9,7 +9,7 @@ include_once("root/comun.php");
  * DESCRIPCION:
  * Muestra los pacientes que ingresan o egresan para un servicio seleccionado o todos.
  */
-$wactualiz = "2021-05-05";
+$wactualiz = "2022-03-29";
 $titulo = "Procesos servicio domiciliario autom&aacute;tico";
 $wemp_pmla = $_GET['wemp_pmla'];
 

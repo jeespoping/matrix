@@ -1291,7 +1291,10 @@ function guardarDatos2($pacienteEgresar){
         }
 
         // Leemos los diagnosticos
-        foreach ($diagnosticosIng as $diagnosticos) {
+
+        $_POST['diagnosticosux'] = [];
+
+        foreach ($diagnosticosIng as $indice => $diagnosticos) {
 
             if ($diagnosticos['dia_nue'] == "S" || $diagnosticos['dia_nue'] == "on") {
                 $datosEnc['Egrtdp'] = "2";
@@ -1303,7 +1306,32 @@ function guardarDatos2($pacienteEgresar){
             } else {
                 $datosEnc['Egrcom'] = "off";
             }
+
+            $diagnosticos['dia_com'] = 'N';
+            $indice == 0 ? $diagnosticos['dia_tip'] = 'P' : $diagnosticos['dia_tip'] = 'S';
+
+            //Construccion del array de diagnositocos para unix
+            $_POST['diagnosticosux'] [$indice] ['_ux_diadia'] = $diagnosticos['dia_cod'];
+            $_POST['diagnosticosux'] [$indice] ['_ux_plug']   = $diagnosticos['dia_cod'];
+            $_POST['diagnosticosux'] [$indice] ['_ux_diatip'] = $diagnosticos['dia_tip'];
+            $_POST['diagnosticosux'] [$indice] ['_ux_diainf'] = $diagnosticos['dia_inf'];
+            $_POST['diagnosticosux'] [$indice] ['_ux_diacom'] = $diagnosticos['dia_com'];
         }
+
+        //CARGAR LOS DATOS QUE SE DEBEN ENVIAR A UNIX Y ALGUNOS QUE SE TRAEN DEL INGRESO
+        //_ux_dxegr -> El diagnostico ppal es ON
+        foreach ($_POST['diagnosticosux'] as $keDiaqq => &$valueDiaqq) {
+            foreach ($valueDiaqq as $keDiaq => &$valueDiaq) {
+                $clave_sub = substr($keDiaq, 0, 7);
+                if ($clave_sub == "dia_tip" && $valueDiaq == "P") {
+                    $valueDiaq['_ux_dxegr'] = "on";
+                } else if ($clave_sub == "dia_tip" && $valueDiaq != "P") {
+                    $valueDiaq['_ux_dxegr'] = "off";
+                }
+            }
+        }
+
+        
 
         /** Definición de datos para guardar en unix **/
         $_POST['egr_dxi'] = $infoing['ing_dig'];
@@ -1316,6 +1344,16 @@ function guardarDatos2($pacienteEgresar){
         $_POST['_ux_infmed'] = $infoing['ing_mei'];
         $_POST['_ux_mepides'] = "";
 
+        // Caclular fecha de dias de instancia para guardar en unix
+        $date1 = new DateTime($infoing['ing_fei']);
+        $date2 = new DateTime($fechaActual);
+        $diff = $date1->diff($date2);
+
+        if ($diff->days > 0){
+            $_POST['dias_extancia'] = (string)$diff->days;
+        }else{
+            $_POST['dias_extancia'] = '0';
+        }
 
         $tieneConexionUnix = consultarAliasPorAplicacion($conex, $wemp_pmla, 'conexionUnix');
         //$tieneConexionUnix  = "off";
@@ -1422,6 +1460,7 @@ function guardarDatos2($pacienteEgresar){
                                     }
                                 }
                             }
+                            $x++;
                         } //foreach
                     }
                     /**Fin Diagnosticos**/
@@ -1452,6 +1491,7 @@ function guardarDatos2($pacienteEgresar){
                                     $data['error'] = 1;
                                 }
                             }
+                            $x++;
                         } //foreach
                     }
                     /**Fin Procedimientos**/
@@ -1499,6 +1539,7 @@ function guardarDatos2($pacienteEgresar){
                                         $data['error'] = 1;
                                     }
                                 }
+                                $x++;
                             }
                         } //foreach
                     }
@@ -1667,6 +1708,7 @@ function guardarDatos2($pacienteEgresar){
                                     }
                                 }
                             }
+                            $x++;
                         } //foreach
                     }
                 }
@@ -1709,6 +1751,7 @@ function guardarDatos2($pacienteEgresar){
                                     $data['error'] = 1;
                                 }
                             }
+                            $x++;
                         } //foreach
                     }
                 }
@@ -1771,6 +1814,7 @@ function guardarDatos2($pacienteEgresar){
                                         $data['error'] = 1;
                                     }
                                 }
+                                $x++;
                             }
                         } //foreach
                     }
