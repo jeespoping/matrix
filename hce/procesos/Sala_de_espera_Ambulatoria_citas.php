@@ -77,7 +77,7 @@
 
 				//LLamado a la historia HCE
 				
-				url="HCE_iFrames.php?empresa="+document.forms.sala.whce.value+"&whisa="+his+"&winga="+ing+"&wservicio=*"+"&wcedula="+doc+"&wtipodoc="+tid+"&wdbmhos="+document.forms.sala.wbasedato.value+"&origen="+document.forms.sala.wemp_pmla.value;
+				url="HCE_iFrames.php?empresa="+document.forms.sala.whce.value+"&whisa="+his+"&winga="+ing+"&wservicio=*"+"&wcedula="+doc+"&wtipodoc="+tid+"&wdbmhos="+document.forms.sala.wbasedato.value+"&wemp_pmla="+document.forms.sala.wemp_pmla.value;
 				//open(url,'','top=50,left=100,width=960,height=940') ;
 				//open(url,'',resizable='yes') ;
 				window.open(url,'','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
@@ -165,7 +165,7 @@ else
 //$wautor                    : "Juan C. Hernandez M. "
 //FECHA CREACION             : Abril 1 de 2014
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz = "2016-04-19"; 
+  $wactualiz = "2022-03-16"; 
 //DESCRIPCION
 //==========================================================================================================================================\\
 //==========================================================================================================================================\\
@@ -178,7 +178,9 @@ else
 //         * Tablas: citasfi_000009  : Citas de médicos fisiatras                                                                           \\
 //                   citasfi_000017  : Citas de fisioterapeutas                                                                             \\
 //                   citasfi_000010  : Maestro de médicos fisiatras                                                                         \\
-//                   citasfi_000015  : Maestro de fisioterapeutas                                                                           \\
+//                   citasfi_000015  : Maestro de fisioterapeutas 
+//==========================================================================================================================================\\
+//16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
 //==========================================================================================================================================\\
 //2016-04-19 Verónica Arismendy
 //           Se modifica la consulta para agregar validación de estado activo del fisiatra o fisioterapeuta.

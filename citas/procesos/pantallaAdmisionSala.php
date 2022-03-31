@@ -6002,7 +6002,6 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 						var historia = data.historia;
 						var ingreso  = data.ingreso;
 						var tipoDoc  = data.tipoDoc;
-						var origen   = $("#wemp_pmla").val();
 						var wemp_pmla = $('#wemp_pmla').val();
 						var whce = $('#whce').val();
 						var wmovhos = $('#wmovhos').val();
@@ -6142,6 +6141,7 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 
  /*
  Modificaciones:
+ 16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
  2017-04-04	 Se agrega validacion $solucionCitas == "citasen") a funcion que actualizaba la agenda con errores en la cedula solo aplica para endoscopia.
  2016-03-11: Se modifica el script para mostrar las columnas respectivas de cada uno de los procesos de Endoscopia.
  			Cada uno de estos pasos en el proceso Endoscopia guarda fechas, horas y estados en un log llamado citasen_000023.
@@ -7115,9 +7115,9 @@ else
 	$wentidad = $institucion->nombre;
 
 	if ($wemp_pmla == 01) {
-		encabezado("AGENDA SALAS", "2017-04-04", $wbasedato );
+		encabezado("AGENDA SALAS", "2022-03-16", $wbasedato );
 	} else {
-		encabezado("AGENDA SALAS", "2017-04-04", "logo_".$wbasedato );
+		encabezado("AGENDA SALAS", "2022-03-16", "logo_".$wbasedato );
 	}
 
 	if (!isset($wfec)) {
