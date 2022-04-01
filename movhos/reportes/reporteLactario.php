@@ -31,7 +31,7 @@ $fecha = date('Y-m-d');
 
 $wactualiz="Octubre 27 de 2021";         
 
-  encabezado("REPORTE DE ENTREGA LACTARIO",$wactualiz, $wemp_pmla);
+  encabezado("REPORTE DE ENTREGA LACTARIO",$wactualiz, $wemp_pmla,true);
 
 ?>
 <html>
@@ -108,7 +108,21 @@ $wactualiz="Octubre 27 de 2021";
 
 
 					<script type="text/javascript" src="Lactarios/lactareos.js"></script>
-					
+					<script>
+						/* Filtro sede */
+						jQuery(document).ready(function($){
+
+							$('#selectsede').change(function(e){
+								localStorage.setItem('sede',$(this).val());
+
+								setTimeout(function() {
+										$('#activar-sede').trigger('click');
+								}, 1000);
+
+							});
+
+						});
+					</script>
 					
 	</head>
 	<style>

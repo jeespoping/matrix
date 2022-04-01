@@ -37,7 +37,13 @@ $(document).ready(function() {
 
    
     var start = moment().subtract(29, 'days');
-	var end = moment();
+    var end = moment();
+
+    var selectsede = '';
+    if (localStorage.getItem('sede') != null) {
+        selectsede = localStorage.getItem('sede');
+    }
+
 
     $('#filtro').daterangepicker({
 		"autoApply": true,
@@ -131,7 +137,7 @@ $(document).ready(function() {
             $.ajax({
                 url : "Lactarios/backReporte.php",
                 type: "POST",
-                data: {"fecha_ini":fechaini, "fecha_fin":fechafin, "accion": "consultar", "wemp_pmla": "01" },
+                data: {"fecha_ini":fechaini, "fecha_fin":fechafin, "accion": "consultar", "wemp_pmla": "01","selectsede": selectsede },
                 dataType: "JSON",
                 success: function(respuesta)
                 {
