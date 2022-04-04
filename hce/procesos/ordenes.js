@@ -24252,7 +24252,7 @@ function suspenderArticulo(idxElemento,tipoProtocolo,confirmar){
 /*****************************************************************************************************************************
  * Llamada a ajax para realizar la grabación de un examen nuevo
  ******************************************************************************************************************************/
- function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idElemento, nroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra,realizarEnServicio,horaDeSolicitado){
+function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idElemento, nroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra,realizarEnServicio,horaDeSolicitado){
 	var parametros = "";
 	var mensaje = "";
 	var ccoSeleccionado = '';
@@ -24265,7 +24265,7 @@ function suspenderArticulo(idxElemento,tipoProtocolo,confirmar){
 		+"&fecha="+fecha+"&codigoExamen="+codExamen+"&observaciones="+observaciones+"&estado="+estadoExamen+"&codUsuario="+usuario+"&nombreExamen="+nomExamen
 		+"&fechaDeSolicitado="+fechaDeSolicitado+"&consecutivoOrden="+consecutivoOrden+"&firma="+firma+"&observacionesOrden="+observacionesOrden+"&consecutivoExamen="+cod_procedi
 		+"&justificacion="+justificacion+"&numeroItem="+nroItem+"&impExamen="+impExamen+"&altExamen="+altExamen+"&firmHCE="+firmHCE+"&datosAdicionales="+datosAdicionales
-		+"&ordenAnexa="+datoOrdenAnexa+"&esOfertado="+esOfertado+"&usuarioTomaMuestra="+usuarioTomaMuestra+"&cco="+$("#wservicio").val()+"&ccoTipoOrd="+ccoSeleccionado+"&wEstadoExamen="+wEstadoExamen;
+		+"&ordenAnexa="+datoOrdenAnexa+"&esOfertado="+esOfertado+"&usuarioTomaMuestra="+usuarioTomaMuestra+"&realizarEnServicio="+realizarEnServicio+"&cco="+$("#wservicio").val()+"&ccoTipoOrd="+ccoSeleccionado+"&wEstadoExamen="+wEstadoExamen;
 
 	try{
 

@@ -2095,7 +2095,8 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 		// close cURL resource, and free up system resources
 		curl_close($ch);
 	}
-	
+
+
 	if( count( $ids ) > 0 ){
 		
 		$sql = "UPDATE ".$whce."_000027 a, ".$whce."_000028 b
@@ -2104,6 +2105,7 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 				 WHERE a.id in(".implode( ",", $ids ).")
 				   AND b.Dettor = a.Ordtor
 				   AND b.Detnro = a.Ordnro
+				   AND b.Detnof = 'off'
 			";
 	
 		$resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -2115,11 +2117,13 @@ function enviarOrdenesAAgendar( $conex, $whce, $wbasedato, $historia, $ingreso )
 				 WHERE a.id in(".implode( ",", $ids ).")
 				   AND b.Dettor = a.Ordtor
 				   AND b.Detnro = a.Ordnro
+				   AND b.Detnof = 'off'
 			";
 	
 		$resEnv	= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	}
-	
+
+
 }
  
  
@@ -40823,27 +40827,27 @@ if(isset($consultaAjaxKardex)){
 			$bEncuentraCodigo = encuentraCodigoMipresMedicamentoDia($nroPrescripcion, $basedatos);
 			echo $bEncuentraCodigo ? '1': '0';
 			break;
-			case 'seRealizaEnUnidadAmbulatoria':
-				
-				$wmovhos= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos');
-				$whce 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce');
-				
-				if( $realizarEnPiso != 'on' ){
-					enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $numeroOrden, $item, $wusuario ); // Realizar en Ayuda diagnóstica
-				}
-				else{
-					marcarRealizadoEnPiso( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $numeroOrden, $item, $wusuario ); // Relizar en servicio o externo
-				}
-				
-			break;
+		case 'seRealizaEnUnidadAmbulatoria':
 			
-			case 'cambioEstadoAutorizadoAutomatico':
-				$wmovhos= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos');
-				$whce 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce');
-				cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $nroOrden, $item, $wuser, $westado );
-			break;
-	
-			default :
+			$wmovhos= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos');
+			$whce 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce');
+			
+			if( $realizarEnPiso != 'on' ){
+				enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $numeroOrden, $item, $wusuario ); // Realizar en Ayuda diagnóstica
+			}
+			else{
+				marcarRealizadoEnPiso( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $numeroOrden, $item, $wusuario ); // Relizar en servicio o externo
+			}
+			
+		break;
+		
+		case 'cambioEstadoAutorizadoAutomatico':
+			$wmovhos= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'movhos');
+			$whce 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, 'hce');
+			cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, $tipoOrden, $nroOrden, $item, $wuser, $westado );
+		break;
+
+		default :
 			break;
 	}
 }
