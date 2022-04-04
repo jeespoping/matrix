@@ -7,6 +7,8 @@
 //                      
 //AUTOR:				TAITO
 //FECHA DE CREACION:	2021-03-30
+// 2022-04-01 Taito: Redistribucion en el json de las camas vs zonas
+
     include_once("conex.php");
     include("root/comun.php");
     ob_end_clean();
@@ -68,7 +70,7 @@
         public function poblarZonas($tmpPiso)
         {
             $qyzonaspiso = "Select Ccocod,Cconom,Ccohos,Ccoest,Ccopis,Ccotor,Ccozon,Ccourg
-            from ".$GLOBALS['wbasedatomovhos']."_000011 where  Ccocod = '".$tmpPiso."' and Ccoest='on' and Ccohos='on' or Ccourg='on' ";
+            from ".$GLOBALS['wbasedatomovhos']."_000011 where  Ccocod = '".$tmpPiso."' and Ccoest='on' and (Ccohos='on' or Ccourg='on') ";
             // echo($qyzonaspiso."</b><br>");
             $reg1 = mysql_query($qyzonaspiso, $conex ) or die("<b>ERROR EN QUERY MATRIX(qyzonaspiso):</b><br>".mysql_error()); 
             $regzon = mysql_fetch_array($reg1);
@@ -82,7 +84,8 @@
                 $tmpZona = "Unica P".$tmpPiso;
                 $objZonas->idZona = "0";
                 $objZonas->NombreZona = $tmpZona;
-                $objZonas->poblarCamas($tmpPiso,$tmpZona);
+                //$objZonas->poblarCamas($tmpPiso,$tmpZona);
+                $objZonas->poblarCamas($tmpPiso,"Unica");
                 $this->Zonas[] = $objZonas;
                 return;
             }
@@ -116,12 +119,14 @@
             }
             else
             {
-                $condZona = "and Ccozon LIKE '%".$tmpZona."%'";
+                $condZona = "and Habzon LIKE '%".$tmpZona."%'";
             }
-            $qycamasxzona = "Select A.Habcco,A.Habhis,A.Habing,A.Habcod,A.Habali,A.Habdis,A.Habest,A.habpro,A.Fecha_Data,Ccocod,
-            Cconom,Ccozon from ".$GLOBALS['wbasedatomovhos']."_000020 as A
-            INNER JOIN ".$GLOBALS['wbasedatomovhos']."_000011 ON(A.Habcco = Ccocod)
-            where  A.Habcco='".$tmpPiso."' ".$condZona." order by Habcod"; 
+            // $qycamasxzona = "Select A.Habcco,A.Habhis,A.Habing,A.Habcod,A.Habali,A.Habdis,A.Habest,A.habpro,A.Fecha_Data,Ccocod,
+            // Cconom,Ccozon from ".$GLOBALS['wbasedatomovhos']."_000020 as A
+            // INNER JOIN ".$GLOBALS['wbasedatomovhos']."_000011 ON(A.Habcco = Ccocod)
+            // where  A.Habcco='".$tmpPiso."' ".$condZona." order by Habcod"; 
+            $qycamasxzona = "Select Habcco,Habhis,Habing,Habcod,Habali,Habdis,Habest,Habpro,Habzon,Fecha_Data 
+            from ".$GLOBALS['wbasedatomovhos']."_000020 where Habcco='".$tmpPiso."' ".$condZona." order by Habcod";
             //echo($qycamasxzona."</b><br>");
             $reg2 = mysql_query($qycamasxzona, $conex ) or die("<b>ERROR EN QUERY MATRIX(qycamasxzona):</b><br>".mysql_error()); 
             if (mysql_num_rows($reg2) == 0)
