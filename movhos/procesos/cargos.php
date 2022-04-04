@@ -1071,7 +1071,7 @@ function consultarRegistroKardexPorArticulo( $art, $pac, &$rowsConsulta ){
 				AND Kadest = 'on'
 				AND Kadper = Percod
 				AND Defart = Kadart
-				AND Defcco = {$ccoSF}
+				AND Defcco = '".$ccoSF."'
 				";
 				
 	$res = mysql_query( $sql, $conex ) or die( mysql_error()." - Error en el query $sql - ".mysql_error() );
