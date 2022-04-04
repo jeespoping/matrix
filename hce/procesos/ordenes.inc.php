@@ -214,9 +214,10 @@ include_once("conex.php");
  *************************************************************************************************************************
  * Octubre 27 de 2014	Edwin MG. 	Si un medicamento no se encuentra en el maestro de familias y tiene una familia asociada
  *									en el campo Kadctr en movhos_000054, se muestra la familia correspondiente a ese campo
- ************************************************************************************************************************/
+ ************************************************************************************************************************
+ * Abril 04 de 2022 Jesus Lopez.  Se agrega dias de dispancio para que sea parametrizado/
 
- 
+
 
 /**********************************
  * INCLUDES
@@ -280,9 +281,7 @@ $horaCorteDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"horaCor
 $inicioDiaDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"inicioDiaDispensacion");
 $topePorcentualCtc 		= consultarAliasPorAplicacion($conex,$wemp_pmla,"topePorcentualCTC");
 
-$diasDispensacion = 1;
-if( $wemp_pmla == '02' )
-	$diasDispensacion = 7;
+$diasDispensacion = intval( consultarAliasPorAplicacion($conex,$wemp_pmla,"diasDispensacion") );
 
 /***********************************
  * CLASES
