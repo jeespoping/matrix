@@ -133,6 +133,103 @@ $.datepicker.setDefaults($.datepicker.regional['esp']);
 consultarAuditoria = true;
 
 
+function marcarCambioRealizarEnServicio( cmp, enServcio, externo, indice, contexamen ){
+	
+	marcarCambio( indice, contexamen );
+	
+	// var msg = "En donde se realizará el estudio <b>"+$( "#wnmexamen"+contexamen ).val()+"</b>?<br><br>En el servicio dónde se encuentra el paciente puede realizarse por uno de los siguientes motivos: ";
+	
+	// if( enServcio ){
+		// msg += "<br><br>- Por que se realizará en la unidad hospitalaria ";
+	// }
+	
+	// if( externo ){
+		// msg += "<br><br>- Por que el equipo requerido no se encuentra disponible ";
+	// }
+	
+	var msg = "En donde se realizará el estudio <b>"+$( "#wnmexamen"+contexamen ).val()+"</b>?";
+	
+	msg += "<br><br><b>Relizar en el servicio o en un servicio externo:</b> Indica que el estudio se realizará en el servicio dónde se encuentra el paciente o se remite a otra institución diferente a las sedes de AUNA";
+	// ya sea por qué el equipo requerido en la unidad interna (Cardiología, imagenlogía, laboratorio, etc ) no se encuentra disponible u otro motivo";
+	
+	msg += "<br><br><b>Realizar en la unidad de Ayuda diagnóstica:</b> Indica que el estudio se realizará en una unidad interna de las sedes de la clínica (Cardiología, imagenología, etc )";
+	
+	$( "<div style='color: black;height: 250px;' title='REALIZAR EN SERVICIO?' class='dvRealizarEnServicio'>"+msg+"</div>" ).dialog({
+		width		: 850,
+		height		: 350,
+		modal		: true,
+		resizable	: false,
+		position	: 'center',
+		buttons	: {
+			"Relizar en el servicio o en un servicio externo": function() {
+					cmp.checked = true;
+					cmp.value = 'on';
+					$( this ).dialog( "close" );
+					$( cmp ).css({display:"none"});
+				},
+			"Realizar en la unidad de Ayuda diagnóstica": function() {
+					let __self = this;
+					jConfirm( "Esta decisión no puede ser modificada. Está seguro(a) que se realizará en la Unidad diagnóstica correspondiente?","ALERTA", function(r){
+						if(r){
+							cmp.checked = true;
+							cmp.value = 'off';
+							$( __self ).dialog( "close" );
+							$( cmp ).css({display:"none"});
+						}
+					});
+				},
+			"Cancelar": function() {
+					cmp.checked = false;
+					cmp.value = '';
+					$( this ).dialog( "close" );
+				},
+		},
+	});
+	
+	$( ".ui-dialog-titlebar" ).css({
+		background: "#C3D9FF",
+	})
+	
+	$( ".ui-widget-overlay" ).css({
+		background: "black",
+	});
+	
+	$( ".ui-dialog-buttonpane > button" ).css({
+		padding		: "10px",
+		margin		: "0 5px",
+		fontWeight	: "bold",
+		color		: "black",
+	});
+	
+	$( ".ui-dialog-titlebar-close" ).css({
+		display : "none",
+	});
+	
+	// jConfirm( msg, 'REALIZAR ESTUDIO EN AYUDA DIAGNOSTICA', function(r) {
+
+		// // if( r ){
+
+			// $.post("../../hce/procesos/ordenes.inc.php",
+            // {
+                // consultaAjax		: '',
+                // consultaAjaxKardex	: 'seRealizaEnUnidadAmbulatoria',
+                // wemp_pmla			: $("#wemp_pmla").val(),
+                // whistoria			: historia,
+                // wingreso			: ingreso,
+                // tipoOrden			: tipoOrden,
+				// numeroOrden			: numeroOrden,
+				// item				: item,
+				// realizarEnPiso		: r ? 'on' : 'off',
+				// wusuario		  	: $('#user').val(),
+            // }
+            // ,function(data) {
+				// console.log(data);
+            // },"json" );
+
+		// // }
+	// });
+
+}
 
 
 
@@ -22778,6 +22875,7 @@ function grabarExamen(idxElemento, grbAut ){
 	var datoOrdenAnexa = "";
 	var esOfertado = "";
 	var usuarioTomaMuestra = "";
+	var realizarEnServicio = "";
 
 	if(altExamen!="on")
 	{
@@ -22844,6 +22942,17 @@ function grabarExamen(idxElemento, grbAut ){
 			}
 			catch(e){
 				usuarioTomaMuestra = '';
+			}
+			
+			try{
+				realizarEnServicio = document.getElementById("wrealizarEnServicio"+idxElemento).value;
+				console.log("uno");
+				console.log(realizarEnServicio);
+			}
+			catch(e){
+				console.log("dos");
+				console.log(realizarEnServicio);
+				realizarEnServicio = '';
 			}
 
 			// 2012-06-27
@@ -22966,7 +23075,7 @@ function grabarExamen(idxElemento, grbAut ){
 	***/
 	if(valido){
 		if(!existe){
-			grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idxElemento,numeroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra);
+			grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idxElemento,numeroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra,realizarEnServicio);
 		} else {
 			alert('El examen ya se encuentra en la lista.  Por favor seleccione otro');
 		}
@@ -24143,7 +24252,7 @@ function suspenderArticulo(idxElemento,tipoProtocolo,confirmar){
 /*****************************************************************************************************************************
  * Llamada a ajax para realizar la grabación de un examen nuevo
  ******************************************************************************************************************************/
-function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idElemento, nroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra,horaDeSolicitado){
+ function grabarExamenElemento(codExamen,nomExamen,historia,ingreso,fecha,observaciones,estadoExamen,fechaDeSolicitado,usuario,consecutivoOrden,firma,observacionesOrden,cod_procedi,justificacion,idElemento, nroItem,impExamen,firmHCE,altExamen,grbAut,datosAdicionales,datoOrdenAnexa,esOfertado,usuarioTomaMuestra,realizarEnServicio,horaDeSolicitado){
 	var parametros = "";
 	var mensaje = "";
 	var ccoSeleccionado = '';

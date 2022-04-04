@@ -311,10 +311,16 @@ function consultarHistoriaPaciente( $conex, $wemp_pmla, $tipoDocumento, $nroDocu
 function consultarProcedimiento( $conex, $wcliame, $cup ){
 	
 	$val = [];
-	
+
 	$sql = "SELECT Procup, Pronom
 			  FROM ".$wcliame."_000103
 			 WHERE Procup = '".$cup."'
+			";
+	
+	// 2022/01/28: Sebastián Nevado - Cambio la consulta para traer el código de procedimiento y no código cups
+	$sql = "SELECT Procod AS Procup, Pronom
+			  FROM ".$wcliame."_000103
+			 WHERE Procod = '".$cup."'
 			";
 	
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -334,6 +340,12 @@ function consultarProcedimientoPorCodigo( $conex, $wcliame, $cod ){
 	$val = [];
 	
 	$sql = "SELECT Procup, Pronom
+			  FROM ".$wcliame."_000103
+			 WHERE Procod = '".$cod."'
+			";
+	
+	// 2022/01/28: Sebastián Nevado - Cambio la consulta para traer el código de procedimiento y no código cups
+	$sql = "SELECT Procod AS Procup, Pronom
 			  FROM ".$wcliame."_000103
 			 WHERE Procod = '".$cod."'
 			";
