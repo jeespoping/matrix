@@ -73,7 +73,11 @@ else
 	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	if(!isset($pac))
 	{
-		echo "</select></tr><tr><td bgcolor=#cccccc colspan=1><font color=#000066>PACIENTE: </font></td>";
+		
+		$wactualiz = "2022-04-05";
+		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+		encabezado( "Paciente", $wactualiz, $institucion->baseDeDatos );
+		$wlogemp = $institucion->baseDeDatos;
 
 		if(isset($pac1))
 		{
