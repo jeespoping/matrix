@@ -272,11 +272,35 @@ else
 		   or (isset($wno1)  and trim($wno1) != "") or (isset($wno2) and trim($wno2) != "")
 		   or (isset($wap1)  and trim($wap1) != "") or (isset($wap2) and trim($wap2) != ""))
 		   {
+			//    $inicio = microtime(true);
 
-		   		$q  = "CREATE TEMPORARY TABLE temp_root_000036
-						SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac
-						  FROM root_000036 A
-						 WHERE pacced != ''";
+		   	// 	$q  = "CREATE TEMPORARY TABLE temp_root_000036
+			// 			SELECT Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac
+			// 			  FROM root_000036 A
+			// 			 WHERE pacced != ''";
+			// if(isset($wno1) and $wno1 != "")
+			// 	$q .= "   AND Pacno1 like '%".$wno1."%' ";
+			// if(isset($wno2) and $wno2 != "")
+			// 	$q .= "   AND Pacno2 like '%".$wno2."%' ";
+			// if(isset($wap1) and $wap1 != "")
+			// 	$q .= "   AND Pacap1 like '%".$wap1."%' ";
+			// if(isset($wap2) and $wap2 != "")
+			// 	$q .= "   AND Pacap2 like '%".$wap2."%' ";
+
+			// $err = mysql_query($q,$conex) or die(mysql_errno().":".mysql_error());
+
+			$q  = "SELECT Orihis, Biting, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac ";
+			$q .= "  FROM root_000037, root_000036,".$empresa."_000021 A";
+			$q .= " WHERE Oriced != ''  ";
+			$q .= "   AND Oriori = '".$wemp_pmla."' ";
+			$q .= "   AND Oriced = Pacced ";
+			if(isset($wtema) and $wtema != "TODOS")
+				$q .= "   and Bittem = '".$wtema."' ";
+			if(isset($whis) and $whis != "")
+				$q .= "   AND Orihis = '".$whis."' ";
+			if(isset($wced) and $wced != "")
+				$q .= "   AND Oriced like '".$wced."' ";
+				$q .= "   AND Orihis = Bithis ";
 			if(isset($wno1) and $wno1 != "")
 				$q .= "   AND Pacno1 like '%".$wno1."%' ";
 			if(isset($wno2) and $wno2 != "")
@@ -285,27 +309,16 @@ else
 				$q .= "   AND Pacap1 like '%".$wap1."%' ";
 			if(isset($wap2) and $wap2 != "")
 				$q .= "   AND Pacap2 like '%".$wap2."%' ";
-
-			$err = mysql_query($q,$conex) or die(mysql_errno().":".mysql_error());
-
-				$q  = "SELECT Orihis, Biting, Pacced, Pactid, Pacno1, Pacno2, Pacap1, Pacap2, Pacnac ";
-				$q .= "  FROM root_000037, temp_root_000036,".$empresa."_000021 A";
-				$q .= " WHERE Oriced != ''  ";
-				$q .= "   AND Oriori = '01' ";
-				$q .= "   AND Oriced = Pacced ";
-			if(isset($wtema) and $wtema != "TODOS")
-				$q .= "   and Bittem = '".$wtema."' ";
-			if(isset($whis) and $whis != "")
-				$q .= "   AND Orihis = '".$whis."' ";
-			if(isset($wced) and $wced != "")
-				$q .= "   AND Oriced like '".$wced."' ";
-				$q .= "   AND Orihis = Bithis ";
-				$q .= "   AND A.fecha_data BETWEEN '".$wfec_i."' AND '".$wfec_f."'";
-				$q .= " GROUP BY Orihis, Biting ";
-				$q .= " ORDER BY Orihis, Biting ";
+			$q .= "   AND A.fecha_data BETWEEN '".$wfec_i."' AND '".$wfec_f."'";
+			$q .= " GROUP BY Orihis, Biting ";
+			$q .= " ORDER BY Orihis, Biting ";
 
 			$err = mysql_query($q,$conex) or die(mysql_errno().":".mysql_error());
 			$num = mysql_num_rows($err);
+
+			// $fin = microtime(true);
+			// $diferencia = $fin - $inicio;
+			// echo "Diferencia: " . $diferencia;
 
 		   }
 
