@@ -93,7 +93,7 @@ include_once("conex.php");
 
 include_once("root/comun.php");
 
-	$wactualiz = '2014-03-17';
+$wactualiz = '2022-04-05';
 /**********************************************************************************************************************
 	   PROGRAMA : rbitacora.php
 	   Fecha de Liberación : 2007-11-21
@@ -105,7 +105,8 @@ include_once("root/comun.php");
 
 
 	   REGISTRO DE MODIFICACIONES :
-
+	   	.2022-05-04 (Juan David Rodriguez)
+	 		Se optimiza consulta de pacientes, y agrega validación de inicio de sesión
 	    .2019-05-27
 			Se comentan ECHOS de queries
 		
