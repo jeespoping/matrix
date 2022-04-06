@@ -7,7 +7,7 @@
     // 
     //                      
     //AUTOR:				    TAITO
-    //FECHA DE CREACION:	2022-01-31
+    //FECHA DE CREACION:	2022-06-04
     //2022-03-02 - Carlos Lora - Se agrega el cierre de la conexion a la base de datos.
     include_once("conex.php");
     include("root/comun.php");
@@ -348,7 +348,7 @@
             $sqlAlertas = "SELECT A.Fecha_data, A.Hora_data, Turtur, Puenom, Conpri, Puetem, Turllv
             FROM ".$wbasedato."_000304 AS A INNER JOIN ".$wbasedato."_000301 ON(Turtem = Puetem AND Turven = Puecod)
 			INNER JOIN ".$wbasedato."_000299 ON(Turupr = Concod) 
-            WHERE A.Fecha_data >= '2022-01-01'
+            WHERE A.Fecha_data >= '".date("Y-m-d",strtotime("-1 day"))."'
             AND Turtem = '".$tema."'
             AND Turest = 'on'
             AND Turllv = 'on'";
