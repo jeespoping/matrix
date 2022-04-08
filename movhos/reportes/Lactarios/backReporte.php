@@ -11,7 +11,7 @@ include_once("conex.php");
 include_once("root/comun.php");
 
 
-$wactualiz="Octubre 27 de 2021"; 
+$wactualiz="Abril 08 de 2022"; 
 
  if(!isset($_SESSION['user'])){
 	  echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>

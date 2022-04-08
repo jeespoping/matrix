@@ -4,6 +4,9 @@
  * Este programa muestra el listado de entregas de nutriciones que se han hecho.
  * En este archivo lo unico que se vera reflejado es la parte front (todo lo que vera el usuario.)
 */
+/**DESCRIPCIÓN 08 DE ABRIL DEL 2022 
+ * Filtro por sede
+*/
 
 $consultaAjax = '';
 
@@ -113,7 +116,7 @@ $wactualiz="Octubre 27 de 2021";
 						jQuery(document).ready(function($){
 
 							$('#selectsede').change(function(e){
-								localStorage.setItem('sede',$(this).val());
+								// localStorage.setItem('sede',$(this).val());
 
 								setTimeout(function() {
 										$('#activar-sede').trigger('click');
