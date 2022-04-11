@@ -31,7 +31,7 @@
 $wemp_pmla = $_REQUEST['wemp_pmla'];
 
 include_once("conex.php");
-//include_once("root/comun.php");
+include_once("root/comun.php");
 
 /****************************************************
 *		REPORTE DE MEDICAMENTOS CARGADOS Y			*
