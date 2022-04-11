@@ -4,7 +4,10 @@ include_once("conex.php");
 include_once("root/comun.php");
 include_once("middlewares/requestResponse.php");
 
-
+	/** 
+	 * Actualizaciones
+	 * 2021-12-15 (Juan Rodriguez): Se comenta wemp_pmla sobre escrito, no se llama de ninguna parte
+	*/
 	/****************************************************************
 	 * FUNCIONES
 	 ****************************************************************/
@@ -285,9 +288,10 @@ include_once("middlewares/requestResponse.php");
 
 	$wactualiz = '2020-10-15';
 	$respuesta = array('message'=>'', 'result'=>array(), 'tipo'=>'', 'status'=>'' );
-	if(!isset($wemp_pmla)){
-		$wemp_pmla = "01";
-	}
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+	// if(!isset($wemp_pmla)){
+	// 	$wemp_pmla = "01";
+	// }
 	$pasarela= 'drivethru';
 	$id_pago =  $_GET['id'];
 	$content 	= file_get_contents("php://input");
