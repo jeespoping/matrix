@@ -314,6 +314,9 @@ Fecha de creacion: 2007-04-30
 Autor: Carolina Castano P
 
 Ultima actualizacion:
+12 de abril de 2022:
+    Sebastian Alvarez Barona: Se realiza correccón para que mantenga la sede cuando se selecciona la clase de requerimiento.
+
 09 de marzo de 2022:
     Sebastian Alvarez Barona: Se realiza filtro de sede a las opciones de centros de costos.
 
@@ -2558,7 +2561,7 @@ function pintarTitulo($wacutaliza, $titulo_requerimientos,$TablaValidacionSede =
 
 	global $wemp_pmla;
 	echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', $incluirFiltroSede);
-	echo "<form id='informatica' name='informatica' action='informatica.php?wemp_pmla=".$wemp_pmla."' method=post >";
+	echo "<form id='informatica' name='informatica' action='informatica.php?wemp_pmla=".$wemp_pmla. $sUrlCodigoSede."' method=post >";
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 	//echo "<tr><td style='font-weight:bold; ' class='encabezadoTabla' style='font-size:15pt; text-align:center;'>SISTEMA DE REQUERIMIENTOS</td></tr>";
@@ -3236,7 +3239,7 @@ if(!isset($_SESSION["user"]))
 echo "error";
 else
 {
-	$wacutaliza = "09 de marzo de 2022";
+	$wacutaliza = "12 de abril de 2022";
 	$wbasedato='root';
 	
 	include_once("root/comun.php");
