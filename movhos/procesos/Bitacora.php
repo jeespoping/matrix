@@ -423,7 +423,7 @@ else
 		$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
 
 		echo "<input type='HIDDEN' name= 'ok' id='ok' value='".$ok."'>";
-		echo "<meta http-equiv='refresh' content='150;url=/matrix/movhos/procesos/bitacora.php?ok=99&empresa=".$empresa."&codemp=".$codemp.$sUrlCodigoSede."'>";
+		echo "<meta http-equiv='refresh' content='900;url=/matrix/movhos/procesos/bitacora.php?ok=99&empresa=".$empresa."&codemp=".$codemp.$sUrlCodigoSede."'>";
 		echo "<table border=0 align=center id=tipo5>";
 		?>
 		<script>
