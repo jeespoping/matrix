@@ -280,6 +280,8 @@ include_once("conex.php");
 //=============================================================================================================================================\\
 //M O D I F I C A C I O N E S                                                                                                                  \\
 //=============================================================================================================================================\\
+// Febrero 23 de 2022 : Sebastian Alvarez Barona: Se descomenta funcion validar_aplicacion para que me muestre los mensajes cuano no haya saldo.
+//=============================================================================================================================================\\
 // Febrero 20 de 2022 Marlon Osorio: -Se parametrizo el centro de costo de Dispensacion Servicio Farmaceutico                                   \\
 //=============================================================================================================================================\\
 // Enero 08 de 2021	Edwin MG:		- Se corrige mensaje de rondas anteriores pendientes para la aplicación de medicamentos.
@@ -502,7 +504,7 @@ else
   $wusuario=trim($wuser1[1]);
 
      	                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Febrero 20 de 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="Febrero 23 de 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 	$wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
@@ -2360,7 +2362,7 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 	}
 
 
- /* function validar_aplicacion($whis, $wing, $wart, $wcco, $wdosis, &$wcant_aplicar, $wuniman, $warticulodelStock, $noenviar, &$saldo, &$saldoSinRecibir )
+	function validar_aplicacion($whis, $wing, $wart, $wcco, $wdosis, &$wcant_aplicar, $wuniman, $warticulodelStock, $noenviar, &$saldo, &$saldoSinRecibir )
     {
 	 global $wusuario;
 	 global $conex;
@@ -2559,7 +2561,7 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 						else
 						   {
 							if ($wsalsre > 0)
-							   $wmensaje = "No hay SALDO suficiente para Entregar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
+							   $wmensaje = "No hay SALDO suficiente para entregar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
 							  else
 								 $wmensaje = "No hay SALDO suficiente para entregar";
 
@@ -2569,7 +2571,7 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 					else
 					   {
 						if ($wsalsre > 0)
-						   $wmensaje = "No hay SALDO suficiente para Entregar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
+						   $wmensaje = "No hay SALDO suficiente para entregar. El saldo es: <b>".number_format($wsalart,2,'.',',')."</b> y pendiente por recibir: <b>".number_format($wsalsre,2,'.',',')."</b>";
 						  else
 							 {
 							  if ($wsalart > 0)
@@ -2620,7 +2622,7 @@ function obtenerVectorAplicacionMedicamentos($fechaActual, $fechaInicioSuministr
 		    </script>
 		  <?php
 		 }
-	}*/
+	}
 
 
   //En esta funcion se busca si la el articulo ya ha sido aplicado en la ronda, para que no queden duplicados
@@ -3652,16 +3654,15 @@ function validar_ipods($wcco)
 							   }
 							  else
 								{
-								 if (!isset($wgrabar) or $wgrabar != "on")
+									if (!isset($wgrabar) or $wgrabar != "on")
 									{
 
 									   //                                      Articulo Cco              Dosis                     Unidad de Manejo, si es del stock, noenviar
-									   $wok = true;
-									   // validar_aplicacion($whis , $wing, $row[1], trim($wcco1[0]), $row[7], $wcant_aplicar, $row[12]        , $wStock[$i]    , $row[16], $saldoArticulo, $sinRecibir );
+									   $wok = validar_aplicacion($whis , $wing, $row[1], trim($wcco1[0]), $row[7], $wcant_aplicar, $row[12]        , $wStock[$i]    , $row[16], $saldoArticulo, $sinRecibir );
 									   
 									   //Es una insulina y por seguridad se deja aplicar máximo el saldo del articulo
 									   //en caso de tener saldo
-									   /*if( true||$esInsulina && $saldoArticulo > 0 ){
+									   if( true||$esInsulina && $saldoArticulo > 0 ){
 											$dosVar[ 'Defcas' ] = min( $dosVar[ 'Defcas' ], $saldoArticulo*$row[12] );
 											// echo "<pre>saldoArticulo: "; echo $saldoArticulo; echo "</pre>";
 											// var_dump( $ok );
@@ -3694,7 +3695,7 @@ function validar_ipods($wcco)
 										   {
 											 $wok = true;
 										   }
-										}*/
+										}
 									}
 								}
 

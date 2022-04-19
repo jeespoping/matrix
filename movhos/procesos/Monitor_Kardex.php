@@ -26,7 +26,7 @@ else
   $wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
 
                                                    // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz=" Diciembre 19 de 2021 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz=" Enero 20 de 2022 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                               // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
             
 //=========================================================================================================================================\\
@@ -42,6 +42,9 @@ else
 //=========================================================================================================================================\\
 //=========================================================================================================================================\\
 //ACTUALIZACIONES
+//=========================================================================================================================================\\
+// Enero 20 del 2022 - Sebastian Alvarez Barona 
+// Se realiza validacion en la consulta que nos trae los aritulos en la seccion soporte nutricional adicionandole que solo nos traigan articulos de lactario.
 //=========================================================================================================================================\\
 // Diciembre 19 de 2021 Marlon Osorio:
 // Se reemplaza la funcion consultarCcoOrigen por consultarCcoOrigenUnificado que esta en el comun.php
@@ -4271,6 +4274,7 @@ if($estadosede=='on')
 					//Llevo los registros con estado=="on" a una matrix, para luego imprimirla por el orden (worden)
 					if ($westado == "on") {
 
+						$CcoLactario = consultarCcoLactarioUnificado( $conex, $wbasedato );
 						// Consulta detalle del kardex, es la que nos trae los arituclos de cada pacientes
 						$q = "
 						SELECT	kadcpx, Artcom, CONCAT_WS( ' ', Percan, Peruni ) as Frecuencia, Kadfin, Kadhin, Viades, Kadobs, CONCAT_WS( ' ', Kadcfr, Kadufr ) as Dosis, Kadsus, K.Fecha_data, K.Hora_data, K.Kadfle, K.Kadhle, kadfpv, kadhpv
@@ -4283,7 +4287,8 @@ if($estadosede=='on')
 							AND	Kadfec = '" . $wfecha . "'
 							AND	Kadvia = Viacod
 							AND	Percod = Kadper
-							AND	kadart = Artcod							
+							AND	kadart = Artcod	
+							AND Kadcco = '".$CcoLactario."'						
 							";
 
 						$result = mysql_query($q, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
