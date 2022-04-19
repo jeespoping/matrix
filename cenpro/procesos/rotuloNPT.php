@@ -18,7 +18,7 @@ include_once("conex.php");
 // 2016-10-11 		- Se corrige consulta del ingreso ya que no debe ser el ultimo sino el ingreso con el que se realizó la NPT  	
 // 2022-03-29       - Se retira la magen izquierda y se modifican estilos de la tabla de sticker. Se ocultan además las líneas de Bolsa y equipos para el sticker.	
 //-------------------------------------------------------------------------------------------------------------------------------------------- \\
-			$wactualiz='2022-03-29';
+			$wactualiz='2022-04-12';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                     
 
 if(!isset($_SESSION['user']))
@@ -682,7 +682,7 @@ else
 								
 							</tr>
 							<tr>
-								<td colspan='5' class='titulo1'>NOMBRE DEL PACIENTE: ".consultarNombrePaciente()."</td>
+								<td colspan='5' class='titulo2'>NOMBRE DEL PACIENTE: ".consultarNombrePaciente()."</td>
 								<td colspan='1' class='texto1'>Lote: ".$lote."</td>
 							</tr>
 							<tr>
