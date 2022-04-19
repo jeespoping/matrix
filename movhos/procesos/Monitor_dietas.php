@@ -35,7 +35,7 @@ global $array_alertas;
 
 $array_alertas = array();
 
-$wactualiz="Agosto 28 de 2017";
+$wactualiz="Marzo 16 de 2022";
 	
 $wtabcco = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tabcco');
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');  
@@ -95,6 +95,11 @@ if(isset($consultaAjax) && $consultaAjax=='actualizarLog')
 //	AUTOR: 			Jerson Trujillo 
 //=========================================================================================================================================\\
 //                  								ACTUALIZACIONES                                                                                                                          \\
+/*=========================================================================================================================================\\
+
+16 de marzo de 2022:	Sebastian Alvarez Barona - Se realiza modificación para que se filtren los centros de costos en el selector
+													y por otro lado se hace filtracion en la función query_principal modificando la consulta
+													que nos trae la información para que solo se vea información de acuerdo a la sede seleccionada.
 /*=========================================================================================================================================\\
 //Abril 17 de 2020: 	(Edwin MG)
 						Se muestra el diagnóstico en la función mostrar_detalle si el parametro mostrarDiagnósticoMonitorDietas en root_000051
@@ -255,11 +260,24 @@ if( isset($_REQUEST['action'] )){
 	}
 	
 	//Retorna el resulset con todas las solicitudes de dietas e informacion relevante
-	function query_principal($wcco, $wser){
+	function query_principal($wcco, $wser, $sCodigoSede = NULL){
 		global $wfec_i;
 		global $wbasedato;
 		global $conex;
 		global $wemp_pmla;
+
+		$sFiltroSede='';
+	
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+		
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 		
 		$wcco=trim($wcco);
 		if( $wcco == '%' )
@@ -286,6 +304,7 @@ if( isset($_REQUEST['action'] )){
 			." AND moving = ubiing "
 			." AND movhis  = inghis "
 			." AND moving  = inging "
+			." {$sFiltroSede} "
 			." UNION "	//Este union es para mostrar los pacientes que tiene observaciones e intolerancias pero que no tienen dietas programadas 
 			." SELECT '', movcco, movser, movhis, moving, movdie, movpam, movcan, movhab, movpco, movest, movobs, movods, movint, movdsn, movnut, '','','', '', '', '', '', "
 			." '', '', '', '', '', '', '', '', '', '', '', '' "
@@ -1047,6 +1066,7 @@ if( isset($_REQUEST['action'] )){
 		global $conex;
 		global $id_alertas;
 		global $array_alertas;
+		global $selectsede;
 		
 		$caracteres = array( "á","é","í","ó","ú","Á","É","Í","Ó","Ú","ñ","Ñ","ü","Ü",",","\\","à","è","ì","ò","ù","À","È","Ì","Ò","Ù","Â","§","®","'","?æ","??","?£", "°", "\"");
 		$caracteres2 = array("a","e","i","o","u","A","E","I","O","U","n","N","u","U","-","-","a","e","i","o","u","A","E","I","O","U","A","S"," ", "", "N", "N", "U", "", "");
@@ -1061,7 +1081,7 @@ if( isset($_REQUEST['action'] )){
 		// Aca comienzo a consultar y procesar la informacion para luego mostrarla
 		//=====================================================================================
 		$wccoaux=explode("-",$wcco);
-		$res= query_principal($wccoaux[0], $wser);
+		$res= query_principal($wccoaux[0], $wser, $selectsede);
 		$num = mysql_num_rows($res);
 		$wccoant="";
 		if ($num > 0)
@@ -1703,6 +1723,17 @@ if( isset($_REQUEST['action'] )){
 				$wclass="fila1";
 				$total_todos_cco=0;
 				$increment=1;
+
+				$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+				$sFiltroSede="";
+				$codigoSede = '';
+				if($estadosede=='on')
+				{	  
+					$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+					$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+				}
+			
+				$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
 							
 				foreach($main_patrones as $pk_wccocod => $arr_patrones){ //recorre por centro de costos
 				
@@ -1732,7 +1763,7 @@ if( isset($_REQUEST['action'] )){
 								$posqx = "";
 								if( isset($array_alertas[$pk_wccocod]['']))  $posqx=$array_alertas[$pk_wccocod][''];
 								
-								echo "<td width='3%' align=center onClick='window.open(\"../reportes/Rep_lista_dietas.php?wemp_pmla=".$wemp_pmla."&wcco=".$pk_wccocod."-".$nom_cco[$pk_wccocod]."&wser=".$wser."&activo=on&wfec_i=".date("Y-m-d")."&wfec_f=".date("Y-m-d")."&impresas=on&wtipo=\", \"\", \"\")' style='cursor: pointer'><b><div id='impresion".$pk_wccocod."' class='blink'> &nbsp;".$array_alertas[$pk_wccocod]['impresiones']."</div></b></td>";//Impresiones
+								echo "<td width='3%' align=center onClick='window.open(\"../reportes/Rep_lista_dietas.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&wcco=".$pk_wccocod."-".$nom_cco[$pk_wccocod]."&wser=".$wser."&activo=on&wfec_i=".date("Y-m-d")."&wfec_f=".date("Y-m-d")."&impresas=on&wtipo=\", \"\", \"\")' style='cursor: pointer'><b><div id='impresion".$pk_wccocod."' class='blink'> &nbsp;".$array_alertas[$pk_wccocod]['impresiones']."</div></b></td>";//Impresiones
 								echo "<td width='3%' align=center><b><div class='blink' id='sinLeer2".$increment.$pk_wccocod."'></div></b></td>";//Mensajes sin leer
 								echo "<td width='3%' align=center><b><div class='blink' id='adicion".$pk_wccocod."'>".$adix."</div></b></td>";//Adiciones
 								echo "<td width='3%' align=center><b><div class='blink' id='modificacion".$pk_wccocod."'>".$modix."</div></b></td>";//Modificaciones
@@ -1740,7 +1771,7 @@ if( isset($_REQUEST['action'] )){
 								echo "<td width='3%' align=center><b><div class='blink' id='traslados".$pk_wccocod."'>".$trasl."</div></b></td>";//Traslados
 								echo "<td width='3%' align=center><b><div class='blink' id='posq".$pk_wccocod."'>".$posqx."</div></b></td>";//Pos quirurjicos
 							}else{
-								echo "<td width='3%' align=center onClick='window.open(\"../reportes/Rep_lista_dietas.php?wemp_pmla=".$wemp_pmla."&wcco=".$pk_wccocod."-".$nom_cco[$pk_wccocod]."&wser=".$wser."&activo=on&wfec_i=".date("Y-m-d")."&wfec_f=".date("Y-m-d")."&impresas=on&wtipo=\", \"\", \"\")' style='cursor: pointer'><b><div id='impresion".$pk_wccocod."' class='blink'> &nbsp;</div></b></td>";//Impresiones
+								echo "<td width='3%' align=center onClick='window.open(\"../reportes/Rep_lista_dietas.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."&wcco=".$pk_wccocod."-".$nom_cco[$pk_wccocod]."&wser=".$wser."&activo=on&wfec_i=".date("Y-m-d")."&wfec_f=".date("Y-m-d")."&impresas=on&wtipo=\", \"\", \"\")' style='cursor: pointer'><b><div id='impresion".$pk_wccocod."' class='blink'> &nbsp;</div></b></td>";//Impresiones
 								echo "<td width='3%' align=center><b><div class='blink' id='sinLeer2".$increment.$pk_wccocod."'></div></b></td>";//Mensajes sin leer
 								echo "<td width='3%' align=center><b><div class='blink' id='adicion".$pk_wccocod."'>&nbsp;</div></b></td>";//Adiciones
 								echo "<td width='3%' align=center><b><div class='blink' id='modificacion".$pk_wccocod."'>&nbsp;</div></b></td>";//Modificaciones
@@ -3640,7 +3671,7 @@ if( isset($_REQUEST['action'] )){
 		return( $result );
 	}
 	
-	function vistaInicial(){
+	function vistaInicial($sCodigoSede = NULL){
 
 		global $wemp_pmla;
 		global $wactualiz;
@@ -3649,10 +3680,24 @@ if( isset($_REQUEST['action'] )){
 		global $wbasedato;
 		global $conex;
 		global $wser;
+		global $selectsede;
+
+		$sFiltroSede='';
+	
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+		
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 		
 		echo "<form name='mondietas' action='' method=post>";
 		
-		encabezado("Monitor Servicio de Alimentación", $wactualiz, 'clinica');
+		encabezado("Monitor Servicio de Alimentación", $wactualiz, 'clinica', TRUE);
 
 		$width_sel = " width: 95%; ";
 		$u_agent = $_SERVER['HTTP_USER_AGENT'];
@@ -3660,7 +3705,8 @@ if( isset($_REQUEST['action'] )){
 			$width_sel = "";		
 
 		echo "<form name='mondietas' action='' method=post>";
-		echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";  
+		echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
+		echo "<input type='hidden' name='sede' id='sede' value='".$selectsede."'>"; 
 		echo "<INPUT type='hidden' id='mensajeriaPrograma' value='cpa'>";
 		if (strpos($user,"-") > 0)
 			$wusuario = substr($user,(strpos($user,"-")+1),strlen($user)); 
@@ -3671,7 +3717,8 @@ if( isset($_REQUEST['action'] )){
 		$q = "SELECT ".$wtabcco.".ccocod, ".$wtabcco.".cconom 
 				FROM ".$wtabcco.", ".$wbasedato."_000011
 			   WHERE ".$wtabcco.".ccocod = ".$wbasedato."_000011.ccocod 
-				 AND ccohos  = 'on' ";
+				 AND ccohos  = 'on' 
+				 {$sFiltroSede}";
 		
 		$res = mysql_query($q,$conex) or die ("Error: ".mysql_errno()." - en el query: ".$q." - ".mysql_error());
 		$num = mysql_num_rows($res);
@@ -3726,12 +3773,23 @@ if( isset($_REQUEST['action'] )){
 		echo "<input type='hidden' id='wbasedato' name='wbasedato' value='".$wbasedato."'>";
 		echo "<input type='HIDDEN' id='usuario' name='usuario' value='".$wusuario."'>";
 		//echo "<input type='HIDDEN' id='servicio' name='servicio' value='".$wser."'>";
+
+		$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+		$sFiltroSede="";
+		$codigoSede = '';
+		if($estadosede=='on')
+		{	  
+			$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	
+		$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
 		
 		echo "<div id='resultados_monitor' style='width:auto;'></div>";
 		echo "<br><br>";
 		echo "<table>";
 			echo "<tr>";  
-				echo "<td align=center colspan=7><A href='Monitor_dietas.php?wemp_pmla=".$wemp_pmla."'><b>Retornar</b></A></td>"; 
+				echo "<td align=center colspan=7><A href='Monitor_dietas.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."'><b>Retornar</b></A></td>"; 
 			echo "</tr>";
 		echo "</table>";
 		echo "</center>";
@@ -3984,6 +4042,7 @@ function consultarMonitor(){
 	var wcco = $("#wcco").val();
 	var wser = $("#wser").val();
 	var wfec_i = $("#wfec_i").val();
+	var selectsede = $("#selectsede").val();
 	
 	if( wcco == "" || wser == "" || wfec_i == "" ){
 		//$("#resultados_lista").hide( 'drop', {}, 500 );
@@ -4005,7 +4064,7 @@ function consultarMonitor(){
 	var rango_inferior = 11;
 	var aleatorio = Math.floor(Math.random()*(rango_superior-(rango_inferior-1))) + rango_inferior;
 	//Realiza el llamado ajax con los parametros de busqueda
-	$.post('Monitor_dietas.php', { wemp_pmla: wemp_pmla, action: "mostrarMonitor", wcco: wcco, wser: wser, wfec_i: wfec_i, consultaAjax: aleatorio} ,
+	$.post('Monitor_dietas.php', { wemp_pmla: wemp_pmla, action: "mostrarMonitor", wcco: wcco, wser: wser, wfec_i: wfec_i, selectsede, consultaAjax: aleatorio} ,
 		function(data) {
 			$.unblockUI();
 			$('#resultados_monitor').html(data);
@@ -4554,6 +4613,10 @@ function agregarEventoResaltar(){
 			mostrar_atras_adelante('');
 		}
 	);*/
+
+	$(document).on('change','#selectsede',function(){
+		window.location.href = "Monitor_dietas.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+	});
 	
 </script>
 <style type="text/css">
@@ -4641,7 +4704,7 @@ p{margin:0;}
     <body>
 		<!-- LO QUE SE MUESTRA AL INGRESAR POR PRIMERA VEZ -->
 			<?php
-					vistaInicial();
+					vistaInicial($selectsede);
 			?>
     </body>
 </html>
