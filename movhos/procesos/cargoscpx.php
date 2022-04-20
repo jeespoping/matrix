@@ -527,7 +527,7 @@ if(isset($artcod))
  * La función registrarError() se llama enviando como parámetro el arreglo, con esto se registra el error en la tabla 000005 y seeobtiene la clase "class" que se mostrara en la pantalla.
  * Es decir, cuando hay un error la tabla debe cambiar de color para indicarselo al usuario, ese cambio de color esta dictado por el class del <td>, lo que se obtiene
  * es el valor de class para el <td>
- *
+ * @modified Abril 16 de 2022 (Marlon Osorio)  - Se cambia las funciones de centro de costos 1050/1051 por la version unifica del comun.php
  * @modified Diciembre 02 de 2020  (Edwin)	   - Se corrige validación de cargos de CTC en la función preCondicionesKE
  * @modified Septiembre 23 de 2020 (Edwin) 	   - Se valida que la fecha no sea vacia en la funcion consultarRegistroKardexPorArticulo. Si es vacia en la consulta se cambia el valor de fecha por 0000-00-00.
  * @modified Noviembre 6 de 2019  (Edwin)  	   - Al dispensar se tiene en cuenta el saldo del cco desde dónde se dispensa
@@ -7185,50 +7185,7 @@ function consultarCcoUrgencias(){
 	}
 	return $cco;
 }
-function centroCostosCM()
-	{
-		global $conex;
-		global $bd;
-		
-		$sql = "SELECT
-					Ccocod
-				FROM
-					".$bd."_000011
-				WHERE
-					ccofac LIKE 'on'
-					AND ccotra LIKE 'on'
-					AND ccoima !='off'
-					AND ccodom !='on'
-				";
-		
-		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		
-		if( $rows = mysql_fetch_array( $res ) ){
-			return $rows[ 'Ccocod' ];
-		}
-	}
-	function centroCostosSF()
-	{
-		global $conex;
-		global $bd;
-		
-		$sql = "SELECT
-					Ccocod
-				FROM
-					".$bd."_000011 
-					WHERE 	ccofac 		LIKE 'on' 
-					AND 	ccotra 		LIKE 'on' 
-					AND 	ccoima 		!='on' 
-					AND 	ccodom 		!='on'
-				
-				";
-		
-		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		
-		if( $rows = mysql_fetch_array( $res ) ){
-			return $rows[ 'Ccocod' ];
-		}
-	}
+
 include_once("movhos/validacion_hist.php");
 include_once("movhos/fxValidacionArticulo.php");
 include_once("movhos/registro_tablas.php");
@@ -7241,7 +7198,7 @@ include_once("ips/funciones_facturacionERP.php");
 $db = $_REQUEST['db'];
 
 $wtitulo = "DISPENSACION ARTICULOS";
-$wactualiz = "Diciembre 12 de 2018";
+$wactualiz = "Abril 16 de 2022";
 
 if( !$existeFacturacionERP )
 	unset($facturacionErp);
@@ -7251,8 +7208,8 @@ encabezado($wtitulo, $wactualiz, 'clinica');
 
 //$serviciofarmaceutico = '1050';
 //$centraldemezclas = '1051';
-$serviciofarmaceutico 	= centroCostosSF();
-$centraldemezclas 		= centroCostosCM();
+$serviciofarmaceutico 	= ccoUnificadoSF();
+$centraldemezclas 		= ccoUnificadoCM();
 //echo $serviciofarmaceutico; echo $centraldemezclas;
 $tempRonda = "";
 $huboReemplazo = false;
