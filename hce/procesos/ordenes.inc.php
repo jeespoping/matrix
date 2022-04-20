@@ -23,6 +23,8 @@ include_once("conex.php");
 
 /************************************************************************************************************************
  * Modificaciones
+ * Abril 16 de 2022  Marlon Osorio - Se cambia las funciones consultarccoCM y consultarCcoSF por la version unificada del comun.php
+ *								     las cuales son ccoUnificadoCM y ccoUnificadoSF respectivamente.
  * Noviembre 11 de 2021	Sebastián Nevado	- Se agregan filtros de interoperabilidad con la tabla de tipos de exámenes (hce15) con interoperabilidad encendido (Tipiws en on).
  * Diciembre 16 de 2021 Daniel CB     -Se comentan lineas con el parametro de wemp_pmla sobrescrito
  * Octubre 26 de 2021   Marlon Oosrio -Se modifican funciones con el parametro global cenmez
@@ -276,8 +278,8 @@ $wecenpro=consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
 //Consulta de la información del usuario
 @$usuario = consultarUsuarioOrdenes($wuser);
 
-$centroCostosServicioFarmaceutico = consultarCcoSF($conex, $wemp_pmla );
-$centroCostosCentralMezclas = consultarCcoCM( $conex, $wemp_pmla );
+$centroCostosServicioFarmaceutico = ccoUnificadoSF();
+$centroCostosCentralMezclas = ccoUnificadoCM();
 
 
 /**********************************
@@ -1171,62 +1173,6 @@ function articuloTieneTarifa( $conex, $wcliame, $wmovhos, $codigo, $tarifa ){
 	
 	if( $rows = mysql_fetch_array ($res) ){
 		$val = true;
-	}
-	
-	return $val;
-}
-
-
-function consultarCcoSF( $conex, $wemp_pmla ){
-	$val = '';
-	
-	//if( empty($wemp_pmla) )
-	//	$wemp_pmla = '01';
-
-	$wmovhos 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
-	
-	//Consultando el nombre del estudio
-	$sql = "SELECT Ccocod
-			  FROM ".$wmovhos."_000011 a
-			 WHERE a.ccotra  = 'on'
-			   AND a.ccoest  = 'on'
-			   AND a.ccoima != 'on' 
-			   AND a.ccofac  = 'on' 
-			   AND a.ccodom != 'on'
-			 ";
-
-	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
-	
-	if( $rows = mysql_fetch_array ($res) ){
-		$val = $rows['Ccocod'];
-	}
-	
-	return $val;
-}
-
-function consultarCcoCM( $conex, $wemp_pmla ){
-	
-	$val = '';
-	
-	//if( empty($wemp_pmla) )
-	//	$wemp_pmla = '01';
-
-	$wmovhos 	= consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
-	
-	//Consultando el nombre del estudio
-	$sql = "SELECT Ccocod
-			  FROM ".$wmovhos."_000011 a
-			 WHERE a.ccotra  = 'on'
-			   AND a.ccoest  = 'on'
-			   AND a.ccoima  = 'on' 
-			   AND a.ccofac  = 'on' 
-			   AND a.ccodom != 'on'
-			 ";
-
-	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
-	
-	if( $rows = mysql_fetch_array ($res) ){
-		$val = $rows['Ccocod'];
 	}
 	
 	return $val;
