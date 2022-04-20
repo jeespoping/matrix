@@ -301,7 +301,10 @@ function cambiarEstadoExamen($conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, $
 				
 				/* FUNCION QUE REALIZA LA VALIDACION DE CARGOS AUTOMATICOS */
 				$worigen = 'Interoperabilidad - Sabbag';
-				interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tipoOrden, $estGeneraCca);																										   
+                $validaCcoRealiza = consultarAliasPorAplicacion($conex, $wemp_pmla, 'booleano_valida_cco_realiza_interoperabilidad');
+
+				interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tipoOrden, $estGeneraCca, $validaCcoRealiza);																										   
+                
                 if ($res) {
 
                     registrarDetalleLog($conex, $wmovhos, $historia, $ingreso, $tipoOrden, $nroOrden, $item, 'Cambio de estado externo', $estado . "-" . $row['Estdes'] . "-" . $row['Estdpa']);
@@ -573,7 +576,7 @@ function consultarEstudiosfacturacion($conex, $whce, $wmovhos, $historia, $ingre
         //Si está ofertado deja ordenar
         if ($num > 0) {
 
-            $index = $row['Dettor'] . "-" . $row['Detnro'] . '-F';
+            $index = $row['Dettor'] . "-" ."A". $row['Detnro'] . '-F';
 
             if (!isset($val[$index])) {
                 $val[$index]['medico'] = $row['Detusu'];
@@ -967,6 +970,7 @@ function consultaEstado($conex, $wmovhos, $estado)
 
 function cambiarEstadoExamenWs($conex, $whce, $wmovhos, $tor, $nro, $tipoRespuesta, $wemp_pmla, $item)
 {
+	
     $estado = "";
     $result = false;
     if ($tipoRespuesta == 'estado') {
@@ -1037,9 +1041,11 @@ function cambiarEstadoExamenWs($conex, $whce, $wmovhos, $tor, $nro, $tipoRespues
     if (mysql_affected_rows() >= 1) {
         $result = true;
     }
-
+	
 	$worigen = 'Interoperabilidad - Dinamica';
-	interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nro, $item, $tor, $estGeneraCca);
+	$validaCcoRealiza = consultarAliasPorAplicacion($conex, $wemp_pmla, 'booleano_valida_cco_realiza_interoperabilidad');
+
+	interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nro, $item, $tor, $estGeneraCca, $validaCcoRealiza);
 
     return $result;
 
@@ -1364,7 +1370,7 @@ function utf8_converter($array)
     return $array;
 }
 
-function utf8ize($d)
+/*function utf8ize($d)
 {
     if (is_array($d)) {
         foreach ($d as $k => $v) {
@@ -1374,7 +1380,7 @@ function utf8ize($d)
         return utf8_encode($d);
     }
     return $d;
-}
+}*/
 
 if (!preg_match('/^\d+$/', $wemp_pmla)) {
     die("Solicitud no encontrada");
@@ -1405,6 +1411,8 @@ if ($_POST) {
                 case 'resutaldoWS':
                     {
                         global $wemp_pmla;
+						
+						
 
                         if (isset($_POST['resultXML'])) {
                             $result = WSRecepcion_De_Resultados(utf8_encode($_POST['resultXML']));
