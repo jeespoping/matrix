@@ -8491,7 +8491,7 @@ else{
 									$artValido =registrarItdro($dronum, $drolin, $fuente, $date, $cco, $pac, $art, $error);
 								
 								//Octubre 13 de 2015. Cargos ERp
-								CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+								CargarCargosErp( $conex, $bd, $wcliame, $art, $tipTrans, $dronum, $drolin );
 
 								/************************************************************************************
 								 * Febrero 27 de 2014
@@ -8534,14 +8534,14 @@ else{
 								}
 								ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
 								
-								CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+								CargarCargosErp( $conex, $bd, $wcliame, $art, $tipTrans, $dronum, $drolin );
 							}
 						}
 						else{
 							
 							// agregarAlCarro( $art, $art['ser'], $tipTrans, $cco );
 							// $artValido = registrarDetalleCargo($date, $dronum, $drolin, $art, $usuario, &$error, "000143" );
-							CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+							CargarCargosErp( $conex, $bd, $wcliame, $art, $tipTrans, $dronum, $drolin );
 							
 							//Busco si es un producto busco los insumos del producto codificado
 							$reInsProducto = consultarInsumosProducto( $wcenpro, $bd, $art[ 'cod' ] );
@@ -8631,7 +8631,7 @@ else{
 												$artValido = registrarItdro($dronum, $drolin2, $fuente, $date, $cco, $pac, $art2, $error);
 											
 											$artValido = registrarDetalleCargo($date, $dronum, $drolin2, $art2, $usuario,$error,$tablaCargosMatrix);
-											CargarCargosErp( $conex, $bd, "cliame", $art2, $tipTrans, $dronum, $drolin2 );
+											CargarCargosErp( $conex, $bd, $wcliame, $art2, $tipTrans, $dronum, $drolin2 );
 
 											$ardrolin2[ $art2['cod'] ] = $drolin2;
 

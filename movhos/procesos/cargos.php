@@ -1420,11 +1420,12 @@ function actualizandoAplicacion( $idKardex, $cco, $art, $num, $lin ){
 function buscarCodigoNombreCamillero(){
 	
 	global $conex;
+	global $wemp_pmla;
 	global $bd;
 	
 	global $bdCencam;
 	
-	$bdCencam = "cencam";
+	$bdCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, "cencam");
 	
 	$val = '';
 	
@@ -1531,8 +1532,9 @@ function crearPeticionCamillero( $origen, $motivo, $hab, $destino, $solicita, $c
 	
 	global $conex;
 	global $bdCencam;
+	global $wemp_pmla;
 	
-	$bdCencam = "cencam";
+	$bdCencam =consultarAliasPorAplicacion($conex, $wemp_pmla, "cencam");
 	
 	$fecha = date( "Y-m-d" );
 	$hora = date( "H:i:s" );
@@ -4251,7 +4253,7 @@ else{
 										if( $conex_o != 0 )
 											$artValido =registrarItdro($dronum, $drolin, $fuente, $date, $cco, $pac, $art, $error);
 										
-										CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+										CargarCargosErp( $conex, $bd, $wcliame, $art, $tipTrans, $dronum, $drolin );
 										
 										/************************************************************************************
 										 * Febrero 27 de 2014
@@ -4294,14 +4296,14 @@ else{
 										}
 										ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
 										
-										CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+										CargarCargosErp( $conex, $bd, $wcliame, $art, $tipTrans, $dronum, $drolin );
 									}
 								}
 								else{
 							
 									// agregarAlCarro( $art, $art['ser'], $tipTrans, $cco );
 									// $artValido = registrarDetalleCargo($date, $dronum, $drolin, $art, $usuario, &$error, "000143" );
-									CargarCargosErp( $conex, $bd, "cliame", $art, $tipTrans, $dronum, $drolin );
+									CargarCargosErp( $conex, $bd, $wcliame, $art, $tipTrans, $dronum, $drolin );
 									
 									//Busco si es un producto busco los insumos del producto codificado
 									$reInsProducto = consultarInsumosProducto( $wcenpro, $bd, $art[ 'cod' ] );
@@ -4389,7 +4391,7 @@ else{
 														$artValido = registrarItdro($dronum, $drolin2, $fuente, $date, $cco, $pac, $art2, $error);
 													
 													$artValido = registrarDetalleCargo($date, $dronum, $drolin2, $art2, $usuario,$error,$tablaCargosMatrix);
-													CargarCargosErp( $conex, $bd, "cliame", $art2, $tipTrans, $dronum, $drolin2 );
+													CargarCargosErp( $conex, $bd, $wcliame, $art2, $tipTrans, $dronum, $drolin2 );
 													
 													$ardrolin2[ $art2['cod'] ] = $drolin2;
 													
