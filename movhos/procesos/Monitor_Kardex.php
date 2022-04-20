@@ -3792,7 +3792,7 @@ if($estadosede=='on')
 									}
 									elseif ($wopcion!="4" and $wopcion!="6" and $wopcion!="7")  // 4 = es la opcion de antibioticos, debe ejecutar es el programa de cargos de la central de mezclas
 									{
-									   echo "<td class=".$walta_tras."><div align='center'><A href='cargos.php?emp=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&cco[cod]=".$ccoDisSF."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
+									   echo "<td class=".$walta_tras."><div align='center'><A href='cargos.php?wemp_pmla=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&cco[cod]=".$ccoDisSF."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
 									}
 									else
 									{
@@ -3917,7 +3917,7 @@ if($estadosede=='on')
 											// echo "<td class=".$walta_tras."><div align='center'><A href='../../".$wcenmez."/procesos/cargoscm.php?wbasedato=lotes.php&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
 										}
 										elseif ($wopcion!="4" and $wopcion!="6" and $wopcion!="7")  // 4 = es la opcion de antibioticos, debe ejecutar es el programa de cargos de la central de mezclas
-										   echo "<td class=".$walta_tras."><div align='center'><A href='cargos.php?emp=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&cco[cod]=".$ccoDisSF."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
+										   echo "<td class=".$walta_tras."><div align='center'><A href='cargos.php?wemp_pmla=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&cco[cod]=".$ccoDisSF."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
 										  else
 											{
 											 if ($wopcion != "7")
@@ -4045,7 +4045,7 @@ if($estadosede=='on')
 											// echo "<td class=".$walta_tras."><div align='center'><A href='../../".$wcenmez."/procesos/cargoscm.php?wbasedato=lotes.php&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";
 										}
 										elseif ($wopcion!="4" and $wopcion!="6" and $wopcion!="7")  // 4 = es la opcion de antibioticos, debe ejecutar es el programa de cargos de la central de mezclas
-											echo "<td class=".$walta_tras." align=center><A href='cargos.php?emp=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&cco[cod]=".$ccoDisSF."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
+											echo "<td class=".$walta_tras." align=center><A href='cargos.php?wemp_pmla=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&cco[cod]=".$ccoDisSF."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
 										else
 										    if ($wopcion!="6" and $wopcion!="7")  //Con Antibioticos SIN Confirmar no debe salir Cargar
 											  echo "<td class=".$walta_tras." align=center><A href='../../".$wcenmez."/procesos/cargoscm.php?wemp_pmla=".$wemp_pmla."wbasedato=lotes.php?wemp_pmla=".$wemp_pmla."&tipo=C&historia=".$wmat_estado[$i][1]."&cco=' target=_blank> Cargar </A></td>";

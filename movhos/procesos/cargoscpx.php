@@ -1,4 +1,9 @@
 <?php
+if(isset($_REQUEST['wemp_pmla']))
+{
+	$wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+
 include_once("conex.php");
 
 
@@ -1177,7 +1182,7 @@ function procesoContingencia(){
 	global $bd;
 	global $conex_o;
 	global $wcenpro;
-	global $emp;
+	global $wemp_pmla;
 
 	if( $conex_o != 0 ){
 
@@ -1250,7 +1255,7 @@ function procesoContingencia(){
 
 
 				//Consulto las empresas a las que se requiere el cambio de articulo equivalente
-				$responsablesEq = consultarAliasPorAplicacion( $conex, $emp, "empresaConEquivalenciaMedEInsumos" );
+				$responsablesEq = consultarAliasPorAplicacion( $conex, $wemp_pmla, "empresaConEquivalenciaMedEInsumos" );
 				// $tipoEmpresaParticular = consultarAliasPorAplicacion( $conex, $emp, "tipoempresaparticular" );
 				$resPaciente = consultarResponsable( $conex, $pac['his'], $pac['ing'] );
 				$admiteEquivalencia = false;
@@ -1289,9 +1294,9 @@ function procesoContingencia(){
 						registrarLogArticuloEquivalente( $conex, $bd, $auxArtEq, $art, $dronum, $drolin, 'off' );
 						
 						//Se hace un ajuste de entrada para cada uno de los insumos iguale a la cantidad dispensado
-						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntrada" ) );
+						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteEntrada" ) );
 						if( $tipTrans != 'C' ){
-							list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteSalidaDevolucion" ) );
+							list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteSalidaDevolucion" ) );
 						}
 						ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
 					}
@@ -1304,9 +1309,9 @@ function procesoContingencia(){
 					 ************************************************************************************/
 					if( !empty( $artEq ) && $registra && $admiteEquivalencia ){
 						//Se hace un ajuste de Salida de inventario para el articulo que se va dispensar
-						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteSalida" ) );
+						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteSalida" ) );
 						if( $tipTrans != 'C' ){
-							list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntradaDevolucion" ) );
+							list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteEntradaDevolucion" ) );
 						}
 						ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
 					}
@@ -1345,9 +1350,9 @@ function procesoContingencia(){
 					if( !empty( $artsAjustar ) && count( $artsAjustar ) > 0 ){
 
 						//Se hace un ajuste de entrada para cada uno de los insumos igual a la cantidad dispensado
-						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntrada" ) );
+						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteEntrada" ) );
 						if( $tipTrans != 'C' ){
-							list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteSalidaDevolucion" ) );
+							list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteSalidaDevolucion" ) );
 						}
 						ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], $artsAjustar );
 					}
@@ -1355,9 +1360,9 @@ function procesoContingencia(){
 					// $art = $auxArtEq;	//Noviembre 12 de 2013
 
 					//Se hace un ajuste de entrada para cada uno de los insumos igual a la cantidad dispensado
-					list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteSalida" ) );
+					list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteSalida" ) );
 					if( $tipTrans != 'C' ){
-						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntradaDevolucion" ) );
+						list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteEntradaDevolucion" ) );
 					}
 					ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
 				}
@@ -2071,7 +2076,7 @@ function actualizandoCargo( $conex, $wbasedato, $num, $lin, $marca ){
 /********************************************************************************
  * Consulta el valor de una aplicacion en root_000051
  ********************************************************************************/
-function consultarValorPorAplicacion( $conex, $emp, $aplicacion ){
+function consultarValorPorAplicacion( $conex, $wemp_pmla, $aplicacion ){
 
 	$val = '';
 
@@ -2081,7 +2086,7 @@ function consultarValorPorAplicacion( $conex, $emp, $aplicacion ){
 				root_000051
 			WHERE
 				detapl = '$aplicacion'
-				AND detemp = '$emp'
+				AND detemp = '$wemp_pmla'
 			";
 
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
@@ -2100,16 +2105,16 @@ function contingencia( $conex ){
 	global $fhContingencia;
 	global $fhGrabacionContingencia;
 	global $marcaContingencia;
-	global $emp;
+	global $wemp_pmla;
 
-	$contingencia = consultarValorPorAplicacion( $conex, $emp, 'CONTINGENCIA' );
+	$contingencia = consultarValorPorAplicacion( $conex, $wemp_pmla, 'CONTINGENCIA' );
 
 	if( $contingencia == 'on' ){
 
-		$fechaContingencia = consultarValorPorAplicacion( $conex, $emp, 'fechaContingencia' );
-		$horaContingencia = consultarValorPorAplicacion( $conex, $emp, 'horaContingencia' );
-		$fechaGrabacionContingencia = consultarValorPorAplicacion( $conex, $emp, 'fechaGrabacionContingencia' );
-		$horaGrabacionContingencia = consultarValorPorAplicacion( $conex, $emp, 'horaGrabacionContingencia' );
+		$fechaContingencia = consultarValorPorAplicacion( $conex, $wemp_pmla, 'fechaContingencia' );
+		$horaContingencia = consultarValorPorAplicacion( $conex, $wemp_pmla, 'horaContingencia' );
+		$fechaGrabacionContingencia = consultarValorPorAplicacion( $conex, $wemp_pmla, 'fechaGrabacionContingencia' );
+		$horaGrabacionContingencia = consultarValorPorAplicacion( $conex, $wemp_pmla, 'horaGrabacionContingencia' );
 
 		//Convierto a fecha unix la hora de contingencia
 		$fhContingencia = strtotime( "$fechaContingencia $horaContingencia" );
@@ -2816,7 +2821,7 @@ function consultarUltimaRondaDispensada( $vectorAplicaciones, $ronda = false, $p
  ********************************************************************************/
 function consultarHoraCorteKardex( $conex ){
 
-	global $wemp;
+	global $wemp_pmla;
 
 	$sql = "SELECT
 				Detval
@@ -2824,7 +2829,7 @@ function consultarHoraCorteKardex( $conex ){
 				root_000051
 			WHERE
 				detapl = 'Hora corte kardex'
-				AND detemp = '$wemp'
+				AND detemp = '$wemp_pmla'
 			";
 
 	$res = mysql_query( $sql, $conex ) or die( mysql_errno." - Error en el query $sql - ".mysql_error() );
@@ -2857,10 +2862,10 @@ function crearKardexAutomaticamente( $conex, $wbd, $pac, $fecha ){
 
 	global $wbasedato;
 	global $usuario;
-	global $emp;
+	//global $emp;
 	global $wemp_pmla;
 
-	$wemp_pmla = $emp;
+	//$wemp_pmla = $emp;
 
 	$wbasedato = $wbd;
 
@@ -4745,7 +4750,7 @@ function ArticulosXPacienteCM( $pac ){
 
 	global $idsArtsConSaldo;
 	
-	global $emp;
+	global $wemp_pmla;
 
 	if( $tipTrans == "C" ){
 
@@ -5277,7 +5282,7 @@ function ArticulosXPacienteCM( $pac ){
 					$datos[$i][7]=$rows[7];
 					$datos[$i][8]=$rows[8];	//Diciembre 11 de 2012
 					$datos[$i][9]=tieneSaldoEnPiso( $bd, $conex, $ori, $pac['his'], $pac['ing'], $rows[2] );
-					$datos[$i][10]=consultarCTCAgotado( $conex, $bd, $pac['his'], $pac['ing'], $rows[2], $emp );
+					$datos[$i][10]=consultarCTCAgotado( $conex, $bd, $pac['his'], $pac['ing'], $rows[2], $wemp_pmla );
 					$i++;
 				}
 				else{
@@ -5290,7 +5295,7 @@ function ArticulosXPacienteCM( $pac ){
 					$vacios[$j][7]=$rows[7];
 					$vacios[$j][8]=$rows[8];	//Diciembre 11 de 2012
 					$vacios[$j][9]=tieneSaldoEnPiso( $bd, $conex, $ori, $pac['his'], $pac['ing'], $rows[2] );
-					$vacios[$j][10]=consultarCTCAgotado( $conex, $bd, $pac['his'], $pac['ing'], $rows[2], $emp );
+					$vacios[$j][10]=consultarCTCAgotado( $conex, $bd, $pac['his'], $pac['ing'], $rows[2], $wemp_pmla );
 
 					if($rows[4] != 'on'){
 						$vacios[$j][4]=false;
@@ -5491,7 +5496,7 @@ function ArticulosXPaciente( $pac ){
 
 	global $idsArtsConSaldo;
 	
-	global $emp;
+	global $wemp_pmla;
 
 	if( $tipTrans == "C" ){
 
@@ -6168,7 +6173,7 @@ function ArticulosXPaciente( $pac ){
 					$datos[$i][7]=$rows[7];
 					$datos[$i][8]=$rows[8];	//Diciembre 11 de 2012
 					$datos[$i][9]=tieneSaldoEnPiso( $bd, $conex, $ori, $pac['his'], $pac['ing'], $rows[2], $ccoSaldoAux );
-					$datos[$i][10]=consultarCTCAgotado( $conex, $bd, $pac['his'], $pac['ing'], $rows[2], $emp );
+					$datos[$i][10]=consultarCTCAgotado( $conex, $bd, $pac['his'], $pac['ing'], $rows[2], $wemp_pmla );
 					$i++;
 				}
 				else{
@@ -6181,7 +6186,7 @@ function ArticulosXPaciente( $pac ){
 					$vacios[$j][7]=$rows[7];
 					$vacios[$j][8]=$rows[8];	//Diciembre 11 de 2012
 					$vacios[$j][9]=tieneSaldoEnPiso( $bd, $conex, $ori, $pac['his'], $pac['ing'], $rows[2], $ccoSaldoAux );
-					$vacios[$j][10]=consultarCTCAgotado( $conex, $bd, $pac['his'], $pac['ing'], $rows[2], $emp );
+					$vacios[$j][10]=consultarCTCAgotado( $conex, $bd, $pac['his'], $pac['ing'], $rows[2], $wemp_pmla );
 
 					if($rows[4] != 'on'){
 						$vacios[$j][4]=false;
@@ -7233,6 +7238,8 @@ include_once("movhos/cargosSF.inc.php");
 
 include_once("ips/funciones_facturacionERP.php");
 
+$db = $_REQUEST['db'];
+
 $wtitulo = "DISPENSACION ARTICULOS";
 $wactualiz = "Diciembre 12 de 2018";
 
@@ -7252,7 +7259,7 @@ $huboReemplazo = false;
 
 echo "<center><table border='0' style='background-color: #FAFAFA;'>";
 
-if ( $tipTrans == "C" || consultarhorario($horario,$emp))
+if ( $tipTrans == "C" || consultarhorario($horario,$wemp_pmla))
 {
 if($tipTrans == "D")
 {
@@ -7292,8 +7299,8 @@ if (isset($user) and !isset($usuario)){
 	$usuario=$usuario[count($usuario)-1];
 }
 
-$wcenpro = consultarAliasPorAplicacion( $conex, $emp, "cenmez" );
-$wcliame = consultarAliasPorAplicacion( $conex, $emp, "cliame" );
+$wcenpro = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+$wcliame = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
 //encabezao del kardex
 //Se pone aca porque la variable usuario es seteado por el kardex automaticamente
 $aux = @$usuario;
@@ -7310,7 +7317,7 @@ if( !isset( $ejecutarProcesosUnix ) )
 
 $usuario = $aux;
 
-$tmpDispensacion = consultarTiempoDispensacion( $conex, $emp );
+$tmpDispensacion = consultarTiempoDispensacion( $conex, $wemp_pmla );
 
 if( false && isset( $cbCrearPeticion ) && $cbCrearPeticion == 'on' ){	//Febrero 06 de 2015. Se desactiva la petición de camilleros a solicitud de Beatriz Orrego
 
@@ -7361,7 +7368,7 @@ elseif (!isset($pac['his']))
 		{
 			$row=mysql_fetch_array($err);
 			$cco['cod']=$row['Cc'];
-			$ok=getCco($cco,$tipTrans,$emp);
+			$ok=getCco($cco,$tipTrans,$wemp_pmla);
 			echo "<input type='hidden' name ='cco[cod]' value='".$cco['cod']."' >";
 		}
 		else
@@ -7397,7 +7404,7 @@ elseif (!isset($pac['his']))
 		if($pos === 0)//Tiene que ser triple igual por que si no no funciona
 		{
 			$cco['cod']=substr($ccoCod,3);
-			if(!getCco($cco,$tipTrans,$emp))
+			if(!getCco($cco,$tipTrans,$wemp_pmla))
 			{
 				$printError="EL CENTRO DE COSTOS NO EXISTE O NO ESTA HABILITADO PARA REALIZAR CARGOS";
 				$ok=false;
@@ -7641,7 +7648,7 @@ elseif (!isset($pac['his']))
 		echo "<tr><td class='errorTitulo'>".$printError;
 		echo "</td></tr>";
 		echo "<tr><td class='tituloSup'>";
-		ECHO "<BR/><B><A HREF='cargos.php?tipTrans=".$tipTrans."&emp=".$emp."&bd=".$bd."'>Retornar</a>";
+		ECHO "<BR/><B><A HREF='cargos.php?tipTrans=".$tipTrans."&wemp_pmla=".$wemp_pmla."&bd=".$bd."'>Retornar</a>";
 		echo "</td></tr></table>";
 	}
 }
@@ -7651,7 +7658,7 @@ else{
 
 	if(!isset($cco['fap'])){
 		/*Busqueda de los datos del Centro de Costos*/
-		getCco($cco,$tipTrans, $emp);
+		getCco($cco,$tipTrans, $wemp_pmla);
 	}
 
 	if(isset($aprov))
@@ -7729,7 +7736,7 @@ else{
 // //				$cco['tras'] = esTraslado( $cco['cod'] );
 			// odbc_close($conex_f);
 			
-			$pac['act']=infoPacientePrima($pac,$emp);
+			$pac['act']=infoPacientePrima($pac,$wemp_pmla);
 			if( !$pac['act'] ){
 				$warning= "NO EXISTE UN PACIENTE ACTIVO CON ESA HISTORIA EN EL SISTEMA, INTENTELO NUEVAMENTE!!!";
 			}
@@ -7769,7 +7776,7 @@ else{
 			 * Mayo 5 de 2018
 			 ********************************************************************************/
 			if( !$cco['urg'] )
-				marcarArticulosNoEnviar( $conex, $bd, $emp, $pac['his'], $pac['ing'], date( "Y-m-d" ) );
+				marcarArticulosNoEnviar( $conex, $bd, $wemp_pmla, $pac['his'], $pac['ing'], date( "Y-m-d" ) );
 			/********************************************************************************/
 
 
@@ -7793,7 +7800,7 @@ else{
 				);
 				$contexto = stream_context_create($opciones);
 				$url = 'http://'.$_SERVER['HTTP_HOST'];
-				$url .= "/matrix/hce/procesos/ordenes.inc.php?wemp_pmla=".$emp."&his=".$pac[ 'his' ]."&ing=".$pac[ 'ing' ]."&consultaAjaxKardex=82";
+				$url .= "/matrix/hce/procesos/ordenes.inc.php?wemp_pmla=".$wemp_pmla."&his=".$pac[ 'his' ]."&ing=".$pac[ 'ing' ]."&consultaAjaxKardex=82";
 				@$varGet = file_get_contents( $url, false, $contexto );
 			}
 			/**************************************************************************************************/
@@ -7805,7 +7812,7 @@ else{
 			if( true ){
 
 				$pac2 = $pac;
-				infoPacientePrima($pac2, $emp);
+				infoPacientePrima($pac2, $wemp_pmla);
 
 				//Consulto la fecha y hora en que fue dado de alta el pacient
 				$sql = "SELECT *
@@ -7835,7 +7842,7 @@ else{
 
 							//Busco si le han dado alta definitiva en menos de x horas
 							//segun parametro en root_000051
-							$egresoUrgencias = consultarValorPorAplicacion( $conex, $emp, 'tiempoEgresoUrgencia' )*3600;
+							$egresoUrgencias = consultarValorPorAplicacion( $conex, $wemp_pmla, 'tiempoEgresoUrgencia' )*3600;
 
 							//Si fue dado de alta en menos de x horas activo el paciente
 							if( time() <= strtotime( $rowsEgresoUrgencias[ 'Ubifad' ]." ".$rowsEgresoUrgencias[ 'Ubihad' ] )+$egresoUrgencias ){
@@ -8117,7 +8124,7 @@ else{
 			 * Es necesario saber si el centro de costos en donde esta matriculado el paciente aplica AUTOMÁTICAMENTE
 			 */
 			$ccoPac['cod']=$pac['sac'];
-			if(getCco($ccoPac, $tipTrans, $emp))
+			if(getCco($ccoPac, $tipTrans, $wemp_pmla))
 			{
 				if($ccoPac['apl'])
 				{
@@ -8494,7 +8501,7 @@ else{
 						if( $conex_o != 0 ){
 							
 							//Consulto las empresas a las que se requiere el cambio de articulo equivalente
-							$responsablesEq = consultarAliasPorAplicacion( $conex, $emp, "empresaConEquivalenciaMedEInsumos" );
+							$responsablesEq = consultarAliasPorAplicacion( $conex, $wemp_pmla, "empresaConEquivalenciaMedEInsumos" );
 							// $tipoEmpresaParticular = consultarAliasPorAplicacion( $conex, $emp, "tipoempresaparticular" );
 							$resPaciente = consultarResponsable( $conex, $pac['his'], $pac['ing'] );
 							$admiteEquivalencia = false;
@@ -8537,9 +8544,9 @@ else{
 									registrarLogArticuloEquivalente( $conex, $bd, $auxArtEq, $art, $dronum, $drolin, 'off' );
 
 									//Se hace un ajuste de entrada para cada uno de los insumos iguale a la cantidad dispensado
-									list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntrada" ) );
+									list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteEntrada" ) );
 									if( $tipTrans != 'C' ){
-										list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteSalidaDevolucion" ) );
+										list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteSalidaDevolucion" ) );
 									}
 									ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
 								}
@@ -8552,9 +8559,9 @@ else{
 								 ************************************************************************************/
 								if( !empty( $artEq ) && $artValido && $admiteEquivalencia ){
 									//Se hace un ajuste de Salida de inventario para el articulo que se va dispensar
-									list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteSalida" ) );
+									list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteSalida" ) );
 									if( $tipTrans != 'C' ){
-										list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntradaDevolucion" ) );
+										list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteEntradaDevolucion" ) );
 									}
 									ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
 								}
@@ -8564,9 +8571,9 @@ else{
 								registrarInsumosProducto( $reInsProducto, $cco, $dronum, $drolin, $fuente, $date, $pac, $art, $error, $tipTrans, $aprov );
 
 								//Se hace un ajuste de entrada para cada uno de los insumos igual a la cantidad dispensado
-								list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteSalida" ) );
+								list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteSalida" ) );
 								if( $tipTrans != 'C' ){
-									list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $emp, "ajusteEntradaDevolucion" ) );
+									list( $fue, $concepto ) = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "ajusteEntradaDevolucion" ) );
 								}
 								ajustarInventario( $conex, $conex_o, $fue, $concepto, $cco[ 'cod' ], Array( 0 => $art ) );
 								
@@ -9874,7 +9881,8 @@ else{
 
 		echo "<input type='hidden' name='usuario' value='".$usuario."'>";
 		echo "<input type='hidden' name='tipTrans' value='".$tipTrans."'>";
-		echo "<input type='hidden' name='emp' value='".$emp."'>";
+		echo "<input type='hidden' name='emp' value='".$wemp_pmla."'>";
+		echo "<input type='hidden' name='wemp_pmla' value='".$wemp_pmla."'>";
 
 //		echo "<input type='hidden' name='pac[nom]' value='".$pac['nom']."'>";
 		echo "<input type='hidden' name='pac[hac]' value='".$pac['hac']."'>";
@@ -10030,17 +10038,17 @@ else{
 		echo "<tr><td class='".$class."'>";
 
 		if( $cco['tras'] && $tipTrans == "C" && $cargados == "on" && $hayArticulosPorDispensar ){
-			echo "<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;emp=".$emp."&bd=".$bd."&cbCrearPeticion=on&ccoCam={$cco['cod']}&hab={$pac['hac']}&solicita=$usuario&origen={$cco['cod']}&destino={$pac['sac']}&paciente={$pac['nom']}&opcionRetornar=1&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar Usuario</a> </font>";
+			echo "<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;wemp_pmla=".$wemp_pmla."&bd=".$bd."&cbCrearPeticion=on&ccoCam={$cco['cod']}&hab={$pac['hac']}&solicita=$usuario&origen={$cco['cod']}&destino={$pac['sac']}&paciente={$pac['nom']}&opcionRetornar=1&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar Usuario</a> </font>";
 		}
 		else{
-			echo "<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;emp=".$emp."&bd=".$bd."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar Usuario</a> </font>";
+			echo "<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;wemp_pmla=".$wemp_pmla."&bd=".$bd."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar Usuario</a> </font>";
 		}
 
 		if( $cco['tras'] && $tipTrans == "C" && $cargados == "on" && $hayArticulosPorDispensar ){
-			echo "&nbsp; &nbsp;<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;emp=".$emp."&bd=".$bd."&ccoCod=UN.".$cco['cod']."&cbCrearPeticion=on&ccoCam={$cco['cod']}&hab={$pac['hac']}&solicita=$usuario&origen={$cco['cod']}&destino={$pac['sac']}&paciente={$pac['nom']}&opcionRetornar=2&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar Usuario+CC</a> </font>";
+			echo "&nbsp; &nbsp;<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;wemp_pmla=".$wemp_pmla."&bd=".$bd."&ccoCod=UN.".$cco['cod']."&cbCrearPeticion=on&ccoCam={$cco['cod']}&hab={$pac['hac']}&solicita=$usuario&origen={$cco['cod']}&destino={$pac['sac']}&paciente={$pac['nom']}&opcionRetornar=2&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar Usuario+CC</a> </font>";
 		}
 		else{
-			echo "&nbsp; &nbsp;<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;emp=".$emp."&bd=".$bd."&ccoCod=UN.".$cco['cod']."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar Usuario+CC</a> </font>";
+			echo "&nbsp; &nbsp;<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;wemp_pmla=".$wemp_pmla."&bd=".$bd."&ccoCod=UN.".$cco['cod']."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar Usuario+CC</a> </font>";
 		}
 
 		echo "</td></tr>";
@@ -10049,13 +10057,13 @@ else{
 		echo "<tr><td class='".$class."'>";
 
 		if( $cco['tras'] && $tipTrans == "C" && $cargados == "on" &&  $hayArticulosPorDispensar ){
-				echo "<A HREF='cargos.php?tipTrans=".$tipTrans."&amp;emp=".$emp."&bd=".$bd."&cbCrearPeticion=on&ccoCam={$cco['cod']}&hab={$pac['hac']}&solicita=$usuario&origen={$cco['cod']}&destino={$pac['sac']}&paciente={$pac['nom']}&opcionRetornar=3&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar</a>";
+				echo "<A HREF='cargos.php?tipTrans=".$tipTrans."&amp;wemp_pmla=".$wemp_pmla."&bd=".$bd."&cbCrearPeticion=on&ccoCam={$cco['cod']}&hab={$pac['hac']}&solicita=$usuario&origen={$cco['cod']}&destino={$pac['sac']}&paciente={$pac['nom']}&opcionRetornar=3&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar</a>";
 		}
 		else{
-			echo "<A HREF='cargos.php?tipTrans=".$tipTrans."&amp;emp=".$emp."&bd=".$bd."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar</a>";
+			echo "<A HREF='cargos.php?tipTrans=".$tipTrans."&amp;wemp_pmla=".$wemp_pmla."&bd=".$bd."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar</a>";
 		}
 
-		echo "&nbsp; &nbsp;<A HREF='reporte.php?pac[his]=".trim($pac['his'])."&amp;pac[ing]=".trim($pac['ing'])."&amp;cc=".$cco['cod']."&tipTrans=".$tipTrans."&usuario=".$usuario."&emp=".$emp."&bd=".$bd."'>Reporte dia paciente</a>";
+		echo "&nbsp; &nbsp;<A HREF='reporte.php?pac[his]=".trim($pac['his'])."&amp;pac[ing]=".trim($pac['ing'])."&amp;cc=".$cco['cod']."&tipTrans=".$tipTrans."&usuario=".$usuario."&wemp_pmla=".$wemp_pmla."&bd=".$bd."'>Reporte dia paciente</a>";
 		echo "</td></tr>";
 	}
 	else
@@ -10065,8 +10073,8 @@ else{
 
 		echo "</td></tr>";
 		echo "<tr><td class='".$class."'>";
-		echo "<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;emp=".$emp."&bd=".$bd."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar con Usuario</a>&nbsp; &nbsp;";
-		echo "<A HREF='cargos.php?tipTrans=".$tipTrans."&amp;emp=".$emp."&bd=".$bd."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar</a>";
+		echo "<A HREF='cargos.php?usuario=".$usuario."&amp;tipTrans=".$tipTrans."&amp;wemp_pmla=".$wemp_pmla."&bd=".$bd."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar con Usuario</a>&nbsp; &nbsp;";
+		echo "<A HREF='cargos.php?tipTrans=".$tipTrans."&amp;wemp_pmla=".$wemp_pmla."&bd=".$bd."&ultPac={$pac['his']}-{$pac['ing']}&fecDis=$fecDispensacion&fechorDis=$fechorDispensacion'>Retornar</a>";
 		echo "</td></tr>";
 
 		$art['cod']="NO APLICA";
