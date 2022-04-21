@@ -4,6 +4,9 @@
  * Este programa muestra el listado de entregas de nutriciones que se han hecho.
  * En este archivo lo unico que se vera reflejado es la parte front (todo lo que vera el usuario.)
 */
+/**DESCRIPCIÓN 08 DE ABRIL DEL 2022 
+ * Filtro por sede
+*/
 
 $consultaAjax = '';
 
@@ -31,7 +34,7 @@ $fecha = date('Y-m-d');
 
 $wactualiz="Octubre 27 de 2021";         
 
-  encabezado("REPORTE DE ENTREGA LACTARIO",$wactualiz, $wemp_pmla);
+  encabezado("REPORTE DE ENTREGA LACTARIO",$wactualiz, $wemp_pmla,true);
 
 ?>
 <html>
@@ -108,7 +111,21 @@ $wactualiz="Octubre 27 de 2021";
 
 
 					<script type="text/javascript" src="Lactarios/lactareos.js"></script>
-					
+					<script>
+						/* Filtro sede */
+						jQuery(document).ready(function($){
+
+							$('#selectsede').change(function(e){
+								// localStorage.setItem('sede',$(this).val());
+
+								setTimeout(function() {
+										$('#activar-sede').trigger('click');
+								}, 1000);
+
+							});
+
+						});
+					</script>
 					
 	</head>
 	<style>
