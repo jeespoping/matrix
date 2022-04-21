@@ -9,14 +9,16 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES 
 //--------------------------------------------------------------------------------------------------------------------------------------------
+// 2022-04-12 		- Angela Zuluaga (Taito): Se adapta diseño a márgenes impresora Zebra.
 // 2020-01-30 		- Se agrega al rotulo los insumos adicionales utilizados para la nutrición (Bolsa y equipos)
 // 2019-09-19 		- Se agrega filtro de tipo de documento al hacer join entre root_000036 y root_000037 para evitar obtener información incorrecta.
 // 					- Se agrega el código de barras con el código de la NPT
 // 2018-02-15 		- Se agregan algunos campos a la impresión del rótulo y se permite seleccionar el rotulo a imprimir de acuerdo al lote
 // 2017-09-18 		- Se agrega el filtro Dnuest='on' en la función consultarDetalleNPT();
-// 2016-10-11 		- Se corrige consulta del ingreso ya que no debe ser el ultimo sino el ingreso con el que se realizó la NPT  		
+// 2016-10-11 		- Se corrige consulta del ingreso ya que no debe ser el ultimo sino el ingreso con el que se realizó la NPT  	
+// 2022-03-29       - Se retira la magen izquierda y se modifican estilos de la tabla de sticker. Se ocultan además las líneas de Bolsa y equipos para el sticker.	
 //-------------------------------------------------------------------------------------------------------------------------------------------- \\
-			$wactualiz='2020-01-30';
+			$wactualiz='2022-04-12';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                     
 
 if(!isset($_SESSION['user']))
@@ -680,7 +682,7 @@ else
 								
 							</tr>
 							<tr>
-								<td colspan='5' class='texto1'>NOMBRE DEL PACIENTE: ".consultarNombrePaciente()."</td>
+								<td colspan='5' class='titulo2'>NOMBRE DEL PACIENTE: ".consultarNombrePaciente()."</td>
 								<td colspan='1' class='texto1'>Lote: ".$lote."</td>
 							</tr>
 							<tr>
@@ -813,7 +815,7 @@ else
 										$htmlRotulo .=  "<tr>
 												<td  colspan='3' class='texto1' ><font color='darkpink'><b>".$valueFormula['descripcion']."</b></font></td>
 												<td  colspan='1' class='texto1' align='center'><font color='darkpink'><b>ml / hora</b></font></td>
-												<td colspan='1' class='texto1' align='right'><font color='darkpink'><b><span id='NPT_VI' style='margin-left:30px'>0.00</span></b></font><input type='hidden' id='NPT_Formula_VI' value='".$valueFormula['formula']."'></td>
+												<td colspan='1'  class='texto1' align='right'><font color='darkpink'><b><span  id='NPT_VI' style='margin-left:30px;font-size:10px !important'>0.00</span></b></font><input type='hidden' id='NPT_Formula_VI' value='".$valueFormula['formula']."'></td>
 												<td colspan='1' class='texto1' align='center' >Tiempo de infusi&oacute;n (h):&nbsp;".$horas."</td>
 											</tr>";
 										break 2;
@@ -822,9 +824,10 @@ else
 							}
 							
 							// Bolsa y equipos
+							//Se debe ocultar solo para el sticker, para la impresión general se debe mostrar 28-03-2022
 							foreach($insumosAdicionales as $keyInsumo => $valueInsumo)
 							{
-								$htmlRotulo .=  "<tr>
+								$htmlRotulo .=  "<tr class='carta'>
 													<td  colspan='3' class='texto1' >".$valueInsumo['generico']."</td>
 													<td  colspan='1' class='texto1' align='center' >".ucfirst(strtolower($valueInsumo['unidad']))."</td>
 													<td  colspan='2' class='texto1' align='left'><span style='margin-left:160px'>".$valueInsumo['cantidad']."</span></td>
@@ -1206,15 +1209,16 @@ function boton_impSticker(){
 	$( ".texto1" ).css({fontSize:"4.7pt"})
 	$( ".texto6" ).css({fontSize:"4.7pt"})
 	$( ".texto3" ).css({fontSize:"4pt"})
+	$( ".carta" ).css({display:"none"})
 
 	$('#tablaNutricionesNPT').css({ 
 		width:390,position: "absolute",
-        left: 178,
+        left: -15,
 		top: 5
     });
 	$('#tablaBotones').css({ 
 		width:390,position: "absolute",
-        left: 178,
+        //left: 178,
         top: $('#tablaNutricionesNPT').outerHeight()+10
     });
 	
@@ -1895,7 +1899,7 @@ function seleccionarLote()
 		.titulo1{color:#FFFFFF;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:center;}
         .titulo2{color:#006699;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;text-align:center;}
         .titulo3{color:#003366;background:#ccffff;font-size:9pt;font-family:Tahoma;font-weight:bold;text-align:center;}
-        .texto1{font-size:8pt;font-family:Tahoma; border-right: 1px solid #000000; border-top: 1px solid #000000;}
+        .texto1{font-size:9pt;font-family:Arial; border-right: 1px solid #000000; border-top: 1px solid #000000;}
         .texto2{font-size:4.7pt;font-family:Tahoma; border-right: 1px solid #000000; border-top: 1px solid #000000;height:0.1em;}
         .texto3{font-size:8pt;}
         .texto4{font-size:4pt;}
