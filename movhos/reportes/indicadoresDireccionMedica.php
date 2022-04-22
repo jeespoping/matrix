@@ -9,8 +9,9 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2020-06-08';
+			$wactualiz='2022-03-16';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//	16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
 //	2020-06-08: Jerson Trujillo: Se corrige warning de division por cero.
 //	2020-02-12: Jerson Trujillo: Se agrega cuadro resumen de ocupación dependiendo de parametros en la movhos_11
 //  2020-01-28: Jerson Trujillo. Se cambia el calculo de la ocupacion hospitalaria del dia actual, para que no consulte en la movhos_38
@@ -42,7 +43,7 @@ else
 
 	include_once("root/comun.php");
 	
-
+	$wbdhce 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 	$conex 			= obtenerConexionBD("matrix");
 	$wbasedato 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 	$wfecha			= date("Y-m-d");   
@@ -1990,7 +1991,7 @@ else
 	//-------------------------------------------------------------------------
 	function abrirHce(documento, tipoDoc, historia, ingreso)
 	{
-		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa=hce&origen="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=I&BC=1";
+		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa="+<?=$wbdhce?>+"&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=I&BC=1";
 		alto		= screen.availHeight;
 		ventana 	= window.open('','','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
 		ventana.document.open();

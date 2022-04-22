@@ -484,9 +484,10 @@ function validar_formulario($clave,$num,&$data)
 
 function consultarUsuarioHabilitado($conex,$origenConsulta,$key)
 {
+	$wbasedatohce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 	$queryHCE = "SELECT Detval 
 				   FROM root_000051 
-				  WHERE Detapl='hce' 
+				  WHERE Detapl='".$wbasedatohce."' 
 					AND Detemp='".$origenConsulta."';";
 					
 	$resHCE = mysql_query($queryHCE, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $queryHCE . " - " . mysql_error());
@@ -1444,7 +1445,7 @@ else
 					$dir = "../reportes/cenimp";
 					$archivoPdf = $dir."/".$wnombrePDF.".pdf";
 					
-					echo "	<p align='center'><input type='button' id='btnEnviarPdf' onclick='enviarPdf(\"".$origen."\",\"".$whis."\",\"".$wing."\",\"".$dir."\",\"".$wnombrePDF.".pdf"."\",\"".$nombrePaciente."\",\"".$nombreEmpresa."\",\"".$wdbmhos."\",\"".$key."\",\"".$nombreEntidad."\");' value='Enviar PDF'></p>";
+					echo "	<p align='center'><input type='button' id='btnEnviarPdf' onclick='enviarPdf(\"".$wemp_pmla."\",\"".$whis."\",\"".$wing."\",\"".$dir."\",\"".$wnombrePDF.".pdf"."\",\"".$nombrePaciente."\",\"".$nombreEmpresa."\",\"".$wdbmhos."\",\"".$key."\",\"".$nombreEntidad."\");' value='Enviar PDF'></p>";
 					echo "	<div id='msjEspere' align='center' style='display:none;'>
 								<img src='../../images/medical/ajax-loader5.gif'/>Por favor espere un momento...<br><br>
 							</div>";
