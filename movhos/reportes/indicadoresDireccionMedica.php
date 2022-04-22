@@ -9,7 +9,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2020-06-08';
+			$wactualiz='2022-04-01';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //	2020-06-08: Jerson Trujillo: Se corrige warning de division por cero.
 //	2020-02-12: Jerson Trujillo: Se agrega cuadro resumen de ocupación dependiendo de parametros en la movhos_11
@@ -41,6 +41,10 @@ else
 	
 
 	include_once("root/comun.php");
+
+    if (is_null($selectsede)){
+        $selectsede = consultarsedeFiltro();
+    }
 	
 
 	$conex 			= obtenerConexionBD("matrix");
@@ -61,9 +65,18 @@ else
 	{
 		global $conex;
 		global $wbasedato;
+		global $wemp_pmla;
+		global $selectsede;
 		
 		$respuesta = array();
-		
+
+        $sFiltroSede = '';
+        $estadosede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+        if($estadosede=='on')
+        {
+            $sFiltroSede=isset($selectsede) && $selectsede != '' ? " AND Ccosed = '{$selectsede}' " : "";
+        }
+
 		// --> Ocupacion del dia
 		if($fechaBuscar1 == date("Y-m-d")){
 			
@@ -75,7 +88,7 @@ else
 					Ccoioh AS EsHos, Ccouci AS EsUci, Ccouce AS EsUce 
 			  FROM ".$wbasedato."_000020 INNER JOIN ".$wbasedato."_000011 ON(Habcco = Ccocod)
 			 WHERE Habest = 'on'
-			   AND Ccourg != 'on'
+			   AND Ccourg != 'on' ".$sFiltroSede."
 			 GROUP BY Habcco
 			";
 			$resHabTot = mysql_query($sqlHabTot, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlHabTot):</b><br>".mysql_error());
@@ -88,7 +101,7 @@ else
 			SELECT COUNT(*) as t, Habcco
 			  FROM ".$wbasedato."_000020 INNER JOIN ".$wbasedato."_000011 ON(Habcco = Ccocod)
 			 WHERE Habest = 'on'
-			   AND Habdis = 'on'
+			   AND Habdis = 'on' ".$sFiltroSede."
 			   AND Ccourg != 'on'
 			 GROUP BY Habcco
 			";
@@ -102,7 +115,7 @@ else
 			  FROM ".$wbasedato."_000020 INNER JOIN ".$wbasedato."_000011 ON(Habcco = Ccocod)
 			 WHERE Habest = 'on'
 			   AND Habali = 'on'
-			   AND Habdis != 'on'
+			   AND Habdis != 'on' ".$sFiltroSede."
 			   AND Ccourg != 'on'
 			 GROUP BY Habcco
 			";
@@ -118,13 +131,13 @@ else
 		}
 		// --> Historico
 		else{
-			
+
 			$arrInfoOcu = array();
 			$sqlOcupacion = "
 			SELECT 	A.Cieser, SUM(Ciedis) AS Ciedis, SUM(Cieocu) AS Cieocu, Cconoc AS Nombre, Ccodtp AS tipoPac, Ccotor AS Torre, Ccopis AS Piso, 0 AS Alistamiento,
 					Ccoioh AS EsHos, Ccouci AS EsUci, Ccouce AS EsUce 
 			  FROM ".$wbasedato."_000038 AS A INNER JOIN ".$wbasedato."_000011 AS B ON(A.Cieser = B.Ccocod AND Ccoest = 'on')
-			 WHERE A.Fecha_data = '".$fechaBuscar1."'
+			 WHERE A.Fecha_data = '".$fechaBuscar1."' ".$sFiltroSede."
 			 GROUP BY A.Cieser
 			 ORDER BY Ccotor, Ccopis DESC
 			";
@@ -201,13 +214,17 @@ if(isset($accion))
 		case 'verOcupacion':
 		{
 			$sqlTorres = "
-			SELECT Torcod, Tornom 
+			SELECT Torcod, Tornom, Torsed, Torurg 
 			  FROM ".$wbasedato."_000234
 			 WHERE Torest = 'on'
 			";
 			$resTorres = mysql_query($sqlTorres, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTorres):</b><br>".mysql_error());
-			while($rowTorres = mysql_fetch_array($resTorres, MYSQL_ASSOC))
+			while($rowTorres = mysql_fetch_array($resTorres, MYSQL_ASSOC)){
 				$arrayTorres[$rowTorres['Torcod']] = $rowTorres['Tornom'];
+				$arraySedes[$rowTorres['Torcod']]  = $rowTorres['Torsed'];
+				$arrayEsUrg[$rowTorres['Torcod']]  = $rowTorres['Torurg'];
+			}
+				
 			
 			$arrayOcupacion 		= ocupacionHospitalaria($fechaBuscar1, $ocupacionGeneral);
 			$respuesta['ocupacion']	= $ocupacionGeneral;
@@ -222,6 +239,7 @@ if(isset($accion))
 			{
 				if($torre == '')
 					continue;
+				
 				
 				$respuesta['Html'].= "
 				<td width='50%' align='center' style='padding:3px;color:#000000'>
@@ -297,15 +315,15 @@ if(isset($accion))
 						</tr>
 					</table>";
 				
-				if($torre == 'T4')
+				if($arrayEsUrg[$torre] == 'on')
 					$respuesta['Html'].= "
 						<br>
 						<table width='95%' class='fondoAmarillo bordeTabla' style='cursor:pointer;border-collapse:collapse;font-size:12pt;font-family:verdana'>
-							<tr align='center'><td colspan='2' onclick='verUrgencias(\"".$fechaBuscar1."\")'><b>Urgencias</b></td></tr>
+							<tr align='center'><td colspan='2' onclick='verUrgencias(\"".$fechaBuscar1."\",\"".$arraySedes[$torre]."\")'><b>Urgencias</b></td></tr>
 						</table>
 						<br>
 						<table width='95%' class='fondoAmarillo bordeTabla' style='cursor:pointer;border-collapse:collapse;font-size:12pt;font-family:verdana'>
-							<tr align='center'><td colspan='2' onClick='verCx()'><b>Cirugía</b></td></tr>
+							<tr align='center'><td colspan='2' onClick='verCx(\"".$arraySedes[$torre]."\")'><b>Cirugía</b></td></tr>
 						</table>
 					</td>
 					";
@@ -317,7 +335,7 @@ if(isset($accion))
 			$respuesta['Html'].= "
 			<br>
 			<table width='50%' style='border-collapse:collapse;font-size:12pt;font-family:verdana' class='bordeTabla'>
-				<tr><td align='center' colspan='4' class='encabezadoTabla'><b>Cuadro resumen (Torre 3 y 4)</b></td></tr>
+				<tr><td align='center' colspan='4' class='encabezadoTabla'><b>Cuadro resumen</b></td></tr>
 				<tr style='font-weight:bold'><td class='fondoAmarillo'>Area</td><td class='fondoAmarillo'>Ocupadas</td><td class='fondoAmarillo'>Total Camas</td><td class='fondoAmarillo'>Ocupación</td>
 				</tr>
 				<tr>
@@ -353,11 +371,29 @@ if(isset($accion))
 			break;
 		}
 		case 'verUrgencias':
-		{			
-			$respuesta['Html'] 	 = "<img id='planoUrgencias' width='100%' height='100%' src='../../images/medical/movhos/PLANOURGENCIAS.jpg' style='border-radius:8px;opacity:0.9'>";
+		{
+            /**
+             * Se agregar parametrizacion por sede
+             * @by: jesus.lopez
+             * @date: 2022/04/101
+             * @return: stdClass
+             */
+            $movhos 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+
+            $q = "SELECT Mapsed, Mapurl, Mapest FROM ".$movhos."_000300 WHERE Mapsed= '".$sedeEnviada."' and Mapest = 'on'";
+
+            $res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
+            $filas = mysql_num_rows($res);
+            if($filas > 0)
+            {
+                $fila = mysql_fetch_row($res);
+                $respuesta['Html'] 	 = "<img id='planoUrgencias' width='100%' height='100%' src='".$fila[1]."' style='border-radius:8px;opacity:0.9'>";
+            }else{
+                $respuesta['Html'] 	 = "<h1>No se encontro mapa</h1>";
+            }
+
 			$arrayOcupacion = array();
-			$ccoUrg 		= "1130";
-			$movhos 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
+			$ccoUrg 		= consultarCentrocoUrgencias('',$sedeEnviada)->codigo;
 			$basedatoshce 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 			$cliame 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
 			
@@ -437,11 +473,11 @@ if(isset($accion))
 			$fechaC 	= date("Y-m-d");
 			// $fechaC 	= "2017-06-30";
 			
-			$pacSala['penTriage']["Niños"]['Can'] 		= 0;
+			$pacSala['penTriage']["Ninos"]['Can'] 		= 0;
 			$pacSala['penTriage']["Adultos"]['Can'] 	= 0;
-			$pacSala['penAdmision']["Niños"]['Can'] 	= 0;
+			$pacSala['penAdmision']["Ninos"]['Can'] 	= 0;
 			$pacSala['penAdmision']["Adultos"]['Can'] 	= 0;
-			$pacSala['penConsulta']["Niños"]['Can'] 	= 0;
+			$pacSala['penConsulta']["Ninos"]['Can'] 	= 0;
 			$pacSala['penConsulta']["Adultos"]['Can'] 	= 0;
 			
 			$sqlTurnos 	= "
@@ -452,6 +488,7 @@ if(isset($accion))
 			   AND Atuaor != 'on'
 			 ORDER BY REPLACE(Atutur, '-', '')*1 ASC
 			";
+			
 			$resTurnos 	= mysql_query($sqlTurnos, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlTurnos):</b><br>".mysql_error());
 
 			while($rowTurnos = mysql_fetch_array($resTurnos))
@@ -495,7 +532,7 @@ if(isset($accion))
 					else
 					{
 						if($rowTurnos['Atuted'] != 'A' || $rowTurnos['Atueda'] <= 12)
-							$tipoPac = "Niños";
+							$tipoPac = "Ninos";
 						else
 							$tipoPac = "Adultos";
 						
@@ -553,7 +590,7 @@ if(isset($accion))
 						else
 						{
 							if($rowTurnos['Atuted'] != 'A' || $rowTurnos['Atueda'] <= 13)
-								$tipoPac = "Niños";
+								$tipoPac = "Ninos";
 							else
 								$tipoPac = "Adultos";
 							
@@ -606,7 +643,7 @@ if(isset($accion))
 							elseif($rowInfo22['Mtrfco'] == '0000-00-00')
 								{
 									if($rowTurnos['Atuted'] != 'A' || $rowTurnos['Atueda'] <= 13)
-										$tipoPac = "Niños";
+										$tipoPac = "Ninos";
 									else
 										$tipoPac = "Adultos";
 									
@@ -624,94 +661,63 @@ if(isset($accion))
 			$respuesta['pacSala'] = print_r($pacSala, true);
 			
 			$pacAlta = array("Cant" => 0);
+
 			// --> Cantidad de pacientes pendientes de alta
+            // Alta
 			$sqlPacAlta = "
 			SELECT Ubihis, Ubiing, Ubifap, Ubihap, CONCAT(Pacno1, ' ', Pacno2, ' ', Pacap1, ' ', Pacap2) as nomPac 	
 			 FROM ".$movhos."_000018 INNER JOIN ".$cliame."_000100 ON(Ubihis = Pachis)
 			WHERE Ubisac = '".$ccoUrg."'
 			  AND Ubialp = 'on'
 			  AND Ubiald != 'on'";
+
 			$resPacAlta = mysql_query($sqlPacAlta, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlPacAlta):</b><br>".mysql_error());
 			while($rowPacAlta = mysql_fetch_array($resPacAlta, MYSQL_ASSOC))
 			{
 				$pacAlta["Cant"]+= 1;
 				$pacAlta["Det"][] = $rowPacAlta;
 			}
-			
-			// --> Pacientes pendientes de alta
-			if($pacAlta['Cant'] > 0)
-				$arrayCoordenadas["13-11"] = "<span infoDet='".json_encode($pacAlta["Det"])."' onClick='verPacientesAlta(this)' style='cursor:pointer;color:red;font-size:9pt;font-family:verdana;'>".$pacAlta['Cant']." Alta</span>";
-			
-			// --> Coordenadas
-			// --> Emergencias
-			$arrayCoordenadas["4-12"] 	= "<span style='font-size:12pt;cursor:pointer' infoZOna='".json_encode($arrayOcupacion["EM"])."' onClick=verPacientesZona(this)>".$arrayOcupacion["EM"]['Ocupacion']."%</span>";
-			$arrayCoordenadas["5-12"] 	= "<span style='font-size:9pt;cursor:default'>".$arrayOcupacion["EM"]['totalPac']."Pac</span>";
-			// --> Covid
-			$arrayCoordenadas["8-15"] 	= "<span style='font-size:12pt;cursor:pointer' infoZOna='".json_encode($arrayOcupacion["COVID"])."' onClick=verPacientesZona(this)>".$arrayOcupacion["COVID"]['Ocupacion']."%</span>";
-			$arrayCoordenadas["9-15"] 	= "<span style='font-size:9pt;cursor:default'>".$arrayOcupacion["COVID"]['totalPac']."Pac</span>";
-			// --> Sala 2
-			$arrayCoordenadas["6-3"] 	= "<span style='font-size:12pt;cursor:pointer' infoZOna='".json_encode($arrayOcupacion["S2"])."' onClick=verPacientesZona(this)>".$arrayOcupacion["S2"]['Ocupacion']."%</span>";
-			$arrayCoordenadas["7-3"] 	= "<span style='font-size:9pt;cursor:default'>".$arrayOcupacion["S2"]['totalPac']."Pac</span>";
-			// --> Sala 1
-			$arrayCoordenadas["11-2"] 	= "<span style='font-size:12pt;cursor:pointer' infoZOna='".json_encode($arrayOcupacion["S1"])."' onClick=verPacientesZona(this)>".$arrayOcupacion["S1"]['Ocupacion']."%</span>";
-			$arrayCoordenadas["12-2"] 	= "<span style='font-size:9pt;cursor:default'>".$arrayOcupacion["S1"]['totalPac']."Pac</span>";
-			// --> Covid
-			$arrayCoordenadas["11-4"] 	= "<span style='font-size:12pt;cursor:pointer' infoZOna='".json_encode($arrayOcupacion["PE"])."' onClick=verPacientesZona(this)>".$arrayOcupacion["PE"]['Ocupacion']."%</span>";
-			$arrayCoordenadas["12-4"] 	= "<span style='font-size:9pt;cursor:default'>".$arrayOcupacion["PE"]['totalPac']."Pac</span>";
-			// --> Sala rapida 1
-			$arrayCoordenadas["14-15"] 	= "<span style='font-size:12pt;cursor:pointer' infoZOna='".json_encode($arrayOcupacion["SAR"])."' onClick=verPacientesZona(this)>".$arrayOcupacion["SAR"]['Ocupacion']."%</span>";
-			$arrayCoordenadas["15-15"] 	= "<span style='font-size:9pt;cursor:default'>".$arrayOcupacion["SAR"]['totalPac']."Pac</span>";
-			// --> Sala rapida 2
-			$arrayCoordenadas["14-2"] 	= "<span style='font-size:12pt;cursor:pointer' infoZOna='".json_encode($arrayOcupacion["SAR1"])."' onClick=verPacientesZona(this)>".$arrayOcupacion["SAR1"]['Ocupacion']."%</span>";
-			$arrayCoordenadas["15-2"] 	= "<span style='font-size:9pt;cursor:default'>".$arrayOcupacion["SAR1"]['totalPac']."Pac</span>";
-			// --> En espera de triage
-			$arrayCoordenadas["15-4"] 	= "<span style='font-size:12pt;cursor:pointer' infoDet='".json_encode($pacSala['penTriage']['Niños']['Det'])."' onClick='verPacientesEspera(this, \"En espera de triage (Niños)\")'>".$pacSala['penTriage']['Niños']['Can']." Ni</span>";
-			$arrayCoordenadas["15-5"] 	= "<span style='font-size:12pt;cursor:pointer' infoDet='".json_encode($pacSala['penTriage']['Adultos']['Det'])."' onClick='verPacientesEspera(this, \"En espera de triage (Adultos)\")'>".$pacSala['penTriage']['Adultos']['Can']." Ad</span>";
-			// --> En espera de admision
-			$arrayCoordenadas["15-6"] 	= "<span style='font-size:12pt;cursor:pointer' infoDet='".json_encode($pacSala['penAdmision']['Niños']['Det'])."' onClick='verPacientesEspera(this, \"En espera de admision (Niños)\")'>".$pacSala['penAdmision']['Niños']['Can']." Ni</span>";
-			$arrayCoordenadas["15-7"] 	= "<span style='font-size:12pt;cursor:pointer' infoDet='".json_encode($pacSala['penAdmision']['Adultos']['Det'])."' onClick='verPacientesEspera(this, \"En espera de admision (Adultos)\")'>".$pacSala['penAdmision']['Adultos']['Can']." Ad</span>";
-			// --> En espera de consulta
-			$arrayCoordenadas["15-9"] 	= "<span style='font-size:12pt;cursor:pointer' infoDet='".json_encode($pacSala['penConsulta']['Niños']['Det'])."' onClick='verPacientesEspera(this, \"En espera de consulta (Niños)\")'>".$pacSala['penConsulta']['Niños']['Can']." Ni</span>";
-			$arrayCoordenadas["15-10"] 	= "<span style='font-size:12pt;cursor:pointer' infoDet='".json_encode($pacSala['penConsulta']['Adultos']['Det'])."' onClick='verPacientesEspera(this, \"En espera de consulta (Adultos)\")'>".$pacSala['penConsulta']['Adultos']['Can']." Ad</span>";
-			
-			$imgPersona = "<img tooltip='si' blink='' width='16px' heigth='16px' src='../../images/medical/root/personasilueta.png'>";
-			$span 		= "<span style='display:none;color:#000000;font-size:7pt;font-family:verdana;font-weight:normal'>";
-			
-			// --> Los codigos de los consultorios está en la tabla movhos_000180
-			
-			// --> Ventanilla admision 1
-			if($pacSala['enAdmision']['01']['Can'] > 0)
-				$arrayCoordenadas["14-11"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enAdmision']['01']['Det'])."' onClick='verPacientesEspera(this, \"En admision\")'>".$imgPersona.$span.$pacSala['enAdmision']['01']['Med']."</span></span>";
-			// --> Ventanilla admision 2
-			if($pacSala['enAdmision']['02']['Can'] > 0)
-				$arrayCoordenadas["15-11"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enAdmision']['02']['Det'])."' onClick='verPacientesEspera(this, \"En admision\")'>".$imgPersona.$span.$pacSala['enAdmision']['02']['Med']."</span></span>";
-			// --> Consultorio triage 1
-			if($pacSala['enTriage']['23']['Can'] > 0)
-				$arrayCoordenadas["13-8"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enTriage']['23']['Det'])."' onClick='verPacientesEspera(this, \"En triage\")'>".$imgPersona.$span.$pacSala['enTriage']['23']['Med']."</span></span>";
-			// --> Consultorio triage 2
-			if($pacSala['enTriage']['22']['Can'] > 0)
-				$arrayCoordenadas["13-6"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enTriage']['22']['Det'])."' onClick='verPacientesEspera(this, \"En triage\")'>".$imgPersona.$span.$pacSala['enTriage']['22']['Med']."</span></span>";
-			// --> Consultorio adulto 1
-			if($pacSala['enConsulta']['07']['Can'] > 0)
-				$arrayCoordenadas["12-8"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enConsulta']['07']['Det'])."' onClick='verPacientesEspera(this, \"En consulta\")'>".$imgPersona.$span.$pacSala['enConsulta']['07']['Med']."</span></span>";
-			// --> Consultorio adulto 2
-			if($pacSala['enConsulta']['08']['Can'] > 0)
-				$arrayCoordenadas["11-8"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enConsulta']['08']['Det'])."' onClick='verPacientesEspera(this, \"En consulta\")'>".$imgPersona.$span.$pacSala['enConsulta']['08']['Med']."</span></span>";
-			// --> Consultorio adulto 3
-			if($pacSala['enConsulta']['05']['Can'] > 0)
-				$arrayCoordenadas["10-8"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enConsulta']['05']['Det'])."' onClick='verPacientesEspera(this, \"En consulta\")'>".$imgPersona.$span.$pacSala['enConsulta']['05']['Med']."</span></span>";
-			// --> Consultorio adulto 4
-			if($pacSala['enConsulta']['10']['Can'] > 0)
-				$arrayCoordenadas["9-8"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enConsulta']['10']['Det'])."' onClick='verPacientesEspera(this, \"En consulta\")'>".$imgPersona.$span.$pacSala['enConsulta']['10']['Med']."</span></span>";
-			// --> Consultorio pediatria 1
-			if($pacSala['enConsulta']['03']['Can'] > 0)
-				$arrayCoordenadas["12-10"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enConsulta']['03']['Det'])."' onClick='verPacientesEspera(this, \"En consulta\")'>".$imgPersona.$span.$pacSala['enConsulta']['03']['Med']."</span></span>";
-			// --> Consultorio pediatria 2
-			if($pacSala['enConsulta']['04']['Can'] > 0)
-				$arrayCoordenadas["10-10"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enConsulta']['04']['Det'])."' onClick='verPacientesEspera(this, \"En consulta\")'>".$imgPersona.$span.$pacSala['enConsulta']['04']['Med']."</span></span>";
-			// --> Consultorio especialista
-			if($pacSala['enConsulta']['16']['Can'] > 0)
-				$arrayCoordenadas["11-10"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enConsulta']['16']['Det'])."' onClick='verPacientesEspera(this, \"En consulta\")'>".$imgPersona.$span.$pacSala['enConsulta']['16']['Med']."</span></span>";
+
+			$sqlMatriz = "SELECT Matcor,Matalta,Maturg,Matzon,Matesp,Matcon,Matseg,Matsed FROM movhos_000301 WHERE Matsed = '".$sedeEnviada."' ";
+
+			$resmatriz = mysql_query($sqlMatriz, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlPacAlta):</b><br>".mysql_error());
+            $num1 = mysql_num_rows($resmatriz);
+
+            $imgPersona = "<img tooltip='si' blink='' width='16px' heigth='16px' src='../../images/medical/root/personasilueta.png'>";
+            $span 		= "<span style='display:none;color:#000000;font-size:7pt;font-family:verdana;font-weight:normal'>";
+
+            if ($num1 > 0)
+            {
+                for ($i = 0;$i < $num1;$i++)
+                {
+                    $row1 = mysql_fetch_array($resmatriz);
+                    // --> Pacientes pendientes de alta
+                    if ($row1["Matalta"] == 'on' and $pacAlta['Cant'] > 0){
+                        $arrayCoordenadas[ $row1["Matcor"] ] = "<span infoDet='".json_encode($pacAlta["Det"])."' onClick='verPacientesAlta(this)' style='cursor:pointer;color:red;font-size:9pt;font-family:verdana;'>".$pacAlta['Cant']." Alta</span>";
+                    }
+                    // --> Coordenadas habitaciones zonas de urgencias
+                    // --> Emergencias
+                    elseif( $row1["Maturg"] == 'on' and $row1["Matesp"] == 'off'){
+                        $arrayCoordenadas[ $row1["Matcor"] ] = "<span style='font-size:12pt;cursor:pointer' infoZOna='".json_encode($arrayOcupacion[ $row1["Matzon"] ])."' onClick=verPacientesZona(this)>".$arrayOcupacion[ $row1["Matzon"] ]['Ocupacion']."%</span>";
+                    }
+                    elseif ( $row1["Maturg"] == 'on' and $row1["Matesp"] == 'on' ){
+                        $arrayCoordenadas[ $row1["Matcor"] ] = "<span style='font-size:9pt;cursor:default'>".$arrayOcupacion[ $row1["Matzon"] ]['totalPac']."Pac</span>";
+                    }
+                    // PacSala son salas que estan en espera
+                    elseif ( $row1["Maturg"] == 'off' and $row1["Matesp"] == 'on' ){
+
+                        $arrayCoordenadas[ $row1["Matcor"] ] = "<span style='font-size:12pt;cursor:pointer' infoDet='".json_encode($pacSala[ $row1["Matzon"] ][ $row1["Matseg"] ]['Det'])."' onClick='verPacientesEspera(this, \"En espera de triage\")'>".$pacSala[ $row1["Matzon"] ][ $row1["Matseg"] ]['Can'].$row1["Matseg"]."</span>";
+                    }
+                    // --> Los codigos de los consultorios está en la tabla movhos_000180
+                    // PacSala ya es cuando el paciente ingresa en si a la sala se compone del codigo del consultorio
+                    else{
+                        if ($pacSala[ $row1["Matzon"] ] [ $row1["Matseg"] ]['Can'] > 0){
+                            $arrayCoordenadas[ $row1["Matcor"] ] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala[ $row1["Matzon"] ][ $row1["Matseg"] ]['Det'])."' onClick='verPacientesEspera(this, \"En admision\")'>".$imgPersona.$span.$pacSala[ $row1["Matzon"] ][ $row1["Matseg"] ]['Med']."</span></span>";
+                        }
+                    }
+                }
+            }
+
 			// --> Consultorio adulto 5
 			// if($pacSala['enConsulta']['09']['Can'] > 0)
 				// $arrayCoordenadas["12-10"] = "<span style='cursor:pointer' infoDet='".json_encode($pacSala['enConsulta']['09']['Det'])."' onClick='verPacientesEspera(this, \"En consulta\")'>".$imgPersona.$span.$pacSala['enConsulta']['09']['Med']."</span></span>";
@@ -757,8 +763,17 @@ if(isset($accion))
 			$tempNum = ($totalHabOcu == $totalHabUrg) ? $totalHabVirOcu : 0; 
 			
 			$respuesta['ocupacionGen'] 	= number_format((($totalHabOcu+$tempNum)/$totalHabUrg)*100, 0);
-			
-			echo json_encode($respuesta);
+
+            /**
+             * Función para Decodificar array en utf-8 esto sucede para los problemas donde el json_encode no funciona
+             * @by: jesus.lopez
+             * @date: 2022/04/101
+             * @return: stdClass
+             */
+            $respuesta = utf8ize($respuesta);
+
+           echo json_encode($respuesta);
+
 			return;
 			break;
 		}
@@ -770,6 +785,13 @@ if(isset($accion))
 			$arrayQx			= array();
 			$arrMedicosQx		= array();
 			$totalCx			= array("Rea" => 0, "Can" => 0, "Adi" => 0);
+
+            $sFiltroSede = '';
+            $estadosede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+            if($estadosede=='on')
+            {
+                $sFiltroSede=isset($sedeEnviada) && $sedeEnviada != '' ? " AND Ccosed = '{$sedeEnviada}' " : "";
+            }
 			
 			
 			$sqlQx = "
@@ -778,7 +800,7 @@ if(isset($accion))
 			       INNER JOIN ".$movhos."_000011 ON(Quicco = Ccocod)
 			 WHERE Turfec = '".$fechaBuscar1."'
 			   AND Turest = 'on'
-			   AND Quiest = 'on'
+			   AND Quiest = 'on' ".$sFiltroSede."
 			   AND Quivir != 'on'
 			 UNION
 			SELECT Mcafec, Mcatur, Mcahin, Mcahfi, Mcaqui as Qui, 'Can' as Tip, Quides, Quicco, Cconoc, '', '' Turmed
@@ -786,7 +808,7 @@ if(isset($accion))
 			       INNER JOIN ".$movhos."_000011 ON(Quicco = Ccocod) 
 			 WHERE A.Fecha_data = '".$fechaBuscar1."'
 			   AND Mcafec = '".$fechaBuscar1."'
-			   AND Quiest = 'on'
+			   AND Quiest = 'on' ".$sFiltroSede."
 			   AND Quivir != 'on'
 			 ORDER BY Qui
 			";
@@ -1039,6 +1061,13 @@ if(isset($accion))
 			$cliame				= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
 			$arrayEspe			= array();
 			$arrayMedi			= array();
+
+            $sFiltroSede = '';
+            $estadosede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+            if($estadosede=='on')
+            {
+                $sFiltroSede=isset($selectsede) && $selectsede != '' ? " AND Ccosed = '{$selectsede}' " : "";
+            }
 			
 			// --> Obtener array de medicos
 			$sqlMedicos = "
@@ -1051,13 +1080,13 @@ if(isset($accion))
 				$arrayMedi[$rowmedicos['Meddoc']] = utf8_encode($rowmedicos['Nombre']);
 			
 			$sqlEspecialidades 	= "
-			SELECT Methis, Meting, Metesp, Espnom, Metdoc, Ubisac, Ubihac, CONCAT(Pacno1, ' ', Pacno2, ' ', Pacap1, ' ', Pacap2) AS NomPac, Pacdoc, Pactdo, Cconoc
+			SELECT Methis, Meting, Metesp, Espnom, Metdoc, Ubisac, Ubihac,Ccosed, CONCAT(Pacno1, ' ', Pacno2, ' ', Pacap1, ' ', Pacap2) AS NomPac, Pacdoc, Pactdo, Cconoc
 			  FROM ".$wbasedato."_000047 AS A LEFT JOIN ".$wbasedato."_000044 AS B ON (A.Metesp = B.Espcod)
 				   INNER JOIN ".$wbasedato."_000018 AS C ON(Methis = Ubihis AND Meting = Ubiing)
 				   INNER JOIN ".$cliame."_000100    AS E ON (Ubihis = Pachis) 
 				   INNER JOIN ".$wbasedato."_000011 AS D ON(Ubisac = Ccocod)
 			 WHERE Metfek = '".$fechaBuscar1."'
-			   AND Metest = 'on'
+			   AND Metest = 'on' {$sFiltroSede}
 			 ORDER BY Metesp
 			";
 			$resEspecialidades = mysql_query($sqlEspecialidades, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlEspecialidades):</b><br>".mysql_error());
@@ -1190,7 +1219,15 @@ if(isset($accion))
 				<tr style='font-weight:bold'><td colspan='3' align='right'>NUMERO DE PACIENTES:</td><td align='center'>".count($cantPac)."</td><td></td></tr>
 			</table>
 			";
-			
+
+            /**
+             * Función para Decodificar array en utf-8 esto sucede para los problemas donde el json_encode no funciona
+             * @by: jesus.lopez
+             * @date: 2022/04/101
+             * @return: stdClass
+             */
+            $respuesta = utf8ize($respuesta);
+
 			echo json_encode($respuesta);
 			return;
 			break;
@@ -1203,6 +1240,13 @@ if(isset($accion))
 			$formulariosHce		= array();			
 			$wbasedatoHce 		= consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 			$wbasedatoCliame 	= consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
+
+            $sFiltroSede = '';
+            $estadosede = consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+            if($estadosede=='on')
+            {
+                $sFiltroSede=isset($selectsede) && $selectsede != '' ? " AND Ccosed = '{$selectsede}' " : "";
+            }
 			
 			// --> Consultar el maestro de diagnosticos
 			$sqlMaesDiag = "
@@ -1242,12 +1286,12 @@ if(isset($accion))
 			   // AND Ubiald != 'on'			   
 			// ";
 			$sqlPacientes = "
-			SELECT Ubihis, Ubiing, Ubisac, Ubihac, CONCAT(Pacno1, ' ', Pacno2, ' ', Pacap1, ' ', Pacap2) AS NomPac, Pacdoc, Pactdo, Cconoc 
+			SELECT Ubihis, Ubiing, Ubisac, Ubihac,Ccosed, CONCAT(Pacno1, ' ', Pacno2, ' ', Pacap1, ' ', Pacap2) AS NomPac, Pacdoc, Pactdo, Cconoc 
 			 FROM ".$wbasedato."_000047 AS A INNER JOIN ".$wbasedato."_000018 AS B ON(Methis = Ubihis AND Meting = Ubiing)
 				   INNER JOIN ".$wbasedatoCliame."_000100 AS E ON (Ubihis = Pachis) 
 				   INNER JOIN ".$wbasedato."_000011 AS D ON(Ubisac = Ccocod)
 			 WHERE Metfek = '".$fechaBuscar1."'
-			   AND Metest = 'on'			 
+			   AND Metest = 'on' {$sFiltroSede}			 
 			";
 			
 			$resPacientes 	= mysql_query($sqlPacientes, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlPacientes):</b><br>".mysql_error());
@@ -1596,6 +1640,14 @@ if(isset($accion))
 				<tr style='font-weight:bold'><td colspan='7' align='right'>TOTAL:</td><td align='center'>".($totalPac+$sinDiagnos)."</td></tr>
 			</table>
 			";
+
+            /**
+             * Función para Decodificar array en utf-8 esto sucede para los problemas donde el json_encode no funciona
+             * @by: jesus.lopez
+             * @date: 2022/04/101
+             * @return: stdClass
+             */
+            $respuesta = utf8ize($respuesta);
 			
 			echo json_encode($respuesta);
 			return;
@@ -1637,6 +1689,10 @@ else
 //=====================================================================================================================================================================
 	var blinkPor;
 	var relojTemp;
+
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "indicadoresDireccionMedica.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+    });
 	
 	$(function(){
 		// --> Parametrizaci&oacute;n del datapicker
@@ -1704,6 +1760,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'ocupacionGeneral',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			
@@ -1771,6 +1828,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'verOcupacion',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			
@@ -1793,7 +1851,7 @@ else
 			
 		}, 'json');
 	}
-	function activarRelojTemporizador(fechaBuscar1)
+	function activarRelojTemporizador(fechaBuscar1, sedeEnviada)
 	{
 		clearInterval(relojTemp);
 		// --> Incializar contador en dos minutos
@@ -1815,13 +1873,13 @@ else
 
 			// --> Actualizar cuando el reloj quede en 00:00
 			if(parseInt($("#relojTemp").attr("cincoMinTem")) == 86400000)
-				verUrgencias(fechaBuscar1);
+				verUrgencias(fechaBuscar1, sedeEnviada);
 		}, 1000);
 	}
 	//--------------------------------------------------------
 	//	--> Ver Urgencias
 	//---------------------------------------------------------
-	function verUrgencias(fechaBuscar1)
+	function verUrgencias(fechaBuscar1, sedeEnviada)
 	{
 		clearInterval(blinkPor);
 		$("#menu").hide();
@@ -1831,10 +1889,12 @@ else
 		{
 			consultaAjax	:   '',
 			accion			:   'verUrgencias',
-			wemp_pmla		:	$('#wemp_pmla').val()
+			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
+			sedeEnviada		:   sedeEnviada,
 		}, function(respuesta){
 			$("#retornar").show();
-			$("#tituloMenu").html("<table width='100%' style='font-family:verdana;font-size:18pt;color:#109DDC;font-weight:bold'><tr><td width='20%'><img id='atras' title='Retornar' src='../../images/medical/sgc/atras.png' onclick='verOcupacion()' width='25px' height='27px' style='cursor:pointer;'></td><td width='50%' align='center'>Ocupaci&oacute;n Urgencias "+respuesta.ocupacionGen+" %</td><td width='30%' style='font-size:8pt;font-weight:normal;'>Pr&oacute;xima actualizaci&oacute;n:&nbsp;<span id='relojTemp' cincoMinTem='86400000'></span>&nbsp;<img width='15px' height='15px' src='../../images/medical/sgc/Clock-32.png'>&nbsp;<img title='Actualizar' src='../../images/medical/sgc/Refresh-128.png' onclick='verUrgencias(\""+fechaBuscar1+"\")' width='15px' height='15px' style='cursor:pointer;'></td></tr></table>");
+			$("#tituloMenu").html("<table width='100%' style='font-family:verdana;font-size:18pt;color:#109DDC;font-weight:bold'><tr><td width='20%'><img id='atras' title='Retornar' src='../../images/medical/sgc/atras.png' onclick='verOcupacion()' width='25px' height='27px' style='cursor:pointer;'></td><td width='50%' align='center'>Ocupaci&oacute;n Urgencias "+respuesta.ocupacionGen+" %</td><td width='30%' style='font-size:8pt;font-weight:normal;'>Pr&oacute;xima actualizaci&oacute;n:&nbsp;<span id='relojTemp' cincoMinTem='86400000'></span>&nbsp;<img width='15px' height='15px' src='../../images/medical/sgc/Clock-32.png'>&nbsp;<img title='Actualizar' src='../../images/medical/sgc/Refresh-128.png' onclick='verUrgencias(\""+fechaBuscar1+"\",\""+sedeEnviada+"\")' width='15px' height='15px' style='cursor:pointer;'></td></tr></table>");
 						
 			$("#contenedor").html(respuesta.Html);
 			var posicion 	= $("#contenedor").position();
@@ -1864,7 +1924,7 @@ else
 			
 			// $("[desvanecer]").hover(function(){$(this).css("color", "#2A5DB0");}, function(){$(this).css("color", "red");});
 			
-			activarRelojTemporizador(fechaBuscar1);
+			activarRelojTemporizador(fechaBuscar1,sedeEnviada);
 			
 		}, 'json');
 	}
@@ -1999,16 +2059,18 @@ else
 	//--------------------------------------------------------
 	//	--> Ver Cx
 	//---------------------------------------------------------
-	function verCx()
+	function verCx(sedeEnviada)
 	{
 		$("#tableContenedor").attr("accion", "verCx");
 		$("#menu").hide();
-		
+        $('#sedeEnviada').val(sedeEnviada);
 		$.post("indicadoresDireccionMedica.php",
 		{
 			consultaAjax	:   '',
 			accion			:   'verCx',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
+            sedeEnviada		:   sedeEnviada,
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			$("#retornar").show();
@@ -2032,6 +2094,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'verEspecialidades',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			
@@ -2065,6 +2128,7 @@ else
 			consultaAjax	:   '',
 			accion			:   'verDiagnosticos',
 			wemp_pmla		:	$('#wemp_pmla').val(),
+            selectsede      :   $('#sede').val(),
 			fechaBuscar1	:	$("#fechaBuscar1").val()
 		}, function(respuesta){
 			if($("#imgClinica").attr("id") != undefined)
@@ -2129,7 +2193,7 @@ else
 			}
 			case 'verCx':
 			{
-				verCx();
+				verCx( $('#sedeEnviada').val() );
 				break;
 			}
 		}
@@ -2216,11 +2280,13 @@ else
 	<BODY>
 	<?php
 	// -->	ENCABEZADO
-	encabezado("Indicadores Direcci&oacute;n Medica", $wactualiz, 'clinica');
+	encabezado("Indicadores Direcci&oacute;n Medica", $wactualiz, 'clinica', true);
 	//<table id='tableContenedor' width='70%' height='50%' class='bordeRedondo' style='border-radius:8px;border:1px solid #AFAFAF;padding:10px;z-index:-2;background:#eeeeee url(../../../include/root/jqueryui_1_9_2/cupertino/images/ui-bg_diagonals-thick_90_eeeeee_40x40.png) 50% 50% repeat;'>
 		
 	echo "
 	<input type='hidden' value='".$wemp_pmla."' id='wemp_pmla'>
+	<input type='hidden' value='".$selectsede."' id='sede'>
+	<input type='hidden' value='".$sedeEnviada."' id='sedeEnviada'>
 	<div align='center' >
 		<table  width='70%'>
 			<tr>
