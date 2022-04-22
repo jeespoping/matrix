@@ -203,7 +203,7 @@ else
 				echo "<body style='background-color:#E8EEF7' FACE='ARIAL' LINK='BLACK'>";				
 				echo "<table border=0 CELLSPACING=0>";
 				echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/lmatrix.jpg'></td>";
-				echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;HCE - INFORMACION GENERAL DEL PACIENTE&nbsp;&nbsp;<A HREF='/matrix/root/Reportes/DOC.php?files=../../hce/Procesos/HCE_IGP.php' target='_blank'>Version 2017-05-17</A></td><td id=tipoT02D><IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'></IMG></td></tr>";
+				echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;HCE - INFORMACION GENERAL DEL PACIENTE&nbsp;&nbsp;<A HREF='/matrix/root/Reportes/DOC.php?files=../../hce/Procesos/HCE_IGP.php' target='_blank'>Version 2022-04-22</A></td><td id=tipoT02D><IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'></IMG></td></tr>";
 				echo "<tr><td id=tipoT03 colspan=3></td></tr>";
 				echo "</table>";
 				echo"</form>";

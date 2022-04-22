@@ -126,7 +126,7 @@
 include_once("conex.php");
 include_once("root/comun.php");
 $wbasedatomovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
-$wactualiz = '2022-03-23';
+$wactualiz = '2022-04-22';
 $institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
 $wbasedato1 = strtolower( $institucion->baseDeDatos );
 encabezado("INFORME DE BALANCE DE LIQUIDOS ",$wactualiz, $wbasedato1);

@@ -875,7 +875,7 @@ if( !empty($hce) ){
 }
 
 $usuarioValidado = true;
-$wactualiz = "2021-12-03";
+$wactualiz = "2022-04-22";
 
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false; 	

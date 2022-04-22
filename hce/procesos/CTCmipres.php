@@ -66,7 +66,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2020-03-02';
+			$wactualiz='2022-04-22';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //	2021-10-08	Sebastián Nevado		- Se agrega acción consultarPrescripcionMipres para validar número de prescripción mipres por post.
 //  2021-10-01  Joel Payares Hdz		- Se crea parametro departamento en base de datos para obtener el valor dinamicamente.
