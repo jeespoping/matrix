@@ -35,6 +35,8 @@ table.sample td {
 </center> 
 <?php
 /********************************************************************************************************************************
+ * Actualización:   2022-04-16 - Marlon.Osorio:    Se cambia las funciones consultarccoCM y consultarCcoSF por la version unificada 
+ * 						del comun.php
  * 
  * Actualización: 	2021-07-08 - sebastian.nevado: Se reemplaza el "C-cenpro" del campo Seguridad las inserciones en base de datos 
  * 						para que indique el usuario que realiza la acción.
@@ -47,31 +49,6 @@ include_once("root/comun.php");
 $empresa = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
 $bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
-function centroCostosCM()
-	{
-		global $conex;
-		global $bdMovhos;
-		
-		$sql = "SELECT
-					Ccocod
-				FROM
-					".$bdMovhos."_000011
-				WHERE
-					ccofac LIKE 'on'
-					AND ccotra LIKE 'on'
-					AND ccoima !='off'
-					AND ccodom !='on'
-				";
-		
-		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		
-		if ( mysql_num_rows($res) > 1 )
-	{
-		return "Hay más de 1 centro de costos con los mismos parámetros";
-	}
-	$rows = mysql_fetch_array( $res );
-	return $rows[ 'Ccocod' ];
-	}
 
 function calcularProducto($cantidad, $lote, $signo, $ano, $mes)
 {
@@ -196,7 +173,7 @@ else
 	echo "<form name='planilla' action='planilla3.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
 	//echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	$cco = centroCostosCM();
+	$cco = ccoUnificadoCM();
 
 	if (!isset($fec))
 	{

@@ -130,6 +130,7 @@ include_once("conex.php");
 * Fecha de creacion:  2007-06-15
 * Autor: Carolina Castano P
 * Ultima actualizacion:
+* 2022-04-16  Marlon Osorio     Se cambia las funciones consultarccoCM y consultarCcoSF por la version unificada del comun.php
 * 2017-02-06  Jessica Madrid M  Se modifica el número de item para que tenga el orden en que se agregan los articulos
 * 2017-01-30  Jessica Madrid M  Se agrega número de item y se modifica para que cada vez que se agregue un artículo quede en la parte 
 *								superior para que sea más fácil visualizar los artículos recién agregados.
@@ -2016,31 +2017,7 @@ function pintarFormulario($estado, $origenes, $destinos, $numtra, $fecha, $wemp_
 	echo "</table></br>";
 }
 
-function centroCostosCM()
-	{
-		global $conex;
-		global $bd;
-		
-		$sql = "SELECT
-					Ccocod
-				FROM
-					".$bd."_000011
-				WHERE
-					ccofac LIKE 'on' 
-					AND ccotra LIKE 'on' 
-					AND ccoima !='off' 
-					AND ccodom !='on'
-				";
-		
-		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		
-		if ( mysql_num_rows($res) > 1 )
-	{
-		return "Hay más de 1 centro de costos con los mismos parámetros";
-	}
-	$rows = mysql_fetch_array( $res );
-	return $rows[ 'Ccocod' ];
-	}
+
 	
 /**
 * Se pinta el formulario que permite buscar los articulos a trasladar, seccionar lotes o presentaciones
@@ -2228,7 +2205,7 @@ else
 
 	include_once("root/comun.php");
 	$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-	$wactualiz = "2017-02-06";
+	$wactualiz = "Abril 16 de 2022";
 	encabezado( "TRASLADOS DE CENTRAL DE MEZCLAS", $wactualiz, $institucion->baseDeDatos );
 	$wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cenmez' );
 	$bd  = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
@@ -2271,7 +2248,7 @@ else
 		if (isset($ccoOri) and $ccoOri != '' and isset($ccoDes) and $ccoDes != '')
 		{
 			$exc=explode('-',$ccoOri);
-			$cco = centroCostosCM();
+			$cco = ccoUnificadoCM();
 			if ($exc[0] == $cco)
 			{
 				echo "<font size=12 color=#FFFFFF><MARQUEE BEHAVIOR=SCROLL BGCOLOR=#009999 LOOP=-1>TRASLADOS DESDE CENTRAL DE MEZCLAS</MARQUEE></FONT></br></br>";

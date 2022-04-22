@@ -12,6 +12,8 @@ include_once("conex.php");
 // ==========================================================================================================================================
 // M O D I F I C A C I O N E S 
 // ==========================================================================================================================================
+// Abril 16 de 2022 Marlon Osorio:  Se cambia las funciones consultarccoCM y consultarCcoSF por la version unificada del comun.php
+// ==========================================================================================================================================
 // Noviembre 07 de 2013: Se agregan "UNION" a las consultas donde se encuentre la tabla movhos_000003 para que traiga los     
 //						datos de contingencia (tabla movhos_00143) con estado activo. Jonatan Lopez	 	 
 // ==========================================================================================================================================
@@ -50,7 +52,7 @@ else
 	include_once("root/magenta.php");
 	include_once("movhos/otros.php");
 	$bd = $wbasedato;
-	$wactualiz = "Noviemnbre 7 de 2013"; // Aca se coloca la ultima fecha de actualizacion de este programa //
+	$wactualiz = "Abril 16 de 2022"; // Aca se coloca la ultima fecha de actualizacion de este programa //
 	$titulo = "REPORTE DE DEVOLUCIONES";
 	encabezado($titulo,$wactualiz, "clinica");  
 	connectOdbc($conex_o, 'facturacion');
@@ -189,7 +191,7 @@ else
 	
 
 		//$wcco = trim($wcco);
-		$ccoCM = centroCostosCM();
+		$ccoCM = ccoUnificadoCM();
 
 		if ($wcco == $ccoCM)
 		{
@@ -363,27 +365,7 @@ else
 		echo "</table>";
 	} // if de register
 }
-function centroCostosCM()
-	{
-		global $conex;
-		global $wbasedato;
-		
-		$sql = "SELECT
-					Ccocod
-				FROM
-					".$wbasedato."_000011
-				WHERE
-					ccotra = 'on'
-					AND ccoima = 'on'	
-					AND ccoest = 'on'
-				";
-		
-		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		
-		if( $rows = mysql_fetch_array( $res ) ){
-			return $rows[ 'Ccocod' ];
-		}
-	}
+
 echo "<input type='HIDDEN' name='wemp_pmla' value='" . $wemp_pmla . "'>";
 echo "<input type='HIDDEN' name='wbasedato' value='" . $wbasedato . "'>";
 
