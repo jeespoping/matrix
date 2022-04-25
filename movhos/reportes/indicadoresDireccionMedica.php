@@ -1991,7 +1991,7 @@ else
 	//-------------------------------------------------------------------------
 	function abrirHce(documento, tipoDoc, historia, ingreso)
 	{
-		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa="+<?=$wbdhce?>+"&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=I&BC=1";
+		var url 	= "/matrix/HCE/procesos/HCE_Impresion.php?empresa="+'<?=$wbdhce?>'+"&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos=movhos&whis="+historia+"&wing="+ingreso+"&wservicio=*&protocolos=0&CLASE=I&BC=1";
 		alto		= screen.availHeight;
 		ventana 	= window.open('','','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
 		ventana.document.open();

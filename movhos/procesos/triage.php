@@ -1959,7 +1959,7 @@ else
 			
 			var formTipoOrden 	= '000152'; 
 			var numHistoriaTemp = 'TEMP'+$.trim(respuesta.Historia);		
-			var urlform 		= '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa='+<?=$wbdhce?>+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+<?=$wbasedato?>+'&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDoc+'&whis='+numHistoriaTemp+'&wing=1';
+			var urlform 		= '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa='+'<?=$wbdhce?>'+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+'<?=$wbasedato?>'+'&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDoc+'&whis='+numHistoriaTemp+'&wing=1';
 			
 			turnoTemp = turno.split("-");
 			
@@ -2103,7 +2103,7 @@ else
 			+"</fieldset>";
 			
 			var formTipoOrden 	= '000152';
-			var urlform 		= '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa='+<?=$wbdhce?>+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+<?=$wbasedato?>+'&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDoc+'&whis='+historia+'&wing='+ingreso+'';
+			var urlform 		= '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa='+'<?=$wbdhce?>'+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+'<?=$wbasedato?>'+'&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDoc+'&whis='+historia+'&wing='+ingreso+'';
 			
 			// --> Cargar el iframe
 			$("#divFormularioHce").html("<div align=center>"+infoPaciente+"</div><iframe id='frameFormularioTriage' name='frameFormularioTriage' src='"+urlform+"' height='600px' width='950px' scrolling=yes frameborder='0'><span id='prueba'>Prueba</span></iframe>");
@@ -2395,7 +2395,7 @@ else
 	//----------------------------------------------------------------------------------
 	function imprimirTriage(documento, tipoDoc, historia, ingreso, nombrePaciente, fechaTriage)
 	{
-		var url 	= "/matrix/movhos/procesos/impresionTriage.php?empresa="+<?=$wbdhce?>+"&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos="+<?=$wbasedato?>+"&whis="+historia+"&wing="+ingreso+"&nombrePaciente="+nombrePaciente+"&wfechai="+fechaTriage+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
+		var url 	= "/matrix/movhos/procesos/impresionTriage.php?empresa="+'<?=$wbdhce?>'+"&wemp_pmla="+$("#wemp_pmla").val()+"&wcedula="+documento+"&wtipodoc="+tipoDoc+"&wdbmhos="+'<?=$wbasedato?>'+"&whis="+historia+"&wing="+ingreso+"&nombrePaciente="+nombrePaciente+"&wfechai="+fechaTriage+"&wservicio=*&protocolos=0&CLASE=C&BC=1";
 		
 		$("#divImpresionTriage").html("<iframe src='"+url+"' width='750px' height='1200px' scrolling=yes frameborder='0'></iframe>");
 		

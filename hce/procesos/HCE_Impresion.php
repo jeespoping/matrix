@@ -484,10 +484,10 @@ function validar_formulario($clave,$num,&$data)
 
 function consultarUsuarioHabilitado($conex,$origenConsulta,$key)
 {
-	$wbasedatohce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
+	$wbdhce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 	$queryHCE = "SELECT Detval 
 				   FROM root_000051 
-				  WHERE Detapl='".$wbasedatohce."' 
+				  WHERE Detapl='".$wbdhce."' 
 					AND Detemp='".$origenConsulta."';";
 					
 	$resHCE = mysql_query($queryHCE, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $queryHCE . " - " . mysql_error());

@@ -630,7 +630,7 @@ if( isset( $accion ) ){
 
             var formTipoOrden   = '000075';
             var numHistoriaTemp = historiaTemporal;
-            var urlform         = '/matrix/hce/procesos/HCE_Notas.php?pre_anestesia=on&ok=1&notas=1&empresa='+<?=$wbdhce?>+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+<?=$wbasedato?>+'&wservicio=*&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDocumento+'&whis='+historiaTemporal+'&wing='+ingreso+'&wfecha_data='+Fecha_data+'&whora_data='+Hora_data;
+            var urlform         = '/matrix/hce/procesos/HCE_Notas.php?pre_anestesia=on&ok=1&notas=1&empresa='+'<?=$wbdhce?>'+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+'<?=$wbasedato?>'+'&wservicio=*&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDocumento+'&whis='+historiaTemporal+'&wing='+ingreso+'&wfecha_data='+Fecha_data+'&whora_data='+Hora_data;
 
             infoPaciente = ""
             +"<fieldset align='center' style='padding:6px;'>"
@@ -943,7 +943,7 @@ if( isset( $accion ) ){
 
                     var formTipoOrden   = '000075';
                     var numHistoriaTemp = 'TEMP'+$.trim(respuesta.Historia);
-                    var urlform         = '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa='+<?=$wbdhce?>+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+<?=$wbasedato?>+'&wformulario='+formTipoOrden+'&wcedula='+numDocumento+'&wtipodoc='+tipoDocumento+'&whis='+numHistoriaTemp+'&wing=1';
+                    var urlform         = '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa='+'<?=$wbdhce?>'+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+'<?=$wbasedato?>'+'&wformulario='+formTipoOrden+'&wcedula='+numDocumento+'&wtipodoc='+tipoDocumento+'&whis='+numHistoriaTemp+'&wing=1';
                     var ccoDestino  = $("[name='select_cco_destino'] > option:selected").html();
                     var selectClon  = $("[name='select_cco_destino']").parent().html();
                     infoPaciente = ""
@@ -1245,7 +1245,7 @@ if( isset( $accion ) ){
         function consultarPreAnestesia( obj, tipoDocumento, documento, turnoCirugia, historiaTemporal, entidad, edad, nombrePaciente, medico, ingreso, servicioDestino = "" ){
 
             var formTipoOrden   = '000075';
-            var urlform         = '/matrix/hce/reportes/HCE_ImpPreIngreso.php?empresa='+<?=$wbdhce?>+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+<?=$wbasedato?>+'&CLASE=C&wcedula='+documento+'&wtipodoc='+tipoDocumento+'&wfor1=000075&wfor2=000339&whis='+historiaTemporal+'&wing='+ingreso;
+            var urlform         = '/matrix/hce/reportes/HCE_ImpPreIngreso.php?empresa='+'<?=$wbdhce?>'+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+'<?=$wbasedato?>'+'&CLASE=C&wcedula='+documento+'&wtipodoc='+tipoDocumento+'&wfor1=000075&wfor2=000339&whis='+historiaTemporal+'&wing='+ingreso;
 
             infoPaciente = ""
                     +"<fieldset align='center' style='padding:6px;'>"
