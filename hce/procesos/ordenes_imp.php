@@ -1053,7 +1053,7 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 									$notas[$kn]=$row[4];
 									
 									$queryF  = " select Medtdo,Meddoc,Medreg,Medesp  from ".$wbasedato."_000048 ";
-									$queryF .= "  where Meduma ='".$row[5]."' ";
+									$queryF .= "  where Medest = 'on' and Meduma ='".$row[5]."' ";
 									$errF = mysql_query($queryF,$conex) or die(mysql_errno().":".mysql_error());
 									$numF = mysql_num_rows($errF);
 									if($numF > 0)
@@ -1664,7 +1664,7 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 							$kn++;
 							$notas[$kn]=$row[4];
 							$queryF  = "select Medtdo,Meddoc,Medreg,Firrol  from ".$wbasedato."_000048, ".$empresa."_000036 ";
-							$queryF .= "   where Meduma = '".$row[5]."' ";
+							$queryF .= "   where Medest = 'on' and  Meduma = '".$row[5]."' ";
 							$queryF .= " 	and Meduma = Firusu ";
 							$queryF .= " 	and Firpro = '".$wforant."' ";
 							$queryF .= " 	and Firhis = '".$whis."' "; 
