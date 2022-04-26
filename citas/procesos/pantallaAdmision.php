@@ -1139,7 +1139,6 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 					var historia = data.historia;
 					var ingreso  = data.ingreso;
 					var tipoDoc  = data.tipoDoc;
-					var origen   = $("#wemp_pmla").val();
 					var wemp_pmla = $('#wemp_pmla').val();
 					var whce    = $('#whce').val();
 					var wmovhos = $('#wmovhos').val();
@@ -1272,7 +1271,8 @@ if(isset($consultaAjax) && $consultaAjax != "" )
 
 <?php
     // - - - - - - - - - - - - - - - - - - - - - Modificaciones - - - - - - - - - - - - - - - -
-    // 2021-11-18  Daniel CB.           Se realiza corrección de parametros 01 quemados.
+    // 16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
+	// 2021-11-18  Daniel CB.           Se realiza corrección de parametros 01 quemados.
 	//
     // 2020-01-08  Arleyda Insignares C. Se modifica select que lista los médicos, a un multiselect de selección única para la utilización del filtro (busqueda por texto).
 	//---------------------------------------------------------ACA TERMINAN LOS LLAMADOS AJAX

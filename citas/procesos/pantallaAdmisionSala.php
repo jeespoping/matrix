@@ -312,7 +312,7 @@ else if (isset($accion) and $accion == 'llamarPacienteAdmision') {
 					if($rowValAutorizacion['Logfia'] != "0000-00-00"){
 						$respuesta['Mensaje'] 	= "No es posible realizar el llamado, ya se ha iniciado la admisi&oacute;n del paciente.";
 					}else{
-						$nameTable = consultarAliasPorAplicacion($conex, "01", 'citasen');
+						$nameTable = consultarAliasPorAplicacion($conex, $wemp_pmla, 'citasen');
 						$arrayUbicaciones = crearArrayPerfilxUbicacion($nameTable);						
 						$respuesta['Mensaje'] 	= "El paciente está siendo llamado a admisión en este momento en ".$arrayUbicaciones["01"][$rowValAutorizacion['Loguba']]."";
 					}					
@@ -1784,7 +1784,7 @@ else if (isset($accion) and $accion == 'terminarAtencion') {
 				}else{
 					//Como ya se termino la atención se llama la función para la solicitud de camillero
 					$nombrePaciente = isset($rowIdCE09['Nom_pac']) ? $rowIdCE09['Nom_pac'] : "";
-					$solicitudCamillero = solicitarCamillero($centroCosto, $empresa, $nombrePaciente);
+					$solicitudCamillero = solicitarCamillero($centroCosto, $wemp_pmla, $nombrePaciente);
 										
 					if($solicitudCamillero != 0){
 						
@@ -2933,7 +2933,7 @@ if (isset($accion) and $accion == 'finalizarAdmision'){
 			//Se debe validar si se guardo ingreso y numero de historia sino se debe ir a consultar y guardar
 			$sqlAddUpdate = "";
 			if($row["Loghis"] == "" || $row["Loging"] == ""){
-				$prefMovhos = consultarAliasPorAplicacion($conex,$empresa,"movhos");
+				$prefMovhos = consultarAliasPorAplicacion($conex,$wemp_pmla,"movhos");
 				$fecha = date("Y-m-d");
 								
 				$consultaHistoria ="SELECT 
@@ -2945,7 +2945,7 @@ if (isset($accion) and $accion == 'finalizarAdmision'){
 									WHERE 
 										r.Oriced = '".$cedulaPac."'
 										AND m.Fecha_data = '".$fecha."'
-										AND r.Oriori = '".$empresa."'				
+										AND r.Oriori = '".$wemp_pmla."'				
 				";
 				$resConHistoria = mysql_query($consultaHistoria) or die("<b>ERROR EN QUERY MATRIX($consultaHistoria):</b><br>".mysql_error());
 				$rowHistoria = mysql_fetch_array($resConHistoria);
@@ -4575,7 +4575,7 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 					idFila: 				idFila,
 					cedulaPac:         		cedulaPaciente,
 					solucionCitas:     		solucionCitas,
-					empresa:     			$("#wemp_pmla").val(),
+					// empresa:     			$("#wemp_pmla").val(),
 					wemp_pmla: 				$('#wemp_pmla').val()
 				}, function(data){
 
@@ -5103,7 +5103,7 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 		            nombrePac:          	nombrePaciente,
 		            solucionCitas:     		solucionCitas,
 					centroCosto: 			$("#ccosto").val(),
-					empresa:				$("#wemp_pmla").val(),
+					// empresa:				$("#wemp_pmla").val(),
 					wemp_pmla: 				$('#wemp_pmla').val()
 		        }, function(data){
 
@@ -6002,7 +6002,6 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 						var historia = data.historia;
 						var ingreso  = data.ingreso;
 						var tipoDoc  = data.tipoDoc;
-						var origen   = $("#wemp_pmla").val();
 						var wemp_pmla = $('#wemp_pmla').val();
 						var whce = $('#whce').val();
 						var wmovhos = $('#wmovhos').val();
@@ -6142,6 +6141,7 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 
  /*
  Modificaciones:
+ 16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
  2017-04-04	 Se agrega validacion $solucionCitas == "citasen") a funcion que actualizaba la agenda con errores en la cedula solo aplica para endoscopia.
  2016-03-11: Se modifica el script para mostrar las columnas respectivas de cada uno de los procesos de Endoscopia.
  			Cada uno de estos pasos en el proceso Endoscopia guarda fechas, horas y estados en un log llamado citasen_000023.
@@ -6916,14 +6916,14 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 	
 	//Verónica Arismendy 2016-05-03
 	//Función que se encarga de hacer la solicitud del camillero cuando se da por terminada la atención.
-	function solicitarCamillero($centroCosto, $empresa, $nombrePac){
+	function solicitarCamillero($centroCosto, $wemp_pmla, $nombrePac){
 		global $conex;
 		$consultaAjax = '';
 		include_once("root/comun.php");
 		$idRegistroInsertado = 0;
 				
 		//Con el ccentro de conto de origen consulta en cencam 4 el nombre
-		$tablaCencam = consultarAliasPorAplicacion($conex, $empresa, 'camilleros');
+		$tablaCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
 			
 		$sqlRoot = "SELECT
 					r.Ccaorg, r.Ccamot, r.Ccades, r.Ccaobs, cn.central
@@ -6992,7 +6992,7 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 	}
 	
 	
-	function validarEstadoSolicitudCamillero($empresa, $idSolicitud){
+	function validarEstadoSolicitudCamillero($wemp_pmla, $idSolicitud){
 		global $conex;
 		$consultaAjax = '';
 		include_once("root/comun.php");
@@ -7000,7 +7000,7 @@ else if (isset($accion) and $accion == 'guardarUbicacionRecargaPagina') {
 		$estadoSolicitud = false;
 		
 		//Con el ccentro de conto de origen consulta en cencam 4 el nombre
-		$tablaCencam = consultarAliasPorAplicacion($conex, $empresa, 'camilleros');
+		$tablaCencam = consultarAliasPorAplicacion($conex, $wemp_pmla, 'camilleros');
 			
 		$sqlRoot = "SELECT
 					Anulada, Fecha_llegada, Hora_llegada
@@ -7115,9 +7115,9 @@ else
 	$wentidad = $institucion->nombre;
 
 	if ($wemp_pmla == 01) {
-		encabezado("AGENDA SALAS", "2017-04-04", $wbasedato );
+		encabezado("AGENDA SALAS", "2022-03-16", $wbasedato );
 	} else {
-		encabezado("AGENDA SALAS", "2017-04-04", "logo_".$wbasedato );
+		encabezado("AGENDA SALAS", "2022-03-16", "logo_".$wbasedato );
 	}
 
 	if (!isset($wfec)) {
