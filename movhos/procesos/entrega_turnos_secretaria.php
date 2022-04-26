@@ -270,7 +270,7 @@ function registrarAuditoriaKardex($conex,$wbasedato, $auditoria){
 	$q = "INSERT INTO ".$wbasedato."_000055
 				(Medico, Fecha_data, Hora_data, Kauhis, Kauing, Kaudes, Kaufec, Kaumen, Kauido, Seguridad)
 			VALUES
-				('movhos','".date("Y-m-d")."','".date("H:i:s")."','$auditoria->historia','$auditoria->ingreso','$auditoria->descripcion','$auditoria->fechaKardex','$auditoria->mensaje','$auditoria->idOriginal','A-$auditoria->seguridad')";
+				('".$wbasedato."','".date("Y-m-d")."','".date("H:i:s")."','$auditoria->historia','$auditoria->ingreso','$auditoria->descripcion','$auditoria->fechaKardex','$auditoria->mensaje','$auditoria->idOriginal','A-$auditoria->seguridad')";
 
 	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 
@@ -3879,9 +3879,9 @@ function traer_observaciones_anteriores_exam($whis, $wing, $wexam, $wfechadataex
             {
 			    echo "";
                 echo "<div id='msjEspere' style='display:none;'><img src='../../images/medical/ajax-loader5.gif'/>Por favor espere un momento...</div><center><table>";
-
-				$path_disp_espec = "/matrix/movhos/procesos/Consul_disponibilidad_especialidad.php?wemp_pmla=01";
-				$path_cirugia = "/matrix/tcx/reportes/ListaG.php?wemp_pmla=".$wemp_pmla."&empresa=tcx&TIP=0";
+				$wbasetcx                         = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tcx');
+				$path_disp_espec = "/matrix/movhos/procesos/Consul_disponibilidad_especialidad.php?wemp_pmla=".$wemp_pmla;
+				$path_cirugia = "/matrix/tcx/reportes/ListaG.php?wemp_pmla=".$wemp_pmla."&empresa=".$wbasetcx."&TIP=0";
 
 			    echo "<tr class='fila1'>";
 				echo "<td colspan=3 style='cursor: pointer' onclick='ejecutar(".chr(34).$path_cirugia.chr(34).")'><font size=2>Consultar Turnos de Cirugia</td>";
@@ -3989,7 +3989,7 @@ function traer_observaciones_anteriores_exam($whis, $wing, $wexam, $wfechadataex
                         }
                     //==========================================================================================================
 
-					$path_hce = "../../hce/procesos/HCE_iFrames.php?empresa=".$whce."&origen=".$wemp_pmla."&wdbmhos=".$wmovhos."&whis=".$whis."&wing=".$wing."&accion=F&ok=0&wcedula=".$wdpa."&wtipodoc=".$wtid."";
+					$path_hce = "../../hce/procesos/HCE_iFrames.php?empresa=".$whce."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wmovhos."&whis=".$whis."&wing=".$wing."&accion=F&ok=0&wcedula=".$wdpa."&wtipodoc=".$wtid."";
                     $origen = "Kardex";
                     echo "<tr class=".$wclass.">";
 

@@ -149,8 +149,11 @@
         }
     </script> <!--VERIFICACION DE BROWSER-->
     <?php
+    
     include("conex.php");
     include("root/comun.php");
+
+    $wdbhce  = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
 
     if(!isset($_SESSION['user']))
     {
@@ -712,7 +715,7 @@
                             <input id="login-username" type="text" class="form-control" style="width: 75px" name="ingreso" value="<?php echo $ingreso ?>" readonly>
 
                             <div class="input-group-addon" style="background-color: #ffffff; width: 10px; border: none"></div>
-                            <span class="input-group-addon"><a href="/matrix/hce/procesos/HCE_iframes.php?empresa=hce&origen=01&wcedula=<?php echo $E_cedula_paciente ?>&wtipodoc=CC&wdbmhos=movhos" target="_blank">Ver historia</a></span>
+                            <span class="input-group-addon"><a href="/matrix/hce/procesos/HCE_iframes.php?empresa=<?=$wdbhce?>&wemp_pmla=<?=$wemp_pmla?>&wcedula=<?php echo $E_cedula_paciente ?>&wtipodoc=CC&wdbmhos=movhos" target="_blank">Ver historia</a></span>
                         </div>
                     </div>
 
