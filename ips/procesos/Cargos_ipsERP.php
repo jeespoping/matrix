@@ -4629,7 +4629,8 @@ else
 	//----------------------------
 	function grabar(Boton)
 	{
-        let tieneInteroperabilidad = false;
+       
+		let tieneInteroperabilidad = false;
 
 		var PermitirGrabar 			= true;
 		var graba_varios_terceros 	= 0;
@@ -4847,6 +4848,7 @@ else
 		//---------------------------------------------------------------
 		if (PermitirGrabar)
 		{
+	
 			// --> Deshabilitar el boton grabar hasta que termine el proceso
 			boton = jQuery(Boton);
 			boton.html('&nbsp;<img class="" border="0" src="../../images/medical/ajax-loader2.gif" title="Cargando.." >').attr("disabled","disabled");
@@ -4926,7 +4928,7 @@ else
 
 				// --> Mostrar mensajes
 				mostrar_mensaje(data.Mensajes.mensaje);
-
+                
 				// --> Si no hay ningun error
 				if(!data.Mensajes.error && tieneInteroperabilidad )
 				{
@@ -4965,7 +4967,9 @@ else
 							$("#codRips").val("").attr("valor", "").hide();
 					
 						}
+						
 					});
+					enviarInteroperabilidadDinamica();
 				}
 				else
 				{
@@ -4997,12 +5001,56 @@ else
 					$("#codRips").val("").attr("valor", "").hide();
 				}
 				// --> Activar boton grabar
+				
 				boton.html('GRABAR').removeAttr("disabled");
 
 			}, 'json');
 		}
 	}
 
+	 /**
+             * Ejecuta el script de interoperabilidad para enviar los ordenes a dínamica
+             * */
+            function enviarInteroperabilidadDinamica() {
+
+							$.ajax({
+							url: "/matrix/interoperabilidad/procesos/funcionesGeneralesEnvioHL7.php",
+							type: "GET",
+							data:{
+								accion              :'consultarInteroperabilidades',
+								wemp_pmla			: $('#wemp_pmla').val()
+								
+							},
+							async: false,
+							success:function(data) {
+							
+								if(data.includes('Dinamica')){
+									let json = {
+										historia: $("#whistoria").val(),
+										ingreso: $("#wing").val(),
+										wemp_pmla: $('#wemp_pmla').val(),
+										accion: 'insertarOrden',
+										tipo_envio: 'FACTURACION'
+									};
+
+									$.ajax({
+										type: 'POST',
+										url: '/matrix/interoperabilidad/procesos/interoperabilidad_ws.php',
+										data: json,
+										success: function (data) {
+											console.log('interoperabilidad enviada');
+										},
+										error: function (xhr, status, errorThrown) {
+											console.log('fallo el envio a la interoperabilidad');
+										}
+									});   
+								}	
+										
+											
+							}
+								});
+                
+            }
 	//-----------------------------------------------------------------
 	//	--> Funcion que realiza la impresion de un soporte de un cargo
 	//-----------------------------------------------------------------
