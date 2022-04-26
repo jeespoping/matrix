@@ -289,7 +289,7 @@ if (isset($consultaAjax) && $consultaAjax=='cambiarPuestoTrabajo')
 				// --> Guardar log del cambio de puesto
 				$sqlLog = "
 				INSERT INTO ".$wcliame."_000300
-				        SET Medico 		= 'cliame',
+				        SET Medico 		= '".$wcliame."',
 					        Fecha_data 	= '".date("Y-m-d")."',
 					        Hora_data 	= '".date("H:i:s")."',
 							Logtem 		= '".$tema."',
