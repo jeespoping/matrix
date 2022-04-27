@@ -721,7 +721,7 @@
         $query = "SELECT * FROM {$wcliame}_000101 
                     INNER JOIN {$wcliame}_000100 ON Pachis = Inghis
                     WHERE Inghis = '{$historiaIngreso[0]}' 
-                    AND Ingnin = '{$historiaIngreso[1][0]}'
+                    AND Ingnin = '{$historiaIngreso[1]}'
                     ";
         $res = mysql_query($query, $conex);
         $num = mysql_num_rows($res);
