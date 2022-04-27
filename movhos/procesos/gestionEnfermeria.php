@@ -2628,7 +2628,7 @@ if(isset($operacion) && $operacion == 'grabar_tipo_hab')
 				 ." SET Habtfa = '".$thab_act."' "
 			   ." WHERE  Habcod = '".$hab."' ";
 
-	//$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
+	$res = mysql_query($q,$conex) or die("Error en el query: ".$q."<br>Tipo Error:".mysql_error());
 
 
 	$wbasedatocliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'facturacion');
@@ -13777,14 +13777,7 @@ function pintarDatosFila( $datos, $sCodigoSelectorSede = NULL ){
 					$cco_esvisible = $row_ccotrasautomaticos['Gesvis'];
 					$cco_puedecambiar = $row_ccotrasautomaticos['Gesdhc'];
 
-					if($cco_puedecambiar=='on')
-					{
-						$cco_puedecambiar='off';
-					}
-					else
-					{
-						$cco_puedecambiar ='on';
-					}
+
 					$cco_formularioHce =$row_ccotrasautomaticos['Gesfhc'];
 					$cco_campoHce =$row_ccotrasautomaticos['Gescam'];
 					$cco_activoDesdeHce =$row_ccotrasautomaticos['Gesdhc'];
