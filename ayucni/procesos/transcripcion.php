@@ -1354,9 +1354,9 @@ function compararprefijo($conex, $wbasedato_cliamep,$wbasedato_cliame,$wbasedato
     
     $prefijo = '';
     
-    $q1 = "SELECT  Ingsei
-    FROM    {$wbasedato_cliame}_000101 AS c101
-    WHERE   c101.inghis = '{$whistoria}' AND c101.Ingnin = '{$wingreso}'";
+    $q1 = "SELECT  Ubisac
+    FROM    {$wbasedato_movhos}_000018 AS m18
+    WHERE   m18.Ubihis = '{$whistoria}' AND m18.Ubiing = '{$wingreso}'";
     $result1 = mysql_query($q1,$conex);
     $row1 = mysql_fetch_assoc($result1);
 
