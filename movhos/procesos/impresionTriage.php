@@ -13,6 +13,7 @@
 </script>
 <BODY TEXT="#000066">
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
 
 //====================================================================================
@@ -51,7 +52,8 @@ else
 
 	include_once("root/comun.php");
 	
-
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
 	
 	$color="#dddddd";
 	$color1="#C3D9FF";
@@ -64,7 +66,7 @@ else
 	echo "
 	<table border=1 width='712' class=tipoTABLE1>
 		<tr>
-			<td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg' id='logo'></td>
+			<td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/".$wbasedato1.".jpg' id='logo'></td>
 			<td id=tipoL01C>Paciente</td>
 			<td colspan=4 id=tipoL04>".$wtipodoc." ".$wcedula."<br>".$nombrePaciente."</td>
 			<td id=tipoL01C>P&aacute;gina 1</td>
