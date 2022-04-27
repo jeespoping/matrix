@@ -452,8 +452,6 @@
 							GROUP BY fuecod
 						)
 				 AND	envencnit IN ( {$cuentas['responsables']} )
-				 AND	envdetdoc = envencden
-				 AND	envdetfue = envencfen
 				 AND	envencfec >= '{$fechaInicio}'
 				 AND	envencfec <= '{$fechaCorte}'
 				 AND	envencfue = envdetfue
@@ -495,8 +493,6 @@
 
 		if( $respuesta )
 		{
-			$cuentaCobroAux = 0;
-
 			$result_array_response = odbc_fetch_array($respuesta);
 
 			if( !empty( $result_array_response ) )
@@ -514,14 +510,7 @@
 						'nit_responsable'	=>		$fila['nit_responsable']
 					];
 
-					if( $cuentaCobroAux != $fila['cuenta_cobro'] )
-					{
-						$cuentaCobro[$fila['cuenta_cobro']] = [];
-					}
-
-					array_push( $cuentaCobro[$fila['cuenta_cobro']], (object) convertKeysToCamelCase( $factura ) );
-					
-					$cuentaCobroAux = $fila['cuenta_cobro'];
+					$cuentaCobro[$fila['cuenta_cobro']][] = (object) convertKeysToCamelCase($factura);
 				}
 
 				$response = (object) $cuentaCobro;
