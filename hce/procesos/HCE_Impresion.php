@@ -432,6 +432,7 @@ else{
 	die('Falta parametro wemp_pmla...');
 }
 include_once("conex.php");
+include_once("root/comun.php");
 include_once("hce/funcionesHCE.php");
 
 function bi($d,$n,$k)
@@ -482,7 +483,7 @@ function validar_formulario($clave,$num,&$data)
 }
 
 
-function consultarUsuarioHabilitado($conex,$origenConsulta,$key)
+function consultarUsuarioHabilitado($conex,$wemp_pmla,$key)
 {
 	$wbasedatoHCE = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
 	// $queryHCE = "SELECT Detval 
@@ -691,9 +692,7 @@ else
 	$wbasedato1 = strtolower( $institucion->baseDeDatos );
 
 	$key = substr($user,2,strlen($user));
-	echo "<form name='HCE_Impresion' action='HCE_Impresion.php' method=post>";
-	
-
+	echo "<form name='HCE_Impresion' action='HCE_Impresion.php' method=get>";
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
@@ -706,7 +705,7 @@ else
 	if(isset($wservicio))
 		echo "<input type='HIDDEN' name= 'wservicio' value='".$wservicio."'>";
 	
-	echo "<input type='HIDDEN' name= 'origenConsulta' value='".$origenConsulta."'>";
+	echo "<input type='HIDDEN' name= 'origenConsulta' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'noCentrar' value='".$noCentrar."'>";
 	echo "<input type='HIDDEN' id='enviarCorreo' name= 'enviarCorreo' value='".$enviarCorreo."'>";
 	echo "<input type='HIDDEN' id='emailEnviarCorreo' name= 'emailEnviarCorreo' value='".$emailEnviarCorreo."'>";
