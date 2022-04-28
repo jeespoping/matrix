@@ -68,7 +68,6 @@
  * Mayo 5 de 2011	Al agregar un examen o procedimiento, todos los examenes son colapsados
  */
 
-
 var preguntarPorVisaulizarMedControl = false;
  
 var cadenaCTCcontributivo = "" ;
@@ -8158,7 +8157,7 @@ function utf8_decode(str_data) {
 
 function ver_ordenes_anteriores(fecha){
 
- $('#ordenes_anteriores_'+fecha).toggle();
+ $('#ordenes_anteriores_'+fecha).toggle("1000");
 
 }
 
@@ -18358,6 +18357,7 @@ function marcarCambio(tipo,indice, campo ){
 			bandera.value = "S";
 		}
 
+		
 		var bandera_alta = document.getElementById("wmodificadoimp"+tipo+indice);
 						   
   

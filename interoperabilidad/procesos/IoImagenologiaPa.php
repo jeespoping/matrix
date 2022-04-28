@@ -2,6 +2,7 @@
 include_once("root/comun.php");
 include_once("./funcionesGeneralesEnvioHL7.php");
 include_once("./interoperabilidad_ws.php");
+
 $wemp_pmla=$_POST['wemp_pmla'];
 $historia=$_POST['historia'];
 $ingreso=$_POST['ingreso'];
@@ -10,11 +11,11 @@ $tipoOrden=$_POST['tipoOrden'];
 
 
 
-$wmovhos=consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
-$wcliame=consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
-$whce = consultarAliasPorAplicacion( $conex, $wemp_pmla, "hce" );
-$paciente = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
-$estudios=consultarEstudios( $conex, $whce,$wcliame,$tipoOrden, $numeroOrden,$paciente);
+$wmovhos		= consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
+$wcliame		= consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
+$whce 			= consultarAliasPorAplicacion( $conex, $wemp_pmla, "hce" );
+$paciente 		= informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
+$estudios		= consultarEstudios( $conex, $whce,$wcliame,$tipoOrden, $numeroOrden,$paciente);
 $conexionSabbag = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'ipHL7Sabbag' );
 
 
@@ -46,14 +47,27 @@ function armarMsgHL7($paciente,$estudio){
 	}elseif($estudio['estadoEstudio'] == 'C'){
         $estado = 'CA';
 	}
+	$responsable="";
+	if(empty($paciente['nombreResponsable'])){
+		$responsable="Particular";
+	}else{
+	  $responsable=$paciente['nombreResponsable'];
+	}
 	
-	
+	$mensaje =	"\013"."MSH|^~\&|MATRIX|PMLA|SABBAG|MEDILAB|".date("YmdHis")."||ORM^O01|449||2.5||||||8859/1\r"
+					."PID||".$paciente['nroDocumento']."^".$paciente['tipoDocumento']."|".$paciente['historia']."||".$paciente['apellido1']." ".$paciente['apellido2']."^".$paciente['nombre1']."||".date("Ymdhis", strtotime($paciente['fechaNacimiento']))."|".$paciente['genero']."|".$paciente['apellido1']."^".$paciente['nombre1']."||".$paciente['direccion']."^^".$paciente['municipio']."^^".$paciente['codigomMunicipio']."^^P||".$paciente['telefono']."|".$paciente['celular']."||\r"
+					."PV1||I||".$paciente['habitacion']."|||||||||||||||".$paciente['ingreso']."|||||||||||||||||||||||||".$paciente['fechaAdmision']."\r"
+					."IN1|||CPA|||||\r"
+					."ORC|".$estado."|A04-".$estudio['numeroOrden']."-".$estudio['numeroItemEnOrden']."|||SC||".date("YmdHis", strtotime($estudio['fechaOrdenamiento']))."|||||||\r"
+					."OBR||".$estudio['tipoOrden']."-".$estudio['numeroOrden']."-".$estudio['numeroItemEnOrden']."||".$estudio['cups']."^".$estudio['nombreCups']."||".date("YmdHis", strtotime($estudio['fechaOrdenamiento']))."|||||||"."Tarifa Estudio: ".$estudio['tarifaEstudio']."-"."Responsable: ".$responsable."-"."||||||||||||||||||".$estudio['nombreCups']."-".$estudio['justificacionEstudio']."\034\015";
+	/*
 	$mensaje =	"\013"."MSH|^~\&|MATRIX|PMLA|SABBAG|MEDILAB|".date("Ymdhis")."||ORM^O01|449||2.5||||||8859/1\r"
 					."PID||".$paciente['nroDocumento']."^".$paciente['tipoDocumento']."|".$paciente['historia']."||".$paciente['apellido1']." ".$paciente['apellido2']."^".$paciente['nombre1']."||".date("Ymdhis", strtotime($paciente['fechaNacimiento']))."|".$paciente['genero']."|".$paciente['apellido1']."^".$paciente['nombre1']."||".$paciente['direccion']."^^".$paciente['municipio']."^^".$paciente['codigomMunicipio']."^^P||".$paciente['telefono']."|".$paciente['celular']."||\r"
 					."PV1||I||".$paciente['habitacion']."|||||||||||||||".$paciente['ingreso']."|||||||||||||||||||||||||".$paciente['fechaAdmision']."\r"
 					."IN1|||CPA|||||\r"
 					."ORC|".$estado."|A04-".$estudio['numeroOrden']."-".$estudio['numeroItemEnOrden']."|||SC||".date("Ymdhis", strtotime($estudio['fechaOrdenamiento']))."|||||||\r"
-					."OBR||".$estudio['tipoOrden']."-".$estudio['numeroOrden']."-".$estudio['numeroItemEnOrden']."||".$estudio['cups']."^".$estudio['nombreCups']."||".date("Ymdhis", strtotime($estudio['fechaOrdenamiento']))."|||||||"."Tarifa Estudio: ".$estudio['tarifaEstudio']."||||||||||||||||||".$estudio['justificacionEstudio']."\034\015";
+					."OBR||".$estudio['tipoOrden']."-".$estudio['numeroOrden']."-".$estudio['numeroItemEnOrden']."||".$estudio['cups']."^".$estudio['nombreCups']."||".date("Ymdhis", strtotime($estudio['fechaOrdenamiento']))."|||||||"."Tarifa Estudio: ".$estudio['tarifaEstudio']."||||||||||||||||||".$estudio['justificacionEstudio']."\034\015";*/
+					
 return $mensaje;
 }
 function enviarMsgHL7($mensaje,$conexionSabbag){

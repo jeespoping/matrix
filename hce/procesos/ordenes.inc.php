@@ -540,6 +540,13 @@ class detalleKardexDTO {
 			$this->validarTarifa = $validarTarifa;
 			
 			$this->autorizadoPorDirector= (($datos['Ekxaut'] == 'on') && ($validarTarifa == 'on'))? true: false;	//Articulo con tarifa
+			
+			//MODIFICADO POR LEANDRO MENESES 2021/08/09 PARA QUE TOME COMO AUTORIZADOS LOS MEDICAMENTOS CON Ekxaut = ''
+			/*if ($datos['Ekxaut'] == 'off')
+				$this->autorizadoPorDirector = false;
+			else
+				$this->autorizadoPorDirector = true;
+			//$this->autorizadoPorDirector= $datos['Ekxaut'] == 'on' ? true: false;*/	//Articulo con tarifa
 			$this->jusParaAutorizar		= $datos['Ekxjus'];	//Justificación parar odenar el medicamento sin tarifa
 			$this->fechaAutorizado		= $datos['Ekxfau'];	//Fecha de aprobación del articulo por director Médico
 			$this->horaAutorizado		= $datos['Ekxhau'];	//Hora de aprobacion del articulo por director médico
@@ -728,7 +735,7 @@ class RegistroGenericoDTO{
 	var $accion_med_proc_agrup = "";	//Abril 2015. Accion a tomar para medicamentos de procedimientos agrupados
 	var $est_cancelada = "";	//Abril 2015. Estados cancelados para medicamentos de procedimientos agrupados
 	var $est_realizado = "";	//Abril 2015. Estados realizados para medicamentos de procedimientos agrupados
-	var $genCca = "";			  				   
+	var $genCca = "";						  
 }
 
 //Clase que maneja las condiciones de suministro
@@ -2009,10 +2016,12 @@ function enviarALaboratorioHL7Faltantes( $conex, $wemp_pmla, $wmovhos, $whce, $u
 		}
 		else{
 			//Esta función envía las ordenes a laboratorio
-			if( $interoperabilidadLis != 'Dinamica' )
+			if( $interoperabilidadLis == 'Dinamica' ){
+                insertarOrdenWs( $conex, $wemp_pmla, $rows['habhis'], $rows['habing'] );
+				
+			}else{
 				crearMensajesHL7OLM( $conex, $wemp_pmla, $wmovhos, $rows['habhis'], $rows['habing'], $usuario );
-			else
-				insertarOrdenWs( $conex, $wemp_pmla, $rows['habhis'], $rows['habing'] );
+				}
 		}
 	}
 	
@@ -3375,7 +3384,6 @@ function abrirCTCcontributivo($wemp_pmla,$historia,$ingreso,$codMedico,$cadenaCT
 										</div>";
 		
 	$urlCTCministerio = consultarAliasPorAplicacion( $conex, $wemp_pmla, "urlCTCministerio" );
-		
 	// Iframe usado antes del 20/12/2021
 	// echo "	<div id='divCTCcontributivo' style='width:100%;height:100%;' >
 	// 			".$listaPendientesCTCcontributivo."
@@ -3399,8 +3407,6 @@ function abrirCTCcontributivo($wemp_pmla,$historia,$ingreso,$codMedico,$cadenaCT
 				</span>";
 				
 	echo"</div>";
-
-
 }
 
 function consultarSiContributivo($codigoResponsable)
@@ -8802,34 +8808,34 @@ function registrarLiquidosEndovenosos( $conex, $wbasedato, $his, $ing, $codlev, 
  * Pinta un formulario oculto para hacer los lev, este se usa para ordenar un medicamento INF o modificar
  * un medicamento INF
  ************************************************************************************************************/
-function pintarModalIC($conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $ccoPaciente, $historia, $ingreso)
-{
-
-    /*
+function pintarModalIC( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $ccoPaciente, $historia, $ingreso ){
+	
+	/*
 	* Modificación: se agrega validación de parámetro para mostrar solo insumos con tarifa
 	* autor: sebastian.nevado
 	* fecha: 2021-08-31
 	*/
-    global $wemp_pmla;
-    $bMostrarSoloConTarifa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'mostrarSoloConTarfia') == 'on';
-    $sTablaTarifas = "";
-    $sWhereTarifas = "";
-
-    if ($bMostrarSoloConTarifa) {
-        $pac = informacionPaciente($conex, $wemp_pmla, $historia, $ingreso);
-        $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
-
-        $sTablaTarifas = ", {$wcliame}_000026 ca ";
-        $sWhereTarifas = " AND artcod = mtaart
+	global $wemp_pmla;
+	$bMostrarSoloConTarifa = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mostrarSoloConTarfia' ) == 'on';
+	$sTablaTarifas = "";
+	$sWhereTarifas = "";
+	
+	if($bMostrarSoloConTarifa)
+	{
+		$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso);
+		$wcliame  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+		
+		$sTablaTarifas = ", {$wcliame}_000026 ca ";
+		$sWhereTarifas = " AND artcod = mtaart
 							AND mtatar = '{$pac['tarifa']}' ";
-    }
-
-    /*
+	}
+	
+	/*
 	* FIN MODIFICACIÓN
 	*/
 
-    //Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
-    $qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Carnal as Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
+	//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+	$qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Carnal as Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
 				FROM {$wbasedato}_000098, {$wbasedato}_000026, {$wbasedato}_000059 {$sTablaTarifas}
 			   WHERE Cartip = '{$tipoGenerico}' 
 				 AND Carcod = artcod
@@ -8887,13 +8893,15 @@ function pintarModalIC($conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $ccoP
 	}
 	
 	$num = max( $k, $j );
-
-    if ($num == 0 && $bMostrarSoloConTarifa) {
-        //mensajeEmergente("No hay artículos configurados con tarifas para los LEVS");
-        echo "<div style='display:none;' id='listaComponentesLEV'>";
-        echo "<br>No hay artículos configurados con tarifas para los LEVS<br>";
-        echo "</div>";
-    }
+	
+	if($num == 0 && $bMostrarSoloConTarifa)
+	{
+		//mensajeEmergente("No hay artículos configurados con tarifas para los LEVS");
+		echo "<div style='display:none;' id='listaComponentesLEV'>";
+		echo "<br>No hay artículos configurados con tarifas para los LEVS<br>";
+		echo "</div>";
+	}
+	
 	for( $i = 0, $j = 3000; $i < $num; $i++ )
 	{
 		if( $i == 0 ){
@@ -9152,34 +9160,34 @@ function pintarModalIC($conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $ccoP
  * Pinta un formulario oculto para hacer los lev, este se usa para ordenar un medicamento LEV o modificar
  * un medicamento LEV
  ************************************************************************************************************/
-function pintarModalLEVS($conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $pacEnUrgencias, $historia, $ingreso)
-{
-
-    /*
+function pintarModalLEVS( $conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $pacEnUrgencias, $historia, $ingreso ){
+	
+	/*
 	* Modificación: se agrega validación de parámetro para mostrar solo insumos con tarifa
 	* autor: sebastian.nevado
 	* fecha: 2021-08-31
 	*/
-    global $wemp_pmla;
-    $bMostrarSoloConTarifa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'mostrarSoloConTarfia') == 'on';
-    $sTablaTarifas = "";
-    $sWhereTarifas = "";
-
-    if ($bMostrarSoloConTarifa) {
-        $pac = informacionPaciente($conex, $wemp_pmla, $historia, $ingreso);
-        $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
-
-        $sTablaTarifas = ", {$wcliame}_000026 ca ";
-        $sWhereTarifas = " AND artcod = mtaart
+	global $wemp_pmla;
+	$bMostrarSoloConTarifa = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mostrarSoloConTarfia' ) == 'on';
+	$sTablaTarifas = "";
+	$sWhereTarifas = "";
+	
+	if($bMostrarSoloConTarifa)
+	{
+		$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso);
+		$wcliame  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+		
+		$sTablaTarifas = ", {$wcliame}_000026 ca ";
+		$sWhereTarifas = " AND artcod = mtaart
 							AND mtatar = '{$pac['tarifa']}' ";
-    }
-
-    /*
+	}
+	
+	/*
 	* FIN MODIFICACIÓN
 	*/
 
-    //Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
-    $qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Carnal as Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
+	//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+	$qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artcom, Carnal as Artgen, Deffra, Deffru, Carele, Artgen as ngen, Carpna
 				FROM {$wbasedato}_000098, {$wbasedato}_000026, {$wbasedato}_000059 {$sTablaTarifas}
 			   WHERE Cartip = '{$tipoGenerico}' 
 				 AND Carcod = artcod
@@ -9238,13 +9246,14 @@ function pintarModalLEVS($conex, $wbasedato, $wcenmez, $whce, $tipoGenerico, $pa
 	}
 	
 	$num = max( $k, $j );
-        if ($num == 0 && $bMostrarSoloConTarifa) {
-            //mensajeEmergente("No hay artículos configurados con tarifas para los LEVS");
-            echo "<div style='display:none;' id='listaComponentesLEV'>";
-            echo "<br>No hay artículos configurados con tarifas para los LEVS<br>";
-            echo "</div>";
-        }
-
+	if($num == 0 && $bMostrarSoloConTarifa)
+	{
+		//mensajeEmergente("No hay artículos configurados con tarifas para los LEVS");
+		echo "<div style='display:none;' id='listaComponentesLEV'>";
+		echo "<br>No hay artículos configurados con tarifas para los LEVS<br>";
+		echo "</div>";
+	}
+	
 	for( $i = 0, $j = 1000; $i < $num; $i++ )
 	{
 		if( $i == 0 ){
@@ -11191,7 +11200,6 @@ function cargarProcedimientosTemporalADetalleItem( $tipoOrden, $nroOrden, $numer
 		
 		
 		//Si no hay registros en la tabla de detalle de examenes se inserta
-
 		$sql = "INSERT INTO ".$whce."_000028( Medico, Fecha_data, Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh, Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detlog, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof, Seguridad )
 				SELECT '$whce' as Medico,         b.Fecha_data, b.Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh, Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detlog, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof, 'C-$whce' as Seguridad
 				  FROM ".$whce."_000027 a, ".$basedatos."_000159 b
@@ -11215,6 +11223,7 @@ function cargarProcedimientosTemporalADetalleItem( $tipoOrden, $nroOrden, $numer
 		$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - $sql".mysql_error() );
 	}
 	else{
+		
 		//Se actualiza el registro de la tabla hce_000028
 		$sql = "UPDATE ".$whce."_000028 a, ".$basedatos."_000159 b
 				   SET a.Detjus = b.Detjus,
@@ -11246,7 +11255,7 @@ function cargarProcedimientosTemporalADetalleItem( $tipoOrden, $nroOrden, $numer
 				   AND a.detnro = b.detnro
 				   AND a.detite = b.detite
 				   AND b.Detfir != ''";
-
+		
 		$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
 	}
 	
@@ -11322,7 +11331,6 @@ function cargarProcedimientosDetalleATemporal( $conex, $wbasedato, $wmovhos, $hi
 	if($num == 0){
 		
 		//Si la temporal está vacía se llena la temporal
-
 		$sql = "INSERT INTO ".$wmovhos."_000159( Medico, Fecha_data, Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh,Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detpri, Detlog, Deteex, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof, Seguridad )
 				SELECT '$wmovhos' as Medico,         b.Fecha_data, b.Hora_data, Dettor, Detnro, Detcod, Detesi, Detrdo, Detfec, Detjus, Detest, Detite, Detusu, Detfir, Deture, Detalt, Detimp, Detifh,Detusp, Detpen, Detule, Detfle, Dethle, Detfmo, Dethmo, Detpri, Detlog, Deteex, Detenv, Detutm, Detcco, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof, 'C-$wmovhos' as Seguridad
 				  FROM ".$wbasedato."_000027 a, ".$wbasedato."_000028 b
@@ -11330,7 +11338,7 @@ function cargarProcedimientosDetalleATemporal( $conex, $wbasedato, $wmovhos, $hi
 				   AND a.ording = '".$ing."'
 				   AND a.ordtor = dettor
 				   AND a.ordnro = detnro";
-
+		
 		$res = mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query - ".mysql_error() );
 	}
 }
@@ -12576,28 +12584,26 @@ function recalcularKardex( $conex, $wbasedato, $historia, $ingreso, $fecha ){
 function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $historia, $ingreso, $wemp_pmla)
 {
 	//Para dejar ordenar ya se hace es por el monitor de autorización del director médico
+	/* 
+	* Modificación: se parametriza vptarifa, y se permite mostrar NPT, LEV e IC independiente de que tenga o no tarifa
+	* autor: sebastian.nevado
+	* fecha: 2021-08-26
+	*/
+	//Armo array con nombres de familias NPT, LEV e IC
+	$aFamiliasNptLevIc = array();
+	$aFamiliasNptLevIc[] = consultarAliasPorAplicacion( $conex, $wemp_pmla, "famNPT" );
+	$aFamiliasNptLevIc = array_merge(explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "famLEVIC" )), $aFamiliasNptLevIc);
+	
+	//Convierto todo a minúscula
+	$aFamiliasNptLevIc = array_map('strtolower', $aFamiliasNptLevIc);
+	$bEsNptLevIc = in_array($familia, $aFamiliasNptLevIc);
+	
+	//Si es una NPT, LEV o IC, no valida tarifa
+	$vptarifa = ((consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mostrarSoloConTarfia' ) == 'on') && !$bEsNptLevIc) ? 'on' : 'off';
+	
 	/*
-		* Modificación: se parametriza vptarifa, y se permite mostrar NPT, LEV e IC independiente de que tenga o no tarifa
-		* autor: sebastian.nevado
-		* fecha: 2021-08-26
-		*/
-    	//Armo array con nombres de familias NPT, LEV e IC
-    	$aFamiliasNptLevIc = array();
-    	$aFamiliasNptLevIc[] = consultarAliasPorAplicacion($conex, $wemp_pmla, "famNPT");
-    	$aFamiliasNptLevIc = array_merge(explode("-", consultarAliasPorAplicacion($conex, $wemp_pmla, "famLEVIC")), $aFamiliasNptLevIc);
-
-    	//Convierto todo a minúscula
-    	$aFamiliasNptLevIc = array_map('strtolower', $aFamiliasNptLevIc);
-    	$bEsNptLevIc = in_array($familia, $aFamiliasNptLevIc);
-
-    	//Si es una NPT, LEV o IC, no valida tarifa
-    	$vptarifa = ((consultarAliasPorAplicacion($conex, $wemp_pmla, 'mostrarSoloConTarfia') == 'on') && !$bEsNptLevIc) ? 'on' : 'off';
-
-    	/*
-		* FIN MODIFICACIÓN
-		*/
-
-
+	* FIN MODIFICACIÓN
+	*/
 	
 	$wcliame  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
 	// Esta es la variable que contendrá todos los datos de los artículos 
@@ -12631,7 +12637,7 @@ function consultarFamiliaMedicamentos( $conex, $wbasedato, $wcenmez, $familia, $
 			
 	//Busco las familias que tengan en su nombre la familia buscada	
 	
-
+	$pac = informacionPaciente( $conex, $wemp_pmla, $historia, $ingreso );
 		
 	if($vptarifa == "off"){		
 		$sql = "SELECT
@@ -27751,7 +27757,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 	if(esUrgenciasUnificado($ccoPaciente)){
 	
 		$q_realizados = " UNION SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
+		Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 			FROM 
 				{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000047 c, {$wbasedatohce}_000015 d,".$wbasedato."_000045
 			WHERE 
@@ -27769,7 +27775,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 				AND timestamp(DATE_SUB( NOW() , INTERVAL 24 HOUR ) ) < timestamp(concat(Detfmo,' ', Dethmo ))
 			UNION
 			SELECT
-				Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
+			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '2' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 			FROM 
 				{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000017 c,  {$wbasedatohce}_000015 d, ".$wbasedato."_000045
 			WHERE 
@@ -27786,11 +27792,10 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 				AND nuevo = 'on'
 				AND Detesi = Eexcod 
 				AND timestamp(DATE_SUB( NOW() , INTERVAL 24 HOUR ) ) < timestamp(concat(Detfmo,' ', Dethmo ))";
-
+		
 	}
 	
 	//Consulta las ordenes asociadas al paciente que tengan estado pendiente, autorizado o pendiente de realizar.
-
 	$q = "SELECT
 			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,'' as Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 		FROM 
@@ -27809,7 +27814,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			AND Eexmeh != 'on'
 		UNION
 		SELECT
-			Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
+		Ordhis,Ording,Ordtor,Ordnro,Ordobs,Ordesp,Ordest,Ordfir,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detfec,Detjus,d.descripcion as Cconom,c.Descripcion,Protocolo, Detite, Tipoestudio,Ordusu,Detusu,Detalt,Detimp,Detfmo,Dethmo,Tiprju, '1' as estado, Codcups,Detpen, Deteex, Ordanx, Ordurl, Ordana, Detjoc, Ordple, Eexpen, Detplc, Eexcan, Tiputm, Detutm, Dethci, Deturl, Deturp, Detftm, Dethtm, Detrse, Detrex, Detaut, Detnof
 		FROM 
 			{$wbasedatohce}_000027 LEFT JOIN ".$wbasedato."_000011 ON Ccocod = Ordtor, {$wbasedatohce}_000028, {$wbasedatohce}_000017 c,  {$wbasedatohce}_000015 d, ".$wbasedato."_000045
 		WHERE 
@@ -27827,7 +27832,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			AND Eexmeh != 'on'
 			$q_realizados
 			ORDER BY Ordtor,Ordnro,estado ";
-
+	
 	$res = mysql_query($q, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $q . " - " . mysql_error());
 	$num = mysql_num_rows($res);
 	
@@ -27884,7 +27889,7 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 			
 			if( !$permiteModEst ){
 				$info['Ordurl'] = '';
-				//$info['Deteex'] = '';
+				// $info['Deteex'] = '';
 				$info['Detjoc'] = '';
 				$info['Detfme'] = '0000-00-00';
 				$info['Dethme'] = '00:00:00';
@@ -28156,10 +28161,8 @@ function consultarOrdenesHCE($historia,$ingreso,$fecha,&$datosAdicionales,$detal
 					}
 				}
 			}
-
-			// $detalle->solicitaUsuarioTomaMuestra = $detalle->esCupOfertado ? true : $detalle->solicitaUsuarioTomaMuestra;
-			//$detalle->solicitaUsuarioTomaMuestra = !$detalle->esCupOfertado ? true : $detalle->solicitaUsuarioTomaMuestra;
-
+			
+			
 			
 			//Si es ayuda hospitalaria el centro de costos es hospitalario
 			// if($detalle->tipoDeOrden == $codigoAyudaHospitalaria){
@@ -31970,7 +31973,7 @@ function grabarArticuloDetalle($wbasedato,$historia,$ingreso,$fechaKardex,$codAr
 
 	$gruposNoVisibles = array();
 	if( !$pacPaciente->enUrgencias ){
-		$gruposNoVisibles = consultarAliasPorAplicacion( $conexion, "01", "gruposNoVisiblesPerfil" );
+		$gruposNoVisibles = consultarAliasPorAplicacion( $conex, $wemp_pmla, "gruposNoVisiblesPerfil" );
 		$gruposNoVisibles = explode( ',', $gruposNoVisibles );
 	}
 
@@ -34508,7 +34511,6 @@ function consultarMedicosPorEspecialidad($basedatos,$especialidad){
  * @param $numeroItem
  * @return unknown_type
  */
-
 function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$nombreExamen,$observaciones,$estadoExamen,$fechaDeSolicitado,$usuario,$consecutivoOrden,$firma,$observacionesOrden,$justificacion,$consecutivoExamen,$numeroItem,$impExamen,$altExamen,$firmHCE, $datosAdicionales, $ordenAnexa, $esOfertado, $usuarioTomaMuestra, $respuestaRealizarEnServicio, $cco = '', $wEstadoExamen = '' ){
 
 	global $whce;
@@ -34665,7 +34667,6 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 
 	
 	//Verifico que exista EL DETALLE de la orden (el examen en particular)
-
 	$q = "SELECT
 				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm, Detrse, Detrex, Detaut, Deteex, Detnof
 			FROM	
@@ -34678,7 +34679,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 				AND Detcod = codigo
 			UNION
 		  SELECT
-				a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm, Detrse, Detrex, Detaut, Deteex, Detnof
+		  		a.Fecha_data,a.Hora_data,Dettor,Detnro,Detcod,Detesi,Detrdo,Detest,Detjus,Detfec,a.Seguridad, Descripcion, Detfir, Detutm, Detrse, Detrex, Detaut, Deteex, Detnof
 			FROM	
 				{$wbasedato}_000159 a, {$whce}_000017 b
 			WHERE 
@@ -34801,7 +34802,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 			$row_log_n1 = mysql_fetch_array($res_log_n1);
 			$cod_log_nuevo1 = $row_log_n1['Logcod'];
 			
-
+			
 			$q = "INSERT INTO {$wbasedato}_000159
 					(   Medico   ,    Fecha_data     ,    Hora_data      ,     Dettor    ,     Detnro        ,      Detcod        ,    Detesi     , Detrdo,       Detfec        , Detest,          Detjus                    , Detite ,  Detusu  , Detfir,     Detimp  ,   Detalt   ,   Detifh  ,  Detusp  , Detpen,        Detlog        ,     Detenv       ,        Detutm            ,   Detcco  ,          Detrse         ,         Detrex           ,             Detaut        ,  Seguridad   )
 				VALUES 
@@ -38663,35 +38664,37 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			* autor: sebastian.nevado
 			* fecha: 2021-08-31
 			*/
-		        $bMostrarSoloConTarifa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'mostrarSoloConTarfia') == 'on';
-        		$sTablaTarifas = "";
-	        	$sWhereTarifas = "";
-	
-	        	if ($bMostrarSoloConTarifa) {
-		            $pac = informacionPaciente($conex, $wemp_pmla, $his, $ing);
-        		    $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
-
-		            $sTablaTarifas = ", {$wcliame}_000026 ca ";
-		            $sWhereTarifas = " AND artcod = mtaart
+			$bMostrarSoloConTarifa = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mostrarSoloConTarfia' ) == 'on';
+			$sTablaTarifas = "";
+			$sWhereTarifas = "";
+			
+			if($bMostrarSoloConTarifa)
+			{
+				$pac = informacionPaciente( $conex, $wemp_pmla, $his, $ing);
+				$wcliame  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+				
+				$sTablaTarifas = ", {$wcliame}_000026 ca ";
+				$sWhereTarifas = " AND artcod = mtaart
 									AND mtatar = '{$pac['tarifa']}' ";
-        		}
+			}
 
-		        //Armo array con nombres de familias LEV e IC
-        		$aFamiliasLevIc = array();
-	        	$aFamiliasLevIc = explode("-", consultarAliasPorAplicacion($conex, $wemp_pmla, "famLEVIC"));
-
-	        	//Convierto todo a minúscula
-		        $aFamiliasLevIc = array_map('strtolower', $aFamiliasLevIc);
-	      		$bEsLevIc = in_array($familia, $aFamiliasLevIc);
-
-        		/*
+			//Armo array con nombres de familias LEV e IC
+			$aFamiliasLevIc = array();
+			$aFamiliasLevIc = explode( "-", consultarAliasPorAplicacion( $conex, $wemp_pmla, "famLEVIC" ));
+			
+			//Convierto todo a minúscula
+			$aFamiliasLevIc = array_map('strtolower', $aFamiliasLevIc);
+			$bEsLevIc = in_array($familia, $aFamiliasLevIc);
+			
+			/*
 			* FIN MODIFICACIÓN
 			*/
-
-        		// var_dump($esNutricion);
-		        if (!$esNutricion) {
-		            //Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
-		            $qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artgen, Carnal, Carpna
+			
+			// var_dump($esNutricion);
+			if(!$esNutricion)
+			{
+				//Si tiene componentes asociados en la tabla de componentes por tipo, mostrará los tipos
+				$qComp = "SELECT Cartip,Carcod,Carcco,Cardis, Artgen, Carnal, Carpna
 							FROM {$wbasedato}_000098, {$wbasedato}_000026 {$sTablaTarifas}
 						   WHERE Cartip = '{$tipoGenerico}' 
 							 AND Carcod = artcod
@@ -38710,18 +38713,20 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 							 {$sWhereTarifas}
 						ORDER BY artgen
 							 ";
-
-		            // var_dump($qComp);
-		            $resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
-
-		            if ((mysql_num_rows($resComp) == 0) && ($bMostrarSoloConTarifa) && $bEsLevIc) {
-                		return "SinArticulosConTarifas";
-		            }
-
-		            while ($infoComp = mysql_fetch_array($resComp)) {
-                		$infoComp['Carnal'] = trim($infoComp['Carnal']);
-
-		                $qArt = " SELECT Artcom, Artgen, Deffra, Deffru, Defcco 
+				
+				// var_dump($qComp);
+				$resComp = mysql_query($qComp, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qComp . " - " . mysql_error());
+				
+				if( (mysql_num_rows( $resComp ) == 0) && ($bMostrarSoloConTarifa) && $bEsLevIc)
+				{
+					return "SinArticulosConTarifas";
+				}
+				
+				while($infoComp = mysql_fetch_array($resComp))
+				{	
+					$infoComp['Carnal'] = trim( $infoComp['Carnal'] );
+			
+					$qArt = " SELECT Artcom, Artgen, Deffra, Deffru, Defcco 
 								FROM {$wbasedato}_000026, {$wbasedato}_000059, {$wbasedato}_000011 
 							   WHERE Artcod = '".$infoComp['Carcod']."'
 								 AND Artest = 'on'
@@ -38793,21 +38798,22 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 			else
 			{
 				$qNutriciones  = " SELECT Inscod,Insdes,Inscon,Insreq,Insfop,Insord,Condes,Requni
-									 FROM ".$wbasedato."_000210,".$wcenmez."_000002,".$wbasedato."_000211,".$wbasedato."_000212" . $sTablaTarifas . "
+									 FROM ".$wbasedato."_000210,".$wcenmez."_000002,".$wbasedato."_000211,".$wbasedato."_000212".$sTablaTarifas."
 									WHERE Inscod=Artcod
 									  AND Insest='on'
 									  AND Artest='on'
 									  AND Insreq=Reqcod
 									  AND Inscon=Concod
-									  " . $sWhereTarifas . "
+									  ".$sWhereTarifas."
 								 ORDER BY Insord;";
 				
 				$resNutriciones = mysql_query($qNutriciones, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qNutriciones . " - " . mysql_error());
 				
-				if ((mysql_num_rows($resNutriciones) == 0) && ($bMostrarSoloConTarifa)) {
-             			   return "SinArticulosConTarifas";
-            			}
-
+				if( (mysql_num_rows( $resNutriciones ) == 0) && ($bMostrarSoloConTarifa) )
+				{
+					return "SinArticulosConTarifas";
+				}
+				
 				$infoNutriciones="";
 				while($rowsNutriciones = mysql_fetch_array($resNutriciones))
 				{	
@@ -39147,7 +39153,6 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 
 	$esSF = $centroCostos == $centroCostosServicioFarmaceutico ? true : false;
 	$esCM = $centroCostos == $centroCostosCentralMezclas ? true : false;
-
 	$esCcoPacienteUrgencias = esUrgenciasUnificado($ccoPaciente);
 
 	$dosis_exacta = true;
@@ -39179,31 +39184,32 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 	}
 	$gruposIncluidos .= "'')";
 	//********************************
-
-    	/*
+	
+	/*
 	* Modificación: se agrega validación de parámetro para mostrar solo insumos con tarifa
 	* autor: sebastian.nevado
 	* fecha: 2021-08-31
 	*/
-	$bMostrarSoloConTarifa = consultarAliasPorAplicacion($conex, $wemp_pmla, 'mostrarSoloConTarfia') == 'on';
+	$bMostrarSoloConTarifa = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'mostrarSoloConTarfia' ) == 'on';
 	$sTablaTarifas = "";
-    	$sWhereTarifas = "";
-
-    	if ($bMostrarSoloConTarifa) {
-        	$pac = informacionPaciente($conex, $wemp_pmla, $his, $ing);
-	        $wcliame = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cliame');
-
-        	$sTablaTarifas = ", {$wcliame}_000026 ca ";
-	        $sWhereTarifas = " AND artcod = mtaart
-				AND mtatar = '{$pac['tarifa']}' ";
-    	}
-
-    	/*
+	$sWhereTarifas = "";
+	
+	if($bMostrarSoloConTarifa)
+	{
+		$pac = informacionPaciente( $conex, $wemp_pmla, $his, $ing);
+		$wcliame  = consultarAliasPorAplicacion( $conex, $wemp_pmla, 'cliame' );
+		
+		$sTablaTarifas = ", {$wcliame}_000026 ca ";
+		$sWhereTarifas = " AND artcod = mtaart
+							AND mtatar = '{$pac['tarifa']}' ";
+	}
+	
+	/*
 	* FIN MODIFICACIÓN
 	*/
 
-    	// Se consultan los medicamentos que cumplan con los criterios seleccionados, excepto la dosis
-    	$sql = "( SELECT
+	 // Se consultan los medicamentos que cumplan con los criterios seleccionados, excepto la dosis
+	 $sql = "( SELECT
 				Artcod, Artcom, Artgen, Artuni, Unides, '$codigoServicioFarmaceutico' origen, SUBSTRING_INDEX( Artgru, '-', 1 ) Artgru, IFNULL(Artfar,'00') Artfar, Artpos, '' Arttip, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia, 0 Defmin, 10000 Defmax
 			FROM
 				{$wbasedato}_000026 a,
@@ -39671,6 +39677,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 					
 					$boolAtc = true;
 				}
+				
 				/*Modificación: Se agrega para validar parámetro de tarifas
 				Autor: sebastian.nevado
 				Fecha: 04/08/2021
@@ -40066,7 +40073,6 @@ function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 	}
 	
 }
-
 function CcoPorTipoOrden($conex, $wemp_pmla, $tipo_orden, $indice, $codcups){
 	$wbasedato_movhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$wbasedato_hce = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
@@ -40113,6 +40119,8 @@ function CcoPorTipoOrden($conex, $wemp_pmla, $tipo_orden, $indice, $codcups){
 	
 	return json_encode($data);
 }
+
+
 /**
  * Función para buscar el código mipres para el día de hoy en los medicamentos
  * @by: sebastian.nevado
@@ -40247,6 +40255,8 @@ function obtenerDatosInformeMipresOrdenes($sWemp_pmla = null, $sFechaBusqueda = 
 	}
 
 	return $aArticulosDefinitivos;
+ 
+						   
 }
 
 /*********************************************************************************************************************************
