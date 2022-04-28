@@ -1362,11 +1362,11 @@ function compararprefijo($conex, $wbasedato_cliamep,$wbasedato_cliame,$wbasedato
 
     $q2 = "SELECT  Ccopic
     FROM    {$wbasedato_movhos}_000011
-    WHERE   Ccocod = '{$row1['Ingsei']}'";
+    WHERE   Ccocod = '{$row1['Ubisac']}'";
     $result2 = mysql_query($q2,$conex);
 
 
-    if ($result2 = mysql_query($q2,$conex)){
+    if ($result2){
         $row2 = mysql_fetch_assoc($result2);
         $num2 = mysql_num_rows($result2);
             if ($num2 == 0 || !$row2 || $row2["Ccopic"] == '' || empty($row2["Ccopic"])){
