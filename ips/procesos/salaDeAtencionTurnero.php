@@ -626,7 +626,7 @@ else
 	                        while($rowCitas = mysqli_fetch_assoc($resCitas))
 	                        {                           
 	                            
-	                            $restem = "<span id='spProfesional' data-html='true' title='Profesional:"."\n".strtoupper($rowCitas["Descripcion"])."'>".substr($rowCitas['Hi'],0,2).":".substr($rowCitas['Hi'],2,2)." - ".$nomcen."<span>";
+	                            $restem = "<span id='spProfesional' data-html='true' title='Profesional:"."\n".strtoupper(utf8_encode(trim($rowCitas["Descripcion"])))."'>".substr($rowCitas['Hi'],0,2).":".substr($rowCitas['Hi'],2,2)." - ".$nomcen."<span>";
 
 	                            $arrCitas[$rowCitas['Hi']] = $restem;
 
