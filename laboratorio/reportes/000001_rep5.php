@@ -24,7 +24,7 @@ else
 		{
 			$wemp_pmla = '05';
 		}
-		$wactualiz = "2021-11-18";
+		$wactualiz = "2022-04-28";
 		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
 		encabezado( "NOMINA Y PRESTACIONES SOCIALES - COLILLA DE PAGO", $wactualiz, $institucion->baseDeDatos );		
 

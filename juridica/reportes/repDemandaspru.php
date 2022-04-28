@@ -34,7 +34,7 @@ if(!isset($_SESSION['user']))
 
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "juridica");
 
-encabezado("DEMANDAS DE RESPONSABILIDAD CIVIL", "Noviembre 23 de 2021" , "clinica");
+encabezado("DEMANDAS DE RESPONSABILIDAD CIVIL", "Abril 28 2022" , "clinica");
 
 if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $estado ) ){
 	

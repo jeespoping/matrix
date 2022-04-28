@@ -137,7 +137,7 @@ if(!isset($_SESSION['user'])){
 }
 else{
 	// Se muestra el encabezado del programa
-	$wactualiz = "2021-11-24";
+	$wactualiz = "2022-04-28";
 	$titulo    = "REPORTE DE USUARIOS INSATISFECHOS"; 
     encabezado($titulo,$wactualiz, "clinica");  
 

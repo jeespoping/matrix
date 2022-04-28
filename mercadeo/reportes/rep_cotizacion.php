@@ -74,7 +74,7 @@ else
 	if(!isset($pac))
 	{
 		
-		$wactualiz = "2022-04-05";
+		$wactualiz = "2022-04-28";
 		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
 		encabezado( "Paciente", $wactualiz, $institucion->baseDeDatos );
 		$wlogemp = $institucion->baseDeDatos;
