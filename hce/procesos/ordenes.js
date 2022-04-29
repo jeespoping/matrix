@@ -8157,7 +8157,13 @@ function utf8_decode(str_data) {
 
 function ver_ordenes_anteriores(fecha){
 
- $('#ordenes_anteriores_'+fecha).toggle("1000");
+	// $('#ordenes_anteriores_'+fecha).toggleClass('hide');
+	var ordenes_anteriores = document.getElementById('ordenes_anteriores_' + fecha);
+    if (ordenes_anteriores.style.display == 'none') {
+        ordenes_anteriores.style.display = 'block'
+    } else {
+        ordenes_anteriores.style.display = 'none'
+    }
 
 }
 
