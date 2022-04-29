@@ -9,6 +9,7 @@ include_once("conex.php");
  Muestra los pacientes que son trasladados desde urgencias.
 
  CAMBIOS:
+  29 de abril de 2022 - Sebastian Alvarez Barona: Se comenta fecha_data de la consulta en la funcion consultarSolicitudCamas($whis, $fecha).
   25 enero 2022 - Diego Torres: Se actualiza variable hora_asigcama a su valor normal y se le quita el valor por defecto que se le estaba pasando de Hora_cumplimiento.
   25 Febrero 2019:      Arleyda I.C. Migración realizada.
   03 octubre 2012:  	Ahora el rango de fechas se hace de la tabla 0000_17 y no de la 0000_18. Este cambio implica tener en cuenta
@@ -56,7 +57,7 @@ if(! isset($_REQUEST['action'] )){
 	$conex = obtenerConexionBD("matrix");
 	$wccosSU = consultaCentrosCostos("ccohos = 'on' AND ccourg != 'on'", true);
 	$wccos = consultaCentrosCostos("ccohos ");
-	$wactualiz = "2012-10-03";
+	$wactualiz = "29 de abril de 2022";
 
 	//FIN***************************************************************//
 
@@ -86,8 +87,8 @@ if(! isset($_REQUEST['action'] )){
 				  ."FROM ".$wbasedatoCamas."_000003 "
 			     ."WHERE central = 'CAMAS' "
 				 ."AND Anulada ='No' "
-				 ."AND (Habitacion like '%".$whis."%' OR Observacion like '%".$whis."%')"
-				." AND Fecha_data = '".$fecha."'";
+				 ."AND (Habitacion like '%".$whis."%' OR Observacion like '%".$whis."%')";
+				// ." AND Fecha_data = '".$fecha."'";
 		
 		$res = mysql_query($query, $conex);
 		$num = mysql_num_rows($res);
