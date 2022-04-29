@@ -87,7 +87,13 @@ if(! isset($_REQUEST['action'] )){
 				  ."FROM ".$wbasedatoCamas."_000003 "
 			     ."WHERE central = 'CAMAS' "
 				 ."AND Anulada ='No' "
-				 ."AND (Habitacion like '%".$whis."%' OR Observacion like '%".$whis."%')";
+				 ."AND Historia = '".$whis."' ORDER BY Fecha_data";
+		
+		// $query = "SELECT Solicito, Usu_central, Fecha_data, Hora_data, Fecha_cumplimiento, Hora_asigcama "
+		// 		  ."FROM ".$wbasedatoCamas."_000003 "
+		// 	     ."WHERE central = 'CAMAS' "
+		// 		 ."AND Anulada ='No' "
+		// 		 ."AND (Habitacion like '%".$whis."%' OR Observacion like '%".$whis."%')";
 				// ." AND Fecha_data = '".$fecha."'";
 		
 		$res = mysql_query($query, $conex);
