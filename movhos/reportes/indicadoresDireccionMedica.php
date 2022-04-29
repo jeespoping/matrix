@@ -770,7 +770,7 @@ if(isset($accion))
              * @date: 2022/04/101
              * @return: stdClass
              */
-            $respuesta = utf8ize($respuesta);
+            $respuesta = utf8ize2($respuesta);
 
            echo json_encode($respuesta);
 
@@ -1226,7 +1226,7 @@ if(isset($accion))
              * @date: 2022/04/101
              * @return: stdClass
              */
-            $respuesta = utf8ize($respuesta);
+            $respuesta = utf8ize2($respuesta);
 
 			echo json_encode($respuesta);
 			return;
@@ -1647,7 +1647,7 @@ if(isset($accion))
              * @date: 2022/04/101
              * @return: stdClass
              */
-            $respuesta = utf8ize($respuesta);
+            $respuesta = utf8ize2($respuesta);
 			
 			echo json_encode($respuesta);
 			return;
