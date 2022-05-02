@@ -877,6 +877,7 @@ if(! isset($_REQUEST['action'] )){
 		
 		echo "<br>";
 		echo '<input type="button" id="consultar" value="Consultar"></input>';
+		echo '&nbsp;<input type="button" id="exportar" value="Exportar"></input>';
 		echo '</div>';
 		echo '<br><br>';
 		echo '<div id="resultados"></div>';
@@ -959,8 +960,12 @@ if(! isset($_REQUEST['action'] )){
 				
 				//agregar eventos a campos de la pagina
 				$("#consultar").click(function() {
-					realizarConsulta();
+					realizarConsulta(1);
 				});
+
+				$("#exportar").click(function() {
+					realizarConsulta(2);
+				});	
 				
 				$("#enlace_retornar").click(function() {
 					restablecer_pagina();
@@ -1044,7 +1049,7 @@ if(! isset($_REQUEST['action'] )){
 				$('#resultados').html("");
 			}
 			
-			function realizarConsulta(){
+			function realizarConsulta(opc){
 				//muestra el mensaje de cargando
 				$.blockUI({ message: $('#msjEspere') });
 				
@@ -1068,7 +1073,25 @@ if(! isset($_REQUEST['action'] )){
 						//imprime resultado
 						$('#resultados').html(data);
 						//lleva mens. emergente a los elementos con la clase msg_tooltip
-						$(".msg_tooltip").tooltip({track: true, delay: 0, showURL: false, opacity: 0.95, left: -50 });						
+						$(".msg_tooltip").tooltip({track: true, delay: 0, showURL: false, opacity: 0.95, left: -50 });	
+						
+						if (opc==2)
+						{
+							//Creamos un Elemento Temporal en forma de enlace
+				            var tmpElemento = document.createElement('a');
+				            var data_type   = 'data:application/vnd.ms-excel'; //Formato anterior xls
+
+				            // Obtenemos la información de la tabla
+				            var tabla_div = document.getElementById('tabla_resultados');
+				            var tabla_html = tabla_div.outerHTML.replace(/ /g, '%20');
+				            
+				            tmpElemento.href = data_type + ', ' + tabla_html;
+				            //Asignamos el nombre a nuestro EXCEL
+				            tmpElemento.download = 'rep_trasladosUrgencias.xls';
+				            // Simulamos el click al elemento creado para descargarlo
+				            tmpElemento.click();
+			            }
+						
 					});			
 			}
 		</script>
