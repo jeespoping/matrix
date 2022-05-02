@@ -15,13 +15,19 @@
 	 *Redirecciona a la pagina inicial
 	 ******************************************************************************************************************************/
 	 function inicio(servicio){
- 		document.location.href=nombreFormulario+'?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&servicio='+servicio;
+		var selectsede = document.getElementById("selectsede");
+		var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+	
+ 		document.location.href=nombreFormulario+'?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&servicio='+servicio+'&selectsede='+valueSelectSede;
 	 }
 	/******************************************************************************************************************************
 	 *Redirecciona a la pagina inicial
 	 ******************************************************************************************************************************/
 	 function inicioRecibido(servicio,wfechai,wfechaf,wscausa){
-	 	document.location.href=nombreFormulario+'?waccion=c&wemp_pmla='+document.forms.forma.wemp_pmla.value+'&servicio='+servicio+'&wfechai='+wfechai+'&wfechaf='+wfechaf+'&wscausa='+wscausa;
+		var selectsede = document.getElementById("selectsede");
+		var valueSelectSede = (selectsede === null) ? '' : selectsede.value;		
+
+	 	document.location.href=nombreFormulario+'?waccion=c&wemp_pmla='+document.forms.forma.wemp_pmla.value+'&servicio='+servicio+'&wfechai='+wfechai+'&wfechaf='+wfechaf+'&wscausa='+wscausa+'&selectsede='+valueSelectSede;
 	 }
 	/*****************************************************************************************************************************
 	 *Consulta las historias y habitaciones de acuerdo a un servicio
@@ -116,17 +122,24 @@
 		var historia = document.forms.forma.whistoria.value;
 		var consecutivo = document.forms.forma.consecutivo.value;
 
+		var selectsede = document.getElementById("selectsede");
+		var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 		if(servicio != ''){
-			document.location.href = nombreFormulario+'?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wservicio='+servicio+'&consecutivo='+consecutivo;
+			document.location.href = nombreFormulario+'?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wservicio='+servicio+'&consecutivo='+consecutivo+'&selectsede='+valueSelectSede;
 		} else {
 			alert('No ha seleccionado el servicio');
 		}
 	}
 
 	function consultarDetalleLactario(historia,ingreso,nomPaciente,habitacion,consecutivo,linea,servicio){
+
+		var selectsede = document.getElementById("selectsede");
+		var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 		$.blockUI({ message: $('#msjEspere') });
 		if(historia != '' && ingreso != '') {
-			var href = nombreFormulario+'?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wingreso='+ingreso+'&nombrePaciente='+nomPaciente+'&habitacion='+habitacion+'&consecutivo='+consecutivo+'&linea='+linea+'&wservicio='+servicio;
+			var href = nombreFormulario+'?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wingreso='+ingreso+'&nombrePaciente='+nomPaciente+'&habitacion='+habitacion+'&consecutivo='+consecutivo+'&linea='+linea+'&wservicio='+servicio+'&selectsede='+valueSelectSede;
 
 			document.location.href = href;
 		} else {
@@ -136,9 +149,13 @@
 
 	function consultarDetalleRecibido(historia,ingreso,nomPaciente,consecutivo,servicio,habitacion,wfechai,wfechaf,wscausa,wfechar){
 		var causaFaltante = document.forms.forma.wscausa.value;
+
+		var selectsede = document.getElementById("selectsede");
+		var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 		$.blockUI({ message: $('#msjEspere') });
 		if(historia != '' && ingreso != '') {
-			var href = nombreFormulario+'?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=d&whistoria='+historia+'&wingreso='+ingreso+'&nombrePaciente='+nomPaciente+'&consecutivo='+consecutivo+'&servicio='+servicio+'&causa='+causaFaltante+'&habitacion='+habitacion+'&wfechai='+wfechai+'&wfechaf='+wfechaf+'&wscausa='+wscausa+'&wfechar='+wfechar;
+			var href = nombreFormulario+'?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=d&whistoria='+historia+'&wingreso='+ingreso+'&nombrePaciente='+nomPaciente+'&consecutivo='+consecutivo+'&servicio='+servicio+'&causa='+causaFaltante+'&habitacion='+habitacion+'&wfechai='+wfechai+'&wfechaf='+wfechaf+'&wscausa='+wscausa+'&wfechar='+wfechar+'&selectsede='+valueSelectSede;
 			document.location.href = href;
 		} else {
 			alert('No ha seleccionado el servicio');
@@ -288,6 +305,9 @@
 		 	var arrCantidades = document.forms.forma.arrCantidades.value;
 		 	var servicio = document.forms.forma.wservicio.value;
 
+			var selectsede = document.getElementById("selectsede");
+			var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 	 		document.getElementById("btnGrabar").disabled = true;
 
 		 	//Recorro los campos con los valores de pedido
@@ -325,7 +345,7 @@
 	 	}
 
 	 	if(datos != ''){
-	 		var href =nombreFormulario+'?wemp_pmla='+wemp_pmla+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&consecutivo='+consecutivo+'&wdatos='+datos+'&arrCantidades='+arrCantidades+'&servicio='+servicio;
+	 		var href =nombreFormulario+'?wemp_pmla='+wemp_pmla+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&consecutivo='+consecutivo+'&wdatos='+datos+'&arrCantidades='+arrCantidades+'&servicio='+servicio+'&selectsede='+valueSelectSede;
 	 		document.location.href = href;
 	 	} else {
 	 		alert("Nada para grabar.");
@@ -347,20 +367,23 @@
 		 var consecutivo = document.forms.forma.consecutivo.value;
 		 var servicio = document.forms.forma.servicio.value;
 
+		 var selectsede = document.getElementById("selectsede");
+		 var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 		 document.getElementById("btnGrabar").disabled = true;
 
 		 for (var cont1 = 0; cont1 < elementos.length; cont1++){
 		 	if(elementos[cont1] && !elementos[cont1].disabled){
-			 	datos += document.getElementById("whcodigo"+ parseInt(cont1+1)).value+"|";
-		 		datos += document.getElementById("whlinea"+parseInt(cont1+1)).value+"|";
-		 		datos += document.getElementById("wscausa"+parseInt(cont1+1)).value+"|";
-		 		datos += document.getElementById("whfrecibo"+parseInt(cont1+1)).value+"|";
-		 		datos += document.getElementById("whhrecibo"+parseInt(cont1+1)).value+";";
+			 	datos += $('#whcodigo'+ parseInt(cont1+1)).val()+"|";
+                datos += $('#whlinea'+ parseInt(cont1+1)).val()+"|";
+                datos += $('#wscausa'+ parseInt(cont1+1)).val()+"|";
+                datos += $('#whfrecibo'+ parseInt(cont1+1)).val()+"|";
+                datos += $('#whhrecibo'+ parseInt(cont1+1)).val()+"|";
 		 	}
 		 }
 
 		 if(datos != ''){
-		 	var href = nombreFormulario+'?wemp_pmla='+wemp_pmla+'&waccion=e&whistoria='+historia+'&wingreso='+ingreso+'&consecutivo='+consecutivo+'&wdatos='+datos+'&servicio='+servicio;
+		 	var href = nombreFormulario+'?wemp_pmla='+wemp_pmla+'&waccion=e&whistoria='+historia+'&wingreso='+ingreso+'&consecutivo='+consecutivo+'&wdatos='+datos+'&servicio='+servicio+"&selectsede="+valueSelectSede;
 		 	document.location.href = href;
 		 } else {
 		 	alert("Nada para grabar.");
@@ -452,6 +475,34 @@
 	 			}
 	 		}catch(e){	}
 	 }
+
+	var queryString = window.location.search;
+    var urlParams = new URLSearchParams(queryString);
+
+    var anuncioParam = urlParams.get('waccion');
+
+	if(anuncioParam !== null){
+		$(document).on('change','#selectsede',function(){
+			window.location.href = "ReciboDispensacionLactario.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&waccion="+anuncioParam
+		});
+	}else{
+		$(document).on('change','#selectsede',function(){
+			window.location.href = "ReciboDispensacionLactario.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+		});
+	}
+
+	if(anuncioParam == "d"){
+		$(document).on('change','#selectsede',function(){
+			window.location.href = "ReciboDispensacionLactario.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&waccion=c"
+		});
+	}
+
+	if(anuncioParam == "a"){
+		$(document).on('change','#selectsede',function(){
+			window.location.href = "ReciboDispensacionLactario.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+		});
+	}
+
 	 </script>
 </head>
 <body>
@@ -567,9 +618,23 @@ function consultarGruposPorCcoUsuario($codigoUsuario,&$centroCostosUsuario){
 	return $gruposVisibles;
 }
 
-function centrosCostosRecibenCarro(){
+function centrosCostosRecibenCarro($sCodigoSede = NULL){
 	global $conex;
 	global $wbasedato;
+	global $wemp_pmla;
+
+	$sFiltroSede='';
+   
+    if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on')
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
 
 	$coleccion = array();
 
@@ -581,6 +646,7 @@ function centrosCostosRecibenCarro(){
 			Ccorec = 'on'
 			AND Ccoest = 'on'
 			AND DATE_FORMAT(NOW(),'%Y-%m-%d %T') >= CONCAT(Fecha_data,' ',Hora_data)
+			{$sFiltroSede}
 		ORDER BY
 			Ccocod";
 
@@ -636,9 +702,23 @@ function centrosCostosRecibenCarro(){
  *    estos dos articulos se reciben en el carro como si fueran UNO solo.
  *
  *******************************************************************************************************************************************************************/
-function consultarListadoPendienteReciboLactario($servicio,$grupos){
+function consultarListadoPendienteReciboLactario($servicio,$grupos,$sCodigoSede = NULL){
 	global $conex;
 	global $wbasedato;
+	global $wemp_pmla;
+
+	$sFiltroSede='';
+   
+    if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+   
+		if($estadosede=='on')
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
 
 	$col = array();
 
@@ -684,8 +764,8 @@ function consultarListadoPendienteReciboLactario($servicio,$grupos){
 
 	//********************************Consulta las lineas de cargos realizadas para el paciente en los tipos de cargo anteriores
 	$historias = "";
-	$q4 = "SELECT Habhis, Habing, Habcod FROM {$wbasedato}_000020 WHERE Habest = 'on' AND Habdis = 'off' AND Habhis != '' AND Habing != '' ORDER BY Habcod";
-	//echo $q4;
+	$q4 = "SELECT Habhis, Habing, Habcod FROM {$wbasedato}_000020, {$wbasedato}_000011 WHERE Habest = 'on' AND Habdis = 'off' AND Habhis != '' AND Habing != '' AND Habcco = Ccocod {$sFiltroSede} ORDER BY Habcod";
+	// echo $q4;
 	$res4 = mysql_query($q4, $conex);
 
 	while($rs4 = mysql_fetch_array($res4)){
@@ -1236,7 +1316,7 @@ function consultarArticulosPendientesReciboPaciente($historia,$ingreso,$consecut
 /*****************
  * Inicio
  *****************/
-$wactualiz = " 2013-12-12";
+$wactualiz = "31 de marzo de 2022";
 $usuarioValidado = true;
 
 if (!isset($user) || !isset($_SESSION['user'])){
@@ -1255,7 +1335,7 @@ if(!isset($wemp_pmla)){
 }
 
 //Encabezado
-encabezado("Recibo de lactario",$wactualiz,"clinica");
+encabezado("Recibo de lactario",$wactualiz,"clinica", TRUE);
 
 if(!$usuarioValidado){
 	echo '<span class="subtituloPagina2" align="center">';
@@ -1274,7 +1354,8 @@ if(!$usuarioValidado){
 
 	//Forma
 	echo "<form name='forma' action='ReciboDispensacionLactario.php?wemp_pmla=".$wemp_pmla."' method='post'>";
-	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'/>";
+	echo "<input type='HIDDEN' NAME= 'wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
+	echo "<input type='HIDDEN' NAME= 'sede' id='sede' value='".$selectsede."'/>";
 	echo "<input type='HIDDEN' NAME= 'wbasedato' value='".$wbasedato."'/>";
 	echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
 
@@ -1630,7 +1711,7 @@ if(!$usuarioValidado){
 			echo "</tr>";
 
 			//Servicio
-			$centrosCostos = centrosCostosRecibenCarro();
+			$centrosCostos = centrosCostosRecibenCarro($selectsede);
 			echo "<tr><td class='fila1' width=170>Servicio</td>";
 			echo "<td class='fila2' align='center'>";
 			if(isset($servicio) && !empty($servicio)){
@@ -1804,6 +1885,8 @@ if(!$usuarioValidado){
 			$gruposConsulta .= "'')";
 
 			echo "<input type=hidden id='wsservicio' name='wsservicio' value='$centroCostosUsuario'>";
+			echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+
 
 			echo '<span class="subtituloPagina2">';
 			echo 'Recibos pendientes del lactario';
@@ -1811,7 +1894,7 @@ if(!$usuarioValidado){
 			echo "<br>";
 			echo "<br>";
 
-			echo consultarListadoPendienteReciboLactario($centroCostosUsuario,$gruposConsulta);
+			echo consultarListadoPendienteReciboLactario($centroCostosUsuario,$gruposConsulta,$selectsede);
 			break;
 	}
 }
