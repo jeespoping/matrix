@@ -692,7 +692,7 @@ else
 	$wbasedato1 = strtolower( $institucion->baseDeDatos );
 
 	$key = substr($user,2,strlen($user));
-	echo "<form name='HCE_Impresion' action='HCE_Impresion.php' method=get>";
+	echo "<form name='HCE_Impresion' action='HCE_Impresion.php' method=post>";
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
@@ -705,7 +705,7 @@ else
 	if(isset($wservicio))
 		echo "<input type='HIDDEN' name= 'wservicio' value='".$wservicio."'>";
 	
-	echo "<input type='HIDDEN' name= 'origenConsulta' value='".$wemp_pmla."'>";
+	echo "<input type='HIDDEN' name= 'origenConsulta' value='".$origenConsulta."'>";
 	echo "<input type='HIDDEN' name= 'noCentrar' value='".$noCentrar."'>";
 	echo "<input type='HIDDEN' id='enviarCorreo' name= 'enviarCorreo' value='".$enviarCorreo."'>";
 	echo "<input type='HIDDEN' id='emailEnviarCorreo' name= 'emailEnviarCorreo' value='".$emailEnviarCorreo."'>";
@@ -977,7 +977,7 @@ else
 				if(isset($origenConsulta) && ($origenConsulta != $wemp_pmla))
 				{
 					// Consulta en donde si el usuario es médico o enfermera en hce_000019 para determinar si esta habilitado para consultar la historia clínica
-					$usuarioHabilitado = consultarUsuarioHabilitado($conex,$origenConsulta,$key);
+					$usuarioHabilitado = consultarUsuarioHabilitado($conex,$wemp_pmla,$key);
 				}
 				
 				if($usuarioHabilitado)
@@ -1447,7 +1447,7 @@ else
 					$nombreEmpresa = consultarAliasPorAplicacionHCE($conex,$wemp_pmla,"nombreEmpresa");
 					$dir = "../reportes/cenimp";
 					$archivoPdf = $dir."/".$wnombrePDF.".pdf";
-					
+
 					echo "	<p align='center'><input type='button' id='btnEnviarPdf' onclick='enviarPdf(\"".$wemp_pmla."\",\"".$whis."\",\"".$wing."\",\"".$dir."\",\"".$wnombrePDF.".pdf"."\",\"".$nombrePaciente."\",\"".$nombreEmpresa."\",\"".$wdbmhos."\",\"".$key."\",\"".$nombreEntidad."\");' value='Enviar PDF'></p>";
 					echo "	<div id='msjEspere' align='center' style='display:none;'>
 								<img src='../../images/medical/ajax-loader5.gif'/>Por favor espere un momento...<br><br>

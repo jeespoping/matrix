@@ -1,5 +1,4 @@
 ﻿<?php
-$wemp_pmla = $_REQUEST['wemp_pmla'];
 if(isset($_REQUEST['origen']) && !isset($_REQUEST['wemp_pmla'])){
     $wemp_pmla=$_REQUEST['origen'];
 }
