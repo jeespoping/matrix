@@ -29,6 +29,18 @@
 
 <script type="text/javascript">
 
+$(document).ready(function() 
+{
+	var selectorSede = document.getElementById("selectsede");
+	
+	if(selectorSede !== null)
+	{
+		selectorSede.addEventListener('change', () => {
+			window.location.href = "Entrega_lactarios.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+		});
+	}	
+});
+
 function alCambiarRondaPiso( cmp ){
 	
 	$( "[name = wfecha_actual]" ).val( $( "option:selected", cmp ).attr( "fechaactual" ) );
@@ -504,7 +516,7 @@ else
   $wusuario=trim($wuser1[1]);
 
      	                                         // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="Febrero 23 de 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="07 de marzo 2022";               	 // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                             // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 	$wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
@@ -517,7 +529,18 @@ else
 	}
 
 
-  encabezado("ENTREGA DE NUTRICIONES",$wactualiz, "clinica");
+  encabezado("ENTREGA DE NUTRICIONES",$wactualiz, "clinica", TRUE, FALSE);
+
+  $estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+  $sFiltroSede="";
+  $codigoSede = '';
+  if($estadosede=='on')
+  {	  
+	  $codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+	  $sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+  }
+
+  $sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
 
   $url = "http://".$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
   function validar_usu($password, $username){
@@ -535,6 +558,8 @@ else
 	}
 
 	function devolver($url, $wemp_pmla, $wfecha_actual,  $whora_par_actual, $whis, $wing, $wcco, $whab, $wpac, $wzona){
+
+		global $selectsede;
 		
 		$url_code = array(
 			'wemp_pmla' => $wemp_pmla,
@@ -546,7 +571,8 @@ else
 			'whab' => $whab,
 			'wpac' => $wpac,
 			'walp' => 'off',
-			'wzona' => $wzona
+			'wzona' => $wzona,
+			'selectsede' => $selectsede
 		);
 		
 		$url = explode("?", $url);
@@ -627,28 +653,44 @@ else
 	}
 
 
-function consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato, $esDomiciliario = false ){
+function consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato, $esDomiciliario = false, $sCodigoSede = NULL ){
+
+	global $wemp_pmla;
+
+	$sFiltroSede='';
 	
-  	$coleccion = array();
+	if(isset($wemp_pmla) && !empty($wemp_pmla))
+	{
+		$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	
+		if($estadosede=='on' && !$bIgnorarSede)
+		{
+			$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+			$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+		}
+	}
+
+		$coleccion = array();
 	
 	if( $esDomiciliario )
 	{
 		$sql = "SELECT Ccocod, UPPER( Cconom )
-				  FROM ".$wbasedato."_000011
-				 WHERE Ccoest  = 'on' 
-				   AND ( Ccohos  = 'on' AND ccodom = 'on' )
-			  ORDER BY Ccoord, Ccocod; ";
+					FROM ".$wbasedato."_000011
+					WHERE Ccoest  = 'on' 
+					AND ( Ccohos  = 'on' AND ccodom = 'on' )
+					{$sFiltroSede}
+				ORDER BY Ccoord, Ccocod; ";
 	}
 	else
 	{
 		$sql = "SELECT Ccocod, UPPER( Cconom )
-				  FROM ".$wbasedato."_000011
-				 WHERE Ccoest  = 'on' 
-				   AND ( Ccohos  = 'on' AND ccodom != 'on' )
-					OR Ccourg  = 'on'
-			  ORDER BY Ccoord, Ccocod; ";
+					FROM ".$wbasedato."_000011
+					WHERE Ccoest  = 'on' 
+					AND ( Ccohos  = 'on' AND ccodom != 'on' OR Ccourg  = 'on')
+					{$sFiltroSede}
+				ORDER BY Ccoord, Ccocod; ";
 	}
-					  
+						
 	$res1 = mysql_query($sql,$conex) or die (" Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
 	$num1 = mysql_num_rows($res1);
 
@@ -1352,7 +1394,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 	  ///encabezado("Aplicación Medicamentos IPOD´s ",$wactualiz, "clinica");
      }
 
-  function elegir_centro_de_costo()
+  function elegir_centro_de_costo($selectsede = '')
      {
 	  global $conex;
 	  global $wcenmez;
@@ -1523,7 +1565,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 							echo "<input type='HIDDEN' name='servicioDomiciliario' value='".$servicioDomiciliario."'>";
 						}
 						
-						$centrosCostos = consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato, $esServicioDomiciliario );
+						$centrosCostos = consultaCentrosCostosNoDomiciliarios( $conex, $wbasedato, $esServicioDomiciliario, $selectsede );
 
 						echo "<table align='center' border=0>";
 						$dib=dibujarSelect($centrosCostos, $sub, $tod, $ipod);
@@ -1652,7 +1694,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
   //Termina la modificacion del Mayo 26 de 2011
   //============================================================================================================================
 
-  function elegir_historia($wzona)
+  function elegir_historia($wzona, $selectsede = '')
      {
 	  global $conex;
 	  global $wcenmez;
@@ -1681,6 +1723,8 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 	  global $wusuario;
 	  
 	  global $servicioDomiciliario;
+
+	  global $sUrlCodigoSede;
 
 	  $wfecha_a_buscar = $wfecha_actual;	//Abril 24 de 2013
 
@@ -1761,7 +1805,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 				}
 				else{
 					// $ccoQueryArts = '1120';
-					$ccoQueryArts = consultarCcoLactario( $conex, $wbasedato );
+					$ccoQueryArts = consultarCcoLactarioUnificado( $conex, $wbasedato, $selectsede );
 				}
 
 
@@ -1884,7 +1928,7 @@ function consultarSiPuedeAnular( $historia, $ingreso, $medicamento, $ido )
 				   }
 
 				   if( true || !$hoyNoConfirmado )
-						echo "<td align=center><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whis=".$whis."&wing=".$wing."&wcco=".$wcco."&whab=".$whab."&wpac=".$wpac."&walp=".$walp."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Ver</A></td>";
+						echo "<td align=center><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whis=".$whis."&wing=".$wing."&wcco=".$wcco."&whab=".$whab."&wpac=".$wpac."&walp=".$walp."&wzona=".$wzona.$sUrlCodigoSede.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Ver</A></td>";
 					else
 						echo "<td align='center' class='suspendido'><font size=6>Kardex No confirmado</font></td>";	//Enero 29 de 2013
 
@@ -2954,7 +2998,7 @@ function esUrgencias($conex, $wbasedato, $servicio){
 //=========================================================================================================
 // Noviembre 17 de 2011
 //=========================================================================================================
-function validar_ipods($wcco)
+function validar_ipods($wcco, $selectsede = '')
   {
    global $conex;
    global $wbasedato;
@@ -3017,7 +3061,7 @@ function validar_ipods($wcco)
 			$ccoQueryArts = '*';
 		}
 		else{
-			$ccoQueryArts = consultarCcoLactario( $conex, $wbasedato );
+			$ccoQueryArts = consultarCcoLactarioUnificado( $conex, $wbasedato, $selectsede );
 		}
 
 		$wok=true;
@@ -3037,7 +3081,7 @@ function validar_ipods($wcco)
 			echo " <script>
 				   alert ('$wmsj');
 
-				   window.location.href='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.( isset($consultaPorHistoria) ? '&consultaPorHistoria=on' : '' )."'
+				   window.location.href='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede( isset($consultaPorHistoria) ? '&consultaPorHistoria=on' : '' )."'
 				   </script> ";
 
 		   }
@@ -3061,12 +3105,13 @@ function validar_ipods($wcco)
   $permisoUsoAplicacion = "1";
   
     
-  echo "<form name='apl_ipods' action='Entrega_lactarios.php' method=post>";
+  echo "<form name='apl_ipods' action='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."' method=post>";
 
   if (!isset($wfecha)) $wfecha = date("Y-m-d");
   $whora  = (string)date("H:i:s");
 
-  echo "<input type='HIDDEN' name='wemp_pmla' value='".$wemp_pmla."'>";
+  echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
+  echo "<input type='HIDDEN' name='sede' id='sede' value='".$selectsede."'>";
 
   mostrar_empresa($wemp_pmla);
   
@@ -3093,7 +3138,7 @@ function validar_ipods($wcco)
      {
       hora_par();
 
-	  elegir_centro_de_costo();
+	  elegir_centro_de_costo($selectsede);
 
       // echo "<input type='HIDDEN' name='wfecha_actual' value='".$wfecha_actual."'>";
 
@@ -3112,7 +3157,7 @@ function validar_ipods($wcco)
 	    //=====================
 	    // Noviembre 17 de 2011
 		//=====================
-	    validar_ipods($wcco);
+	    validar_ipods($wcco, $selectsede);
 		//=====================
 		}  /// ******CAMBIO PARA LA CONTIGENCIA
 
@@ -3166,7 +3211,7 @@ function validar_ipods($wcco)
 				}
 				else{
 					// $ccoQueryArts = '1120';
-					$ccoQueryArts = consultarCcoLactario( $conex, $wbasedato );
+					$ccoQueryArts = consultarCcoLactarioUnificado( $conex, $wbasedato, $selectsede );
 				}
 
 				query_articulos($whis, $wing, $wfecha_actual, $res, $ccoQueryArts );
@@ -3746,7 +3791,7 @@ function validar_ipods($wcco)
 									$noPuedeAnular = consultarSiPuedeAnular( $whis, $wing, $row[1], $row[22]);
 									if(!$noPuedeAnular)
 									{
-										echo "<td align=center rowspan=4><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
+										echo "<td align=center rowspan=4><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.$sUrlCodigoSede.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
 									}
 									
 
@@ -3757,7 +3802,7 @@ function validar_ipods($wcco)
 									{
 									   if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
 									     {
-									       echo "<td align=center rowspan=4 colspan=2><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Entregar</A></td>";
+									       echo "<td align=center rowspan=4 colspan=2><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.$sUrlCodigoSede.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Entregar</A></td>";
 										 }
 									   else
 										 {
@@ -3781,7 +3826,7 @@ function validar_ipods($wcco)
 									 {
 									  if ($wStock[$i]=="on")
 										if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
-										    echo "<td align=center rowspan=4 colspan=2><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Entregar (Stock)</A></td>";
+										    echo "<td align=center rowspan=4 colspan=2><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.$sUrlCodigoSede.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )." ' class=tipo3V>Entregar (Stock)</A></td>";
 										 else
 										    {
 										      echo "<td align=center rowspan=4 colspan=2><font class=tipo4V>(Stock)<br></font>";
@@ -3798,7 +3843,7 @@ function validar_ipods($wcco)
 											}
 										else
 										   if( !$dosVar[ 'Defrci' ] ) //si NO pide cantidad al aplicar
-										      echo "<td align=center rowspan=4 colspan=2><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&firma2=on' class=tipo3V>Entregar</A></td>";
+										      echo "<td align=center rowspan=4 colspan=2><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wido[".$i."]=".$row[22]."&wapl[".$i."]=on&wzona=".$wzona.$sUrlCodigoSede.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&firma2=on' class=tipo3V>Entregar</A></td>";
 										   else
 										    {
 										      echo "<td align=center rowspan=4 colspan=2>";
@@ -3825,7 +3870,7 @@ function validar_ipods($wcco)
 											$noPuedeAnular = consultarSiPuedeAnular( $whis, $wing, $row[1], $row[22]);
 											if(!$noPuedeAnular)
 											{
-												echo "<td align=center rowspan=4><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
+												echo "<td align=center rowspan=4><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona.$sUrlCodigoSede.( !empty( $pac_historia ) ? '&pac_historia='.$pac_historia : '' ).( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Anular</A></td>";
 											}
 											// echo "<td align=center rowspan=4><A HREF='Entrega_lactarios.ph?wemp_pmla=".$wemp_pmla.$waplicados."&wcco=".$wcco."&whis=".$whis."&wing=".$wing."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&whab=".$whab."&wpac=".$wpac."&wanular[".$i."]=on&wapl[".$i."]=off&wart[".$i."]=".$row[1]."&wdosis[".$i."]=".$row[7]."&wcanfra[".$i."]=".$row[12]."&wnoenviar[".$i."]=".$wnoenviar[$i]."&wStock[".$i."]=".$wStock[$i]."&wido[".$i."]=".$row[22]."&wzona=".$wzona."' class=tipo3V>Anular</A></td>";
 										   }
@@ -3848,9 +3893,9 @@ function validar_ipods($wcco)
 				echo "<br><br>";
 				echo "<table>";
 				if( empty($pac_historia) )
-					echo "<tr><td><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
+					echo "<tr><td><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla."&wcco=".$wcco."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.$sUrlCodigoSede.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
 				else
-					echo "<tr><td><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
+					echo "<tr><td><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
 				echo "</table>";
 			   }
 			  else
@@ -3864,17 +3909,17 @@ function validar_ipods($wcco)
 					      echo "<br><br><br><br>";
 						 }
 						else
-						   elegir_historia($wzona);
+						   elegir_historia($wzona, $selectsede);
 					 }
 					else                             //Termina modificacion de Mayo 26 de 2011
-				       elegir_historia("");
+				       elegir_historia("", $selectsede);
 
 				  echo "<br><br>";
 				  echo "<table>";
 				  if(empty($pac_historia))
-					echo "<tr><td><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
+					echo "<tr><td><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla."&wfecha_actual=".$wfecha_actual."&whora_par_actual=".$whora_par_actual."&wzona=".$wzona.$sUrlCodigoSede.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."' class=tipo3V>Retornar</A></td></tr>";
 				  else	
-					echo "<tr><td><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
+					echo "<tr><td><A HREF='Entrega_lactarios.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede.( !empty( $servicioDomiciliario ) ? '&servicioDomiciliario='.$servicioDomiciliario : '' )."&consultaPorHistoria=on' class=tipo3V>Retornar</A></td></tr>";
 				
 				  echo "</table>";
 				 }

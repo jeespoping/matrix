@@ -26,7 +26,7 @@ else
   $wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
 
                                                    // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz=" Enero 20 de 2022 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="07 de Abril 2022 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                               // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
             
 //=========================================================================================================================================\\
@@ -3152,8 +3152,14 @@ if($estadosede=='on')
 			echo "<form name='monkardex' action='Monitor_Kardex.php?wemp_pmla=" . $wemp_pmla . "' method=post>";
 
 			$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-			encabezado( $wtitulo, $wactualiz, $institucion->baseDeDatos, TRUE );
+			// encabezado( $wtitulo, $wactualiz, $institucion->baseDeDatos, TRUE );
 
+			if($wopcion == 5){
+				encabezado( $wtitulo, $wactualiz, $institucion->baseDeDatos, TRUE, FALSE );
+
+			}else{
+				encabezado( $wtitulo, $wactualiz, $institucion->baseDeDatos, TRUE );
+			}
 
 			echo "<input type='HIDDEN' id='wemp_pmla' name='wemp_pmla' value='" . $wemp_pmla . "'>";
 			echo "<input type='HIDDEN' id='wbasedato' name='wbasedato' value='" . $wbasedato . "'>";
@@ -4095,7 +4101,7 @@ if($estadosede=='on')
 			//Desde aca comienza el detalle del kardex que tiene cada paciente
 			if ($wopcion == 5 && $wactivolactario == 'on') //se hace condición para que solo muestre la tabla de pacientes con la informacion de medicamento
 			{
-				function estado_del_Kardex_lactario($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac, &$esOrdenes)
+				function estado_del_Kardex_lactario($whis, $wing, &$westado, $wmuerte, &$wcolor, &$wactual, $wsac, &$esOrdenes, $selectsede= '')
 				{
 					global $wbasedato;
 					global $conex;
@@ -4265,7 +4271,7 @@ if($estadosede=='on')
 					$wdpa = $rowpac[4];  //Documento del Paciente
 					$wtid = $rowpac[5]; //Tipo de Documento o Identificacion
 
-					estado_del_Kardex_lactario($whis, $wing, $westado, $wmue, $wcolor, $wactual, $wsac, $esOrdenes);
+					estado_del_Kardex_lactario($whis, $wing, $westado, $wmue, $wcolor, $wactual, $wsac, $esOrdenes, $selectsede);
 
 					if ($wmue == "on") {
 						$whab = $whan;
@@ -4274,7 +4280,7 @@ if($estadosede=='on')
 					//Llevo los registros con estado=="on" a una matrix, para luego imprimirla por el orden (worden)
 					if ($westado == "on") {
 
-						$CcoLactario = consultarCcoLactarioUnificado( $conex, $wbasedato );
+						$CcoLactario = consultarCcoLactarioUnificado( $conex, $wbasedato, $selectsede );
 						// Consulta detalle del kardex, es la que nos trae los arituclos de cada pacientes
 						$q = "
 						SELECT	kadcpx, Artcom, CONCAT_WS( ' ', Percan, Peruni ) as Frecuencia, Kadfin, Kadhin, Viades, Kadobs, CONCAT_WS( ' ', Kadcfr, Kadufr ) as Dosis, Kadsus, K.Fecha_data, K.Hora_data, K.Kadfle, K.Kadhle, kadfpv, kadhpv

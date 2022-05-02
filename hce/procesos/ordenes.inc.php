@@ -1109,15 +1109,15 @@ class AccionPestanaDTO{
  ***********************************/
  
 function consultarCcoLactario( $conex, $wbasedato ){
-//    global $usuario;
+    global $usuario;
 	
 	$val = false;
     //	Se comenta el filtro de sede debido a un error del programa de aplicaciones icops se espera a que icops este con clisur
 	//Consultando el nombre del estudio
 	$sql = "SELECT Ccocod 
 			  FROM ".$wbasedato."_000011 
-			 WHERE ccolac = 'on'";
-//             And Ccosed = '".$usuario->sede."'";
+			 WHERE ccolac = 'on'
+             And Ccosed = '".$usuario->sede."'";
 
 	$res = mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error()); 
 	
