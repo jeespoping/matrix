@@ -149,12 +149,12 @@
         }
     </script> <!--VERIFICACION DE BROWSER-->
     <?php
-    
+    $wemp_pmla=$_REQUEST['wemp_pmla'];
     include("conex.php");
     include("root/comun.php");
 
     $wdbhce  = consultarAliasPorAplicacion($conex, $wemp_pmla, 'hce');
-
+    $wbdmovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
     if(!isset($_SESSION['user']))
     {
         ?>
@@ -172,6 +172,12 @@
 
         $conex = obtenerConexionBD("matrix");
     }
+    /*************************************************************************
+     * REGISTRO DE MODIFICACIONES :
+     * =======================================================================
+     *  01/05/2022 Brigith Lagares : se agrega el parametro del wemp_pmla
+    
+    **************************************************************************/
     ?>
     <script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
     <script src="../../../include/root/jquery.blockUI.min.js" type="text/javascript"></script>
@@ -696,7 +702,7 @@
                 <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12">
                 </div>
 
-                <form id="loginform" name="loginform" class="form-horizontal" role="form" method="post" action="guardarcxpaf.php" onsubmit="return confirm('Esta seguro de guardar en este momento?')">
+                <form id="loginform" name="loginform" class="form-horizontal" role="form" method="post" action="guardarcxpaf.php?wemp_pmla=<?php echo $wemp_pmla;?>" onsubmit="return confirm('Esta seguro de guardar en este momento?')">
 
                     <!-- HABITACION, HISTORIA, INGRESO -->
                     <div style="margin-bottom: 10px" class="input-group">
@@ -715,7 +721,7 @@
                             <input id="login-username" type="text" class="form-control" style="width: 75px" name="ingreso" value="<?php echo $ingreso ?>" readonly>
 
                             <div class="input-group-addon" style="background-color: #ffffff; width: 10px; border: none"></div>
-                            <span class="input-group-addon"><a href="/matrix/hce/procesos/HCE_iframes.php?empresa=<?=$wdbhce?>&wemp_pmla=<?=$wemp_pmla?>&wcedula=<?php echo $E_cedula_paciente ?>&wtipodoc=CC&wdbmhos=movhos" target="_blank">Ver historia</a></span>
+                            <span class="input-group-addon"><a href="/matrix/hce/procesos/HCE_iframes.php?empresa=<?php echo $wdbhce?>&wemp_pmla=<?php echo $wemp_pmla?>&wcedula=<?php echo $E_cedula_paciente ?>&wtipodoc=CC&wdbmhos=<?php echo $wbdmovhos?>" target="_blank">Ver historia</a></span>
                         </div>
                     </div>
 
@@ -1956,7 +1962,7 @@
                             <input type="hidden" name="fechaNac" value="<?php echo $edad ?>">
                             <input type="submit" class="btn btn-success" value="GUARDAR">
                             <br><br>
-                            <a href="bitacorapaf.php"><img src="/matrix/images/medical/paf/volverPAF.png" width="30" height="30" title="Cancelar"></a>
+                            <a href="bitacorapaf.php?wemp_pmla=<?php echo $wemp_pmla;?>"><img src="/matrix/images/medical/paf/volverPAF.png" width="30" height="30" title="Cancelar"></a>
                         </div>
                     </div>
                 </form>

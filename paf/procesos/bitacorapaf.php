@@ -156,6 +156,11 @@
     {
         $user_session = explode('-', $_SESSION['user']);
         $wuse = $user_session[1];
+        if(isset($_REQUEST['wemp_pmla'])){
+            $wemp_pmla = $_REQUEST['wemp_pmla'];
+        }else{
+            $wemp_pmla ="01";
+        }
         include("conex.php");
         include("root/comun.php");
         mysql_select_db("matrix");
@@ -163,6 +168,13 @@
         $conex = obtenerConexionBD("matrix");
     }
     include("paf/librarypaf.php");
+
+    /*************************************************************************
+     * REGISTRO DE MODIFICACIONES :
+     * =======================================================================
+     *  01/05/2022 Brigith Lagares : se agrega el parametro del wemp_pmla
+    
+    **************************************************************************/
     ?>
 </head>
 
@@ -176,7 +188,7 @@
             </div>
             <div style="padding-top:30px" class="panel-body" >
                 <div id="divServicio" class="form-horizontal">
-                    <form style="margin-left: -60px" name="bitacorapaf" method="post" action="bitacorapaf.php">
+                    <form style="margin-left: -60px" name="bitacorapaf" method="post" action="bitacorapaf.php?wemp_pmla=<?php echo $wemp_pmla; ?>">
                         <table align="center" width="400">
                             <tr align="center">
                                 <td>&nbsp;&nbsp;&nbsp;</td>
@@ -236,7 +248,7 @@
                                                        AND a.Inging=d.Ubiing
                                                        AND a.Inghis=e.Orihis
                                                        AND a.Inging=e.Oriing
-                                                       AND e.Oriori = '01'
+                                                       AND e.Oriori = '".$wemp_pmla."'
                                                 ORDER BY f.Ingfei ASC");
                     }
                     if($valorRadio == 1) //HABITACION
@@ -340,7 +352,7 @@
                                                 ?>
                                                 <tbody>
                                                 <tr>
-                                                    <form method="post" action="cirugiapaf.php">
+                                                    <form method="post" action="cirugiapaf.php?wemp_pmla=<?php echo $wemp_pmla;?>">
                                                         <td><label style="color: #3CB248"><?php echo $habitacion ?></label></td>
                                                         <td><label style="color: #3CB248"><?php echo $historia ?></label></td>
                                                         <td><label style="color: #3CB248"><?php echo $ingreso ?></label></td>
@@ -385,7 +397,7 @@
                                                 ?>
                                                 <tbody>
                                                 <tr>
-                                                    <form method="post" action="cirugiapaf.php">
+                                                    <form method="post" action="cirugiapaf.php?wemp_pmla=<?php echo $wemp_pmla; ?>">
                                                         <td><label style="color: #3CB248"><?php echo $habitacion ?></label></td>
                                                         <td><label style="color: #3CB248"><?php echo $historia ?></label></td>
                                                         <td><label style="color: #3CB248"><?php echo $ingreso ?></label></td>
@@ -431,7 +443,7 @@
                                             ?>
                                             <tbody>
                                             <tr>
-                                                <form method="post" action="cirugiapaf.php">
+                                                <form method="post" action="cirugiapaf.php?wemp_pmla=<?php echo $wemp_pmla; ?>">
                                                     <td><label style="color: #3CB248"><?php echo $habitacion ?></label></td>
                                                     <td><label style="color: #3CB248"><?php echo $historia ?></label></td>
                                                     <td><label style="color: #3CB248"><?php echo $ingreso ?></label></td>
@@ -477,7 +489,7 @@
                                         ?>
                                         <tbody>
                                         <tr>
-                                            <form method="post" action="cirugiapaf.php">
+                                            <form method="post" action="cirugiapaf.php?wemp_pmla=<?php echo $wemp_pmla; ?>">
                                                 <td><?php echo $habitacion ?></td>
                                                 <td><?php echo $historia ?></td>
                                                 <td><?php echo $ingreso ?></td>
