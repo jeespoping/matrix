@@ -1112,7 +1112,7 @@ function consultarCcoLactario( $conex, $wbasedato ){
     global $usuario;
 	
 	$val = false;
-    //	Se comenta el filtro de sede debido a un error del programa de aplicaciones icops se espera a que icops este con clisur
+
 	//Consultando el nombre del estudio
 	$sql = "SELECT Ccocod 
 			  FROM ".$wbasedato."_000011 
@@ -1183,6 +1183,7 @@ function articuloTieneTarifa( $conex, $wcliame, $wmovhos, $codigo, $tarifa ){
 
 
 function consultarCcoSF( $conex, $wemp_pmla ){
+	
 	$val = '';
 	
 	if( empty($wemp_pmla) )
@@ -1368,7 +1369,7 @@ function cambioEstadoAutorizadoAutomatico( $conex, $wemp_pmla, $whce, $wmovhos, 
 	
 	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 	
-	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce,$wemp_pmla);
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	if( $hayInteroperabilidad && $cupOfertado )
@@ -1480,7 +1481,7 @@ function marcarRealizadoEnPiso( $conex, $wemp_pmla, $whce, $wmovhos, $tor, $nro,
 	
 	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 	
-	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce,$wemp_pmla);
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	// $detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
@@ -1592,7 +1593,7 @@ function enviarPorNoRealizarEnServicio( $conex, $wemp_pmla, $whce, $wmovhos, $to
 	
 	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 	
-	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce,$wemp_pmla);
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
@@ -2199,6 +2200,7 @@ function esCupOfertado( $conex, $wbasedato, $tor, $cup ){
 }
  
 function tomarMuestrasDesdeGestion( $conex, $whce, $wmovhos, $tor, $nro, $item, $usuario ){
+	global $wemp_pmla;
 	
 	$val = [	
 			'fecha'=> '',
@@ -2212,7 +2214,7 @@ function tomarMuestrasDesdeGestion( $conex, $whce, $wmovhos, $tor, $nro, $item, 
 	
 	$cup = consultarCupPorEstudio( $conex, $whce, $tor, $nro, $item );
 	
-	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce );
+	$hayInteroperabilidad 	= hayInteroperabilidadPorTipoDeOrden( $conex, $wmovhos, $tor, $whce ,$wemp_pmla);
 	$cupOfertado 			= esCupOfertado( $conex, $wmovhos, $tor, $cup );
 	
 	$detval = $hayInteroperabilidad && $cupOfertado ? 'on' : 'off' ;
@@ -2404,19 +2406,31 @@ function ccoRealizaEstudios( $conex, $wbasedato, $cco ){
 	return $val;
 }
  
-function hayInteroperabilidadPorTipoDeOrden( $conex, $wbasedato, $tor, $whce ){
+function hayInteroperabilidadPorTipoDeOrden( $conex, $wbasedato, $tor, $whce,$wemp_pmla){
 		
 	$val = false;
 	
 	//Tiene interoperabilidad si tipo de orden se encuentra en la tabla de sedes (movhos_000264 para Sistema HIRUKO de IMEXH)
 	//o en la tabla de tipos ofertados (movhos_000267 para laboratorio)
-	$sql = "SELECT Valtor
-			  FROM ".$wbasedato."_000267 a
-			  INNER JOIN ".$whce."_000015 b ON (a.Valtor = b.Codigo)
-			 WHERE a.Valtor = '".$tor."'
-			   AND a.Valest = 'on'
-			   AND b.Tipiws = 'on'
-			";
+	 $sql="";
+	$interoperabilidad_activa=consultarAliasPorAplicacion( $conex, $wemp_pmla, "interoperabilidadRis" );
+	if ($interoperabilidad_activa=="SABBAG") {
+			$sql = "SELECT Valtor
+			FROM ".$wbasedato."_000267 a
+		WHERE Valtor = '".$tor."'
+			AND Valest = 'on'";
+	}else {
+		$sql = "SELECT Valtor
+	 		  FROM ".$wbasedato."_000267 a
+	 		  INNER JOIN ".$whce."_000015 b ON (a.Valtor = b.Codigo)
+	 		 WHERE a.Valtor = '".$tor."'
+	 		   AND a.Valest = 'on'
+	 		   AND b.Tipiws = 'on'
+	 		";
+	}
+	
+
+	 
 			
 	$res = mysql_query( $sql, $conex )  or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
 	$num = mysql_num_rows( $res );
@@ -34523,7 +34537,7 @@ function grabarExamenKardex($wbasedato,$historia,$ingreso,$fecha,$codigoExamen,$
 	$estado = "0";	
 	
 	//Indica si hay interoperabilidad por tipo de orden
-	$hayInteroperabilidad = hayInteroperabilidadPorTipoDeOrden( $conexion, $wbasedato, $codigoExamen, $whce );
+	$hayInteroperabilidad = hayInteroperabilidadPorTipoDeOrden( $conexion, $wbasedato, $codigoExamen, $whce,$wemp_pmla );
 	
 	//Si hay interoperabilidad el estado de envio de mensaje es activo (on), caso contrario es off
 	$estadoEnvioMsgHL7 = 'on';
@@ -40029,8 +40043,9 @@ function insertarOrdenWs( $conex, $wemp_pmla, $historia, $ingreso){
 
 function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 	//Agregar inner join con hce15, y filtro Tipiws en on
+		print("Entro a enviar sabbag");
 		$sql="SELECT DISTINCT a.Detnro,a.dettor
-				  FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c, ".$whce."_000015 e
+				  FROM ".$whce."_000027 d, ".$whce."_000028 a, ".$whce."_000047 b, root_000012 c
 				 WHERE a.Dettor = 'A04'
 				   AND a.Detcod = b.codigo
 				   AND a.Detenv = 'on'
@@ -40040,9 +40055,9 @@ function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 				   AND d.Ordtor = a.Dettor
 				   AND d.Ordnro = a.Detnro
 				   AND d.Ordhis = '".$historia."'
-				   AND d.Ording = '".$ingreso."'
-				   AND a.Dettor = e.Codigo
-				   AND e.Tipiws = 'on'";
+				   AND d.Ording = '".$ingreso."'";
+
+				   print_r($sql);
 		$ordenes=[];
 	
 	$res 	= mysql_query($sql, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $sql . " - " . mysql_error());
@@ -40050,6 +40065,8 @@ function enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso){
 	while( $rows = mysql_fetch_array( $res ) ){
 		$ordenes[]=["numeroOrden"=>$rows[0],"tipoOrden"=>$rows[1]];
 	}
+	//$ordenes[]=["numeroOrden"=>"1577636","tipoOrden"=>"A04"];
+	print_r($ordenes);
 	foreach($ordenes as $orden){
 		$ch = curl_init();
 
@@ -40813,6 +40830,7 @@ if(isset($consultaAjaxKardex)){
 			$wemp_pmla = $_GET['wemp_pmla'];
 			$historia=$_GET['historia'];
 			$ingreso=$_GET['ingreso'];
+			print($historia);
 			print_r(enviarOrdenesSabbag($conex,$whce,$wemp_pmla,$historia,$ingreso));
 		break;	
 		case 'ccoPorTipoOrden':
