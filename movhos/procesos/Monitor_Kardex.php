@@ -333,6 +333,8 @@ else
 		
 		$wcliame=consultarAliasPorAplicacion( $conex, $wemp_pmla, "cliame" );
 		$wip=consultarAliasPorAplicacion( $conex, $wemp_pmla, "IPImpStrickLactarios" );
+
+		$hora_Actual_imp_sticker = date('g:i:s a');
 		
 		for ($i = 0; $i < count($dataPac); $i++){
 			$sql = "SELECT Pacdoc 
@@ -354,43 +356,53 @@ else
 							^CFR
 							^FO240,40^FD".$dataPac[$i]["historia"]."^FS
 							^CFP
+							^CFA,20
 							^FO240,20^FDHISTORIA:^FS
 
 							^FX Nombre del producto
 							^CFR,1
-							^FO10,90^A0,34,21^FD".$dataPac[$i]["nombre"]."^FS
+							^FO10,90^FD".$dataPac[$i]["nombre"]."^FS
 							^CFP
+							^CFA,20
 							^FO10,120^FDDOC NRO: ".$paciente."^FS
 
 							^FX Fecha de preparación
 							^CFP
-							^FO10,150^FDF. PREP: ".$dataPac[$i]["fecha"]."^FS
+							^CFA,20
+							^FO10,140^FDF. PREP: ".$dataPac[$i]["fecha"]."^FS
 
 							^FX Hora de preparación
 							^CFP
-							^FO10,171^FDH. PREP: ".$dataPac[$i]["hora"]."^FS
+							^CFA,20
+							^FO10,155^FDH. PREP: ".$hora_Actual_imp_sticker."^FS
 
 							^FX Preparado por
 							^CFP
-							^FO10,190^FDPREPARADO POR :^FS
-							^FO145,190^FDAUX CME^FS
+							^CFA,20
+							^FO10,172^FDPREPARADO POR :^FS
+							^FO187,172^FDAUX CME^FS
 
 							^FX Habitacion
 							^CFP
-							^FO10,209^FDHAB: ".$dataPac[$i]["habitacion"]."^FS
+							^CFA,20
+							^FO10,188^FDHAB: ".$dataPac[$i]["habitacion"]."^FS
 
 							^FX Hora de toma
 							^CFQ
-							^FO10,240^A0,22,20^FDHORA DE TOMA: ".$dataPac[$i]["frecuencia"]."s^FS
-							^FO10,262^A0,22,20^FD".$dataPac[$i]["articulo"]."^FS
-							^FO10,284^A0,22,20^FD".$dataPac[$i]["dosis"]." - Via: ".$dataPac[$i]["via"]."^FS
-							^FO10,265^FDConservar en nevera de 2° a 6° C C^FS
+							^CFA,20
+							^FO10,209^A1^FDHORA DE TOMA: ".$dataPac[$i]["hora"]."s^FS
+							^CFA,20
+							^FO10,235^FD".$dataPac[$i]["articulo"]."^FS
+							^CFA,20
+							^FO10,255^FD".$dataPac[$i]["dosis"]." - Via: ".$dataPac[$i]["via"]."^FS
+							^CFA,20
+							^FO10,268^FDConservar en nevera de 2 a 6 grados C ^FS
 
 							^FX Cantidad de etiquetas a imprimir
 							^PQ1
 
 							^XZ";
-						
+				
 			$fp = fsockopen($wip, 9100, $errno, $errstr, 30);
 			if(!$fp) 
 				echo "ERROR : "."$errstr ($errno)<br>\n";
