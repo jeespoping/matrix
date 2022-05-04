@@ -23,6 +23,7 @@ se encuentran toda la lógica, funciones y regla de negocio asociada con el proc
 
 /************************************************************************************************************************
  * Modificaciones
+ * Mayo 04 de 2022 (Cidenet S.A) Cristhian Barros				   - Se añade el parametro permGrabarCargoCcoDifPda en el array de datos para enviarse en on, tal cual se envia desde la facturacion Manual 
  * Marzo   07 de 2022 (Cidenet S.A) Cristhian Barros			   - Se modifica el parametro codParticipacionMedicoNoDisponible a codParticipacionMedicoDisponible para que permita la correcta grabación de cargos por honorarios
  * Febrero 22 de 2022 (Cidenet S.A) Cristhian Barros               - Se añaden comentarios de acuerdo a las recomendaciones de buenas prácticas, se corrige error en la creación de cca de tipo orden
                                                                      se corrige error en el listado de especialidades y se modifica número de registros default por el log.
@@ -1502,6 +1503,9 @@ function guardarCargoAutomaticoFacturacionERP($conex, $wemp_pmla, $use, $whis, $
 					
 					$datos['numCargoInv']			= '';
 					$datos['linCargoInv']			= '';
+
+					// Se añade este parametro adicional para evitar el problema que está ocurriendo con los cargos automáticos de datos (Oxígeno)
+					$datos['permGrabarCargoCcoDifPda']		= "on";
 					
 					if(isset($configCCA['ccaord']) && $configCCA['ccaord'] == 'on') {
 						$datos['wEstadoExamen']			= $datosAdic['wEstadoExamen'];
