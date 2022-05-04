@@ -27,6 +27,16 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
+
+		var selectorSede = document.getElementById("selectsede");
+	
+		if(selectorSede !== null)
+		{
+			selectorSede.addEventListener('change', () => {
+				window.location.href = "generarKardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+			});
+		}
+
 		inicializarJquery();
 	});
 </script>
@@ -224,10 +234,10 @@ if(!isset($wemp_pmla)){
 
 if(isset($editable) && $editable == "off"){
 	//Encabezado
-	encabezado("Kardex de Enfermer&iacute;a de consulta",$wactualiz,"clinica");
+	encabezado("Kardex de Enfermer&iacute;a de consulta",$wactualiz,"clinica", TRUE, FALSE);
 } else {
 	//Encabezado
-	encabezado("Kardex de Enfermer&iacute;a",$wactualiz,"clinica");
+	encabezado("Kardex de Enfermer&iacute;a",$wactualiz,"clinica", TRUE, FALSE);
 }
 
 if (!$usuarioValidado){
@@ -268,6 +278,9 @@ if (!$usuarioValidado){
 	echo "<input type='HIDDEN' NAME= 'wemp_pmla' id= 'wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<input type='HIDDEN' NAME= 'wbasedato' id= 'wbasedato' value='".$wbasedato."'/>";
 	echo "<input type='HIDDEN' NAME= 'usuario' id='usuario' value='".$wuser."'/>";
+	echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+	echo "<input type='hidden' id='wsservicio' name= 'wsservicio' value='".$wsservicio."'>";
+	echo "<input type='hidden' id='editable' name= 'editable' value='".$editable."'>";
 	echo "<input type='HIDDEN' NAME= 'centroCostosUsuario' id= 'centroCostosUsuario' value='".$usuario->centroCostos."'/>";
 	
 	$centroCostosGrabacionTemp = $usuario->centroCostosGrabacion;
@@ -2910,7 +2923,7 @@ if (!$usuarioValidado){
 			echo "<br>";
 
 			//Servicio
-			$centrosCostosHospitalarios = centrosCostosHospitalariosOcupados();
+			$centrosCostosHospitalarios = centrosCostosHospitalariosOcupados(false,$selectsede);
 			echo "<tr><td class='fila1' width=170>Servicio</td>";
 			echo "<td class='fila2' align='center' width=170>";
 			echo "<select id='wsservicio' NAME='wsservicio' onchange='javascript:consultarHabitaciones();' class='textoNormal'>";

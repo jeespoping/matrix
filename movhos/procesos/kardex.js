@@ -859,6 +859,9 @@ function confirmarGeneracion(){
 	var fecha = document.forms.forma.wfecha.value;
 	var whgrabado = document.forms.forma.whgrabado;
 
+	var selectsede = document.getElementById("sede");
+	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 	if(historia && ingreso){
 
 		var et="&et=";
@@ -874,9 +877,9 @@ function confirmarGeneracion(){
 		}
 
 		if(whgrabado && whgrabado.value != ''){
-			document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha+'&whgrabado='+whgrabado.value+'&editable='+document.forms.forma.editable.value+et;
+			document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha+'&whgrabado='+whgrabado.value+'&editable='+document.forms.forma.editable.value+et+"&selectsede="+valueSelectSede;
 		} else {
-			document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha+'&editable='+document.forms.forma.editable.value+et;
+			document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha+'&editable='+document.forms.forma.editable.value+et+"&selectsede="+valueSelectSede;
 		}
 	} else {
 		alert("No se encontró historia, ingreso y fecha en los parametros de entrada.");
@@ -1007,6 +1010,9 @@ function consultarKardex(){
 	var whgrabado = document.getElementById("whgrabado");
 	var wemp_pmla = document.forms.forma.wemp_pmla.value;
 	var wbasedato = document.forms.forma.wbasedato.value;
+
+	var selectsede = document.getElementById("sede");
+	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
 		
 	$.post("../../../include/movhos/kardex.inc.php",
 		{
@@ -1046,9 +1052,9 @@ function consultarKardex(){
 
 					if(esFechaValida){
 						if(whgrabado && whgrabado.value != ''){
-							document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&whgrabado='+whgrabado.value+'&editable='+document.forms.forma.editable.value;
+							document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&whgrabado='+whgrabado.value+'&editable='+document.forms.forma.editable.value+"&selectsede="+valueSelectSede;
 						} else {
-							document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&editable='+document.forms.forma.editable.value+"&wingreso="+wingreso;	//Diciembre 5 de 2011
+							document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&editable='+document.forms.forma.editable.value+"&wingreso="+wingreso+"&selectsede="+valueSelectSede;	//Diciembre 5 de 2011
 						}
 					} else {
 						alert("La fecha ingresada debe ser igual o anterior a la fecha actual");
