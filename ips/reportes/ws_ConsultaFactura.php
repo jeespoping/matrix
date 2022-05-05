@@ -517,7 +517,14 @@
 			// Liberando result_set
 			odbc_free_result($respuesta);
 
-			$response = $cuentaCobro;
+			$response = [
+				'state'			=>	200,
+				'description'	=>	'Consulta de datos existosa.',
+				'data'			=>	(object) $cuentaCobro,
+				'error_code'	=>	odbc_error($conex_unix),
+				'error_msg'		=>	odbc_errormsg($conex_unix),
+				'sql'			=> $sql
+			];
 		}
 		else
 		{
@@ -532,8 +539,6 @@
 
 		// Cerrando conexión Unix
 		liberarConexionOdbc($conex_unix);
-
-		$response['sql'] = $sql;
 
 		return $response;
 	}
