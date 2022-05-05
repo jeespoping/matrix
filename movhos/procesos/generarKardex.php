@@ -29,13 +29,20 @@
 	$(document).ready(function(){
 
 		var selectorSede = document.getElementById("selectsede");
-	
-		if(selectorSede !== null)
-		{
+		var queryString = window.location.search;
+		var urlParams = new URLSearchParams(queryString);
+		var anuncioParam = urlParams.get('editable');
+
+		if  (anuncioParam && selectorSede !== null){
 			selectorSede.addEventListener('change', () => {
-				window.location.href = "generarKardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+				window.location.href = "generarKardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&editable="+anuncioParam
+			});
+		}else{
+			selectorSede.addEventListener('change', () => {
+				window.location.href = "generarKardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
 			});
 		}
+		console.log(anuncioParam);
 
 		inicializarJquery();
 	});
@@ -279,7 +286,7 @@ if (!$usuarioValidado){
 	echo "<input type='HIDDEN' NAME= 'wbasedato' id= 'wbasedato' value='".$wbasedato."'/>";
 	echo "<input type='HIDDEN' NAME= 'usuario' id='usuario' value='".$wuser."'/>";
 	echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
-	echo "<input type='hidden' id='wsservicio' name= 'wsservicio' value='".$wsservicio."'>";
+	// echo "<input type='hidden' id='wsservicio' name= 'wsservicio' value='".$wsservicio."'>";
 	echo "<input type='hidden' id='editable' name= 'editable' value='".$editable."'>";
 	echo "<input type='HIDDEN' NAME= 'centroCostosUsuario' id= 'centroCostosUsuario' value='".$usuario->centroCostos."'/>";
 	

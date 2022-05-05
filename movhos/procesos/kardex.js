@@ -859,7 +859,7 @@ function confirmarGeneracion(){
 	var fecha = document.forms.forma.wfecha.value;
 	var whgrabado = document.forms.forma.whgrabado;
 
-	var selectsede = document.getElementById("sede");
+	var selectsede = document.getElementById("selectsede");
 	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
 
 	if(historia && ingreso){
@@ -891,14 +891,17 @@ function confirmarGeneracion(){
 function inicio(servicio){
 	var esEditable = document.forms.forma.editable;
 
+	var selectsede = document.getElementById("selectsede");
+	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 	if(document.getElementById('wthistoria')){
 		document.getElementById('wthistoria').value = '';
 	}
 
 	if(esEditable && esEditable.value != ''){
-		document.location.href='generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&editable='+document.forms.forma.editable.value+'&wsservicio='+servicio;
+		document.location.href='generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&editable='+document.forms.forma.editable.value+"&selectsede="+valueSelectSede+'&wsservicio='+servicio;
 	} else {
-		document.location.href='generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&wsservicio='+servicio;
+		document.location.href='generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+"&selectsede="+valueSelectSede+'&wsservicio='+servicio;
 	}
 }
 /******************************************************************************************************************************
@@ -1011,7 +1014,7 @@ function consultarKardex(){
 	var wemp_pmla = document.forms.forma.wemp_pmla.value;
 	var wbasedato = document.forms.forma.wbasedato.value;
 
-	var selectsede = document.getElementById("sede");
+	var selectsede = document.getElementById("selectsede");
 	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
 		
 	$.post("../../../include/movhos/kardex.inc.php",
@@ -1562,8 +1565,11 @@ function consultarHabitaciones()
 	var contenedor = document.getElementById('cntHabitacion');
 	var parametros = "";
 	var cco_cod = document.getElementById('wsservicio').value;
+
+	var selectsede = document.getElementById("selectsede");
+	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
 		
-	parametros = "consultaAjaxKardex=25&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + cco_cod ;
+	parametros = "consultaAjaxKardex=25&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + cco_cod + "&selectsede="+valueSelectSede;
 	
 	var cco_ordenes = $("#ccocod_"+cco_cod).val();
 	
