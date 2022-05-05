@@ -181,7 +181,7 @@
 	{
 		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
-		
+
 		if( !$conex_unix )
 		{
 			return [
@@ -197,8 +197,11 @@
 		$respuesta = array();
 		$historia = '';
 		$ingreso = '';
-		$codigo_responsable = '';
-		$pacientes_paf = array();
+
+		$estados_excluidos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "estadosExcepcionFactura" );
+		$estados_excluidos_string = "'";
+		$estados_excluidos_string .= implode("','", explode('-', $estados_excluidos));
+		$estados_excluidos_string .= "'";
 
 		if( !isset($conex) )
 		{
@@ -216,29 +219,49 @@
 			];
 		}
 
+		// foreach( $pacientes as $paciente )
+		// {
+		// 	$responsable = isset( $paciente['responsable'] ) && !empty( $paciente['responsable'] ) ? $paciente['responsable'] : null;
+
+		// 	$respuesta_validacion = validarResponsablePAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $responsable);
+
+		// 	if( $respuesta_validacion['esPaf'] )
+		// 	{
+		// 		$paciente['responsable'] = $respuesta_validacion['responsable'];
+		// 		array_push($pacientes_paf, $paciente);
+		// 	}
+		// }
+
 		foreach( $pacientes as $paciente )
 		{
+			// Se obtiene el responsable de los parámetros enviados, si no existes se setea en null
 			$responsable = isset( $paciente['responsable'] ) && !empty( $paciente['responsable'] ) ? $paciente['responsable'] : null;
+			
+			// Se obtiene la información si este paciente es del PAF y si no se pasó responsble se obtiene este dato tambien
+			$respuesta_validacion = validarResponsablePAF($paciente['historia'], $paciente['ingreso'], $responsable);
 
-			$respuesta_validacion = validarResponsablePAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $responsable);
-
+			// Se valida si es del PAF y se agrega a un array de pacientesPAF
 			if( $respuesta_validacion['esPaf'] )
 			{
 				$paciente['responsable'] = $respuesta_validacion['responsable'];
-				array_push($pacientes_paf, $paciente);
+				
+				$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['codigo_responsable'], $paciente['fecha_inicio'], $paciente['fecha_corte'], $estados_excluidos_string);
+
+				if( count($respuesta) == 0 )
+				{
+					$respuesta = [
+						'state'			=>	200,
+						'description'	=>	"No existen registros para la historia {$historia} e ingreso {$ingreso}.",
+						'data'			=>	[]
+					];
+				}
+				
+				$paciente += ["estadoFactura" => $respuesta];
+	
+				array_push($array_respuesta, $paciente);
 			}
-		}
 
-		foreach( $pacientes as $paciente )
-		{
-			$responsable = isset( $paciente['responsable'] ) && !empty( $paciente['responsable'] ) ? $paciente['responsable'] : null;
-
-			$codigo_responsable = $paciente['responsable'];
-
-			$historia = $paciente['historia'];
-			$ingreso = $paciente['ingreso'];
-
-			$respuesta = consultarEstadoFacturaPorHistoriaIngreso($conex_unix, $historia, $ingreso, $codigo_responsable);
+			$respuesta = consultarEstadoFacturaPorHistoriaIngreso($conex_unix, $paciente['historia'], $paciente['ingreso'], $paciente['responsable']);
 
 			if( count($respuesta) == 0 ) {
 				$respuesta = [
@@ -253,33 +276,33 @@
 			array_push($array_respuesta, $paciente);
 		}
 
-		$respuesta = array();
-		$estados_excluidos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "estadosExcepcionFactura" );
+		// $respuesta = array();
+		// $estados_excluidos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "estadosExcepcionFactura" );
 
-		$estados_excluidos_string = "'";
-		$estados_excluidos_string .= implode("','", explode('-', $estados_excluidos));
-		$estados_excluidos_string .= "'";
+		// $estados_excluidos_string = "'";
+		// $estados_excluidos_string .= implode("','", explode('-', $estados_excluidos));
+		// $estados_excluidos_string .= "'";
 
-		if( count($pacientes_paf) > 0 )
-		{
-			foreach( $pacientes_paf as $paciente )
-			{
-				$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $paciente['codigo_responsable'], $paciente['fecha_inicio'], $paciente['fecha_corte'], $estados_excluidos_string);
+		// if( count($pacientes_paf) > 0 )
+		// {
+		// 	foreach( $pacientes_paf as $paciente )
+		// 	{
+		// 		$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $paciente['codigo_responsable'], $paciente['fecha_inicio'], $paciente['fecha_corte'], $estados_excluidos_string);
 
-				if( count($respuesta) == 0 )
-				{
-					$response = [
-						'state'			=>	200,
-						'description'	=>	"No existen registros para la historia {$historia} e ingreso {$ingreso}.",
-						'data'			=>	[]
-					];
-				}
+		// 		if( count($respuesta) == 0 )
+		// 		{
+		// 			$response = [
+		// 				'state'			=>	200,
+		// 				'description'	=>	"No existen registros para la historia {$historia} e ingreso {$ingreso}.",
+		// 				'data'			=>	[]
+		// 			];
+		// 		}
 				
-				$paciente += ["estadoFactura" => $respuesta];
+		// 		$paciente += ["estadoFactura" => $respuesta];
 	
-				array_push($array_respuesta, $paciente);
-			}
-		}
+		// 		array_push($array_respuesta, $paciente);
+		// 	}
+		// }
 
 		return [
 				'state'			=>	200,
@@ -338,7 +361,7 @@
 		return $response;
 	}
 
-	function consultarEstadoFacturaPacientesPAF($conex_unix, $historia, $ingreso, $codigo_responsable = null, $fecha_inicio, $fecha_corte,$estados_excluidos)
+	function consultarEstadoFacturaPacientesPAF($conex_unix, $codigo_responsable = null, $fecha_inicio, $fecha_corte,$estados_excluidos)
 	{
 		$sql = "
 			  SELECT	cardethis as historia,
@@ -441,12 +464,11 @@
 		}
 
 		$respuesta = odbc_exec($conex_unix, $sql);
-var_dump( $respuesta );
-echo "=====================\n\n";
+
 		if( $respuesta && isset($respuesta) )
 		{
 			$result_array_response = odbc_fetch_array($respuesta);
-			var_dump( $result_array_response );die();
+
 			if( !empty( $result_array_response ) )
 			{
 				while ($fila = odbc_fetch_array($respuesta)) {
@@ -458,24 +480,8 @@ echo "=====================\n\n";
 			}
 			else
 			{
-				$response = [
-					'state'			=>	404,
-					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
-					'data'			=>	[],
-					'error_code'	=>	odbc_error($conex_unix),
-					'error_msg'		=>	odbc_errormsg($conex_unix)
-				];
+				$result = null;
 			}
-		}
-		else
-		{
-			$response = [
-				'state'			=>	400,
-				'description'	=>	'Problemas de comunicación con Unix.',
-				'data'			=>	[],
-				'error_code'	=>	odbc_error($conex_unix),
-				'error_msg'		=>	odbc_errormsg($conex_unix)
-			];
 		}
 
 		return $result;
@@ -519,24 +525,8 @@ echo "=====================\n\n";
 			}
 			else
 			{
-				$response = [
-					'state'			=>	404,
-					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
-					'data'			=>	[],
-					'error_code'	=>	odbc_error($conex_unix),
-					'error_msg'		=>	odbc_errormsg($conex_unix)
-				];
+				$response = null;
 			}
-		}
-		else
-		{
-			$response = [
-				'state'			=>	400,
-				'description'	=>	'Problemas de comunicación con Unix.',
-				'data'			=>	[],
-				'error_code'	=>	odbc_error($conex_unix),
-				'error_msg'		=>	odbc_errormsg($conex_unix)
-			];
 		}
 
 		return $response;
@@ -848,7 +838,7 @@ echo "=====================\n\n";
 					else
 					{
 						$respuesta['responsable'] = $fila['movcer'];
-						$respuesta['esPaf'] = null;
+						$respuesta['esPaf'] = false;
 					}
 				}
 			}
@@ -863,7 +853,7 @@ echo "=====================\n\n";
 			else
 			{
 				$respuesta['responsable'] = $responsable;
-				$respuesta['esPaf'] = null;
+				$respuesta['esPaf'] = false;
 			}
 		}
 
