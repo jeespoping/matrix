@@ -1,5 +1,6 @@
 /************************************************************************************************************************************************
  * Modificaciones
+ * 05 de mayo de 2022		(Sebastian Alvarez Barona) Se realiza modificación en unas funciones especificas para la filtracion de sedes
  * Junio 5 de 2019			(Edwin MG)	Se valida el tiempo de recarga de la mensajería kardex
  * Julio 3 de 2018			(Edwin MG)	Al dar clic sobre la auditoría se consulta los datos por ajax y se muestra en pantalla
  * Mayo 26 de 2016			(Edwin MG)	Al reemplazar un medicamento en el perfil, se tiene en cuenta las dosis máxima configuradas para el medicamento teniendo en cuenta 
@@ -859,6 +860,9 @@ function confirmarGeneracion(){
 	var fecha = document.forms.forma.wfecha.value;
 	var whgrabado = document.forms.forma.whgrabado;
 
+	var selectsede = document.getElementById("selectsede");
+	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 	if(historia && ingreso){
 
 		var et="&et=";
@@ -874,9 +878,9 @@ function confirmarGeneracion(){
 		}
 
 		if(whgrabado && whgrabado.value != ''){
-			document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha+'&whgrabado='+whgrabado.value+'&editable='+document.forms.forma.editable.value+et;
+			document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha+'&whgrabado='+whgrabado.value+'&editable='+document.forms.forma.editable.value+et+"&selectsede="+valueSelectSede;
 		} else {
-			document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha+'&editable='+document.forms.forma.editable.value+et;
+			document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=b&whistoria='+historia+'&wingreso='+ingreso+'&wfecha='+fecha+'&editable='+document.forms.forma.editable.value+et+"&selectsede="+valueSelectSede;
 		}
 	} else {
 		alert("No se encontró historia, ingreso y fecha en los parametros de entrada.");
@@ -888,14 +892,17 @@ function confirmarGeneracion(){
 function inicio(servicio){
 	var esEditable = document.forms.forma.editable;
 
+	var selectsede = document.getElementById("selectsede");
+	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 	if(document.getElementById('wthistoria')){
 		document.getElementById('wthistoria').value = '';
 	}
 
 	if(esEditable && esEditable.value != ''){
-		document.location.href='generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&editable='+document.forms.forma.editable.value+'&wsservicio='+servicio;
+		document.location.href='generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&editable='+document.forms.forma.editable.value+"&selectsede="+valueSelectSede+'&wsservicio='+servicio;
 	} else {
-		document.location.href='generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&wsservicio='+servicio;
+		document.location.href='generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+"&selectsede="+valueSelectSede+'&wsservicio='+servicio;
 	}
 }
 /******************************************************************************************************************************
@@ -1007,6 +1014,9 @@ function consultarKardex(){
 	var whgrabado = document.getElementById("whgrabado");
 	var wemp_pmla = document.forms.forma.wemp_pmla.value;
 	var wbasedato = document.forms.forma.wbasedato.value;
+
+	var selectsede = document.getElementById("selectsede");
+	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
 		
 	$.post("../../../include/movhos/kardex.inc.php",
 		{
@@ -1046,9 +1056,9 @@ function consultarKardex(){
 
 					if(esFechaValida){
 						if(whgrabado && whgrabado.value != ''){
-							document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&whgrabado='+whgrabado.value+'&editable='+document.forms.forma.editable.value;
+							document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&whgrabado='+whgrabado.value+'&editable='+document.forms.forma.editable.value+"&selectsede="+valueSelectSede;
 						} else {
-							document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&editable='+document.forms.forma.editable.value+"&wingreso="+wingreso;	//Diciembre 5 de 2011
+							document.location.href = 'generarKardex.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&waccion=a&whistoria='+historia+'&wfecha='+document.forms.forma.wfecha.value+'&editable='+document.forms.forma.editable.value+"&wingreso="+wingreso+"&selectsede="+valueSelectSede;	//Diciembre 5 de 2011
 						}
 					} else {
 						alert("La fecha ingresada debe ser igual o anterior a la fecha actual");
@@ -1556,8 +1566,11 @@ function consultarHabitaciones()
 	var contenedor = document.getElementById('cntHabitacion');
 	var parametros = "";
 	var cco_cod = document.getElementById('wsservicio').value;
+
+	var selectsede = document.getElementById("selectsede");
+	var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
 		
-	parametros = "consultaAjaxKardex=25&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + cco_cod ;
+	parametros = "consultaAjaxKardex=25&basedatos="+document.forms.forma.wbasedato.value+"&servicio=" + cco_cod + "&selectsede="+valueSelectSede;
 	
 	var cco_ordenes = $("#ccocod_"+cco_cod).val();
 	
@@ -2152,6 +2165,9 @@ function grabarKardex(){
 		var valido = true;
 		var mensaje = '';
 
+		var selectsede = document.getElementById("selectsede");
+		var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 		window.onbeforeunload = '';
 
 		if(valido){
@@ -2182,7 +2198,8 @@ function grabarKardex(){
 							+'&rutaOrdenMedica='+rutaImagenOrdenMedica
 							+'&editable='+document.forms.forma.editable.value
 							+'&confirmado='+conf
-							+'&wsservicio='+document.forms.forma.wservicio.value;
+							+'&wsservicio='+document.forms.forma.wservicio.value
+							+"&selectsede="+valueSelectSede;
 
 			/*
 			if(pestanasActivas.indexOf('1') >= 0 || pestanasActivas.indexOf('*') >= 0){
@@ -2362,6 +2379,9 @@ function grabarKardexSalida(){
 		var valido = true;
 		var mensaje = '';
 
+		var selectsede = document.getElementById("selectsede");
+		var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 //		window.onbeforeunload = '';
 
 		if(valido){
@@ -2392,7 +2412,8 @@ function grabarKardexSalida(){
 							+'&rutaOrdenMedica='+rutaImagenOrdenMedica
 							+'&editable='+document.forms.forma.editable.value
 							+'&confirmado='+conf
-							+'&wsservicio='+document.forms.forma.wservicio.value;
+							+'&wsservicio='+document.forms.forma.wservicio.value
+							+"&selectsede="+valueSelectSede;
 
 //			$.blockUI({ message: $('#msjEspere') });
 	//		debugger;

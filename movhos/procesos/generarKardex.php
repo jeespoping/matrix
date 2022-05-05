@@ -27,6 +27,23 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
+
+		var selectorSede = document.getElementById("selectsede");
+		var queryString = window.location.search;
+		var urlParams = new URLSearchParams(queryString);
+		var anuncioParam = urlParams.get('editable');
+
+		if  (anuncioParam && selectorSede !== null){
+			selectorSede.addEventListener('change', () => {
+				window.location.href = "generarKardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&editable="+anuncioParam
+			});
+		}else{
+			selectorSede.addEventListener('change', () => {
+				window.location.href = "generarKardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&wsservicio="+$('#wsservicio').val()+"&editable="+$('#editable').val();
+			});
+		}
+		console.log(anuncioParam);
+
 		inicializarJquery();
 	});
 </script>
@@ -73,6 +90,7 @@ include_once("conex.php");
 	*************************************************
 	*
 	* Modificaciones:
+	*	05 de mayo de 2022  (Sebastian Alvarez Barona) Se hace filtracion de sedes para corregir problema con los articulos de lactario (1120 - 8713)
 	* 	Julio 9 de 2018		(Edwin MG)		Se corrige el posicionamiento del div de alertas
 	* 	Julio 3 de 2018		(Edwin MG)		Se comenta la información de la pestaña auditoría ya que esta se consulta por ajax cuando se de clic sobre la pestaña Auditoría
 	* 	Diciembre 18 de 2016				Se agrega el llamado a la función consultarUltimoDiagnosticoHCE() de comun.php que devuelve 
@@ -192,7 +210,7 @@ include_once("conex.php");
 	*	2010-10-27:  (Msanchez) -> Suma de dosis desde urgencias y cirugia segun el ultimo traslado
  */
 $usuarioValidado = true;
-$wactualiz = "Diciembre 18 de 2017";
+$wactualiz = "05 de mayo de 2022";
 
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false;
@@ -224,10 +242,10 @@ if(!isset($wemp_pmla)){
 
 if(isset($editable) && $editable == "off"){
 	//Encabezado
-	encabezado("Kardex de Enfermer&iacute;a de consulta",$wactualiz,"clinica");
+	encabezado("Kardex de Enfermer&iacute;a de consulta",$wactualiz,"clinica", TRUE, FALSE);
 } else {
 	//Encabezado
-	encabezado("Kardex de Enfermer&iacute;a",$wactualiz,"clinica");
+	encabezado("Kardex de Enfermer&iacute;a",$wactualiz,"clinica", TRUE, FALSE);
 }
 
 if (!$usuarioValidado){
@@ -268,6 +286,9 @@ if (!$usuarioValidado){
 	echo "<input type='HIDDEN' NAME= 'wemp_pmla' id= 'wemp_pmla' value='".$wemp_pmla."'/>";
 	echo "<input type='HIDDEN' NAME= 'wbasedato' id= 'wbasedato' value='".$wbasedato."'/>";
 	echo "<input type='HIDDEN' NAME= 'usuario' id='usuario' value='".$wuser."'/>";
+	echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
+	// echo "<input type='hidden' id='wsservicio' name= 'wsservicio' value='".$wsservicio."'>";
+	// echo "<input type='hidden' id='editable' name= 'editable' value='".$editable."'>";
 	echo "<input type='HIDDEN' NAME= 'centroCostosUsuario' id= 'centroCostosUsuario' value='".$usuario->centroCostos."'/>";
 	
 	$centroCostosGrabacionTemp = $usuario->centroCostosGrabacion;
@@ -2910,7 +2931,7 @@ if (!$usuarioValidado){
 			echo "<br>";
 
 			//Servicio
-			$centrosCostosHospitalarios = centrosCostosHospitalariosOcupados();
+			$centrosCostosHospitalarios = centrosCostosHospitalariosOcupados(false,$selectsede);
 			echo "<tr><td class='fila1' width=170>Servicio</td>";
 			echo "<td class='fila2' align='center' width=170>";
 			echo "<select id='wsservicio' NAME='wsservicio' onchange='javascript:consultarHabitaciones();' class='textoNormal'>";
