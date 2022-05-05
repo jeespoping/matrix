@@ -1,5 +1,6 @@
 /************************************************************************************************************************************************
  * Modificaciones
+ * 05 de mayo de 2022		(Sebastian Alvarez Barona) Se realiza modificación en unas funciones especificas para la filtracion de sedes
  * Junio 5 de 2019			(Edwin MG)	Se valida el tiempo de recarga de la mensajería kardex
  * Julio 3 de 2018			(Edwin MG)	Al dar clic sobre la auditoría se consulta los datos por ajax y se muestra en pantalla
  * Mayo 26 de 2016			(Edwin MG)	Al reemplazar un medicamento en el perfil, se tiene en cuenta las dosis máxima configuradas para el medicamento teniendo en cuenta 

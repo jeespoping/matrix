@@ -90,6 +90,7 @@ include_once("conex.php");
 	*************************************************
 	*
 	* Modificaciones:
+	*	05 de mayo de 2022  (Sebastian Alvarez Barona) Se hace filtracion de sedes para corregir problema con los articulos de lactario (1120 - 8713)
 	* 	Julio 9 de 2018		(Edwin MG)		Se corrige el posicionamiento del div de alertas
 	* 	Julio 3 de 2018		(Edwin MG)		Se comenta la información de la pestaña auditoría ya que esta se consulta por ajax cuando se de clic sobre la pestaña Auditoría
 	* 	Diciembre 18 de 2016				Se agrega el llamado a la función consultarUltimoDiagnosticoHCE() de comun.php que devuelve 
@@ -209,7 +210,7 @@ include_once("conex.php");
 	*	2010-10-27:  (Msanchez) -> Suma de dosis desde urgencias y cirugia segun el ultimo traslado
  */
 $usuarioValidado = true;
-$wactualiz = "Diciembre 18 de 2017";
+$wactualiz = "05 de mayo de 2022";
 
 if (!isset($user) || !isset($_SESSION['user'])){
 	$usuarioValidado = false;
