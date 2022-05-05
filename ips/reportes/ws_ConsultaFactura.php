@@ -32,6 +32,8 @@
 	 * . 							respectiva información, enviando como parametro un array de
 	 * . 							de responsables o un array con datos adicionales como lo son
 	 * . 							fecha de inicio y fecha de corte.
+	 * . @update [2022-05-05]	-	Se cambia estructura de control dodne se construye la respuesta
+	 * 								y se logra enviar toda la data completa sin perdidas.
 	*/
 
 	/** Se inicializa el bufer de salida de php **/
@@ -488,54 +490,50 @@
 					AND    movnum = '{$ingreso}'
 				";
 		}
+		
+		$respuesta = odbc_exec($conex_unix, $sql);
 
-		$respuesta = odbc_do($conex_unix, $sql);
-
-		if( $respuesta )
+		if (is_resource($respuesta))
 		{
-			$result_array_response = odbc_fetch_array($respuesta);
+			$key = 0;
 
-			if( !empty( $result_array_response ) )
+			while ($result[] = odbc_fetch_array($respuesta))
 			{
-				while ($fila = odbc_fetch_array($respuesta))
-				{
-					$factura = [
-						'historia'			=>		$fila['historia'],
-						'ingreso'			=>		$fila['ingreso'],
-						'prefijo'			=>		$fila['prefijo'],
-						'fuente'			=>		$fila['fuente_factura'],
-						'factura'			=>		$fila['factura'],
-						'estado_factura'	=>		$fila['estado_factura'],
-						'valor_total'		=>		$fila['valor_factura'],
-						'nit_responsable'	=>		$fila['nit_responsable']
+				$factura = [
+						'historia'			=>		$result[$key]['historia'],
+						'ingreso'			=>		$result[$key]['ingreso'],
+						'prefijo'			=>		$result[$key]['prefijo'],
+						'fuente'			=>		$result[$key]['fuente_factura'],
+						'factura'			=>		$result[$key]['factura'],
+						'estado_factura'	=>		$result[$key]['estado_factura'],
+						'valor_total'		=>		$result[$key]['valor_factura'],
+						'nit_responsable'	=>		$result[$key]['nit_responsable']
 					];
 
-					$cuentaCobro[$fila['cuenta_cobro']][] = (object) convertKeysToCamelCase($factura);
-				}
+				$cuentaCobro[$result[$key]['cuenta_cobro']][] = (object) convertKeysToCamelCase($factura);
+				$key++;
+			}
 
-				$response = (object) $cuentaCobro;
-			}
-			else
-			{
-				$response = [
-					'state'			=>	404,
-					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
-					'data'			=>	[],
-					'error_code'	=>	odbc_error($conex_unix),
-					'error_msg'		=>	odbc_errormsg($conex_unix)
-				];
-			}
+			// Liberando result_set
+			odbc_free_result($respuesta);
+
+			$response = $cuentaCobro;
 		}
 		else
 		{
 			$response = [
-				'state'			=>	400,
-				'description'	=>	'Problemas de comunicación con Unix.',
+				'state'			=>	404,
+				'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
 				'data'			=>	[],
 				'error_code'	=>	odbc_error($conex_unix),
 				'error_msg'		=>	odbc_errormsg($conex_unix)
 			];
 		}
+
+		// Cerrando conexión Unix
+		liberarConexionOdbc($conex_unix);
+
+		$response['sql'] = $sql;
 
 		return $response;
 	}
