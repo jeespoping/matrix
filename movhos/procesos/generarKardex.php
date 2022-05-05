@@ -39,7 +39,7 @@
 			});
 		}else{
 			selectorSede.addEventListener('change', () => {
-				window.location.href = "generarKardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+				window.location.href = "generarKardex.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()+"&wsservicio="+$('#wsservicio').val()+"&editable="+$('#editable').val();
 			});
 		}
 		console.log(anuncioParam);
@@ -287,7 +287,7 @@ if (!$usuarioValidado){
 	echo "<input type='HIDDEN' NAME= 'usuario' id='usuario' value='".$wuser."'/>";
 	echo "<input type='hidden' id='sede' name= 'sede' value='".$selectsede."'>";
 	// echo "<input type='hidden' id='wsservicio' name= 'wsservicio' value='".$wsservicio."'>";
-	echo "<input type='hidden' id='editable' name= 'editable' value='".$editable."'>";
+	// echo "<input type='hidden' id='editable' name= 'editable' value='".$editable."'>";
 	echo "<input type='HIDDEN' NAME= 'centroCostosUsuario' id= 'centroCostosUsuario' value='".$usuario->centroCostos."'/>";
 	
 	$centroCostosGrabacionTemp = $usuario->centroCostosGrabacion;

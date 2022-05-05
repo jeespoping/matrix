@@ -2164,6 +2164,9 @@ function grabarKardex(){
 		var valido = true;
 		var mensaje = '';
 
+		var selectsede = document.getElementById("selectsede");
+		var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 		window.onbeforeunload = '';
 
 		if(valido){
@@ -2194,7 +2197,8 @@ function grabarKardex(){
 							+'&rutaOrdenMedica='+rutaImagenOrdenMedica
 							+'&editable='+document.forms.forma.editable.value
 							+'&confirmado='+conf
-							+'&wsservicio='+document.forms.forma.wservicio.value;
+							+'&wsservicio='+document.forms.forma.wservicio.value
+							+"&selectsede="+valueSelectSede;
 
 			/*
 			if(pestanasActivas.indexOf('1') >= 0 || pestanasActivas.indexOf('*') >= 0){
@@ -2374,6 +2378,9 @@ function grabarKardexSalida(){
 		var valido = true;
 		var mensaje = '';
 
+		var selectsede = document.getElementById("selectsede");
+		var valueSelectSede = (selectsede === null) ? '' : selectsede.value;
+
 //		window.onbeforeunload = '';
 
 		if(valido){
@@ -2404,7 +2411,8 @@ function grabarKardexSalida(){
 							+'&rutaOrdenMedica='+rutaImagenOrdenMedica
 							+'&editable='+document.forms.forma.editable.value
 							+'&confirmado='+conf
-							+'&wsservicio='+document.forms.forma.wservicio.value;
+							+'&wsservicio='+document.forms.forma.wservicio.value
+							+"&selectsede="+valueSelectSede;
 
 //			$.blockUI({ message: $('#msjEspere') });
 	//		debugger;
