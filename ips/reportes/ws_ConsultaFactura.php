@@ -63,14 +63,31 @@
 	*/
 	function Consulta_Estado_Factura($conex = null, $wemp_pmla = null,
 										$documento_paciente = null, $tipo_documento = null,
-											$historia = null, $ingreso = null, $codigo_responsable = null)
+											$historia = null, $ingreso = null, $fecha_inicio = null,
+												$fecha_corte = null, $codigo_responsable = null)
 	{
 		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
 
 		$respuesta = array();
 		$response = array();
-		$flag = true;
+		$respuesta_validacion = array();
+
+		$estados_excluidos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "estadosExcepcionFactura" );
+		$estados_excluidos_string = "'";
+		$estados_excluidos_string .= implode("','", explode('-', $estados_excluidos));
+		$estados_excluidos_string .= "'";
+
+		if( !$conex_unix )
+		{
+			return [
+				'state'			=>	400,
+				'description'	=>	'Problemas de comunicación con Unix.',
+				'data'			=>	[],
+				'error_code'	=>	odbc_error($conex_unix),
+				'error_msg'		=>	odbc_errormsg($conex_unix)
+			];
+		}
 
 		if( !isset($conex) )
 		{
@@ -87,14 +104,6 @@
 				'description'	=>	'Falta el campo código de empresa, es obligatorio.'
 			];
 		}
-		
-		// if( !isset($codigo_responsable) )
-		// {
-		// 	return [
-		// 		'state'			=>	404,
-		// 		'description'	=>	'Falta el campo código del responsable, es obligatorio.'
-		// 	];
-		// }
 		
 		if( !isset($historia) && !isset($ingreso) )
 		{
@@ -135,17 +144,19 @@
 			}
 		}
 		
-		if( $historia != null && $ingreso != null )
+		// Se obtiene la información si este paciente es del PAF y si no se pasó responsble se obtiene este dato tambien
+		$respuesta_validacion = validarResponsablePAF($historia, $ingreso, $codigo_responsable);
+
+		// Se valida si es del PAF y se agrega a un array de pacientesPAF
+		if( $respuesta_validacion['esPaf'] )
 		{
-			$respuesta = consultarEstadoFacturaPorHistoriaIngreso($conex_unix, $historia, $ingreso, $codigo_responsable);
+			$codigo_responsable = $respuesta_validacion['responsable'];
+			
+			$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $codigo_responsable, $fecha_inicio, $fecha_corte, $estados_excluidos_string);
 		}
 		else
 		{
-			$response = [
-				"state"			=>	200,
-				"description"	=>	"Error al realizar la consulta.",
-				"data"			=>	"La historia '$historia' e ingreso '$ingreso', no existen."
-			];
+			$respuesta = consultarEstadoFacturaPorHistoriaIngreso($conex_unix, $historia, $ingreso, $codigo_responsable);
 		}
 		
 		if( count($respuesta) == 0 ) {
@@ -177,7 +188,7 @@
 	 *
 	 * @return [array] Respuesta de base de datos
 	*/
-	function Consulta_Estado_Factura_Array($conex = null, $wemp_pmla = null, $pacientes = null)
+	function Consulta_Estado_Factura_Array($conex = null, $wemp_pmla = null, $pacientes = null, $fecha_inicio = null, $fecha_corte = null)
 	{
 		$wmovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 		conexionOdbc( $conex, $wmovhos, $conex_unix, 'facturacion' );
@@ -219,19 +230,6 @@
 			];
 		}
 
-		// foreach( $pacientes as $paciente )
-		// {
-		// 	$responsable = isset( $paciente['responsable'] ) && !empty( $paciente['responsable'] ) ? $paciente['responsable'] : null;
-
-		// 	$respuesta_validacion = validarResponsablePAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $responsable);
-
-		// 	if( $respuesta_validacion['esPaf'] )
-		// 	{
-		// 		$paciente['responsable'] = $respuesta_validacion['responsable'];
-		// 		array_push($pacientes_paf, $paciente);
-		// 	}
-		// }
-
 		foreach( $pacientes as $paciente )
 		{
 			// Se obtiene el responsable de los parámetros enviados, si no existes se setea en null
@@ -245,7 +243,7 @@
 			{
 				$paciente['responsable'] = $respuesta_validacion['responsable'];
 				
-				$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['codigo_responsable'], $paciente['fecha_inicio'], $paciente['fecha_corte'], $estados_excluidos_string);
+				$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['codigo_responsable'], $fecha_inicio, $fecha_corte, $estados_excluidos_string);
 
 				if( count($respuesta) == 0 )
 				{
@@ -266,7 +264,7 @@
 			if( count($respuesta) == 0 ) {
 				$respuesta = [
 					'state'			=>	200,
-					'description'	=>	"No existen registros para la historia {$historia} e ingreso {$ingreso}.",
+					'description'	=>	"No existen registros para la historia {$paciente['historia']} e ingreso {$paciente['ingreso']}.",
 					'data'			=>	[]
 				];
 			}
@@ -275,34 +273,6 @@
 
 			array_push($array_respuesta, $paciente);
 		}
-
-		// $respuesta = array();
-		// $estados_excluidos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "estadosExcepcionFactura" );
-
-		// $estados_excluidos_string = "'";
-		// $estados_excluidos_string .= implode("','", explode('-', $estados_excluidos));
-		// $estados_excluidos_string .= "'";
-
-		// if( count($pacientes_paf) > 0 )
-		// {
-		// 	foreach( $pacientes_paf as $paciente )
-		// 	{
-		// 		$respuesta = consultarEstadoFacturaPacientesPAF($conex_unix, $paciente['historia'], $paciente['ingreso'], $paciente['codigo_responsable'], $paciente['fecha_inicio'], $paciente['fecha_corte'], $estados_excluidos_string);
-
-		// 		if( count($respuesta) == 0 )
-		// 		{
-		// 			$response = [
-		// 				'state'			=>	200,
-		// 				'description'	=>	"No existen registros para la historia {$historia} e ingreso {$ingreso}.",
-		// 				'data'			=>	[]
-		// 			];
-		// 		}
-				
-		// 		$paciente += ["estadoFactura" => $respuesta];
-	
-		// 		array_push($array_respuesta, $paciente);
-		// 	}
-		// }
 
 		return [
 				'state'			=>	200,
@@ -361,7 +331,7 @@
 		return $response;
 	}
 
-	function consultarEstadoFacturaPacientesPAF($conex_unix, $codigo_responsable = null, $fecha_inicio, $fecha_corte,$estados_excluidos)
+	function consultarEstadoFacturaPacientesPAF($conex_unix, $codigo_responsable, $fecha_inicio, $fecha_corte, $estados_excluidos)
 	{
 		$sql = "
 			  SELECT	cardethis as historia,
@@ -403,24 +373,8 @@
 			}
 			else
 			{
-				$response = [
-					'state'			=>	404,
-					'description'	=>	'No se ecnotraron datos para los parámetros enviados.',
-					'data'			=>	[],
-					'error_code'	=>	odbc_error($conex_unix),
-					'error_msg'		=>	odbc_errormsg($conex_unix)
-				];
+				$response = null;
 			}
-		}
-		else
-		{
-			$response = [
-				'state'			=>	400,
-				'description'	=>	'Problemas de comunicación con Unix.',
-				'data'			=>	[],
-				'error_code'	=>	odbc_error($conex_unix),
-				'error_msg'		=>	odbc_errormsg($conex_unix)
-			];
 		}
 
 		return $response;
@@ -450,8 +404,8 @@
 						carced as codigo_responsable,
 						carval as valor_factura
 			  	FROM	cacar, caenc, famov
-			   WHERE	movhis = {$historia}
-			   	 AND	movnum = {$ingreso}
+			   WHERE	movhis = '{$historia}'
+			   	 AND	movnum = '{$ingreso}'
 				 AND	movfuo = '01'
 			     AND	carfue = encfue
 			     AND	cardoc = encdoc
@@ -504,7 +458,7 @@
 			SELECT envdetdoc as cuenta_cobro
 			  FROM caenvdet, caenvenc
 			 WHERE envdetfan = '{$prefijo}'
-			   AND envdetdan = {$numero_factura}
+			   AND envdetdan = '{$numero_factura}'
 			   AND envencfue = envdetfue
 			   AND envencdoc = envdetdoc";
 
@@ -562,7 +516,7 @@
 							movnum as ingreso,
 							envdetnit as responsable
 					FROM 	caenvdet, caenvenc, famov
-				   WHERE	envdetdoc = {$cuenta}
+				   WHERE	envdetdoc = '{$cuenta}'
 					 AND    envdetfue =  = (
 								SELECT fuecod
 								FROM cafue
@@ -936,7 +890,19 @@
 					case 'POST':
 						if( isset( $_POST['pacientes'] ) && is_array( $_POST['pacientes'] ) && ( count( $_POST['pacientes'] ) > 0 ) )
 						{
-							$arrayRespuesta = Consulta_Estado_Factura_Array($conex, $_POST['wemp_pmla'], $_POST['pacientes']);
+							if ( ( isset( $_POST['fecha_inicio'] ) && !empty( $_POST['fecha_inicio'] ) ) &&
+							( isset( $_POST['fecha_corte'] ) && !empty( $_POST['fecha_corte'] ) ) &&
+								( strtotime($_POST['fecha_corte']) >= strtotime($_POST['fecha_inicio']) ) )
+							{
+								$arrayRespuesta = Consulta_Estado_Factura_Array($conex, $_POST['wemp_pmla'], $_POST['pacientes'], $_POST['fecha_inicio'], $_POST['fecha_corte']);
+							}
+							else
+							{
+								$arrayRespuesta = [
+									'state'			=>	401,
+									'description'	=>	'Fechas vacias o fecha inicio mayor a fecha corte.'
+								];
+							}
 						}
 						else
 						{
