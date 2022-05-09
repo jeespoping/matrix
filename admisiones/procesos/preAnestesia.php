@@ -33,7 +33,8 @@ if(!isset($_SESSION['user']))
 
 include_once("root/comun.php");
 
-
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
 $wactualiz='2022-03-16';
 $conex          = obtenerConexionBD("matrix");
 $wbasedato      = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
@@ -1358,14 +1359,10 @@ if( isset( $accion ) ){
         <input type='hidden' id='inp_cco_destino'         value=''>
 
 
-        <div id='accordionPrincipal' align='center' style='margin: auto auto; height:900px;'>
-            <h1 style='font-size: 3rem;background:#75C3EB' align='center'>
-                <img width='125' heigth='61' src='../../images/medical/root/logoClinicaGrande.png' >
-                &nbsp;
-                Realizaci&oacute;n de preanestesia
-                &nbsp;
-                <img width='120' heigth='100' src='../../images/medical/root/Logo_MatrixAzulClaro.png'>
-            </h1>
+        <div  align='center' >
+        <?php
+               encabezado("Realizaci&oacute;n de preanestesia",$wactualiz, $wbasedato1);
+                ?>
             <div style='color:#000000;font-family: verdana;font-weight: normal;font-size: 2rem;' id='div_contenedor_2' align='center'>
                 <table style='width:80%;margin-top:0px;margin-bottom:2px;font-family: verdana;font-weight: normal;font-size: 1rem;'>
                     <tr>

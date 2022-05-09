@@ -92,6 +92,9 @@
 if(isset($_REQUEST['origen']) && !isset($_REQUEST['wemp_pmla'])){
     $wemp_pmla=$_REQUEST['origen'];
 }
+elseif(isset($_REQUEST['codemp']) && !isset($_REQUEST['wemp_pmla'])){
+    $wemp_pmla=$_REQUEST['codemp'];
+}
 elseif(isset($_REQUEST['wemp_pmla'])){
     $wemp_pmla = $_REQUEST['wemp_pmla'];
 }
