@@ -63,21 +63,7 @@ $wactualiz="Abril 08 de 2022";
     }
     return $datos;
 }
-/**
- * Función para Decodificar array en utf-8 esto sucede para los problemas donde el json_encode no funciona
- * @by: jesus.lopez
- * @date: 2022/04/101
- */
-function utf8ize2($d) {
-    if (is_array($d)) {
-        foreach ($d as $k => $v) {
-            $d[$k] = utf8ize2($v);
-            return utf8_encode($d);
-        }
-    } else if (is_string ($d)) {
-    }
-    return $d;
-}
+
 
  switch ($_POST['accion']) {
      case 'consultar':
