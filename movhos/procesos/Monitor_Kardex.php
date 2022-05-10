@@ -26,7 +26,7 @@ else
   $wactivolactario = consultarAliasPorAplicacion( $conex, $wemp_pmla, "ProyectoLactario" );
 
                                                    // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz="07 de Abril 2022 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz="10 de mayo 2022 ";               // Aca se coloca la ultima fecha de actualizacion de este programa //
 	                                               // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
             
 //=========================================================================================================================================\\
@@ -42,6 +42,8 @@ else
 //=========================================================================================================================================\\
 //=========================================================================================================================================\\
 //ACTUALIZACIONES
+//=========================================================================================================================================\\
+// 10 de mayo de 2022 - Sebastian Alvarez Barona: Se realiza modificación a los sticker para que deje imprimir cuando un nombre de un paciente tiene alguna tilde o ñ
 //=========================================================================================================================================\\
 // Enero 20 del 2022 - Sebastian Alvarez Barona 
 // Se realiza validacion en la consulta que nos trae los aritulos en la seccion soporte nutricional adicionandole que solo nos traigan articulos de lactario.
@@ -4445,7 +4447,7 @@ if($estadosede=='on')
 							$dataPac = array(
 								"historia" => $fila[1],
 								"ingreso" => $fila[2],
-								"nombre" => $fila[3],
+								"nombre" => utf8_encode($fila[3]),
 								"fecha" => $pos_art[3],
 								"hora" => $pos_art[4],
 								"habitacion" => $fila[0],
@@ -4505,7 +4507,7 @@ if($estadosede=='on')
 						$dataPac = array(
 							"historia" => $fila[1],
 							"ingreso" => $fila[2],
-							"nombre" => $fila[3],
+							"nombre" => utf8_encode($fila[3]),
 							"fecha" => $fila[13],
 							"hora" => $fila[14],
 							"habitacion" => $fila[0],
