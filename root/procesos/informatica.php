@@ -314,6 +314,10 @@ Fecha de creacion: 2007-04-30
 Autor: Carolina Castano P
 
 Ultima actualizacion:
+12 de mayo de 2022:
+    Sebastian Alvarez Barona: Se comenta linea de encabezado() ya que en esa linea estabamos excluyendo a todos los usuarios excepto de esterilizacion para seleccionar la sede
+	Se adiciono otra vez el encabezado() con el parametro TRUE al final para que muestre la sede para todos los usuarios. 
+
 12 de abril de 2022:
     Sebastian Alvarez Barona: Se realiza correccón para que mantenga la sede cuando se selecciona la clase de requerimiento.
 
@@ -2560,7 +2564,10 @@ function pintarTitulo($wacutaliza, $titulo_requerimientos,$TablaValidacionSede =
 	$incluirFiltroSede = ($TablaValidacionSede == '') ? FALSE : TRUE;
 
 	global $wemp_pmla;
-	echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', $incluirFiltroSede);
+	/** Se comenta ya que se requiere que para todos los usuarios muestre el selector de sedes. */
+	// echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', $incluirFiltroSede);
+	echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', TRUE);
+
 	echo "<form id='informatica' name='informatica' action='informatica.php?wemp_pmla=".$wemp_pmla. $sUrlCodigoSede."' method=post >";
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
@@ -3239,7 +3246,7 @@ if(!isset($_SESSION["user"]))
 echo "error";
 else
 {
-	$wacutaliza = "12 de abril de 2022";
+	$wacutaliza = "12 de mayo de 2022";
 	$wbasedato='root';
 	
 	include_once("root/comun.php");

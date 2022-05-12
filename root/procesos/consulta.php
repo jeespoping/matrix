@@ -9,6 +9,10 @@ include_once("conex.php");
 
  ACTUALIZACIONES:
 
+ * 12 de mayo de 2022:
+ *   Sebastian Alvarez Barona: Se comenta linea de encabezado() ya que en esa linea estabamos excluyendo a todos los usuarios excepto de esterilizacion para seleccionar la sede
+ *	                           Se adiciono otra vez el encabezado() con el parametro TRUE al final para que muestre la sede para todos los usuarios. 
+
  * 25 de febrero de 2022 - Sebastian Alvarez Barona - Se realiza filtro por sede a la información que nos arroja el sistema, esta información se filtra de acuerdo a la sede 80 o sur.
 
  2015-10-13:
@@ -474,8 +478,10 @@ function pintarTitulo($para,$wacutaliza, $titulo_requerimientos,$TablaValidacion
     }
 
     $sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
-    
-    echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', $incluirFiltroSede);
+
+    /** Se comenta ya que se requiere que para todos los usuarios muestre el selector de sedes. */
+    // echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', $incluirFiltroSede);
+    echo encabezado("<div class='titulopagina2'>".$titulo_requerimientos."</div>", $wacutaliza, 'clinica', TRUE);
     echo "<form name='informatica' action='consulta.php?wemp_pmla=".$wemp_pmla."' method=post>";
     echo "<table ALIGN=CENTER width='50%'>";
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
@@ -719,7 +725,7 @@ if (!isset($_SESSION["user"]))
     echo "error";
 else
 {
-    $wacutaliza = "25 de febrero de 2022";
+    $wacutaliza = "12 de mayo de 2022";
     if (!isset ($para))
     {
         $para = 'recibidos';
