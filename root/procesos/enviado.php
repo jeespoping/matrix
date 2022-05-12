@@ -72,7 +72,7 @@ include_once("conex.php");
 
 <?php
 // ----------------------------------------------------------funciones de persitencia------------------------------------------------
-function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $orden2, $sCodigoSede = NULL, $TablaValidacionSede = NULL)
+function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $orden2, $sCodigoSede = NULL)
 {
     global $conex;
     global $wbasedato;
@@ -96,7 +96,7 @@ function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $or
 
     if ($para == 'recibidos')
     {
-        if($estadosede == 'off' || empty($TablaValidacionSede) || !isset($TablaValidacionSede))
+        if($estadosede == 'off')
         {
             $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, Hora_data, Descripcion, r40.id AS id_req, Reqccs  "
             . "       FROM " . $wbasedato . "_000040 AS r40, usuarios "
@@ -110,7 +110,7 @@ function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $or
            . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc, 12 desc ";
         }else{
             $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, r40.Hora_data, Descripcion, r40.id AS id_req, Reqccs, m11.Cconom  "
-            . "       FROM " . $wbasedato . "_000040 AS r40, usuarios, ".$TablaValidacionSede." m11 "
+            . "       FROM " . $wbasedato . "_000040 AS r40, usuarios, ".$wmovhos."_000011 m11 "
             . "    WHERE (r40.Requrc = '" . $codigo . "' "
             . "       OR  r40.Reqpurs = '" . $codigo . "') "
             . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
@@ -126,10 +126,10 @@ function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $or
     else if ($para == 'enviados')
     {
 
-        if ($estadosede == 'off' || empty($TablaValidacionSede) || !isset($TablaValidacionSede))
+        if ($estadosede == 'off')
         {
             
-            $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, Hora_data, Descripcion, r40.id AS id_req  "
+            $q = " SELECT r40.Reqcco, r40.Reqccs, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, Hora_data, Descripcion, r40.id AS id_req  "
             . "       FROM " . $wbasedato . "_000040 AS r40, usuarios " 
             . "    WHERE r40.Requso = '" . $codigo . "' "
             . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
@@ -139,8 +139,8 @@ function consultarRequerimientos($codigo, $confec1, $confec2, $para, $orden, $or
             . "    ORDER BY " . $orden2 . " " . $orden . ", 10, 9, 4 desc , 12 desc ";
         }else{
             
-            $q = " SELECT r40.Reqcco, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, r40.Hora_data, Descripcion, r40.id AS id_req, m11.Cconom  "
-            . "       FROM " . $wbasedato . "_000040 AS r40, usuarios, ".$TablaValidacionSede." m11 " 
+            $q = " SELECT r40.Reqcco, r40.Reqccs, r40.Reqnum, r40.Reqtip, r40.Reqfec, r40.Requso, r40.Requrc, r40.Reqdes, r40.Reqpurs, r40.Reqpri, r40.Reqest, r40.Reqcla, r40.Hora_data, Descripcion, r40.id AS id_req, m11.Cconom  "
+            . "       FROM " . $wbasedato . "_000040 AS r40, usuarios, ".$wmovhos."_000011 m11 " 
             . "    WHERE r40.Requso = '" . $codigo . "' "
             . "       AND r40.Reqest IN ( SELECT Estcod FROM " . $wbasedato . "_000049 WHERE Estfin='on') "
             . "       AND r40.Reqfec between '" . $confec1 . "' and '" . $confec2 . "' "
@@ -561,7 +561,7 @@ else
     }
 
     pintarFormulario($confec1, $confec2, $para);
-    $requerimientos = consultarRequerimientos($wusuario, $confec1, $confec2, $para, $orden, $orden2, $selectsede, $TablaValidacionSede);
+    $requerimientos = consultarRequerimientos($wusuario, $confec1, $confec2, $para, $orden, $orden2, $selectsede);
     if (is_array($requerimientos))
     {
         pintarRequerimientos($requerimientos, $para, $orden, $orden2);
