@@ -1249,6 +1249,7 @@ function guardarDatos2($pacienteEgresar){
         $infoing = $pacienteEgresar->data['infoing'][0];
         $datosEnc['egrhis'] = $pacienteEgresar->historia;
         $datosEnc['egring'] = $pacienteEgresar->ingreso;
+        $datosEnc['Egrcae'] = 'A';
         $datosEnc['egrfee'] = $pacienteEgresar->fechaAltDefinitiva;
         $datosEnc['egrhoe'] = $pacienteEgresar->horaAltDefinitiva;
         $datosEnc['egrest'] = dias_pasados($infoing['ing_ha_data'], $fechaActual);
