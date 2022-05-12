@@ -248,6 +248,11 @@ $(document).ready(function()
 	/******************************************************************
 	 *  Modificaciones:
 	 * ================================================================================================================================================
+	 * Abril 26 de 2022
+	   Leandro Meneses. Cuando se consultan notas complementarias, en el enlace con la tabla movhos_000048 se filtran
+	   solo los registros activos medest = 'on'
+	 
+	 
 	 *	Enero 21 de 2022: Marlon Osorio
 							- Se parametrizo el centro de costos de Dispensacion Servicio Farmaceutico
 	  ================================================================================================================================================
