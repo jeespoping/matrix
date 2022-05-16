@@ -66,7 +66,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2020-03-02';
+			$wactualiz='2022-04-22';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //	2021-10-08	Sebastián Nevado		- Se agrega acción consultarPrescripcionMipres para validar número de prescripción mipres por post.
 //  2021-10-01  Joel Payares Hdz		- Se crea parametro departamento en base de datos para obtener el valor dinamicamente.
@@ -141,10 +141,13 @@ if(!isset($_SESSION['user']) && $proceso != "actualizar" && !isset($_GET['automa
 }
 else
 {
-	if(!isset($wemp_pmla))
-	{
-		$wemp_pmla = "01";
-	}
+		//if(!isset($wemp_pmla))
+	//{
+	//	$wemp_pmla = "01";
+	//}
+
+    $wemp_pmla = $_REQUEST['wemp_pmla'];
+	
 	header('Content-type: text/html;charset=ISO-8859-1');
 	$user_session = explode('-',$_SESSION['user']);
 	$wuse = $user_session[1];
