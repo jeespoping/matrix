@@ -11,7 +11,7 @@ include_once("conex.php");
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='2019-09-30';
+			$wactualiz='17 de mayo de 2022';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //                
 //
@@ -43,21 +43,39 @@ else
 
 	$tipoRequerimiento = consultarAliasPorAplicacion($conex, $wemp_pmla, 'ReqCentralEsterilizacion');
 
+	$wmovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');  
+
 
 //=====================================================================================================================================================================     
 //		F U N C I O N E S	 G E N E R A L E S    P H P
 //=====================================================================================================================================================================
 	
-	function consultarCentroCostos()
+	function consultarCentroCostos($sCodigoSede = NULL)
 	{
 		global $conex;
 		global $wbasedato;
+		global $wemp_pmla;
+		global $wmovhos;
+
+		$sFiltroSede='';
+   
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	   
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 			
 		$query = "SELECT Reqccs 
-					FROM root_000040
+					FROM root_000040, ".$wmovhos."_000011
 				   WHERE Reqcco='(01)1082'
 				     AND Reqccs!='' 
 					 AND Reqccs NOT LIKE '%NO%'
+					 AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede})
 				GROUP BY Reqccs;";
 			
 		// $query = "SELECT Reqccs 
@@ -124,8 +142,9 @@ else
 	function pintarFiltroCco()
 	{
 		global $wuse;
+		global $selectsede;
 		
-		$ccos = consultarCentroCostos();
+		$ccos = consultarCentroCostos($selectsede);
 		$ccoUsuario = consultarCcoUsuario($wuse);
 		
 		$html = "";
@@ -190,11 +209,26 @@ else
 		return $html;
 	}
 	
-	function consultarRequerimientos($wemp_pmla,$cco,$claseRequerimiento,$estado)
+	function consultarRequerimientos($wemp_pmla,$cco,$claseRequerimiento,$estado,$sCodigoSede = NULL)
 	{
 		global $conex;
 		global $wuse;
 		global $tipoRequerimiento;
+		global $wmovhos;
+		global $selectsede;
+	
+		$sFiltroSede='';
+	   
+		if(isset($wemp_pmla) && !empty($wemp_pmla))
+		{
+			$estadosede=consultarAliasPorAplicacion($conex, $wemp_pmla, "filtrarSede");
+	   
+			if($estadosede=='on')
+			{
+				$codigoSede = (is_null($sCodigoSede)) ? consultarsedeFiltro() : $sCodigoSede;
+				$sFiltroSede = (isset($codigoSede) && ($codigoSede !='')) ? " AND Ccosed = '{$codigoSede}' " : "";
+			}
+		}
 		
 		$filtroClase = "";
 		if($claseRequerimiento!="")
@@ -214,15 +248,17 @@ else
 			$filtroEstado = "AND Reqsat='".$estado."'";
 		}
 		
-		$queryRequerimientos = "SELECT Reqcco, Reqnum, Reqfec, Requso, Descripcion AS solicitante, Reqccs, Reqcla, Reqdes, Reqest,Estnom,Estcol, Reqtpn, Reqsat, r40.id AS id_req 
-								  FROM root_000040 AS r40, usuarios,root_000049
+		$queryRequerimientos = "SELECT Reqcco, Reqnum, Reqfec, Requso, Descripcion AS solicitante, Reqccs, Reqcla, Reqdes, Reqest,Estnom,Estcol, Reqtpn, Reqsat, r40.id AS id_req
+								  FROM root_000040 AS r40, usuarios,root_000049, ".$wmovhos."_000011
 								 WHERE Reqtip='".$tipoRequerimiento."' 
 								   AND Reqest IN ( SELECT Estcod FROM root_000049 WHERE Estfin='on')
 								   ".$filtroClase."
 								   ".$filtroCco."
 								   ".$filtroEstado."
 								   AND Codigo = Requso
+								   AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede})
 								   AND Estcod=Reqest;";
+
 								   
 		$resultado = mysql_query($queryRequerimientos,$conex);
 		$num = mysql_num_rows($resultado);
@@ -230,7 +266,7 @@ else
 		$arrayRequerimientos = array();
 		if($num>0)
 		{
-			$arrayCcos = consultarCentroCostos();
+			$arrayCcos = consultarCentroCostos($selectsede);
 			$arrayClasesReq = consultarClaseRequerimiento($tipoRequerimiento);
 			while($row = mysql_fetch_array($resultado))
 			{
@@ -261,7 +297,7 @@ if(isset($accion))
 	{
 		case 'consultarRequerimientos':
 		{	
-			$data = consultarRequerimientos($wemp_pmla,$cco,$claseRequerimiento,$estado);
+			$data = consultarRequerimientos($wemp_pmla,$cco,$claseRequerimiento,$estado,$selectsede);
 			echo json_encode($data);
 			break;
 			return;
@@ -307,6 +343,7 @@ else
 			cco					: $('#cco').val(),
 			claseRequerimiento	: $('#claseRequerimiento').val(),
 			estado				: $('#estado').val(),
+			selectsede			: $('#selectsede').val(),
 		}
 		, function(datos) {
 			
@@ -377,6 +414,10 @@ else
 	{
 		top.close();		  
     }
+
+	$(document).on('change','#selectsede',function(){
+		window.location.href = "reciboRequerimientosEsterilizacion.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val();
+	});
 	
 //=======================================================================================================================================================	
 //	F I N  F U N C I O N E S  J A V A S C R I P T 
@@ -404,7 +445,7 @@ else
 	<BODY>
 	<?php
 	// -->	ENCABEZADO
-	encabezado("RECIBO REQUERIMIENTOS CENTRAL ESTERILIZACION", $wactualiz, 'clinica');
+	encabezado("RECIBO REQUERIMIENTOS CENTRAL ESTERILIZACION", $wactualiz, 'clinica', TRUE);
 	
 	$htmlFiltroCco = pintarFiltroCco();
 	$htmlFiltroRequerimiento = pintarFiltroRequerimiento();
@@ -412,6 +453,7 @@ else
 	?>
 		<input type='hidden' id='wbasedato' value='<?php echo $wbasedato; ?>'>
 		<input type='hidden' id='wemp_pmla' value='<?php echo $wemp_pmla; ?>'>
+		<input type='hidden' id='sede' value='<?php echo $selectsede; ?>'>
 		
 		<div id='divFiltros' align='center'>
 			<table>
