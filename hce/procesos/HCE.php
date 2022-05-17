@@ -1000,18 +1000,17 @@ else
 		switch($accion)
 		{
 			case "T":
+					
 				echo "</head>";
-				echo "<body style='background-color:#E8EEF7' FACE='ARIAL' LINK='BLACK'>";
 				echo "<div id='1'>";
-				echo "<form name='HCE1' action='HCE.php' method=post>";
-				
-				echo "<table border=0 CELLSPACING=0>";
-				echo "<tr><td align=center id=tipoT01><IMG SRC='/matrix/images/medical/root/HCE".$wemp_pmla.".jpg'></td>";
-				echo "<td id=tipoT02>&nbsp;CLINICA LAS AMERICAS<BR>&nbsp;HISTORIA CLINICA ELECTRONICA HCE&nbsp;&nbsp;<A HREF='/matrix/root/Reportes/DOC.php?files=/var/www/matrix/hce/procesos/HCE.php' target='_blank'>Version 2018-04-05</A></td></tr>";
-				echo "<tr><td id=tipoT03 colspan=2></td></tr>";
-				echo "</table>";
-				echo"</form>";
+			
+				include_once("root/comun.php");
+				$institucion = consultarInstitucionPorCodigo($conex, $origen);
+            	$wbasedato = strtolower( $institucion->baseDeDatos );
+				$wactualiz = '2022-05-16';
+				encabezado("HISTORIA CLINICA ELECTRONICA HCE",$wactualiz,$wbasedato);
 			break;
+		
 			
 			case "U": 
 				echo "</head>";
