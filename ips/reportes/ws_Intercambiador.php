@@ -69,12 +69,14 @@ if(isset($_POST['accion'])) {
 			$supportsParients = $request['supportsParients'];
 			$contab   		  = $request['contab'];
 			$wemppmla 	      = $request['wemppmla'];
-			
+			$accessData       = $request['accessData'];
+
 			$data = [
 				'patients'  		=> $patients,
 				'supportsParients'  => $supportsParients,
 				'contab'    		=> $contab,
-				'wemppmla'  		=> $wemppmla
+				'wemppmla'  		=> $wemppmla,
+				'accessData'        => $accessData
 			];
 			
 			$options = array(
