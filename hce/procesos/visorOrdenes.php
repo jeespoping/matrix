@@ -9,7 +9,8 @@ include_once("conex.php");
 //FECHA DE CREACION: 	2019-12-17
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
-//--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//--------------------------------------------------------------------------------------------------------------------------------------------  
+//  2022-05-16  -   Sebastian Alvarez Barona: Se realiza modificación para que se puedan consultar los resultados de patologia.                                                                                                                     \\
 //	2020-05-12	-	Edwin Molina Grisales:	- Si las ordenes están en proceso no se muestra el boton de Ver pdf
 //	2020-03-17	-	Jessica Madrid Mejía:	- Si las ordenes de laboratorio están en proceso no se muestran los botones Ver resultado
 // 											  y Ver PDF.
@@ -1047,7 +1048,7 @@ else
 				else
 				{
 					// Laboratorio
-					if(tipoOrdenes[tipoOrden]=="A20")
+					if(tipoOrdenes[tipoOrden]=="A20" || tipoOrdenes[tipoOrden]=="A16")
 					{
 						// Debe consultar el API de laboratorio para obtener los exámenes realizados para el paciente en el rango de fechas
 						
@@ -1440,7 +1441,7 @@ else
 		<?php
 		
 		// -->	ENCABEZADO
-		$wactualiz='2020-05-12';
+		$wactualiz='17 de mayo de 2022';
 		encabezado("VISOR DE RESULTADOS", $wactualiz, "HCE".$wemp_pmla);
 		
 		$historiaPantalla = consultarAliasPorAplicacion($conex, $wemp_pmla, 'historiaPantalla');
