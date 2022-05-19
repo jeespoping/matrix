@@ -38,8 +38,10 @@ define("OBR_MUESTRA_SITIO_ANATOMICO", 15 );
 include_once("root/comun.php");
 include_once("./funcionesGeneralesEnvioHL7.php");
 
-if( !isset( $wemp_pmla ) )
-	$wemp_pmla = "01";
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+
+// if( !isset( $wemp_pmla ) )
+// 	$wemp_pmla = "01";
 
 function actualizarUrl( $conex, $whce, $wmovhos, $tipoOrden, $nroOrden, $item, $url ){
 	
@@ -587,7 +589,7 @@ function ConectarFTP( $server, $port, $user, $password, $modo ){
 	return $id_ftp; //Devuelve el manejador a la función
 }
 
-function subirArchivosFtp( $archivo_remoto, $archivo_local, $wemp_pmla = '01' ){
+function subirArchivosFtp( $archivo_remoto, $archivo_local, $wemp_pmla  ){
 	
 	$val = false;
 	
