@@ -10,8 +10,9 @@ include_once("conex.php");
 //FECHA DE CREACION: 	2019-09-30
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
+// 19 de mayo de 2022 - Sebastian Alvarez Barona : Se realiza filtros de sedes a la información ofrecida una vez se consulta
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
-			$wactualiz='17 de mayo de 2022';
+			$wactualiz='19 de mayo de 2022';
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
 //                
 //
@@ -248,7 +249,18 @@ else
 			$filtroEstado = "AND Reqsat='".$estado."'";
 		}
 		
-		$queryRequerimientos = "SELECT Reqcco, Reqnum, Reqfec, Requso, Descripcion AS solicitante, Reqccs, Reqcla, Reqdes, Reqest,Estnom,Estcol, Reqtpn, Reqsat, r40.id AS id_req
+		if($estadosede == 'off'){
+			$queryRequerimientos = "SELECT Reqcco, Reqnum, Reqfec, Requso, Descripcion AS solicitante, Reqccs, Reqcla, Reqdes, Reqest,Estnom,Estcol, Reqtpn, Reqsat, r40.id AS id_req
+								  FROM root_000040 AS r40, usuarios,root_000049
+								 WHERE Reqtip='".$tipoRequerimiento."' 
+								   AND Reqest IN ( SELECT Estcod FROM root_000049 WHERE Estfin='on')
+								   ".$filtroClase."
+								   ".$filtroCco."
+								   ".$filtroEstado."
+								   AND Codigo = Requso
+								   AND Estcod=Reqest;";
+		}else{
+			$queryRequerimientos = "SELECT Reqcco, Reqnum, Reqfec, Requso, Descripcion AS solicitante, Reqccs, Reqcla, Reqdes, Reqest,Estnom,Estcol, Reqtpn, Reqsat, r40.id AS id_req
 								  FROM root_000040 AS r40, usuarios,root_000049, ".$wmovhos."_000011
 								 WHERE Reqtip='".$tipoRequerimiento."' 
 								   AND Reqest IN ( SELECT Estcod FROM root_000049 WHERE Estfin='on')
@@ -258,6 +270,7 @@ else
 								   AND Codigo = Requso
 								   AND (mid(Reqccs,(instr(Reqccs,')') + 1),length(Reqccs)) = Ccocod {$sFiltroSede})
 								   AND Estcod=Reqest;";
+		}
 
 								   
 		$resultado = mysql_query($queryRequerimientos,$conex);
