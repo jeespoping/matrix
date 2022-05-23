@@ -1250,7 +1250,7 @@ function guardarDatos2($pacienteEgresar){
         $datosEnc['egrhis'] = $pacienteEgresar->historia;
         $datosEnc['egring'] = $pacienteEgresar->ingreso;
         $datosEnc['egrfee'] = $pacienteEgresar->fechaAltDefinitiva;
-        $datosEnc['Egrcae'] = 'A';
+        $datosEnc['Egrcae'] = consultarAliasPorAplicacion($conex, $wemp_pmla, 'causaEgresoAutomatico');
         $datosEnc['egrhoe'] = $pacienteEgresar->horaAltDefinitiva;
         $datosEnc['egrest'] = dias_pasados($infoing['ing_ha_data'], $fechaActual);
         $datosEnc['Fecha_data'] = $fechaActual;
@@ -1597,7 +1597,7 @@ function guardarDatos2($pacienteEgresar){
                 $datosEnc['egring'] = $pacienteEgresar->ingreso;
                 $datosEnc['egrfee'] = $pacienteEgresar->fechaAltDefinitiva;
                 $datosEnc['egrhoe'] = $pacienteEgresar->horaAltDefinitiva;
-                $datosEnc['Egrcae'] = 'A';
+                $datosEnc['Egrcae'] = consultarAliasPorAplicacion($conex, $wemp_pmla, 'causaEgresoAutomatico');
                 $datosEnc['egrest'] = dias_pasados($infoing['ing_ha_data'], $fechaActual);
                 $datosEnc['Fecha_data'] = $fechaActual;
                 $datosEnc['Hora_data'] = $horaActual;
