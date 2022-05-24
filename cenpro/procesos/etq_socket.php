@@ -10,8 +10,10 @@
 
 		$wactualiz = "01 De Febrero del 2022";
 
+		
 		/**
 		 * Acutalizacion:
+		 * 24/05/2022 				Esteban Villa 		  Cambio input wip por un select a la tabla root_000053
 		 * 
 		 * Febrero 01 del 2022		Sebastian Alvarez B.  Se crea la función obetenrLotePaciente() que nos trae el lote que esta asociado a una historia de un paciente.
 		 * 												  Esto con el fin de que cuando se daña un sticker de medicamentos en central de mezclas se opta por sacar
@@ -379,11 +381,8 @@ else
 			echo "<tr><td bgcolor=#cccccc>Numero de Etiquetas</td>";
 			echo "<td bgcolor=#cccccc><input type='TEXT' name='wetq' size=6 maxlength=6 required=required></td></tr>";	
 			echo "<tr><td bgcolor=#cccccc>Numero de IP</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wip' size=15 maxlength=15 required=required></td></tr>";
-
-
-				// echo "<td bgcolor=#cccccc><input type='TEXT' name='wip' size=15 maxlength=15></td></tr>";
-				$selectOptionsIps = '';
+			
+			$selectOptionsIps = '';
 
 
 
