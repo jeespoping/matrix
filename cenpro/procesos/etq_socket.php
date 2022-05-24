@@ -10,7 +10,7 @@
 
 		$wactualiz = "01 De Febrero del 2022";
 
-		
+
 		/**
 		 * Acutalizacion:
 		 * 24/05/2022 				Esteban Villa 		  Cambio input wip por un select a la tabla root_000053
@@ -371,15 +371,15 @@ else
 			echo "<tr><td align=center colspan=2>CENTRAL DE MEZCLAS</td></tr>";
 			//echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Codigo del Producto</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wcod' size=10 maxlength=10 required=required></td></tr>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wcod' size=10 maxlength=10 ></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Nro. de Lote</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wlot' size=20 maxlength=20 required=required></td></tr>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wlot' size=20 maxlength=20 ></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Fecha de Vencimiento</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wfev' size=10 maxlength=10 required=required></td></tr>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wfev' size=10 maxlength=10 ></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Nombre del Producto</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wnom' size=80 maxlength=80 required=required></td></tr>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wnom' size=80 maxlength=80 ></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Numero de Etiquetas</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wetq' size=6 maxlength=6 required=required></td></tr>";	
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wetq' size=6 maxlength=6 ></td></tr>";	
 			echo "<tr><td bgcolor=#cccccc>Numero de IP</td>";
 			
 			$selectOptionsIps = '';
