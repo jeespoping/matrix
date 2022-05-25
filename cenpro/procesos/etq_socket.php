@@ -1,18 +1,34 @@
 <html>
 <head>
-  <title>MATRIX</title>
+  <title>STIKERS DE CODIGOS DE BARRAS</title>
+
+  <script type="text/javascript" src="../../../include/root/jquery-1.3.2.min.js"></script>
 </head>
 <body BGCOLOR="">
 
 	<BODY TEXT="#000066">
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var selectorSede = document.getElementById("selectsede");
+		
+			if(selectorSede !== null)
+			{
+				selectorSede.addEventListener('change', () => {
+					window.location.href = "etq_socket.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+				});
+			}
+		});
+	</script>
+
 		<?php
 		include_once("conex.php");
 
-		$wactualiz = "01 De Febrero del 2022";
-
+		$wactualiz = "10 De Mayo del 2022";
 
 		/**
 		 * Acutalizacion:
+		 * 10 de Mayo de 2022		Sebastian Alvarez B.  Se adiciona en el encabezado el selector de sede para que cuando se genere un stciker nos muestre la sede desde el cual se genero.
 		 * 24/05/2022 				Esteban Villa 		  Cambio input wip por un select a la tabla root_000053
 		 * 
 		 * Febrero 01 del 2022		Sebastian Alvarez B.  Se crea la función obetenrLotePaciente() que nos trae el lote que esta asociado a una historia de un paciente.
@@ -331,7 +347,7 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 
 include_once("root/comun.php");
 $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-encabezado( "GENERACION DE STIKERS DE CODIGOS DE BARRAS", $wactualiz, $institucion->baseDeDatos );
+encabezado( "GENERACION DE STIKERS DE CODIGOS DE BARRAS", $wactualiz, $institucion->baseDeDatos, TRUE );
 include_once(get_include_path()."/../matrix/cenpro/procesos/monitorProduccionDA.php");
 
 
@@ -353,14 +369,26 @@ else
 //  	
 
 //	
+	$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+	$sFiltroSede="";
+	$codigoSede = '';
+	if($estadosede=='on')
+	{	  
+		$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+		$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+	}
 
-  	echo "<form action='etq_socket.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
+
+  	echo "<form action='etq_socket.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."' method=post>";
   	echo "<INPUT TYPE='hidden' name='bd' value='$bd'>";
   	echo "<INPUT TYPE='hidden' name='whistoria' value='".$whistoria."'>";
   	echo "<INPUT TYPE='hidden' name='wingreso' value='".$wingreso."'>";
   	echo "<INPUT TYPE='hidden' name='wido' value='".$wido."'>";
   	echo "<INPUT TYPE='hidden' name='wronda' value='".$wronda."'>";
   	echo "<INPUT TYPE='hidden' name='wfecharonda' value='".$wfecharonda."'>";
+	echo "<INPUT TYPE='hidden' name='sede' id= 'sede' value='".$selectsede."'>";
+	echo "<INPUT TYPE='hidden' name='wemp_pmla' id= 'wemp_pmla' value='".$wemp_pmla."'>";
   	if(!isset($wcod) or !isset($wlot) or !isset($wfev) or !isset($wnom) or !isset($wetq) or !isset($wip))
 	{
 		
@@ -380,7 +408,6 @@ else
 			echo "<td bgcolor=#cccccc><input type='TEXT' name='wnom' size=80 maxlength=80 ></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Numero de Etiquetas</td>";
 			echo "<td bgcolor=#cccccc><input type='TEXT' name='wetq' size=6 maxlength=6 ></td></tr>";	
-			echo "<tr><td bgcolor=#cccccc>Numero de IP</td>";
 			
 			$selectOptionsIps = '';
 
@@ -613,6 +640,16 @@ else
 
 					$stikerInformacionPaciente = ''; // Variable vacia 
 
+					$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+					$sFiltroSede="";
+					$codigoSede = '';
+					if($estadosede=='on')
+					{	  
+						$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+					}
+				
+					$sUrlCodigoSede = ($estadosede=='on') ? $codigoSede : '';
+
 					if ($StickerPacienteDA == 'on' && $whistoria == "" && $wingreso == "") // Si el parametro esta en on entonces el sticker DA sale unificado con el del paciente.
 					{
 
@@ -681,7 +718,8 @@ else
 						^CFP
 						^FO5,499^FDEPS: ".$ResponsablePaciente." ^FS
 						^CFR,1
-						^FO120,517^FDHAB: ".$Habitacion."^FS";
+						^FO120,517^FDHAB: ".$Habitacion."^FS
+						^FO120,548^FD".$sUrlCodigoSede."^FS";
 						
 					}
 
@@ -743,6 +781,11 @@ else
 							^PQ" . $wetq . "
 
 							^XZ";
+
+						// echo '<pre>';
+						// echo $impresionZPL;
+						// echo '</pre>';
+						// die();
 
 
 					$addr = $wip;
