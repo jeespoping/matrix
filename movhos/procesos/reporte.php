@@ -28,7 +28,10 @@
 <BODY TEXT="#000066" BGCOLOR="#FFFFFF">
 
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
+
 include_once("conex.php");
+include_once("root/comun.php");
 
 /****************************************************
 *		REPORTE DE MEDICAMENTOS CARGADOS Y			*
@@ -82,7 +85,10 @@ include_once("movhos/validacion_hist.php");
 
 
 
-
+$wactualiz = '2022-02-16';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("MEDICAMENTOS Y MATERIAL",$wactualiz, $wbasedato1);
 
 // COMPROBAR QUE LOS PARAMETROS ESTEN puestos(paciente medico y fecha)
 
@@ -97,8 +103,8 @@ if(!isset($year1)  or !isset($cc) or !isset($pac['ing']) or !isset($turno))
 	echo "<input type='hidden' name ='usuario' value='".$usuario."' >";
 
 	echo "<center><table border=0 width=300>";
-	echo "<tr><td align='center' colspan='2' class='tituloSup'>MEDICAMENTOS Y MATERIAL</td></tr>";
-	echo "<tr></tr>";
+	// echo "<tr><td align='center' colspan='2' class='tituloSup'>MEDICAMENTOS Y MATERIAL</td></tr>";
+	// echo "<tr></tr>";
 	echo "<tr><td  class='titulo2'>CC: </td>";
 	echo "<td class='titulo2'><select name='cco[cod]' >";
 	$q = "SELECT Ccocod, Cconom  "
@@ -178,7 +184,7 @@ if(!isset($year1)  or !isset($cc) or !isset($pac['ing']) or !isset($turno))
 }else {
 
 	$fecha1=$year1."-".$month1."-".$day1;
-	if(!infoPaciente($pac, $emp))
+	if(!infoPaciente($pac, $wemp_pmla))
 	$pac['nom']="";
 	/*	$ini1=strpos($pac,"-");
 	$hist=substr($pac,0,$ini1);
@@ -330,8 +336,8 @@ if(!isset($year1)  or !isset($cc) or !isset($pac['ing']) or !isset($turno))
 		}
 		echo "</table></td></tr>";
 
-		echo "<tr><td align='center'><font color=#000066 face='arial'><b><A HREF='cargos.php?usuario=".$usuario."&tipTrans=".$tipTrans."&emp=".$emp."&bd=movhos'>Retornar con Usuario</a> </font><br>";
-		echo "<tr><td align='center'><font color=#000066 face='arial'><b><A HREF='cargos.php?tipTrans=".$tipTrans."&emp=".$emp."&bd=movhos'>Retornar</a> </font><br>";
+		echo "<tr><td align='center'><font color=#000066 face='arial'><b><A HREF='cargos.php?usuario=".$usuario."&tipTrans=".$tipTrans."&wemp_pmla=".$wemp_pmla."&bd=movhos'>Retornar con Usuario</a> </font><br>";
+		echo "<tr><td align='center'><font color=#000066 face='arial'><b><A HREF='cargos.php?tipTrans=".$tipTrans."&wemp_pmla=".$wemp_pmla."&bd=movhos'>Retornar</a> </font><br>";
 	}
 }
 ?>
