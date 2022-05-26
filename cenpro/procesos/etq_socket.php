@@ -28,6 +28,7 @@
 
 		/**
 		 * Acutalizacion:
+		 * 26 de mayo de 2022	    Sebastian Alvarez B.  Se adiciona mensajes de conservacion al sticker para que salgan de acuerdo a como esten configurados en el maestro de articulos de la central de mezclas cenpro_000002
 		 * 10 de Mayo de 2022		Sebastian Alvarez B.  Se adiciona en el encabezado el selector de sede para que cuando se genere un stciker nos muestre la sede desde el cual se genero.
 		 * 24/05/2022 				Esteban Villa 		  Cambio input wip por un select a la tabla root_000053
 		 * 
@@ -342,6 +343,82 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 
 		}
 
+		/**
+		 * Date: 26-05-2022
+		 * By: Sebastian Alvarez Barona
+		 * Descripción: Se crea función para preguntar si un articulo se conserva en nevera o es fotosensible
+		 * Se obtienen los datos de la tabla cenpro_000002 los campos Artfot(Articulo fotosensible), Artnev(Articulo de conservacion en nevera)
+		 */
+
+		function conservacionArticulo($wcod)
+		{
+		
+			global $wemp_pmla;
+			global $wbasedatocenpro;
+			global $conex;
+
+			$QueryConservacion = "
+			SELECT 
+				Artfot, Artnev
+			FROM  
+				".$wbasedatocenpro."_000002 
+			WHERE 
+				Artcod = '".$wcod."' 
+				AND Artest = 'on'";
+
+			echo $QueryConservacion;
+			echo '<br>';
+
+			$result_conservacion = mysql_query($QueryConservacion, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $QueryConservacion . " - " . mysql_error());
+			$aResultadoConservacion = mysql_num_rows($result_conservacion);
+
+			if( $aResultadoConservacion >= 1 ){
+				$rowsEnt = mysql_fetch_array($result_conservacion);
+				$valEnt = $rowsEnt['Artnev'];
+			}
+
+			return $valEnt;
+
+		}
+
+		/**
+		 * Date: 26-05-2022
+		 * By: Sebastian Alvarez Barona
+		 * Descripción: Se crea función para preguntar si un articulo es fotosensible
+		 * Se obtienen los datos de la tabla cenpro_000002 los campos Artfot(Articulo que no se puede exponer a la luz)
+		 */
+		function conservacionArticuloFot($wcod)
+		{
+		
+			global $wemp_pmla;
+			global $wbasedatocenpro;
+			global $conex;
+
+			$QueryConservacion = "
+			SELECT 
+				Artfot, Artnev
+			FROM  
+				".$wbasedatocenpro."_000002 
+			WHERE 
+				Artcod = '".$wcod."' 
+				AND Artest = 'on'";
+
+			echo $QueryConservacion;
+			echo '<br>';
+
+			$result_conservacion = mysql_query($QueryConservacion, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $QueryConservacion . " - " . mysql_error());
+			$aResultadoConservacion = mysql_num_rows($result_conservacion);
+
+			if( $aResultadoConservacion >= 1 ){
+				$rowsEnt = mysql_fetch_array($result_conservacion);
+				$valEnt = $rowsEnt['Artfot'];
+			}
+
+			return $valEnt;
+
+		}
+
+		
 		//$wemp_pmla="01";
 		$soloconsulta = true;
 
@@ -630,6 +707,30 @@ else
 
 					// 				^XZ";
 
+					/**26 de mayo de 2022
+					 * Llamamos a las funciónes que creamos y Se crea validación para mostrar los mensajes de conservacion de cada producto
+					 * conservacion en nevera o fotsensible
+					 */
+
+					$conservarNev = conservacionArticulo($wcod);
+					$conservacionArticuloFot = conservacionArticuloFot($wcod);
+
+
+					/** Mensaje para conservar en nevera, depediendo del articulo */
+					if($conservarNev !== 'on'){
+						$mensajeConservacion = "Conservar a temperatura ambiente de 15grados a 25grados C";
+					}else{
+						$mensajeConservacion = "Conservar en nevera de 2grados a 8grados C.";
+					}
+
+					/** Mensaje para fotosensible (cuando un articulo no puede estar directo a la luz) */
+					if($conservacionArticuloFot !== 'on'){
+						$mensajeConservacion2 = "";
+					}else{
+						$mensajeConservacion2 = "Fotosensible";
+					}
+
+		
 
 					
 
@@ -764,7 +865,8 @@ else
 							^FX Tiempo de infusión y nota
 							^CFP
 							^FO10,260^FD" . $tiempoInfusion . "^FS
-							^FO10,280^FDConservar en nevera de 2' a 8' C^FS
+							^FO10,280^FD". $mensajeConservacion . "^FS
+							^FO10,295^FD". $mensajeConservacion2 . "^FS
 							
 							^FX Firma de quien prepara
 							^FO225,162
@@ -782,10 +884,10 @@ else
 
 							^XZ";
 
-						// echo '<pre>';
-						// echo $impresionZPL;
-						// echo '</pre>';
-						// die();
+						echo '<pre>';
+						echo $impresionZPL;
+						echo '</pre>';
+						die();
 
 
 					$addr = $wip;
