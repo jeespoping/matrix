@@ -681,7 +681,10 @@ if(!isset($accion))
 	echo "			<tr><td align=center id=tipo4>C&oacute;digo</td><td align=center><input class='input-login' type='text' name='codigo' size=18 maxlength=8></td></tr>";
 	echo "			<tr><td align=center id=tipo4>Clave</td><td align=center><input class='input-login'  type='password' name='password' size=18 maxlength=30></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' colspan=2></td></tr>";
-    echo "			<tr><td align=center id=tipo5 colspan=2><div class='g-recaptcha' data-sitekey='6LeX_54cAAAAAO4Utru2JVgp4TISOhehiYzQDnM4'></div></td></tr>";
+	$config = require('db_config.php');
+	$modoEjecucion = ($config['Matrix']['mode'] ?? 'produccion');
+	if ($modoEjecucion == 'produccion')
+    	echo "			<tr><td align=center id=tipo5 colspan=2><div class='g-recaptcha' data-sitekey='6LeX_54cAAAAAO4Utru2JVgp4TISOhehiYzQDnM4'></div></td></tr>";
 	echo "			<tr><td align=center colspan=2><button onClick='enter()' class='tipoHIDE'><IMG SRC='/matrix/images/medical/root/boton-10.png'></button></td></tr>";
 	echo "          <tr><td align=center class='tipo1a' id='restablecerPassword' colspan=2 >
 							<span onclick='abrirRestablecerPassword();'>&iquest;olvid&oacute; su usuario o contrase&ntilde;a?</span>
@@ -802,21 +805,25 @@ else
 					// $_SESSION['password'] = strtolower($password);
 					$_SESSION['password'] = $password;
 
-                    // se valida con recaptcha al momento de no estar logueado
-                    $ipRobot = $_SERVER["REMOTE_ADDR"];
-                    $tokenCaptcha = $_POST['g-recaptcha-response'] ;
-                    if ( evaluacionRecapchat($tokenCaptcha) == false and validarIp($ipRobot) == false){
-                        echo "<body bgcolor=#FFFFFF>";
-                        echo "<BODY TEXT='#000066'>";
-                        echo "<center>";
-                        echo "</center>";
-                        echo "<table  border=0 align=center>";
-                        echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
-                        echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
-                        @session_destroy();
-                        echo "<td id=tipo1><A HREF='F1.php' target='_top'>reCAPTCHA INVALIDO, vuelva a intentarlo!!</A></td></tr></table></body>";
-                        return;
-                    }
+					if ($modoEjecucion == 'produccion'){
+
+						// se valida con recaptcha al momento de no estar logueado
+						$ipRobot = $_SERVER["REMOTE_ADDR"];
+						$tokenCaptcha = $_POST['g-recaptcha-response'] ;
+						if ( evaluacionRecapchat($tokenCaptcha) == false and validarIp($ipRobot) == false){
+							echo "<body bgcolor=#FFFFFF>";
+							echo "<BODY TEXT='#000066'>";
+							echo "<center>";
+							echo "</center>";
+							echo "<table  border=0 align=center>";
+							echo "<tr><td id=tipo1 colspan=2 align=center><IMG SRC='/matrix/images/medical/root/GELA.png' BORDER=0></td></tr>";
+							echo "<tr><td id=tipo1><IMG SRC='/matrix/images/medical/root/denegado.png' BORDER=0></td>";
+							@session_destroy();
+							echo "<td id=tipo1><A HREF='F1.php' target='_top'>reCAPTCHA INVALIDO, vuelva a intentarlo!!</A></td></tr></table></body>";
+							return;
+						}
+					}
+
 				}
 			}
 			
