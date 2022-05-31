@@ -884,10 +884,10 @@ else
 
 							^XZ";
 
-						echo '<pre>';
-						echo $impresionZPL;
-						echo '</pre>';
-						die();
+						// echo '<pre>';
+						// echo $impresionZPL;
+						// echo '</pre>';
+						// die();
 
 
 					$addr = $wip;
