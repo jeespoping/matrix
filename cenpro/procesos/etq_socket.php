@@ -366,8 +366,6 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 				Artcod = '".$wcod."' 
 				AND Artest = 'on'";
 
-			echo $QueryConservacion;
-			echo '<br>';
 
 			$result_conservacion = mysql_query($QueryConservacion, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $QueryConservacion . " - " . mysql_error());
 			$aResultadoConservacion = mysql_num_rows($result_conservacion);
@@ -403,8 +401,6 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 				Artcod = '".$wcod."' 
 				AND Artest = 'on'";
 
-			echo $QueryConservacion;
-			echo '<br>';
 
 			$result_conservacion = mysql_query($QueryConservacion, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $QueryConservacion . " - " . mysql_error());
 			$aResultadoConservacion = mysql_num_rows($result_conservacion);
