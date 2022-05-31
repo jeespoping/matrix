@@ -6464,7 +6464,7 @@ else
 						$fraccion =  consultarFraccionProducto( $unidad, $inslis );
 						
 						$unidad = explode( "-", $unidad );
-						$cco = ccoUnificadoCM();
+						$cco = ccoUnificadoCM($selectsede);
 						
 						list( $viaAux ) = explode( "-", $via );
 						$viaCM = consultarViaMovhos( $conex, $bd, trim( $viaAux ) );
@@ -6543,7 +6543,7 @@ else
 						$unidad = consultarUnidadInsumoMaximo($inslis);
 						$unidad = explode( "-", $unidad );
 						
-						$cco = ccoUnificadoCM();
+						$cco = ccoUnificadoCM($selectsede);
 						list( $viaAux ) = explode( "-", $via );
 						$viaCM = consultarViaMovhos( $conex, $bd, trim( $viaAux ) );
 						registrarFraccion( $productos[0]['cod'], $vol+(float)$purga, $unidad[0], intval((float)$tve/24), $viaCM, $cco );
@@ -6668,7 +6668,7 @@ else
 					//2007-07-09 se agrega que se pueda modificar foto y neve
 					modificarProducto($productos[0]['cod'], $productos[0]['nom'], $productos[0]['gen'], $presentacion, $via, $tin, $tve, $fecha, $exp[0], $des, $foto, $neve, $peso, $purga);
 					
-					$cco = ccoUnificadoCM();
+					$cco = ccoUnificadoCM($selectsede);
 					$unidad = consultarUnidadInsumoMaximo($inslis);
 					
 					
@@ -7243,7 +7243,7 @@ else
 	
 	//se va a realizar el descarte de las vias que se debe hacer diariamente
 	//$cco = "SELECT Ccocod FROM ".$wmovhos."_000011 WHERE ccofac LIKE 'on' AND ccotra LIKE 'on' and ccoima !='off' AND ccodom !='on';";
-	$cco = ccoUnificadoCM();
+	$cco = ccoUnificadoCM($selectsede);
 	realizarDescarte($cco, $wusuario);
 
 	if($NPT_tiempoInfusion!="")

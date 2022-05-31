@@ -19,6 +19,10 @@ $bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 //	$wemp_pmla = "01";
 //
 
+if (is_null($selectsede)){
+    $selectsede = consultarsedeFiltro();
+}
+
 include_once( "movhos/kardex.inc.php" );
 
 // consulto los datos del usuario de la sesion
@@ -2724,7 +2728,29 @@ function anularLote($codlot, $codpro)
 function pintarTitulo()
 {
 	global $wemp_pmla;
+	global $selectsede;
+    global $parcon;
+    global $forcon;
+    global $pintar;
+    global $whistoria;
+    global $wingreso;
+    global $warticuloda;
+    global $idoda;
+    global $wronda;
+    global $wfecharonda;
+
 	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
+    echo "<input type='hidden' id='parcon' value='".$parcon."'/>";
+    echo "<input type='hidden' id='forcon' value='".$forcon."'/>";
+    echo "<input type='hidden' id='pintar' value='".$pintar."'/>";
+    echo "<input type='hidden' id='whistoria' value='".$whistoria."'/>";
+    echo "<input type='hidden' id='wingreso' value='".$wingreso."'/>";
+    echo "<input type='hidden' id='warticuloda' value='".$warticuloda."'/>";
+    echo "<input type='hidden' id='idoda' value='".$idoda."'/>";
+    echo "<input type='hidden' id='wronda' value='".$wronda."'/>";
+    echo "<input type='hidden' id='wfecharonda' value='".$wfecharonda."'/>";
+
+    echo "<input type='hidden' name='selectsede' id='sede' value='".$selectsede."'/>";
 	echo "<table ALIGN=CENTER width='50%'>"; 
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
     echo "<tr><td class='titulo1'>PRODUCCION CENTRAL DE MEZCLAS</td></tr>";
@@ -2732,10 +2758,10 @@ function pintarTitulo()
 
     echo "<table ALIGN=CENTER width='90%' >"; 
     // echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
-    echo "<tr><td class='texto5' width='15%'><a href='cen_Mez.php?wemp_pmla=$wemp_pmla' style='text-decoration: none; color: black;'>PRODUCTOS</a></td>";
-    echo "<td class='texto6' width='15%'><a href='lotes.php?wemp_pmla=$wemp_pmla' style='text-decoration: none; color: white;'>LOTES</a></td>";
-    echo "<td class='texto5' width='15%'><a href='cargoscm.php?wemp_pmla=$wemp_pmla&tipo=C' style='text-decoration: none; color: black;'>CARGOS A PACIENTES</a></td>";
-    echo "<td class='texto5' width='15%'><a href='pos.php?wemp_pmla=$wemp_pmla&tipo=A' style='text-decoration: none; color: black;'>VENTA EXTERNA</a></td></TR>";
+    echo "<tr><td class='texto5' width='15%'><a href='cen_Mez.php?wemp_pmla=$wemp_pmla&selectsede=$selectsede' style='text-decoration: none; color: black;'>PRODUCTOS</a></td>";
+    echo "<td class='texto6' width='15%'><a href='lotes.php?wemp_pmla=$wemp_pmla&selectsede=$selectsede' style='text-decoration: none; color: white;'>LOTES</a></td>";
+    echo "<td class='texto5' width='15%'><a href='cargoscm.php?wemp_pmla=$wemp_pmla&tipo=C&selectsede=$selectsede' style='text-decoration: none; color: black;'>CARGOS A PACIENTES</a></td>";
+    echo "<td class='texto5' width='15%'><a href='pos.php?wemp_pmla=$wemp_pmla&tipo=A&selectsede=$selectsede' style='text-decoration: none; color: black;'>VENTA EXTERNA</a></td></TR>";
     // echo "<a href='cargos.php?wbasedato=lotes.php&tipo=A'><td class='texto5' width='15%'>AVERIAS</td></a>";
     // echo "<a href='descarte.php?wbasedato=cenmez'><td class='texto5' width='15%'>DESCARTES</td></TR></a>";
     echo "<tr><td class='texto6' >&nbsp;</td>";
@@ -2780,6 +2806,7 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
     global $pre2;
     global $wemp_pmla;
 	global $bdMovhos;
+	global $selectsede;
 	
 	$arrayNPT = array();
 	if($productos != "")
@@ -2787,8 +2814,9 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 		$arrayNPT = consultarSiEsNPT($productos[0]['cod']);
 	}
 	
-    echo "<form name='producto2' action='lotes.php?wemp_pmla=".$wemp_pmla."' method=post>";
+    echo "<form name='producto2' action='lotes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' method=post>";
 	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
+    echo "<input type='hidden' name='selectsede' id='sede' value='".$selectsede."'/>";
     echo "<INPUT type='hidden' id='txHistoria' name='txHistoria'>";
     echo "<table border=0 ALIGN=CENTER width=90%>";
     
@@ -2836,8 +2864,9 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
     } 
     echo "</table></form>";
 
-    echo "<form name='producto' action='lotes.php?wemp_pmla=".$wemp_pmla."' method=post>";
+    echo "<form name='producto' action='lotes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' method=post>";
 	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
+    echo "<input type='hidden' name='selectsede' id='sede' value='".$selectsede."'/>";
     echo "<INPUT type='hidden' id='txHistoria1' name='txHistoria'>";
     echo "<table border=0 ALIGN=CENTER width=90%>";
     echo "<tr><td colspan=2 class='titulo3' align='center'><b>Informacion general del Lote</b></td></tr>";
@@ -2973,7 +3002,7 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
         } 
 
 		$imp=$lotsal*2;
-        $cadena = 'imprimir("etq_socket.php?wemp_pmla='.$wemp_pmla.'&wlot=' . $codlot . '&wnom=' . $nombre . '&wcod=' . $productos[0]['cod'] . '&wfev=' . $fecven . '&wetq=' . $imp .'")';
+        $cadena = 'imprimir("etq_socket.php?wemp_pmla='.$wemp_pmla.'&selectsede='.$selectsede.'&wlot=' . $codlot . '&wnom=' . $nombre . '&wcod=' . $productos[0]['cod'] . '&wfev=' . $fecven . '&wetq=' . $imp .'")';
         
         /***************************************************************************************************************************************
          * Creando impresion para articulos de alto riegos 
@@ -3010,7 +3039,7 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 			//echo "$ccos[0]";
 			$expCco = explode( "-", $ccos[0] );
 	        
-	        $cadena2 = "imprimirEtiquetasAltoRiesgo( \"rotuloElectrolitos.php?wemp_pmla=".$wemp_pmla."&whis={$txHistoria}&warticulo={$productos[0]['cod']}&wlote=$codlot&wcco={$expCco[0]}\" )";
+	        $cadena2 = "imprimirEtiquetasAltoRiesgo( \"rotuloElectrolitos.php?wemp_pmla=".$wemp_pmla."&selectsede={$selectsede}&whis={$txHistoria}&warticulo={$productos[0]['cod']}&wlote=$codlot&wcco={$expCco[0]}\" )";
 	        
 	        $msj = "No se encuentra la historia";
 	        if( @$numrowsHis > 0 ){
@@ -3047,7 +3076,7 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
                         $StickerPacienteDA = consultarAliasPorAplicacion($conex, $wemp_pmla, "StickerPacienteDA");
 
                         //Agregamos variable $StickerPacienteDA
-						$cadena = 'etq_socket.php?wemp_pmla='.$wemp_pmla.'&wlot=' . $codlot . '&wnom=' . $nombre . '&wcod=' . $productos[0]['cod'] . '&wfev=' . $fecven . '&wetq=' . $imp .'&whistoria='.$whistoria.'&wingreso='.$wingreso.'&wronda='.$wronda.'&wfecharonda='.$wfecharonda."&wido=".$idoda;
+						$cadena = 'etq_socket.php?wemp_pmla='.$wemp_pmla.'&selectsede='.$selectsede.'&wlot=' . $codlot . '&wnom=' . $nombre . '&wcod=' . $productos[0]['cod'] . '&wfev=' . $fecven . '&wetq=' . $imp .'&whistoria='.$whistoria.'&wingreso='.$wingreso.'&wronda='.$wronda.'&wfecharonda='.$wfecharonda."&wido=".$idoda;
 						$botonImprimir = "<input type='button' id='CargosDA' name='CargosDA' value='Imprimir Sticker y cargar DA al paciente' onclick='cargarDAaPaciente(\"".$whistoria."\",\"".$wingreso."\",\"".$productos[0]['cod']."\",\"".$idoda."\",\"".$warticuloda."\",\"".$codlot."\",\"".$ccos[0]."\",\"".$servicioPaciente."\",\"off\",\"".$cadena."\",\"".$wbasedato."\",\"".$wronda."\",\"".$wfecharonda."\",\"".$StickerPacienteDA."\")'>";
 						$botonCargos="";
 					}
@@ -3068,7 +3097,7 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 				
 				if($whistoria!="" && $wingreso!="") // validacion para DA, cuando las NPT son con reemplazo no se envía la historia ni ingreso ya que al ser unicas se consulta en movhos_000214
 				{
-					$cadena = 'etq_socket.php?wemp_pmla='.$wemp_pmla.'&wlot=' . $codlot . '&wnom=' . $nombre . '&wcod=' . $productos[0]['cod'] . '&wfev=' . $fecven . '&wetq=' . $imp .'&whistoria='.$whistoria.'&wingreso='.$wingreso.'&wronda='.$wronda.'&wfecharonda='.$wfecharonda;
+					$cadena = 'etq_socket.php?wemp_pmla='.$wemp_pmla.'&selectsede='.$selectsede.'&wlot=' . $codlot . '&wnom=' . $nombre . '&wcod=' . $productos[0]['cod'] . '&wfev=' . $fecven . '&wetq=' . $imp .'&whistoria='.$whistoria.'&wingreso='.$wingreso.'&wronda='.$wronda.'&wfecharonda='.$wfecharonda;
 					$botonImprimir = consultarSiEsDA($whistoria,$wingreso,$productos[0]['cod'],$codlot,$ccos[0],$warticuloda,$idoda,$cadena,$wbasedato,$wronda,$wfecharonda);
 					$botonCargos="";
 				}
@@ -3089,10 +3118,10 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 			
 			if(count($arrayNPT)>0)
 			{
-				$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&historia=".$arrayNPT['Enuhis']."&codigo=".$productos[0]['cod']."' target='new'>";
+				$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&historia=".$arrayNPT['Enuhis']."&codigo=".$productos[0]['cod']."' target='new'>";
 				if($arrayNPT['Enuord']=="on")
 				{
-					$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&historia=".$arrayNPT['Enuhis']."&codigo=".$productos[0]['cod']."' target='new'>";
+					$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&historia=".$arrayNPT['Enuhis']."&codigo=".$productos[0]['cod']."' target='new'>";
 				}
 				
 				echo "<tr><td colspan=2 class='titulo3' align='center'>".$rotuloNPT."IMPRIMIR ROTULO</a></td></tr>";
@@ -3103,7 +3132,7 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 				$datosNutricion = consultarDatosNutricion($productos[0]['cod']);
 				if(count($datosNutricion)>0)
 				{
-					$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&historia=".$datosNutricion['historia']."&codigo=".$productos[0]['cod']."&horas=".$datosNutricion['tiempoInfusion']."&insti=".$datosNutricion['institucion']."' target='new'>";
+					$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&historia=".$datosNutricion['historia']."&codigo=".$productos[0]['cod']."&horas=".$datosNutricion['tiempoInfusion']."&insti=".$datosNutricion['institucion']."' target='new'>";
 					echo "<tr><td colspan=2 class='titulo3' align='center'>".$rotuloNPT."IMPRIMIR ROTULO</a></td></tr>";
 				}
 			}				
@@ -3238,7 +3267,7 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 			}
 	        
 			$expCco = explode( "-", $ccos[0] );
-	        $cadena2 = "imprimirEtiquetasAltoRiesgo( \"rotuloElectrolitos.php?wemp_pmla=".$wemp_pmla."&whis={$txHistoria}&warticulo={$productos[0]['cod']}&wlote=$codlot&wcco={$expCco[0]}\" )";
+	        $cadena2 = "imprimirEtiquetasAltoRiesgo( \"rotuloElectrolitos.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&whis={$txHistoria}&warticulo={$productos[0]['cod']}&wlote=$codlot&wcco={$expCco[0]}\" )";
 	        
 	        $msj = "No se encuentra la historia";
 	        if( @$numrowsHis > 0 ){
@@ -3258,7 +3287,7 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 			$wcod_tmp = '';
 			if (is_array($productos))
 			{ $wcod_tmp = $productos[0]['cod'];}
-			$cadena = 'imprimir("etq_socket.php?wemp_pmla='.$wemp_pmla.'&wlot=' . $codlot . '&wnom=' . $nombre . '&wcod=' .$wcod_tmp. '&wfev=' . $fecven . '&wetq=' . $imp .'")';
+			$cadena = 'imprimir("etq_socket.php?wemp_pmla='.$wemp_pmla.'&selectsede='.$selectsede.'&wlot=' . $codlot . '&wnom=' . $nombre . '&wcod=' .$wcod_tmp. '&wfev=' . $fecven . '&wetq=' . $imp .'")';
         	echo "<tr><td colspan=2 class='titulo3' align='center'>&nbsp;&nbsp;<input type='button' name='anular' value='Anular' onclick='enter4()'>&nbsp;&nbsp;<input type='button' name='porque' value='Imprimir' onclick='" . $cadena . "'></td></tr>";	
 		}
         /***************************************************************************************************************************************/
@@ -3314,8 +3343,10 @@ function pintarFormulario($forcon, $productos, $consultas, $codlot, $presentacio
 function pintarAdaptacion($productosA, $lotesA, $canA)
 {
 	global $wemp_pmla;
+	global $seletsede;
 	
 	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
+    echo "<input type='hidden' name='selectsede' id='sede' value='".$seletsede."'/>";
     echo "<table border=0 ALIGN=CENTER width=90%>";
     echo "<tr><td colspan='6' class='titulo3' align='center'><b>Producto para adaptar</b></td></tr>";
 
@@ -3373,7 +3404,9 @@ function pintarAdaptacion($productosA, $lotesA, $canA)
 function pintarInsumos($inslis, $unidades, $cantidades1, $pintar)
 {
 	global $wemp_pmla;
-	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
+	global $selectsede;
+
+	echo "<input type='hidden' name='selectsede' id='sede' value='".$selectsede."'/>";
     echo "<table border=0 ALIGN=CENTER width=90%>";
     if ($pintar and $pintar < 3)
     {
@@ -3433,7 +3466,7 @@ function pintarInsumos($inslis, $unidades, $cantidades1, $pintar)
                     if ($pintar and $pintar < 3)
                     {
                         echo "<td class='" . $class . "' colspan='1' align='center'>(" . ($exp[5] * $exp[3] + $exp[4]) . " " . $exp1[0] . ") " . $exp[3] . " UN-" . $exp[4] . " FR</td>";
-                        echo "<td class='" . $class . "' colspan='1' align='center'><a href='descarte.php?wemp_pmla=".$wemp_pmla."&parbus2=" . $exp[0] . "&forbus2=rotulo&canti=" . $exp[4] . "' target='new'>" . $exp[6] . "-" . $exp[7] . "-" . $exp[8] . "</a></td>";
+                        echo "<td class='" . $class . "' colspan='1' align='center'><a href='descarte.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&parbus2=" . $exp[0] . "&forbus2=rotulo&canti=" . $exp[4] . "' target='new'>" . $exp[6] . "-" . $exp[7] . "-" . $exp[8] . "</a></td>";
                     } 
 
                     if (($cantidades1[$i][$j] == '' or $cantidades1[$i][$j] == 0)and count($unidades[$i]) == 1)
@@ -3547,6 +3580,7 @@ function imprimirStickerPaciente(historia,ronda,codCco)
 		{
 			consultaAjax:   	'stick_historia',
 			wemp_pmla:      	$('#wemp_pmla').val(),
+            selectsede:         $('#sede').val(),
 			wbasedato:          "movhos",
 			whis:       		historia,
 			whora_par_actual:   ronda,
@@ -3576,7 +3610,7 @@ function imprimirOrden(path)
 	
 function cargarProductoaPaciente(historia,ingreso,codProducto,lote,codCco,servicio)
 {
-	window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&cod="+codProducto+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self")
+	window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&selectsede="+sede.value+"&cod="+codProducto+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self")
 }
 
 // Agregamos parametro StickerPacienteDa en off para omitir el sticker del paciente
@@ -3605,6 +3639,7 @@ function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,se
 			wronda			: wronda,
 			wfecharonda		: wfecharonda,
 			wemp_pmla		: wemp_pmla.value,
+            selectsede:     : sede.value,
 		}
 		, function(data) {
 			
@@ -3616,7 +3651,7 @@ function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,se
 				
 				cadena = cadena + "&wido=" +data.ido;
 				imprimir(cadena);
-				window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
+				window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&selectsede="+sede.value+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
 			}
 			
 		},'json');
@@ -3627,7 +3662,7 @@ function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,se
 		// imprimirOrden(path);
 		
 		imprimir(cadena);
-		window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
+		window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&selectsede="+sede.value+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
 	}
 	
     // Omitimos el sticker del paciente para que no salga una vez que se le da al boton Aprobar, Reemplazar, Imprimir Sticker y Cargar DA al paciente
@@ -3650,13 +3685,14 @@ function cargarNPTAPaciente(historia,ingreso,NPTgenerica,ido,NPTreemplazada,lote
 		ido				: ido,
 		NPTreemplazada	: NPTreemplazada,
 		wemp_pmla		: wemp_pmla.value,
+        selectsede      : sede.value,
 	}
 	, function(data) {
 		
 		alert(data.mensaje);
 		if(data.error==0)
 		{
-			window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&cod="+NPTreemplazada+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self")
+			window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&selectsede="+sede.value+"&cod="+NPTreemplazada+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self")
 		}
 		
 	},'json');
@@ -3929,7 +3965,7 @@ else
     include_once("cenpro/funciones.php"); 
     // pintarVersion(); //Escribe en el programa el autor y la version del Script.
 	$wactualiz = "Diciembre 19 de 2021";
-	encabezado("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica");
+	encabezado("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica", true, false);
     pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts    
     // consulto los datos del usuario de la sesion
     $pos = strpos($user, "-");
@@ -3938,12 +3974,12 @@ else
     // si ya se ha seleccionado un centro de costos, se manda a funcion para que quede de primero en el select
     if (isset($cco))
     {
-        $ccos = consultarCcosUnificado($cco);
+        $ccos = consultarCcosUnificado($cco, $selectsede);
         
     } 
     else // si no existe aun $cco, se carga como el primer centro de la lista de centros de costos
         {
-            $ccos = consultarCcosUnificado('');
+            $ccos = consultarCcosUnificado('', $selectsede);
         $cco = $ccos[0];
     } 
         // si nos pasan un parametro de busqueda de lote, como numero o codigo del producto, se consultan los lotes para esa forma de busqueda
@@ -4462,8 +4498,13 @@ else
 
     ?>
 
-
+<script>
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "lotes.php?wemp_pmla="+$('#wemp_pmla').val()+"&parcon="+$('#parcon').val()+"&forcon="+$('#forcon').val()+"&pintar="+$('#pintar').val()+"&whistoria="+$('#whistoria').val()+"&wingreso="+$('#wingreso').val()+"&warticuloda="+$('#warticuloda').val()+"&idoda="+$('#idoda').val()+"&wronda="+$('#wronda').val()+"&wfecharonda="+$('#wfecharonda').val()+"&selectsede="+$('#selectsede').val()
+    });
+</script>
 </body >
+
 </html >
 
 <?php
