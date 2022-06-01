@@ -862,7 +862,7 @@ else
 							^CFP
 							^FO10,260^FD" . $tiempoInfusion . "^FS
 							^FO10,280^FD". $mensajeConservacion . "^FS
-							^FO10,295^FD". $mensajeConservacion2 . "^FS
+							^FO85,295^FD". $mensajeConservacion2 . "^FS
 							
 							^FX Firma de quien prepara
 							^FO225,162
