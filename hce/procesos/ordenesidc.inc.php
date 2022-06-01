@@ -27,7 +27,6 @@ include_once("conex.php");  header("Content-Type: text/html;charset=ISO-8859-1")
  *  * Enero 22 de 2022  Marlon Osorio  
  * 									Se parametriza los centros de costos de Dispensacion Servicio Farmaceutico (1050) y 
  * 									Central de Mezclas (1051)
- * Octubre 25 de 2021   Daniel CB   Se realizan cambios en parametros quemados 
  * Agosto 13 de 2019	Edwin MG	Se castea valor en array ($arrAplicacion) como entero
  * Enero 29 de 2019		Edwin MG	En la función generarListaProtocolos se agrega filtro de estado en la consulta principal
  * Agosto 6 de 2018		Edwin MG	A la función consultarExamenesAnteriorHCE se comenta su contenido ya que esta función se llama
@@ -97,11 +96,9 @@ $conex = obtenerConexionBD("matrix");
 /**********************************
  * PARAMETROS DE LA BASE DE DATOS *
  **********************************/
-
-global $wemp_pmla;
-$horaCorteDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"horaCorteDispensacion");
-$inicioDiaDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"inicioDiaDispensacion");
-$topePorcentualCtc 		= consultarAliasPorAplicacion($conex,$wemp_pmla,"topePorcentualCTC");
+$horaCorteDispensacion 	= consultarAliasPorAplicacion($conex,"10","horaCorteDispensacion");
+$inicioDiaDispensacion 	= consultarAliasPorAplicacion($conex,"10","inicioDiaDispensacion");
+$topePorcentualCtc 		= consultarAliasPorAplicacion($conex,"10","topePorcentualCTC");
 
 /***********************************
  * CLASES
@@ -1123,16 +1120,13 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
-	global $wemp_pmla;
-	
 
 	$esSF = $centroCostos == $centroCostosServicioFarmaceutico ? true : false;
 	$esCM = $centroCostos == $centroCostosCentralMezclas ? true : false;
 
 	$codigo = str_replace("-","%",$codigo);
 	
-	$wcenpro = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
-	registrarFraccion( $conex, $wbasedato, $wcenpro, $codigo, $centroCostosCentralMezclas, $wbasedato );	//Marzo 7 de 2011
+	registrarFraccion( $conex, $wbasedato, "cenpro", $codigo, $centroCostosCentralMezclas, $wbasedato );	//Marzo 7 de 2011
 
 	//*******************************Grupos que puede ver el centro de costos del usuario
 	$tieneGruposIncluidos = false;
@@ -1195,7 +1189,7 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 				$subConsulta = "SELECT "
 							."	Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia "
 							." FROM "
-							."	{$wbasedato}_000068, {$wcenpro}_000002, {$wbasedato}_000059, {$wbasedato}_000027 "
+							."	{$wbasedato}_000068, cenpro_000002, {$wbasedato}_000059, {$wbasedato}_000027 "
 							." WHERE "
 							."	artuni = unicod "
 							."	AND Arktip = '$tipoProtocolo' "
@@ -1240,7 +1234,7 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 					$q .= " AND SUBSTRING_INDEX( Artgru, '-', 1 ) IN $gruposIncluidos ";
 				}
 //				$q .= " AND Artcod NOT IN (SELECT Arkcod FROM {$wbasedato}_000068 WHERE Arkcod = Artcod AND Arkest = 'on' AND Arktip != 'I' AND Arktip != 'T' AND Arktip != 'N') "
-				$q .= " AND Artcod NOT IN (SELECT Arkcod FROM {$wbasedato}_000068 WHERE Arkcod = Artcod AND Arkest = 'on' AND Arktip != 'I' AND Arktip != 'LC' AND Arktip NOT IN (SELECT tiptpr FROM {$wcenpro}_000001 WHERE tiptpr != '' AND tiptpr != 'NO APLICA' GROUP BY tiptpr) AND Arktip != 'N') "	//Marzo 2 DE 2011
+				$q .= " AND Artcod NOT IN (SELECT Arkcod FROM {$wbasedato}_000068 WHERE Arkcod = Artcod AND Arkest = 'on' AND Arktip != 'I' AND Arktip != 'LC' AND Arktip NOT IN (SELECT tiptpr FROM cenpro_000001 WHERE tiptpr != '' AND tiptpr != 'NO APLICA' GROUP BY tiptpr) AND Arktip != 'N') "	//Marzo 2 DE 2011
 			."	AND Defcco = '$centroCostosServicioFarmaceutico' ";
 			if($gruposMedicamentos != "*"){
 				$q = $q."AND SUBSTRING_INDEX( Artgru, '-', 1 ) IN (SELECT Melgru FROM {$wbasedato}_000066 WHERE Melest = 'on' AND Meltip = 'M' AND Melgru IN ($criterioGrupo))";
@@ -1251,7 +1245,7 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 			$subConsulta = "SELECT "
 						   ."		Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia "
 						   ."	FROM "
-							."	{$wbasedato}_000027, {$wcenpro}_000002, {$wbasedato}_000059 "
+							."	{$wbasedato}_000027, cenpro_000002, {$wbasedato}_000059 "
 							." WHERE "
 							."	artuni = unicod "
 							."	AND artcod LIKE '%".$codigo."%' "
@@ -1259,7 +1253,7 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 							."	AND artcod = Defart "
 							."	AND artest = 'on' "
 //							."	AND Artcod NOT IN (SELECT Arkcod FROM {$wbasedato}_000068 WHERE Arkcod = Artcod AND Arkest = 'on' AND Arktip != 'I' AND Arktip != 'T' AND Arktip != 'N') "
-							."	AND Artcod NOT IN (SELECT Arkcod FROM {$wbasedato}_000068 WHERE Arkcod = Artcod AND Arkest = 'on' AND Arktip != 'I' AND Arktip NOT IN (SELECT tiptpr FROM {$wcenpro}_000001 WHERE tiptpr != '' AND tiptpr != 'NO APLICA' GROUP BY tiptpr) AND Arktip != 'N') "	//Marzo 2 DE 2011
+							."	AND Artcod NOT IN (SELECT Arkcod FROM {$wbasedato}_000068 WHERE Arkcod = Artcod AND Arkest = 'on' AND Arktip != 'I' AND Arktip NOT IN (SELECT tiptpr FROM cenpro_000001 WHERE tiptpr != '' AND tiptpr != 'NO APLICA' GROUP BY tiptpr) AND Arktip != 'N') "	//Marzo 2 DE 2011
 							."	AND Defest = 'on' "
 							."	AND Defcco = '$centroCostosCentralMezclas'";
 
@@ -1302,7 +1296,7 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 			$subConsulta = "SELECT "
 							."	Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia "
 							." FROM "
-								." {$wbasedato}_000027, {$wcenpro}_000002, {$wbasedato}_000059 "
+								." {$wbasedato}_000027, cenpro_000002, {$wbasedato}_000059 "
 							." WHERE "
 							."  artuni = unicod "
 							."	AND artcod LIKE '%".$codigo."%' "
@@ -4552,12 +4546,11 @@ function consultarUnidadManejo( $codigoArticulo, $cco ){
 	
 	global $conex;
 	global $wbasedato;
-	global $wcenpro;
 	
 	$sql = "SELECT
 				*
 			FROM
-				{$wcenpro}_000002, {$wcenpro}_000001
+				cenpro_000002, cenpro_000001
 			WHERE
 				artcod = '$codigoArticulo'
 				AND arttip = tipcod
@@ -8382,7 +8375,6 @@ function consultarEspecialidades(){
 function consultarArticulosEspeciales($centroCostos,$tipo){
 	global $wbasedato;
 	global $conex;
-	global $wcenpro;
 	global $centroCostosServicioFarmaceutico;
 
 	$coleccion = array();
@@ -8399,7 +8391,7 @@ function consultarArticulosEspeciales($centroCostos,$tipo){
 												WHERE artcod = Arkcod
 										) ELSE (
 												SELECT Artcom
-												FROM {$wcenpro}_000002
+												FROM cenpro_000002
 												WHERE artcod = Arkcod
 										)
 			END ) Nombre
@@ -9688,7 +9680,6 @@ function actualizarRutaArchivoKardex($historia,$ingreso,$fecha,$ruta,$usuario){
 function consultarDetalleTemporalKardex($historia,$ingreso,$fecha,$tipoProtocolo,$pestAlta='off'){
 	//,$centroCostosMovimiento,$gruposMedicamentosMovimiento
 	global $wbasedato;
-	global $wcenpro;
 	global $conex;
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
@@ -9803,7 +9794,7 @@ function consultarDetalleTemporalKardex($historia,$ingreso,$fecha,$tipoProtocolo
 	$subConsulta = " SELECT
 						Kadart,Artcom,Artgen,Artuni,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcdi,Kaddis,Kadpro,Kadcco,'' Artgru,Kaddis,Kaduma,Kadcma,Kadnar, Artest, Kadusu, 'a' as Famcod, 'a' as Famnom, Kadimp, Kadalt, Kadcal, Kadint, Kadpos, Kadupo, '' as Relcon, Artuni as Reluni, '' as Artpos, Kadido
 					FROM
-						".$wbasedato."_000060, ".$wcenpro."_000002
+						".$wbasedato."_000060, cenpro_000002
 					WHERE
 						Kadhis = '$historia'
 						AND Kading = '$ingreso'
@@ -10091,7 +10082,6 @@ function consultarDetalleTemporalKardex($historia,$ingreso,$fecha,$tipoProtocolo
 function consultarDetalleDefinitivoKardex($historia,$ingreso,$fecha,$tipoProtocolo,$pestAlta='off'){
 	global $wbasedato;
 	global $conex;
-	global $wcenpro;
 
 	global $centroCostosServicioFarmaceutico;
 	global $codigoServicioFarmaceutico;
@@ -10206,7 +10196,7 @@ function consultarDetalleDefinitivoKardex($historia,$ingreso,$fecha,$tipoProtoco
 	$subConsulta = " SELECT
 						Kadart,Artcom,Artgen,Artuni,'' Artgru,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kaddis,Kaduma,Kadcma,Kadpro,Kadcco,Kadnar, Artest, Kadusu, 'a' as Famcod, 'a' as Famnom, Kadimp, Kadalt, Kadcal, Kadint, Kadpos, Kadupo, '' as Relcon, Artuni as Reluni, '' as Artpos, Kadido
 					FROM
-						".$wbasedato."_000054, ".$wcenpro."_000002
+						".$wbasedato."_000054, cenpro_000002
 					WHERE
 						Kadhis = '$historia'
 						AND Kading = '$ingreso'
@@ -10502,7 +10492,6 @@ function consultarDetalleDefinitivoKardex($historia,$ingreso,$fecha,$tipoProtoco
 function consultarDetalleKardexAlta($historia,$ingreso,$fecha,$tipoProtocolo,$pestAlta='off'){
 	//,$centroCostosMovimiento,$gruposMedicamentosMovimiento
 	global $wbasedato;
-	global $wcenpro;
 	global $conex;
 	global $codigoServicioFarmaceutico;
 	global $codigoCentralMezclas;
@@ -10594,7 +10583,7 @@ function consultarDetalleKardexAlta($historia,$ingreso,$fecha,$tipoProtocolo,$pe
 	$subConsulta = " SELECT
 						Kadart,Artcom,Artgen,Artuni,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcdi,Kaddis,Kadpro,Kadcco,'' Artgru,Kaddis,Kaduma,Kadcma,Kadnar, Artest, Kadusu, Famcod, Famnom, Kadimp, Kadalt, Kadcal, Kadint, Kadpos, Kadupo, Relcon, Reluni
 					FROM
-						".$wbasedato."_000060, ".$wcenpro."_000002, ".$wbasedato."_000115, ".$wbasedato."_000114
+						".$wbasedato."_000060, cenpro_000002, ".$wbasedato."_000115, ".$wbasedato."_000114
 					WHERE
 						Kadhis = '$historia'
 						AND Kading = '$ingreso'
@@ -10895,7 +10884,6 @@ function consultarDetalleKardexAlta($historia,$ingreso,$fecha,$tipoProtocolo,$pe
 function consultarArticulosCMParaSF($historia,$ingreso,$fecha,$tipoProtocolo){
 	global $wbasedato;
 	global $conex;
-	global $wcenpro;
 
 	global $centroCostosServicioFarmaceutico;
 	global $codigoServicioFarmaceutico;
@@ -10909,7 +10897,7 @@ function consultarArticulosCMParaSF($historia,$ingreso,$fecha,$tipoProtocolo){
 	$q = " SELECT
 				Kadart,Artcom,Artgen,Artuni,'' Artgru,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kaddis,Kaduma,Kadcma,Kadpro,Kadcco,Kadare,Deffra,Deffru,Defven,Defdis,Defdup, Artest, Kadusu, Kadimp, Kadalt, Kadcal, Kadint, Kadpos, Kadupo, Artpos, Kadido
 			FROM 
-				".$wbasedato."_000054, ".$wcenpro."_000002 LEFT JOIN ( SELECT Deffra, Deffru, Defart, Defven,Defdis,Defdup  FROM {$wbasedato}_000059 WHERE Defest = 'on' AND Defcco = '$centroCostosCentralMezclas') a ON a.Defart = Artcod  
+				".$wbasedato."_000054, cenpro_000002 LEFT JOIN ( SELECT Deffra, Deffru, Defart, Defven,Defdis,Defdup  FROM {$wbasedato}_000059 WHERE Defest = 'on' AND Defcco = '$centroCostosCentralMezclas') a ON a.Defart = Artcod  
 			WHERE 
 				Kadhis = '$historia' 
 				AND Kading = '$ingreso'				 
@@ -10922,7 +10910,7 @@ function consultarArticulosCMParaSF($historia,$ingreso,$fecha,$tipoProtocolo){
 			SELECT 
 				Kadart,Artcom,Artgen,Artuni,'' Artgru,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kaddis,Kaduma,Kadcma,Kadpro,Kadcco,Kadare,Deffra,Deffru,Defven,Defdis,Defdup, Artest, Kadusu, Kadimp, Kadalt, Kadcal, Kadint, Kadpos, Kadupo, '' as Artpos, Kadido
 			FROM 
-				".$wbasedato."_000060, ".$wcenpro."_000002 LEFT JOIN ( SELECT Deffra, Deffru, Defart, Defven,Defdis,Defdup  FROM {$wbasedato}_000059 WHERE Defest = 'on' AND Defcco = '$centroCostosCentralMezclas') a ON a.Defart = Artcod  
+				".$wbasedato."_000060, cenpro_000002 LEFT JOIN ( SELECT Deffra, Deffru, Defart, Defven,Defdis,Defdup  FROM {$wbasedato}_000059 WHERE Defest = 'on' AND Defcco = '$centroCostosCentralMezclas') a ON a.Defart = Artcod  
 			WHERE 
 				Kadhis = '$historia' 
 				AND Kading = '$ingreso'				 
@@ -11183,7 +11171,6 @@ function consultarArticulosLactario($historia,$ingreso,$fecha,$tipoProtocolo){
  */
 function consultarDetalleDefinitivoPerfil($historia,$ingreso,$fecha){
 	global $wbasedato;
-	global $wcenpro;
 	global $conex;
 	global $usuario;		//Información de usuario
 
@@ -11210,7 +11197,7 @@ function consultarDetalleDefinitivoPerfil($historia,$ingreso,$fecha){
 	$subConsulta = " SELECT
 			{$wbasedato}_000054.Fecha_data,{$wbasedato}_000054.Hora_data,Kadart,Artcom,Artgen,'' Artgru,'' Artpos,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadcdi,Kadpri,Kadare,Kadsad,Kadusu, Kadimp, Kadalt, Kadcal, Kadint, Kadpos, Kadupo, Kadido
 		FROM
-			{$wcenpro}_000002, {$wbasedato}_000054
+			cenpro_000002, {$wbasedato}_000054
 		WHERE
 			Kadhis = '$historia'
 			AND Kading = '$ingreso'
@@ -11352,11 +11339,9 @@ function consultarDetalleDefinitivoPerfil($historia,$ingreso,$fecha){
  */
 function consultarDetallePerfilKardex($historia,$ingreso,$fecha){
 	global $wbasedato;
-	global $wcenpro;
 	global $conex;
-	global $wemp_pmla;
 	global $usuario;		//Información de usuario
-	
+
 	$coleccion = array();
 
 	global $centroCostosServicioFarmaceutico;
@@ -11390,7 +11375,7 @@ function consultarDetallePerfilKardex($historia,$ingreso,$fecha){
 	$subConsulta = "SELECT
 			Kadart,Artcom,Artgen,'' Artgru,'' Artpos,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kadcan,Kaddis,Kaduma,Kadcma,Kadcdi,Kadpri,Kadare,Kadusu, Kadimp, Kadalt, Kadcal, Kadint, Kadpos, Kadupo, Kadido
 		FROM
-			".$wcenpro."_000002, ".$wbasedato."_000054
+			cenpro_000002, ".$wbasedato."_000054
 		WHERE
 			Kadhis = '$historia'
 			AND Kading = '$ingreso'
@@ -11467,7 +11452,7 @@ function consultarDetallePerfilKardex($historia,$ingreso,$fecha){
 			/****************************************************************************************
 			 * Junio 7 de 2012
 			 ****************************************************************************************/
-			$wcenmez = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
+			$wcenmez = consultarAliasPorAplicacion( $conex, "10", "cenmez" );
 			 
 			if( isset($detalle->origen) && $detalle->origen == $codigoCentralMezclas ){
 				if( esProductoNoPOSCM( $conex, $wbasedato, $wcenmez, $info['Kadart'] ) ){
@@ -11546,7 +11531,6 @@ function esUsuarioCtc($centroCostosUsuario,$codigoUsuario){
  */
 function consultarDetalleMedicamentosAnterioresKardex($historia,$ingreso,$fecha,$tipoProtocolo){
 	global $wbasedato;
-	global $wcenpro;
 	global $conex;
 
 	global $centroCostosServicioFarmaceutico;
@@ -11653,7 +11637,7 @@ function consultarDetalleMedicamentosAnterioresKardex($historia,$ingreso,$fecha,
 			SELECT
 				Kadart,Artcom,Artgen,'' Artgru,Kadcfr,Kadufr,Kaddia,Kadest,Kadess,Kadper,Kadffa,Kadfin,Kadhin,Kadvia,Kadfec,Kadcon,Kadnar,Kadpro,Kadobs,Kadori,Kadsus,Kadcnd,Kaddma,Kaddis,Kaduma,Kadcma,Kadusu, Artcod as Famcod, Artgen as Famnom, Artuni, Kadimp, Kadalt, Kadcal, Kadint, Kadpos, Kadupo, '' as Relcon, Artuni as Reluni, '' as Artpos, Kadido
 			FROM
-				".$wcenpro."_000002, ".$wbasedato."_000054
+				cenpro_000002, ".$wbasedato."_000054
 			WHERE
 				Kadhis = '$historia'
 				AND Kading = '$ingreso'
@@ -11933,7 +11917,6 @@ function consultarCambiosKardexPorTiempo($servicio, $minutos){
 function consultarMedicamentosPendientesHorario($wservicio, $fecha, $whabitacion){
 	global $wbasedato;
 	global $conex;
-	global $wcenpro;
 	global $codigoServicioFarmaceutico;
 
 	global $usuario;
@@ -11950,7 +11933,7 @@ function consultarMedicamentosPendientesHorario($wservicio, $fecha, $whabitacion
 												WHERE artcod = kadart
 										) ELSE (
 												SELECT Artcom
-												FROM {$wcenpro}_000002
+												FROM cenpro_000002
 												WHERE artcod = kadart
 										)
 				END) Nombre
@@ -12130,7 +12113,6 @@ function consultarMedicamentosPendientesHorario($wservicio, $fecha, $whabitacion
 function consultarListadoArticulosPacientes($wservicio, $fecha){
 	global $conex;
 	global $wbasedato;
-	global $wcenpro;
 
 	$coleccion = array();
 	global $codigoServicioFarmaceutico;
@@ -12249,7 +12231,7 @@ function consultarListadoArticulosPacientes($wservicio, $fecha){
 												WHERE artcod = kadart
 										) ELSE (
 												SELECT Artcom
-												FROM {$wcenpro}_000002
+												FROM cenpro_000002
 												WHERE artcod = kadart
 										)
 							END) Nombre
@@ -12352,7 +12334,6 @@ function consultarListadoArticulosPacientes($wservicio, $fecha){
 function consultarListadoArticulosPacientesCentral($wservicio, $fecha){
 	global $conex;
 	global $wbasedato;
-	global $wcenpro;
 
 	$coleccion = array();
 	global $codigoCentralMezclas;
@@ -12440,7 +12421,7 @@ function consultarListadoArticulosPacientesCentral($wservicio, $fecha){
 					$q2 = "SELECT
 						Artcom
 					FROM 
-						{$wcenpro}_000002
+						cenpro_000002
 					WHERE 
 						artcod = '{$info['Kadart']}'";
 
@@ -15142,7 +15123,6 @@ function consultarAlergiasDiagnosticosAnteriores($historia,&$alergiasAnteriores,
 //function consultarMedicamentosPorCodigo($wbasedato,$codigo,$tipoMedicamento,$unidadMedida,$centroCostos,$gruposMedicamentos,$tipoProtocolo){
 function consultarMedicamentosPorCodigo($wbasedato,$codigo,$tipoMedicamento,$unidadMedida,$centroCostos,$gruposMedicamentos,$tipoProtocolo, $ccoPaciente = ''){
 	global $conex;
-	global $wcenpro;
 
 	$coleccion = array();
 	$consulta = "";
@@ -15218,7 +15198,7 @@ function consultarMedicamentosPorCodigo($wbasedato,$codigo,$tipoMedicamento,$uni
 				$subConsulta = "SELECT "
 							."	Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia "
 							." FROM "
-							."	{$wbasedato}_000068, {$wcenpro}_000002, {$wbasedato}_000059, {$wbasedato}_000027 "
+							."	{$wbasedato}_000068, cenpro_000002, {$wbasedato}_000059, {$wbasedato}_000027 "
 							." WHERE "
 							."	artuni = unicod "
 							."	AND Arktip = '$tipoProtocolo' "
@@ -15273,7 +15253,7 @@ function consultarMedicamentosPorCodigo($wbasedato,$codigo,$tipoMedicamento,$uni
 			$subConsulta = "SELECT "
 						   ."		Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia "
 						   ."	FROM "
-							."	{$wbasedato}_000027, {$wcenpro}_000002, {$wbasedato}_000059 "
+							."	{$wbasedato}_000027, cenpro_000002, {$wbasedato}_000059 "
 							." WHERE "
 							."	artuni = unicod "
 							."	AND artcod LIKE '%".$codigo."%' "
@@ -15323,7 +15303,7 @@ function consultarMedicamentosPorCodigo($wbasedato,$codigo,$tipoMedicamento,$uni
 			$subConsulta = "SELECT "
 							."	Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia "
 							." FROM "
-								." {$wbasedato}_000027, {$wcenpro}_000002, {$wbasedato}_000059 "
+								." {$wbasedato}_000027, cenpro_000002, {$wbasedato}_000059 "
 							." WHERE "
 							."  artuni = unicod "
 							."	AND artcod LIKE '%".$codigo."%' "
@@ -15459,7 +15439,6 @@ function consultarComponentesPorNombre($wbasedato,$nombre,$tipoMedicamento,$unid
 //function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$unidadMedida,$centroCostos,$gruposMedicamentos,$tipoProtocolo){
 function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$unidadMedida,$centroCostos,$gruposMedicamentos,$tipoProtocolo, $ccoPaciente = '' ){
 	global $conex;
-	global $wcenpro;
 
 	global $centroCostosServicioFarmaceutico;
 	global $codigoServicioFarmaceutico;
@@ -15542,7 +15521,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 				$subConsulta = "SELECT
 								Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia
 							FROM
-							{$wbasedato}_000068, {$wcenpro}_000002, {$wbasedato}_000059, {$wbasedato}_000027
+							{$wbasedato}_000068, cenpro_000002, {$wbasedato}_000059, {$wbasedato}_000027
 							WHERE
 								artuni = unicod
 								AND Arktip = '$tipoProtocolo'
@@ -15594,7 +15573,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 						$subConsulta = "SELECT
 									Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia
 								FROM
-									{$wcenpro}_000002, {$wbasedato}_000059, {$wbasedato}_000027
+									cenpro_000002, {$wbasedato}_000059, {$wbasedato}_000027
 								WHERE
 									artuni = unicod
 									AND artcom LIKE '%".$nombre."%'
@@ -15642,7 +15621,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 						$subConsulta = "SELECT
 									Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia
 								FROM
-									{$wcenpro}_000002, {$wbasedato}_000059, {$wbasedato}_000027
+									cenpro_000002, {$wbasedato}_000059, {$wbasedato}_000027
 								WHERE
 									artuni = unicod
 									AND artgen LIKE '%".$nombre."%'
@@ -15691,7 +15670,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 				$subConsulta = "SELECT
 									Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia
 								FROM 
-									{$wcenpro}_000002, {$wbasedato}_000059, {$wbasedato}_000027
+									cenpro_000002, {$wbasedato}_000059, {$wbasedato}_000027
 								WHERE
 									artuni = unicod 
 									AND artcom LIKE '%".$nombre."%'
@@ -15737,7 +15716,7 @@ function consultarMedicamentosPorNombre($wbasedato,$nombre,$tipoMedicamento,$uni
 			$subConsulta = "SELECT
 								Artcod, Artcom, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia
 							FROM 
-								{$wcenpro}_000002, {$wbasedato}_000059, {$wbasedato}_000027
+								cenpro_000002, {$wbasedato}_000059, {$wbasedato}_000027
 							WHERE
 								artuni = unicod 
 								AND artgen LIKE '%".$nombre."%'
@@ -18616,7 +18595,6 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 	global $centroCostosServicioFarmaceutico;
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
-	global $wemp_pmla;
 
 	global $protocoloNormal;
 	
@@ -18750,8 +18728,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 	$cantidadDosis = $fila['Kadcan'];
 	$dosisMaxima = trim( $fila['Kaddma'] );
 	
-	$wcenpro = consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenmez" );
-	$esGenerico = esArticuloGenerico( $conexion, $wbasedatos, $wcenpro, $codArticulo );
+	$esGenerico = esArticuloGenerico( $conexion, $wbasedatos, "cenpro", $codArticulo );
 	
 	//Si el articulo que se va a reemplazar es generico se debe cambiar la cantidad de fracción
 	//según la definición de fracciones
@@ -18766,8 +18743,8 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 				if( trim($fila['Kadufr']) != trim($fila3['Deffru']) ){	//Febrero 21 de 2011
 					
 					$cantidadFraccion = ceil( $fila['Kadcfr']/$fila['Kadcma'] )*$fila3['Deffra'];	//Enero 24 de 2011
-					// $wcenpro = consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenmez" );
-					if( esTipoGenerico( $conexion, $wbasedatos, $wcenpro, $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){		
+					
+					if( esTipoGenerico( $conexion, $wbasedatos, "cenpro", $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){
 //						$cantidadFraccion = ceil( $fila['Kadcfr']/$fila3['Deffra'] )*$fila3['Deffra'];
 						$cantidadFraccion = (1)*$fila3['Deffra'];
 					}
@@ -18790,9 +18767,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 					 * 
 					 * Si el articulo es de un tipo  generico se debe gastar toda la bolsa
 					 ************************************************************************************************************/
-
-					// consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenmez" );
-					if( esTipoGenerico( $conexion, $wbasedatos, $wcenpro, $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){
+					if( esTipoGenerico( $conexion, $wbasedatos, "cenpro", $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){
 //						$cantidadFraccion = ceil( $fila['Kadcfr']/$fila3['Deffra'] )*$fila3['Deffra'];
 						$cantidadFraccion = (1)*$fila3['Deffra'];
 					}
@@ -19232,7 +19207,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 				$sql = "SELECT
 							Artuni
 						FROM
-							{$wcenpro}_000002
+							cenpro_000002
 						WHERE
 							artcod = '$codArticuloNuevo'
 						";
@@ -21899,7 +21874,6 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
 	global $wemp_pmla;
-	global $wcenpro;
 	
 	global $protocoloNormal;
 
@@ -21966,7 +21940,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 	$qCmCod = "SELECT "
 	."	Artcod, Artcom, Artgen, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Arttip , Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia "
 	." FROM "
-	." {$wbasedato}_000027, {$wcenpro}_000002, {$wbasedato}_000059 "
+	." {$wbasedato}_000027, cenpro_000002, {$wbasedato}_000059 "
 	." WHERE "
 	."  artuni = unicod "
 	."	AND artcod LIKE '%".$criterioCM."%' "
@@ -21989,7 +21963,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 	$qCmGen = "SELECT "
 	."	Artcod, Artcom, Artgen, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Arttip , Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia "
 	." FROM "
-	." {$wbasedato}_000027, {$wcenpro}_000002, {$wbasedato}_000059 "
+	." {$wbasedato}_000027, cenpro_000002, {$wbasedato}_000059 "
 	." WHERE "
 	."  artuni = unicod "
 	."	AND Artgen LIKE '%".$criterioCM."%' "
@@ -22012,7 +21986,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 	$qCmCom = "SELECT "
 	."	Artcod, Artcom, Artgen, Artuni, Unides, '$codigoCentralMezclas' origen, '' Artgru, '00' Artfar, '' Artpos, Arttip, Deffra, Deffru, Defven, Defdie, Defdis, Defdup, Defdim, Defdom, Defvia "
 	." FROM "
-	." {$wbasedato}_000027, {$wcenpro}_000002, {$wbasedato}_000059 "
+	." {$wbasedato}_000027, cenpro_000002, {$wbasedato}_000059 "
 	." WHERE "
 	."  artuni = unicod "
 	."	AND Artcom LIKE '%".$criterioCM."%' "
@@ -22150,7 +22124,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 				$tipoCentralMezclas = $rs['Arttip'];
 				
 				if(!empty($tipoCentralMezclas)){
-					$qTipGen = "SELECT Arkcod, Tiptpr, Tipdes FROM {$wcenpro}_000001, mhosidc_000068 WHERE Tipcod = '{$tipoCentralMezclas}' AND Arktip = Tiptpr";
+					$qTipGen = "SELECT Arkcod, Tiptpr, Tipdes FROM cenpro_000001, mhosidc_000068 WHERE Tipcod = '{$tipoCentralMezclas}' AND Arktip = Tiptpr";
 					$resTipGen = mysql_query($qTipGen, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qTipGen . " - " . mysql_error());
 					if($infoTipGen = mysql_fetch_array($resTipGen)){
 						$tipoGenerico = $infoTipGen['Tiptpr'];
@@ -22203,7 +22177,7 @@ function consultarArticulos($wbasedato,$criterio,$ccoPaciente){
 				if($infoComp['Carcco'] == $ccoSF){
 					$qArt = "SELECT Artcom,Artgen FROM mhosidc_000026 WHERE Artcod = '{$infoComp['Carcod']}';";
 				} else {
-					$qArt = "SELECT Artcom,Artgen FROM {$wcenpro}_000002 WHERE Artcod = '{$infoComp['Carcod']}';";
+					$qArt = "SELECT Artcom,Artgen FROM cenpro_000002 WHERE Artcod = '{$infoComp['Carcod']}';";
 				}
 				$resArt = mysql_query($qArt, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qArt . " - " . mysql_error());
 				if($infoArt = mysql_fetch_array($resArt)){
@@ -22400,7 +22374,6 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 	global $codigoCentralMezclas;
 	global $centroCostosCentralMezclas;
 	global $wemp_pmla;
-	global $wcenpro;
 	
 	global $protocoloNormal;
 
@@ -22882,7 +22855,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				
 				if(!empty($tipoCentralMezclas))
 				{
-					$qTipGen = "SELECT Arkcod, Tiptpr, Tipdes FROM {$wcenpro}_000001, mhosidc_000068 WHERE Tipcod = '{$tipoCentralMezclas}' AND Arktip = Tiptpr";
+					$qTipGen = "SELECT Arkcod, Tiptpr, Tipdes FROM cenpro_000001, mhosidc_000068 WHERE Tipcod = '{$tipoCentralMezclas}' AND Arktip = Tiptpr";
 					$resTipGen = mysql_query($qTipGen, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qTipGen . " - " . mysql_error());
 					if($infoTipGen = mysql_fetch_array($resTipGen)){
 						$tipoGenerico = $infoTipGen['Tiptpr'];
@@ -22948,7 +22921,7 @@ function consultarArticulosFamilia( $wbasedato, $wcenmez, $criterio, $ccoPacient
 				else 
 				{
 					$qArt = " SELECT Artcom, Artgen, Deffra, Deffru 
-								FROM ".$wcenpro."_000002, mhosidc_000059 
+								FROM cenpro_000002, mhosidc_000059 
 							   WHERE Artcod = '".$infoComp['Carcod']."' 
 								 AND Artest = 'on'
 							     AND Artcod = Defart
@@ -23139,7 +23112,6 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 	$criterio = strtoupper($criterio);
 	
 	global $conex;
-	global $wcenpro;
 
 	$coleccion = array();
 	$consulta = "";
@@ -23362,7 +23334,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 				
 				if(!empty($tipoCentralMezclas))
 				{
-					$qTipGen = "SELECT Arkcod, Tiptpr, Tipdes FROM {$wcenpro}_000001, mhosidc_000068 WHERE Tipcod = '{$tipoCentralMezclas}' AND Arktip = Tiptpr";
+					$qTipGen = "SELECT Arkcod, Tiptpr, Tipdes FROM cenpro_000001, mhosidc_000068 WHERE Tipcod = '{$tipoCentralMezclas}' AND Arktip = Tiptpr";
 					$resTipGen = mysql_query($qTipGen, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qTipGen . " - " . mysql_error());
 					if($infoTipGen = mysql_fetch_array($resTipGen)){
 						$tipoGenerico = $infoTipGen['Tiptpr'];
@@ -23418,7 +23390,7 @@ function consultarArticulosProtocolo( $wbasedato, $wcenmez, $criterio, $ccoPacie
 				if($infoComp['Carcco'] == $ccoSF){
 					$qArt = "SELECT Artcom,Artgen FROM mhosidc_000026 WHERE Artcod = '{$infoComp['Carcod']}';";
 				} else {
-					$qArt = "SELECT Artcom,Artgen FROM {$wcenpro}_000002 WHERE Artcod = '{$infoComp['Carcod']}';";
+					$qArt = "SELECT Artcom,Artgen FROM cenpro_000002 WHERE Artcod = '{$infoComp['Carcod']}';";
 				}
 				$resArt = mysql_query($qArt, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $qArt . " - " . mysql_error());
 				if($infoArt = mysql_fetch_array($resArt)){
