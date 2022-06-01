@@ -1131,7 +1131,7 @@ function consultarMedicamentosPorCodigoContingencia($conex, $wbasedato,$codigo,$
 
 	$codigo = str_replace("-","%",$codigo);
 	
-	$wcenpro = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenpro" );
+	$wcenpro = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
 	registrarFraccion( $conex, $wbasedato, $cenpro, $codigo, $centroCostosCentralMezclas, $wbasedato );	//Marzo 7 de 2011
 
 	//*******************************Grupos que puede ver el centro de costos del usuario
@@ -18750,7 +18750,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 	$cantidadDosis = $fila['Kadcan'];
 	$dosisMaxima = trim( $fila['Kaddma'] );
 	
-	$wcempro = consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenpro" );
+	$wcempro = consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenmez" );
 	$esGenerico = esArticuloGenerico( $conexion, $wbasedatos, $wcenpro, $codArticulo );
 	
 	//Si el articulo que se va a reemplazar es generico se debe cambiar la cantidad de fracción
@@ -18766,7 +18766,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 				if( trim($fila['Kadufr']) != trim($fila3['Deffru']) ){	//Febrero 21 de 2011
 					
 					$cantidadFraccion = ceil( $fila['Kadcfr']/$fila['Kadcma'] )*$fila3['Deffra'];	//Enero 24 de 2011
-					$wcempro = consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenpro" );
+					$wcempro = consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenmez" );
 					if( esTipoGenerico( $conexion, $wbasedatos, $wcenpro, $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){		
 //						$cantidadFraccion = ceil( $fila['Kadcfr']/$fila3['Deffra'] )*$fila3['Deffra'];
 						$cantidadFraccion = (1)*$fila3['Deffra'];
@@ -18791,7 +18791,7 @@ function reemplazarArticuloDetallePerfil($wbasedatos,$historia,$ingreso,$fechaKa
 					 * Si el articulo es de un tipo  generico se debe gastar toda la bolsa
 					 ************************************************************************************************************/
 
-					consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenpro" );
+					consultarAliasPorAplicacion( $conexion, $wemp_pmla, "cenmez" );
 					if( esTipoGenerico( $conexion, $wbasedatos, $wcenpro, $codArticuloNuevo ) && $cantidadFraccion != $fila3['Deffra'] ){
 //						$cantidadFraccion = ceil( $fila['Kadcfr']/$fila3['Deffra'] )*$fila3['Deffra'];
 						$cantidadFraccion = (1)*$fila3['Deffra'];
