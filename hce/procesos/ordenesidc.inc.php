@@ -84,7 +84,7 @@ $regletaFamilia = array();
 
 	
 //Nombre del esquema de hce
-$esquemaBDHce = "hceidc";
+
 $codigoAplicacion = "ordenes";
 $codigoAyudaHospitalaria="H";
 
@@ -98,7 +98,8 @@ $conex = obtenerConexionBD("matrix");
  * PARAMETROS DE LA BASE DE DATOS *
  **********************************/
 
-global $wemp_pmla
+global $wemp_pmla;
+$esquemaBDHce =  consultarAliasPorAplicacion($conex,$wemp_pmla,"hceidc");
 $horaCorteDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"horaCorteDispensacion");
 $inicioDiaDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"inicioDiaDispensacion");
 $topePorcentualCtc 		= consultarAliasPorAplicacion($conex,$wemp_pmla,"topePorcentualCTC");
