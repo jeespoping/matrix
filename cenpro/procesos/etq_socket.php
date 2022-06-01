@@ -714,9 +714,9 @@ else
 
 					/** Mensaje para conservar en nevera, depediendo del articulo */
 					if($conservarNev !== 'on'){
-						$mensajeConservacion = "Conservar a temperatura ambiente de 15' a 25'C";
+						$mensajeConservacion = "Conservar a temperatura ambiente de 15'C a 25'C";
 					}else{
-						$mensajeConservacion = "Conservar en nevera de 2' a 8'C";
+						$mensajeConservacion = "Conservar en nevera de 2'C a 8'C";
 					}
 
 					/** Mensaje para fotosensible (cuando un articulo no puede estar directo a la luz) */
