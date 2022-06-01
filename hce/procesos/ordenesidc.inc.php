@@ -99,7 +99,7 @@ $conex = obtenerConexionBD("matrix");
  **********************************/
 
 global $wemp_pmla;
-$esquemaBDHce =  consultarAliasPorAplicacion($conex,$wemp_pmla,"hceidc");
+$esquemaBDHce =  consultarAliasPorAplicacion($conex,$wemp_pmla,"hce");
 $horaCorteDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"horaCorteDispensacion");
 $inicioDiaDispensacion 	= consultarAliasPorAplicacion($conex,$wemp_pmla,"inicioDiaDispensacion");
 $topePorcentualCtc 		= consultarAliasPorAplicacion($conex,$wemp_pmla,"topePorcentualCTC");
