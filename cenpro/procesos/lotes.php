@@ -3610,7 +3610,7 @@ function imprimirOrden(path)
 	
 function cargarProductoaPaciente(historia,ingreso,codProducto,lote,codCco,servicio)
 {
-	window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&selectsede="+sede.value+"&cod="+codProducto+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self")
+	window.open ("cargocpx.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#sede').val()+"&cod="+codProducto+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self")
 }
 
 // Agregamos parametro StickerPacienteDa en off para omitir el sticker del paciente
@@ -3638,8 +3638,8 @@ function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,se
 			servicioPaciente: servicio,
 			wronda			: wronda,
 			wfecharonda		: wfecharonda,
-			wemp_pmla		: wemp_pmla.value,
-            selectsede:     : sede.value,
+            wemp_pmla:      	$('#wemp_pmla').val(),
+            selectsede:         $('#sede').val(),
 		}
 		, function(data) {
 			
@@ -3651,7 +3651,7 @@ function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,se
 				
 				cadena = cadena + "&wido=" +data.ido;
 				imprimir(cadena);
-				window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&selectsede="+sede.value+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
+				window.open ("cargocpx.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#sede').val(),+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
 			}
 			
 		},'json');
@@ -3662,7 +3662,7 @@ function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,se
 		// imprimirOrden(path);
 		
 		imprimir(cadena);
-		window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&selectsede="+sede.value+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
+		window.open ("cargocpx.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#sede').val()+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
 	}
 	
     // Omitimos el sticker del paciente para que no salga una vez que se le da al boton Aprobar, Reemplazar, Imprimir Sticker y Cargar DA al paciente
@@ -3684,15 +3684,15 @@ function cargarNPTAPaciente(historia,ingreso,NPTgenerica,ido,NPTreemplazada,lote
 		NPTgenerica		: NPTgenerica,
 		ido				: ido,
 		NPTreemplazada	: NPTreemplazada,
-		wemp_pmla		: wemp_pmla.value,
-        selectsede      : sede.value,
+        wemp_pmla:      	$('#wemp_pmla').val(),
+        selectsede:         $('#sede').val(),
 	}
 	, function(data) {
 		
 		alert(data.mensaje);
 		if(data.error==0)
 		{
-			window.open ("cargocpx.php?wemp_pmla="+wemp_pmla.value+"&selectsede="+sede.value+"&cod="+NPTreemplazada+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self")
+			window.open ("cargocpx.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#sede').val()+"&cod="+NPTreemplazada+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self")
 		}
 		
 	},'json');
@@ -4031,7 +4031,7 @@ else
             if (!isset($crear))
             {
                 $conpro = $conpro + 1;
-            } 
+            }
             // el consecutivo se organiza de manera que conste de 5 digitos
             // que pasa si el numero ya supera los 5 digitos?
             for ($i = 0; $i < (6 - strlen($conpro)); $i++)
