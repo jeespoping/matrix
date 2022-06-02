@@ -6,6 +6,11 @@ include_once("conex.php");
 $accion_iq = "";
 if(!empty($emp))
 	$wemp_pmla = $emp;
+
+if(empty($emp))
+{
+	$emp=$wemp_pmla;
+}
 $existeFacturacionERP = true;
 $desde_CargosPDA = true;
 ?>
