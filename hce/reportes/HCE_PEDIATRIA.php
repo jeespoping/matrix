@@ -53,7 +53,7 @@ else
 	$key = substr($user,2,strlen($user));
 	
 	
-	$wactualiz = '2022-04-22';
+	$wactualiz = '2015-03-10';
 
 	echo "<form action='HCE_PEDIATRIA.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
@@ -90,7 +90,7 @@ else
 		$query .= "    where ".$wbasedatohce."_000036.fecha_data between '".$v0."' and '".$v1."' "; 
 		$query .= " 	 and ".$wbasedatohce."_000036.firpro = ".$wbasedatohce."_000001.encpro  ";
 		$query .= " 	 and ".$wbasedatohce."_000036.firhis = root_000037.orihis "; 
-		$query .= " 	 and root_000037.oriori = '".$wemp_pmla."'  ";
+		$query .= " 	 and root_000037.oriori = '01'  ";
 		$query .= " 	 and root_000037.oritid = root_000036.pactid "; 
 		$query .= " 	 and root_000037.oriced = root_000036.pacced "; 
 		$query .= " 	 and  ".$wbasedatohce."_000036.firusu = usuarios.codigo  ";

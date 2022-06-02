@@ -11,15 +11,13 @@
  * Mayo 4 de 2020			Edwin MG	- Se imprime el número de orden de laboratorio
  *******************************************************************************************/
 include_once("conex.php");
-$wemp_pmla = $_REQUEST['wemp_pmla'];
 @session_start();
 if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
 	$key = substr($user,2,strlen($user));
-	global $wemp_pmla;
-	echo "<form action='HCE_Sticker_GA.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<form action='HCE_Sticker_GA.php' method=post>";
 	
 
 	
@@ -40,7 +38,7 @@ else
 		//                  0        1                   2             3       4       5       6       7       8         
 		$query  = "select orihis, oriing, concat(pacno1,' ',pacno2), pacap1, pacap2, pacnac, pacsex, pactid, pacced from root_000037,root_000036 ";
 		$query .= " where orihis = '".$whis."'";
-		$query .= "   and oriori = '".$wemp_pmla."' ";
+		$query .= "   and oriori = '01' ";
 		$query .= "   and oritid = pactid ";
 		$query .= "   and oriced = pacced ";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());

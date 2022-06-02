@@ -51,7 +51,6 @@
 <BODY TEXT="#000066">
 <?php
 include_once("conex.php");
-include_once("root/comun.php");
 
 function buscartitulo(&$t,$ord,$n,$f)
 {
@@ -116,8 +115,7 @@ if(!isset($_SESSION['user']))
 else
 {
 	$key = substr($user,2,strlen($user));
-	$wemp_pmla = $_REQUEST['wemp_pmla'];
-	echo "<form name='HCE_Tipo3' action='HCE_Tipo3.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<form name='HCE_Tipo3' action='HCE_Tipo3.php' method=post>";
 	
 
 	
@@ -184,15 +182,13 @@ else
 			$firma="";
 		}
 	}
-	$wbasedatoMovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
 	//                 0      1      2      3      4      5      6      7      8      9      10     11
-	$wbasedatoMovhos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "movhos" );
-	$query = "select Pacno1,Pacno2,Pacap1,Pacap2,Pacnac,Pacsex,Orihis,Oriing,Ingnre,Ubisac,Ubihac,Cconom from root_000036,root_000037,".$wbasedatoMovhos."_000016,".$wbasedatoMovhos."_000018,".$wbasedatoMovhos."_000011 ";
+	$query = "select Pacno1,Pacno2,Pacap1,Pacap2,Pacnac,Pacsex,Orihis,Oriing,Ingnre,Ubisac,Ubihac,Cconom from root_000036,root_000037,movhos_000016,movhos_000018,movhos_000011 ";
 	$query .= " where pacced = '".$wcedula."'";
 	$query .= "   and pactid = '".$wtipodoc."'";
 	$query .= "   and  pacced = oriced ";
 	$query .= "   and  pactid = oritid ";
-	$query .= "   and oriori = '".$wemp_pmla."' ";
+	$query .= "   and oriori = '01' ";
 	$query .= "   and inghis = orihis ";
 	$query .= "   and  inging = oriing ";
 	$query .= "   and ubihis = inghis "; 

@@ -2,10 +2,6 @@
  *
  * MODIFICACIONES
  *
- * Noviembre 1 de 2021 Daniel CB    Se agrega el wemp_pmla a consultaAjax faltante.
- * 
- * Octubre 19 de 2021  Juan david R Se hacen modificaciones en parametros quemados. 
- * 
  * Octubre 8 de 2021	Sebastián Nevado	Se agrega funcionalidad de mipres obligatorio basado en parámetro mipresEnListaMedicamentosOrdenes. Valida que antes de ordenar el medicamento, tenga código mipres si es nopos, contributivo, paciente de eps y ordenador sea médico. Valida por Webservice la existencia del mipres para permitir guardar.
  * Mayo 4 de 2020		Edwin		Se hacen cambios varios para la interoperabilidad con laboratorio por centro de costos y POCT
  *									En la modal de al seleccionar el tipo de muestra(Sitio anatomico y tipo de muestra) se muestra la opcion Seleccione
@@ -506,7 +502,6 @@ function imprimirSticker( contexamen, realizaUnidad, imp ){
 					{
 						consultaAjax: '',
 						whis		: $("#whistoria").val(),
-						wemp_pmla	: $("#wemp_pmla").val(),
 						wing		: $("#wingreso").val(),
 						wip			: $("#wipimpresoraga").val(),
 						wtor		: $("#hexcco"+contexamen ).val(),
@@ -8841,7 +8836,6 @@ function traeJustificacionHCE(campoChk,campoDestino){
 
 	var historia = document.forms.forma.whistoria.value;
 	var ingreso = document.forms.forma.wingreso.value;
-	var whce = document.forms.forma.wingreso.value;
 
 	if(campoChk.checked == false)
 	{
@@ -8856,7 +8850,7 @@ function traeJustificacionHCE(campoChk,campoDestino){
 		return false;
 	}
 
-	var parametros = "consultaAjaxKardex=46&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatoshce="+whce+"&whistoria="+historia+"&wingreso="+ingreso;
+	var parametros = "consultaAjaxKardex=46&wemp_pmla="+document.forms.forma.wemp_pmla.value+"&basedatoshce=hce"+"&whistoria="+historia+"&wingreso="+ingreso;
 
 	try{
 		//$.blockUI({ message: $('#msjEspere') });
@@ -14994,11 +14988,10 @@ function activarModalIframe(path){
 function inicio(){
 	var nroDocumento = document.forms.forma.wcedula.value;
 	var tipoDocumento = document.forms.forma.wtipodoc.value;
-	var whce = document.forms.forma.wbasedatohce.value;
 
 	//document.location.href='ordenes.php?wemp_pmla='+document.forms.forma.wemp_pmla.value+'&wcedula='+nroDocumento+'&wtipodoc='+tipoDocumento+'&wfecha='+document.forms.forma.wfecha.value;
 
-	document.location.href='HCE_iframes.php?accion=M&ok=0&empresa='+whce+'&wcedula='+nroDocumento+'&wtipodoc='+tipoDocumento;
+	document.location.href='HCE_iframes.php?accion=M&ok=0&empresa=hce&wcedula='+nroDocumento+'&wtipodoc='+tipoDocumento;
 
 }
 /*****************************************************************************************************************************
@@ -17929,7 +17922,6 @@ function grabarKardex(wimprimir){
 				$.post("../reportes/HCE_Sticker_GA.php",
 					{
 						consultaAjax: '',
-						wemp_pmla	: $("#wemp_pmla").val(),
 						whis		: $("#whistoria").val(),
 						wing		: $("#wingreso").val(),
 						wip			: $("#wipimpresoraga").val(),
