@@ -474,6 +474,9 @@ farstore_000002 Select
 /*========================================================FUNCIONES==========================================================================*/
 
 //----------------------------------------------------------funciones de persitencia------------------------------------------------
+if (is_null($selectsede)){
+    $selectsede = consultarsedeFiltro();
+}
 
 function consultarViaMovhos( $conex, $wbasedato, $viaCM ){
 
@@ -6333,10 +6336,6 @@ else
 	$bd = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 	$wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 	$wfarstore = consultarAliasPorAplicacion($conex, $wemp_pmla, "farmastore");
-
-    if (is_null($selectsede)){
-        $selectsede = consultarsedeFiltro();
-    }
 	
 	if(!isset($NPT_origen))
 	{
