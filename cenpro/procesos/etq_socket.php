@@ -19,15 +19,52 @@
 				});
 			}
 		});
+
+
+		function validarForm(){
+			var  wcod, wlot, wfev, wnom, wetq, wip;
+
+			wcod = document.getElementById("wcod").value;
+			wlot = document.getElementById("wlot").value;
+			wfev = document.getElementById("wfev").value;
+			wnom = document.getElementById("wnom").value;
+			wetq = document.getElementById("wetq").value;
+			wip = document.getElementById("wip").value;
+
+			
+			if(wcod === ""){
+				window.alert("El campo codigo de producto no puede estar vacio.");
+				return false;
+			}else if(wlot === ""){
+				window.alert("El campo Nro. de Lote no puede estar vacio.");
+				return false;
+			}else if(wfev === ""){
+				window.alert("El campo Fecha de Vencimiento no puede estar vacio.");
+				return false;
+			}else if(wnom === ""){
+				window.alert("El campo Nombre del Producto no puede estar vacio.");
+				return false;
+			}else if(wetq === ""){
+				window.alert("El campo Numero de Etiquetas no puede estar vacio.");
+				return false;
+			}else if(wip === ""){
+				window.alert("Debe seleccionar alguna IP.");
+				return false;
+			}
+			
+
+		}
+
 	</script>
 
 		<?php
 		include_once("conex.php");
 
-		$wactualiz = "26 De Mayo del 2022";
+		$wactualiz = "03 De Junio del 2022";
 
 		/**
 		 * Acutalizacion:
+		 * 03 de Junio de 2022      Sebastian Alvarez B.  Se filtra por sedes el listado de las impresoras, se crea validación javascript para que los campos del formulario sean obligatorios y se cambio un poco el diseño del formulario.
 		 * 26 de mayo de 2022	    Sebastian Alvarez B.  Se adiciona mensajes de conservacion al sticker para que salgan de acuerdo a como esten configurados en el maestro de articulos de la central de mezclas cenpro_000002
 		 * 10 de Mayo de 2022		Sebastian Alvarez B.  Se adiciona en el encabezado el selector de sede para que cuando se genere un stciker nos muestre la sede desde el cual se genero.
 		 * 24/05/2022 				Esteban Villa 		  Cambio input wip por un select a la tabla root_000053
@@ -432,6 +469,8 @@ if( !isset($bd) || empty($bd) ){
 
 $wbasedato = consultarAliasPorAplicacion( $conex, $wemp_pmla, $bd );
 $wbasedatocenpro = consultarAliasPorAplicacion($conex, $wemp_pmla, 'cenmez');
+$wbasedatoMovhos = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+
 
 session_start();
 if(!isset($_SESSION['user']))
@@ -453,7 +492,7 @@ else
 
 	$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
 
-  	echo "<form action='etq_socket.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."' method=post>";
+  	echo "<form action='etq_socket.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."' onsubmit='return validarForm();'  method=post>";
   	echo "<INPUT TYPE='hidden' name='bd' value='$bd'>";
   	echo "<INPUT TYPE='hidden' name='whistoria' value='".$whistoria."'>";
   	echo "<INPUT TYPE='hidden' name='wingreso' value='".$wingreso."'>";
@@ -468,25 +507,38 @@ else
 		if( $bd != "movhos" ){	//OPCIONES DE CENTRAL DE MEZCLAS
 			
 			echo "<center><table border=0>";
-			echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-			echo "<tr><td align=center colspan=2>CENTRAL DE MEZCLAS</td></tr>";
+			// echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+			echo "<tr><td align=center colspan=2><b>CENTRAL DE MEZCLAS<b></td></tr>";
 			//echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Codigo del Producto</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wcod' size=10 maxlength=10 ></td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Nro. de Lote</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wlot' size=20 maxlength=20 ></td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Fecha de Vencimiento</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wfev' size=10 maxlength=10 ></td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Nombre del Producto</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wnom' size=80 maxlength=80 ></td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Numero de Etiquetas</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wetq' size=6 maxlength=6 ></td></tr>";	
+			echo "<tr><td bgcolor=#cccccc>Codigo del Producto*</td>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wcod' id=' wcod' size=10 maxlength=10 ></td></tr>";
+			echo "<tr><td bgcolor=#cccccc>Nro. de Lote*</td>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wlot' id='wlot' size=20 maxlength=20 ></td></tr>";
+			echo "<tr><td bgcolor=#cccccc>Fecha de Vencimiento*</td>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wfev' id='wfev' size=10 maxlength=10 ></td></tr>";
+			echo "<tr><td bgcolor=#cccccc>Nombre del Producto*</td>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wnom' id='wnom' size=80 maxlength=80 ></td></tr>";
+			echo "<tr><td bgcolor=#cccccc>Numero de Etiquetas*</td>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wetq' id='wetq' size=6 maxlength=6 ></td></tr>";	
 			
 			$selectOptionsIps = '';
 
+			$QueryIPs = "
+			SELECT
+				*
+			FROM
+				root_000053,
+				".$wbasedatoMovhos."_000011 
+			WHERE
+				Impcco =  Ccocod
+				AND Impcco  = Ccocod
+				".$sFiltroSede."
+				AND Impest = 'on'";
 
+				echo $QueryIPs;
 
-				$QueryIPs = "select * from root_000053 ORDER BY Impnom ASC limit 100";
+				//Se comenta ya que se va filtrar por sedes las ip en el selector, para evitar confusiones.
+				// $QueryIPs = "select * from root_000053 ORDER BY Impnom ASC limit 100";
 				$result_IPs = mysql_query($QueryIPs, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $QueryIPs . " - " . mysql_error());
 				$numIPs = mysql_num_rows($result_IPs);
 				$arrayIPs = array();
@@ -501,8 +553,8 @@ else
 				mysql_free_result($result_IPs);
 
 	
-			echo "<td bgcolor=#cccccc>Numero de IP</td>";
-			echo "<td bgcolor=#cccccc style='display: flex;justify-content: flex-end;'><select style='width: 100%;' name='wip' size='15' maxlength='15' required='required' >".$selectOptionsIps."</select></td></tr>";
+			echo "<td bgcolor=#cccccc>Numero de IP*</td>";
+			echo "<td bgcolor=#cccccc style='display: flex;justify-content: flex-end;'><select style='width: 100%;' name='wip' id='wip' size='15' maxlength='15' >".$selectOptionsIps."</select></td></tr>";
 			echo "<tr><td bgcolor=#cccccc colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
 		}
 		else{	//OPCIONES DEL SERVICIO FARMACEUTICO
