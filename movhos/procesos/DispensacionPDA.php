@@ -165,9 +165,13 @@ else
   
   
   
-  //$wtitulo = "KARDEX ** SIN ** DISPENSAR PARCIAL O TOTALMENTE";
+//$wtitulo = "KARDEX ** SIN ** DISPENSAR PARCIAL O TOTALMENTE";
        
-  //encabezado($wtitulo, $wactualiz, 'clinica');
+//encabezado($wtitulo, $wactualiz, 'clinica');
+$wactualiz = '2022-02-23';
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+encabezado("KARDEX ** SIN ** DISPENSAR PARCIAL O TOTALMENTE ",$wactualiz, $wbasedato1);
   
        
   //FORMA ================================================================
@@ -275,7 +279,7 @@ else
 				  $wdpa = $rowpac[4];                                                 //Documento del Paciente
 			      $wtid = $rowpac[5];                                                 //Tipo de Documento o Identificacion
 			      
-			      estado_del_kardex($whis,$wing,&$westado,$wmue, &$wcolor);     
+			      estado_del_kardex($whis,$wing,$westado,$wmue, $wcolor);     
 			      
 			      if ($wmue=="on")
 			         {
@@ -321,7 +325,7 @@ else
 				     echo "<td align=center>".$wmat_estado[$i][0]."</td>";
 				     echo "<td align=center>".$wmat_estado[$i][1]." - ".$wmat_estado[$i][2]."</td>";
 				     echo "<td align=left  >".$wmat_estado[$i][3]."</td>";
-				     echo "<td align=left  ><A href='cargos.php?emp=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&usuario=".$wusuario."&cco[cod]=".$wccousu."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
+				     echo "<td align=left  ><A href='cargos.php?wemp_pmla=".$wemp_pmla."&bd=".$wbasedato."&tipTrans=C&wemp=".$wemp_pmla."&usuario=".$wusuario."&cco[cod]=".$wccousu."&historia=".$wmat_estado[$i][1]."&fecDispensacion=".$wfecha."' target=_blank> Cargar </A></td>";
 				     echo "</tr>";
 				    }
 			  }
