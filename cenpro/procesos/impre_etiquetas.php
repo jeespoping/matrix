@@ -23,8 +23,14 @@
  * FECHA PUBLICACION	      : 2020-06-26.                                                                                             |
  * FECHA ULTIMA ACTUALIZACION : 2019-06-26. 
  *
- *									
- */
+ * 
+ * Actualizacion
+ * Se cambia las funciones consultarccoCM y consultarCcoSF por la version unificada del comun.php
+ * @by: Marlon Osorio
+ * @date: 16/04/2022
+ * 
+*/
+ 
     include_once("conex.php");
     include_once("root/comun.php");
 	$conex = obtenerConexionBD("matrix");
@@ -52,33 +58,7 @@
         $conex = obtenerConexionBD("matrix");
     }
 
-	function centroCostosCM()
-	{
 	
-		global $conex;
-		global $wmovhos;
-		
-		$sql = "SELECT
-					Ccocod
-				FROM
-					".$wmovhos."_000011
-				WHERE
-					ccofac LIKE 'on' 
-					AND ccotra LIKE 'on' 
-					AND ccoima !='off' 
-					AND ccodom !='on'
-				";
-		
-		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		if ( mysql_num_rows($res) > 1 )
-	{
-		return "Hay más de 1 centro de costos con los mismos parámetros";
-	}
-	$rows = mysql_fetch_array( $res );
-	return $rows[ 'Ccocod' ];
-		
-	} 
-
 //---------------------------->>> CODIGO PARA SACAR FECHA Y LA HORA ACTUAL <<<----------------------------------------
 $fecha_actual = date('d-m-Y');
 $hora_actual = date('H:i');
@@ -184,7 +164,7 @@ $respo_firma = $res['Firfir'];
 							<td bgcolor=#cccccc>						
 									<select id="wip" name="wip">
 										<?php
-										$cco = centroCostosCM();
+										$cco = ccoUnificadoCM();
 										$queryIp = "SELECT Impcod,Impnip from root_000053 
 															where Impcco = ".$cco."
 															and Impest = 'on'";

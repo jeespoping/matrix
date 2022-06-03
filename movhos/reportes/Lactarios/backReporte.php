@@ -5,13 +5,18 @@
  * para consultar los datos y mostrarlos.
 */
 
+/** ACTUALIZACIONES 
+ * 09 de mayo de 2022 -  Sebastian Alvarez Barona : Se arregla codificación utf 8 a los registros que muestra el reporte
+ * para que a futuro no se vuelva a presentar.
+ */
+
 $consultaAjax = '';
 
 include_once("conex.php");
 include_once("root/comun.php");
 
 
-$wactualiz="Abril 08 de 2022"; 
+$wactualiz="Mayo 09 de 2022"; 
 
  if(!isset($_SESSION['user'])){
 	  echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>
@@ -63,12 +68,14 @@ $wactualiz="Abril 08 de 2022";
     }
     return $datos;
 }
+
+
  switch ($_POST['accion']) {
      case 'consultar':
         $res = get_data($_POST['fecha_ini'], $_POST['fecha_fin'],$selectsede);
         header('Content-Type: application/json; charset=utf-8');
-        echo json_encode(array('datos' => $res,
-                                'status' => true ));
+        $array = utf8ize2(array('datos' => $res, 'status' => true ));
+        echo json_encode($array);
          break;
      
      default:

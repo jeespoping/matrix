@@ -10,8 +10,10 @@
 
 		$wactualiz = "01 De Febrero del 2022";
 
+
 		/**
 		 * Acutalizacion:
+		 * 24/05/2022 				Esteban Villa 		  Cambio input wip por un select a la tabla root_000053
 		 * 
 		 * Febrero 01 del 2022		Sebastian Alvarez B.  Se crea la función obetenrLotePaciente() que nos trae el lote que esta asociado a una historia de un paciente.
 		 * 												  Esto con el fin de que cuando se daña un sticker de medicamentos en central de mezclas se opta por sacar
@@ -369,17 +371,38 @@ else
 			echo "<tr><td align=center colspan=2>CENTRAL DE MEZCLAS</td></tr>";
 			//echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Codigo del Producto</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wcod' size=10 maxlength=10></td></tr>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wcod' size=10 maxlength=10 ></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Nro. de Lote</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wlot' size=20 maxlength=20></td></tr>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wlot' size=20 maxlength=20 ></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Fecha de Vencimiento</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wfev' size=10 maxlength=10></td></tr>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wfev' size=10 maxlength=10 ></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Nombre del Producto</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wnom' size=80 maxlength=80></td></tr>";
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wnom' size=80 maxlength=80 ></td></tr>";
 			echo "<tr><td bgcolor=#cccccc>Numero de Etiquetas</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wetq' size=6 maxlength=6></td></tr>";	
+			echo "<td bgcolor=#cccccc><input type='TEXT' name='wetq' size=6 maxlength=6 ></td></tr>";	
 			echo "<tr><td bgcolor=#cccccc>Numero de IP</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wip' size=15 maxlength=15></td></tr>";
+			
+			$selectOptionsIps = '';
+
+
+
+				$QueryIPs = "select * from root_000053 ORDER BY Impnom ASC limit 100";
+				$result_IPs = mysql_query($QueryIPs, $conex) or die("Error: " . mysql_errno() . " - en el query: " . $QueryIPs . " - " . mysql_error());
+				$numIPs = mysql_num_rows($result_IPs);
+				$arrayIPs = array();
+				
+
+				if($numIPs > 0)
+				{
+					while ($filaIp = mysql_fetch_assoc($result_IPs)) {
+						$selectOptionsIps .=  '<option value="'.$filaIp["Impnip"].'">'.$filaIp["Impnom"].' - '.' IP:  '.$filaIp["Impnip"].'</option>';
+					}
+				}
+				mysql_free_result($result_IPs);
+
+	
+			echo "<td bgcolor=#cccccc>Numero de IP</td>";
+			echo "<td bgcolor=#cccccc style='display: flex;justify-content: flex-end;'><select style='width: 100%;' name='wip' size='15' maxlength='15' required='required' >".$selectOptionsIps."</select></td></tr>";
 			echo "<tr><td bgcolor=#cccccc colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
 		}
 		else{	//OPCIONES DEL SERVICIO FARMACEUTICO

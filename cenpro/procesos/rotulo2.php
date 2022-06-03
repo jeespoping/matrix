@@ -9,6 +9,8 @@ include_once("conex.php");
  * ademas que salga informaciòn de SEGURA O INSEGURA dependiendo si el valor esta dentro de la especificacion o por fuera de la especificaciòn
  * 
  * Modificaciones:
+ * 
+ * Abril 16/2022 Marlon.Osorio - Se cambia las funciones consultarccoCM y consultarCcoSF por la version unificada del comun.php
  *  
  * Enero 30 de 2020 Jessica		- Se agrega al rotulo los insumos adicionales utilizados para la nutrición (Bolsa y equipos) y si se 
  *								  recibe el parámetro $consulta='on' lo campos input quedan de solo lectura y se inhabilitan los select
@@ -36,32 +38,6 @@ include_once("conex.php");
 
 
 //2009-04-24: Se creo una nueva clase para aumentar el tamaño del nombre y de la cama, la clase es la (texto5)
-
-function centroCostosCM()
-	{
-		global $conex;
-		global $wbasedatoMovhos;
-		
-		$sql = "SELECT
-					Ccocod
-				FROM
-					".$wbasedatoMovhos."_000011
-				WHERE
-					ccofac LIKE 'on' 
-					AND ccotra LIKE 'on' 
-					AND ccoima !='off' 
-					AND ccodom !='on'
-				";
-		
-		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		
-		if ( mysql_num_rows($res) > 1 )
-	{
-		return "Hay más de 1 centro de costos con los mismos parámetros";
-	}
-	$rows = mysql_fetch_array( $res );
-	return $rows[ 'Ccocod' ];
-	}
 
 
 ////////////////////////////////////////////////////PROGRAMA/////////////////////////////////////////////////////////
@@ -152,7 +128,7 @@ function numero_mes($mes){
 function pintarUsuarios($nombreCampo,$codigoUsuario,$consulta)
 {
 	global $conex;
-	$cco = centroCostosCM();
+	$cco = ccoUnificadoCM();
 	$queryUsuarios = "SELECT Codigo,Descripcion 
 						FROM usuarios 
 					   WHERE Ccostos=".$cco." 
@@ -2060,4 +2036,6 @@ else
 }
 	
 }
+
+
 ?>
