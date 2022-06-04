@@ -2,7 +2,19 @@
 <head>
   <title>STIKERS DE CODIGOS DE BARRAS</title>
 
-  <script type="text/javascript" src="../../../include/root/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="../../../include/root/jquery-1.3.2.min.js"></script>
+	<script src="../../../include/root/modernizr.custom.js" type="text/javascript"></script>
+	<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
+	<script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
+	<script type="text/javascript" src="../../../include/root/jquery.blockUI.min.js"></script>
+
+	<script src="../../../include/ips/funcionInsumosqxERP.js" type="text/javascript"></script>
+
+	<link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
+	<script src="../../../include/root/jquery.tooltip.js" type="text/javascript"></script>
+
+	<script type="text/javascript" src="../../../include/root/jquery.ui.timepicker.js"></script>
+	<link type="text/css" href="../../../include/root/jquery.ui.timepicker.css" rel="stylesheet"/>
 </head>
 <body BGCOLOR="">
 
@@ -18,6 +30,14 @@
 					window.location.href = "etq_socket.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
 				});
 			}
+
+			$("#wfev").datepicker({
+				showOn: "button",
+				buttonImage: "../../images/medical/root/calendar.gif",
+				buttonImageOnly: true,
+				maxDate: "+2Y",
+				dateFormat: "yy-mm-dd"
+			});
 		});
 
 
@@ -31,7 +51,7 @@
 			wetq = document.getElementById("wetq").value;
 			wip = document.getElementById("wip").value;
 
-			
+
 			if(wcod === ""){
 				window.alert("El campo codigo de producto no puede estar vacio.");
 				return false;
@@ -64,37 +84,37 @@
 
 		/**
 		 * Acutalizacion:
-		 * 03 de Junio de 2022      Sebastian Alvarez B.  Se filtra por sedes el listado de las impresoras, se crea validación javascript para que los campos del formulario sean obligatorios y se cambio un poco el diseño del formulario.
+		 * 03 de Junio de 2022      Sebastian Alvarez B.  Se filtra por sedes el listado de las impresoras, se crea validaciï¿½n javascript para que los campos del formulario sean obligatorios y se cambio un poco el diseï¿½o del formulario.
 		 * 26 de mayo de 2022	    Sebastian Alvarez B.  Se adiciona mensajes de conservacion al sticker para que salgan de acuerdo a como esten configurados en el maestro de articulos de la central de mezclas cenpro_000002
 		 * 10 de Mayo de 2022		Sebastian Alvarez B.  Se adiciona en el encabezado el selector de sede para que cuando se genere un stciker nos muestre la sede desde el cual se genero.
 		 * 24/05/2022 				Esteban Villa 		  Cambio input wip por un select a la tabla root_000053
 		 * 
-		 * Febrero 01 del 2022		Sebastian Alvarez B.  Se crea la función obetenrLotePaciente() que nos trae el lote que esta asociado a una historia de un paciente.
-		 * 												  Esto con el fin de que cuando se daña un sticker de medicamentos en central de mezclas se opta por sacar
-		 * 												  uno nuevo desde la opcion gestion central - impresion de codigo de barras. La modificación que se realizo
-		 * 												  fue que cuando se dañe un sticker y se saque por esta opcion debe de salir tambien con la información
+		 * Febrero 01 del 2022		Sebastian Alvarez B.  Se crea la funciï¿½n obetenrLotePaciente() que nos trae el lote que esta asociado a una historia de un paciente.
+		 * 												  Esto con el fin de que cuando se daï¿½a un sticker de medicamentos en central de mezclas se opta por sacar
+		 * 												  uno nuevo desde la opcion gestion central - impresion de codigo de barras. La modificaciï¿½n que se realizo
+		 * 												  fue que cuando se daï¿½e un sticker y se saque por esta opcion debe de salir tambien con la informaciï¿½n
 		 * 												  del paciente unificado al del medicamento.
 		 * 
-		 * Noviembre 30 del 2021    Sebastian Alvarez B.  Se hace la unificación del sticker del medicamento con la información del paciente, anteriormente
+		 * Noviembre 30 del 2021    Sebastian Alvarez B.  Se hace la unificaciï¿½n del sticker del medicamento con la informaciï¿½n del paciente, anteriormente
 		 * 												  se hacian por separado, entonces para mas practicidad se opto por unificar las dos informaciones en uno solo. 
 		 *
-		 * Septiembre 14 de 2018	Jessica 	Se aumenta el tamaño de la letra del TIEMPO DE INFUSION y la nota de CONSERVAR EN NEVERA.
-		 * Abril 18 de 2018			Jessica 	En la impresión de la etiqueta en zpl la posicion inicial de algunos elementos que estaban 
+		 * Septiembre 14 de 2018	Jessica 	Se aumenta el tamaï¿½o de la letra del TIEMPO DE INFUSION y la nota de CONSERVAR EN NEVERA.
+		 * Abril 18 de 2018			Jessica 	En la impresiï¿½n de la etiqueta en zpl la posicion inicial de algunos elementos que estaban 
 		 *										a 5 puntos se modifican a 10 puntos para evitar que en algunas impresoras no se visualice 
 		 *										correctamente el codigo de barras
-		 * Febrero 20 de 2018		Jessica 	Se comenta la impresión de la etiqueta en html y se agrega la impresión de la etiqueta en zpl
-		 * Febrero 15 de 2018		Jessica 	Se comenta la impresión de la etiqueta en epl ya que se agrega la etiqueta en html en el 
+		 * Febrero 20 de 2018		Jessica 	Se comenta la impresiï¿½n de la etiqueta en html y se agrega la impresiï¿½n de la etiqueta en zpl
+		 * Febrero 15 de 2018		Jessica 	Se comenta la impresiï¿½n de la etiqueta en epl ya que se agrega la etiqueta en html en el 
 		 *										script stickerProductos.php porque se deben imprimir las firmas.
-		 * Enero 24 de 2018			Jessica 	Modificacion en la impresión de la etiqueta, se quitan algunos espacios ya que algunos 
+		 * Enero 24 de 2018			Jessica 	Modificacion en la impresiï¿½n de la etiqueta, se quitan algunos espacios ya que algunos 
 		 *										datos no quedaban legibles
-		 * Enero 23 de 2018			Jessica 	Modificaciones en la impresión de la etiqueta, se cambian los textos:
+		 * Enero 23 de 2018			Jessica 	Modificaciones en la impresiï¿½n de la etiqueta, se cambian los textos:
 		 * 										- POR: - PREPARADO POR QF: y REVISADO POR: - APROBO:
-		 * Enero 22 de 2018			Jessica 	Modificaciones en la impresión de la etiqueta: 
+		 * Enero 22 de 2018			Jessica 	Modificaciones en la impresiï¿½n de la etiqueta: 
 		 *										- Se cambia el orden de algunos campos (Codigo del producto, lote y fecha de vencimiento,quien prepara y quien revisa)
-		 *										- Se agregan nuevos datos (Hora de preparación, tiempo de infusión y una nota fija para todos los productos)
-		 * Septiembre 12 de 2017	Jessica 	Se registra la preparación de las dosis adaptadas despues de imprimir los stickers.	
+		 *										- Se agregan nuevos datos (Hora de preparaciï¿½n, tiempo de infusiï¿½n y una nota fija para todos los productos)
+		 * Septiembre 12 de 2017	Jessica 	Se registra la preparaciï¿½n de las dosis adaptadas despues de imprimir los stickers.	
 		 * Diciembre 10 de 2012.	Edwin MG.	Al imprimir quien elabora el lote (Aparece despues de  "Por:" ), se aumenta la cantidad de caracteres a imprimir de 27 a 38 
-		 *										y se disminuye el tamaño de la letra, estaba en 2 y queda en 1.
+		 *										y se disminuye el tamaï¿½o de la letra, estaba en 2 y queda en 1.
 		 *										
 		 */
 
@@ -223,7 +243,7 @@ function registrarPreparacion($historia,$ingreso,$ido,$wnom1,$wnom2,$codDA,$wlot
 		$mensajeInsert = "";
 		if($resInsert)
 		{
-			$mensajeInsert = "Se envío el producto: ".$wcod." al monitor de preparacion";
+			$mensajeInsert = "Se envï¿½o el producto: ".$wcod." al monitor de preparacion";
 		}
 		else
 		{
@@ -262,7 +282,7 @@ function consultarNombreProductos( &$wnom1, &$wnom2, $cod ){
 /**
  * Busca el nombre del que elabora el lote
  * 
- * @param $producto			Código del producto
+ * @param $producto			Cï¿½digo del producto
  * @param $lote				Nro del lote
  * @return String
  */
@@ -356,7 +376,7 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 		/**
 		 * Date: 01/02/2022
 		 * By: Sebastian Alvarez Barona
-		 * Descripcion : Creamos una función en donde nos traeremos 
+		 * Descripcion : Creamos una funciï¿½n en donde nos traeremos 
 		 * el lote que esta asociado a cada paciente
 		 */
 		function obetenrLotePaciente($wcod, $wlot){
@@ -383,7 +403,7 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 		/**
 		 * Date: 26-05-2022
 		 * By: Sebastian Alvarez Barona
-		 * Descripción: Se crea función para preguntar si un articulo se conserva en nevera o es fotosensible
+		 * Descripciï¿½n: Se crea funciï¿½n para preguntar si un articulo se conserva en nevera o es fotosensible
 		 * Se obtienen los datos de la tabla cenpro_000002 los campos Artfot(Articulo fotosensible), Artnev(Articulo de conservacion en nevera)
 		 */
 
@@ -419,7 +439,7 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 		/**
 		 * Date: 26-05-2022
 		 * By: Sebastian Alvarez Barona
-		 * Descripción: Se crea función para preguntar si un articulo es fotosensible
+		 * Descripciï¿½n: Se crea funciï¿½n para preguntar si un articulo es fotosensible
 		 * Se obtienen los datos de la tabla cenpro_000002 los campos Artfot(Articulo que no se puede exponer a la luz)
 		 */
 		function conservacionArticuloFot($wcod)
@@ -492,6 +512,8 @@ else
 
 	$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
 
+	$DateFec = date('Y-m-d');
+
   	echo "<form action='etq_socket.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."' onsubmit='return validarForm();'  method=post>";
   	echo "<INPUT TYPE='hidden' name='bd' value='$bd'>";
   	echo "<INPUT TYPE='hidden' name='whistoria' value='".$whistoria."'>";
@@ -510,16 +532,16 @@ else
 			// echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 			echo "<tr><td align=center colspan=2><b>CENTRAL DE MEZCLAS<b></td></tr>";
 			//echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Codigo del Producto*</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wcod' id=' wcod' size=10 maxlength=10 ></td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Nro. de Lote*</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wlot' id='wlot' size=20 maxlength=20 ></td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Fecha de Vencimiento*</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wfev' id='wfev' size=10 maxlength=10 ></td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Nombre del Producto*</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wnom' id='wnom' size=80 maxlength=80 ></td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Numero de Etiquetas*</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wetq' id='wetq' size=6 maxlength=6 ></td></tr>";	
+			echo "<tr><td bgcolor=#E8EEF7>Codigo del Producto*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wcod' id='wcod' size=10 maxlength=10 ></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Nro. de Lote*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wlot' id='wlot' size=20 maxlength=20 ></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Fecha de Vencimiento*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wfev' id='wfev' value=".$DateFec." size=10 maxlength=10 ></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Nombre del Producto*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wnom' id='wnom' size=80 maxlength=80 ></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Numero de Etiquetas*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wetq' id='wetq' size=6 maxlength=6 ></td></tr>";	
 			
 			$selectOptionsIps = '';
 
@@ -535,7 +557,6 @@ else
 				".$sFiltroSede."
 				AND Impest = 'on'";
 
-				echo $QueryIPs;
 
 				//Se comenta ya que se va filtrar por sedes las ip en el selector, para evitar confusiones.
 				// $QueryIPs = "select * from root_000053 ORDER BY Impnom ASC limit 100";
@@ -553,9 +574,9 @@ else
 				mysql_free_result($result_IPs);
 
 	
-			echo "<td bgcolor=#cccccc>Numero de IP*</td>";
-			echo "<td bgcolor=#cccccc style='display: flex;justify-content: flex-end;'><select style='width: 100%;' name='wip' id='wip' size='15' maxlength='15' >".$selectOptionsIps."</select></td></tr>";
-			echo "<tr><td bgcolor=#cccccc colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
+			echo "<td bgcolor=#E8EEF7>Numero de IP*</td>";
+			echo "<td bgcolor=#E8EEF7 style='display: flex;justify-content: flex-end;'><select style='width: 100%;' name='wip' id='wip' size='15' maxlength='15' >".$selectOptionsIps."</select></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7 colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
 		}
 		else{	//OPCIONES DEL SERVICIO FARMACEUTICO
 			
@@ -596,8 +617,8 @@ else
 			$ok=1;
 			
 			echo "<center><table border=0>";
-			echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-			echo "<tr><td align=center colspan=2>CENTRAL DE MEZCLAS</td></tr>";
+			// echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+			echo "<tr><td align=center colspan=2><b>CENTRAL DE MEZCLAS<b></td></tr>";
 			//echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
 			echo "<tr><td align=center colspan=2>Confirmacion De Nombre</td></tr>";
 			
@@ -627,10 +648,10 @@ else
 			
 			
 			
-			echo "<tr><td bgcolor=#cccccc align=center>Parte 1 Nombre del Producto</td>";
-			echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wnom1' size=27 maxlength=27 value='".substr($wnom,0,27)."'></td></tr>";
-			echo "<tr><td bgcolor=#cccccc align=center>Parte 2 Nombre del Producto</td>";
-			echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wnom2' size=27 maxlength=27 value='".substr($wnom,27,27)."'></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7 align=center>Parte 1 Nombre del Producto</td>";
+			echo "<td bgcolor=#E8EEF7 align=center><input type='TEXT' name='wnom1' size=27 maxlength=27 value='".substr($wnom,0,27)."'></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7 align=center>Parte 2 Nombre del Producto</td>";
+			echo "<td bgcolor=#E8EEF7 align=center><input type='TEXT' name='wnom2' size=27 maxlength=27 value='".substr($wnom,27,27)."'></td></tr>";
 			
 			if( !isset($wrev) ){
 				$wrev = "";
@@ -639,8 +660,8 @@ else
 			echo "<tr style='display:none;'><td bgcolor=#cccccc align=center>Revisado Por</td>";
 			echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wrev' size=27 maxlength=38></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc align=center>Cantidad a Imprimir: </td>";echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wetq' size=27 maxlength=27 value='".$wetq."'></td></tr>";
-			echo "<tr><td bgcolor=#cccccc  colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
+			echo "<tr><td bgcolor=#E8EEF7 align=center>Cantidad a Imprimir: </td>";echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='wetq' size=27 maxlength=27 value='".$wetq."'></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7  colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
 			
 		}
 		else
@@ -719,7 +740,7 @@ else
 					// 				^FO10,107^FD".$wnom2."^FS
 
 
-					// 				^FX Fecha y hora de preparación
+					// 				^FX Fecha y hora de preparaciï¿½n
 					// 				^CFP
 					// 				^FO10,142^FDF. PREP: ".$wfpr."^FS
 					// 				^FO190,142^FDH. PREP: ".$whpr."^FS
@@ -736,7 +757,7 @@ else
 					// 				^FO10,200^FDAPROBO:^FS
 					// 				^FO10,220^FD".$wrev."^FS
 
-					// 				^FX Tiempo de infusión y nota
+					// 				^FX Tiempo de infusiï¿½n y nota
 					// 				^CFQ
 					// 				^FO10,240^FD".$tiempoInfusion."^FS
 					// 				^FO10,265^FDConservar en nevera de 2' a 8' C^FS
@@ -756,7 +777,7 @@ else
 					// 				^XZ";
 
 					/**26 de mayo de 2022
-					 * Llamamos a las funciónes que creamos y Se crea validación para mostrar los mensajes de conservacion de cada producto
+					 * Llamamos a las funciï¿½nes que creamos y Se crea validaciï¿½n para mostrar los mensajes de conservacion de cada producto
 					 * conservacion en nevera o fotsensible
 					 */
 
@@ -783,7 +804,7 @@ else
 					
 
 					/**Noviembre 30 del 2021
-					 * Llamado de los datos del paciente y construcción del sticker del paciente.s
+					 * Llamado de los datos del paciente y construcciï¿½n del sticker del paciente.s
 					 */
 					$StickerPacienteDA = consultarAliasPorAplicacion($conex, $wemp_pmla, "StickerPacienteDA"); // Parametro al que se le asigna on o off en caso de querer que el sticker del paciente salga unificado con el del medicamento
 
@@ -816,14 +837,14 @@ else
 
 					if ($StickerPacienteDA == 'on' && $whistoria != "" && $wingreso != "") // Si el parametro esta en on entonces el sticker DA sale unificado con el del paciente.
 					{
-						//Llamo a la función
+						//Llamo a la funciï¿½n
 						$informacion_paciente = informacionPaciente($whistoria, $wingreso);
 						
 					
 						$historiaPaciente = $informacion_paciente['Orihis']; //Historia del paciente
 						$Habitacion = $informacion_paciente['Habcod']; // Habitacion del paciente
-						$Tidentificacion = $informacion_paciente['Oritid']; // Tipo de identificación 
-						$NroIdentificacion = $informacion_paciente['Oriced']; // Numero de identificación
+						$Tidentificacion = $informacion_paciente['Oritid']; // Tipo de identificaciï¿½n 
+						$NroIdentificacion = $informacion_paciente['Oriced']; // Numero de identificaciï¿½n
 						$NamePaciente = $informacion_paciente['Nombres']; // Nombre completo del paciente
 						$SexPaciente = $informacion_paciente['Pacsex']; // Sexo del paciente (M o F)
 						$ResponsablePaciente = $informacion_paciente['Ingnre']; // EPS del paciente (Responsable)
@@ -893,7 +914,7 @@ else
 							^FO5,115^FD" . $wnom2 . "^FS
 							
 							
-							^FX Fecha y hora de preparación
+							^FX Fecha y hora de preparaciï¿½n
 							^CFP
 							^FO10,150^FDF. PREP: " . $wfpr . "^FS
 							^FO190,150^FDH. PREP: " . $whpr . "^FS
@@ -910,7 +931,7 @@ else
 							^FO10,220^FDAPROBO:^FS
 							^FO10,240^FD" . $wrev . "^FS
 							
-							^FX Tiempo de infusión y nota
+							^FX Tiempo de infusiï¿½n y nota
 							^CFP
 							^FO10,260^FD" . $tiempoInfusion . "^FS
 							^FO10,280^FD". $mensajeConservacion . "^FS
@@ -974,27 +995,27 @@ else
 					// $paquete=$paquete."V10,38,L,".chr(34)."NOTA".chr(34).chr(13).chr(10);		   //Para la variable 06...V07, 27=largo del contenido, 'ELA'  nombre del campo. Diciembre 10 de 2012
 					// $paquete=$paquete."q650".chr(13).chr(10);                                          //q650: Indica el ancho de la etiqueta, 650= es el ancho en milimtros
 					// $paquete=$paquete."S3".chr(13).chr(10);                                            //S3 : Indica la velocidad de la impresora para la 2844=3 que es 2.5 ips (63 mm/s)
-					// $paquete=$paquete."D4".chr(13).chr(10);                                            //D4 : Define el formato de fecha a imprimirse, 4 : Indica que se muestra elaño de 4 digitos
+					// $paquete=$paquete."D4".chr(13).chr(10);                                            //D4 : Define el formato de fecha a imprimirse, 4 : Indica que se muestra elaï¿½o de 4 digitos
 					// $paquete=$paquete."ZT".chr(13).chr(10);                                            //ZT : Z:indica la orientacion de la impresion, T:Indica donde se imprime en este caso en el TOP, B:Seria Bottom
 					// $paquete=$paquete."TTh:m".chr(13).chr(10);                                         //TT: Setea el formato de la hora. Si se utiliza
-					// $paquete=$paquete."TDy2.mn.dd".chr(13).chr(10);                                    //TD: Setea el formato de la fecha y2=Año 2 digitos, mn:Mes dos digitos y dd:dia de dos digitos 
-					// $paquete=$paquete."B145,10,0,1,2,5,70,N,V00".chr(13).chr(10); //Imprime en la columna=215, fila=20, Parametros del código de Barras
-					// $paquete=$paquete."A355,10,0,4,1,1,N,V00".chr(13).chr(10);   //Imprime en la columna=140, fila=110, tamaño=4, V00=Codigo
-					// $paquete=$paquete."A355,35,0,3,1,1,N,V01".chr(13).chr(10);   //Imprime en la columna=140, fila=140, tamaño=3, V01=Lote
-					// $paquete=$paquete."A355,60,0,2,1,1,N,V02".chr(13).chr(10);   //Imprime en la columna=140, fila=200, tamaño=3, V02=F.Vencimiento
-					// $paquete=$paquete."A140,100,0,4,1,1,N,V03".chr(13).chr(10);   //Imprime en la columna=140, fila=230, tamaño=3, V03=Nombre1 (27 Caracteres)
-					// $paquete=$paquete."A140,130,0,4,1,1,N,V04".chr(13).chr(10);   //Imprime en la columna=140, fila=260, tamaño=3, V04=Nombre2 (27 Caracteres)
-					// $paquete=$paquete."A140,160,0,1,1,1,N,V05".chr(13).chr(10);   //Imprime en la columna=140, fila=170, tamaño=3, V05=Fecha de Preparacion o de Reempaque
-					// $paquete=$paquete."A355,160,0,1,1,1,N,V06".chr(13).chr(10);   //Imprime en la columna=140, fila=170, tamaño=3, V05=Fecha de Preparacion o de Reempaque
-					// $paquete=$paquete."A140,190,0,1,1,1,N,V07".chr(13).chr(10);   //Imprime en la columna=140, fila=210, tamaño=3, V06=POR
-					// $paquete=$paquete."A140,210,0,1,1,1,N,V08".chr(13).chr(10);   //Imprime en la columna=140, fila=250, tamaño=1, V08=REVISADO POR.	Diciembre 10 de 2012
-					// $paquete=$paquete."A140,240,0,1,1,1,N,V09".chr(13).chr(10);   //Imprime en la columna=140, fila=270, tamaño=1, V09=Quien elabora el lote.	Diciembre 10 de 2012
-					// $paquete=$paquete."A140,260,0,1,1,1,N,V10".chr(13).chr(10);   //Imprime en la columna=140, fila=270, tamaño=1, V09=Quien elabora el lote.	Diciembre 10 de 2012
+					// $paquete=$paquete."TDy2.mn.dd".chr(13).chr(10);                                    //TD: Setea el formato de la fecha y2=Aï¿½o 2 digitos, mn:Mes dos digitos y dd:dia de dos digitos 
+					// $paquete=$paquete."B145,10,0,1,2,5,70,N,V00".chr(13).chr(10); //Imprime en la columna=215, fila=20, Parametros del cï¿½digo de Barras
+					// $paquete=$paquete."A355,10,0,4,1,1,N,V00".chr(13).chr(10);   //Imprime en la columna=140, fila=110, tamaï¿½o=4, V00=Codigo
+					// $paquete=$paquete."A355,35,0,3,1,1,N,V01".chr(13).chr(10);   //Imprime en la columna=140, fila=140, tamaï¿½o=3, V01=Lote
+					// $paquete=$paquete."A355,60,0,2,1,1,N,V02".chr(13).chr(10);   //Imprime en la columna=140, fila=200, tamaï¿½o=3, V02=F.Vencimiento
+					// $paquete=$paquete."A140,100,0,4,1,1,N,V03".chr(13).chr(10);   //Imprime en la columna=140, fila=230, tamaï¿½o=3, V03=Nombre1 (27 Caracteres)
+					// $paquete=$paquete."A140,130,0,4,1,1,N,V04".chr(13).chr(10);   //Imprime en la columna=140, fila=260, tamaï¿½o=3, V04=Nombre2 (27 Caracteres)
+					// $paquete=$paquete."A140,160,0,1,1,1,N,V05".chr(13).chr(10);   //Imprime en la columna=140, fila=170, tamaï¿½o=3, V05=Fecha de Preparacion o de Reempaque
+					// $paquete=$paquete."A355,160,0,1,1,1,N,V06".chr(13).chr(10);   //Imprime en la columna=140, fila=170, tamaï¿½o=3, V05=Fecha de Preparacion o de Reempaque
+					// $paquete=$paquete."A140,190,0,1,1,1,N,V07".chr(13).chr(10);   //Imprime en la columna=140, fila=210, tamaï¿½o=3, V06=POR
+					// $paquete=$paquete."A140,210,0,1,1,1,N,V08".chr(13).chr(10);   //Imprime en la columna=140, fila=250, tamaï¿½o=1, V08=REVISADO POR.	Diciembre 10 de 2012
+					// $paquete=$paquete."A140,240,0,1,1,1,N,V09".chr(13).chr(10);   //Imprime en la columna=140, fila=270, tamaï¿½o=1, V09=Quien elabora el lote.	Diciembre 10 de 2012
+					// $paquete=$paquete."A140,260,0,1,1,1,N,V10".chr(13).chr(10);   //Imprime en la columna=140, fila=270, tamaï¿½o=1, V09=Quien elabora el lote.	Diciembre 10 de 2012
 					// $paquete=$paquete."FE".chr(13).chr(10);
 					// $paquete=$paquete.".".chr(13).chr(10);
 					// $paquete=$paquete."FR".chr(34)."CENPRO".chr(34).chr(13).chr(10);
 					// $paquete=$paquete."?".chr(13).chr(10);
-					// $paquete=$paquete.$wcod.chr(13).chr(10);                      //Imprime el código normal
+					// $paquete=$paquete.$wcod.chr(13).chr(10);                      //Imprime el cï¿½digo normal
 					// $paquete=$paquete."LOTE:".$wlot.chr(13).chr(10);             //Imprime la palabra lote y la variable
 					// $paquete=$paquete."F.V:".$wfev.chr(13).chr(10);             //Imprime la fecha de vencimiento y la variable
 					// $paquete=$paquete.$wnom1.chr(13).chr(10);                     //Imprime la variable wnom1
