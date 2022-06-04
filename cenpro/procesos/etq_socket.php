@@ -3,18 +3,6 @@
   <title>STIKERS DE CODIGOS DE BARRAS</title>
 
 	<script type="text/javascript" src="../../../include/root/jquery-1.3.2.min.js"></script>
-	<script src="../../../include/root/modernizr.custom.js" type="text/javascript"></script>
-	<link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
-	<script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
-	<script type="text/javascript" src="../../../include/root/jquery.blockUI.min.js"></script>
-
-	<script src="../../../include/ips/funcionInsumosqxERP.js" type="text/javascript"></script>
-
-	<link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
-	<script src="../../../include/root/jquery.tooltip.js" type="text/javascript"></script>
-
-	<script type="text/javascript" src="../../../include/root/jquery.ui.timepicker.js"></script>
-	<link type="text/css" href="../../../include/root/jquery.ui.timepicker.css" rel="stylesheet"/>
 </head>
 <body BGCOLOR="">
 
