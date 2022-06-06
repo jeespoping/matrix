@@ -10,14 +10,20 @@
 
 	<script type="text/javascript">
 		$(document).ready(function(){
-			var selectorSede = document.getElementById("selectsede");
+
+		$(document).on('change','#selectsede',function(e){
+			e.stopPropagation();
+			window.location.href = "etq_socket.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+		});
 		
-			if(selectorSede !== null)
-			{
-				selectorSede.addEventListener('change', () => {
-					window.location.href = "etq_socket.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
-				});
-			}
+		// var selectorSede = document.getElementById("selectsede");
+	
+		// if(selectorSede !== null)
+		// {
+		// 	selectorSede.addEventListener('change', () => {
+		// 		window.location.href = "etq_socket.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+		// 	});
+		// }
 
 			$("#wfev").datepicker({
 				showOn: "button",
