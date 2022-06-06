@@ -29,6 +29,8 @@ include_once("conex.php");
 // a los examenes anteriores, en la parte inferior la sercretaria puede agregar observaciones generales para la historia.
 /*
 //========================================================================================================================================\\
+  03/06/2022 Brigith Lagares: Se corrigen parametros quemados de movhos y se estandariza el origen por wemp_pmla
+//========================================================================================================================================\\
   Septiembre 21 de 2020 Edwin MG: Se agrega casting a la variable $valor para que no se generen warnings
 //========================================================================================================================================\\
   Febrero 19 de 2019 Arleyda I.C: Migración realizada 
@@ -5765,8 +5767,10 @@ function traer_observaciones_anteriores_exam($whis, $wing, $wexam, $wfechadataex
         echo "<input type='HIDDEN' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'>";
         echo "<input type='hidden' name='sololectura' id='sololectura' value=".$sololectura.">";
 		
-		$wactualiz = "Septiembre 26 de 2017";		 
-        encabezado("PROCEDIMIENTOS E INSUMOS POR GRABAR", $wactualiz, "clinica");
+		$wactualiz = "03/06/2022";
+		$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+		$wbasedato1 = strtolower( $institucion->baseDeDatos );		 
+        encabezado("PROCEDIMIENTOS E INSUMOS POR GRABAR", $wactualiz, $wbasedato1);
 
         if ( date( "H" ) > "7" and date( "H" ) < "19" )
         $wtur_grabar="MAÑANA";
