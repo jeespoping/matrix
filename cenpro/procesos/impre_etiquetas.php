@@ -327,7 +327,7 @@ $respo_firma = $res['Firfir'];
 							
 			
 							//echo "<pre>".print_r($impresionZPL,true)."</pre>";
-							echo $impresionZPL;
+							// echo $impresionZPL;
 			$addr=$wip;
 			$fp = fsockopen( $addr,9100, $errno, $errstr, 30);
 			if(!$fp) 
