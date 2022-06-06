@@ -29,40 +29,6 @@
 		});
 
 
-		function validarForm(){
-			var  wcod, wlot, wfev, wnom, wetq, wip;
-
-			wcod = document.getElementById("wcod").value;
-			wlot = document.getElementById("wlot").value;
-			wfev = document.getElementById("wfev").value;
-			wnom = document.getElementById("wnom").value;
-			wetq = document.getElementById("wetq").value;
-			wip = document.getElementById("wip").value;
-
-
-			if(wcod === ""){
-				window.alert("El campo codigo de producto no puede estar vacio.");
-				return false;
-			}else if(wlot === ""){
-				window.alert("El campo Nro. de Lote no puede estar vacio.");
-				return false;
-			}else if(wfev === ""){
-				window.alert("El campo Fecha de Vencimiento no puede estar vacio.");
-				return false;
-			}else if(wnom === ""){
-				window.alert("El campo Nombre del Producto no puede estar vacio.");
-				return false;
-			}else if(wetq === ""){
-				window.alert("El campo Numero de Etiquetas no puede estar vacio.");
-				return false;
-			}else if(wip === ""){
-				window.alert("Debe seleccionar alguna IP.");
-				return false;
-			}
-			
-
-		}
-
 	</script>
 
 		<?php
@@ -502,7 +468,7 @@ else
 
 	$DateFec = date('Y-m-d');
 
-  	echo "<form action='etq_socket.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."' onsubmit='return validarForm();'  method=post>";
+  	echo "<form action='etq_socket.php?wemp_pmla=".$wemp_pmla.$sUrlCodigoSede."' method=post>";
   	echo "<INPUT TYPE='hidden' name='bd' value='$bd'>";
   	echo "<INPUT TYPE='hidden' name='whistoria' value='".$whistoria."'>";
   	echo "<INPUT TYPE='hidden' name='wingreso' value='".$wingreso."'>";
@@ -520,16 +486,16 @@ else
 			// echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
 			echo "<tr><td align=center colspan=2><b>CENTRAL DE MEZCLAS<b></td></tr>";
 			//echo "<tr><td align=center colspan=2>GENERACION DE STIKERS DE CODIGOS DE BARRAS</td></tr>";
-			echo "<tr><td bgcolor=#E8EEF7>Codigo del Producto*</td>";
-			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wcod' id='wcod' size=10 maxlength=10 ></td></tr>";
-			echo "<tr><td bgcolor=#E8EEF7>Nro. de Lote*</td>";
-			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wlot' id='wlot' size=20 maxlength=20 ></td></tr>";
-			echo "<tr><td bgcolor=#E8EEF7>Fecha de Vencimiento*</td>";
+			echo "<tr><td bgcolor=#E8EEF7>Codigo del Producto</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wcod' size=10 maxlength=10 ></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Nro. de Lote</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wlot' size=20 maxlength=20 ></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Fecha de Vencimiento</td>";
 			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wfev' id='wfev' value=".$DateFec." size=10 maxlength=10 ></td></tr>";
-			echo "<tr><td bgcolor=#E8EEF7>Nombre del Producto*</td>";
-			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wnom' id='wnom' size=80 maxlength=80 ></td></tr>";
-			echo "<tr><td bgcolor=#E8EEF7>Numero de Etiquetas*</td>";
-			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wetq' id='wetq' size=6 maxlength=6 ></td></tr>";	
+			echo "<tr><td bgcolor=#E8EEF7>Nombre del Producto</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wnom' size=80 maxlength=80 ></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Numero de Etiquetas</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wetq' size=6 maxlength=6 ></td></tr>";	
 			
 			$selectOptionsIps = '';
 
@@ -562,8 +528,8 @@ else
 				mysql_free_result($result_IPs);
 
 	
-			echo "<td bgcolor=#E8EEF7>Numero de IP*</td>";
-			echo "<td bgcolor=#E8EEF7 style='display: flex;justify-content: flex-end;'><select style='width: 100%;' name='wip' id='wip' size='15' maxlength='15' >".$selectOptionsIps."</select></td></tr>";
+			echo "<td bgcolor=#E8EEF7>Numero de IP</td>";
+			echo "<td bgcolor=#E8EEF7 style='display: flex;justify-content: flex-end;'><select style='width: 100%;' name='wip' size='15' maxlength='15' >".$selectOptionsIps."</select></td></tr>";
 			echo "<tr><td bgcolor=#E8EEF7 colspan=2 align=center><input type='submit' value='ENTER'></td></tr></table>";
 		}
 		else{	//OPCIONES DEL SERVICIO FARMACEUTICO

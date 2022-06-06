@@ -1,7 +1,32 @@
  <html>
 <head>
   <title>MATRIX</title>
+  	<script src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="../../../include/root/modernizr.custom.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="../../../include/root/jqueryui_1_9_2/cupertino/jquery-ui-cupertino.css" />
+    <script src="../../../include/root/jqueryui_1_9_2/jquery-ui.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../../include/root/jquery.blockUI.min.js"></script>
+
+    <script src="../../../include/ips/funcionInsumosqxERP.js" type="text/javascript"></script>
+
+    <link type="text/css" href="../../../include/root/jquery.tooltip.css" rel="stylesheet" />
+    <script src="../../../include/root/jquery.tooltip.js" type="text/javascript"></script>
+
+    <script type="text/javascript" src="../../../include/root/jquery.ui.timepicker.js"></script>
+    <link type="text/css" href="../../../include/root/jquery.ui.timepicker.css" rel="stylesheet"/>
+
   <script>
+
+		$(document).ready(function(){
+			$("#wfecv").datepicker({
+				showOn: "button",
+				buttonImage: "../../images/medical/root/calendar.gif",
+				buttonImageOnly: true,
+				maxDate: "+2Y",
+				dateFormat: "yy-mm-dd"
+			});
+		});
+
 		function consultar(wcod) {
 			var validacion = null;
 			ancho = 300;    alto = 120;
@@ -11,6 +36,43 @@
 			validacion = window.open ("validarMedicamento.php?wemp_pmla="+wemp_pmla.value+"&wcod="+wcod,"miwin",settings2);
 			validacion.focus();
 		}
+
+		function validarForm(){
+			var  wlotm, wfecv, wapro, wvia, wobs;
+
+			wlotm = document.getElementById("wlotm").value;
+			wfecv = document.getElementById("wfecv").value;
+			wapro = document.getElementById("wapro").value;
+			wvia = document.getElementById("wvia").value;
+			wobs = document.getElementById("wobs").value;
+			wip = document.getElementById("wip").value;
+			wetq = document.getElementById("wetq").value;
+
+
+			if(wlotm === ""){
+				window.alert("El campo Lote de medicamento no puede estar vacio.");
+				return false;
+			}else if(wfecv === ""){
+				window.alert("El campo fecha de vencimiento no puede estar vacio.");
+				return false;
+			}else if(wapro === "" || wapro === "Seleccione..."){
+				window.alert("El campo verifica no puede estar vacio o con el valor de seleccione...");
+				return false;
+			}else if(wvia === ""){
+				window.alert("El campo vía de administración no puede estar vacio.");
+				return false;
+			}else if(wobs === ""){
+				window.alert("El campo observación no puede estar vacio.");
+				return false;
+			}else if(wetq === "" ){
+				window.alert("Debe seleccionar una cantidad de etiquetas");
+				return false;
+			}else if(wip === "" || wip === "Seleccione..."){
+				window.alert("El campo de IP no puede estar vacio o con el valor de seleccione...");
+				return false;
+			}
+		}
+
    </script>
 </head>
 <body BGCOLOR="">
@@ -25,6 +87,7 @@
  *
  * 
  * Actualizacion
+ * 03 de junio de 2022 Sebastian Alvarez Barona - Se modifica formulario haciendo obligatorios algunos campos a digitar. Esto se logra poniendole id a los imput y luego creando una funcion javascript para validar el formulario.
  * Se cambia las funciones consultarccoCM y consultarCcoSF por la version unificada del comun.php
  * @by: Marlon Osorio
  * @date: 16/04/2022
@@ -49,7 +112,7 @@
     else
     {
 		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-		$wactualiz = "2019-06-26";
+		$wactualiz = "06 de Junio de 2022";
 		encabezado( "GENERACION DE ETIQUETAS DE CODIGOS DE BARRAS", $wactualiz, $institucion->baseDeDatos );
         $user_session = explode('-', $_SESSION['user']);
         $wuse = $user_session[1];
@@ -60,7 +123,7 @@
 
 	
 //---------------------------->>> CODIGO PARA SACAR FECHA Y LA HORA ACTUAL <<<----------------------------------------
-$fecha_actual = date('d-m-Y');
+$fecha_actual = date('Y-m-d');
 $hora_actual = date('H:i');
 //---------------------------->>> CAPTURAR LOS DATOS DEL FORMULARIO <<<----------------------------------------
 $wcod = $_POST['wcod'];
@@ -91,46 +154,46 @@ $respo_firma = $res['Firfir'];
 				// $respo_firma = $resultado_usuario[1];
 				//$concat_usuario = $wuse.'-'.$user_nom;
 
-  	echo "<form action='impre_etiquetas.php?wemp_pmla=".$wemp_pmla."' method=post id='info_medicamento' name='info_medicamento'>";
+  	echo "<form action='impre_etiquetas.php?wemp_pmla=".$wemp_pmla."' method=post id='info_medicamento' name='info_medicamento' onsubmit='return validarForm();'>";
   	echo "<INPUT TYPE='hidden' name='bd' value='$bd'>";
 	echo "<INPUT TYPE='hidden' name='wemp_pmla' value='$wemp_pmla' id='wemp_pmla'>";
 			echo "<center><table border=0>";
 			//echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
-			echo "<tr><td align=center colspan=2>CENTRAL DE MEZCLAS</td></tr>";
+			echo "<tr><td align=center colspan=2><h3>CENTRAL DE MEZCLAS</h3></td></tr>";
 			//echo "<tr><td align=center colspan=2>GENERACION DE ETIQUETAS DE CODIGOS DE BARRAS</td></tr>";
-			echo "<tr><td bgcolor=#cccccc>Codigo del Producto</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' id='wcod' value='' name='wcod' size=10 maxlength=10 onblur='consultar(this.value)'></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Codigo del Producto</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' id='wcod' value='' name='wcod' size=10 maxlength=10 onblur='consultar(this.value)'></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Nombre Generico</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT'  id='wnom' name='wnom' size=80 maxlength=80 readonly></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Nombre Generico</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT'  id='wnom' name='wnom' size=80 maxlength=80 readonly></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Nombre Comercial</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' id='wnomc' name='wnomc' size=80 maxlength=80 readonly></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Nombre Comercial</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' id='wnomc' name='wnomc' size=80 maxlength=80 readonly></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Registro de Invima</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' id='winv' name='winv' size=20 maxlength=20></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Registro de Invima</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' id='winv' name='winv' size=20 maxlength=20></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Fecha de Acondicionamiento</td>";
-			echo "<td bgcolor=#cccccc><input type='text' value='".$fecha_actual."' name='wacon' size=20 maxlength=20></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Fecha de Acondicionamiento</td>";
+			echo "<td bgcolor=#E8EEF7><input type='text' value='".$fecha_actual."' name='wacon' size=20 maxlength=20></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Hora</td>";
-			echo "<td bgcolor=#cccccc><input type=text' value='".$hora_actual."' name='whor' size=10 maxlength=10></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Hora</td>";
+			echo "<td bgcolor=#E8EEF7><input type=text' value='".$hora_actual."' name='whor' size=10 maxlength=10></td></tr>";
 			
-			//echo "<tr><td bgcolor=#cccccc>Nro. de Lote Acondicionamiento</td>";
-			//echo "<td bgcolor=#cccccc><input type='TEXT' id='wlot' name='wlot' size=20 maxlength=20 readonly></td></tr>";
+			//echo "<tr><td bgcolor=#E8EEF7>Nro. de Lote Acondicionamiento</td>";
+			//echo "<td bgcolor=#E8EEF7><input type='TEXT' id='wlot' name='wlot' size=20 maxlength=20 readonly></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Nro. de Lote de Medicamento</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' id='wlotm' name='wlotm' size=20 maxlength=20></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Nro. de Lote de Medicamento*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' id='wlotm' name='wlotm' size=20 maxlength=20></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Fecha de Vencimiento:</td>";
-			echo "<td bgcolor=#cccccc><input type='date' name='wfecv' size=20 maxlength=20></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Fecha de Vencimiento*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wfecv' id='wfecv' size=20 maxlength=20></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Acondiciona</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' value='".$user_nom."' name='wres' size=80 maxlength=80 readonly></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Acondiciona</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' value='".$user_nom."' name='wres' size=80 maxlength=80 readonly></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Verifica</td>";
+			echo "<tr><td bgcolor=#E8EEF7>Verifica*</td>";
 			?>
-							<td bgcolor=#cccccc>						
+							<td bgcolor=#E8EEF7>						
 									<select id="wapro" name="wapro">
 										<?php
 										$queryDetalle = "SELECT fircod,descripcion from usuarios, ".$wbasedato."_000023 
@@ -149,23 +212,23 @@ $respo_firma = $res['Firfir'];
 							 
 							</td>
 			<?php
-			echo "<tr><td bgcolor=#cccccc>Vía de Administración</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wvia' size=15 maxlength=15 required></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Vía de Administración*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wvia' id='wvia' size=15 maxlength=15 ></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Observacion</td>";
-			echo "<td bgcolor=#cccccc><input type='TEXT' name='wobs' size=80 maxlength=80></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Observacion*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wobs' id='wobs' size=80 maxlength=80></td></tr>";
 			
-			echo "<tr><td bgcolor=#cccccc>Numero de Etiquetas</td>";
-			echo "<td bgcolor=#cccccc><input type='number' name='wetq' size=6 maxlength=6 min=1 max=500 required></td></tr>";	
+			echo "<tr><td bgcolor=#E8EEF7>Numero de Etiquetas*</td>";
+			echo "<td bgcolor=#E8EEF7><input type='number' name='wetq' id='wetq' size=6 maxlength=6 min=1 max=500 ></td></tr>";	
 			
-			echo "<tr><td bgcolor=#cccccc>Numero de IP</td>";
-			//echo "<td bgcolor=#cccccc><input type='TEXT' name='wip' size=15 maxlength=15 required></td></tr>";
+			echo "<tr><td bgcolor=#E8EEF7>Numero de IP*</td>";
+			//echo "<td bgcolor=#E8EEF7><input type='TEXT' name='wip' size=15 maxlength=15 required></td></tr>";
 			?>
-							<td bgcolor=#cccccc>						
+							<td bgcolor=#E8EEF7>						
 									<select id="wip" name="wip">
 										<?php
 										$cco = ccoUnificadoCM();
-										$queryIp = "SELECT Impcod,Impnip from root_000053 
+										$queryIp = "SELECT Impcod,Impnip,Impnom from root_000053 
 															where Impcco = ".$cco."
 															and Impest = 'on'";
 															
@@ -173,7 +236,8 @@ $respo_firma = $res['Firfir'];
 											while($datoIp = mysql_fetch_assoc($resutlIp))
 											{
 												$Impcod = $datoIp['Impcod'];    $Impnip = $datoIp['Impnip'];
-												echo "<option value='".$Impnip."'>".$Impcod.'-'.$Impnip."</option>";
+												$Impnom = $datoIp['Impnom'];
+												echo "<option value='".$Impnip."'>".$Impnom.' - '.$Impcod.' - IP:'.$Impnip."</option>";
 											}
 										?>
 										   <option selected disabled>Seleccione...</option>
@@ -182,8 +246,7 @@ $respo_firma = $res['Firfir'];
 							</td>
 			<?php
 			
-			echo "<tr><td bgcolor=#cccccc colspan=2 align=center><input type='submit' value='ENTER' name='buscador'></td></tr></table>";
-			
+			echo "<tr><td bgcolor=#E8EEF7 colspan=2 align=center><input type='submit' value='ENTER' name='buscador'></td></tr></table>";
 			
 			echo "</form>";
 			if 	($_POST['buscador']){			
@@ -264,7 +327,7 @@ $respo_firma = $res['Firfir'];
 							
 			
 							//echo "<pre>".print_r($impresionZPL,true)."</pre>";
-							//echo $impresionZPL;
+							echo $impresionZPL;
 			$addr=$wip;
 			$fp = fsockopen( $addr,9100, $errno, $errstr, 30);
 			if(!$fp) 
