@@ -6349,7 +6349,7 @@ else
 	$pos = strpos($user,"-");
 	$wusuario = substr($user,$pos+1,strlen($user)); //extraigo el codigo del usuario
 	
-	$wactualiz = "Abril 16 del 2022";
+	$wactualiz = "Junio 07 del 2022";
 	encabezado("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica", true, false);
 	pintarManuales($wusuario);
 	

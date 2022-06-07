@@ -3964,7 +3964,7 @@ else
 
     include_once("cenpro/funciones.php"); 
     // pintarVersion(); //Escribe en el programa el autor y la version del Script.
-	$wactualiz = "Diciembre 19 de 2021";
+	$wactualiz = "Junio 07 del 2022";
 	encabezado("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica", true, false);
     pintarTitulo(); //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts    
     // consulto los datos del usuario de la sesion
