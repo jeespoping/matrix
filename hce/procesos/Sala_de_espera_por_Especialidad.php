@@ -452,7 +452,7 @@ if (!isset($consultaAjax))
 				//LLamado a la historia HCE
 
 				//location.href="HCE_iFrames.php?empresa="+document.forms.sala.whce.value+"&whis="+his+"&wing="+ing+"&accion=M&ok=0&wcedula="+doc+"&wtipodoc="+tid;
-				url="HCE_iFrames.php?empresa="+document.forms.sala.whce.value+"&whis="+his+"&wing="+ing+"&accion=F&ok=0&wcedula="+doc+"&wtipodoc="+tid+"&wdbmhos="+document.forms.sala.wbasedato.value+"&origen="+document.forms.sala.wemp_pmla.value;
+				url="HCE_iFrames.php?empresa="+document.forms.sala.whce.value+"&whis="+his+"&wing="+ing+"&accion=F&ok=0&wcedula="+doc+"&wtipodoc="+tid+"&wdbmhos="+document.forms.sala.wbasedato.value+"&wemp_pmla="+document.forms.sala.wemp_pmla.value;
 				//open(url,'','top=50,left=100,width=960,height=940') ;
 				//open(url,'',resizable='yes') ;
 				window.open(url,'','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
@@ -667,7 +667,7 @@ else
 //$wautor="Juan C. Hernandez M. ";
 //FECHA CREACION             : Febrero 15 de 2011
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="(Diciembre 19 de 2021)";
+  $wactualiz="2022-03-16";
  /* 
 //DESCRIPCION
 //==========================================================================================================================================\\
@@ -685,7 +685,8 @@ else
 //                   hce_000035      : Maestro de conductas indica si se da de alta o se indica muerte                                      \\
 //                   movhos_000018   : Ubicación del paciente y se indica el alta definitiva.
 //==========================================================================================================================================\\
- 
+// 16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
+//==========================================================================================================================================\\
 	Se edita el option vacio, por solicitud de calidad (lady) ya que al seleccionar el vacio el paciente vuelve a quedar 
 	en la lista de pacientes en espera y se reinician los tiempos lo que implicaba que los indicadores de oportunidad
 	se ampliaran. jerson trujillo 2019-12-16
