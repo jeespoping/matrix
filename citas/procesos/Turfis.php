@@ -9,11 +9,11 @@
     <link rel="stylesheet" href="../../zpcal/themes/winter.css" />
 
 <!-- Loading Calendar JavaScript files -->
-    <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
+<!--     <script type="text/javascript" src="../../zpcal/src/utils.js"></script>
     <script type="text/javascript" src="../../zpcal/src/calendar.js"></script>
-    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script>
+    <script type="text/javascript" src="../../zpcal/src/calendar-setup.js"></script> -->
     <!-- Loading language definition file -->
-    <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script>
+<!--     <script type="text/javascript" src="../../zpcal/lang/calendar-sp.js"></script> -->
     <style type="text/css">
     	//body{background:white url(portal.gif) transparent center no-repeat scroll;}
     	#tipo1{color:#000066;background:#FFFFFF;font-size:7pt;font-family:Tahoma;font-weight:bold;}
@@ -99,6 +99,7 @@
 //-->
 </script>
 <?php
+
 include_once("conex.php");
 include_once("root/comun.php");
 /**********************************************************************************************************************  
@@ -345,7 +346,7 @@ if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
-	encabezado("TURNOS DE FISIOTERAPIA", '2022-04-21', "clinica"); 
+	encabezado("TURNOS DE FISIOTERAPIA", '2022-04-21', $wemp_pmla); 
 	$key = substr($user,2,strlen($user));
 	echo "<form name='Turfis' action='Turfis.php?empresa=".$empresa.""."&wemp_pmla=".$wemp_pmla."' method=post>";	
 
