@@ -1,18 +1,20 @@
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 echo "<html>";
 echo "<head>";
 echo "<title>CONSULTA DE TURNOS X PACIENTE</title>";
 echo "</head>";
 echo "<body BGCOLOR=''>";
 echo "<BODY TEXT='#000066'>";
-echo "<center>";
+/* echo "<center>";
 echo "<table border=0 align=center>";
 echo "<tr><td align=center bgcolor='#cccccc'><A NAME='Arriba'><font size=6><b>Turnos x Paciente</b></font></a></tr></td>";
 echo "<tr><td align=center bgcolor='#cccccc'><font size=2> <b> busfis.php Ver. 2011-08-17</b></font></tr></td></table>";
-echo "</center>";
+echo "</center>"; */
 $wfec=date("Y-m-d");
-echo "<form action='busfis.php' method=post>";
+encabezado("TURNOS DE FISIOTERAPIA", '2022-04-21', "clinica"); 
+echo "<form action='busfis.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."' method=post>";
 @session_start();
 if(!isset($_SESSION['user']))
 	echo "Error Usuario NO Registrado";

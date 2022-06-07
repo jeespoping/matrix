@@ -28,12 +28,12 @@ $wactualiz="2007-07-10";
 encabezado( "REPORTE PARA LA ESTADISTICA DE LOS PACIENTES", $wactualiz, $institucion->baseDeDatos );
 //==================================================================================================================================
 //ACTUALIZACIONES
-//==================================================================================================================================
-// xxxx				 
-//==================================================================================================================================
-// xxxx
-//==================================================================================================================================
-
+/*
+	.2022-04-18
+	Se cambia el nombre de la tabla citasfi en sql por el noimbre enviado en la variable $empresa,
+	el cual se envia en la url de la aplicación para que funcione como
+	multisede ejemplo: turfister.php?empresa=citasfi
+*/
 
 
 session_start();
@@ -48,7 +48,7 @@ else
 
 
 	echo "<form name=rep_estad_fisia action='' method=post>";
-	$wbasedato='citasfi';
+	//$wbasedato='citasfi';
 	// ENCABEZADO
 	if (!isset ($fecha2) or (isset ($fecha2) and $fecha2==''))
 	

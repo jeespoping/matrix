@@ -100,17 +100,23 @@
 </script>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
 /**********************************************************************************************************************  
 	   PROGRAMA : turfis.php
 	   Fecha de Liberacion : 2010-01-28
 	   Autor : Ing. Pedro Ortiz Tamayo
-	   Version Actual : 2014-12-30
+	   Version Actual : 2022-04-18
 	   
 	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface grafica que permite grabar los turnos de las
 	   Terapuetas de la unidad de Fisiatria.
 	   
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   .2022-04-18
+	   		Se cambia el nombre de la tabla citasfi en sql por el noimbre enviado en la variable $empresa,
+			el cual se envia en la url de la aplicación para que funcione como
+			multisede ejemplo: novfis.php?empresa=citasfi
+	   
 	   .2014-12-30
 	   		Se modifico el programa para que cuando se modifique o actulice un registro de lock a la tabla 17.
 	   		Se publico el programa InfoTurFis.php, el cual no se encontraba en producción y estaba generando
@@ -339,8 +345,9 @@ if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
+	encabezado("TURNOS DE FISIOTERAPIA", '2022-04-21', "clinica"); 
 	$key = substr($user,2,strlen($user));
-	echo "<form name='Turfis' action='Turfis.php' method=post>";	
+	echo "<form name='Turfis' action='Turfis.php?empresa=".$empresa.""."&wemp_pmla=".$wemp_pmla."' method=post>";	
 
 	echo "<center><input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	if($ok == 99)
@@ -351,9 +358,10 @@ else
 			function ira(){document.Turfis.wfecha.focus();}
 		</script>
 		<?php
-		echo "<tr><td align=center colspan=7><IMG SRC='/matrix/images/medical/citas/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=right colspan=7><font size=2>Ver. 2014-12-30 </font></td></tr>";
-		echo "<tr><td align=center colspan=7 id=tipo14><b>TURNOS DE FISIOTERAPIA</td></tr>";
+  		//echo "<tr><td align=center colspan=7><IMG SRC='/matrix/images/medical/citas/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=right colspan=7><font size=2>Ver. 2014-12-30 </font></td></tr>";
+		echo "<tr><td align=center colspan=7 id=tipo14><b>TURNOS DE FISIOTERAPIA</td></tr>"; 
+		
 		if (!isset($wfecha))
 			$wfecha=date("Y-m-d");
 		if (!isset($wcedT))
@@ -406,7 +414,7 @@ else
 			Zapatec.Calendar.setup({weekNumbers:false,showsTime:true,timeFormat:'12',electric:false,inputField:'wfecha',button:'trigger1',ifFormat:'%Y-%m-%d',daFormat:'%Y/%m/%d'});	
 		//]]></script>
 		<?php
-		echo "<td bgcolor='#cccccc'  align=center><b>BUSQUEDA : </b><A HREF='/MATRIX/citas/reportes/busfis.php?empresa=".$empresa."' target='_blank'><IMG SRC='/MATRIX/images/medical/Citas/find.gif'></A></td><td bgcolor='#cccccc'  align=center><b>CANCELACION : </b><A HREF='/MATRIX/citas/procesos/canfis.php?empresa=".$empresa."' target='_blank'><IMG SRC='/MATRIX/images/medical/Citas/cancelar.PNG'></A></td><td bgcolor='#cccccc' rowspan=2><input type='submit' value='IR'></td></tr>";
+		echo "<td bgcolor='#cccccc'  align=center><b>BUSQUEDA : </b><A HREF='/MATRIX/citas/reportes/busfis.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."' target='_blank'><IMG SRC='/MATRIX/images/medical/Citas/find.gif'></A></td><td bgcolor='#cccccc'  align=center><b>CANCELACION : </b><A HREF='/MATRIX/citas/procesos/canfis.php?empresa=".$empresa."' target='_blank'><IMG SRC='/MATRIX/images/medical/Citas/cancelar.PNG'></A></td><td bgcolor='#cccccc' rowspan=2><input type='submit' value='IR'></td></tr>";
 		echo "<tr><td align=center colspan=7 bgcolor='#cccccc'><b>Terapeuta : ";
 		$query = "SELECT Codigo, Nombre  from  ".$empresa."_000015 where estado='on' order by Nombre";
 		$err = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
@@ -694,7 +702,7 @@ else
 							$Grid[$i][$j]["for"]=1;
 						}
 				$Grid[$i][$j]["alt"]=$Data[$i][$j]["msg"];
-				$Grid[$i][$j]["url"]="Turfis.php?ok=9&wfecha=".$Grid[0][$j]["tex"]."&wter=".$wter."&whin=".$Grid[$i][0]["tex"]."&wmax=".$Data[$i][$j]["tpa"]."&empresa=citasfi&wtipo=".$Data[$i][$j]["msg"]."&wcedT=".$wcedT."&wnomT=".$wnomT."&wresT=".$wresT;
+				$Grid[$i][$j]["url"]="Turfis.php?ok=9&wfecha=".$Grid[0][$j]["tex"]."&wter=".$wter."&whin=".$Grid[$i][0]["tex"]."&wmax=".$Data[$i][$j]["tpa"]."&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wtipo=".$Data[$i][$j]["msg"]."&wcedT=".$wcedT."&wnomT=".$wnomT."&wresT=".$wresT;
 			}
 		}
 		if(isset($wter) and $wter != "SELECCIONAR")
@@ -724,7 +732,7 @@ else
 						$image3 = $Data[$i][$j]["msg"];
 						if($Grid[$i][$j]["bac"].$Grid[$i][$j]["for"] != 21)
 						{ 
-							echo "<td id=".$tipo." ondblclick='ejecutar(".chr(34)."/matrix/citas/procesos/InfoTurFis.php?wfecha=".$Grid[0][$j]["tex"]."&wter=".$wter."&whin=".$Grid[$i][0]["tex"]."&wmax=".$Data[$i][$j]["tpa"]."&empresa=citasfi".chr(34).",1)'><A HREF='".$Grid[$i][$j]["url"]."'>".$image1." de ".$image2." - ".$image3."</A></td>"; 
+							echo "<td id=".$tipo." ondblclick='ejecutar(".chr(34)."/matrix/citas/procesos/InfoTurFis.php?wfecha=".$Grid[0][$j]["tex"]."&wter=".$wter."&whin=".$Grid[$i][0]["tex"]."&wmax=".$Data[$i][$j]["tpa"]."&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."".chr(34).",1)'><A HREF='".$Grid[$i][$j]["url"]."'>".$image1." de ".$image2." - ".$image3."</A></td>"; 
 						}
 						else
 						{ 
@@ -742,9 +750,10 @@ else
 	else
 	{
 		
-		echo "<table border=0 align=center id=tipo2>";
-		echo "<tr><td align=center colspan=6><IMG SRC='/matrix/images/medical/citas/logo_".$empresa.".png'></td></tr>";
-		echo "<tr><td align=right colspan=6><font size=2>Ver. 2014-12-30 </font></td></tr>";
+  		echo "<table border=0 align=center id=tipo2>";
+		//echo "<tr><td align=center colspan=6><IMG SRC='/matrix/images/medical/citas/logo_".$empresa.".png'></td></tr>";
+		//echo "<tr><td align=right colspan=6><font size=2>Ver. 2014-12-30 </font></td></tr>"; 
+
 		//******* INICIALIZACION DEL SISTEMA *********
 		if(isset($ok) and $ok == 9)
 			$ok=0;
@@ -957,7 +966,7 @@ else
 		echo "<td bgcolor=#cccccc colspan=2 align=center><input type='RADIO' name=ok value=1 checked onclick='enter()'><b>PROCESO</b></td>";
 		echo "<td bgcolor=#cccccc colspan=2 align=center><input type='RADIO' name=ok value=2 onclick='enter()'><b>GRABAR</b></td></tr>";
 		echo "<tr><td bgcolor=#999999 colspan=4 align=center><input type='submit' value='OK'></td></tr>";
-		echo "<tr><td bgcolor=#ffffff colspan=4 align=center><A HREF='/MATRIX/citas/Procesos/Turfis.php?ok=99&root=1&empresa=".$empresa."&wfecha=".$wfecha."&wter=".$wter."&wcedT=".$wcedT."&wnomT=".$wnomT."&wresT=".$wresT."'><IMG SRC='/matrix/images/medical/movhos/pac.png' alt='Lista'><br>Lista</A></td></tr></table><br><br></center>";
+		echo "<tr><td bgcolor=#ffffff colspan=4 align=center><A HREF='/MATRIX/citas/Procesos/Turfis.php?ok=99&root=1&empresa=".$empresa."&wemp_pmla=".$wemp_pmla."&wfecha=".$wfecha."&wter=".$wter."&wcedT=".$wcedT."&wnomT=".$wnomT."&wresT=".$wresT."'><IMG SRC='/matrix/images/medical/movhos/pac.png' alt='Lista'><br>Lista</A></td></tr></table><br><br></center>";
 		if(isset($werr) and isset($e) and $e > -1)
 		{
 			echo "<br><br><center><table border=0 aling=center id=tipo2>";

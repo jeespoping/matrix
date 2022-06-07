@@ -61,6 +61,26 @@
 </script>
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+/**********************************************************************************************************************  
+	   PROGRAMA : turfis.php
+	   Fecha de Liberacion :  Sin información
+	   Autor : Sin información
+	   Version Actual : 2022-04-18
+	   
+	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface grafica que permite consultar los horarios de 
+	   fisioterapia.
+
+	   REGISTRO DE MODIFICACIONES :
+	   .2022-04-18
+	   		Se cambia el nombre de la tabla citasfi en sql por el noimbre enviado en la variable $empresa,
+			el cual se envia en la url de la aplicación para que funcione como
+			multisede ejemplo: novfis.php?empresa=citasfi
+	   		
+
+***********************************************************************************************************************/
+
+
 function ultimoDia($mes,$ano){ 
     $udia=28; 
     while (checkdate($mes,$udia + 1,$ano)){ 
@@ -68,13 +88,14 @@ function ultimoDia($mes,$ano){
     } 
     return $udia; 
 }
-echo "<center>";
+/* echo "<center>";
 echo "<table border=0 align=center>";
 echo "<tr><td align=center bgcolor='#cccccc'><A NAME='Arriba'><font size=6><b>Horarios De Fisioterapia</b></font></a></tr></td>";
 echo "<tr><td align=center bgcolor='#cccccc'><font size=2> <b> Novfis.php Ver. 2010-01-14</b></font></tr></td></table>";
-echo "</center>";
+echo "</center>"; */
+encabezado("Horarios De Fisioterapia", '2022-04-21', "clinica"); 
 $wfec=date("Y-m-d");
-echo "<form name='Novfis' action='Novfis.php' method=post>";
+echo "<form name='Novfis' action='Novfis.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."' method=post>";
 session_start();
 if(!isset($_SESSION['user']))
 	echo "Error Usuario NO Registrado";
@@ -115,7 +136,7 @@ else
 				{
 					$fecha = date("Y-m-d");
 					$hora = (string)date("H:i:s");
-	        		$query = "insert ".$empresa."_000016 (medico,fecha_data,hora_data, Terapeuta, Fecha_I, Fecha_F, Dia, Hora_inicial, Personas, Adicionales, Tipo, Estado,seguridad) values ('citasfi','".$fecha."','".$hora."','".substr($wter,0,strpos($wter,"-"))."','".$Wfechai."','".$Wfechaf."',".$dia.",'".$HI."',".$wper[$i][$j].",".$wadi[$i][$j].",'".$wtip[$i][$j]."','on','C-citasfi')";
+	        		$query = "insert ".$empresa."_000016 (medico,fecha_data,hora_data, Terapeuta, Fecha_I, Fecha_F, Dia, Hora_inicial, Personas, Adicionales, Tipo, Estado,seguridad) values ('".$empresa."','".$fecha."','".$hora."','".substr($wter,0,strpos($wter,"-"))."','".$Wfechai."','".$Wfechaf."',".$dia.",'".$HI."',".$wper[$i][$j].",".$wadi[$i][$j].",'".$wtip[$i][$j]."','on','C-".$empresa."')";
 					$err1 = mysql_query($query,$conex) or die(mysql_errno().":".mysql_error());
 				}
 			}
