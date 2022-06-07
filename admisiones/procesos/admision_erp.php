@@ -3381,13 +3381,11 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 									}
 								}
 							}
-
+							//en la iteracion verificamos si cada elemento del array existe el estado del ['pac_act'], si es asi, le cambiamos el valor a OFF, ya que muchos de los ingresos anteriores ya estan inactivos, excepto el mas reciente (en algunos casos) --> se compara con el estado del paciente.
 							$data[ 'infoing' ][$i] = $data[ 'infopac' ];
-
-							
-
-							var_dump($data[ 'infoing' ][$i]);
-
+							if($data[ 'infoing' ][$i]['pac_act']){
+								$data[ 'infoing' ][$i]['pac_act'] = 'off'; 
+							}
 
 							if( $rows1['Ingcai' ] == '02' ){
 								consultarAccidentesAlmacenados( $rows['Pachis'], $rows1['Ingnin'], $data );
@@ -3754,8 +3752,6 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 											}
 											/*fin nombres de los cco*/
 										}
-
-										end($data['infoing']); 
 									}
 									else
 									{
@@ -3775,6 +3771,8 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 							// array_push( $data[ 'infoing' ][$i], $data[ 'infopac' ] );
 						}//for
 
+						$statusPac = $data['infopac']['pac_act']; //obtiene el estado del paciente
+						$data['infoing'][count($data['infoing']) -1]['pac_act'] = $statusPac; //obtenemos el ultimo elemento del array $data['infoing'] y le cambiamos es status del paciente pac_act
 					}//$num1>0
 					else
 					{
