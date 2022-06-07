@@ -14,7 +14,7 @@ else
   $array_user_aux = explode("-",$sesion_usuario);
 
 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz = "Enero 21 de 2022"; // Ultima fecha de actualizacion de este programa
+  $wactualiz = "Abril 21 de 2022"; // Ultima fecha de actualizacion de este programa
 // =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
 //-----------------------------------------------------------------------------------------------------
@@ -207,6 +207,7 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 //=========================================================================================================================================\\
 //En este programa se registran las diferentes dietas por servicio y pacientes de la clinica.                                              \\
 //=========================================================================================================================================\\
+//2022-04-21 Giovanny Velasco Cardona: Se agrega funcionalidad "consultar_costo_patron_edad" para consultar que el paciente esté en los rangos de edad del tipo de dieta específica.
 //2022-01-21 Sebastian Alvarez Barona : Se agrega funcionalidad al select de sede
 // para que cuando seleccionemos la sede nos filtre los correspondientes centros de costos.
 //=========================================================================================================================================\\
@@ -1574,6 +1575,24 @@ function generarQueryCombinado($variables, $tabla, $filtro, $filtro_aux)
 
                                             alert('No es posible hacer la combinación ya que no ha seleccionado el paciente como postquirúrgico, favor seleccione el cajón de postquirúrgico y luego seleccione otro patrón o patrones.');
                                             return false;
+                                            }
+                                            if(x == 32)
+                                            {
+                                                cajon.style.backgroundColor="";
+                                                document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
+                                                var dato_media_porcion = document.getElementById("dato_media_porcion").value;
+                                                var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
+                                                alert('El patron **'+ patron +'** no está registrado, o se encuentra fuera del rango de edades del paciente');
+                                                return false;
+                                            }
+                                            if(x == 59)
+                                            {
+                                                cajon.style.backgroundColor="";
+                                                document.getElementById("patron_grid"+f.toString()+"-"+c.toString()).checked=false;
+                                                var dato_media_porcion = document.getElementById("dato_media_porcion").value;
+                                                var media_porcion = document.getElementById("media_porcion"+f.toString()+"-"+dato_media_porcion).disabled=true;
+                                                alert('El paciente se encuentra en el rango de edades del patron **'+ patron +'** pero el costo está inactivo');
+                                                return false;
                                             }
 
                                            if (x == 31)// Este caso se da por la combinacion del resultado de las funciones traer_costo_del_patron_asociado y traer_costo_del_patron, ya que no hay costo para el servicio actual ni para el asociado.
@@ -9318,7 +9337,32 @@ function consultarservgrabado_dsn($whis, $wing, $wser, $wcco, $control_solicitud
 
      //==================================================================================================================
   //==================================================================================================================
-
+    // Consulta el costo del patrón por edad
+    function consultar_costo_patron_edad($wedad,$wser,$wpatron,$wtem)
+    {
+        global $wbasedato;
+        global $conex;
+        $q = " SELECT Cospat, Cosser, Cosedi, Cosest" 
+            ."  FROM ".$wbasedato."_000079"
+            ." WHERE Cospat = '".$wpatron."'"
+            ."  AND Cosser = '".$wser."'"
+            ."  AND costem LIKE '%".$wtem."%'"
+            ."  AND ".($wedad*12)."" 
+            ."  BETWEEN Cosedi and Cosedf";
+        $res_edad_patron = mysql_query($q,$conex) or die (mysql_errno().$q." - ".mysql_error());
+        $row_edad_patron = mysql_fetch_array($res_edad_patron);
+        $rows_edad_patron = mysql_num_rows($res_edad_patron);
+        if($rows_edad_patron == 0)
+        {   
+            return "32"; // Alerta javascript que muestra el mensaje "El paciente no está registrado, o se encuentra fuera del rango de edades"
+        }
+        elseif($row_edad_patron['Cosest'] == "off")
+        {
+            return "59"; // Alerta javascript que muestra el mensaje "El paciente se encuentra en el rango de edades pero está inactivo"
+        }
+    }
+   //==================================================================================================================
+//==================================================================================================================
   //Consulta datos sobre solicitudes de servicio actual.
   function consultar_patron_actual($whis, $wing, $wser, $wfec)
      {
@@ -9535,7 +9579,15 @@ function consultarTiempoRecargaMsg( $wemp_pmla ){
           //Funcion que consulta que patrones en la his e ing antes de hacer alguna operacion, para insertarlo en la auditoria.
           $wpatronesantes = consultar_patron_actual($whis, $wing, $wser, $wfec);
           $wdatopatrones = explode("-", $wpatronesantes);
-
+          // Consulta el costo del patrón por edad
+          if($wpatron !== "SI")
+            {
+                $edad_patron = consultar_costo_patron_edad($wedad,$wser,$wpatron,$wtem);
+                if($edad_patron)
+                  {
+                    return $edad_patron; //Alerta javascript que muestra un mensaje;
+                  }
+            }
           $wcombinables = consultar_combinables($wpatron).",".$wpatron; // Verifica con cuales patrones se puede combinar el patron seleccionado.
           $whorario_adicional = consultarHorario($wser, $wfec);  //Funcion que verifica si se esta en horario adicional.
           $wchequeados1=explode(",",$wchequeados);
