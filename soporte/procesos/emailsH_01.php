@@ -1010,14 +1010,14 @@
                                     $mail->Host = 'localhost';
                                     $mail->Host = 'smtp.gmail.com';                             // Specify main and backup SMTP servers
                                     $mail->SMTPAuth = true;                                     // Enable SMTP authentication
-                                    $mail->Username = 'honorarios@dos.correolasamericas.com';   // SMTP username
-                                    $mail->Password = 'honorarios2020';                               // SMTP password
+                                    $mail->Username = 'honorarios@lasamericas.com.co';   // SMTP username
+                                    $mail->Password = 'Honorarios2020';                               // SMTP password
                                     $mail->SMTPSecure = 'ssl';                                  // Enable TLS encryption, `ssl` also accepted
                                     $mail->Port = 465;
                                     $mail->isHTML(true);                                        // Set email format to HTML
                                     /////
                                     $mail->Subject = $asunto1;                                   //Asunto
-                                    $mail->setFrom('honorarios@dos.correolasamericas.com','Honorarios Clinica Las Americas');
+                                    $mail->setFrom('honorarios@lasamericas.com.co','Honorarios Clinica Las Americas');
 
                                     //SELECCIONAR LOS CORREOS QUE EL TERCERO TENGA REGISTRADO EN MATRIX:
                                     if($mail1 != null){$mail->AddAddress($mail1, $nombreTer);}
@@ -1327,14 +1327,14 @@
                                     $mail2->Host = 'localhost';
                                     $mail2->Host = 'smtp.gmail.com';                             // Specify main and backup SMTP servers
                                     $mail2->SMTPAuth = true;                                     // Enable SMTP authentication
-                                    $mail2->Username = 'honorarios@dos.correolasamericas.com'; // SMTP username
-                                    $mail2->Password = 'honorarios2020';                               // SMTP password
+                                    $mail2->Username = 'honorarios@lasamericas.com.co'; // SMTP username
+                                    $mail2->Password = 'Honorarios2020';                               // SMTP password
                                     $mail2->SMTPSecure = 'ssl';                                  // Enable TLS encryption, `ssl` also accepted
                                     $mail2->Port = 465;
                                     $mail2->isHTML(true);                                        // Set email format to HTML
                                     /////
                                     $mail2->Subject = $asunto2;                                  //Asunto
-                                    $mail2->setFrom('honorarios@dos.correolasamericas.com','Honorarios Clinica Las Americas');
+                                    $mail2->setFrom('honorarios@lasamericas.com.co','Honorarios Clinica Las Americas');
 
                                     //SELECCIONAR EMAIL(S) DESTINATARIO(S):
                                     if($terceroSelRep2 == null or $terceroSelRep2 == 'TODOS(*)')
@@ -1709,14 +1709,14 @@
                                         $mail3->Host = 'localhost';
                                         $mail3->Host = 'smtp.gmail.com';                             // Specify main and backup SMTP servers
                                         $mail3->SMTPAuth = true;                                     // Enable SMTP authentication
-                                        $mail3->Username = 'honorarios@dos.correolasamericas.com'; // SMTP username
-                                        $mail3->Password = 'honorarios2020';                               // SMTP password
+                                        $mail3->Username = 'honorarios@lasamericas.com.co'; // SMTP username
+                                        $mail3->Password = 'Honorarios2020';                               // SMTP password
                                         $mail3->SMTPSecure = 'ssl';                                  // Enable TLS encryption, `ssl` also accepted
                                         $mail3->Port = 465;
                                         $mail3->isHTML(true);                                        // Set email format to HTML
                                         /////
                                         $mail3->Subject = $asunto3;                                  //Asunto
-                                        $mail3->setFrom('honorarios@dos.correolasamericas.com','Honorarios Clinica Las Americas');
+                                        $mail3->setFrom('honorarios@lasamericas.com.co','Honorarios Clinica Las Americas');
 
                                         //SELECCIONAR EMAIL(S) DESTINATARIO(S):
                                         $queryMail3 = "select correo1,correo2,correo3,correo4,nombre,cednit from equipos_000016 WHERE cednit = '$cedNitMtx3'";
