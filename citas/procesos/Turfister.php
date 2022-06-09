@@ -104,13 +104,17 @@ include_once("conex.php");
 	   PROGRAMA : Turfister.php
 	   Fecha de Liberacion : 2011-06-29
 	   Autor : Ing. Pedro Ortiz Tamayo
-	   Version Actual : 2011-08-17
+	   Version Actual : 2022-04-18
 
 	   OBJETIVO GENERAL :Este programa ofrece al usuario una interface grafica que permite visualizar en forma matricial
 	   los pacientes que terminan tratamiento en la unidad de Fisiatria y deben ser facturados y los pacientes que
 	   que asisteron a la session.
 
 	   REGISTRO DE MODIFICACIONES :
+		.2022-04-18
+		Se cambia el nombre de la tabla citasfi en sql por el noimbre enviado en la variable $empresa,
+		el cual se envia en la url de la aplicación para que funcione como
+		multisede ejemplo: turfister.php?empresa=citasfi
 	   .2011-08-17
 	   		Release de Version Beta.
 
@@ -347,7 +351,7 @@ else
 	}
 	$H=array();
 	//                     0      1       2        3            4
-	$query  =  "select Terapeuta,Dia,Hora_inicial,tipo,(Personas+Adicionales) from citasfi_000016 ";
+	$query  =  "select Terapeuta,Dia,Hora_inicial,tipo,(Personas+Adicionales) from ".$empresa."_000016 ";
 	$query .= " where MONTH(fecha_i) = ".$month;
 	$query .= "  and YEAR(fecha_f) = ".$year;
 	$query .= "  order by 1,2,3,4,5 ";

@@ -248,6 +248,11 @@ $(document).ready(function()
 	/******************************************************************
 	 *  Modificaciones:
 	 * ================================================================================================================================================
+	 * Abril 26 de 2022
+	   Leandro Meneses. Cuando se consultan notas complementarias, en el enlace con la tabla movhos_000048 se filtran
+	   solo los registros activos medest = 'on'
+	 
+	 
 	 *	Enero 21 de 2022: Marlon Osorio
 							- Se parametrizo el centro de costos de Dispensacion Servicio Farmaceutico
 	  ================================================================================================================================================
@@ -1053,7 +1058,7 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 									$notas[$kn]=$row[4];
 									
 									$queryF  = " select Medtdo,Meddoc,Medreg,Medesp  from ".$wbasedato."_000048 ";
-									$queryF .= "  where Meduma ='".$row[5]."' ";
+									$queryF .= "  where Medest = 'on' and Meduma ='".$row[5]."' ";
 									$errF = mysql_query($queryF,$conex) or die(mysql_errno().":".mysql_error());
 									$numF = mysql_num_rows($errF);
 									if($numF > 0)
@@ -1664,7 +1669,7 @@ function imprimir($conex,&$empresa,&$queryI,&$whis,&$wing,&$key,&$en,&$wintitulo
 							$kn++;
 							$notas[$kn]=$row[4];
 							$queryF  = "select Medtdo,Meddoc,Medreg,Firrol  from ".$wbasedato."_000048, ".$empresa."_000036 ";
-							$queryF .= "   where Meduma = '".$row[5]."' ";
+							$queryF .= "   where Medest = 'on' and  Meduma = '".$row[5]."' ";
 							$queryF .= " 	and Meduma = Firusu ";
 							$queryF .= " 	and Firpro = '".$wforant."' ";
 							$queryF .= " 	and Firhis = '".$whis."' "; 

@@ -9,6 +9,7 @@ include_once("conex.php");
  Muestra los pacientes que son trasladados desde urgencias.
 
  CAMBIOS:
+  29 de abril de 2022 - Sebastian Alvarez Barona: Se comenta fecha_data de la consulta en la funcion consultarSolicitudCamas($whis, $fecha).
   25 enero 2022 - Diego Torres: Se actualiza variable hora_asigcama a su valor normal y se le quita el valor por defecto que se le estaba pasando de Hora_cumplimiento.
   25 Febrero 2019:      Arleyda I.C. Migración realizada.
   03 octubre 2012:  	Ahora el rango de fechas se hace de la tabla 0000_17 y no de la 0000_18. Este cambio implica tener en cuenta
@@ -56,7 +57,7 @@ if(! isset($_REQUEST['action'] )){
 	$conex = obtenerConexionBD("matrix");
 	$wccosSU = consultaCentrosCostos("ccohos = 'on' AND ccourg != 'on'", true);
 	$wccos = consultaCentrosCostos("ccohos ");
-	$wactualiz = "2012-10-03";
+	$wactualiz = "29 de abril de 2022";
 
 	//FIN***************************************************************//
 
@@ -86,8 +87,14 @@ if(! isset($_REQUEST['action'] )){
 				  ."FROM ".$wbasedatoCamas."_000003 "
 			     ."WHERE central = 'CAMAS' "
 				 ."AND Anulada ='No' "
-				 ."AND (Habitacion like '%".$whis."%' OR Observacion like '%".$whis."%')"
-				." AND Fecha_data = '".$fecha."'";
+				 ."AND Historia = '".$whis."' ORDER BY Fecha_data";
+		
+		// $query = "SELECT Solicito, Usu_central, Fecha_data, Hora_data, Fecha_cumplimiento, Hora_asigcama "
+		// 		  ."FROM ".$wbasedatoCamas."_000003 "
+		// 	     ."WHERE central = 'CAMAS' "
+		// 		 ."AND Anulada ='No' "
+		// 		 ."AND (Habitacion like '%".$whis."%' OR Observacion like '%".$whis."%')";
+				// ." AND Fecha_data = '".$fecha."'";
 		
 		$res = mysql_query($query, $conex);
 		$num = mysql_num_rows($res);
@@ -870,6 +877,7 @@ if(! isset($_REQUEST['action'] )){
 		
 		echo "<br>";
 		echo '<input type="button" id="consultar" value="Consultar"></input>';
+		echo '&nbsp;<input type="button" id="exportar" value="Exportar"></input>';
 		echo '</div>';
 		echo '<br><br>';
 		echo '<div id="resultados"></div>';
@@ -952,8 +960,12 @@ if(! isset($_REQUEST['action'] )){
 				
 				//agregar eventos a campos de la pagina
 				$("#consultar").click(function() {
-					realizarConsulta();
+					realizarConsulta(1);
 				});
+
+				$("#exportar").click(function() {
+					realizarConsulta(2);
+				});	
 				
 				$("#enlace_retornar").click(function() {
 					restablecer_pagina();
@@ -1037,7 +1049,7 @@ if(! isset($_REQUEST['action'] )){
 				$('#resultados').html("");
 			}
 			
-			function realizarConsulta(){
+			function realizarConsulta(opc){
 				//muestra el mensaje de cargando
 				$.blockUI({ message: $('#msjEspere') });
 				
@@ -1061,7 +1073,25 @@ if(! isset($_REQUEST['action'] )){
 						//imprime resultado
 						$('#resultados').html(data);
 						//lleva mens. emergente a los elementos con la clase msg_tooltip
-						$(".msg_tooltip").tooltip({track: true, delay: 0, showURL: false, opacity: 0.95, left: -50 });						
+						$(".msg_tooltip").tooltip({track: true, delay: 0, showURL: false, opacity: 0.95, left: -50 });	
+						
+						if (opc==2)
+						{
+							//Creamos un Elemento Temporal en forma de enlace
+				            var tmpElemento = document.createElement('a');
+				            var data_type   = 'data:application/vnd.ms-excel'; //Formato anterior xls
+
+				            // Obtenemos la información de la tabla
+				            var tabla_div = document.getElementById('tabla_resultados');
+				            var tabla_html = tabla_div.outerHTML.replace(/ /g, '%20');
+				            
+				            tmpElemento.href = data_type + ', ' + tabla_html;
+				            //Asignamos el nombre a nuestro EXCEL
+				            tmpElemento.download = 'rep_trasladosUrgencias.xls';
+				            // Simulamos el click al elemento creado para descargarlo
+				            tmpElemento.click();
+			            }
+						
 					});			
 			}
 		</script>

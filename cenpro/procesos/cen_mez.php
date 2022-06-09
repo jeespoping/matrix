@@ -534,38 +534,6 @@ function actualizarFraccionArticulo( $articulo, $fraccion, $unidad, $tiempoVenci
 		return false;
 	}
 }
-
-/**
- * Hallo el codigo del centro de costos de central de Mezclas
- * @return unknown_type
- */
-function centroCostosCM(){
-	
-	global $conex;
-	global $bd;
-	
-	$sql = "SELECT
-				Ccocod
-			FROM
-				".$bd."_000011
-			WHERE
-				ccofac LIKE 'on' 
-				AND ccotra LIKE 'on' 
-				AND ccoima !='off' 
-				AND ccodom !='on'
-			";
-	
-	$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-	if ( mysql_num_rows($res) > 1 )
-	{
-		return "Hay más de 1 centro de costos con los mismos parámetros";
-	}
-	$rows = mysql_fetch_array( $res );
-	return $rows[ 'Ccocod' ];
-	
-}
-
-
 /**
  * Para productos que no son Nutriciones, se suma todos los insumos con la misma presentación, para calcular la Fraccion del articulo
  * @param $unidad		Unidad
@@ -6367,7 +6335,7 @@ else
 	$pos = strpos($user,"-");
 	$wusuario = substr($user,$pos+1,strlen($user)); //extraigo el codigo del usuario
 	
-	$wactualiz = "Noviembre 19 de 2019";
+	$wactualiz = "Abril 16 del 2022";
 	encabezado("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica");
 	pintarManuales($wusuario);
 	
@@ -6481,7 +6449,7 @@ else
 						$fraccion =  consultarFraccionProducto( $unidad, $inslis );
 						
 						$unidad = explode( "-", $unidad );
-						$cco = centroCostosCM();
+						$cco = ccoUnificadoCM();
 						
 						list( $viaAux ) = explode( "-", $via );
 						$viaCM = consultarViaMovhos( $conex, $bd, trim( $viaAux ) );
@@ -6560,7 +6528,7 @@ else
 						$unidad = consultarUnidadInsumoMaximo($inslis);
 						$unidad = explode( "-", $unidad );
 						
-						$cco = centroCostosCM();
+						$cco = ccoUnificadoCM();
 						list( $viaAux ) = explode( "-", $via );
 						$viaCM = consultarViaMovhos( $conex, $bd, trim( $viaAux ) );
 						registrarFraccion( $productos[0]['cod'], $vol+(float)$purga, $unidad[0], intval((float)$tve/24), $viaCM, $cco );
@@ -6685,7 +6653,7 @@ else
 					//2007-07-09 se agrega que se pueda modificar foto y neve
 					modificarProducto($productos[0]['cod'], $productos[0]['nom'], $productos[0]['gen'], $presentacion, $via, $tin, $tve, $fecha, $exp[0], $des, $foto, $neve, $peso, $purga);
 					
-					$cco = centroCostosCM();
+					$cco = ccoUnificadoCM();
 					$unidad = consultarUnidadInsumoMaximo($inslis);
 					
 					
@@ -7260,7 +7228,7 @@ else
 	
 	//se va a realizar el descarte de las vias que se debe hacer diariamente
 	//$cco = "SELECT Ccocod FROM ".$wmovhos."_000011 WHERE ccofac LIKE 'on' AND ccotra LIKE 'on' and ccoima !='off' AND ccodom !='on';";
-	$cco = centroCostosCM();
+	$cco = ccoUnificadoCM();
 	realizarDescarte($cco, $wusuario);
 
 	if($NPT_tiempoInfusion!="")

@@ -1354,19 +1354,19 @@ function compararprefijo($conex, $wbasedato_cliamep,$wbasedato_cliame,$wbasedato
     
     $prefijo = '';
     
-    $q1 = "SELECT  Ingsei
-    FROM    {$wbasedato_cliame}_000101 AS c101
-    WHERE   c101.inghis = '{$whistoria}' AND c101.Ingnin = '{$wingreso}'";
+    $q1 = "SELECT  Ubisac
+    FROM    {$wbasedato_movhos}_000018 AS m18
+    WHERE   m18.Ubihis = '{$whistoria}' AND m18.Ubiing = '{$wingreso}'";
     $result1 = mysql_query($q1,$conex);
     $row1 = mysql_fetch_assoc($result1);
 
     $q2 = "SELECT  Ccopic
     FROM    {$wbasedato_movhos}_000011
-    WHERE   Ccocod = '{$row1['Ingsei']}'";
+    WHERE   Ccocod = '{$row1['Ubisac']}'";
     $result2 = mysql_query($q2,$conex);
 
 
-    if ($result2 = mysql_query($q2,$conex)){
+    if ($result2){
         $row2 = mysql_fetch_assoc($result2);
         $num2 = mysql_num_rows($result2);
             if ($num2 == 0 || !$row2 || $row2["Ccopic"] == '' || empty($row2["Ccopic"])){

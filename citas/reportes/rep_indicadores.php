@@ -34,8 +34,8 @@ include_once("conex.php");
 //FECHA CREACION			  :ABRIL 17 DE 2011.                                                                                            |
 //FECHA ULTIMA ACTUALIZACION  :17 de Marzo de 2011.                                                                                         |
 //TABLAS UTILIZADAS :                                                                                                                       |
-//citasfi_000009      : Tabla de Citas.
-//citasfi_000002      : Tabla de Empresas.                                                                                 |
+//".$empresa."_000009      : Tabla de Citas.
+//".$empresa."_000002      : Tabla de Empresas.                                                                                 |
 //==========================================================================================================================================
 include_once("root/comun.php");
 $conex = obtenerConexionBD("matrix");
@@ -72,7 +72,7 @@ else
 
 
  //Forma
- echo "<form name='forma' action='rep_indicadores.php' method='post'>";
+ echo "<form name='forma' action='rep_indicadores.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."' method='post'>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
  
  if (!isset($fec1) or !isset($fec2))
@@ -156,7 +156,7 @@ else
 	   echo "<br>";
 	   
 	  
-	   $query = " select (DATEDIFF(citasfi_000008.Fecha,citasfi_000008.Fecha_DATA)) "
+	   $query = " select (DATEDIFF(".$empresa."_000008.Fecha,".$empresa."_000008.Fecha_DATA)) "
 	           ."   FROM ".$empresa."_000008, ".$empresa."_000009 "
 	           ."  WHERE ".$empresa."_000008.Fecha between '".$fec1."' and '".$fec2."'" 
 	           ."    AND ".$empresa."_000008.fecha=".$empresa."_000009.fecha"
