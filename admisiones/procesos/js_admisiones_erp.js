@@ -3018,7 +3018,7 @@ function navegacionIngresos(incremento) {
 
 		//Muestra datos para el navegador inferior
 		$("#spTotalReg").html(data.numRegistrosPac);// numero de registros encontrados en la busqueda
-		$("#spTotalIng").html(data.numRegistrosIng[data.infoing[data.posAct].pac_his]); //total ingresos encontrados
+		$("#spTotalIng").html(data.ultimoIngreso[data.infoing[data.posAct].pac_his]); //total ingresos encontrados
 		$("#spRegAct").html(data.numPosicionHistorias[data.infoing[data.posAct].pac_his] + 1); //resultado actual
 
 		$("#spHisAct").html(data.infoing[data.posAct].pac_his); //historia del registro actual
