@@ -421,23 +421,18 @@
 
 		$respuesta = odbc_exec($conex_unix, $sql);
 
-		if( $respuesta && isset($respuesta) )
+		if( is_resource($respuesta) )
 		{
-			$result_array_response = odbc_fetch_array($respuesta);
+			while ($fila = odbc_fetch_array($respuesta)) {
+				
+				$fila['cuenta_cobro'] = consultarCuentaCobro($conex_unix, $fila['prefijo'], $fila['numero_factura']);
 
-			if( !empty( $result_array_response ) )
-			{
-				while ($fila = odbc_fetch_array($respuesta)) {
-					
-					$fila['cuenta_cobro'] = consultarCuentaCobro($conex_unix, $fila['prefijo'], $fila['numero_factura']);
-
-					array_push($result, convertKeysToCamelCase( $fila ));
-				}
+				array_push($result, convertKeysToCamelCase( $fila ));
 			}
-			else
-			{
-				$result = null;
-			}
+		}
+		else
+		{
+			$result = null;
 		}
 
 		return $result;
@@ -466,23 +461,19 @@
 
 		$respuesta = odbc_exec($conex_unix, $sql);
 		
-		if( $respuesta )
+		if( is_resource($respuesta) )
 		{
-			$result_array_response = odbc_fetch_array($respuesta);
-
-			if( !empty( $result_array_response ) )
+			while ($fila = odbc_fetch_array($respuesta))
 			{
-				while ($fila = odbc_fetch_array($respuesta)) {
-					if( isset( $fila['cuenta_cobro'] ) )
-					{
-						$response = $fila['cuenta_cobro'];
-					}
+				if( isset( $fila['cuenta_cobro'] ) )
+				{
+					$response = $fila['cuenta_cobro'];
 				}
 			}
-			else
-			{
-				$response = null;
-			}
+		}
+		else
+		{
+			$response = null;
 		}
 
 		return $response;

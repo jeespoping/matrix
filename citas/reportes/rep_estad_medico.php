@@ -50,7 +50,13 @@ function pintar($med,$cant)
 //FECHA CREACION			  :ABRIL 21 DE 2010.                                                                                            |
 //FECHA ULTIMA ACTUALIZACION  :21 de Abril de 2010.                                                                                         |
 //TABLAS UTILIZADAS :                                                                                                                       |
-//citasfi_000009      : Tabla de Citas.                                                                                 |
+//citasfi_000009      : Tabla de Citas.       
+/*
+	.2022-04-18
+	Se cambia el nombre de la tabla citasfi en sql por el noimbre enviado en la variable $empresa,
+	el cual se envia en la url de la aplicación para que funcione como
+	multisede ejemplo: turfister.php?empresa=citasfi
+*/                                                                         
 //==========================================================================================================================================
 include_once("root/comun.php");
 $conex = obtenerConexionBD("matrix");
@@ -87,7 +93,7 @@ else
  
 
  //Forma
- echo "<form name='forma' action='rep_estad_medico.php' method='post'>";
+ echo "<form name='forma' action='rep_estad_medico.php?empresa=".$empresa."&wemp_pmla=".$wemp_pmla."' method='post'>";
  echo "<input type='HIDDEN' NAME= 'usuario' value='".$wuser."'/>";
  
  if (!isset($te) or $te=='' or!isset($me) or $me=='' or !isset($fec1) or !isset($fec2))

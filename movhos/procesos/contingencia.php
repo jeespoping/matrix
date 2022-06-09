@@ -1157,10 +1157,10 @@ function cargarArticulos( $conex, $wbasedato, $historia, $articulo, $fechaKardex
 			for( $i = 0; $i < $articulo[ 'Condis' ]; $i++ ){
 				//Se carga de a uno para no validar cantidades maximas de medicamentos ni especiales
 				if( $tieneCpx ){
-					$url = "/matrix/movhos/procesos/cargoscpx.php?emp=$wemp_pmla&bd=$wbasedato&tipTrans=C&wemp=$wemp_pmla&cco[cod]={$ccoOrigen}&historia=$historia&fecDispensacion=$fecha&artcod={$articulo['Conart']}&art[can]=1&art[max]=1&artValido=1&art[cva]=0&art[ini]={$articulo['Conart']}&ke=1&procesoContingencia=on&marcaContingencia=C&art[uni]=$unidad";
+					$url = "/matrix/movhos/procesos/cargoscpx.php?wemp_pmla=$wemp_pmla&bd=$wbasedato&tipTrans=C&wemp=$wemp_pmla&cco[cod]={$ccoOrigen}&historia=$historia&fecDispensacion=$fecha&artcod={$articulo['Conart']}&art[can]=1&art[max]=1&artValido=1&art[cva]=0&art[ini]={$articulo['Conart']}&ke=1&procesoContingencia=on&marcaContingencia=C&art[uni]=$unidad";
 				}
 				else{
-					$url = "/matrix/movhos/procesos/cargos.php?emp=$wemp_pmla&bd=$wbasedato&tipTrans=C&wemp=$wemp_pmla&cco[cod]={$ccoOrigen}&historia=$historia&fecDispensacion=$fecha&artcod={$articulo['Conart']}&art[can]=1&art[max]=1&artValido=1&art[cva]=0&art[ini]={$articulo['Conart']}&ke=1&procesoContingencia=on&marcaContingencia=C&art[uni]=$unidad";
+					$url = "/matrix/movhos/procesos/cargos.php?wemp_pmla=$wemp_pmla&bd=$wbasedato&tipTrans=C&wemp=$wemp_pmla&cco[cod]={$ccoOrigen}&historia=$historia&fecDispensacion=$fecha&artcod={$articulo['Conart']}&art[can]=1&art[max]=1&artValido=1&art[cva]=0&art[ini]={$articulo['Conart']}&ke=1&procesoContingencia=on&marcaContingencia=C&art[uni]=$unidad";
 				}
 				
 				//$mensajes .= "<br><br>historia: $historia. Url enviado por ajax: ".$url;

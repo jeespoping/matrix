@@ -28,13 +28,11 @@ table.sample td {
 </head>
 <body BGCOLOR="FFFFFF">
 <BODY TEXT="#000066">
-<center>
-<table border=0 align=center>
-<tr><td align=center bgcolor="#cccccc"><A NAME="Arriba"><font size=5>AJUSTE AUTOMATICO DE INVENTARIO CENTRAL DE MEZCLAS</font></a></tr></td>
-<tr><td align=center bgcolor="#cccccc"><font size=2> <b>planilla3.php Ver. 1.00</b></font></tr></td></table></br>
-</center> 
 <?php
 /********************************************************************************************************************************
+ * Actualización:   2022-04-16 - Marlon.Osorio:		-Se cambia las funciones consultarccoCM y consultarCcoSF por la version unificada 
+ *							 						del comun.php
+ *													-Se Ajusta el encabezado, la version y se retira etiquetas HTML <Promotora Medica las Americas
  * 
  * Actualización: 	2021-07-08 - sebastian.nevado: Se reemplaza el "C-cenpro" del campo Seguridad las inserciones en base de datos 
  * 						para que indique el usuario que realiza la acción.
@@ -47,31 +45,11 @@ include_once("root/comun.php");
 $empresa = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cenmez" );
 $bdMovhos  = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
 
-function centroCostosCM()
-	{
-		global $conex;
-		global $bdMovhos;
-		
-		$sql = "SELECT
-					Ccocod
-				FROM
-					".$bdMovhos."_000011
-				WHERE
-					ccofac LIKE 'on'
-					AND ccotra LIKE 'on'
-					AND ccoima !='off'
-					AND ccodom !='on'
-				";
-		
-		$res= mysql_query( $sql, $conex ) or die( mysql_errno()." - Error en el query $sql - ".mysql_error() );
-		
-		if ( mysql_num_rows($res) > 1 )
-	{
-		return "Hay más de 1 centro de costos con los mismos parámetros";
-	}
-	$rows = mysql_fetch_array( $res );
-	return $rows[ 'Ccocod' ];
-	}
+$wactualiz =  "Abril 26 del 2022";
+$wtitulo = "AJUSTE AUTOMATICO DE INVENTARIO CENTRAL DE MEZCLAS";
+
+$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+encabezado( $wtitulo, $wactualiz, $institucion->baseDeDatos, FALSE );
 
 function calcularProducto($cantidad, $lote, $signo, $ano, $mes)
 {
@@ -196,12 +174,12 @@ else
 	echo "<form name='planilla' action='planilla3.php?wemp_pmla=".$wemp_pmla."' method=post>";
 	echo "<input type='hidden' id='wemp_pmla' name='wemp_pmla' value='".$wemp_pmla."'>";
 	//echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	$cco = centroCostosCM();
+	$cco = ccoUnificadoCM();
 
 	if (!isset($fec))
 	{
 		echo "<center><table border=0>";
-		echo "<tr><td align=center colspan=2><b>PROMOTORA MEDICA LAS AMERICAS S.A.<b></td></tr>";
+		
 		echo "<tr><td bgcolor=#cccccc align=center>Fecha de inventario</td>";
 		echo "<td bgcolor=#cccccc align=center><input type='TEXT' name='fec' value='".date('Y-m-d')."' size=10 ></td></tr>";
 		echo "<tr><td bgcolor=#cccccc align=center>Fecha de ajuste</td>";

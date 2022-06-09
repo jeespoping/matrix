@@ -76,6 +76,7 @@ function botonconsultar() {
         let codigo=0;
          codigo= document.getElementById("codigo").value;
          table.clear().draw();
+         localStorage.clear();
          $.post("devolucioncartasback.php",
          {
              accion:"cuatro",
@@ -114,7 +115,7 @@ function  llenar_tabla(codigo) {
                json[index].carhis,
                json[index].carpac,
                json[index].envdetest,
-               `<input type="text" class="causal" id="causal" name="causal" value="" disabled>`
+               `<input type="text" class="causal" id="${json[index].cardoc}" name="causal" value="" disabled>`
            ] ).draw(true);             
        }
     });
@@ -138,6 +139,7 @@ table.on( 'deselect', function ( e, dt, type, indexes ) {
     $('.custom-selected > td > input').removeClass( 'errorcausal' );
     $('.custom-selected > td > input').val('');
     $('.custom-selected > td > input').attr('disabled', 'disabled');
+    localStorage.removeItem( $('.custom-selected > td > input').attr('id'));
     table[ type ]( indexes ).nodes().to$().removeClass( 'custom-selected' );
     $(document).on('change','.causal',function(e) {
         e.stopPropagation();
@@ -169,9 +171,10 @@ function config_toastr() {
 function evento_input() {
     $(document).on('change','.causal',function(e) {
                    var  color="";
+                   let facturacausal=this.id;
                     let data= { 
                         accion: "nueve", 
-                        codigo: this.value.toUpperCase(), 
+                        codigo: this.value, 
                     }
                         $.ajax({
                             type:'POST',
@@ -183,10 +186,12 @@ function evento_input() {
                                     toastr["error"](json.error, "Info. Causal");
                                     debugger;
                                     color="1";
+                                   localStorage.setItem(facturacausal,"")
                                 }else{
                                     toastr["info"](json.caucod + "-"+json.caunom, "Info. Causal");
                                     debugger;
                                     color="0";
+                                    localStorage.setItem(facturacausal,json.caucod)
                                 }},
                                 async:false
                             });
@@ -216,12 +221,13 @@ function organizar_data() {
     let datos=table.rows('.selected').data();
     let data=[];
     let valores=datos.map((datos,index,dato) => {
+        console.log(index);
         return [
           dato[index][1],
           dato[index][2],
           dato[index][3],
           dato[index][4],
-          $('.selected > td > input')[index].value.toUpperCase()
+          localStorage.getItem(dato[index][1])
         ]
     })
     return valores;
@@ -283,6 +289,7 @@ function boton_grabar(){
                   
                   
                    $(".info-carta").remove();
+                   localStorage.clear();
                    
                 });
             }
