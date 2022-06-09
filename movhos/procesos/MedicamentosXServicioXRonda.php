@@ -1581,7 +1581,7 @@ function pintarAritculos( $articulos ){
 
 	  $winstitucion=$row[2];
 
-	  encabezado("Medicamentos por Ronda y C.Costo",$wactualiz, "clinica", TRUE);
+	  encabezado("Medicamentos por Ronda y C.Costo",$wactualiz, "clinica", TRUE, FALSE);
      }
 
 

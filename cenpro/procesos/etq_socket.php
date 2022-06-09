@@ -437,7 +437,7 @@ function elaboradorLote( $producto, $lote, &$fcr, &$hpr ){
 
 include_once("root/comun.php");
 $institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
-encabezado( "GENERACION DE STIKERS DE CODIGOS DE BARRAS", $wactualiz, $institucion->baseDeDatos, TRUE );
+encabezado( "GENERACION DE STIKERS DE CODIGOS DE BARRAS", $wactualiz, $institucion->baseDeDatos, TRUE, FALSE );
 include_once(get_include_path()."/../matrix/cenpro/procesos/monitorProduccionDA.php");
 
 
