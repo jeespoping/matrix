@@ -6766,7 +6766,7 @@ function EntregaDesdeCirugiaAPiso(whis, wing, nombre, hab_destino, id_solicitud,
 <body>
 <?php
 
-$actualiz="Febrero 04 de 2022";
+$actualiz="10 de Mayo 2022";
 //TABLA TEMPORAL Y CONSULTANDO TODOS LOS MEDICAMENTOS DE LA 15 EN UN SOLO PASO
 
 /**********************************************************************************************************************************************************
@@ -6787,6 +6787,10 @@ $actualiz="Febrero 04 de 2022";
 /**********************************************************************************************************************************************************
 
  * Modificaciones:
+ * 2022-05-10: Sebastian Alvarez B. - Se agrega el parametro TRUE en uno de los 3 encabezados que tiene el programa para que cuando se cosulte un centro de costos
+ * 									  y no tenga registros o datos me mantenga la sede, ya que cuando no tenia registros no me mantenia la sede haciendo que 
+ *                                    se perdiera la sede que selecciono el usuario.
+ *
  * 2022-02-04: Cristhian Barros     - Se modifica parametro worigen cambia de "Historia Clinica Electronica" a "Gestion de Enfermeria", con el fin de corregir el origen de 
 									  donde se realizan los cargos automaticos desde gestion de enfermeria.
  * 2022-01-04: Sebastian Alvarez B. - Se adiciona el on change para el filtro de sede del centro de costos (servicio). Pasamos el valor del select de sede 
@@ -17819,7 +17823,7 @@ else{
 			pintarDatosFila( $datosHabitaciones, $sCodigoSelector );
 		}
 		else{
-			encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica" );
+			encabezado( "SISTEMA DE GESTION DE ENFERMERIA", $actualiz ,"clinica", TRUE );
 			echo "<center><b>No se encontraron datos</b></center>";
 		}
 
