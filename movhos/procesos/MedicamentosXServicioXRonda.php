@@ -284,6 +284,8 @@ function cerrarVentana()
 include_once("conex.php");
 /****************************************************************************************************************************************************************
  * Actualizaciones:
+ * 11 de mayo de 2022 Sebastian Alvarez Barona:  - Se adiciona el valor de la sede que se tiene seleccionada en los link's que van a crear el lote
+ * 
  * Enero 28 de 2022 Sebastian Alvarez Barona:	 - Se lleva la funcion consultarCcoCiclos24 al comun con el nombre consultarCcoCiclos24Unificado sin borrar 
  * 												   la que esta actualmente en este archivo, esto con el fin de evitar funciones con centros de costos quemados.
  * Enero 13 de 2022 Sebastian Alvarez Barona:    - Se adiciono el parametro $selectsede en el llamado de función ConsultaCentrosCostos & query_todos_articulos_cco
@@ -372,7 +374,7 @@ else
   $wusuario = substr($user,$pos+1,strlen($user));
 
   															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
-  $wactualiz  ="Febrero 07 de 2022";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
+  $wactualiz  ="11 de Mayo de 2022";             		// Aca se coloca la ultima fecha de actualizacion de este programa //
 															// =*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*= //
 
   //***********************************v********************************************************************************************************
@@ -862,6 +864,7 @@ else
 		global $wbasedato;
 		global $wemp_pmla;
 		global $conex;
+		global $sUrlCodigoSede;
 		
 		$wfecha = date( "Y-m-d" );
 		
@@ -1054,7 +1057,7 @@ else
 								}
 								else
 								{
-									$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&DA_historia=".$historia."&DA_ingreso=".$ingreso."&DA_articulo=".$rows['Kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=".$rows['Tipo']."&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
+									$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&DA_historia=".$historia."&DA_ingreso=".$ingreso."&DA_articulo=".$rows['Kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=".$rows['Tipo']."&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco'].$sUrlCodigoSede."' target=_blank> Crear producto </A>"; 
 									if($rows['Tipo']=="Antibiotico")
 									{
 										$urlCM .= "<br>-<br><A href='perfilFarmacoterapeutico.php?wemp_pmla=".$wemp_pmla."&waccion=a&whistoria=".$historia."&wfecha=".$wfecha.$serDom."' target=_blank> Ir al Perfil </A>"; 
@@ -1070,7 +1073,7 @@ else
 									$info = "Dosis adaptada creada: ".$existeDA;
 									$codigoDA = $existeDA;
 									// crear lote
-									$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$rows['Kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
+									$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$rows['Kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda.$sUrlCodigoSede."' target=_blank> Crear lote </A>"; 
 								}
 								else
 								{
@@ -1107,7 +1110,7 @@ else
 										
 										$info = "Dosis adaptada genérica";
 										// crear producto DA
-										$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&DA_historia=".$historia."&DA_ingreso=".$ingreso."&DA_articulo=".$rows['Kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=Generica&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco']."' target=_blank> Crear producto </A>"; 
+										$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&DA_historia=".$historia."&DA_ingreso=".$ingreso."&DA_articulo=".$rows['Kadart']."&DA_ido=".$rows['Kadido']."&DA_articuloCM=".$equivalenteCM ."&DA_cantidad=".$dosisConPurga."&DA_cantidadSinPurga=".$dosis."&DA_tipo=Generica&tippro=03-Dosis adaptada-NO CODIFICADO&pintarListaDAPendientes=true&wronda=".$ronda."&wfecharonda=".$fecharonda."&DA_cco=".$rows['Habcco'].$sUrlCodigoSede."' target=_blank> Crear producto  </A>"; 
 									}
 									else
 									{
@@ -1118,7 +1121,7 @@ else
 											// crear lote
 											$codigoDA = $rows['Kadart'];
 											$info = "Dosis adaptada creada: ".$codigoDA;
-											$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$codigoDA."&idoda=".$rows['Kadido']."&sinReemplazo=on&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
+											$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$codigoDA."&idoda=".$rows['Kadido']."&sinReemplazo=on&wronda=".$ronda."&wfecharonda=".$fecharonda.$sUrlCodigoSede."' target=_blank> Crear lote </A>"; 
 										
 											
 										}
@@ -1140,7 +1143,7 @@ else
 										$info = "Dosis adaptada creada: ".$existeDA;
 										// crear lote
 										$codigoDA = $existeDA;
-										$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$rows['Kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda."' target=_blank> Crear lote </A>"; 
+										$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoDA."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&warticuloda=".$rows['Kadart']."&idoda=".$rows['Kadido']."&wronda=".$ronda."&wfecharonda=".$fecharonda.$sUrlCodigoSede."' target=_blank> Crear lote </A>"; 
 									}
 									else
 									{
@@ -1177,7 +1180,7 @@ else
 										$tipoProtocoloNPT=$rowsDatosNPT['Tiptpr'];
 										
 										// crear NPT
-										$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&NPT_historia=".$historia."&NPT_ingreso=".$ingreso."&NPT_articulo=".$rows['Kadart']."&NPT_ido=".$rows['Kadido']."&peso=".$rowsDatosNPT['Enupes']."&purga=".$rowsDatosNPT['Enupur']."&volumen=".$rowsDatosNPT['Enuvol']."&NPT_tiempoInfusion=".$rowsDatosNPT['Enutin']."&NPT_origen=ordenes&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
+										$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&NPT_historia=".$historia."&NPT_ingreso=".$ingreso."&NPT_articulo=".$rows['Kadart']."&NPT_ido=".$rows['Kadido']."&peso=".$rowsDatosNPT['Enupes']."&purga=".$rowsDatosNPT['Enupur']."&volumen=".$rowsDatosNPT['Enuvol']."&NPT_tiempoInfusion=".$rowsDatosNPT['Enutin'].$sUrlCodigoSede."&NPT_origen=ordenes&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto  </A>"; 
 										
 									}
 									else
@@ -1189,13 +1192,13 @@ else
 										{
 											$info = "Nutrición parenteral genérica";
 											// crear NPT generica
-											$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&NPT_historia=".$historia."&NPT_ingreso=".$ingreso."&NPT_articulo=".$rows['Kadart']."&NPT_ido=".$rows['Kadido']."&&NPT_origen=kardex&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto </A>"; 
+											$urlCM = "<A href='../../cenpro/procesos/cen_mez.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&NPT_historia=".$historia."&NPT_ingreso=".$ingreso."&NPT_articulo=".$rows['Kadart']."&NPT_ido=".$rows['Kadido'].$sUrlCodigoSede."&&NPT_origen=kardex&tippro=02-Nutricion Parenteral-NO CODIFICADO&pintarListaNPTPendientes=true' target=_blank> Crear producto  </A>"; 
 										}
 										else
 										{
 											$codigoNPT = $rows['Kadart'];
 											$info = "Nutrición parenteral creada: ".$codigoNPT;
-											$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoNPT."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso."&sinReemplazo=on' target=_blank> Crear lote </A>"; 
+											$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoNPT."&forcon=Codigo del Producto&pintar=1&whistoria=".$historia."&wingreso=".$ingreso.$sUrlCodigoSede."&sinReemplazo=on' target=_blank> Crear lote </A>"; 
 										}
 										
 									}
@@ -1203,7 +1206,7 @@ else
 								else
 								{
 									$info = "Nutrición parenteral creada: ".$codigoNPT;
-									$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoNPT."&forcon=Codigo del Producto&pintar=1' target=_blank> Crear lote </A>"; 
+									$urlCM = "<A href='../../cenpro/procesos/lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$codigoNPT.$sUrlCodigoSede."&forcon=Codigo del Producto&pintar=1' target=_blank> Crear lote </A>"; 
 								}
 							}
 							else
@@ -1578,7 +1581,7 @@ function pintarAritculos( $articulos ){
 
 	  $winstitucion=$row[2];
 
-	  encabezado("Medicamentos por Ronda y C.Costo",$wactualiz, "clinica", TRUE);
+	  encabezado("Medicamentos por Ronda y C.Costo",$wactualiz, "clinica", TRUE, FALSE);
      }
 
 
@@ -1945,6 +1948,19 @@ function pintarAritculos( $articulos ){
   // P R I N C I P A L
   //===========================================================================================================================================
   //===========================================================================================================================================
+  
+	$estadosede=consultarAliasPorAplicacion($conexion, $wemp_pmla, "filtrarSede");
+	$sFiltroSede="";
+	$codigoSede = '';
+	if($estadosede=='on')
+	{	  
+		$codigoSede = (isset($selectsede)) ? $selectsede : consultarsedeFiltro();
+		$sFiltroSede = (isset($codigoSede) && ($codigoSede != '')) ? " AND Ccosed = '{$codigoSede}' " : "";
+	}
+
+	$sUrlCodigoSede = ($estadosede=='on') ? '&selectsede='.$codigoSede : '';
+
+
   echo "<form name='separacionXRonda' action='MedicamentosXServicioXRonda.php?wemp_pmla=".$wemp_pmla."' method=post>";
 
   $wfecha = date("Y-m-d");
