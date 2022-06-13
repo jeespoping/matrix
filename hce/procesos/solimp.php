@@ -46,7 +46,7 @@ include_once("conex.php");
 	2013-12-01: Frederick Aguirre, Al cerrar el pdf, se cambia para que no cierre todo el documento y permita generar otra solicitud.
 
  **********************************************************************************************************/
-if( !isset($_SESSION['user']) && isset($peticionAjax) && !isset($_GET['automatizacion_pdfs']) )//session muerta en una petición ajax
+if( !isset($_SESSION['user']) && isset($peticionAjax) && !isset($_GET['automatizacion_pdfs']) && !isset($_GET['appFirmas']) )//session muerta en una petición ajax
 {
   if( $tipoPeticion == "json" ){
     $data = array( 'error'=>"error" );
@@ -59,7 +59,7 @@ if( !isset($_SESSION['user']) && isset($peticionAjax) && !isset($_GET['automatiz
 
 $wactualiz = "2019-10-09";
 
-if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs'])){
+if(!isset($_SESSION['user']) && !isset($_GET['automatizacion_pdfs']) && !isset($_GET['appFirmas'])){
 	echo "error";
 	return;
 }
@@ -72,7 +72,7 @@ $pos                   = strpos($user,"-");
 $wuser                 = substr($user,$pos+1,strlen($user));
 $LIMITE_DE_FORMULARIOS_A_IMPRIMIR = 150;
 
-if(! isset($_REQUEST['action']) || isset($_GET['automatizacion_pdfs'])){
+if(! isset($_REQUEST['action']) || isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas'])){
 	echo "<html>";
 	echo "<head>";
 	echo "<title>Solicitud impresion</title>";
@@ -440,8 +440,8 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 
 
 		//$wservicio         ='*';
-		$key = isset($_GET['automatizacion_pdfs']) ? $usuarioAutomatizacion : $wuser;
-
+		$key = isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas']) ? $usuarioAutomatizacion : $wuser;
+		
 		$htmlArbolCompleto = "";
 
 		$htmlArbolCompleto .= "<div id='div_arbol_impresion'>";
@@ -667,7 +667,7 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 									$progAnex = "progAnex='".$data[$exp][0]."'";
 								}
 								
-								if(isset($_GET['automatizacion_pdfs'])) {
+								if(isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas'])) {
 									$htmlArbolCompleto .= "<td id=".$color."><span style='float:left;'><input class='formulario_arbol_impresion' {$checkFormulario} type='checkbox' checked value='".$valueCheckbox."' name='imp[".$exp."]' ".$progAnex."></span>";
 								}
 								else{
@@ -1275,7 +1275,7 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 		}
 
 		$menu = "";
-		if( count( $pacientes ) > 0 || isset($_GET['automatizacion_pdfs'])){
+		if( count( $pacientes ) > 0 || isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas'])){
 			$formulariosHce = todoslosFormularios();
 			$menu .= htmllistadoPacientes( $pacientes, $wfact, $clasificacion, $wmodal,$formulariosHce );
 		}
@@ -1643,7 +1643,7 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 		}
 
 		$listado = "";
-		if( count($pacientes) > 0 || isset($_GET['automatizacion_pdfs'])){
+		if( count($pacientes) > 0 || isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas'])){
 			$formulariosHce = todoslosFormularios();
 			$listado .= htmllistadoPacientes( $pacientes, $wfact, $clasificacion, $wmodal, $formulariosHce );
 		}
@@ -1799,7 +1799,7 @@ $formulariosIndependientes = array(); //arreglo para el manejo de formularios in
 	}
 
 	function generarCodigoHtmlFormularios( $lista_formularios, $whis, $wing, $wfechai, $wfechaf, $wcodigo_solicitud, $wllevaTapa, $wllevaLogo, $wseparaFormularios,$htmlProgramasAnexos ){
-
+		
 		global $whcebasedato;
 		global $conex;
 		global $wemp_pmla;
@@ -2654,7 +2654,7 @@ if( isset($_REQUEST['action'] )){
 		$contenedorFormularios = "<input type='hidden' este='sii' class='contenedor_formularios' historia='{$whis}'  ingreso='{$wing}' ".$formulariosDiligenciados." formulariosElegidos='' cadAnexos='".$cadProgramasAnexos."'>";
 
 		// if( existePaciente( $whis, $wing ) AND $tieneFormulariosImprimir ){
-		if( (existePaciente( $whis, $wing ) AND $tieneFormulariosImprimir) || (existePaciente( $whis, $wing ) AND $cadenaProgramasAnexos!="")  || isset($_GET['automatizacion_pdfs'])){
+		if( (existePaciente( $whis, $wing ) AND $tieneFormulariosImprimir) || (existePaciente( $whis, $wing ) AND $cadenaProgramasAnexos!="")  || isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas'])){
 
 			( trim( $wcco ) == "" )   ? $wcco   = '%' : $wcco   = $wcco;
 			( trim( $wgrupo ) == "" ) ? $wgrupo = '%' : $wgrupo = $wgrupo;
@@ -2663,7 +2663,7 @@ if( isset($_REQUEST['action'] )){
 
 			echo $datosPaciente['encabezadoPaciente']."<br><br>";
 			echo mostrarPaquetes( $wmodal, $wcco, $wgrupo );
-			if( $wfact == "off" || isset($_GET['automatizacion_pdfs'])){
+			if( $wfact == "off" || isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas'])){
 				echo "<br>";
 				echo mostrarArbolImpresion($_REQUEST['whis'], $_REQUEST['wing'] );
 			}else{
@@ -2913,9 +2913,10 @@ $wcorreopmla         = consultarAliasPorAplicacion( $conex, $wemp_pmla, "emailpm
 $buscaXcedulaActivos = consultarAliasPorAplicacion( $conex, $wemp_pmla, "cedulaPacientesActivos");
 $usuarioAutomatizacion = consultarAliasPorAplicacion( $conex, $wemp_pmla, "usuarioAutomatizacion");
 
+
 /* REVISAR CON EDWIN PARA EL TEMA DEL USUARIO AUTOMATIZACION - JAIME */
 //$wuser = isset($_GET['automatizacion_pdfs']) ? 'autsop' : $wuser;
-$wuser = isset($_GET['automatizacion_pdfs']) ? $usuarioAutomatizacion : $wuser;
+$wuser = isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas']) ? $usuarioAutomatizacion : $wuser;
 
 $wauxrol    = consultarRol();
 $wrol       = $wauxrol['rol'];
@@ -3324,7 +3325,7 @@ $cadenaProgramasAnexos = "";
 	//modificado por jaime mejia
 	//Funcion para hacer click en "generar solicitud" en el metodo automatico para rescatar el soporte	
 	function readyFn() {
-		var clickGenerarSolicitud = '<?php echo (isset($_GET['automatizacion_pdfs'])); ?>';
+		var clickGenerarSolicitud = '<?php echo (isset($_GET["automatizacion_pdfs"]) ? isset($_GET["automatizacion_pdfs"]) : isset($_GET["appFirmas"])); ?>';
 		if(clickGenerarSolicitud == 1){
 			$("input[name=btn_guardar]").click();
 		}
@@ -3609,7 +3610,7 @@ $cadenaProgramasAnexos = "";
 						}else{
 							error = 1;
 							if( bloquear == "si" ){
-								var clickGenerarSolicitud = '<?php echo (isset($_GET['automatizacion_pdfs'])); ?>';
+								var clickGenerarSolicitud = '<?php (isset($_GET["automatizacion_pdfs"]) ? isset($_GET["automatizacion_pdfs"]) : isset($_GET["appFirmas"])); ?>';
 								if(clickGenerarSolicitud == 1){
 								}									
 								else{
@@ -4375,7 +4376,7 @@ $cadenaProgramasAnexos = "";
 				/**++++++++++++++++++++++++++++++++++++++++++++++ FORMULARIOS HOSPITALARIOS+++++++++++++++++++++++++++++++++++++++++++**/
 				/** ACCESO DIRECTO DESDE HCE
 					MUESTRA EN PANTALLA LOS QUE SE PUEDE IMPRIMIR DE UN PACIENTE ACTIVO **/
-					if( ($wfacturacion == "off" and isset( $whis ) and isset( $wing ) AND $wsoloPacientesActivos == "on") || isset($_GET['automatizacion_pdfs'])){
+					if( ($wfacturacion == "off" and isset( $whis ) and isset( $wing ) AND $wsoloPacientesActivos == "on") || isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas'])){
 						echo "<input type='hidden' name ='wgrupo'       id ='wgrupo' 	   value='%'/>";
 						echo "<input type='hidden' name ='whis' id='whis'  value='{$whis}'>";
 						echo "<input type='hidden' name ='wing' id='wing'  value='{$wing}'>";
@@ -4384,7 +4385,7 @@ $cadenaProgramasAnexos = "";
 
 						$paciente       = array();
 						$paciente       = datosPaciente( $whis, $wing, "altaDefinitiva", "off" );
-						if(($paciente['altaDefinitiva'] == "off" or  ( $paciente['altaDefinitiva'] == "on" and $paciente['horasDesdeAlta']*1 <= 6)) || isset($_GET['automatizacion_pdfs'])){//-->2016-06-21
+						if(($paciente['altaDefinitiva'] == "off" or  ( $paciente['altaDefinitiva'] == "on" and $paciente['horasDesdeAlta']*1 <= 6)) || isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas'])){//-->2016-06-21
 
 							$tieneSolicitud = tieneSolicitudPendiente( $whis, $wing, $wmodalidad );
 							$tieneSolicitud = $tieneSolicitud['existe'];
@@ -4399,7 +4400,7 @@ $cadenaProgramasAnexos = "";
 							$progAnexos = consultarScripts($conex,$whcebasedato,$whis,$wing);
 							
 							// if( $tieneFormulariosImprimir ){
-							if(($tieneFormulariosImprimir || (count($progAnexos)>0)) || isset($_GET['automatizacion_pdfs'])){
+							if(($tieneFormulariosImprimir || (count($progAnexos)>0)) || isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas'])){
 								echo '<center><div id="div_resultados" align="center" style="width:90%;">';
 								$datosPaciente = mostrarEncabezadoPaciente( $whis, $wing, $empresa );
 								echo $datosPaciente['encabezadoPaciente'];
@@ -4449,7 +4450,7 @@ $cadenaProgramasAnexos = "";
 					echo '<center><div id="div_resultados" align="center" style="width:90%; display:none;"></div></center>';
 				//echo "<center><input type='button' name='btn_guardar' value='Generar Solicitud' {$mostrarBoton} bloquear='si' /></center><br>";
 
-				(($wfacturacion == "off" and isset( $whis ) and isset( $wing ) AND $wsoloPacientesActivos == "on" and !$errorEnBusqueda) || isset($_GET['automatizacion_pdfs']) ) ? $mostrarBoton = "" : $mostrarBoton = "style='display:none;'";
+				(($wfacturacion == "off" and isset( $whis ) and isset( $wing ) AND $wsoloPacientesActivos == "on" and !$errorEnBusqueda) || isset($_GET['automatizacion_pdfs']) || isset($_GET['appFirmas']) ) ? $mostrarBoton = "" : $mostrarBoton = "style='display:none;'";
 				echo "<center><input type='button' name='btn_guardar' value='Generar Solicitud' {$mostrarBoton} bloquear='si' /></center><br><br>";
 				echo "<div id='div_contenedor_pdf' align='center'></div>";
 				echo "<center><input type='button' id='btn_retornar2' onclick='retornar()' value='Retornar' bloquear='no' style='display:none' /></center>";
@@ -4531,7 +4532,7 @@ $cadenaProgramasAnexos = "";
 				            [?] Usuario no autenticado en el sistema.<br />Recargue la p&aacute;gina principal de Matrix &oacute; Inicie sesi&oacute;n nuevamente.
 				        </div>";
 				echo " <div id='div_dialogo' align='center' style='display:none;'>
-				       </div>";
+				       </div>";	 
 					   
 				mysql_close( $conex );
 			?>
