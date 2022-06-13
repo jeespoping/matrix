@@ -599,12 +599,13 @@ if( isset($consultaAjax) == false ){
 include_once("root/magenta.php");
 include_once("root/comun.php");
 
-$wactualiz = "2016-05-25";
+$wactualiz = "2022-03-16";
 
 //=============================================================================================================================================\\
 //M O D I F I C A C I O N E S 
 //=============================================================================================================================================\\
-// 2016-05-25: Arleyda Insignares C. 
+// 	16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla
+//	2016-05-25: Arleyda Insignares C. 
 // -Se Modifica la funcion que asigna el numero de orden para que tenga en cuenta los inactivos.
 // -Se habilita un campo input text para el tipo de dato Memo y de manera predeterminada debe 
 //  sacar el texto 'admisiones', sin embargo el usuario podra modificar este texto.
@@ -1800,7 +1801,7 @@ function mostrar_grilla(){
    
    //<a target='_top' href='../../hce/procesos/HCE.php?accion=W1&ok=0&empresa=".$wbasedato."&wcedula=1&wtipodoc=CC&wformulario=".$wformulario."&whis=1&wing=1&wsex=A&width=900'>Previsualizar formulario</a>
 	echo "<div>	
-	<a onclick='nuevaventana(\"../../hce/procesos/HCE.php?accion=W1&origen=".$wemp_pmla."&wdbmhos=".$wdbmovhos."&ok=0&empresa=".$wbasedato."&wcedula=1&wtipodoc=CC&wformulario=".$wformulario."&whis=1&wing=1&wsex=A&width=900\")' >Previsualizar formulario</a>
+	<a onclick='nuevaventana(\"../../hce/procesos/HCE.php?accion=W1&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmovhos."&ok=0&empresa=".$wbasedato."&wcedula=1&wtipodoc=CC&wformulario=".$wformulario."&whis=1&wing=1&wsex=A&width=900\")' >Previsualizar formulario</a>
 	</div>";
 	echo "<br>";
 	echo "<div style='float:left;cursor: pointer;'>";

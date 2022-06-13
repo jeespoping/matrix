@@ -8,6 +8,8 @@ AUTOR:                Camilo Zapata
 FECHA DE CREACION:    2017-04-28
 ----------------------------------------------------------------------------------------------------------------------------------
                   ACTUALIZACIONES
+
+16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.      
 2018-08-08 camilo zapata: modificación de la función consultarPreAnestesiasRealizadas con el propósito de mejorar el rendimiento de la misma
 2018-07-03 camilo zapata: se le pide al médico el servicio destino de dicha preanestesia, para garantizar que se asocie corectamente a los ingresos en ayudas
 2017-11-22 camilo zapata: se cambia el manejo de los scrolls en los iframes, para que los medicos puedan agregar tantas filas como deseen en el formulario y que el botón guardar no se les pierda
@@ -31,8 +33,9 @@ if(!isset($_SESSION['user']))
 
 include_once("root/comun.php");
 
-
-$wactualiz      = "2018-08-08";
+$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+$wbasedato1 = strtolower( $institucion->baseDeDatos );
+$wactualiz='2022-03-16';
 $conex          = obtenerConexionBD("matrix");
 $wbasedato      = consultarAliasPorAplicacion($conex, $wemp_pmla, 'movhos');
 $wbdtcx         = consultarAliasPorAplicacion($conex, $wemp_pmla, 'tcx');
@@ -628,7 +631,7 @@ if( isset( $accion ) ){
 
             var formTipoOrden   = '000075';
             var numHistoriaTemp = historiaTemporal;
-            var urlform         = '/matrix/hce/procesos/HCE_Notas.php?pre_anestesia=on&ok=1&notas=1&empresa=hce&origen='+$('#wemp_pmla').val()+'&wdbmhos=movhos&wservicio=*&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDocumento+'&whis='+historiaTemporal+'&wing='+ingreso+'&wfecha_data='+Fecha_data+'&whora_data='+Hora_data;
+            var urlform         = '/matrix/hce/procesos/HCE_Notas.php?pre_anestesia=on&ok=1&notas=1&empresa='+'<?=$wbdhce?>'+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+'<?=$wbasedato?>'+'&wservicio=*&wformulario='+formTipoOrden+'&wcedula='+documento+'&wtipodoc='+tipoDocumento+'&whis='+historiaTemporal+'&wing='+ingreso+'&wfecha_data='+Fecha_data+'&whora_data='+Hora_data;
 
             infoPaciente = ""
             +"<fieldset align='center' style='padding:6px;'>"
@@ -941,7 +944,7 @@ if( isset( $accion ) ){
 
                     var formTipoOrden   = '000075';
                     var numHistoriaTemp = 'TEMP'+$.trim(respuesta.Historia);
-                    var urlform         = '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa=hce&origen='+$('#wemp_pmla').val()+'&wdbmhos=movhos&wformulario='+formTipoOrden+'&wcedula='+numDocumento+'&wtipodoc='+tipoDocumento+'&whis='+numHistoriaTemp+'&wing=1';
+                    var urlform         = '/matrix/hce/procesos/HCE.php?accion=M&ok=0&empresa='+'<?=$wbdhce?>'+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+'<?=$wbasedato?>'+'&wformulario='+formTipoOrden+'&wcedula='+numDocumento+'&wtipodoc='+tipoDocumento+'&whis='+numHistoriaTemp+'&wing=1';
                     var ccoDestino  = $("[name='select_cco_destino'] > option:selected").html();
                     var selectClon  = $("[name='select_cco_destino']").parent().html();
                     infoPaciente = ""
@@ -1243,7 +1246,7 @@ if( isset( $accion ) ){
         function consultarPreAnestesia( obj, tipoDocumento, documento, turnoCirugia, historiaTemporal, entidad, edad, nombrePaciente, medico, ingreso, servicioDestino = "" ){
 
             var formTipoOrden   = '000075';
-            var urlform         = '/matrix/hce/reportes/HCE_ImpPreIngreso.php?empresa=hce&origen='+$('#wemp_pmla').val()+'&wdbmhos=movhos&CLASE=C&wcedula='+documento+'&wtipodoc='+tipoDocumento+'&wfor1=000075&wfor2=000339&whis='+historiaTemporal+'&wing='+ingreso;
+            var urlform         = '/matrix/hce/reportes/HCE_ImpPreIngreso.php?empresa='+'<?=$wbdhce?>'+'&wemp_pmla='+$('#wemp_pmla').val()+'&wdbmhos='+'<?=$wbasedato?>'+'&CLASE=C&wcedula='+documento+'&wtipodoc='+tipoDocumento+'&wfor1=000075&wfor2=000339&whis='+historiaTemporal+'&wing='+ingreso;
 
             infoPaciente = ""
                     +"<fieldset align='center' style='padding:6px;'>"
@@ -1356,14 +1359,10 @@ if( isset( $accion ) ){
         <input type='hidden' id='inp_cco_destino'         value=''>
 
 
-        <div id='accordionPrincipal' align='center' style='margin: auto auto; height:900px;'>
-            <h1 style='font-size: 3rem;background:#75C3EB' align='center'>
-                <img width='125' heigth='61' src='../../images/medical/root/logoClinicaGrande.png' >
-                &nbsp;
-                Realizaci&oacute;n de preanestesia
-                &nbsp;
-                <img width='120' heigth='100' src='../../images/medical/root/Logo_MatrixAzulClaro.png'>
-            </h1>
+        <div  align='center' >
+        <?php
+               encabezado("Realizaci&oacute;n de preanestesia",$wactualiz, $wbasedato1);
+                ?>
             <div style='color:#000000;font-family: verdana;font-weight: normal;font-size: 2rem;' id='div_contenedor_2' align='center'>
                 <table style='width:80%;margin-top:0px;margin-bottom:2px;font-family: verdana;font-weight: normal;font-size: 1rem;'>
                     <tr>

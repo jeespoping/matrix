@@ -57,7 +57,7 @@ function ocultarFlotante(numdiv)
 
 			.north {
 				width: 100%;
-				height: 10.3%;
+				height: 15.3%;
 			}
 
 			.east {
@@ -82,6 +82,8 @@ function ocultarFlotante(numdiv)
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //                  ACTUALIZACIONES   
 //--------------------------------------------------------------------------------------------------------------------------------------------                                                                                                                       \\
+//	16/05/2022 - Brigith Lagares:  se corrige el tamaño del iframe del encabezado 
+//
 //	11/03/2022 - Brigith Lagares:  Se realiza estadarización del wemp_pmla
 //
 //	2020-05-20	-	Jessica Madrid Mejía:	Se valida si en la tabla movhos_000282 el centro de costos tiene 
@@ -277,9 +279,9 @@ if(isset($sess))
 				
 			echo "<div class='north'>";
 			if(isset($whisa))
-				echo "<iframe id='fd' name='fd' src='HCE.php?accion=T&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' scrolling=no frameborder=0 style='width:100%;height:80;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -4px;' allowTransparency='true'></iframe>";
+				echo "<iframe id='fd' name='fd' src='HCE.php?accion=T&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&whisa=".$whisa."&winga=".$winga."' scrolling=no frameborder=0 style='width:100%;height:110;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -10px;' allowTransparency='true'></iframe>";
 			else
-				echo "<iframe id='fd' name='fd' src='HCE.php?accion=T&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."' scrolling=no frameborder=0 style='width:100%;height:80;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -4px;' allowTransparency='true'></iframe>";
+				echo "<iframe id='fd' name='fd' src='HCE.php?accion=T&ok=0&empresa=".$empresa."&origen=".$wemp_pmla."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."' scrolling=no frameborder=0 style='width:100%;height:110;border:0px;dotted #FFFFFF;margin-left: -0px; margin-top: -10px;' allowTransparency='true'></iframe>";
 			echo "</div>";
 
 			echo "<div class='center'>";

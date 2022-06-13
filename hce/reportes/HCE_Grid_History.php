@@ -19,7 +19,17 @@
 <body onLoad= 'pintardivs();' BGCOLOR="FFFFFF" oncontextmenu = "return true" onselectstart = "return true" ondragstart = "return false">
 <BODY TEXT="#000066">
 <?php
+if(isset($_REQUEST['origen']) && !isset($_REQUEST['wemp_pmla'])){
+    $wemp_pmla=$_REQUEST['origen'];
+}
+elseif(isset($_REQUEST['wemp_pmla'])){
+    $wemp_pmla = $_REQUEST['wemp_pmla'];
+}
+else{
+    die('Falta parametro wemp_pmla...');
+}
 include_once("conex.php");
+include_once("root/comun.php");
 function pintar_grid($data,$struc,$id)
 {
 	$wsgrid="";
@@ -77,6 +87,7 @@ function pintar_grid($data,$struc,$id)
 	   tipo Grid de cualquier formulario de la HCE
 	   
 	   REGISTRO DE MODIFICACIONES 
+	   	.16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
 	   	.2014-04-18
 	   		Release de Versión Beta. 
 	   
@@ -86,6 +97,8 @@ if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
 	$key = substr($user,2,strlen($user));
 	echo "<form name='HCE_Grid_History' action='HCE_Grid_History.php' method=post>";
 	
@@ -93,7 +106,7 @@ else
 	
 
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 	echo "<input type='HIDDEN' name= 'protocolos' value='".$wformulario."'>";
 	echo "<input type='HIDDEN' name= 'wcons' value='".$wcons."'>";
@@ -103,7 +116,7 @@ else
 	$query .= "   and pactid = '".$wtipodoc."'";
 	$query .= "   and pacced = oriced ";
 	$query .= "   and pactid = oritid ";
-	$query .= "   and oriori = '".$origen."'";
+	$query .= "   and oriori = '".$wemp_pmla."'";
 	$query .= "   and inghis = orihis ";
 	$query .= "   and inging = '".$wing."' ";
 	$query .= "   and ubihis = inghis "; 
@@ -172,7 +185,7 @@ else
 	echo "<input type='HIDDEN' name= 'wcedula' value=".$wcedula.">";
 	echo "<input type='HIDDEN' name= 'wtipodoc' value=".$wtipodoc.">";
 	echo "<center><table border=1 width='712' class=tipoTABLE1>";
-	echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$origen.".jpg' id='logo'></td>";	
+	echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/".$wbasedato1.".jpg' id='logo'></td>";	
 	echo "<td id=tipoL01C>Paciente</td><td colspan=4 id=tipoL04>".$wpac."</td><td id=tipoL04A>P&aacute;gina 1</td></tr>";
 	echo "<tr><td id=tipoL01C>Historia Clinica</td><td id=tipoL02C>".$whis."-".$wing."</td><td id=tipoL01>Edad</td><td id=tipoL02C>".$wedad."</td><td id=tipoL01C>Sexo</td><td id=tipoL02C>".$sexo."</td></tr>";
 	echo "<tr><td id=tipoL01C>Servicio</td><td id=tipoL02C>".$row[11]."</td><td id=tipoL01C>Habitacion</td><td id=tipoL02C>".$row[10]."</td><td id=tipoL01C>Entidad</td><td id=tipoL02C>".$row[8]."</td></tr>";
