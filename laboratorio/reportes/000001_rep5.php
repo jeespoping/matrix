@@ -7,6 +7,9 @@
 <?php
 include_once("conex.php");
 include_once("root/comun.php");
+
+										//ACTUALIZACIONES
+			//Daniel CB   28-04-2022.  Se realiza correccion de parametros quemados
 function bisiesto($year)
 {
 	return(($year % 4 == 0 and $year % 100 != 0) or $year % 400 == 0);
@@ -20,10 +23,10 @@ else
 		{
 			$wemp_pmla = $_REQUEST['wemp_pmla'];
 		}
-		else
-		{
-			$wemp_pmla = '05';
-		}
+		//else
+		//{
+		//	$wemp_pmla = '05';
+		//}
 		$wactualiz = "2022-04-28";
 		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
 		encabezado( "NOMINA Y PRESTACIONES SOCIALES - COLILLA DE PAGO", $wactualiz, $institucion->baseDeDatos );		

@@ -42,6 +42,7 @@
 <?php
 include_once("conex.php");
 include_once("root/comun.php");
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 /*
 *********************************************************************************************************************
 [DOC]
@@ -54,6 +55,8 @@ include_once("root/comun.php");
 	   servicios (Cotizacion)
 
 	   REGISTRO DE MODIFICACIONES :
+
+	   Daniel CB.    28-04-2022   Se realiza correccion de parametros quemados.
 
 [*DOC]
 **********************************************************************************************************************
@@ -122,7 +125,7 @@ else
                        Honorarios_anestesia,Honorarios2,Honorarios3,Instrumentadora,Derecho_sala,Tiempo,Suministros,Det_suministros,Uso_equipos,Det_equipos,Ayudas_dx,Det_ayudas,Recuperacion,Otros_gastos,Det_otros,Total,Seguridad,Valoriva
 					   from ".$empresa."_000001 where Fecha = '".$paciente[0]."' and Documento='".$paciente[1]."' and Nro_cotizacion='".$paciente[3]."' ";
 		//echo $query."<br>";
-		$wactualiz = "2022-04-04";
+		$wactualiz = "2022-04-28";
 		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
 		encabezado( "PRESUPUESTO DE SERVICIOS", $wactualiz, $institucion->baseDeDatos );
 		$wlogemp = $institucion->baseDeDatos;

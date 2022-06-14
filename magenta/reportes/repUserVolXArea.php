@@ -41,6 +41,7 @@
 <body>
 <?php
 include_once("conex.php");
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 /****************************************************************************************************************
  * Tipo:	Reporte
  * Por:		Edwin Molina Grisales	
@@ -50,7 +51,7 @@ include_once("conex.php");
  
 /****************************************************************************************************************
   Actualizaciones:
-		    2021-11-24  Daniel CB.
+		    2022-04-28  Daniel CB.
 						-Se realiza corrección de parametros 01 quemados.	
 
  			2016-05-06  Arleyda Insignares C.

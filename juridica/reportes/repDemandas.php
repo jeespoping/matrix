@@ -4,6 +4,7 @@
 </head>
 <?php
 include_once("conex.php");
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 
 /*********************************************************************************************************
  * Fecha de Creación: 	2009-06-24
@@ -16,6 +17,11 @@ include_once("conex.php");
 
 /*********************************************************************************************************
  * Actualizaciones
+ * Fecha:				2022-04-28
+ * Programador:			Daniel CB
+ * Modificacion:		Se realiza correccion de parametros quemados
+ * 
+ * 
  * 
  * Fecha:				2009-11-25
  * Programador:			Edwin Molina Grisales

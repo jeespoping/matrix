@@ -4,14 +4,15 @@
 </head>
 <?php 
  include_once("conex.php");
-
+ $wemp_pmla = $_REQUEST['wemp_pmla'];
  if(!isset($_SESSION['user'])){
 	  echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>
 		<tr><td>Error, inicie nuevamente</td></tr>
 		</table></center>";
 	  return;
  }
-
+	// Actualizaciones //
+	// Daniel CB.     28/04/2022   Se realiza correccion de parametros quemados
  include_once("root/comun.php");
 
  session_start();
