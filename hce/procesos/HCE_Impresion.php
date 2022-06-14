@@ -432,7 +432,7 @@ else{
 	die('Falta parametro wemp_pmla...');
 }
 include_once("conex.php");
-include_once("root/comun.php");
+
 include_once("hce/funcionesHCE.php");
 
 function bi($d,$n,$k)
@@ -688,8 +688,7 @@ if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
-	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
-	$wbasedato1 = strtolower( $institucion->baseDeDatos );
+
 
 	$key = substr($user,2,strlen($user));
 	echo "<form name='HCE_Impresion' action='HCE_Impresion.php' method=POST>";
@@ -775,7 +774,7 @@ else
 		if(isset($BC))
 			echo "<IMG SRC='/matrix/images/medical/HCE/button.gif' onclick='javascript:top.close();'><br><br>";
 		echo "<center><table border=1 width='712' class=tipoTABLE1>";
-		echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/".$wbasedato1.".jpg' id='logo'></td>";	
+		echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg' id='logo'></td>";	
 		echo "<td id=tipoL01C>Paciente</td><td colspan=5 id=tipoL04>".$wpac."</td></tr>";
 		if($CLASE == "I")
 		{
@@ -1322,7 +1321,7 @@ else
 			}
 			
 			echo "<table border=1 width='712' class=tipoTABLE1>";
-			echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/".$wbasedato1.".jpg' id='logo'></td>";	
+			echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg' id='logo'></td>";	
 			echo "<td id=tipoL01C>Paciente</td><td colspan=4 id=tipoL04>".$wpac."</td><td id=tipoL04A>P&aacute;gina 1</td></tr>";
 			echo "<tr><td id=tipoL01C>Historia Clinica</td><td id=tipoL02C>".$whis."-".$wing."</td><td id=tipoL01>Edad actual</td><td id=tipoL02C>".$wedad."</td><td id=tipoL01C>Sexo</td><td id=tipoL02C>".$sexo."</td></tr>";
 			echo "<tr><td id=tipoL01C>Servicio</td><td id=tipoL02C>".$row[11]."</td><td id=tipoL01C>Habitacion</td><td id=tipoL02C>".$row[10]."</td><td id=tipoL01C>Entidad</td><td id=tipoL02C>".$row[8]."</td></tr>";
@@ -1549,7 +1548,7 @@ else
 				if($row1[0] > 0)
 				{
 					echo "<table border=1 width='712' class=tipoTABLE1>";
-					echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/".$wbasedato1.".jpg' id='logo'></td>";	
+					echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg' id='logo'></td>";	
 					echo "<td id=tipoL01C>Paciente</td><td colspan=4 id=tipoL04>".$wpac."</td><td id=tipoL04A>P&aacute;gina 1</td></tr>";
 					echo "<tr><td id=tipoL01C>Historia Clinica</td><td id=tipoL02C>".$whis."-".$wing."</td><td id=tipoL01>Edad actual</td><td id=tipoL02C>".$wedad."</td><td id=tipoL01C>Sexo</td><td id=tipoL02C>".$sexo."</td></tr>";
 					echo "<tr><td id=tipoL01C>Servicio</td><td id=tipoL02C>".$row[11]."</td><td id=tipoL01C>Habitacion</td><td id=tipoL02C>".$row[10]."</td><td id=tipoL01C>Entidad</td><td id=tipoL02C>".$row[8]."</td></tr>";
