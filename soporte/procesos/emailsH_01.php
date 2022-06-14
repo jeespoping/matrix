@@ -1011,7 +1011,7 @@
                                     $mail->Host = 'smtp.gmail.com';                             // Specify main and backup SMTP servers
                                     $mail->SMTPAuth = true;                                     // Enable SMTP authentication
                                     $mail->Username = 'honorarios@lasamericas.com.co';   // SMTP username
-                                    $mail->Password = 'Honorarios2020';                               // SMTP password
+                                    $mail->Password = 'Honorarios2022';                               // SMTP password
                                     $mail->SMTPSecure = 'ssl';                                  // Enable TLS encryption, `ssl` also accepted
                                     $mail->Port = 465;
                                     $mail->isHTML(true);                                        // Set email format to HTML
@@ -1328,7 +1328,7 @@
                                     $mail2->Host = 'smtp.gmail.com';                             // Specify main and backup SMTP servers
                                     $mail2->SMTPAuth = true;                                     // Enable SMTP authentication
                                     $mail2->Username = 'honorarios@lasamericas.com.co'; // SMTP username
-                                    $mail2->Password = 'Honorarios2020';                               // SMTP password
+                                    $mail2->Password = 'Honorarios2022';                               // SMTP password
                                     $mail2->SMTPSecure = 'ssl';                                  // Enable TLS encryption, `ssl` also accepted
                                     $mail2->Port = 465;
                                     $mail2->isHTML(true);                                        // Set email format to HTML
@@ -1710,7 +1710,7 @@
                                         $mail3->Host = 'smtp.gmail.com';                             // Specify main and backup SMTP servers
                                         $mail3->SMTPAuth = true;                                     // Enable SMTP authentication
                                         $mail3->Username = 'honorarios@lasamericas.com.co'; // SMTP username
-                                        $mail3->Password = 'Honorarios2020';                               // SMTP password
+                                        $mail3->Password = 'Honorarios2022';                               // SMTP password
                                         $mail3->SMTPSecure = 'ssl';                                  // Enable TLS encryption, `ssl` also accepted
                                         $mail3->Port = 465;
                                         $mail3->isHTML(true);                                        // Set email format to HTML
