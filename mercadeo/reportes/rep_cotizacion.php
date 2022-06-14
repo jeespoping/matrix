@@ -73,7 +73,11 @@ else
 	echo "<input type='HIDDEN' NAME= 'wemp_pmla' value='".$wemp_pmla."'>";
 	if(!isset($pac))
 	{
-		echo "</select></tr><tr><td bgcolor=#cccccc colspan=1><font color=#000066>PACIENTE: </font></td>";
+		
+		$wactualiz = "2022-04-28";
+		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+		encabezado( "Paciente", $wactualiz, $institucion->baseDeDatos );
+		$wlogemp = $institucion->baseDeDatos;
 
 		if(isset($pac1))
 		{
@@ -118,7 +122,7 @@ else
                        Honorarios_anestesia,Honorarios2,Honorarios3,Instrumentadora,Derecho_sala,Tiempo,Suministros,Det_suministros,Uso_equipos,Det_equipos,Ayudas_dx,Det_ayudas,Recuperacion,Otros_gastos,Det_otros,Total,Seguridad,Valoriva
 					   from ".$empresa."_000001 where Fecha = '".$paciente[0]."' and Documento='".$paciente[1]."' and Nro_cotizacion='".$paciente[3]."' ";
 		//echo $query."<br>";
-		$wactualiz = "2015-05-22";
+		$wactualiz = "2022-04-04";
 		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
 		encabezado( "PRESUPUESTO DE SERVICIOS", $wactualiz, $institucion->baseDeDatos );
 		$wlogemp = $institucion->baseDeDatos;
@@ -131,7 +135,7 @@ else
 				//echo "<img SRC='/MATRIX/images/medical/mercadeo/logoclinica.JPG' width='127' height='65'></td>";
 				echo "<tr><td id='tipo01'>FA-GC-01-04</td></tr>";
 				echo "<tr><td id='tipo01'>V-2</td></tr>";
-				echo "<tr><td id='tipo01'>PROMOTORA MEDICA LAS AMERICAS NIT 800067065-9</td></tr>";
+				echo "<tr><td id='tipo01'>".$institucion->nombre." NIT ".$institucion->nit."</td></tr>";
 				echo "<tr><td id='tipo01'>PRESUPUESTO DE SERVICIOS</td></tr>";
 			echo "</center></table>";
 		//echo "<td align=center><img SRC='/MATRIX/images/medical/mercadeo/logoclinica.JPG' width='127' height='65'></td>";
