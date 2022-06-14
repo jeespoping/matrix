@@ -43,9 +43,8 @@ define("PV1_SEDE", 10 );
 define("OBX_URL", 1 );
 define("OBX_URL_REPORTE", 5 );
 
-$wemp_pmla = $_REQUEST['wemp_pmla'];
-//if( !isset( $wemp_pmla ) )
-//	$wemp_pmla = "01";
+if( !isset( $wemp_pmla ) )
+	$wemp_pmla = "01";
 
 
 class medicoDTO {
@@ -70,7 +69,7 @@ function marcarEstudioComoEnviado( $conex, $wmovhos, $whce, $tipoOrden, $nroOrde
 	
 	//El campo detenv indica si debe enviar un mensaje hl7 cuando está activo
 	//por tal motivo se apaga
-	 $sql = "UPDATE ".$wmovhos."_000159
+	echo $sql = "UPDATE ".$wmovhos."_000159
 			   SET Detenv = 'off'
 			 WHERE Dettor = '".$tipoOrden."'
 			   AND Detnro = '".$nroOrden."'

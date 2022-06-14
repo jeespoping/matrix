@@ -123,7 +123,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ){
 	
 	if( $message ){
 		
-		$wmovhos = consultarAliasPorAplicacion( $conex,$wemp_pmla, "movhos" );
+		$wmovhos 	= consultarAliasPorAplicacion( $conex, '01', "movhos " );
 		
 		//Borro los registros de hace un mes
 		borrarMsgLog( $conex, $wmovhos, date("Y-m-d", time()-30*24*3600) );
@@ -151,8 +151,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST' ){
 	}
 	else{
 		// //Registro el msg que llegó
-		$wmovhos=consultarAliasPorAplicacion($conexion, $wemp_pmla, "movhos");
-		registrarMsgLog( $conex, $wmovhos, 'HIRUKO', $content );
+		registrarMsgLog( $conex, "movhos", 'HIRUKO', $content );
 		// registrarMsgLog( $conex, "movhos", 'HIRUKO', json_decode( file_get_contents("php://input"), true ) );
 		// registrarMsgLog( $conex, "movhos", 'HIRUKO', json_decode( $_POST, true ) );
 		
