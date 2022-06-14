@@ -432,7 +432,6 @@ else{
 	die('Falta parametro wemp_pmla...');
 }
 include_once("conex.php");
-
 include_once("hce/funcionesHCE.php");
 
 function bi($d,$n,$k)
@@ -483,22 +482,21 @@ function validar_formulario($clave,$num,&$data)
 }
 
 
-function consultarUsuarioHabilitado($conex,$wemp_pmla,$key)
+function consultarUsuarioHabilitado($conex,$origenConsulta,$key)
 {
-	$wbasedatoHCE = consultarAliasPorAplicacion($conex, $wemp_pmla, "hce");
-	// $queryHCE = "SELECT Detval 
-	// 			   FROM root_000051 
-	// 			  WHERE Detapl='".$wbdhce."' 
-	// 				AND Detemp='".$origenConsulta."';";
+	$queryHCE = "SELECT Detval 
+				   FROM root_000051 
+				  WHERE Detapl='hce' 
+					AND Detemp='".$origenConsulta."';";
 					
-	// $resHCE = mysql_query($queryHCE, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $queryHCE . " - " . mysql_error());
-	// $numHCE = mysql_num_rows($resHCE);
+	$resHCE = mysql_query($queryHCE, $conex) or die ("Error: " . mysql_errno() . " - en el query: " . $queryHCE . " - " . mysql_error());
+	$numHCE = mysql_num_rows($resHCE);
 	
 	$usuarioHabilitado = false;
-	// if($numHCE>0)
-	// {
-	// 	$rowHCE = mysql_fetch_array($resHCE);
-	// 	$wbasedatoHCE = $rowHCE['Detval'];
+	if($numHCE>0)
+	{
+		$rowHCE = mysql_fetch_array($resHCE);
+		$wbasedatoHCE = $rowHCE['Detval'];
 		
 		$queryRol = " SELECT Usurol
 						FROM ".$wbasedatoHCE."_000020, ".$wbasedatoHCE."_000019 
@@ -514,7 +512,7 @@ function consultarUsuarioHabilitado($conex,$wemp_pmla,$key)
 		{
 			$usuarioHabilitado = true;
 		}
-	//}
+	}
 
 	return $usuarioHabilitado;	
 }
@@ -688,10 +686,10 @@ if(!isset($_SESSION['user']))
 	echo "error";
 else
 {
-
-
 	$key = substr($user,2,strlen($user));
-	echo "<form name='HCE_Impresion' action='HCE_Impresion.php' method=POST>";
+	echo "<form name='HCE_Impresion' action='HCE_Impresion.php' method=post>";
+	
+
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
 	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
@@ -704,7 +702,7 @@ else
 	if(isset($wservicio))
 		echo "<input type='HIDDEN' name= 'wservicio' value='".$wservicio."'>";
 	
-	//echo "<input type='HIDDEN' name= 'origenConsulta' value='".$origenConsulta."'>";
+	echo "<input type='HIDDEN' name= 'origenConsulta' value='".$origenConsulta."'>";
 	echo "<input type='HIDDEN' name= 'noCentrar' value='".$noCentrar."'>";
 	echo "<input type='HIDDEN' id='enviarCorreo' name= 'enviarCorreo' value='".$enviarCorreo."'>";
 	echo "<input type='HIDDEN' id='emailEnviarCorreo' name= 'emailEnviarCorreo' value='".$emailEnviarCorreo."'>";
@@ -976,7 +974,7 @@ else
 				if(isset($origenConsulta) && ($origenConsulta != $wemp_pmla))
 				{
 					// Consulta en donde si el usuario es médico o enfermera en hce_000019 para determinar si esta habilitado para consultar la historia clínica
-					$usuarioHabilitado = consultarUsuarioHabilitado($conex,$wemp_pmla,$key);
+					$usuarioHabilitado = consultarUsuarioHabilitado($conex,$origenConsulta,$key);
 				}
 				
 				if($usuarioHabilitado)
@@ -1319,7 +1317,6 @@ else
 			{
 				echo "<center>";
 			}
-			
 			echo "<table border=1 width='712' class=tipoTABLE1>";
 			echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg' id='logo'></td>";	
 			echo "<td id=tipoL01C>Paciente</td><td colspan=4 id=tipoL04>".$wpac."</td><td id=tipoL04A>P&aacute;gina 1</td></tr>";
