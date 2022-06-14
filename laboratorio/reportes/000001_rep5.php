@@ -35,7 +35,7 @@ else
 		$cedula = $key;
 		$conex = odbc_connect('nomlab','informix','sco')
 			or die("No se ralizo Conexion");
-		echo "<form action='000001_rep5.php' method=post>";
+		echo "<form action='000001_rep5.php?wemp_pmla=".$wemp_pmla."' method=post>'";
 		if(!isset($cedula) or !isset($ano) or !isset($mes))
 		{
 			$year=(integer)substr(date("Y-m-d"),0,4);
