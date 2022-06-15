@@ -5,7 +5,6 @@
 <?php
 include_once("conex.php");
 $wemp_pmla = $_REQUEST['wemp_pmla'];
-
 /*********************************************************************************************************
  * Fecha de Creación: 	2009-06-24
  * Programador:			Edwin Molina Grisales
@@ -17,14 +16,15 @@ $wemp_pmla = $_REQUEST['wemp_pmla'];
 
 /*********************************************************************************************************
  * Actualizaciones
- * 
- * Fecha:				2022-04-28
- * Programador:			Daniel CB
- * Modificacion:		Se realiza correccion de parametros quemados
+ * Fecha:				2022-06-04
+ * Programador:			Daniel CB.
+ * Modificacion:	   
+ *                       Se realiza correccion de parametros quemados.
  * 
  * Fecha:				2009-11-25
  * Programador:			Edwin Molina Grisales
- * Modificacion:		Se elimina tres campos, estos son: 
+ * Modificacion:		
+ *                       Se elimina tres campos, estos son: 
  * 						- Nro. de poliza que cubre el evento (Demnpo)
  * 						- Fechas de pago (Dempeg)
  * 						- Pagos Nro de Egreso de la promotora (Demfpa)
@@ -39,7 +39,7 @@ if(!isset($_SESSION['user']))
 
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "juridica");
 
-encabezado("DEMANDAS DE RESPONSABILIDAD CIVIL", "Abril 28 2022" , "clinica");
+encabezado("DEMANDAS DE RESPONSABILIDAD CIVIL", "Abril 04 2022" , "clinica");
 
 if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $estado ) ){
 	
@@ -50,7 +50,7 @@ if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $es
 		
 	//Tipos de detselecciones
 	$sqlest = "SELECT subcodigo, descripcion FROM det_selecciones
-			WHERE medico='juridica' AND
+			WHERE medico= {$wbasedato} AND
 			codigo='001'
 			GROUP BY 1";
 	
