@@ -1,4 +1,5 @@
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
 
 /***********************************************
