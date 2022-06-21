@@ -156,7 +156,7 @@
     {
         $user_session = explode('-', $_SESSION['user']);
         $wuse = $user_session[1];
-        
+        $wemp_pmla = $_REQUEST['wemp_pmla'];
         include("conex.php");
         include("root/comun.php");
         mysql_select_db("matrix");
