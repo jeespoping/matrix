@@ -13,12 +13,15 @@
 </script>
 <BODY TEXT="#000066">
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
 
 //====================================================================================
 //	--> Programa creado para realizar la impresion del formulario de triage de la HCE
 //====================================================================================
 /*
+	16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
+
 	Fecha Creacion:	2016-07-05
 	Autor:			Jerson Andres Trujillo
 	Descripcion:	Este programa realiza la impresion del formulario de triage de la hce, para una historia e
@@ -28,7 +31,7 @@ include_once("conex.php");
 					que se guarda el formulario hce con una historia e ingreso temporal, ya despues de que se la haga 
 					la admision, dicho formulario es actualizado con la historia e ingreso definitivo.
 					Las funciones y el query principal es copiado del programa HCE_Impresion.php
-
+	
 */
 
 
@@ -49,7 +52,8 @@ else
 
 	include_once("root/comun.php");
 	
-
+	$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+	$wbasedato1 = strtolower( $institucion->baseDeDatos );
 	
 	$color="#dddddd";
 	$color1="#C3D9FF";
@@ -62,7 +66,7 @@ else
 	echo "
 	<table border=1 width='712' class=tipoTABLE1>
 		<tr>
-			<td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$origen.".jpg' id='logo'></td>
+			<td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/".$wbasedato1.".jpg' id='logo'></td>
 			<td id=tipoL01C>Paciente</td>
 			<td colspan=4 id=tipoL04>".$wtipodoc." ".$wcedula."<br>".$nombrePaciente."</td>
 			<td id=tipoL01C>P&aacute;gina 1</td>
@@ -79,7 +83,7 @@ else
 	$nrofor				=-1;
 	$wfechaf 			= $wfechai;
 	
-	$forYcampoTriage	= consultarAliasPorAplicacion($conex, $origen, "formularioYcampoTriage");
+	$forYcampoTriage	= consultarAliasPorAplicacion($conex, $wemp_pmla, "formularioYcampoTriage");
 	$forYcampoTriage	= explode("-", $forYcampoTriage);
 	$formularioTriage 	= $forYcampoTriage[0];
 	$en 				= $forYcampoTriage[0];
@@ -101,6 +105,6 @@ else
 	$queryI .= "   and ".$empresa."_000002.Detpro = ".$empresa."_000001.Encpro "; 
 				
 	if($CLASE == "C")
-		imprimir($conex,$empresa,$wdbmhos,$origen,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,0);
+		imprimir($conex,$empresa,$wdbmhos,$wemp_pmla,$queryI,$whis,$wing,$key,$en,$wintitulo,$Hgraficas,$CLASE,$wsex,0);
 }
 ?>

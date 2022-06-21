@@ -12,10 +12,11 @@ include_once("conex.php");
  DESCRIPCION:
  Muestra los pacientes que ingresan o egresan para un servicio seleccionado o todos.
 
- */$wactualiz = "2022-02-02";
-/**
+ */$wactualiz = "2022-03-16";
+/***
 
  CAMBIOS:
+		16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
  		2018-05-24: camilo zapata: se adicionan en la url que dirige al programa de egreso, para llevar como fecha de egreso, la fecha de alta definitva
  		2017-05-10: * camilo zapata: intermitencia en opción de cambio de documentos, y restricción de dicha opción por centro de costos para que solo lo usen los usuarios de registros
  		2017-05-09: * Camilo Zapata: se adiciona la opción y el funcionamiento necesario para la gestión de las solicitudes del cambio de documento desde admisiones.
@@ -28,7 +29,7 @@ include_once("conex.php");
 		2016-06-03: (Camilo zapata)  Se modifica para que pinte el fondo de distinto color segun la unidad que realiza el egreso.
 		2013-12-09: (Frederick Aguirre)  Se actualiza la URL para ver la historia clinica electrónica
 		2013-02-21: (Frederick Aguirre)  Para la consulta de egresos se agrega la condicion si es 1179 que no cuente los ambulatorios (ubihac == '')
-*////////////////////
+**////////////////////
 
 if(isset($accion) && !array_key_exists('user',$_SESSION))
 {
@@ -386,7 +387,7 @@ function ConsultaPendiente2($wfecha_i,$wfecha_f,$wcco0){
 				$vopcion = 1;
 				$title_btn  = "Ver HCE";
 				$title2_btn = "Egresar";
-				$path  = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$whce."&wcedula=".$row["Pacced"]."&wtipodoc=".$row["Pactid"]."&origen=".$wemp_pmla."&wdbmhos=".$wbasedato;
+				$path  = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$whce."&wcedula=".$row["Pacced"]."&wtipodoc=".$row["Pactid"]."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wbasedato;
 				$path2 = "/matrix/admisiones/procesos/egreso_erp.php?wemp_pmla=".$wemp_pmla."&documento=".$row['Pacced']."&wtipodoc=".$row['Pactid']."&historia=".$row['historia']."&ingreso=".$row['ingreso']."&ccoEgreso={$row['Ubisac']}&fechaAltDefinitiva={$fechaAltDefinitiva}&horaAltDefinitiva={$horaAltaDefinitiva}";
 
 			}else {
@@ -675,7 +676,7 @@ function ConsultaEgreso2($wfecha_i,$wfecha_f,$wcco0){
 
 			if ($wpos_Alta === false and $wpos_Muerte === false){
 				$title_btn = "Ver HCE";
-				$path = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$whce."&wcedula=".$row["Pacced"]."&wtipodoc=".$row["Pactid"]."&origen=".$wemp_pmla."&wdbmhos=".$wbasedato;
+				$path = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$whce."&wcedula=".$row["Pacced"]."&wtipodoc=".$row["Pactid"]."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wbasedato;
 			}else {
 				$fechaAltDefinitiva  = ( $row['Ubimue'] != "on" ) ? $row['Ubifad'] : $row['Ubifap'] ;
                 $horaAltaDefinitiva  = ( $row['Ubimue'] != "on" ) ? $row['Ubihad'] : $row['Ubihap'] ;
@@ -831,7 +832,7 @@ function ConsultaIngreso2($wfecha_i,$wfecha_f,$wcco0){
 		echo "<td align=center>".$row['hora_ingreso']."</td>"; //hora ingreso
 
 		$title_btn = "Ver HCE";
-		$path = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$whce."&wcedula=".$row["Pacced"]."&wtipodoc=".$row["Pactid"]."&origen=".$wemp_pmla."&wdbmhos=".$wbasedato;
+		$path = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$whce."&wcedula=".$row["Pacced"]."&wtipodoc=".$row["Pactid"]."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wbasedato;
 
 		echo "<td><A style='cursor:pointer;' onClick='ejecutar(\"".$path."\")'><b>".$title_btn."</b></A></td>"; //enlace hce
 		echo "</tr>";
@@ -989,7 +990,7 @@ function ConsultaIngreso3( $whis ){
 
 			if ($wpos_Alta === false and $wpos_Muerte === false){
 				$title_btn = "Ver HCE";
-				$path = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$whce."&wcedula=".$row["Pacced"]."&wtipodoc=".$row["Pactid"]."&origen=".$wemp_pmla."&wdbmhos=".$wbasedato;
+				$path = "/matrix/HCE/procesos/HCE_iFrames.php?accion=M&ok=0&empresa=".$whce."&wcedula=".$row["Pacced"]."&wtipodoc=".$row["Pactid"]."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wbasedato;
 			}else {
 				//$path = "/matrix/hce/procesos/TableroAnt.php?empresa=".$wbasedato."&codemp=".$wemp_pmla."&historia=hce&accion=I&whis=".$row["historia"];
 				$fechaAltDefinitiva  = ( $row['Ubimue'] != "on" ) ? $row['Ubifad'] : $row['Ubifap'] ;

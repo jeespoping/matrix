@@ -1443,8 +1443,8 @@ else
 					$nombreEmpresa = consultarAliasPorAplicacionHCE($conex,$wemp_pmla,"nombreEmpresa");
 					$dir = "../reportes/cenimp";
 					$archivoPdf = $dir."/".$wnombrePDF.".pdf";
-					
-					echo "	<p align='center'><input type='button' id='btnEnviarPdf' onclick='enviarPdf(\"".$origen."\",\"".$whis."\",\"".$wing."\",\"".$dir."\",\"".$wnombrePDF.".pdf"."\",\"".$nombrePaciente."\",\"".$nombreEmpresa."\",\"".$wdbmhos."\",\"".$key."\",\"".$nombreEntidad."\");' value='Enviar PDF'></p>";
+
+					echo "	<p align='center'><input type='button' id='btnEnviarPdf' onclick='enviarPdf(\"".$wemp_pmla."\",\"".$whis."\",\"".$wing."\",\"".$dir."\",\"".$wnombrePDF.".pdf"."\",\"".$nombrePaciente."\",\"".$nombreEmpresa."\",\"".$wdbmhos."\",\"".$key."\",\"".$nombreEntidad."\");' value='Enviar PDF'></p>";
 					echo "	<div id='msjEspere' align='center' style='display:none;'>
 								<img src='../../images/medical/ajax-loader5.gif'/>Por favor espere un momento...<br><br>
 							</div>";

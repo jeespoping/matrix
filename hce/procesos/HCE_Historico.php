@@ -227,6 +227,8 @@ function ver($chain)
 	   grabados en los diferentes formularios de la HCE. Tambien permite graficar las tendencias de dichos datos.
 	   
 	   REGISTRO DE MODIFICACIONES :
+	   	.16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
+		   
 	     .2019-08-13
               Se agrega el include a funcionesHCE.php con la función calcularEdadPaciente() y se reemplaza en el script el cálculo 
 			  de la edad del paciente por dicha función, ya que el cálculo se realizaba con 360 días, es decir, no se tenían en 
@@ -274,7 +276,7 @@ else
 	
 
 	echo "<input type='HIDDEN' name= 'empresa' value='".$empresa."'>";
-	echo "<input type='HIDDEN' name= 'origen' value='".$origen."'>";
+	echo "<input type='HIDDEN' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 	echo "<input type='HIDDEN' name= 'wdbmhos' value='".$wdbmhos."'>";
 	if(isset($wservicio))
 		echo "<input type='HIDDEN' name= 'wservicio' value='".$wservicio."'>";
@@ -309,7 +311,7 @@ else
 			
 
 		echo "<table border=0 align=center>";
-		echo "<tr><td id=tipoTI01 colspan=8>GRAFICACION DE DATOS NUMERICOS DE LA HISTORIA CLINICA ELECTRONICA Version 2015-07-15</td></tr>";
+		echo "<tr><td id=tipoTI01 colspan=8>GRAFICACION DE DATOS NUMERICOS DE LA HISTORIA CLINICA ELECTRONICA Version 2022-03-16</td></tr>";
 		echo "<tr><td id=tipoTI05 colspan=8>Fecha Inicial <input type='TEXT' name='wfechai' size=10 maxlength=10 id='wfechai' readonly='readonly' value=".$wfechai." class=tipo6>&nbsp;&nbsp;&nbsp;<IMG SRC='/matrix/images/medical/TCX/calendario.jpg' id='trigger1'>";
 		?>
 		<script type="text/javascript">//<![CDATA[
@@ -508,7 +510,7 @@ else
 		$query .= "   and pactid = '".$wtipodoc."'";
 		$query .= "   and  pacced = oriced ";
 		$query .= "   and  pactid = oritid ";
-		$query .= "   and oriori = '".$origen."'";
+		$query .= "   and oriori = '".$wemp_pmla."'";
 		$query .= "   and inghis = orihis ";
 		$query .= "   and  inging = oriing ";
 		$query .= "   and ubihis = inghis "; 
@@ -565,7 +567,7 @@ else
 		$color4="#99CCFF";
 		$wintitulo="Historia:".$row[6]." Ingreso:".$row[7]." Paciente:".$wpac;
 		echo "<table border=1>";
-		echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$origen.".jpg'></td>";	
+		echo "<tr><td rowspan=3 align=center><IMG SRC='/MATRIX/images/medical/root/HCE".$wemp_pmla.".jpg'></td>";	
 		echo "<td id=tipoL01C>Paciente</td><td colspan=4 id=tipoL04>".$wpac."</td><td id=tipoL04A>".$fechal."<input type='text' name='reloj' size='10' readonly='readonly' class=tipo3R></td></tr>";
 		echo "<tr><td id=tipoL01C>Historia Clinica</td><td id=tipoL02C>".$row[6]."-".$row[7]."</td><td id=tipoL01>Edad</td><td id=tipoL02C>".$wedad."</td><td id=tipoL01C>Sexo</td><td id=tipoL02C>".$sexo."</td></tr>";
 		echo "<tr><td id=tipoL01C>Servicio</td><td id=tipoL02C>".$row[11]."</td><td id=tipoL01C>Habitacion</td><td id=tipoL02C>".$row[10]."</td><td id=tipoL01C>Entidad</td><td id=tipoL02C>".$row[8]."</td></tr>";
@@ -767,7 +769,7 @@ else
 			}
 			for ($h=0;$h<$num;$h++)
 				$line[$h] .= "];";
-			echo "<tr><td colspan=".$totcol." id=tipoH01><A HREF='#' class=tipo3V onClick='enter()'>GRAFICAR</A>&nbsp;&nbsp;<A HREF='/MATRIX/HCE/Procesos/HCE_Historico.php?empresa=hce&wcedula=".$wcedula."&origen=".$origen."&wdbmhos=".$wdbmhos."&wtipodoc=".$wtipodoc."&wfechai=".$wfechai."&wfechaf=".$wfechaf."&wservicio=".$wservicio."' class=tipo3V>RETORNAR</a></td></tr>";
+			echo "<tr><td colspan=".$totcol." id=tipoH01><A HREF='#' class=tipo3V onClick='enter()'>GRAFICAR</A>&nbsp;&nbsp;<A HREF='/MATRIX/HCE/Procesos/HCE_Historico.php?empresa=hce&wcedula=".$wcedula."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wtipodoc=".$wtipodoc."&wfechai=".$wfechai."&wfechaf=".$wfechaf."&wservicio=".$wservicio."' class=tipo3V>RETORNAR</a></td></tr>";
 			echo "</table></center>";
 			echo "<br><center><table border=0 cellspacing=0><tr><td>";
 			$LINEAS="";
@@ -816,7 +818,7 @@ else
 		}
 		else
 		{
-			echo "<tr><td colspan=".$totcol." id=tipoH01><A HREF='#' class=tipo3V onClick='enter()'>GRAFICAR</A>&nbsp;&nbsp;<A HREF='/MATRIX/HCE/Procesos/HCE_Historico.php?empresa=hce&wcedula=".$wcedula."&origen=".$origen."&wdbmhos=".$wdbmhos."&wtipodoc=".$wtipodoc."&wfechai=".$wfechai."&wfechaf=".$wfechaf."&wservicio=".$wservicio."' class=tipo3V>RETORNAR</a></td></tr>";
+			echo "<tr><td colspan=".$totcol." id=tipoH01><A HREF='#' class=tipo3V onClick='enter()'>GRAFICAR</A>&nbsp;&nbsp;<A HREF='/MATRIX/HCE/Procesos/HCE_Historico.php?empresa=hce&wcedula=".$wcedula."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wdbmhos."&wtipodoc=".$wtipodoc."&wfechai=".$wfechai."&wfechaf=".$wfechaf."&wservicio=".$wservicio."' class=tipo3V>RETORNAR</a></td></tr>";
 			echo "</table></center>";
 		}
 	}
