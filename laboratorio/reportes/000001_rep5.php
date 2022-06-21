@@ -6,6 +6,10 @@
 <BODY TEXT="#000066">
 <?php
 include_once("conex.php");
+include_once("root/comun.php");
+
+										//ACTUALIZACIONES
+			//Daniel CB   28-04-2022.  Se realiza correccion de parametros quemados
 function bisiesto($year)
 {
 	return(($year % 4 == 0 and $year % 100 != 0) or $year % 400 == 0);
@@ -15,21 +19,31 @@ if(!isset($_SESSION['user']))
 	echo "error";
 else
 	{
-		
+		if(isset($_REQUEST['wemp_pmla']))
+		{
+			$wemp_pmla = $_REQUEST['wemp_pmla'];
+		}
+		//else
+		//{
+		//	$wemp_pmla = '05';
+		//}
+		$wactualiz = "2022-04-28";
+		$institucion = consultarInstitucionPorCodigo( $conex, $wemp_pmla );
+		encabezado( "NOMINA Y PRESTACIONES SOCIALES - COLILLA DE PAGO", $wactualiz, $institucion->baseDeDatos );		
 
 		$key = substr($user,2,strlen($user));
 		$cedula = $key;
 		$conex = odbc_connect('nomlab','informix','sco')
 			or die("No se ralizo Conexion");
-		echo "<form action='000001_rep5.php' method=post>";
+		echo "<form action='000001_rep5.php?wemp_pmla=".$wemp_pmla."' method=post>'";
 		if(!isset($cedula) or !isset($ano) or !isset($mes))
 		{
 			$year=(integer)substr(date("Y-m-d"),0,4);
 			$day=substr(date("Y-m-d"),5,2);
 			echo "<center><table border=0>";
-			echo "<tr><td align=center><b>LABORATORIO MEDICO LAS AMERICAS S.A.<b></td></tr>";
-			echo "<tr><td align=center>NOMINA Y PRESTACIONES SOCIALES</td></tr>";
-			echo "<tr><td align=center>COLILLA DE PAGO</td></tr>";
+			// echo "<tr><td align=center><b>LABORATORIO MEDICO LAS AMERICAS S.A.<b></td></tr>";
+			// echo "<tr><td align=center>NOMINA Y PRESTACIONES SOCIALES</td></tr>";
+			// echo "<tr><td align=center>COLILLA DE PAGO</td></tr>";
 			echo "<tr>";
 			echo "<tr><td bgcolor=#cccccc align=center><select name='ano'>";
 			
@@ -132,11 +146,11 @@ else
 				}
 				$nombre=$row[3]." ".$row[4]." ".$row[1]." ".$row[2];	
 				echo "<table border=1>";				
-				echo "<tr><td rowspan=4 align=center><IMG SRC='/matrix/images/medical/laboratorio/labmed.gif' ></td>";				
-				echo "<td colspan=4 align=center><font size=5>LABORATORIO MEDICO LAS AMERICAS S.A.</font></td></tr>";
-				echo "<tr><td colspan=4  align=center><font size=4>NIT : 800209804</font><td></tr>";
-				echo "<tr><td colspan=4  align=center><font size=4>NOMINA Y PRESTACIONES SOCIALES</font><td></tr>";
-				echo "<tr><td colspan=4 align=center><b>COLILLA DE PAGO</b></td></tr>";
+				// echo "<tr><td rowspan=4 align=center><IMG SRC='/matrix/images/medical/laboratorio/labmed.gif' ></td>";				
+				// echo "<td colspan=4 align=center><font size=5>LABORATORIO MEDICO LAS AMERICAS S.A.</font></td></tr>";
+				// echo "<tr><td colspan=4  align=center><font size=4>NIT : 800209804</font><td></tr>";
+				// echo "<tr><td colspan=4  align=center><font size=4>NOMINA Y PRESTACIONES SOCIALES</font><td></tr>";
+				// echo "<tr><td colspan=4 align=center><b>COLILLA DE PAGO</b></td></tr>";
 				echo "<tr><td colspan=5 align=center>PERIODO : ".$ano."/".$mes." QUINCENA : ".$qui." DESDE : ".$ano."-".$mes."-".$begin." HASTA : ".$ano."-".$mes."-".$last."</td></tr>";
 				echo "<tr><td bgcolor=#cccccc colspan=5 align=center>EMPLEADO : ".$row[0]."-".$nombre." CEDULA : ".$row[7]." OFICIO : ".$row[8]."-".$row[9]."</td></tr>";
 				echo "<tr><td colspan=5 align=center>CENTRO DE COSTOS : ".$row[5]."-".$row[6]."</td></tr>";

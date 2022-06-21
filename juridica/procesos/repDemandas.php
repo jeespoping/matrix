@@ -4,14 +4,15 @@
 </head>
 <?php 
  include_once("conex.php");
-
+ $wemp_pmla = $_REQUEST['wemp_pmla'];
  if(!isset($_SESSION['user'])){
 	  echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>
 		<tr><td>Error, inicie nuevamente</td></tr>
 		</table></center>";
 	  return;
  }
-
+	// Actualizaciones //
+	// Daniel CB.     28/04/2022   Se realiza correccion de parametros quemados
  include_once("root/comun.php");
 
  session_start();
@@ -54,7 +55,7 @@ if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $es
 	
 	$resabo = mysql_query( $sqlabo , $conex );
 	
-	echo "<form action='repDemandas.php?wemp_pmla=01' method='post'><table align='center'>
+	echo "<form action='repDemandas.php?wemp_pmla=".$wemp_pmla."' method='post'><table align='center'>
 		<tr class='encabezadotabla'>
 			<td>Abogado</td>
 			<td>Estado</td>
@@ -193,7 +194,7 @@ else
 	echo "</table>"; 
 	
 	echo "<br><br>
-	<form action='repDemandas.php?wemp_pmla=01' method='post'>
+	<form action='repDemandas.php?wemp_pmla=".$wemp_pmla."' method='post'>
 		<table align='center'>
 			<tr class='encabezadotabla'>
 				<td><INPUT type='submit' value='Retornar' style='width:100'></td>

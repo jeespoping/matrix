@@ -41,6 +41,7 @@
 <body>
 <?php
 include_once("conex.php");
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 /****************************************************************************************************************
  * Tipo:	Reporte
  * Por:		Edwin Molina Grisales	
@@ -50,6 +51,9 @@ include_once("conex.php");
  
 /****************************************************************************************************************
   Actualizaciones:
+		    2022-04-28  Daniel CB.
+						-Se realiza corrección de parametros 01 quemados.	
+
  			2016-05-06  Arleyda Insignares C.
  						-Se Modifican los campos de calendario fecha inicial y fecha final configurados con
  						 la funcion 'campoFechaDeFecto' por calendario jQuery
@@ -134,7 +138,7 @@ if(!isset($_SESSION['user'])){
 }
 else{
 	// Se muestra el encabezado del programa
-	$wactualiz = "2016-05-06";
+	$wactualiz = "2022-04-28";
 	$titulo    = "REPORTE DE USUARIOS INSATISFECHOS"; 
     encabezado($titulo,$wactualiz, "clinica");  
 
@@ -200,7 +204,7 @@ else{
 		if( $fecFinal < $fecInicial ){
 			mensajeEmergente("La fecha inicial debe ser menor que la fecha final");
 		}
-		echo "<form name='menuinicial' action='repUserVolXArea.php?wemp_pmla=01' method='post'>";
+		echo "<form name='menuinicial' action='repUserVolXArea.php?wemp_pmla=".$wemp_pmla."' method='post'>";
 		
 		//Eligiendo centro de Costos
 		$sql = "SELECT
@@ -269,7 +273,7 @@ else{
 //		$tabla[0][5] = 0;	//Lleva la cuenta de CAMB
 //		$tabla[0][6] = 0;	//Lleva la cuenta total
 		
-		echo "<form action='repUserVolXArea.php?wemp_pmla=01' method='post'>";
+		echo "<form action='repUserVolXArea.php?wemp_pmla=".$wemp_pmla."' method='post'>";
 		
 		//Encabezado del informe
 		echo "<table align='center'>";

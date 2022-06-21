@@ -4,7 +4,7 @@
 </head>
 <?php
 include_once("conex.php");
-
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 /*********************************************************************************************************
  * Fecha de Creación: 	2009-06-24
  * Programador:			Edwin Molina Grisales
@@ -16,10 +16,15 @@ include_once("conex.php");
 
 /*********************************************************************************************************
  * Actualizaciones
+ * Fecha:				2022-06-04
+ * Programador:			Daniel CB.
+ * Modificacion:	   
+ *                       Se realiza correccion de parametros quemados.
  * 
  * Fecha:				2009-11-25
  * Programador:			Edwin Molina Grisales
- * Modificacion:		Se elimina tres campos, estos son: 
+ * Modificacion:		
+ *                       Se elimina tres campos, estos son: 
  * 						- Nro. de poliza que cubre el evento (Demnpo)
  * 						- Fechas de pago (Dempeg)
  * 						- Pagos Nro de Egreso de la promotora (Demfpa)
@@ -34,7 +39,7 @@ if(!isset($_SESSION['user']))
 
 $wbasedato = consultarAliasPorAplicacion($conex, $wemp_pmla, "juridica");
 
-encabezado("DEMANDAS DE RESPONSABILIDAD CIVIL", "1.0 Julio 24 de 2009" , "clinica");
+encabezado("DEMANDAS DE RESPONSABILIDAD CIVIL", "Abril 04 2022" , "clinica");
 
 if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $estado ) ){
 	
@@ -45,7 +50,7 @@ if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $es
 		
 	//Tipos de detselecciones
 	$sqlest = "SELECT subcodigo, descripcion FROM det_selecciones
-			WHERE medico='juridica' AND
+			WHERE medico= {$wbasedato} AND
 			codigo='001'
 			GROUP BY 1";
 	
@@ -85,7 +90,7 @@ if( !isset( $abogado ) || !isset( $tipo ) || !isset( $sentencia ) || !isset( $es
 	
 	$respol = mysql_query( $sqlpol , $conex );
 	
-	echo "<form action='repDemandaspru.php?wemp_pmla=01' method='post'><table align='center'>
+	echo "<form action='repDemandaspru.php?wemp_pmla=".$wemp_pmla."'method='post'><table align='center'>
 		<br><p align=center>Nombre médico involucrado: <INPUT type='text' name='medicos'></p><br>
 		<tr class='encabezadotabla'>
 			<td>Abogado</td>
@@ -293,7 +298,7 @@ else
 	echo "</table>"; 
 	
 	echo "<br><br>
-	<form action='repDemandaspru.php?wemp_pmla=01' method='post'>
+	<form action='repDemandaspru.php?wemp_pmla=".$wemp_pmla."'method='post'>
 		<table align='center'>
 			<tr align=center>
 				<td><INPUT type='submit' value='Retornar' style='width:100'></td>
