@@ -1,4 +1,5 @@
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
 
 /***********************************************
@@ -289,7 +290,7 @@ if (isset($consultaAjax) && $consultaAjax=='cambiarPuestoTrabajo')
 				// --> Guardar log del cambio de puesto
 				$sqlLog = "
 				INSERT INTO ".$wcliame."_000300
-				        SET Medico 		= 'cliame',
+				        SET Medico 		= '".$wcliame."',
 					        Fecha_data 	= '".date("Y-m-d")."',
 					        Hora_data 	= '".date("H:i:s")."',
 							Logtem 		= '".$tema."',
@@ -1797,7 +1798,7 @@ function mostrarPacientesComunes($wbasedato, $wcliame, $whce, $wemp_pmla, $wcco,
 
 				//LLamado a la historia HCE
 				
-				url="HCE_iFrames.php?empresa="+document.forms.sala.whce.value+"&whis="+his+"&wing="+ing+"&wservicio="+ser+"&accion=F&ok=0&wcedula="+doc+"&wtipodoc="+tid+"&wdbmhos="+document.forms.sala.wbasedato.value+"&origen="+document.forms.sala.wemp_pmla.value;
+				url="HCE_iFrames.php?empresa="+document.forms.sala.whce.value+"&whis="+his+"&wing="+ing+"&wservicio="+ser+"&accion=F&ok=0&wcedula="+doc+"&wtipodoc="+tid+"&wdbmhos="+document.forms.sala.wbasedato.value+"&wemp_pmla="+document.forms.sala.wemp_pmla.value;
 
 				window.open(url,'','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
 				}
@@ -1949,7 +1950,7 @@ function mostrarPacientesComunes($wbasedato, $wcliame, $whce, $wemp_pmla, $wcco,
 //$wautor="Juan C. Hernandez M. ";
 //FECHA CREACION             : Febrero 15 de 2011
 //FECHA ULTIMA ACTUALIZACION :
-  $wactualiz="2020-03-10"; 
+  $wactualiz="2022-03-16"; 
 //DESCRIPCION
 //==========================================================================================================================================\\
 //==========================================================================================================================================\\
@@ -1966,6 +1967,7 @@ function mostrarPacientesComunes($wbasedato, $wcliame, $whce, $wemp_pmla, $wcco,
 //                   movhos_000018   : Ubicación del paciente y se indica el alta definitiva.                                               \\
 //==========================================================================================================================================\\
 //==========================================================================================================================================\\
+//16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
 //2020-03-10 Arleyda Insignares C.
 //Se adiciona filtro para la admisión y tenga en cuenta además del médico registrado en la admisión, el grupo de centros de costos de Arkadia
 //2020-02-27 Arleyda Insignares C.
