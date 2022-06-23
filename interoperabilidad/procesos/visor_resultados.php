@@ -1,12 +1,72 @@
 
-    <?php 
-        
-            $nroOrden = $_GET['nroOrden'];
-            $tOrden = $_GET['tOrden'];
-            $wemp_pmla = $_GET['wemp_pmla'];
-            $item = $_GET['item'];
-    
-    ?>
+<?php 
+
+function cargarOpcionesPOST($url,$data,$accion=null)
+{
+    $options = array(
+    CURLOPT_URL                 => $url."&".($accion != null ? $accion : 'automatizacion_pdfs')."=",
+    CURLOPT_HEADER              => false,
+    CURLOPT_RETURNTRANSFER      => 1,
+    CURLOPT_POSTFIELDS          => $data,
+    CURLOPT_CUSTOMREQUEST       => 'POST',
+    );
+
+    return $options;
+}
+
+$nroOrden = $_GET['nroOrden'];
+$tOrden = $_GET['tOrden'];
+$wemp_pmla = $_GET['wemp_pmla'];
+$item = $_GET['item'];
+
+if (isset($_GET['automatizacion_pdfs'])){
+    // Crear un manejador cURL
+    $ch = curl_init();
+    if (!$ch) {
+        die("Couldn't initialize a cURL handle");
+    }
+    $url = 'http://matrix-portoazul.lasamericas.com.co/matrix/interoperabilidad/procesos/interoperabilidad_ws.php?accion=consultarOrden'.
+    '&wemp_pmla='.$wemp_pmla.'&nroOrden='.$nroOrden.'&tOrden='.$tOrden.'&item='.$item;
+
+    $opciones = cargarOpcionesPOST($url,$data);  
+    curl_setopt_array($ch, $opciones);
+    $response = curl_exec($ch);
+    $paciente = json_decode($response, true);
+    curl_close($ch);
+    $historia = $paciente["paciente"]["historia"];
+    $nombre_completo = $paciente["paciente"]['nombreCompleto'];
+    $cedula = $paciente["paciente"]['nroDocumento'];
+    $edad = $paciente["paciente"]['fechaNacimiento'];
+    $sexo = $paciente["paciente"]['fechaNacimiento'] = "M"? "MASCULINO": "FEMENINO";
+    $empresa = $paciente["paciente"]['nombreResponsable'];
+    $medico =  $paciente["medico"]["nombre1"] . " " .$paciente["medico"]["nombre2"] . " " .
+    $paciente["medico"]["apellido1"] . " " . $paciente["medico"]["apellido2"] ;
+    $recepcion = " " . $paciente["resultado"]["fechaOrden"]; 
+    $muestra = " " . $paciente["resultado"]["fechaRes"]; 
+    $infoExamen = $paciente["resultado"]["info"]["examen"]["descripcion"];
+    if(!is_null($paciente["resultado"]["info"]["examen"]["observacion"])){
+        $observacion = $paciente["resultado"]["info"]["examen"]["observacion"];
+    }
+    else{
+        $observacion = "OBSERVACIONES:";
+    }
+    $nombreMedicoResponsable = $paciente["resultado"]["info"]["examen"]["responsable"]["nombre"];
+    $registroMedicoResponsable = $paciente["resultado"]["info"]["examen"]["responsable"]["registroMedico"];
+
+    //responsable
+    $contentResponsable = '<dt class="col-sm-2 table-sm">Responsable: </dt>
+                            <table class="table table-borderless table-sm">
+                                <td text-align="center">
+                                    <dl class="dl_row">
+                                        <dt class="col-sm-12" style="margin-right:-40px !important;">'.
+                                        $nombreMedicoResponsable.'</dt>
+                                        <dt class="col-sm-12" style="margin-right:-40px !important;"> REG. '.
+                                        $registroMedicoResponsable.'</dt>
+                                    </dl>
+                                </td>
+                            </table>';
+}
+?>
 
 <!DOCTYPE html>
 
@@ -20,52 +80,52 @@
 
 
 
-    <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
-    <meta http-equiv=â€Content-Typeâ€ content=â€text/html; charset=ISO-8859-1â€³ />
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
+<meta http-equiv=”Content-Type” content=”text/html; charset=ISO-8859-1" />
 
 
-    <meta charset="UTF-8" />
+<meta charset="UTF-8" />
 
 
 
-    <title>
+<title>
 
 
 
-    Resultados en L&iacute;nea - Laboratorio M&eacute;dico Las Am&eacute;ricas
+Resultados en L&iacute;nea - Laboratorio M&eacute;dico Las Am&eacute;ricas
 
 
 
-    </title>
+</title>
 
 
 
 
-    <style type="text/css">
+<style type="text/css">
 
 
 
-    a.linkstabla3 {
+a.linkstabla3 {
 
 
 
-        color: black;
+color: black;
 
 
 
-        font-size: 10px;
+font-size: 10px;
 
 
 
-        font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 
 
 
-        text-decoration: none;
+text-decoration: none;
 
 
 
-    }
+}
 
 
 
@@ -73,31 +133,31 @@
 
 
 
-    a.linkstabla4 {
+a.linkstabla4 {
 
 
 
-        color: White;
+color: White;
 
 
 
-        font-weight: bold;
+font-weight: bold;
 
 
 
-        font-size: 18px;
+font-size: 18px;
 
 
 
-        font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 
 
 
-        text-decoration: none;
+text-decoration: none;
 
 
 
-    }
+}
 
 
 
@@ -105,31 +165,31 @@
 
 
 
-    a.linkstabla5 {
+a.linkstabla5 {
 
 
 
-        color: black;
+color: black;
 
 
 
-        font-weight: bold;
+font-weight: bold;
 
 
 
-        font-size: 11px;
+font-size: 11px;
 
 
 
-        font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 
 
 
-        text-decoration: none;
+text-decoration: none;
 
 
 
-    }
+}
 
 
 
@@ -137,31 +197,31 @@
 
 
 
-    a.linkstabla6 {
+a.linkstabla6 {
 
 
 
-        color: black;
+color: black;
 
 
 
-        font-weight: normal;
+font-weight: normal;
 
 
 
-        font-size: 11px;
+font-size: 11px;
 
 
 
-        font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 
 
 
-        text-decoration: none;
+text-decoration: none;
 
 
 
-    }
+}
 
 
 
@@ -169,31 +229,31 @@
 
 
 
-    a.linkstabla7 {
+a.linkstabla7 {
 
 
 
-        color: black;
+color: black;
 
 
 
-        font-weight: normal;
+font-weight: normal;
 
 
 
-        font-size: 12px;
+font-size: 12px;
 
 
 
-        font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 
 
 
-        text-decoration: none;
+text-decoration: none;
 
 
 
-    }
+}
 
 
 
@@ -201,35 +261,35 @@
 
 
 
-    a.navegacion {
+a.navegacion {
 
 
 
-        color: white;
+color: white;
 
 
 
-        font-style: normal;
+font-style: normal;
 
 
 
-        font-weight: normal;
+font-weight: normal;
 
 
 
-        font-size: 10px;
+font-size: 10px;
 
 
 
-        font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 
 
 
-        text-decoration: underline;
+text-decoration: underline;
 
 
 
-    }
+}
 
 
 
@@ -237,35 +297,35 @@
 
 
 
-    a.navegacion1 {
+a.navegacion1 {
 
 
 
-        color: white;
+color: white;
 
 
 
-        font-style: normal;
+font-style: normal;
 
 
 
-        font-weight: normal;
+font-weight: normal;
 
 
 
-        font-size: 10px;
+font-size: 10px;
 
 
 
-        font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 
 
 
-        text-decoration: none;
+text-decoration: none;
 
 
 
-    }
+}
 
 
 
@@ -273,15 +333,15 @@
 
 
 
-    h1 {
+h1 {
 
 
 
-        font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 
 
 
-    }
+}
 
 
 
@@ -289,19 +349,19 @@
 
 
 
-    .historicButtons {
+.historicButtons {
 
 
 
-        display: flex;
+display: flex;
 
 
 
-        flex-direction: column;
+flex-direction: column;
 
 
 
-    }
+}
 
 
 
@@ -309,31 +369,31 @@
 
 
 
-    .loadFields {
+.loadFields {
 
 
 
-        margin: 10px 0 10px 0;
+margin: 10px 0 10px 0;
 
 
 
-        font-size: 24px;
+font-size: 24px;
 
 
 
-        background-color: #0260b1;
+background-color: #0260b1;
 
 
 
-        color: white;
+color: white;
 
 
 
-        border-radius: 4px;
+border-radius: 4px;
 
 
 
-    }
+}
 
 
 
@@ -341,19 +401,19 @@
 
 
 
-    .fieldsDropDown {
+.fieldsDropDown {
 
 
 
-        font-size: 18px;
+font-size: 18px;
 
 
 
-        margin: 18px 0 18px 0;
+margin: 18px 0 18px 0;
 
 
 
-    }
+}
 
 
 
@@ -361,23 +421,23 @@
 
 
 
-    #loading {
+#loading {
 
 
 
-        font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
 
 
 
-        font-size: 18px;
+font-size: 18px;
 
 
 
-        color: black;
+color: black;
 
 
 
-    }
+}
 
 
 
@@ -385,19 +445,19 @@
 
 
 
-    #chartdiv {
+#chartdiv {
 
 
 
-        width: auto;
+width: auto;
 
 
 
-        height: 500px;
+height: 500px;
 
 
 
-    }
+}
 
 
 
@@ -405,67 +465,67 @@
 
 
 
-    #closeChart {
+#closeChart {
 
 
 
-        margin: 10px;
+margin: 10px;
 
 
 
-        font-size: 16px;
+font-size: 16px;
 
 
 
-    }
+}
 
 
 
-    .radioGroup {
+.radioGroup {
 
 
 
-        display: flex;
+display: flex;
 
 
 
-        justify-content: space-evenly;
+justify-content: space-evenly;
 
 
 
-        color: black;
+color: black;
 
 
 
-    }
+}
 
 
 
-    #datesDiv {
+#datesDiv {
 
 
 
-        color: black;
+color: black;
 
 
 
-        display: flex;
+display: flex;
 
 
 
-        justify-content: space-around;
+justify-content: space-around;
 
 
 
-        font-size: 14px;
+font-size: 14px;
 
 
 
-        font-weight: bold;
+font-weight: bold;
 
 
 
-    }
+}
 
 
 
@@ -473,19 +533,19 @@
 
 
 
-    #closeChartDiv {
+#closeChartDiv {
 
 
 
-        display: flex;
+display: flex;
 
 
 
-        justify-content: center;
+justify-content: center;
 
 
 
-    }
+}
 
 
 
@@ -493,27 +553,27 @@
 
 
 
-    label {
+label {
 
 
 
-        vertical-align: middle;
+vertical-align: middle;
 
 
 
-        font-size: 14px;
+font-size: 14px;
 
 
 
-        border-radius: 4px;
+border-radius: 4px;
 
 
 
-        margin-bottom: 0px !important;
+margin-bottom: 0px !important;
 
 
 
-    }
+}
 
 
 
@@ -521,39 +581,39 @@
 
 
 
-    #fechaInicial,
+#fechaInicial,
 
 
 
-    #fechaFinal {
+#fechaFinal {
 
 
 
-        vertical-align: middle;
+vertical-align: middle;
 
 
 
-        font-size: 14px;
+font-size: 14px;
 
 
 
-        border-bottom: 2px solid;
+border-bottom: 2px solid;
 
 
 
-        border-top: none;
+border-top: none;
 
 
 
-        border-left: none;
+border-left: none;
 
 
 
-        border-right: none;
+border-right: none;
 
 
 
-    }
+}
 
 
 
@@ -561,23 +621,23 @@
 
 
 
-    .titulo {
+.titulo {
 
 
 
-        background-color: #00acc9;
+background-color: #00acc9;
 
 
 
-        color: whitesmoke;
+color: whitesmoke;
 
 
 
-        text-align: center;
+text-align: center;
 
 
 
-    }
+}
 
 
 
@@ -585,39 +645,39 @@
 
 
 
-    .dl_row {
+.dl_row {
 
 
 
-        display: -ms-flexbox;
+display: -ms-flexbox;
 
 
 
-        display: flex;
+display: flex;
 
 
 
-        -ms-flex-wrap: wrap;
+-ms-flex-wrap: wrap;
 
 
 
-        flex-wrap: wrap;
+flex-wrap: wrap;
 
 
 
-        font-size: 14px;
+font-size: 14px;
 
 
 
-        margin-top: 1rem !important;
+margin-top: 1rem !important;
 
 
 
-    }
+}
 
 
 
-    </style>
+</style>
 
 
 
@@ -637,598 +697,594 @@
 <input type='hidden' id='wemp_pmla' name='wemp_pmla' value='<?php echo $wemp_pmla ?>'>
 <input type='hidden' id='tOrden' name='tOrden' value='<?php echo $tOrden ?>'>
 <input type='hidden' id='item' name='item' value='<?php echo $item ?>'>
-    <link
+<link
 
 
 
-    rel="stylesheet"
+rel="stylesheet"
 
 
 
-    href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
 
 
 
-    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
 
 
 
-    crossorigin="anonymous"
+crossorigin="anonymous"
 
 
 
-    />
+/>
 
 
 
-    <link
+<link
 
 
 
-    rel="stylesheet"
+rel="stylesheet"
 
 
 
-    href="https://www.amcharts.com/lib/3/plugins/export/export.css"
+href="https://www.amcharts.com/lib/3/plugins/export/export.css"
 
 
 
-    type="text/css"
+type="text/css"
 
 
 
-    media="all"
+media="all"
 
 
 
-    />
+/>
 
 
 
-    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
 
 
 
-    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
-
-
-
-
+<script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
 
 <script>
 
-    $(document).ready(function(){
-    $.ajax({
-            url: "interoperabilidad_ws.php",
-            type: "GET",
-            dataType: "json",
-            data:{
-                accion			: 'consultarOrden',
-                wemp_pmla		: $('#wemp_pmla').val(),
-                nroOrden		: $('#nroOrden').val(),
-                tOrden		: $('#tOrden').val(),
-                item		: $('#item').val(),
-            
-                },
-                async: false,
-                success:function(res) {
-                    console.log(res.paciente.historia);
-                    //paciente
-                    $("#nroHistoria").html(res.paciente.historia);
-                    $("#nombreCompleto").html(res.paciente.nombreCompleto);
-                    $("#nroDocumento").html(res.paciente.nroDocumento);
-                    $("#fechaNacimiento").html(res.paciente.fechaNacimiento);
-                    var genero = res.paciente.genero = "M"? "MASCULINO": "FEMENINO";
-                    $("#genero").html(genero);
-                    $("#nombreResponsable").html(res.paciente.nombreResponsable);
-                    
-                    //medico
-                    var nomMedico = res.medico.nombre1+" "+res.medico.nombre2+" "+ res.medico.apellido1+" "+res.medico.apellido2;
-                    $("#nombreMedico").html(nomMedico);
-                    
-                    //resultado
-                    $("#fechaOrden").html(res.resultado.fechaOrden);
-                    $("#fechaRes").html(res.resultado.fechaRes);
-                    $("#nomDescripcion").html(res.resultado.info.examen.descripcion);
-					if(Object.prototype.hasOwnProperty.call(res.resultado.info.examen, 'observacion')){
-						   $("#observacion").html(res.resultado.info.examen.observacion);
-					}else{
-						 $("#observacion").html("OBSERVACIONES:");
-					}
-                    var html = '';
-                    if(!$.isArray(res.resultado.info.detallesResultado)){
-                    var element = res.resultado.info.detallesResultado;
-                    html += '<tr>'+
+$(document).ready(function(){
+$.ajax({
+url: "interoperabilidad_ws.php",
+type: "GET",
+dataType: "json",
+data:{
+accion			: 'consultarOrden',
+wemp_pmla		: $('#wemp_pmla').val(),
+nroOrden		: $('#nroOrden').val(),
+tOrden		: $('#tOrden').val(),
+item		: $('#item').val(),
 
-                                    '<td width="5"></td>'+
-                                    '<td width="130" colspan="2">'+
-                                        '<a class="linkstabla6">'+	 element.descripcion +'</a>'+
-                                    '</td>'+
-                                    '<td width="100" colspan="2">';
-                                        if(element.resultadoValor!=""){
-                                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>'; 
-											html +=' ';
-											 html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
-                                        }else{
-                                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
-												html +=' ';
-										  html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
-                                            
-                                        }
-                                        
-                                    html += '</td>'+
-                                    '<td width="80" colspan="2">'+
-                                        '<a class="linkstabla6">'+element.valorReferencia+'</a>'+
-                                    '</td>'+
-                                    '<td width="80" colspan="2">'+
-                                        '<a class="linkstabla6">'+element.unidades+'</a>'+
-                                    '</td>'+
+},
+async: false,
+success:function(res) {
+    console.log(res.paciente.historia);
+    //paciente
+    $("#nroHistoria").html(res.paciente.historia);
+    $("#nombreCompleto").html(res.paciente.nombreCompleto);
+    $("#nroDocumento").html(res.paciente.nroDocumento);
+    $("#fechaNacimiento").html(res.paciente.fechaNacimiento);
+    var genero = res.paciente.genero = "M"? "MASCULINO": "FEMENINO";
+    $("#genero").html(genero);
+    $("#nombreResponsable").html(res.paciente.nombreResponsable);
+    
+    //medico
+    var nomMedico = res.medico.nombre1+" "+res.medico.nombre2+" "+ res.medico.apellido1+" "+res.medico.apellido2;
+    $("#nombreMedico").html(nomMedico);
+    
+    //resultado
+    $("#fechaOrden").html(res.resultado.fechaOrden);
+    $("#fechaRes").html(res.resultado.fechaRes);
+    $("#nomDescripcion").html(res.resultado.info.examen.descripcion);
+    if(Object.prototype.hasOwnProperty.call(res.resultado.info.examen, 'observacion')){
+           $("#observacion").html(res.resultado.info.examen.observacion);
+    }else{
+         $("#observacion").html("OBSERVACIONES:");
+    }
+    var html = '';
+    if(!$.isArray(res.resultado.info.detallesResultado)){
+    var element = res.resultado.info.detallesResultado;
+    html += '<tr>'+
 
-                            '</tr>';
-                            $("#tabla").append(html);
-                    }else{
-                            $.each( res.resultado.info.detallesResultado , (key,element) => { 
+                    '<td width="5"></td>'+
+                    '<td width="130" colspan="2">'+
+                        '<a class="linkstabla6">'+	 element.descripcion +'</a>'+
+                    '</td>'+
+                    '<td width="100" colspan="2">';
+                        if(element.resultadoValor!=""){
+                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>'; 
+                            html +=' ';
+                             html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
+                        }else{
+                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
+                                html +=' ';
+                          html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
+                            
+                        }
                         
-                            html += '<tr>'+
-                                    '<td width="5"></td>'+
-                                    '<td width="130" colspan="2">'+                        
-                                        '<a class="linkstabla6">'+	 element.descripcion +'</a>'+                                    
-                                    '</td>'+
-                                    '<td width="100" colspan="2">';
-                                        if(element.resultadoValor!=""){
-                                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
-											html +=' ';
-											html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
-                                        }else{
-										    html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
-											html +=' ';
-										   html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
-                                            
-                                        }                                        
-                                    html += '</td>'+
-                                    '<td width="80" colspan="2">'+
-                                        '<a class="linkstabla6">'+element.valorReferencia+'</a>'+
-                                    '</td>'+
-                                    '<td width="80" colspan="2">'+
-                                        '<a class="linkstabla6">'+element.unidades+'</a>'+
-                                    '</td>'+
+                    html += '</td>'+
+                    '<td width="80" colspan="2">'+
+                        '<a class="linkstabla6">'+element.valorReferencia+'</a>'+
+                    '</td>'+
+                    '<td width="80" colspan="2">'+
+                        '<a class="linkstabla6">'+element.unidades+'</a>'+
+                    '</td>'+
 
-                            '</tr>'
-                                });
-                            $("#tabla").append(html);
+            '</tr>';
+            $("#tabla").append(html);
+    }else{
+            $.each( res.resultado.info.detallesResultado , (key,element) => { 
+        
+            html += '<tr>'+
+                    '<td width="5"></td>'+
+                    '<td width="130" colspan="2">'+                        
+                        '<a class="linkstabla6">'+	 element.descripcion +'</a>'+                                    
+                    '</td>'+
+                    '<td width="100" colspan="2">';
+                        if(element.resultadoValor!=""){
+                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
+                            html +=' ';
+                            html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
+                        }else{
+                            html +='<a class="linkstabla6">'+ element.resultadoValor +'</a>';
+                            html +=' ';
+                           html +='<a class="linkstabla6">'+ element.resultadoTexto +'</a>';
                             
-                        }
-                        //responsable
-                        var contentResponsable = '<dt class="col-sm-2 table-sm">Responsable: </dt>';;
-                        contentResponsable += '<table class="table table-borderless table-sm">'+
-                                                            '<td text-align="center">'+
+                        }                                        
+                    html += '</td>'+
+                    '<td width="80" colspan="2">'+
+                        '<a class="linkstabla6">'+element.valorReferencia+'</a>'+
+                    '</td>'+
+                    '<td width="80" colspan="2">'+
+                        '<a class="linkstabla6">'+element.unidades+'</a>'+
+                    '</td>'+
 
-                                                                '<dl class="dl_row">'+
-                                                                    '<dt class="col-sm-12" style="margin-right:-40px !important;">'+ res.resultado.info.examen.responsable.nombre +'</dt>'+
-                                                                    '<dt class="col-sm-12" style="margin-right:-40px !important;">'+ "REG. "+res.resultado.info.examen.responsable.registroMedico +'</dt>'+
-                                                                        
+            '</tr>'
+                });
+            $("#tabla").append(html);
+            
+        }
+        //responsable
+        var contentResponsable = '<dt class="col-sm-2 table-sm">Responsable: </dt>';;
+        contentResponsable += '<table class="table table-borderless table-sm">'+
+                                            '<td text-align="center">'+
 
-                                                                '</dl>'+
-                                                                
-                                                            '</td>'+
-                                                        '</table>';
-                            $("#responsable").append(contentResponsable);                             
-                        if("microorganismos" in res.resultado.info &&  res.resultado.info.microorganismos != ""){
-                            var contentMicroorganismo = '';
-                            var contentAntibioticos = '';
-                            var contentNotas = '';
-                            //TABLA DE Microorganismo
-                            if(!$.isArray(res.resultado.info.microorganismos.MicroorganismoDTO)){
-                                contentMicroorganismo += '<table class="table table-borderless table-sm">'+
-                                                '<td text-align="center">'+
-
-                                                    '<dl class="dl_row">'+
-                                                        '<dt class="col-sm-2">Microorganismo: </dt>'+
-                                                            '<dd id="NumOT" class="col-sm-10" >'+
-                                                            res.resultado.info.microorganismos.MicroorganismoDTO.descripcion+
-                                                            '</dd>'+
-                                                            
-                                                        '<dt class="col-sm-2">Cantidad:</dt>'+
-                                                            '<dd class="col-sm-10" >'+
-                                                                res.resultado.info.microorganismos.MicroorganismoDTO.cantidadTotal+
-                                                            '</dd>'+
-                                                        '<dt class="col-sm-2">Antibiograma</dt>'+
-                                                    '</dl>'+
-                                                '</td>'+
-                                            '</table>';
-                                        
-                                //TABLA DE ANTIBIOTICOS
-								
-							   var dato=res.resultado.info.microorganismos.MicroorganismoDTO.antibioticos.length;
-								console.log(dato);
-                                if(dato>0){
-                                    var element = res.resultado.info.microorganismos.MicroorganismoDTO.antibioticos.AntibioticoDTO;
-                                      '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
-                                                    '<tr>'+
-                                                    '<td width="5"></td>'+
-                                                        '<td width="130" colspan="2">'+
-                                                            '<div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>'+
-
-                                                    '</td>'+
-                                                        '<td width="100" colspan="2">'+
-                                                            '<div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>'+
-                                                        '</td>'+
-                                                        '<td width="80" colspan="2">'+
-                                                                '<div align="left"><a class="linkstabla5">MIC </a></div>'+
-                                                    ' </td>'+                                                                                
-                                                    '</tr>'+
-                                                    '<tr>'+
-
-                                                        '<td width="5"></td>'+
-                                                        '<td width="130" colspan="2">'+
-                                                            '<a class="linkstabla6">'+	 element.dsantibiotico +'</a>'+
-                                                        '</td>'+
-                                                        '<td width="100" colspan="2">'+
-                                                            '<a class="linkstabla6">'+	 element.dssensibilidad +'</a>'+
-                                                        '</td>'+
-                                                        '<td width="80" colspan="2">'+
-                                                            '<a class="linkstabla6">'+element.mic_completo+'</a>'+
-                                                        '</td>'+
-                                                    
-                                                    '</tr>' +   
-
-
-                                                '</table>';
-								 }else{
-									  if(dato>0 || dato  === undefined){
-								   contentAntibioticos += 
-                                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
-                                                    '<tr>'+
-                                                    '<td width="5"></td>'+
-                                                        '<td width="130" colspan="2">'+
-                                                            '<div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>'+
-
-                                                    '</td>'+
-                                                        '<td width="100" colspan="2">'+
-                                                            '<div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>'+
-                                                        '</td>'+
-                                                        '<td width="80" colspan="2">'+
-                                                                '<div align="left"><a class="linkstabla5">MIC </a></div>'+
-                                                    ' </td>'+                                                                                
-                                                    '</tr>';
-                                    $.each( res.resultado.info.microorganismos.MicroorganismoDTO.antibioticos.AntibioticoDTO , (key,element) => { 
-                                    
-                                        contentAntibioticos += '<tr>'+
-
-                                                '<td width="5"></td>'+
-                                                '<td width="130" colspan="2">'+
-                                                    '<a class="linkstabla6">'+	 element.dsantibiotico +'</a>'+
-                                                '</td>'+
-                                                '<td width="100" colspan="2">'+
-                                                    '<a class="linkstabla6">'+	 element.dssensibilidad +'</a>'+
-                                                '</td>'+
-                                                '<td width="80" colspan="2">'+
-                                                    '<a class="linkstabla6">'+element.mic_completo+'</a>'+
-                                                '</td>'+
-                                            
-                                        '</tr>';
-                                    });
-                                    contentAntibioticos +=  '</table>';
-                                }
-								 }
-                            console.log(res.resultado.info.microorganismos.MicroorganismoDTO.notas);
-							if(Object.prototype.hasOwnProperty.call(res.resultado.info.microorganismos.MicroorganismoDTO.notas, 'NotaMicroorganismoDTO')){
-									     if("notas" in res.resultado.info.microorganismos.MicroorganismoDTO &&  res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO != ""){
-                                    contentNotas += '<dt class="col-sm-2 table-sm">Notas: </dt>';
-                                        if(!$.isArray(res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO)){
-                                            var element = res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO;
-                                            contentNotas += '<table class="table table-borderless table-sm">'+
-                                                    '<td text-align="center">'+
-
-                                                        '<dl class="dl_row">'+
-                                                            '<dt class="col-sm-2" style="margin-right:-40px !important;">'+ element.nombreNota +'</dt>'+
-                                                                '<dd id="NumOT" class="col-sm-10" >'+
-                                                                element.nota+
-                                                                '</dd>'+
-
-                                                        '</dl>'+
-                                                    '</td>'+
-                                                '</table>';
-                                        }else{
-                                            $.each( res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO , (key,element) => { 
-                                                    contentNotas += '<table class="table table-borderless table-sm">'+
-                                                            '<td text-align="center">'+
-
-                                                                '<dl class="dl_row">'+
-                                                                    '<dt class="col-sm-2" style="margin-right:-40px !important;">'+ element.nombreNota +'</dt>'+
-                                                                        '<dd id="NumOT" class="col-sm-10" >'+
-                                                                        element.nota+
-                                                                        '</dd>'+
-
-                                                                '</dl>'+
-                                                            '</td>'+
-                                                        '</table>';
-                                                    });
-                                        }
-                                    
-                                
-                                }
-					        }
-                          
-                                $("#microorganismos").append(contentMicroorganismo+contentAntibioticos+contentNotas); 
-                            }else{
-                            
-                                $.each( res.resultado.info.microorganismos.MicroorganismoDTO , (key,element) => { 
-                                var contentMicroorganismo = '';
-                                var contentAntibioticos = '';
-                                var contentNotas = '';
-                                
-                                        contentMicroorganismo += '<table class="table table-borderless table-sm">'+
-                                                    '<td text-align="center">'+
-
-                                                        '<dl class="dl_row">'+
-                                                            '<dt class="col-sm-2">Microorganismo: </dt>'+
-                                                                '<dd id="NumOT" class="col-sm-10" >'+
-                                                                element.descripcion+
-                                                                '</dd>'+
-                                                                
-                                                            '<dt class="col-sm-2">Cantidad:</dt>'+
-                                                                '<dd class="col-sm-10" >'+
-                                                                    element.cantidadTotal+
-                                                                '</dd>'+
-                                                            '<dt class="col-sm-2">Antibiograma</dt>'+
-                                                        '</dl>'+
-                                                    '</td>'+
-                                                '</table>';
-                                            
-                                    //TABLA DE ANTIBIOTICOS
-                                    if(!$.isArray(element.antibioticos.AntibioticoDTO)){
-                                    
-                                        var element2 = element.antibioticos.AntibioticoDTO;
-                                            contentAntibioticos += 
-                                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
-                                                    '<tr>'+
-                                                    '<td width="5"></td>'+
-                                                        '<td width="130" colspan="2">'+
-                                                            '<div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>'+
-
-                                                    '</td>'+
-                                                        '<td width="100" colspan="2">'+
-                                                            '<div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>'+
-                                                        '</td>'+
-                                                        '<td width="80" colspan="2">'+
-                                                                '<div align="left"><a class="linkstabla5">MIC </a></div>'+
-                                                    ' </td>'+                                                                                
-                                                    '</tr>'+
-                                                    '<tr>'+
-
-                                                        '<td width="5"></td>'+
-                                                        '<td width="130" colspan="2">'+
-                                                            '<a class="linkstabla6">'+	 element2.dsantibiotico +'</a>'+
-                                                        '</td>'+
-                                                        '<td width="100" colspan="2">'+
-                                                            '<a class="linkstabla6">'+	 element2.dssensibilidad +'</a>'+
-                                                        '</td>'+
-                                                        '<td width="80" colspan="2">'+
-                                                            '<a class="linkstabla6">'+element2.mic_completo+'</a>'+
-                                                        '</td>'+
-                                                    
-                                                    '</tr>' +   
-
-
-                                                '</table>';
-                                            
-                                    }else{
-                                    contentAntibioticos += 
-                                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
-                                                    '<tr>'+
-                                                    '<td width="5"></td>'+
-                                                        '<td width="130" colspan="2">'+
-                                                            '<div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>'+
-
-                                                    '</td>'+
-                                                        '<td width="100" colspan="2">'+
-                                                            '<div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>'+
-                                                        '</td>'+
-                                                        '<td width="80" colspan="2">'+
-                                                                '<div align="left"><a class="linkstabla5">MIC </a></div>'+
-                                                    ' </td>'+                                                                                
-                                                    '</tr>';
-                                                        $.each( element.antibioticos.AntibioticoDTO , (key2,element2) => { 
+                                                '<dl class="dl_row">'+
+                                                    '<dt class="col-sm-12" style="margin-right:-40px !important;">'+ res.resultado.info.examen.responsable.nombre +'</dt>'+
+                                                    '<dt class="col-sm-12" style="margin-right:-40px !important;">'+ "REG. "+res.resultado.info.examen.responsable.registroMedico +'</dt>'+
                                                         
-                                                            contentAntibioticos += '<tr>'+
 
-                                                                    '<td width="5"></td>'+
-                                                                    '<td width="130" colspan="2">'+
-                                                                        '<a class="linkstabla6">'+	 element2.dsantibiotico +'</a>'+
-                                                                    '</td>'+
-                                                                    '<td width="100" colspan="2">'+
-                                                                        '<a class="linkstabla6">'+	 element2.dssensibilidad +'</a>'+
-                                                                    '</td>'+
-                                                                    '<td width="80" colspan="2">'+
-                                                                        '<a class="linkstabla6">'+element2.mic_completo+'</a>'+
-                                                                    '</td>'+
-                                                                
-                                                            '</tr>';
-                                                        });
-                                        contentAntibioticos +=  '</table>';
-                                    }
-                                
-                                
-                                //NOTAS
-								
-                                    if("notas" in element &&  (element.notas.NotaMicroorganismoDTO != "" && element.notas !="")){
-                                        contentNotas += '<dt class="col-sm-2 table-sm">Notas: </dt>';
-                                            if(!$.isArray(element.notas.NotaMicroorganismoDTO)){
-                                            debugger;
-                                                var element3 = element.notas.NotaMicroorganismoDTO;
-                                                contentNotas += '<table class="table table-borderless table-sm" style="width: 70%;">'+
-                                                        '<td text-align="center">'+
+                                                '</dl>'+
+                                                
+                                            '</td>'+
+                                        '</table>';
+            $("#responsable").append(contentResponsable);                             
+        if("microorganismos" in res.resultado.info &&  res.resultado.info.microorganismos != ""){
+            var contentMicroorganismo = '';
+            var contentAntibioticos = '';
+            var contentNotas = '';
+            //TABLA DE Microorganismo
+            if(!$.isArray(res.resultado.info.microorganismos.MicroorganismoDTO)){
+                contentMicroorganismo += '<table class="table table-borderless table-sm">'+
+                                '<td text-align="center">'+
 
-                                                            '<dl class="dl_row">'+
-                                                                '<dt class="col-sm-2" style="margin-right:-40px !important;">'+ element3.nombreNota +'</dt>'+
-                                                                    '<dd id="NumOT" class="col-sm-10" >'+
-                                                                    element3.nota+
-                                                                    '</dd>'+
-
-                                                            '</dl>'+
-                                                        '</td>'+
-                                                    '</table>';
-                                            }else{
-                                                contentNotas += '<table class="table table-borderless table-sm" style="width: 70%;">';
-                                                $.each( element.notas.NotaMicroorganismoDTO , (key3,element3) => { 
-                                                    
-                                                  contentNotas +=  '<tr text-align="center">'+
-
-                                                                '<dl class="row col-sm-12">'+
-                                                                    '<dt class="col-sm-2" style="margin-right:-40px !important;">'+ element3.nombreNota +'</dt>'+
-                                                                        '<dd id="NumOT" class="col-sm-10" >'+
-                                                                        element3.nota+
-                                                                        '</dd>'
-
-                                                                '</dl>'+
-                                                            '</tr>'+'</br>';
-                                                        
-                                                    });
-                                                    contentNotas += '</table>';
-                                            }
-                                        
-                                        //$("#notas").append(contentNotas);
-                                    }
-                                    $("#microorganismos").append(contentMicroorganismo+contentAntibioticos+contentNotas); 
-                                    //$("#antibioticos").append(contentAntibioticos);
-                                    $("#antibioticos").show();
-                                });
-                                
-                        } 
-                        }
-                }
+                                    '<dl class="dl_row">'+
+                                        '<dt class="col-sm-2">Microorganismo: </dt>'+
+                                            '<dd id="NumOT" class="col-sm-10" >'+
+                                            res.resultado.info.microorganismos.MicroorganismoDTO.descripcion+
+                                            '</dd>'+
+                                            
+                                        '<dt class="col-sm-2">Cantidad:</dt>'+
+                                            '<dd class="col-sm-10" >'+
+                                                res.resultado.info.microorganismos.MicroorganismoDTO.cantidadTotal+
+                                            '</dd>'+
+                                        '<dt class="col-sm-2">Antibiograma</dt>'+
+                                    '</dl>'+
+                                '</td>'+
+                            '</table>';
+                        
+                //TABLA DE ANTIBIOTICOS
                 
-        });
+               var dato=res.resultado.info.microorganismos.MicroorganismoDTO.antibioticos.length;
+                console.log(dato);
+                if(dato>0){
+                    var element = res.resultado.info.microorganismos.MicroorganismoDTO.antibioticos.AntibioticoDTO;
+                      '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
+                                    '<tr>'+
+                                    '<td width="5"></td>'+
+                                        '<td width="130" colspan="2">'+
+                                            '<div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>'+
+
+                                    '</td>'+
+                                        '<td width="100" colspan="2">'+
+                                            '<div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>'+
+                                        '</td>'+
+                                        '<td width="80" colspan="2">'+
+                                                '<div align="left"><a class="linkstabla5">MIC </a></div>'+
+                                    ' </td>'+                                                                                
+                                    '</tr>'+
+                                    '<tr>'+
+
+                                        '<td width="5"></td>'+
+                                        '<td width="130" colspan="2">'+
+                                            '<a class="linkstabla6">'+	 element.dsantibiotico +'</a>'+
+                                        '</td>'+
+                                        '<td width="100" colspan="2">'+
+                                            '<a class="linkstabla6">'+	 element.dssensibilidad +'</a>'+
+                                        '</td>'+
+                                        '<td width="80" colspan="2">'+
+                                            '<a class="linkstabla6">'+element.mic_completo+'</a>'+
+                                        '</td>'+
+                                    
+                                    '</tr>' +   
+
+
+                                '</table>';
+                 }else{
+                      if(dato>0 || dato  === undefined){
+                   contentAntibioticos += 
+                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
+                                    '<tr>'+
+                                    '<td width="5"></td>'+
+                                        '<td width="130" colspan="2">'+
+                                            '<div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>'+
+
+                                    '</td>'+
+                                        '<td width="100" colspan="2">'+
+                                            '<div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>'+
+                                        '</td>'+
+                                        '<td width="80" colspan="2">'+
+                                                '<div align="left"><a class="linkstabla5">MIC </a></div>'+
+                                    ' </td>'+                                                                                
+                                    '</tr>';
+                    $.each( res.resultado.info.microorganismos.MicroorganismoDTO.antibioticos.AntibioticoDTO , (key,element) => { 
+                    
+                        contentAntibioticos += '<tr>'+
+
+                                '<td width="5"></td>'+
+                                '<td width="130" colspan="2">'+
+                                    '<a class="linkstabla6">'+	 element.dsantibiotico +'</a>'+
+                                '</td>'+
+                                '<td width="100" colspan="2">'+
+                                    '<a class="linkstabla6">'+	 element.dssensibilidad +'</a>'+
+                                '</td>'+
+                                '<td width="80" colspan="2">'+
+                                    '<a class="linkstabla6">'+element.mic_completo+'</a>'+
+                                '</td>'+
+                            
+                        '</tr>';
+                    });
+                    contentAntibioticos +=  '</table>';
+                }
+                 }
+            console.log(res.resultado.info.microorganismos.MicroorganismoDTO.notas);
+            if(Object.prototype.hasOwnProperty.call(res.resultado.info.microorganismos.MicroorganismoDTO.notas, 'NotaMicroorganismoDTO')){
+                         if("notas" in res.resultado.info.microorganismos.MicroorganismoDTO &&  res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO != ""){
+                    contentNotas += '<dt class="col-sm-2 table-sm">Notas: </dt>';
+                        if(!$.isArray(res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO)){
+                            var element = res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO;
+                            contentNotas += '<table class="table table-borderless table-sm">'+
+                                    '<td text-align="center">'+
+
+                                        '<dl class="dl_row">'+
+                                            '<dt class="col-sm-2" style="margin-right:-40px !important;">'+ element.nombreNota +'</dt>'+
+                                                '<dd id="NumOT" class="col-sm-10" >'+
+                                                element.nota+
+                                                '</dd>'+
+
+                                        '</dl>'+
+                                    '</td>'+
+                                '</table>';
+                        }else{
+                            $.each( res.resultado.info.microorganismos.MicroorganismoDTO.notas.NotaMicroorganismoDTO , (key,element) => { 
+                                    contentNotas += '<table class="table table-borderless table-sm">'+
+                                            '<td text-align="center">'+
+
+                                                '<dl class="dl_row">'+
+                                                    '<dt class="col-sm-2" style="margin-right:-40px !important;">'+ element.nombreNota +'</dt>'+
+                                                        '<dd id="NumOT" class="col-sm-10" >'+
+                                                        element.nota+
+                                                        '</dd>'+
+
+                                                '</dl>'+
+                                            '</td>'+
+                                        '</table>';
+                                    });
+                        }
+                    
+                
+                }
+            }
+          
+                $("#microorganismos").append(contentMicroorganismo+contentAntibioticos+contentNotas); 
+            }else{
+            
+                $.each( res.resultado.info.microorganismos.MicroorganismoDTO , (key,element) => { 
+                var contentMicroorganismo = '';
+                var contentAntibioticos = '';
+                var contentNotas = '';
+                
+                        contentMicroorganismo += '<table class="table table-borderless table-sm">'+
+                                    '<td text-align="center">'+
+
+                                        '<dl class="dl_row">'+
+                                            '<dt class="col-sm-2">Microorganismo: </dt>'+
+                                                '<dd id="NumOT" class="col-sm-10" >'+
+                                                element.descripcion+
+                                                '</dd>'+
+                                                
+                                            '<dt class="col-sm-2">Cantidad:</dt>'+
+                                                '<dd class="col-sm-10" >'+
+                                                    element.cantidadTotal+
+                                                '</dd>'+
+                                            '<dt class="col-sm-2">Antibiograma</dt>'+
+                                        '</dl>'+
+                                    '</td>'+
+                                '</table>';
+                            
+                    //TABLA DE ANTIBIOTICOS
+                    if(!$.isArray(element.antibioticos.AntibioticoDTO)){
+                    
+                        var element2 = element.antibioticos.AntibioticoDTO;
+                            contentAntibioticos += 
+                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
+                                    '<tr>'+
+                                    '<td width="5"></td>'+
+                                        '<td width="130" colspan="2">'+
+                                            '<div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>'+
+
+                                    '</td>'+
+                                        '<td width="100" colspan="2">'+
+                                            '<div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>'+
+                                        '</td>'+
+                                        '<td width="80" colspan="2">'+
+                                                '<div align="left"><a class="linkstabla5">MIC </a></div>'+
+                                    ' </td>'+                                                                                
+                                    '</tr>'+
+                                    '<tr>'+
+
+                                        '<td width="5"></td>'+
+                                        '<td width="130" colspan="2">'+
+                                            '<a class="linkstabla6">'+	 element2.dsantibiotico +'</a>'+
+                                        '</td>'+
+                                        '<td width="100" colspan="2">'+
+                                            '<a class="linkstabla6">'+	 element2.dssensibilidad +'</a>'+
+                                        '</td>'+
+                                        '<td width="80" colspan="2">'+
+                                            '<a class="linkstabla6">'+element2.mic_completo+'</a>'+
+                                        '</td>'+
+                                    
+                                    '</tr>' +   
+
+
+                                '</table>';
+                            
+                    }else{
+                    contentAntibioticos += 
+                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">'+
+                                    '<tr>'+
+                                    '<td width="5"></td>'+
+                                        '<td width="130" colspan="2">'+
+                                            '<div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>'+
+
+                                    '</td>'+
+                                        '<td width="100" colspan="2">'+
+                                            '<div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>'+
+                                        '</td>'+
+                                        '<td width="80" colspan="2">'+
+                                                '<div align="left"><a class="linkstabla5">MIC </a></div>'+
+                                    ' </td>'+                                                                                
+                                    '</tr>';
+                                        $.each( element.antibioticos.AntibioticoDTO , (key2,element2) => { 
+                                        
+                                            contentAntibioticos += '<tr>'+
+
+                                                    '<td width="5"></td>'+
+                                                    '<td width="130" colspan="2">'+
+                                                        '<a class="linkstabla6">'+	 element2.dsantibiotico +'</a>'+
+                                                    '</td>'+
+                                                    '<td width="100" colspan="2">'+
+                                                        '<a class="linkstabla6">'+	 element2.dssensibilidad +'</a>'+
+                                                    '</td>'+
+                                                    '<td width="80" colspan="2">'+
+                                                        '<a class="linkstabla6">'+element2.mic_completo+'</a>'+
+                                                    '</td>'+
+                                                
+                                            '</tr>';
+                                        });
+                        contentAntibioticos +=  '</table>';
+                    }
+                
+                
+                //NOTAS
+                
+                    if("notas" in element &&  (element.notas.NotaMicroorganismoDTO != "" && element.notas !="")){
+                        contentNotas += '<dt class="col-sm-2 table-sm">Notas: </dt>';
+                            if(!$.isArray(element.notas.NotaMicroorganismoDTO)){
+                            debugger;
+                                var element3 = element.notas.NotaMicroorganismoDTO;
+                                contentNotas += '<table class="table table-borderless table-sm" style="width: 70%;">'+
+                                        '<td text-align="center">'+
+
+                                            '<dl class="dl_row">'+
+                                                '<dt class="col-sm-2" style="margin-right:-40px !important;">'+ element3.nombreNota +'</dt>'+
+                                                    '<dd id="NumOT" class="col-sm-10" >'+
+                                                    element3.nota+
+                                                    '</dd>'+
+
+                                            '</dl>'+
+                                        '</td>'+
+                                    '</table>';
+                            }else{
+                                contentNotas += '<table class="table table-borderless table-sm" style="width: 70%;">';
+                                $.each( element.notas.NotaMicroorganismoDTO , (key3,element3) => { 
+                                    
+                                  contentNotas +=  '<tr text-align="center">'+
+
+                                                '<dl class="row col-sm-12">'+
+                                                    '<dt class="col-sm-2" style="margin-right:-40px !important;">'+ element3.nombreNota +'</dt>'+
+                                                        '<dd id="NumOT" class="col-sm-10" >'+
+                                                        element3.nota+
+                                                        '</dd>'
+
+                                                '</dl>'+
+                                            '</tr>'+'</br>';
+                                        
+                                    });
+                                    contentNotas += '</table>';
+                            }
+                        
+                        //$("#notas").append(contentNotas);
+                    }
+                    $("#microorganismos").append(contentMicroorganismo+contentAntibioticos+contentNotas); 
+                    //$("#antibioticos").append(contentAntibioticos);
+                    $("#antibioticos").show();
+                });
+                
+        } 
+        }
+}
+
+});
 });
 
 </script>
 
-    <table class="table table-borderless table-sm">
+<?php
+if(!isset($_GET['automatizacion_pdfs'])) {
+?>
 
+<table class="table table-borderless table-sm">
 
 
-    <tr>
 
+<tr>
 
 
-        <td class="titulo" text-align="center">
 
+<td class="titulo" text-align="center">
 
 
-        <a class="linkstabla4">Informaci&oacute;n del paciente</a>
 
+<a class="linkstabla4">Informaci&oacute;n del paciente</a>
 
 
-        </td>
 
+</td>
 
 
-        <td class="titulo" text-align="center">
 
+<td class="titulo" text-align="center">
 
 
-        <a class="linkstabla4">Informaci&oacute;n del Ex&aacute;men </a>
 
+<a class="linkstabla4">Informaci&oacute;n del Ex&aacute;men </a>
 
 
-        </td>
 
+</td>
 
 
-    </tr>
 
+</tr>
 
 
-    <tr>
 
+<tr>
 
 
-        <td text-align="center">
 
+<td text-align="center">
 
 
-        <dl class="dl_row">
 
+<dl class="dl_row">
 
 
-            <dt class="col-sm-2">No. de O.T.:</dt>
 
+<dt class="col-sm-2">No. de O.T.:</dt>
 
 
-            <dd id="NumOT" class="col-sm-10" >
 
+<dd id="NumOT" class="col-sm-10" >
 
-            <?php echo $nroOrden;?>
 
+<?php echo $nroOrden;?>
 
 
 
-            </dd>
 
+</dd>
 
 
 
 
 
 
-            <dt class="col-sm-2">No. Historia:</dt>
 
+<dt class="col-sm-2">No. Historia:</dt>
 
 
-            <dd class="col-sm-10" >
 
-            <a id="nroHistoria"></a>
+<dd class="col-sm-10" >
 
-            
+<a id="nroHistoria"></a>
 
 
 
-            </dd>
 
 
+</dd>
 
 
 
 
 
-            <dt class="col-sm-2">Paciente:</dt>
 
 
+<dt class="col-sm-2">Paciente:</dt>
 
-            <dd class="col-sm-10">
 
-                    <a id="nombreCompleto"></a>
 
-            
+<dd class="col-sm-10">
 
+    <a id="nombreCompleto"></a>
 
 
-            </dd>
 
 
 
+</dd>
 
 
 
 
-            <dt class="col-sm-2">C&eacute;dula:</dt>
 
 
 
-            <dd id="CedulaActual" class="col-sm-10">
+<dt class="col-sm-2">C&eacute;dula:</dt>
 
 
 
-                    <a id="nroDocumento"></a>
+<dd id="CedulaActual" class="col-sm-10">
 
 
 
-            </dd>
+    <a id="nroDocumento"></a>
 
 
 
-            
+</dd>
 
 
 
@@ -1236,217 +1292,215 @@
 
 
 
-            <dt class="col-sm-2">Edad:</dt>
 
 
 
-            <dd class="col-sm-10">
 
+<dt class="col-sm-2">Edad:</dt>
 
 
-            <a id="fechaNacimiento"></a>
 
+<dd class="col-sm-10">
 
 
-            </dd>
 
+<a id="fechaNacimiento"></a>
 
 
-            <dt class="col-sm-2">Sexo:</dt>
 
+</dd>
 
 
-            <dd class="col-sm-10">
 
+<dt class="col-sm-2">Sexo:</dt>
 
 
-            <a id="genero"></a>
 
+<dd class="col-sm-10">
 
 
-            
 
+<a id="genero"></a>
 
 
-            </dd>
 
 
 
 
 
+</dd>
 
 
-            <dt class="col-sm-2">Empresa:</dt>
 
 
 
-            <dd class="col-sm-10">
 
 
+<dt class="col-sm-2">Empresa:</dt>
 
-            <a id="nombreResponsable"></a>
 
 
+<dd class="col-sm-10">
 
-            </dd>
 
 
+<a id="nombreResponsable"></a>
 
-        </dl>
 
 
+</dd>
 
-        </td>
 
 
+</dl>
 
-        <td text-align="center">
 
 
+</td>
 
-        <dl class="dl_row">
 
 
+<td text-align="center">
 
-            <dt class="col-sm-2">C&oacute;digo:</dt>
 
 
+<dl class="dl_row">
 
-            <dd id="CodigoExamen" class="col-sm-10">
 
 
+<dt class="col-sm-2">C&oacute;digo:</dt>
 
-            P315
 
 
+<dd id="CodigoExamen" class="col-sm-10">
 
-            </dd>
 
 
+P315
 
 
 
+</dd>
 
 
-            <dt class="col-sm-2">Servicio:</dt>
 
 
 
-            <dd class="col-sm-10">
 
 
+<dt class="col-sm-2">Servicio:</dt>
 
-            
 
 
+<dd class="col-sm-10">
 
-            </dd>
 
 
 
 
 
 
+</dd>
 
-            <dt class="col-sm-2">M&eacute;dico:</dt>
 
 
 
-            <dd class="col-sm-10">
 
 
 
-            <a id="nombreMedico"></a>
+<dt class="col-sm-2">M&eacute;dico:</dt>
 
 
 
-            </dd>
+<dd class="col-sm-10">
 
 
 
+<a id="nombreMedico"></a>
 
 
 
+</dd>
 
-            <dt class="col-sm-2">Recepci&oacute;n:</dt>
 
 
 
-            <dd class="col-sm-10">
 
 
 
-            Fecha:
+<dt class="col-sm-2">Recepci&oacute;n:</dt>
 
 
 
-            <a id="fechaOrden"></a>
+<dd class="col-sm-10">
 
 
 
+Fecha:
 
 
-            </dd>
 
+<a id="fechaOrden"></a>
 
 
 
 
 
+</dd>
 
-            <dt class="col-sm-2">Muestra:</dt>
 
 
 
-            <dd class="col-sm-10">
 
 
 
-            Fecha:
+<dt class="col-sm-2">Muestra:</dt>
 
 
 
-            <a id="fechaRes"></a>
+<dd class="col-sm-10">
 
 
 
+Fecha:
 
 
-            </dd>
 
+<a id="fechaRes"></a>
 
 
-            <dt class="col-sm-2"></dt>
 
 
 
-            <dd class="col-sm-10">
+</dd>
 
 
 
-            Todos los valores de referencia estan ajustados por edad y sexo.
+<dt class="col-sm-2"></dt>
 
 
 
-            </dd>
+<dd class="col-sm-10">
 
 
 
-        </dl>
+Todos los valores de referencia estan ajustados por edad y sexo.
 
 
 
-        </td>
+</dd>
 
 
 
-    </tr>
+</dl>
 
 
 
+</td>
 
 
 
+</tr>
 
 
 
@@ -1454,125 +1508,130 @@
 
 
 
-    <tr>
 
 
 
-        <td colspan="2" class="titulo" text-align="center">
 
 
 
-        <a class="linkstabla4">Informaci&oacute;n de los Resultados</a>
+<tr>
 
 
 
-        </td>
+<td colspan="2" class="titulo" text-align="center">
 
 
 
-    </tr>
+<a class="linkstabla4">Informaci&oacute;n de los Resultados</a>
 
 
 
-    <tr>
+</td>
 
 
 
-        <td text-align="center" colspan="2">
+</tr>
 
 
 
-        <div text-align="center">
+<tr>
 
 
 
-            
+<td text-align="center" colspan="2">
 
 
 
+<div text-align="center">
 
 
 
 
-            
 
 
 
-        <table class="table">
 
 
 
-            <tr>
 
 
 
-                <td height="20" bgcolor="#C1CE0D" colspan="8">
 
 
+<table class="table">
 
-                    <div align="center">
 
 
+<tr>
 
-                    <a class="linkstabla6"><font color="white"><b id="nomDescripcion"></b></font></a></div>
-					
 
 
-                </td>
-				
-             
+<td height="20" bgcolor="#C1CE0D" colspan="8">
 
 
-            </tr>
-             <table class="table">
 
+    <div align="center">
 
 
-            <tr>
 
+    <a class="linkstabla6"><font color="white"><b id="nomDescripcion"></b></font></a></div>
+    
 
 
-                <td height="20" bgcolor="#C1CE0D" colspan="8">
+</td>
 
 
 
-                    <div align="center">
 
+</tr>
+<table class="table">
 
 
-                   <a class="linkstabla6"><font color="white"><b id="observacion"></b></font></a></div>	
-					
 
+<tr>
 
-                </td>
-				
-               
 
 
-            </tr>
+<td height="20" bgcolor="#C1CE0D" colspan="8">
 
 
 
-            
+    <div align="center">
 
 
 
-            
+   <a class="linkstabla6"><font color="white"><b id="observacion"></b></font></a></div>	
+    
+
+
+</td>
+
+
+
+
+</tr>
+
+
+
+
+
+
+
+
+
+
+                                
+
+
+
+</table>
+
 
 
                                                 
 
 
 
-        </table>
-
-
-
-                                                                
-
-
-
-    
 
 
 
@@ -1580,7 +1639,6 @@
 
 
 
-            
 
 
 
@@ -1588,11 +1646,6 @@
 
 
 
-            
-
-
-
-            
 
 
 
@@ -1600,62 +1653,65 @@
 
 
 
-            
-
-        <table class="table table-striped" id="tabla">
-
-            <tr>
-
-                <td width="5"></td>
-
-                <td width="130" colspan="2">
-
-                    <div align="left"><a class="linkstabla5">Par&aacute;metro: </a></div>
-
-                </td>
-
-                <td width="100" colspan="2">
-
-                    <div align="left"><a class="linkstabla5">Resultado: </a></div>
-
-                </td>
-
-                <td width="80" colspan="2">
-
-                        <div align="left"><a class="linkstabla5">V.de referencias: </a></div>
-
-                </td>
-                
-                <td width="80" colspan="2">
-
-                        <div align="left"><a class="linkstabla5">Unidad: </a></div>
-
-                </td>
-
-            </tr>
 
 
 
-        </table>
-        
-        <div id="microorganismos"></div>
-        
-        <div id="responsable"></div>
-    <script>
+
+
+
+
+
+
+<table class="table table-striped" id="tabla">
+
+<tr>
+
+<td width="5"></td>
+
+<td width="130" colspan="2">
+
+    <div align="left"><a class="linkstabla5">Par&aacute;metro: </a></div>
+
+</td>
+
+<td width="100" colspan="2">
+
+    <div align="left"><a class="linkstabla5">Resultado: </a></div>
+
+</td>
+
+<td width="80" colspan="2">
+
+        <div align="left"><a class="linkstabla5">V.de referencias: </a></div>
+
+</td>
+
+<td width="80" colspan="2">
+
+        <div align="left"><a class="linkstabla5">Unidad: </a></div>
+
+</td>
+
+</tr>
+
+
+
+</table>
+
+<div id="microorganismos"></div>
+
+<div id="responsable"></div>
+<script>
 
 
 
 </script>
 
-                                                                
+                                                
 
 
 
-                                                                
-
-
-
-    
+                                                
 
 
 
@@ -1663,11 +1719,6 @@
 
 
 
-            
-
-
-
-            
 
 
 
@@ -1675,7 +1726,6 @@
 
 
 
-            
 
 
 
@@ -1683,23 +1733,6 @@
 
 
 
-            
-
-
-
-        </div>
-
-
-
-        </td>
-
-
-
-    </tr>
-
-
-
-    </table>
 
 
 
@@ -1707,15 +1740,42 @@
 
 
 
-    <p>
 
 
 
-    
 
 
 
-    </p>
+
+</div>
+
+
+
+</td>
+
+
+
+</tr>
+
+
+
+</table>
+
+
+
+
+
+
+
+<p>
+
+
+
+
+
+
+
+</p>
 
 
 
@@ -1723,8 +1783,425 @@
 
 </body>
 
+<?php 
+} 
+else {
+    if(is_null($paciente["resultado"]["info"])){
+        echo 'El usuario no tiene laboratorios firmados';
+    }
+?>	
+<table class="table table-borderless table-sm">
 
+<tr>
+<td class="titulo" text-align="center">
+    <a class="linkstabla4">Informaci&oacute;n del paciente</a>
+</td>
+<td class="titulo" text-align="center">
+    <a class="linkstabla4">Informaci&oacute;n del Ex&aacute;men </a>
+</td>
+</tr>
+<tr>
+<td text-align="center">
+    <dl class="dl_row">
+        <dt class="col-sm-2">No. de O.T.:</dt>
+        <dd id="NumOT" class="col-sm-10" >
+            <?php echo $nroOrden;?>
+        </dd>
+        <dt class="col-sm-2">No. Historia: </dt>
+        <dd class="col-sm-10" >
+            <a id="nroHistoria"><?php echo $historia; ?></a>
+        </dd>
+        <dt class="col-sm-2">Paciente:</dt>
+        <dd class="col-sm-10">
+            <a id="nombreCompleto"><?php echo $nombre_completo; ?></a>
+        </dd>
+        <dt class="col-sm-2">C&eacute;dula:</dt>
+        <dd id="CedulaActual" class="col-sm-10">
+            <a id="nroDocumento"><?php echo $cedula; ?></a>
+        </dd>
+        <dt class="col-sm-2">Edad: </dt>
+        <dd class="col-sm-10">
+            <a id="fechaNacimiento"><?php echo $edad; ?></a>
+        </dd>
+        <dt class="col-sm-2">Sexo:</dt>
+        <dd class="col-sm-10">
+            <a id="genero"><?php echo $sexo; ?></a>
+        </dd>
+        <dt class="col-sm-2">Empresa:</dt>
+        <dd class="col-sm-10">
+            <a id="nombreResponsable"><?php echo $empresa; ?></a>
+        </dd>
+    </dl>
+</td>
+<td text-align="center">
+    <dl class="dl_row">
+        <dt class="col-sm-2">C&oacute;digo:</dt>
+            <dd id="CodigoExamen" class="col-sm-10">
+                P315
+            </dd>
+        <dt class="col-sm-2">Servicio:</dt>
+        <dd class="col-sm-10"></dd>
+        <dt class="col-sm-2">M&eacute;dico:</dt>
+        <dd class="col-sm-10">
+            <a id="nombreMedico"><?php echo $medico; ?></a>
+        </dd>
+        <dt class="col-sm-2">Recepci&oacute;n:</dt>
+        <dd class="col-sm-10">
+            Fecha:<a id="fechaOrden"><?php echo $recepcion; ?></a>
+        </dd>
+        <dt class="col-sm-2">Muestra:</dt>
+        <dd class="col-sm-10">
+            Fecha: <a id="fechaRes"><?php echo $muestra; ?></a>
+        </dd>
+        <dt class="col-sm-2"></dt>
+        <dd class="col-sm-10">
+            Todos los valores de referencia estan ajustados por edad y sexo.
+        </dd>
+    </dl>
+</td>
+</tr>
+<tr>
+<td colspan="2" class="titulo" text-align="center">
+    <a class="linkstabla4">Informaci&oacute;n de los Resultados</a>
+</td>
+</tr>
+<tr>
+<td text-align="center" colspan="2">
+    <div text-align="center">
+        <table class="table">
+            <tr>
+                <td height="20" bgcolor="#C1CE0D" colspan="8">
+                    <div align="center">
+                        <a class="linkstabla6"><font color="white"><b id="nomDescripcion"><?php echo $infoExamen; ?></b></font></a></div>
+                </td>
+            </tr>
+        <table class="table">
+            <tr>
+                <td height="20" bgcolor="#C1CE0D" colspan="8">
+                    <div align="center">
+                        <a class="linkstabla6"><font color="white"><b id="observacion"><?php echo $observacion; ?></b></font></a></div>	
+                </td>
+            </tr>
+        </table>
+        <table class="table table-striped" id="tabla">
+            <tr>
+                <td width="5"></td>
+                    <td width="130" colspan="2">
+                        <div align="left"><a class="linkstabla5">Par&aacute;metro: </a></div>
+                    </td>
+                    <td width="100" colspan="2">
+                        <div align="left"><a class="linkstabla5">Resultado: </a></div>
+                    </td>
+                <td width="80" colspan="2">
+                    <div align="left"><a class="linkstabla5">V.de referencias: </a></div>
+                </td>
+                <td width="80" colspan="2">
+                    <div align="left"><a class="linkstabla5">Unidad: </a></div>
+                </td>
+            </tr>
+            <?php     
+                if(!isset($paciente["resultado"]["info"]["detallesResultado"][0])){
+                    $element = $paciente["resultado"]["info"]["detallesResultado"];
+                    $html = 
+                    '<tr>
+                        <td width="5"></td>
+                        <td width="130" colspan="2">
+                            <a class="linkstabla6">'. $element["descripcion"] .'</a>
+                        </td>
+                        <td width="100" colspan="2">
+                            <a class="linkstabla6">'. $element["resultadoValor"] .'</a>
+                            <a class="linkstabla6">'. $element["resultadoTexto"] .'</a>
+                        </td>
+                        <td width="80" colspan="2">
+                            <a class="linkstabla6">'.$element["valorReferencia"].'</a>
+                        </td>.
+                        <td width="80" colspan="2">
+                            <a class="linkstabla6">'.$element["unidades"].'</a>
+                        </td>
+                    </tr>';
+                    echo $html;
+                }
+                else{
+                    foreach( $paciente["resultado"]["info"]["detallesResultado"] as $element){
+                        $html = 
+                        '<tr>
+                            <td width="5"></td>
+                            <td width="130" colspan="2">                        
+                                <a class="linkstabla6">'.  utf8_decode($element["descripcion"])  . '</a>                                    
+                            </td>
+                            <td width="100" colspan="2">
+                                <a class="linkstabla6">'. $element["resultadoValor"] .'</a>
+                                <a class="linkstabla6">'. $element["resultadoTexto"] .'</a>
+                            </td>
+                            <td width="80" colspan="2">
+                                <a class="linkstabla6">'.$element["valorReferencia"].'</a>
+                            </td>.
+                            <td width="80" colspan="2">
+                                <a class="linkstabla6">'.$element["unidades"].'</a>
+                            </td>
+                        </tr>';
+                        echo $html;
+                    }
+                }
+            ?>
+        </table>
+
+        <div id="microorganismos" <?php echo  $contentMicroorganismo; ?>>
+            <?php
+                //if(in_array("microorganismos",$paciente["resultado"]["info"]) && $paciente["resultado"]["info"]["microorganismos"] != ""){
+                if(!is_null($paciente["resultado"]["info"]) && $paciente["resultado"]["info"]["microorganismos"] != ""){
+                    $contentMicroorganismo = '';
+                    $contentAntibioticos = '';
+                    $contentNotas = '';
+
+                    //TABLA DE Microorganismo
+
+                    if(!isset($paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"][0])){
+                        $contentMicroorganismo = 
+                        '<table class="table table-borderless table-sm">
+                            <td text-align="center">
+                                <dl class="dl_row">
+                                    <dt class="col-sm-2">Microorganismo: </dt>
+                                        <dd id="NumOT" class="col-sm-10" >'.
+                                            $paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]["descripcion"].'
+                                        </dd>
+                                        <dt class="col-sm-2">Cantidad:</dt>
+                                        <dd class="col-sm-10" >'.
+                                            $paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]["cantidadTotal"].'
+                                        </dd>
+                                    <dt class="col-sm-2">Antibiograma</dt>
+                                </dl>
+                            </td>
+                        </table>';
+
+                        //TABLA DE ANTIBIOTICOS
+                        $dato = count($paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]["antibioticos"]);
+                        if($dato>0){
+                            $element = $paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]["antibioticos"]
+                            ["AntibioticoDTO"];
+                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">
+                                <tr>
+                                    <td width="5"></td>
+                                    <td width="130" colspan="2">
+                                        <div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>
+                                    </td>
+                                    <td width="100" colspan="2">
+                                        <div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>
+                                    </td>
+                                    <td width="80" colspan="2">
+                                        <div align="left"><a class="linkstabla5">MIC </a></div>
+                                    </td>                                                                            
+                                </tr>
+                                <tr>
+                                    <td width="5"></td>
+                                    <td width="130" colspan="2">
+                                        <a class="linkstabla6">'.$element["dsantibiotico"].'</a>
+                                    </td>
+                                    <td width="100" colspan="2">
+                                        <a class="linkstabla6">'.$element.["dssensibilidad"].'</a>
+                                    </td>
+                                    <td width="80" colspan="2">
+                                        <a class="linkstabla6">'.$element["mic_completo"].'</a>
+                                    </td>
+                                </tr>
+                            </table>';
+                        }
+                        else{
+                            $contentAntibioticos =
+                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">.
+                                <tr>
+                                    <td width="5"></td>
+                                    <td width="130" colspan="2">
+                                        <div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>
+                                    </td>
+                                    <td width="100" colspan="2">
+                                        <div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>
+                                    </td>
+                                    <td width="80" colspan="2">
+                                        <div align="left"><a class="linkstabla5">MIC </a></div>
+                                    </td>                                                                              
+                                </tr>';
+                            foreach( $paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]["antibioticos"]
+                            ["AntibioticoDTO"] as $element){
+                                $contentAntibioticos . '<tr>
+                                    <td width="5"></td>
+                                    <td width="130" colspan="2">
+                                        <a class="linkstabla6">'. $element["dsantibiotico"] .'</a>
+                                    </td>
+                                    <td width="100" colspan="2">
+                                        <a class="linkstabla6">'.$element.["dssensibilidad"].'</a>
+                                    </td>
+                                    <td width="80" colspan="2">
+                                        <a class="linkstabla6">'.$element["mic_completo"].'</a>
+                                    </td>                    
+                                </tr>';
+                            }
+                            $contentAntibioticos . '</table>';
+                        }
+
+                        if(in_array("microorganismos",$paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]) && 
+                        $paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]["notas"]["NotaMicroorganismoDTO"] != ""){
+                            $contentNotas = '<dt class="col-sm-2 table-sm">Notas: </dt>';
+                            if(!is_array($paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]["notas"]
+                            ["NotaMicroorganismoDTO"])){
+                                $element = $paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]["notas"]
+                                ["NotaMicroorganismoDTO"];
+                                $contentNotas . 
+                                '<table class="table table-borderless table-sm">
+                                    <td text-align="center">
+                                        <dl class="dl_row">
+                                            <dt class="col-sm-2" style="margin-right:-40px !important;">'. $element["nombreNota"] .'</dt>
+                                            <dd id="NumOT" class="col-sm-10" >'.
+                                                $element["nota"].
+                                            '</dd>
+                                        </dl>
+                                    </td>
+                                </table>';
+                            }
+                            else{
+                                foreach($paciente["resultado"]["info"]["microorganismos"]["MicroorganismoDTO"]["notas"]
+                                ["NotaMicroorganismoDTO"]  as $element){
+                                    $contentNotas . 
+                                    '<table class="table table-borderless table-sm">.
+                                        <td text-align="center">
+                                            <dl class="dl_row">
+                                                <dt class="col-sm-2" style="margin-right:-40px !important;">'. $element["nombreNota"] .'</dt>
+                                                <dd id="NumOT" class="col-sm-10" >'.
+                                                    $element["nota"].
+                                                '</dd>
+                                            </dl>
+                                        </td>
+                                    </table>';
+                                }
+                            }
+                        }                      
+                    }
+                    else{
+                        $contentMicroorganismo = '';
+                        $contentAntibioticos = '';
+                        $contentNotas = '';
+                        $contentMicroorganismo = '<table class="table table-borderless table-sm">
+                            <td text-align="center">
+                                <dl class="dl_row">
+                                    <dt class="col-sm-2">Microorganismo: </dt>
+                                    <dd id="NumOT" class="col-sm-10">'.
+                                        $element["descripcion"].
+                                    '</dd>
+                                    <dt class="col-sm-2">Cantidad:</dt>
+                                    <dd class="col-sm-10" >'.
+                                        $element["cantidadTotal"].'
+                                    </dd>
+                                    <dt class="col-sm-2">Antibiograma</dt>
+                                </dl>
+                            </td>
+                        </table>';
+
+                        //TABLA DE ANTIBIOTICOS
+                        if(!is_array($element["antibioticos"]["AntibioticoDTO"])){
+                            $element2 = $element["antibioticos"]["AntibioticoDTO"];
+                            $contentAntibioticos . 
+                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">
+                                <tr>
+                                    <td width="5"></td>
+                                    <td width="130" colspan="2">
+                                        <div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>
+                                    </td>
+                                    <td width="100" colspan="2">
+                                        <div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>
+                                    </td>
+                                    <td width="80" colspan="2">
+                                        <div align="left"><a class="linkstabla5">MIC </a></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="5"></td>
+                                    <td width="130" colspan="2">
+                                        <a class="linkstabla6">'. $element2["dsantibiotico"] .'</a>
+                                        </td>
+                                        <td width="100" colspan="2">
+                                            <a class="linkstabla6">'. $element2["dssensibilidad"] .'</a>
+                                        </td>
+                                        <td width="80" colspan="2">
+                                            <a class="linkstabla6">'.$element2.["mic_completo"].'</a>
+                                        </td>
+                                </tr> 
+                            </table>';
+                        }
+                        else{
+                            $contentAntibioticos .
+                            '<table class="table table-striped"  style="width: 50%; margin-left: 5%;">
+                                <tr>
+                                    <td width="5"></td>
+                                    <td width="130" colspan="2">
+                                        <div align="left"><a class="linkstabla5">ANTIBIOTICOS</a></div>
+                                    </td>
+                                    <td width="100" colspan="2">
+                                        <div align="left"><a class="linkstabla5">SENSIBILIDAD </a></div>
+                                    </td>
+                                    <td width="80" colspan="2">
+                                        <div align="left"><a class="linkstabla5">MIC </a></div>
+                                    </td>                                                                        
+                                </tr>';
+                                foreach($element["antibioticos"]["AntibioticoDTO"] as $element2){
+                                    $contentAntibioticos . 
+                                    '<tr>
+                                        <td width="5"></td>
+                                        <td width="130" colspan="2">
+                                            <a class="linkstabla6">'. $element2["dsantibiotico"] .'</a>
+                                        </td>
+                                        <td width="100" colspan="2">
+                                            <a class="linkstabla6">'. $element2.["dssensibilidad"] .'</a>
+                                        </td>
+                                        <td width="80" colspan="2">
+                                            <a class="linkstabla6">'.$element2.["mic_completo"].'</a>
+                                        </td>
+                                    </tr>';
+                                }
+                            $contentAntibioticos .  '</table>';
+                        }
+
+                        //NOTAS
+                        if(in_array("notas",$element) &&  ($element["notas"]["NotaMicroorganismoDTO"] != "" && $element["notas"] !="")){
+                            $contentNotas . '<dt class="col-sm-2 table-sm">Notas: </dt>';
+                            if(!is_array($element["notas"]["NotaMicroorganismoDTO"])){
+                                $element3 = $element.["notas"].["NotaMicroorganismoDTO"];
+                                $contentNotas . '<table class="table table-borderless table-sm" style="width: 70%;">
+                                    <td text-align="center">
+                                        <dl class="dl_row">
+                                            <dt class="col-sm-2" style="margin-right:-40px !important;">'. $element3["nombreNota"] .'</dt>
+                                                <dd id="NumOT" class="col-sm-10" >'.
+                                                    $element3["nota"].'
+                                                </dd>
+                                            </dl>
+                                        </td>
+                                    </table>';
+                            }else{
+                                $contentNotas . '<table class="table table-borderless table-sm" style="width: 70%;">';
+                                foreach($element["notas"]["NotaMicroorganismoDTO"] as $element3){
+                                    $contentNotas .  '<tr text-align="center">
+                                        <dl class="row col-sm-12">
+                                            <dt class="col-sm-2" style="margin-right:-40px !important;">'. $element3["nombreNota"] .'</dt>
+                                                <dd id="NumOT" class="col-sm-10" >'. $element3["nota"].' </dd>
+                                        </dl>
+                                    </tr></br>';
+                                }
+                            $contentNotas . '</table>';
+                            }
+                        }
+                    }
+                }
+                echo $contentMicroorganismo;
+                echo $contentAntibioticos;
+                echo $contentNotas;
+            ?>
+        </div>
+        <div id="responsable"><?php echo $contentResponsable; ?></div>
+        <script>
+        </script>
+    </div>
+</td>
+</tr>
+</table>
+</body>
+<?php	} ?>
 </html>
-
-
-
