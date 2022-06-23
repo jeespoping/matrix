@@ -301,9 +301,8 @@ function cambiarEstadoExamen($conex, $wemp_pmla, $tipoOrden, $nroOrden, $item, $
 				
 				/* FUNCION QUE REALIZA LA VALIDACION DE CARGOS AUTOMATICOS */
 				$worigen = 'Interoperabilidad - Sabbag';
-                $validaCcoRealiza = consultarAliasPorAplicacion($conex, $wemp_pmla, 'booleano_valida_cco_realiza_interoperabilidad');
-
-				interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tipoOrden, $estGeneraCca, $validaCcoRealiza);																										   
+                
+				interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nroOrden, $item, $tipoOrden, $estGeneraCca);																										   
                 
                 if ($res) {
 
@@ -1043,9 +1042,8 @@ function cambiarEstadoExamenWs($conex, $whce, $wmovhos, $tor, $nro, $tipoRespues
     }
 	
 	$worigen = 'Interoperabilidad - Dinamica';
-	$validaCcoRealiza = consultarAliasPorAplicacion($conex, $wemp_pmla, 'booleano_valida_cco_realiza_interoperabilidad');
-
-	interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nro, $item, $tor, $estGeneraCca, $validaCcoRealiza);
+	
+	interoperabilidadCargosAutomaticos($conex, $wemp_pmla, $whce, $wmovhos, $worigen, $nro, $item, $tor, $estGeneraCca);
 
     return $result;
 
