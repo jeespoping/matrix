@@ -3,6 +3,7 @@
   <TITLE>REPORTE DE PRODUCTOS EXISTENTES</TITLE>
    <script type="text/javascript">
    </script>
+   <script type="text/javascript" src="../../../include/root/jquery_1_7_2/js/jquery-1.7.2.min.js"></script>
  </HEAD>
  <BODY>
  <?php
@@ -88,6 +89,7 @@ include_once("conex.php");
  function generarResultados($wtip_pr, $conex, $wcenmez, $fhoy)
  {
 	global $acumulado;
+	global $selectsede;
 	
 		if($wtip_pr=="Todos")
 		{ 
@@ -117,7 +119,12 @@ include_once("conex.php");
 	$rsnum = mysql_num_rows($rs);
 	
 	if($rsnum > 0)
-	{	
+	{
+	    $cco = ccoUnificadoCM($selectsede);
+	    $concatQuery = '';
+        if ($selectsede){
+            $concatQuery .= " And Plocco = '".$cco."'";
+        }
 		for($i = 0; $i < $rsnum; $i++)
 		{	
 			$row = mysql_fetch_row($rs);
@@ -127,7 +134,7 @@ include_once("conex.php");
 					."WHERE Plopro = '".$row[0]."'"
 					//."  AND Plofve >= '".$fhoy."'"
 					."  AND Ploest = 'on' "
-					."  AND Plosal > 0 "
+					."  AND Plosal > 0 {$concatQuery}"
 					."ORDER BY 4";
 					
 			$rs2 = mysql_query($query,$conex) or die (mysql_errno().": ".mysql_error());
@@ -250,7 +257,7 @@ include_once("conex.php");
 	echo "</table>";
  }
 
- 	$wactualiz = "2021-11-18"; /***********************
+ 	$wactualiz = "Junio 07 del 2022"; /***********************
 								** fecha actualizacion	
 								***********************/
 
@@ -258,21 +265,26 @@ include_once("conex.php");
 
 
 include_once("root/comun.php");
-encabezado("LISTADO PRODUCTOS EXISTENTES",$wactualiz, "clinica");
+encabezado("LISTADO PRODUCTOS EXISTENTES",$wactualiz, "clinica", true);
 	
  session_start();
  if(!isset($_SESSION['user']))
  echo "error";
  else
   {
-	
+
+      if (is_null($selectsede)){
+          $selectsede = consultarsedeFiltro();
+      }
 
 	$wcenmez = consultarAliasPorAplicacion($conex, $wemp_pmla, "cenmez");
 	$fhoy = date("Y-m-d");
 	$acumulado = 0;
+
 	
-	echo "<form name='listarProdEx' action='rep_listarProductosExistentes.php?wemp_pmla=".$wemp_pmla."' method=post>";
-	
+	echo "<form name='listarProdEx' action='rep_listarProductosExistentes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' method=post>";
+
+	echo "<center><input type='HIDDEN' id='wemp_pmla' name= 'wemp_pmla' value='".$wemp_pmla."'>";
 		
 	if(!isset($wtip_pr))
 	{
@@ -313,5 +325,10 @@ encabezado("LISTADO PRODUCTOS EXISTENTES",$wactualiz, "clinica");
 	
   }
  ?>
+ <script>
+     $(document).on('change','#selectsede',function(){
+         window.location.href = "rep_listarProductosExistentes.php?ok=&wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#selectsede').val()
+     });
+ </script>
  </BODY>
 </HTML>

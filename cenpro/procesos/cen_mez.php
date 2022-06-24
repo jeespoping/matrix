@@ -474,6 +474,9 @@ farstore_000002 Select
 /*========================================================FUNCIONES==========================================================================*/
 
 //----------------------------------------------------------funciones de persitencia------------------------------------------------
+if (is_null($selectsede)){
+    $selectsede = consultarsedeFiltro();
+}
 
 function consultarViaMovhos( $conex, $wbasedato, $viaCM ){
 
@@ -2460,6 +2463,8 @@ function eliminarInsumo($lista, $index)
 function pintarTitulo()
 {
 	global $wemp_pmla;
+	global $selectsede;
+
 	echo "<table ALIGN=CENTER width='50%'>";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 	echo "<tr><td class='titulo1'>PRODUCCION CENTRAL DE MEZCLAS</td></tr>";
@@ -2468,10 +2473,10 @@ function pintarTitulo()
 	echo "<table ALIGN=CENTER width='90%' >";
 	//echo "<tr><td align=center colspan=1 ><img src='/matrix/images/medical/general/logo_promo.gif' height='100' width='250' ></td></tr>";
 	//echo "<tr><td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='cen_mez.php?wbasedato=cen_mez'><b>PRODUCTOS</b></a></td>";
-	echo "<tr><td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='cen_mez.php?wemp_pmla=$wemp_pmla'><b>PRODUCTOS</b></a></td>";
-	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='lotes.php?wemp_pmla=$wemp_pmla'>LOTES</a></td>";
-	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cargoscm.php?wemp_pmla=$wemp_pmla&tipo=C'>CARGOS A PACIENTES</a></td>";
-	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='pos.php?wemp_pmla=$wemp_pmla&tipo=A'>VENTA EXTERNA</a></td></TR>";
+	echo "<tr><td class='texto6' width='15%'><a style='text-decoration:none;color:white' href='cen_mez.php?wemp_pmla=$wemp_pmla&selectsede=$selectsede'><b>PRODUCTOS</b></a></td>";
+	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='lotes.php?wemp_pmla=$wemp_pmla&selectsede=$selectsede'>LOTES</a></td>";
+	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='cargoscm.php?wemp_pmla=$wemp_pmla&tipo=C&selectsede=$selectsede'>CARGOS A PACIENTES</a></td>";
+	echo "<td class='texto5' width='15%'><a style='text-decoration:none;color:black' href='pos.php?wemp_pmla=$wemp_pmla&tipo=A&selectsede=$selectsede'>VENTA EXTERNA</a></td></TR>";
 	//echo "<a href='cargos.php?wbasedato=lotes.php&tipo=A'><td class='texto5' width='15%'>AVERIAS</td></a>";
 	//echo "<a href='descarte.php?wbasedato=cenmez'><td class='texto5' width='15%'>DESCARTES</td></TR></a>";
 	//echo "<a href='consulta.php?para=enviados'><td class='texto5' width='20%'>LISTADO POR PRODUCIR</td></a>";
@@ -2493,10 +2498,12 @@ function pintarTitulo()
 function pintarBusqueda($consultas, $tipo, $forcon)
 {
 	global $wemp_pmla;
+	global $selectsede;
 	
 	echo "<table border=0 ALIGN=CENTER width=90%>";
-	echo "<form name='producto2' action='cen_mez.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<form name='producto2' action='cen_mez.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' method=post>";
 	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
+    echo "<input type='hidden' name='selectsede' id='sede' value='".$selectsede."'/>";
 	echo "<tr><td class='titulo3' colspan='3' align='center'>Consulta de Productos: ";
 	echo "<select name='forcon' class='texto5' onchange='enter7()'>";
 	echo "<option>".$forcon."</option>";
@@ -2605,6 +2612,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 	global $conex;
 	global $wusuario;
 	global $wemp_pmla;
+	global $selectsede;
 	global $wfarstore;
 	
 	$esDosisAdaptada = consultarSiTipoEsDA($tipos[0]);
@@ -2625,8 +2633,9 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		$cantColspan = "3";
 	}
 	
-	echo "<form name='producto3' action='cen_mez.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<form name='producto3' action='cen_mez.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' method=post>";
 	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
+    echo "<input type='hidden' name='selectsede' id='sede' value='".$selectsede."'/>";
 	echo "<tr><td colspan=3 class='titulo3' align='center'><INPUT TYPE='submit' NAME='NUEVO' VALUE='Nuevo' class='texto5' ></td></tr>";
 	echo "</table></form>";
 	
@@ -2635,8 +2644,9 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		pintarEncabezadoDA($DA_historia,$DA_ingreso,$cantColspan);
 	}
 
-	echo "<form name='producto' action='cen_mez.php?wemp_pmla=".$wemp_pmla."' method=post>";
+	echo "<form name='producto' action='cen_mez.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."' method=post>";
 	echo "<input type='hidden' name='wemp_pmla' id='wemp_pmla' value='".$wemp_pmla."'/>";
+    echo "<input type='hidden' name='selectsede' id='sede' value='".$selectsede."'/>";
 	echo "<input type='hidden' name='wusuario' id='wusuario' value='".$wusuario."'/>";
 	echo "<input type='hidden' name='wbd' id='wbd' value='".$bd."'/>";
 	echo "<table border=0 ALIGN=CENTER width=90%>";
@@ -3385,10 +3395,10 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		case 'creado':
 		if($nutri=='off')
 		{
-			$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>";
+			$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1&selectsede=".$selectsede."'>";
 			if($DA_historia!="")
 			{
-				$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1&whistoria=".$DA_historia."&wingreso=".$DA_ingreso."&warticuloda=".$DA_articulo."&idoda=".$DA_ido."&wronda=".$wronda."&wfecharonda=".$wfecharonda."'>";
+				$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1&whistoria=".$DA_historia."&wingreso=".$DA_ingreso."&warticuloda=".$DA_articulo."&idoda=".$DA_ido."&wronda=".$wronda."&wfecharonda=".$wfecharonda."'>";
 			}
 			
 			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO CREADO EXITOSAMENTE &nbsp;&nbsp;".$linkCrearLote."/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
@@ -3397,12 +3407,12 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		}
 		else
 		{
-			$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
+			$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			if($instituciones[0]['cod']==$wemp_pmla && $NPT_origen=="ordenes")
 			{
-				$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
+				$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			}
-			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO CREADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
+			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO CREADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
 			// echo "<tr><td colspan=8 class='titulo3' align='center'>".$rotuloNPT."GENERAR ROTULO</a></td></tr>";
 			echo "<tr><td colspan=8 class='titulo3' align='center'>".$rotuloNPT."IMPRIMIR ROTULOS</a></td></tr>";
 			// echo "<tr><td colspan=7 class='titulo3' align='center'><a href='rotulo2.php?historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>GENERAR ROTULO</a></td></tr>";
@@ -3414,11 +3424,11 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		case 'desactivado':
 		if($nutri=='off')
 		{
-			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO DESACTIVADO EXITOSAMENTE &nbsp;&nbsp;<a href='cen_mez.php?wemp_pmla=".$wemp_pmla."'>INICIAR</a> </td></tr>";
+			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO DESACTIVADO EXITOSAMENTE &nbsp;&nbsp;<a href='cen_mez.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."'>INICIAR</a> </td></tr>";
 		}
 		else
 		{
-			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO DESACTIVADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='cen_mez.php?wemp_pmla=".$wemp_pmla."'>INICIAR</a> </td></tr>";
+			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO DESACTIVADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='cen_mez.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."'>INICIAR</a> </td></tr>";
 			
 			//Desactivar boton crear
 			echo"<script>desactivarBotonCrear();</script>";
@@ -3428,7 +3438,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		case 'modificado':
 		if($nutri=='off')
 		{
-			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO MODIFICADO EXITOSAMENTE &nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></td></tr>";
+			echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO HA SIDO MODIFICADO EXITOSAMENTE &nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></td></tr>";
 		}
 		else
 		{
@@ -3444,12 +3454,12 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 			$resOrigenOrdenes = mysql_query($qOrigenOrdenes,$conex);
 			$numOrigenOrdenes = mysql_num_rows($resOrigenOrdenes);					  
 			
-			$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
+			$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			if($numOrigenOrdenes>0)
 			{
-				$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
+				$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			}
-			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO MODIFICADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></td></tr>";
+			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO HA SIDO MODIFICADO EXITOSAMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></td></tr>";
 			echo "<tr><td colspan=8 class='titulo3' align='center'>".$rotuloNPT."IMPRIMIR ROTULOS</a></td></tr>";
 			// echo "<tr><td colspan=7 class='titulo3' align='center'><a href='rotulo2.php?historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>GENERAR ROTULO</a></td></tr>";
 			
@@ -3460,12 +3470,12 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		case 'Creado':
 		if($nutri=='off')
 		{
-			$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>";
+			$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>";
 			if($esDosisAdaptada=="on")
 			{
 				if($DA_historia!="")
 				{
-					$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1&whistoria=".$DA_historia."&wingreso=".$DA_ingreso."&warticuloda=".$DA_articulo."&idoda=".$DA_ido."&wronda=".$wronda."&wfecharonda=".$wfecharonda."'>";
+					$linkCrearLote = "<a href='lotes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1&whistoria=".$DA_historia."&wingreso=".$DA_ingreso."&warticuloda=".$DA_articulo."&idoda=".$DA_ido."&wronda=".$wronda."&wfecharonda=".$wfecharonda."'>";
 					// echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO EXISTE ACTUALMENTE &nbsp;&nbsp;<a href='lotes.php?parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
 					echo "<tr><td colspan=3 class='titulo3' align='center'>EL PRODUCTO EXISTE ACTUALMENTE &nbsp;&nbsp;".$linkCrearLote."/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
 				}
@@ -3495,14 +3505,14 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 			$resOrigenOrdenes = mysql_query($qOrigenOrdenes,$conex);
 			$numOrigenOrdenes = mysql_num_rows($resOrigenOrdenes);					  
 			
-			$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
+			$rotuloNPT = "<a href='rotulo2.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			
 			if($numOrigenOrdenes>0)
 			{
-				$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
+				$rotuloNPT = "<a href='rotuloNPT.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>";
 			}
 			
-			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO EXISTE ACTUALMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
+			echo "<tr><td colspan=8 class='titulo3' align='center'><span class='blinkProdCreado'>EL PRODUCTO EXISTE ACTUALMENTE</span> &nbsp;&nbsp;<a href='#' onclick='enter5()'>/COPIAR</a>&nbsp;&nbsp;<a href='lotes.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."&parcon=".$productos[0]['cod']."&forcon=Codigo del Producto&pintar=1'>/CREAR LOTE</a>&nbsp;&nbsp;<a href='#' onclick='enter3()'>/MODIFICAR</a>&nbsp;&nbsp;<a href='#' onclick='enter4()'>/DESACTIVAR</a></td></tr>";
 			echo "<tr><td colspan=8 class='titulo3' align='center'>".$rotuloNPT."IMPRIMIR ROTULOS</a></td></tr>";
 			// echo "<tr><td colspan=7 class='titulo3' align='center'><a href='rotulo2.php?historia=".$historia."&codigo=".$productos[0]['cod']."&horas=$tfd&insti=".$instituciones[0]['cod']."' target='new'>GENERAR ROTULO</a></td></tr>";
 			
@@ -3511,7 +3521,7 @@ function pintarFormulario($tipos, $codi, $productos, $presentaciones, $fecha, $v
 		}
 		break;
 		case 'Desactivado':
-		echo "<tr><td colspan=3 class='titulo3' align='center'><span class='blinkProdCreado'>PRODUCTO DESACTIVADO</span> &nbsp;&nbsp;<a href='cen_mez.php?wemp_pmla=".$wemp_pmla."'>INICIAR</a> </td></tr>";
+		echo "<tr><td colspan=3 class='titulo3' align='center'><span class='blinkProdCreado'>PRODUCTO DESACTIVADO</span> &nbsp;&nbsp;<a href='cen_mez.php?wemp_pmla=".$wemp_pmla."&selectsede=".$selectsede."'>INICIAR</a> </td></tr>";
 		break;
 
 	}
@@ -5816,6 +5826,7 @@ if($noEsAjax)
 					accion			: 'cancelarPreparacionDA',
 					wbasedato		: $('#wbd').val(),
 					wemp_pmla		: $('#wemp_pmla').val(),
+                    selectsede		: $('#sede').val(),
 					wusuario		: $('#wusuario').val(),
 					historia		: historia,
 					ingreso			: ingreso,
@@ -5855,6 +5866,7 @@ if($noEsAjax)
 			accion			: 'recargarCantDAPendientes',
 			actualizar		: 'on',
 			wemp_pmla	 	: $('#wemp_pmla').val(),
+            selectsede	 	: $('#sede').val(),
 		
 		}
 		,function(data) {
@@ -6015,6 +6027,7 @@ if($noEsAjax)
 			accion			:   'recargarCantNPTPendientes',
 			actualizar		:	'on',
 			wemp_pmla	 	: 	$('#wemp_pmla').val(),
+            selectsede	 	: 	$('#sede').val(),
 		
 		}
 		,function(data) {
@@ -6285,6 +6298,7 @@ if($noEsAjax)
 
 <body onload="hacerFoco()">
 <input type='HIDDEN' NAME= 'wemp_pmla' value='<?php echo($wemp_pmla)?>'>
+<input type='HIDDEN' NAME= 'selectsede' value='<?php echo($selectsede)?>'>
 
 <?php
 
@@ -6335,8 +6349,8 @@ else
 	$pos = strpos($user,"-");
 	$wusuario = substr($user,$pos+1,strlen($user)); //extraigo el codigo del usuario
 	
-	$wactualiz = "Abril 16 del 2022";
-	encabezado("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica");
+	$wactualiz = "Junio 07 del 2022";
+	encabezado("PRODUCCION CENTRAL DE MEZCLAS",$wactualiz,"clinica", true, false);
 	pintarManuales($wusuario);
 	
 	pintarTitulo();  //Escribe el titulo de la aplicacion, fecha y hora adicionalmente da el acceso a otros scripts
@@ -6449,7 +6463,7 @@ else
 						$fraccion =  consultarFraccionProducto( $unidad, $inslis );
 						
 						$unidad = explode( "-", $unidad );
-						$cco = ccoUnificadoCM();
+						$cco = ccoUnificadoCM($selectsede);
 						
 						list( $viaAux ) = explode( "-", $via );
 						$viaCM = consultarViaMovhos( $conex, $bd, trim( $viaAux ) );
@@ -6528,7 +6542,7 @@ else
 						$unidad = consultarUnidadInsumoMaximo($inslis);
 						$unidad = explode( "-", $unidad );
 						
-						$cco = ccoUnificadoCM();
+						$cco = ccoUnificadoCM($selectsede);
 						list( $viaAux ) = explode( "-", $via );
 						$viaCM = consultarViaMovhos( $conex, $bd, trim( $viaAux ) );
 						registrarFraccion( $productos[0]['cod'], $vol+(float)$purga, $unidad[0], intval((float)$tve/24), $viaCM, $cco );
@@ -6653,7 +6667,7 @@ else
 					//2007-07-09 se agrega que se pueda modificar foto y neve
 					modificarProducto($productos[0]['cod'], $productos[0]['nom'], $productos[0]['gen'], $presentacion, $via, $tin, $tve, $fecha, $exp[0], $des, $foto, $neve, $peso, $purga);
 					
-					$cco = ccoUnificadoCM();
+					$cco = ccoUnificadoCM($selectsede);
 					$unidad = consultarUnidadInsumoMaximo($inslis);
 					
 					
@@ -7228,7 +7242,7 @@ else
 	
 	//se va a realizar el descarte de las vias que se debe hacer diariamente
 	//$cco = "SELECT Ccocod FROM ".$wmovhos."_000011 WHERE ccofac LIKE 'on' AND ccotra LIKE 'on' and ccoima !='off' AND ccodom !='on';";
-	$cco = ccoUnificadoCM();
+	$cco = ccoUnificadoCM($selectsede);
 	realizarDescarte($cco, $wusuario);
 
 	if($NPT_tiempoInfusion!="")
@@ -7482,6 +7496,11 @@ else
 
 ?>
 </body >
+<script>
+    $(document).on('change','#selectsede',function(){
+        window.location.href = "cen_mez.php?wemp_pmla="+$('#wemp_pmla').val()+"&wbasedato=cenpro&selectsede="+$('#selectsede').val()
+    });
+</script>
 </html >
 
 <?php
