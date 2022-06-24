@@ -4827,7 +4827,7 @@ function mostrarPacientesComunes($wbasedato, $whce, $wemp_pmla, $wcco, $wusuario
 					mysql_query($sqlUpdatePues, $conex) or die("<b>ERROR EN QUERY MATRIX(sqlUpdatePues):</b><br>".mysql_error());
 				}
 			}
-
+            $respuesta = utf8ize2($respuesta);
 			echo json_encode($respuesta);
 			return;
 			break;
