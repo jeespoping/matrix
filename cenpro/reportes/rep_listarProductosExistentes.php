@@ -103,6 +103,12 @@ include_once("conex.php");
 		 }
 	
 	//consulta para traer las existencias de cada uno de los productos.
+
+     $cco = ccoUnificadoCM($selectsede);
+     $concatQuery2 = '';
+     if ($selectsede){
+         $concatQuery2 .= " And Karcco = '".$cco."'";
+     }
 	
 	$query ="SELECT Artcod, Artcom, Karexi, Karcos "
                        ." FROM ".$wcenmez."_000001, ".$wcenmez."_000002, ".$wcenmez."_000005 "
@@ -110,8 +116,9 @@ include_once("conex.php");
                        ."  AND Tippro = 'on' "
                        ."  AND Artest = 'on'"
                        ."  AND Karcod = Artcod"
-                       ."  AND Karexi > 0 "
+                       ."  AND Karexi > 0 {$concatQuery2} "
 					   .$wftipo.""
+                       ."GROUP BY Artcod"
 					   ."  ORDER BY Artcom";        
 
 					
@@ -265,7 +272,7 @@ include_once("conex.php");
 
 
 include_once("root/comun.php");
-encabezado("LISTADO PRODUCTOS EXISTENTES",$wactualiz, "clinica", true);
+encabezado("LISTADO PRODUCTOS EXISTENTES",$wactualiz, "clinica", true, false);
 	
  session_start();
  if(!isset($_SESSION['user']))
