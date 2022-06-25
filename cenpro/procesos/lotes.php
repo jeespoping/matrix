@@ -3842,8 +3842,8 @@ function deshabilitar_teclas()
    {
 		textoCampo = window.document.producto.lotcan.value;
 		textoCampo = validarEntero(textoCampo);
-		
-		if($("#warticuloda").val()!==undefined && textoCampo!="1")
+
+		if($("#warticuloda").val()!==undefined && textoCampo!="1" && $("#warticuloda").val()!= '')
 		{
 			alert('Para las dosis adaptadas la cantidad del lote debe ser 1');
 			textoCampo = "1";
