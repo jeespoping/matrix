@@ -4,7 +4,6 @@ define('MYSQL_ASSOC',MYSQLI_ASSOC);
 //header("Content-Type: text/html;charset=UTF8");
 /****************************************************************************
 *  accion
-2022-06-02 Jasson Esteban Gualguan Guzman: Paginacion de las historias clinicas, se arregla el sistema de conteo de historias clinicas
 2022-03-30 Luis F Meneses: No utilizar el dato fecha de expedición en la acción 'mostrarDatosAlmacenados'
 2021-03-15 Juan David Rodriguez: Se corrige la fecha de preadmision que había sido comentada en una publicación anterior
 2021-12-19 Sebastián Nevado: se cambia la función verificarCcoIngresoAyuda.
@@ -3381,11 +3380,8 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 									}
 								}
 							}
-							//en la iteracion verificamos si cada elemento del array existe el estado del ['pac_act'], si es asi, le cambiamos el valor a OFF, ya que muchos de los ingresos anteriores ya estan inactivos, excepto el mas reciente (en algunos casos) --> se compara con el estado del paciente.
+
 							$data[ 'infoing' ][$i] = $data[ 'infopac' ];
-							if($data[ 'infoing' ][$i]['pac_act']){
-								$data[ 'infoing' ][$i]['pac_act'] = 'off'; 
-							}
 
 							if( $rows1['Ingcai' ] == '02' ){
 								consultarAccidentesAlmacenados( $rows['Pachis'], $rows1['Ingnin'], $data );
@@ -3771,8 +3767,6 @@ if (isset($accion) and $accion == 'mostrarDatosAlmacenados')
 							// array_push( $data[ 'infoing' ][$i], $data[ 'infopac' ] );
 						}//for
 
-						$statusPac = $data['infopac']['pac_act']; //obtiene el estado del paciente
-						$data['infoing'][count($data['infoing']) -1]['pac_act'] = $statusPac; //obtenemos el ultimo elemento del array $data['infoing'] y le cambiamos es status del paciente pac_act
 					}//$num1>0
 					else
 					{
@@ -9303,7 +9297,7 @@ if(!array_key_exists("user", $_SESSION))
     echo "error";
 else
 {
-	$wactualiz = '2022-06-03';
+	$wactualiz = '2022-03-15';
 	encabezado("ADMISI&Oacute;N DE PACIENTES ",$wactualiz, $wbasedato1);
 
 	$fechaAct=date("Y-m-d");
@@ -9321,7 +9315,6 @@ $solucionCitas      = (!isset($solucionCitas)) ? '' : $solucionCitas;
 
 $search_historia      = (!isset($search_historia)) ? '' : $search_historia;
 $search_ingreso      = (!isset($search_ingreso)) ? '' : $search_ingreso;
-
 
 
 
@@ -9368,7 +9361,7 @@ echo "<div id='bot_navegacion1' style='display:none'>";
 echo "<center><table style='width:500;' border='0'>";
 echo "<th colspan='3' class='encabezadotabla'>Resultados de la busqueda</th>";
 echo "<tr class='fila1'>";
-echo "<td align='center' colspan='3'>Registro <span id='spIngAct1'></span> de <span id='spTotalIng1'></span>&nbsp;&nbsp;</td>"; /* se agrega como id de este campo el valor ing_nintxtNumIng como historia actual de historias clinicas y spTotalIng1 como total de las historias */
+echo "<td align='center' colspan='3'>Registro <span id='spRegAct1'></span> de <span id='spTotalReg1'></span>&nbsp;&nbsp;</td>";
 echo "</tr>";
 /*echo "<tr class='fila1'>";
 echo "<td align='center' colspan='3'>Total Resultados:<span id='spTotalReg1'></span>&nbsp;&nbsp;</td>";
@@ -10279,7 +10272,7 @@ echo "<div id='bot_navegacion' style='display:none'>";
 echo "<center><table style='width:500;' border='0'>";
 echo "<th colspan='3' class='encabezadotabla'>Resultados de la busqueda</th>";
 echo "<tr class='fila1'>";
-echo "<td align='center' colspan='3'>Registro <span id='spIngAct'></span> de <span id='spTotalIng'></span>&nbsp;&nbsp;</td>"; /* se agrega como id de este campo el valor ing_nintxtNumIng como historia actual de historias clinicas y spTotalIng1 como total de las historias */
+echo "<td align='center' colspan='3'>Registro <span id='spRegAct'></span> de <span id='spTotalReg'></span>&nbsp;&nbsp;</td>";
 echo "</tr>";
 /*echo "<tr class='fila1'>"; //Total Ingresos:<span id='spTotalIng'></span>
 echo "<td align='center' colspan='3'>Total Resultados:<span id='spTotalReg'></span>&nbsp;&nbsp;</td>";
@@ -10293,6 +10286,7 @@ echo "&nbsp;<img src='../../images/medical/citas/adelante.jpg' height='30' width
 echo "</tr>";
 echo "</table></center>";
 echo "</div>";//div botones navegacion
+
 echo "<div id='div_contenedor_topes' style='display:none'>";
 echo "</div>";
 
