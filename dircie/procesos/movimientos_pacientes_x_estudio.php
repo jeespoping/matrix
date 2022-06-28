@@ -1,4 +1,5 @@
 <?php
+$wemp_pmla = $_REQUEST['wemp_pmla'];
 include_once("conex.php");
    /*******************************************************************************************************************
    *                                 MOVIMIENTOS DE PACIENTES POR ESTUDIO                                             *
@@ -11,6 +12,7 @@ include_once("conex.php");
    * Autor: John M. Cadavid. G.                                                                                       *
    * Fecha creacion: 2011-12-27                                                                                       *
    * **********************************      Modificaciones    ********************************************************
+   * 16/03/2022 - Brigith Lagares: Se realiza estadarización del wemp_pmla.
    * 2017-06-09 - Arleyda Insignares Ceballos. Se adicionan decimales, y se cambia el orden de las columnas en la     *
    *              captura de movimientos por estudio para que ordene por frecuencia.                                  *      
    *                                                                                                                  *
@@ -33,7 +35,7 @@ include_once("conex.php");
    * y qué va a grabar - Mario Cadavid                                                                                *
    ********************************************************************************************************************/
  
-  $wactualiz = "2017-06-09";  
+  $wactualiz = "2022-03-16";  
 
   if(!isset($_SESSION['user'])){
     echo "<center></br></br><table id='tblmensaje' name='tblmensaje' style='border: 1px solid blue;visibility:none;'>
@@ -101,7 +103,7 @@ include_once("conex.php");
                         else
                             $wcolor="fila2";
 
-                        $path="../../hce/procesos/HCE_iFrames.php?empresa=".$whce."&origen=01&wdbmhos=".$wbasemovhos."&whis=".$row['Paehis']."&wing=".$row['Paeing']."&accion=F&ok=0&wcedula=".$numeroide."&wtipodoc=".$tipoide;  
+                        $path="../../hce/procesos/HCE_iFrames.php?empresa=".$whce."&wemp_pmla=".$wemp_pmla."&wdbmhos=".$wbasemovhos."&whis=".$row['Paehis']."&wing=".$row['Paeing']."&accion=F&ok=0&wcedula=".$numeroide."&wtipodoc=".$tipoide;  
 
                         $detalle .= "<tr class='".$wcolor."'>
                                      <td align='center'>".$row['Paehis']."</td>

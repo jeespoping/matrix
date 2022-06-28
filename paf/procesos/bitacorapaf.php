@@ -156,13 +156,29 @@
     {
         $user_session = explode('-', $_SESSION['user']);
         $wuse = $user_session[1];
+        $wemp_pmla = $_REQUEST['wemp_pmla'];
         include("conex.php");
         include("root/comun.php");
         mysql_select_db("matrix");
 
+        $wactualiz = '2022-06-15';
+		$institucion = consultarInstitucionPorCodigo($conex, $wemp_pmla);
+		$wbasedato1 = strtolower( $institucion->baseDeDatos );
+		encabezado("BASE DE DATOS - PAF",$wactualiz, $wbasedato1);
+
+        $wbasedato   = consultarAliasPorAplicacion($conex, $wemp_pmla, "movhos");
+        $wbasedato_cliame   = consultarAliasPorAplicacion($conex, $wemp_pmla, "cliame");
+ 
         $conex = obtenerConexionBD("matrix");
     }
     include("paf/librarypaf.php");
+
+    /*************************************************************************
+     * REGISTRO DE MODIFICACIONES :
+     * =======================================================================
+     *  01/05/2022 Brigith Lagares : se agrega el parametro del wemp_pmla
+    
+    **************************************************************************/
     ?>
 </head>
 
@@ -176,7 +192,7 @@
             </div>
             <div style="padding-top:30px" class="panel-body" >
                 <div id="divServicio" class="form-horizontal">
-                    <form style="margin-left: -60px" name="bitacorapaf" method="post" action="bitacorapaf.php">
+                    <form style="margin-left: -60px" name="bitacorapaf" method="post" action="bitacorapaf.php?wemp_pmla=<?php echo $wemp_pmla; ?>">
                         <table align="center" width="400">
                             <tr align="center">
                                 <td>&nbsp;&nbsp;&nbsp;</td>
@@ -222,9 +238,9 @@
                     if($valorRadio == 0)
                     {
                         $query = mysql_queryV("SELECT a.Inghis, a.Inging, a.Ingnre, a.Ingres, f.Ingfei, b.Habcod, c.Pacno1, c.Pacno2, c.Pacap1, c.Pacap2, c.Pacsex, c.Pacfna, d.Ubisac
-                                                FROM movhos_000016 a
+                                                FROM {$wbasedato}_000016 a
                                                              left join
-                                                     movhos_000020 b on (a.Inghis=b.Habhis and a.Inging=b.Habing),cliame_000100 c,movhos_000018 d,root_000037 e,cliame_000101 f
+                                                {$wbasedato}_000020 b on (a.Inghis=b.Habhis and a.Inging=b.Habing),{$wbasedato_cliame}_000100 c,{$wbasedato}_000018 d,root_000037 e,{$wbasedato_cliame}_000101 f
                                                 WHERE a.Fecha_data BETWEEN '$fechaanterior' AND '$fecha_actual'
                                                        AND a.Ingres in ('800088702CV','800088702CS','900156264CV','900156264CS','800130907CV','800130907CS')
                                                        AND f.Ingsei not in('1290','1251','1033','1250','1320','1075')
@@ -236,13 +252,13 @@
                                                        AND a.Inging=d.Ubiing
                                                        AND a.Inghis=e.Orihis
                                                        AND a.Inging=e.Oriing
-                                                       AND e.Oriori = '01'
+                                                       AND e.Oriori = '".$wemp_pmla."'
                                                 ORDER BY f.Ingfei ASC");
                     }
                     if($valorRadio == 1) //HABITACION
                     {
                         $query = mysql_queryV("SELECT a.Inghis, a.Inging, a.Ingnre, a.Ingres, a.Fecha_data, b.Habcod, c.Pacno1, c.Pacno2, c.Pacap1, c.Pacap2, c.Pacsex, c.Pacfna, d.Ubisac
-                                                FROM movhos_000020 b, movhos_000016 a, cliame_000100 c, movhos_000018 d
+                                                FROM {$wbasedato}_000020 b, {$wbasedato}_000016 a, {$wbasedato_cliame}_000100 c, {$wbasedato}_000018 d
                                                 WHERE b.Habcod LIKE '$buscado%'
                                                 AND b.Habhis = a.Inghis
                                                 AND b.Habing = a.Inging
@@ -254,7 +270,7 @@
                     if($valorRadio == 2) //HISTORIA
                     {
                         $query = mysql_queryV("SELECT Pachis, Ingnin, Ingfei, Pacno1, Pacno2, Pacap1, Pacap2, Ingsei, Ingent, Pacfna, Pacsex
-                                                FROM cliame_000100, cliame_000101
+                                                FROM {$wbasedato_cliame}_000100, {$wbasedato_cliame}_000101
                                                 WHERE Pachis = '$buscado'
                                                 AND Pachis = Inghis
                                                 ORDER BY ingfei ASC");
@@ -264,7 +280,7 @@
                         if($buscado != '')
                         {
                             $query = mysql_queryV("SELECT a.Ubihis, a.Ubiing, e.Ingfei, b.Pacno1, b.Pacno2, b.Pacap1,b.Pacap2, a.Ubisac, c.sexo, d.Ingnre, b.Pacfna
-                                                    FROM paf_000004 c, movhos_000018 a, movhos_000016 d, cliame_000100 b, cliame_000101 e
+                                                    FROM paf_000004 c, {$wbasedato}_000018 a, {$wbasedato}_000016 d, {$wbasedato_cliame}_000100 b, {$wbasedato_cliame}_000101 e
                                                     WHERE c.hc = '$buscado'
                                                     AND c.hc = a.Ubihis
                                                     AND e.Inghis = a.Ubihis
@@ -318,7 +334,7 @@
                                     $responsable=$dato['Ingnre']; if($responsable == ''){$responsable=$dato['responsable'];} if($responsable == ''){$responsable=$dato['Ingent'];}
                                     $cod_responsable=$dato['Ingres']; if($cod_responsable == ''){$cod_responsable=$dato['Ingcem'];}
                                     $servicio=$dato['Ubisac']; if($servicio == ''){$servicio=$dato['Ingsei'];}
-                                    $queryServicio = "select Cconom from movhos_000011 where Ccocod = '$servicio'";
+                                    $queryServicio = "select Cconom from {$wbasedato}_000011 where Ccocod = '$servicio'";
                                     $commQryServicio = mysql_query($queryServicio) or die (mysql_errno()." - en el query: ".$queryServicio." - ".mysql_error());
                                     $datoServicio = mysql_fetch_array($commQryServicio);
                                     $nombreServicio = $datoServicio[0];
@@ -340,7 +356,7 @@
                                                 ?>
                                                 <tbody>
                                                 <tr>
-                                                    <form method="post" action="cirugiapaf.php">
+                                                    <form method="post" action="cirugiapaf.php?wemp_pmla=<?php echo $wemp_pmla;?>">
                                                         <td><label style="color: #3CB248"><?php echo $habitacion ?></label></td>
                                                         <td><label style="color: #3CB248"><?php echo $historia ?></label></td>
                                                         <td><label style="color: #3CB248"><?php echo $ingreso ?></label></td>
@@ -385,7 +401,7 @@
                                                 ?>
                                                 <tbody>
                                                 <tr>
-                                                    <form method="post" action="cirugiapaf.php">
+                                                    <form method="post" action="cirugiapaf.php?wemp_pmla=<?php echo $wemp_pmla; ?>">
                                                         <td><label style="color: #3CB248"><?php echo $habitacion ?></label></td>
                                                         <td><label style="color: #3CB248"><?php echo $historia ?></label></td>
                                                         <td><label style="color: #3CB248"><?php echo $ingreso ?></label></td>
@@ -431,7 +447,7 @@
                                             ?>
                                             <tbody>
                                             <tr>
-                                                <form method="post" action="cirugiapaf.php">
+                                                <form method="post" action="cirugiapaf.php?wemp_pmla=<?php echo $wemp_pmla; ?>">
                                                     <td><label style="color: #3CB248"><?php echo $habitacion ?></label></td>
                                                     <td><label style="color: #3CB248"><?php echo $historia ?></label></td>
                                                     <td><label style="color: #3CB248"><?php echo $ingreso ?></label></td>
@@ -477,7 +493,7 @@
                                         ?>
                                         <tbody>
                                         <tr>
-                                            <form method="post" action="cirugiapaf.php">
+                                            <form method="post" action="cirugiapaf.php?wemp_pmla=<?php echo $wemp_pmla; ?>">
                                                 <td><?php echo $habitacion ?></td>
                                                 <td><?php echo $historia ?></td>
                                                 <td><?php echo $ingreso ?></td>
