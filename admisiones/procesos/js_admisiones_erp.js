@@ -2997,10 +2997,8 @@ var informacionIngresos = '';
 function navegacionIngresos(incremento) {
 
 	var data = informacionIngresos;
-
 	if (data.posAct + incremento < informacionIngresos.regTotal && data.posAct + incremento >= 0) {
 		data.posAct = data.posAct + incremento;
-
 		$("#tabla_eps").find("tr[id$='_tr_tabla_eps']").remove();
 		var wbasedato = $("#wbasedato").val();
 		var wemp_pmla = $("#wemp_pmla").val();
@@ -3020,29 +3018,30 @@ function navegacionIngresos(incremento) {
 
 		//Muestra datos para el navegador inferior
 		$("#spTotalReg").html(data.numRegistrosPac);// numero de registros encontrados en la busqueda
-		$("#spTotalIng").html(data.numRegistrosIng[data.infoing[data.posAct].pac_his]); //total ingresos encontrados
+		$("#spTotalIng").html(data.ultimoIngreso[data.infoing[data.posAct].pac_his]); //total ingresos encontrados
 		$("#spRegAct").html(data.numPosicionHistorias[data.infoing[data.posAct].pac_his] + 1); //resultado actual
 
 		$("#spHisAct").html(data.infoing[data.posAct].pac_his); //historia del registro actual
 		$("#spIngAct").html(data.infoing[data.posAct].ing_nin);	//ingreso actual del registro actual
-		$("#spTotalIng1").html(data.numRegistrosIng[data.infoing[data.posAct].pac_his]); //total ingresos por historia
+		$("#spTotalIng1").html(data.ultimoIngreso[data.infoing[data.posAct].pac_his]); //total ingresos por historia
 
 		//Muestra datos para el navegador superior
 		$("#spTotalReg1").html(data.numRegistrosPac);// numero de registros encontrados en la busqueda
-		$("#spTotalIng1").html(data.numRegistrosIng[data.infoing[data.posAct].pac_his]); //total ingresos encontrados
+		$("#spTotalIng1").html(data.ultimoIngreso[data.infoing[data.posAct].pac_his]); //total ingresos encontrados
 		$("#spRegAct1").html(data.numPosicionHistorias[data.infoing[data.posAct].pac_his] + 1); //resultado actual
 
 		$("#spHisAct1").html(data.infoing[data.posAct].pac_his); //historia del registro actual
 		$("#spIngAct1").html(data.infoing[data.posAct].ing_nin);	//ingreso actual del registro actual
-		$("#spTotalIng11").html(data.numRegistrosIng[data.infoing[data.posAct].pac_his]); //total ingresos por historia
+		$("#spTotalIng11").html(data.ultimoIngreso[data.infoing[data.posAct].pac_his]); //total ingresos por historia
+
 
 		$("#spEstPac").removeClass("estadoInactivo estadoActivo");//se le quita antes la clase que tiene para colocarle la nueva
 		var estPac = data.infoing[data.posAct].pac_act;//se trae el estado del paciente
-		if (estPac == 'off') {
+		if (estPac == 'off') { // validamos el estado del ingreso del paciente segun su estado del ingreso "on" / "off"
 			estPac = "INACTIVO";
 			$("#spEstPac").addClass("estadoInactivo");
 		}
-		else {
+		else  {
 			estPac = "ACTIVO";
 			$("#spEstPac").addClass("estadoActivo");
 		}
@@ -4002,7 +4001,7 @@ function navegacionIngresosPreadmision(incremento) {
 		$("#ing_plaselPlan" + prefijo_trEps).val(data.infoing[data.posAct].ing_pla);
 		$("#spEstPac").removeClass("estadoInactivo estadoActivo");//se le quita antes la clase que tiene para colocarle la nueva
 
-		var estPac = data.infoing[data.posAct].pac_act;//se trae el estado del paciente
+		var estPac = data.infoing[data.posAct].ing_;//se trae el estado del paciente
 		$("#spEstPac").html('');
 		//var objetoRes = $("[name=ing_tpaselTipRes]").eq(0);
 		//validarTipoResp(objetoRes[0]);
