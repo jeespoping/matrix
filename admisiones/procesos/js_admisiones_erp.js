@@ -538,7 +538,8 @@ function CambiarEstadoDatosExtranjeros(obj) {
 
 function buscarPaises() {
 	//Asigno autocompletar para la busqueda de paises
-	$("#pac_pantxtPaiNac, #pac_pahtxtPaiRes").autocomplete("admision_erp.php?consultaAjax=&accion=consultarPais", {
+	wemp_pmla= $("#wemp_pmla").val()
+	$("#pac_pantxtPaiNac, #pac_pahtxtPaiRes").autocomplete("admision_erp.php?consultaAjax=&accion=consultarPais&wemp_pmla="+wemp_pmla, {
 		cacheLength: 1,
 		delay: 300,
 		max: 100,
@@ -670,7 +671,8 @@ function buscarPaises() {
 
 function buscarDepartamentos() {
 	//Asigno autocompletar para la busqueda de departamentos
-	$("#pac_deptxtDepNac,#pac_dehtxtDepRes,#pac_dretxtDepResp,#AccConductordp,#AccDepPropietario,#Catdep,#Accdep").autocomplete("admision_erp.php?consultaAjax=&accion=consultarDepartamento",
+	wemp_pmla= $("#wemp_pmla").val()
+	$("#pac_deptxtDepNac,#pac_dehtxtDepRes,#pac_dretxtDepResp,#AccConductordp,#AccDepPropietario,#Catdep,#Accdep").autocomplete("admision_erp.php?consultaAjax=&accion=consultarDepartamento&wemp_pmla="+ wemp_pmla,
 		{
 			extraParams: {
 				codigoPais: function (campo) {
@@ -752,7 +754,8 @@ function buscarDepartamentos() {
 
 function buscarMunicipios() {
 	//Asigno autocompletar para la busqueda de municipios
-	$("#pac_ciutxtMunNac,#pac_muhtxtMunRes,#pac_mretxtMunResp,#AccMunPropietario,#AccConductorMun,#Catmun,#Accmun").autocomplete("admision_erp.php?consultaAjax=&accion=consultarMunicipio",
+	wemp_pmla= $("#wemp_pmla").val()
+	$("#pac_ciutxtMunNac,#pac_muhtxtMunRes,#pac_mretxtMunResp,#AccMunPropietario,#AccConductorMun,#Catmun,#Accmun").autocomplete("admision_erp.php?consultaAjax=&accion=consultarMunicipio&wemp_pmla="+ wemp_pmla,
 		{
 			extraParams: {
 				dep: function (campo) {
@@ -842,7 +845,8 @@ function buscarMunicipios() {
 
 function buscarBarrios() {
 	//Asigno autocompletar para la busqueda de barrios
-	$("#pac_bartxtBarRes").autocomplete("admision_erp.php?consultaAjax=&accion=consultarBarrio",
+	wemp_pmla= $("#wemp_pmla").val()
+	$("#pac_bartxtBarRes").autocomplete("admision_erp.php?consultaAjax=&accion=consultarBarrio&&wemp_pmla="+wemp_pmla,
 		{
 			extraParams: {
 				mun: function (campo) {
@@ -927,7 +931,8 @@ function buscarBarrios() {
 
 function buscarOcupaciones() {
 	//Asigno autocompletar para la busqueda de ocuapciones
-	$("#pac_ofitxtocu").autocomplete("admision_erp.php?consultaAjax=&accion=consultarOcupacion",
+	wemp_pmla= $("#wemp_pmla").val();
+	$("#pac_ofitxtocu").autocomplete("admision_erp.php?consultaAjax=&accion=consultarOcupacion&wemp_pmla="+ wemp_pmla,
 		{
 			cacheLength: 1,
 			delay: 300,
@@ -1115,7 +1120,8 @@ function buscarCUPS(contenedor, indice) {
 		indice = 0;
 	}
 	//Asigno autocompletar para la busqueda de paises
-	$("[name=ing_cactxtcups]:eq(" + indice + ")", $("#" + contenedor)).autocomplete("admision_erp.php?consultaAjax=&accion=consultarCUPS",
+	wemp_pmla= $("#wemp_pmla").val()
+	$("[name=ing_cactxtcups]:eq(" + indice + ")", $("#" + contenedor)).autocomplete("admision_erp.php?consultaAjax=&accion=consultarCUPS&wemp_pmla="+ wemp_pmla,
 		{
 			cacheLength: 1,
 			delay: 300,
@@ -1186,7 +1192,8 @@ function buscarCUPS(contenedor, indice) {
 
 function buscarImpresionDiagnostica() {
 	//Asigno autocompletar para la busqueda de impresiones diagnosticas
-	$("#ing_digtxtImpDia").autocomplete("admision_erp.php?consultaAjax=&accion=consultarImpresionDiagnostica",
+	wemp_pmla = $('#wemp_pmla').val();
+	$("#ing_digtxtImpDia").autocomplete("admision_erp.php?consultaAjax=&accion=consultarImpresionDiagnostica&wemp_pmla="+ wemp_pmla,
 		{
 			extraParams: {
 				edad: function (campo) {
@@ -1271,7 +1278,8 @@ function buscarImpresionDiagnostica() {
 
 function buscarTarifaParticular() {
 	//Asigno autocompletar para la busqueda de impresiones diagnosticas
-	$("#ing_tartxt").autocomplete("admision_erp.php?consultaAjax=&accion=buscarTarifaParticular&wbasedato=" + $("#wbasedato").val(),
+	wemp_pmla= $("#wemp_pmla").val();
+	$("#ing_tartxt").autocomplete("admision_erp.php?consultaAjax=&accion=buscarTarifaParticular&wbasedato=" + $("#wbasedato").val() +"&wemp_pmla="+wemp_pmla,
 		{
 			cacheLength: 0,
 			delay: 300,
@@ -1696,6 +1704,7 @@ function llenarPlan(valor, selectHijo) {
 				consultaAjax: '',
 				accion: 'llenarSelectPlan',
 				wbasedato: $("#wbasedato").val(),
+				wemp_pmla: $('#wemp_pmla').val(),
 				valor: valor
 			},
 			async: false,
@@ -2001,7 +2010,8 @@ function enviarDatos(automatico = '') {
 
 				//2014-10-22
 				$.blockUI({ message: "Por favor espere..." });
-				$.post("admision_erp.php",
+				wemp_pmla= $("#wemp_pmla").val();
+				$.post("admision_erp.php?wemp_pmla="+wemp_pmla,
 					objJson,
 					function (data) {
 						if (automatico != "on")
@@ -2167,11 +2177,11 @@ function enviarDatos(automatico = '') {
 
 																	imprimirHistoria = $("#chk_imprimirHistoria").is(":checked");
 																	wbasedatoImp = $("#wbasedatoImp").val();
+																	wemp_pmla = $('#wemp_pmla').val();
 																	if (imprimirHistoria) {
-																		winSticker = window.open("../../ips/reportes/r001-admision.php?wpachi=" + data.historia + "&wingni=" + data.ingreso + "&empresa=" + wbasedatoImp);
+																		winSticker = window.open("../../ips/reportes/r001-admision.php?wemp_pmla=" + wemp_pmla + "&wpachi=" + data.historia + "&wingni=" + data.ingreso + "&empresa=" + wbasedatoImp);
 
 																	}
-																	wemp_pmla = $('#wemp_pmla').val();
 																	if ($("#imprimirSticker").val() == "on") {
 																		winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla=" + wemp_pmla + "&wtip=" + wtip + "&whis=" + data.historia, '', 'fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 																		winSticker.onload = function () {
@@ -2249,12 +2259,12 @@ function enviarDatos(automatico = '') {
 																	try {
 
 																		imprimirHistoria = $("#chk_imprimirHistoria").is(":checked");
+																		wemp_pmla = $('#wemp_pmla').val();
 																		wbasedatoImp = $("#wbasedatoImp").val();
 																		if (imprimirHistoria) {
-																			winSticker = window.open("../../ips/reportes/r001-admision.php?wpachi=" + data.historia + "&wingni=" + data.ingreso + "&empresa=" + wbasedatoImp);
+																			winSticker = window.open("../../ips/reportes/r001-admision.php?wemp_pmla=" + wemp_pmla + "&wpachi=" + data.historia + "&wingni=" + data.ingreso + "&empresa=" + wbasedatoImp);
 
 																		}
-																		wemp_pmla = $('#wemp_pmla').val();
 																		if ($("#imprimirSticker").val() == "on") {
 																			winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla=" + wemp_pmla + "&wtip=" + wtip + "&whis=" + data.historia, '', 'fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 																			winSticker.onload = function () {
@@ -2778,13 +2788,13 @@ function onloadDesdeSoportes() {
 
 					imprimirHistoria = $("#chk_imprimirHistoria").is(":checked");
 					wbasedatoImp = $("#wbasedatoImp").val();
+					wemp_pmla = $('#wemp_pmla').val();
 					if (imprimirHistoria) {
-						winSticker = window.open("../../ips/reportes/r001-admision.php?wpachi=" + historia + "&wingni=" + ingreso + "&empresa=" + wbasedatoImp);
+						winSticker = window.open("../../ips/reportes/r001-admision.php?wemp_pmla=" + wemp_pmla + "&wpachi=" + historia + "&wingni=" + ingreso + "&empresa=" + wbasedatoImp);
 
 					}
 
 					if ($("#imprimirSticker").val() == "on") {
-						wemp_pmla = $('#wemp_pmla').val();
 						winSticker = window.open("../../movhos/reportes/sticker_HC100.php?wemp_pmla=" + wemp_pmla + "&wtip=" + wtip + "&whis=" + historia, '', 'fullscreen=no, status=no, menubar=no, toolbar=no, directories=no, resizable=yes, scrollbars=yes,titlebar=yes,width=600,height=600');
 						winSticker.onload = function () {
 							$("input:radio[value=" + wtip + "]", winSticker.document).attr("checked", true);
@@ -2925,8 +2935,8 @@ function mostrarDatos(documento, ingreso, tipoDocumento) {
 	}
 
 	$.blockUI({ message: "Por favor espere..." });
-
-	$.post("admision_erp.php",
+	wemp_pmla = $('#wemp_pmla').val();
+	$.post("admision_erp.php?wemp_pmla="+wemp_pmla,
 		objJson,
 		function (data) {
 			$.unblockUI();
@@ -3657,7 +3667,8 @@ function borrarLog(key) {
 function buscarIpsRemite() {
 	var wbasedato = $("#wbasedato").val();
 	//Asigno autocompletar para la busqueda de ips que remite
-	$("#pac_iretxtIpsRem").autocomplete("admision_erp.php?consultaAjax=&accion=consultarIpsRemite&wbasedato=" + wbasedato,
+	wemp_pmla = $('#wemp_pmla').val();
+	$("#pac_iretxtIpsRem").autocomplete("admision_erp.php?consultaAjax=&accion=consultarIpsRemite&wbasedato=" + wbasedato+"&wemp_pmla="+wemp_pmla,
 		{
 			cacheLength: 1,
 			delay: 300,
@@ -3914,8 +3925,8 @@ function mostrarDatosPreadmision(documento) {
 			objJson[id] = '';
 		}
 	});
-
-	$.post("admision_erp.php",
+	wemp_pmla = $('#wemp_pmla').val();
+	$.post("admision_erp.php?wemp_pmla="+wemp_pmla,
 		objJson,
 		function (data) {
 
@@ -4148,8 +4159,8 @@ function consultarAgendaPreadmision(fecha, incremento) {
 	objJson.consulta = $("#perfil_consulta").val();
 
 	$.blockUI({ message: "Espere un momento por favor..." });
-
-	$.post("admision_erp.php",
+	wemp_pmla = $('#wemp_pmla').val();
+	$.post("admision_erp.php?wemp_pmla=" + wemp_pmla,
 		objJson,
 		function (data) {
 			$.unblockUI();
@@ -4521,7 +4532,7 @@ function ingresarPreadmision(campo, tdoc, doc) {
 								$.unblockUI();
 
 
-
+								objJson.wemp_pmla = $("#wemp_pmla").val();
 								$.post("admision_erp.php",
 
 
@@ -5240,13 +5251,15 @@ function verificarTriageUrgencias() {
 
 function consultarFechaHoraActual() {
 	var datos;
+	wemp_pmla = $('#wemp_pmla').val();
 	$.ajax({
 		url: "admision_erp.php",
 		type: 'post',
 		async: false,
 		data: {
 			consultaAjax: '',
-			accion: 'consultarFechaHoraActual'
+			accion: 'consultarFechaHoraActual',
+			wemp_pmla: $("#wemp_pmla").val()
 		},
 		success: function (data) {
 			datos = data;
@@ -5406,7 +5419,8 @@ function anularAdmision(historia, ingreso, tipoDoc, cedula, automatico = '') {
 
 function imprimirHistoria(historia, ingreso) {
 	wbasedatoImp = $("#wbasedatoImp").val();
-	winSticker = window.open("../../ips/reportes/r001-admision.php?wpachi=" + historia + "&wingni=" + ingreso + "&empresa=" + wbasedatoImp);
+	wemp_pmla= $("#wemp_pmla").val();
+	winSticker = window.open("../../ips/reportes/r001-admision.php?wpachi=" + historia + "&wingni=" + ingreso + "&empresa=" + wbasedatoImp + "&wemp_pmla=" + wemp_pmla);
 	consultarAgendaPreadmision($("#fecActAgenda").html(), 0);
 	consultarAgendaAdmitidos($("#fecActAdmitidos").html(), 0);
 }
@@ -5493,8 +5507,9 @@ function mostrarDatosDemograficos() {
 
 function buscarAseguradorasVehiculo() {
 	var wbasedato = $("#wbasedato").val();
+	wemp_pmla= $("#wemp_pmla").val();
 	//Asigno autocompletar para la busqueda de aseguradoras
-	$("[name=_ux_accasn]").autocomplete("admision_erp.php?consultaAjax=&accion=consultarAseguradoraVehiculo&wbasedato=" + wbasedato,
+	$("[name=_ux_accasn]").autocomplete("admision_erp.php?consultaAjax=&accion=consultarAseguradoraVehiculo&wbasedato=" + wbasedato + "&wemp_pmla=" + wemp_pmla,
 		{
 			cacheLength: 1,
 			delay: 300,
@@ -5619,6 +5634,7 @@ function buscarSegundoResp() {
 		{
 			wbasedato: wbasedato,
 			consultaAjax: '',
+			wemp_pmla: $("#wemp_pmla").val(),
 			accion: 'consultarSegundoResp'
 
 		}
@@ -5655,6 +5671,7 @@ function buscarPrimerResp() {
 			consultaAjax: '',
 			accion: 'consultarPrimerResp',
 			asegu: asegu,
+			wemp_pmla: $("#wemp_pmla").val(),
 			fechaAccidente: $("#dat_Accfec").val()
 
 		}, function (data) {
@@ -5723,7 +5740,8 @@ function listarEventosCatastroficos() {
 			{
 				consultaAjax: '',
 				accion: 'listaEventos',
-				wbasedato: $("#wbasedato").val()
+				wbasedato: $("#wbasedato").val(),
+				wemp_pmla: $("#wemp_pmla").val()
 
 			}
 			, function (data) {
@@ -5777,7 +5795,8 @@ function mostrarDetalleEventosCatastroficos(codigo) {
 			consultaAjax: '',
 			accion: 'mostrarDetalleEvento',
 			wbasedato: $("#wbasedato").val(),
-			codigo: codigo
+			codigo: codigo,
+			wemp_pmla: $("#wemp_pmla").val()
 
 		}
 		, function (data) {
@@ -7077,7 +7096,8 @@ function removerFila(id_fila, wbasedato, tabla_referencia) {
 					accion: 'eliminar_planes',
 					consultaAjax: '',
 					id_eliminar: id_eliminar,
-					wbasedato: wbasedato
+					wbasedato: wbasedato,
+					wemp_pmla: $("#wemp_pmla").val()
 				},
 				function (data) {
 					if (data.error == 1) {
@@ -7341,7 +7361,8 @@ function consultarClientesEspeciales() {
 			consultaAjax: '',
 			accion: 'consultaClientes',
 			cedula: cedula,
-			tipoDoc: tipoDoc
+			tipoDoc: tipoDoc,
+			wemp_pmla: $("#wemp_pmla").val()
 
 		}, function (data) {
 			if (data.error == 1) {
@@ -8056,7 +8077,7 @@ function consultarHistoriaPendienteDeAlta() {
 		obJson['accion'] = 'consultar_historia_activa';
 		obJson['historia_alta'] = historia_alta;
 		// obJson['ccoUrgencias']  = document.forms.forma.codCco.value;
-
+		objJson['wemp_pmla'] = $("#wemp_pmla").val();
 		fnModalLoading();
 
 		$.post("admision_erp.php", obJson,
@@ -8096,6 +8117,7 @@ function altaPacienteOtroServicio(historia_alta, wing, usuario, nombre) {
 			obJson['seguridad'] = usuario;
 			obJson['wcubiculo_ocupado'] = '';
 			obJson['turno'] = '';
+			obJson['wemp_pmla'] = $("#wemp_pmla").val();
 			obJson['desde'] = 'altaPacienteOtroServicio';
 
 			$.post("../../hce/procesos/agenda_urgencias_por_especialidad.php", obJson,
@@ -8169,7 +8191,8 @@ function abrirTableroDigitalizacion(historia, ingreso, tipoDocumento, documento,
 	// Usage! 3-
 
 	sleep(500).then(() => {
-		var html = '<iframe id="iframeModalTablero" src="../../ips/procesos/tableroDigitalizacion.php?AbiertoDesdeAdmision=si&DesdeAdmisionHistoria=' + historia + '&DesdeAdmisionIngreso=' + ingreso + '&DesdeAdmisionTipoDocumento=' + tipoDocumento + '&DesdeAdmisionDocumento=' + documento + '&DesdeAdmisionResponsable=' + empresa + '&DesdeAdmisionFecha=' + fecha + '" width="100%" height="100%" frameborder="0" allowtransparency="true"></iframe>';
+		wemp_pmla= $("#wemp_pmla").val();
+		var html = '<iframe id="iframeModalTablero" src="../../ips/procesos/tableroDigitalizacion.php?wemp_pmla='+wemp_pmla+'&AbiertoDesdeAdmision=si&DesdeAdmisionHistoria=' + historia + '&DesdeAdmisionIngreso=' + ingreso + '&DesdeAdmisionTipoDocumento=' + tipoDocumento + '&DesdeAdmisionDocumento=' + documento + '&DesdeAdmisionResponsable=' + empresa + '&DesdeAdmisionFecha=' + fecha + '" width="100%" height="100%" frameborder="0" allowtransparency="true"></iframe>';
 
 		$("#modaliframe").html(html).show().dialog({
 			// dialogClass: 'fixed-dialog',
