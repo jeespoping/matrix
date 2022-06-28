@@ -3651,7 +3651,7 @@ function cargarDAaPaciente(historia,ingreso,codArticulo,ido,codDA,lote,codCco,se
 				
 				cadena = cadena + "&wido=" +data.ido;
 				imprimir(cadena);
-				window.open ("cargocpx.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#sede').val(),+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
+				window.open ("cargocpx.php?wemp_pmla="+$('#wemp_pmla').val()+"&selectsede="+$('#sede').val()+"&cod="+codDA+"&cco="+codCco+"&var="+lote+"&historia="+historia+"&ingreso="+ingreso+"&servicio="+servicio+"&carro=off","_self");
 			}
 			
 		},'json');
