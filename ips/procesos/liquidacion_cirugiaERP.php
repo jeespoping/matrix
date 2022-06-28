@@ -16896,7 +16896,7 @@ $actOpOtrosProced = ($actOpOtrosProced == 'on') ? '': 'disabled="disabled"';
             var wbasedato_movhos = $("#wbasedato_movhos").val();
             if(wtip_doc_tal != "" && wdoc_tal != "" && whistoria_tal != "")
             {
-                var path = "/matrix/HCE/procesos/HCE_iFrames.php?empresa=hce&origen="+wemp_pmla+"&wcedula="+wdoc_tal+"&wtipodoc="+wtip_doc_tal+"&wdbmhos="+wbasedato_movhos;
+                var path = "/matrix/HCE/procesos/HCE_iFrames.php?empresa="+'<?=$wbasedato_HCE?>'+"&wemp_pmla="+wemp_pmla+"&wcedula="+wdoc_tal+"&wtipodoc="+wtip_doc_tal+"&wdbmhos="+wbasedato_movhos;
                 window.open(path,'','fullscreen=1,status=0,menubar=0,toolbar=0,location=0,directories=0,resizable=0,scrollbars=1,titlebar=0');
             }
             else
