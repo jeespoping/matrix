@@ -2059,9 +2059,9 @@ function mostrarPacientesComunes($wbasedato, $wcliame, $whce, $wemp_pmla, $wcco,
        ////////////////////////////////////
        //Buscar listado centro de costos //
        ////////////////////////////////////
-       $sqlListacen =  " SELECT GROUP_CONCAT(DISTINCT ccocod
-					ORDER BY Ccocod ASC
-					SEPARATOR ',')
+       $sqlListacen =  " SELECT concat('''',GROUP_CONCAT(DISTINCT ccocod
+	   					ORDER BY Ccocod ASC
+						SEPARATOR ''','''),'''')
                           FROM ".$wbasedato."_000011                        
                           WHERE Ccocun = '".$row['Ccocun']."' ";
 
