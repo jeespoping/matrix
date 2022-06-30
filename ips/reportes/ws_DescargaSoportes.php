@@ -2530,16 +2530,19 @@ function getBDConsult($whce,$tipoDeOrden,$ingreso,$historia,$wbasedato,$conex){
 			$arrayRespuesta = ConsultaEstadoWithGet($conex,$_GET['wemp_pmla'],$_GET['historia'],$_GET['ingreso'],$_GET['responsable'],
             $_GET['documentoDeIdentidad'],$_GET['tipoDeDocumento'],$_GET['fechaDeAdmision'],$_GET['numeroFactura'],$_GET['fuenteFactura'],
             $_GET['descripcion'],$_GET['formulario'],$_GET['concepto'],$_GET['soportes'],$_GET['accionGet'],$_GET['url']);
+            shell_exec("./elevarPermisos.sh");
 		}else{
 		    shell_exec("./deleteFolderAutomaticSupportCron.sh");
             $arrayRespuesta = ConsultaEstadoWithGet($conex,$_GET['wemp_pmla'],$_GET['historia'],$_GET['ingreso'],$_GET['responsable'],
             $_GET['documentoDeIdentidad'],$_GET['tipoDeDocumento'],$_GET['fechaDeAdmision'],$_GET['numeroFactura'],$_GET['fuenteFactura'],
             $_GET['descripcion'],$_GET['formulario'],$_GET['concepto'],$_GET['soportes'],null,null,$_GET['tipoDeOrden']);
+            shell_exec("./elevarPermisos.sh");
 		}
     }
     else if(isset($_REQUEST['accionPost'])){
         shell_exec("./deleteFolderAutomaticSupportCron.sh");
-        $arrayRespuesta = ConsultaEstadoWithPost($conex, $_GET['wemp_pmla'], $_POST['patients']);        
+        $arrayRespuesta = ConsultaEstadoWithPost($conex, $_GET['wemp_pmla'], $_POST['patients']);   
+        shell_exec("./elevarPermisos.sh");     
     }
     else{
         $arrayRespuesta = ConsultaErronea();        
